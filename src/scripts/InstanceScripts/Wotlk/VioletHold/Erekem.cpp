@@ -23,8 +23,8 @@ ErekemAI::ErekemAI(Creature* pCreature) : CreatureAIScript(pCreature)
     addAISpell(Erekem::SPELL_LIGHTNING_BOLT, 44.0f, TARGET_RANDOM_SINGLE, 0, 2);
     addAISpell(Erekem::SPELL_EARTH_SHOCK, 44.0f, TARGET_RANDOM_SINGLE, 0, 8);
 
-    // Only Casted When hes Guards are Dead so make Chance 0 and Handle in Update
-    if (windfury = addAISpell(Erekem::SPELL_WINDFURY, 0.0f, TARGET_ATTACKING))
+    // Only caste when his guards are dead so make chance 0 and handle in update
+    if ((windfury = addAISpell(Erekem::SPELL_WINDFURY, 0.0f, TARGET_ATTACKING)))
     {
         windfury->mIsTriggered = true;
         windfury->setAvailableForScriptPhase({ 1 });

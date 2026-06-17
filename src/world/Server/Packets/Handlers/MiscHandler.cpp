@@ -108,7 +108,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
 
     PlayerTeam const team = _player->getTeam();
 
-    uint32_t sent_count = 0;
+    [[maybe_unused]] uint32_t sent_count = 0;
     uint32_t total_count = 0;
 
     WorldPacket data;
@@ -493,17 +493,17 @@ void WorldSession::handleSetActionButtonOpcode(WorldPacket& recvPacket)
         if (srlPacket.type == 64 || srlPacket.type == 65)
         {
             sLogger.debug("MISC: Added Macro {} into button {}", srlPacket.action, srlPacket.button);
-            _player->setActionButton(srlPacket.button, srlPacket.action, srlPacket.type, srlPacket.misc);
+            _player->setActionButton(srlPacket.button, srlPacket.action, static_cast<uint8_t>(srlPacket.type), static_cast<uint8_t>(srlPacket.misc));
         }
         else if (srlPacket.type == 128)
         {
             sLogger.debug("MISC: Added Item {} into button {}", srlPacket.action, srlPacket.button);
-            _player->setActionButton(srlPacket.button, srlPacket.action, srlPacket.type, srlPacket.misc);
+            _player->setActionButton(srlPacket.button, srlPacket.action, static_cast<uint8_t>(srlPacket.type), static_cast<uint8_t>(srlPacket.misc));
         }
         else if (srlPacket.type == 0)
         {
             sLogger.debug("MISC: Added Spell {} into button {}", srlPacket.action, srlPacket.button);
-            _player->setActionButton(srlPacket.button, srlPacket.action, srlPacket.type, srlPacket.misc);
+            _player->setActionButton(srlPacket.button, srlPacket.action, static_cast<uint8_t>(srlPacket.type), static_cast<uint8_t>(srlPacket.misc));
         }
     }
 }
@@ -1111,7 +1111,7 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
 }
 #endif
 
-void WorldSession::handleSuggestionOpcode(WorldPacket& recvPacket)
+void WorldSession::handleSuggestionOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     uint8_t unk1;
@@ -1120,14 +1120,14 @@ void WorldSession::handleSuggestionOpcode(WorldPacket& recvPacket)
     recvPacket >> unk1;
     recvPacket >> unk2;
 
-    uint32_t lenght = 0;
-    lenght = unk1 * 16;
-    lenght += unk2 / 16;
+    uint32_t length = 0;
+    length = unk1 * 16;
+    length += unk2 / 16;
 
     std::string suggestionMessage;
-    suggestionMessage = recvPacket.ReadString(lenght);
+    suggestionMessage = recvPacket.ReadString(length);
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SUGGESTIONS [Suggestion] lenght: {} message: {}", lenght, suggestionMessage);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SUGGESTIONS [Suggestion] length: {} message: {}", length, suggestionMessage);
 
     uint64_t accountId = GetAccountId();
     uint32_t timeStamp = uint32_t(UNIXTIME);
@@ -1157,7 +1157,7 @@ void WorldSession::handleReturnToGraveyardOpcode(WorldPacket& /*recvPacket*/)
 #endif
 }
 
-void WorldSession::handleLogDisconnectOpcode(WorldPacket& recvPacket)
+void WorldSession::handleLogDisconnectOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     uint32_t disconnectReason;
@@ -1234,7 +1234,7 @@ void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)
     sLogger.debug("Sent SMSG_LOGOUT_CANCEL_ACK");
 }
 
-void WorldSession::handlePlayerLogoutOpcode(WorldPacket& recvPacket)
+void WorldSession::handlePlayerLogoutOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING == Mop
     // MoP client sends 0x1349 (CMSG_LOGOUT_REQUEST); if it is mapped as CMSG_PLAYER_LOGOUT (internal 75), handle as logout request
@@ -1291,7 +1291,7 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
 }
 
 
-void WorldSession::handleLoadScreenOpcode(WorldPacket& recvPacket)
+void WorldSession::handleLoadScreenOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     uint32_t mapId;
@@ -1310,7 +1310,7 @@ void WorldSession::handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/)
 #endif
 }
 
-void WorldSession::handleTimeSyncRespOpcode(WorldPacket& recvPacket)
+void WorldSession::handleTimeSyncRespOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     uint32_t counter;
@@ -1434,7 +1434,7 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
 #define DB2_REPLY_SPARSE 2442913102
 #define DB2_REPLY_ITEM   1344507586
 
-void WorldSession::sendItemDb2Reply(uint32_t entry)
+void WorldSession::sendItemDb2Reply([[maybe_unused]] uint32_t entry)
 {
 #if VERSION_STRING >= Cata
 #if VERSION_STRING < Mop
@@ -1471,7 +1471,7 @@ void WorldSession::sendItemDb2Reply(uint32_t entry)
 #endif
 }
 
-void WorldSession::sendItemSparseDb2Reply(uint32_t entry)
+void WorldSession::sendItemSparseDb2Reply([[maybe_unused]] uint32_t entry)
 {
 #if VERSION_STRING >= Cata
 #if VERSION_STRING < Mop
@@ -1629,7 +1629,7 @@ void WorldSession::sendItemSparseDb2Reply(uint32_t entry)
 #endif
 }
 
-void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
+void WorldSession::handleRequestHotfix([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
 #if VERSION_STRING == Cata
@@ -2232,7 +2232,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     }
 #endif
 #else // Mop
-    uint32_t talentPoints = 41;
+    [[maybe_unused]] uint32_t talentPoints = 41;
     uint32_t slotCount = 0;
     uint32_t glyphCount = 0;
     uint32_t talentCount = 0;
@@ -2392,7 +2392,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     const auto talentTabIds = getTalentTabPages(inspectedPlayer->getClass());
     for (uint8_t i = 0; i < 3; ++i)
     {
-        const uint32_t talentTabId = talentTabIds[i];
+        [[maybe_unused]] const uint32_t talentTabId = talentTabIds[i];
         for (uint32_t j = 0; j < sTalentStore.getNumRows(); ++j)
         {
             const auto talentInfo = sTalentStore.lookupEntry(j);
@@ -2421,7 +2421,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
 }
 
 
-void WorldSession::readAddonInfoPacket(ByteBuffer &recvPacket)
+void WorldSession::readAddonInfoPacket([[maybe_unused]] ByteBuffer &recvPacket)
 {
 #if VERSION_STRING >= Cata
     if (recvPacket.rpos() + 4 > recvPacket.size())
@@ -2597,7 +2597,7 @@ void WorldSession::sendAddonInfo()
 #endif
 }
 
-bool WorldSession::isAddonRegistered(const std::string& addon_name) const
+bool WorldSession::isAddonRegistered([[maybe_unused]] const std::string& addon_name) const
 {
 #if VERSION_STRING >= Cata
     if (!isAddonMessageFiltered)
@@ -2628,7 +2628,7 @@ void WorldSession::handleClearTargetOpcode(WorldPacket& /*recvPacket*/)
     SendPacket(SmsgClearTarget().serialise().get());
 }
 
-void WorldSession::handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket)
+void WorldSession::handleAddonRegisteredPrefixesOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     uint32_t addonCount = recvPacket.readBits(25);
@@ -2657,7 +2657,7 @@ void WorldSession::handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
+void WorldSession::handleReportOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REPORT");
@@ -2706,7 +2706,7 @@ void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleReportPlayerOpcode(WorldPacket& recvPacket)
+void WorldSession::handleReportPlayerOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REPORT_PLAYER {}", static_cast<uint32_t>(recvPacket.size()));

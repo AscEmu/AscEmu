@@ -73,7 +73,7 @@ void Spell::FillTargetMap(uint32_t i)
     if (TargetType & SPELL_TARGET_OBJECT_SELF)
         AddTarget(i, TargetType, m_caster);
     if (TargetType & (SPELL_TARGET_AREA | SPELL_TARGET_AREA_SELF))  //targetted aoe
-        AddAOETargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets());
+        AddAOETargets(i, TargetType, getEffectRadius(static_cast<uint8_t>(i)), m_spellInfo->getMaxTargets());
     ///\todo arcemu, doesn't support summon slots?
     /*if (TargetType & SPELL_TARGET_OBJECT_CURTOTEMS && u_caster != NULL)
         for (uint32_t i=1; i<5; ++i) //totem slots are 1, 2, 3, 4
@@ -95,25 +95,25 @@ void Spell::FillTargetMap(uint32_t i)
     if ((TargetType & SPELL_TARGET_AREA_PARTY) && !(TargetType & SPELL_TARGET_AREA_RAID))
     {
         if (p_caster == nullptr && !m_caster->isPet() && (!m_caster->isCreature() || !m_caster->isTotem()))
-            AddAOETargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets()); //npcs
+            AddAOETargets(i, TargetType, getEffectRadius(static_cast<uint8_t>(i)), m_spellInfo->getMaxTargets()); //npcs
         else
-            AddPartyTargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets()); //players/pets/totems
+            AddPartyTargets(i, TargetType, getEffectRadius(static_cast<uint8_t>(i)), m_spellInfo->getMaxTargets()); //players/pets/totems
     }
     if (TargetType & SPELL_TARGET_AREA_RAID)
     {
         if (p_caster == nullptr && !m_caster->isPet() && (!m_caster->isCreature() || !m_caster->isTotem()))
-            AddAOETargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets()); //npcs
+            AddAOETargets(i, TargetType, getEffectRadius(static_cast<uint8_t>(i)), m_spellInfo->getMaxTargets()); //npcs
         else
-            AddRaidTargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets(), (TargetType & SPELL_TARGET_AREA_PARTY) ? true : false); //players/pets/totems
+            AddRaidTargets(i, TargetType, getEffectRadius(static_cast<uint8_t>(i)), m_spellInfo->getMaxTargets(), (TargetType & SPELL_TARGET_AREA_PARTY) ? true : false); //players/pets/totems
     }
     if (TargetType & SPELL_TARGET_AREA_CHAIN)
-        AddChainTargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets());
+        AddChainTargets(i, TargetType, getEffectRadius(static_cast<uint8_t>(i)), m_spellInfo->getMaxTargets());
     //target cone
     if (TargetType & SPELL_TARGET_AREA_CONE)
-        AddConeTargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets());
+        AddConeTargets(i, TargetType, getEffectRadius(static_cast<uint8_t>(i)), m_spellInfo->getMaxTargets());
 
     if (TargetType & SPELL_TARGET_OBJECT_SCRIPTED)
-        AddScriptedOrSpellFocusTargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets());
+        AddScriptedOrSpellFocusTargets(i, TargetType, getEffectRadius(static_cast<uint8_t>(i)), m_spellInfo->getMaxTargets());
 }
 
 void Spell::AddScriptedOrSpellFocusTargets(uint32_t i, uint32_t targetType, float r, uint32_t /*maxtargets*/)
@@ -147,7 +147,7 @@ void Spell::AddConeTargets(uint32_t i, uint32_t targetType, float /*r*/, uint32_
             continue;
 
         //is Creature in range
-        if (m_caster->isInRange(itr, getEffectRadius(i)))
+        if (m_caster->isInRange(itr, getEffectRadius(static_cast<uint8_t>(i))))
         {
             if (m_spellInfo->cone_width ? m_caster->isInArc(itr, m_spellInfo->cone_width) : m_caster->isInFront(itr))  // !!! is the target within our cone ?
             {
@@ -233,7 +233,7 @@ void Spell::AddPartyTargets(uint32_t i, uint32_t targetType, float r, uint32_t /
 
     // If spell has area aura effect, aura code will handle proper targetting
     // so add just caster
-    if (getSpellInfo()->isAreaAuraEffect(i))
+    if (getSpellInfo()->isAreaAuraEffect(static_cast<uint8_t>(i)))
     {
         AddTarget(i, targetType, u);
         return;
@@ -272,7 +272,7 @@ void Spell::AddRaidTargets(uint32_t i, uint32_t targetType, float r, uint32_t /*
 
     // If spell has area aura effect, aura code will handle proper targetting
     // so add just caster
-    if (getSpellInfo()->isAreaAuraEffect(i))
+    if (getSpellInfo()->isAreaAuraEffect(static_cast<uint8_t>(i)))
     {
         AddTarget(i, targetType, u);
         return;
@@ -401,7 +401,7 @@ bool Spell::AddTarget(uint32_t i, uint32_t TargetType, Object* obj)
     auto spell_range = sSpellRangeStore.lookupEntry(m_spellInfo->getRangeIndex());
     if (spell_range != nullptr)
     {
-        if (worldConfig.terrainCollision.isCollisionEnabled && spell_range->maxRange < 50000 && getEffectRadius(i) < 50000 && !obj->isItem())
+        if (worldConfig.terrainCollision.isCollisionEnabled && spell_range->maxRange < 50000 && getEffectRadius(static_cast<uint8_t>(i)) < 50000 && !obj->isItem())
         {
             float x = m_caster->GetPositionX(), y = m_caster->GetPositionY(), z = m_caster->GetPositionZ() + 0.5f;
 

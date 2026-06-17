@@ -336,7 +336,7 @@ void WorldSession::handleArenaTeamRosterOpcode(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::handleInspectArenaStatsOpcode(WorldPacket& recvPacket)
+void WorldSession::handleInspectArenaStatsOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING != Classic
     MsgInspectArenaTeams srlPacket;

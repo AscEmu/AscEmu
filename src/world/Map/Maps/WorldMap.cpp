@@ -271,8 +271,8 @@ void WorldMap::update(uint32_t t_diff)
     _dynamicTree.update(t_diff);
 
     // Update Transporters
-    auto diffTime = msTime - m_lastTransportUpdateTimer;
-    if (diffTime >= 100)
+    auto transportDiffTime = msTime - m_lastTransportUpdateTimer;
+    if (transportDiffTime >= 100)
     {
         {
             std::scoped_lock<std::mutex> guard(m_transportsLock);
@@ -284,7 +284,7 @@ void WorldMap::update(uint32_t t_diff)
                 if (!trans || !trans->IsInWorld())
                     continue;
 
-                trans->Update(diffTime);
+                trans->Update(transportDiffTime);
             }
         }
 
@@ -318,13 +318,13 @@ void WorldMap::update(uint32_t t_diff)
 
     // Update Creatures
     {
-        auto diffTime = msTime - m_lastCreatureUpdateTimer;
+        auto creatureDiffTime = msTime - m_lastCreatureUpdateTimer;
         creature_iterator = activeCreatures.begin();
         for (; creature_iterator != activeCreatures.end();)
         {
             Creature* ptr = *creature_iterator;
             ++creature_iterator;
-            ptr->Update(diffTime);
+            ptr->Update(creatureDiffTime);
         }
 
         m_lastCreatureUpdateTimer = msTime;
@@ -332,12 +332,12 @@ void WorldMap::update(uint32_t t_diff)
 
     // Update Pets
     {
-        const auto diffTime = msTime - m_lastPetUpdateTimer;
+        const auto petDiffTime = msTime - m_lastPetUpdateTimer;
         for (auto itr = m_PetStorage.cbegin(); itr != m_PetStorage.cend();)
         {
             Pet* ptr = itr->second;
             ++itr;
-            ptr->Update(diffTime);
+            ptr->Update(petDiffTime);
         }
 
         m_lastPetUpdateTimer = msTime;
@@ -345,20 +345,20 @@ void WorldMap::update(uint32_t t_diff)
 
     // Update Players
     {
-        auto diffTime = msTime - m_lastPlayerUpdateTimer;
+        auto playerDiffTime  = msTime - m_lastPlayerUpdateTimer;
         for (auto itr = m_PlayerStorage.cbegin(); itr != m_PlayerStorage.cend();)
         {
             Player* ptr = itr->second;
             ++itr;
-            ptr->Update(diffTime);
+            ptr->Update(playerDiffTime);
         }
 
         m_lastPlayerUpdateTimer = msTime;
     }
 
     // Dynamic objects are updated every 100ms
-    diffTime = msTime - m_lastDynamicUpdateTimer;
-    if (diffTime >= 100)
+    auto dynamicDiffTime = msTime - m_lastDynamicUpdateTimer;
+    if (dynamicDiffTime >= 100)
     {
         for (auto itr = m_DynamicObjectStorage.cbegin(); itr != m_DynamicObjectStorage.cend();)
         {
@@ -371,8 +371,8 @@ void WorldMap::update(uint32_t t_diff)
     }
 
     // Update gameobjects only every 200ms
-    diffTime = msTime - m_lastGameObjectUpdateTimer;
-    if (diffTime >= 200)
+    auto gameObjectDiffTime = msTime - m_lastGameObjectUpdateTimer;
+    if (gameObjectDiffTime >= 200)
     {
         gameObject_iterator = activeGameObjects.begin();
         for (; gameObject_iterator != activeGameObjects.end();)
@@ -380,15 +380,15 @@ void WorldMap::update(uint32_t t_diff)
             GameObject* gameobject = *gameObject_iterator;
             ++gameObject_iterator;
             if (gameobject != nullptr)
-                gameobject->Update(diffTime);
+                gameobject->Update(gameObjectDiffTime);
         }
 
         m_lastGameObjectUpdateTimer = msTime;
     }
 
     // Update Sessions every 100ms
-    diffTime = msTime - m_lastSessionUpdateTimer;
-    if (diffTime >= 100)
+    auto sessionDiffTime = msTime - m_lastSessionUpdateTimer;
+    if (sessionDiffTime >= 100)
     {
         for (auto itr = Sessions.cbegin(); itr != Sessions.cend();)
         {
@@ -425,8 +425,8 @@ void WorldMap::update(uint32_t t_diff)
     }
 
     /// Update Respawns every 1000ms
-    diffTime = msTime - m_lastRespawnUpdateTimer;
-    if (diffTime >= 1000)
+    auto respawnDiffTime = msTime - m_lastRespawnUpdateTimer;
+    if (respawnDiffTime >= 1000)
     {
         processRespawns();
 
@@ -452,7 +452,7 @@ void WorldMap::update(uint32_t t_diff)
 
         m_lastRespawnUpdateTimer = msTime;
     }
-    
+
     // Finally, A9 Building/Distribution
     updateObjects();
 }

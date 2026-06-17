@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Item.hpp"
 
-void WorldSession::sendVoidStorageTransferResult(uint8_t result)
+void WorldSession::sendVoidStorageTransferResult([[maybe_unused]] uint8_t result)
 {
 #if VERSION_STRING >= Cata
     WorldPacket data(SMSG_VOID_TRANSFER_RESULT, 4);
@@ -23,7 +23,7 @@ void WorldSession::sendVoidStorageTransferResult(uint8_t result)
 #endif
 }
 
-void WorldSession::handleVoidStorageUnlock(WorldPacket& recvData)
+void WorldSession::handleVoidStorageUnlock([[maybe_unused]] WorldPacket& recvData)
 {
 #if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_VOID_STORAGE_UNLOCK");
@@ -74,7 +74,7 @@ void WorldSession::handleVoidStorageUnlock(WorldPacket& recvData)
 #endif
 }
 
-void WorldSession::handleVoidStorageQuery(WorldPacket& recvData)
+void WorldSession::handleVoidStorageQuery([[maybe_unused]] WorldPacket& recvData)
 {
 #if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_VOID_STORAGE_QUERY");
@@ -192,7 +192,7 @@ void WorldSession::handleVoidStorageQuery(WorldPacket& recvData)
 #endif
 }
 
-void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
+void WorldSession::handleVoidStorageTransfer([[maybe_unused]] WorldPacket& recvData)
 {
 #if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_VOID_STORAGE_TRANSFER");
@@ -487,7 +487,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
 #endif
 }
 
-void WorldSession::handleVoidSwapItem(WorldPacket& recvData)
+void WorldSession::handleVoidSwapItem([[maybe_unused]] WorldPacket& recvData)
 {
 #if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_VOID_SWAP_ITEM");
@@ -561,12 +561,12 @@ void WorldSession::handleVoidSwapItem(WorldPacket& recvData)
     }
 
     bool usedSrcSlot = player->getVoidStorageItem(oldSlot) != nullptr; // should be always true
-    bool usedDestSlot = player->getVoidStorageItem(newSlot) != nullptr;
+    bool usedDestSlot = player->getVoidStorageItem(static_cast<uint8_t>(newSlot)) != nullptr;
     WoWGuid itemIdDest;
     if (usedDestSlot)
-        itemIdDest = player->getVoidStorageItem(newSlot)->itemId;
+        itemIdDest = player->getVoidStorageItem(static_cast<uint8_t>(newSlot))->itemId;
 
-    if (!player->swapVoidStorageItem(oldSlot, newSlot))
+    if (!player->swapVoidStorageItem(oldSlot, static_cast<uint8_t>(newSlot)))
     {
         sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INTERNAL_ERROR_1);
         return;

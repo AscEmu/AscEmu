@@ -3120,11 +3120,11 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
 
             //some spell has one aura of mount and one of vehicle
             for (uint32_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                if (getSpellInfo()->getEffect(i) == SPELL_EFFECT_SUMMON
-                    && getSpellInfo()->getEffectMiscValue(i) == aurEff->getEffectMiscValue())
+                if (getSpellInfo()->getEffect(static_cast<uint8_t>(i)) == SPELL_EFFECT_SUMMON
+                    && getSpellInfo()->getEffectMiscValue(static_cast<uint8_t>(i)) == aurEff->getEffectMiscValue())
                     displayId = 0;
         }
-        
+
         p_target->setMountSpellId(m_spellInfo->getId());
         p_target->m_flyingAura = 0;
 

@@ -43,22 +43,22 @@ namespace WDB
 
     LocaleNameStr const fullLocaleNameList[] =
     {
-           { "enGB", LOCALE_enGB },
-           { "enUS", LOCALE_enUS },
-           { "deDE", LOCALE_deDE },
-           { "esES", LOCALE_esES },
-           { "frFR", LOCALE_frFR },
-           { "koKR", LOCALE_koKR },
-           { "zhCN", LOCALE_zhCN },
-           { "zhTW", LOCALE_zhTW },
-           { "enCN", LOCALE_enCN },
-           { "enTW", LOCALE_enTW },
-           { "esMX", LOCALE_esMX },
-           { "ruRU", LOCALE_ruRU },
-           { "ptBR", LOCALE_ptBR },
-           { "itIT", LOCALE_itIT },
-           { "ptPT", LOCALE_ptPT },
-           { "none", LOCALE_none }
+        {"enGB", LOCALE_enGB},
+        {"enUS", LOCALE_enUS},
+        {"deDE", LOCALE_deDE},
+        {"esES", LOCALE_esES},
+        {"frFR", LOCALE_frFR},
+        {"koKR", LOCALE_koKR},
+        {"zhCN", LOCALE_zhCN},
+        {"zhTW", LOCALE_zhTW},
+        {"enCN", LOCALE_enCN},
+        {"enTW", LOCALE_enTW},
+        {"esMX", LOCALE_esMX},
+        {"ruRU", LOCALE_ruRU},
+        {"ptBR", LOCALE_ptBR},
+        {"itIT", LOCALE_itIT},
+        {"ptPT", LOCALE_ptPT},
+        {"none", LOCALE_none}
     };
 
     namespace
@@ -91,7 +91,7 @@ namespace WDB
 
     template <class T>
     void loadWDBFile(uint32_t& /*available_dbc_locales*/, StoreProblemList& _errors, WDB::WDBContainer<T>& _storage, std::string const& _dbcPath,
-      std::string const& _dbcFilename,std::string const* _customFormat = nullptr, std::string const* /*custom_index_name*/ = nullptr)
+                     std::string const& _dbcFilename, std::string const* /*_customFormat*/ = nullptr, std::string const* /*custom_index_name*/ = nullptr)
     {
         if (WDB::WDBLoader::hasFormat(_dbcFilename))
         {

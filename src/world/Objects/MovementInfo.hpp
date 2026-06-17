@@ -106,7 +106,7 @@ struct MovementInfo
         transport_position.o = 0.0f;
         transport_time = 0;
 #if VERSION_STRING >= WotLK
-        transport_seat = -1;
+        transport_seat = static_cast<uint8_t>(-1);;
 #endif
     }
 

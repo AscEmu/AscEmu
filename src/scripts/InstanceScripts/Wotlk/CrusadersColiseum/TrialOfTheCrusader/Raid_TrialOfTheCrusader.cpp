@@ -61,7 +61,7 @@ void TrialOfTheCrusaderInstanceScript::UpdateEvent()
     }
 }
 
-void TrialOfTheCrusaderInstanceScript::OnAreaTrigger(Player* pPlayer, uint32_t pAreaId)
+void TrialOfTheCrusaderInstanceScript::OnAreaTrigger(Player* /*pPlayer*/, uint32_t pAreaId)
 {
     if (pAreaId == 5475)
     {
@@ -687,7 +687,7 @@ void TirionAI::DoAction(int32_t action)
     }
 }
 
-void TirionAI::GormokIntro(CreatureAIFunc pThis)
+void TirionAI::GormokIntro(CreatureAIFunc /*pThis*/)
 {
     TirionAI* script = static_cast<TirionAI*>(this);
     if (script && script->getInstanceScript())
@@ -702,7 +702,7 @@ void TirionAI::GormokIntro(CreatureAIFunc pThis)
     }
 }
 
-void TirionAI::GormokSpawn(CreatureAIFunc pThis)
+void TirionAI::GormokSpawn(CreatureAIFunc /*pThis*/)
 {
     TirionAI* script = static_cast<TirionAI*>(this);
     if (script && script->getInstanceScript())
@@ -712,14 +712,14 @@ void TirionAI::GormokSpawn(CreatureAIFunc pThis)
     }
 }
 
-void TirionAI::JormungarsIntro(CreatureAIFunc pThis)
+void TirionAI::JormungarsIntro(CreatureAIFunc /*pThis*/)
 {
     sendDBChatMessageByIndex(TIRION_SAY_JORMUNGARS);
     addEmote(Emote(EMOTE_ONESHOT_EXCLAMATION), DoOnceScheduler(7s));
     addAIFunction(&TirionAI::JormungarsSpawn, DoOnceScheduler(1s));
 }
 
-void TirionAI::JormungarsSpawn(CreatureAIFunc pThis)
+void TirionAI::JormungarsSpawn(CreatureAIFunc /*pThis*/)
 {
     TirionAI* script = static_cast<TirionAI*>(this);
     if (script && script->getInstanceScript())
@@ -729,14 +729,14 @@ void TirionAI::JormungarsSpawn(CreatureAIFunc pThis)
     }
 }
 
-void TirionAI::IcehowlIntro(CreatureAIFunc pThis)
+void TirionAI::IcehowlIntro(CreatureAIFunc /*pThis*/)
 {
     sendDBChatMessageByIndex(TIRION_SAY_ICEHOWL);
     addEmote(Emote(EMOTE_ONESHOT_EXCLAMATION), DoOnceScheduler(6s));
     addAIFunction(&TirionAI::IcehowlSpawn, DoOnceScheduler(1s));
 }
 
-void TirionAI::IcehowlSpawn(CreatureAIFunc pThis)
+void TirionAI::IcehowlSpawn(CreatureAIFunc /*pThis*/)
 {
     TirionAI* script = static_cast<TirionAI*>(this);
     if (script && script->getInstanceScript())
@@ -746,13 +746,13 @@ void TirionAI::IcehowlSpawn(CreatureAIFunc pThis)
     }
 }
 
-void TirionAI::JaraxxusIntro(CreatureAIFunc pThis)
+void TirionAI::JaraxxusIntro(CreatureAIFunc /*pThis*/)
 {
     addMessage(Message(TIRION_SAY_WILFRED), DoOnceScheduler());
     addAIFunction(&TirionAI::JaraxxusSpawn, DoOnceScheduler(7s));
 }
 
-void TirionAI::JaraxxusSpawn(CreatureAIFunc pThis)
+void TirionAI::JaraxxusSpawn(CreatureAIFunc /*pThis*/)
 {
     TirionAI* script = static_cast<TirionAI*>(this);
     if (script && script->getInstanceScript())
@@ -762,7 +762,7 @@ void TirionAI::JaraxxusSpawn(CreatureAIFunc pThis)
     }
 }
 
-void TirionAI::Lamet(CreatureAIFunc pThis)
+void TirionAI::Lamet(CreatureAIFunc /*pThis*/)
 {
     addMessage(Message(TIRION_SAY_LAMENT), DoOnceScheduler());
 
@@ -776,7 +776,7 @@ void TirionAI::Lamet(CreatureAIFunc pThis)
     addAIFunction(&TirionAI::handleBarrettSummon, DoOnceScheduler(53s));
 }
 
-void TirionAI::summonChampions(CreatureAIFunc pThis)
+void TirionAI::summonChampions(CreatureAIFunc /*pThis*/)
 {
     if (Creature* factitonController = summonCreature(NPC_CHAMPIONS_CONTROLLER, ToCCommonLoc[1]))
         factitonController->GetScript()->DoAction(champions::ACTION_SUMMON);
@@ -784,17 +784,17 @@ void TirionAI::summonChampions(CreatureAIFunc pThis)
     addAIFunction(&TirionAI::ChampionsStart, DoOnceScheduler(3s));
 }
 
-void TirionAI::ChampionsStart(CreatureAIFunc pThis)
+void TirionAI::ChampionsStart(CreatureAIFunc /*pThis*/)
 {
     if (Creature* factitonController = getInstanceScript()->getCreatureFromData(DATA_FACTION_CRUSADERS))
         factitonController->GetScript()->DoAction(champions::ACTION_START);
 }
 
-void TirionAI::valkyrSummon(CreatureAIFunc pThis)
+void TirionAI::valkyrSummon(CreatureAIFunc /*pThis*/)
 {
     Creature* lightbane = summonCreature(NPC_FJOLA_LIGHTBANE, ToCSpawnLoc[1], CreatureSummonDespawnType::CORPSE_TIMED_DESPAWN, DESPAWN_TIME);
     Creature* darkbane = summonCreature(NPC_EYDIS_DARKBANE, ToCSpawnLoc[2], CreatureSummonDespawnType::CORPSE_TIMED_DESPAWN, DESPAWN_TIME);
-    
+
     if (lightbane && darkbane)
     {
         lightbane->getAIInterface()->setReactState(REACT_PASSIVE);
@@ -810,7 +810,7 @@ void TirionAI::valkyrSummon(CreatureAIFunc pThis)
     getInstanceScript()->DoAction(ACTION_OPEN_GATE);
 }
 
-void TirionAI::lickkingChallenge(CreatureAIFunc pThis)
+void TirionAI::lickkingChallenge(CreatureAIFunc /*pThis*/)
 {
     summonCreature(NPC_LICH_KING_VOICE, LocationVector(646.073f, 60.3333f, 394.856f), TIMED_DESPAWN, 50 * TimeVarsMs::Second);
 
@@ -818,22 +818,22 @@ void TirionAI::lickkingChallenge(CreatureAIFunc pThis)
         lkVoice->GetScript()->sendDBChatMessageByIndex(LK_VOICE_SAY_CHALLENGE);
 
     summonCreature(NPC_ARTHAS_PORTAL, ArthasPortalSpawnPosition, CreatureSummonDespawnType::TIMED_DESPAWN, 34 * TimeVarsMs::Second);
-    
+
     addAIFunction(&TirionAI::summonLickKing, DoOnceScheduler(5s));
 }
 
-void TirionAI::lichkingSouls(CreatureAIFunc pThis)
+void TirionAI::lichkingSouls(CreatureAIFunc /*pThis*/)
 {
     if (Creature* lkVoice = getInstanceScript()->getCreatureFromData(DATA_LICH_KING_VOICE))
         lkVoice->GetScript()->sendDBChatMessageByIndex(LK_VOICE_SAY_SOULS_WILL_BE_MINE);
 }
 
-void TirionAI::summonLickKing(CreatureAIFunc pThis)
+void TirionAI::summonLickKing(CreatureAIFunc /*pThis*/)
 {
     summonCreature(NPC_LICH_KING, LichKingSpawnPosition, CreatureSummonDespawnType::TIMED_DESPAWN, 38 * TimeVarsMs::Second);
 }
 
-void TirionAI::handleBarrettSummon(CreatureAIFunc pThis)
+void TirionAI::handleBarrettSummon(CreatureAIFunc /*pThis*/)
 {
     if (isHeroic() && mInstance->getBossState(DATA_NORTHREND_BEASTS) != EncounterStates::Performed)
         summonCreature(NPC_BARRETT_BEASTS_HC, BarretSpawnPosition);
@@ -958,19 +958,19 @@ void LichKingAI::OnReachWP(uint32_t type, uint32_t id)
         addAIFunction(&LichKingAI::startTalk, DoOnceScheduler(4s));
 }
 
-void LichKingAI::startMove(CreatureAIFunc pThis)
+void LichKingAI::startMove(CreatureAIFunc /*pThis*/)
 {
     moveAlongSplineChain(POINT_MIDDLE, SPLINE_INITIAL_MOVEMENT, true);
 }
 
-void LichKingAI::startTalk(CreatureAIFunc pThis)
+void LichKingAI::startTalk(CreatureAIFunc /*pThis*/)
 {
     addMessage(Message(LK_SAY_EMPIRE), DoOnceScheduler());
     addAIFunction(&LichKingAI::changeWeather, DoOnceScheduler(4s));
     addAIFunction(&LichKingAI::breakPlatform, DoOnceScheduler(18s));
 }
 
-void LichKingAI::changeWeather(CreatureAIFunc pThis)
+void LichKingAI::changeWeather(CreatureAIFunc /*pThis*/)
 {
     addEmote(Emote(EMOTE_STATE_TALK, true), DoOnceScheduler());
     sWeatherMgr.sendWeatherForZone(1, 0.0f, AREA_TRIAL_OF_THE_CRUSADER);
@@ -978,7 +978,7 @@ void LichKingAI::changeWeather(CreatureAIFunc pThis)
     addEmote(Emote(EMOTE_ONESHOT_KNEEL), DoOnceScheduler(10s + 3s));
 }
 
-void LichKingAI::breakPlatform(CreatureAIFunc pThis)
+void LichKingAI::breakPlatform(CreatureAIFunc /*pThis*/)
 {
     castSpellOnSelf(SPELL_LK_FROST_NOVA, true);
     castSpellOnSelf(SPELL_CORPSE_TELEPORT, true);
@@ -999,11 +999,11 @@ ArthasPortalAI::ArthasPortalAI(Creature* pCreature) : CreatureAIScript(pCreature
 {
     setUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
     setReactState(REACT_PASSIVE);
-    addAIFunction([this](CreatureAIFunc pThis)
-        {
-            castSpellOnSelf(SPELL_ARTHAS_PORTAL, true);
-            sWeatherMgr.sendWeatherForZone(7, 0.75f, AREA_TRIAL_OF_THE_CRUSADER);
-        }, DoOnceScheduler(3s, 100.0f));
+    addAIFunction([this](CreatureAIFunc /*pThis*/)
+    {
+        castSpellOnSelf(SPELL_ARTHAS_PORTAL, true);
+        sWeatherMgr.sendWeatherForZone(7, 0.75f, AREA_TRIAL_OF_THE_CRUSADER);
+    }, DoOnceScheduler(3s, 100.0f));
 }
 
 CreatureAIScript* ArthasPortalAI::Create(Creature* pCreature) { return new ArthasPortalAI(pCreature); }

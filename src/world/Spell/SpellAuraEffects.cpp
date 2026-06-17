@@ -1762,7 +1762,7 @@ void Aura::spellAuraEffectSchoolAbsorb(AuraEffectModifier* /*aurEff*/, bool /*ap
     // See AbsorbAura::spellAuraEffectSchoolAbsorb
 }
 
-void Aura::spellAuraEffectModPowerRegen(AuraEffectModifier* aurEff, bool apply)
+void Aura::spellAuraEffectModPowerRegen(AuraEffectModifier* aurEff, bool /*apply*/)
 {
     if (aurEff->getEffectDamage() == 0)
         return;

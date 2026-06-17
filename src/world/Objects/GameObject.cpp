@@ -1420,7 +1420,7 @@ void GameObject_Lootable::getFishLoot(Player* loot_owner, bool getJunk/* = false
     uint32_t defaultzone = 1;
     m_WorldMap->getZoneAndAreaId(GetPhase(), zone, subzone, GetPosition());
 
-    const uint8_t lootMode = getJunk ? LOOT_MODE_JUNK_FISH : 0;
+    const uint8_t lootMode = getJunk ? static_cast<uint8_t>(LOOT_MODE_JUNK_FISH) : static_cast<uint8_t>(0);
 
     // if subzone loot exist use it
     loot.fillLoot(subzone, sLootMgr.getFishingLoot(), loot_owner, true, lootMode);

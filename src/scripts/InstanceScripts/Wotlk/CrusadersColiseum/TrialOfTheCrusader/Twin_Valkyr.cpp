@@ -175,7 +175,7 @@ void TwinsAI::handleRemoveAuras()
     }
 }
 
-void TwinsAI::intro(CreatureAIFunc pThis)
+void TwinsAI::intro(CreatureAIFunc /*pThis*/)
 {
     setScriptPhase(twins::PHASE_COMBAT);
     moveAlongSplineChain(twins::POINT_INITIAL_MOVEMENT, SPLINE_INITIAL_MOVEMENT, false);
@@ -283,10 +283,10 @@ void FjolaAI::generateStageSequence()
     CurrentStage = 0;
 
     // Initialize and clean up.
-    for (int i = 0; i < twins::MAX_STAGES; ++i)
+    for (uint8_t i = 0; i < twins::MAX_STAGES; ++i)
         Stage[i] = i;
 
-    // Allocate an unique random stage to each position in the array.
+    // Allocate a unique random stage to each position in the array.
     for (int i = 0; i < twins::MAX_STAGES - 1; ++i)
     {
         int random = i + Util::getRandomUInt(0, twins::MAX_STAGES - i);
@@ -386,7 +386,7 @@ void UnleashedBallAI::OnLoad()
     RangeCheckTimer = 500;
 }
 
-void UnleashedBallAI::OnReachWP(uint32_t type, uint32_t id)
+void UnleashedBallAI::OnReachWP(uint32_t type, uint32_t /*id*/)
 {
     if (type != POINT_MOTION_TYPE)
         return;
@@ -545,7 +545,7 @@ bool PoweringUpEffect(uint8_t effectIndex, Spell* pSpell)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Spell Dark Essence and Light Essence
-SpellScriptExecuteState EssenceScript::beforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply)
+SpellScriptExecuteState EssenceScript::beforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool /*apply*/)
 {
     if (aurEff->getEffectIndex() == EFF_INDEX_0)
     {
@@ -559,7 +559,7 @@ SpellScriptExecuteState EssenceScript::beforeAuraEffect(Aura* aur, AuraEffectMod
                         aur->GetUnitTarget()->castSpell(aur->GetUnitTarget(), twins::SPELL_SURGE_OF_SPEED, true);
 
                     // Twin Vortex part
-                    int32_t stacksCount = aur->getSpellInfo()->calculateEffectValue(EFF_INDEX_0) / 1000 - 1;
+                    int16_t stacksCount = static_cast<int16_t>(aur->getSpellInfo()->calculateEffectValue(EFF_INDEX_0) / 1000 - 1);
 
                     if (stacksCount)
                     {
@@ -618,7 +618,7 @@ void PowerOfTwinsScript::onAuraApply(Aura* aur)
     }
 }
 
-void PowerOfTwinsScript::onAuraRemove(Aura* aur, AuraRemoveMode mode)
+void PowerOfTwinsScript::onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/)
 {
     if (!aur->getCaster()->isCreature())
         return;

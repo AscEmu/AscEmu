@@ -339,7 +339,7 @@ public:
 class VampiricEmbraceDummy : public SpellScript
 {
 public:
-    SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
+    SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, [[maybe_unused]] AuraEffectModifier* aurEff, bool apply) override
     {
         if (apply)
         {
@@ -535,7 +535,7 @@ public:
         return true;
     }
 
-    SpellScriptExecuteState onDoProcEffect(SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, [[maybe_unused]]DamageInfo damageInfo) override
+    SpellScriptExecuteState onDoProcEffect([[maybe_unused]] SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, [[maybe_unused]]DamageInfo damageInfo) override
     {
 #if VERSION_STRING == TBC
         manaReturn = static_cast<uint32_t>(std::round(damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100.0f));

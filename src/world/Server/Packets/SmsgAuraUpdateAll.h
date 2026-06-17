@@ -18,6 +18,7 @@ namespace AscEmu::Packets
     class SmsgAuraUpdateAll : public ManagedPacket
     {
 #if VERSION_STRING > TBC
+
     public:
         WoWGuid guid;
 
@@ -98,8 +99,6 @@ namespace AscEmu::Packets
 #else
             WoWGuid targetGuid = guid.getRawGuid();
 
-            for (const auto& auras : aura_updates)
-
             packet.writeBit(targetGuid[7]);
             packet.writeBit(1); // Is AURA_UPDATE_ALL
             packet.writeBits(aura_updates.size(), 24); // Aura Count
@@ -125,7 +124,7 @@ namespace AscEmu::Packets
                         effCount++;
 
                     if (auras.flags & 0x04) // AFLAG_EFFECT_3
-                            effCount++;
+                        effCount++;
 
                     packet.writeBits(effCount, 22); // Effect Count
                 }
@@ -200,7 +199,6 @@ namespace AscEmu::Packets
                         packet << float(auras.effAmount[2]);
                     else
                         packet << float(0.f);
-
                 }
 
                 packet << uint8_t(auras.visualSlot);

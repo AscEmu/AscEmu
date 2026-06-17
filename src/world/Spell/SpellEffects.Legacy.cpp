@@ -752,8 +752,8 @@ void Spell::ApplyAreaAura(uint8_t effectIndex)
         if (!sEventMgr.HasEvent(auraHolder.get(), eventtype))      /* only add it once */
             sEventMgr.AddEvent(auraHolder.get(), &Aura::EventUpdateAreaAura, effectIndex, r * r, eventtype, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-        const auto [itr, _] = m_pendingAuras.try_emplace(m_unitTarget->getGuid(), 0, std::move(auraHolder));
-        pAura = itr->second.aur.get();
+        const auto [emplaceItr, isInserted] = m_pendingAuras.try_emplace(m_unitTarget->getGuid(), 0, std::move(auraHolder));
+        pAura = emplaceItr->second.aur.get();
     }
     else
     {
@@ -1888,13 +1888,14 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
         auraHolder->pSpellId = pSpellId; //this is required for triggered spells
         auraHolder->m_castedItemId = castedItemId;
 
-        const auto [itr, _] = m_pendingAuras.try_emplace(m_unitTarget->getGuid(), 0, std::move(auraHolder));
-        pAura = itr->second.aur.get();
+        const auto [emplaceItr, isInserted] = m_pendingAuras.try_emplace(m_unitTarget->getGuid(), 0, std::move(auraHolder));
+        pAura = emplaceItr->second.aur.get();
     }
     else
     {
         pAura = itr->second.aur.get();
     }
+
     switch (m_spellInfo->getId())
     {
         case 27907:
@@ -3033,7 +3034,7 @@ void Spell::SpellEffectSummonGuardian(uint32_t /*i*/, WDB::Structures::SummonPro
     }
 }
 
-void Spell::SpellEffectSummonTemporaryPet(uint32_t i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
+void Spell::SpellEffectSummonTemporaryPet(uint32_t /*i*/, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
     if (p_caster == nullptr)
         return;
@@ -3065,7 +3066,7 @@ void Spell::SpellEffectSummonTemporaryPet(uint32_t i, WDB::Structures::SummonPro
         v.y += y;
 
         const auto pet = sObjectMgr.createPet(properties_->Id, spe);
-        if (!pet->createAsSummon(ci, nullptr, p_caster, v, static_cast<uint32_t>(getDuration()), m_spellInfo, i, PET_TYPE_SUMMON))
+        if (!pet->createAsSummon(ci, nullptr, p_caster, v, static_cast<uint32_t>(getDuration()), m_spellInfo, static_cast<uint8_t>(i), PET_TYPE_SUMMON))
         {
             pet->DeleteMe();
             break;

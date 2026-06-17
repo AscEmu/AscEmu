@@ -55,15 +55,15 @@ void TaxiPath::initTaxiNodesForLevel(uint32_t race, uint32_t chrClass, uint8_t l
     switch (chrClass)
     {
         case DEATHKNIGHT:
-        {
-            for (uint8_t i = 0; i < DBC_TAXI_MASK_SIZE; ++i)
-                m_taximask[i] |= sOldContinentsNodesMask[i];
-            break;
-        }
+            {
+                for (uint8_t i = 0; i < DBC_TAXI_MASK_SIZE; ++i)
+                    m_taximask[i] |= sOldContinentsNodesMask[i];
+                break;
+            }
     }
 #endif
-    
-    const auto team = getSideByRace(race);
+
+    const auto team = getSideByRace(static_cast<uint8_t>(race));
 
 #if VERSION_STRING < Cata
     // Add race specific initial nodes

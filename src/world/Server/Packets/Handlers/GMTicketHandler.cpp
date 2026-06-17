@@ -79,7 +79,7 @@ void WorldSession::handleGMSurveySubmitOpcode(WorldPacket& recvPacket)
         _player->getName(), next_survey_id);
 }
 
-void WorldSession::handleReportLag(WorldPacket& recvPacket)
+void WorldSession::handleReportLag([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgGmReportLag srlPacket;

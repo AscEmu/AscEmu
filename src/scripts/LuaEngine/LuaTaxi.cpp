@@ -9,21 +9,21 @@ This file is released under the MIT license. See README-MIT for more information
 
 // todo aaron02 add these back when i have more spare time :)
 
-int LuaTaxi::CreateTaxi(lua_State* L, TaxiPath* tp)
+int LuaTaxi::CreateTaxi(lua_State* /*L*/, TaxiPath* /*tp*/)
 {
     /*TaxiPath* ntp = new TaxiPath();
     PUSH_TAXIPATH(L, ntp);*/
     return 1;
 }
 
-int LuaTaxi::GetNodeCount(lua_State* L, TaxiPath* tp)
+int LuaTaxi::GetNodeCount(lua_State* /*L*/, TaxiPath* /*tp*/)
 {
     /*if (!tp) return 0;
     lua_pushinteger(L, tp->getPath().size());*/
     return 1;
 }
 
-int LuaTaxi::AddPathNode(lua_State* L, TaxiPath* tp)
+int LuaTaxi::AddPathNode(lua_State* /*L*/, TaxiPath* /*tp*/)
 {
     /*if (!tp) return 0;
     uint32_t mapid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
@@ -41,7 +41,7 @@ int LuaTaxi::AddPathNode(lua_State* L, TaxiPath* tp)
     return 0;
 }
 
-int LuaTaxi::GetNodeX(lua_State* L, TaxiPath* tp)
+int LuaTaxi::GetNodeX(lua_State* /*L*/, TaxiPath* /*tp*/)
 {
     /*if (!tp) return 0;
     uint32_t index = luaL_checkinteger(L, 1);
@@ -53,7 +53,7 @@ int LuaTaxi::GetNodeX(lua_State* L, TaxiPath* tp)
     return 1;
 }
 
-int LuaTaxi::GetNodeY(lua_State* L, TaxiPath* tp)
+int LuaTaxi::GetNodeY(lua_State* /*L*/, TaxiPath* /*tp*/)
 {
     /*if (!tp) return 0;
     uint32_t index = luaL_checkinteger(L, 1);
@@ -65,7 +65,7 @@ int LuaTaxi::GetNodeY(lua_State* L, TaxiPath* tp)
     return 1;
 }
 
-int LuaTaxi::GetNodeZ(lua_State* L, TaxiPath* tp)
+int LuaTaxi::GetNodeZ(lua_State* /*L*/, TaxiPath* /*tp*/)
 {
     /*if (!tp) return 0;
     uint32_t index = luaL_checkinteger(L, 1);
@@ -77,7 +77,7 @@ int LuaTaxi::GetNodeZ(lua_State* L, TaxiPath* tp)
     return 1;
 }
 
-int LuaTaxi::GetNodeMapId(lua_State* L, TaxiPath* tp)
+int LuaTaxi::GetNodeMapId(lua_State* /*L*/, TaxiPath* /*tp*/)
 {
     /*if (!tp) return 0;
     uint32_t index = luaL_checkinteger(L, 1);
@@ -89,7 +89,7 @@ int LuaTaxi::GetNodeMapId(lua_State* L, TaxiPath* tp)
     return 1;
 }
 
-int LuaTaxi::GetId(lua_State* L, TaxiPath* tp)
+int LuaTaxi::GetId(lua_State* /*L*/, TaxiPath* /*tp*/)
 {
     /*if (!tp) return 0;
     lua_pushinteger(L, tp->getCurrentTaxiPath());*/

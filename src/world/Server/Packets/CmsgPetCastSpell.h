@@ -28,8 +28,8 @@ namespace AscEmu::Packets
 
         bool hasMovementData = false;
 
-        bool hasSrcLocation = false;    // since 184141
-        bool hasDestLocation = false;   // since 184141
+        bool hasSrcLocation = false; // since 184141
+        bool hasDestLocation = false; // since 184141
 
         CmsgPetCastSpell() : CmsgPetCastSpell(0, 0, 0, 0)
         {
@@ -50,7 +50,7 @@ namespace AscEmu::Packets
             return false;
         }
 
-        bool internalDeserialise(WorldPacket& packet) override
+        bool internalDeserialise([[maybe_unused]] WorldPacket& packet) override
         {
 #if VERSION_STRING < Mop
             packet >> petGuid >> castCount >> spellId >> castFlags;

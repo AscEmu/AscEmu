@@ -423,18 +423,16 @@ void WorldSession::sendTrainerList(Creature* creature)
     WorldPacket data(SMSG_TRAINER_LIST, size);
 
     data << creature->getGuid();
-    data << uint32_t(trainer->TrainerType);
+    data << static_cast<uint32_t>(trainer->TrainerType);
 
 #if VERSION_STRING >= Cata
-    data << uint32_t(1); // Unk
+    data << static_cast<uint32_t>(1); // Unk
 #endif
 
     size_t count_p = data.wpos();
-    data << uint32_t(sObjectMgr.getTrainerSpellSetById(trainer->spellset_id)->size());
+    data << static_cast<uint32_t>(sObjectMgr.getTrainerSpellSetById(trainer->spellset_id)->size());
 
     uint32_t count = 0;
-
-    auto its = sObjectMgr.getTrainerSpellSetById(trainer->spellset_id);
 
     for (auto& spellItr : *sObjectMgr.getTrainerSpellSetById(trainer->spellset_id))
     {
@@ -465,16 +463,16 @@ void WorldSession::sendTrainerList(Creature* creature)
                     continue;
         }
 
-        data << uint32_t(spellInfo->getId());
-        data << uint8_t(trainerGetSpellStatus(&trainerSpell));
-        data << uint32_t(trainerSpell.cost);
+        data << static_cast<uint32_t>(spellInfo->getId());
+        data << static_cast<uint8_t>(trainerGetSpellStatus(&trainerSpell));
+        data << static_cast<uint32_t>(trainerSpell.cost);
 #if VERSION_STRING < Cata
         data << uint32_t(0); // Unk
         data << uint32_t(trainerSpell.isPrimaryProfession);
 #endif
-        data << uint8_t(trainerSpell.requiredLevel);
-        data << uint32_t(trainerSpell.requiredSkillLine);
-        data << uint32_t(trainerSpell.requiredSkillLineValue);
+        data << static_cast<uint8_t>(trainerSpell.requiredLevel);
+        data << static_cast<uint32_t>(trainerSpell.requiredSkillLine);
+        data << static_cast<uint32_t>(trainerSpell.requiredSkillLineValue);
 
         // Get the required spells to learn this spell
         uint8_t requiredSpellCount = 0;
@@ -484,7 +482,7 @@ void WorldSession::sendTrainerList(Creature* creature)
             if (requiredSpell == 0)
                 continue;
 
-            data << uint32_t(requiredSpell);
+            data << static_cast<uint32_t>(requiredSpell);
             ++requiredSpellCount;
 
             if (requiredSpellCount >= maxRequiredCount)
@@ -493,7 +491,7 @@ void WorldSession::sendTrainerList(Creature* creature)
             const auto requiredSpells = sSpellMgr.getSpellsRequiredRangeForSpell(requiredSpell);
             for (const auto& itr : requiredSpells)
             {
-                data << uint32_t(itr.second);
+                data << static_cast<uint32_t>(itr.second);
                 ++requiredSpellCount;
 
                 if (requiredSpellCount > maxRequiredCount)
@@ -506,13 +504,13 @@ void WorldSession::sendTrainerList(Creature* creature)
 
         while (requiredSpellCount < maxRequiredCount)
         {
-            data << uint32_t(0);
+            data << static_cast<uint32_t>(0);
             ++requiredSpellCount;
         }
 
 #if VERSION_STRING >= Cata
-        data << uint32_t(trainerSpell.isPrimaryProfession && _player->getFreePrimaryProfessionPoints() != 0);
-        data << uint32_t(trainerSpell.isPrimaryProfession);
+        data << static_cast<uint32_t>(trainerSpell.isPrimaryProfession && _player->getFreePrimaryProfessionPoints() != 0);
+        data << static_cast<uint32_t>(trainerSpell.isPrimaryProfession);
 #endif
         ++count;
     }

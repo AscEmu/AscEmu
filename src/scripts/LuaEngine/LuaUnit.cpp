@@ -3778,9 +3778,9 @@ int LuaUnit::AddSkill(lua_State* L, Unit* ptr)
         return 0;
     }
 
-    const uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-    const uint32_t current = static_cast<uint32_t>(luaL_checkinteger(L, 2));
-    uint32_t max = static_cast<uint32_t>(luaL_checkinteger(L, 3));
+    const uint16_t skill = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+    const uint16_t current = static_cast<uint16_t>(luaL_checkinteger(L, 2));
+    uint16_t max = static_cast<uint16_t>(luaL_checkinteger(L, 3));
     Player* plr = dynamic_cast<Player*>(ptr);
     if (!max)
         max = 475;
@@ -3798,7 +3798,7 @@ int LuaUnit::RemoveSkill(lua_State* L, Unit* ptr)
         return 0;
     }
 
-    const uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+    const uint16_t skill = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     if (!skill)
         return 0;
     Player* plr = dynamic_cast<Player*>(ptr);
@@ -3825,8 +3825,8 @@ int LuaUnit::AdvanceSkill(lua_State* L, Unit* ptr)
         return 0;
     }
 
-    const uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-    const uint32_t count = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+    const uint16_t skill = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+    const uint16_t count = static_cast<uint16_t>(luaL_checkinteger(L, 2));
     Player* plr = dynamic_cast<Player*>(ptr);
     if (skill && count)
     {
@@ -4227,7 +4227,7 @@ int LuaUnit::GetMaxSkill(lua_State* L, Unit* ptr)
         return 0;
     }
 
-    const uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+    const uint16_t skill = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     lua_pushinteger(L, dynamic_cast<Player*>(ptr)->getSkillLineMax(skill));
     return 1;
 }
@@ -4239,7 +4239,7 @@ int LuaUnit::GetCurrentSkill(lua_State* L, Unit* ptr)
         return 0;
     }
 
-    const uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+    const uint16_t skill = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     lua_pushinteger(L, dynamic_cast<Player*>(ptr)->getSkillLineCurrent(skill));
     return 1;
 }
@@ -4251,7 +4251,7 @@ int LuaUnit::HasSkill(lua_State* L, Unit* ptr)
         return 0;
     }
 
-    const uint32_t skill = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+    const uint16_t skill = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     lua_pushboolean(L, (dynamic_cast<Player*>(ptr)->hasSkillLine(skill)) ? 1 : 0);
     return 1;
 }
@@ -4329,7 +4329,7 @@ int LuaUnit::GetAccountName(lua_State* L, Unit* ptr)
     return 1;
 }
 
-int LuaUnit::GetGmRank(lua_State* L, Unit* ptr)
+int LuaUnit::GetGmRank(lua_State* /*L*/, Unit* /*ptr*/)
 {
     // TODO: possibly needs rewrite of LuaEngine to handle unique_ptr<T> -Appled
 
@@ -4745,7 +4745,7 @@ int LuaUnit::AdvanceAllSkills(lua_State* L, Unit* ptr)
     }
 
     Player* plr = dynamic_cast<Player*>(ptr);
-    const uint32_t skillvalue = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+    const uint16_t skillvalue = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     plr->advanceAllSkills(skillvalue);
     return 0;
 }
@@ -6384,7 +6384,7 @@ int LuaUnit::GetAuraStackCount(lua_State* L, Unit* ptr)
     RET_NUMBER(ptr->getAuraCountForId(id));
 }
 
-int LuaUnit::AddAuraObject(lua_State* L, Unit* ptr)
+int LuaUnit::AddAuraObject(lua_State* /*L*/, Unit* ptr)
 {
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
     {
@@ -6725,7 +6725,7 @@ int LuaUnit::MoveVehiclePassengerToSeat(lua_State* L, Unit* ptr)
         return 0;
 
     Unit* passenger = CHECK_UNIT(L, 1);
-    const uint32_t seat = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+    const uint8_t seat = static_cast<uint8_t>(luaL_checkinteger(L, 2));
 
     if (passenger == nullptr)
         return 0;

@@ -42,7 +42,7 @@ public:
     {
         getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
         // Hackfix for Updatemgr
-        addAIFunction([this](CreatureAIFunc pThis) { startSleeping(); }, DoOnceScheduler(1s));
+        addAIFunction([this](CreatureAIFunc /*pThis*/) { startSleeping(); }, DoOnceScheduler(1s));
     }
 
     void OnReachWP(uint32_t /*type*/, uint32_t id) override
@@ -76,10 +76,10 @@ public:
     {
         castSpellOnSelf(SPELL_BUFF_SLEEP);
         // Start working after aura expires by itself
-        addAIFunction([this](CreatureAIFunc PThis) { handleWakeUp(nullptr); }, DoOnceScheduler(2min));
+        addAIFunction([this](CreatureAIFunc /*PThis*/) { handleWakeUp(nullptr); }, DoOnceScheduler(2min));
     }
 
-    void handleMoveRandom(CreatureAIFunc pThis)
+    void handleMoveRandom(CreatureAIFunc /*pThis*/)
     {
         getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
 

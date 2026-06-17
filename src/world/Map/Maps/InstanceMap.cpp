@@ -235,7 +235,7 @@ void InstanceMap::setResetSchedule(bool on)
     if (getBaseMap()->isDungeon() && !getPlayerCount() && !isRaidOrHeroicDungeon())
     {
         if (InstanceSaved* save = sInstanceMgr.getInstanceSave(getInstanceId()))
-            sInstanceMgr.addResetEvent(on, save->getResetTime(), InstanceMgr::InstResetEvent(0, getBaseMap()->getMapId(), InstanceDifficulty::Difficulties(getSpawnMode()), getInstanceId()));
+            sInstanceMgr.addResetEvent(on, save->getResetTime(), InstanceMgr::InstResetEvent(0, getBaseMap()->getMapId(), InstanceDifficulty::Difficulties(getSpawnMode()), static_cast<uint16_t>(getInstanceId())));
     }
 }
 

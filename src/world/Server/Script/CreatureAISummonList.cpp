@@ -88,7 +88,7 @@ bool SummonList::hasEntry(uint32_t entry) const
     return false;
 }
 
-void SummonList::doAction(int32_t action, StorageType const& summons)
+void SummonList::doAction(int32_t action, StorageType const& /*summons*/)
 {
     for (uint64_t const& guid : _storage)
     {

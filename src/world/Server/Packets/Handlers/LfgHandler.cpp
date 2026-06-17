@@ -488,7 +488,7 @@ void WorldSession::handleLfgSetCommentOpcode(WorldPacket& recvPacket)
     sLfgMgr.SetComment(_player->getGuid(), srlPacket.comment);
 }
 
-void WorldSession::handleLfgLockInfoOpcode(WorldPacket& recvPacket)
+void WorldSession::handleLfgLockInfoOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     const bool requestFromPlayer = recvPacket.readBit();
@@ -565,7 +565,7 @@ void WorldSession::handleLfgSearchOpcode(WorldPacket& recvPacket)
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SEARCH_LFG_JOIN for guid {} dungeon entry: {}",
-        _player->getGuid(), srlPacket.entry);
+                      _player->getGuid(), srlPacket.entry);
 #endif
 }
 
@@ -577,7 +577,7 @@ void WorldSession::handleLfgSearchLeaveOpcode(WorldPacket& recvPacket)
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SEARCH_LFG_LEAVE for guid {} dungeonId: {}",
-        _player->getGuid(), srlPacket.entry);
+                      _player->getGuid(), srlPacket.entry);
 #endif
 }
 
@@ -589,7 +589,7 @@ void WorldSession::handleLfgProposalResultOpcode(WorldPacket& recvPacket)
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_PROPOSAL_RESULT guid {} proposal: {} accept: {}", 
-        _player->getGuid(), srlPacket.lfgGroupId, srlPacket.accept ? 1 : 0);
+                      _player->getGuid(), srlPacket.lfgGroupId, srlPacket.accept ? 1 : 0);
 
     sLfgMgr.UpdateProposal(srlPacket.lfgGroupId, _player->getGuid(), srlPacket.accept);
 #endif
@@ -605,9 +605,9 @@ void WorldSession::handleLfgSetRolesOpcode(WorldPacket& recvPacket)
     if (auto grp = _player->getGroup())
     {
         sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_SET_ROLES: Group {}, Player {}, Roles: {}",
-            grp->GetGUID(), _player->getGuid(), srlPacket.roles);
+                          grp->GetGUID(), _player->getGuid(), srlPacket.roles);
 
-        sLfgMgr.UpdateRoleCheck(grp->GetGUID(), _player->getGuid(), srlPacket.roles);
+        sLfgMgr.UpdateRoleCheck(grp->GetGUID(), _player->getGuid(), static_cast<uint8_t>(srlPacket.roles));
     }
 #endif
 }
@@ -620,7 +620,7 @@ void WorldSession::handleLfgSetBootVoteOpcode(WorldPacket& recvPacket)
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_SET_BOOT_VOTE {} agree: {}",
-        _player->getGuid(), srlPacket.voteFor ? 1 : 0);
+                      _player->getGuid(), srlPacket.voteFor ? 1 : 0);
 
     sLfgMgr.UpdateBoot(_player, srlPacket.voteFor);
 #endif
@@ -645,7 +645,6 @@ void WorldSession::handleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvPacke
         WDB::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.lookupEntry(i);
         if (dungeon && dungeon->type == LFG_TYPE_RANDOM && dungeon->expansion <= expansion && dungeon->minlevel <= level && level <= dungeon->maxlevel)
             randomDungeons.insert(dungeon->Entry());
-
     }
 #endif
 

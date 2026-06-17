@@ -92,7 +92,7 @@ void WorldSession::handleAuctionListBidderItems(WorldPacket& recvPacket)
     creature->auctionHouse->sendBidListPacket(_player, &recvPacket);
 }
 
-void WorldSession::handleAuctionListPendingSales(WorldPacket& recvPacket)
+void WorldSession::handleAuctionListPendingSales([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgAuctionListIPendingSales srlPacket;

@@ -2876,7 +2876,7 @@ void Creature::SendScriptTextChatMessage(uint32_t textid, Unit* target/* = targe
 
 void Creature::SendScriptTextChatMessageByIndex(uint32_t textid, Unit* target/* = target*/)
 {
-    auto text = sMySQLStore.getNpcScriptTextById(getEntry(), textid);
+    auto text = sMySQLStore.getNpcScriptTextById(getEntry(), static_cast<uint8_t>(textid));
 
     if (text)
         SendCreatureChatMessageInRange(this, text->id, target);

@@ -36,7 +36,7 @@ LootItem::LootItem(LootStoreItem const& li)
 {
     itemId = li.itemId;
     itemproto = li.itemproto;
-    count = Util::getRandomUInt(li.mincount, li.maxcount);
+    count = static_cast<uint8_t>(Util::getRandomUInt(li.mincount, li.maxcount));
     is_ffa = itemproto != nullptr && itemproto->HasFlag(ITEM_FLAG_FREE_FOR_ALL);
 
     iRandomProperty = sLootMgr.getRandomProperties(itemproto);

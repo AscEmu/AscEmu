@@ -212,26 +212,32 @@ void LogonCommClientSocket::SendPacket(WorldPacket* data, bool no_crypto)
 
     burstBegin();
 
+    LogonWorldPacket header;
     header.opcode = data->GetOpcode();
-    //header.size   = ntohl((u_long)data->size());
-    header.size = (uint32_t)data->size();
 
-    byteSwapUInt32(&header.size);
+    uint32_t sizeVal = static_cast<uint32_t>(data->size());
+    byteSwapUInt32(&sizeVal);
+    header.size = sizeVal;
 
     if (use_crypto && !no_crypto)
-        _sendCrypto.process((unsigned char*)&header, (unsigned char*)&header, 6);
+    {
+        auto* headerPtr = reinterpret_cast<unsigned char*>(&header);
+        _sendCrypto.process(headerPtr, headerPtr, 6);
+    }
 
-    bool rv = burstSend((const uint8_t*)&header, 6);
+    bool rv = burstSend(reinterpret_cast<const uint8_t*>(&header), 6);
 
     if (data->size() > 0 && rv)
     {
         if (use_crypto && !no_crypto)
-            _sendCrypto.process(data->contents(), data->contents(), (unsigned int)data->size());
+            _sendCrypto.process(data->contents(), data->contents(), static_cast<unsigned int>(data->size()));
 
-        rv = burstSend(data->contents(), (uint32_t)data->size());
+        rv = burstSend(data->contents(), static_cast<uint32_t>(data->size()));
     }
 
-    if (rv) burstPush();
+    if (rv)
+        burstPush();
+
     burstEnd();
 }
 

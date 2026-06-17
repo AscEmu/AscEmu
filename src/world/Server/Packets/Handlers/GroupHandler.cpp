@@ -34,14 +34,14 @@ This file is released under the MIT license. See README-MIT for more information
 using namespace AscEmu::Packets;
 
 
-void WorldSession::sendEmptyGroupList(Player* player)
+void WorldSession::sendEmptyGroupList([[maybe_unused]] Player* player)
 {
 #if VERSION_STRING >= Cata
     player->sendPacket(SmsgGroupList().serialise().get());
 #endif
 }
 
-void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
+void WorldSession::handleGroupInviteResponseOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     recvPacket.readBit();                    //unk
@@ -92,7 +92,7 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGroupSetRolesOpcode(WorldPacket& recvPacket)
+void WorldSession::handleGroupSetRolesOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     uint32_t newRole;
@@ -199,7 +199,7 @@ void WorldSession::handleGroupRequestJoinUpdatesOpcode(WorldPacket& /*recvPacket
 #endif
 }
 
-void WorldSession::handleGroupRoleCheckBeginOpcode(WorldPacket& recvPacket)
+void WorldSession::handleGroupRoleCheckBeginOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     auto group = _player->getGroup();

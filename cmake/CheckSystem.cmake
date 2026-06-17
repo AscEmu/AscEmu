@@ -1,10 +1,9 @@
 # Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 include_guard(GLOBAL)
 
+# Enforce C++23 standard without compiler extensions
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# correctly switches from -std=gnu++2a to -std=c++2a.
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # set runtime binary where all compiled (before install) binary will compiled in
@@ -46,7 +45,7 @@ include(${CMAKE_MODULE_PATH}/AEConfigureArch.cmake)
 
 # default definitions
 # -DPREFIX=\"${ASCEMU_SCRIPTLIB_PATH}\"
-add_compile_options(-DHAVE_CONFIG_H)
+add_compile_definitions(HAVE_CONFIG_H)
 
 mark_as_advanced(
     ZLIB_LIBRARIES

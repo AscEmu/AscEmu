@@ -118,7 +118,7 @@ bool ChatCommandHandler::HandleNpcAppearCommand(const char* /*_*/, WorldSession*
 }
 
 //.npc addtrainerspell
-bool ChatCommandHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcAddTrainerSpellCommand(const char* /*args*/, WorldSession* /*m_session*/)
 {
     /*auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)

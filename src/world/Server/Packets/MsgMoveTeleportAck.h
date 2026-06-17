@@ -35,7 +35,7 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& packet) override
+        bool internalSerialise([[maybe_unused]] WorldPacket& packet) override
         {
 #if VERSION_STRING < TBC
             packet << guid;

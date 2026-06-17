@@ -4955,16 +4955,16 @@ void Spell::sendSpellGo()
     bool hasSourceLocation = (m_targets.getTargetMask() & TARGET_FLAG_SOURCE_LOCATION) && m_targets.getDestination().isSet();
     bool hasDestUnkByte = m_targets.getTargetMask() & TARGET_FLAG_DEST_LOCATION;
     bool hasTargetString = m_targets.getTargetMask() & TARGET_FLAG_STRING;
-    bool hasPredictedHeal = false;
+    [[maybe_unused]] bool hasPredictedHeal = false;
     bool hasPredictedType = false;
     bool hasTargetMask = m_targets.getTargetMask() != 0;
-    bool hasCastImmunities = false;
-    bool hasCastSchoolImmunities = false;
+    [[maybe_unused]] bool hasCastImmunities = false;
+    [[maybe_unused]] bool hasCastSchoolImmunities = false;
     bool hasElevation = false;
     bool hasDelayTime = false;
     bool hasVisualChain = false;
-    bool hasAmmoInventoryType = false;
-    bool hasAmmoDisplayId = false;
+    [[maybe_unused]] bool hasAmmoInventoryType = false;
+    [[maybe_unused]] bool hasAmmoDisplayId = false;
     bool hasRunesStateBefore = false;
     bool hasRunesStateAfter = false;
     uint8_t predictedPowerCount = false;
@@ -4983,10 +4983,10 @@ void Spell::sendSpellGo()
     data.writeBit(casterUnitGuid[7]);
     data.writeBits(0, 20); // Extra Target Count
 
-    size_t missTypeCountPos = data.bitwpos();
+    [[maybe_unused]] size_t missTypeCountPos = data.bitwpos();
     data.writeBits(0, 25); // Miss Type Count
 
-    size_t missCountPos = data.bitwpos();
+    [[maybe_unused]] size_t missCountPos = data.bitwpos();
     data.writeBits(0, 24); // Miss Count
 
     data.writeBit(casterUnitGuid[1]);

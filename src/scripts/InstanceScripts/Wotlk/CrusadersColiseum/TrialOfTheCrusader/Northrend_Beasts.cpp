@@ -53,7 +53,7 @@ void CombatStalkerAI::DoAction(int32_t action)
     }
 }
 
-void CombatStalkerAI::Berserk(CreatureAIFunc pThis)
+void CombatStalkerAI::Berserk(CreatureAIFunc /*pThis*/)
 {
     CombatStalkerAI* script = static_cast<CombatStalkerAI*>(this);
     if (script && script->getInstanceScript())
@@ -72,7 +72,7 @@ void CombatStalkerAI::Berserk(CreatureAIFunc pThis)
     }
 }
 
-void CombatStalkerAI::StartJormungars(CreatureAIFunc pThis)
+void CombatStalkerAI::StartJormungars(CreatureAIFunc /*pThis*/)
 {
     CombatStalkerAI* script = static_cast<CombatStalkerAI*>(this);
     if (script && script->getInstanceScript())
@@ -82,7 +82,7 @@ void CombatStalkerAI::StartJormungars(CreatureAIFunc pThis)
     }
 }
 
-void CombatStalkerAI::StartIcehowl(CreatureAIFunc pThis)
+void CombatStalkerAI::StartIcehowl(CreatureAIFunc /*pThis*/)
 {
     CombatStalkerAI* script = static_cast<CombatStalkerAI*>(this);
     if (script && script->getInstanceScript())
@@ -112,7 +112,7 @@ void NorthrendBeastsAI::InitOrReset()
     addAIFunction(&NorthrendBeastsAI::initialMove, DoOnceScheduler(1s));
 }
 
-void NorthrendBeastsAI::OnCombatStart(Unit* _target)
+void NorthrendBeastsAI::OnCombatStart(Unit* /*_target*/)
 {
     getInstanceScript()->sendUnitEncounter(EncounterFrameEngage, getCreature());
     handleEncounterProgress();
@@ -121,7 +121,7 @@ void NorthrendBeastsAI::OnCombatStart(Unit* _target)
         handleWithHeroicEvents();
 }
 
-void NorthrendBeastsAI::OnCombatStop(Unit* _target)
+void NorthrendBeastsAI::OnCombatStop(Unit* /*_target*/)
 {
     getInstanceScript()->setLocalData(DATA_DESPAWN_SNOBOLDS, 0);
     getInstanceScript()->sendUnitEncounter(EncounterFrameDisengaged, getCreature());
@@ -199,7 +199,7 @@ void NorthrendBeastsAI::handleWithHeroicEvents()
     }
 }
 
-void NorthrendBeastsAI::initialMove(CreatureAIFunc pThis)
+void NorthrendBeastsAI::initialMove(CreatureAIFunc /*pThis*/)
 {
     NorthrendBeastsAI* script = static_cast<NorthrendBeastsAI*>(this);
     if (script && script->getInstanceScript())
@@ -419,12 +419,12 @@ void SnoboldAI::mountOnBoss()
 
 void SnoboldAI::CheckMount(CreatureAIFunc pThis)
 {
-    SnoboldAI* script = static_cast<SnoboldAI*>(this);
-    if (script && script->getInstanceScript())
+    if (getInstanceScript())
     {
-        auto base = getCreature()->getVehicleBase();
-        if (!getCreature()->getVehicleBase())
-            mountOnBoss();        
+        if (auto* base = getCreature()->getVehicleBase(); !base)
+        {
+            mountOnBoss();
+        }
 
         repeatFunctionFromScheduler(pThis, 3s);
     }
@@ -471,10 +471,10 @@ CreatureAIScript* FireBombAI::Create(Creature* pCreature) { return new FireBombA
 void FireBombAI::InitOrReset()
 {
     // for whatever reason we cannot cast spells directly when spawned
-    addAIFunction([this](CreatureAIFunc pThis)
-        {
-            castSpellAOE(Beasts::Gormok::SPELL_FIRE_BOMB_AURA);
-        }, DoOnceScheduler(500ms, 100.0f));
+    addAIFunction([this](CreatureAIFunc /*pThis*/)
+    {
+        castSpellAOE(Beasts::Gormok::SPELL_FIRE_BOMB_AURA);
+    }, DoOnceScheduler(500ms, 100.0f));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -499,7 +499,7 @@ void DreadscaleAI::OnCombatStart(Unit* _target)
     addTasks();
 }
 
-void DreadscaleAI::OnDied(Unit* _killer)
+void DreadscaleAI::OnDied(Unit* /*_killer*/)
 {
     if (CreatureAIScript* otherWorm = getLinkedCreatureAIScript())
     {
@@ -613,7 +613,7 @@ void DreadscaleAI::Engage(CreatureAIFunc)
     }
 }
 
-void DreadscaleAI::submerge(CreatureAIFunc pThis)
+void DreadscaleAI::submerge(CreatureAIFunc /*pThis*/)
 {
     DreadscaleAI* script = static_cast<DreadscaleAI*>(this);
     if (script && script->getInstanceScript())
@@ -629,7 +629,7 @@ void DreadscaleAI::submerge(CreatureAIFunc pThis)
             castSpellOnSelf(Beasts::Dreadscale_Acidmaw::SPELL_GROUND_VISUAL_0, true);
 
             setScriptPhase(Beasts::PHASE_SUBMERGED);
-            
+
             func_Emerge = addAIFunction(&DreadscaleAI::emerge, DoOnceScheduler(5s));
             setUnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
         }
@@ -722,7 +722,7 @@ void AcidmawAI::OnCombatStart(Unit* _target)
     addTasks();
 }
 
-void AcidmawAI::OnDied(Unit* _killer)
+void AcidmawAI::OnDied(Unit* /*_killer*/)
 {
     if (CreatureAIScript* otherWorm = getLinkedCreatureAIScript())
     {
@@ -819,7 +819,7 @@ void AcidmawAI::Engage(CreatureAIFunc)
     }
 }
 
-void AcidmawAI::submerge(CreatureAIFunc pThis)
+void AcidmawAI::submerge(CreatureAIFunc /*pThis*/)
 {
     AcidmawAI* script = static_cast<AcidmawAI*>(this);
     if (script && script->getInstanceScript())
@@ -912,7 +912,7 @@ void SlimePoolAI::OnLoad()
     addAIFunction(&SlimePoolAI::slimeEffect, DoOnceScheduler(1s));
 }
 
-void SlimePoolAI::slimeEffect(CreatureAIFunc pThis)
+void SlimePoolAI::slimeEffect(CreatureAIFunc /*pThis*/)
 {
     castSpellOnSelf(Beasts::Dreadscale_Acidmaw::SPELL_SLIME_POOL_EFFECT, true);
     castSpellOnSelf(Beasts::Dreadscale_Acidmaw::SPELL_PACIFY_SELF, true);
@@ -1002,7 +1002,7 @@ void IcehowlAI::addTasks()
     addAIFunction(&IcehowlAI::Crash, crashScheduler);
 }
 
-void IcehowlAI::Engage(CreatureAIFunc pThis)
+void IcehowlAI::Engage(CreatureAIFunc /*pThis*/)
 {
     getInstanceScript()->DoAction(ACTION_CLOSE_GATE);
     setIgnorePlayerCombat(false);
@@ -1011,20 +1011,20 @@ void IcehowlAI::Engage(CreatureAIFunc pThis)
     setZoneWideCombat();
 }
 
-void IcehowlAI::Charge(CreatureAIFunc pThis)
+void IcehowlAI::Charge(CreatureAIFunc /*pThis*/)
 {
     if (Unit* target = selectUnitTarget(FilterArgs(TargetFilter_Player)))
     {
         // Spell is not in dbcs so hackfix it until we support custom spells
         //castSpell(target, Beasts::Icehowl::SPELL_FURIOUS_CHARGE_SUMMON, true);
         summonCreature(NPC_FURIOUS_CHARGE_STALKER, target->GetPosition(), CreatureSummonDespawnType::TIMED_DESPAWN, 18 * TimeVarsMs::Second);
-        
+
         addMessage(Message(Beasts::Icehowl::EMOTE_TRAMPLE_ROAR, target), DoOnceScheduler());
         addAIFunction(&IcehowlAI::Roar, DoOnceScheduler(1s));
     }
 }
 
-void IcehowlAI::Roar(CreatureAIFunc pThis)
+void IcehowlAI::Roar(CreatureAIFunc /*pThis*/)
 {
     if (Creature* stalker = getInstanceScript()->getCreatureFromData(DATA_FURIOUS_CHARGE))
         castSpell(stalker, Beasts::Icehowl::SPELL_ROAR);
@@ -1035,7 +1035,7 @@ void IcehowlAI::Roar(CreatureAIFunc pThis)
     addAIFunction(&IcehowlAI::JumpBack, mSchedulerArgs);
 }
 
-void IcehowlAI::JumpBack(CreatureAIFunc pThis)
+void IcehowlAI::JumpBack(CreatureAIFunc /*pThis*/)
 {
     if (Creature* stalker = getInstanceScript()->getCreatureFromData(DATA_FURIOUS_CHARGE))
         castSpell(stalker, Beasts::Icehowl::SPELL_JUMP_BACK);
@@ -1046,7 +1046,7 @@ void IcehowlAI::JumpBack(CreatureAIFunc pThis)
     addAIFunction(&IcehowlAI::Trample, mSchedulerArgs);
 }
 
-void IcehowlAI::Crash(CreatureAIFunc pThis)
+void IcehowlAI::Crash(CreatureAIFunc /*pThis*/)
 {
     setReactState(REACT_PASSIVE);
     attackStop();
@@ -1054,7 +1054,7 @@ void IcehowlAI::Crash(CreatureAIFunc pThis)
     moveJump(ToCCommonLoc[1], 20.0f, 20.0f, POINT_MIDDLE);
 }
 
-void IcehowlAI::Trample(CreatureAIFunc pThis)
+void IcehowlAI::Trample(CreatureAIFunc /*pThis*/)
 {
     if (Creature* stalker = getInstanceScript()->getCreatureFromData(DATA_FURIOUS_CHARGE))
         moveCharge(stalker->GetPosition(), 42.0f, Beasts::POINT_ICEHOWL_CHARGE);
@@ -1080,7 +1080,7 @@ void RidePlayer::onAuraCreate(Aura* aur)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Spell Snobolled
-SpellScriptExecuteState Snobolled::onAuraPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float_t* damage)
+SpellScriptExecuteState Snobolled::onAuraPeriodicTick(Aura* aur, AuraEffectModifier* /*aurEff*/, float_t* /*damage*/)
 {
     if (!aur->GetUnitTarget()->hasAurasWithId(Beasts::Gormok::SPELL_RIDE_PLAYER))
         aur->removeAura();
@@ -1096,7 +1096,7 @@ SpellScriptExecuteState Snobolled::onAuraPeriodicTick(Aura* aur, AuraEffectModif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Spell Firebomb
-SpellScriptExecuteState Firebomb::beforeSpellEffect(Spell* spell, uint8_t effIndex)
+SpellScriptExecuteState Firebomb::beforeSpellEffect(Spell* spell, uint8_t /*effIndex*/)
 {
     //if (effIndex == EFF_INDEX_1)
     {
@@ -1131,12 +1131,12 @@ void ParalyticToxin::onAuraApply(Aura* aur)
             acidmaw->GetScript()->sendDBChatMessageByIndex(Beasts::Dreadscale_Acidmaw::SAY_SPECIAL, aur->GetUnitTarget());
 }
 
-void ParalyticToxin::onAuraRemove(Aura* aur, AuraRemoveMode mode)
+void ParalyticToxin::onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/)
 {
     aur->GetUnitTarget()->removeAllAurasById(Beasts::Dreadscale_Acidmaw::SPELL_PARALYSIS);
 }
 
-void ParalyticToxin::onAuraRefreshOrGainNewStack(Aura* aur, uint32_t newStackCount, uint32_t oldStackCount)
+void ParalyticToxin::onAuraRefreshOrGainNewStack(Aura* aur, uint32_t /*newStackCount*/, uint32_t /*oldStackCount*/)
 {
     if (auto slowEff = aur->getAuraEffect(EFF_INDEX_0))
     {
@@ -1175,17 +1175,18 @@ SpellScriptExecuteState BurningBile::beforeSpellEffect(Spell* spell, uint8_t eff
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Spell Slime Pool
-SpellScriptExecuteState SlimePool::onAuraPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float_t* damage)
+SpellScriptExecuteState SlimePool::onAuraPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float_t* /*damage*/)
 {
     if (aurEff->getEffectIndex() != EFF_INDEX_0)
         return SpellScriptExecuteState::EXECUTE_OK;
 
     ++stackCounter;
-    int32_t const radius = static_cast<int32_t>(((stackCounter / 60.f) * 0.9f + 0.1f) * 10000.f * 2.f / 3.f);
+    // Mark as [[maybe_unused]] so the compiler silences /W4, preserving the formula for the future TODO
+    [[maybe_unused]] int32_t const radius = static_cast<int32_t>(((stackCounter / 60.f) * 0.9f + 0.1f) * 10000.f * 2.f / 3.f);
 
     SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(aur->getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex()));
     Unit* caster = aur->GetUnitTarget();
-    
+
     // Cast Spell
     // todo spellradius should change...
     caster->castSpell(nullptr, spellInfo, true);

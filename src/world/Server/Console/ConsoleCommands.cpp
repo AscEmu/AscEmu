@@ -450,7 +450,7 @@ bool handleGetAccountsCommand(BaseConsole* baseConsole, int /*argumentCount*/, s
     return true;
 }
 
-bool handleSendMailGold(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
+bool handleSendMailGold(BaseConsole* /*baseConsole*/, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;

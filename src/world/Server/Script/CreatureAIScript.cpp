@@ -1478,7 +1478,7 @@ void CreatureAIScript::addEmoteForEvent(uint32_t eventType, uint32_t scriptTextI
 
 void CreatureAIScript::addEmoteForEventByIndex(uint32_t eventType, uint32_t scriptTextId)
 {
-    auto text = sMySQLStore.getNpcScriptTextById(_creature->getEntry(), scriptTextId);
+    auto text = sMySQLStore.getNpcScriptTextById(_creature->getEntry(), static_cast<uint8_t>(scriptTextId));
 
     if (text)
         addEmoteForEvent(eventType, text->id);

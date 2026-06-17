@@ -53,7 +53,7 @@ void AnubarakAI::InitOrReset()
     burrowGuids.clear();
 }
 
-void AnubarakAI::OnCombatStart(Unit* target)
+void AnubarakAI::OnCombatStart(Unit* /*target*/)
 {
     getInstanceScript()->sendUnitEncounter(EncounterFrameEngage, getCreature());
     getInstanceScript()->setBossState(DATA_ANUBARAK, EncounterStates::InProgress);
@@ -209,7 +209,7 @@ void AnubarakAI::emerge(CreatureAIFunc pThis)
 void AnubarakAI::summonFrostSphere(CreatureAIFunc pThis)
 {
     // Get a random starting index within the valid range
-    uint8_t startAt = Util::getRandomUInt(0, static_cast<uint32_t>(sphereGuids.size() - 1));
+    uint8_t startAt = static_cast<uint8_t>(Util::getRandomUInt(0, static_cast<uint32_t>(sphereGuids.size() - 1)));
     uint8_t attempts = 0;
 
     do {
@@ -486,7 +486,7 @@ void SpikeAI::InitOrReset()
     phaseTimer = 1;
 }
 
-void SpikeAI::OnCombatStart(Unit* _target)
+void SpikeAI::OnCombatStart(Unit* /*target*/)
 {
     if (Unit* target = selectUnitTarget(FilterArgs(TargetFilter_Player)))
     {

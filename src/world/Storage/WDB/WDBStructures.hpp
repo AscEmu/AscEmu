@@ -1962,7 +1962,7 @@ namespace WDB::Structures
         float coefBase;                                             // 14
         int32_t coefLevelBase;                                      // 15
 
-        bool IsScalableEffect(uint8_t i) const { return coefBase != 0.0f; };
+        bool IsScalableEffect(uint8_t /*i*/) const { return coefBase != 0.0f; }
     };
 
     // SpellShapeshift.dbc

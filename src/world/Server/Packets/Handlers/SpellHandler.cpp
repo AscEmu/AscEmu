@@ -213,9 +213,9 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleCancelCastOpcode(WorldPacket& recvPacket)
 {
-    uint32_t spellId;
+    uint32_t spellId = 0;
 #if VERSION_STRING == Mop
-    uint8_t counter;
+    uint8_t counter = 0;
 
     bool hasCounter = !recvPacket.readBit();
     bool hasSpellId = !recvPacket.readBit();

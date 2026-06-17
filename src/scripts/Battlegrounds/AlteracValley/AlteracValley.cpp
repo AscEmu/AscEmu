@@ -514,7 +514,6 @@ AlteracValley::AVNode::AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint3
 
 AlteracValley::AVNode::~AVNode()
 {
-
 }
 
 void AlteracValley::AVNode::Assault(Player* plr)
@@ -562,8 +561,9 @@ void AlteracValley::AVNode::Assault(Player* plr)
     if (m_template->m_isGraveyard)
     {
         // send message
-        m_bg->sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->getTeam(), 0, "%s claims the %s! If left unchallenged, the %s will control it!", plr->getName().c_str(), m_template->m_name,
-            plr->isTeamHorde() ? "Horde" : "Alliance");
+        const uint8_t chatMsgType = static_cast<uint8_t>(CHAT_MSG_BG_EVENT_ALLIANCE) + static_cast<uint8_t>(plr->getTeam());
+        m_bg->sendChatMessage(chatMsgType, 0, "%s claims the %s! If left unchallenged, the %s will control it!", plr->getName().c_str(), m_template->m_name,
+                              plr->isTeamHorde() ? "Horde" : "Alliance");
 
         plr->m_bgScore.MiscData[BattlegroundDef::AV_GRAVEYARDS_ASSAULTED]++;
     }
@@ -1296,43 +1296,51 @@ const static AVLoot g_avLoot[] =
 
 void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
 {
-    const AVLoot* loot_ptr = &g_avLoot[0];
-    while (loot_ptr->ItemId != 0)
+    auto* corpse = dynamic_cast<Corpse*>(pCorpse);
+    if (!corpse)
+        return;
+
+    const AVLoot* lootPtr = &g_avLoot[0];
+    while (lootPtr->ItemId != 0)
     {
-        if (loot_ptr->Faction == -1 || loot_ptr->Faction == static_cast<int8_t>(plr->getTeam()))
+        if (lootPtr->Faction == -1 || lootPtr->Faction == static_cast<int8_t>(plr->getTeam()))
         {
-            if (Util::checkChance(loot_ptr->Chance * worldConfig.getFloatRate(RATE_DROP0)))
+            if (Util::checkChance(lootPtr->Chance * worldConfig.getFloatRate(RATE_DROP0)))
             {
-                LootItem li;
-                ItemProperties const* pProto = sMySQLStore.getItemProperties(loot_ptr->ItemId);
-                if (pProto != nullptr)
+                if (const auto* itemProto = sMySQLStore.getItemProperties(lootPtr->ItemId))
                 {
-                    li.is_ffa = 0;
-                    li.itemproto = pProto;
-                    if (loot_ptr->MinCount != loot_ptr->MaxCount)
-                        li.count = Util::getRandomUInt(loot_ptr->MaxCount - loot_ptr->MinCount) + loot_ptr->MinCount;
+                    LootItem lootItem;
+                    lootItem.is_ffa = false;
+                    lootItem.itemproto = itemProto;
+                    if (lootPtr->MinCount != lootPtr->MaxCount)
+                    {
+                        lootItem.count = static_cast<decltype(lootItem.count)>(
+                            Util::getRandomUInt(lootPtr->MaxCount - lootPtr->MinCount) + lootPtr->MinCount
+                        );
+                    }
                     else
-                        li.count = loot_ptr->MinCount;
+                    {
+                        lootItem.count = static_cast<decltype(lootItem.count)>(lootPtr->MinCount);
+                    }
 
-                    li.iRandomProperty = nullptr;
-                    li.iRandomSuffix = nullptr;
-                    li.roll = nullptr;
+                    lootItem.iRandomProperty = nullptr;
+                    lootItem.iRandomSuffix = nullptr;
+                    lootItem.roll = nullptr;
 
-                    // push to vector
-                    static_cast<Corpse*>(pCorpse)->loot.items.push_back(std::move(li));
+                    corpse->loot.items.push_back(std::move(lootItem));
                 }
             }
         }
 
-        ++loot_ptr;
+        ++lootPtr;
     }
 
     // add some money
-    float gold = ((plr->getLevel() / 2.5f) + 1.0f) * 100.0f;            // fix this later
+    float gold = ((plr->getLevel() / 2.5f) + 1.0f) * 100.0f; // TODO: fix this later
     gold *= worldConfig.getFloatRate(RATE_MONEY);
 
     // set it
-    static_cast<Corpse*>(pCorpse)->loot.gold = Util::float2int32(gold);
+    corpse->loot.gold = Util::float2int32(gold);
 }
 
 void AlteracValley::EventUpdateResources()

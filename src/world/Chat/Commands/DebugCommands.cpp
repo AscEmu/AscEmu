@@ -32,7 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 
-bool ChatCommandHandler::HandleMoveDBCItemSetsToDB(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleMoveDBCItemSetsToDB(const char* /*args*/, WorldSession* /*session*/)
 {
 #if VERSION_STRING >= Cata
     std::string dumpTable = "CREATE TABLE IF NOT EXISTS `item_sets_dump` (`id` INT NOT NULL, `item1` INT NOT NULL, `item2` INT NOT NULL, `item3` INT NOT NULL, `item4` INT NOT NULL, `item5` INT NOT NULL, `item6` INT NOT NULL, `item7` INT NOT NULL, `item8` INT NOT NULL, `item9` INT NOT NULL, `item10` INT NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
@@ -54,7 +54,7 @@ bool ChatCommandHandler::HandleMoveDBCItemSetsToDB(const char* args, WorldSessio
 
 }
 
-bool ChatCommandHandler::HandleMoveDB2ItemsToDB(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleMoveDB2ItemsToDB(const char* /*args*/, WorldSession* /*session*/)
 {
 #if VERSION_STRING >= Cata
     std::string dumpTable = "CREATE TABLE IF NOT EXISTS `item_dump` (`entry` INT NOT NULL, `class` INT NOT NULL, `subclass` INT NOT NULL, `material` INT NOT NULL, `displayId` INT NOT NULL, `inventoryType` INT NOT NULL, `sheath` INT NOT NULL, PRIMARY KEY (`entry`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";

@@ -211,7 +211,7 @@ class SERVER_DECL WorldSession
 
 #if VERSION_STRING != Cata
         uint32_t GetClientBuild() { return client_build; }
-        void SetClientBuild(uint32_t build) { client_build = build; }
+        void SetClientBuild(uint32_t build) { client_build = static_cast<uint16_t>(build); }
 #else
         uint16_t GetClientBuild() { return client_build; }
         void SetClientBuild(uint16_t build) { client_build = build; }

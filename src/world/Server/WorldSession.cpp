@@ -576,7 +576,7 @@ void WorldSession::SystemMessage(const char* format, ...)
 #endif
 }
 
-void WorldSession::sendSystemMessagePacket(std::string& _message)
+void WorldSession::sendSystemMessagePacket([[maybe_unused]] std::string& _message)
 {
 #if VERSION_STRING < Mop
     SendPacket(SmsgMessageChat(SystemMessagePacket(_message)).serialise().get());

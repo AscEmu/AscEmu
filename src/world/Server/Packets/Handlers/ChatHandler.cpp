@@ -135,8 +135,8 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
     {
         if (messageLanguage <= languageSpellSkillStore.size())
         {
-            if (auto languageSkill = getLanguageSkillSpell(messageLanguage).skillId)
-                player_can_speak_language = _player->hasSkillLine(languageSkill);
+            if (auto languageSkill = getLanguageSkillSpell(static_cast<uint8_t>(messageLanguage)).skillId)
+                player_can_speak_language = _player->hasSkillLine(static_cast<uint16_t>(languageSkill));
         }
 
         if (worldConfig.player.isInterfactionChatEnabled)
@@ -498,7 +498,7 @@ void WorldSession::handleEmoteOpcode(WorldPacket& recvPacket)
     sQuestMgr.OnPlayerEmote(_player, srlPacket.emote, guid);
 }
 
-void WorldSession::handleReportSpamOpcode(WorldPacket& recvPacket)
+void WorldSession::handleReportSpamOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING < Cata
     CmsgComplaint srlPacket;
@@ -506,7 +506,7 @@ void WorldSession::handleReportSpamOpcode(WorldPacket& recvPacket)
         return;
 
     sLogger.debug("REPORT SPAM: type {}, guid {}, unk1 {}, unk2 {}, unk3 {}, unk4 {}, message {}", srlPacket.spam_type, srlPacket.spammer_guid.getGuidLow(),
-        srlPacket.unk1, srlPacket.unk2, srlPacket.unk3, srlPacket.unk4, srlPacket.description);
+                  srlPacket.unk1, srlPacket.unk2, srlPacket.unk3, srlPacket.unk4, srlPacket.description);
 
     SendPacket(SmsgComplainResult(0).serialise().get());
 #endif

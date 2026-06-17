@@ -105,7 +105,7 @@ void ChampionControllerAI::summonChampions()
 
     for (uint8_t i = 0; i < vChampionEntries.size(); ++i)
     {
-        uint8_t pos = Util::getRandomUInt(0, static_cast<uint32_t>(vChampionJumpTarget.size() - 1));
+        uint8_t pos = static_cast<uint8_t>(Util::getRandomUInt(0, static_cast<uint32_t>(vChampionJumpTarget.size() - 1)));
         const auto maxChampionOrigin = static_cast<uint32_t>(vChampionJumpOrigin.size() - 1);
         if (Creature* champion = summonCreature(vChampionEntries[i], vChampionJumpOrigin[Util::getRandomUInt(0, maxChampionOrigin)], CreatureSummonDespawnType::MANUAL_DESPAWN))
         {
@@ -158,7 +158,7 @@ std::vector<uint32_t> ChampionControllerAI::selectChampions(PlayerTeam playerTea
     // Fill Healers
     for (uint8_t i = 0; i < healersSubtracted; ++i)
     {
-        uint8_t pos = Util::getRandomUInt(0, static_cast<uint32_t>(vHealersEntries.size() - 1));
+        uint8_t pos = static_cast<uint8_t>(Util::getRandomUInt(0, static_cast<uint32_t>(vHealersEntries.size() - 1)));
         switch (vHealersEntries[pos])
         {
             case NPC_ALLIANCE_DRUID_RESTORATION:
@@ -306,7 +306,7 @@ uint32_t FactionChampionsAI::enemiesInRange(float range)
     return count;
 }
 
-void FactionChampionsAI::update(CreatureAIFunc pThis)
+void FactionChampionsAI::update(CreatureAIFunc /*pThis*/)
 {
     // Power Management
     if (getCreature()->getPowerType() == POWER_TYPE_MANA)
@@ -321,7 +321,7 @@ void FactionChampionsAI::update(CreatureAIFunc pThis)
         }
 }
 
-void FactionChampionsAI::removeCC(CreatureAIFunc pThis)
+void FactionChampionsAI::removeCC(CreatureAIFunc /*pThis*/)
 {
     if (hasBreakableByDamageCrowdControlAura())
     {
@@ -1046,7 +1046,7 @@ void EnhancerAI::onSummonedCreature(Creature* summon)
     summons.summon(summon);
 }
 
-void EnhancerAI::OnSummonDespawn(Creature* summon)
+void EnhancerAI::OnSummonDespawn(Creature* /*summon*/)
 {
     --mTotemCount;
 }

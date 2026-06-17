@@ -739,7 +739,7 @@ void ThreatManager::sendThreatListToClients(bool newHighest) const
     packedGuidOwner.appendPackGUID(_owner->getGuid());
     packedGuidVictim1.appendPackGUID(_currentVictimRef->getVictim()->getGuid());
 
-    WorldPacket data((newHighest ? SMSG_HIGHEST_THREAT_UPDATE : SMSG_THREAT_UPDATE), (_sortedThreatList.size() + 2) * 8); // guess
+    WorldPacket data(static_cast<uint16_t>(newHighest ? SMSG_HIGHEST_THREAT_UPDATE : SMSG_THREAT_UPDATE), (_sortedThreatList.size() + 2) * 8); // guess
     data.append(packedGuidOwner);
     if (newHighest)
         data.append(packedGuidVictim1);

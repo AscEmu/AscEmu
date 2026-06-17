@@ -181,12 +181,12 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
 
     sLogger.info("Registering realm `{}` with ID {}.", realmName, realmId);
 
-    // check Realms if realmId is valid! Otherwise send back error.
+    // check Realms if realmId is valid! Otherwise, send back error.
     auto realm = sRealmManager.getRealmById(realmId);
     if (realm == nullptr)
     {
         WorldPacket data(LRSMSG_REALM_REGISTER_RESULT, 4);
-        data << uint32_t(1);        // 1 = realm not known by logonserver - failed
+        data << uint32_t(1); // 1 = realm not known by logonserver - failed
         data << realmId;
         data << realmName;
         SendPacket(&data);
@@ -204,10 +204,10 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
     recvData >> realm->lock;
     recvData >> realm->gameBuild;
 
-    sRealmManager.setStatusForRealm(realmId, 1);
+    sRealmManager.setStatusForRealm(static_cast<uint8_t>(realmId), 1);
 
     WorldPacket data(LRSMSG_REALM_REGISTER_RESULT, 4);
-    data << uint32_t(0);              // 0 = everything ok - success
+    data << uint32_t(0); // 0 = everything ok - success
     data << realmId;
     data << realm->name;
     SendPacket(&data);
@@ -220,7 +220,7 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
     SendPacket(&data);
 }
 
-void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
+void LogonCommServerSocket::HandleSessionRequest(WorldPacket& recvData)
 {
     uint32_t request_id;
     std::string account_name;
@@ -232,7 +232,7 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
     uint32_t error = 0;
     const auto* acct = sAccountMgr.getAccountByName(account_name);
     if (acct == nullptr || acct->SessionKey == NULL)
-        error = 1;          // Unauthorized user.
+        error = 1; // Unauthorized user.
 
     // build response packet
     WorldPacket data(LRSMSG_ACC_SESSION_RESULT, 150);
@@ -272,30 +272,40 @@ void LogonCommServerSocket::HandlePing(WorldPacket & recvData)
 
 void LogonCommServerSocket::SendPacket(WorldPacket* data)
 {
-    bool rv;
+    if (!data)
+        return;
+
     burstBegin();
 
     LogonWorldPacket header;
     header.opcode = data->GetOpcode();
-    //header.size   = ntohl((u_long)data->size());
-    header.size = (uint32_t)data->size();
 
-    byteSwapUInt32(&header.size);
+    uint32_t sizeValue = static_cast<uint32_t>(data->size());
+    byteSwapUInt32(&sizeValue);
+    header.size = sizeValue;
 
     if (use_crypto)
-        _sendCrypto.process((unsigned char*)&header, (unsigned char*)&header, 6);
-
-    rv = burstSend((uint8_t*)&header, 6);
-
-    if (data->size() > 0 && rv)
     {
-        if (use_crypto)
-            _sendCrypto.process((unsigned char*)data->contents(), (unsigned char*)data->contents(), (uint32_t)data->size());
-
-        rv = burstSend(data->contents(), (uint32_t)data->size());
+        auto* headerPtr = reinterpret_cast<unsigned char*>(&header);
+        _sendCrypto.process(headerPtr, headerPtr, 6);
     }
 
-    if (rv) burstPush();
+    bool isSuccess = burstSend(reinterpret_cast<const uint8_t*>(&header), 6);
+
+    if (data->size() > 0 && isSuccess)
+    {
+        if (use_crypto)
+        {
+            auto* contentsPtr = data->contents();
+            _sendCrypto.process(contentsPtr, contentsPtr, static_cast<unsigned int>(data->size()));
+        }
+
+        isSuccess = burstSend(data->contents(), static_cast<uint32_t>(data->size()));
+    }
+
+    if (isSuccess)
+        burstPush();
+
     burstEnd();
 }
 

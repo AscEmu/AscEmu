@@ -7,13 +7,13 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "C:/AscEmu" CACHE PATH "Install path prefix" FORCE)
 endif ()
 
-find_package(MySQL)
-find_package(OpenSSL)
+find_package(MySQL REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 # needed for socket stuff and crash handler
 set(EXTRA_LIBS
-    ws2_32.lib
-    dbghelp.lib
+    ws2_32
+    dbghelp
 )
 
 if (MSVC)

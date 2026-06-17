@@ -88,7 +88,7 @@ namespace AscEmu::Packets
 
 #else // Mop
             uint32_t targetStringLength = 0;
-            
+
             WoWGuid targetGuid = 0;
             WoWGuid itemTargetGuid = 0;
             WoWGuid destTransGuid = 0;
@@ -102,7 +102,7 @@ namespace AscEmu::Packets
             bool hasUnkField = false;
             uint32_t unkCounter = 0;
             uint32_t unkMoveCounter = 0;
-            bool hasPitch = false;
+            [[maybe_unused]] bool hasPitch = false;
             bool hasTimestamp = false;
 
             packet >> containerIndex >> inventorySlot;
@@ -112,7 +112,7 @@ namespace AscEmu::Packets
             bool hasTargetString = !packet.readBit();
             itemGuid[1] = packet.readBit();
             bool hasCastFlags = !packet.readBit();
-            bool hasDestLocation = packet.readBit();
+            hasDestLocation = packet.readBit();
             itemGuid[2] = packet.readBit();
             itemGuid[7] = packet.readBit();
             itemGuid[0] = packet.readBit();
@@ -125,11 +125,11 @@ namespace AscEmu::Packets
             bool hasGlyphIndex = !packet.readBit();
             packet.readBit();
             itemGuid[4] = packet.readBit();
-            bool hasSrcLocation = packet.readBit();
+            hasSrcLocation = packet.readBit();
             itemGuid[3] = packet.readBit();
             itemGuid[5] = packet.readBit();
 
-            uint8_t researchCount = packet.readBits(2);
+            uint8_t researchCount = static_cast<uint8_t>(packet.readBits(2));
             for (uint8_t i = 0; i < researchCount; ++i)
                 packet.readBits(2);
 
@@ -174,13 +174,13 @@ namespace AscEmu::Packets
                 moveGuid[3] = packet.readBit();
                 hasTimestamp = !packet.readBit();
                 unkMoveCounter = !packet.readBit();
-                bool hasMovementFlags = !packet.readBit();
+                [[maybe_unused]] bool hasMovementFlags = !packet.readBit();
 
                 if (hasMovementFlags2)
-                    movementInfo.flags2 = packet.readBits(13);
+                    movementInfo.flags2 = static_cast<uint16_t>(packet.readBits(13));
 
                 if (hasMovement)
-                    movementInfo.flags = packet.readBits(30);
+                    movementInfo.flags = static_cast<uint16_t>(packet.readBits(30));
             }
 
             if (hasSrcLocation)
@@ -229,7 +229,7 @@ namespace AscEmu::Packets
             itemTargetGuid[2] = packet.readBit();
 
             if (hasCastFlags)
-                castFlags = packet.readBits(5);
+                castFlags = static_cast<uint8_t>(packet.readBits(5));
 
             if (hasTargetMask)
                 targets.setTargetMask(packet.readBits(20));

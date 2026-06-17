@@ -624,8 +624,8 @@ protected:
     static uint8_t const ActivationCrystalCount = 5;
     uint32_t ActivationCrystalGUIDs[ActivationCrystalCount] = { 0, 0, 0, 0, 0};
 
-    uint32_t FirstBossId;
-    uint32_t SecondBossId;
+    uint8_t FirstBossId;
+    uint8_t SecondBossId;
 
     uint8_t DoorIntegrity;
     uint8_t WaveCount;

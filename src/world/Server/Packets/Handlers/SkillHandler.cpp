@@ -45,7 +45,7 @@ void WorldSession::handleUnlearnTalents(WorldPacket& /*recvPacket*/)
 }
 
 
-void WorldSession::handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
+void WorldSession::handleLearnMultipleTalentsOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING < Cata
 #if VERSION_STRING > TBC
@@ -63,7 +63,7 @@ void WorldSession::handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleLearnPreviewTalentsOpcode(WorldPacket& recvPacket)
+void WorldSession::handleLearnPreviewTalentsOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     int32_t current_tab;

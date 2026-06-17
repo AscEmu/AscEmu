@@ -5145,10 +5145,10 @@ void Player::updateGlyphs()
     }
 #endif
 
-    const auto level = getLevel();
     uint32_t slotMask = 0;
 
 #if VERSION_STRING == WotLK
+    const auto level = getLevel();
     if (level >= 15)
         slotMask |= (GS_MASK_1 | GS_MASK_2);
     if (level >= 30)
@@ -5160,6 +5160,7 @@ void Player::updateGlyphs()
     if (level >= 80)
         slotMask |= GS_MASK_6;
 #elif VERSION_STRING == Cata
+    const auto level = getLevel();
     if (level >= 25)
         slotMask |= GS_MASK_LEVEL_25;
     if (level >= 50)
@@ -5711,7 +5712,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     if (talentInfo->TalentTree != m_FirstTalentTreeLock && m_FirstTalentTreeLock != 0)
     {
         auto pointsUsed = 0;
-        for (const auto& [talentId, rank] : getActiveSpec().getTalents())
+        for (const auto& rank : getActiveSpec().getTalents() | std::views::values)
         {
             pointsUsed += rank + 1;
         }
@@ -6075,7 +6076,7 @@ void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
 
     data.flushBits();
 
-    for (auto specId = 0; specId < m_talentSpecsCount; ++specId)
+    for (uint8_t specId = 0; specId < m_talentSpecsCount; ++specId)
     {
         PlayerSpec spec = m_specs[specId];
 
@@ -6763,7 +6764,7 @@ void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, b
 #endif
 
 #if VERSION_STRING > WotLK
-void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, bool apply)
+void Player::calculateHeirloomBonus(ItemProperties const* /*proto*/, int16_t /*slot*/, bool /*apply*/)
 {
     // Todo CATA/MOP
 }
@@ -9455,7 +9456,7 @@ void Player::sendResetFailedNotify(uint32_t mapid)
     sendPacket(&data);
 }
 
-void Player::sendInstanceDifficultyPacket(uint8_t difficulty)
+void Player::sendInstanceDifficultyPacket([[maybe_unused]] uint8_t difficulty)
 {
 #if VERSION_STRING < Mop
     m_session->SendPacket(SmsgInstanceDifficulty(difficulty).serialise().get());
@@ -9767,11 +9768,11 @@ void Player::setVisibleItemFields(uint32_t slot, Item* item)
     {
         setVisibleItemEntry(slot, item->getVisibleEntry());
 #if VERSION_STRING > TBC
-        setVisibleItemEnchantment(slot, PERM_ENCHANTMENT_SLOT, item->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
-        setVisibleItemEnchantment(slot, TEMP_ENCHANTMENT_SLOT, item->getEnchantmentId(TEMP_ENCHANTMENT_SLOT));
+        setVisibleItemEnchantment(slot, PERM_ENCHANTMENT_SLOT, static_cast<uint16_t>(item->getEnchantmentId(PERM_ENCHANTMENT_SLOT)));
+        setVisibleItemEnchantment(slot, TEMP_ENCHANTMENT_SLOT, static_cast<uint16_t>(item->getEnchantmentId(TEMP_ENCHANTMENT_SLOT)));
 #else
         for (uint8_t i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
-            setVisibleItemEnchantment(slot, i, item->getEnchantmentId(i));
+            setVisibleItemEnchantment(slot, i, static_cast<uint16_t>(item->getEnchantmentId(i)));
 #endif
     }
     else
@@ -9997,7 +9998,7 @@ void Player::applyReforgeEnchantment(Item* item, bool apply)
     updateStats();
 }
 #elif VERSION_STRING > Cata
-void Player::applyReforgeEnchantment(Item* item, bool apply)
+void Player::applyReforgeEnchantment(Item* /*item*/, bool /*apply*/)
 {
     // TODO mop
 }
@@ -10648,7 +10649,7 @@ bool Player::isOnTaxi() const
 
 void Player::initTaxiNodesForLevel()
 {
-    m_taxi->initTaxiNodesForLevel(getRace(), getClass(), getLevel());
+    m_taxi->initTaxiNodesForLevel(getRace(), getClass(), static_cast<uint8_t>(getLevel()));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -11548,7 +11549,6 @@ uint32_t Player::getExaltedCount() const
 void Player::sendSmsgInitialFactions()
 {
 #if VERSION_STRING == Mop
-    uint32_t repListId = 0;
     ByteBuffer buffer;
 
     WorldPacket data(SMSG_INITIALIZE_FACTIONS, PLAYER_REPUTATION_COUNT * (1 + 4) + 32);
@@ -11556,13 +11556,13 @@ void Player::sendSmsgInitialFactions()
     {
         if (factionReputation == nullptr)
         {
-            data << uint8_t(0);
-            data << uint32_t(0);
+            data << static_cast<uint8_t>(0);
+            data << static_cast<uint32_t>(0);
         }
         else
         {
-            data << uint8_t(factionReputation->flag);
-            data << uint32_t(factionReputation->calcStanding());
+            data << factionReputation->flag;
+            data << static_cast<uint32_t>(factionReputation->calcStanding());
         }
         buffer.writeBit(0);
     }
@@ -11986,7 +11986,7 @@ void Player::giveXp(uint32_t xp, const uint64_t& guid, bool allowBonus)
     setXp(newXp);
 }
 
-void Player::sendLogXpGainPacket(uint64_t guid, uint32_t normalXp, uint32_t restedXp, bool type)
+void Player::sendLogXpGainPacket([[maybe_unused]] uint64_t guid, [[maybe_unused]] uint32_t normalXp, [[maybe_unused]] uint32_t restedXp, [[maybe_unused]] bool type)
 {
 #if VERSION_STRING < Mop
     m_session->SendPacket(SmsgLogXpGain(guid, normalXp, restedXp, type).serialise().get());
@@ -14730,7 +14730,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     loadReputations(results[PlayerQuery::Reputation].result.get());
 
     // Load saved actionbars
-    uint32_t Counter = 0;
+    uint8_t Counter = 0;
     char* start = nullptr;
     char* end = nullptr;
 #if VERSION_STRING > TBC

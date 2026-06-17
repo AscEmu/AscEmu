@@ -283,7 +283,9 @@ void WarsongGulch::HookOnFlagDrop(Player* plr)
 
     setWorldState(plr->isTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 1);
 
-    sEventMgr.AddEvent(this, &WarsongGulch::ReturnFlag, plr->getTeam(), EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + plr->getTeam(), 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    const auto teamId = plr->getTeam();
+    const uint32_t eventId = static_cast<uint32_t>(EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG) + static_cast<uint32_t>(teamId);
+    sEventMgr.AddEvent(this, &WarsongGulch::ReturnFlag, teamId, eventId, 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     playSoundToAll(BattlegroundDef::FLAG_RETURNED);
 
@@ -302,7 +304,7 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
         if ((obj->getEntry() == SILVERWING_FLAG && plr->isTeamAlliance()) || (obj->getEntry() == WARSONG_FLAG && plr->isTeamHorde()))
         {
             uint32_t x = plr->getTeam() ? TEAM_ALLIANCE : TEAM_HORDE;
-            sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + (plr->isTeamHorde() ? TEAM_ALLIANCE : TEAM_HORDE));
+            sEventMgr.RemoveEvents(this, static_cast<uint8_t>(EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG) + static_cast<uint8_t>(plr->isTeamHorde() ? TEAM_ALLIANCE : TEAM_HORDE));
 
             if (m_dropFlags[x]->IsInWorld())
                 m_dropFlags[x]->RemoveFromWorld(false);

@@ -710,7 +710,7 @@ bool Pet::_preparePetForPush(PetCache const* petCache)
             setPower(POWER_TYPE_HAPPINESS, petCache->current_happiness);
 #endif
 #if VERSION_STRING == WotLK || VERSION_STRING == Cata
-            setPetTalentPoints(petCache->talentpoints);
+            setPetTalentPoints(static_cast<uint8_t>(petCache->talentpoints));
 #endif
 
 #if VERSION_STRING == Classic
@@ -2263,16 +2263,17 @@ void Pet::die(Unit* pAttacker, uint32_t /*damage*/, uint32_t spellid)
     {
         //////////////////////////////////////////////////////////////////////////////////////////
         // Pet death handling
-        Pet* pPet = this;
 
 #if VERSION_STRING < Cata
+        Pet* pPet = this;
+
         // dying pet looses 1 happiness level (not in BG)
         if (m_petType == PET_TYPE_HUNTER && !pPet->IsInBg())
         {
             pPet->modPower(POWER_TYPE_HAPPINESS, -PET_HAPPINESS_UPDATE_VALUE);
         }
 #endif
-    }   //////////////////////////////////////////////////////////////////////////////////////////
+    } //////////////////////////////////////////////////////////////////////////////////////////
 
     // Clear health batch on death
     clearHealthBatch();

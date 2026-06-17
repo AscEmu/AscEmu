@@ -336,12 +336,12 @@ void WorldSession::handleUnstablePet(WorldPacket& recvPacket)
     if (!foundSlot.has_value())
     {
         // Client sends unstable packet instead of swap packet if current pet is dismissed and player starts from stable slot
-        performStableSlotSwap(_player, srlPacket.petNumber);
+        performStableSlotSwap(_player, static_cast<uint8_t>(srlPacket.petNumber));
         return;
     }
     else
     {
-        if (!_player->tryPutPetToSlot(srlPacket.petNumber, foundSlot.value()))
+        if (!_player->tryPutPetToSlot(static_cast<uint8_t>(srlPacket.petNumber), foundSlot.value()))
             return;
 
         // If pet is taken from first stable slot, client automatically shifts next pet in stables to this first slot
@@ -364,7 +364,7 @@ void WorldSession::handleUnstablePet(WorldPacket& recvPacket)
     // Summon unstabled pet if pet is alive and player is able to summon it
     if (!_player->isPetRequiringTemporaryUnsummon())
     {
-        if (const auto petCache = _player->getPetCache(srlPacket.petNumber))
+        if (const auto petCache = _player->getPetCache(static_cast<uint8_t>(srlPacket.petNumber)))
         {
             if (petCache->alive)
                 _player->_spawnPet(petCache);
@@ -381,7 +381,7 @@ void WorldSession::handleStableSwapPet(WorldPacket& recvPacket)
         return;
 
     // Pet number in packet is always the pet that is in stables
-    performStableSlotSwap(_player, srlPacket.petNumber);
+    performStableSlotSwap(_player, static_cast<uint8_t>(srlPacket.petNumber));
 }
 
 void WorldSession::handleBuyStableSlot(WorldPacket& /*recvPacket*/)
@@ -432,7 +432,7 @@ void WorldSession::handlePetSetActionOpcode(WorldPacket& recvPacket)
             if (button.parts.spellId == 0)
             {
                 // Emptied a slot
-                pet->setActionBarSlot(slot, 0, 0);
+                pet->setActionBarSlot(static_cast<uint8_t>(slot), 0, 0);
                 return;
             }
 
@@ -446,9 +446,9 @@ void WorldSession::handlePetSetActionOpcode(WorldPacket& recvPacket)
         {
             // Client seems to send sometimes weird data or packet structure is still not correct
             if (button.parts.state != PET_SPELL_STATE_SET_REACT && button.parts.state != PET_SPELL_STATE_SET_ACTION)
-                pet->setActionBarSlot(slot, 0, 0);
+                pet->setActionBarSlot(static_cast<uint8_t>(slot), 0, 0);
             else
-                pet->setActionBarSlot(slot, button.parts.spellId, button.parts.state);
+                pet->setActionBarSlot(static_cast<uint8_t>(slot), button.parts.spellId, button.parts.state);
         }
     };
 
@@ -574,7 +574,7 @@ void WorldSession::handlePetCancelAura(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
+void WorldSession::handlePetLearnTalent([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING < Cata
 #if VERSION_STRING > TBC

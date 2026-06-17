@@ -2507,7 +2507,7 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
     else // unit controlled by AI
     {
         // send notification to all clients
-        sendMessageToSet(SmsgSplineSetSpeed(GetNewGUID(), rate, moveTypeToOpcode[mtype][0]).serialise().get(), true);
+        sendMessageToSet(SmsgSplineSetSpeed(GetNewGUID(), rate, static_cast<uint8_t>(moveTypeToOpcode[mtype][0])).serialise().get(), true);
     }
 }
 

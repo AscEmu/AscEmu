@@ -22,7 +22,7 @@ namespace AscEmu::Packets
         {
         }
 
-        SmsgSplineSetSpeed(WoWGuid guid, float rate, uint16_t opcode) :
+        SmsgSplineSetSpeed(WoWGuid /*guid*/, float rate, uint16_t opcode) :
             ManagedPacket(opcode, 0),
             rate(rate),
             opcode(opcode)
@@ -35,7 +35,7 @@ namespace AscEmu::Packets
             return 8 + 4;
         }
 
-        bool internalSerialise(WorldPacket& packet) override
+        bool internalSerialise([[maybe_unused]] WorldPacket& packet) override
         {
 #if VERSION_STRING < Cata
             packet << guid << rate;

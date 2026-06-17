@@ -51,7 +51,7 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& packet) override
+        bool internalSerialise([[maybe_unused]] WorldPacket& packet) override
         {
 #if VERSION_STRING < Mop
             packet << min_level;
@@ -109,8 +109,8 @@ namespace AscEmu::Packets
             packet >> min_level;
             packet >> max_level;
 
-            uint8_t playerNameLen = packet.readBits(6);
-            uint8_t guildNameLen  = packet.readBits(6);
+            uint8_t playerNameLen = static_cast<uint8_t>(packet.readBits(6));
+            uint8_t guildNameLen = static_cast<uint8_t>(packet.readBits(6));
 
             packet >> race_mask;
             packet >> class_mask;
@@ -125,16 +125,16 @@ namespace AscEmu::Packets
                 name_count = 4;
 
             for (uint32_t i = 0; i < zone_count; ++i)
-               packet >> zones[i];
+                packet >> zones[i];
 
             for (uint32_t i = 0; i < name_count; ++i)
             {
-                uint8_t len = packet.readBits(6);
+                uint8_t len = static_cast<uint8_t>(packet.readBits(6));
                 names[i] = packet.ReadString(len);
             }
 
             player_name = packet.ReadString(playerNameLen);
-            guild_name  = packet.ReadString(guildNameLen);
+            guild_name = packet.ReadString(guildNameLen);
 #endif
             return true;
         }

@@ -46,7 +46,6 @@ namespace AscEmu::Packets
             guid.init(unpackedGuid);
 #else
 
-            WoWGuid guid;
             guid[2] = packet.readBit();
             guid[4] = packet.readBit();
             guid[0] = packet.readBit();

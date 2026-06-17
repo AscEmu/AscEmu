@@ -77,7 +77,6 @@ void MySQLDataStore::loadAdditionalTableConfig()
                             {
                                 Field* fields = result->fetch();
 
-                                uint32_t count = fields[0].asUint32();
                                 if (fields[0].asUint32())
                                     myTable.tableVector.push_back(additional_table);
                                 else

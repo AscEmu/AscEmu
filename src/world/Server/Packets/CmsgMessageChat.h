@@ -108,7 +108,7 @@ namespace AscEmu::Packets
             }
 #else
 #if VERSION_STRING == Cata
-            type = getMessageTypeForOpcode(sOpcodeTables.getInternalIdForHex(packet.GetOpcode()));
+            type = getMessageTypeForOpcode(static_cast<uint16_t>(sOpcodeTables.getInternalIdForHex(packet.GetOpcode())));
             if (type == 0xFF)
                 return false;
 
@@ -174,7 +174,7 @@ namespace AscEmu::Packets
             }
 #else // Mop
 
-            type = getMessageTypeForOpcode(sOpcodeTables.getInternalIdForHex(packet.GetOpcode()));
+            type = getMessageTypeForOpcode(static_cast<uint16_t>(sOpcodeTables.getInternalIdForHex(packet.GetOpcode())));
             if (type == 0xFF)
                 return false;
 

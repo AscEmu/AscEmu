@@ -2538,7 +2538,7 @@ void QuestMgr::LoadExtraQuestStuff()
             quest = data[1].asUint32();
 
             if (auto qst = sMySQLStore.getQuestProperties(quest))
-                addCreatureQuest(entry, qst, 2);  // 2 = finisher
+                addCreatureQuest(entry, qst, 2); // 2 = finisher
             else
                 sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add finisher to npc {} for non-existent quest {} in table creature_quest_finisher.", entry, quest);
 
@@ -2555,11 +2555,11 @@ void QuestMgr::LoadExtraQuestStuff()
             quest = data[1].asUint32();
 
             if (auto qst = sMySQLStore.getQuestProperties(quest))
-                addGameObjectQuest(entry, qst, 1);  // 1 = starter
+                addGameObjectQuest(entry, qst, 1); // 1 = starter
             else
                 sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add starter to go {} for non-existent quest {} in table gameobject_quest_starter.", entry, quest);
 
-        } while (pResult->nextRow());
+        } while (pResult->NextRow());
     }
 
     pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM gameobject_quest_finisher WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
@@ -2571,9 +2571,8 @@ void QuestMgr::LoadExtraQuestStuff()
             entry = data[0].asUint32();
             quest = data[1].asUint32();
 
-            auto qst = sMySQLStore.getQuestProperties(quest);
             if (auto qst = sMySQLStore.getQuestProperties(quest))
-                addGameObjectQuest(entry, qst, 2);  // 2 = finish
+                addGameObjectQuest(entry, qst, 2); // 2 = finish
             else
                 sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add finisher to go {} for non-existent quest {} in table gameobject_quest_finisher.", entry, quest);
 

@@ -526,7 +526,7 @@ bool ChatCommandHandler::HandleModifyDynamicflags(const char* args, WorldSession
 
     sendModifySystemMessage(session, unitTarget, "dynamicflags", value, oldDynamicFlags);
 
-    unitTarget->setDynamicFlags(value);
+    unitTarget->setDynamicFlags(static_cast<uint16_t>(value));
 
     return false;
 }

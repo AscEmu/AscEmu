@@ -206,7 +206,7 @@ void WorldSession::handleSetGuildBankText(WorldPacket& recvPacket)
         return;
 
     if (Guild* guild = _player->getGuild())
-        guild->setBankTabText(srlPacket.tabId, srlPacket.text);
+        guild->setBankTabText(static_cast<uint8_t>(srlPacket.tabId), srlPacket.text);
 }
 
 void WorldSession::handleGuildLeader(WorldPacket& recvPacket)
@@ -316,7 +316,7 @@ void WorldSession::handleGuildDemote(WorldPacket& recvPacket)
 }
 
 
-void WorldSession::handleGuildSetPublicNote(WorldPacket& recvPacket)
+void WorldSession::handleGuildSetPublicNote([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING < Cata
     CmsgGuildSetPublicNote srlPacket;
@@ -332,7 +332,7 @@ void WorldSession::handleGuildSetPublicNote(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGuildSetOfficerNote(WorldPacket& recvPacket)
+void WorldSession::handleGuildSetOfficerNote([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING < Cata
     CmsgGuildSetOfficerNote srlPacket;
@@ -348,7 +348,7 @@ void WorldSession::handleGuildSetOfficerNote(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGuildSetNoteOpcode(WorldPacket& recvPacket)
+void WorldSession::handleGuildSetNoteOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     CmsgGuildSetNote srlPacket;
@@ -360,7 +360,7 @@ void WorldSession::handleGuildSetNoteOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGuildDelRank(WorldPacket& recvPacket)
+void WorldSession::handleGuildDelRank([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING < Cata
     if (Guild* guild = _player->getGuild())
@@ -428,7 +428,7 @@ void WorldSession::handleGuildBankSwapItems(WorldPacket& recvPacket)
 }
 
 
-void WorldSession::handleGuildBankQueryText(WorldPacket& recvPacket)
+void WorldSession::handleGuildBankQueryText([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING < Cata
     MsgQueryGuildBankText srlPacket;
@@ -440,7 +440,7 @@ void WorldSession::handleGuildBankQueryText(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleQueryGuildBankTabText(WorldPacket& recvPacket)
+void WorldSession::handleQueryGuildBankTabText([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     CmsgGuildBankQueryText srlPacket;
@@ -940,7 +940,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::handleGuildAssignRankOpcode(WorldPacket& recvPacket)
+void WorldSession::handleGuildAssignRankOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     WoWGuid targetGuid;
@@ -1005,7 +1005,7 @@ void WorldSession::handleGuildAssignRankOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGuildQueryRanksOpcode(WorldPacket& recvPacket)
+void WorldSession::handleGuildQueryRanksOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     WoWGuid guildGuid;
@@ -1046,7 +1046,7 @@ void WorldSession::handleGuildRequestChallengeUpdate(WorldPacket& /*recvPacket*/
 #endif
 }
 
-void WorldSession::handleGuildQueryXPOpcode(WorldPacket& recvPacket)
+void WorldSession::handleGuildQueryXPOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     WoWGuid guildGuid;
@@ -1081,7 +1081,7 @@ void WorldSession::handleGuildQueryXPOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGuildRequestPartyState(WorldPacket& recvPacket)
+void WorldSession::handleGuildRequestPartyState([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     WoWGuid guildGuid;
@@ -1111,7 +1111,7 @@ void WorldSession::handleGuildRequestPartyState(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGuildRequestMaxDailyXP(WorldPacket& recvPacket)
+void WorldSession::handleGuildRequestMaxDailyXP([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     WoWGuid guid;
@@ -1148,7 +1148,7 @@ void WorldSession::handleGuildRequestMaxDailyXP(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleAutoDeclineGuildInvites(WorldPacket& recvPacket)
+void WorldSession::handleAutoDeclineGuildInvites([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     uint8_t enable;
@@ -1163,7 +1163,7 @@ void WorldSession::handleAutoDeclineGuildInvites(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGuildRewardsQueryOpcode(WorldPacket& recvPacket)
+void WorldSession::handleGuildRewardsQueryOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     recvPacket.read_skip<uint32_t>();
@@ -1192,7 +1192,7 @@ void WorldSession::handleGuildRewardsQueryOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGuildQueryNewsOpcode(WorldPacket& recvPacket)
+void WorldSession::handleGuildQueryNewsOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     recvPacket.read_skip<uint32_t>();
@@ -1202,7 +1202,7 @@ void WorldSession::handleGuildQueryNewsOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGuildNewsUpdateStickyOpcode(WorldPacket& recvPacket)
+void WorldSession::handleGuildNewsUpdateStickyOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     uint32_t newsId;
@@ -1235,7 +1235,7 @@ void WorldSession::handleGuildNewsUpdateStickyOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGuildSetGuildMaster(WorldPacket& recvPacket)
+void WorldSession::handleGuildSetGuildMaster([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     const auto nameLength = static_cast<uint8_t>(recvPacket.readBits(7));
@@ -1251,7 +1251,7 @@ void WorldSession::handleGuildSetGuildMaster(WorldPacket& recvPacket)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // GuildFinder
-void WorldSession::handleGuildFinderAddRecruit(WorldPacket& recvPacket)
+void WorldSession::handleGuildFinderAddRecruit([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     if (sGuildFinderMgr.getAllMembershipRequestsForPlayer(_player->getGuidLow()).size() == 10)
@@ -1311,7 +1311,7 @@ void WorldSession::handleGuildFinderAddRecruit(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGuildFinderBrowse(WorldPacket& recvPacket)
+void WorldSession::handleGuildFinderBrowse([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     uint32_t classRoles = 0;
@@ -1423,7 +1423,7 @@ void WorldSession::handleGuildFinderBrowse(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGuildFinderDeclineRecruit(WorldPacket& recvPacket)
+void WorldSession::handleGuildFinderDeclineRecruit([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     WoWGuid playerGuid;
@@ -1523,7 +1523,7 @@ void WorldSession::handleGuildFinderGetApplications(WorldPacket& /*recvPacket*/)
 #endif
 }
 
-void WorldSession::handleGuildFinderGetRecruits(WorldPacket& recvPacket)
+void WorldSession::handleGuildFinderGetRecruits([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     uint32_t unkTime = 0;
@@ -1642,7 +1642,7 @@ void WorldSession::handleGuildFinderPostRequest(WorldPacket& /*recvPacket*/)
 #endif
 }
 
-void WorldSession::handleGuildFinderRemoveRecruit(WorldPacket& recvPacket)
+void WorldSession::handleGuildFinderRemoveRecruit([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     WoWGuid guildGuid;
@@ -1669,7 +1669,7 @@ void WorldSession::handleGuildFinderRemoveRecruit(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGuildFinderSetGuildPost(WorldPacket& recvPacket)
+void WorldSession::handleGuildFinderSetGuildPost([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     uint32_t classRoles = 0;

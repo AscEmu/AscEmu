@@ -76,7 +76,7 @@ namespace AscEmu::Packets
 #else // Mop
 
             uint32_t targetStringLength = 0;
-            
+
             WoWGuid targetGuid = 0;
             WoWGuid itemTargetGuid = 0;
             WoWGuid destTransGuid = 0;
@@ -100,7 +100,7 @@ namespace AscEmu::Packets
             hasDestLocation = packet.readBit();
 
             bool hasSpellId = !packet.readBit();
-            uint8_t researchCount = packet.readBits(2);
+            uint8_t researchCount = static_cast<uint8_t>(packet.readBits(2));
             bool hasTargetFlags = !packet.readBit();
             bool hasMissileSpeed = !packet.readBit();
 
@@ -183,7 +183,7 @@ namespace AscEmu::Packets
                 bool hasMovementFlags2 = !packet.readBit();
 
                 if (hasMovementFlags2)
-                    movementInfo.flags2 = packet.readBits(13);
+                    movementInfo.flags2 = static_cast<uint16_t>(packet.readBits(13));
             }
 
             itemTargetGuid[1] = packet.readBit();
@@ -211,7 +211,7 @@ namespace AscEmu::Packets
                 targets.setTargetMask(packet.readBits(20));
 
             if (hasCastFlags)
-                castFlags = packet.readBits(5);
+                castFlags = static_cast<uint8_t>(packet.readBits(5));
 
             if (hasTargetString)
                 targetStringLength = packet.readBits(7);

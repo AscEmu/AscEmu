@@ -247,12 +247,12 @@ void WorldSocket::UpdateQueuedPackets()
 
             // kill everything in the buffer
             default:
-            {
-                while (auto pck = _queue.tryPop())
                 {
+                    while (auto remainingPacket = _queue.tryPop())
+                    {
+                    }
+                    return;
                 }
-                return;
-            }
         }
     }
 }
@@ -364,7 +364,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     }*/
 
     // Packet logger :)
-    sWorldPacketLog.logPacket(static_cast<uint32_t>(len), opcode, static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
+    sWorldPacketLog.logPacket(static_cast<uint32_t>(len), static_cast<uint16_t>(opcode), static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
 
     if (_crypt.isInitialized())
     {
@@ -947,7 +947,7 @@ void WorldSocket::onRead()
             readBuffer.Read(packet->contents(), mRemaining);
         }
 
-        sWorldPacketLog.logPacket(mSize, mOpcode, mSize ? packet->contents() : nullptr, 0, (mSession ? mSession->GetAccountId() : 0));
+        sWorldPacketLog.logPacket(mSize, static_cast<uint16_t>(mOpcode), mSize ? packet->contents() : nullptr, 0, (mSession ? mSession->GetAccountId() : 0));
 
         mRemaining = mSize = 0;
 
@@ -993,7 +993,7 @@ bool WorldSocket::processHeader()
     _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&clientPktHeader), sizeof(ClientPktHeader));
 
     mRemaining = mSize = clientPktHeader.size -= 4;
-    mOpcode = sOpcodeTables.getInternalIdForHex(clientPktHeader.cmd);
+    mOpcode = sOpcodeTables.getInternalIdForHex(static_cast<uint16_t>(clientPktHeader.cmd));
     return true;
 #else
     if (readBuffer.GetSize() < 6) return false;
@@ -1008,7 +1008,7 @@ bool WorldSocket::processHeader()
 #endif
 
     mRemaining = mSize = ntohs(header.size) - 4;
-    mOpcode = sOpcodeTables.getInternalIdForHex(header.cmd);
+    mOpcode = sOpcodeTables.getInternalIdForHex(static_cast<uint16_t>(header.cmd));
     return true;
 #endif
 }

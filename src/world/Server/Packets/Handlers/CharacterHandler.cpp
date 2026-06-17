@@ -106,7 +106,7 @@ void WorldSession::handleCharDeleteOpcode(WorldPacket& recvPacket)
 
 
 // \todo port player to a main city of his new faction
-void WorldSession::handleCharFactionOrRaceChange(WorldPacket& recvPacket)
+void WorldSession::handleCharFactionOrRaceChange([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgCharFactionChange srlPacket;
@@ -513,7 +513,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     sLogonCommHandler.updateAccountCount(GetAccountId(), 1);
 }
 
-void WorldSession::handleCharCustomizeLooksOpcode(WorldPacket& recvPacket)
+void WorldSession::handleCharCustomizeLooksOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgCharCustomize srlPacket;
@@ -914,9 +914,8 @@ void WorldSession::characterEnumProc(QueryResult* result)
 #if VERSION_STRING == Cata
                                     if (enchslot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
                                     {
-                                        const auto itemProperties = sMySQLStore.getItemProperties(enchant_id);
-                                        if (itemProperties)
-                                            charEnum.player_items[item_slot].displayId = itemProperties->DisplayInfoID;
+                                        if (const auto properties = sMySQLStore.getItemProperties(enchant_id))
+                                            charEnum.player_items[item_slot].displayId = properties->DisplayInfoID;
                                     }
 #endif
                                     // Only Display Perm Enchants on Weapons

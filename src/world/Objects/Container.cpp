@@ -36,7 +36,7 @@ Container::~Container()
 
 void Container::create(uint32_t itemid, Player* owner)
 {
-    if (m_itemProperties = sMySQLStore.getItemProperties(itemid))
+    if ((m_itemProperties = sMySQLStore.getItemProperties(itemid)))
     {
         setEntry(itemid);
 
@@ -66,7 +66,7 @@ void Container::loadFromDB(Field* fields)
 {
     uint32_t itemId = fields[2].asUint32();
 
-    if (m_itemProperties = sMySQLStore.getItemProperties(itemId))
+    if ((m_itemProperties = sMySQLStore.getItemProperties(itemId)))
     {
         setEntry(itemId);
 

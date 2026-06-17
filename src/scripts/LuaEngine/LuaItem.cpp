@@ -438,7 +438,7 @@ int LuaItem::Remove(lua_State* /*L*/, Item* ptr)
     return 0;
 }
 
-int LuaItem::Create(lua_State* L, Item* /*ptr*/)
+int LuaItem::Create(lua_State* /*L*/, Item* /*ptr*/)
 {
     // TODO: possibly needs rewrite of LuaEngine to handle unique_ptr<T> -Appled
 

@@ -202,18 +202,17 @@ bool ChatCommandHandler::HandleLookupAchievementCommand([[maybe_unused]]const ch
         j = sAchievementCriteriaStore.getNumRows();
         for (i = 0; i < j && numFound < 25; ++i)
         {
-            auto criteria = sAchievementCriteriaStore.lookupEntry(i);
-            if (criteria)
+            if (auto criteriaEntry = sAchievementCriteriaStore.lookupEntry(i))
             {
-                if (foundList.find(criteria->ID) != foundList.end())
+                if (foundList.find(criteriaEntry->ID) != foundList.end())
                 {
                     // already listed this achievement (some achievements have multiple entries in dbc)
                     continue;
                 }
 #if VERSION_STRING < Cata
-                y = std::string(criteria->name[sWorld.getDbcLocaleLanguageId()]);
+                y = std::string(criteriaEntry->name[sWorld.getDbcLocaleLanguageId()]);
 #else
-                y = std::string(criteria->name[0]);
+                y = std::string(criteriaEntry->name[0]);
 #endif
                 AscEmu::Util::Strings::toLowerCase(y);
                 if (AscEmu::Util::Strings::contains(x, y) == false)
@@ -221,20 +220,19 @@ bool ChatCommandHandler::HandleLookupAchievementCommand([[maybe_unused]]const ch
                     continue;
                 }
 
-                foundList.insert(criteria->ID);
+                foundList.insert(criteriaEntry->ID);
                 std::stringstream strm;
-                strm << criteria->ID;
+                strm << criteriaEntry->ID;
                 recout = "|cffffffffCriteria ";
                 recout += strm.str();
                 recout += ": |cfffff000";
 #if VERSION_STRING < Cata
-                recout += criteria->name[sWorld.getDbcLocaleLanguageId()];
+                recout += criteriaEntry->name[sWorld.getDbcLocaleLanguageId()];
 #else
-                recout += criteria->name[0];
+                recout += criteriaEntry->name[0];
 #endif
                 strm.str("");
-                auto achievement = sAchievementStore.lookupEntry(criteria->referredAchievement);
-                if (achievement)
+                if (auto achievement = sAchievementStore.lookupEntry(criteriaEntry->referredAchievement))
                 {
                     // create achievement link
                     recout += " |cffffffffAchievement ";

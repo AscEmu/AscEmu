@@ -44,7 +44,7 @@ namespace AscEmu::Packets
             return false;
         }
 
-        bool internalDeserialise(WorldPacket& packet) override
+        bool internalDeserialise([[maybe_unused]] WorldPacket& packet) override
         {
 #if VERSION_STRING <= WotLK
             packet >> guid >> bgType >> instanceId >> asGroup;

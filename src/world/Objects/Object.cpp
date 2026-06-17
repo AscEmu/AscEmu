@@ -3334,14 +3334,13 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     bool hasFallData = false;
     bool hasFallDirection = false;
     bool hasElevation = false;
-    bool hasOrientation = !IsType(TYPE_ITEM);
+    [[maybe_unused]] bool hasOrientation = !IsType(TYPE_ITEM);
     bool hasTimeStamp = false;
     bool hasTransportTime2 = false;
     bool hasTransportTime3 = false;
 
     if (IsType(TYPE_UNIT))
     {
-        Unit* unit = (Unit*)this;
         hasTransport = !obj_movement_info.transport_guid.isEmpty();
         isSplineEnabled = false; // unit->IsSplineEnabled();
 

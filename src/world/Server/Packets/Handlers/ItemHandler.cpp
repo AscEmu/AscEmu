@@ -526,7 +526,7 @@ void WorldSession::sendRefundInfo(uint64_t GUID)
 }
 
 // todo : Check for MOP
-void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
+void WorldSession::handleTransmogrifyItems([[maybe_unused]] WorldPacket& recvData)
 {
 #if VERSION_STRING == Cata
     sLogger.debug("Received CMSG_TRANSMOGRIFY_ITEMS");
@@ -643,7 +643,7 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
         }
 
         // transmogrified item
-        Item* itemTransmogrified = player->getItemInterface()->GetInventoryItem(slots[i]);
+        Item* itemTransmogrified = player->getItemInterface()->GetInventoryItem(static_cast<int16_t>(slots[i]));
         if (!itemTransmogrified)
         {
             sLogger.debug("handleTransmogrifyItems - Player (GUID: {}, name: {}) tried to transmogrify an invalid item in a valid slot (slot: {}).", player->getGuidLow(), player->getName(), slots[i]);
@@ -685,7 +685,7 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
 #endif
 }
 
-void WorldSession::handleReforgeItemOpcode(WorldPacket& recvData)
+void WorldSession::handleReforgeItemOpcode([[maybe_unused]] WorldPacket& recvData)
 {
 #if VERSION_STRING == Cata
     uint32_t slot, reforgeEntry;
@@ -729,7 +729,7 @@ void WorldSession::handleReforgeItemOpcode(WorldPacket& recvData)
         return;
     }
 
-    Item* item = player->getItemInterface()->GetInventoryItem(bag, slot);
+    Item* item = player->getItemInterface()->GetInventoryItem(static_cast<int8_t>(bag), static_cast<int16_t>(slot));
 
     if (!item)
     {
@@ -745,7 +745,7 @@ void WorldSession::handleReforgeItemOpcode(WorldPacket& recvData)
         sendReforgeResult(true);
         return;
     }
-    
+
     WDB::Structures::ItemReforgeEntry const* stats = sItemReforgeStore.lookupEntry(reforgeEntry);
     if (!stats)
     {
@@ -774,7 +774,7 @@ void WorldSession::handleReforgeItemOpcode(WorldPacket& recvData)
 #endif
 }
 
-void WorldSession::sendReforgeResult(bool success)
+void WorldSession::sendReforgeResult([[maybe_unused]] bool success)
 {
 #if VERSION_STRING == Cata
     WorldPacket data(SMSG_REFORGE_RESULT, 1);
@@ -1814,7 +1814,7 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
         }
 
         // Check for gold
-        uint32_t cost = _player->getBuybackPriceSlot(srlPacket.buybackSlot);
+        uint32_t cost = _player->getBuybackPriceSlot(static_cast<uint8_t>(srlPacket.buybackSlot));
         if (!_player->hasEnoughCoinage(cost))
         {
             sendBuyFailed(srlPacket.buybackSlot, itemid, 2);
@@ -1832,11 +1832,11 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
 
         int32_t coins = cost * -1;
         _player->modCoinage(coins);
-        auto itemHolder = _player->getItemInterface()->RemoveBuyBackItem(srlPacket.buybackSlot);
+        auto itemHolder = _player->getItemInterface()->RemoveBuyBackItem(static_cast<uint8_t>(srlPacket.buybackSlot));
 
         if (!add)
         {
-            it->m_isDirty = true;            // save the item again on logout
+            it->m_isDirty = true; // save the item again on logout
             const auto [result, _] = _player->getItemInterface()->AddItemToFreeSlot(std::move(itemHolder));
             if (!result)
             {

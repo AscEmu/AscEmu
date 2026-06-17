@@ -222,14 +222,14 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// hack detected?
-    if (isHackDetectedInMovementData(opcode))
+    if (isHackDetectedInMovementData(static_cast<uint16_t>(opcode)))
     {
         return;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Lets update our internal save vars
-    updatePlayerMovementVars(opcode);
+    updatePlayerMovementVars(static_cast<uint16_t>(opcode));
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Remove emote state if available
@@ -427,7 +427,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
 #elif VERSION_STRING == WotLK
 
-    WorldPacket data(opcode, recvData.size());
+    WorldPacket data(static_cast<uint16_t>(opcode), recvData.size());
     data << sessionMovementInfo;
     mover->sendMessageToSet(&data, _player);
 

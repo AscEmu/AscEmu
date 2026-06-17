@@ -42,7 +42,7 @@ void JaraxxusAI::InitOrReset()
     }
 }
 
-void JaraxxusAI::OnCombatStart(Unit* _target)
+void JaraxxusAI::OnCombatStart(Unit* /*_target*/)
 {
     getInstanceScript()->sendUnitEncounter(EncounterFrameEngage, getCreature());
 
@@ -134,7 +134,7 @@ void JaraxxusAI::OnCastSpell(uint32_t spellId)
 {
     if (spellId == jaraxxus::SPELL_NETHER_POWER)
         if (Aura* aura = getCreature()->getAuraWithId(jaraxxus::SPELL_NETHER_POWER))
-            aura->refreshOrModifyStack(false, getRaidModeValue(5, 10, 5, 10));
+            aura->refreshOrModifyStack(false, static_cast<uint16_t>(getRaidModeValue(5, 10, 5, 10)));
 }
 
 void JaraxxusAI::DoAction(int32_t action)
@@ -167,19 +167,19 @@ void JaraxxusAI::OnReachWP(uint32_t type, uint32_t id)
     }
 }
 
-void JaraxxusAI::intro(CreatureAIFunc pThis)
+void JaraxxusAI::intro(CreatureAIFunc /*pThis*/)
 {
     castSpellOnSelf(jaraxxus::SPELL_LORD_JARAXXUS_HITTIN_YA, true);
     moveAlongSplineChain(jaraxxus::POINT_SUMMONED, SPLINE_INITIAL_MOVEMENT, true);
 }
 
-void JaraxxusAI::taunt(CreatureAIFunc pThis)
+void JaraxxusAI::taunt(CreatureAIFunc /*pThis*/)
 {
     addMessage(Message(jaraxxus::SAY_INTRO), DoOnceScheduler());
     addAIFunction(&JaraxxusAI::killGnome, DoOnceScheduler(9s));
 }
 
-void JaraxxusAI::killGnome(CreatureAIFunc pThis)
+void JaraxxusAI::killGnome(CreatureAIFunc /*pThis*/)
 {
     if (Creature* wilfred = getInstanceScript()->getCreatureFromData(DATA_FIZZLEBANG))
         castSpell(wilfred, jaraxxus::SPELL_FEL_LIGHTNING_INTRO);
@@ -187,13 +187,13 @@ void JaraxxusAI::killGnome(CreatureAIFunc pThis)
     addAIFunction(&JaraxxusAI::faceto, DoOnceScheduler(3s));
 }
 
-void JaraxxusAI::faceto(CreatureAIFunc pThis)
+void JaraxxusAI::faceto(CreatureAIFunc /*pThis*/)
 {
     getCreature()->setFacingTo(4.729842f);
     addAIFunction(&JaraxxusAI::startCombat, DoOnceScheduler(7s));
 }
 
-void JaraxxusAI::startCombat(CreatureAIFunc pThis)
+void JaraxxusAI::startCombat(CreatureAIFunc /*pThis*/)
 {
     setIgnorePlayerCombat(false);
     setReactState(REACT_AGGRESSIVE);
@@ -253,12 +253,12 @@ void FrizzlebangAI::OnHitBySpell(uint32_t spellId, Unit* caster)
         getCreature()->die(caster, getCreature()->getHealth(), spellId);
 }
 
-void FrizzlebangAI::startMove(CreatureAIFunc pThis)
+void FrizzlebangAI::startMove(CreatureAIFunc /*pThis*/)
 {
     moveAlongSplineChain(POINT_SUMMON, SPLINE_INITIAL_MOVEMENT, true);
 }
 
-void FrizzlebangAI::oblivion(CreatureAIFunc pThis)
+void FrizzlebangAI::oblivion(CreatureAIFunc /*pThis*/)
 {
     Creature* portal = summonCreature(NPC_WILFRED_PORTAL, PortalTargetSpawnPosition);
     Creature* ground = summonCreature(NPC_PURPLE_GROUND, PurpleGroundSpawnPosition, CreatureSummonDespawnType::TIMED_DESPAWN, 16 * TimeVarsMs::Second);
@@ -269,7 +269,7 @@ void FrizzlebangAI::oblivion(CreatureAIFunc pThis)
     addAIFunction(&FrizzlebangAI::summonJaraxus, DoOnceScheduler(11s));
 }
 
-void FrizzlebangAI::summonJaraxus(CreatureAIFunc pThis)
+void FrizzlebangAI::summonJaraxus(CreatureAIFunc /*pThis*/)
 {
     if (Creature* fordring = getInstanceScript()->getCreatureFromData(DATA_FORDRING))
         fordring->GetScript()->DoAction(ACTION_SUMMON_JARAXXUS);
@@ -282,7 +282,7 @@ void FrizzlebangAI::summonJaraxus(CreatureAIFunc pThis)
     addAIFunction(&FrizzlebangAI::setTarget, DoOnceScheduler(4s));
 }
 
-void FrizzlebangAI::setTarget(CreatureAIFunc pThis)
+void FrizzlebangAI::setTarget(CreatureAIFunc /*pThis*/)
 {
     if (Creature* jaraxxus = getInstanceScript()->getCreatureFromData(DATA_JARAXXUS))
         getCreature()->setFacingToObject(jaraxxus);
@@ -291,7 +291,7 @@ void FrizzlebangAI::setTarget(CreatureAIFunc pThis)
     addAIFunction(&FrizzlebangAI::lastTalk, DoOnceScheduler(9s));
 }
 
-void FrizzlebangAI::lastTalk(CreatureAIFunc pThis)
+void FrizzlebangAI::lastTalk(CreatureAIFunc /*pThis*/)
 {
     addMessage(Message(WILFRED_SAY_DEAD), DoOnceScheduler());
 
@@ -323,7 +323,7 @@ void PortalAI::OnHitBySpell(uint32_t _spellId, Unit* /*_caster*/)
     }
 }
 
-void PortalAI::portalOpening(CreatureAIFunc pThis)
+void PortalAI::portalOpening(CreatureAIFunc /*pThis*/)
 {
     castSpellOnSelf(SPELL_WILFRED_PORTAL);
     despawn(9000);

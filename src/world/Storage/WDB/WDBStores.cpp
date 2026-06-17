@@ -722,7 +722,7 @@ WDB::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t r
 
 WDB::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty)
 {
-    MapDifficultyMap::const_iterator itr = sMapDifficultyMap.find(Util::MAKE_PAIR32(mapId, difficulty));
+    MapDifficultyMap::const_iterator itr = sMapDifficultyMap.find(Util::MAKE_PAIR32(static_cast<uint16_t>(mapId), difficulty));
     return itr != sMapDifficultyMap.end() ? &itr->second : nullptr;
 }
 

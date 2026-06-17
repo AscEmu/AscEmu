@@ -3,6 +3,8 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include <algorithm>
+
 #include "Setup.h"
 #include "Management/ItemInterface.h"
 #include "Objects/Item.hpp"
@@ -147,15 +149,14 @@ public:
         return SpellScriptExecuteState::EXECUTE_OK;
     }
 
-    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t /*effIndex*/, int32_t* damage) override
+    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t /*effIndex*/, int32_t* effectDamage) override
     {
         if (spell->getUnitCaster() == nullptr)
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
         // Damage cannot exceed 50% of paladin's health
         const int32_t maxDmg = spell->getUnitCaster()->getMaxHealth() / 2;
-        if (*damage > maxDmg)
-            *damage = maxDmg;
+        *effectDamage = std::min(*effectDamage, maxDmg);
 
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }

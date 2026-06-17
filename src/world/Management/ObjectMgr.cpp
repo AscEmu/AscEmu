@@ -2147,7 +2147,7 @@ TimedEmoteList* ObjectMgr::getTimedEmoteList(uint32_t _spawnId) const
     if (timedEmotesPair != m_timedEmotes.end())
         return timedEmotesPair->second.get();
 
-     return nullptr;
+    return nullptr;
 }
 
 void ObjectMgr::generateLevelUpInfo()
@@ -2176,21 +2176,21 @@ void ObjectMgr::generateLevelUpInfo()
                 if (sMySQLStore.getPlayerLevelstats(1, currentRace, currentClass))
                 {
                     sLogger.info("ObjectMgr : Invalid class/race combination (Class: {}, Race: {}), but level 1 values exist in DB!",
-                        static_cast<uint32_t>(playerClass),
-                        static_cast<uint32_t>(playerRace));
+                                 static_cast<uint32_t>(playerClass),
+                                 static_cast<uint32_t>(playerRace));
                 }
                 continue;
             }
 
-            const auto [lvlMapItr, _] = m_levelInfo.insert_or_assign(std::make_pair(playerRace, playerClass), std::make_unique<LevelMap>());
+            const auto [lvlMapItr, mapInserted] = m_levelInfo.insert_or_assign(std::make_pair(playerRace, playerClass), std::make_unique<LevelMap>());
             auto* levelMap = lvlMapItr->second.get();
 
             for (uint32_t level = 1; level <= worldConfig.player.playerLevelCap; ++level)
             {
-                const auto [lvlInfoItr, _] = levelMap->insert_or_assign(level, std::make_unique<LevelInfo>());
+                const auto [lvlInfoItr, infoInserted] = levelMap->insert_or_assign(level, std::make_unique<LevelInfo>());
                 auto* levelInfo = lvlInfoItr->second.get();
 
-                if (auto* playerClassLevelstats = sMySQLStore.getPlayerClassLevelStats(level, playerClass))
+                if (auto* playerClassLevelstats = sMySQLStore.getPlayerClassLevelStats(level, static_cast<uint8_t>(playerClass)))
                 {
                     levelInfo->HP = playerClassLevelstats->health;
                     levelInfo->Mana = playerClassLevelstats->mana;
@@ -2203,7 +2203,7 @@ void ObjectMgr::generateLevelUpInfo()
                     _missingHealthLevelData.push_back({ level, currentRace, currentClass });
                 }
 
-                if (auto* playerLevelstats = sMySQLStore.getPlayerLevelstats(level, playerRace, playerClass))
+                if (auto* playerLevelstats = sMySQLStore.getPlayerLevelstats(level, static_cast<uint8_t>(playerRace), static_cast<uint8_t>(playerClass)))
                 {
                     levelInfo->Stat[0] = playerLevelstats->strength;
                     levelInfo->Stat[1] = playerLevelstats->agility;
@@ -2372,7 +2372,7 @@ LevelInfo* ObjectMgr::getLevelInfo(uint32_t _race, uint32_t _class, uint32_t _le
 Pet* ObjectMgr::createPet(uint32_t _entry, WDB::Structures::SummonPropertiesEntry const* properties)
 {
     const uint32_t guid = ++m_hiPetGuid;
-    return new Pet(WoWGuid(guid, _entry, HIGHGUID_TYPE_PET), properties);
+    return new Pet(WoWGuid(guid, _entry, static_cast<uint32_t>(HIGHGUID_TYPE_PET)), properties);
 }
 
 void ObjectMgr::loadPetSpellCooldowns()

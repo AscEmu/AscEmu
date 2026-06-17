@@ -329,7 +329,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32_t id)
             break;
     }
 
-    if (plr->isDead())        // on ne buff pas les joueurs morts ;)
+    if (plr->isDead()) // on ne buff pas les joueurs morts ;)
         return;
 
     if (bonusid > -1)
@@ -359,7 +359,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32_t id)
         sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s will be removed from the game for cheating.", plr->getName().c_str());
         // Remove player from battleground.
         this->removePlayer(plr, false);
-        // Kick    player from server.
+        // Kick player from server.
         plr->kickFromServer(TimeVarsMs::Second * 6);
         return;
     }
@@ -377,7 +377,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32_t id)
         val = EOTS_BANNER_HORDE;
 
     if (!m_CPBanner[tid] || m_CPBanner[tid]->getEntry() != static_cast<uint32_t>(val))
-        return;            // not captured by our team
+        return; // not captured by our team
 
     for (uint8_t i = 0; i < EOTS_TOWER_COUNT; ++i)
     {
@@ -387,17 +387,17 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32_t id)
 
     /*
     Points from flag captures
-    * 1 towers controlled = 75 points
+    * 1 tower controlled = 75 points
     * 2 towers controlled = 85 points
     * 3 towers controlled = 100 points
     * 4 towers controlled = 500 points
     */
 
     // 25 is guessed
-    const static uint32_t points[5] = { 25, 75, 85, 100, 500 };
-    const char* msgs[2] = { "The Alliance have captured the flag.", "The Horde have captured the flag." };
+    const static uint32_t points[5] = {25, 75, 85, 100, 500};
+    const char* msgs[2] = {"The Alliance have captured the flag.", "The Horde have captured the flag."};
 
-    sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + team, 0, msgs[team]);
+    sendChatMessage(static_cast<uint8_t>(CHAT_MSG_BG_EVENT_ALLIANCE) + static_cast<uint8_t>(team), 0, msgs[team]);
     GivePoints(team, points[towers]);
 
     DropFlag2(plr, id);
@@ -434,7 +434,7 @@ void EyeOfTheStorm::HookFlagDrop(Player* plr, GameObject* /*obj*/)
 
     setWorldState(EOTS_NETHERWING_FLAG_READY, 0);
     playSoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
-    sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->getTeam(), plr->getGuid(), "%s has taken the flag!", plr->getName().c_str());
+    sendChatMessage(static_cast<uint8_t>(CHAT_MSG_BG_EVENT_ALLIANCE) + static_cast<uint8_t>(plr->getTeam()), plr->getGuid(), "%s has taken the flag!", plr->getName().c_str());
     m_flagHolder = plr->getGuidLow();
 
     event_RemoveEvents(EVENT_EOTS_RESET_FLAG);
@@ -454,7 +454,7 @@ bool EyeOfTheStorm::HookSlowLockOpen(GameObject* /*pGo*/, Player* pPlayer, Spell
 
     setWorldState(EOTS_NETHERWING_FLAG_READY, 0);
     playSoundToAll(pPlayer->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
-    sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + pPlayer->getTeam(), pPlayer->getGuid(), "%s has taken the flag!", pPlayer->getName().c_str());
+    sendChatMessage(static_cast<uint8_t>(CHAT_MSG_BG_EVENT_ALLIANCE) + static_cast<uint8_t>(pPlayer->getTeam()), pPlayer->getGuid(), "%s has taken the flag!", pPlayer->getName().c_str());
     m_flagHolder = pPlayer->getGuidLow();
     return true;
 }
@@ -537,7 +537,7 @@ void EyeOfTheStorm::HookOnFlagDrop(Player* plr)
     m_dropFlag->PushToWorld(m_mapMgr);
     m_flagHolder = 0;
     playSoundToAll(BattlegroundDef::FLAG_RETURNED);
-    sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->getTeam(), plr->getGuid(), "%s has dropped the flag!", plr->getName().c_str());
+    sendChatMessage(static_cast<uint8_t>(CHAT_MSG_BG_EVENT_ALLIANCE) + static_cast<uint8_t>(plr->getTeam()), plr->getGuid(), "%s has dropped the flag!", plr->getName().c_str());
 
     sEventMgr.AddEvent(this, &EyeOfTheStorm::EventResetFlag, EVENT_EOTS_RESET_FLAG, 10000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }

@@ -304,7 +304,7 @@ void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)
 #endif
 }
 
-void WorldSession::handleRequestRatedBgInfoOpcode(WorldPacket& recvPacket)
+void WorldSession::handleRequestRatedBgInfoOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
     CmsgRequestRatedBgInfo srlPacket;

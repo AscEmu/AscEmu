@@ -39,7 +39,7 @@ TheVioletHoldScript::TheVioletHoldScript(WorldMap* pMapMgr) : InstanceScript(pMa
     WaveCount = 0;
     EventState = EncounterStates::NotStarted;
 
-    LastPortalLocation = Util::getRandomUInt(0, EncouterPortalsCount - 1);
+    LastPortalLocation = static_cast<uint8_t>(Util::getRandomUInt(0, EncouterPortalsCount - 1));
 
     Defenseless = true;
 }
@@ -165,209 +165,208 @@ void TheVioletHoldScript::UpdateEvent()
         switch (eventId)
         {
             case EVENT_NEXT_WAVE:
-            {
-                // Update Wave Counter
-                getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_WAVE_COUNT, WaveCount);
-
-                switch (WaveCount)
                 {
-                    case 6:
-                    {
-                        if (FirstBossId == 0)
-                            FirstBossId = Util::getRandomUInt(DATA_MORAGG, DATA_ZURAMAT);
+                    // Update Wave Counter
+                    getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_WAVE_COUNT, WaveCount);
 
-                        if (Creature* sinclari = getCreatureFromData(DATA_SINCLARI))
-                        {
-                            sinclari->summonCreature(NPC_TELEPORTATION_PORTAL_INTRO, PortalIntroPositions[3], TIMED_DESPAWN, 3 * TimeVarsMs::Second);
-                            sinclari->summonCreature(NPC_SABOTEOUR, SaboteurSpawnLocation, DEAD_DESPAWN);
-                        }
-                    } break;
-                    case 12:
+                    switch (WaveCount)
                     {
-                        if (SecondBossId == 0)
-                            do
+                        case 6:
                             {
-                                SecondBossId = Util::getRandomUInt(DATA_MORAGG, DATA_ZURAMAT);
-                            } while (SecondBossId == FirstBossId);
-                            if (Creature* sinclari = getCreatureFromData(DATA_SINCLARI))
-                            {
-                                sinclari->summonCreature(NPC_TELEPORTATION_PORTAL_INTRO, PortalIntroPositions[3], TIMED_DESPAWN, 3 * TimeVarsMs::Second);
-                                sinclari->summonCreature(NPC_SABOTEOUR, SaboteurSpawnLocation, DEAD_DESPAWN);
-                            }
-                    } break;
-                    case 18:
-                    {
-                        if (Creature* sinclari = getCreatureFromData(DATA_SINCLARI))
-                        {
-                            sinclari->summonCreature(NPC_TELEPORTATION_PORTAL_INTRO, PortalIntroPositions[4], TIMED_DESPAWN, 6 * TimeVarsMs::Second);
-                            if (Creature* cyanigosa = sinclari->summonCreature(NPC_CYANIGOSA, CyanigosaSpawnLocation, DEAD_DESPAWN))
-                                cyanigosa->castSpell(cyanigosa, SPELL_CYANIGOSA_ARCANE_POWER_STATE, true);
+                                if (FirstBossId == 0)
+                                    FirstBossId = static_cast<uint8_t>(Util::getRandomUInt(DATA_MORAGG, DATA_ZURAMAT));
 
-                            startCyanigosaIntro();
-                        }
-                    } break;
-                    default:
-                        spawnPortal();
-                        break;
-                }
-            } break;
-            case EVENT_STATE_CHECK:
-            {
-                StateCheck();
-                scriptEvents.addEvent(EVENT_STATE_CHECK, 3 * TimeVarsMs::Second);
-            } break;
-            case EVENT_TIMER1:
-            {
-                uint32_t bossId = 0;
-
-                if (WaveCount == 6)
-                    bossId = FirstBossId;
-                else
-                    bossId = SecondBossId;
-
-                if (Creature* boss = getCreatureFromData(bossId))
-                {
-                    switch (bossId)
-                    {
-                        case DATA_MORAGG:
-                        {
-                            boss->PlaySoundToSet(SOUND_MORAGG_SPAWN);
-                            boss->castSpell(boss, SPELL_MORAGG_EMOTE_ROAR);
-                        } break;
-                        case DATA_EREKEM:
-                        {
-                            boss->GetScript()->sendDBChatMessage(SAY_EREKEM_SPAWN);
-                        } break;
-                        case DATA_ICHORON:
-                        {
-                            boss->GetScript()->sendDBChatMessage(SAY_ICHORON_SPAWN);
-                        } break;
-                        case DATA_LAVANTHOR:
-                        {
-                            boss->castSpell(boss, SPELL_LAVANTHOR_SPECIAL_UNARMED);
-                        } break;
-                        case DATA_XEVOZZ:
-                        {
-                            boss->GetScript()->sendDBChatMessage(SAY_XEVOZZ_SPAWN);
-                        } break;
-                        case DATA_ZURAMAT:
-                        {
-                            boss->castSpell(boss, SPELL_ZURAMAT_COSMETIC_CHANNEL_OMNI);
-                            boss->GetScript()->sendDBChatMessage(SAY_ZURAMAT_SPAWN);
-                        } break;
-                    }
-                }
-
-                scriptEvents.addEvent(EVENT_TIMER2, 5 * TimeVarsMs::Second);
-            } break;
-            case EVENT_TIMER2:
-            {
-                uint32_t bossId = 0;
-
-                if (WaveCount == 6)
-                    bossId = FirstBossId;
-                else
-                    bossId = SecondBossId;
-
-                if (Creature* boss = getCreatureFromData(bossId))
-                {
-                    switch (bossId)
-                    {
-                        case DATA_MORAGG:
-                        {
-                            boss->getMovementManager()->moveSmoothPath(POINT_INTRO, MoraggPath, MoraggPathSize, true);
-                        } break;
-                        case DATA_EREKEM:
-                        {
-                            boss->getMovementManager()->moveSmoothPath(POINT_INTRO, ErekemPath, ErekemPathSize, true);
-
-                            if (Creature* guard = GetCreatureByGuid(getLocalData(DATA_EREKEM_GUARD_1)))
-                                guard->getMovementManager()->moveSmoothPath(POINT_INTRO, ErekemGuardLeftPath, ErekemGuardLeftPathSize, true);
-                            if (Creature* guard = GetCreatureByGuid(getLocalData(DATA_EREKEM_GUARD_2)))
-                                guard->getMovementManager()->moveSmoothPath(POINT_INTRO, ErekemGuardRightPath, ErekemGuardRightPathSize, true);
-
-                        } break;
-                        case DATA_ICHORON:
-                        {
-                            boss->getMovementManager()->moveSmoothPath(POINT_INTRO, IchoronPath, IchoronPathSize, true);
-                        } break;
-                        case DATA_LAVANTHOR:
-                        {
-                            boss->getMovementManager()->moveSmoothPath(POINT_INTRO, LavanthorPath, LavanthorPathSize, true);
-                        } break;
-                        case DATA_XEVOZZ:
-                        {
-                            boss->emote(EMOTE_ONESHOT_TALK_NOSHEATHE);
-                        } break;
-                        case DATA_ZURAMAT:
-                        {
-                            boss->getMovementManager()->moveSmoothPath(POINT_INTRO, ZuramatPath, ZuramatPathSize, true);
-                        } break;
-                    }
-                }
-
-                scriptEvents.addEvent(EVENT_TIMER3, 8 * TimeVarsMs::Second);
-            } break;
-            case EVENT_TIMER3:
-            {
-                uint32_t bossId = 0;
-
-                if (WaveCount == 6)
-                    bossId = FirstBossId;
-                else
-                    bossId = SecondBossId;
-
-                if (Creature* boss = getCreatureFromData(bossId))
-                {
-                    boss->getAIInterface()->setIgnoreCreatureCombat(false);
-                    boss->getAIInterface()->setIgnorePlayerCombat(false);
-                    boss->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
-
-                    switch (bossId)
-                    {
-                        case DATA_EREKEM:
-                        {
-                            boss->emote(EMOTE_ONESHOT_ROAR);
-
-                            for (uint32_t i = DATA_EREKEM_GUARD_1; i <= DATA_EREKEM_GUARD_2; ++i)
-                            {
-                                if (Creature* guard = GetCreatureByGuid(getLocalData(i)))
+                                if (Creature* sinclari = getCreatureFromData(DATA_SINCLARI))
                                 {
-                                    guard->getAIInterface()->setIgnoreCreatureCombat(false);
-                                    guard->getAIInterface()->setIgnorePlayerCombat(false);
-                                    guard->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
+                                    sinclari->summonCreature(NPC_TELEPORTATION_PORTAL_INTRO, PortalIntroPositions[3], TIMED_DESPAWN, 3 * TimeVarsMs::Second);
+                                    sinclari->summonCreature(NPC_SABOTEOUR, SaboteurSpawnLocation, DEAD_DESPAWN);
                                 }
-                            }
-                        } break;
-                        case DATA_XEVOZZ:
-                        {
-                            boss->getMovementManager()->moveSmoothPath(POINT_INTRO, XevozzPath, XevozzPathSize, true);
-                        } break;
+                            } break;
+                        case 12:
+                            {
+                                if (SecondBossId == 0)
+                                    do
+                                    {
+                                        SecondBossId = static_cast<uint8_t>(Util::getRandomUInt(DATA_MORAGG, DATA_ZURAMAT));
+                                    } while (SecondBossId == FirstBossId);
+                                if (Creature* sinclari = getCreatureFromData(DATA_SINCLARI))
+                                {
+                                    sinclari->summonCreature(NPC_TELEPORTATION_PORTAL_INTRO, PortalIntroPositions[3], TIMED_DESPAWN, 3 * TimeVarsMs::Second);
+                                    sinclari->summonCreature(NPC_SABOTEOUR, SaboteurSpawnLocation, DEAD_DESPAWN);
+                                }
+                            } break;
+                        case 18:
+                            {
+                                if (Creature* sinclari = getCreatureFromData(DATA_SINCLARI))
+                                {
+                                    sinclari->summonCreature(NPC_TELEPORTATION_PORTAL_INTRO, PortalIntroPositions[4], TIMED_DESPAWN, 6 * TimeVarsMs::Second);
+                                    if (Creature* cyanigosa = sinclari->summonCreature(NPC_CYANIGOSA, CyanigosaSpawnLocation, DEAD_DESPAWN))
+                                        cyanigosa->castSpell(cyanigosa, SPELL_CYANIGOSA_ARCANE_POWER_STATE, true);
+
+                                    startCyanigosaIntro();
+                                }
+                            } break;
+                        default:
+                            spawnPortal();
+                            break;
                     }
-                }
-            } break;
-            case EVENT_CYANIGOSA_INTRO1:
-            {
-                if (Creature* cyanigosa = getCreatureFromData(DATA_CYANIGOSA))
-                    if (cyanigosa->GetScript())
-                        cyanigosa->GetScript()->sendDBChatMessage(SAY_CYANIGOSA_SPAWN);
-            } break;
-            case EVENT_CYANIGOSA_INTRO2:
-            {
-                if (Creature* cyanigosa = getCreatureFromData(DATA_CYANIGOSA))
-                    cyanigosa->getMovementManager()->moveJump(CyanigosaJumpLocation, 10.0f, 27.44744f);
-            } break;
-            case EVENT_CYANIGOSA_INTRO3:
-            {
-                if (Creature* cyanigosa = getCreatureFromData(DATA_CYANIGOSA))
+                } break;
+            case EVENT_STATE_CHECK:
                 {
-                    cyanigosa->removeAllAurasById(SPELL_CYANIGOSA_ARCANE_POWER_STATE);
-                    cyanigosa->castSpell(cyanigosa, SPELL_CYANIGOSA_TRANSFORM, true);
-                    cyanigosa->getAIInterface()->setIgnoreCreatureCombat(false);
-                    cyanigosa->getAIInterface()->setIgnorePlayerCombat(false);
-                    cyanigosa->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
-                }
-            } break;
+                    StateCheck();
+                    scriptEvents.addEvent(EVENT_STATE_CHECK, 3 * TimeVarsMs::Second);
+                } break;
+            case EVENT_TIMER1:
+                {
+                    uint32_t bossId = 0;
+
+                    if (WaveCount == 6)
+                        bossId = FirstBossId;
+                    else
+                        bossId = SecondBossId;
+
+                    if (Creature* boss = getCreatureFromData(bossId))
+                    {
+                        switch (bossId)
+                        {
+                            case DATA_MORAGG:
+                                {
+                                    boss->PlaySoundToSet(SOUND_MORAGG_SPAWN);
+                                    boss->castSpell(boss, SPELL_MORAGG_EMOTE_ROAR);
+                                } break;
+                            case DATA_EREKEM:
+                                {
+                                    boss->GetScript()->sendDBChatMessage(SAY_EREKEM_SPAWN);
+                                } break;
+                            case DATA_ICHORON:
+                                {
+                                    boss->GetScript()->sendDBChatMessage(SAY_ICHORON_SPAWN);
+                                } break;
+                            case DATA_LAVANTHOR:
+                                {
+                                    boss->castSpell(boss, SPELL_LAVANTHOR_SPECIAL_UNARMED);
+                                } break;
+                            case DATA_XEVOZZ:
+                                {
+                                    boss->GetScript()->sendDBChatMessage(SAY_XEVOZZ_SPAWN);
+                                } break;
+                            case DATA_ZURAMAT:
+                                {
+                                    boss->castSpell(boss, SPELL_ZURAMAT_COSMETIC_CHANNEL_OMNI);
+                                    boss->GetScript()->sendDBChatMessage(SAY_ZURAMAT_SPAWN);
+                                } break;
+                        }
+                    }
+
+                    scriptEvents.addEvent(EVENT_TIMER2, 5 * TimeVarsMs::Second);
+                } break;
+            case EVENT_TIMER2:
+                {
+                    uint32_t bossId = 0;
+
+                    if (WaveCount == 6)
+                        bossId = FirstBossId;
+                    else
+                        bossId = SecondBossId;
+
+                    if (Creature* boss = getCreatureFromData(bossId))
+                    {
+                        switch (bossId)
+                        {
+                            case DATA_MORAGG:
+                                {
+                                    boss->getMovementManager()->moveSmoothPath(POINT_INTRO, MoraggPath, MoraggPathSize, true);
+                                } break;
+                            case DATA_EREKEM:
+                                {
+                                    boss->getMovementManager()->moveSmoothPath(POINT_INTRO, ErekemPath, ErekemPathSize, true);
+
+                                    if (Creature* guard = GetCreatureByGuid(getLocalData(DATA_EREKEM_GUARD_1)))
+                                        guard->getMovementManager()->moveSmoothPath(POINT_INTRO, ErekemGuardLeftPath, ErekemGuardLeftPathSize, true);
+                                    if (Creature* guard = GetCreatureByGuid(getLocalData(DATA_EREKEM_GUARD_2)))
+                                        guard->getMovementManager()->moveSmoothPath(POINT_INTRO, ErekemGuardRightPath, ErekemGuardRightPathSize, true);
+                                } break;
+                            case DATA_ICHORON:
+                                {
+                                    boss->getMovementManager()->moveSmoothPath(POINT_INTRO, IchoronPath, IchoronPathSize, true);
+                                } break;
+                            case DATA_LAVANTHOR:
+                                {
+                                    boss->getMovementManager()->moveSmoothPath(POINT_INTRO, LavanthorPath, LavanthorPathSize, true);
+                                } break;
+                            case DATA_XEVOZZ:
+                                {
+                                    boss->emote(EMOTE_ONESHOT_TALK_NOSHEATHE);
+                                } break;
+                            case DATA_ZURAMAT:
+                                {
+                                    boss->getMovementManager()->moveSmoothPath(POINT_INTRO, ZuramatPath, ZuramatPathSize, true);
+                                } break;
+                        }
+                    }
+
+                    scriptEvents.addEvent(EVENT_TIMER3, 8 * TimeVarsMs::Second);
+                } break;
+            case EVENT_TIMER3:
+                {
+                    uint32_t bossId = 0;
+
+                    if (WaveCount == 6)
+                        bossId = FirstBossId;
+                    else
+                        bossId = SecondBossId;
+
+                    if (Creature* boss = getCreatureFromData(bossId))
+                    {
+                        boss->getAIInterface()->setIgnoreCreatureCombat(false);
+                        boss->getAIInterface()->setIgnorePlayerCombat(false);
+                        boss->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
+
+                        switch (bossId)
+                        {
+                            case DATA_EREKEM:
+                                {
+                                    boss->emote(EMOTE_ONESHOT_ROAR);
+
+                                    for (uint32_t i = DATA_EREKEM_GUARD_1; i <= DATA_EREKEM_GUARD_2; ++i)
+                                    {
+                                        if (Creature* guard = GetCreatureByGuid(getLocalData(i)))
+                                        {
+                                            guard->getAIInterface()->setIgnoreCreatureCombat(false);
+                                            guard->getAIInterface()->setIgnorePlayerCombat(false);
+                                            guard->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
+                                        }
+                                    }
+                                } break;
+                            case DATA_XEVOZZ:
+                                {
+                                    boss->getMovementManager()->moveSmoothPath(POINT_INTRO, XevozzPath, XevozzPathSize, true);
+                                } break;
+                        }
+                    }
+                } break;
+            case EVENT_CYANIGOSA_INTRO1:
+                {
+                    if (Creature* cyanigosa = getCreatureFromData(DATA_CYANIGOSA))
+                        if (cyanigosa->GetScript())
+                            cyanigosa->GetScript()->sendDBChatMessage(SAY_CYANIGOSA_SPAWN);
+                } break;
+            case EVENT_CYANIGOSA_INTRO2:
+                {
+                    if (Creature* cyanigosa = getCreatureFromData(DATA_CYANIGOSA))
+                        cyanigosa->getMovementManager()->moveJump(CyanigosaJumpLocation, 10.0f, 27.44744f);
+                } break;
+            case EVENT_CYANIGOSA_INTRO3:
+                {
+                    if (Creature* cyanigosa = getCreatureFromData(DATA_CYANIGOSA))
+                    {
+                        cyanigosa->removeAllAurasById(SPELL_CYANIGOSA_ARCANE_POWER_STATE);
+                        cyanigosa->castSpell(cyanigosa, SPELL_CYANIGOSA_TRANSFORM, true);
+                        cyanigosa->getAIInterface()->setIgnoreCreatureCombat(false);
+                        cyanigosa->getAIInterface()->setIgnorePlayerCombat(false);
+                        cyanigosa->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
+                    }
+                } break;
             default:
                 break;
         }
@@ -379,94 +378,93 @@ void TheVioletHoldScript::setLocalData(uint32_t type, uint32_t data)
     switch (type)
     {
         case DATA_WAVE_COUNT:
-        {
-            WaveCount = data;
-            if (WaveCount)
             {
-                // Add Next Wave
-                scriptEvents.addEvent(EVENT_NEXT_WAVE, (isBossWave(WaveCount - 1) ? 45 : 5) * TimeVarsMs::Second);
-            }
-        } break;
+                WaveCount = static_cast<uint8_t>(data);
+                if (WaveCount)
+                {
+                    // Add Next Wave
+                    scriptEvents.addEvent(EVENT_NEXT_WAVE, (isBossWave(WaveCount - 1) ? 45 : 5) * TimeVarsMs::Second);
+                }
+            } break;
         case DATA_DOOR_INTEGRITY:
-        {
-            DoorIntegrity = data;
-            Defenseless = false;
-            getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_PRISON_STATE, DoorIntegrity);
-        } break;
+            {
+                DoorIntegrity = static_cast<uint8_t>(data);
+                Defenseless = false;
+                getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_PRISON_STATE, DoorIntegrity);
+            } break;
         case DATA_MAIN_EVENT_STATE:
-        {
-            EventState = data;
-
-            switch (EventState)
             {
-                case EncounterStates::NotStarted: // Reset the Encounter
+                EventState = static_cast<uint8_t>(data);
+
+                switch (EventState)
                 {
-                    // Open Door
-                    if (GameObject* mainDoor = getGameObjectFromData(DATA_MAIN_DOOR))
-                    {
-                        mainDoor->setState(GO_STATE_OPEN);
-                        mainDoor->removeFlags(GO_FLAG_LOCKED);
-                    }
+                    case EncounterStates::NotStarted: // Reset the Encounter
+                        {
+                            // Open Door
+                            if (GameObject* mainDoor = getGameObjectFromData(DATA_MAIN_DOOR))
+                            {
+                                mainDoor->setState(GO_STATE_OPEN);
+                                mainDoor->removeFlags(GO_FLAG_LOCKED);
+                            }
 
-                    // Reset Worldstates
-                    getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_WAVE_COUNT, WaveCount);
-                    getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_PRISON_STATE, DoorIntegrity);
-                    getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_SHOW, 0);
+                            // Reset Worldstates
+                            getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_WAVE_COUNT, WaveCount);
+                            getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_PRISON_STATE, DoorIntegrity);
+                            getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_SHOW, 0);
 
-                    // Make Activation Crystalls not Selectable
-                    for (uint8_t i = 0; i < ActivationCrystalCount; ++i)
-                        if (GameObject* crystal = GetGameObjectByGuid(ActivationCrystalGUIDs[i]))
-                            crystal->setFlags(GO_FLAG_NOT_SELECTABLE);
-                } break;
-                case EncounterStates::InProgress: // We Started the Encounter
-                {
-                    getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_WAVE_COUNT, WaveCount);
-                    getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_PRISON_STATE, DoorIntegrity);
-                    getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_SHOW, 1);
+                            // Make Activation Crystalls not Selectable
+                            for (uint8_t i = 0; i < ActivationCrystalCount; ++i)
+                                if (GameObject* crystal = GetGameObjectByGuid(ActivationCrystalGUIDs[i]))
+                                    crystal->setFlags(GO_FLAG_NOT_SELECTABLE);
+                        } break;
+                    case EncounterStates::InProgress: // We Started the Encounter
+                        {
+                            getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_WAVE_COUNT, WaveCount);
+                            getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_PRISON_STATE, DoorIntegrity);
+                            getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_SHOW, 1);
 
-                    WaveCount = 1;
-                    scriptEvents.addEvent(EVENT_NEXT_WAVE, 1 * TimeVarsMs::Second);
-                    scriptEvents.addEvent(EVENT_STATE_CHECK, 3 * TimeVarsMs::Second);
+                            WaveCount = 1;
+                            scriptEvents.addEvent(EVENT_NEXT_WAVE, 1 * TimeVarsMs::Second);
+                            scriptEvents.addEvent(EVENT_STATE_CHECK, 3 * TimeVarsMs::Second);
 
-                    for (uint8_t i = 0; i < ActivationCrystalCount; ++i)
-                        if (GameObject* crystal = GetGameObjectByGuid(ActivationCrystalGUIDs[i]))
-                            crystal->removeFlags(GO_FLAG_NOT_SELECTABLE);
+                            for (uint8_t i = 0; i < ActivationCrystalCount; ++i)
+                                if (GameObject* crystal = GetGameObjectByGuid(ActivationCrystalGUIDs[i]))
+                                    crystal->removeFlags(GO_FLAG_NOT_SELECTABLE);
+                        } break;
+                    case EncounterStates::Performed: // Encounter Done
+                        {
+                            // Open Door
+                            if (GameObject* mainDoor = getGameObjectFromData(DATA_MAIN_DOOR))
+                            {
+                                mainDoor->setState(GO_STATE_OPEN);
+                                mainDoor->removeFlags(GO_FLAG_LOCKED);
+                            }
 
-                } break;
-                case EncounterStates::Performed: // Encounter Done
-                {
-                    // Open Door
-                    if (GameObject* mainDoor = getGameObjectFromData(DATA_MAIN_DOOR))
-                    {
-                        mainDoor->setState(GO_STATE_OPEN);
-                        mainDoor->removeFlags(GO_FLAG_LOCKED);
-                    }
+                            // Hide Worldstates
+                            getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_SHOW, 0);
 
-                    // Hide Worldstates
-                    getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_SHOW, 0);
-
-                    // Play Outro
-                    if (Creature* sinclari = getCreatureFromData(DATA_SINCLARI))
-                        sinclari->GetScript()->DoAction(ACTION_SINCLARI_OUTRO);
-                } break;
-            }
-        } break;
+                            // Play Outro
+                            if (Creature* sinclari = getCreatureFromData(DATA_SINCLARI))
+                                sinclari->GetScript()->DoAction(ACTION_SINCLARI_OUTRO);
+                        } break;
+                }
+            } break;
         case DATA_START_BOSS_ENCOUNTER:
-        {
-            switch (WaveCount)
             {
-                case 6:
-                    startBossEncounter(FirstBossId);
-                    break;
-                case 12:
-                    startBossEncounter(SecondBossId);
-                    break;
-            }
-        } break;
+                switch (WaveCount)
+                {
+                    case 6:
+                        startBossEncounter(FirstBossId);
+                        break;
+                    case 12:
+                        startBossEncounter(SecondBossId);
+                        break;
+                }
+            } break;
         case DATA_HANDLE_CELLS:
-        {
-            handleCells(data, false);
-        } break;
+            {
+                handleCells(static_cast<uint8_t>(data), false);
+            } break;
         default:
             break;
     }
