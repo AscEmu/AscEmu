@@ -138,7 +138,7 @@ int LuaGlobalFunctions::logcol(lua_State* L)
     return 0;
 }
 
-int LuaGlobalFunctions::WorldDBQuery(lua_State* /*L*/)
+int LuaGlobalFunctions::WorldDBQuery(lua_State* L)
 {
     const char* qStr = luaL_checkstring(L, 1);
     if (qStr == nullptr)
@@ -153,7 +153,7 @@ int LuaGlobalFunctions::WorldDBQuery(lua_State* /*L*/)
     return 1;
 }
 
-int LuaGlobalFunctions::CharDBQuery(lua_State* /*L*/)
+int LuaGlobalFunctions::CharDBQuery(lua_State* L)
 {
     const char* qStr = luaL_checkstring(L, 1);
     if (qStr == nullptr)
@@ -168,7 +168,7 @@ int LuaGlobalFunctions::CharDBQuery(lua_State* /*L*/)
     return 1;
 }
 
-int LuaGlobalFunctions::WorldDBQueryTable(lua_State* /*L*/)
+int LuaGlobalFunctions::WorldDBQueryTable(lua_State* L)
 {
     const char* qStr = luaL_checkstring(L, 1);
     if (qStr == nullptr)
@@ -183,7 +183,7 @@ int LuaGlobalFunctions::WorldDBQueryTable(lua_State* /*L*/)
     return 1;
 }
 
-int LuaGlobalFunctions::CharDBQueryTable(lua_State* /*L*/)
+int LuaGlobalFunctions::CharDBQueryTable(lua_State* L)
 {
     const char* qStr = luaL_checkstring(L, 1);
     if (qStr == nullptr)
