@@ -300,3 +300,9 @@ int main(int argc, char** argv)
         printf("Finished. MMAPS were built in %I64d ms!\n", Util::GetTimeDifferenceToNow(startTime));
     return 0;
 }
+
+// Empty stub implementation to satisfy the linker requirement from shared.lib
+void onCrash(bool /*isFatal*/)
+{
+    // No specific crash handling required for this CLI utility
+}

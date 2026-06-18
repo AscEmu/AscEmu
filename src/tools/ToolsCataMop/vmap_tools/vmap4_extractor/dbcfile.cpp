@@ -72,7 +72,7 @@ bool DBCFile::open()
     _data = new unsigned char[_recordSize * _recordCount + _stringSize];
     _stringTable = _data + _recordSize*_recordCount;
 
-    size_t data_size = _recordSize * _recordCount + _stringSize;
+    uint32_t data_size = static_cast<uint32_t>(_recordSize * _recordCount + _stringSize);
     readBytes = 0;
     SFileReadFile(_file, _data, data_size, &readBytes, NULL);
     if (readBytes != data_size)

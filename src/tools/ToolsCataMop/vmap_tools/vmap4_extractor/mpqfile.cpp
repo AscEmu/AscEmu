@@ -58,7 +58,7 @@ MPQFile::MPQFile(HANDLE mpq, const char* filename, bool warnNoExist /*= true*/) 
 
     DWORD read = 0;
     buffer = new char[size];
-    if (!SFileReadFile(file, buffer, size, &read, nullptr) || size != read)
+    if (!SFileReadFile(file, buffer, static_cast<DWORD>(size), &read, nullptr) || size != read)
     {
         fprintf(stderr, "Can't read %s, size=%u read=%u!\n", filename, uint32_t(size), uint32_t(read));
         SFileCloseFile(file);

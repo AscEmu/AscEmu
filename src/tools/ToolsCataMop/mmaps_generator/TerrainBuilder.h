@@ -20,7 +20,6 @@
 #ifndef _MMAP_TERRAIN_BUILDER_H
 #define _MMAP_TERRAIN_BUILDER_H
 
-#include "CommonTypes.hpp"
 #include "PathCommon.h"
 #include "WorldModel.h"
 
