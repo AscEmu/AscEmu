@@ -261,8 +261,8 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         Disconnect();
         sCheatLog.writefromsession(this, "Player tried to use an item with a spell that didn't match the spell in the database.");
         sCheatLog.writefromsession(this, "Possibly corrupted or intentionally altered itemcache.wdb");
-        sCheatLog.writefromsession(this, "Itemid: %u", itemProto->ItemId);
-        sCheatLog.writefromsession(this, "Spellid: %u", spellId);
+        sCheatLog.writefromsession(this, "Itemid: {}", itemProto->ItemId);
+        sCheatLog.writefromsession(this, "Spellid: {}", spellId);
         sCheatLog.writefromsession(this, "Player was disconnected.");
         return;
     }
@@ -892,7 +892,7 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
     if (srlPacket.itemCount <= 0 || srlPacket.srcInventorySlot <= 0 && srlPacket.srcSlot < INVENTORY_SLOT_ITEM_START)
     {
         sCheatLog.writefromsession(this,
-            "tried to split item: srcInventorySlot %d, srcSlot %d, destInventorySlot %d, destSlot %d, itemCount %ld",
+            "tried to split item: srcInventorySlot {}, srcSlot {}, destInventorySlot {}, destSlot {}, itemCount {}",
             srlPacket.srcInventorySlot, srlPacket.srcSlot, srlPacket.destInventorySlot, srlPacket.destSlot, srlPacket.itemCount);
         return;
     }

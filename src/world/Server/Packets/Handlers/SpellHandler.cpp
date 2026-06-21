@@ -96,7 +96,7 @@ const SpellInfo* WorldSession::getSpellInfo(uint32_t _spellId) const
     // Check does player have the spell
     if (!_player->hasSpell(_spellId))
     {
-        sCheatLog.writefromsession(_player->getSession(), "WORLD: Player %u tried to cast spell %u but player does not have it.", _player->getGuidLow(), _spellId);
+        sCheatLog.writefromsession(_player->getSession(), "WORLD: Player {} tried to cast spell {} but player does not have it.", _player->getGuidLow(), _spellId);
         sLogger.info("WORLD: Player {} tried to cast spell {} but player does not have it.", _player->getGuidLow(), _spellId);
         return nullptr;
     }
@@ -104,8 +104,8 @@ const SpellInfo* WorldSession::getSpellInfo(uint32_t _spellId) const
     // Check is player trying to cast a passive spell
     if (spellInfo->isPassive())
     {
-        sCheatLog.writefromsession(_player->getSession(), "WORLD: Player %u tried to cast a passive spell %u, ignored", _player->getGuidLow(), _spellId);
-        sLogger.info("WORLD: Player {} tried to cast a passive spell {}, ignored", _player->getGuidLow(), _spellId);
+        sCheatLog.writefromsession(_player->getSession(), "WORLD: Player {} tried to cast passive spell {}, ignored.", _player->getGuidLow(), _spellId);
+        sLogger.info("WORLD: Player {} tried to cast passive spell {}, ignored.", _player->getGuidLow(), _spellId);
         return nullptr;
     }
 

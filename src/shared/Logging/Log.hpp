@@ -7,6 +7,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Platform/SymbolVisibility.hpp"
 #include <mutex>
+#include <string_view>
+#include <utility>
+#include <fmt/format.h>
 
 class WorldPacket;
 
@@ -65,6 +68,14 @@ public:
     void write(const char* format, ...);
 
     // WorldSession.cpp
-    void writefromsession(WorldSession* session, const char* format, ...);
     void write(WorldSession* session, const char* format, ...);
+
+    template <typename... Args>
+    void writefromsession(WorldSession* session, fmt::format_string<Args...> format, Args&&... args)
+    {
+        writefromsession(session, fmt::format(format, std::forward<Args>(args)...));
+    }
+
+    void writefromsession(WorldSession* session,std::string_view message);
 };
+

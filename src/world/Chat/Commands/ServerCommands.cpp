@@ -167,7 +167,7 @@ bool ChatCommandHandler::HandleServerSetMotdCommand(const char* args, WorldSessi
     }
 
     greenSystemMessage(m_session, "Motd has been set to: {}", args);
-    sGMLog.writefromsession(m_session, "Set MOTD to %s", args);
+    sGMLog.writefromsession(m_session, "Set MOTD to {}", args);
     worldConfig.setMessageOfTheDay(args);
 
     return true;
@@ -191,7 +191,7 @@ bool ChatCommandHandler::HandleServerShutdownCommand(const char* args, WorldSess
 
     sWorld.sendMessageToOnlineGms(teamAnnounce.str());
 
-    sGMLog.writefromsession(m_session, "initiated server shutdown timer %u sec", shutdowntime);
+    sGMLog.writefromsession(m_session, "Initiated server shutdown timer {} sec...", shutdowntime);
 
     std::stringstream worldAnnounce;
     worldAnnounce << "Server is shutting down in " << shutdowntime << " seconds.";
@@ -253,7 +253,7 @@ bool ChatCommandHandler::HandleServerRestartCommand(const char* args, WorldSessi
     teamAnnounce << "]|h:" << MSG_COLOR_YELLOW << " initiated server restart timer " << shutdowntime << " sec";
 
     sWorld.sendMessageToOnlineGms(teamAnnounce.str());
-    sGMLog.writefromsession(m_session, "initiated server restart timer %u sec", shutdowntime);
+    sGMLog.writefromsession(m_session, "Initiated server restart timer {} sec...", shutdowntime);
 
     std::stringstream worldAnnounce;
     worldAnnounce << "Server is restarting in " << shutdowntime << " seconds.";

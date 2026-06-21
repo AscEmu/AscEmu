@@ -218,7 +218,7 @@ bool ChatCommandHandler::HandleResetInstanceCommand(const char* args, WorldSessi
     plr->getSession()->SendPacket(SmsgInstanceReset(instance->getBaseMap()->getMapId()).serialise().get());
 
     //    redSystemMessage(m_session, "Resetting single non-persistent instances is not available yet.");
-    sGMLog.writefromsession(m_session, "used reset instance command on %s, instance %u,", plr->getName().c_str(), instanceId);
+    sGMLog.writefromsession(m_session, "Used reset instance command on {}, instance {}.", plr->getName(), instanceId);
     return true;
 }
 
@@ -251,7 +251,7 @@ bool ChatCommandHandler::HandleResetAllInstancesCommand(const char* args, WorldS
     player->resetInstances(INSTANCE_RESET_ALL, false);
     systemMessage(m_session, "...done");
 
-    sGMLog.writefromsession(m_session, "used reset all instances command on %s,", player->getName().c_str());
+    sGMLog.writefromsession(m_session, "Used reset all instances command on {}.", player->getName());
     return true;
 }
 
@@ -283,7 +283,7 @@ bool ChatCommandHandler::HandleShutdownInstanceCommand(const char* args, WorldSe
 
     systemMessage(m_session, "...done");
 
-    sGMLog.writefromsession(m_session, "used shutdown instance command on instance %u,", instanceId);
+    sGMLog.writefromsession(m_session, "Used shutdown instance command on instance {}.", instanceId);
     return true;
 }
 

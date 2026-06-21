@@ -254,7 +254,7 @@ void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
 
     _player->setName(newName);
 
-    sPlrLog.writefromsession(this, "renamed character %s, %u (guid), to %s.", oldName.c_str(), playerInfo->guid, newName.c_str());
+    sPlrLog.writefromsession(this, "renamed character {}, {} (guid), to {}.", oldName, playerInfo->guid, newName);
 
     CharacterDatabase.waitExecute("UPDATE characters SET name = '%s' WHERE guid = %u",
         newName.c_str(), srlPacket.guid.getGuidLow());
@@ -338,7 +338,7 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
                 arenaTeam->removeMember(playerInfo);
         }
 
-        sPlrLog.writefromsession(this, "deleted character %s %u (guidLow))", name.c_str(), guid.getGuidLow());
+        sPlrLog.writefromsession(this, "deleted character {} (guidLow: {})", name, guid.getGuidLow());
 
         CharacterDatabase.waitExecute("DELETE FROM characters WHERE guid = %u", guid.getGuidLow());
 

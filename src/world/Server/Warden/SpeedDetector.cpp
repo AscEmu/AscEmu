@@ -30,7 +30,7 @@
 SpeedCheatDetector::SpeedCheatDetector()
 {
     EventSpeedChange();
-    bigest_hacked_speed_dif = 0;
+    biggest_hacked_speed_diff = 0;
     cheat_threat = 0;
     last_used_speed = 0;
     last_stamp = 0;
@@ -85,8 +85,8 @@ void SpeedCheatDetector::AddSample(float x, float y, int stamp, float player_spe
         {
             cheat_threat++;
             float hackspeed_diff = cur_speed - player_speed;
-            if (hackspeed_diff > bigest_hacked_speed_dif)
-                bigest_hacked_speed_dif = hackspeed_diff;
+            if (hackspeed_diff > biggest_hacked_speed_diff)
+                biggest_hacked_speed_diff = hackspeed_diff;
         }
         else if (cheat_threat > 0)
             cheat_threat--;
@@ -102,8 +102,8 @@ void SpeedCheatDetector::ReportCheater(Player* _player)
     if ((worldConfig.antiHack.isAntiHackCheckDisabledForGm && _player->getSession()->HasGMPermissions()))
         return; // do not check GMs speed been the config tells us not to.
 
-    //toshik is wonderful and i can't understand how he managed to make this happen
-    if (bigest_hacked_speed_dif <= 1)
+    // toshik: is wonderful and i can't understand how he managed to make this happen
+    if (biggest_hacked_speed_diff <= 1)
     {
         cheat_threat = 0;
         EventSpeedChange();
@@ -112,12 +112,12 @@ void SpeedCheatDetector::ReportCheater(Player* _player)
 
     float speed = (_player->m_flyingAura) ? _player->getSpeedRate(TYPE_FLY, true) : (_player->getSpeedRate(TYPE_SWIM, true) > _player->getSpeedRate(TYPE_RUN, true)) ? _player->getSpeedRate(TYPE_SWIM, true) : _player->getSpeedRate(TYPE_RUN, true);
     _player->broadcastMessage("Speedhack detected. In case server was wrong then make a report how to reproduce this case. You will be logged out in 7 seconds.");
-    sCheatLog.writefromsession(_player->getSession(), "Caught %s speed hacking last occurrence with speed: %f instead of %f", _player->getName().c_str(), speed + bigest_hacked_speed_dif, speed);
+    sCheatLog.writefromsession(_player->getSession(), "Caught {} speed hacking last occurrence with speed: {} instead of {}", _player->getName(), speed + biggest_hacked_speed_diff, speed);
     sEventMgr.AddEvent(_player, &Player::eventKickFromServer, EVENT_PLAYER_KICK, 7000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-    //next check will be very far away
+    // next check will be very far away
     last_stamp = 0x0FFFFFFF;
-    cheat_threat = -100; //no more reports this session (unless flooding server :P :D)
+    cheat_threat = -100; // no more reports this session (unless flooding server :P :D)
 }
 
 // MIT Start

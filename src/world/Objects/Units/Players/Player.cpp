@@ -2250,7 +2250,7 @@ bool Player::create(CharCreate& charCreateContent)
     if (!m_dbcRace || !m_dbcClass)
     {
         // information not found
-        sCheatLog.writefromsession(m_session, "tried to create invalid player with race %u and class %u, dbc m_playerCreateInfo not found", charCreateContent._race, charCreateContent._class);
+        sCheatLog.writefromsession(m_session, "tried to create invalid player with race {} and class {}, dbc m_playerCreateInfo not found", charCreateContent._race, charCreateContent._class);
         m_session->Disconnect();
         return false;
     }
@@ -14464,7 +14464,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     Field* field = result->fetch();
     if (field[1].asUint32() != m_session->GetAccountId())
     {
-        sCheatLog.writefromsession(m_session, "player tried to load character not belonging to them (guid %u, on account %u)",
+        sCheatLog.writefromsession(m_session, "player tried to load character not belonging to them (guid {}, on account {})",
             field[0].asUint32(), field[1].asUint32());
         removePendingPlayer();
         return;
@@ -15584,8 +15584,7 @@ void Player::updateStats()
 
         if (worldConfig.limit.isLimitSystemEnabled && (worldConfig.limit.maxManaCap > 0) && (res > worldConfig.limit.maxManaCap) && !getSession()->hasPermissions())   //hacker?
         {
-            char logmsg[256];
-            snprintf(logmsg, 256, "has over %u mana (%i)", worldConfig.limit.maxManaCap, res);
+            auto logmsg = fmt::format("has over {} mana ({})", worldConfig.limit.maxManaCap, res);
             sCheatLog.writefromsession(getSession(), logmsg);
 
             if (worldConfig.limit.broadcastMessageToGmOnExceeding) // send m_playerCreateInfo to online GM

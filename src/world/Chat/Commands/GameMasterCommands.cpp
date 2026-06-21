@@ -86,8 +86,7 @@ bool ChatCommandHandler::HandleGMAnnounceCommand(const char* args, WorldSession*
     teamAnnounce << "|h[" << m_session->GetPlayer()->getName().c_str() << "]|h:" << MSG_COLOR_YELLOW << " " << args;
 
     sWorld.sendMessageToOnlineGms(teamAnnounce.str());
-
-    sGMLog.writefromsession(m_session, "used .gm annouince command: [%s]", args);
+    sGMLog.writefromsession(m_session, "used .gm announce command: [{}]", args);
 
     return true;
 }
@@ -216,6 +215,6 @@ bool ChatCommandHandler::HandleGMLogCommentCommand(const char* args, WorldSessio
     }
 
     blueSystemMessage(m_session, "Added Logcomment: {}", args);
-    sGMLog.writefromsession(m_session, "Comment: %s", args);
+    sGMLog.writefromsession(m_session, "Comment: {}", args);
     return true;
 }

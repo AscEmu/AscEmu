@@ -65,7 +65,7 @@ private:
     int last_stamp;
     signed char cheat_threat;           /// don't draw quick conclusions. If player is suspicious over time then kill him
     float last_used_speed;              /// we reset if speed changed since our last measure
-    float bigest_hacked_speed_dif;
+    float biggest_hacked_speed_diff;
 };
 
 #endif // SPEEDDETECTOR_H

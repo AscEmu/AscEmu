@@ -126,7 +126,7 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
     if (_player->m_position.distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y }) > 3025.0f &&
         _player->getSpeedRate(TYPE_RUN, true) < 50.0f && !_player->obj_movement_info.transport_guid)
     {
-        sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f",
+        sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: {}, Distance traveled: {}",
             _player->getSpeedRate(TYPE_RUN, true),
             std::sqrt(_player->m_position.distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y })));
 

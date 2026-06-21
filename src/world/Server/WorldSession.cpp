@@ -504,31 +504,20 @@ void WorldSession::SendNotification(const char* message, ...)
     SendPacket(SmsgNotification(msg1).serialise().get());
 }
 
-void SessionLog::writefromsession(WorldSession* session, const char* format, ...)
+void SessionLog::writefromsession(WorldSession* session, std::string_view message)
 {
-    if (isSessionLogOpen())
-    {
-        va_list ap;
-        va_start(ap, format);
-        char out[32768];
+    if (!isSessionLogOpen())
+        return;
 
-        std::string current_time = "[" + Util::GetCurrentDateTimeString() + "] ";
-        snprintf(out, 32768, current_time.c_str());
-        size_t lenght = strlen(out);
-
-        snprintf(&out[lenght], 32768 - lenght, "Account %u [%s], IP %s, Player %s :: ",
+    fmt::println(mSessionLogFile, "[{}] Account {} [{}], IP {}, Player {} :: {}",
+            Util::GetCurrentDateTimeString(),
             session->GetAccountId(),
-            session->GetAccountName().c_str(),
-            session->GetSocket() ? session->GetSocket()->getRemoteIp().c_str() : "NOIP",
-            session->GetPlayer() ? session->GetPlayer()->getName().c_str() : "nologin");
+            session->GetAccountName(),
+            session->GetSocket() ? session->GetSocket()->getRemoteIp() : "NOIP",
+            session->GetPlayer() ? session->GetPlayer()->getName() : "nologin",
+            message);
 
-        lenght = strlen(out);
-        vsnprintf(&out[lenght], 32768 - lenght, format, ap);
-
-        fprintf(mSessionLogFile, "%s\n", out);
-        fflush(mSessionLogFile);
-        va_end(ap);
-    }
+    fflush(mSessionLogFile);
 }
 
 void SessionLog::write(WorldSession* session, const char* format, ...)

@@ -4100,7 +4100,7 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
     }
 
     if (p_caster->getSession()->hasPermissions())
-        sGMLog.writefromsession(p_caster->getSession(), "enchanted item for %s", m_itemTarget->getOwner()->getName().c_str());
+        sGMLog.writefromsession(p_caster->getSession(), "enchanted item for {}", m_itemTarget->getOwner()->getName());
 
     //remove other perm enchantment that was enchanted by profession
     m_itemTarget->removeEnchantment(PERM_ENCHANTMENT_SLOT);
@@ -6085,7 +6085,7 @@ void Spell::SpellEffectEnchantItemPrismatic(uint8_t effectIndex)
     }
 
     if (p_caster->getSession()->hasPermissions())
-        sGMLog.writefromsession(p_caster->getSession(), "enchanted item for %s", m_itemTarget->getOwner()->getName().c_str());
+        sGMLog.writefromsession(p_caster->getSession(), "enchanted item for {}", m_itemTarget->getOwner()->getName());
 
     //remove other socket enchant
     m_itemTarget->removeEnchantment(PRISMATIC_ENCHANTMENT_SLOT);

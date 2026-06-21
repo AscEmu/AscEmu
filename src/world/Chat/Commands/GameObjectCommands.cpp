@@ -105,9 +105,9 @@ bool ChatCommandHandler::HandleGODeleteCommand(const char* /*args*/, WorldSessio
             selected_gobject->m_spawn = nullptr;
         }
     }
-    sGMLog.writefromsession(m_session, "deleted game object entry %u on map %u at X:%f Y:%f Z:%f Name %s", selected_gobject->getEntry(),
+    sGMLog.writefromsession(m_session, "deleted game object entry {} on map {} at X:{} Y:{} Z:{} Name {}", selected_gobject->getEntry(),
         selected_gobject->GetMapId(), selected_gobject->GetPositionX(), selected_gobject->GetPositionY(), selected_gobject->GetPositionZ(),
-        sMySQLStore.getGameObjectProperties(selected_gobject->getEntry())->name.c_str());
+        sMySQLStore.getGameObjectProperties(selected_gobject->getEntry())->name);
     selected_gobject->despawn(0, 0);
 
     m_session->GetPlayer()->setSelectedGo(0);
@@ -138,7 +138,7 @@ bool ChatCommandHandler::HandleGOEnableCommand(const char* /*args*/, WorldSessio
         blueSystemMessage(m_session, "Gameobject activated.");
     }
 
-    sGMLog.writefromsession(m_session, "activated/deactivated gameobject %s, entry %u", sMySQLStore.getGameObjectProperties(gameobject->getEntry())->name.c_str(), gameobject->getEntry());
+    sGMLog.writefromsession(m_session, "activated/deactivated gameobject {}, entry {}", sMySQLStore.getGameObjectProperties(gameobject->getEntry())->name, gameobject->getEntry());
 
     return true;
 }
@@ -348,7 +348,7 @@ bool ChatCommandHandler::HandleGOMoveHereCommand(const char* /*args*/, WorldSess
 
     greenSystemMessage(m_session, "Position changed in gameobject_spawns table for spawn ID: {}.", go_spawn->id);
     WorldDatabase.execute("UPDATE gameobject_spawns SET position_x = %f, position_y = %f, position_z = %f WHERE id = %u AND min_build <= %u AND max_build >= %u", position_x, position_y, position_z, go_spawn->id, VERSION_STRING, VERSION_STRING);
-    sGMLog.writefromsession(m_session, "changed gameobject position of gameobject_spawns ID: %u.", go_spawn->id);
+    sGMLog.writefromsession(m_session, "changed gameobject position of gameobject_spawns ID: {}.", go_spawn->id);
 
     uint32_t new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
@@ -581,7 +581,7 @@ bool ChatCommandHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_
 
     greenSystemMessage(m_session, "Spawning GameObject by entry '{}'. Added to gameobject_spawns table.", gameobject->getSpawnId());
     gameobject->saveToDB(true);
-    sGMLog.writefromsession(m_session, "spawned gameobject %s, entry %u at %u %f %f %f", gameobject_prop->name.c_str(), gameobject->getEntry(), player->GetMapId(), gameobject->GetPositionX(), gameobject->GetPositionY(), gameobject->GetPositionZ());
+    sGMLog.writefromsession(m_session, "spawned gameobject {}, entry {} at {} {} {} {}", gameobject_prop->name, gameobject->getEntry(), player->GetMapId(), gameobject->GetPositionX(), gameobject->GetPositionY(), gameobject->GetPositionZ());
 
     m_session->GetPlayer()->setSelectedGo(gameobject->getGuid());
 
@@ -651,7 +651,7 @@ bool ChatCommandHandler::HandleGOSetFactionCommand(const char* args, WorldSessio
 
     greenSystemMessage(m_session, "Faction changed in gameobject_spawns table for spawn ID: {}.", go_spawn->id);
     WorldDatabase.execute("REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)", go_spawn->id, VERSION_STRING, VERSION_STRING, gameobject->getScale(), go_faction, gameobject->getFlags());
-    sGMLog.writefromsession(m_session, "changed gameobject faction of gameobject_spawns ID: %u.", go_spawn->id);
+    sGMLog.writefromsession(m_session, "changed gameobject faction of gameobject_spawns ID: {}.", go_spawn->id);
 
     return true;
 }
@@ -685,7 +685,7 @@ bool ChatCommandHandler::HandleGOSetFlagsCommand(const char* args, WorldSession*
     }
     greenSystemMessage(m_session, "Flags changed in gameobject_spawns table for spawn ID: {}.", go_spawn->id);
     WorldDatabase.execute("REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)", go_spawn->id, VERSION_STRING, VERSION_STRING, gameobject->getScale(), gameobject->getFactionTemplate(), go_flags);
-    sGMLog.writefromsession(m_session, "changed gameobject flags of gameobject_spawns ID: %u.", go_spawn->id);
+    sGMLog.writefromsession(m_session, "changed gameobject flags of gameobject_spawns ID: {}.", go_spawn->id);
 
     return true;
 }
@@ -717,15 +717,13 @@ bool ChatCommandHandler::HandleGOSetOverridesCommand(const char* args, WorldSess
     }
     greenSystemMessage(m_session, "Overrides changed in gameobject_spawns table to {} for spawn ID: {}.", go_override, go_spawn->id);
     WorldDatabase.execute("UPDATE gameobject_spawns SET overrides = %u WHERE id = %u AND min_build <= %u AND max_build >= %u", go_override, go_spawn->id, VERSION_STRING, VERSION_STRING);
-    sGMLog.writefromsession(m_session, "changed gameobject scale of gameobject_spawns ID: %u to %u", go_spawn->id, go_override);
+    sGMLog.writefromsession(m_session, "Changed gameobject scale of gameobject_spawns ID: {} to {}", go_spawn->id, go_override);
 
     uint32_t new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
     gameobject->SetNewGuid(new_go_guid);
     gameobject->PushToWorld(m_session->GetPlayer()->getWorldMap());
-
     m_session->GetPlayer()->setSelectedGo(new_go_guid);
-
     return true;
 }
 
@@ -759,7 +757,7 @@ bool ChatCommandHandler::HandleGOSetPhaseCommand(const char* args, WorldSession*
     }
     greenSystemMessage(m_session, "Phase changed in gameobject_spawns table to {} for spawn ID: {}.", phase, go_spawn->id);
     WorldDatabase.execute("UPDATE gameobject_spawns SET phase = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", phase, go_spawn->id, VERSION_STRING, VERSION_STRING);
-    sGMLog.writefromsession(m_session, "changed gameobject phase of gameobject_spawns ID: %u to %u", go_spawn->id, phase);
+    sGMLog.writefromsession(m_session, "changed gameobject phase of gameobject_spawns ID: {} to {}", go_spawn->id, phase);
 
     uint32_t new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
@@ -796,9 +794,9 @@ bool ChatCommandHandler::HandleGOSetScaleCommand(const char* args, WorldSession*
         redSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
         return true;
     }
-    greenSystemMessage(m_session, "Scale changed in gameobject_spawns_overrides table to {} for spawn ID: {}.", scale, go_spawn->id);
+    greenSystemMessage(m_session, "Changed gameobject scale of gameobject_spawns ID: {} to {:.3f}", go_spawn->id, scale);
     WorldDatabase.execute("REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)", go_spawn->id, VERSION_STRING, VERSION_STRING, scale, gameobject->getFactionTemplate(), gameobject->getFlags());
-    sGMLog.writefromsession(m_session, "changed gameobject scale of gameobject_spawns ID: %u to %3.3lf", go_spawn->id, scale);
+    sGMLog.writefromsession(m_session, "Changed gameobject scale of gameobject_spawns ID: {} to {:.3f}", go_spawn->id, scale);
 
     uint32_t new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
     gameobject->RemoveFromWorld(true);
@@ -806,7 +804,6 @@ bool ChatCommandHandler::HandleGOSetScaleCommand(const char* args, WorldSession*
     gameobject->PushToWorld(m_session->GetPlayer()->getWorldMap());
 
     m_session->GetPlayer()->setSelectedGo(new_go_guid);
-
     return true;
 }
 
@@ -839,7 +836,7 @@ bool ChatCommandHandler::HandleGOSetStateCommand(const char* args, WorldSession*
     }
     greenSystemMessage(m_session, "State changed in gameobject_spawns table for spawn ID: {}.", go_spawn->id);
     WorldDatabase.execute("UPDATE gameobject_spawns SET state = %u WHERE id = %u AND min_build <= %u AND max_build >= %u", go_state, go_spawn->id, VERSION_STRING, VERSION_STRING);
-    sGMLog.writefromsession(m_session, "changed gameobject state of gameobject_spawns ID: %u.", go_spawn->id);
+    sGMLog.writefromsession(m_session, "changed gameobject state of gameobject_spawns ID: {}.", go_spawn->id);
 
     return true;
 }

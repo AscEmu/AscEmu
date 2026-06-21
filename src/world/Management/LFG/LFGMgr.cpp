@@ -2072,7 +2072,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32_t dungeonId, Player* player)
     }
 
     // Give rewards
-    //Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u done dungeon %u, %s previously done.", player->GetGUID(), GetDungeon(gguid), index > 0 ? " " : " not");
+    // sLogger.debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: {} done dungeon {}, previously done: {}", player->GetGUID(), GetDungeon(gguid), index > 0);
     sLogger.debug("{} done dungeon {}, previously done.", player->getGuid(), GetDungeon(gguid));
     player->getSession()->sendLfgPlayerReward(dungeon->Entry(), GetDungeon(gguid, false), index, reward, qReward);
 #else

@@ -1,7 +1,7 @@
 # Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 include_guard(GLOBAL)
 
-# Enforce C++23 standard without compiler extensions
+# enforce C++23 standard without compiler extensions
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)

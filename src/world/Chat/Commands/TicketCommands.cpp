@@ -170,7 +170,7 @@ bool ChatCommandHandler::HandleTicketCloseCommand(const char* args, WorldSession
 
     CharacterDatabase.execute("UPDATE gm_tickets SET deleted = 1, comment = 'GM: %s %s', assignedto = %u WHERE ticketid = %u", player->getName().c_str(), comment, player->getGuid(), ticketID);
     greenSystemMessage(m_session, "Ticket {} is now closed and assigned to you.", ticketID);
-    sGMLog.writefromsession(m_session, "closed ticket %u ", ticketID);
+    sGMLog.writefromsession(m_session, "Ticket {} is now closed and assigned to you.", ticketID);
     return true;
 }
 
@@ -192,8 +192,8 @@ bool ChatCommandHandler::HandleTicketDeleteCommand(const char* args, WorldSessio
     }
 
     CharacterDatabase.execute("DELETE FROM gm_tickets WHERE ticketid = %u", ticketID);
-    greenSystemMessage(m_session, "Ticket {} is deleted", ticketID);
-    sGMLog.writefromsession(m_session, "deleted ticket %u ", ticketID);
+    greenSystemMessage(m_session, "Ticket {} is deleted.", ticketID);
+    sGMLog.writefromsession(m_session, "Ticket {} is deleted.", ticketID);
 
     return true;
 }

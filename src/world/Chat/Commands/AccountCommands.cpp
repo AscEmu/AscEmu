@@ -70,9 +70,8 @@ bool ChatCommandHandler::handleAccountMuteCommand(const char* args, WorldSession
     sLogonCommHandler.setAccountMute(pAccount, banned);
 
     std::string tsstr = Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32_t)UNIXTIME);
-    greenSystemMessage(m_session, "Account '{}' has been muted until {}. The change will be effective immediately.", pAccount, tsstr);
-
-    sGMLog.writefromsession(m_session, "mutex account %s until %s", pAccount, Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32_t)UNIXTIME).c_str());
+    greenSystemMessage(m_session, "Muted account {} until {}. The change will be effective immediately.", pAccount, tsstr);
+    sGMLog.writefromsession(m_session, "Mute account {} until {}.", pAccount, Util::GetDateTimeStringFromTimeStamp(timeperiod + static_cast<uint32_t>(UNIXTIME)));
 
     WorldSession* pSession = sWorld.getSessionByAccountName(pAccount);
     if (pSession != nullptr)
@@ -89,7 +88,7 @@ bool ChatCommandHandler::handleAccountUnmuteCommand(const char* args, WorldSessi
     sLogonCommHandler.setAccountMute(args, 0);
 
     greenSystemMessage(m_session, "Account '%s' has been unmuted.", args);
-    sGMLog.writefromsession(m_session, "unmuted account %s", args);
+    sGMLog.writefromsession(m_session, "unmuted account {}", args);
     WorldSession* pSession = sWorld.getSessionByAccountName(args);
     if (pSession != nullptr)
     {
@@ -154,7 +153,7 @@ bool ChatCommandHandler::handleAccountBannedCommand(const char* args, WorldSessi
         pAccount, timeperiod ? "until " : "forever", timeperiod ? Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32_t)UNIXTIME) : "", reason);
 
     sWorld.disconnectSessionByAccountName(pAccount, m_session);
-    sGMLog.writefromsession(m_session, "banned account %s until %s", pAccount, timeperiod ? Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32_t)UNIXTIME).c_str() : "permanent");
+    sGMLog.writefromsession(m_session, "banned account {} until {}", pAccount, timeperiod ? Util::GetDateTimeStringFromTimeStamp(timeperiod + static_cast<uint32_t>(UNIXTIME)) : "permanent");
     return true;
 }
 
@@ -167,7 +166,7 @@ bool ChatCommandHandler::handleAccountUnbanCommand(const char* args, WorldSessio
     sLogonCommHandler.setAccountBanned(pAccount, 0, "");
     greenSystemMessage(m_session, "Account '{}' has been unbanned. This change will be effective immediately.", pAccount);
 
-    sGMLog.writefromsession(m_session, "unbanned account %s", pAccount);
+    sGMLog.writefromsession(m_session, "unbanned account {}", pAccount);
     return true;
 }
 
@@ -209,7 +208,7 @@ bool ChatCommandHandler::handleAccountGetAccountID(const char* args, WorldSessio
 
     sLogonCommHandler.checkIfAccountExist(pAccount, m_session->GetAccountNameS(), nullptr, 2);
 
-    sGMLog.writefromsession(m_session, "looked up account id for account %s", pAccount);
+    sGMLog.writefromsession(m_session, "looked up account id for account {}", pAccount);
 
 
     return true;

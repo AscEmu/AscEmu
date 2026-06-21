@@ -39,13 +39,13 @@ bool ChatCommandHandler::HandleAdminCastAllCommand(const char* args, WorldSessio
     {
         if (spell_entry->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
         {
-            sGMLog.writefromsession(m_session, "used learn spell stopped %u", spell_id);
+            sGMLog.writefromsession(m_session, "used learn spell stopped {}", spell_id);
             redSystemMessage(m_session, "Learn spell specified.");
             return true;
         }
     }
 
-    sGMLog.writefromsession(m_session, "used castall command, spellid %u", spell_id);
+    sGMLog.writefromsession(m_session, "used castall command, spellid {}", spell_id);
 
     std::lock_guard guard(sObjectMgr.m_playerLock);
     for (const auto playerPair : sObjectMgr.getPlayerStorage())
@@ -77,7 +77,7 @@ bool ChatCommandHandler::HandleAdminDispelAllCommand(const char* args, WorldSess
     if (*args)
         pos = atoi(args);
 
-    sGMLog.writefromsession(m_session, "used dispelall command, pos %u", pos);
+    sGMLog.writefromsession(m_session, "used dispelall command, pos {}", pos);
 
     std::lock_guard guard(sObjectMgr.m_playerLock);
     for (const auto playerPair : sObjectMgr.getPlayerStorage())
@@ -144,7 +144,7 @@ bool ChatCommandHandler::HandleAdminMassSummonCommand(const char* args, WorldSes
         }
     }
 
-    sGMLog.writefromsession(m_session, "requested a mass summon of %u players.", summon_count);
+    sGMLog.writefromsession(m_session, "requested a mass summon of {} players.", summon_count);
 
     return true;
 }
@@ -163,7 +163,7 @@ bool ChatCommandHandler::HandleAdminPlayGlobalSoundCommand(const char* args, Wor
 
     blueSystemMessage(m_session, "Broadcasted sound {} to server.", sound_id);
 
-    sGMLog.writefromsession(m_session, "used play all command soundid %u", sound_id);
+    sGMLog.writefromsession(m_session, "used play all command soundid {}", sound_id);
 
     return true;
 }

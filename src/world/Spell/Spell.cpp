@@ -4621,7 +4621,7 @@ void Spell::sendSpellStart()
         getSpellInfo()->getSpellVisual(1) != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
         return;
 
-    uint32_t castFlags = 0x02; //trajectory
+    uint32_t castFlags = 0x02; // trajectory
     if (((m_triggeredSpell && !getSpellInfo()->isRangedAutoRepeat() || m_triggeredByAura)))
         castFlags |= 0x01; // pending
 
@@ -4630,7 +4630,7 @@ void Spell::sendSpellStart()
         castFlags |= 0x800; // power left
 
     if (getSpellInfo()->getRuneCostID() && getSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
-        castFlags |= 0x40000;   // runes
+        castFlags |= 0x40000; // runes
 
     WoWGuid casterGuid = i_caster ? i_caster ->getGuid() : m_caster->getGuid();
     WoWGuid casterUnitGuid = m_caster->getGuid();

@@ -585,7 +585,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
 
                 //Write info to gmlog
                 if (request_name.compare("none") != 0)
-                    sGMLog.writefromsession(session_name, "set account %s (%u) permissions to %s", account_string, accountId, gmlevel.c_str());
+                    sGMLog.writefromsession(session_name, "set account {} ({}) permissions to {}", account_string, accountId, gmlevel);
 
                 //Send information to updated account
                 WorldSession* updated_account_session = sWorld.getSessionByAccountName(account_string);
@@ -606,7 +606,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
 
                 //Write info to gmlog
                 if (request_name.compare("none") != 0)
-                    sGMLog.writefromsession(session_name, "removed permissions for account %s (%u)", account_string, accountId);
+                    sGMLog.writefromsession(session_name, "removed permissions for account {} ({})", account_string, accountId);
 
                 //Send information to updated account
                 WorldSession* updated_account_session = sWorld.getSessionByAccountName(account_string);

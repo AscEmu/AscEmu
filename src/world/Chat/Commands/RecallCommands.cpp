@@ -86,8 +86,7 @@ bool ChatCommandHandler::HandleRecallAddCommand(const char* args, WorldSession* 
     greenSystemMessage(m_session, "Added location to DB with MapID: {}, X: {}, Y: {}, Z: {}, O: {}",
              player->GetMapId(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
 
-    sGMLog.writefromsession(m_session, "used recall add, added \'%s\' location to database.", args);
-
+    sGMLog.writefromsession(m_session, "Used recall add, added '{}' location to database.", args);
     return true;
 }
 
@@ -102,7 +101,7 @@ bool ChatCommandHandler::HandleRecallDelCommand(const char* args, WorldSession* 
         WorldDatabase.execute("DELETE FROM recall WHERE name = %s;", recall->name.c_str());
 
         greenSystemMessage(m_session, "Recall location removed.");
-        sGMLog.writefromsession(m_session, "used recall delete, removed \'%s\' location from database.", args);
+        sGMLog.writefromsession(m_session, "used recall delete, removed \'{}\' location from database.", args);
 
         sMySQLStore.loadRecallTable();
 
@@ -166,9 +165,9 @@ bool ChatCommandHandler::HandleRecallPortPlayerCommand(const char* args, WorldSe
 
     if (const auto recall = sMySQLStore.getRecallByName(location))
     {
-        sGMLog.writefromsession(m_session, "ported %s to %s ( map: %u, x: %f, y: %f, z: %f, 0: %f )", player->getName().c_str(), recall->name.c_str(), recall->mapId, recall->location.x, recall->location.y, recall->location.z, recall->location.o);
+        sGMLog.writefromsession(m_session, "Ported {} to {} ( map: {}, x: {}, y: {}, z: {}, o: {} )", player->getName().c_str(), recall->name.c_str(), recall->mapId, recall->location.x, recall->location.y, recall->location.z, recall->location.o);
         if (player->getSession() && (player->getSession()->CanUseCommand('a') || !m_session->GetPlayer()->m_isGmInvisible))
-            player->getSession()->SystemMessage("%s teleported you to location %s!", m_session->GetPlayer()->getName().c_str(), recall->name.c_str());
+            player->getSession()->SystemMessage("{} teleported you to location {}!", m_session->GetPlayer()->getName().c_str(), recall->name.c_str());
 
         if (player->GetInstanceID() != m_session->GetPlayer()->GetInstanceID())
             sEventMgr.AddEvent(player, &Player::eventTeleport, recall->mapId, recall->location, uint32_t(0), EVENT_PLAYER_TELEPORT, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);

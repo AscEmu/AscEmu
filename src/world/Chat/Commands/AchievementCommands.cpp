@@ -25,7 +25,7 @@ bool ChatCommandHandler::handleAchievementCompleteCommand(const char* args, Worl
     {
         selected_player->getAchievementMgr()->gmCompleteAchievement(m_session, 0, true);
         systemMessage(m_session, "All achievements have now been completed for that player.");
-        sGMLog.writefromsession(m_session, "completed all achievements for player %s", selected_player->getName().c_str());
+        sGMLog.writefromsession(m_session, "completed all achievements for player {}", selected_player->getName());
         return true;
     }
 
@@ -36,7 +36,7 @@ bool ChatCommandHandler::handleAchievementCompleteCommand(const char* args, Worl
     if (selected_player->getAchievementMgr()->gmCompleteAchievement(m_session, achievement_id))
     {
         systemMessage(m_session, "The achievement has now been completed for that player.");
-        sGMLog.writefromsession(m_session, "completed achievement %u for player %s", achievement_id, selected_player->getName().c_str());
+        sGMLog.writefromsession(m_session, "completed achievement {} for player {}", achievement_id, selected_player->getName());
     }
 
     return true;
@@ -59,7 +59,7 @@ bool ChatCommandHandler::handleAchievementCriteriaCommand(const char* args, Worl
         {
             selected_player->getAchievementMgr()->gmCompleteCriteria(m_session, 0, true);
             systemMessage(m_session, "All achievement criteria have now been completed for that player.");
-            sGMLog.writefromsession(m_session, "completed all achievement criteria for player %s", selected_player->getName().c_str());
+            sGMLog.writefromsession(m_session, "completed all achievement criteria for player {}", selected_player->getName());
             return true;
         }
         return false;
@@ -68,7 +68,7 @@ bool ChatCommandHandler::handleAchievementCriteriaCommand(const char* args, Worl
     if (selected_player->getAchievementMgr()->gmCompleteCriteria(m_session, criteria_id))
     {
         systemMessage(m_session, "The achievement criteria has now been completed for that player.");
-        sGMLog.writefromsession(m_session, "completed achievement criteria %u for player %s", criteria_id, selected_player->getName().c_str());
+        sGMLog.writefromsession(m_session, "completed achievement criteria {} for player {}", criteria_id, selected_player->getName());
     }
 
     return true;
