@@ -380,7 +380,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE *output, WMORoot *rootWMO, bool precise
         for (int i = 0; i<3 * nColTriangles; ++i)
         {
             assert(MoviEx[i] < nVertices);
-            MoviEx[i] = IndexRenum[MoviEx[i]];
+            MoviEx[i] = static_cast<uint16_t>(IndexRenum[MoviEx[i]]);
         }
 
         // write triangle indices
@@ -457,7 +457,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE *output, WMORoot *rootWMO, bool precise
             }
         }
 
-        hlq->type = liquidEntry;
+        hlq->type = static_cast<short>(liquidEntry);
 
         /* std::ofstream llog("Buildings/liquid.log", ios_base::out | ios_base::app);
         llog << filename;

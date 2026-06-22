@@ -272,9 +272,10 @@ bool FileExists(const char* file)
 
 void strToLower(char* str)
 {
-    while(*str)
+    while (*str)
     {
-        *str=tolower(*str);
+        // Cast input to unsigned char for safety, and the int result back to char
+        *str = static_cast<char>(std::tolower(static_cast<unsigned char>(*str)));
         ++str;
     }
 }
@@ -341,7 +342,7 @@ void ReadLiquidTypeTableDBC()
     memset(LiqType, 0xff, (LiqType_maxid + 1) * sizeof(uint16_t));
 
     for (size_t x = 0; x < LiqType_count; ++x)
-        LiqType[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
+        LiqType[dbc.getRecord(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRecord(x).getUInt(3));
 
     printf("Done! (%zu LiqTypes loaded)\n", LiqType_count);
 #endif

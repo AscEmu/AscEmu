@@ -421,7 +421,7 @@ void ReadLiquidMaterialTable()
     for (uint32_t x = 0; x < dbc.getRecordCount(); ++x)
     {
         LiquidMaterialEntry& liquidType = LiquidMaterials[dbc.getRecord(x).getUInt(0)];
-        liquidType.LVF = dbc.getRecord(x).getUInt(1);
+        liquidType.LVF = static_cast<int8_t>(dbc.getRecord(x).getUInt(1));
     }
 
     printf("Done! (" SZFMTD " LiquidMaterials loaded)\n", LiquidMaterials.size());
@@ -448,7 +448,7 @@ void ReadLiquidObjectTable()
     for (uint32_t x = 0; x < dbc.getRecordCount(); ++x)
     {
         LiquidObjectEntry& liquidType = LiquidObjects[dbc.getRecord(x).getUInt(0)];
-        liquidType.LiquidTypeID = dbc.getRecord(x).getUInt(3);
+        liquidType.LiquidTypeID = static_cast<uint16_t>(dbc.getRecord(x).getUInt(3));
     }
 
     printf("Done! (" SZFMTD " LiquidObjects loaded)\n", LiquidObjects.size());
@@ -474,8 +474,8 @@ void ReadLiquidTypeTable()
     for (uint32_t x = 0; x < dbc.getRecordCount(); ++x)
     {
         LiquidTypeEntry& liquidType = LiquidTypes[dbc.getRecord(x).getUInt(0)];
-        liquidType.SoundBank = dbc.getRecord(x).getUInt(3);
-        liquidType.MaterialID = dbc.getRecord(x).getUInt(14);
+        liquidType.SoundBank = static_cast<uint8_t>(dbc.getRecord(x).getUInt(3));
+        liquidType.MaterialID = static_cast<uint8_t>(dbc.getRecord(x).getUInt(14));
     }
 
     SFileCloseFile(dbcFile);
@@ -640,7 +640,7 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
         }
 
         // Area data
-        area_ids[mcnk->iy][mcnk->ix] = mcnk->areaid;
+        area_ids[mcnk->iy][mcnk->ix] = static_cast<uint16_t>(mcnk->areaid);
 
         // Height
         // Height values for triangles stored in order:
@@ -762,7 +762,7 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
         }
 
         // Hole data
-        holes[mcnk->iy][mcnk->ix] = mcnk->holes;
+        holes[mcnk->iy][mcnk->ix] = static_cast<uint16_t>(mcnk->holes);
         if (!hasHoles && mcnk->holes != 0)
             hasHoles = true;
     }
@@ -1039,10 +1039,10 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
         liquidHeader.fourcc = *reinterpret_cast<uint32_t const*>(MAP_LIQUID_MAGIC);
         liquidHeader.flags = 0;
         liquidHeader.liquidType = 0;
-        liquidHeader.offsetX = minX;
-        liquidHeader.offsetY = minY;
-        liquidHeader.width = maxX - minX + 1 + 1;
-        liquidHeader.height = maxY - minY + 1 + 1;
+        liquidHeader.offsetX = static_cast<uint8_t>(minX);
+        liquidHeader.offsetY = static_cast<uint8_t>(minY);
+        liquidHeader.width = static_cast<uint8_t>(maxX - minX + 1 + 1);
+        liquidHeader.height = static_cast<uint8_t>(maxY - minY + 1 + 1);
         liquidHeader.liquidLevel = minHeight;
 
         if (maxHeight == minHeight)
@@ -1395,22 +1395,22 @@ void ExtractCameraFiles()
     for (std::string thisFile : camerafiles)
     {
         std::string filename = path;
-        HANDLE dbcFile = nullptr;
+        HANDLE fileHandle = nullptr;
         filename += (thisFile.c_str() + strlen("Cameras\\"));
 
         if (FileExists(filename.c_str()))
             continue;
 
-        if (!SFileOpenFileEx(WorldMpq, thisFile.c_str(), SFILE_OPEN_FROM_MPQ, &dbcFile))
+        if (!SFileOpenFileEx(WorldMpq, thisFile.c_str(), SFILE_OPEN_FROM_MPQ, &fileHandle))
         {
             printf("Unable to open file %s in the archive\n", thisFile.c_str());
             continue;
         }
 
-        if (ExtractFile(dbcFile, filename.c_str()))
+        if (ExtractFile(fileHandle, filename.c_str()))
             ++count;
 
-        SFileCloseFile(dbcFile);
+        SFileCloseFile(fileHandle);
     }
     printf("Extracted %u camera files\n", count);
 }
