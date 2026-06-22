@@ -45,7 +45,7 @@ endif ()
 # dll warning 4251 disabled by default.
 if (BUILD_WITH_WARNINGS)
     add_compile_options(
-	/W3
+	/W4
 	/external:anglebrackets
 	/external:W3
 	/wd4251 # Suppress DLL-interface warning
