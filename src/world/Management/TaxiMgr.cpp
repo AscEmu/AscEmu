@@ -48,7 +48,7 @@ TaxiPath::TaxiPath()
     m_taximask.fill(0);
 }
 
-void TaxiPath::initTaxiNodesForLevel(uint32_t race, [[maybe_unused]] uint32_t chrClass, uint8_t level)
+void TaxiPath::initTaxiNodesForLevel(uint32_t race, [[maybe_unused]] uint32_t chrClass, [[maybe_unused]] uint8_t level)
 {
 #if VERSION_STRING >= WotLK
     // class specific initial known nodes

@@ -8399,7 +8399,7 @@ void Player::updatePvPCurrencies()
     this->updateArenaPoints();
 }
 
-bool Player::hasPvPTitle(RankTitles title)
+bool Player::hasPvPTitle([[maybe_unused]] RankTitles title)
 {
 #if VERSION_STRING > Classic
     const auto index = static_cast<uint8_t>(title / 32);
@@ -8410,7 +8410,7 @@ bool Player::hasPvPTitle(RankTitles title)
 #endif
 }
 
-void Player::setKnownPvPTitle(RankTitles title, bool set)
+void Player::setKnownPvPTitle([[maybe_unused]] RankTitles title, [[maybe_unused]] bool set)
 {
 #if VERSION_STRING > Classic
     if (!set && !hasPvPTitle(title))
@@ -12995,9 +12995,9 @@ void Player::loadFieldsFromString(const char* string, uint16_t /*firstField*/, u
 
 void Player::calcExpertise()
 {
+#if VERSION_STRING != Classic
     int32_t modifier = 0;
 
-#if VERSION_STRING != Classic
     setExpertise(0);
     setOffHandExpertise(0);
 
@@ -15612,7 +15612,7 @@ void Player::updateStats()
         float value = getModCastSpeed() * m_spellHasteRatingBonus / haste; // remove previous mod and apply current
 
         setModCastSpeed(value);
-        m_spellHasteRatingBonus = haste;    // keep value for next run
+        m_spellHasteRatingBonus = haste; // keep value for next run
     }
 
     // Shield Block
@@ -15620,11 +15620,10 @@ void Player::updateStats()
     if (itemShield != nullptr && itemShield->getItemProperties()->InventoryType == INVTYPE_SHIELD)
     {
         float block_multiplier = (100.0f + m_modBlockAbsorbValue) / 100.0f;
-        if (block_multiplier < 1.0f)
-            block_multiplier = 1.0f;
+        block_multiplier = std::max(block_multiplier, 1.0f);
 
-        int32_t blockable_damage = Util::float2int32((itemShield->getItemProperties()->Block + m_modBlockValueFromSpells + getCombatRating(CR_BLOCK) + (str / 2.0f) - 1.0f) * block_multiplier);
 #if VERSION_STRING != Classic
+        int32_t blockable_damage = Util::float2int32((itemShield->getItemProperties()->Block + m_modBlockValueFromSpells + getCombatRating(CR_BLOCK) + (str / 2.0f) - 1.0f) * block_multiplier);
         setShieldBlock(blockable_damage);
 #endif
     }

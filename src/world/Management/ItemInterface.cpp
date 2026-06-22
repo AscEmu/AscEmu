@@ -3856,7 +3856,7 @@ void ItemInterface::CheckAreaItems()
     }
 }
 
-uint32_t ItemInterface::GetEquippedCountByItemLimit(uint32_t LimitId)
+uint32_t ItemInterface::GetEquippedCountByItemLimit([[maybe_unused]] uint32_t LimitId)
 {
     uint32_t count = 0;
 #if VERSION_STRING > Classic

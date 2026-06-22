@@ -8036,7 +8036,7 @@ bool Unit::isMounted() const
 #endif
 }
 
-void Unit::mount(uint32_t mount, [[maybe_unused]] uint32_t VehicleId, [[maybe_unused]] uint32_t creatureEntry)
+void Unit::mount([[maybe_unused]] uint32_t mount, [[maybe_unused]] uint32_t VehicleId, [[maybe_unused]] uint32_t creatureEntry)
 {
 #if VERSION_STRING == Classic
     // TODO
@@ -8087,7 +8087,7 @@ void Unit::mount(uint32_t mount, [[maybe_unused]] uint32_t VehicleId, [[maybe_un
 #endif
 }
 
-void Unit::dismount(bool resummonPet/* = true*/)
+void Unit::dismount([[maybe_unused]] bool resummonPet/* = true*/)
 {
     if (!isMounted())
         return;
@@ -9938,7 +9938,6 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     uint16_t SubClassSkill = SKILL_UNARMED;
 
     bool backAttack = !pVictim->isInFront(this);
-    uint32_t vskill = 0;
     bool disable_dR = false;
 
     if (ability)
@@ -9952,6 +9951,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     }
 
 #if VERSION_STRING >= TBC // support classic
+    uint32_t vskill = 0;
     //////////////////////////////////////////////////////////////////////////////////////////
     //Victim Skill Base Calculation
     if (pVictim->isPlayer())

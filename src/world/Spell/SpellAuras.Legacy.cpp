@@ -2562,7 +2562,7 @@ void Aura::SpellAuraModBlockPerc(AuraEffectModifier* aurEff, bool apply)
     }
 }
 
-void Aura::SpellAuraModCritPerc(AuraEffectModifier* aurEff, bool apply)
+void Aura::SpellAuraModCritPerc([[maybe_unused]] AuraEffectModifier* aurEff, [[maybe_unused]] bool apply)
 {
 #if VERSION_STRING >= TBC // support classic
     if (p_target != nullptr)
@@ -3225,7 +3225,7 @@ void Aura::SpellAuraModDamagePercDone(AuraEffectModifier* aurEff, bool apply)
     m_target->calculateDamage();
 }
 
-void Aura::SpellAuraModPercStat(AuraEffectModifier* aurEff, bool apply)
+void Aura::SpellAuraModPercStat([[maybe_unused]] AuraEffectModifier* aurEff, [[maybe_unused]] bool apply)
 {
 #if VERSION_STRING >= TBC // support classic
     int32_t val;
@@ -4176,7 +4176,7 @@ void Aura::SpellAuraModManaRegInterrupt(AuraEffectModifier* aurEff, bool apply)
     }
 }
 
-void Aura::SpellAuraModTotalStatPerc(AuraEffectModifier* aurEff, bool apply)
+void Aura::SpellAuraModTotalStatPerc([[maybe_unused]] AuraEffectModifier* aurEff, [[maybe_unused]] bool apply)
 {
 #if VERSION_STRING >= TBC // support classic
     int32_t val;
@@ -4736,7 +4736,7 @@ void Aura::SpellAuraModSpellDamageByAP(AuraEffectModifier* aurEff, bool apply)
     }
 }
 
-void Aura::SpellAuraIncreaseHealingByAttribute(AuraEffectModifier* aurEff, bool apply)
+void Aura::SpellAuraIncreaseHealingByAttribute([[maybe_unused]] AuraEffectModifier* aurEff, [[maybe_unused]] bool apply)
 {
 #if VERSION_STRING > Classic
     int32_t val = aurEff->getEffectDamage();
@@ -4780,7 +4780,7 @@ void Aura::SpellAuraIncreaseHealingByAttribute(AuraEffectModifier* aurEff, bool 
 #endif
 }
 
-void Aura::SpellAuraModHealingByAP(AuraEffectModifier* aurEff, bool apply)
+void Aura::SpellAuraModHealingByAP([[maybe_unused]] AuraEffectModifier* aurEff, [[maybe_unused]] bool apply)
 {
 #if VERSION_STRING > Classic
     int32_t val;
@@ -4821,7 +4821,7 @@ void Aura::SpellAuraModHealingByAP(AuraEffectModifier* aurEff, bool apply)
 #endif
 }
 
-void Aura::SpellAuraModHealingDone(AuraEffectModifier* aurEff, bool apply)
+void Aura::SpellAuraModHealingDone([[maybe_unused]] AuraEffectModifier* aurEff, [[maybe_unused]] bool apply)
 {
 #if VERSION_STRING > Classic
     int32_t val;
@@ -5393,7 +5393,7 @@ void Aura::SpellAuraRegenManaStatPCT(AuraEffectModifier* aurEff, bool apply)
     static_cast<Player*>(m_target)->updateStats();
 }
 
-void Aura::SpellAuraSpellHealingStatPCT(AuraEffectModifier* aurEff, bool apply)
+void Aura::SpellAuraSpellHealingStatPCT([[maybe_unused]] AuraEffectModifier* aurEff, [[maybe_unused]] bool apply)
 {
 #if VERSION_STRING >= TBC // support classic
     if (!m_target->isPlayer())
@@ -5595,7 +5595,7 @@ void Aura::SpellAuraExpertise(AuraEffectModifier* /*aurEff*/, bool /*apply*/)
     p_target->calcExpertise();
 }
 
-void Aura::SpellAuraForceMoveForward(AuraEffectModifier* /*aurEff*/, bool apply)
+void Aura::SpellAuraForceMoveForward(AuraEffectModifier* /*aurEff*/, [[maybe_unused]] bool apply)
 {
 #if VERSION_STRING != Classic
     if (apply)
@@ -5605,7 +5605,7 @@ void Aura::SpellAuraForceMoveForward(AuraEffectModifier* /*aurEff*/, bool apply)
 #endif
 }
 
-void Aura::SpellAuraComprehendLang(AuraEffectModifier* /*aurEff*/, bool apply)
+void Aura::SpellAuraComprehendLang(AuraEffectModifier* /*aurEff*/, [[maybe_unused]] bool apply)
 {
 #if VERSION_STRING != Classic
     if (apply)
@@ -5743,7 +5743,7 @@ void Aura::SpellAuraAddHealth(AuraEffectModifier* aurEff, bool apply)
     }
 }
 
-void Aura::SpellAuraRemoveReagentCost(AuraEffectModifier* /*aurEff*/, bool apply)
+void Aura::SpellAuraRemoveReagentCost(AuraEffectModifier* /*aurEff*/, [[maybe_unused]] bool apply)
 {
     if (p_target == nullptr)
         return;

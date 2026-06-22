@@ -402,7 +402,7 @@ bool SpellMgr::checkLocation(SpellInfo const* spellInfo, uint32_t zone_id, uint3
     // Normal case
     if (spellInfo->getRequiresAreaId() > 0)
     {
-        const auto requireAreaId = static_cast<uint32_t>(spellInfo->getRequiresAreaId());
+        [[maybe_unused]] const auto requireAreaId = static_cast<uint32_t>(spellInfo->getRequiresAreaId());
 #if VERSION_STRING == TBC
         if (requireAreaId != zone_id && requireAreaId != area_id)
             return false;

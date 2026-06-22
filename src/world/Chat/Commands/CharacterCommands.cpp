@@ -1292,7 +1292,6 @@ bool ChatCommandHandler::HandleCharSetGenderCommand(const char* args, WorldSessi
     if (player_target == nullptr)
         return true;
 
-    uint32_t displayId = player_target->getNativeDisplayId();
     uint8_t gender;
     if (*args == 0)
     {
@@ -1300,9 +1299,8 @@ bool ChatCommandHandler::HandleCharSetGenderCommand(const char* args, WorldSessi
     }
     else
     {
-        gender = (uint8_t)atoi(args);
-        if (gender > 1)
-            gender = 1;
+        gender = static_cast<uint8_t>(atoi(args));
+        gender = std::min<uint8_t>(gender, 1);
     }
 
     if (gender == player_target->getGender())
@@ -1315,6 +1313,8 @@ bool ChatCommandHandler::HandleCharSetGenderCommand(const char* args, WorldSessi
     systemMessage(m_session, "Set {}'s gender to {}({}).", player_target->getName(), gender ? "Female" : "Male", gender);
 
 #if VERSION_STRING > Classic
+    uint32_t displayId = player_target->getNativeDisplayId();
+
     if (player_target->getGender() == 0)
     {
         player_target->setDisplayId((player_target->getRace() == RACE_BLOODELF) ? ++displayId : --displayId);
@@ -1650,7 +1650,7 @@ bool ChatCommandHandler::HandleCharSetTalentpointsCommand(const char* args, Worl
 }
 
 //.character set title
-bool ChatCommandHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharSetTitleCommand([[maybe_unused]] const char* args, WorldSession* m_session)
 {
 #if VERSION_STRING > Classic
     auto player_target = GetSelectedPlayer(m_session, true, true);

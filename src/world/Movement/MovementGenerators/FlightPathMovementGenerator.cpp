@@ -200,7 +200,7 @@ void FlightPathMovementGenerator::setCurrentNodeAfterTeleport()
     }
 }
 
-void FlightPathMovementGenerator::doEventIfAny(Player* player, WDB::Structures::TaxiPathNodeEntry const* node, bool departure)
+void FlightPathMovementGenerator::doEventIfAny([[maybe_unused]] Player* player, [[maybe_unused]] WDB::Structures::TaxiPathNodeEntry const* node, [[maybe_unused]] bool departure)
 {
 #if VERSION_STRING >= TBC
     if (uint32_t eventid = departure ? node->departureEventID : node->arivalEventID)

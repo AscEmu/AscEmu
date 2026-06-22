@@ -2127,7 +2127,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             if (areaEntry == nullptr)
                 return SPELL_FAILED_NOT_HERE;
 
-            const auto requireAreaId = static_cast<uint32_t>(getSpellInfo()->getRequiresAreaId());
+            [[maybe_unused]] const auto requireAreaId = static_cast<uint32_t>(getSpellInfo()->getRequiresAreaId());
 #if VERSION_STRING == TBC
             if (requireAreaId != areaEntry->id && requireAreaId != areaEntry->zone)
             {

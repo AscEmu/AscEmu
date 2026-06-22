@@ -845,7 +845,7 @@ uint8_t Item::getSocketSlotCount([[maybe_unused]]bool includePrismatic/* = true*
 
 #endif
 
-uint32_t Item::countGemsWithLimitId(uint32_t limitId)
+uint32_t Item::countGemsWithLimitId([[maybe_unused]] uint32_t limitId)
 {
 #if VERSION_STRING > Classic
     uint32_t result = 0;
@@ -867,7 +867,7 @@ uint32_t Item::countGemsWithLimitId(uint32_t limitId)
 #endif
 }
 
-bool Item::isGemRelated(WDB::Structures::SpellItemEnchantmentEntry const* enchantment)
+bool Item::isGemRelated([[maybe_unused]] WDB::Structures::SpellItemEnchantmentEntry const* enchantment)
 {
 #if VERSION_STRING > Classic
     if (getItemProperties()->SocketBonus == enchantment->Id)
@@ -875,7 +875,7 @@ bool Item::isGemRelated(WDB::Structures::SpellItemEnchantmentEntry const* enchan
 
     return enchantment->GemEntry != 0;
 #else
-    return 0;
+    return false;
 #endif
 }
 

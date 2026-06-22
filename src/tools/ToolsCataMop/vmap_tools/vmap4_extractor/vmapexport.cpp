@@ -299,7 +299,7 @@ void ReadLiquidTypeTableDBC()
     memset(LiqType, 0xff, (LiqType_maxid + 1) * sizeof(uint16_t));
 
     for(uint32_t x = 0; x < LiqType_count; ++x)
-        LiqType[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
+        LiqType[dbc.getRecord(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRecord(x).getUInt(3));
 
     printf("Done! (%u LiqTypes loaded)\n", (unsigned int)LiqType_count);
 #else

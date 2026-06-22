@@ -874,7 +874,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
     if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
         return;
 
-    int32_t customDamage = 0;
+    [[maybe_unused]] int32_t customDamage = 0;
     auto effectIntValue = static_cast<int32_t>(std::ceil(effectFloatValue));
 
     switch (aurEff->getAuraEffectType())

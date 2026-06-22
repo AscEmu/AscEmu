@@ -299,10 +299,11 @@ void ArenaTeam::setLeader(CachedCharacterInfo const* cachedCharInfo)
 
         sendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
 
-        const uint32_t old_leader = m_leader;
         m_leader = cachedCharInfo->guid;
 
 #if VERSION_STRING != Classic
+        const uint32_t old_leader = m_leader;
+
         for (uint32_t i = 0; i < m_memberCount; ++i)
         {
             if (m_members[i].Info)

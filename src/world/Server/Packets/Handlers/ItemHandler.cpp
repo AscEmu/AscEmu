@@ -2759,7 +2759,7 @@ void WorldSession::handleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacke
     item->removeAllEnchantments(true);
 }
 
-void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
+void WorldSession::handleInsertGemOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > Classic
     CmsgSocketGems srlPacket;

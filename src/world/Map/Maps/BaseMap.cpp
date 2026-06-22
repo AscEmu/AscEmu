@@ -128,7 +128,7 @@ bool BaseMap::isInstanceableMap() const
     return _mapEntry->isInstanceableMap() && _mapInfo->isInstanceableMap();
 }
 
-bool BaseMap::getEntrancePos(int32_t& mapid, float& x, float& y) const
+bool BaseMap::getEntrancePos([[maybe_unused]] int32_t& mapid, [[maybe_unused]] float& x, [[maybe_unused]] float& y) const
 {
 #if VERSION_STRING > Classic
     if (!_mapEntry)
