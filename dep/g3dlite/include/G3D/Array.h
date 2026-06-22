@@ -35,6 +35,8 @@
 #   pragma warning( disable : 4786)
 #endif
 
+#include <type_traits>
+
 namespace G3D {
 
 /**
@@ -46,8 +48,6 @@ const bool DONT_SHRINK_UNDERLYING_ARRAY = false;
 const int SORT_INCREASING = 1;
 /** Constant for Array::sort */
 const int SORT_DECREASING = -1;
-
-
 
 /**
  \brief Dynamic 1D array tuned for performance.
@@ -346,7 +346,7 @@ public:
 
    /** Resizes this to match the size of \a other and then copies the data from other using memcpy.  This is only safe for POD types */
    void copyPOD(const Array<T>& other) {
-       static_assert(std::is_standard_layout_v<T> && std::is_trivial_v<T>, "copyPOD called on non-POD type");
+       static_assert(std::is_standard_layout<T>::value && std::is_trivial<T>::value, "copyPOD called on non-POD type");
        if (numAllocated < other.num) {
            m_memoryManager->free(data);
            data = NULL;
@@ -365,7 +365,7 @@ public:
    /** Resizes this to just barely match the size of \a other + itself and then copies the data to the end of the array from other using memcpy.  
         This is only safe for POD types */
    void appendPOD(const Array<T>& other) {
-       static_assert(std::is_standard_layout_v<T> && std::is_trivial_v<T>, "appendPOD called on non-POD type");
+       static_assert(std::is_standard_layout<T>::value && std::is_trivial<T>::value, "appendPOD called on non-POD type");
        const size_t oldSize = num;
        num += other.num;
        if (numAllocated < num) {
