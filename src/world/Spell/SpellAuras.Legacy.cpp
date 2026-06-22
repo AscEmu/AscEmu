@@ -3729,7 +3729,7 @@ void Aura::SpellAuraFeatherFall(AuraEffectModifier* /*aurEff*/, bool apply)
     }
 }
 
-void Aura::SpellAuraHover(AuraEffectModifier* [[maybe_unused]] aurEff, [[maybe_unused]] bool apply)
+void Aura::SpellAuraHover([[maybe_unused]] AuraEffectModifier* aurEff, [[maybe_unused]] bool apply)
 {
 #if VERSION_STRING > TBC
     mPositive = true;
@@ -3737,7 +3737,7 @@ void Aura::SpellAuraHover(AuraEffectModifier* [[maybe_unused]] aurEff, [[maybe_u
     if (apply)
     {
         m_target->setMoveHover(true);
-        m_target->setHoverHeight(float(aurEff->getEffectDamage()) / 2);
+        m_target->setHoverHeight(static_cast<float>(aurEff->getEffectDamage()) / 2);
     }
     else
     {
