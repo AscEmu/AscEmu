@@ -106,7 +106,7 @@ void WorldSession::handleRequestVehicleSwitchSeat([[maybe_unused]] WorldPacket& 
 #endif
 }
 
-void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPacket& recvPacket)
+void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     Unit* vehicle_base = GetPlayer()->getVehicleBase();
@@ -122,9 +122,9 @@ void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPac
         return;
 
 #if VERSION_STRING < Cata
-    uint64_t guid = srlPacket.sourceGuid;               // current vehicle guid
+    uint64_t guid = srlPacket.sourceGuid; // current vehicle guid
 #endif
-    uint64_t accessory = srlPacket.destinationGuid;     // accessory guid
+    uint64_t accessory = srlPacket.destinationGuid; // accessory guid
 
     vehicle_base->obj_movement_info = srlPacket.movementInfo;
     int8_t seatId = srlPacket.seat;
@@ -160,7 +160,7 @@ void WorldSession::handleRemoveVehiclePassenger([[maybe_unused]] WorldPacket& re
     Vehicle* vehicle = _player->getVehicleKit();
     if (!vehicle)
     {
-        recvPacket.rfinish();   // prevent warnings spam
+        recvPacket.rfinish(); // prevent warnings spam
         return;
     }
 
@@ -178,8 +178,7 @@ void WorldSession::handleRemoveVehiclePassenger([[maybe_unused]] WorldPacket& re
     if (!passengerUnit->isOnVehicle(vehicle->getBase()))
         return;
 
-    auto seat = vehicle->getSeatForPassenger(passengerUnit);
-    if (seat)
+    if (auto seat = vehicle->getSeatForPassenger(passengerUnit))
         if (seat->isEjectable())
             passengerUnit->callExitVehicle();
 #endif
@@ -199,7 +198,7 @@ void WorldSession::handleLeaveVehicle(WorldPacket& /*recvPacket*/)
 #endif
 }
 
-void WorldSession::handleEnterVehicle(WorldPacket& [[maybe_unused]] recvPacket)
+void WorldSession::handleEnterVehicle([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgPlayerVehicleEnter srlPacket;
