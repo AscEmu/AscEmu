@@ -407,7 +407,7 @@ void WorldSession::handleSwapItemOpcode(WorldPacket& recvPacket)
         srlPacket.destSlot, srlPacket.srcInventorySlot, srlPacket.srcSlot);
 }
 
-void WorldSession::sendRefundInfo(uint64_t GUID)
+void WorldSession::sendRefundInfo([[maybe_unused]] uint64_t GUID)
 {
 #if VERSION_STRING == WotLK
     if (!_player || !_player->IsInWorld())
@@ -784,7 +784,7 @@ void WorldSession::sendReforgeResult([[maybe_unused]] bool success)
 #endif
 }
 
-void WorldSession::handleItemRefundInfoOpcode(WorldPacket& recvPacket)
+void WorldSession::handleItemRefundInfoOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= WotLK
     CmsgItemrefundinfo srlPacket;
@@ -797,7 +797,7 @@ void WorldSession::handleItemRefundInfoOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleItemRefundRequestOpcode(WorldPacket& recvPacket)
+void WorldSession::handleItemRefundRequestOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= WotLK
     CmsgItemrefundrequest srlPacket;
@@ -3064,7 +3064,7 @@ void WorldSession::handleWrapItemOpcode(WorldPacket& recvPacket)
     dst->saveToDB(srlPacket.destBagSlot, srlPacket.destSlot, false, nullptr);
 }
 
-void WorldSession::handleEquipmentSetUse(WorldPacket& data)
+void WorldSession::handleEquipmentSetUse([[maybe_unused]] WorldPacket& data)
 {
 #if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_EQUIPMENT_SET_USE");
@@ -3137,7 +3137,7 @@ void WorldSession::handleEquipmentSetUse(WorldPacket& data)
 #endif
 }
 
-void WorldSession::handleEquipmentSetSave(WorldPacket& data)
+void WorldSession::handleEquipmentSetSave([[maybe_unused]] WorldPacket& data)
 {
 #if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_EQUIPMENT_SET_SAVE");
@@ -3179,7 +3179,7 @@ void WorldSession::handleEquipmentSetSave(WorldPacket& data)
 #endif
 }
 
-void WorldSession::handleEquipmentSetDelete(WorldPacket& data)
+void WorldSession::handleEquipmentSetDelete([[maybe_unused]] WorldPacket& data)
 {
 #if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_EQUIPMENT_SET_DELETE");

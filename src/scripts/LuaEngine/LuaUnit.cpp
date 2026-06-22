@@ -5820,8 +5820,8 @@ int LuaUnit::GetTalentPoints(lua_State* L, Unit* ptr)
         return 0;
     }
 
-    const uint32_t spec = static_cast<uint32_t>(luaL_checkinteger(L, 1)); //0 or 1
 #ifdef FT_DUAL_SPEC
+    const uint32_t spec = static_cast<uint32_t>(luaL_checkinteger(L, 1)); //0 or 1
     PlayerSpec plrSpec = dynamic_cast<Player*>(ptr)->m_specs[spec];
 #else
     PlayerSpec plrSpec = static_cast<Player*>(ptr)->m_spec;
@@ -5896,7 +5896,7 @@ int LuaUnit::GetGuildMembers(lua_State* L, Unit* ptr)
     return 1;
 }
 
-int LuaUnit::AddAchievement(lua_State* L, Unit* ptr)
+int LuaUnit::AddAchievement([[maybe_unused]] lua_State* L, Unit* ptr)
 {
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
     {
@@ -5914,7 +5914,7 @@ int LuaUnit::AddAchievement(lua_State* L, Unit* ptr)
     return 1;
 }
 
-int LuaUnit::RemoveAchievement(lua_State* L, Unit* ptr)
+int LuaUnit::RemoveAchievement([[maybe_unused]] lua_State* L, Unit* ptr)
 {
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
     {
@@ -5928,7 +5928,7 @@ int LuaUnit::RemoveAchievement(lua_State* L, Unit* ptr)
     return 0;
 }
 
-int LuaUnit::HasAchievement(lua_State* L, Unit* ptr)
+int LuaUnit::HasAchievement([[maybe_unused]] lua_State* L, Unit* ptr)
 {
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
     {
@@ -6441,7 +6441,7 @@ int LuaUnit::GetQuestObjectiveCompletion(lua_State* L, Unit* ptr)
     return 1;
 }
 
-int LuaUnit::IsOnVehicle(lua_State* L, Unit* ptr)
+int LuaUnit::IsOnVehicle([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
 {
 #ifdef FT_VEHICLES
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
@@ -6457,7 +6457,7 @@ int LuaUnit::IsOnVehicle(lua_State* L, Unit* ptr)
     return 1;
 }
 
-int LuaUnit::SpawnAndEnterVehicle(lua_State* L, Unit* ptr)
+int LuaUnit::SpawnAndEnterVehicle([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
 {
 #ifdef FT_VEHICLES
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
@@ -6505,7 +6505,7 @@ int LuaUnit::SpawnAndEnterVehicle(lua_State* L, Unit* ptr)
     return 0;
 }
 
-int LuaUnit::DismissVehicle(lua_State* /*L*/, Unit* ptr)
+int LuaUnit::DismissVehicle(lua_State* /*L*/, [[maybe_unused]] Unit* ptr)
 {
 #ifdef FT_VEHICLES
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
@@ -6539,7 +6539,7 @@ int LuaUnit::DismissVehicle(lua_State* /*L*/, Unit* ptr)
     return 0;
 }
 
-int LuaUnit::AddVehiclePassenger(lua_State* L, Unit* ptr)
+int LuaUnit::AddVehiclePassenger([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
 {
 #ifdef FT_VEHICLES
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
@@ -6580,7 +6580,7 @@ int LuaUnit::AddVehiclePassenger(lua_State* L, Unit* ptr)
     return 0;
 }
 
-int LuaUnit::HasEmptyVehicleSeat(lua_State* L, Unit* ptr)
+int LuaUnit::HasEmptyVehicleSeat([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
 {
 #ifdef FT_VEHICLES
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
@@ -6607,7 +6607,7 @@ int LuaUnit::HasEmptyVehicleSeat(lua_State* L, Unit* ptr)
     return 1;
 }
 
-int LuaUnit::EnterVehicle(lua_State* L, Unit* ptr)
+int LuaUnit::EnterVehicle([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
 {
 #ifdef FT_VEHICLES
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
@@ -6627,7 +6627,7 @@ int LuaUnit::EnterVehicle(lua_State* L, Unit* ptr)
     return 0;
 }
 
-int LuaUnit::ExitVehicle(lua_State* /*L*/, Unit* ptr)
+int LuaUnit::ExitVehicle(lua_State* /*L*/, [[maybe_unused]] Unit* ptr)
 {
 #ifdef FT_VEHICLES
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
@@ -6648,7 +6648,7 @@ int LuaUnit::ExitVehicle(lua_State* /*L*/, Unit* ptr)
     return 0;
 }
 
-int LuaUnit::GetVehicleBase(lua_State* L, Unit* ptr)
+int LuaUnit::GetVehicleBase([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
 {
 #ifdef FT_VEHICLES
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
@@ -6666,7 +6666,7 @@ int LuaUnit::GetVehicleBase(lua_State* L, Unit* ptr)
     return 1;
 }
 
-int LuaUnit::EjectAllVehiclePassengers(lua_State* /*L*/, Unit* ptr)
+int LuaUnit::EjectAllVehiclePassengers(lua_State* /*L*/, [[maybe_unused]] Unit* ptr)
 {
 #ifdef FT_VEHICLES
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
@@ -6683,7 +6683,7 @@ int LuaUnit::EjectAllVehiclePassengers(lua_State* /*L*/, Unit* ptr)
     return 0;
 }
 
-int LuaUnit::EjectVehiclePassengerFromSeat(lua_State* L, Unit* ptr)
+int LuaUnit::EjectVehiclePassengerFromSeat([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
 {
 #ifdef FT_VEHICLES
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
@@ -6709,7 +6709,7 @@ int LuaUnit::EjectVehiclePassengerFromSeat(lua_State* L, Unit* ptr)
     return 0;
 }
 
-int LuaUnit::MoveVehiclePassengerToSeat(lua_State* L, Unit* ptr)
+int LuaUnit::MoveVehiclePassengerToSeat([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
 {
 #ifdef FT_VEHICLES
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())

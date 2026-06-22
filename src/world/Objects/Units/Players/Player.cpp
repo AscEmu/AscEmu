@@ -796,13 +796,14 @@ void Player::setPlayerFlags(uint32_t flags)
 #if VERSION_STRING == TBC
     // TODO Fix this later
     return;
-#endif
+#else
 
     // Update player flags also to group
     if (!IsInWorld() || getGroup() == nullptr)
         return;
 
     addGroupUpdateFlag(GROUP_UPDATE_FLAG_STATUS);
+#endif
 }
 
 void Player::addPlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() | flags); }
@@ -4584,7 +4585,7 @@ void Player::addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t ma
     if (!initializeProfession)
         currentValue = currentValue < 1 ? 1U : currentValue;
 
-    const auto onLearnedNewSkill = [&](uint16_t curVal, uint16_t skillStep, bool isPrimaryProfession) -> void
+    const auto onLearnedNewSkill = [&](uint16_t curVal, [[maybe_unused]] uint16_t skillStep, bool isPrimaryProfession) -> void
     {
 #if VERSION_STRING >= Cata
         // Profession skill line
@@ -9483,7 +9484,7 @@ void Player::sendDestroyObjectPacket(uint64_t destroyedGuid)
     m_session->SendPacket(SmsgDestroyObject(destroyedGuid).serialise().get());
 }
 
-void Player::sendEquipmentSetUseResultPacket(uint8_t result)
+void Player::sendEquipmentSetUseResultPacket([[maybe_unused]] uint8_t result)
 {
 #if VERSION_STRING > TBC
     m_session->SendPacket(SmsgEquipmentSetUseResult(result).serialise().get());
@@ -9624,7 +9625,7 @@ void Player::sendEquipmentSetList()
 #endif
 }
 
-void Player::sendEquipmentSetSaved(uint32_t setId, uint32_t setGuid)
+void Player::sendEquipmentSetSaved([[maybe_unused]] uint32_t setId, [[maybe_unused]] uint32_t setGuid)
 {
 #if VERSION_STRING > TBC
     WorldPacket data(SMSG_EQUIPMENT_SET_SAVED, 12);

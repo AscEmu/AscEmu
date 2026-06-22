@@ -48,7 +48,7 @@ TaxiPath::TaxiPath()
     m_taximask.fill(0);
 }
 
-void TaxiPath::initTaxiNodesForLevel(uint32_t race, uint32_t chrClass, uint8_t level)
+void TaxiPath::initTaxiNodesForLevel(uint32_t race, [[maybe_unused]] uint32_t chrClass, uint8_t level)
 {
 #if VERSION_STRING >= WotLK
     // class specific initial known nodes
@@ -121,7 +121,7 @@ void TaxiPath::initTaxiNodesForLevel(uint32_t race, uint32_t chrClass, uint8_t l
             setTaximaskNode(2);
             break;
 #endif
-#if VERSION_STRING >= Mop   
+#if VERSION_STRING >= Mop
         case RACE_PANDAREN_ALLIANCE:
             setTaximaskNode(2);
             break;

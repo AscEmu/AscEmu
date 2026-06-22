@@ -61,7 +61,7 @@ public:
 class WrathGateQuestCinema : public QuestScript
 {
 public:
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    void OnQuestComplete([[maybe_unused]] Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
 #if VERSION_STRING > TBC
         // send packet for movie

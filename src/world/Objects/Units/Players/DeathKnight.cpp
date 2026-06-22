@@ -24,7 +24,7 @@
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgConvertRune.h"
 
-void DeathKnight::SendRuneUpdate(uint8_t slot)
+void DeathKnight::SendRuneUpdate([[maybe_unused]] uint8_t slot)
 {
 #if VERSION_STRING > TBC
     getSession()->SendPacket(AscEmu::Packets::SmsgConvertRune(slot, m_runes[slot].type).serialise().get());

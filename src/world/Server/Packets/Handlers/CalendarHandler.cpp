@@ -42,7 +42,7 @@ void WorldSession::handleCalendarGetNumPending(WorldPacket& /*recvPacket*/)
 #endif
 }
 
-void WorldSession::handleCalendarAddEvent(WorldPacket& recvPacket)
+void WorldSession::handleCalendarAddEvent([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     // Create an Event and save it to char db 
@@ -153,7 +153,7 @@ void WorldSession::handleCalendarEventModeratorStatus(WorldPacket& /*recvPacket*
 #endif
 }
 
-void WorldSession::sendCalendarRaidLockout(InstanceSaved const* save, bool add)
+void WorldSession::sendCalendarRaidLockout([[maybe_unused]] InstanceSaved const* save, [[maybe_unused]] bool add)
 {
 #if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_CALENDAR_RAID_LOCKOUT_ADDED/REMOVED");
@@ -175,7 +175,7 @@ void WorldSession::sendCalendarRaidLockout(InstanceSaved const* save, bool add)
 #endif
 }
 
-void WorldSession::sendCalendarRaidLockoutUpdated(InstanceSaved const* save)
+void WorldSession::sendCalendarRaidLockoutUpdated([[maybe_unused]] InstanceSaved const* save)
 {
 #if VERSION_STRING > TBC
     if (!save)

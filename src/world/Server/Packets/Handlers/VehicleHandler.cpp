@@ -16,14 +16,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-void WorldSession::handleDismissVehicle(WorldPacket& recvPacket)
+void WorldSession::handleDismissVehicle([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     uint64_t vehicleGUID = _player->getCharmGuid();
 
-    if (!vehicleGUID)   // something wrong here...
+    if (!vehicleGUID) // something wrong here...
     {
-        recvPacket.rfinish();   // prevent warnings spam
+        recvPacket.rfinish(); // prevent warnings spam
         return;
     }
 
@@ -32,7 +32,7 @@ void WorldSession::handleDismissVehicle(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleRequestVehiclePreviousSeat(WorldPacket& recvPacket)
+void WorldSession::handleRequestVehiclePreviousSeat([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     if (GetPlayer()->getVehicleBase() == nullptr)
@@ -52,7 +52,7 @@ void WorldSession::handleRequestVehiclePreviousSeat(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleRequestVehicleNextSeat(WorldPacket& recvPacket)
+void WorldSession::handleRequestVehicleNextSeat([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     if (GetPlayer()->getVehicleBase() == nullptr)
@@ -72,7 +72,7 @@ void WorldSession::handleRequestVehicleNextSeat(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleRequestVehicleSwitchSeat(WorldPacket& recvPacket)
+void WorldSession::handleRequestVehicleSwitchSeat([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     Unit* vehicle_base = GetPlayer()->getVehicleBase();
@@ -154,7 +154,7 @@ void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPac
 #endif
 }
 
-void WorldSession::handleRemoveVehiclePassenger(WorldPacket& recvPacket)
+void WorldSession::handleRemoveVehiclePassenger([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     Vehicle* vehicle = _player->getVehicleKit();
@@ -199,7 +199,7 @@ void WorldSession::handleLeaveVehicle(WorldPacket& /*recvPacket*/)
 #endif
 }
 
-void WorldSession::handleEnterVehicle(WorldPacket& recvPacket)
+void WorldSession::handleEnterVehicle(WorldPacket& [[maybe_unused]] recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgPlayerVehicleEnter srlPacket;

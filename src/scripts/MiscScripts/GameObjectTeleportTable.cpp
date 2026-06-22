@@ -46,7 +46,7 @@ public:
             GameobjectTeleport* gt = itr->second;
             uint32_t required_level = gt->req_level;
             uint8_t req_class = gt->req_class;
-            uint32_t req_achievement = gt->req_achievement;
+            [[maybe_unused]] uint32_t req_achievement = gt->req_achievement;
 
             if (required_level > pPlayer->getLevel())
             {
@@ -78,6 +78,7 @@ public:
             }
         }
     }
+
     static GameObjectAIScript* Create(GameObject* GO) { return new CustomTeleport(GO); }
 };
 

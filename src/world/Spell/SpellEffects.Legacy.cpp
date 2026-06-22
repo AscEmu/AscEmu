@@ -3095,7 +3095,7 @@ void Spell::SpellEffectSummonPossessed(uint32_t /*i*/, WDB::Structures::SummonPr
     p_caster->possess(s, 1000);
 }
 
-void Spell::SpellEffectSummonCompanion(uint32_t /*i*/, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
+void Spell::SpellEffectSummonCompanion(uint32_t /*i*/, [[maybe_unused]] WDB::Structures::SummonPropertiesEntry const* spe, [[maybe_unused]] CreatureProperties const* properties_, [[maybe_unused]] LocationVector& v)
 {
     if (u_caster == nullptr)
         return;
@@ -3107,14 +3107,14 @@ void Spell::SpellEffectSummonCompanion(uint32_t /*i*/, WDB::Structures::SummonPr
         if (critter == nullptr)
             return;
 
-        auto creature = static_cast< Creature* >(critter);
+        auto creature = static_cast<Creature*>(critter);
 
         uint32_t currententry = creature->GetCreatureProperties()->Id;
 
         creature->RemoveFromWorld(false, true);
         u_caster->setCritterGuid(0);
 
-        // Before WOTLK when you casted the companion summon spell the second time it removed the companion
+        // Before WOTLK when you cast the companion summon spell the second time it removed the companion
         // Customized servers or old databases could still use this method
         if (properties_->Id == currententry)
             return;
@@ -4579,7 +4579,7 @@ void Spell::SpellEffectAddFarsight(uint8_t effectIndex) // Add Farsight
     p_caster->getWorldMap()->changeFarsightLocation(p_caster, dynObj);
 }
 
-void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
+void Spell::SpellEffectUseGlyph([[maybe_unused]] uint8_t effectIndex)
 {
 #if VERSION_STRING > TBC
     if (!p_caster)
@@ -6068,7 +6068,7 @@ void Spell::SpellEffectDualWield2H(uint8_t /*effectIndex*/)
     m_playerTarget->setDualWield2H(true);
 }
 
-void Spell::SpellEffectEnchantItemPrismatic(uint8_t effectIndex)
+void Spell::SpellEffectEnchantItemPrismatic([[maybe_unused]] uint8_t effectIndex)
 {
 #if VERSION_STRING < WotLK
     return;

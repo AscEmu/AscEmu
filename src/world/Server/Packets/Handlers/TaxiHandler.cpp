@@ -143,7 +143,7 @@ void WorldSession::handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket)
     sendTaxiMenu(unit);
 }
 
-void WorldSession::handleEnabletaxiOpcode(WorldPacket& recvPacket)
+void WorldSession::handleEnabletaxiOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgEnabletaxi srlPacket;

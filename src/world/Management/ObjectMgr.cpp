@@ -1990,7 +1990,7 @@ void ObjectMgr::loadInstanceEncounters()
     sLogger.info("ObjectMgr : Loaded {} instance encounters in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
-DungeonEncounterList const* ObjectMgr::getDungeonEncounterList(uint32_t _mapId, uint8_t _difficulty) const
+DungeonEncounterList const* ObjectMgr::getDungeonEncounterList(uint32_t _mapId, [[maybe_unused]] uint8_t _difficulty) const
 {
 #if VERSION_STRING >= WotLK
     std::unordered_map<uint32_t, DungeonEncounterList>::const_iterator itr = m_dungeonEncounterStore.find(uint32_t(uint16_t(_mapId) | (uint32_t(_difficulty) << 16)));

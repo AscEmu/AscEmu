@@ -83,7 +83,7 @@ void WorldStatesHandler::BuildInitWorldStatesForZone(uint32_t _zone, uint32_t _a
         ++count;
     }
 
-    _data.put<uint16_t>(count_pos, count);
+    _data.put<uint16_t>(count_pos, static_cast<uint16_t>(count));
 #endif
 }
 

@@ -437,7 +437,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     // but we should already received the active mover
     sessionMovementInfo.guid = m_MoverWoWGuid;
 
-    WorldPacket data(opcode, recvData.size());
+    WorldPacket data(static_cast<uint16_t>(opcode), recvData.size());
     data << sessionMovementInfo;
     mover->sendMessageToSet(&data, false);
 

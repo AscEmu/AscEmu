@@ -571,7 +571,7 @@ void WorldSession::handleWorldStateUITimerUpdate(WorldPacket& /*recvPacket*/)
 #endif
 }
 
-void WorldSession::handleGameobjReportUseOpCode(WorldPacket& recvPacket)
+void WorldSession::handleGameobjReportUseOpCode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgGameobjReportUse srlPacket;
@@ -624,7 +624,7 @@ void WorldSession::handleDungeonDifficultyOpcode(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::handleRaidDifficultyOpcode(WorldPacket& recvPacket)
+void WorldSession::handleRaidDifficultyOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     MsgSetRaidDifficulty srlPacket;
@@ -1764,7 +1764,7 @@ void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
 
 
 
-void WorldSession::handleRemoveGlyph(WorldPacket& recvPacket)
+void WorldSession::handleRemoveGlyph([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgRemoveGlyph srlPacket;
@@ -1800,7 +1800,7 @@ namespace BarberShopResult
 }
 #endif
 
-void WorldSession::handleBarberShopResult(WorldPacket& recvPacket)
+void WorldSession::handleBarberShopResult([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     // todo: Here was SMSG_BARBER_SHOP:RESULT... maybe itr is MSG or it was just wrong. Check it!
@@ -2857,7 +2857,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     sLogger.debug("Sent SMSG_MIRRORIMAGE_DATA");
 }
 
-void WorldSession::sendClientCacheVersion(uint32_t version)
+void WorldSession::sendClientCacheVersion([[maybe_unused]] uint32_t version)
 {
 #if VERSION_STRING > TBC
     WorldPacket data(SMSG_CLIENTCACHE_VERSION, 4);

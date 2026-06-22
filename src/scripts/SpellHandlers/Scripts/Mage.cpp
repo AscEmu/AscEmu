@@ -151,7 +151,7 @@ public:
 class Impact : public SpellScript
 {
 public:
-    void onCreateSpellProc(SpellProc* proc, Object* /*obj*/) override
+    void onCreateSpellProc([[maybe_unused]] SpellProc* proc, Object* /*obj*/) override
     {
         // TODO: classic and tbc masks
 #if VERSION_STRING >= WotLK

@@ -686,7 +686,7 @@ void WorldSession::handlePetLearnTalent([[maybe_unused]] WorldPacket& recvPacket
 #endif
 }
 
-void WorldSession::handleDismissCritter(WorldPacket& recvPacket)
+void WorldSession::handleDismissCritter([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgDismissCritter srlPacket;

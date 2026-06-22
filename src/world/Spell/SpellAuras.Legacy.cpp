@@ -1871,7 +1871,7 @@ void Aura::SpellAuraReflectSpells(AuraEffectModifier* aurEff, bool apply)
     }
 }
 
-void Aura::SpellAuraModStat(AuraEffectModifier* aurEff, bool apply)
+void Aura::SpellAuraModStat([[maybe_unused]] AuraEffectModifier* aurEff, [[maybe_unused]] bool apply)
 {
 #if VERSION_STRING > TBC // support classic
     int32_t stat = aurEff->getEffectMiscValue();
@@ -2485,7 +2485,7 @@ void Aura::SpellAuraTrackResources(AuraEffectModifier* aurEff, bool apply)
     }
 }
 
-void Aura::SpellAuraModParryPerc(AuraEffectModifier* aurEff, bool apply)
+void Aura::SpellAuraModParryPerc([[maybe_unused]] AuraEffectModifier* aurEff, [[maybe_unused]] bool apply)
 {
 #if VERSION_STRING > TBC // support classic
     //if (m_target->getObjectTypeId() == TYPEID_PLAYER)
@@ -2512,7 +2512,7 @@ void Aura::SpellAuraModParryPerc(AuraEffectModifier* aurEff, bool apply)
 #endif
 }
 
-void Aura::SpellAuraModDodgePerc(AuraEffectModifier* aurEff, bool apply)
+void Aura::SpellAuraModDodgePerc([[maybe_unused]] AuraEffectModifier* aurEff, [[maybe_unused]] bool apply)
 {
 #if VERSION_STRING > TBC // support classic
     // if (m_target->getObjectTypeId() == TYPEID_PLAYER)
@@ -3729,7 +3729,7 @@ void Aura::SpellAuraFeatherFall(AuraEffectModifier* /*aurEff*/, bool apply)
     }
 }
 
-void Aura::SpellAuraHover(AuraEffectModifier* aurEff, bool apply)
+void Aura::SpellAuraHover(AuraEffectModifier* [[maybe_unused]] aurEff, [[maybe_unused]] bool apply)
 {
 #if VERSION_STRING > TBC
     mPositive = true;
@@ -5658,7 +5658,7 @@ void Aura::SpellAuraReduceEffectDuration(AuraEffectModifier* aurEff, bool apply)
 
 // Caster = player
 // Target = vehicle
-void Aura::HandleAuraControlVehicle(AuraEffectModifier* aurEff, bool apply)
+void Aura::HandleAuraControlVehicle([[maybe_unused]] AuraEffectModifier* aurEff, [[maybe_unused]] bool apply)
 {
 #ifdef FT_VEHICLES
     if (!getCaster())
@@ -5779,7 +5779,7 @@ void Aura::SpellAuraModMechanicDmgTakenPct(AuraEffectModifier* aurEff, bool appl
         m_target->m_modDamageTakenByMechPct[aurEff->getEffectMiscValue()] -= (float)aurEff->getEffectDamage() / 100;
 }
 
-void Aura::SpellAuraAllowOnlyAbility(AuraEffectModifier* /*aurEff*/, bool apply)
+void Aura::SpellAuraAllowOnlyAbility(AuraEffectModifier* /*aurEff*/, [[maybe_unused]] bool apply)
 {
     // cannot perform any abilities, currently only works on players
     if (!p_target)

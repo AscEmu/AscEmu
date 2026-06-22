@@ -71,9 +71,8 @@ void BattlegroundManager::registerMapForBgType(uint32_t type, uint32_t map)
 }
 
 #if VERSION_STRING <= WotLK
-void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, uint32_t battlegroundType, uint8_t from)
+void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, uint32_t battlegroundType, [[maybe_unused]] uint8_t from)
 {
-
     WorldPacket data(SMSG_BATTLEFIELD_LIST, 18);
 
 #if VERSION_STRING == WotLK

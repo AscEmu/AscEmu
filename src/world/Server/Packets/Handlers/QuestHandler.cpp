@@ -378,7 +378,7 @@ void WorldSession::handleQuestQueryOpcode(WorldPacket& recvPacket)
 }
 
 
-void WorldSession::handleQuestPOIQueryOpcode(WorldPacket& recvPacket)
+void WorldSession::handleQuestPOIQueryOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgQuestPoiQuery srlPacket;

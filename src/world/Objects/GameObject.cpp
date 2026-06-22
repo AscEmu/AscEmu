@@ -186,7 +186,7 @@ void GameObject::setLevel(uint32_t level) { write(gameObjectData()->level, level
 uint8_t GameObject::getState() const
 {
 #if VERSION_STRING <= TBC
-    return gameObjectData()->state;
+    return static_cast<uint8_t>(gameObjectData()->state);
 #elif VERSION_STRING >= WotLK
     return gameObjectData()->bytes_1.bytes_1_gameobject.state;
 #endif
@@ -203,7 +203,7 @@ void GameObject::setState(uint8_t state)
 uint8_t GameObject::getGoType() const
 {
 #if VERSION_STRING <= TBC
-    return gameObjectData()->type;
+    return static_cast<uint8_t>(gameObjectData()->type);
 #elif VERSION_STRING >= WotLK
     return gameObjectData()->bytes_1.bytes_1_gameobject.type;
 #endif
@@ -221,7 +221,7 @@ void GameObject::setGoType(uint8_t type)
 uint8_t GameObject::getArtKit() const
 {
 #if VERSION_STRING <= TBC
-    return gameObjectData()->art_kit;
+    return static_cast<uint8_t>(gameObjectData()->art_kit);
 #elif VERSION_STRING >= WotLK
     return gameObjectData()->bytes_1.bytes_1_gameobject.art_kit;
 #endif
@@ -249,7 +249,7 @@ void GameObject::setArtKit(uint8_t artkit)
 uint8_t GameObject::getAnimationProgress() const
 {
 #if VERSION_STRING <= TBC
-    return gameObjectData()->animation_progress;
+    return static_cast<uint8_t>(gameObjectData()->animation_progress);
 #elif VERSION_STRING >= WotLK
     return gameObjectData()->bytes_1.bytes_1_gameobject.animation_progress;
 #endif
@@ -2573,7 +2573,7 @@ void GameObject_Destructible::Damage(uint32_t damage, uint64_t AttackerGUID, uin
     setDestructibleState(newState, false);
 }
 
-void GameObject_Destructible::SendDamagePacket(uint32_t damage, uint64_t AttackerGUID, uint64_t ControllerGUID, uint32_t SpellID)
+void GameObject_Destructible::SendDamagePacket([[maybe_unused]] uint32_t damage, [[maybe_unused]] uint64_t AttackerGUID, [[maybe_unused]] uint64_t ControllerGUID, [[maybe_unused]] uint32_t SpellID)
 {
 #if VERSION_STRING > TBC
     sendMessageToSet(SmsgDestructibleBuildingDamage(GetNewGUID(), AttackerGUID, ControllerGUID, damage, SpellID).serialise().get(), false, false);

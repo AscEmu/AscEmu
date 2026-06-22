@@ -117,12 +117,11 @@ bool ChatCommandHandler::HandleGMBlockWhispersCommand(const char* args, WorldSes
 }
 
 //.gm devtag
-bool ChatCommandHandler::HandleGMDevTagCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMDevTagCommand([[maybe_unused]] const char* args, [[maybe_unused]] WorldSession* m_session)
 {
+#if VERSION_STRING >= WotLK
     auto player = m_session->GetPlayer();
     bool toggle_no_notice = std::string(args) == "no_notice" ? true : false;
-
-#if VERSION_STRING >= WotLK
     if (player->hasPlayerFlags(PLAYER_FLAG_DEVELOPER))
     {
         if (!toggle_no_notice)

@@ -1162,7 +1162,7 @@ uint32_t Pet::getUntrainCost()
 }
 #endif
 
-void Pet::_addSpell(SpellInfo const* spellInfo, bool silently, uint8_t spellState)
+void Pet::_addSpell(SpellInfo const* spellInfo, [[maybe_unused]] bool silently, uint8_t spellState)
 {
     if (spellInfo == nullptr)
         return;

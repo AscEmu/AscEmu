@@ -122,7 +122,7 @@ void WorldSession::handleQueryTimeOpcode(WorldPacket& /*recvPacket*/)
     SendPacket(SmsgQueryTimeResponse(UNIXTIME).serialise().get());
 }
 
-void WorldSession::handleAchievmentQueryOpcode(WorldPacket& recvPacket)
+void WorldSession::handleAchievmentQueryOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgInspectAchievements srlPacket;

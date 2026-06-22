@@ -2567,7 +2567,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
 #endif
 
 #if VERSION_STRING == TBC
-void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* target)
+void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, [[maybe_unused]] Player* target)
 {
     *data << uint8_t(updateFlags);
 

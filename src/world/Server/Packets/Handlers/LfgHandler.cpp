@@ -54,7 +54,7 @@ void BuildPartyLockDungeonBlock(WorldPacket& data, const LfgLockPartyMap& lockMa
 }
 
 //not used cata
-void WorldSession::sendLfgUpdateSearch(bool update)
+void WorldSession::sendLfgUpdateSearch([[maybe_unused]] bool update)
 {
 #if VERSION_STRING > TBC
     SendPacket(SmsgLfgUpdateSearch(update).serialise().get());
@@ -70,21 +70,21 @@ void WorldSession::sendLfgDisabled()
     SendPacket(&data);
 }
 
-void WorldSession::sendLfgOfferContinue(uint32_t dungeonEntry)
+void WorldSession::sendLfgOfferContinue([[maybe_unused]] uint32_t dungeonEntry)
 {
 #if VERSION_STRING > TBC
     SendPacket(SmsgLfgOfferContinue(dungeonEntry).serialise().get());
 #endif
 }
 
-void WorldSession::sendLfgTeleportError(uint8_t error)
+void WorldSession::sendLfgTeleportError([[maybe_unused]] uint8_t error)
 {
 #if VERSION_STRING > TBC
     SendPacket(SmsgLfgTeleportDenied(error).serialise().get());
 #endif
 }
 
-void WorldSession::sendLfgJoinResult(const LfgJoinResultData& joinData)
+void WorldSession::sendLfgJoinResult([[maybe_unused]] const LfgJoinResultData& joinData)
 {
 #if VERSION_STRING > TBC
     uint32_t size = 0;
@@ -95,15 +95,15 @@ void WorldSession::sendLfgJoinResult(const LfgJoinResultData& joinData)
 
     WorldPacket data(SMSG_LFG_JOIN_RESULT, 4 + 4 + size);
 
-    data << uint32_t(joinData.result);        // Check Result
-    data << uint32_t(joinData.state);         // Check Value
+    data << uint32_t(joinData.result); // Check Result
+    data << uint32_t(joinData.state); // Check Value
     if (!joinData.lockmap.empty())
         BuildPartyLockDungeonBlock(data, joinData.lockmap);
     SendPacket(&data);
 #endif
 }
 
-void WorldSession::sendLfgUpdatePlayer(const LfgUpdateData& updateData)
+void WorldSession::sendLfgUpdatePlayer([[maybe_unused]] const LfgUpdateData& updateData)
 {
 #if VERSION_STRING > TBC
     bool queued = false;
@@ -151,7 +151,7 @@ void WorldSession::sendLfgUpdatePlayer(const LfgUpdateData& updateData)
 #endif
 }
 
-void WorldSession::sendLfgUpdateParty(const LfgUpdateData& updateData)
+void WorldSession::sendLfgUpdateParty([[maybe_unused]] const LfgUpdateData& updateData)
 {
 #if VERSION_STRING > TBC
     bool isJoining = false;
@@ -211,7 +211,7 @@ void WorldSession::sendLfgUpdateParty(const LfgUpdateData& updateData)
 #endif
 }
 
-void WorldSession::sendLfgRoleChosen(uint64_t guid, uint8_t roles)
+void WorldSession::sendLfgRoleChosen([[maybe_unused]] uint64_t guid, [[maybe_unused]] uint8_t roles)
 {
 #if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_ROLE_CHOSEN {} guid: {} roles: {}", _player->getGuid(), guid, roles);
@@ -220,7 +220,7 @@ void WorldSession::sendLfgRoleChosen(uint64_t guid, uint8_t roles)
 #endif
 }
 
-void WorldSession::sendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
+void WorldSession::sendLfgRoleCheckUpdate([[maybe_unused]] const LfgRoleCheck* pRoleCheck)
 {
 #if VERSION_STRING > TBC
 
@@ -288,7 +288,7 @@ void WorldSession::sendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
 #endif
 }
 
-void WorldSession::sendLfgQueueStatus(uint32_t dungeon, int32_t waitTime, int32_t avgWaitTime, int32_t waitTimeTanks, int32_t waitTimeHealer, int32_t waitTimeDps, uint32_t queuedTime, uint8_t tanks, uint8_t healers, uint8_t dps)
+void WorldSession::sendLfgQueueStatus([[maybe_unused]] uint32_t dungeon, [[maybe_unused]] int32_t waitTime, [[maybe_unused]] int32_t avgWaitTime, [[maybe_unused]] int32_t waitTimeTanks, [[maybe_unused]] int32_t waitTimeHealer, [[maybe_unused]] int32_t waitTimeDps, [[maybe_unused]] uint32_t queuedTime, [[maybe_unused]] uint8_t tanks, [[maybe_unused]] uint8_t healers, [[maybe_unused]] uint8_t dps)
 {
 #if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_QUEUE_STATUS {} dungeon: {} - waitTime: {} - avgWaitTime: {} - waitTimeTanks: {} - waitTimeHealer: {} - waitTimeDps: {} - queuedTime: {} - tanks: {} - healers: {} - dps: {}", _player->getGuid(), dungeon, waitTime, avgWaitTime, waitTimeTanks, waitTimeHealer, waitTimeDps, queuedTime, tanks, healers, dps);
@@ -310,7 +310,7 @@ void WorldSession::sendLfgQueueStatus(uint32_t dungeon, int32_t waitTime, int32_
 #endif
 }
 
-void WorldSession::sendLfgPlayerReward(uint32_t RandomDungeonEntry, uint32_t DungeonEntry, uint8_t done, const LfgReward* reward, QuestProperties const* qReward)
+void WorldSession::sendLfgPlayerReward([[maybe_unused]] uint32_t RandomDungeonEntry, [[maybe_unused]] uint32_t DungeonEntry, [[maybe_unused]] uint8_t done, [[maybe_unused]] const LfgReward* reward, [[maybe_unused]] QuestProperties const* qReward)
 {
 #if VERSION_STRING > TBC
     if (!RandomDungeonEntry || !DungeonEntry || !qReward)
@@ -350,7 +350,7 @@ void WorldSession::sendLfgPlayerReward(uint32_t RandomDungeonEntry, uint32_t Dun
 #endif
 }
 
-void WorldSession::sendLfgBootPlayer(const LfgPlayerBoot* pBoot)
+void WorldSession::sendLfgBootPlayer([[maybe_unused]] const LfgPlayerBoot* pBoot)
 {
 #if VERSION_STRING > TBC
     uint64_t guid = _player->getGuid();
@@ -389,7 +389,7 @@ void WorldSession::sendLfgBootPlayer(const LfgPlayerBoot* pBoot)
 #endif
 }
 
-void WorldSession::sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal* pProp)
+void WorldSession::sendLfgUpdateProposal([[maybe_unused]] uint32_t proposalId, [[maybe_unused]] const LfgProposal* pProp)
 {
 #if VERSION_STRING > TBC
     if (!pProp)
@@ -499,7 +499,7 @@ void WorldSession::handleLfgLockInfoOpcode([[maybe_unused]] WorldPacket& recvPac
 #endif
 }
 
-void WorldSession::handleLfgJoinOpcode(WorldPacket& recvPacket)
+void WorldSession::handleLfgJoinOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     sLogger.debug("CMSG_LFG_JOIN");
@@ -557,7 +557,7 @@ void WorldSession::handleLfgLeaveOpcode(WorldPacket& /*recvPacket*/)
 #endif
 }
 
-void WorldSession::handleLfgSearchOpcode(WorldPacket& recvPacket)
+void WorldSession::handleLfgSearchOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgSearchLfgJoin srlPacket;
@@ -569,7 +569,7 @@ void WorldSession::handleLfgSearchOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleLfgSearchLeaveOpcode(WorldPacket& recvPacket)
+void WorldSession::handleLfgSearchLeaveOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgSearchLfgLeave srlPacket;
@@ -581,7 +581,7 @@ void WorldSession::handleLfgSearchLeaveOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleLfgProposalResultOpcode(WorldPacket& recvPacket)
+void WorldSession::handleLfgProposalResultOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgLfgProposalResult srlPacket;
@@ -595,7 +595,7 @@ void WorldSession::handleLfgProposalResultOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleLfgSetRolesOpcode(WorldPacket& recvPacket)
+void WorldSession::handleLfgSetRolesOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgLfgSetRoles srlPacket;
@@ -612,7 +612,7 @@ void WorldSession::handleLfgSetRolesOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleLfgSetBootVoteOpcode(WorldPacket& recvPacket)
+void WorldSession::handleLfgSetBootVoteOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgLfgSetBootVote srlPacket;
@@ -708,7 +708,7 @@ void WorldSession::handleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvPacke
 #endif
 }
 
-void WorldSession::handleLfgTeleportOpcode(WorldPacket& recvPacket)
+void WorldSession::handleLfgTeleportOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgLfgTeleport srlPacket;

@@ -297,7 +297,7 @@ void World::addSession(std::unique_ptr<WorldSession> sessionHolder)
     {
         std::lock_guard<std::mutex> guard(mSessionLock);
 
-        auto* worldSession = sessionHolder.get();
+        [[maybe_unused]] auto* worldSession = sessionHolder.get();
         mActiveSessionMapStore[sessionHolder->GetAccountId()] = std::move(sessionHolder);
 
         if (static_cast<uint32_t>(mActiveSessionMapStore.size()) > getPeakSessionCount())

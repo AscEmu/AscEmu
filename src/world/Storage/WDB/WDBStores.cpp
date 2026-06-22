@@ -300,9 +300,9 @@ bool loadDBCs()
 
                 // Classic has only one Difficulty - Same reset Time - and only 5 or 40 man Raids
                 if (!entry->getResetTimeHeroic())
-                    sMapDifficultyMap[Util::MAKE_PAIR32(entry->id, InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] = WDB::Structures::MapDifficulty(entry->getResetTimeNormal(), maxPlayers, false);
+                    sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry->id), InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] = WDB::Structures::MapDifficulty(entry->getResetTimeNormal(), maxPlayers, false);
                 else
-                    sMapDifficultyMap[Util::MAKE_PAIR32(entry->id, InstanceDifficulty::Difficulties::DUNGEON_HEROIC)] = WDB::Structures::MapDifficulty(entry->getResetTimeHeroic(), maxPlayers, false);
+                    sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry->id), InstanceDifficulty::Difficulties::DUNGEON_HEROIC)] = WDB::Structures::MapDifficulty(entry->getResetTimeHeroic(), maxPlayers, false);
             }
         }
 #endif
