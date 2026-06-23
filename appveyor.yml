@@ -1,5 +1,5 @@
 version: 1.0.{build}
-image: Visual Studio 2022
+image: Visual Studio 2026
 
 branches:
   except:
@@ -23,7 +23,7 @@ init:
   - cmd: msbuild /version
 
 install:
-  - git submodule update --init --recursive
+  - git submodule update --init --recursive --depth 1
 
 before_build:
   - cmd: echo %Image%
@@ -32,5 +32,5 @@ before_build:
 build_script:
   - cmd: mkdir ascemu_build
   - cmd: cd ascemu_build
-  - cmd: cmake ../ -G "Visual Studio 17 2022" -A %Platform% -DBUILD_WITH_WARNINGS=0 -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION%
-  - cmd: msbuild Ascemu.sln
+  - cmd: cmake ../ -G "Visual Studio 18 2026" -A %Platform% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION%
+  - cmd: msbuild Ascemu.sln /m /p:WarningLevel=3 /p:TreatWarningsAsErrors=true
