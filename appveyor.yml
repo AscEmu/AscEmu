@@ -6,7 +6,6 @@ branches:
     - coverity_scan
 
 environment:
-  OPENSSL_ROOT_DIR: C:\OpenSSL-v32-Win64
   matrix:
   - ASC_VERSION: Classic
   - ASC_VERSION: TBC
@@ -21,6 +20,9 @@ configuration: Release
 init:
   # Upgrade CMake to the latest version via Chocolatey
   - cmd: choco upgrade cmake -y
+  # Automatically detect the latest pre-installed OpenSSL 3.x 64-bit directory
+  - ps: $sslDir = (Get-ChildItem C:\ -Filter "OpenSSL-v*Win64" | Sort-Object Name -Descending | Select-Object -First 1).FullName
+  - ps: Set-AppveyorBuildVariable -Name "OPENSSL_ROOT_DIR" -Value $sslDir
   # Verify versions
   - cmd: "\"C:\\Program Files\\CMake\\bin\\cmake.exe\" --version"
   - cmd: msbuild /version
