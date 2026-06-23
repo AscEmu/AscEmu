@@ -35,5 +35,5 @@ before_build:
 build_script:
   - cmd: mkdir ascemu_build
   - cmd: cd ascemu_build
-  - cmd: "\"C:\\Program Files\\CMake\\bin\\cmake.exe\" ../ -G \"Visual Studio 18 2026\" -A %Platform% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION%
+  - cmd: "\"C:\\Program Files\\CMake\\bin\\cmake.exe\" ../ -G \"Visual Studio 18 2026\" -A %Platform% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION%"
   - cmd: msbuild Ascemu.sln /m /p:WarningLevel=3 /p:TreatWarningsAsErrors=true
