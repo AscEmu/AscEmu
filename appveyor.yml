@@ -35,7 +35,7 @@ before_build:
   - cmd: echo %Configuration%
 
 build_script:
-  # Modern CMake: -S specifies the source root, -B the build directory (creates it automatically)
+  # Modern CMake: -S specifies the source root, -B the build directory
   - cmd: '"C:\Program Files\CMake\bin\cmake.exe" -S . -B ascemu_build -G "Visual Studio 18 2026" -A %Platform% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION%'
-  # Target the solution file directly inside the build folder (use maximum cpu cores (/m) and use /p:WarningLevel=3)
-  - cmd: msbuild ascemu_build\Ascemu.sln /m /p:WarningLevel=3 /p:TreatWarningsAsErrors=true
+  # Let CMake find and build the solution automatically, passing custom flags after '--' (use maximum cpu cores (/m) and use /p:WarningLevel=3)
+  - cmd: '"C:\Program Files\CMake\bin\cmake.exe" --build ascemu_build --config %CONFIGURATION% -- /m /p:WarningLevel=3 /p:TreatWarningsAsErrors=true'
