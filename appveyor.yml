@@ -24,7 +24,7 @@ init:
   - ps: $sslDir = (Get-ChildItem C:\ -Filter "OpenSSL-v*Win64" | Sort-Object Name -Descending | Select-Object -First 1).FullName
   - ps: Set-AppveyorBuildVariable -Name "OPENSSL_ROOT_DIR" -Value $sslDir
   # Verify versions
-  - cmd: "\"C:\\Program Files\\CMake\\bin\\cmake.exe\" --version"
+  - cmd: '"C:\Program Files\CMake\bin\cmake.exe" --version'
   - cmd: msbuild /version
 
 install:
@@ -35,7 +35,7 @@ before_build:
   - cmd: echo %Configuration%
 
 build_script:
-  - cmd: mkdir ascemu_build
-  - cmd: cd ascemu_build
-  - cmd: "\"C:\\Program Files\\CMake\\bin\\cmake.exe\" ../ -G \"Visual Studio 18 2026\" -A %Platform% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION%"
-  - cmd: msbuild Ascemu.sln /m /p:WarningLevel=3 /p:TreatWarningsAsErrors=true
+  # Modern CMake: -S specifies the source root, -B the build directory (creates it automatically)
+  - cmd: '"C:\Program Files\CMake\bin\cmake.exe" -S . -B ascemu_build -G "Visual Studio 18 2026" -A %Platform% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION%'
+  # Target the solution file directly inside the build folder (use maximum cpu cores (/m) and use /p:WarningLevel=3)
+  - cmd: msbuild ascemu_build\Ascemu.sln /m /p:WarningLevel=3 /p:TreatWarningsAsErrors=true
