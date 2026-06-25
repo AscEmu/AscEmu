@@ -17,15 +17,15 @@ platform:
 
 configuration: Release
 
-# Caches the build directory and chocolatey tools. Resets if appveyor.yml changes.
+# Caches sccache directory and chocolatey tools. Resets if appveyor.yml changes.
 cache:
-  - ascemu_build -> appveyor.yml
-  - C:\ProgramData\chocolatey\bin -> appveyor.yml
-  - C:\ProgramData\chocolatey\lib -> appveyor.yml
+  - '%LOCALAPPDATA%\Mozilla\sccache -> appveyor.yml'
+  - 'C:\ProgramData\chocolatey\bin -> appveyor.yml'
+  - 'C:\ProgramData\chocolatey\lib -> appveyor.yml'
 
 init:
-  # Upgrade CMake to the latest version via Chocolatey
-  - cmd: choco upgrade cmake -y
+  # Upgrade CMake to the latest version and sccache via Chocolatey
+  - cmd: choco upgrade cmake sccache -y
   # Automatically detect the latest pre-installed OpenSSL 3.x 64-bit directory
   - ps: $sslDir = (Get-ChildItem C:\ -Filter "OpenSSL-v*Win64" | Sort-Object Name -Descending | Select-Object -First 1).FullName
   - ps: Set-AppveyorBuildVariable -Name "OPENSSL_ROOT_DIR" -Value $sslDir
@@ -41,7 +41,7 @@ before_build:
   - cmd: echo %Configuration%
 
 build_script:
-  # Modern CMake: -S specifies the source root, -B the build directory
-  - cmd: '"C:\Program Files\CMake\bin\cmake.exe" -S . -B ascemu_build -G "Visual Studio 18 2026" -A %Platform% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION%'
+  # Modern CMake: -S specifies the source root, -B the build directory. Tell CMake to use sccache for compilation
+  - cmd: '"C:\Program Files\CMake\bin\cmake.exe" -S . -B ascemu_build -G "Visual Studio 18 2026" -A %Platform% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION% -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache'
   # Let CMake find and build the solution automatically, passing custom flags after '--' (use maximum cpu cores (/m) and use /p:WarningLevel=3)
   - cmd: '"C:\Program Files\CMake\bin\cmake.exe" --build ascemu_build --config %CONFIGURATION% -- /m /p:MultiProcessorCompilation=true /p:WarningLevel=3 /p:TreatWarningsAsErrors=true'
