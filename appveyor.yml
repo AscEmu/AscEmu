@@ -17,6 +17,12 @@ platform:
 
 configuration: Release
 
+# Caches the build directory and chocolatey tools. Resets if appveyor.yml changes.
+cache:
+  - ascemu_build -> appveyor.yml
+  - C:\ProgramData\chocolatey\bin -> appveyor.yml
+  - C:\ProgramData\chocolatey\lib -> appveyor.yml
+
 init:
   # Upgrade CMake to the latest version via Chocolatey
   - cmd: choco upgrade cmake -y
@@ -38,4 +44,4 @@ build_script:
   # Modern CMake: -S specifies the source root, -B the build directory
   - cmd: '"C:\Program Files\CMake\bin\cmake.exe" -S . -B ascemu_build -G "Visual Studio 18 2026" -A %Platform% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION%'
   # Let CMake find and build the solution automatically, passing custom flags after '--' (use maximum cpu cores (/m) and use /p:WarningLevel=3)
-  - cmd: '"C:\Program Files\CMake\bin\cmake.exe" --build ascemu_build --config %CONFIGURATION% -- /m /p:WarningLevel=3 /p:TreatWarningsAsErrors=true'
+  - cmd: '"C:\Program Files\CMake\bin\cmake.exe" --build ascemu_build --config %CONFIGURATION% -- /m /p:MultiProcessorCompilation=true /p:WarningLevel=3 /p:TreatWarningsAsErrors=true'
