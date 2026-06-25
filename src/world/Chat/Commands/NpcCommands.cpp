@@ -246,8 +246,8 @@ bool ChatCommandHandler::HandleNpcDeleteCommand(const char* /*args*/, WorldSessi
 
         if (creature_target->m_spawn)
         {
-            uint32_t cellx = uint32_t(((Map::Terrain::_maxX - creature_target->m_spawn->x) / Map::Cell::cellSize));
-            uint32_t celly = uint32_t(((Map::Terrain::_maxY - creature_target->m_spawn->y) / Map::Cell::cellSize));
+            uint32_t cellx = static_cast<uint32_t>((Map::Terrain::_maxX - creature_target->m_spawn->x) / Map::Cell::cellSize);
+            uint32_t celly = static_cast<uint32_t>((Map::Terrain::_maxY - creature_target->m_spawn->y) / Map::Cell::cellSize);
 
             if (cellx <= Map::Cell::_sizeX && celly <= Map::Cell::_sizeY)
             {
