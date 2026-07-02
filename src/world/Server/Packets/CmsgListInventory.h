@@ -41,9 +41,9 @@ namespace AscEmu::Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
 #if VERSION_STRING <= Cata
-            uint64_t unpacked_guid;
-            packet >> guid;
-            guid.init(unpacked_guid);
+            uint64_t unpackedGuid;
+            packet >> unpackedGuid;
+            guid.init(unpackedGuid);
 #else // Mop
             guid[6] = packet.readBit();
             guid[7] = packet.readBit();
