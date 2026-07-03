@@ -13,6 +13,10 @@ environment:
   - ASC_VERSION: WotLK
   - ASC_VERSION: Cata
   - ASC_VERSION: Mop
+
+matrix
+  fast_finisch: true # Abort all other Matrix builds if one fails
+
 platform:
   - x64
 
@@ -32,5 +36,5 @@ before_build:
 build_script:
   - cmd: mkdir ascemu_build
   - cmd: cd ascemu_build
-  - cmd: cmake ../ -G "Visual Studio 17 2022" -A %Platform% -DBUILD_WITH_WARNINGS=1 -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION%
+  - cmd: cmake ../ -G "Visual Studio 17 2022" -A %Platform% -DBUILD_WITH_WARNINGS=1 -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=0 -DASCEMU_VERSION=%ASC_VERSION%
   - cmd: msbuild Ascemu.sln /m /v:m /p:WarningLevel=4
