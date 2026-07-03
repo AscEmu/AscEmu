@@ -14,8 +14,8 @@ environment:
   - ASC_VERSION: Cata
   - ASC_VERSION: Mop
 
-matrix
-  fast_finisch: true # Abort all other Matrix builds if one fails
+matrix:
+  fast_finish: true # Abort all other Matrix builds if one fails
 
 platform:
   - x64
