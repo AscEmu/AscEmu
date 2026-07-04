@@ -25,6 +25,7 @@
 #include "Network/WorldPacket.hpp"
 #include "Network/Network.hpp"
 #include "AEVersion.hpp"
+#include "ClientProtocol.hpp"
 #include "Threading/ThreadSafeQueue.hpp"
 
 #include <string>
@@ -85,6 +86,12 @@ public:
 
     void UpdateQueuedPackets();
 
+    inline void SetClientProtocol(ClientProtocolState protocol)
+    {
+        m_clientProtocol = protocol;
+        m_HandshakeReceived = false;
+    }
+
 #if VERSION_STRING >= Cata
     void HandleWoWConnection(std::unique_ptr<WorldPacket> recvPacket);
 #endif
@@ -115,9 +122,9 @@ private:
     std::unique_ptr<std::string> m_fullAccountName;
 
     ByteBuffer mAddonInfoBuffer;
-#if VERSION_STRING >= Cata
-    bool m_HandshakeReceived;
-#endif
+
+    ClientProtocolState m_clientProtocol{};
+    bool m_HandshakeReceived{false};
 
     uint8_t AuthDigest[20];
 #if VERSION_STRING < Cata

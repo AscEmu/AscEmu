@@ -6,18 +6,10 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "MovementInfo.hpp"
+#include "Server/ClientProtocol.hpp"
 #include <array>
 #include <cstdint>
 #include <span>
-
-enum class ClientVersion
-{
-    _Classic,
-    _TBC,
-    _WotLK,
-    _Cata,
-    _Mop
-};
 
 enum class Cond : uint8_t
 {

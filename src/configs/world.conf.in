@@ -100,13 +100,22 @@
 #        Locks the realm (0 = open, 1 = locked)
 #        Default: 0
 #
+#    ClientVersion:
+#        Note: this setting is not implemented. Use CMake version configuration.
+#        Default: 2 (WotLK)
+#        0 = 5875 (Classic)     1 = 8606 (TBC)      2 = 12340 (WotLK)
+#        3 = 15595 (Cata)       4 = 18414 (Mop)     5 = (WoD)
+#        6 = (Legion)           7 = (BfA)           8 = (Shadowlands)
+#        9 = (Dragonflight)    10 = (TWW)          11 = (Midnight)
+#
 
-<Realm1 Id         = "1"
-        Name       = "AscEmu"
-        Address    = "127.0.0.1:8129"
-        Icon       = "Normal"
-        TimeZone   = "1"
-        Lock       = "0">
+<Realm1 Id            = "1"
+        Name          = "AscEmu"
+        Address       = "127.0.0.1:8129"
+        Icon          = "Normal"
+        TimeZone      = "1"
+        Lock          = "0"
+        ClientVersion = "2">
 
 ################################################################################
 # Listen Config

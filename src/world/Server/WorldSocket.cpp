@@ -151,10 +151,34 @@ WorldSocket::WorldSocket(SOCKET fd)
     mQueued(false),
     m_nagleEanbled(false),
     m_fullAccountName(nullptr)
-#if VERSION_STRING == Mop
-    , m_HandshakeReceived(false)
-#endif
 {
+    //todo Zyres: This is temp until we moved the supported version from makro to config
+    ClientProtocolState protocol;
+    switch (sOpcodeTables.getVersionIdForAEVersion())
+    {
+        case 0:
+            protocol.version = ClientVersion::_Classic;
+            break;
+        case 1:
+            protocol.version = ClientVersion::_TBC;
+            break;
+        case 2:
+            protocol.version = ClientVersion::_WotLK;
+            break;
+        case 3:
+            protocol.version = ClientVersion::_Cata;
+            break;
+        case 4:
+            protocol.version = ClientVersion::_Mop;
+            break;
+        default:
+            protocol.version = ClientVersion::_Unknown;
+            break;
+    }
+
+    SetClientProtocol(protocol);
+
+    sLogger.debug("Processing client protokol for version {}", m_clientProtocol.version);
 }
 
 WorldSocket::~WorldSocket()
@@ -957,10 +981,10 @@ void WorldSocket::onRead()
 
 bool WorldSocket::processHeader()
 {
-#if VERSION_STRING == Mop
-    if (!m_HandshakeReceived)
+    if (m_clientProtocol.version == ClientVersion::_Mop && !m_HandshakeReceived)
     {
-        if (readBuffer.GetSize() < 2) return false;
+        if (readBuffer.GetSize() < 2)
+            return false;
 
         uint16_t size;
         readBuffer.Read(&size, 2);
@@ -973,9 +997,10 @@ bool WorldSocket::processHeader()
         return true;
     }
 
-    if (_crypt.isInitialized())
+    if (m_clientProtocol.version == ClientVersion::_Mop && _crypt.isInitialized())
     {
-        if (readBuffer.GetSize() < 4) return false;
+        if (readBuffer.GetSize() < 4)
+            return false;
 
         AuthPktHeader authPktHeader(0, 0);
         readBuffer.Read(reinterpret_cast<uint8_t*>(&authPktHeader.raw), 4);
@@ -986,31 +1011,30 @@ bool WorldSocket::processHeader()
         return true;
     }
 
-    if (readBuffer.GetSize() < 6) return false;
-
-    ClientPktHeader clientPktHeader;
-    readBuffer.Read(reinterpret_cast<uint8_t*>(&clientPktHeader), 6);
-    _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&clientPktHeader), sizeof(ClientPktHeader));
-
-    mRemaining = mSize = clientPktHeader.size -= 4;
-    mOpcode = sOpcodeTables.getInternalIdForHex(static_cast<uint16_t>(clientPktHeader.cmd));
-    return true;
-#else
-    if (readBuffer.GetSize() < 6) return false;
+    if (readBuffer.GetSize() < 6)
+        return false;
 
     ClientPktHeader header;
     readBuffer.Read(&header, 6);
 
-#if VERSION_STRING < WotLK
-    _crypt.decryptLegacyReceive(reinterpret_cast<uint8_t*>(&header), sizeof(ClientPktHeader));
-#else
-    _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&header), sizeof(ClientPktHeader));
-#endif
+    if (m_clientProtocol.version == ClientVersion::_Classic ||
+        m_clientProtocol.version == ClientVersion::_TBC)
+    {
+        _crypt.decryptLegacyReceive(reinterpret_cast<uint8_t*>(&header), sizeof(ClientPktHeader));
+        mRemaining = mSize = ntohs(header.size) - 4;
+    }
+    else
+    {
+        _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&header), sizeof(ClientPktHeader));
 
-    mRemaining = mSize = ntohs(header.size) - 4;
+        if (m_clientProtocol.version == ClientVersion::_Mop)
+            mRemaining = mSize = header.size - 4;
+        else
+            mRemaining = mSize = ntohs(header.size) - 4;
+    }
+
     mOpcode = sOpcodeTables.getInternalIdForHex(static_cast<uint16_t>(header.cmd));
     return true;
-#endif
 }
 
 void WorldSocket::dispatchPacket(std::unique_ptr<WorldPacket> packet)
