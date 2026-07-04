@@ -332,9 +332,20 @@ void WorldSocket::onConnect()
     sWorld.increaseAcceptedConnections();
     _latency = Util::getMSTime();
 
-#if VERSION_STRING <= WotLK
+    if (m_clientProtocol.version <= WoW::Expansion::_WotLK)
+        sendAuthChallengePacket();
+    else
+        sendVerifyConnectPacket();
+}
+
+void WorldSocket::sendAuthChallengePacket()
+{
     SendPacket(SmsgAuthChallenge(mSeed).serialise().get());
-#elif VERSION_STRING == Mop
+}
+
+void WorldSocket::sendVerifyConnectPacket()
+{
+#if VERSION_STRING == Mop
     const std::string handshake = "WORLD OF WARCRAFT CONNECTION - SERVER TO CLIENT";
     uint16_t size = static_cast<uint16_t>(handshake.length());
     uint8_t sizeBytes[2];
@@ -352,13 +363,6 @@ void WorldSocket::onConnect()
     SendPacket(&packet);
 #endif
 }
-
-#if VERSION_STRING >= Cata
-void WorldSocket::OnConnectTwo()
-{
-    SendPacket(SmsgAuthChallenge(mSeed).serialise().get());
-}
-#endif
 
 void WorldSocket::_HandleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
 {
@@ -971,15 +975,17 @@ void WorldSocket::dispatchPacket(std::unique_ptr<WorldPacket> packet)
     }
 }
 
-#if VERSION_STRING >= Cata
 void WorldSocket::HandleWoWConnection(std::unique_ptr<WorldPacket> recvPacket)
 {
     std::string ClientToServerMsg;
     *recvPacket >> ClientToServerMsg;
 
-    OnConnectTwo();
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received client Message: {}", ClientToServerMsg);
+
+    m_HandshakeReceived = true;
+
+    sendAuthChallengePacket();
 }
-#endif
 
 void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid)
 {

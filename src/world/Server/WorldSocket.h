@@ -87,11 +87,10 @@ public:
         m_HandshakeReceived = false;
     }
 
-#if VERSION_STRING >= Cata
     void HandleWoWConnection(std::unique_ptr<WorldPacket> recvPacket);
-#endif
 
-    void OnConnectTwo();
+    void sendAuthChallengePacket();
+    void sendVerifyConnectPacket();
 
 protected:
     void _HandleAuthSession(std::unique_ptr<WorldPacket> recvPacket);
