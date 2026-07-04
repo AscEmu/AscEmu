@@ -506,7 +506,7 @@ void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
 
         if (!tradeItem->isTradeableWith(tradeData->getTradeTarget()))
         {
-            sCheatLog.writefromsession(this, "tried to cheat trade a soulbound item");
+            sCheatLog.writefromsession(this, "Attempted to trade soulbound item.");
             // not a good idea since we can trade soulbound items if item flag is set. 
             // Would Disconnect the Trader when the Trader is not on the allowedGuids list.
             //Disconnect(); 
@@ -528,7 +528,7 @@ void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
     {
         if (tradeData->getTradeItem(TradeSlots(i)) == tradeItem || playerTarget->getTradeData()->getTradeItem(TradeSlots(i)) == tradeItem)
         {
-            sCheatLog.writefromsession(this, "tried to dupe an item through trade");
+            sCheatLog.writefromsession(this, "Attempted item duplication via trade.");
             Disconnect();
             return;
         }
@@ -539,7 +539,7 @@ void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
         const auto item = _player->getItemInterface()->GetInventoryItem(srlPacket.sourceBag);
         if (item == nullptr || srlPacket.sourceSlot >= item->getItemProperties()->ContainerSlots)
         {
-            sCheatLog.writefromsession(this, "tried to cheat trade a soulbound item");
+            sCheatLog.writefromsession(this, "Attempted to trade soulbound item.");
             Disconnect();
         }
     }

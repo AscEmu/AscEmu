@@ -2252,7 +2252,7 @@ bool Player::create(CharCreate& charCreateContent)
     if (!m_dbcRace || !m_dbcClass)
     {
         // information not found
-        sCheatLog.writefromsession(m_session, "tried to create invalid player with race {} and class {}, dbc m_playerCreateInfo not found", charCreateContent._race, charCreateContent._class);
+        sCheatLog.writefromsession(m_session, "Attempted character creation with invalid data. Race: {}, Class: {}. PlayerCreateInfo not found in DBC.", charCreateContent._race, charCreateContent._class);
         m_session->Disconnect();
         return false;
     }
@@ -13094,15 +13094,14 @@ void Player::displayCreatureSetForEntry(uint32_t _creatureEntry)
 
 uint32_t Player::checkDamageLimits(uint32_t damage, uint32_t spellId)
 {
-    std::stringstream dmglog;
+    std::string message;
 
     if ((spellId != 0) && (worldConfig.limit.maxSpellDamageCap > 0))
     {
         if (damage > worldConfig.limit.maxSpellDamageCap)
         {
-            dmglog << "Dealt " << damage << " with spell " << spellId;
-
-            sCheatLog.writefromsession(m_session, dmglog.str().c_str());
+            message = fmt::format("Dealt {} with spell {}.", damage, spellId);
+            sCheatLog.writefromsession(m_session, "{}", message);
 
             if (worldConfig.limit.disconnectPlayerForExceedingLimits != 0)
                 m_session->Disconnect();
@@ -13112,8 +13111,8 @@ uint32_t Player::checkDamageLimits(uint32_t damage, uint32_t spellId)
     }
     else if ((worldConfig.limit.maxAutoAttackDamageCap > 0) && (damage > worldConfig.limit.maxAutoAttackDamageCap))
     {
-        dmglog << "Dealt " << damage << " with auto attack";
-        sCheatLog.writefromsession(m_session, dmglog.str().c_str());
+        message = fmt::format("Dealt {} with auto attack.", damage);
+        sCheatLog.writefromsession(m_session, "{}", message);
 
         if (worldConfig.limit.disconnectPlayerForExceedingLimits != 0)
             m_session->Disconnect();
@@ -13121,8 +13120,8 @@ uint32_t Player::checkDamageLimits(uint32_t damage, uint32_t spellId)
         damage = worldConfig.limit.maxAutoAttackDamageCap;
     }
 
-    if (worldConfig.limit.broadcastMessageToGmOnExceeding != 0)
-        sendReportToGmMessage(getName(), dmglog.str());
+    if (worldConfig.limit.broadcastMessageToGmOnExceeding != 0 && !message.empty())
+        sendReportToGmMessage(getName(), message);
 
     return damage;
 }
@@ -14466,7 +14465,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     Field* field = result->fetch();
     if (field[1].asUint32() != m_session->GetAccountId())
     {
-        sCheatLog.writefromsession(m_session, "player tried to load character not belonging to them (guid {}, on account {})",
+        sCheatLog.writefromsession(m_session, "Attempted to load character not owned by account. Character GUID: {}, Account: {}.",
             field[0].asUint32(), field[1].asUint32());
         removePendingPlayer();
         return;
@@ -14665,7 +14664,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     m_taxi->loadTaxiMask(field[32].asCString());
     initTaxiNodesForLevel();
 
-    m_banned = field[33].asUint32();      //Character ban
+    m_banned = field[33].asUint32(); // Character ban
     m_banreason = field[34].asCString();
     m_timeLogoff = field[35].asUint32();
     //field[36].GetUInt32();    online
@@ -14688,17 +14687,15 @@ void Player::loadFromDBProc(QueryResultVector& results)
     m_arenaPoints = field[51].asUint32();
     if (m_arenaPoints > worldConfig.limit.maxArenaPoints)
     {
-        std::stringstream dmgLog;
-        dmgLog << "has over " << worldConfig.limit.maxArenaPoints << " arena points " << m_arenaPoints;
-        sCheatLog.writefromsession(m_session, dmgLog.str().c_str());
+        const auto message = fmt::format("Has over {} arena points {}.", worldConfig.limit.maxArenaPoints, m_arenaPoints);
+        sCheatLog.writefromsession(m_session, "{}", message);
 
-        if (worldConfig.limit.broadcastMessageToGmOnExceeding)          // report to online GMs
-            sendReportToGmMessage(getName(), dmgLog.str());
+        if (worldConfig.limit.broadcastMessageToGmOnExceeding) // report to online GMs
+            sendReportToGmMessage(getName(), message);
 
         if (worldConfig.limit.disconnectPlayerForExceedingLimits)
-        {
             m_session->Disconnect();
-        }
+
         m_arenaPoints = worldConfig.limit.maxArenaPoints;
     }
 
@@ -14869,13 +14866,11 @@ void Player::loadFromDBProc(QueryResultVector& results)
     m_honorPoints = field[78].asUint32();
     if (m_honorPoints > worldConfig.limit.maxHonorPoints)
     {
-        std::stringstream dmgLog;
-        dmgLog << "has over " << worldConfig.limit.maxHonorPoints << " honor points " << m_honorPoints;
-
-        sCheatLog.writefromsession(m_session, dmgLog.str().c_str());
+        const auto message = fmt::format("Has over {} honor points {}.", worldConfig.limit.maxHonorPoints, m_honorPoints);
+        sCheatLog.writefromsession(m_session, "{}", message);
 
         if (worldConfig.limit.broadcastMessageToGmOnExceeding)
-            sendReportToGmMessage(getName(), dmgLog.str());
+            sendReportToGmMessage(getName(), message);
 
         if (worldConfig.limit.disconnectPlayerForExceedingLimits)
             m_session->Disconnect();
@@ -15540,13 +15535,11 @@ void Player::updateStats()
 
     if (worldConfig.limit.isLimitSystemEnabled && (worldConfig.limit.maxHealthCap > 0) && (res > worldConfig.limit.maxHealthCap) && !getSession()->hasPermissions())   //hacker?
     {
-        std::stringstream dmgLog;
-        dmgLog << "has over " << worldConfig.limit.maxArenaPoints << " health " << res;
-
-        sCheatLog.writefromsession(getSession(), dmgLog.str().c_str());
+        const auto message = fmt::format("Has over {} health {}.",worldConfig.limit.maxHealthCap, res);
+        sCheatLog.writefromsession(getSession(), "{}", message);
 
         if (worldConfig.limit.broadcastMessageToGmOnExceeding)
-            sendReportToGmMessage(getName(), dmgLog.str());
+            sendReportToGmMessage(getName(), message);
 
         if (worldConfig.limit.disconnectPlayerForExceedingLimits)
             getSession()->Disconnect();
@@ -15586,11 +15579,11 @@ void Player::updateStats()
 
         if (worldConfig.limit.isLimitSystemEnabled && (worldConfig.limit.maxManaCap > 0) && (res > worldConfig.limit.maxManaCap) && !getSession()->hasPermissions())   //hacker?
         {
-            auto logmsg = fmt::format("has over {} mana ({})", worldConfig.limit.maxManaCap, res);
-            sCheatLog.writefromsession(getSession(), logmsg);
+            const auto message = fmt::format("Has over {} mana ({}).", worldConfig.limit.maxManaCap, res);
+            sCheatLog.writefromsession(getSession(), "{}", message);
 
-            if (worldConfig.limit.broadcastMessageToGmOnExceeding) // send m_playerCreateInfo to online GM
-                sendReportToGmMessage(getName(), logmsg);
+            if (worldConfig.limit.broadcastMessageToGmOnExceeding)
+                sendReportToGmMessage(getName(), message);
 
             if (worldConfig.limit.disconnectPlayerForExceedingLimits)
                 getSession()->Disconnect();

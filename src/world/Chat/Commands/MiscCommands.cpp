@@ -312,8 +312,8 @@ bool ChatCommandHandler::HandleMountCommand(const char* args, WorldSession* m_se
 
     unit_target->setMountDisplayId(modelid);
 
-    blueSystemMessage(m_session, "Now mounted with model {}.", modelid);
-    sGMLog.writefromsession(m_session, "used mount command to model {}", modelid);
+    blueSystemMessage(m_session, "Used mount command to model {}.", modelid);
+    sGMLog.writefromsession(m_session, "Used mount command to model {}.", modelid);
 
     return true;
 }
@@ -516,9 +516,9 @@ bool ChatCommandHandler::HandleKillCommand(const char* args, WorldSession* m_ses
             return true;
         }
         named_player->die(nullptr, 0, 0);
-        redSystemMessage(named_player->getSession(), "You were killed by {} with a GM command.", m_session->GetPlayer()->getName());
-        greenSystemMessage(m_session, "Killed player {}.", args);
-        sGMLog.writefromsession(m_session, "Used kill command on Player {} (guid: {})", m_session->GetPlayer()->getName(), m_session->GetPlayer()->getGuid());
+        redSystemMessage(named_player->getSession(), "You were killed by GM {}.", m_session->GetPlayer()->getName());
+        greenSystemMessage(m_session, "Killed player {}.", named_player->getName());
+        sGMLog.writefromsession(m_session, "Killed player {} (guid: {}).", named_player->getName(), named_player->getGuid());
     }
     else
     {
@@ -538,7 +538,7 @@ bool ChatCommandHandler::HandleKillCommand(const char* args, WorldSession* m_ses
                     spell->prepare(&targets);
 
                     greenSystemMessage(m_session, "Killed Creature {}.", creature->GetCreatureProperties()->Name);
-                    sGMLog.writefromsession(m_session, "Used kill command on Creature {} [{}], spawn ID: {}", creature->getEntry(), creature->GetCreatureProperties()->Name, creature->spawnid);
+                    sGMLog.writefromsession(m_session, "Killed creature {} (entry: {}, spawn ID: {}).", creature->GetCreatureProperties()->Name, creature->getEntry(), creature->spawnid);
                     break;
                 }
                 case TYPEID_PLAYER:
@@ -547,22 +547,22 @@ bool ChatCommandHandler::HandleKillCommand(const char* args, WorldSession* m_ses
 
                     player->setHealth(0);
                     player->die(nullptr, 0, 0);
-                    redSystemMessage(player->getSession(), "You were killed by {} with a GM command.", m_session->GetPlayer()->getName());
+                    redSystemMessage(player->getSession(), "You were killed by GM {}.", m_session->GetPlayer()->getName());
                     greenSystemMessage(m_session, "Killed player {}.", player->getName());
-                    sGMLog.writefromsession(m_session, "Used kill command on Player Name: {} Guid: {}", m_session->GetPlayer()->getName(), std::to_string(player->getGuid()));
+                    sGMLog.writefromsession(m_session, "Killed player {} (guid: {}).", player->getName(), player->getGuid());
                     break;
                 }
                 default:
-                    redSystemMessage(m_session, "Something went wrong while killing a unit with this command!");
+                    redSystemMessage(m_session, "Failed to execute the kill command.");
                     break;
 
             }
         }
         else
         {
-            redSystemMessage(m_session, "No selected target or player name set.");
-            redSystemMessage(m_session, "Use .kill on an selected unit (player/creature)");
-            redSystemMessage(m_session, "Use .kill <playername> to kill players");
+            redSystemMessage(m_session, "No target selected and no player name specified.");
+            redSystemMessage(m_session, "Use .kill on a selected player or creature.");
+            redSystemMessage(m_session, "Use .kill <playername> to kill a player.");
             return true;
         }
 
@@ -599,11 +599,11 @@ bool ChatCommandHandler::HandleReviveCommand(const char* args, WorldSession* m_s
 
     reviveTarget->setFullHealthMana();
 
-    // Write to GM log
+    // write to GM log
     if (revivedSelf)
-        sGMLog.writefromsession(m_session, "revived himself");
+        sGMLog.writefromsession(m_session, "Revived self.");
     else
-        sGMLog.writefromsession(m_session, "revived player {}", reviveTarget->getName());
+        sGMLog.writefromsession(m_session, "Revived player {}.", reviveTarget->getName());
 
     return true;
 }
@@ -619,14 +619,14 @@ bool ChatCommandHandler::HandleRootCommand(const char* /*args*/, WorldSession* m
 
     if (unit->isPlayer())
     {
-        systemMessage(m_session, "Rooting Player {}.", static_cast<Player*>(unit)->getName());
-        blueSystemMessage(static_cast<Player*>(unit)->getSession(), "You have been rooted by {}.", m_session->GetPlayer()->getName());
-        sGMLog.writefromsession(m_session, "rooted player {}", static_cast<Player*>(unit)->getName());
+        systemMessage(m_session, "Rooted player {}.", static_cast<Player*>(unit)->getName());
+        blueSystemMessage(static_cast<Player*>(unit)->getSession(), "You were rooted by GM {}.", m_session->GetPlayer()->getName());
+        sGMLog.writefromsession(m_session, "Rooted player {}.", static_cast<Player*>(unit)->getName());
     }
     else
     {
-        blueSystemMessage(m_session, "Rooting Creature {}.", static_cast<Creature*>(unit)->GetCreatureProperties()->Name);
-        sGMLog.writefromsession(m_session, "rooted creature {}", static_cast<Creature*>(unit)->GetCreatureProperties()->Name);
+        blueSystemMessage(m_session, "Rooting creature {}.", static_cast<Creature*>(unit)->GetCreatureProperties()->Name);
+        sGMLog.writefromsession(m_session, "Rooted creature {}.", static_cast<Creature*>(unit)->GetCreatureProperties()->Name);
     }
 
     return true;
@@ -643,14 +643,14 @@ bool ChatCommandHandler::HandleUnrootCommand(const char* /*args*/, WorldSession*
 
     if (unit->isPlayer())
     {
-        systemMessage(m_session, "Unrooting Player {}.", static_cast<Player*>(unit)->getName());
-        blueSystemMessage(static_cast<Player*>(unit)->getSession(), "You have been unrooted by {}.", m_session->GetPlayer()->getName());
-        sGMLog.writefromsession(m_session, "unrooted player {}", static_cast<Player*>(unit)->getName());
+        systemMessage(m_session, "Unrooted player {}.", static_cast<Player*>(unit)->getName());
+        blueSystemMessage(static_cast<Player*>(unit)->getSession(), "You were unrooted by GM {}.", m_session->GetPlayer()->getName());
+        sGMLog.writefromsession(m_session, "Unrooted player {}.", static_cast<Player*>(unit)->getName());
     }
     else
     {
-        blueSystemMessage(m_session, "Unrooting Creature {}.", static_cast<Creature*>(unit)->GetCreatureProperties()->Name);
-        sGMLog.writefromsession(m_session, "unrooted creature {}", static_cast<Creature*>(unit)->GetCreatureProperties()->Name);
+        blueSystemMessage(m_session, "Unrooting creature {}.", static_cast<Creature*>(unit)->GetCreatureProperties()->Name);
+        sGMLog.writefromsession(m_session, "Unrooted creature {}.", static_cast<Creature*>(unit)->GetCreatureProperties()->Name);
     }
 
     return true;
@@ -663,7 +663,7 @@ bool ChatCommandHandler::HandleKickByNameCommand(const char* args, WorldSession*
 {
     if (!args)
     {
-        redSystemMessage(m_session, "A player name is required!");
+        redSystemMessage(m_session, "Player name required.");
         redSystemMessage(m_session, "Usage: .kick player <player_name>");
         redSystemMessage(m_session, "Optional: .kick player <player_name> <reason>");
         return true;
@@ -679,12 +679,12 @@ bool ChatCommandHandler::HandleKickByNameCommand(const char* args, WorldSession*
         if (reason)
             kickreason = reason;
 
-        blueSystemMessage(m_session, "Attempting to kick {} from the server for '{}'.", player_target->getName(), kickreason);
-        sGMLog.writefromsession(m_session, "Kicked player {} from the server for {}", player_target->getName(), kickreason);
+        blueSystemMessage(m_session, "Kicked player {} from the server. Reason: {}.", player_target->getName(), kickreason);
+        sGMLog.writefromsession(m_session, "Kicked player {} from the server. Reason: {}.", player_target->getName(), kickreason);
 
         if (!m_session->CanUseCommand('z') && player_target->getSession()->CanUseCommand('z'))
         {
-            redSystemMessage(m_session, "You cannot kick {}, a GM whose permissions outrank yours.", player_target->getName());
+            redSystemMessage(m_session, "You cannot kick {} because their permissions outrank yours.", player_target->getName());
             return true;
         }
 
@@ -695,7 +695,7 @@ bool ChatCommandHandler::HandleKickByNameCommand(const char* args, WorldSession*
             sWorld.sendMessageToAll(worldAnnounce.str(), nullptr);
         }
 
-        systemMessage(player_target->getSession(), "You are being kicked from the server by {}. Reason: {}", m_session->GetPlayer()->getName(), kickreason);
+        systemMessage(player_target->getSession(), "You are being kicked from the server by GM {}. Reason: {}.", m_session->GetPlayer()->getName(), kickreason);
         player_target->kickFromServer(6000);
         return true;
     }
@@ -725,7 +725,7 @@ bool ChatCommandHandler::HandleKKickBySessionCommand(const char* args, WorldSess
         }
 
         sWorld.disconnectSessionByAccountName(args, m_session);
-        sGMLog.writefromsession(m_session, "kicked player with account {}", args);
+        sGMLog.writefromsession(m_session, "Kicked player on account {}.", args);
     }
     else
     {
@@ -741,12 +741,12 @@ bool ChatCommandHandler::HandleKickByIPCommand(const char* args, WorldSession* m
     if (!args || strlen(args) < 8)
     {
         redSystemMessage(m_session, "An IP is required!");
-        redSystemMessage(m_session, "Usage: .kick ip <AN.IP.ADD.RES>");
+        redSystemMessage(m_session, "Usage: .kick ip <ip_address>");
         return true;
     }
 
     sWorld.disconnectSessionByIp(args, m_session);
-    sGMLog.writefromsession(m_session, "kicked players with IP {}", args);
+    sGMLog.writefromsession(m_session, "Kicked players with IP address {}.", args);
 
     return true;
 }
@@ -818,8 +818,8 @@ bool ChatCommandHandler::HandleGPSCommand(const char* args, WorldSession* m_sess
 #if VERSION_STRING < Cata
     if (obj->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
     {
-        systemMessage(m_session, "Position on Transport:");
-        systemMessage(m_session, "  tX: {}  tY: {}  tZ: {}  tO: {}", obj->GetTransOffsetX(), obj->GetTransOffsetY(), obj->GetTransOffsetZ(), obj->GetTransOffsetO());
+        systemMessage(m_session, "Transport position:");
+        systemMessage(m_session, "  X: {}  Y: {}  Z: {}  O: {}", obj->GetTransOffsetX(), obj->GetTransOffsetY(), obj->GetTransOffsetZ(), obj->GetTransOffsetO());
     }
 #endif
 
@@ -855,7 +855,7 @@ bool ChatCommandHandler::HandleInvincibleCommand(const char* /*args*/, WorldSess
         if (selected_player != m_session->GetPlayer())
         {
             greenSystemMessage(selected_player->getSession(), "{} turns your invincibility off", m_session->GetPlayer()->getName());
-            sGMLog.writefromsession(m_session, "turns invincibility off for {}", selected_player->getName());
+            sGMLog.writefromsession(m_session, "Turns invincibility off for {}.", selected_player->getName());
         }
         else
         {
@@ -868,12 +868,12 @@ bool ChatCommandHandler::HandleInvincibleCommand(const char* /*args*/, WorldSess
 
         if (selected_player != m_session->GetPlayer())
         {
-            greenSystemMessage(selected_player->getSession(), "{} turns your invincibility on", m_session->GetPlayer()->getName());
-            sGMLog.writefromsession(m_session, "turns invincibility on for {}", selected_player->getName());
+            greenSystemMessage(selected_player->getSession(), "{} disabled your invincibility.", m_session->GetPlayer()->getName());
+            sGMLog.writefromsession(m_session, "Disabled invincibility for {}.", selected_player->getName());
         }
         else
         {
-            greenSystemMessage(m_session, "Invincibility is now on");
+            greenSystemMessage(m_session, "Enabled invincibility.");
         }
     }
 
@@ -899,12 +899,12 @@ bool ChatCommandHandler::HandleInvisibleCommand(const char* /*args*/, WorldSessi
 
         if (selected_player != m_session->GetPlayer())
         {
-            greenSystemMessage(selected_player->getSession(), "{} turns your invisibility and invincibility off", m_session->GetPlayer()->getName());
-            sGMLog.writefromsession(m_session, "turns invisibility and invincibility off for {}", selected_player->getName());
+            greenSystemMessage(selected_player->getSession(), "{} turns your invisibility and invincibility off.", m_session->GetPlayer()->getName());
+            sGMLog.writefromsession(m_session, "Turns invisibility and invincibility off for {}.", selected_player->getName());
         }
         else
         {
-            greenSystemMessage(m_session, "Invisibility and Invincibility are now off");
+            greenSystemMessage(m_session, "Disabled invincibility.");
         }
     }
     else
@@ -919,12 +919,12 @@ bool ChatCommandHandler::HandleInvisibleCommand(const char* /*args*/, WorldSessi
 
         if (selected_player != m_session->GetPlayer())
         {
-            greenSystemMessage(selected_player->getSession(), "{} turns your invisibility and invincibility on", m_session->GetPlayer()->getName());
-            sGMLog.writefromsession(m_session, "turns invisibility and invincibility on for {}", selected_player->getName());
+            greenSystemMessage(selected_player->getSession(), "{} disabled your invisibility and invincibility.", m_session->GetPlayer()->getName());
+            sGMLog.writefromsession(m_session, "Disabled invisibility and invincibility for {}.", selected_player->getName());
         }
         else
         {
-            greenSystemMessage(m_session, "Invisibility and Invincibility are now on");
+            greenSystemMessage(m_session, "Enabled invisibility and invincibility.");
         }
     }
 
@@ -938,7 +938,7 @@ bool ChatCommandHandler::HandleAnnounceCommand(const char* args, WorldSession* m
 {
     if (!*args || strlen(args) < 4 || strchr(args, '%'))
     {
-        m_session->SystemMessage("Announces cannot contain the %% character and must be at least 4 characters.");
+        m_session->SystemMessage("Announcement must be at least 4 characters long and cannot contain the '%%' character.");
         return true;
     }
 
@@ -975,7 +975,7 @@ bool ChatCommandHandler::HandleAnnounceCommand(const char* args, WorldSession* m
 
     sWorld.sendMessageToAll(worldAnnounce.str());
 
-    sGMLog.writefromsession(m_session, "used announce command, [{}]", args);
+    sGMLog.writefromsession(m_session, "Sent announcement: [{}].", args);
 
     return true;
 }
@@ -1016,7 +1016,7 @@ bool ChatCommandHandler::HandleWAnnounceCommand(const char* args, WorldSession* 
 
     sWorld.sendAreaTriggerMessage(colored_widescreen_text.str());
 
-    sGMLog.writefromsession(m_session, "used wannounce command [{}]", args);
+    sGMLog.writefromsession(m_session, "Sent wannounce: [{}].", args);
 
     return true;
 }
@@ -1040,10 +1040,10 @@ bool ChatCommandHandler::HandleAppearCommand(const char* args, WorldSession* m_s
             systemMessage(m_session, "{} is already being teleported.", chr->getName());
             return true;
         }
-        systemMessage(m_session, "Appearing at {}'s location.", chr->getName());
+        systemMessage(m_session, "Teleporting to {}.", chr->getName());
         if (!m_session->GetPlayer()->m_isGmInvisible)
         {
-            systemMessage(chr->getSession(), "{} is appearing to your location.", m_session->GetPlayer()->getName());
+            systemMessage(chr->getSession(),"GM {} teleported to your location.", m_session->GetPlayer()->getName());
         }
 
 #if VERSION_STRING < Cata
@@ -1145,7 +1145,7 @@ bool ChatCommandHandler::HandleSummonCommand(const char* args, WorldSession* m_s
         systemMessage(m_session, "(Offline) {} has been summoned.", pinfo->name);
         return true;
     }
-    sGMLog.writefromsession(m_session, "summoned {} on map {}, {} {} {}", args, m_session->GetPlayer()->GetMapId(), m_session->GetPlayer()->GetPositionX(), m_session->GetPlayer()->GetPositionY(), m_session->GetPlayer()->GetPositionZ());
+    sGMLog.writefromsession(m_session, "Summoned {} on map {}, {} {} {}.", args, m_session->GetPlayer()->GetMapId(), m_session->GetPlayer()->GetPositionX(), m_session->GetPlayer()->GetPositionY(), m_session->GetPlayer()->GetPositionZ());
     return true;
 }
 
@@ -1330,7 +1330,7 @@ bool ChatCommandHandler::HandleIPUnBanCommand(const char* args, WorldSession* m_
 
     systemMessage(m_session, "Deleting [{}] from ip ban table if it exists", pIp);
     sLogonCommHandler.removeIpBan(pIp.c_str());
-    sGMLog.writefromsession(m_session, "unbanned ip address {}", pIp);
+    sGMLog.writefromsession(m_session, "Unbanned ip address {}.", pIp);
     return true;
 }
 
@@ -1364,7 +1364,7 @@ bool ChatCommandHandler::HandleUnBanCharacterCommand(const char* args, WorldSess
     CharacterDatabase.execute("UPDATE characters SET banned = 0 WHERE name = '%s'", CharacterDatabase.escapeString(character).c_str());
 
     systemMessage(m_session, "Unbanned character {} in database.", character);
-    sGMLog.writefromsession(m_session, "unbanned {}", character);
+    sGMLog.writefromsession(m_session, "Unbanned {}.", character);
 
     return true;
 }
@@ -1375,18 +1375,18 @@ void ParseBanArgs(char* args, char** BanDuration, char** BanReason)
     char* pReason = nullptr;
     if (pBanDuration != nullptr)
     {
-        if (isdigit(*(pBanDuration + 1)))       // this is the duration of the ban
+        if (isdigit(*(pBanDuration + 1)))               // this is the duration of the ban
         {
-            *pBanDuration = 0;                  // nullptr-terminate the first string (character/account/ip)
-            ++pBanDuration;                     // point to next arg
+            *pBanDuration = 0;                          // nullptr-terminate the first string (character/account/ip)
+            ++pBanDuration;                             // point to next arg
             pReason = strchr(pBanDuration + 1, ' ');
-            if (pReason != nullptr)                // BanReason is OPTIONAL
+            if (pReason != nullptr)                     // BanReason is OPTIONAL
             {
-                *pReason = 0;                   // BanReason was given, so nullptr-terminate the duration string
-                ++pReason;                      // and point to the ban reason
+                *pReason = 0;                           // BanReason was given, so nullptr-terminate the duration string
+                ++pReason;                              // and point to the ban reason
             }
         }
-        else                                    // no duration was given (didn't start with a digit) - so this arg must be ban reason and duration defaults to permanent
+        else                                            // no duration was given (didn't start with a digit) - so this arg must be ban reason and duration defaults to permanent
         {
             pReason = pBanDuration;
             pBanDuration = nullptr;
@@ -1443,7 +1443,7 @@ bool ChatCommandHandler::HandleIPBanCommand(const char* args, WorldSession* m_se
     systemMessage(m_session, "Adding [{}] to IP ban table, expires {}. Reason is: {}", pIp, (expire_time == 0) ? "Never" : ctime(&expire_time), reason);
     sLogonCommHandler.addIpBan(IP.c_str(), (uint32_t)expire_time, reason.c_str());
     sWorld.disconnectSessionByIp(IP.substr(0, IP.find("/")), m_session);
-    sGMLog.writefromsession(m_session, "banned ip address {}, expires {}", pIp, (expire_time == 0) ? "Never" : ctime(&expire_time));
+    sGMLog.writefromsession(m_session, "Banned ip address {}, expires {}", pIp, (expire_time == 0) ? "Never" : ctime(&expire_time));
 
     return true;
 }

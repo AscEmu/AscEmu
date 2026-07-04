@@ -117,7 +117,7 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
     // Double Jump
     if (opcode == MSG_MOVE_JUMP && _player->m_isJumping)
     {
-        sCheatLog.writefromsession(this, "Detected jump hacking");
+        sCheatLog.writefromsession(this, "Detected jump hacking.");
         return true;
     }
 
@@ -126,9 +126,8 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
     if (_player->m_position.distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y }) > 3025.0f &&
         _player->getSpeedRate(TYPE_RUN, true) < 50.0f && !_player->obj_movement_info.transport_guid)
     {
-        sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: {}, Distance traveled: {}",
-            _player->getSpeedRate(TYPE_RUN, true),
-            std::sqrt(_player->m_position.distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y })));
+        sCheatLog.writefromsession(this, "Teleport exploit detected. Speed: {}. Distance traveled: {:.2f}.", _player->getSpeedRate(TYPE_RUN, true),
+                                          std::sqrt(_player->m_position.distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y })));
 
         return true;
     }
@@ -615,14 +614,16 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
         {
             if (!_player->isTransferPending())
             {
-                sCheatLog.writefromsession(this, "Used Teleporthack 1, disconnecting.");
+                sCheatLog.writefromsession(this, "Teleport exploit detected: missing transfer state. Player disconnected.");
+
                 Disconnect();
                 return;
             }
 
             if (_player->m_position.distance2DSq(_player->m_sentTeleportPosition) > 625.0f)
             {
-                sCheatLog.writefromsession(this, "Used Teleporthack 2, disconnecting.");
+                sCheatLog.writefromsession(this, "Teleport exploit detected: position mismatch. DistanceSq: {:.2f}. Player disconnected.", _player->m_position.distance2DSq(_player->m_sentTeleportPosition));
+
                 Disconnect();
                 return;
             }

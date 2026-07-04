@@ -1509,10 +1509,10 @@ bool ChatCommandHandler::HandleCastSpellCommand(const char* args, WorldSession* 
     {
         case TYPEID_PLAYER:
             if (caster != target)
-                sGMLog.writefromsession(m_session, "cast spell {} on PLAYER {}", spellid, static_cast< Player* >(target)->getName());
+                sGMLog.writefromsession(m_session, "Cast spell {} on Player {}.", spellid, static_cast< Player* >(target)->getName());
             break;
         case TYPEID_UNIT:
-            sGMLog.writefromsession(m_session, "cast spell {} on CREATURE {} [{}], sqlid {}", spellid, target->getEntry(), static_cast< Creature* >(target)->GetCreatureProperties()->Name, static_cast< Creature* >(target)->GetSQL_id());
+            sGMLog.writefromsession(m_session, "Cast spell {} on Creature {} [{}], sqlid {}.", spellid, target->getEntry(), static_cast< Creature* >(target)->GetCreatureProperties()->Name, static_cast< Creature* >(target)->GetSQL_id());
             break;
     }
 
@@ -1569,10 +1569,10 @@ bool ChatCommandHandler::HandleCastSpellNECommand(const char* args, WorldSession
     {
         case TYPEID_PLAYER:
             if (caster != target)
-                sGMLog.writefromsession(m_session, "cast spell {} on PLAYER {}", spellId, static_cast< Player* >(target)->getName());
+                sGMLog.writefromsession(m_session, "Cast spell {} on Player {}.", spellId, static_cast< Player* >(target)->getName());
             break;
         case TYPEID_UNIT:
-            sGMLog.writefromsession(m_session, "cast spell {} on CREATURE {} [{}], sqlid {}", spellId, target->getEntry(), static_cast< Creature* >(target)->GetCreatureProperties()->Name, static_cast< Creature* >(target)->GetSQL_id());
+            sGMLog.writefromsession(m_session, "Cast spell {} on Creature {} [{}], sqlid {}.", spellId, target->getEntry(), static_cast< Creature* >(target)->GetCreatureProperties()->Name, static_cast< Creature* >(target)->GetSQL_id());
             break;
     }
 
@@ -1609,10 +1609,10 @@ bool ChatCommandHandler::HandleCastSelfCommand(const char* args, WorldSession* m
     {
         case TYPEID_PLAYER:
             if (m_session->GetPlayer() != target)
-                sGMLog.writefromsession(m_session, "used castself with spell {} on PLAYER {}", spellid, static_cast< Player* >(target)->getName());
+                sGMLog.writefromsession(m_session, "Used castself with spell {} on Player {}.", spellid, static_cast< Player* >(target)->getName());
             break;
         case TYPEID_UNIT:
-            sGMLog.writefromsession(m_session, "used castself with spell {} on CREATURE {} [{}], sqlid {}", spellid, target->getEntry(), static_cast< Creature* >(target)->GetCreatureProperties()->Name, static_cast< Creature* >(target)->GetSQL_id());
+            sGMLog.writefromsession(m_session, "Used castself with spell {} on Creature {} [{}], sqlid {}.", spellid, target->getEntry(), static_cast< Creature* >(target)->GetCreatureProperties()->Name, static_cast< Creature* >(target)->GetSQL_id());
             break;
     }
 

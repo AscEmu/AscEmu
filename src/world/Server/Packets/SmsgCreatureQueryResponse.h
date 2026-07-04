@@ -109,7 +109,7 @@ namespace AscEmu::Packets
                 packet.writeBits(_name.length() + 1, 11);
 
                 for (uint8_t i = 0; i < 7; ++i)
-                    packet.writeBits(0, 11);    // name2-name8
+                    packet.writeBits(0, 11); // name2-name8
 
                 packet.writeBit(false);
                 packet.writeBits(0, 6);
@@ -148,7 +148,7 @@ namespace AscEmu::Packets
                     packet.writeBits(_name.length() + 1, 11);
 
                     for (uint8_t i = 0; i < 7; ++i)
-                        packet.writeBits(0, 11);    // name2-name8
+                        packet.writeBits(0, 11); // name2-name8
 
                     packet.writeBit(info->Leader);
                     packet.writeBits(hasIcon ? info->icon_name.length() + 1 : 0, 6);

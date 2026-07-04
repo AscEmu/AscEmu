@@ -69,15 +69,15 @@ bool ChatCommandHandler::handleAccountMuteCommand(const char* args, WorldSession
 
     sLogonCommHandler.setAccountMute(pAccount, banned);
 
-    std::string tsstr = Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32_t)UNIXTIME);
-    greenSystemMessage(m_session, "Muted account {} until {}. The change will be effective immediately.", pAccount, tsstr);
-    sGMLog.writefromsession(m_session, "Mute account {} until {}.", pAccount, Util::GetDateTimeStringFromTimeStamp(timeperiod + static_cast<uint32_t>(UNIXTIME)));
+    std::string tsstr = Util::GetDateTimeStringFromTimeStamp(timeperiod + static_cast<uint32_t>(UNIXTIME));
+    greenSystemMessage(m_session, "Muted account {} until {}. The change takes effect immediately.", pAccount, tsstr);
+    sGMLog.writefromsession(m_session, "Muted account {} until {}.", pAccount, tsstr);
 
     WorldSession* pSession = sWorld.getSessionByAccountName(pAccount);
     if (pSession != nullptr)
     {
         pSession->m_muted = banned;
-        pSession->SystemMessage("Your voice has been muted until %s by a GM. Until this time, you will not be able to speak in any form.", tsstr.c_str());
+        pSession->SystemMessage("Your account has been muted until %s by a GM. Until then, you will not be able to use chat.", tsstr.c_str());
     }
 
     return true;
@@ -87,8 +87,9 @@ bool ChatCommandHandler::handleAccountUnmuteCommand(const char* args, WorldSessi
 {
     sLogonCommHandler.setAccountMute(args, 0);
 
-    greenSystemMessage(m_session, "Account '%s' has been unmuted.", args);
-    sGMLog.writefromsession(m_session, "unmuted account {}", args);
+    greenSystemMessage(m_session, "Account '{}' has been unmuted.", args);
+    sGMLog.writefromsession(m_session, "Unmuted account {}.", args);
+
     WorldSession* pSession = sWorld.getSessionByAccountName(args);
     if (pSession != nullptr)
     {
@@ -149,11 +150,13 @@ bool ChatCommandHandler::handleAccountBannedCommand(const char* args, WorldSessi
 
     sLogonCommHandler.setAccountBanned(pAccount, banned, reason.c_str());
 
-    greenSystemMessage(m_session, "Account '{}' has been banned {}{} for reason : {}. The change will be effective immediately.",
-        pAccount, timeperiod ? "until " : "forever", timeperiod ? Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32_t)UNIXTIME) : "", reason);
+    const std::string banUntil = timeperiod ? Util::GetDateTimeStringFromTimeStamp(timeperiod + static_cast<uint32_t>(UNIXTIME)) : "";
+    greenSystemMessage(m_session, "Account '{}' has been banned {}{} for reason: {}. The change takes effect immediately.", pAccount, timeperiod ? "until " : "permanently", timeperiod ? banUntil : "", reason);
 
     sWorld.disconnectSessionByAccountName(pAccount, m_session);
-    sGMLog.writefromsession(m_session, "banned account {} until {}", pAccount, timeperiod ? Util::GetDateTimeStringFromTimeStamp(timeperiod + static_cast<uint32_t>(UNIXTIME)) : "permanent");
+
+    sGMLog.writefromsession(m_session, "Banned account {} {}{}.", pAccount, timeperiod ? "until " : "permanently", timeperiod ? banUntil : "");
+
     return true;
 }
 
@@ -164,9 +167,10 @@ bool ChatCommandHandler::handleAccountUnbanCommand(const char* args, WorldSessio
     char* pAccount = (char*)args;
 
     sLogonCommHandler.setAccountBanned(pAccount, 0, "");
-    greenSystemMessage(m_session, "Account '{}' has been unbanned. This change will be effective immediately.", pAccount);
 
-    sGMLog.writefromsession(m_session, "unbanned account {}", pAccount);
+    greenSystemMessage(m_session, "Account '{}' has been unbanned. The change takes effect immediately.", pAccount);
+    sGMLog.writefromsession(m_session, "Unbanned account {}.", pAccount);
+
     return true;
 }
 
@@ -208,8 +212,7 @@ bool ChatCommandHandler::handleAccountGetAccountID(const char* args, WorldSessio
 
     sLogonCommHandler.checkIfAccountExist(pAccount, m_session->GetAccountNameS(), nullptr, 2);
 
-    sGMLog.writefromsession(m_session, "looked up account id for account {}", pAccount);
-
+    sGMLog.writefromsession(m_session, "Looked up account id for account {}.", pAccount);
 
     return true;
 }

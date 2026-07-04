@@ -39,13 +39,13 @@ bool ChatCommandHandler::HandleAdminCastAllCommand(const char* args, WorldSessio
     {
         if (spell_entry->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
         {
-            sGMLog.writefromsession(m_session, "used learn spell stopped {}", spell_id);
-            redSystemMessage(m_session, "Learn spell specified.");
+            sGMLog.writefromsession(m_session, "Stopped learning spell {}.", spell_id);
+            redSystemMessage(m_session, "Stopped learning spell {}.", spell_id);
             return true;
         }
     }
 
-    sGMLog.writefromsession(m_session, "used castall command, spellid {}", spell_id);
+    sGMLog.writefromsession(m_session, "Cast spell {} on all players.", spell_id);
 
     std::lock_guard guard(sObjectMgr.m_playerLock);
     for (const auto playerPair : sObjectMgr.getPlayerStorage())
@@ -77,7 +77,7 @@ bool ChatCommandHandler::HandleAdminDispelAllCommand(const char* args, WorldSess
     if (*args)
         pos = atoi(args);
 
-    sGMLog.writefromsession(m_session, "used dispelall command, pos {}", pos);
+    sGMLog.writefromsession(m_session, "Dispelled all effects (position: {}).", pos);
 
     std::lock_guard guard(sObjectMgr.m_playerLock);
     for (const auto playerPair : sObjectMgr.getPlayerStorage())
@@ -91,9 +91,9 @@ bool ChatCommandHandler::HandleAdminDispelAllCommand(const char* args, WorldSess
                 player->removeAllNegativeAuras();
         }
     }
-    sGMLog.writefromsession(m_session, "used mass dispel");
+    sGMLog.writefromsession(m_session, "Mass dispel performed.");
+    blueSystemMessage(m_session, "Mass dispel performed.");
 
-    blueSystemMessage(m_session, "Dispel action done.");
     return true;
 }
 
@@ -144,7 +144,7 @@ bool ChatCommandHandler::HandleAdminMassSummonCommand(const char* args, WorldSes
         }
     }
 
-    sGMLog.writefromsession(m_session, "requested a mass summon of {} players.", summon_count);
+    sGMLog.writefromsession(m_session, "Requested a mass summon for {} players.", summon_count);
 
     return true;
 }
@@ -161,9 +161,8 @@ bool ChatCommandHandler::HandleAdminPlayGlobalSoundCommand(const char* args, Wor
 
     sWorld.playSoundToAllPlayers(sound_id);
 
-    blueSystemMessage(m_session, "Broadcasted sound {} to server.", sound_id);
-
-    sGMLog.writefromsession(m_session, "used play all command soundid {}", sound_id);
+    blueSystemMessage(m_session, "Broadcasted sound {} to all players.", sound_id);
+    sGMLog.writefromsession(m_session, "Broadcasted sound {} to all players.", sound_id);
 
     return true;
 }

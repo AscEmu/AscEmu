@@ -307,8 +307,8 @@ CommandTableStorage::CommandTableStorage()
         {"lookup skill",                  "l", 1, wrap(&ChatCommandHandler::HandleLookupSkillCommand),            "Looks up skill string x." },
 
         {"modify",                        "0", 0 },
-        {"modify hp",                     "m", 1, wrap(&ChatCommandHandler::HandleModifyHp),                      "Mods health points (HP) of selected target" },
-        {"modify mana",                   "m", 1, wrap(&ChatCommandHandler::HandleModifyMana),                    "Mods mana points (MP) of selected target." },
+        {"modify hp",                     "m", 1, wrap(&ChatCommandHandler::HandleModifyHp),                      "Mods health points of selected target" },
+        {"modify mana",                   "m", 1, wrap(&ChatCommandHandler::HandleModifyMana),                    "Mods mana points of selected target." },
         {"modify rage",                   "m", 1, wrap(&ChatCommandHandler::HandleModifyRage),                    "Mods rage points of selected target." },
         {"modify energy",                 "m", 1, wrap(&ChatCommandHandler::HandleModifyEnergy),                  "Mods energy points of selected target." },
 #if VERSION_STRING >= WotLK

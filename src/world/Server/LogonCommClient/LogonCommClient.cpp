@@ -535,11 +535,11 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
     std::string account_name;
     std::string request_name;
 
-    recvData >> result_id;      //Get the result id for further processing
+    recvData >> result_id; // Get the result id for further processing
     recvData >> account_name;
     recvData >> request_name;
 
-    //transform std::string to const char
+    // transform std::string to const char
     const char* request_string = request_name.c_str();
     const char* account_string = account_name.c_str();
 
@@ -555,17 +555,17 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
 
     switch (result_id)
     {
-        case 1:     // Account not available
+        case 1: // Account not available
         {
             if (request_name.compare("none") != 0)
                 session_name->SystemMessage("Account: %s not found in database!", account_string);
         } break;
-        case 2:     // No additional data set
+        case 2: // No additional data set
         {
             if (request_name.compare("none") != 0)
                 session_name->SystemMessage("No gmlevel set for account: %s !", account_string);
         } break;
-        case 3:     // Everything is okay
+        case 3: // Everything is okay
         {
             std::string gmlevel;
             recvData >> gmlevel;
@@ -575,19 +575,19 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
 
             if (gmlevel.compare("0") != 0)
             {
-                //Update account_permissions
+                // Update account_permissions
                 CharacterDatabase.execute("REPLACE INTO account_permissions (`id`, `permissions`, `name`) VALUES (%u, '%s', '%s')", accountId, gmlevel.c_str(), account_string);
                 if (request_name.compare("none") != 0)
                     session_name->SystemMessage("Account permissions has been updated to '%s' for account '%s' (%u). The change will be effective immediately.", gmlevel.c_str(), account_string, accountId);
 
-                //Update forcedpermission map
+                // Update forcedpermission map
                 sLogonCommHandler.setAccountPermission(accountId, gmlevel);
 
-                //Write info to gmlog
+                // Write info to gmlog
                 if (request_name.compare("none") != 0)
-                    sGMLog.writefromsession(session_name, "set account {} ({}) permissions to {}", account_string, accountId, gmlevel);
+                    sGMLog.writefromsession(session_name, "Set account permissions for {} ({}): {}.", account_string, accountId, gmlevel);
 
-                //Send information to updated account
+                // Send information to updated account
                 WorldSession* updated_account_session = sWorld.getSessionByAccountName(account_string);
                 if (updated_account_session != nullptr)
                 {
@@ -596,19 +596,19 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
             }
             else
             {
-                //Update account_permissions
+                // Update account_permissions
                 CharacterDatabase.execute("DELETE FROM account_permissions WHERE id = %u", accountId);
                 if (request_name.compare("none") != 0)
                     session_name->SystemMessage("Account permissions removed for account '%s' (%u). The change will be effective immediately.", account_string, accountId);
 
-                //Update forcedpermission map
+                // Update forcedpermission map
                 sLogonCommHandler.removeAccountPermission(accountId);
 
-                //Write info to gmlog
+                // Write info to gmlog
                 if (request_name.compare("none") != 0)
-                    sGMLog.writefromsession(session_name, "removed permissions for account {} ({})", account_string, accountId);
+                    sGMLog.writefromsession(session_name, "Removed account permissions for {} ({}).", account_string, accountId);
 
-                //Send information to updated account
+                // Send information to updated account
                 WorldSession* updated_account_session = sWorld.getSessionByAccountName(account_string);
                 if (updated_account_session != nullptr)
                 {
@@ -617,7 +617,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
             }
 
         } break;
-        case 4:     // Account ID
+        case 4: // Account ID
         {
             uint32_t account_id;
             recvData >> account_id;
