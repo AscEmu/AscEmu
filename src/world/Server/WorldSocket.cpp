@@ -153,26 +153,26 @@ WorldSocket::WorldSocket(SOCKET fd)
     m_fullAccountName(nullptr)
 {
     //todo Zyres: This is temp until we moved the supported version from makro to config
-    ClientProtocolState protocol;
+    WoW::ClientProtocolState protocol;
     switch (sOpcodeTables.getVersionIdForAEVersion())
     {
         case 0:
-            protocol.version = ClientVersion::_Classic;
+            protocol.version = WoW::Expansion::_Classic;
             break;
         case 1:
-            protocol.version = ClientVersion::_TBC;
+            protocol.version = WoW::Expansion::_TBC;
             break;
         case 2:
-            protocol.version = ClientVersion::_WotLK;
+            protocol.version = WoW::Expansion::_WotLK;
             break;
         case 3:
-            protocol.version = ClientVersion::_Cata;
+            protocol.version = WoW::Expansion ::_Cata;
             break;
         case 4:
-            protocol.version = ClientVersion::_Mop;
+            protocol.version = WoW::Expansion::_Mop;
             break;
         default:
-            protocol.version = ClientVersion::_Unknown;
+            protocol.version = WoW::Expansion::Unknown;
             break;
     }
 
@@ -981,7 +981,7 @@ void WorldSocket::onRead()
 
 bool WorldSocket::processHeader()
 {
-    if (m_clientProtocol.version == ClientVersion::_Mop && !m_HandshakeReceived)
+    if (m_clientProtocol.version == WoW::Expansion::_Mop && !m_HandshakeReceived)
     {
         if (readBuffer.GetSize() < 2)
             return false;
@@ -997,7 +997,7 @@ bool WorldSocket::processHeader()
         return true;
     }
 
-    if (m_clientProtocol.version == ClientVersion::_Mop && _crypt.isInitialized())
+    if (m_clientProtocol.version == WoW::Expansion::_Mop && _crypt.isInitialized())
     {
         if (readBuffer.GetSize() < 4)
             return false;
@@ -1017,8 +1017,8 @@ bool WorldSocket::processHeader()
     ClientPktHeader header;
     readBuffer.Read(&header, 6);
 
-    if (m_clientProtocol.version == ClientVersion::_Classic ||
-        m_clientProtocol.version == ClientVersion::_TBC)
+    if (m_clientProtocol.version == WoW::Expansion::_Classic ||
+        m_clientProtocol.version == WoW::Expansion::_TBC)
     {
         _crypt.decryptLegacyReceive(reinterpret_cast<uint8_t*>(&header), sizeof(ClientPktHeader));
         mRemaining = mSize = ntohs(header.size) - 4;
@@ -1027,7 +1027,7 @@ bool WorldSocket::processHeader()
     {
         _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&header), sizeof(ClientPktHeader));
 
-        if (m_clientProtocol.version == ClientVersion::_Mop)
+        if (m_clientProtocol.version == WoW::Expansion::_Mop)
             mRemaining = mSize = header.size - 4;
         else
             mRemaining = mSize = ntohs(header.size) - 4;

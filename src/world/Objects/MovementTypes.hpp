@@ -99,11 +99,11 @@ struct MovementStep
     Cond cond = Cond::Always;
 };
 
-template <ClientVersion Version>
+template <WoW::Expansion Version>
 struct MovementVersionTraits;
 
 template <>
-struct MovementVersionTraits<ClientVersion::_Classic>
+struct MovementVersionTraits<WoW::Expansion::_Classic>
 {
     static constexpr bool hasFlags2 = false;
     static constexpr int flags2BitWidth = 0;
@@ -111,7 +111,7 @@ struct MovementVersionTraits<ClientVersion::_Classic>
 };
 
 template <>
-struct MovementVersionTraits<ClientVersion::_TBC>
+struct MovementVersionTraits<WoW::Expansion::_TBC>
 {
     static constexpr bool hasFlags2 = true;
     static constexpr int flags2BitWidth = 8;
@@ -119,7 +119,7 @@ struct MovementVersionTraits<ClientVersion::_TBC>
 };
 
 template <>
-struct MovementVersionTraits<ClientVersion::_WotLK>
+struct MovementVersionTraits<WoW::Expansion::_WotLK>
 {
     static constexpr bool hasFlags2 = true;
     static constexpr int flags2BitWidth = 16;
@@ -127,7 +127,7 @@ struct MovementVersionTraits<ClientVersion::_WotLK>
 };
 
 template <>
-struct MovementVersionTraits<ClientVersion::_Cata>
+struct MovementVersionTraits<WoW::Expansion::_Cata>
 {
     static constexpr bool hasFlags2 = true;
     static constexpr int flags2BitWidth = 12;
@@ -135,7 +135,7 @@ struct MovementVersionTraits<ClientVersion::_Cata>
 };
 
 template <>
-struct MovementVersionTraits<ClientVersion::_Mop>
+struct MovementVersionTraits<WoW::Expansion::_Mop>
 {
     static constexpr bool hasFlags2 = true;
     static constexpr int flags2BitWidth = 13;

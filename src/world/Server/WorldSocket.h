@@ -86,7 +86,7 @@ public:
 
     void UpdateQueuedPackets();
 
-    inline void SetClientProtocol(ClientProtocolState protocol)
+    inline void SetClientProtocol(WoW::ClientProtocolState protocol)
     {
         m_clientProtocol = protocol;
         m_HandshakeReceived = false;
@@ -123,7 +123,7 @@ private:
 
     ByteBuffer mAddonInfoBuffer;
 
-    ClientProtocolState m_clientProtocol{};
+    WoW::ClientProtocolState m_clientProtocol{};
     bool m_HandshakeReceived{false};
 
     uint8_t AuthDigest[20];

@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MovementDefines.hpp"
 #include "MovementDescriptors.hpp"
 
-template <ClientVersion Version>
+template <WoW::Expansion Version>
 class MovementCodec
 {
 public:
@@ -71,7 +71,7 @@ private:
     //set states based on data for write
     static void setState(MovementInfo& movementInfo)
     {
-        if constexpr (Version == ClientVersion::_Classic || Version == ClientVersion::_TBC || Version == ClientVersion::_WotLK)
+        if constexpr (Version == WoW::Expansion::_Classic || Version == WoW::Expansion::_TBC || Version == WoW::Expansion::_WotLK)
         {
             movementInfo.hasTransportData = movementInfo.hasMovementFlag(MOVEFLAG_TRANSPORT);
         }
@@ -90,7 +90,7 @@ private:
         movementInfo.status_info.hasTransportTime3 = false;
         movementInfo.status_info.hasOrientation = movementInfo.position.o != 0;
 
-        if constexpr (Version == ClientVersion::_Classic)
+        if constexpr (Version == WoW::Expansion::_Classic)
         {
             movementInfo.status_info.hasPitch = 
                 movementInfo.hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING));
@@ -191,7 +191,7 @@ private:
 
             case MovementOp::Flags:
             {
-                if constexpr (Version == ClientVersion::_Cata || Version == ClientVersion::_Mop)
+                if constexpr (Version == WoW::Expansion::_Cata || Version == WoW::Expansion::_Mop)
                     movementInfo.flags = buffer.readBits(30);
                 else
                     buffer >> movementInfo.flags;
@@ -354,7 +354,7 @@ private:
 
             case MovementOp::Flags:
             {
-                if constexpr (Version == ClientVersion::_Cata || Version == ClientVersion::_Mop)
+                if constexpr (Version == WoW::Expansion::_Cata || Version == WoW::Expansion::_Mop)
                     data.writeBits(movementInfo.flags, 30);
                 else
                     data << movementInfo.flags;
@@ -455,13 +455,13 @@ private:
 
     static std::span<MovementStep const> getDescriptor(uint16_t opcode, bool read)
     {
-        if constexpr (Version == ClientVersion::_Classic)
+        if constexpr (Version == WoW::Expansion::_Classic)
             return getClassicMovementDescriptor(opcode);
-        else if constexpr (Version == ClientVersion::_TBC)
+        else if constexpr (Version == WoW::Expansion::_TBC)
             return getTbcMovementDescriptor(opcode);
-        else if constexpr (Version == ClientVersion::_WotLK)
+        else if constexpr (Version == WoW::Expansion::_WotLK)
             return getWotlkMovementDescriptor(opcode);
-        else if constexpr (Version == ClientVersion::_Cata)
+        else if constexpr (Version == WoW::Expansion::_Cata)
             return getCataMovementDescriptor(opcode);
         else
             return getMopMovementDescriptor(opcode, read);

@@ -9,13 +9,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MovementCodec.hpp"
 
 #if VERSION_STRING == Classic
-    using ActiveMovementCodec = MovementCodec<ClientVersion::_Classic>;
+    using ActiveMovementCodec = MovementCodec<WoW::Expansion::_Classic>;
 #elif VERSION_STRING == TBC
-    using ActiveMovementCodec = MovementCodec<ClientVersion::_TBC>;
+    using ActiveMovementCodec = MovementCodec<WoW::Expansion::_TBC>;
 #elif VERSION_STRING == WotLK
-    using ActiveMovementCodec = MovementCodec<ClientVersion::_WotLK>;
+    using ActiveMovementCodec = MovementCodec<WoW::Expansion::_WotLK>;
 #elif VERSION_STRING == Cata
-    using ActiveMovementCodec = MovementCodec<ClientVersion::_Cata>;
+    using ActiveMovementCodec = MovementCodec<WoW::Expansion::_Cata>;
 #elif VERSION_STRING == Mop
-    using ActiveMovementCodec = MovementCodec<ClientVersion::_Mop>;
+    using ActiveMovementCodec = MovementCodec<WoW::Expansion::_Mop>;
 #endif
