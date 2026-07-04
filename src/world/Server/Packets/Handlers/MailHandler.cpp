@@ -535,7 +535,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
             msg.items.push_back(pItem->getGuidLow());
 
             if (hasPermissions())
-                sGMLog.writefromsession(this, "sent mail with item entry {} to {}", pItem->getEntry(), playerReceiverInfo->name);
+                sGMLog.writefromsession(this, "Sent mail with item entry {} to {}.", pItem->getEntry(), playerReceiverInfo->name);
         }
     }
 

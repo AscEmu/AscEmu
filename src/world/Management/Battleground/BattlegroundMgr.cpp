@@ -261,7 +261,7 @@ void BattlegroundManager::handleBattlegroundJoin(WorldSession* session, WorldPac
 
     if (srlPacket.bgType >= BATTLEGROUND_NUM_TYPES || srlPacket.bgType == 0 || m_bgMaps.find(srlPacket.bgType) == m_bgMaps.end() && srlPacket.bgType != BattlegroundDef::TYPE_RANDOM)
     {
-        sCheatLog.writefromsession(session, "tried to crash the server by joining battleground that does not exist (0)");
+        sCheatLog.writefromsession(session, "Attempted to join invalid battleground type: {}.", srlPacket.bgType);
         plr->softDisconnect();
         return;
     }

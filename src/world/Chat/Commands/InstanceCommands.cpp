@@ -217,7 +217,7 @@ bool ChatCommandHandler::HandleResetInstanceCommand(const char* args, WorldSessi
     // tell player the instance was reset
     plr->getSession()->SendPacket(SmsgInstanceReset(instance->getBaseMap()->getMapId()).serialise().get());
 
-    //    redSystemMessage(m_session, "Resetting single non-persistent instances is not available yet.");
+    redSystemMessage(m_session, "Used reset instance command on {}, instance {} is not available.", plr->getName(), instanceId);
     sGMLog.writefromsession(m_session, "Used reset instance command on {}, instance {}.", plr->getName(), instanceId);
     return true;
 }

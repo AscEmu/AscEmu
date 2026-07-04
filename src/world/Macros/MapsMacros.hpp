@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 // The Burning Crusade = 600 - untested
 // Wrath of the Lich King = 800
 // Cataclysm = 975
-// Mists of Pandaria = 975 - untested
+// Mists of Pandaria = 1161 - untested
 // Warlords of Draenor = untested
 // Legion = untested
 //
@@ -41,7 +41,7 @@ This file is released under the MIT license. See README-MIT for more information
 // The Burning Crusade = 600 - untested
 // Wrath of the Lich King = 800
 // Cataclysm = 975
-// Mists of Pandaria = 975 - untested
+// Mists of Pandaria = 1161 - untested
 // Warlords of Draenor = untested
 // Legion = untested
 //
@@ -64,7 +64,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #define MAP_CELL_DEFAULT_UNLOAD_TIME 300
 #define MAKE_CELL_EVENT(x, y) (((x) * 1000) + 200 + y)
-#define DECODE_CELL_EVENT(dest_x, dest_y, ev) (dest_x) = ((ev - 200) / 1000); (dest_y) = ((ev - 200) % 1000);
+// #define DECODE_CELL_EVENT(dest_x, dest_y, ev) (dest_x) = ((ev - 200) / 1000); (dest_y) = ((ev - 200) % 1000);
 
 #define GO_GUID_RECYCLE_INTERVAL 2048 /// client will cache GO positions. Using same guid for same client will make GO appear at wrong possition so we try to avoid assigning same guid
 

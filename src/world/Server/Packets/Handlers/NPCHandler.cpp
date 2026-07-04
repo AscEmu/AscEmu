@@ -65,7 +65,7 @@ void WorldSession::handleTabardVendorActivateOpcode(WorldPacket& recvPacket)
     SendPacket(MsgTabardvendorActivate(srlPacket.guid).serialise().get());
 }
 
-//helper
+// helper
 void WorldSession::sendTabardHelp(Creature* creature)
 {
     if (creature == nullptr)
@@ -89,7 +89,7 @@ void WorldSession::handleBankerActivateOpcode(WorldPacket& recvPacket)
     SendPacket(SmsgShowBank(srlPacket.guid).serialise().get());
 }
 
-//helper
+// helper
 void WorldSession::sendBankerList(Creature* creature)
 {
     if (creature == nullptr)
@@ -113,7 +113,7 @@ void WorldSession::handleAuctionHelloOpcode(WorldPacket& recvPacket)
     sendAuctionList(creature);
 }
 
-//helper
+// helper
 void WorldSession::sendAuctionList(Creature* creature)
 {
     if (creature == nullptr)
@@ -154,8 +154,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 
     for (auto& itr : *its)
     {
-        if ((itr.castSpell && itr.castSpell->getId() == srlPacket.spellId) ||
-            (itr.learnSpell && itr.learnSpell->getId() == srlPacket.spellId))
+        if ((itr.castSpell && itr.castSpell->getId() == srlPacket.spellId) || (itr.learnSpell && itr.learnSpell->getId() == srlPacket.spellId))
         {
             trainerSpell = &itr;
             break;
@@ -164,7 +163,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 
     if (trainerSpell == nullptr)
     {
-        sCheatLog.writefromsession(this, "{} tried to learn non-obtainable spell - possibly using WPE", _player->getName());
+        sCheatLog.writefromsession(this, "Attempted to learn non-obtainable spell. Player: {}.", _player->getName());
         Disconnect();
         return;
     }
@@ -217,7 +216,7 @@ void WorldSession::handleCharterShowListOpcode(WorldPacket& recvPacket)
     sendCharterRequest(creature);
 }
 
-//helper
+// helper
 void WorldSession::sendCharterRequest(Creature* creature)
 {
     if (creature == nullptr)

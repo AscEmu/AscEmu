@@ -57,6 +57,7 @@
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Narrow.hpp"
 #include "Utilities/TimeTracker.hpp"
+#include <Server/WorldSessionLog.hpp>
 
 using namespace AscEmu::Packets;
 
@@ -1581,7 +1582,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
     {
         if (!dynamic_cast<Creature*>(qst_giver)->HasQuest(qst->id, 2))
         {
-            //sCheatLog.writefromsession(plr->getSession(), "tried to finish quest from invalid npc.");
+            sGMLog.writefromsession(plr->getSession(), "Attempted to complete quest from invalid NPC."); // QuestID: {}, NPC Entry: {}.", qst->id, qst_giver->GetEntry());
             plr->getSession()->Disconnect();
             return;
         }
@@ -2361,7 +2362,6 @@ void QuestMgr::finalize()
     // NTY.
     m_quest_associations.clear();
 }
-
 
 bool QuestMgr::CanStoreReward(Player* plyr, QuestProperties const* qst, uint32_t reward_slot)
 {

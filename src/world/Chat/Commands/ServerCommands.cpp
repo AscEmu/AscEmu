@@ -151,7 +151,7 @@ bool ChatCommandHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldS
 
     sWorld.sendMessageToOnlineGms(teamAnnounce.str());
 
-    sGMLog.writefromsession(m_session, "saved all online players");
+    sGMLog.writefromsession(m_session, "Saved all online players.");
 
     return true;
 }
@@ -166,8 +166,8 @@ bool ChatCommandHandler::HandleServerSetMotdCommand(const char* args, WorldSessi
         return true;
     }
 
-    greenSystemMessage(m_session, "Motd has been set to: {}", args);
-    sGMLog.writefromsession(m_session, "Set MOTD to {}", args);
+    greenSystemMessage(m_session, "Motd has been set to: {}.", args);
+    sGMLog.writefromsession(m_session, "Set MOTD to {}.", args);
     worldConfig.setMessageOfTheDay(args);
 
     return true;
@@ -227,7 +227,7 @@ bool ChatCommandHandler::HandleServerCancelShutdownCommand(const char* /*args*/,
     }
 
     sWorld.sendMessageToOnlineGms(teamAnnounce.str());
-    sGMLog.writefromsession(m_session, "canceled server shutdown");
+    sGMLog.writefromsession(m_session, "Canceled server shutdown.");
 
     sWorld.sendGlobalMessage(AscEmu::Packets::SmsgServerMessage(sMaster().isRestartActive() ? SERVER_MSG_RESTART_CANCELLED : SERVER_MSG_SHUTDOWN_CANCELLED).serialise().get());
 
@@ -250,7 +250,7 @@ bool ChatCommandHandler::HandleServerRestartCommand(const char* args, WorldSessi
 
     std::stringstream teamAnnounce;
     teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str() << "|h[" << m_session->GetPlayer()->getName().c_str();
-    teamAnnounce << "]|h:" << MSG_COLOR_YELLOW << " initiated server restart timer " << shutdowntime << " sec";
+    teamAnnounce << "]|h:" << MSG_COLOR_YELLOW << " initiated server restart timer " << shutdowntime << " sec...";
 
     sWorld.sendMessageToOnlineGms(teamAnnounce.str());
     sGMLog.writefromsession(m_session, "Initiated server restart timer {} sec...", shutdowntime);

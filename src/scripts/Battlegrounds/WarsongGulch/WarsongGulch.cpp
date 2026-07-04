@@ -194,8 +194,8 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32_t id)
         float distance = plr->isTeamAlliance() ? plr->CalcDistance(1540.29f, 1481.34f, 352.64f) : plr->CalcDistance(915.367f, 1433.78f, 346.089f);
         if (distance > 50.0f)
         {
-            //50 yards from the spawn, gtfo hacker.
-            sCheatLog.writefromsession(plr->getSession(), "Tried to capture the flag in WSG while being more than 50 yards away. ({:.2f} yards)", plr->CalcDistance(915.367f, 1433.78f, 346.089f));
+            // 50 yards from the spawn, gtfo hacker.
+            sCheatLog.writefromsession(plr->getSession(), "{} attempted to capture the Warsong Gulch flag from more than 50 yards away (distance: {:.2f} yards)", plr->getName(), plr->CalcDistance(915.367f, 1433.78f, 346.089f));
             plr->getSession()->Disconnect();
             return;
         }
@@ -384,8 +384,8 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
 {
     if (!m_hasStarted)
     {
-        sCheatLog.writefromsession(plr->getSession(), "{} attempted to pick up the flag in Warsong Gulch before battleground (ID {}) started.", plr->getName(), this->m_id);
-        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s will be removed from the game for cheating.", plr->getName().c_str());
+        sCheatLog.writefromsession(plr->getSession(), "{} attempted to pick up the Warsong Gulch flag before the battleground started (ID: {}).", plr->getName(), this->m_id);
+        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s attempted to pick up the Warsong Gulch flag before the battleground started and will be removed for cheating.", plr->getName().c_str());
         // Remove player from battleground.
         this->removePlayer(plr, false);
         // Kick player from server.

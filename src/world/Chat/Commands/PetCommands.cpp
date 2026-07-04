@@ -127,13 +127,13 @@ bool ChatCommandHandler::HandlePetDismissCommand(const char* /*args*/, WorldSess
     if (selected_creature != nullptr)
     {
         greenSystemMessage(m_session, "Dismissed {}'s pet.", selected_creature->GetCreatureProperties()->Name);
-        sGMLog.writefromsession(m_session, "used dismiss pet command on creature {}", selected_creature->GetCreatureProperties()->Name);
+        sGMLog.writefromsession(m_session, "Used dismiss pet command on creature {}.", selected_creature->GetCreatureProperties()->Name);
     }
     else if (selected_player != nullptr && selected_player != m_session->GetPlayer())
     {
         greenSystemMessage(m_session, "Dismissed {}'s pet.", selected_player->getName());
         systemMessage(selected_player->getSession(), "{} dismissed your pet.", m_session->GetPlayer()->getName());
-        sGMLog.writefromsession(m_session, "used dismiss pet command on player {}", selected_player->getName());
+        sGMLog.writefromsession(m_session, "Used dismiss pet command on player {}.", selected_player->getName());
     }
     else
     {
@@ -167,7 +167,7 @@ bool ChatCommandHandler::HandlePetRenameCommand(const char* args, WorldSession* 
     {
         greenSystemMessage(m_session, "Renamed {}'s pet to {}.", selected_player->getName(), args);
         systemMessage(selected_player->getSession(), "{} renamed your pet to {}.", m_session->GetPlayer()->getName(), args);
-        sGMLog.writefromsession(m_session, "renamed {}'s pet to {}", selected_player->getName(), args);
+        sGMLog.writefromsession(m_session, "Renamed {}'s pet to {}.", selected_player->getName(), args);
     }
     else
     {
@@ -294,8 +294,8 @@ bool ChatCommandHandler::HandlePetSetLevelCommand(const char* args, WorldSession
     if (selected_player != m_session->GetPlayer())
     {
         greenSystemMessage(m_session, "Set {}'s pet to level {}.", selected_player->getName(), static_cast<uint32_t>(newLevel));
-        systemMessage(selected_player->getSession(), "{} set your pet to level {}.", m_session->GetPlayer()->getName(), newLevel);
-        sGMLog.writefromsession(m_session, "leveled {}'s pet to {}", selected_player->getName(), static_cast<uint32_t>(newLevel));
+        systemMessage(selected_player->getSession(), "{} Set your pet to level {}.", m_session->GetPlayer()->getName(), newLevel);
+        sGMLog.writefromsession(m_session, "Leveled {}'s pet to {}.", selected_player->getName(), static_cast<uint32_t>(newLevel));
     }
     else
     {

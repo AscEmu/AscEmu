@@ -86,7 +86,7 @@ bool ChatCommandHandler::HandleGMAnnounceCommand(const char* args, WorldSession*
     teamAnnounce << "|h[" << m_session->GetPlayer()->getName().c_str() << "]|h:" << MSG_COLOR_YELLOW << " " << args;
 
     sWorld.sendMessageToOnlineGms(teamAnnounce.str());
-    sGMLog.writefromsession(m_session, "used .gm announce command: [{}]", args);
+    sGMLog.writefromsession(m_session, "Sent GM announce: [{}].", args);
 
     return true;
 }
@@ -208,12 +208,12 @@ bool ChatCommandHandler::HandleGMLogCommentCommand(const char* args, WorldSessio
 {
     if (!args)
     {
-        redSystemMessage(m_session, "No logcomment set.");
-        redSystemMessage(m_session, "Use .gm logcomment <your comment message>");
+        redSystemMessage(m_session, "No log comment set.");
+        redSystemMessage(m_session, "Use .gm logcomment <message>");
         return true;
     }
 
-    blueSystemMessage(m_session, "Added Logcomment: {}", args);
-    sGMLog.writefromsession(m_session, "Comment: {}", args);
+    blueSystemMessage(m_session, "Set GM log comment: {}.", args);
+    sGMLog.writefromsession(m_session, "Set GM log comment: {}.", args);
     return true;
 }

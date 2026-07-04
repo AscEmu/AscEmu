@@ -63,7 +63,7 @@ bool ChatCommandHandler::HandleRecallAddCommand(const char* args, WorldSession* 
 
     if (const auto recall = sMySQLStore.getRecallByName(args))
     {
-        redSystemMessage(m_session, "Name in use, please use another name for your location.");
+        redSystemMessage(m_session, "Location name is already in use. Please choose another name.");
         return true;
     }
 
@@ -83,10 +83,11 @@ bool ChatCommandHandler::HandleRecallAddCommand(const char* args, WorldSession* 
 
     sMySQLStore.loadRecallTable();
 
-    greenSystemMessage(m_session, "Added location to DB with MapID: {}, X: {}, Y: {}, Z: {}, O: {}",
-             player->GetMapId(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
+    greenSystemMessage(m_session, "Added recall location '{}' to the database (map: {}, X: {}, Y: {}, Z: {}, O: {}).",
+                                   args, player->GetMapId(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
 
-    sGMLog.writefromsession(m_session, "Used recall add, added '{}' location to database.", args);
+    sGMLog.writefromsession(m_session, "Added recall location '{}' to the database (map: {}, X: {}, Y: {}, Z: {}, O: {}).",
+                                        args, player->GetMapId(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
     return true;
 }
 
@@ -100,8 +101,8 @@ bool ChatCommandHandler::HandleRecallDelCommand(const char* args, WorldSession* 
     {
         WorldDatabase.execute("DELETE FROM recall WHERE name = %s;", recall->name.c_str());
 
-        greenSystemMessage(m_session, "Recall location removed.");
-        sGMLog.writefromsession(m_session, "used recall delete, removed \'{}\' location from database.", args);
+        greenSystemMessage(m_session, "Removed recall location '{}'.", args);
+        sGMLog.writefromsession(m_session, "Removed recall location '{}'.", args);
 
         sMySQLStore.loadRecallTable();
 
@@ -165,7 +166,8 @@ bool ChatCommandHandler::HandleRecallPortPlayerCommand(const char* args, WorldSe
 
     if (const auto recall = sMySQLStore.getRecallByName(location))
     {
-        sGMLog.writefromsession(m_session, "Ported {} to {} ( map: {}, x: {}, y: {}, z: {}, o: {} )", player->getName().c_str(), recall->name.c_str(), recall->mapId, recall->location.x, recall->location.y, recall->location.z, recall->location.o);
+        sGMLog.writefromsession(m_session, "Teleported player {} to recall location '{}' (map: {}, X: {}, Y: {}, Z: {}, O: {}).",
+                                            player->getName(), recall->name, recall->mapId, recall->location.x, recall->location.y, recall->location.z, recall->location.o);
         if (player->getSession() && (player->getSession()->CanUseCommand('a') || !m_session->GetPlayer()->m_isGmInvisible))
             player->getSession()->SystemMessage("{} teleported you to location {}!", m_session->GetPlayer()->getName().c_str(), recall->name.c_str());
 

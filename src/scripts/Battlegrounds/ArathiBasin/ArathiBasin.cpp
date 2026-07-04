@@ -782,8 +782,8 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
 {
     if (!m_hasStarted)
     {
-        sCheatLog.writefromsession(pPlayer->getSession(), "{} attempted to assault a control point in Arathi Basin before battleground (ID {}) started.", pPlayer->getName(), this->m_id);
-        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, pPlayer->getGuid(), "%s will be removed from the game for cheating.", pPlayer->getName().c_str());
+        sCheatLog.writefromsession(pPlayer->getSession(), "{} attempted to assault an Arathi Basin control point before the battleground started (battleground ID: {}).", pPlayer->getName(), this->m_id);
+        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, pPlayer->getGuid(), "%s attempted to assault an Arathi Basin control point before the battleground started and will be removed for cheating.", pPlayer->getName().c_str());
         // Remove player from battleground.
         removePlayer(pPlayer, false);
         // Kick player from server.

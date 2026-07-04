@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSessionLog.hpp"
 #include "Utilities/Strings.hpp"
 
-
 #if VERSION_STRING > TBC
 //.achieve complete
 bool ChatCommandHandler::handleAchievementCompleteCommand(const char* args, WorldSession* m_session)
@@ -24,8 +23,8 @@ bool ChatCommandHandler::handleAchievementCompleteCommand(const char* args, Worl
     if (AscEmu::Util::Strings::isEqual(args, "all"))
     {
         selected_player->getAchievementMgr()->gmCompleteAchievement(m_session, 0, true);
-        systemMessage(m_session, "All achievements have now been completed for that player.");
-        sGMLog.writefromsession(m_session, "completed all achievements for player {}", selected_player->getName());
+        systemMessage(m_session, "Completed all achievements for player {}.", selected_player->getName());
+        sGMLog.writefromsession(m_session, "Completed all achievements for player {}.", selected_player->getName());
         return true;
     }
 
@@ -35,8 +34,8 @@ bool ChatCommandHandler::handleAchievementCompleteCommand(const char* args, Worl
 
     if (selected_player->getAchievementMgr()->gmCompleteAchievement(m_session, achievement_id))
     {
-        systemMessage(m_session, "The achievement has now been completed for that player.");
-        sGMLog.writefromsession(m_session, "completed achievement {} for player {}", achievement_id, selected_player->getName());
+        systemMessage(m_session, "Completed achievement {} for player {}.", achievement_id, selected_player->getName());
+        sGMLog.writefromsession(m_session, "Completed achievement {} for player {}.", achievement_id, selected_player->getName());
     }
 
     return true;
@@ -58,8 +57,8 @@ bool ChatCommandHandler::handleAchievementCriteriaCommand(const char* args, Worl
         if (AscEmu::Util::Strings::isEqual(args, "all"))
         {
             selected_player->getAchievementMgr()->gmCompleteCriteria(m_session, 0, true);
-            systemMessage(m_session, "All achievement criteria have now been completed for that player.");
-            sGMLog.writefromsession(m_session, "completed all achievement criteria for player {}", selected_player->getName());
+            systemMessage(m_session, "Completed all achievement criteria for player {}.", selected_player->getName());
+            sGMLog.writefromsession(m_session, "Completed all achievement criteria for player {}.", selected_player->getName());
             return true;
         }
         return false;
@@ -67,8 +66,8 @@ bool ChatCommandHandler::handleAchievementCriteriaCommand(const char* args, Worl
     
     if (selected_player->getAchievementMgr()->gmCompleteCriteria(m_session, criteria_id))
     {
-        systemMessage(m_session, "The achievement criteria has now been completed for that player.");
-        sGMLog.writefromsession(m_session, "completed achievement criteria {} for player {}", criteria_id, selected_player->getName());
+        systemMessage(m_session, "Completed achievement criterion {} for player {}.", criteria_id, selected_player->getName());
+        sGMLog.writefromsession(m_session, "Completed achievement criterion {} for player {}.", criteria_id, selected_player->getName());
     }
 
     return true;

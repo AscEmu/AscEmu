@@ -1980,7 +1980,7 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
 
     if (itemProperties->Class != ITEM_CLASS_PROJECTILE || _player->getItemInterface()->GetItemCount(ammoId) == 0)
     {
-        sCheatLog.writefromsession(_player->getSession(), "Definitely cheating. tried to add %u as ammo.", ammoId);
+        sCheatLog.writefromsession(_player->getSession(), "Attempted to add invalid ammo. Ammo ID: {}.", ammoId);
         _player->getSession()->Disconnect();
         return;
     }

@@ -355,8 +355,8 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32_t id)
 
     if (!m_hasStarted)
     {
-        sCheatLog.writefromsession(plr->getSession(), "{} tried to pick up the flag in Eye of the Storm before battleground (ID {}) started.", plr->getName(), this->m_id);
-        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s will be removed from the game for cheating.", plr->getName().c_str());
+        sCheatLog.writefromsession(plr->getSession(), "{} attempted to pick up the Eye of the Storm flag before the battleground started (ID: {})", plr->getName(), this->m_id);
+        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s attempted to pick up the Eye of the Storm flag before the battleground started and will be removed for cheating.", plr->getName().c_str());
         // Remove player from battleground.
         this->removePlayer(plr, false);
         // Kick player from server.

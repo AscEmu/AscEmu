@@ -54,7 +54,7 @@ bool ChatCommandHandler::HandleGuildCreateCommand(const char* args, WorldSession
         return true;
     }
 
-    greenSystemMessage(m_session, "Guild created.");
+    greenSystemMessage(m_session, "Created guild '{}'.", args);
     sGMLog.writefromsession(m_session, "Created guild '{}'.", args);
     return true;
 }
@@ -72,8 +72,8 @@ bool ChatCommandHandler::HandleGuildDisbandCommand(const char* /*args*/, WorldSe
         return true;
     }
 
-    greenSystemMessage(m_session, "Disbanded Guild: {}.", selected_player->getGuild()->getName());
-    sGMLog.writefromsession(m_session, "Disbanded Guild {}.", selected_player->getGuild()->getName());
+    greenSystemMessage(m_session, "Disbanded guild '{}'.", selected_player->getGuild()->getName());
+    sGMLog.writefromsession(m_session, "Disbanded guild '{}'.", selected_player->getGuild()->getName());
     selected_player->getGuild()->disband();
     return true;
 }
@@ -128,8 +128,8 @@ bool ChatCommandHandler::HandleGuildJoinCommand(const char* args, WorldSession* 
         }
 
         guild->addMember(selected_player->getGuid(), 4);
-        greenSystemMessage(m_session, "You have joined the guild '{}'", guild->getName());
-        sGMLog.writefromsession(m_session, "Force joined guild '{}'", guild->getName());
+        greenSystemMessage(m_session, "Joined guild '{}'.", guild->getName());
+        sGMLog.writefromsession(m_session, "Joined guild '{}'.", guild->getName());
         return true;
     }
     redSystemMessage(m_session, "Guild {} is not a valid guildname!", args);
@@ -176,9 +176,9 @@ bool ChatCommandHandler::HandleRenameGuildCommand(const char* args, WorldSession
         redSystemMessage(m_session, "Guild name {} is already taken.", args);
         return true;
     }
-    greenSystemMessage(m_session, "Changed guild name of {} to {}. This will take effect next restart.", selected_player->getGuild()->getName(), args);
+    greenSystemMessage(m_session, "Renamed guild '{}' to '{}'. This will take effect on next restart.", selected_player->getGuild()->getName(), args);
     CharacterDatabase.execute("UPDATE guilds SET `guildName` = \'%s\' WHERE `guildId` = '%u'", CharacterDatabase.escapeString(std::string(args)).c_str(), selected_player->getGuild()->getId());
-    sGMLog.writefromsession(m_session, "Changed guild name of '{}' to '{}'", selected_player->getGuild()->getName(), args);
+    sGMLog.writefromsession(m_session, "Renamed guild '{}' to '{}'.", selected_player->getGuild()->getName(), args);
 
     return true;
 }
@@ -202,10 +202,10 @@ bool ChatCommandHandler::HandleGuildRemovePlayerCommand(const char* /*args*/, Wo
         return true;
     }
 
-    greenSystemMessage(m_session, "Kicked {} from Guild: {}.", selected_player->getName(), selected_player->getGuild()->getName());
+    greenSystemMessage(m_session, "Kicked {} from guild '{}'.", selected_player->getName(), selected_player->getGuild()->getName());
 
     if (selected_player != m_session->GetPlayer())
-        sGMLog.writefromsession(m_session, "Kicked {} from Guild {}", selected_player->getName(), selected_player->getGuild()->getName());
+        sGMLog.writefromsession(m_session, "Kicked {} from guild '{}'.", selected_player->getName(), selected_player->getGuild()->getName());
 
     selected_player->getGuild()->handleRemoveMember(selected_player->getSession(), selected_player->getGuid());
 

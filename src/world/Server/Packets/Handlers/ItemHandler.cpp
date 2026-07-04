@@ -261,8 +261,8 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         Disconnect();
         sCheatLog.writefromsession(this, "Player tried to use an item with a spell that didn't match the spell in the database.");
         sCheatLog.writefromsession(this, "Possibly corrupted or intentionally altered itemcache.wdb");
-        sCheatLog.writefromsession(this, "Itemid: {}", itemProto->ItemId);
-        sCheatLog.writefromsession(this, "Spellid: {}", spellId);
+        sCheatLog.writefromsession(this, "Itemid: {}.", itemProto->ItemId);
+        sCheatLog.writefromsession(this, "Spellid: {}.", spellId);
         sCheatLog.writefromsession(this, "Player was disconnected.");
         return;
     }
@@ -891,9 +891,8 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
 
     if (srlPacket.itemCount <= 0 || srlPacket.srcInventorySlot <= 0 && srlPacket.srcSlot < INVENTORY_SLOT_ITEM_START)
     {
-        sCheatLog.writefromsession(this,
-            "tried to split item: srcInventorySlot {}, srcSlot {}, destInventorySlot {}, destSlot {}, itemCount {}",
-            srlPacket.srcInventorySlot, srlPacket.srcSlot, srlPacket.destInventorySlot, srlPacket.destSlot, srlPacket.itemCount);
+        sCheatLog.writefromsession(this, "Attempted item split: srcInventorySlot: {}, srcSlot: {}, destInventorySlot: {}, destSlot: {}, itemCount: {}.",
+                                          srlPacket.srcInventorySlot, srlPacket.srcSlot, srlPacket.destInventorySlot, srlPacket.destSlot, srlPacket.itemCount);
         return;
     }
 
@@ -2397,7 +2396,7 @@ void WorldSession::sendInventoryList(Creature* unit)
                 else
                     data << uint32_t(0);
 #elif VERSION_STRING == Cata
-                itemsData << uint32_t(counter + 1);        // client expects counting to start at 1
+                itemsData << uint32_t(counter + 1); // client expects counting to start at 1
                 itemsData << uint32_t(curItem->MaxDurability);
                 if (sellItem.extended_cost != nullptr)
                 {
