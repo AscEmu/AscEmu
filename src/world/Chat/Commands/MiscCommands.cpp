@@ -799,8 +799,8 @@ bool ChatCommandHandler::HandleGPSCommand(const char* args, WorldSession* m_sess
     }
 
     auto out_map_id = obj->GetMapId();
-    auto out_zone_id = at->zone; // uint32_t at_old->ZoneId
-    auto out_area_id = at->id; // uint32_t at_old->AreaId
+    uint32_t out_zone_id = (at->zone == 0) ? at->id : at->zone;
+    uint32_t out_area_id = (at->zone == 0) ? 0 : at->id;
     auto out_phase = obj->GetPhase();
     auto out_x = obj->GetPositionX();
     auto out_y = obj->GetPositionY();
@@ -809,7 +809,7 @@ bool ChatCommandHandler::HandleGPSCommand(const char* args, WorldSession* m_sess
 #if VERSION_STRING < Cata
     auto out_area_name = at->area_name[sWorld.getDbcLocaleLanguageId()];
 #else
-    auto out_area_name = at->area_name[0];
+    auto out_area_name = at->area_name;
 #endif
 
     systemMessage(m_session, "Current Position: Map:{} Zone:{} Area:{} Phase:{} X:{} Y:{} Z:{} Orientation:{} Area Name: {}",

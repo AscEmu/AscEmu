@@ -699,7 +699,11 @@ namespace WDB::Structures
 #endif
         // 5-9 unused
         int32_t area_level;                                         // 10
+#if VERSION_STRING == Cata
+        char* area_name;                                            // 11-26
+#else
         char* area_name[NAME_PATTERN];                              // 11-26
+#endif
         // 27, string flags, unused
         uint32_t team;                                              // 28
 #if VERSION_STRING == Classic
@@ -726,7 +730,7 @@ namespace WDB::Structures
         uint32_t flags;                                             // 4
         // 5-11 unused
         int32_t area_level;                                         // 12
-        char* area_name[NAME_PATTERN];                              // 13
+        char* area_name;                                            // 13
         uint32_t team;                                              // 14
         uint32_t liquid_type_override[4];                           // 15-18 liquid override by type
         float elevation;                                            // 19

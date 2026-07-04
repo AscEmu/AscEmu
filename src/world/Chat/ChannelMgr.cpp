@@ -185,7 +185,7 @@ std::string ChannelMgr::generateChannelName(WDB::Structures::ChatChannelsEntry c
 #if VERSION_STRING < Cata
         defaultAreaName = defaultArea->area_name[sWorld.getDbcLocaleLanguageId()];
 #else
-        defaultAreaName = defaultArea->area_name[0];
+        defaultAreaName = defaultArea->area_name;
 #endif
     }
 
