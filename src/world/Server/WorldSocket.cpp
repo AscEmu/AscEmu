@@ -63,73 +63,57 @@ struct AuthPktHeader
     uint32_t raw;
 };
 
-// MIT
-#if VERSION_STRING != Mop
 struct ServerPktHeader
 {
-#if VERSION_STRING >= Cata
-    ServerPktHeader(uint32_t _size, uint16_t _cmd) : size(_size)
-    {
-        headerLength = 0;
-        if (size > 0x7FFF)
-            header[headerLength++] = 0x80 | (0xFF & (_size >> 16));
-        header[headerLength++] = 0xFF & (_size >> 8);
-        header[headerLength++] = 0xFF & _size;
-        header[headerLength++] = 0xFF & _cmd;
-        header[headerLength++] = 0xFF & (_cmd >> 8); 
-    }
+    uint16_t legacySize{0};
+    uint16_t legacyCmd{0};
 
-    uint8_t getHeaderLength() { return headerLength; }
-    bool isLargePacket() { return (headerLength == 4); }
-    const uint32_t size;
-    uint8_t header[5]{};
-    uint8_t headerLength;
-#else
-    uint16_t size;
-    uint16_t cmd;
-#endif
-};
-#else
-struct ServerPktHeader
-{
-    ServerPktHeader(uint32_t _size, uint32_t _cmd) : headerLength(0)
-    {
-        if (_size > 0x7FFF)
-            header[headerLength++] = 0x80 | 0xFF & _size >> 16;
-
-        header[headerLength++] = 0xFF & _size;
-        header[headerLength++] = 0xFF & _size >> 8;
-        header[headerLength++] = 0xFF & _cmd;
-        header[headerLength++] = 0xFF & _cmd >> 8;
-    }
-
-    uint32_t getOpcode() const
-    {
-        uint8_t length = headerLength;
-        uint32_t opcode = uint32_t(header[--length]) << 8;
-        opcode |= uint32_t(header[--length]);
-
-        return opcode;
-    }
-
-    uint32_t getSize() const
-    {
-        uint32_t size = 0;
-
-        uint8_t length = 0;
-        if (header[length] & 0x80)
-            size |= uint32_t(header[length++] & 0x7F) << 16;
-
-        size |= uint32_t(header[length++] & 0xFF) << 8;
-        size |= uint32_t(header[length] & 0xFF);
-
-        return size;
-    }
-
-    uint8_t headerLength;
     uint8_t header[6]{};
+    uint8_t headerLength{0};
+
+    static ServerPktHeader legacy(uint16_t size, uint16_t cmd)
+    {
+        ServerPktHeader pkt;
+        pkt.legacySize = size;
+        pkt.legacyCmd = cmd;
+        return pkt;
+    }
+
+    static ServerPktHeader modern(uint32_t size, uint16_t cmd, WoW::Expansion version)
+    {
+        ServerPktHeader pkt;
+
+        if (size > 0x7FFF)
+            pkt.header[pkt.headerLength++] = static_cast<uint8_t>(0x80 | ((size >> 16) & 0xFF));
+
+        // Mop = low byte, high byte / Cata = high byte, low byte
+        if (version == WoW::Expansion::_Mop)
+        {
+            pkt.header[pkt.headerLength++] = static_cast<uint8_t>(size & 0xFF);
+            pkt.header[pkt.headerLength++] = static_cast<uint8_t>((size >> 8) & 0xFF);
+        }
+        else
+        {
+            pkt.header[pkt.headerLength++] = static_cast<uint8_t>((size >> 8) & 0xFF);
+            pkt.header[pkt.headerLength++] = static_cast<uint8_t>(size & 0xFF);
+        }
+
+        pkt.header[pkt.headerLength++] = static_cast<uint8_t>(cmd & 0xFF);
+        pkt.header[pkt.headerLength++] = static_cast<uint8_t>((cmd >> 8) & 0xFF);
+
+        return pkt;
+    }
+
+    const uint8_t* legacyData() const
+    {
+        return reinterpret_cast<const uint8_t*>(&legacySize);
+    }
+
+    const uint8_t* modernData() const
+    {
+        return header;
+    }
 };
-#endif
 
 // MIT End
 #pragma pack(pop)
@@ -224,11 +208,7 @@ void WorldSocket::onDisconnect()
     }
 }
 
-#if VERSION_STRING != Mop
-void WorldSocket::OutPacket(uint16_t opcode, size_t len, const void* data)
-#else
 void WorldSocket::OutPacket(uint32_t opcode, size_t len, const void* data)
-#endif
 {
     if ((len + 10) > WORLDSOCKET_SENDBUF_SIZE)
     {
@@ -281,63 +261,8 @@ void WorldSocket::UpdateQueuedPackets()
     }
 }
 
-#if VERSION_STRING != Mop
-OUTPACKET_RESULT WorldSocket::_OutPacket(uint16_t opcode, size_t len, const void* data)
-{
-    bool rv;
-    if (!isConnected())
-        return OUTPACKET_RESULT_NOT_CONNECTED;
-
-    burstBegin();
-    //if ((m_writeByteCount + len + 4) >= m_writeBufferSize)
-    if (writeBuffer.GetSpace() < (len + 4))
-    {
-        burstEnd();
-        return OUTPACKET_RESULT_NO_ROOM_IN_BUFFER;
-    }
-
-    // Packet logger :)
-    sWorldPacketLog.logPacket(static_cast<uint32_t>(len), opcode, static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
-
-#if VERSION_STRING >= Cata
-    ServerPktHeader Header(uint32_t(len + 2), sOpcodeTables.getHexValueForVersionId(opcode));
-#else
-    // Encrypt the packet
-    // First, create the header.
-    ServerPktHeader Header;
-    Header.cmd = sOpcodeTables.getHexValueForVersionId(opcode);
-    Header.size = ntohs((uint16_t)len + 2);
-#endif
-
-#if VERSION_STRING < WotLK
-    _crypt.encryptLegacySend((uint8_t*)&Header, sizeof(ServerPktHeader));
-#elif VERSION_STRING == WotLK
-    _crypt.encryptWotlkSend((uint8_t*)&Header, sizeof(ServerPktHeader));
-#elif VERSION_STRING >= Cata
-    _crypt.encryptWotlkSend(static_cast<uint8_t*>(Header.header), Header.getHeaderLength());
-#endif
-
-#if VERSION_STRING >= Cata
-    rv = burstSend(reinterpret_cast<const uint8_t*>(&Header.header), Header.getHeaderLength());
-#else
-    // Pass the header to our send buffer
-    rv = burstSend((const uint8_t*)&Header, 4);
-#endif
-
-    // Pass the rest of the packet to our send buffer (if there is any)
-    if (len > 0 && rv)
-    {
-        rv = burstSend(static_cast<const uint8_t*>(data), static_cast<uint32_t>(len));
-    }
-
-    if (rv) burstPush();
-    burstEnd();
-    return rv ? OUTPACKET_RESULT_SUCCESS : OUTPACKET_RESULT_SOCKET_ERROR;
-}
-#else
 OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void* data)
 {
-    bool rv;
     if (!isConnected())
         return OUTPACKET_RESULT_NOT_CONNECTED;
 
@@ -349,60 +274,49 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
         return OUTPACKET_RESULT_NO_ROOM_IN_BUFFER;
     }
 
-    /*switch (opcode)
-    {
-    //case SMSG_POWER_UPDATE:
-    //case SMSG_ITEM_TIME_UPDATE:
-    //case SMSG_AURA_UPDATE_ALL:
-    //case SMSG_UPDATE_INSTANCE_OWNERSHIP:
-    //case SMSG_SPELL_GO:
-    //case SMSG_SPELL_COOLDOWN:
-    //case SMSG_SPELL_START:
-    //case SMSG_SPELL_FAILURE:
-    //case SMSG_CAST_FAILED:
-    //case SMSG_MOVE_SET_CAN_FLY:
-    //case SMSG_TIME_SYNC_REQUEST:
-    //case SMSG_UPDATE_OBJECT:
-    //case SMSG_UPDATE_WORLD_STATE:
-    //case MSG_MOVE_SET_FLIGHT_SPEED:
-    //case MSG_MOVE_SET_RUN_SPEED:
-    //case SMSG_LOGIN_SET_TIME_SPEED:
-    //case SMSG_INITIALIZE_FACTIONS:
-    //case SMSG_UPDATE_ACTION_BUTTONS:
-    //case SMSG_SEND_UNLEARN_SPELLS:
-    //case SMSG_SEND_KNOWN_SPELLS:
-    //case SMSG_UPDATE_TALENT_DATA:
-    //case SMSG_TUTORIAL_FLAGS:
-    //case SMSG_SET_PROFICIENCY:
-    //case SMSG_BINDPOINTUPDATE:
-    //case SMSG_INSTANCE_DIFFICULTY:
-    //case SMSG_MOTD:
-    //case SMSG_MESSAGECHAT:
-    //case MSG_SET_RAID_DIFFICULTY:
-    //case MSG_SET_DUNGEON_DIFFICULTY:
-    //case SMSG_CONTACT_LIST:
-    //case SMSG_ACCOUNT_DATA_TIMES:
-    //case SMSG_FEATURE_SYSTEM_STATUS:
-    //case SMSG_LOGIN_VERIFY_WORLD:
-        return OUTPACKET_RESULT_NOT_CONNECTED;
-    }*/
+    sWorldPacketLog.logPacket(static_cast<uint32_t>(len), static_cast<uint16_t>(opcode),
+        static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
 
-    // Packet logger :)
-    sWorldPacketLog.logPacket(static_cast<uint32_t>(len), static_cast<uint16_t>(opcode), static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
+    const auto version = m_clientProtocol.version;
+    const bool isClassic = version == WoW::Expansion::_Classic;
+    const bool isTbc = version == WoW::Expansion::_TBC;
+    const bool isWotlk = version == WoW::Expansion::_WotLK;
+    const bool isCata = version == WoW::Expansion::_Cata;
+    const bool isMop = version == WoW::Expansion::_Mop;
+    const bool isLegacy = isClassic || isTbc;
+    const bool isModern = isCata || isMop;
 
-    if (_crypt.isInitialized())
+    bool rv = false;
+
+    if (isMop && _crypt.isInitialized())
     {
         AuthPktHeader authPktHeader(static_cast<uint32_t>(len), sOpcodeTables.getHexValueForVersionId(opcode));
         _crypt.encryptWotlkSend(reinterpret_cast<uint8_t*>(&authPktHeader.raw), 4);
         rv = burstSend(reinterpret_cast<const uint8_t*>(&authPktHeader.raw), 4);
     }
+    else if (isModern)
+    {
+        ServerPktHeader header = ServerPktHeader::modern(static_cast<uint32_t>(len + 2),
+            static_cast<uint16_t>(sOpcodeTables.getHexValueForVersionId(opcode)), version);
+
+        if (isCata)
+            _crypt.encryptWotlkSend(header.header, header.headerLength);
+
+        rv = burstSend(header.modernData(), header.headerLength);
+    }
     else
     {
-        ServerPktHeader serverPktHeader(static_cast<uint32_t>(len + 2), sOpcodeTables.getHexValueForVersionId(opcode));
-        rv = burstSend(reinterpret_cast<const uint8_t*>(&serverPktHeader.header), serverPktHeader.headerLength);
+        ServerPktHeader header = ServerPktHeader::legacy(ntohs(static_cast<uint16_t>(len + 2)),
+            static_cast<uint16_t>(sOpcodeTables.getHexValueForVersionId(opcode)));
+
+        if (isLegacy)
+            _crypt.encryptLegacySend(reinterpret_cast<uint8_t*>(&header.legacySize), 4);
+        else if (isWotlk)
+            _crypt.encryptWotlkSend(reinterpret_cast<uint8_t*>(&header.legacySize), 4);
+
+        rv = burstSend(header.legacyData(), 4);
     }
 
-    // Pass the rest of the packet to our send buffer (if there is any)
     if (len > 0 && rv)
         rv = burstSend(static_cast<const uint8_t*>(data), static_cast<uint32_t>(len));
 
@@ -412,8 +326,6 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     burstEnd();
     return rv ? OUTPACKET_RESULT_SUCCESS : OUTPACKET_RESULT_SOCKET_ERROR;
 }
-#endif
-
 
 void WorldSocket::onConnect()
 {

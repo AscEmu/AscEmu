@@ -62,13 +62,8 @@ public:
     // vs8 fix - send null on empty buffer
     inline void SendPacket(WorldPacket* packet) { if (!packet) return; OutPacket(packet->getOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : NULL)); }
 
-#if VERSION_STRING != Mop
-    void OutPacket(uint16_t opcode, size_t len, const void* data);
-    OUTPACKET_RESULT _OutPacket(uint16_t opcode, size_t len, const void* data);
-#else
     void OutPacket(uint32_t opcode, size_t len, const void* data);
     OUTPACKET_RESULT _OutPacket(uint32_t opcode, size_t len, const void* data);
-#endif
 
     inline uint32_t GetLatency() { return _latency; }
 
