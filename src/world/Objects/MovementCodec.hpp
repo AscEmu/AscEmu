@@ -456,13 +456,13 @@ private:
     static std::span<MovementStep const> getDescriptor(uint16_t opcode, bool read)
     {
         if constexpr (Version == WoW::Expansion::_Classic)
-            return getClassicMovementDescriptor(opcode);
+            return getClassicMovementDescriptor(opcode, read);
         else if constexpr (Version == WoW::Expansion::_TBC)
-            return getTbcMovementDescriptor(opcode);
+            return getTbcMovementDescriptor(opcode, read);
         else if constexpr (Version == WoW::Expansion::_WotLK)
-            return getWotlkMovementDescriptor(opcode);
+            return getWotlkMovementDescriptor(opcode, read);
         else if constexpr (Version == WoW::Expansion::_Cata)
-            return getCataMovementDescriptor(opcode);
+            return getCataMovementDescriptor(opcode, read);
         else
             return getMopMovementDescriptor(opcode, read);
     }
