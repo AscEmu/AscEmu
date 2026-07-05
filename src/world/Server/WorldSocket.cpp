@@ -345,23 +345,26 @@ void WorldSocket::sendAuthChallengePacket()
 
 void WorldSocket::sendVerifyConnectPacket()
 {
-#if VERSION_STRING == Mop
     const std::string handshake = "WORLD OF WARCRAFT CONNECTION - SERVER TO CLIENT";
-    uint16_t size = static_cast<uint16_t>(handshake.length());
+    uint16_t handshaleLength = static_cast<uint16_t>(handshake.length());
     uint8_t sizeBytes[2];
-    sizeBytes[0] = size & 0xFF;
-    sizeBytes[1] = (size >> 8) & 0xFF;
+
+    if (m_clientProtocol.version == WoW::Expansion::_Mop)
+    {
+        sizeBytes[0] = handshaleLength & 0xFF;
+        sizeBytes[1] = (handshaleLength >> 8) & 0xFF;
+    }
+    else // Cata
+    {
+        sizeBytes[0] = (handshaleLength >> 8) & 0xFF;
+        sizeBytes[1] = handshaleLength & 0xFF;
+    }
 
     burstBegin();
     burstSend(sizeBytes, 2);
     burstSend(reinterpret_cast<const uint8_t*>(handshake.c_str()), static_cast<uint32_t>(handshake.length()));
     burstPush();
     burstEnd();
-#else // Cata
-    WorldPacket packet(MSG_VERIFY_CONNECTIVITY, 46);
-    packet << "RLD OF WARCRAFT CONNECTION - SERVER TO CLIENT";
-    SendPacket(&packet);
-#endif
 }
 
 void WorldSocket::_HandleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
@@ -897,20 +900,61 @@ void WorldSocket::onRead()
 
 bool WorldSocket::processHeader()
 {
-    if (m_clientProtocol.version == WoW::Expansion::_Mop && !m_HandshakeReceived)
+    const auto version = m_clientProtocol.version;
+    const bool isCata = version == WoW::Expansion::_Cata;
+    const bool isMop = version == WoW::Expansion::_Mop;
+    const bool isModern = isCata || isMop;
+
+    if (isModern && !m_HandshakeReceived)
     {
-        if (readBuffer.GetSize() < 2)
-            return false;
+        if (isCata)
+        {
+            if (readBuffer.GetSize() < 2)
+                return false;
 
-        uint16_t size;
-        readBuffer.Read(&size, 2);
+            sLogger.debug("Received Cata handshake size: {}", readBuffer.GetSize());
 
-        mRemaining = mSize = size;
-        mOpcode = MSG_VERIFY_CONNECTIVITY;
-        m_HandshakeReceived = true;
+            uint8_t header[2];
+            readBuffer.Read(header, 2);
 
-        sLogger.debug("MoP Handshake Header. Size: {}", mSize);
-        return true;
+            const uint16_t size =
+                (static_cast<uint16_t>(header[0]) << 8) |
+                static_cast<uint16_t>(header[1]);
+
+            mRemaining = mSize = size;
+            mOpcode = MSG_VERIFY_CONNECTIVITY;
+            m_HandshakeReceived = true;
+
+            sLogger.debug("Received Cata handshake header. Raw: {:02X} {:02X}, size: {}",
+                header[0], header[1], mSize);
+
+            return true;
+        }
+
+        if (isMop)
+        {
+            if (readBuffer.GetSize() < 2)
+                return false;
+
+            sLogger.debug("Received Mop handshake size: {}", readBuffer.GetSize());
+
+            uint8_t header[2];
+            readBuffer.Read(header, 2);
+
+            const uint16_t size =
+                static_cast<uint16_t>(header[0]) |
+                (static_cast<uint16_t>(header[1]) << 8);
+
+            mSize = size;
+            mRemaining = mSize;
+            mOpcode = MSG_VERIFY_CONNECTIVITY;
+            m_HandshakeReceived = true;
+
+            sLogger.debug("Received MoP handshake header. Raw: {:02X} {:02X}, size: {}",
+                header[0], header[1], mSize);
+
+            return true;
+        }
     }
 
     if (m_clientProtocol.version == WoW::Expansion::_Mop && _crypt.isInitialized())
