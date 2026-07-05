@@ -40,16 +40,16 @@ namespace WoW {
 
     struct ClientProtocolState
     {
-        Expansion version{Expansion::Unknown};
+        Expansion expansion{Expansion::Unknown};
 
         [[nodiscard]] constexpr int32_t versionId() const noexcept
         {
-            if (version == Expansion::Unknown)
+            if (expansion == Expansion::Unknown)
             {
                 return -1;
             }
 
-            return static_cast<int32_t>(version);
+            return static_cast<int32_t>(expansion);
         }
     };
 

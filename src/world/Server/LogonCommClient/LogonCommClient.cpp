@@ -177,15 +177,15 @@ void LogonCommClientSocket::HandleSessionInfo(WorldPacket& recvData)
 
     // find the socket with this request
     WorldSocket* sock = sLogonCommHandler.getWorldSocketForClientRequestId(request_id);
-    if (sock == nullptr || sock->Authed || !sock->isConnected())       // Expired/Client disconnected
+    if (sock == nullptr || sock->isAuthenticated || !sock->isConnected())       // Expired/Client disconnected
     {
         return;
     }
 
     // extract sessionkey / account information (done by WS)
-    sock->Authed = true;
+    sock->isAuthenticated = true;
     sLogonCommHandler.removeUnauthedClientSocket(request_id);
-    sock->InformationRetreiveCallback(recvData, request_id);
+    sock->informationRetreiveCallback(recvData, request_id);
 }
 
 void LogonCommClientSocket::HandlePong(WorldPacket& /*recvData*/)

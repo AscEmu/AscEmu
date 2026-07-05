@@ -169,7 +169,6 @@ WorldSocket::WorldSocket(SOCKET fd)
     :
     Socket(fd, WORLDSOCKET_SENDBUF_SIZE, WORLDSOCKET_RECVBUF_SIZE), AuthDigest{},
     mClientBuild(0),
-    Authed(false),
     mOpcode(0),
     mRemaining(0),
     mSize(0),
@@ -188,28 +187,28 @@ WorldSocket::WorldSocket(SOCKET fd)
     switch (sOpcodeTables.getVersionIdForAEVersion())
     {
         case 0:
-            protocol.version = WoW::Expansion::_Classic;
+            protocol.expansion = WoW::Expansion::_Classic;
             break;
         case 1:
-            protocol.version = WoW::Expansion::_TBC;
+            protocol.expansion = WoW::Expansion::_TBC;
             break;
         case 2:
-            protocol.version = WoW::Expansion::_WotLK;
+            protocol.expansion = WoW::Expansion::_WotLK;
             break;
         case 3:
-            protocol.version = WoW::Expansion ::_Cata;
+            protocol.expansion = WoW::Expansion ::_Cata;
             break;
         case 4:
-            protocol.version = WoW::Expansion::_Mop;
+            protocol.expansion = WoW::Expansion::_Mop;
             break;
         default:
-            protocol.version = WoW::Expansion::Unknown;
+            protocol.expansion = WoW::Expansion::Unknown;
             break;
     }
 
-    SetClientProtocol(protocol);
+    setClientProtocol(protocol);
 
-    sLogger.debug("Processing client protokol for version {}", m_clientProtocol.version);
+    sLogger.debug("Processing client protokol for version {}", m_protocol.expansion);
 }
 
 WorldSocket::~WorldSocket()
@@ -324,7 +323,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     sWorldPacketLog.logPacket(static_cast<uint32_t>(len), static_cast<uint16_t>(opcode),
         static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
 
-    const auto version = m_clientProtocol.version;
+    const auto version = m_protocol.expansion;
     const bool isClassic = version == WoW::Expansion::_Classic;
     const bool isTbc = version == WoW::Expansion::_TBC;
     const bool isWotlk = version == WoW::Expansion::_WotLK;
@@ -388,7 +387,7 @@ void WorldSocket::onConnect()
     sWorld.increaseAcceptedConnections();
     _latency = Util::getMSTime();
 
-    if (m_clientProtocol.version <= WoW::Expansion::_WotLK)
+    if (m_protocol.expansion <= WoW::Expansion::_WotLK)
         sendAuthChallengePacket();
     else
         sendVerifyConnectPacket();
@@ -405,7 +404,7 @@ void WorldSocket::sendVerifyConnectPacket()
     uint16_t handshaleLength = static_cast<uint16_t>(handshake.length());
     uint8_t sizeBytes[2];
 
-    if (m_clientProtocol.version == WoW::Expansion::_Mop)
+    if (m_protocol.expansion == WoW::Expansion::_Mop)
     {
         sizeBytes[0] = handshaleLength & 0xFF;
         sizeBytes[1] = (handshaleLength >> 8) & 0xFF;
@@ -423,7 +422,237 @@ void WorldSocket::sendVerifyConnectPacket()
     burstEnd();
 }
 
-void WorldSocket::_HandleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
+void WorldSocket::Authenticate(std::unique_ptr<WorldSession> sessionHolder)
+{
+    if (pAuthenticationPacket != nullptr)
+    {
+        mQueued = false;
+
+        if (mSession == nullptr || sessionHolder == nullptr)
+            return;
+
+        SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
+
+#if VERSION_STRING < Cata
+        sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket.get(), static_cast<uint32_t>(pAuthenticationPacket->rpos()), mSession);
+#else
+        mSession->sendAddonInfo();
+#endif
+
+#if VERSION_STRING > TBC
+        mSession->sendClientCacheVersion(BUILD_VERSION);
+#endif
+        mSession->_latency = _latency;
+
+        pAuthenticationPacket = nullptr;
+
+        sWorld.addGlobalSession(mSession);
+        sWorld.addSession(std::move(sessionHolder));
+    }
+    else
+    {
+        sLogger.failure("WorldSocket::Authenticate something tried to Authenticate but packet is invalid (nullptr)");
+        SendPacket(SmsgAuthResponse(AuthRejected, ARST_ONLY_ERROR).serialise().get());
+        disconnect();
+    }
+}
+
+void WorldSocket::UpdateQueuePosition(uint32_t Position)
+{
+    SendPacket(SmsgAuthResponse(0, ARST_QUEUE, Position).serialise().get());
+}
+
+void WorldSocket::onRead()
+{
+    for (;;)
+    {
+        if (mRemaining == 0 && !processHeader())
+        {
+            return;
+        }
+
+        if (mRemaining > 0 && readBuffer.GetSize() < mRemaining)
+        {
+            return;
+        }
+
+        auto packet = std::make_unique<WorldPacket>(sOpcodeTables.getHexValueForVersionId(mOpcode), mSize);
+        packet->resize(mSize);
+
+        if (mRemaining > 0)
+        {
+            readBuffer.Read(packet->contents(), mRemaining);
+        }
+
+        sWorldPacketLog.logPacket(mSize, static_cast<uint16_t>(mOpcode), mSize ? packet->contents() : nullptr, 0, (mSession ? mSession->GetAccountId() : 0));
+
+        mRemaining = mSize = 0;
+
+        dispatchPacket(std::move(packet));
+    }
+}
+
+bool WorldSocket::processHeader()
+{
+    const auto version = m_protocol.expansion;
+    const bool isClassic = version == WoW::Expansion::_Classic;
+    const bool isTBC = version == WoW::Expansion::_TBC;
+    const bool legacyDecrypt = isClassic || isTBC;
+    const bool isCata = version == WoW::Expansion::_Cata;
+    const bool isMop = version == WoW::Expansion::_Mop;
+    const bool isHandshakeRequired = isCata || isMop;
+
+    if (isHandshakeRequired && !m_HandshakeReceived)
+    {
+        if (readBuffer.GetSize() < 2)
+            return false;
+
+        sLogger.debug("WorldSocket::processHeader(): Received handshake size: {}", readBuffer.GetSize());
+
+        uint8_t header[2];
+        readBuffer.Read(header, 2);
+        uint16_t size = 0;
+
+        if (isCata)
+            size = (static_cast<uint16_t>(header[0]) << 8) | static_cast<uint16_t>(header[1]);
+        if (isMop)
+            size = static_cast<uint16_t>(header[0]) | (static_cast<uint16_t>(header[1]) << 8);
+
+        mRemaining = mSize = size;
+        mOpcode = MSG_VERIFY_CONNECTIVITY;
+        m_HandshakeReceived = true;
+
+        sLogger.debug("WorldSocket::processHeader(): Received handshake header. Raw: {:02X} {:02X}, size: {}",
+            header[0], header[1], mSize);
+
+        return true;
+    }
+
+    if (isMop && _crypt.isInitialized())
+    {
+        if (readBuffer.GetSize() < 4)
+            return false;
+
+        uint32_t rawHeader = 0;
+        readBuffer.Read(reinterpret_cast<uint8_t*>(&rawHeader), 4);
+        _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&rawHeader), 4);
+
+        const ClientPktHeader header = ClientPktHeader::mopEncrypted(rawHeader);
+
+        if (!header.isMopPayloadValid())
+        {
+            sLogger.failure("WorldSocket::processHeader(): Received broken MoP packet from client. Size: {}, Opcode: {}",
+                header.getMopPayloadSize(), header.getRawMopOpcode());
+
+            disconnect();
+            return false;
+        }
+
+        mRemaining = mSize = header.getMopPayloadSize();
+        mOpcode = sOpcodeTables.getInternalIdForHex(header.getMopOpcode());
+
+        return true;
+    }
+
+    if (readBuffer.GetSize() < 6)
+        return false;
+
+    ClientPktHeader header;
+    readBuffer.Read(&header, 6);
+
+    if (legacyDecrypt)
+    {
+        _crypt.decryptLegacyReceive(reinterpret_cast<uint8_t*>(&header), sizeof(ClientPktHeader));
+        mRemaining = mSize = ntohs(header.size) - 4;
+    }
+    else
+    {
+        _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&header), sizeof(ClientPktHeader));
+        if (isMop)
+            mRemaining = mSize = header.size - 4;
+        else
+            mRemaining = mSize = ntohs(header.size) - 4;
+    }
+
+    mOpcode = sOpcodeTables.getInternalIdForHex(static_cast<uint16_t>(header.cmd));
+    return true;
+}
+
+void WorldSocket::dispatchPacket(std::unique_ptr<WorldPacket> packet)
+{
+    switch (sOpcodeTables.getInternalIdForHex(packet->getOpcode()))
+    {
+        case CMSG_PING:
+            _handlePing(std::move(packet));
+            break;
+        case CMSG_AUTH_SESSION:
+            _handleAuthSession(std::move(packet));
+            break;
+        case MSG_VERIFY_CONNECTIVITY:
+            _handleMsgVerifyConnection(std::move(packet));
+            break;
+        default:
+            if (mSession)
+                mSession->QueuePacket(std::move(packet));
+            break;
+    }
+}
+
+void WorldSocket::_handlePing(std::unique_ptr<WorldPacket> recvPacket)
+{
+    uint32_t ping;
+    if (recvPacket->size() < 4)
+    {
+        sLogger.failure("Socket closed due to incomplete ping packet.");
+        disconnect();
+        return;
+    }
+
+#if VERSION_STRING < Cata
+    *recvPacket >> ping;
+    *recvPacket >> _latency;
+#else
+    *recvPacket >> _latency;
+    *recvPacket >> ping;
+#endif
+
+    if (mSession)
+    {
+        mSession->_latency = _latency;
+        mSession->m_lastPing = static_cast<uint32_t>(UNIXTIME);
+
+        // reset the move time diff calculator, don't worry it will be re-calculated next movement packet.
+        mSession->m_clientTimeDelay = 0;
+    }
+
+    SendPacket(SmsgPong(ping).serialise().get());
+
+#ifdef WIN32
+    // Dynamically change nagle buffering status based on latency.
+    //if (_latency >= 250)
+    // I think 350 is better, in a MMO 350 latency isn't that big that we need to worry about reducing the number of packets being sent.
+    if (_latency >= 350)
+    {
+        if (!m_nagleEanbled)
+        {
+            u_long arg = 0;
+            setsockopt(getFd(), 0x6, 0x1, reinterpret_cast<const char*>(&arg), sizeof(arg));
+            m_nagleEanbled = true;
+        }
+    }
+    else
+    {
+        if (m_nagleEanbled)
+        {
+            u_long arg = 1;
+            setsockopt(getFd(), 0x6, 0x1, reinterpret_cast<const char*>(&arg), sizeof(arg));
+            m_nagleEanbled = false;
+        }
+    }
+#endif
+}
+
+void WorldSocket::_handleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
 {
 #if VERSION_STRING == Mop
     std::string account;
@@ -455,7 +684,11 @@ void WorldSocket::_HandleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
         *recvPacket >> AuthDigest[5];
         *recvPacket >> AuthDigest[6];
         *recvPacket >> AuthDigest[8];
-        *recvPacket >> mClientBuild;
+
+        uint16_t build;
+        *recvPacket >> build;
+        mClientBuild = static_cast<uint32_t>(build);
+
         *recvPacket >> AuthDigest[17];
         *recvPacket >> AuthDigest[7];
         *recvPacket >> AuthDigest[13];
@@ -504,7 +737,11 @@ void WorldSocket::_HandleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
         *recvPacket >> AuthDigest[7];
         *recvPacket >> AuthDigest[16];
         *recvPacket >> AuthDigest[3];
-        *recvPacket >> mClientBuild;
+
+        uint16_t build;
+        *recvPacket >> build;
+        mClientBuild = static_cast<uint32_t>(build);
+
         *recvPacket >> AuthDigest[8];
         recvPacket->read<uint32_t>();
         recvPacket->read<uint8_t>();
@@ -582,7 +819,19 @@ void WorldSocket::_HandleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
     pAuthenticationPacket = std::move(recvPacket);
 }
 
-void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32_t requestid)
+void WorldSocket::_handleMsgVerifyConnection(std::unique_ptr<WorldPacket> recvPacket)
+{
+    std::string ClientToServerMsg;
+    *recvPacket >> ClientToServerMsg;
+
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received client Message: {}", ClientToServerMsg);
+
+    m_HandshakeReceived = true;
+
+    sendAuthChallengePacket();
+}
+
+void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t requestid)
 {
     if (requestid != mRequestID)
         return;
@@ -828,275 +1077,6 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32_t r
         SendPacket(SmsgAuthResponse(AuthRejected, ARST_ONLY_ERROR).serialise().get());
         disconnect();
     }
-}
-
-void WorldSocket::Authenticate(std::unique_ptr<WorldSession> sessionHolder)
-{
-    if (pAuthenticationPacket != nullptr)
-    {
-        mQueued = false;
-
-        if (mSession == nullptr || sessionHolder == nullptr)
-            return;
-
-        SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
-
-#if VERSION_STRING < Cata
-        sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket.get(), static_cast<uint32_t>(pAuthenticationPacket->rpos()), mSession);
-#else
-        mSession->sendAddonInfo();
-#endif
-
-#if VERSION_STRING > TBC
-        mSession->sendClientCacheVersion(BUILD_VERSION);
-#endif
-        mSession->_latency = _latency;
-
-        pAuthenticationPacket = nullptr;
-
-        sWorld.addGlobalSession(mSession);
-        sWorld.addSession(std::move(sessionHolder));
-    }
-    else
-    {
-        sLogger.failure("WorldSocket::Authenticate something tried to Authenticate but packet is invalid (nullptr)");
-        SendPacket(SmsgAuthResponse(AuthRejected, ARST_ONLY_ERROR).serialise().get());
-        disconnect();
-    }
-}
-
-void WorldSocket::UpdateQueuePosition(uint32_t Position)
-{
-    SendPacket(SmsgAuthResponse(0, ARST_QUEUE, Position).serialise().get());
-}
-
-void WorldSocket::_HandlePing(std::unique_ptr<WorldPacket> recvPacket)
-{
-    uint32_t ping;
-    if (recvPacket->size() < 4)
-    {
-        sLogger.failure("Socket closed due to incomplete ping packet.");
-        disconnect();
-        return;
-    }
-
-#if VERSION_STRING < Cata
-    *recvPacket >> ping;
-    *recvPacket >> _latency;
-#else
-    *recvPacket >> _latency;
-    *recvPacket >> ping;
-#endif
-
-    if (mSession)
-    {
-        mSession->_latency = _latency;
-        mSession->m_lastPing = static_cast<uint32_t>(UNIXTIME);
-
-        // reset the move time diff calculator, don't worry it will be re-calculated next movement packet.
-        mSession->m_clientTimeDelay = 0;
-    }
-
-    SendPacket(SmsgPong(ping).serialise().get());
-
-#ifdef WIN32
-    // Dynamically change nagle buffering status based on latency.
-    //if (_latency >= 250)
-    // I think 350 is better, in a MMO 350 latency isn't that big that we need to worry about reducing the number of packets being sent.
-    if (_latency >= 350)
-    {
-        if (!m_nagleEanbled)
-        {
-            u_long arg = 0;
-            setsockopt(getFd(), 0x6, 0x1, reinterpret_cast<const char*>(&arg), sizeof(arg));
-            m_nagleEanbled = true;
-        }
-    }
-    else
-    {
-        if (m_nagleEanbled)
-        {
-            u_long arg = 1;
-            setsockopt(getFd(), 0x6, 0x1, reinterpret_cast<const char*>(&arg), sizeof(arg));
-            m_nagleEanbled = false;
-        }
-    }
-#endif
-}
-
-void WorldSocket::onRead()
-{
-    for (;;)
-    {
-        if (mRemaining == 0 && !processHeader())
-        {
-            return;
-        }
-
-        if (mRemaining > 0 && readBuffer.GetSize() < mRemaining)
-        {
-            return;
-        }
-
-        auto packet = std::make_unique<WorldPacket>(sOpcodeTables.getHexValueForVersionId(mOpcode), mSize);
-        packet->resize(mSize);
-
-        if (mRemaining > 0)
-        {
-            readBuffer.Read(packet->contents(), mRemaining);
-        }
-
-        sWorldPacketLog.logPacket(mSize, static_cast<uint16_t>(mOpcode), mSize ? packet->contents() : nullptr, 0, (mSession ? mSession->GetAccountId() : 0));
-
-        mRemaining = mSize = 0;
-
-        dispatchPacket(std::move(packet));
-    }
-}
-
-bool WorldSocket::processHeader()
-{
-    const auto version = m_clientProtocol.version;
-    const bool isCata = version == WoW::Expansion::_Cata;
-    const bool isMop = version == WoW::Expansion::_Mop;
-    const bool isModern = isCata || isMop;
-
-    if (isModern && !m_HandshakeReceived)
-    {
-        if (isCata)
-        {
-            if (readBuffer.GetSize() < 2)
-                return false;
-
-            sLogger.debug("WorldSocket::processHeader(): Received Cata handshake size: {}", readBuffer.GetSize());
-
-            uint8_t header[2];
-            readBuffer.Read(header, 2);
-
-            const uint16_t size =
-                (static_cast<uint16_t>(header[0]) << 8) |
-                static_cast<uint16_t>(header[1]);
-
-            mRemaining = mSize = size;
-            mOpcode = MSG_VERIFY_CONNECTIVITY;
-            m_HandshakeReceived = true;
-
-            sLogger.debug("WorldSocket::processHeader(): Received Cata handshake header. Raw: {:02X} {:02X}, size: {}",
-                header[0], header[1], mSize);
-
-            return true;
-        }
-
-        if (isMop)
-        {
-            if (readBuffer.GetSize() < 2)
-                return false;
-
-            sLogger.debug("WorldSocket::processHeader(): Received Mop handshake size: {}", readBuffer.GetSize());
-
-            uint8_t header[2];
-            readBuffer.Read(header, 2);
-
-            const uint16_t size =
-                static_cast<uint16_t>(header[0]) |
-                (static_cast<uint16_t>(header[1]) << 8);
-
-            mSize = size;
-            mRemaining = mSize;
-            mOpcode = MSG_VERIFY_CONNECTIVITY;
-            m_HandshakeReceived = true;
-
-            sLogger.debug("WorldSocket::processHeader(): Received MoP handshake header. Raw: {:02X} {:02X}, size: {}",
-                header[0], header[1], mSize);
-
-            return true;
-        }
-    }
-
-    if (m_clientProtocol.version == WoW::Expansion::_Mop && _crypt.isInitialized())
-    {
-        if (readBuffer.GetSize() < 4)
-            return false;
-
-        uint32_t rawHeader = 0;
-        readBuffer.Read(reinterpret_cast<uint8_t*>(&rawHeader), 4);
-        _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&rawHeader), 4);
-
-        const ClientPktHeader header = ClientPktHeader::mopEncrypted(rawHeader);
-
-        if (!header.isMopPayloadValid())
-        {
-            sLogger.failure("WorldSocket::processHeader(): Received broken MoP packet from client. Size: {}, Opcode: {}",
-                header.getMopPayloadSize(), header.getRawMopOpcode());
-
-            disconnect();
-            return false;
-        }
-
-        mRemaining = mSize = header.getMopPayloadSize();
-        mOpcode = sOpcodeTables.getInternalIdForHex(header.getMopOpcode());
-
-        return true;
-    }
-
-    if (readBuffer.GetSize() < 6)
-        return false;
-
-    ClientPktHeader header;
-    readBuffer.Read(&header, 6);
-
-    if (m_clientProtocol.version == WoW::Expansion::_Classic ||
-        m_clientProtocol.version == WoW::Expansion::_TBC)
-    {
-        _crypt.decryptLegacyReceive(reinterpret_cast<uint8_t*>(&header), sizeof(ClientPktHeader));
-        mRemaining = mSize = ntohs(header.size) - 4;
-    }
-    else
-    {
-        _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&header), sizeof(ClientPktHeader));
-
-        if (m_clientProtocol.version == WoW::Expansion::_Mop)
-            mRemaining = mSize = header.size - 4;
-        else
-            mRemaining = mSize = ntohs(header.size) - 4;
-    }
-
-    mOpcode = sOpcodeTables.getInternalIdForHex(static_cast<uint16_t>(header.cmd));
-    return true;
-}
-
-void WorldSocket::dispatchPacket(std::unique_ptr<WorldPacket> packet)
-{
-    switch (sOpcodeTables.getInternalIdForHex(packet->getOpcode()))
-    {
-        case CMSG_PING:
-            _HandlePing(std::move(packet));
-            break;
-#if VERSION_STRING >= Cata
-        case MSG_VERIFY_CONNECTIVITY:
-            HandleWoWConnection(std::move(packet));
-            break;
-#endif
-        case CMSG_AUTH_SESSION:
-            _HandleAuthSession(std::move(packet));
-            break;
-        default:
-            if (mSession)
-                mSession->QueuePacket(std::move(packet));
-            break;
-    }
-}
-
-void WorldSocket::HandleWoWConnection(std::unique_ptr<WorldPacket> recvPacket)
-{
-    std::string ClientToServerMsg;
-    *recvPacket >> ClientToServerMsg;
-
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received client Message: {}", ClientToServerMsg);
-
-    m_HandshakeReceived = true;
-
-    sendAuthChallengePacket();
 }
 
 void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid)

@@ -44,9 +44,6 @@ enum OUTPACKET_RESULT
     OUTPACKET_RESULT_SOCKET_ERROR = 4,
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// \brief Main network code functions, handles reading/writing of all packets.
-//////////////////////////////////////////////////////////////////////////////////////////
 class SERVER_DECL WorldSocket : public Socket
 {
 public:
@@ -59,6 +56,12 @@ public:
     void onConnect() override;
     void onDisconnect() override;
 
+    // helper
+    inline void setClientProtocol(WoW::ClientProtocolState protocol)
+    {
+        m_protocol = protocol;
+    }
+
     // vs8 fix - send null on empty buffer
     inline void SendPacket(WorldPacket* packet) { if (!packet) return; OutPacket(packet->getOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : NULL)); }
 
@@ -68,33 +71,30 @@ public:
     inline uint32_t GetLatency() { return _latency; }
 
     void Authenticate(std::unique_ptr<WorldSession> sessionHolder);
-    void InformationRetreiveCallback(WorldPacket & recvData, uint32_t requestid);
 
     void UpdateQueuePosition(uint32_t Position);
 
-    bool processHeader();
-    void dispatchPacket(std::unique_ptr<WorldPacket> packet);
-
     inline void SetSession(WorldSession* session) { mSession = session; }
     inline WorldSession* GetSession() { return mSession; }
-    bool Authed;
 
     void UpdateQueuedPackets();
-
-    inline void SetClientProtocol(WoW::ClientProtocolState protocol)
-    {
-        m_clientProtocol = protocol;
-        m_HandshakeReceived = false;
-    }
-
-    void HandleWoWConnection(std::unique_ptr<WorldPacket> recvPacket);
 
     void sendAuthChallengePacket();
     void sendVerifyConnectPacket();
 
+    bool processHeader();
+
+    void dispatchPacket(std::unique_ptr<WorldPacket> packet);
+
 protected:
-    void _HandleAuthSession(std::unique_ptr<WorldPacket> recvPacket);
-    void _HandlePing(std::unique_ptr<WorldPacket> recvPacket);
+    void _handleAuthSession(std::unique_ptr<WorldPacket> recvPacket);
+    void _handlePing(std::unique_ptr<WorldPacket> recvPacket);
+    void _handleMsgVerifyConnection(std::unique_ptr<WorldPacket> recvPacket);
+
+public:
+    // used by LogonCommClient
+    void informationRetreiveCallback(WorldPacket& recvData, uint32_t requestid);
+    bool isAuthenticated{false};
 
 private:
     uint32_t mOpcode;
@@ -117,15 +117,11 @@ private:
 
     ByteBuffer mAddonInfoBuffer;
 
-    WoW::ClientProtocolState m_clientProtocol{};
+    WoW::ClientProtocolState m_protocol{};
     bool m_HandshakeReceived{false};
 
     uint8_t AuthDigest[20];
-#if VERSION_STRING < Cata
     uint32_t mClientBuild;
-#else
-    uint16_t mClientBuild;
-#endif
 };
 
 static inline void FastGUIDPack(ByteBuffer & buf, const uint64_t & oldguid)
