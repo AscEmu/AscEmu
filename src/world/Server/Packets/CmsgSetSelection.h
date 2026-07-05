@@ -15,48 +15,42 @@ namespace AscEmu::Packets
     class CmsgSetSelection : public ManagedPacket
     {
     public:
-        uint64_t guid;
+        WoWGuid guid;
 
         CmsgSetSelection() : CmsgSetSelection(0)
         {
         }
 
         CmsgSetSelection(uint64_t guid) :
-            ManagedPacket(CMSG_SET_SELECTION, 8),
+            ManagedPacket(CMSG_SET_SELECTION, 0),
             guid(guid)
         {
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
 #if VERSION_STRING < Mop
-            packet >> guid;
+            uint64_t rawGuid;
+            packet >> rawGuid;
+            guid.init(rawGuid);
 #else
-            WoWGuid rawGuid;
-            rawGuid[7] = packet.readBit();
-            rawGuid[6] = packet.readBit();
-            rawGuid[5] = packet.readBit();
-            rawGuid[4] = packet.readBit();
-            rawGuid[3] = packet.readBit();
-            rawGuid[2] = packet.readBit();
-            rawGuid[1] = packet.readBit();
-            rawGuid[0] = packet.readBit();
-            packet.readByteSeq(rawGuid[0]);
-            packet.readByteSeq(rawGuid[7]);
-            packet.readByteSeq(rawGuid[3]);
-            packet.readByteSeq(rawGuid[5]);
-            packet.readByteSeq(rawGuid[1]);
-            packet.readByteSeq(rawGuid[4]);
-            packet.readByteSeq(rawGuid[6]);
-            packet.readByteSeq(rawGuid[2]);
-
-            guid = rawGuid.getRawGuid();
+            guid[7] = packet.readBit();
+            guid[6] = packet.readBit();
+            guid[5] = packet.readBit();
+            guid[4] = packet.readBit();
+            guid[3] = packet.readBit();
+            guid[2] = packet.readBit();
+            guid[1] = packet.readBit();
+            guid[0] = packet.readBit();
+            packet.readByteSeq(guid[0]);
+            packet.readByteSeq(guid[7]);
+            packet.readByteSeq(guid[3]);
+            packet.readByteSeq(guid[5]);
+            packet.readByteSeq(guid[1]);
+            packet.readByteSeq(guid[4]);
+            packet.readByteSeq(guid[6]);
+            packet.readByteSeq(guid[2]);
 #endif
             return true;
         }

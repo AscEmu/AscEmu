@@ -317,7 +317,7 @@ void WorldSession::handleSetSelectionOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    _player->setTargetGuid(srlPacket.guid);
+    _player->setTargetGuid(srlPacket.guid.getRawGuid());
 
     if (_player->m_comboPoints)
         _player->updateComboPoints();

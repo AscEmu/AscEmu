@@ -44,32 +44,53 @@ struct ClientPktHeader
 {
     uint16_t size;
     uint32_t cmd;
-};
 
-struct AuthPktHeader
-{
-    AuthPktHeader(uint32_t _size, uint32_t _opcode) : raw(_size << 13 | _opcode & 0x01FFF) {}
+    uint16_t mopCmd;
 
-    uint16_t getOpcode() const
+    static constexpr uint32_t MopOpcodeMask = 0x01FFF;
+    static constexpr uint32_t MopMaxPayloadSize = 0x07FFF;
+
+    static ClientPktHeader mopEncrypted(uint32_t raw)
     {
-        return uint16_t(raw & 0x01FFF);
+        ClientPktHeader pkt{};
+
+        pkt.size = static_cast<uint16_t>((raw & ~MopOpcodeMask) >> 13);
+        pkt.mopCmd = static_cast<uint16_t>(raw & MopOpcodeMask);
+        pkt.cmd = pkt.dropMopHighBytes(pkt.mopCmd);
+
+        return pkt;
     }
 
-    uint32_t getSize() const
+    static uint16_t dropMopHighBytes(uint16_t opcode)
     {
-        return raw >> 13;
-    };
+        return static_cast<uint16_t>(opcode & MopOpcodeMask);
+    }
 
-    uint32_t raw;
+    bool isMopPayloadValid() const
+    {
+        return size <= MopMaxPayloadSize;
+    }
+
+    uint32_t getMopPayloadSize() const
+    {
+        return size;
+    }
+
+    uint16_t getMopOpcode() const
+    {
+        return static_cast<uint16_t>(cmd);
+    }
+
+    uint16_t getRawMopOpcode() const
+    {
+        return mopCmd;
+    }
 };
 
 struct ServerPktHeader
 {
     uint16_t legacySize{0};
     uint16_t legacyCmd{0};
-
-    uint8_t header[6]{};
-    uint8_t headerLength{0};
 
     static ServerPktHeader legacy(uint16_t size, uint16_t cmd)
     {
@@ -79,29 +100,50 @@ struct ServerPktHeader
         return pkt;
     }
 
-    static ServerPktHeader modern(uint32_t size, uint16_t cmd, WoW::Expansion version)
+    uint8_t cataHeader[6]{};
+    uint8_t cataHeaderLength{0};
+
+    static ServerPktHeader cataEncrypted(uint32_t size, uint16_t cmd)
     {
         ServerPktHeader pkt;
 
         if (size > 0x7FFF)
-            pkt.header[pkt.headerLength++] = static_cast<uint8_t>(0x80 | ((size >> 16) & 0xFF));
+            pkt.cataHeader[pkt.cataHeaderLength++] = static_cast<uint8_t>(0x80 | ((size >> 16) & 0xFF));
 
         // Mop = low byte, high byte / Cata = high byte, low byte
-        if (version == WoW::Expansion::_Mop)
-        {
-            pkt.header[pkt.headerLength++] = static_cast<uint8_t>(size & 0xFF);
-            pkt.header[pkt.headerLength++] = static_cast<uint8_t>((size >> 8) & 0xFF);
-        }
-        else
-        {
-            pkt.header[pkt.headerLength++] = static_cast<uint8_t>((size >> 8) & 0xFF);
-            pkt.header[pkt.headerLength++] = static_cast<uint8_t>(size & 0xFF);
-        }
+        pkt.cataHeader[pkt.cataHeaderLength++] = static_cast<uint8_t>((size >> 8) & 0xFF);
+        pkt.cataHeader[pkt.cataHeaderLength++] = static_cast<uint8_t>(size & 0xFF);
 
-        pkt.header[pkt.headerLength++] = static_cast<uint8_t>(cmd & 0xFF);
-        pkt.header[pkt.headerLength++] = static_cast<uint8_t>((cmd >> 8) & 0xFF);
+        pkt.cataHeader[pkt.cataHeaderLength++] = static_cast<uint8_t>(cmd & 0xFF);
+        pkt.cataHeader[pkt.cataHeaderLength++] = static_cast<uint8_t>((cmd >> 8) & 0xFF);
 
         return pkt;
+    }
+
+    static constexpr uint32_t MopOpcodeMask = 0x01FFF;
+    uint8_t mopHeader[4]{};
+    uint32_t mopHeaderLength{0};
+
+    static ServerPktHeader mopEncrypted(uint32_t size, uint32_t cmd)
+    {
+        ServerPktHeader pkt;
+
+        const uint32_t raw = (size << 13) | (cmd & MopOpcodeMask);
+        memcpy(pkt.mopHeader, &raw, 4);
+        pkt.mopHeaderLength = 4;
+
+        return pkt;
+    }
+
+    static ServerPktHeader mopUnencrypted(uint32_t size, uint32_t cmd)
+    {
+        ServerPktHeader header;
+
+        memcpy(&header.mopHeader[0], &size, 2);
+        memcpy(&header.mopHeader[2], &cmd, 2);
+
+        header.mopHeaderLength = 4;
+        return header;
     }
 
     const uint8_t* legacyData() const
@@ -109,9 +151,14 @@ struct ServerPktHeader
         return reinterpret_cast<const uint8_t*>(&legacySize);
     }
 
-    const uint8_t* modernData() const
+    const uint8_t* cataData() const
     {
-        return header;
+        return cataHeader;
+    }
+
+    const uint8_t* mopData() const
+    {
+        return mopHeader;
     }
 };
 
@@ -284,25 +331,34 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     const bool isCata = version == WoW::Expansion::_Cata;
     const bool isMop = version == WoW::Expansion::_Mop;
     const bool isLegacy = isClassic || isTbc;
-    const bool isModern = isCata || isMop;
 
     bool rv = false;
 
-    if (isMop && _crypt.isInitialized())
+    if (isMop)
     {
-        AuthPktHeader authPktHeader(static_cast<uint32_t>(len), sOpcodeTables.getHexValueForVersionId(opcode));
-        _crypt.encryptWotlkSend(reinterpret_cast<uint8_t*>(&authPktHeader.raw), 4);
-        rv = burstSend(reinterpret_cast<const uint8_t*>(&authPktHeader.raw), 4);
+        if (_crypt.isInitialized())
+        {
+            ServerPktHeader header = ServerPktHeader::mopEncrypted(static_cast<uint32_t>(len),
+                static_cast<uint32_t>(sOpcodeTables.getHexValueForVersionId(opcode)));
+
+            _crypt.encryptWotlkSend(header.mopHeader, header.mopHeaderLength);
+            rv = burstSend(header.mopData(), header.mopHeaderLength);
+        }
+        else
+        {
+            ServerPktHeader header = ServerPktHeader::mopUnencrypted(static_cast<uint32_t>(len + 2),
+                static_cast<uint32_t>(sOpcodeTables.getHexValueForVersionId(opcode)));
+
+            rv = burstSend(header.mopData(), header.mopHeaderLength);
+        }
     }
-    else if (isModern)
+    else if (isCata)
     {
-        ServerPktHeader header = ServerPktHeader::modern(static_cast<uint32_t>(len + 2),
-            static_cast<uint16_t>(sOpcodeTables.getHexValueForVersionId(opcode)), version);
+        ServerPktHeader header = ServerPktHeader::cataEncrypted(static_cast<uint32_t>(len + 2),
+            static_cast<uint16_t>(sOpcodeTables.getHexValueForVersionId(opcode)));
 
-        if (isCata)
-            _crypt.encryptWotlkSend(header.header, header.headerLength);
-
-        rv = burstSend(header.modernData(), header.headerLength);
+        _crypt.encryptWotlkSend(header.cataHeader, header.cataHeaderLength);
+        rv = burstSend(header.cataData(), header.cataHeaderLength);
     }
     else
     {
@@ -912,7 +968,7 @@ bool WorldSocket::processHeader()
             if (readBuffer.GetSize() < 2)
                 return false;
 
-            sLogger.debug("Received Cata handshake size: {}", readBuffer.GetSize());
+            sLogger.debug("WorldSocket::processHeader(): Received Cata handshake size: {}", readBuffer.GetSize());
 
             uint8_t header[2];
             readBuffer.Read(header, 2);
@@ -925,7 +981,7 @@ bool WorldSocket::processHeader()
             mOpcode = MSG_VERIFY_CONNECTIVITY;
             m_HandshakeReceived = true;
 
-            sLogger.debug("Received Cata handshake header. Raw: {:02X} {:02X}, size: {}",
+            sLogger.debug("WorldSocket::processHeader(): Received Cata handshake header. Raw: {:02X} {:02X}, size: {}",
                 header[0], header[1], mSize);
 
             return true;
@@ -936,7 +992,7 @@ bool WorldSocket::processHeader()
             if (readBuffer.GetSize() < 2)
                 return false;
 
-            sLogger.debug("Received Mop handshake size: {}", readBuffer.GetSize());
+            sLogger.debug("WorldSocket::processHeader(): Received Mop handshake size: {}", readBuffer.GetSize());
 
             uint8_t header[2];
             readBuffer.Read(header, 2);
@@ -950,7 +1006,7 @@ bool WorldSocket::processHeader()
             mOpcode = MSG_VERIFY_CONNECTIVITY;
             m_HandshakeReceived = true;
 
-            sLogger.debug("Received MoP handshake header. Raw: {:02X} {:02X}, size: {}",
+            sLogger.debug("WorldSocket::processHeader(): Received MoP handshake header. Raw: {:02X} {:02X}, size: {}",
                 header[0], header[1], mSize);
 
             return true;
@@ -962,12 +1018,24 @@ bool WorldSocket::processHeader()
         if (readBuffer.GetSize() < 4)
             return false;
 
-        AuthPktHeader authPktHeader(0, 0);
-        readBuffer.Read(reinterpret_cast<uint8_t*>(&authPktHeader.raw), 4);
-        _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&authPktHeader.raw), 4);
+        uint32_t rawHeader = 0;
+        readBuffer.Read(reinterpret_cast<uint8_t*>(&rawHeader), 4);
+        _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&rawHeader), 4);
 
-        mRemaining = mSize = authPktHeader.getSize();
-        mOpcode = sOpcodeTables.getInternalIdForHex(authPktHeader.getOpcode());
+        const ClientPktHeader header = ClientPktHeader::mopEncrypted(rawHeader);
+
+        if (!header.isMopPayloadValid())
+        {
+            sLogger.failure("WorldSocket::processHeader(): Received broken MoP packet from client. Size: {}, Opcode: {}",
+                header.getMopPayloadSize(), header.getRawMopOpcode());
+
+            disconnect();
+            return false;
+        }
+
+        mRemaining = mSize = header.getMopPayloadSize();
+        mOpcode = sOpcodeTables.getInternalIdForHex(header.getMopOpcode());
+
         return true;
     }
 
