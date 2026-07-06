@@ -182,11 +182,7 @@ std::string ChannelMgr::generateChannelName(WDB::Structures::ChatChannelsEntry c
 
     if (const auto defaultArea = MapManagement::AreaManagement::AreaStorage::GetAreaById(3459))
     {
-#if VERSION_STRING < Cata
-        defaultAreaName = defaultArea->area_name[sWorld.getDbcLocaleLanguageId()];
-#else
-        defaultAreaName = defaultArea->area_name;
-#endif
+        defaultAreaName = defaultArea->area_name.c_str();
     }
 
     // City specific channels
@@ -201,7 +197,7 @@ std::string ChannelMgr::generateChannelName(WDB::Structures::ChatChannelsEntry c
 #if VERSION_STRING < Cata
             std::snprintf(channelName, 95, channelNameDbc, areaEntry->area_name[sWorld.getDbcLocaleLanguageId()]);
 #else
-            std::snprintf(channelName, 95, channelNameDbc, areaEntry->area_name);
+            std::snprintf(channelName, 95, channelNameDbc, areaEntry->area_name.c_str());
 #endif
         }
         else

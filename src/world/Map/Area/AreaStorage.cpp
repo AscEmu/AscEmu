@@ -21,7 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace MapManagement::AreaManagement
 {
-    WDB::WDBContainer<WDB::Structures::AreaTableEntry>* AreaStorage::m_storage;
+    WDB::WDBStore<WDB::Structures::AreaTableEntry> const* AreaStorage::m_areaContainer = nullptr;
     MapEntryPair AreaStorage::m_map_storage;
     AreaFlagByAreaID AreaStorage::m_area_flag_by_id_collection;
     AreaFlagByMapID AreaStorage::m_area_flag_by_map_id_collection;
@@ -31,27 +31,24 @@ namespace MapManagement::AreaManagement
         return &AreaStorage::m_map_storage;
     }
 
-    void AreaStorage::Initialise(WDB::WDBContainer<WDB::Structures::AreaTableEntry>* dbc_storage)
+    void AreaStorage::Initialise(WDB::WDBStore<WDB::Structures::AreaTableEntry>const* container)
     {
-        m_storage = dbc_storage;
+        m_areaContainer = container;
 
         // Preload this stuff to make lookups easier elsewhere in code
-        for (uint32_t i = 0; i < m_storage->getNumRows(); ++i)
+        for (auto const& [id, area] : *m_areaContainer)
         {
-            if (auto area = m_storage->lookupEntry(i))
+            m_area_flag_by_id_collection.insert(std::map<uint16_t, uint32_t>::value_type(uint16_t(area.area_level), area.explore_flag));
+            if (area.zone == 0 && area.map_id != 0 && area.map_id != 1 && area.map_id != 530 && area.map_id != 571)
             {
-                m_area_flag_by_id_collection.insert(std::map<uint16_t, uint32_t>::value_type(uint16_t(area->id), area->explore_flag));
-                if (area->zone == 0 && area->map_id != 0 && area->map_id != 1 && area->map_id != 530 && area->map_id != 571)
-                {
-                    m_area_flag_by_map_id_collection.insert(std::map<uint32_t, uint32_t>::value_type(area->map_id, area->explore_flag));
-                }
+                m_area_flag_by_map_id_collection.insert(std::map<uint32_t, uint32_t>::value_type(area.map_id, area.explore_flag));
             }
         }
     }
 
-    WDB::WDBContainer<WDB::Structures::AreaTableEntry>* AreaStorage::GetStorage()
+    WDB::WDBStore<WDB::Structures::AreaTableEntry> const* AreaStorage::GetStorage()
     {
-        return m_storage;
+        return m_areaContainer;
     }
 
     int32_t AreaStorage::GetFlagById(uint32_t area_id)
@@ -74,7 +71,7 @@ namespace MapManagement::AreaManagement
 
     WDB::Structures::AreaTableEntry const* AreaStorage::GetAreaByFlag(uint32_t area_flag)
     {
-        return m_storage->lookupEntry(area_flag);
+        return m_areaContainer->lookupEntry(area_flag);
     }
 
     WDB::Structures::AreaTableEntry const* AreaStorage::GetAreaByMapId(uint32_t map_id)
@@ -131,7 +128,7 @@ namespace MapManagement::AreaManagement
         if (area_flag < 0)
             return NULL;
 
-        return m_storage->lookupEntry(area_flag);
+        return m_areaContainer->lookupEntry(area_flag);
     }
 
     void AreaStorage::GetZoneAndIdByFlag(uint32_t& zone_id, uint32_t& area_id, uint16_t area_flag, uint32_t map_id)

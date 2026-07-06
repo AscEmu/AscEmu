@@ -829,7 +829,7 @@ bool ChatCommandHandler::HandleGPSCommand(const char* args, WorldSession* m_sess
         FILE* gpslog = fopen(AscEmu::Logging::getFormattedFileName("logs", "gps", false).c_str(), "at");
         if (gpslog)
         {
-            fprintf(gpslog, "%d, %u, %u, %f, %f, %f, %f, \'%s\'", out_map_id, out_zone_id, out_area_id, out_x, out_y, out_z, out_o, out_area_name);
+            fprintf(gpslog, "%d, %u, %u, %f, %f, %f, %f, \'%s\'", out_map_id, out_zone_id, out_area_id, out_x, out_y, out_z, out_o, out_area_name.c_str());
             // ".gps 1 comment" will save comment after the gps data
             if (*(args + 1) == ' ')
                 fprintf(gpslog, ",%s\n", args + 2);

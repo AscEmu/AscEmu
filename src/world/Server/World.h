@@ -195,14 +195,12 @@ public:
     void sendZoneUnderAttackMessage(uint32_t areaId, uint8_t teamId);
 
     void sendBroadcastMessageById(uint32_t broadcastId);
-    
     //////////////////////////////////////////////////////////////////////////////////////////
     // General Functions
 private:
     std::unique_ptr<EventableObjectHolder> mEventableObjectHolder;
-#if VERSION_STRING < Cata
     uint8_t mDbcLocaleId = 0;
-#endif
+
 
 public:
     std::list<std::unique_ptr<SpellInfo>> dummySpellList;
@@ -213,11 +211,8 @@ public:
 
     // TODO: figure out how to get it for cata/mop
     // although this is probably not needed anymore after wotlk
-#if VERSION_STRING < Cata
-    // Loads correct localization id used in name columns in DBC files
     void loadDbcLocaleLanguage();
-    uint8_t getDbcLocaleLanguageId() const;
-#endif
+    [[nodiscard]] uint8_t getDbcLocaleLanguageId() const noexcept;
 
     void loadMySQLStores();
     void loadMySQLTablesByTask();

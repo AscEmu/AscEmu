@@ -52,7 +52,7 @@ struct NameGenData
 
 std::vector<NameGenData> _namegenData[3];
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::AreaTableEntry> sAreaStore;
+SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTableEntry> sAreaStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::AreaTriggerEntry> sAreaTriggerStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::AuctionHouseEntry> sAuctionHouseStore;
 
@@ -243,7 +243,30 @@ bool loadDBCs()
     WDB::StoreProblemList bad_dbc_files;
     std::string dbc_path = sWorld.settings.server.dataDir + "dbc/";
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sAreaStore, dbc_path, "AreaTable.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::AreaTableEntry>(
+        bad_dbc_files, sAreaStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::AreaTableEntry& entry) {
+            entry.id = raw.id;
+            entry.map_id = raw.map_id;
+            entry.zone = raw.zone;
+            entry.explore_flag = raw.explore_flag;
+            entry.flags = raw.flags;
+            entry.area_level = raw.area_level;
+            entry.team = raw.team;
+
+            if constexpr (std::is_same_v<RawType, WDB::Structures::Raw::AreaTableEntryClassic>) {
+                uint8_t localeId = sWorld.getDbcLocaleLanguageId();
+                entry.area_name = raw.area_name[localeId] ? raw.area_name[localeId] : "";
+                entry.liquid_type_override[0] = raw.liquid_type_override;
+            }
+            else if constexpr (std::is_same_v<RawType, WDB::Structures::Raw::AreaTableEntryMop>) {
+                entry.area_name = raw.area_name ? raw.area_name : "";
+                entry.elevation = raw.elevation;
+                std::copy(std::begin(raw.liquid_type_override), std::end(raw.liquid_type_override), std::begin(entry.liquid_type_override));
+            }
+        }
+    );
+
     MapManagement::AreaManagement::AreaStorage::Initialise(&sAreaStore);
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sAreaTriggerStore, dbc_path, "AreaTrigger.dbc");

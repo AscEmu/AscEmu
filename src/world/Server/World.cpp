@@ -808,16 +808,18 @@ bool World::loadDbcDb2Stores()
     return true;
 }
 
-#if VERSION_STRING < Cata
 void World::loadDbcLocaleLanguage()
 {
-    // Read names from warrior class in ChrClasses DBC file to get used locale language
     const auto warr = sChrClassesStore.lookupEntry(1);
-#if VERSION_STRING == Classic
-    for (uint8_t i = 0; i < 8; ++i)
-#else
-    for (uint8_t i = 0; i < 16; ++i)
-#endif
+    if (!warr)
+    {
+        return;
+    }
+
+    // Classic DBCs contain 8 locale slots, TBC up to Cata contain 16
+    const uint8_t maxLocales = (WoW::getCurrentExpansion() == WoW::Expansion::_Classic) ? 8 : 16;
+
+    for (uint8_t i = 0; i < maxLocales; ++i)
     {
         std::string name(warr->name[i]);
         if (!name.empty())
@@ -828,11 +830,10 @@ void World::loadDbcLocaleLanguage()
     }
 }
 
-uint8_t World::getDbcLocaleLanguageId() const
+[[nodiscard]] uint8_t World::getDbcLocaleLanguageId() const noexcept
 {
     return mDbcLocaleId;
 }
-#endif
 
 inline void runParallel(const std::vector<std::function<void()>>& tasks)
 {

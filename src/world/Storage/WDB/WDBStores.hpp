@@ -160,7 +160,7 @@ extern float SERVER_DECL GetRadius(WDB::Structures::SpellRadiusEntry const* radi
 extern uint32_t SERVER_DECL GetCastTime(WDB::Structures::SpellCastTimesEntry const* time);
 extern uint32_t SERVER_DECL GetDuration(WDB::Structures::SpellDurationEntry const* dur);
 
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AreaTableEntry> sAreaStore;
+extern SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTableEntry> sAreaStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AreaTriggerEntry> sAreaTriggerStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AuctionHouseEntry> sAuctionHouseStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BankBagSlotPrices> sBankBagSlotPricesStore;
