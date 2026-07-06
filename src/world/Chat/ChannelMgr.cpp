@@ -194,11 +194,7 @@ std::string ChannelMgr::generateChannelName(WDB::Structures::ChatChannelsEntry c
     {
         if (areaEntry != nullptr)
         {
-#if VERSION_STRING < Cata
-            std::snprintf(channelName, 95, channelNameDbc, areaEntry->area_name[sWorld.getDbcLocaleLanguageId()]);
-#else
             std::snprintf(channelName, 95, channelNameDbc, areaEntry->area_name.c_str());
-#endif
         }
         else
         {

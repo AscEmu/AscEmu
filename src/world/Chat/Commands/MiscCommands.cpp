@@ -806,11 +806,7 @@ bool ChatCommandHandler::HandleGPSCommand(const char* args, WorldSession* m_sess
     auto out_y = obj->GetPositionY();
     auto out_z = obj->GetPositionZ();
     auto out_o = obj->GetOrientation();
-#if VERSION_STRING < Cata
-    auto out_area_name = at->area_name[sWorld.getDbcLocaleLanguageId()];
-#else
     auto out_area_name = at->area_name;
-#endif
 
     systemMessage(m_session, "Current Position: Map:{} Zone:{} Area:{} Phase:{} X:{} Y:{} Z:{} Orientation:{} Area Name: {}",
         out_map_id, out_zone_id, out_area_id, out_phase, out_x, out_y, out_z, out_o, out_area_name);
