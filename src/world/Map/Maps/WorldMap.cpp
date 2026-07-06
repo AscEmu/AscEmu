@@ -2736,23 +2736,23 @@ ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, LocationVector pos, 
                 {
                     if (const auto* area = MapManagement::AreaManagement::AreaStorage::getExactArea(this, pos, phaseMask))
                     {
-#if VERSION_STRING > Classic
-                        uint32_t overrideLiquid = area->liquid_type_override[liquidFlagType];
+                        uint32_t const index = (WoW::getCurrentExpansion() == WoW::Expansion::_Classic) ? 0 : liquidFlagType;
+
+                        uint32_t overrideLiquid = area->liquid_type_override[index];
                         if (!overrideLiquid && area->zone)
                         {
                             area = MapManagement::AreaManagement::AreaStorage::GetAreaById(area->zone);
                             if (area)
-                                overrideLiquid = area->liquid_type_override[liquidFlagType];
+                            {
+                                overrideLiquid = area->liquid_type_override[index];
+                            }
                         }
-#else
-                        uint32_t overrideLiquid = area->liquid_type_override;
-                        if (!overrideLiquid && area->zone)
+
+                        if (WDB::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.lookupEntry(overrideLiquid))
                         {
-                            area = MapManagement::AreaManagement::AreaStorage::GetAreaById(area->zone);
-                            if (area)
-                                overrideLiquid = area->liquid_type_override;
+                            liquid_type = overrideLiquid;
+                            liquidFlagType = liq->Type;
                         }
-#endif
 
                         if (WDB::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.lookupEntry(overrideLiquid))
                         {
