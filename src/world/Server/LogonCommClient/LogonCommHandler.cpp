@@ -428,6 +428,28 @@ uint32_t LogonCommHandler::clientConnectionId(std::string AccountName, WorldSock
     return request_id;
 }
 
+void LogonCommHandler::sendBuildRequest(std::string ip, WorldSocket* Socket)
+{
+    uint32_t request_id = next_request++;
+
+    sLogger.debug(" Send Request for Account: `{}` (request ID: {}).", ip, request_id);
+
+    LogonCommClientSocket* logonCommSocket = getLogonServerSocket();
+    if (logonCommSocket)
+    {
+        // lock here for writing
+        {
+            std::lock_guard lock{ pendingLock };
+            WorldPacket data(LRCMSG_BUILD_REQUEST, 50);
+            data << request_id;
+            data << ip;
+            logonCommSocket->SendPacket(&data, false);
+
+            pending_logons[request_id] = Socket;
+        }
+    }
+}
+
 void LogonCommHandler::removeUnauthedClientSocketClose(uint32_t id)
 {
     std::lock_guard lock{pendingLock};

@@ -142,8 +142,8 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
         NULL,                                               // LRSMSG_ACC_SESSION_RESULT
         &LogonCommServerSocket::HandlePing,                 // LRCMSG_LOGON_PING_STATUS
         NULL,                                               // LRSMSG_LOGON_PING_RESULT
-        NULL,                                               // LRCMSG_FREE_01
-        NULL,                                               // LRCMSG_FREE_02
+        &LogonCommServerSocket::HandleBuildRequest,         // LRCMSG_BUILD_REQUEST
+        NULL,                                               // LRSMSG_BUILD_RESULT
         &LogonCommServerSocket::HandleAuthChallenge,        // LRCMSG_AUTH_REQUEST
         NULL,                                               // LRSMSG_AUTH_RESPONSE
         NULL,                                               // LRSMSG_ACC_CHAR_MAPPING_REQUEST
@@ -268,6 +268,21 @@ void LogonCommServerSocket::HandlePing(WorldPacket & recvData)
     last_ping = static_cast<uint32_t>(time(nullptr));
 
     sRealmManager.setLastPing(realmId);
+}
+
+void LogonCommServerSocket::HandleBuildRequest(WorldPacket& recvData)
+{
+    uint32_t request_id;
+    std::string ip;
+
+    recvData >> request_id;
+    recvData >> ip;
+
+    WorldPacket data(LRSMSG_BUILD_RESULT, 50);
+    data << request_id;
+    data << sRealmManager.getBuildForIP(ip);
+
+    SendPacket(&data);
 }
 
 void LogonCommServerSocket::SendPacket(WorldPacket* data)

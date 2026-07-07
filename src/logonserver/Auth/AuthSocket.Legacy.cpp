@@ -307,6 +307,8 @@ void AuthSocket::HandleChallenge()
     memcpy(challenge.unk3, unk.AsByteArray(), 16);
     challenge.unk4 = 0;
 
+    sRealmManager.addBuildForIP(getRemoteIp(), m_challenge.build);
+
     send(reinterpret_cast<uint8_t*>(&challenge), sizeof(sAuthLogonChallenge_S));
 }
 

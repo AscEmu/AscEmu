@@ -32,6 +32,12 @@ namespace AscEmu::Realm
         std::chrono::high_resolution_clock::time_point lastPing;
     };
 
+    struct ClientIPBuild
+    {
+        std::string ip;
+        uint32_t build;
+    };
+
     //class ::AuthSocket;
     //class ::LogonCommServerSocket;
 
@@ -86,6 +92,12 @@ namespace AscEmu::Realm
 
         std::unique_ptr<AscEmu::Threading::AEThread> checkThread;
         uint32_t checkTime;
+
+        std::vector<ClientIPBuild> m_clientIPs;
+
+    public:
+        uint32_t getBuildForIP(const std::string& ip) const;
+        void addBuildForIP(const std::string& ip, uint32_t build);
     };
 }
 #define sRealmManager AscEmu::Realm::RealmManager::getInstance()

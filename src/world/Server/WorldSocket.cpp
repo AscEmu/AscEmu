@@ -36,6 +36,7 @@
 #include "OpcodeTable.hpp"
 #include "WorldSession.h"
 #include "Utilities/Random.hpp"
+#include "Packets/CmsgAuthSession.h"
 
 using namespace AscEmu::Packets;
 
@@ -182,32 +183,6 @@ WorldSocket::WorldSocket(SOCKET fd)
     m_nagleEanbled(false),
     m_fullAccountName(nullptr)
 {
-    //todo Zyres: This is temp until we moved the supported version from makro to config
-    WoW::ClientProtocolState protocol;
-    switch (sOpcodeTables.getVersionIdForAEVersion())
-    {
-        case 0:
-            protocol.expansion = WoW::Expansion::_Classic;
-            break;
-        case 1:
-            protocol.expansion = WoW::Expansion::_TBC;
-            break;
-        case 2:
-            protocol.expansion = WoW::Expansion::_WotLK;
-            break;
-        case 3:
-            protocol.expansion = WoW::Expansion ::_Cata;
-            break;
-        case 4:
-            protocol.expansion = WoW::Expansion::_Mop;
-            break;
-        default:
-            protocol.expansion = WoW::Expansion::Unknown;
-            break;
-    }
-
-    setClientProtocol(protocol);
-
     sLogger.debug("Processing client protokol for version {}", m_protocol.expansion);
 }
 
@@ -385,11 +360,54 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     return rv ? OUTPACKET_RESULT_SUCCESS : OUTPACKET_RESULT_SOCKET_ERROR;
 }
 
+void WorldSocket::setCurrentVersionAsProtocol()
+{
+    //Zyres: this is a fallback when the client version is not set by the client information
+    WoW::ClientProtocolState protocol;
+    switch (sOpcodeTables.getVersionIdForAEVersion())
+    {
+        case 0:
+            protocol.expansion = WoW::Expansion::_Classic;
+            break;
+        case 1:
+            protocol.expansion = WoW::Expansion::_TBC;
+            break;
+        case 2:
+            protocol.expansion = WoW::Expansion::_WotLK;
+            break;
+        case 3:
+            protocol.expansion = WoW::Expansion::_Cata;
+            break;
+        case 4:
+            protocol.expansion = WoW::Expansion::_Mop;
+            break;
+        default:
+            protocol.expansion = WoW::Expansion::Unknown;
+            break;
+    }
+
+    setClientProtocol(protocol);
+}
+
 void WorldSocket::onConnect()
 {
     sWorld.increaseAcceptedConnections();
     _latency = Util::getMSTime();
 
+    if (m_protocolSetByLogonComm)
+    {
+        sLogger.debug("WorldSocket::onConnect(): sending build request for ip {}", getRemoteIp());
+        sLogonCommHandler.sendBuildRequest(getRemoteIp(), this);
+    }
+    else
+    {
+        setCurrentVersionAsProtocol();
+        sendClientConnectionPacket();
+    }
+}
+
+void WorldSocket::sendClientConnectionPacket()
+{
     if (m_protocol.expansion <= WoW::Expansion::_WotLK)
         sendAuthChallengePacket();
     else
@@ -660,154 +678,23 @@ void WorldSocket::_handlePing(std::unique_ptr<WorldPacket> recvPacket)
 
 void WorldSocket::_handleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
 {
-#if VERSION_STRING == Mop
-    std::string account;
-    uint32_t addonSize;
-
-    _latency = Util::getMSTime() - _latency;
-
-    try
+    CmsgAuthSession authSession;
+    if (!authSession.deserialise(*recvPacket, m_protocol))
     {
-        recvPacket->read<uint32_t>();
-        recvPacket->read<uint32_t>();
-        *recvPacket >> AuthDigest[18];
-        *recvPacket >> AuthDigest[14];
-        *recvPacket >> AuthDigest[3];
-        *recvPacket >> AuthDigest[4];
-        *recvPacket >> AuthDigest[0];
-        recvPacket->read<uint32_t>();
-        *recvPacket >> AuthDigest[11];
-        *recvPacket >> mClientSeed;
-        *recvPacket >> AuthDigest[19];
-        recvPacket->read<uint8_t>();
-        recvPacket->read<uint8_t>();
-        *recvPacket >> AuthDigest[2];
-        *recvPacket >> AuthDigest[9];
-        *recvPacket >> AuthDigest[12];
-        recvPacket->read<uint64_t>();
-        recvPacket->read<uint32_t>();
-        *recvPacket >> AuthDigest[16];
-        *recvPacket >> AuthDigest[5];
-        *recvPacket >> AuthDigest[6];
-        *recvPacket >> AuthDigest[8];
+        sLogger.failure("Socket closed due to wrong auth session packet.");
+        sLogger.failure("Error {}", authSession.errorMsg);
 
-        uint16_t build;
-        *recvPacket >> build;
-        mClientBuild = static_cast<uint32_t>(build);
-
-        *recvPacket >> AuthDigest[17];
-        *recvPacket >> AuthDigest[7];
-        *recvPacket >> AuthDigest[13];
-        *recvPacket >> AuthDigest[15];
-        *recvPacket >> AuthDigest[1];
-        *recvPacket >> AuthDigest[10];
-
-        *recvPacket >> addonSize;
-
-        if (addonSize)
-        {
-            if (recvPacket->rpos() + addonSize > recvPacket->size())
-            {
-                sLogger.failure("Addon size overflow packet size!");
-                return;
-            }
-            mAddonInfoBuffer.resize(addonSize);
-            recvPacket->read(static_cast<uint8_t*>(mAddonInfoBuffer.contents()), addonSize);
-        }
-
-        recvPacket->readBit();
-
-        const auto accountNameLength = recvPacket->readBits(11);
-        account = recvPacket->readString(accountNameLength);
-    }
-#elif VERSION_STRING == Cata
-    std::string account;
-    uint32_t addonSize;
-
-    _latency = Util::getMSTime() - _latency;
-
-    try
-    {
-        recvPacket->read<uint32_t>();
-        recvPacket->read<uint32_t>();
-        recvPacket->read<uint8_t>();
-        *recvPacket >> AuthDigest[10];
-        *recvPacket >> AuthDigest[18];
-        *recvPacket >> AuthDigest[12];
-        *recvPacket >> AuthDigest[5];
-        recvPacket->read<uint64_t>();
-        *recvPacket >> AuthDigest[15];
-        *recvPacket >> AuthDigest[9];
-        *recvPacket >> AuthDigest[19];
-        *recvPacket >> AuthDigest[4];
-        *recvPacket >> AuthDigest[7];
-        *recvPacket >> AuthDigest[16];
-        *recvPacket >> AuthDigest[3];
-
-        uint16_t build;
-        *recvPacket >> build;
-        mClientBuild = static_cast<uint32_t>(build);
-
-        *recvPacket >> AuthDigest[8];
-        recvPacket->read<uint32_t>();
-        recvPacket->read<uint8_t>();
-        *recvPacket >> AuthDigest[17];
-        *recvPacket >> AuthDigest[6];
-        *recvPacket >> AuthDigest[0];
-        *recvPacket >> AuthDigest[1];
-        *recvPacket >> AuthDigest[11];
-        *recvPacket >> mClientSeed;
-        *recvPacket >> AuthDigest[2];
-        recvPacket->read<uint32_t>();
-        *recvPacket >> AuthDigest[14];
-        *recvPacket >> AuthDigest[13];
-
-        *recvPacket >> addonSize;
-        if (addonSize)
-        {
-            mAddonInfoBuffer.resize(addonSize);
-            recvPacket->read(static_cast<uint8_t*>(mAddonInfoBuffer.contents()), addonSize);
-        }
-        
-        recvPacket->readBit();
-        uint32_t accountNameLength = recvPacket->readBits(12);
-        account = recvPacket->readString(accountNameLength);
-    }
-#else
-    std::string account;
-    uint32_t unk2;
-
-    _latency = Util::getMSTime() - _latency;
-
-    try
-    {
-#if VERSION_STRING < WotLK
-        *recvPacket >> mClientBuild;
-        *recvPacket >> unk2;
-        *recvPacket >> account;
-        *recvPacket >> mClientSeed;
-#else
-        uint32_t unk3;
-        uint64_t unk4;
-        uint32_t unk5, unk6, unk7;
-
-        *recvPacket >> mClientBuild;
-        *recvPacket >> unk2;
-        *recvPacket >> account;
-        *recvPacket >> unk3;
-        *recvPacket >> mClientSeed;
-        *recvPacket >> unk4;
-        *recvPacket >> unk5;
-        *recvPacket >> unk6;
-        *recvPacket >> unk7;
-#endif
-    }
-#endif
-    catch (ByteBuffer::error &)
-    {
-        sLogger.info("Incomplete copy of AUTH_SESSION Received.");
+        disconnect();
         return;
     }
+
+    _latency = Util::getMSTime() - _latency;
+
+    std::string account = authSession.accountName;
+    std::copy(authSession.authDigest, authSession.authDigest + 20, AuthDigest);
+    mClientSeed = authSession.clientSeed;
+    mClientBuild = authSession.clientBuild;
+    mAddonInfoBuffer = std::move(authSession.addonInfoBuffer);
 
     // Send out a request for this account.
     mRequestID = sLogonCommHandler.clientConnectionId(account, this);
@@ -1083,6 +970,34 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
         SendPacket(SmsgAuthResponse(AuthRejected, ARST_ONLY_ERROR).serialise().get());
         disconnect();
     }
+}
+
+void WorldSocket::setClientProtocolByBuild(uint32_t build)
+{
+    WoW::ClientProtocolState protocol;
+
+    switch (build)
+    {
+        case 5875:
+            protocol.expansion = WoW::Expansion::_Classic;
+            break;
+        case 8606:
+            protocol.expansion = WoW::Expansion::_TBC;
+            break;
+        case 12340:
+            protocol.expansion = WoW::Expansion::_WotLK;
+            break;
+        case 15595:
+            protocol.expansion = WoW::Expansion::_Cata;
+            break;
+        case 18414:
+            protocol.expansion = WoW::Expansion::_Mop;
+            break;
+        default:
+            protocol.expansion = WoW::Expansion::Unknown;
+            break;
+    }
+    setClientProtocol(protocol);
 }
 
 void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid)

@@ -61,6 +61,9 @@ public:
     {
         m_protocol = protocol;
     }
+    void setCurrentVersionAsProtocol();
+
+    void sendClientConnectionPacket();
 
     // vs8 fix - send null on empty buffer
     inline void SendPacket(WorldPacket* packet) { if (!packet) return; OutPacket(packet->getOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : NULL)); }
@@ -95,6 +98,8 @@ public:
     // used by LogonCommClient
     void informationRetreiveCallback(WorldPacket& recvData, uint32_t requestid);
     bool isAuthenticated{false};
+    void setClientProtocolByBuild(uint32_t build);
+    bool m_protocolSetByLogonComm{ true };
 
 private:
     uint32_t mOpcode;

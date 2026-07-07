@@ -111,8 +111,8 @@ void LogonCommClientSocket::HandlePacket(WorldPacket& recvData)
         &LogonCommClientSocket::HandleSessionInfo,              // LRSMSG_ACC_SESSION_RESULT
         NULL,                                                   // LRCMSG_LOGON_PING_STATUS
         &LogonCommClientSocket::HandlePong,                     // LRSMSG_LOGON_PING_RESULT
-        NULL,                                                   // LRCMSG_FREE_01
-        NULL,                                                   // LRSMSG_FREE_02
+        NULL,                                                   // LRCMSG_BUILD_REQUEST
+        &LogonCommClientSocket::HandleBuildResult,              // LRSMSG_BUILD_RESULT
         NULL,                                                   // LRCMSG_AUTH_REQUEST
         &LogonCommClientSocket::HandleAuthResponse,             // LRSMSG_AUTH_RESPONSE
         &LogonCommClientSocket::HandleRequestAccountMapping,    // LRSMSG_ACC_CHAR_MAPPING_REQUEST
@@ -186,6 +186,31 @@ void LogonCommClientSocket::HandleSessionInfo(WorldPacket& recvData)
     sock->isAuthenticated = true;
     sLogonCommHandler.removeUnauthedClientSocket(request_id);
     sock->informationRetreiveCallback(recvData, request_id);
+}
+
+void LogonCommClientSocket::HandleBuildResult(WorldPacket& recvData)
+{
+    uint32_t request_id;
+    uint32_t build;
+
+    recvData >> request_id;
+    recvData >> build; 
+
+    sLogger.info("Received build {} for request_id {}", build, request_id);
+
+    std::unique_lock lock{sLogonCommHandler.getPendingLock()};
+
+    // find the socket with this request
+    WorldSocket* sock = sLogonCommHandler.getWorldSocketForClientRequestId(request_id);
+    if (sock == nullptr || sock->isAuthenticated || !sock->isConnected())       // Expired/Client disconnected
+    {
+        return;
+    }
+
+    // extract sessionkey / account information (done by WS)
+    sock->setClientProtocolByBuild(build);
+    sLogonCommHandler.removeUnauthedClientSocket(request_id);
+    sock->sendClientConnectionPacket();
 }
 
 void LogonCommClientSocket::HandlePong(WorldPacket& /*recvData*/)

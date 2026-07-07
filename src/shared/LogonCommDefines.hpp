@@ -22,8 +22,8 @@ enum LogonRealmOpcodes
     LRSMSG_ACC_SESSION_RESULT         = 0x004,
     LRCMSG_LOGON_PING_STATUS          = 0x005,  // request logon online
     LRSMSG_LOGON_PING_RESULT          = 0x006,  // send result if logon is online
-    LRCMSG_FREE_01                    = 0x007,  // unused
-    LRSMSG_FREE_02                    = 0x008,  // unused
+    LRCMSG_BUILD_REQUEST              = 0x007,  // Request Build for ip at logonserver
+    LRSMSG_BUILD_RESULT               = 0x008,  // Result of client build from logonserver
     LRCMSG_AUTH_REQUEST               = 0x009,  // try authenticate our realm
     LRSMSG_AUTH_RESPONSE              = 0x00A,  // authentication result from logonserver
     LRSMSG_ACC_CHAR_MAPPING_REQUEST   = 0x00B,

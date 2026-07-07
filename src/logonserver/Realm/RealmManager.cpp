@@ -323,4 +323,19 @@ namespace AscEmu::Realm
         std::lock_guard lock(serverSocketLock);
         this->serverSockets.erase(sock);
     }
+
+    uint32_t RealmManager::getBuildForIP(const std::string& ip) const
+    {
+        for (const auto& clientIP : m_clientIPs)
+        {
+            if (clientIP.ip == ip)
+                return clientIP.build;
+        }
+        return 0;
+    }
+
+    void RealmManager::addBuildForIP(const std::string& ip, uint32_t build)
+    {
+        m_clientIPs.push_back({ ip, build });
+    }
 }
