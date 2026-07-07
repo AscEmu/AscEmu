@@ -364,10 +364,13 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
         ServerPktHeader header = ServerPktHeader::legacy(ntohs(static_cast<uint16_t>(len + 2)),
             static_cast<uint16_t>(sOpcodeTables.getHexValueForVersionId(opcode)));
 
-        if (isLegacy)
-            _crypt.encryptLegacySend(reinterpret_cast<uint8_t*>(&header.legacySize), 4);
-        else if (isWotlk)
-            _crypt.encryptWotlkSend(reinterpret_cast<uint8_t*>(&header.legacySize), 4);
+        if (_crypt.isInitialized())
+        {
+            if (isLegacy)
+                _crypt.encryptLegacySend(reinterpret_cast<uint8_t*>(&header.legacySize), 4);
+            else if (isWotlk)
+                _crypt.encryptWotlkSend(reinterpret_cast<uint8_t*>(&header.legacySize), 4);
+        }
 
         rv = burstSend(header.legacyData(), 4);
     }
@@ -498,6 +501,7 @@ bool WorldSocket::processHeader()
     const bool isClassic = version == WoW::Expansion::_Classic;
     const bool isTBC = version == WoW::Expansion::_TBC;
     const bool legacyDecrypt = isClassic || isTBC;
+    const bool isWotLK = version == WoW::Expansion::_WotLK;
     const bool isCata = version == WoW::Expansion::_Cata;
     const bool isMop = version == WoW::Expansion::_Mop;
     const bool isHandshakeRequired = isCata || isMop;
@@ -562,16 +566,18 @@ bool WorldSocket::processHeader()
 
     if (legacyDecrypt)
     {
-        _crypt.decryptLegacyReceive(reinterpret_cast<uint8_t*>(&header), sizeof(ClientPktHeader));
+        _crypt.decryptLegacyReceive(reinterpret_cast<uint8_t*>(&header), 6);
+        mRemaining = mSize = ntohs(header.size) - 4;
+    }
+    else if (isCata || isWotLK)
+    {
+        _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&header), 6);
         mRemaining = mSize = ntohs(header.size) - 4;
     }
     else
     {
-        _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&header), sizeof(ClientPktHeader));
-        if (isMop)
-            mRemaining = mSize = header.size - 4;
-        else
-            mRemaining = mSize = ntohs(header.size) - 4;
+        _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&header), 8);
+        mRemaining = mSize = header.size - 4;
     }
 
     mOpcode = sOpcodeTables.getInternalIdForHex(static_cast<uint16_t>(header.cmd));
@@ -1009,7 +1015,7 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     std::lock_guard guard(pSession->deleteMutex);
 
     // Set session properties
-    pSession->SetClientBuild(mClientBuild);
+    pSession->SetClientBuild(static_cast<uint16_t>(mClientBuild));
 
 #if VERSION_STRING >= Cata
     pSession->readAddonInfoPacket(mAddonInfoBuffer);

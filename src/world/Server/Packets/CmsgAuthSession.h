@@ -84,6 +84,8 @@ namespace AscEmu::Packets
 
                 accountNameLength = packet.readBits(11);
                 accountName = packet.readString(accountNameLength);
+
+                return true;
             }
 
             if (m_protocol.isCata())
@@ -147,6 +149,8 @@ namespace AscEmu::Packets
 
                 accountNameLength = static_cast<uint32_t>(packet.readBits(12));
                 accountName = packet.readString(accountNameLength);
+
+                return true;
             }
             
             if (m_protocol.isWotlk())
@@ -162,6 +166,8 @@ namespace AscEmu::Packets
                 packet.read<uint32_t>();
 
                 packet.read(authDigest, 20);
+
+                return true;
             }
 
             if (m_protocol.isTbc() || m_protocol.isClassic())
@@ -172,9 +178,11 @@ namespace AscEmu::Packets
                 packet >> clientSeed;
 
                 packet.read(authDigest, 20);
+
+                return true;
             }
 
-            return true;
+            return false;
         }
     };
 }
