@@ -51,6 +51,17 @@ namespace WoW {
 
             return static_cast<int32_t>(expansion);
         }
+
+        [[nodiscard]] WoW::Expansion getExpansion() const { return expansion; }
+
+        [[nodiscard]] int32_t getVersionId() const { return versionId(); }
+
+        [[nodiscard]] bool isClassic() const { return expansion == WoW::Expansion::_Classic; }
+        [[nodiscard]] bool isTbc() const { return expansion == WoW::Expansion::_TBC; }
+        [[nodiscard]] bool isWotlk() const { return expansion == WoW::Expansion::_WotLK; }
+        [[nodiscard]] bool isCata() const { return expansion == WoW::Expansion::_Cata; }
+        [[nodiscard]] bool isMop() const { return expansion == WoW::Expansion::_Mop; }
+        [[nodiscard]] bool isLegacy() const { return isClassic() || isTbc(); }
     };
 
 #ifndef ASC_DEFAULT_EXPANSION
