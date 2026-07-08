@@ -111,7 +111,6 @@ private:
     uint32_t mRequestID;
 
     WorldSession* mSession;
-    std::unique_ptr<WorldPacket> pAuthenticationPacket;
     ThreadSafeQueue<std::unique_ptr<WorldPacket>> _queue;
 
     WowCrypt _crypt;

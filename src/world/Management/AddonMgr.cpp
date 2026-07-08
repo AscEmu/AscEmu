@@ -93,128 +93,12 @@ void AddonMgr::LoadFromDB()
     }
 }
 
-#if VERSION_STRING >= Cata
 void AddonMgr::SaveAddon(AddonEntry const& addon)
 {
     CharacterDatabase.execute("REPLACE INTO clientaddons(name, crc) VALUES('%s', %u )", addon.name.c_str(), addon.crc);
 
     mKnownAddons.emplace_back(SavedAddon(addon.name, addon.crc));
 }
-#endif
-
-#if VERSION_STRING < Cata
-//\Todo: Zyres: This part is a real mess, we should try to handle it the same for all versions
-void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32_t /*pos*/, WorldSession* m_session)
-{
-    WorldPacket returnpacket;
-    returnpacket.initialize(SMSG_ADDON_INFO); // SMSG_ADDON_INFO
-
-    uint32_t realsize;
-    uLongf rsize;
-
-    try
-    {
-        *source >> realsize;
-    }
-    catch (ByteBuffer::error&)
-    {
-        sLogger.debug("Warning: Incomplete auth session sent.");
-        return;
-    }
-
-    rsize = realsize;
-    size_t position = source->rpos();
-
-    ByteBuffer unpacked;
-    unpacked.resize(realsize);
-
-    if ((source->size() - position) < 4 || realsize == 0)
-    {
-        // we shouldn't get here.. but just in case this will stop any crash here.
-        sLogger.debug("Warning: Incomplete auth session sent.");
-        return;
-    }
-
-    int32_t result = uncompress(unpacked.contents(), &rsize, source->contents() + position, static_cast<uLong>(source->size() - position));
-
-    if (result != Z_OK)
-    {
-        sLogger.failure("Decompression of addon section of CMSG_AUTH_SESSION failed.");
-        return;
-    }
-
-    sLogger.info("Decompression of addon section of CMSG_AUTH_SESSION succeeded.");
-
-    uint8_t enabled; // based on the parsed files from retool
-    uint32_t crc;
-    uint32_t unknown;
-
-    std::string name;
-
-    uint32_t addoncount;
-    unpacked >> addoncount;
-
-    for (uint32_t i = 0; i < addoncount; ++i)
-    {
-        if (unpacked.rpos() >= unpacked.size())
-            break;
-
-        unpacked >> name;
-        unpacked >> enabled;
-        unpacked >> crc;
-        unpacked >> unknown;
-
-#if VERSION_STRING == WotLK
-        uint8_t unk;
-        uint8_t unk1;
-        uint8_t unk2;
-
-        unk = (enabled ? 2 : 1);
-        returnpacket << unk;
-
-        unk1 = (enabled ? 1 : 0);
-        returnpacket << unk1;
-
-        if (unk1)
-        {
-            if (crc != STANDARD_ADDON_CRC)
-            {
-                returnpacket << uint8_t(1);
-                returnpacket.append(PublicKey, 264);
-            }
-            else
-            {
-                returnpacket << uint8_t(0);
-            }
-
-            returnpacket << uint32_t(0);
-        }
-
-        unk2 = (enabled ? 0 : 1);
-        returnpacket << unk2;
-
-        if (unk2)
-            returnpacket << uint8_t(0);
-#else
-        if (crc != STANDARD_ADDON_CRC)
-        {
-            returnpacket.append(PublicKey, 264);
-        }
-        else
-        {
-            returnpacket << uint8_t(2) << uint8_t(1) << uint8_t(0) << uint32_t(0) << uint8_t(0);
-        }
-#endif
-    }
-
-    // unknown 4 bytes at the end of the packet. Stays 0 for me. Tried custom addons, deleting, faulty etc. It stays 0.
-#ifndef AE_TBC
-    returnpacket << uint32_t(0); // some additional count for additional records, but we won't send them.
-#endif
-
-    m_session->SendPacket(&returnpacket);
-}
-#endif
 
 SavedAddon const* AddonMgr::getAddonInfoForAddonName(const std::string& name)
 {

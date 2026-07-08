@@ -134,15 +134,9 @@ public:
 
     void LoadFromDB();
 
-#if VERSION_STRING >= Cata
     void SaveAddon(AddonEntry const& addon);
-#endif
 
 public:
-#if VERSION_STRING < Cata
-    void SendAddonInfoPacket(WorldPacket* source, uint32_t pos, WorldSession* m_session);
-#endif
-
     SavedAddon const* getAddonInfoForAddonName(const std::string& name);
     BannedAddonList const* getBannedAddonsList();
 

@@ -2422,7 +2422,6 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
 
 void WorldSession::readAddonInfoPacket([[maybe_unused]] ByteBuffer &recvPacket)
 {
-#if VERSION_STRING >= Cata
     if (recvPacket.rpos() + 4 > recvPacket.size())
         return;
 
@@ -2497,14 +2496,60 @@ void WorldSession::readAddonInfoPacket([[maybe_unused]] ByteBuffer &recvPacket)
     {
         sLogger.failure("Decompression of addon section of CMSG_AUTH_SESSION failed.");
     }
-#endif
-
 }
 
 void WorldSession::sendAddonInfo()
 {
-#if VERSION_STRING < Cata
+#if VERSION_STRING <= TBC
+    WorldPacket data(SMSG_ADDON_INFO, 4);
+    for (auto itr : m_addonList)
+    {
+        if (itr.crc != STANDARD_ADDON_CRC)
+            data.append(PublicKey, 264);
+        else
+            data << uint8_t(2) << uint8_t(1) << uint8_t(0) << uint32_t(0) << uint8_t(0);
+    }
+#if VERSION_STRING == TBC
+    data << uint32_t(0);
+#endif
 
+    SendPacket(&data);
+#elif VERSION_STRING == WotLK
+    WorldPacket data(SMSG_ADDON_INFO, 4);
+    for (auto itr : m_addonList)
+    {
+        uint8_t unk;
+        uint8_t unk1;
+        uint8_t unk2;
+
+        unk = (itr.state ? 2 : 1);
+        data << unk;
+
+        unk1 = (itr.state ? 1 : 0);
+        data << unk1;
+
+        if (unk1)
+        {
+            if (itr.crc != STANDARD_ADDON_CRC)
+            {
+                data << uint8_t(1);
+                data.append(PublicKey, 264);
+            }
+            else
+            {
+                data << uint8_t(0);
+            }
+
+            data << uint32_t(0);
+        }
+
+        unk2 = (itr.state ? 0 : 1);
+        data << unk2;
+
+        if (unk2)
+            data << uint8_t(0);
+    }
+    SendPacket(&data);
 #elif VERSION_STRING == Cata
     WorldPacket data(SMSG_ADDON_INFO, 4);
     for (auto itr : m_addonList)
@@ -2598,7 +2643,6 @@ void WorldSession::sendAddonInfo()
 
 bool WorldSession::isAddonRegistered([[maybe_unused]] const std::string& addon_name) const
 {
-#if VERSION_STRING >= Cata
     if (!isAddonMessageFiltered)
         return true;
 
@@ -2607,18 +2651,13 @@ bool WorldSession::isAddonRegistered([[maybe_unused]] const std::string& addon_n
 
     auto itr = std::find(mRegisteredAddonPrefixesVector.begin(), mRegisteredAddonPrefixesVector.end(), addon_name);
     return itr != mRegisteredAddonPrefixesVector.end();
-#else
-    return false;
-#endif
 }
 
 void WorldSession::handleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket*/)
 {
-#if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_UNREGISTER_ALL_ADDON_PREFIXES");
 
     mRegisteredAddonPrefixesVector.clear();
-#endif
 }
 
 void WorldSession::handleClearTargetOpcode(WorldPacket& /*recvPacket*/)

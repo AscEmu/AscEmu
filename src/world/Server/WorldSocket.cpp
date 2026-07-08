@@ -177,7 +177,6 @@ WorldSocket::WorldSocket(SOCKET fd)
     mClientSeed(0),
     mRequestID(0),
     mSession(nullptr),
-    pAuthenticationPacket(nullptr),
     _latency(0),
     mQueued(false),
     m_nagleEanbled(false),
@@ -191,8 +190,6 @@ WorldSocket::~WorldSocket()
     while (auto pck = _queue.tryPop())
     {
     }
-
-    pAuthenticationPacket = nullptr;
 
     if (mSession)
     {
@@ -445,37 +442,22 @@ void WorldSocket::sendVerifyConnectPacket()
 
 void WorldSocket::Authenticate(std::unique_ptr<WorldSession> sessionHolder)
 {
-    if (pAuthenticationPacket != nullptr)
-    {
-        mQueued = false;
+    mQueued = false;
 
-        if (mSession == nullptr || sessionHolder == nullptr)
-            return;
+    if (mSession == nullptr || sessionHolder == nullptr)
+        return;
 
-        SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
+    SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
 
-#if VERSION_STRING < Cata
-        sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket.get(), static_cast<uint32_t>(pAuthenticationPacket->rpos()), mSession);
-#else
-        mSession->sendAddonInfo();
-#endif
+    mSession->sendAddonInfo();
 
 #if VERSION_STRING > TBC
-        mSession->sendClientCacheVersion(BUILD_VERSION);
+    mSession->sendClientCacheVersion(BUILD_VERSION);
 #endif
-        mSession->_latency = _latency;
+    mSession->_latency = _latency;
 
-        pAuthenticationPacket = nullptr;
-
-        sWorld.addGlobalSession(mSession);
-        sWorld.addSession(std::move(sessionHolder));
-    }
-    else
-    {
-        sLogger.failure("WorldSocket::Authenticate something tried to Authenticate but packet is invalid (nullptr)");
-        SendPacket(SmsgAuthResponse(AuthRejected, ARST_ONLY_ERROR).serialise().get());
-        disconnect();
-    }
+    sWorld.addGlobalSession(mSession);
+    sWorld.addSession(std::move(sessionHolder));
 }
 
 void WorldSocket::UpdateQueuePosition(uint32_t Position)
@@ -632,13 +614,16 @@ void WorldSocket::_handlePing(std::unique_ptr<WorldPacket> recvPacket)
         return;
     }
 
-#if VERSION_STRING < Cata
-    *recvPacket >> ping;
-    *recvPacket >> _latency;
-#else
-    *recvPacket >> _latency;
-    *recvPacket >> ping;
-#endif
+    if (m_protocol.expansion <= WoW::Expansion::_Cata)
+    {
+        *recvPacket >> ping;
+        *recvPacket >> _latency;
+    }
+    else
+    {
+        *recvPacket >> _latency;
+        *recvPacket >> ping;
+    }
 
     if (mSession)
     {
@@ -707,9 +692,6 @@ void WorldSocket::_handleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
 
     // shitty hash !
     m_fullAccountName = std::make_unique<std::string>(account);
-
-    // Set the authentication packet
-    pAuthenticationPacket = std::move(recvPacket);
 }
 
 void WorldSocket::_handleMsgVerifyConnection(std::unique_ptr<WorldPacket> recvPacket)
@@ -732,9 +714,8 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     uint32_t error;
     recvData >> error;
 
-    if (error != 0 || pAuthenticationPacket == nullptr)
+    if (error != 0)
     {
-        // something happened wrong @ the logon server
         SendPacket(SmsgAuthResponse(AuthFailed, ARST_ONLY_ERROR).serialise().get());
         return;
     }
@@ -857,10 +838,6 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     }
 
     Sha1Hash sha;
-#if VERSION_STRING < Cata
-    uint8_t digest[20];
-    pAuthenticationPacket->read(digest, 20);
-#endif
     uint32_t t = 0;
     if (m_fullAccountName == nullptr) // should never happen !
         sha.updateData(AccountName);
@@ -882,11 +859,7 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
 #endif
     sha.finalize();
 
-#if VERSION_STRING < Cata
-    if (memcmp(sha.getDigest(), digest, 20))
-#else
     if (memcmp(sha.getDigest(), AuthDigest, 20))
-#endif
     {
         // AUTH_UNKNOWN_ACCOUNT = 21
         SendPacket(SmsgAuthResponse(AuthUnknownAccount, ARST_ONLY_ERROR).serialise().get());
@@ -904,21 +877,14 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     // Set session properties
     pSession->SetClientBuild(static_cast<uint16_t>(mClientBuild));
 
-#if VERSION_STRING >= Cata
     pSession->readAddonInfoPacket(mAddonInfoBuffer);
-#endif
 
     pSession->LoadSecurity(GMFlags);
     pSession->SetAccountFlags(AccountFlags);
     pSession->m_lastPing = static_cast<uint32_t>(UNIXTIME);
     pSession->language = Util::getLanguagesIdFromString(lang);
 
-#if VERSION_STRING != Mop
     recvData >> pSession->m_muted;
-#else
-    if (recvData.rpos() != recvData.wpos())
-        recvData >> pSession->m_muted;
-#endif
 
     for (uint8_t i = 0; i < 8; ++i)
         pSession->SetAccountData(i, nullptr, true, 0);
