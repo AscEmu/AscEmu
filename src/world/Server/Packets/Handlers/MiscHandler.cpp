@@ -2897,11 +2897,9 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 
 void WorldSession::sendClientCacheVersion([[maybe_unused]] uint32_t version)
 {
-#if VERSION_STRING > TBC
     WorldPacket data(SMSG_CLIENTCACHE_VERSION, 4);
     data << uint32_t(version);
     SendPacket(&data);
-#endif
 }
 
 void WorldSession::sendAccountDataTimes(uint32_t mask)

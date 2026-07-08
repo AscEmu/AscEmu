@@ -179,10 +179,8 @@ WorldSocket::WorldSocket(SOCKET fd)
     mSession(nullptr),
     _latency(0),
     mQueued(false),
-    m_nagleEanbled(false),
-    m_fullAccountName(nullptr)
+    m_nagleEanbled(false)
 {
-    sLogger.debug("Processing client protokol for version {}", m_protocol.expansion);
 }
 
 WorldSocket::~WorldSocket()
@@ -451,9 +449,9 @@ void WorldSocket::Authenticate(std::unique_ptr<WorldSession> sessionHolder)
 
     mSession->sendAddonInfo();
 
-#if VERSION_STRING > TBC
-    mSession->sendClientCacheVersion(BUILD_VERSION);
-#endif
+    if (m_protocol.expansion > WoW::Expansion::_TBC)
+        mSession->sendClientCacheVersion(BUILD_VERSION);
+
     mSession->_latency = _latency;
 
     sWorld.addGlobalSession(mSession);
@@ -470,22 +468,16 @@ void WorldSocket::onRead()
     for (;;)
     {
         if (mRemaining == 0 && !processHeader())
-        {
             return;
-        }
 
         if (mRemaining > 0 && readBuffer.GetSize() < mRemaining)
-        {
             return;
-        }
 
         auto packet = std::make_unique<WorldPacket>(sOpcodeTables.getHexValueForVersionId(mOpcode), mSize);
         packet->resize(mSize);
 
         if (mRemaining > 0)
-        {
             readBuffer.Read(packet->contents(), mRemaining);
-        }
 
         sWorldPacketLog.logPacket(mSize, static_cast<uint16_t>(mOpcode), mSize ? packet->contents() : nullptr, 0, (mSession ? mSession->GetAccountId() : 0));
 
@@ -675,23 +667,20 @@ void WorldSocket::_handleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
 
     _latency = Util::getMSTime() - _latency;
 
-    std::string account = authSession.accountName;
+    m_accountName = authSession.accountName;
     std::copy(authSession.authDigest, authSession.authDigest + 20, AuthDigest);
     mClientSeed = authSession.clientSeed;
     mClientBuild = authSession.clientBuild;
     mAddonInfoBuffer = std::move(authSession.addonInfoBuffer);
 
     // Send out a request for this account.
-    mRequestID = sLogonCommHandler.clientConnectionId(account, this);
+    mRequestID = sLogonCommHandler.clientConnectionId(m_accountName, this);
 
     if (mRequestID == 0xFFFFFFFF)
     {
         disconnect();
         return;
     }
-
-    // shitty hash !
-    m_fullAccountName = std::make_unique<std::string>(account);
 }
 
 void WorldSocket::_handleMsgVerifyConnection(std::unique_ptr<WorldPacket> recvPacket)
@@ -725,12 +714,17 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     uint32_t AccountID;
     std::string GMFlags;
     uint8_t AccountFlags;
+    uint8_t K[40];
     std::string lang;
+    uint32_t muted;
 
     recvData >> AccountID;
     recvData >> AccountName;
     recvData >> GMFlags;
     recvData >> AccountFlags;
+    recvData.read(K, 40);
+    recvData >> lang;
+    recvData >> muted;
 
     sLogger.debug("InfoRetreiveCallback - Account: '{}', ID: {}, GMFlags: '{}', Flags: {}", AccountName, AccountID, GMFlags, AccountFlags);
 
@@ -741,10 +735,6 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     sLogger.debug("InformationRetreiveCallback : got information packet from logon: `{}` ID {} (request {})", AccountName, AccountID, mRequestID);
 
     mRequestID = 0;
-
-    // Pull the sessionkey we generated during the logon - client handshake
-    uint8_t K[40];
-    recvData.read(K, 40);
 
 #if VERSION_STRING < WotLK
     BigNumber BNK;
@@ -795,16 +785,6 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     BNK.SetBinary(K, 40);
 #endif
 
-#if VERSION_STRING != Mop
-    recvData >> lang;
-#else
-    if (recvData.rpos() != recvData.wpos())
-    {
-        lang.resize(4);
-        recvData.read(reinterpret_cast<uint8_t*>(lang.data()), 4);
-    }
-#endif
-
     //checking if player is already connected
     //disconnect current player and login this one(blizzlike)
     WorldSession* oldSession = sWorld.getSessionByAccountId(AccountID);
@@ -815,6 +795,7 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
             sLogger.info("Reconnect: removing zombie session for account {} (ID: {})", AccountName, AccountID);
             if (oldSession->GetPlayer() && !oldSession->IsLoggingOut())
                 oldSession->LogoutPlayer(true);
+
             sWorld.deleteSession(oldSession);
             // Continue with new session
         }
@@ -823,6 +804,7 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
             sLogger.info("Reconnect: account {} (ID: {}) already connected from {}; rejecting new connection",
                 AccountName, AccountID,
                 oldSession->GetSocket() ? oldSession->GetSocket()->getRemoteIp().c_str() : "unknown");
+            
             // AUTH_FAILED = 0x0D
             oldSession->Disconnect();
 
@@ -830,8 +812,6 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
             oldSession->SetLogoutTimer(1);
 
             // we must send authentication failed here.
-            // the stupid newb can relog his client.
-            // otherwise accounts dupe up and disasters happen.
             SendPacket(SmsgAuthResponse(AuthUnknownAccount, ARST_ONLY_ERROR).serialise().get());
             return;
         }
@@ -839,15 +819,10 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
 
     Sha1Hash sha;
     uint32_t t = 0;
-    if (m_fullAccountName == nullptr) // should never happen !
+    if (m_accountName.empty())
         sha.updateData(AccountName);
     else
-    {
-        sha.updateData(*m_fullAccountName);
-
-        // this is unused now. we may as well free up the memory.
-        m_fullAccountName = nullptr;
-    }
+        sha.updateData(m_accountName);
 
     sha.updateData(reinterpret_cast<uint8_t*>(&t), 4);
     sha.updateData(reinterpret_cast<uint8_t*>(&mClientSeed), 4);
@@ -861,7 +836,6 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
 
     if (memcmp(sha.getDigest(), AuthDigest, 20))
     {
-        // AUTH_UNKNOWN_ACCOUNT = 21
         SendPacket(SmsgAuthResponse(AuthUnknownAccount, ARST_ONLY_ERROR).serialise().get());
         return;
     }
@@ -883,8 +857,7 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     pSession->SetAccountFlags(AccountFlags);
     pSession->m_lastPing = static_cast<uint32_t>(UNIXTIME);
     pSession->language = Util::getLanguagesIdFromString(lang);
-
-    recvData >> pSession->m_muted;
+    pSession->m_muted = muted;
 
     for (uint8_t i = 0; i < 8; ++i)
         pSession->SetAccountData(i, nullptr, true, 0);
@@ -923,7 +896,7 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     }
     else if (playerLimit > 0)
     {
-        // Queued, sucker.
+        // Queued
         uint32_t Position = sWorld.addQueuedSocket(this, std::move(pSession));
         mQueued = true;
         sLogger.debug("{} added to queue in position {}", AccountName, Position);
