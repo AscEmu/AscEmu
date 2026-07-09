@@ -9,7 +9,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cassert>
 #include <openssl/hmac.h>
 
+#include "BigNumber.hpp"
 #include "Sha1.hpp"
+#include <cstring>
+#include <memory>
 
 WowCrypt::WowCrypt()
 {
@@ -29,6 +32,49 @@ WowCrypt::WowCrypt()
 bool WowCrypt::isInitialized()
 {
     return m_isInitialized;
+}
+
+void WowCrypt::initForClientVersion(uint8_t version, uint8_t* sessionKey)
+{
+    switch (version)
+    {
+        case 0: initClassicCrypt(sessionKey); return;
+        case 1: initTbcCrypt(sessionKey); return;
+        case 2:
+        case 3: initWotlkCrypt(sessionKey); return;
+        case 4: initMopCrypt(sessionKey); return;
+
+        default: m_isInitialized = false; return;
+    }
+}
+
+bool WowCrypt::verifyWorldAuthDigest(uint8_t version, const std::string& accountName, uint32_t clientSeed,
+    uint32_t serverSeed, const uint8_t* sessionKey, const uint8_t* expectedDigest) const
+{
+    if (expectedDigest == nullptr)
+        return false;
+
+    Sha1Hash sha;
+    uint32_t zero = 0;
+
+    sha.updateData(accountName);
+    sha.updateData(reinterpret_cast<uint8_t*>(&zero), 4);
+    sha.updateData(reinterpret_cast<uint8_t*>(&clientSeed), 4);
+    sha.updateData(reinterpret_cast<uint8_t*>(&serverSeed), 4);
+
+    if (version == 0 || version == 1)
+    {
+        BigNumber sessionKeyBigNumber;
+        sessionKeyBigNumber.SetBinary(sessionKey, 40);
+        sha.updateBigNumbers(&sessionKeyBigNumber, NULL);
+    }
+    else
+    {
+        sha.updateData(const_cast<uint8_t*>(sessionKey), 40);
+    }
+
+    sha.finalize();
+    return std::memcmp(sha.getDigest(), expectedDigest, 20) == 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -106,6 +152,54 @@ void WowCrypt::encryptWotlkSend(uint8_t* data, size_t length)
 void WowCrypt::initLegacyCrypt()
 {
     m_isInitialized = true;
+}
+
+constexpr uint8_t ClassicAuthKey[16] =
+{
+    0x38, 0xA7, 0x83, 0x15,
+    0xF8, 0x92, 0x25, 0x30,
+    0x71, 0x98, 0x67, 0xB1,
+    0x8C, 0x04, 0xE2, 0xAA
+};
+
+void WowCrypt::initClassicCrypt(uint8_t* sessionKey)
+{
+    uint8_t abuf[64];
+    uint8_t bbuf[64];
+    uint8_t buffer[104];
+
+    std::memset(abuf, 0x36, sizeof(abuf));
+    std::memset(bbuf, 0x5C, sizeof(bbuf));
+
+    for (int i = 0; i < 16; ++i)
+    {
+        abuf[i] ^= ClassicAuthKey[i];
+        bbuf[i] ^= ClassicAuthKey[i];
+    }
+
+    Sha1Hash hasher;
+    hasher.initialize();
+    std::memcpy(buffer, abuf, 64);
+    std::memcpy(&buffer[64], sessionKey, 40);
+    hasher.updateData(buffer, 104);
+    hasher.finalize();
+
+    std::memcpy(buffer, bbuf, 64);
+    std::memcpy(&buffer[64], hasher.getDigest(), 20);
+    hasher.initialize();
+    hasher.updateData(buffer, 84);
+    hasher.finalize();
+
+    setLegacyKey(sessionKey, 40);
+    initLegacyCrypt();
+}
+
+void WowCrypt::initTbcCrypt(uint8_t* sessionKey)
+{
+    auto key = std::make_unique<uint8_t[]>(20);
+    generateTbcKey(key.get(), sessionKey);
+    setLegacyKey(key.get(), 20);
+    initLegacyCrypt();
 }
 
 void WowCrypt::decryptLegacyReceive(uint8_t* data, size_t length)

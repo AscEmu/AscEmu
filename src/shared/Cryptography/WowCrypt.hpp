@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <vector>
 #include <cstdint>
+#include <string>
 #include "RC4.hpp"
 
 class WowCrypt
@@ -18,6 +19,10 @@ public:
     bool isInitialized();
 
     const static int seedLenght = 16;
+
+    void initForClientVersion(uint8_t version, uint8_t* sessionKey);
+    bool verifyWorldAuthDigest(uint8_t version, const std::string& accountName,
+        uint32_t clientSeed, uint32_t serverSeed, const uint8_t* sessionKey, const uint8_t* expectedDigest) const;
 
 private:
     bool m_isInitialized;
@@ -44,6 +49,8 @@ public:
     const static size_t cryptedReceiveLength = 6;
 
     void initLegacyCrypt();
+    void initClassicCrypt(uint8_t* sessionKey);
+    void initTbcCrypt(uint8_t* sessionKey);
     void decryptLegacyReceive(uint8_t* data, size_t length);
     void encryptLegacySend(uint8_t* data, size_t length);
     void setLegacyKey(uint8_t* key, size_t length);

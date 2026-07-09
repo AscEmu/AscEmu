@@ -726,64 +726,34 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     recvData >> lang;
     recvData >> muted;
 
-    sLogger.debug("InfoRetreiveCallback - Account: '{}', ID: {}, GMFlags: '{}', Flags: {}", AccountName, AccountID, GMFlags, AccountFlags);
+    sLogger.debug("InfoRetreiveCallback - Account: '{}', ID: {}, GMFlags: '{}', Flags: {}",
+        AccountName, AccountID, GMFlags, AccountFlags);
 
     std::string forcedPermissions = sLogonCommHandler.getPermissionStringForAccountId(AccountID);
     if (!forcedPermissions.empty())
         GMFlags = forcedPermissions;
 
-    sLogger.debug("InformationRetreiveCallback : got information packet from logon: `{}` ID {} (request {})", AccountName, AccountID, mRequestID);
+    sLogger.debug("InformationRetreiveCallback : got information packet from logon: `{}` ID {} (request {})",
+        AccountName, AccountID, mRequestID);
 
     mRequestID = 0;
 
-#if VERSION_STRING < WotLK
-    BigNumber BNK;
-    BNK.SetBinary(K, 40);
+    const std::string& authAccountName = m_accountName.empty() ? AccountName : m_accountName;
 
-#if VERSION_STRING == TBC
-    auto key = std::make_unique<uint8_t[]>(20);
-    WowCrypt::generateTbcKey(key.get(), K);
+    _crypt.initForClientVersion(static_cast<uint8_t>(m_protocol.expansion), K);
 
-    _crypt.setLegacyKey(key.get(), 20);
-    _crypt.initLegacyCrypt();
-#elif VERSION_STRING == Classic
-    static constexpr uint8_t classicAuthKey[16] = { 0x38, 0xA7, 0x83, 0x15, 
-                                                    0xF8, 0x92, 0x25, 0x30, 
-                                                    0x71, 0x98, 0x67, 0xB1, 
-                                                    0x8C, 0x04, 0xE2, 0xAA };
-    uint8_t abuf[64], bbuf[64];
-    memset(abuf, 0x36, 64);
-    memset(bbuf, 0x5C, 64);
-    for (int i = 0; i<16; ++i)
+    if (!_crypt.isInitialized())
     {
-        abuf[i] ^= classicAuthKey[i];
-        bbuf[i] ^= classicAuthKey[i];
+        SendPacket(SmsgAuthResponse(AuthFailed, ARST_ONLY_ERROR).serialise().get());
+        return;
     }
 
-    Sha1Hash hasher;
-    uint8_t buffer[104];
-    hasher.initialize();
-    memcpy(buffer, abuf, 64);
-    memcpy(&buffer[64], K, 40);
-    hasher.updateData(buffer, 104);
-    hasher.finalize();
-    memcpy(buffer, bbuf, 64);
-    memcpy(&buffer[64], hasher.getDigest(), 20);
-    hasher.initialize();
-    hasher.updateData(buffer, 84);
-    hasher.finalize();
-
-    _crypt.setLegacyKey(K, 40);
-    _crypt.initLegacyCrypt();
-#endif
-#elif VERSION_STRING < Mop
-    _crypt.initWotlkCrypt(K);
-#else
-    _crypt.initMopCrypt(K);
-
-    BigNumber BNK;
-    BNK.SetBinary(K, 40);
-#endif
+    if (!_crypt.verifyWorldAuthDigest(static_cast<uint8_t>(m_protocol.expansion), authAccountName,
+        mClientSeed, mSeed, K, AuthDigest))
+    {
+        SendPacket(SmsgAuthResponse(AuthUnknownAccount, ARST_ONLY_ERROR).serialise().get());
+        return;
+    }
 
     //checking if player is already connected
     //disconnect current player and login this one(blizzlike)
@@ -815,29 +785,6 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
             SendPacket(SmsgAuthResponse(AuthUnknownAccount, ARST_ONLY_ERROR).serialise().get());
             return;
         }
-    }
-
-    Sha1Hash sha;
-    uint32_t t = 0;
-    if (m_accountName.empty())
-        sha.updateData(AccountName);
-    else
-        sha.updateData(m_accountName);
-
-    sha.updateData(reinterpret_cast<uint8_t*>(&t), 4);
-    sha.updateData(reinterpret_cast<uint8_t*>(&mClientSeed), 4);
-    sha.updateData(reinterpret_cast<uint8_t*>(&mSeed), 4);
-#if VERSION_STRING < WotLK
-    sha.updateBigNumbers(&BNK, NULL);
-#else
-    sha.updateData(reinterpret_cast<uint8_t*>(&K), 40);
-#endif
-    sha.finalize();
-
-    if (memcmp(sha.getDigest(), AuthDigest, 20))
-    {
-        SendPacket(SmsgAuthResponse(AuthUnknownAccount, ARST_ONLY_ERROR).serialise().get());
-        return;
     }
 
     // Allocate session
