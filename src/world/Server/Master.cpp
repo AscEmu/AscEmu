@@ -49,7 +49,7 @@
 #include "Script/ScriptMgr.hpp"
 #include "Server/BroadcastMgr.h"
 #include "Server/EventMgr.h"
-#include "Server/WorldSocket.h"
+#include "Server/WorldSocket.hpp"
 #include "Server/Console/ConsoleAuthMgr.h"
 #include "Server/Console/ConsoleListener.h"
 #include "Server/Console/ConsoleThread.h"

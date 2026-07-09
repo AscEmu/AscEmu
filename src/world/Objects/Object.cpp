@@ -13,7 +13,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "VMapManager2.h"
 #include "MMapFactory.h"
 #include "Management/ItemInterface.h"
-#include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/Management/MapMgr.hpp"

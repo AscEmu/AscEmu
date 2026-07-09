@@ -31,7 +31,7 @@
 #include "Storage/MySQLStructures.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/Definitions/PowerType.hpp"
-#include "WorldSocket.h"
+#include "WorldSocket.hpp"
 #include "Packets/SmsgNotification.h"
 #include "Packets/SmsgLogoutComplete.h"
 #include "OpcodeTable.hpp"
@@ -106,7 +106,7 @@ WorldSession::~WorldSession()
     }
 
     if (_socket)
-        _socket->SetSession(nullptr);
+        _socket->setSession(nullptr);
 
     if (m_loggingInPlayer)
         m_loggingInPlayer->setSession(nullptr);
@@ -117,7 +117,7 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
     m_currMsTime = Util::getMSTime();
 
     if (!((++_updatecount) % 2) && _socket)
-        _socket->UpdateQueuedPackets();
+        _socket->updateQueuedPackets();
 
     if (m_loginTime == 0)
         m_loginTime = Util::getMSTime();
@@ -707,25 +707,19 @@ void WorldSession::SendPacket(WorldPacket* packet)
     }
 
     if (_socket && _socket->isConnected())
-    {
-        _socket->SendPacket(packet);
-    }
+        _socket->sendPacket(packet);
 }
 
 void WorldSession::OutPacket(uint16_t opcode)
 {
     if (_socket && _socket->isConnected())
-    {
-        _socket->OutPacket(opcode, 0, nullptr);
-    }
+        _socket->outPacket(opcode, 0, nullptr);
 }
 
 void WorldSession::OutPacket(uint16_t opcode, uint16_t len, const void* data)
 {
     if (_socket && _socket->isConnected())
-    {
-        _socket->OutPacket(opcode, len, data);
-    }
+        _socket->outPacket(opcode, len, data);
 }
 
 void WorldSession::QueuePacket(std::unique_ptr<WorldPacket> packet)

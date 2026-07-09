@@ -7,8 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
-#include "Server/WorldSocket.h"
-
 #if VERSION_STRING <= TBC
 
 #include "ManagedPacket.h"

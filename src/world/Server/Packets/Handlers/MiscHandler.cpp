@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Loot/LootItem.hpp"
 #include "Macros/CorpseMacros.hpp"
 #include "Management/Battleground/Battleground.hpp"
-#include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "zlib.h"
 #include "Chat/ChatDefines.hpp"

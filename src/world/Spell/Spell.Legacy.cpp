@@ -40,7 +40,6 @@
 #include "Objects/DynamicObject.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.hpp"
-#include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Map/Management/MapMgr.hpp"

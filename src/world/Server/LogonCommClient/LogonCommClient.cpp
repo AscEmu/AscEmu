@@ -35,7 +35,7 @@
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
-#include "Server/WorldSocket.h"
+#include "Server/WorldSocket.hpp"
 
 LogonCommClientSocket::LogonCommClientSocket(SOCKET fd) : Socket(fd, 724288, 262444)
 {

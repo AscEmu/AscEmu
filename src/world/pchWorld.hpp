@@ -108,7 +108,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/ServerState.h"
 #include "Server/WorldConfig.h"
 #include "Server/WorldSession.h"
-#include "Server/WorldSocket.h"
+#include "Server/WorldSocket.hpp"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/LogonCommClient/LogonCommClient.h"
 #include "Server/Packets/SmsgMessageChat.h"

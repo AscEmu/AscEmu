@@ -20,7 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/TaxiMgr.hpp"
 #include "Management/ItemInterface.h"
 #include "Chat/ChannelMgr.hpp"
-#include "WorldSocket.h"
+#include "WorldSocket.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Debugging/CrashHandler.hpp"
 #include "Storage/DayWatcherThread.h"
@@ -516,10 +516,10 @@ void World::updateQueuedSessions(uint32_t diff)
             auto&& sessionHolder = std::move((*iter).second);
             mQueuedSessions.erase(iter);
 
-            if (QueuedSocket->GetSession() && sessionHolder != nullptr)
+            if (QueuedSocket->getSession() && sessionHolder != nullptr)
             {
-                std::lock_guard guard(QueuedSocket->GetSession()->deleteMutex);
-                QueuedSocket->Authenticate(std::move(sessionHolder));
+                std::lock_guard guard(QueuedSocket->getSession()->deleteMutex);
+                QueuedSocket->sendAuthenticated(std::move(sessionHolder));
             }
         }
 
@@ -532,7 +532,7 @@ void World::updateQueuedSessions(uint32_t diff)
         uint32_t queuPosition = 1;
         while (iter != mQueuedSessions.end())
         {
-            (*iter).first->UpdateQueuePosition(queuPosition++);
+            (*iter).first->sendUpdateQueuePosition(queuPosition++);
             if (iter == mQueuedSessions.end())
                 break;
 

@@ -13,7 +13,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Item.hpp"
 #include "Objects/Units/Stats.h"
-#include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Management/MapMgr.hpp"

@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
-#include "Server/WorldSocket.h"
+#include "Server/WorldSocket.hpp"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellMgr.hpp"

@@ -23,6 +23,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <type_traits>
 #include <utility>
 #include <concepts>
+#include <array>
+#include <bit>
 
 namespace byteBufferDetail
 {
@@ -766,4 +768,43 @@ ByteBuffer& operator>>(ByteBuffer& b, std::map<K, V>& m)
     }
 
     return b;
+}
+
+namespace
+{
+    [[nodiscard]] inline auto packFastGuid(std::uint64_t oldGuid)
+        -> std::pair<std::array<std::uint8_t, 9>, std::uint32_t>
+    {
+        std::array<std::uint8_t, 9> packed{};
+        const auto bytes = std::bit_cast<std::array<std::uint8_t, 8>>(oldGuid);
+
+        std::uint8_t guidMask = 0;
+        std::uint32_t outSize = 1;
+
+        for (std::size_t i = 0; i < bytes.size(); ++i)
+        {
+            if (bytes[i] == 0)
+                continue;
+
+            packed[outSize++] = bytes[i];
+            guidMask |= static_cast<std::uint8_t>(1u << i);
+        }
+
+        packed[0] = guidMask;
+        return {packed, outSize};
+    }
+}
+
+static inline void FastGUIDPack(ByteBuffer& buf, const std::uint64_t& oldguid)
+{
+    const auto [packed, packedSize] = packFastGuid(oldguid);
+    buf.append(packed.data(), packedSize);
+}
+
+// Warning: this presumes that all GUIDs can be compressed to at least 1 byte.
+static inline unsigned int FastGUIDPack(const std::uint64_t& oldguid, unsigned char* buffer, std::uint32_t pos)
+{
+    const auto [packed, packedSize] = packFastGuid(oldguid);
+    std::memcpy(buffer + pos, packed.data(), packedSize);
+    return packedSize;
 }

@@ -81,7 +81,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgStableResult.h"
 #include "Server/Packets/SmsgPetSpells.h"
 #include "Server/World.h"
-#include "Server/WorldSocket.h"
 #include "Server/Packets/SmsgContactList.h"
 #include "Server/Packets/SmsgFriendStatus.h"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"

@@ -39,6 +39,7 @@
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/Management/MapMgr.hpp"
+#include "Map/Area/AreaManagementGlobals.hpp"
 #include "SpellMgr.hpp"
 #include "SpellAura.hpp"
 #include "Definitions/SpellCastTargetFlags.hpp"

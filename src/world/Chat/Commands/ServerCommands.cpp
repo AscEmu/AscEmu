@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
-#include "Server/WorldSocket.h"
+#include "Server/WorldSocket.hpp"
 #include "Server/Packets/SmsgServerMessage.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"

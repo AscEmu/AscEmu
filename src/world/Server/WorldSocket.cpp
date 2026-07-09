@@ -1,35 +1,14 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-// Class WorldSocket - Main network code functions, handles
-// reading/writing of all packets.
-
-#include "WorldSocket.h"
+#include "WorldSocket.hpp"
 
 #include "DatabaseDefinition.hpp"
 #include "Utilities/Util.hpp"
 #include "Server/LogonCommClient/LogonCommHandler.h"
-#include "Cryptography/Sha1.hpp"
 #include "World.h"
-#include "Management/AddonMgr.h"
 #include "Packets/SmsgPong.h"
 #include "Packets/SmsgAuthChallenge.h"
 #include "Packets/SmsgAuthResponse.h"
@@ -67,25 +46,10 @@ struct ClientPktHeader
         return static_cast<uint16_t>(opcode & MopOpcodeMask);
     }
 
-    bool isMopPayloadValid() const
-    {
-        return size <= MopMaxPayloadSize;
-    }
-
-    uint32_t getMopPayloadSize() const
-    {
-        return size;
-    }
-
-    uint16_t getMopOpcode() const
-    {
-        return static_cast<uint16_t>(cmd);
-    }
-
-    uint16_t getRawMopOpcode() const
-    {
-        return mopCmd;
-    }
+    bool isMopPayloadValid() const { return size <= MopMaxPayloadSize; }
+    uint32_t getMopPayloadSize() const { return size; }
+    uint16_t getMopOpcode() const { return static_cast<uint16_t>(cmd); }
+    uint16_t getRawMopOpcode() const { return mopCmd; }
 };
 
 struct ServerPktHeader
@@ -147,137 +111,180 @@ struct ServerPktHeader
         return header;
     }
 
-    const uint8_t* legacyData() const
-    {
-        return reinterpret_cast<const uint8_t*>(&legacySize);
-    }
-
-    const uint8_t* cataData() const
-    {
-        return cataHeader;
-    }
-
-    const uint8_t* mopData() const
-    {
-        return mopHeader;
-    }
+    const uint8_t* legacyData() const { return reinterpret_cast<const uint8_t*>(&legacySize); }
+    const uint8_t* cataData() const { return cataHeader; }
+    const uint8_t* mopData() const { return mopHeader; }
 };
-
-// MIT End
 #pragma pack(pop)
+
+static constexpr uint32_t WORLDSOCKET_SENDBUF_SIZE = 131078;
+static constexpr uint32_t WORLDSOCKET_RECVBUF_SIZE = 16384;
+
+enum OutPacketResult : uint8_t
+{
+    OUTPACKET_RESULT_SUCCESS = 1,
+    OUTPACKET_RESULT_NO_ROOM_IN_BUFFER = 2,
+    OUTPACKET_RESULT_NOT_CONNECTED = 3,
+    OUTPACKET_RESULT_SOCKET_ERROR = 4,
+};
 
 WorldSocket::WorldSocket(SOCKET fd)
     :
-    Socket(fd, WORLDSOCKET_SENDBUF_SIZE, WORLDSOCKET_RECVBUF_SIZE), AuthDigest{},
-    mClientBuild(0),
-    mOpcode(0),
-    mRemaining(0),
-    mSize(0),
-    mSeed(Util::getRandomUInt(RAND_MAX)),
-    mClientSeed(0),
-    mRequestID(0),
-    mSession(nullptr),
-    _latency(0),
-    mQueued(false),
-    m_nagleEanbled(false)
+    Socket(fd, WORLDSOCKET_SENDBUF_SIZE, WORLDSOCKET_RECVBUF_SIZE),
+    m_socketSeed(Util::getRandomUInt(RAND_MAX))
 {
 }
 
 WorldSocket::~WorldSocket()
 {
-    while (auto pck = _queue.tryPop())
+    while (auto pck = m_queue.tryPop())
     {
     }
 
-    if (mSession)
+    if (m_session)
     {
-        mSession->SetSocket(nullptr);
-        mSession = nullptr;
+        m_session->SetSocket(nullptr);
+        m_session = nullptr;
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// virtual functions (Socket)
+void WorldSocket::onRead()
+{
+    for (;;)
+    {
+        if (m_remaining == 0 && !processHeader())
+            return;
+
+        if (m_remaining > 0 && readBuffer.GetSize() < m_remaining)
+            return;
+
+        auto packet = std::make_unique<WorldPacket>(sOpcodeTables.getHexValueForVersionId(m_opcode), m_size);
+        packet->resize(m_size);
+
+        if (m_remaining > 0)
+            readBuffer.Read(packet->contents(), m_remaining);
+
+        sWorldPacketLog.logPacket(m_size, static_cast<uint16_t>(m_opcode), m_size ? packet->contents() : nullptr, 0, (m_session ? m_session->GetAccountId() : 0));
+
+        m_remaining = m_size = 0;
+
+        dispatchPacket(std::move(packet));
+    }
+}
+
+void WorldSocket::onConnect()
+{
+    sWorld.increaseAcceptedConnections();
+    m_latency = Util::getMSTime();
+
+    if (m_protocolSetByLogonComm)
+    {
+        sLogger.debug("WorldSocket::onConnect(): sending build request for ip {}", getRemoteIp());
+        sLogonCommHandler.sendBuildRequest(getRemoteIp(), this);
+    }
+    else
+    {
+        setCurrentVersionAsProtocol();
+        sendClientConnectionPacket();
     }
 }
 
 void WorldSocket::onDisconnect()
 {
-    if (!_queue.hasItems())
+    if (!m_queue.hasItems())
         return;
 
-    while (auto pck = _queue.tryPop())
+    while (auto pck = m_queue.tryPop())
     {
     }
 
-    if (mSession)
+    if (m_session)
     {
-        mSession->SetSocket(nullptr);
-        mSession = nullptr;
+        m_session->SetSocket(nullptr);
+        m_session = nullptr;
     }
 
-    if (mRequestID != 0)
+    if (m_requestId != 0)
     {
-        sLogonCommHandler.removeUnauthedClientSocketClose(mRequestID);
-        mRequestID = 0;
+        sLogonCommHandler.removeUnauthedClientSocketClose(m_requestId);
+        m_requestId = 0;
     }
 
-    if (mQueued)
+    if (m_queued)
     {
-        sWorld.removeQueuedSocket(this);    // Remove from queued sockets.
-        mQueued = false;
+        sWorld.removeQueuedSocket(this);
+        m_queued = false;
     }
 }
 
-void WorldSocket::OutPacket(uint32_t opcode, size_t len, const void* data)
+//////////////////////////////////////////////////////////////////////////////////////////
+// helper for protocol setup
+void WorldSocket::setClientProtocol(WoW::ClientProtocolState protocol) { m_protocol = protocol; }
+
+void WorldSocket::setCurrentVersionAsProtocol()
+{
+    //Zyres: this is a fallback when the client version is not set by the client information
+    WoW::ClientProtocolState protocol;
+    switch (sOpcodeTables.getVersionIdForAEVersion())
+    {
+        case 0: protocol.expansion = WoW::Expansion::_Classic; break;
+        case 1: protocol.expansion = WoW::Expansion::_TBC; break;
+        case 2: protocol.expansion = WoW::Expansion::_WotLK; break;
+        case 3: protocol.expansion = WoW::Expansion::_Cata; break;
+        case 4: protocol.expansion = WoW::Expansion::_Mop; break;
+
+        default: protocol.expansion = WoW::Expansion::Unknown; break;
+    }
+
+    setClientProtocol(protocol);
+}
+
+void WorldSocket::setClientProtocolByBuild(uint32_t build)
+{
+    WoW::ClientProtocolState protocol;
+
+    switch (build)
+    {
+        case 5875: protocol.expansion = WoW::Expansion::_Classic; break;
+        case 8606: protocol.expansion = WoW::Expansion::_TBC; break;
+        case 12340: protocol.expansion = WoW::Expansion::_WotLK; break;
+        case 15595: protocol.expansion = WoW::Expansion::_Cata; break;
+        case 18414: protocol.expansion = WoW::Expansion::_Mop; break;
+
+        default: protocol.expansion = WoW::Expansion::Unknown; break;
+    }
+
+    setClientProtocol(protocol);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// packet sending SERVER->CLIENT
+void WorldSocket::outPacket(uint32_t opcode, size_t len, const void* data)
 {
     if ((len + 10) > WORLDSOCKET_SENDBUF_SIZE)
     {
-        sLogger.failure("WARNING: Tried to send a packet of {} bytes (which is too large) to a socket. Opcode was: {} (0x{:03X})", static_cast<unsigned int>(len), static_cast<unsigned int>(opcode), static_cast<unsigned int>(opcode));
+        sLogger.failure("WARNING: Tried to send a packet of {} bytes (which is too large) to a socket. Opcode was: {} (0x{:03X})",
+            static_cast<unsigned int>(len), static_cast<unsigned int>(opcode), static_cast<unsigned int>(opcode));
         return;
     }
 
-    OUTPACKET_RESULT res = _OutPacket(opcode, len, data);
+    uint8_t res = _outPacket(opcode, len, data);
     if (res == OUTPACKET_RESULT_SUCCESS)
         return;
 
     if (res == OUTPACKET_RESULT_NO_ROOM_IN_BUFFER)
     {
-        /* queue the packet */
         auto packet = std::make_unique<WorldPacket>(opcode, len);
         if (len)
             packet->append(static_cast<const uint8_t*>(data), len);
 
-        _queue.push(std::move(packet));
+        m_queue.push(std::move(packet));
     }
 }
 
-void WorldSocket::UpdateQueuedPackets()
-{
-    if (!_queue.hasItems())
-        return;
-
-    while (auto itr = _queue.tryPop())
-    {
-        const auto& pck = itr.value();
-        // try to push out as many as you can
-        switch (_OutPacket(pck->getOpcode(), pck->size(), pck->size() ? pck->contents() : nullptr))
-        {
-            case OUTPACKET_RESULT_SUCCESS:
-                break;
-
-            // still connected
-            case OUTPACKET_RESULT_NO_ROOM_IN_BUFFER:
-                return;
-
-            // kill everything in the buffer
-            default:
-                {
-                    while (auto remainingPacket = _queue.tryPop())
-                    {
-                    }
-                    return;
-                }
-        }
-    }
-}
-
-OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void* data)
+uint8_t WorldSocket::_outPacket(uint32_t opcode, size_t len, const void* data)
 {
     if (!isConnected())
         return OUTPACKET_RESULT_NOT_CONNECTED;
@@ -291,7 +298,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     }
 
     sWorldPacketLog.logPacket(static_cast<uint32_t>(len), static_cast<uint16_t>(opcode),
-        static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
+        static_cast<const uint8_t*>(data), 1, (m_session ? m_session->GetAccountId() : 0));
 
     const auto version = m_protocol.expansion;
     const bool isClassic = version == WoW::Expansion::_Classic;
@@ -305,12 +312,12 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
 
     if (isMop)
     {
-        if (_crypt.isInitialized())
+        if (m_crypt.isInitialized())
         {
             ServerPktHeader header = ServerPktHeader::mopEncrypted(static_cast<uint32_t>(len),
                 static_cast<uint32_t>(sOpcodeTables.getHexValueForVersionId(opcode)));
 
-            _crypt.encryptWotlkSend(header.mopHeader, header.mopHeaderLength);
+            m_crypt.encryptWotlkSend(header.mopHeader, header.mopHeaderLength);
             rv = burstSend(header.mopData(), header.mopHeaderLength);
         }
         else
@@ -326,7 +333,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
         ServerPktHeader header = ServerPktHeader::cataEncrypted(static_cast<uint32_t>(len + 2),
             static_cast<uint16_t>(sOpcodeTables.getHexValueForVersionId(opcode)));
 
-        _crypt.encryptWotlkSend(header.cataHeader, header.cataHeaderLength);
+        m_crypt.encryptWotlkSend(header.cataHeader, header.cataHeaderLength);
         rv = burstSend(header.cataData(), header.cataHeaderLength);
     }
     else
@@ -334,12 +341,12 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
         ServerPktHeader header = ServerPktHeader::legacy(ntohs(static_cast<uint16_t>(len + 2)),
             static_cast<uint16_t>(sOpcodeTables.getHexValueForVersionId(opcode)));
 
-        if (_crypt.isInitialized())
+        if (m_crypt.isInitialized())
         {
             if (isLegacy)
-                _crypt.encryptLegacySend(reinterpret_cast<uint8_t*>(&header.legacySize), 4);
+                m_crypt.encryptLegacySend(reinterpret_cast<uint8_t*>(&header.legacySize), 4);
             else if (isWotlk)
-                _crypt.encryptWotlkSend(reinterpret_cast<uint8_t*>(&header.legacySize), 4);
+                m_crypt.encryptWotlkSend(reinterpret_cast<uint8_t*>(&header.legacySize), 4);
         }
 
         rv = burstSend(header.legacyData(), 4);
@@ -355,50 +362,66 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     return rv ? OUTPACKET_RESULT_SUCCESS : OUTPACKET_RESULT_SOCKET_ERROR;
 }
 
-void WorldSocket::setCurrentVersionAsProtocol()
+void WorldSocket::updateQueuedPackets()
 {
-    //Zyres: this is a fallback when the client version is not set by the client information
-    WoW::ClientProtocolState protocol;
-    switch (sOpcodeTables.getVersionIdForAEVersion())
-    {
-        case 0:
-            protocol.expansion = WoW::Expansion::_Classic;
-            break;
-        case 1:
-            protocol.expansion = WoW::Expansion::_TBC;
-            break;
-        case 2:
-            protocol.expansion = WoW::Expansion::_WotLK;
-            break;
-        case 3:
-            protocol.expansion = WoW::Expansion::_Cata;
-            break;
-        case 4:
-            protocol.expansion = WoW::Expansion::_Mop;
-            break;
-        default:
-            protocol.expansion = WoW::Expansion::Unknown;
-            break;
-    }
+    if (!m_queue.hasItems())
+        return;
 
-    setClientProtocol(protocol);
+    while (auto itr = m_queue.tryPop())
+    {
+        const auto& pck = itr.value();
+
+        switch (_outPacket(pck->getOpcode(), pck->size(), pck->size() ? pck->contents() : nullptr))
+        {
+            case OUTPACKET_RESULT_SUCCESS:
+                break;
+
+            case OUTPACKET_RESULT_NO_ROOM_IN_BUFFER:
+                return;
+
+            // pop remaining packets
+            default:
+                {
+                    while (auto remainingPacket = m_queue.tryPop())
+                    {
+                    }
+                    return;
+                }
+        }
+    }
 }
 
-void WorldSocket::onConnect()
+void WorldSocket::sendPacket(WorldPacket* packet)
 {
-    sWorld.increaseAcceptedConnections();
-    _latency = Util::getMSTime();
+    if (!packet)
+        return;
 
-    if (m_protocolSetByLogonComm)
-    {
-        sLogger.debug("WorldSocket::onConnect(): sending build request for ip {}", getRemoteIp());
-        sLogonCommHandler.sendBuildRequest(getRemoteIp(), this);
-    }
-    else
-    {
-        setCurrentVersionAsProtocol();
-        sendClientConnectionPacket();
-    }
+    outPacket(packet->getOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : nullptr));
+}
+
+void WorldSocket::sendUpdateQueuePosition(uint32_t Position)
+{
+    sendPacket(SmsgAuthResponse(0, ARST_QUEUE, Position).serialise().get());
+}
+
+void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
+{
+    m_queued = false;
+
+    if (m_session == nullptr || sessionHolder == nullptr)
+        return;
+
+    sendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
+
+    m_session->sendAddonInfo();
+
+    if (m_protocol.expansion > WoW::Expansion::_TBC)
+        m_session->sendClientCacheVersion(BUILD_VERSION);
+
+    m_session->_latency = m_latency;
+
+    sWorld.addGlobalSession(m_session);
+    sWorld.addSession(std::move(sessionHolder));
 }
 
 void WorldSocket::sendClientConnectionPacket()
@@ -411,7 +434,7 @@ void WorldSocket::sendClientConnectionPacket()
 
 void WorldSocket::sendAuthChallengePacket()
 {
-    SendPacket(SmsgAuthChallenge(mSeed).serialise().get());
+    sendPacket(SmsgAuthChallenge(m_socketSeed).serialise().get());
 }
 
 void WorldSocket::sendVerifyConnectPacket()
@@ -438,55 +461,8 @@ void WorldSocket::sendVerifyConnectPacket()
     burstEnd();
 }
 
-void WorldSocket::Authenticate(std::unique_ptr<WorldSession> sessionHolder)
-{
-    mQueued = false;
-
-    if (mSession == nullptr || sessionHolder == nullptr)
-        return;
-
-    SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
-
-    mSession->sendAddonInfo();
-
-    if (m_protocol.expansion > WoW::Expansion::_TBC)
-        mSession->sendClientCacheVersion(BUILD_VERSION);
-
-    mSession->_latency = _latency;
-
-    sWorld.addGlobalSession(mSession);
-    sWorld.addSession(std::move(sessionHolder));
-}
-
-void WorldSocket::UpdateQueuePosition(uint32_t Position)
-{
-    SendPacket(SmsgAuthResponse(0, ARST_QUEUE, Position).serialise().get());
-}
-
-void WorldSocket::onRead()
-{
-    for (;;)
-    {
-        if (mRemaining == 0 && !processHeader())
-            return;
-
-        if (mRemaining > 0 && readBuffer.GetSize() < mRemaining)
-            return;
-
-        auto packet = std::make_unique<WorldPacket>(sOpcodeTables.getHexValueForVersionId(mOpcode), mSize);
-        packet->resize(mSize);
-
-        if (mRemaining > 0)
-            readBuffer.Read(packet->contents(), mRemaining);
-
-        sWorldPacketLog.logPacket(mSize, static_cast<uint16_t>(mOpcode), mSize ? packet->contents() : nullptr, 0, (mSession ? mSession->GetAccountId() : 0));
-
-        mRemaining = mSize = 0;
-
-        dispatchPacket(std::move(packet));
-    }
-}
-
+//////////////////////////////////////////////////////////////////////////////////////////
+// packet receiving CLIENT->SERVER (after onRead from Socket class)
 bool WorldSocket::processHeader()
 {
     const auto version = m_protocol.expansion;
@@ -498,7 +474,7 @@ bool WorldSocket::processHeader()
     const bool isMop = version == WoW::Expansion::_Mop;
     const bool isHandshakeRequired = isCata || isMop;
 
-    if (isHandshakeRequired && !m_HandshakeReceived)
+    if (isHandshakeRequired && !m_handshakeReceived)
     {
         if (readBuffer.GetSize() < 2)
             return false;
@@ -514,24 +490,24 @@ bool WorldSocket::processHeader()
         if (isMop)
             size = static_cast<uint16_t>(header[0]) | (static_cast<uint16_t>(header[1]) << 8);
 
-        mRemaining = mSize = size;
-        mOpcode = MSG_VERIFY_CONNECTIVITY;
-        m_HandshakeReceived = true;
+        m_remaining = m_size = size;
+        m_opcode = MSG_VERIFY_CONNECTIVITY;
+        m_handshakeReceived = true;
 
         sLogger.debug("WorldSocket::processHeader(): Received handshake header. Raw: {:02X} {:02X}, size: {}",
-            header[0], header[1], mSize);
+            header[0], header[1], m_size);
 
         return true;
     }
 
-    if (isMop && _crypt.isInitialized())
+    if (isMop && m_crypt.isInitialized())
     {
         if (readBuffer.GetSize() < 4)
             return false;
 
         uint32_t rawHeader = 0;
         readBuffer.Read(reinterpret_cast<uint8_t*>(&rawHeader), 4);
-        _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&rawHeader), 4);
+        m_crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&rawHeader), 4);
 
         const ClientPktHeader header = ClientPktHeader::mopEncrypted(rawHeader);
 
@@ -544,8 +520,8 @@ bool WorldSocket::processHeader()
             return false;
         }
 
-        mRemaining = mSize = header.getMopPayloadSize();
-        mOpcode = sOpcodeTables.getInternalIdForHex(header.getMopOpcode());
+        m_remaining = m_size = header.getMopPayloadSize();
+        m_opcode = sOpcodeTables.getInternalIdForHex(header.getMopOpcode());
 
         return true;
     }
@@ -558,21 +534,21 @@ bool WorldSocket::processHeader()
 
     if (legacyDecrypt)
     {
-        _crypt.decryptLegacyReceive(reinterpret_cast<uint8_t*>(&header), 6);
-        mRemaining = mSize = ntohs(header.size) - 4;
+        m_crypt.decryptLegacyReceive(reinterpret_cast<uint8_t*>(&header), 6);
+        m_remaining = m_size = ntohs(header.size) - 4;
     }
     else if (isCata || isWotLK)
     {
-        _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&header), 6);
-        mRemaining = mSize = ntohs(header.size) - 4;
+        m_crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&header), 6);
+        m_remaining = m_size = ntohs(header.size) - 4;
     }
     else
     {
-        _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&header), 8);
-        mRemaining = mSize = header.size - 4;
+        m_crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&header), 8);
+        m_remaining = m_size = header.size - 4;
     }
 
-    mOpcode = sOpcodeTables.getInternalIdForHex(static_cast<uint16_t>(header.cmd));
+    m_opcode = sOpcodeTables.getInternalIdForHex(static_cast<uint16_t>(header.cmd));
     return true;
 }
 
@@ -581,27 +557,28 @@ void WorldSocket::dispatchPacket(std::unique_ptr<WorldPacket> packet)
     switch (sOpcodeTables.getInternalIdForHex(packet->getOpcode()))
     {
         case CMSG_PING:
-            _handlePing(std::move(packet));
+            handlePing(std::move(packet));
             break;
         case CMSG_AUTH_SESSION:
-            _handleAuthSession(std::move(packet));
+            handleAuthSession(std::move(packet));
             break;
         case MSG_VERIFY_CONNECTIVITY:
-            _handleMsgVerifyConnection(std::move(packet));
+            handleMsgVerifyConnection(std::move(packet));
             break;
         default:
-            if (mSession)
-                mSession->QueuePacket(std::move(packet));
-            break;
+        {
+            if (m_session)
+                m_session->QueuePacket(std::move(packet));
+        } break;
     }
 }
 
-void WorldSocket::_handlePing(std::unique_ptr<WorldPacket> recvPacket)
+void WorldSocket::handlePing(std::unique_ptr<WorldPacket> recvPacket)
 {
     uint32_t ping;
     if (recvPacket->size() < 4)
     {
-        sLogger.failure("Socket closed due to incomplete ping packet.");
+        sLogger.failure("WorldSocket::handlePing: Socket closed due to incomplete ping packet.");
         disconnect();
         return;
     }
@@ -609,30 +586,28 @@ void WorldSocket::_handlePing(std::unique_ptr<WorldPacket> recvPacket)
     if (m_protocol.expansion <= WoW::Expansion::_Cata)
     {
         *recvPacket >> ping;
-        *recvPacket >> _latency;
+        *recvPacket >> m_latency;
     }
     else
     {
-        *recvPacket >> _latency;
+        *recvPacket >> m_latency;
         *recvPacket >> ping;
     }
 
-    if (mSession)
+    if (m_session)
     {
-        mSession->_latency = _latency;
-        mSession->m_lastPing = static_cast<uint32_t>(UNIXTIME);
-
-        // reset the move time diff calculator, don't worry it will be re-calculated next movement packet.
-        mSession->m_clientTimeDelay = 0;
+        m_session->_latency = m_latency;
+        m_session->m_lastPing = static_cast<uint32_t>(UNIXTIME);
+        m_session->m_clientTimeDelay = 0;
     }
 
-    SendPacket(SmsgPong(ping).serialise().get());
+    sendPacket(SmsgPong(ping).serialise().get());
 
 #ifdef WIN32
     // Dynamically change nagle buffering status based on latency.
     //if (_latency >= 250)
     // I think 350 is better, in a MMO 350 latency isn't that big that we need to worry about reducing the number of packets being sent.
-    if (_latency >= 350)
+    if (m_latency >= 350)
     {
         if (!m_nagleEanbled)
         {
@@ -653,51 +628,51 @@ void WorldSocket::_handlePing(std::unique_ptr<WorldPacket> recvPacket)
 #endif
 }
 
-void WorldSocket::_handleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
+void WorldSocket::handleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
 {
     CmsgAuthSession authSession;
     if (!authSession.deserialise(*recvPacket, m_protocol))
     {
-        sLogger.failure("Socket closed due to wrong auth session packet.");
-        sLogger.failure("Error {}", authSession.errorMsg);
+        sLogger.failure("WorldSocket::handleAuthSession: Error {}", authSession.errorMsg);
 
         disconnect();
         return;
     }
 
-    _latency = Util::getMSTime() - _latency;
+    m_latency = Util::getMSTime() - m_latency;
 
     m_accountName = authSession.accountName;
-    std::copy(authSession.authDigest, authSession.authDigest + 20, AuthDigest);
-    mClientSeed = authSession.clientSeed;
-    mClientBuild = authSession.clientBuild;
-    mAddonInfoBuffer = std::move(authSession.addonInfoBuffer);
+    std::copy(authSession.authDigest, authSession.authDigest + 20, m_authDigest);
+    m_clientSeed = authSession.clientSeed;
+    m_clientBuild = authSession.clientBuild;
+    m_addonInfoBuffer = std::move(authSession.addonInfoBuffer);
 
     // Send out a request for this account.
-    mRequestID = sLogonCommHandler.clientConnectionId(m_accountName, this);
+    m_requestId = sLogonCommHandler.clientConnectionId(m_accountName, this);
 
-    if (mRequestID == 0xFFFFFFFF)
+    if (m_requestId == 0xFFFFFFFF)
     {
         disconnect();
         return;
     }
 }
 
-void WorldSocket::_handleMsgVerifyConnection(std::unique_ptr<WorldPacket> recvPacket)
+void WorldSocket::handleMsgVerifyConnection(std::unique_ptr<WorldPacket> recvPacket)
 {
     std::string ClientToServerMsg;
     *recvPacket >> ClientToServerMsg;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received client Message: {}", ClientToServerMsg);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE,
+        "WorldSocket::handleMsgVerifyConnection:Received client Message: {}", ClientToServerMsg);
 
-    m_HandshakeReceived = true;
+    m_handshakeReceived = true;
 
     sendAuthChallengePacket();
 }
 
 void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t requestid)
 {
-    if (requestid != mRequestID)
+    if (requestid != m_requestId)
         return;
 
     uint32_t error;
@@ -705,7 +680,7 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
 
     if (error != 0)
     {
-        SendPacket(SmsgAuthResponse(AuthFailed, ARST_ONLY_ERROR).serialise().get());
+        sendPacket(SmsgAuthResponse(AuthFailed, ARST_ONLY_ERROR).serialise().get());
         return;
     }
 
@@ -726,80 +701,67 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     recvData >> lang;
     recvData >> muted;
 
-    sLogger.debug("InfoRetreiveCallback - Account: '{}', ID: {}, GMFlags: '{}', Flags: {}",
+    sLogger.debug("WorldSocket::informationRetreiveCallback: Account: '{}', ID: {}, GMFlags: '{}', Flags: {}",
         AccountName, AccountID, GMFlags, AccountFlags);
 
     std::string forcedPermissions = sLogonCommHandler.getPermissionStringForAccountId(AccountID);
     if (!forcedPermissions.empty())
         GMFlags = forcedPermissions;
 
-    sLogger.debug("InformationRetreiveCallback : got information packet from logon: `{}` ID {} (request {})",
-        AccountName, AccountID, mRequestID);
+    sLogger.debug("WorldSocket::informationRetreiveCallback: got information packet from logon: `{}` ID {} (request {})",
+        AccountName, AccountID, m_requestId);
 
-    mRequestID = 0;
+    m_requestId = 0;
 
     const std::string& authAccountName = m_accountName.empty() ? AccountName : m_accountName;
 
-    _crypt.initForClientVersion(static_cast<uint8_t>(m_protocol.expansion), K);
-
-    if (!_crypt.isInitialized())
+    m_crypt.initForClientVersion(static_cast<uint8_t>(m_protocol.expansion), K);
+    if (!m_crypt.isInitialized())
     {
-        SendPacket(SmsgAuthResponse(AuthFailed, ARST_ONLY_ERROR).serialise().get());
+        sendPacket(SmsgAuthResponse(AuthFailed, ARST_ONLY_ERROR).serialise().get());
         return;
     }
 
-    if (!_crypt.verifyWorldAuthDigest(static_cast<uint8_t>(m_protocol.expansion), authAccountName,
-        mClientSeed, mSeed, K, AuthDigest))
+    if (!m_crypt.verifyWorldAuthDigest(static_cast<uint8_t>(m_protocol.expansion), authAccountName,
+        m_clientSeed, m_socketSeed, K, m_authDigest))
     {
-        SendPacket(SmsgAuthResponse(AuthUnknownAccount, ARST_ONLY_ERROR).serialise().get());
+        sendPacket(SmsgAuthResponse(AuthUnknownAccount, ARST_ONLY_ERROR).serialise().get());
         return;
     }
 
-    //checking if player is already connected
-    //disconnect current player and login this one(blizzlike)
+    // disconnect current player and login this one(blizzlike)
     WorldSession* oldSession = sWorld.getSessionByAccountId(AccountID);
     if (oldSession)
     {
         if (oldSession->GetSocket() == nullptr)
         {
-            sLogger.info("Reconnect: removing zombie session for account {} (ID: {})", AccountName, AccountID);
+            sLogger.info("WorldSocket::informationRetreiveCallback: reconnect session for account {} (ID: {})", AccountName, AccountID);
             if (oldSession->GetPlayer() && !oldSession->IsLoggingOut())
                 oldSession->LogoutPlayer(true);
 
             sWorld.deleteSession(oldSession);
-            // Continue with new session
         }
         else
         {
-            sLogger.info("Reconnect: account {} (ID: {}) already connected from {}; rejecting new connection",
-                AccountName, AccountID,
-                oldSession->GetSocket() ? oldSession->GetSocket()->getRemoteIp().c_str() : "unknown");
+            sLogger.info("WorldSocket::informationRetreiveCallback: account {} (ID: {}) already connected from {}; rejecting new connection",
+                AccountName, AccountID, oldSession->GetSocket() ? oldSession->GetSocket()->getRemoteIp().c_str() : "unknown");
             
-            // AUTH_FAILED = 0x0D
             oldSession->Disconnect();
-
-            // clear the logout timer so he times out straight away
             oldSession->SetLogoutTimer(1);
 
-            // we must send authentication failed here.
-            SendPacket(SmsgAuthResponse(AuthUnknownAccount, ARST_ONLY_ERROR).serialise().get());
+            sendPacket(SmsgAuthResponse(AuthUnknownAccount, ARST_ONLY_ERROR).serialise().get());
             return;
         }
     }
 
-    // Allocate session
     auto pSession = std::make_unique<WorldSession>(AccountID, AccountName, this);
 
-    mSession = pSession.get();
+    m_session = pSession.get();
 
-    // aquire delete mutex
     std::lock_guard guard(pSession->deleteMutex);
 
-    // Set session properties
-    pSession->SetClientBuild(static_cast<uint16_t>(mClientBuild));
-
-    pSession->readAddonInfoPacket(mAddonInfoBuffer);
-
+    pSession->SetClientBuild(static_cast<uint16_t>(m_clientBuild));
+    pSession->readAddonInfoPacket(m_addonInfoBuffer);
     pSession->LoadSecurity(GMFlags);
     pSession->SetAccountFlags(AccountFlags);
     pSession->m_lastPing = static_cast<uint32_t>(UNIXTIME);
@@ -833,57 +795,26 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
         }
     }
 
-    sLogger.debug("{} from {}:{} [{}ms]", AccountName, getRemoteIp(), getRemotePort(), _latency);
+    sLogger.debug("WorldSocket::informationRetreiveCallback: {} from {}:{} [{}ms]", AccountName, getRemoteIp(), getRemotePort(), m_latency);
 
-    // Check for queue.
     uint32_t playerLimit = worldConfig.getPlayerLimit();
     if ((sWorld.getSessionCount() < playerLimit) || pSession->HasGMPermissions())
     {
-        Authenticate(std::move(pSession));
+        sendAuthenticated(std::move(pSession));
     }
     else if (playerLimit > 0)
     {
-        // Queued
         uint32_t Position = sWorld.addQueuedSocket(this, std::move(pSession));
-        mQueued = true;
-        sLogger.debug("{} added to queue in position {}", AccountName, Position);
+        m_queued = true;
+        sLogger.debug("WorldSocket::informationRetreiveCallback: {} added to queue in position {}", AccountName, Position);
 
-        // Send packet so we know what we're doing
-        UpdateQueuePosition(Position);
+        sendUpdateQueuePosition(Position);
     }
     else
     {
-        SendPacket(SmsgAuthResponse(AuthRejected, ARST_ONLY_ERROR).serialise().get());
+        sendPacket(SmsgAuthResponse(AuthRejected, ARST_ONLY_ERROR).serialise().get());
         disconnect();
     }
-}
-
-void WorldSocket::setClientProtocolByBuild(uint32_t build)
-{
-    WoW::ClientProtocolState protocol;
-
-    switch (build)
-    {
-        case 5875:
-            protocol.expansion = WoW::Expansion::_Classic;
-            break;
-        case 8606:
-            protocol.expansion = WoW::Expansion::_TBC;
-            break;
-        case 12340:
-            protocol.expansion = WoW::Expansion::_WotLK;
-            break;
-        case 15595:
-            protocol.expansion = WoW::Expansion::_Cata;
-            break;
-        case 18414:
-            protocol.expansion = WoW::Expansion::_Mop;
-            break;
-        default:
-            protocol.expansion = WoW::Expansion::Unknown;
-            break;
-    }
-    setClientProtocol(protocol);
 }
 
 void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid)
