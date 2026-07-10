@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -33,18 +32,6 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override
-        {
-            return m_minimum_size;
-        }
-
-        bool internalSerialise(WorldPacket& packet) override
-        {
-            packet << guid << gossip_id << option;
-
-            return true;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
             uint64_t unpackedGuid;

@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -50,11 +48,6 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
             uint64_t unpacked_guid;
@@ -74,20 +67,23 @@ namespace AscEmu::Packets
             packet >> getAll;
 
             // sorting is not implemented yet
-#if VERSION_STRING < Cata
-            uint8_t sortCount;
-            packet >> sortCount;
-            for (uint8_t i = 0; i < sortCount; ++i)
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
-                packet.readSkip<uint8_t>();
-                packet.readSkip<uint8_t>();
+                uint8_t sortCount;
+                packet >> sortCount;
+                for (uint8_t i = 0; i < sortCount; ++i)
+                {
+                    packet.readSkip<uint8_t>();
+                    packet.readSkip<uint8_t>();
+                }
             }
-#else
-            packet.readSkip<uint8_t>();    //sortCount
+            else
+            {
+                packet.readSkip<uint8_t>();    //sortCount
 
-            for (uint8_t i = 0; i < 15; ++i)
-                packet.readSkip<uint8_t>();
-#endif
+                for (uint8_t i = 0; i < 15; ++i)
+                    packet.readSkip<uint8_t>();
+            }
 
             return true;
         }

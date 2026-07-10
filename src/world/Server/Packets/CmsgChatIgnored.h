@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -30,65 +28,66 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Cata
-            uint64_t unpacked_guid;
-            packet >> unpacked_guid >> unk1;
-            guid.init(unpacked_guid);
-#else
-            WoWGuid playerGuid;
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+            {
+                uint64_t unpacked_guid;
+                packet >> unpacked_guid >> unk1;
+                guid.init(unpacked_guid);
+            }
+            else
+            {
+                WoWGuid playerGuid;
 
-#if VERSION_STRING == Cata
-            packet >> unk1;
+                if (m_protocol.expansion == WoW::Expansion::_Cata)
+                {
+                    packet >> unk1;
 
-            playerGuid[5] = packet.readBit();
-            playerGuid[2] = packet.readBit();
-            playerGuid[6] = packet.readBit();
-            playerGuid[4] = packet.readBit();
-            playerGuid[7] = packet.readBit();
-            playerGuid[0] = packet.readBit();
-            playerGuid[1] = packet.readBit();
-            playerGuid[3] = packet.readBit();
+                    playerGuid[5] = packet.readBit();
+                    playerGuid[2] = packet.readBit();
+                    playerGuid[6] = packet.readBit();
+                    playerGuid[4] = packet.readBit();
+                    playerGuid[7] = packet.readBit();
+                    playerGuid[0] = packet.readBit();
+                    playerGuid[1] = packet.readBit();
+                    playerGuid[3] = packet.readBit();
 
-            packet.readByteSeq(playerGuid[0]);
-            packet.readByteSeq(playerGuid[6]);
-            packet.readByteSeq(playerGuid[5]);
-            packet.readByteSeq(playerGuid[1]);
-            packet.readByteSeq(playerGuid[4]);
-            packet.readByteSeq(playerGuid[3]);
-            packet.readByteSeq(playerGuid[7]);
-            packet.readByteSeq(playerGuid[2]);
-#else // Mop
-            playerGuid[5] = packet.readBit();
+                    packet.readByteSeq(playerGuid[0]);
+                    packet.readByteSeq(playerGuid[6]);
+                    packet.readByteSeq(playerGuid[5]);
+                    packet.readByteSeq(playerGuid[1]);
+                    packet.readByteSeq(playerGuid[4]);
+                    packet.readByteSeq(playerGuid[3]);
+                    packet.readByteSeq(playerGuid[7]);
+                    packet.readByteSeq(playerGuid[2]);
+                }
+                else if (m_protocol.expansion == WoW::Expansion::_Mop)
+                {
+                    playerGuid[5] = packet.readBit();
 
-            packet >> unk1;
+                    packet >> unk1;
 
-            playerGuid[0] = packet.readBit();
-            playerGuid[1] = packet.readBit();
-            playerGuid[3] = packet.readBit();
-            playerGuid[6] = packet.readBit();
-            playerGuid[7] = packet.readBit();
-            playerGuid[4] = packet.readBit();
-            playerGuid[2] = packet.readBit();
+                    playerGuid[0] = packet.readBit();
+                    playerGuid[1] = packet.readBit();
+                    playerGuid[3] = packet.readBit();
+                    playerGuid[6] = packet.readBit();
+                    playerGuid[7] = packet.readBit();
+                    playerGuid[4] = packet.readBit();
+                    playerGuid[2] = packet.readBit();
 
-            packet.readByteSeq(playerGuid[2]);
-            packet.readByteSeq(playerGuid[0]);
-            packet.readByteSeq(playerGuid[3]);
-            packet.readByteSeq(playerGuid[4]);
-            packet.readByteSeq(playerGuid[7]);
-            packet.readByteSeq(playerGuid[6]);
-            packet.readByteSeq(playerGuid[0]);
-            packet.readByteSeq(playerGuid[5]);
-#endif
+                    packet.readByteSeq(playerGuid[2]);
+                    packet.readByteSeq(playerGuid[0]);
+                    packet.readByteSeq(playerGuid[3]);
+                    packet.readByteSeq(playerGuid[4]);
+                    packet.readByteSeq(playerGuid[7]);
+                    packet.readByteSeq(playerGuid[6]);
+                    packet.readByteSeq(playerGuid[0]);
+                    packet.readByteSeq(playerGuid[5]);
+                }
 
-            guid.init(playerGuid);
-#endif
+                guid.init(playerGuid);
+            }
             return true;
         }
     };

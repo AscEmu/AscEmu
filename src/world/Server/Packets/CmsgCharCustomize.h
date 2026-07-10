@@ -5,15 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class CmsgCharCustomize : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         WoWGuid guid;
         CharCreate createStruct;
@@ -30,18 +28,17 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guid >> createStruct.name >> createStruct.gender >> createStruct.skin >> createStruct.hairColor >> 
-                createStruct.hairStyle >> createStruct.facialHair >> createStruct.face;
+            if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            {
+                packet >> guid >> createStruct.name >> createStruct.gender >> createStruct.skin >> createStruct.hairColor >>
+                    createStruct.hairStyle >> createStruct.facialHair >> createStruct.face;
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
-#endif
     };
 }

@@ -5,16 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class CmsgGmReportLag : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         uint32_t lagType;
         uint32_t mapId;
@@ -33,17 +30,15 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> lagType >> mapId >> location.x >> location.y >> location.z;
+            if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            {
+                packet >> lagType >> mapId >> location.x >> location.y >> location.z;
+                return true;
+            }
 
-            return true;
+            return false;
         }
-#endif
     };
 }

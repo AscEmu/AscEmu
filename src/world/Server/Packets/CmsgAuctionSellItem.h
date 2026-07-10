@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 #include "Management/AuctionHouse.h"
 
 namespace AscEmu::Packets
@@ -17,13 +15,13 @@ namespace AscEmu::Packets
     {
     public:
         WoWGuid auctioneerGuid;
-#if VERSION_STRING >= Cata
-        uint64_t bidMoney;
-        uint64_t buyoutPrice;
-#else
+
+        uint64_t bidMoney64 = 0;        //Cata
+        uint64_t buyoutPrice64 = 0;     //Cata
+
         uint32_t bidMoney;
         uint32_t buyoutPrice;
-#endif
+
         uint32_t itemsCount;
         uint32_t expireTime;
 
@@ -34,15 +32,6 @@ namespace AscEmu::Packets
         {
         }
 
-#if VERSION_STRING >= Cata
-        CmsgAuctionSellItem(uint64_t auctioneerGuid, uint64_t bidMoney, uint64_t buyoutPrice, uint32_t itemsCount, uint32_t expireTime) :
-            ManagedPacket(CMSG_AUCTION_SELL_ITEM, 0),
-            auctioneerGuid(auctioneerGuid),
-            bidMoney(bidMoney),
-            buyoutPrice(buyoutPrice),
-            itemsCount(itemsCount),
-            expireTime(expireTime)
-#else
         CmsgAuctionSellItem(uint64_t auctioneerGuid, uint32_t bidMoney, uint32_t buyoutPrice, uint32_t itemsCount, uint32_t expireTime) :
             ManagedPacket(CMSG_AUCTION_SELL_ITEM, 0),
             auctioneerGuid(auctioneerGuid),
@@ -50,16 +39,10 @@ namespace AscEmu::Packets
             buyoutPrice(buyoutPrice),
             itemsCount(itemsCount),
             expireTime(expireTime)
-#endif
         {
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
             uint64_t unpacked_guid;
@@ -75,7 +58,18 @@ namespace AscEmu::Packets
                     return false;
             }
 
-            packet >> bidMoney >> buyoutPrice >> expireTime;
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+            {
+                packet >> bidMoney >> buyoutPrice;
+            }
+            else
+            {
+                packet >> bidMoney64 >> buyoutPrice64;
+                bidMoney = static_cast<uint32_t>(bidMoney64);
+                buyoutPrice = static_cast<uint32_t>(buyoutPrice64);
+            }
+
+            packet >> expireTime;
 
             return true;
         }

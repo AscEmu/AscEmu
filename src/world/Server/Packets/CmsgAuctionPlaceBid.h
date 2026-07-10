@@ -5,10 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "AEVersion.hpp"
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
-
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -18,11 +15,10 @@ namespace AscEmu::Packets
     public:
         WoWGuid guid;
         uint32_t auctionId;
-#if VERSION_STRING < Cata
         uint32_t price;
-#else
-        uint64_t price;
-#endif
+
+        // used since Cata
+        uint64_t price64 = 0;
 
         CmsgAuctionPlaceBid() : CmsgAuctionPlaceBid(0, 0, 0)
         {
@@ -37,15 +33,21 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
             uint64_t unpacked_guid;
-            packet >> unpacked_guid >> auctionId >> price;
+            packet >> unpacked_guid >> auctionId;
+
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+            {
+                packet >> price;
+            }
+            else
+            {
+                packet >> price64;
+                price = static_cast<uint32_t>(price64);
+            }
+
             guid.init(unpacked_guid);
             return true;
         }

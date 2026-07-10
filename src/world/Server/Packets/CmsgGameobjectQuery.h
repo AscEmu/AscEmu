@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -29,45 +27,40 @@ namespace AscEmu::Packets
         {
         }
 
-        //bool internalSerialise(WorldPacket& packet) override { return false; }
-
-        size_t expectedSize() const override
-        {
-#if VERSION_STRING == Mop
-            return 8;
-#else
-            return 12;
-#endif
-        }
-
+    protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING <= Cata
-            uint64_t unpacked_guid;
-            packet >> entry >> unpacked_guid;
-            guid.init(unpacked_guid);
-#else // Mop
-            packet >> entry;
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                uint64_t unpacked_guid;
+                packet >> entry >> unpacked_guid;
+                guid.init(unpacked_guid);
+                return true;
+            }
+            else // Mop
+            {
+                packet >> entry;
 
-            guid[5] = packet.readBit();
-            guid[3] = packet.readBit();
-            guid[6] = packet.readBit();
-            guid[2] = packet.readBit();
-            guid[7] = packet.readBit();
-            guid[1] = packet.readBit();
-            guid[0] = packet.readBit();
-            guid[4] = packet.readBit();
+                guid[5] = packet.readBit();
+                guid[3] = packet.readBit();
+                guid[6] = packet.readBit();
+                guid[2] = packet.readBit();
+                guid[7] = packet.readBit();
+                guid[1] = packet.readBit();
+                guid[0] = packet.readBit();
+                guid[4] = packet.readBit();
 
-            packet.readByteSeq(guid[1]);
-            packet.readByteSeq(guid[5]);
-            packet.readByteSeq(guid[3]);
-            packet.readByteSeq(guid[4]);
-            packet.readByteSeq(guid[6]);
-            packet.readByteSeq(guid[2]);
-            packet.readByteSeq(guid[7]);
-            packet.readByteSeq(guid[0]);
-#endif
-            return true;
+                packet.readByteSeq(guid[1]);
+                packet.readByteSeq(guid[5]);
+                packet.readByteSeq(guid[3]);
+                packet.readByteSeq(guid[4]);
+                packet.readByteSeq(guid[6]);
+                packet.readByteSeq(guid[2]);
+                packet.readByteSeq(guid[7]);
+                packet.readByteSeq(guid[0]);
+
+                return true;
+            }
         }
     };
 }

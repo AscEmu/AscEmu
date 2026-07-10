@@ -5,16 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class CmsgComplaint : public ManagedPacket
     {
-#if VERSION_STRING < Cata
     public:
         // 0 - mail, 1 - chat
         uint8_t spam_type;
@@ -43,11 +40,6 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
             uint64_t unpacked_guid;
@@ -61,6 +53,5 @@ namespace AscEmu::Packets
 
             return true;
         }
-#endif
     };
 }

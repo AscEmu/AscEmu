@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -25,31 +26,29 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING != Mop
-            packet >> createStruct.name >> createStruct._race >> createStruct._class >>
-                createStruct.gender >> createStruct.skin >> createStruct.face >> createStruct.hairStyle >>
-                createStruct.hairColor >> createStruct.facialHair >> createStruct.outfitId;
-#else
-            packet >> createStruct.outfitId >> createStruct.hairStyle >> createStruct._class >>
-                createStruct.skin >> createStruct.face >> createStruct._race >> createStruct.facialHair >>
-                createStruct.gender >> createStruct.hairColor;
+            if (!m_protocol.isMop())
+            {
+                packet >> createStruct.name >> createStruct._race >> createStruct._class >>
+                    createStruct.gender >> createStruct.skin >> createStruct.face >> createStruct.hairStyle >>
+                    createStruct.hairColor >> createStruct.facialHair >> createStruct.outfitId;
+            }
+            else // Mop
+            {
+                packet >> createStruct.outfitId >> createStruct.hairStyle >> createStruct._class >>
+                    createStruct.skin >> createStruct.face >> createStruct._race >> createStruct.facialHair >>
+                    createStruct.gender >> createStruct.hairColor;
 
-            const auto nameLength = packet.readBits(6);
-            uint8_t unknown = packet.readBit();
-            createStruct.name = packet.readString(nameLength);
+                const auto nameLength = packet.readBits(6);
+                uint8_t unknown = packet.readBit();
+                createStruct.name = packet.readString(nameLength);
 
-            if (unknown)
-                packet.read<uint32_t>();
+                if (unknown)
+                    packet.read<uint32_t>();
 
-            packet.rpos(0);
-#endif
+                packet.rpos(0);
+            }
 
             return true;
         }

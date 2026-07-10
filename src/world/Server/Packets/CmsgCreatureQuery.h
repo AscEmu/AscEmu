@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -30,21 +28,18 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& packet) override
-        {
-            packet << entry << guid;
-            return true;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING <= Cata
-            uint64_t unpacked_guid;
-            packet >> entry >> unpacked_guid;
-            guid.init(unpacked_guid);
-#else // Mop
-            packet >> entry;
-#endif
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                uint64_t unpacked_guid;
+                packet >> entry >> unpacked_guid;
+                guid.init(unpacked_guid);
+            }
+            else // Mop
+            {
+                packet >> entry;
+            }
             return true;
         }
     };

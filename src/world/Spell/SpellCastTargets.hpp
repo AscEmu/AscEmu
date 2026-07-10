@@ -38,10 +38,8 @@ public:
     SpellCastTargets& operator=(const SpellCastTargets& target);
     ~SpellCastTargets();
 
-#if VERSION_STRING < Mop
     void read(WorldPacket& data);
     void write(WorldPacket& data) const;
-#endif
 
     bool isEmpty() const;
     bool hasSource() const;

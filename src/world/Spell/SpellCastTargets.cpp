@@ -50,7 +50,7 @@ SpellCastTargets::~SpellCastTargets()
     m_strTarget.clear();
 }
 
-#if VERSION_STRING < Mop
+
 void SpellCastTargets::read(WorldPacket& data)
 {
     reset();
@@ -136,7 +136,7 @@ void SpellCastTargets::write(WorldPacket& data) const
         data << m_strTarget.c_str();
     }
 }
-#endif
+
 
 bool SpellCastTargets::isEmpty() const
 {

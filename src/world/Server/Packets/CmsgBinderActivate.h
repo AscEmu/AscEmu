@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -35,32 +33,35 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING <= Cata
-            uint64_t unpackedGuid;
-            packet >> unpackedGuid;
-            guid.init(unpackedGuid);
-#elif VERSION_STRING == Mop
-            WoWGuid npcGuid;
-            npcGuid[0] = packet.readBit();
-            npcGuid[5] = packet.readBit();
-            npcGuid[4] = packet.readBit();
-            npcGuid[7] = packet.readBit();
-            npcGuid[6] = packet.readBit();
-            npcGuid[2] = packet.readBit();
-            npcGuid[1] = packet.readBit();
-            npcGuid[3] = packet.readBit();
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                uint64_t unpackedGuid;
+                packet >> unpackedGuid;
+                guid.init(unpackedGuid);
+            }
+            else
+            {
+                WoWGuid npcGuid;
+                npcGuid[0] = packet.readBit();
+                npcGuid[5] = packet.readBit();
+                npcGuid[4] = packet.readBit();
+                npcGuid[7] = packet.readBit();
+                npcGuid[6] = packet.readBit();
+                npcGuid[2] = packet.readBit();
+                npcGuid[1] = packet.readBit();
+                npcGuid[3] = packet.readBit();
 
-            packet.readByteSeq(npcGuid[0]);
-            packet.readByteSeq(npcGuid[4]);
-            packet.readByteSeq(npcGuid[2]);
-            packet.readByteSeq(npcGuid[3]);
-            packet.readByteSeq(npcGuid[7]);
-            packet.readByteSeq(npcGuid[1]);
-            packet.readByteSeq(npcGuid[5]);
-            packet.readByteSeq(npcGuid[6]);
+                packet.readByteSeq(npcGuid[0]);
+                packet.readByteSeq(npcGuid[4]);
+                packet.readByteSeq(npcGuid[2]);
+                packet.readByteSeq(npcGuid[3]);
+                packet.readByteSeq(npcGuid[7]);
+                packet.readByteSeq(npcGuid[1]);
+                packet.readByteSeq(npcGuid[5]);
+                packet.readByteSeq(npcGuid[6]);
 
-            guid.init(npcGuid);
-#endif
+                guid.init(npcGuid);
+            }
             return true;
         }
     };

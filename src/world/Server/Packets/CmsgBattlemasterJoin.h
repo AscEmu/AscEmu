@@ -5,22 +5,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
-
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class CmsgBattlemasterJoin : public ManagedPacket
     {
     public:
-#if VERSION_STRING < Cata
         uint64_t guid;
-#else
-        WoWGuid guid;
-#endif
+        
         uint32_t bgType;
         uint32_t instanceId;
         uint8_t asGroup;
@@ -39,42 +33,40 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
+        bool internalDeserialise(WorldPacket& packet) override
         {
-            return false;
-        }
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+            {
+                packet >> guid >> bgType >> instanceId >> asGroup;
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_Cata)
+            {
+                WoWGuid guidCount;
+                packet >> instanceId;
 
-        bool internalDeserialise([[maybe_unused]] WorldPacket& packet) override
-        {
-#if VERSION_STRING <= WotLK
-            packet >> guid >> bgType >> instanceId >> asGroup;
-#endif
-#if VERSION_STRING == Cata
-            packet >> instanceId;
+                guidCount[2] = packet.readBit();
+                guidCount[0] = packet.readBit();
+                guidCount[3] = packet.readBit();
+                guidCount[1] = packet.readBit();
+                guidCount[5] = packet.readBit();
 
-            guid[2] = packet.readBit();
-            guid[0] = packet.readBit();
-            guid[3] = packet.readBit();
-            guid[1] = packet.readBit();
-            guid[5] = packet.readBit();
+                asGroup = packet.readBit();
 
-            asGroup = packet.readBit();
+                guidCount[4] = packet.readBit();
+                guidCount[6] = packet.readBit();
+                guidCount[7] = packet.readBit();
 
-            guid[4] = packet.readBit();
-            guid[6] = packet.readBit();
-            guid[7] = packet.readBit();
+                packet.readByteSeq(guidCount[2]);
+                packet.readByteSeq(guidCount[6]);
+                packet.readByteSeq(guidCount[4]);
+                packet.readByteSeq(guidCount[3]);
+                packet.readByteSeq(guidCount[7]);
+                packet.readByteSeq(guidCount[0]);
+                packet.readByteSeq(guidCount[5]);
+                packet.readByteSeq(guidCount[1]);
 
-            packet.readByteSeq(guid[2]);
-            packet.readByteSeq(guid[6]);
-            packet.readByteSeq(guid[4]);
-            packet.readByteSeq(guid[3]);
-            packet.readByteSeq(guid[7]);
-            packet.readByteSeq(guid[0]);
-            packet.readByteSeq(guid[5]);
-            packet.readByteSeq(guid[1]);
-
-            bgType = guid.getCounter();
-#endif
+                bgType = guidCount.getCounter();
+            }
 
             return true;
         }

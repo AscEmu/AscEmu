@@ -5,16 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class CmsgEnabletaxi : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         WoWGuid creatureGuid;
 
@@ -29,18 +26,17 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-            uint64_t unpackedGuid;
-            packet >> unpackedGuid;
-            creatureGuid.init(unpackedGuid);
-            return true;
+            if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            {
+                uint64_t unpackedGuid;
+                packet >> unpackedGuid;
+                creatureGuid.init(unpackedGuid);
+                return true;
+            }
+
+            return false;
         }
-#endif
     };
 }
