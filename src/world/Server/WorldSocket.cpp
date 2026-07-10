@@ -221,12 +221,12 @@ void WorldSocket::onDisconnect()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // helper for protocol setup
-void WorldSocket::setClientProtocol(WoW::ClientProtocolState protocol) { m_protocol = protocol; }
+void WorldSocket::setClientProtocol(WoW::ClientProtocol protocol) { m_protocol = protocol; }
 
 void WorldSocket::setCurrentVersionAsProtocol()
 {
     //Zyres: this is a fallback when the client version is not set by the client information
-    WoW::ClientProtocolState protocol;
+    WoW::ClientProtocol protocol;
     switch (sOpcodeTables.getVersionIdForAEVersion())
     {
         case 0: protocol.expansion = WoW::Expansion::_Classic; break;
@@ -243,7 +243,7 @@ void WorldSocket::setCurrentVersionAsProtocol()
 
 void WorldSocket::setClientProtocolByBuild(uint32_t build)
 {
-    WoW::ClientProtocolState protocol;
+    WoW::ClientProtocol protocol;
 
     switch (build)
     {
@@ -401,7 +401,8 @@ void WorldSocket::sendPacket(WorldPacket* packet)
 
 void WorldSocket::sendUpdateQueuePosition(uint32_t Position)
 {
-    sendPacket(SmsgAuthResponse(0, ARST_QUEUE, Position).serialise().get());
+    SmsgAuthResponse response(0, ARST_QUEUE, Position);
+    sendManagedPacket(response);
 }
 
 void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
@@ -411,7 +412,8 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
     if (m_session == nullptr || sessionHolder == nullptr)
         return;
 
-    sendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
+    SmsgAuthResponse response(AuthOkay, ARST_ACCOUNT_DATA);
+    sendManagedPacket(response);
 
     m_session->sendAddonInfo();
 
@@ -631,7 +633,7 @@ void WorldSocket::handlePing(std::unique_ptr<WorldPacket> recvPacket)
 void WorldSocket::handleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
 {
     CmsgAuthSession authSession;
-    if (!authSession.deserialise(*recvPacket, m_protocol))
+    if (!parsePacket(*recvPacket, authSession))
     {
         sLogger.failure("WorldSocket::handleAuthSession: Error {}", authSession.errorMsg);
 
@@ -680,7 +682,8 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
 
     if (error != 0)
     {
-        sendPacket(SmsgAuthResponse(AuthFailed, ARST_ONLY_ERROR).serialise().get());
+        SmsgAuthResponse response(AuthFailed, ARST_ONLY_ERROR);
+        sendManagedPacket(response);
         return;
     }
 
@@ -718,14 +721,16 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     m_crypt.initForClientVersion(static_cast<uint8_t>(m_protocol.expansion), K);
     if (!m_crypt.isInitialized())
     {
-        sendPacket(SmsgAuthResponse(AuthFailed, ARST_ONLY_ERROR).serialise().get());
+        SmsgAuthResponse response(AuthFailed, ARST_ONLY_ERROR);
+        sendManagedPacket(response);
         return;
     }
 
     if (!m_crypt.verifyWorldAuthDigest(static_cast<uint8_t>(m_protocol.expansion), authAccountName,
         m_clientSeed, m_socketSeed, K, m_authDigest))
     {
-        sendPacket(SmsgAuthResponse(AuthUnknownAccount, ARST_ONLY_ERROR).serialise().get());
+        SmsgAuthResponse response(AuthUnknownAccount, ARST_ONLY_ERROR);
+        sendManagedPacket(response);
         return;
     }
 
@@ -749,7 +754,8 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
             oldSession->Disconnect();
             oldSession->SetLogoutTimer(1);
 
-            sendPacket(SmsgAuthResponse(AuthUnknownAccount, ARST_ONLY_ERROR).serialise().get());
+            SmsgAuthResponse response(AuthUnknownAccount, ARST_ONLY_ERROR);
+            sendManagedPacket(response);
             return;
         }
     }
@@ -767,6 +773,7 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     pSession->m_lastPing = static_cast<uint32_t>(UNIXTIME);
     pSession->language = Util::getLanguagesIdFromString(lang);
     pSession->m_muted = muted;
+    pSession->setClientProtocol(m_protocol);
 
     for (uint8_t i = 0; i < 8; ++i)
         pSession->SetAccountData(i, nullptr, true, 0);
@@ -812,7 +819,8 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     }
     else
     {
-        sendPacket(SmsgAuthResponse(AuthRejected, ARST_ONLY_ERROR).serialise().get());
+        SmsgAuthResponse response(AuthRejected, ARST_ONLY_ERROR);
+        sendManagedPacket(response);
         disconnect();
     }
 }

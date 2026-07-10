@@ -5,11 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-
-//\NOTE: This packet file is ugly as hell ;)
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -57,167 +54,163 @@ namespace AscEmu::Packets
         }
 
         SmsgAuthAccount accountInfo = {
-            0, 0, 0,
-#if VERSION_STRING == Classic
-            0
-#endif
-#if VERSION_STRING == TBC
-            1
-#endif
-#if VERSION_STRING == WotLK
-            2
-#endif
-#if VERSION_STRING == Cata
-            3
-#endif
-#if VERSION_STRING == Mop
-            4
-#endif
+            0, 0, 0, static_cast<uint8_t>(m_protocol.expansion)
         };
 
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            sLogger.debug("SmsgAuthResponse::internalSerialise: for expansion {}", static_cast<unsigned int>(m_protocol.expansion));
+
             switch (sendType)
             {
                 case ARST_ONLY_ERROR:
                 {
- #if VERSION_STRING <= WotLK
-                    packet << error;
-#else
-                    packet.writeBit(0);                 // has account info
-                    packet.writeBit(0);                 // has queue info
-                    packet << error;
-#endif
+                    if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+                        packet << error;
+                    else
+                    {
+                        packet.writeBit(0);                 // has account info
+                        packet.writeBit(0);                 // has queue info
+                        packet << error;
+                    }
+
                 } break;
                 case ARST_QUEUE:
                 {
                     if (queuePosition == 0)
                     {
                         error = AuthOkay;
-#if VERSION_STRING <= WotLK
-                        packet << error;
-#endif 
-#if VERSION_STRING == Cata
-                        packet.writeBit(0);             // has account info
-                        packet.writeBit(0);             // has queue info
-                        packet << error;
-                        packet.flushBits();
-#endif 
-#if VERSION_STRING == Mop
-                        packet.writeBit(0);             // has account info
-                        packet.writeBit(0);             // has queue info
-                        packet << error;
-                        packet.flushBits();
-#endif    
+                        if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+                            packet << error;
+
+                        if (m_protocol.expansion == WoW::Expansion::_Cata)
+                        {
+                            packet.writeBit(0);             // has account info
+                            packet.writeBit(0);             // has queue info
+                            packet << error;
+                            packet.flushBits();
+                        }
+                        if (m_protocol.expansion == WoW::Expansion::_Mop)
+                        {
+                            packet.writeBit(0);             // has account info
+                            packet.writeBit(0);             // has queue info
+                            packet << error;
+                            packet.flushBits();
+                        }
                     }
                     else
                     {
                         error = AuthWaitQueue;
-#if VERSION_STRING <= WotLK
-                        packet << error;
-                        packet << queuePosition;
-    #if VERSION_STRING == WotLK
-                        packet << uint8_t(0);
-    #endif
-#endif 
-#if VERSION_STRING == Cata
-                        packet.writeBit(1);             // has queue info
-                        packet.writeBit(0);             // unk queue bool
-                        packet.writeBit(0);             // has account info
-                        packet.flushBits();
-                        packet << error;
-                        packet << queuePosition;
-#endif 
-#if VERSION_STRING == Mop
-                        packet.writeBit(0);             // has account info
-                        packet.writeBit(1);             // has queue info
-                        packet.writeBit(0);             // unk queue bool
-                        packet << error;
-                        packet.flushBits();
-                        packet << queuePosition;
-#endif 
+                        if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+                        {
+                            packet << error;
+                            packet << queuePosition;
+
+                            if (m_protocol.expansion == WoW::Expansion::_WotLK)
+                                packet << uint8_t(0);
+                        }
+                        if (m_protocol.expansion == WoW::Expansion::_Cata)
+                        {
+                            packet.writeBit(1);             // has queue info
+                            packet.writeBit(0);             // unk queue bool
+                            packet.writeBit(0);             // has account info
+                            packet.flushBits();
+                            packet << error;
+                            packet << queuePosition;
+                        }
+                        if (m_protocol.expansion == WoW::Expansion::_Mop)
+                        {
+                            packet.writeBit(0);             // has account info
+                            packet.writeBit(1);             // has queue info
+                            packet.writeBit(0);             // unk queue bool
+                            packet << error;
+                            packet.flushBits();
+                            packet << queuePosition;
+                        }
                     }
                 } break;
                 case ARST_ACCOUNT_DATA:
                 {
-#if VERSION_STRING <= WotLK
-                    packet << error << accountInfo.billingTimeRemaining << accountInfo.billingPlanFlags << accountInfo.billingTimeRested << accountInfo.expansion;
-                    
-#endif
-#if VERSION_STRING == Cata
-                    packet.writeBit(0);                 // has queue info
-                    packet.writeBit(1);                 // has account Info
-                    packet << accountInfo.billingTimeRemaining << accountInfo.expansion << uint32_t(0)
-                        << accountInfo.expansion << accountInfo.billingTimeRested << accountInfo.billingPlanFlags << error;
-            
-#endif
-#if VERSION_STRING == Mop
-                    packet.writeBit(1);                 // has account info
+                    if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+                    {
+                        packet << error << accountInfo.billingTimeRemaining << accountInfo.billingPlanFlags;
+                        packet << accountInfo.billingTimeRested << accountInfo.expansion;
+                    }
+                    if (m_protocol.expansion == WoW::Expansion::_Cata)
+                    {
+                        packet.writeBit(0);                 // has queue info
+                        packet.writeBit(1);                 // has account Info
+                        packet << accountInfo.billingTimeRemaining << accountInfo.expansion << uint32_t(0);
+                        packet << accountInfo.expansion << accountInfo.billingTimeRested << accountInfo.billingPlanFlags;
+                        packet << error;
 
-                    uint8_t realmsCount = 0;
-                    packet.writeBits(realmsCount, 21);  // send realms
+                    }
+                    if (m_protocol.expansion == WoW::Expansion::_Mop)
+                    {
+                        packet.writeBit(1);                 // has account info
 
-                    packet.writeBits(11, 23);           // classes
-                    packet.writeBits(0, 21);
-                    packet.writeBit(0);
-                    packet.writeBit(0);
-                    packet.writeBit(0);
-                    packet.writeBit(0);
-                    packet.writeBits(15, 23);           // races
-                    packet.writeBit(0);
+                        uint8_t realmsCount = 0;
+                        packet.writeBits(realmsCount, 21);  // send realms
 
-                    packet.writeBit(0);                 // is queued
+                        packet.writeBits(11, 23);           // classes
+                        packet.writeBits(0, 21);
+                        packet.writeBit(0);
+                        packet.writeBit(0);
+                        packet.writeBit(0);
+                        packet.writeBit(0);
+                        packet.writeBits(15, 23);           // races
+                        packet.writeBit(0);
 
-                    packet.flushBits();
+                        packet.writeBit(0);                 // is queued
 
-                    // add expansion-race combination
-                    packet << uint8_t(0) << uint8_t(1);
-                    packet << uint8_t(0) << uint8_t(2);
-                    packet << uint8_t(0) << uint8_t(3);
-                    packet << uint8_t(0) << uint8_t(4);
-                    packet << uint8_t(0) << uint8_t(5);
-                    packet << uint8_t(0) << uint8_t(6);
-                    packet << uint8_t(0) << uint8_t(7);
-                    packet << uint8_t(0) << uint8_t(8);
-                    packet << uint8_t(3) << uint8_t(9);
-                    packet << uint8_t(1) << uint8_t(10);
-                    packet << uint8_t(1) << uint8_t(11);
-                    packet << uint8_t(3) << uint8_t(22);
-                    packet << uint8_t(4) << uint8_t(24);
-                    packet << uint8_t(4) << uint8_t(25);
-                    packet << uint8_t(4) << uint8_t(26);
+                        packet.flushBits();
 
-                    // add expansion-class combination
-                    packet << uint8_t(0) << uint8_t(1);
-                    packet << uint8_t(0) << uint8_t(2);
-                    packet << uint8_t(0) << uint8_t(3);
-                    packet << uint8_t(0) << uint8_t(4);
-                    packet << uint8_t(0) << uint8_t(5);
-                    packet << uint8_t(2) << uint8_t(6);
-                    packet << uint8_t(0) << uint8_t(7);
-                    packet << uint8_t(0) << uint8_t(8);
-                    packet << uint8_t(0) << uint8_t(9);
-                    packet << uint8_t(4) << uint8_t(10);
-                    packet << uint8_t(0) << uint8_t(11);
+                        // add expansion-race combination
+                        packet << uint8_t(0) << uint8_t(1);
+                        packet << uint8_t(0) << uint8_t(2);
+                        packet << uint8_t(0) << uint8_t(3);
+                        packet << uint8_t(0) << uint8_t(4);
+                        packet << uint8_t(0) << uint8_t(5);
+                        packet << uint8_t(0) << uint8_t(6);
+                        packet << uint8_t(0) << uint8_t(7);
+                        packet << uint8_t(0) << uint8_t(8);
+                        packet << uint8_t(3) << uint8_t(9);
+                        packet << uint8_t(1) << uint8_t(10);
+                        packet << uint8_t(1) << uint8_t(11);
+                        packet << uint8_t(3) << uint8_t(22);
+                        packet << uint8_t(4) << uint8_t(24);
+                        packet << uint8_t(4) << uint8_t(25);
+                        packet << uint8_t(4) << uint8_t(26);
 
-                    packet << accountInfo.billingTimeRemaining;
-                    packet << accountInfo.expansion;
-                    packet << uint32_t(4);
-                    packet << uint32_t(0);
-                    packet << accountInfo.expansion;
-                    packet << uint32_t(0);
-                    packet << uint32_t(0);
-                    packet << uint32_t(0);
+                        // add expansion-class combination
+                        packet << uint8_t(0) << uint8_t(1);
+                        packet << uint8_t(0) << uint8_t(2);
+                        packet << uint8_t(0) << uint8_t(3);
+                        packet << uint8_t(0) << uint8_t(4);
+                        packet << uint8_t(0) << uint8_t(5);
+                        packet << uint8_t(2) << uint8_t(6);
+                        packet << uint8_t(0) << uint8_t(7);
+                        packet << uint8_t(0) << uint8_t(8);
+                        packet << uint8_t(0) << uint8_t(9);
+                        packet << uint8_t(4) << uint8_t(10);
+                        packet << uint8_t(0) << uint8_t(11);
 
-                    packet << error;
-#endif
+                        packet << accountInfo.billingTimeRemaining;
+                        packet << accountInfo.expansion;
+                        packet << uint32_t(4);
+                        packet << uint32_t(0);
+                        packet << accountInfo.expansion;
+                        packet << uint32_t(0);
+                        packet << uint32_t(0);
+                        packet << uint32_t(0);
+
+                        packet << error;
+                    }
                 }
             }
 
             return true;
         }
-
-        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

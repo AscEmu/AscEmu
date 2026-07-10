@@ -38,7 +38,7 @@ namespace WoW {
         uint8_t patch;
     };
 
-    struct ClientProtocolState
+    struct ClientProtocol
     {
         Expansion expansion{Expansion::Unknown};
 

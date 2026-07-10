@@ -33,6 +33,7 @@
 #include <memory>
 #include <string>
 #include "Logging/StringFormat.hpp"
+#include "Server/ClientProtocol.hpp"
 
 struct QuestProperties;
 class Player;
@@ -216,6 +217,38 @@ class SERVER_DECL WorldSession
         uint16_t GetClientBuild() { return client_build; }
         void SetClientBuild(uint16_t build) { client_build = build; }
 #endif
+        void setClientProtocol(WoW::ClientProtocol protocol)
+        {
+            m_protocol = protocol;
+        }
+
+        [[nodiscard]] WoW::ClientProtocol getClientProtocol() const
+        {
+            return m_protocol;
+        }
+
+        template <typename TPacket>
+        bool parsePacket(WorldPacket& packet, TPacket& managedPacket)
+        {
+            managedPacket.setClientProtocol(m_protocol);
+            return managedPacket.deserialise(packet);
+        }
+
+        template <typename TPacket>
+        std::unique_ptr<WorldPacket> buildPacket(TPacket& managedPacket)
+        {
+            managedPacket.setClientProtocol(m_protocol);
+            return managedPacket.serialise();
+        }
+
+        template <typename TPacket>
+        void sendManagedPacket(TPacket& managedPacket)
+        {
+            auto packet = buildPacket(managedPacket);
+            SendPacket(packet.get());
+        }
+
+        WoW::ClientProtocol m_protocol{};
 
         bool bDeleted;
         uint32_t GetInstance() { return instanceId; }

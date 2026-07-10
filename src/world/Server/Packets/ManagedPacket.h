@@ -21,7 +21,7 @@ namespace AscEmu::Packets
         uint16_t m_opcode;
         size_t m_minimum_size;
 
-        WoW::ClientProtocolState m_protocol{};
+        WoW::ClientProtocol m_protocol{};
 
         virtual bool internalSerialise(WorldPacket&) { return true; }
 
@@ -36,12 +36,12 @@ namespace AscEmu::Packets
         virtual size_t expectedSize() const { return size_t(0); }
 
     public:
-        void setClientProtocol(WoW::ClientProtocolState protocol)
+        void setClientProtocol(WoW::ClientProtocol protocol)
         {
             m_protocol = protocol;
         }
 
-        [[nodiscard]] WoW::ClientProtocolState getClientProtocol() const
+        [[nodiscard]] WoW::ClientProtocol getClientProtocol() const
         {
             return m_protocol;
         }
@@ -56,24 +56,12 @@ namespace AscEmu::Packets
             return packet;
         }
 
-        virtual std::unique_ptr<WorldPacket> serialise(WoW::ClientProtocolState protocol)
-        {
-            setClientProtocol(protocol);
-            return serialise();
-        }
-
         virtual bool deserialise(WorldPacket& packet)
         {
             if (packet.remaining() < m_minimum_size)
                 return false;
 
             return internalDeserialise(packet);
-        }
-
-        virtual bool deserialise(WorldPacket& packet, WoW::ClientProtocolState protocol)
-        {
-            setClientProtocol(protocol);
-            return deserialise(packet);
         }
     };
 }

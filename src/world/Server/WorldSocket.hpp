@@ -30,9 +30,10 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // helper for protocol setup
-    void setClientProtocol(WoW::ClientProtocolState protocol);
+    void setClientProtocol(WoW::ClientProtocol protocol);
     void setCurrentVersionAsProtocol();
     void setClientProtocolByBuild(uint32_t build);
+
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // packet sending SERVER->CLIENT
@@ -46,6 +47,20 @@ public:
     void sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder);
     void sendClientConnectionPacket();
 
+    template <typename TPacket>
+    std::unique_ptr<WorldPacket> buildPacket(TPacket& managedPacket)
+    {
+        managedPacket.setClientProtocol(m_protocol);
+        return managedPacket.serialise();
+    }
+
+    template <typename TPacket>
+    void sendManagedPacket(TPacket& managedPacket)
+    {
+        auto packet = buildPacket(managedPacket);
+        sendPacket(packet.get());
+    }
+
 protected:
     void sendAuthChallengePacket();
     void sendVerifyConnectPacket();
@@ -55,6 +70,13 @@ protected:
 public:
     bool processHeader();
     void dispatchPacket(std::unique_ptr<WorldPacket> packet);
+
+    template <typename TPacket>
+    bool parsePacket(WorldPacket& packet, TPacket& managedPacket)
+    {
+        managedPacket.setClientProtocol(m_protocol);
+        return managedPacket.deserialise(packet);
+    }
 
 protected:
     void handleAuthSession(std::unique_ptr<WorldPacket> recvPacket);
@@ -81,7 +103,7 @@ private:
     uint32_t m_remaining{0};
     uint32_t m_size{0};
 
-    WoW::ClientProtocolState m_protocol{};
+    WoW::ClientProtocol m_protocol{};
 
     uint32_t m_socketSeed{0};
     uint32_t m_clientSeed{0};
