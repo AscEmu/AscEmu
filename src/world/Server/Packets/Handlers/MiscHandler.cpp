@@ -2903,7 +2903,8 @@ void WorldSession::sendClientCacheVersion([[maybe_unused]] uint32_t version)
 
 void WorldSession::sendAccountDataTimes(uint32_t mask)
 {
-    SendPacket(SmsgAccountDataTimes(static_cast<uint32_t>(UNIXTIME), 1, mask, NUM_ACCOUNT_DATA_TYPES).serialise().get());
+    SmsgAccountDataTimes sendPacket(static_cast<uint32_t>(UNIXTIME), 1, mask, NUM_ACCOUNT_DATA_TYPES);
+    sendManagedPacket(sendPacket);
 }
 
 void WorldSession::sendMOTD()

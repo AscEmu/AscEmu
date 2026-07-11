@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -37,28 +36,28 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING <= TBC
+            if (m_protocol.expansion <= WoW::Expansion::_TBC)
+            {
+                for (auto i = 0; i < dataCount; ++i)
+                    packet << uint32_t(0);
+            }
+            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet << time << unknown1 << mask;
+                for (auto i = 0; i < dataCount; ++i)
+                    if (mask & (1 << i))
+                        packet << uint32_t(0);
+            }
+            else // Mop
+            {
+                packet.writeBit(1);
+                packet.flushBits();
 
-            for (auto i = 0; i < dataCount; ++i)
-                packet << uint32_t(0);
-
-#elif VERSION_STRING <= Cata
-
-            packet << time << unknown1 << mask;
-            for (auto i = 0; i < dataCount; ++i)
-                if (mask & (1 << i))
+                for (uint8_t i = 0; i < 8; ++i)
                     packet << uint32_t(0);
 
-#else
-
-            packet.writeBit(1);
-            packet.flushBits();
-
-            for (uint8_t i = 0; i < 8; ++i)
-                    packet << uint32_t(0);
-
-            packet << mask << time;
-#endif
+                packet << mask << time;
+            }
 
             return true;
         }
