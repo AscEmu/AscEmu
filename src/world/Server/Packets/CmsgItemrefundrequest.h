@@ -5,16 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class CmsgItemrefundrequest : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         uint64_t itemGuid;
 
@@ -29,16 +26,15 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> itemGuid;
-            return true;
+            if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            {
+                packet >> itemGuid;
+                return true;
+            }
+
+            return false;
         }
-#endif
     };
 }

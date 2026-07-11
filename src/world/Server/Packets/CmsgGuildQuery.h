@@ -4,31 +4,19 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #pragma once
-#include <cstdint>
 
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class CmsgGuildQuery : public ManagedPacket
     {
     public:
-#if VERSION_STRING < Cata
-        uint32_t guildId;
+        uint32_t guildId = 0;
 
-        CmsgGuildQuery() : CmsgGuildQuery(0)
-        {
-        }
-
-        CmsgGuildQuery(uint32_t guildId) :
-            ManagedPacket(CMSG_GUILD_QUERY, 4),
-            guildId(guildId)
-        {
-        }
-#else
-        uint64_t guildId;
-        uint64_t playerGuid;
+        uint64_t guildId64 = 0;
+        uint64_t playerGuid = 0;
 
         CmsgGuildQuery() : CmsgGuildQuery(0, 0)
         {
@@ -40,19 +28,20 @@ namespace AscEmu::Packets
             playerGuid(playerGuid)
         {
         }
-#endif
 
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
+    protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guildId;
-#if VERSION_STRING >= Cata
-            packet >> playerGuid;
-#endif
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+            {
+                packet >> guildId;
+            }
+            else
+            {
+                packet >> guildId64;
+                guildId = static_cast<uint32_t>(guildId64);
+                packet >> playerGuid;
+            }
             return true;
         }
     };

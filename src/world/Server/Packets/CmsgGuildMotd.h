@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -26,19 +26,17 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Cata
-            packet >> message;
-#else
-            const uint32_t motdLength = packet.readBits(11);
-            message = packet.readString(motdLength);
-#endif
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+            {
+                packet >> message;
+            }
+            else
+            {
+                const uint32_t motdLength = packet.readBits(11);
+                message = packet.readString(motdLength);
+            }
             return true;
         }
     };

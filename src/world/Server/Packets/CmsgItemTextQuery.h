@@ -5,54 +5,39 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
-#include "AEVersion.hpp"
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class CmsgItemTextQuery : public ManagedPacket
     {
     public:
-#if VERSION_STRING > TBC
-        uint64_t itemGuid;
-#else
-        uint32_t itemTextId;
-#endif
+        uint64_t itemGuid = 0;  // since WotLK
+        uint32_t itemTextId = 0; // before WotLK
 
         CmsgItemTextQuery() : CmsgItemTextQuery(0)
         {
         }
 
-#if VERSION_STRING > TBC
-        CmsgItemTextQuery(uint64_t itemGuid) :
-            ManagedPacket(CMSG_ITEM_TEXT_QUERY, 8),
-            itemGuid(itemGuid)
-        {
-        }
-#else
         CmsgItemTextQuery(uint32_t itemTextId) :
             ManagedPacket(CMSG_ITEM_TEXT_QUERY, 4),
             itemTextId(itemTextId)
         {
         }
-#endif
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING > TBC
-            packet >> itemGuid;
-#else
-            packet >> itemTextId;
-#endif
+            if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            {
+                packet >> itemGuid;
+            }
+            else
+            {
+                packet >> itemTextId;
+            }
+
             return true;
         }
     };

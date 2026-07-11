@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Management/Guild/Guild.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -40,18 +38,12 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Cata
-            packet >> newRankId >> newRights >> rankName >> moneyPerDay;
-#else
-            packet >> oldRankId >> oldRights >> newRights;
-#endif
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+                packet >> newRankId >> newRights >> rankName >> moneyPerDay;
+            else
+                packet >> oldRankId >> oldRights >> newRights;
 
             GuildBankRightsAndSlotsVec rightsAndSlots(MAX_GUILD_BANK_TABS);
             for (uint8_t tabId = 0; tabId < MAX_GUILD_BANK_TABS; ++tabId)
@@ -65,12 +57,15 @@ namespace AscEmu::Packets
 
                 _rightsAndSlots.push_back(rightsAndSlots[tabId]);
             }
-#if VERSION_STRING >= Cata
-            packet >> moneyPerDay >> newRankId;
 
-            const uint32_t nameLength = packet.readBits(7);
-            rankName = packet.readString(nameLength);
-#endif
+            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            {
+                packet >> moneyPerDay >> newRankId;
+
+                const uint32_t nameLength = packet.readBits(7);
+                rankName = packet.readString(nameLength);
+            }
+
             return true;
         }
     };

@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -16,11 +14,8 @@ namespace AscEmu::Packets
     {
     public:
         uint64_t guid;
-#if VERSION_STRING < Cata
         uint32_t money;
-#else
-        uint64_t money;
-#endif
+        uint64_t money64;   // Cata
 
         CmsgGuildBankWithdrawMoney() : CmsgGuildBankWithdrawMoney(0, 0)
         {
@@ -34,14 +29,19 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guid >> money;
+            packet >> guid;
+
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+            {
+                packet >> money;
+            }
+            else // Cata and greater
+            {
+                packet >> money64;
+                money = static_cast<uint32_t>(money);
+            }
             return true;
         }
     };

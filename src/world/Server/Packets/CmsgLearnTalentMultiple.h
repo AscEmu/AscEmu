@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 struct MultipleTalents
 {
@@ -20,7 +18,6 @@ namespace AscEmu::Packets
 {
     class CmsgLearnTalentMultiple : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         uint32_t talentCount;
         std::vector<MultipleTalents> multipleTalents;
@@ -37,25 +34,24 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> talentCount;
-
-            MultipleTalents multiTalent{};
-
-            for (uint32_t i = 0; i < talentCount; ++i)
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
-                packet >> multiTalent.talentId >> multiTalent.talentRank;
+                packet >> talentCount;
 
-                multipleTalents.push_back(multiTalent);
+                MultipleTalents multiTalent{};
+
+                for (uint32_t i = 0; i < talentCount; ++i)
+                {
+                    packet >> multiTalent.talentId >> multiTalent.talentRank;
+
+                    multipleTalents.push_back(multiTalent);
+                }
+                return true;
             }
-            return true;
+
+            return false;
         }
-#endif
     };
 }

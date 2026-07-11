@@ -6,13 +6,11 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
 
 namespace AscEmu::Packets
 {
     class CmsgGuildSetOfficerNote : public ManagedPacket
     {
-#if VERSION_STRING < Cata
     public:
         std::string targetName;
         std::string note;
@@ -29,16 +27,15 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> targetName >> note;
-            return true;
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+            {
+                packet >> targetName >> note;
+                return true;
+            }
+
+            return false;
         }
-#endif
     };
 }

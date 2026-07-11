@@ -5,16 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class CmsgGuildSetNote : public ManagedPacket
     {
-#if VERSION_STRING >= Cata
     public:
         bool isPublic;
         std::string note;
@@ -33,41 +30,40 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-            guid[1] = packet.readBit();
-            guid[4] = packet.readBit();
-            guid[5] = packet.readBit();
-            guid[3] = packet.readBit();
-            guid[0] = packet.readBit();
-            guid[7] = packet.readBit();
+            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            {
+                guid[1] = packet.readBit();
+                guid[4] = packet.readBit();
+                guid[5] = packet.readBit();
+                guid[3] = packet.readBit();
+                guid[0] = packet.readBit();
+                guid[7] = packet.readBit();
 
-            isPublic = packet.readBit();
+                isPublic = packet.readBit();
 
-            guid[6] = packet.readBit();
+                guid[6] = packet.readBit();
 
-            const uint32_t noteLength = packet.readBits(8);
+                const uint32_t noteLength = packet.readBits(8);
 
-            guid[2] = packet.readBit();
+                guid[2] = packet.readBit();
 
-            packet.readByteSeq(guid[4]);
-            packet.readByteSeq(guid[5]);
-            packet.readByteSeq(guid[0]);
-            packet.readByteSeq(guid[3]);
-            packet.readByteSeq(guid[1]);
-            packet.readByteSeq(guid[6]);
-            packet.readByteSeq(guid[7]);
+                packet.readByteSeq(guid[4]);
+                packet.readByteSeq(guid[5]);
+                packet.readByteSeq(guid[0]);
+                packet.readByteSeq(guid[3]);
+                packet.readByteSeq(guid[1]);
+                packet.readByteSeq(guid[6]);
+                packet.readByteSeq(guid[7]);
 
-            note = packet.readString(noteLength);
+                note = packet.readString(noteLength);
 
-            packet.readByteSeq(guid[2]);
-            return true;
+                packet.readByteSeq(guid[2]);
+                return true;
+            }
+
+            return false;
         }
-#endif
     };
 }

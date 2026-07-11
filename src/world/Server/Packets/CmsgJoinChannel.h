@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Utilities/utf8String.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -34,43 +32,40 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override { return m_minimum_size; }
-
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Cata
-            packet >> dbcId >> unk >> channelName >> password;
-#else
-#if VERSION_STRING == Cata
-            packet >> dbcId;
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+            {
+                packet >> dbcId >> unk >> channelName >> password;
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_Cata)
+            {
+                packet >> dbcId;
 
-            packet.readBit();       // has voice
-            packet.readBit();       // zone update
+                packet.readBit();       // has voice
+                packet.readBit();       // zone update
 
-            const uint32_t channelLength = packet.readBits(8);
-            const uint32_t passwordLength = packet.readBits(8);
+                const uint32_t channelLength = packet.readBits(8);
+                const uint32_t passwordLength = packet.readBits(8);
 
-            channelName = packet.readString(channelLength);
-            password = packet.readString(passwordLength);
-#else // Mop
-            packet >> dbcId;
+                channelName = packet.readString(channelLength);
+                password = packet.readString(passwordLength);
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_Mop)
+            {
+                packet >> dbcId;
 
-            packet.readBit();       // has voice
+                packet.readBit();       // has voice
 
-            const uint32_t channelLength = packet.readBits(7);
-            const uint32_t passwordLength = packet.readBits(7);
+                const uint32_t channelLength = packet.readBits(7);
+                const uint32_t passwordLength = packet.readBits(7);
 
-            packet.readBit();       // zone update
+                packet.readBit();       // zone update
 
-            channelName = packet.readString(channelLength);
-            password = packet.readString(passwordLength);
-#endif
-#endif
+                channelName = packet.readString(channelLength);
+                password = packet.readString(passwordLength);
+            }
+
             return true;
         }
     };
