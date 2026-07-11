@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
-#include "AEVersion.hpp"
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -32,20 +30,19 @@ namespace AscEmu::Packets
         }
 
     protected:
-#if VERSION_STRING == Mop
-        size_t expectedSize() const override { return 4; }
-#else
-        size_t expectedSize() const override { return 12; }
-#endif
+        size_t expectedSize() const override { return m_protocol.isMop() ? 4 : 12; }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING == Mop
-            packet.initialize(SMSG_SET_DUNGEON_DIFFICULTY, 4);
-            packet << uint32_t(difficulty);
-#else
-            packet << uint32_t(difficulty) << unknown << uint32_t(isInGroup);
-#endif
+            if (m_protocol.isMop())
+            {
+                packet.initialize(SMSG_SET_DUNGEON_DIFFICULTY, 4);
+                packet << uint32_t(difficulty);
+            }
+            else
+            {
+                packet << uint32_t(difficulty) << unknown << uint32_t(isInGroup);
+            }
             return true;
         }
 

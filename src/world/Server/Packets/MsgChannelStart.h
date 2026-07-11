@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
-#include "AEVersion.hpp"
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -32,25 +30,15 @@ namespace AscEmu::Packets
         }
 
     protected:
-#if VERSION_STRING == Classic
-        size_t expectedSize() const override { return static_cast<size_t>(4 + 4); }
-#elif VERSION_STRING >= TBC
-        size_t expectedSize() const override { return static_cast<size_t>(8 + 4 + 4); }
-#elif VERSION_STRING >= Cata
-        size_t expectedSize() const override { return static_cast<size_t>(8 + 4 + 4 + 1 + 1); }
-#endif
-
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING >= TBC
-            packet << casterGuid;
-#endif
-            
+            if (m_protocol.expansion >= WoW::Expansion::_TBC)
+                packet << casterGuid;
+
             packet << spellId << duration;
 
-#if VERSION_STRING >= Cata
-            packet << uint8_t(0) << uint8_t(0);
-#endif
+            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+                packet << uint8_t(0) << uint8_t(0);
 
             return true;
         }

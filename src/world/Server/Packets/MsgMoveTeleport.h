@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "ManagedPacket.h"
 #include <cstdint>
 
-#include "ManagedPacket.h"
 #include "Objects/MovementInfo.hpp"
 
 namespace AscEmu::Packets
@@ -39,68 +39,71 @@ namespace AscEmu::Packets
 
         bool internalSerialise([[maybe_unused]] WorldPacket& packet) override
         {
-#if VERSION_STRING < Cata
-            mi.position = lv;
-            packet << guid;
-            mi.writeMovementInfo(packet, 0, false);
-
-#elif VERSION_STRING == Cata
-            bool hasTransportData = !mi.transport_guid.isEmpty();
-
-            packet.writeBit(guid[6]);
-            packet.writeBit(guid[0]);
-            packet.writeBit(guid[3]);
-            packet.writeBit(guid[2]);
-
-            packet.writeBit(0); // unk bool vehicle
-            packet.writeBit(hasTransportData);
-            packet.writeBit(guid[1]);
-
-            if (hasTransportData)
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
-                packet.writeBit(mi.transport_guid[1]);
-                packet.writeBit(mi.transport_guid[3]);
-                packet.writeBit(mi.transport_guid[2]);
-                packet.writeBit(mi.transport_guid[5]);
-                packet.writeBit(mi.transport_guid[0]);
-                packet.writeBit(mi.transport_guid[7]);
-                packet.writeBit(mi.transport_guid[6]);
-                packet.writeBit(mi.transport_guid[4]);
+                mi.position = lv;
+                packet << guid;
+                mi.writeMovementInfo(packet, 0, false);
+
             }
-
-            packet.writeBit(guid[4]);
-            packet.writeBit(guid[7]);
-            packet.writeBit(guid[5]);
-
-            packet.flushBits();
-
-            if (hasTransportData)
+            else if (m_protocol.isCata())
             {
-                packet.writeByteSeq(mi.transport_guid[5]);
-                packet.writeByteSeq(mi.transport_guid[6]);
-                packet.writeByteSeq(mi.transport_guid[1]);
-                packet.writeByteSeq(mi.transport_guid[7]);
-                packet.writeByteSeq(mi.transport_guid[0]);
-                packet.writeByteSeq(mi.transport_guid[2]);
-                packet.writeByteSeq(mi.transport_guid[4]);
-                packet.writeByteSeq(mi.transport_guid[3]);
-            }
+                bool hasTransportData = !mi.transport_guid.isEmpty();
 
-            packet << uint32_t(0); // unk
-            packet.writeByteSeq(guid[1]);
-            packet.writeByteSeq(guid[2]);
-            packet.writeByteSeq(guid[3]);
-            packet.writeByteSeq(guid[5]);
-            packet << lv.x;
-            packet.writeByteSeq(guid[4]);
-            packet << lv.o;
-            packet.writeByteSeq(guid[7]);
-            packet << lv.z;
-            packet.writeByteSeq(guid[0]);
-            packet.writeByteSeq(guid[6]);
-            packet << lv.y;
-#else // TODO: Mop
-#endif
+                packet.writeBit(guid[6]);
+                packet.writeBit(guid[0]);
+                packet.writeBit(guid[3]);
+                packet.writeBit(guid[2]);
+
+                packet.writeBit(0); // unk bool vehicle
+                packet.writeBit(hasTransportData);
+                packet.writeBit(guid[1]);
+
+                if (hasTransportData)
+                {
+                    packet.writeBit(mi.transport_guid[1]);
+                    packet.writeBit(mi.transport_guid[3]);
+                    packet.writeBit(mi.transport_guid[2]);
+                    packet.writeBit(mi.transport_guid[5]);
+                    packet.writeBit(mi.transport_guid[0]);
+                    packet.writeBit(mi.transport_guid[7]);
+                    packet.writeBit(mi.transport_guid[6]);
+                    packet.writeBit(mi.transport_guid[4]);
+                }
+
+                packet.writeBit(guid[4]);
+                packet.writeBit(guid[7]);
+                packet.writeBit(guid[5]);
+
+                packet.flushBits();
+
+                if (hasTransportData)
+                {
+                    packet.writeByteSeq(mi.transport_guid[5]);
+                    packet.writeByteSeq(mi.transport_guid[6]);
+                    packet.writeByteSeq(mi.transport_guid[1]);
+                    packet.writeByteSeq(mi.transport_guid[7]);
+                    packet.writeByteSeq(mi.transport_guid[0]);
+                    packet.writeByteSeq(mi.transport_guid[2]);
+                    packet.writeByteSeq(mi.transport_guid[4]);
+                    packet.writeByteSeq(mi.transport_guid[3]);
+                }
+
+                packet << uint32_t(0); // unk
+                packet.writeByteSeq(guid[1]);
+                packet.writeByteSeq(guid[2]);
+                packet.writeByteSeq(guid[3]);
+                packet.writeByteSeq(guid[5]);
+                packet << lv.x;
+                packet.writeByteSeq(guid[4]);
+                packet << lv.o;
+                packet.writeByteSeq(guid[7]);
+                packet << lv.z;
+                packet.writeByteSeq(guid[0]);
+                packet.writeByteSeq(guid[6]);
+                packet << lv.y;
+            }
+            // TODO: MoP
             return true;
         }
 

@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
-#include "AEVersion.hpp"
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -38,24 +36,27 @@ namespace AscEmu::Packets
         }
 
     protected:
-#if VERSION_STRING == Classic
-        size_t expectedSize() const override { return static_cast<size_t>(8 + 1 + 4); }
-#elif VERSION_STRING < Cata
-        size_t expectedSize() const override { return static_cast<size_t>(8 + 1 + 4 + 4 + 4 + 4); }
-#else
-        size_t expectedSize() const override { return static_cast<size_t>(8 + 1 + 4 + 4); }
-#endif
+        size_t expectedSize() const override
+        {
+            if (m_protocol.isClassic())
+                return static_cast<size_t>(8 + 1 + 4);
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+                return static_cast<size_t>(8 + 1 + 4 + 4 + 4 + 4);
+            return static_cast<size_t>(8 + 1 + 4 + 4);
+        }
 
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << guid << honnorCurrency;
-#if VERSION_STRING != Classic
-            packet << kills;
-#if VERSION_STRING < Cata
-            packet << todayContrib;
-            packet << yesterdayContrib;
-#endif
-#endif
+            if (!m_protocol.isClassic())
+            {
+                packet << kills;
+                if (m_protocol.expansion < WoW::Expansion::_Cata)
+                {
+                    packet << todayContrib;
+                    packet << yesterdayContrib;
+                }
+            }
             packet << lifetimeHonorKills;
             return true;
         }

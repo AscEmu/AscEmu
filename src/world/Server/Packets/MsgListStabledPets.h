@@ -5,11 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
-#include "AEVersion.hpp"
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 struct PlayerStablePet
 {
@@ -41,20 +38,21 @@ namespace AscEmu::Packets
         }
 
     protected:
-#if VERSION_STRING >= Cata
-        size_t expectedSize() const override { return 10 + (stableList.size() * 29); }
-#else
-        size_t expectedSize() const override { return 10 + (stableList.size() * 25); }
-#endif
+        size_t expectedSize() const override
+        {
+            return m_protocol.expansion >= WoW::Expansion::_Cata
+                ? 10 + (stableList.size() * 29)
+                : 10 + (stableList.size() * 25);
+        }
 
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << guid.getRawGuid() << uint8_t(stableList.size()) << slotCount;
             for (const auto& [slot, stablePet] : stableList)
             {
-#if VERSION_STRING >= Cata
-                packet << int32_t(slot);
-#endif
+                if (m_protocol.expansion >= WoW::Expansion::_Cata)
+                    packet << int32_t(slot);
+
                 packet << stablePet.petNumber;
                 packet << stablePet.entry;
                 packet << stablePet.level;
