@@ -59,7 +59,7 @@ void WorldSession::handleGMTicketToggleSystemStatusOpcode(WorldPacket& /*recvPac
 void WorldSession::handleGMSurveySubmitOpcode(WorldPacket& recvPacket)
 {
     CmsgGmSurveySubmit srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     auto result = CharacterDatabase.query("SELECT MAX(survey_id) FROM gm_survey");
@@ -83,7 +83,7 @@ void WorldSession::handleReportLag([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgGmReportLag srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (_player != nullptr)
@@ -100,7 +100,7 @@ void WorldSession::handleReportLag([[maybe_unused]] WorldPacket& recvPacket)
 void WorldSession::handleGMTicketUpdateOpcode(WorldPacket& recvPacket)
 {
     CmsgGmTicketUpdateText srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     GM_Ticket* ticket = sTicketMgr.getGMTicketByPlayer(_player->getGuid());
@@ -159,7 +159,7 @@ void WorldSession::handleGMTicketDeleteOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
 {
     CmsgGmTicketCreate srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
 #if VERSION_STRING > WotLK

@@ -35,7 +35,7 @@ using namespace AscEmu::Packets;
 void WorldSession::handleChannelJoin(WorldPacket& recvPacket)
 {
     CmsgJoinChannel srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (!sWorld.settings.gm.gmClientChannelName.empty() && AscEmu::Util::Strings::isEqual(sWorld.settings.gm.gmClientChannelName.c_str(), srlPacket.channelName.c_str()) && !hasPermissions())
@@ -52,7 +52,7 @@ void WorldSession::handleChannelJoin(WorldPacket& recvPacket)
 void WorldSession::handleGetChannelMemberCount(WorldPacket& recvPacket)
 {
     CmsgGetChannelMemberCount srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -63,7 +63,7 @@ void WorldSession::handleGetChannelMemberCount(WorldPacket& recvPacket)
 void WorldSession::handleChannelLeave(WorldPacket& recvPacket)
 {
     CmsgLeaveChannel srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -74,7 +74,7 @@ void WorldSession::handleChannelLeave(WorldPacket& recvPacket)
 void WorldSession::handleChannelList(WorldPacket& recvPacket)
 {
     CmsgChannelList srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -85,7 +85,7 @@ void WorldSession::handleChannelList(WorldPacket& recvPacket)
 void WorldSession::handleChannelPassword(WorldPacket& recvPacket)
 {
     CmsgChannelPassword srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -96,7 +96,7 @@ void WorldSession::handleChannelPassword(WorldPacket& recvPacket)
 void WorldSession::handleChannelSetOwner(WorldPacket& recvPacket)
 {
     CmsgChannelSetOwner srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -108,7 +108,7 @@ void WorldSession::handleChannelSetOwner(WorldPacket& recvPacket)
 void WorldSession::handleChannelOwner(WorldPacket& recvPacket)
 {
     CmsgChannelOwner srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -119,7 +119,7 @@ void WorldSession::handleChannelOwner(WorldPacket& recvPacket)
 void WorldSession::handleChannelModerator(WorldPacket& recvPacket)
 {
     CmsgChannelModerator srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -131,7 +131,7 @@ void WorldSession::handleChannelModerator(WorldPacket& recvPacket)
 void WorldSession::handleChannelUnmoderator(WorldPacket& recvPacket)
 {
     CmsgChannelUnmoderator srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -143,7 +143,7 @@ void WorldSession::handleChannelUnmoderator(WorldPacket& recvPacket)
 void WorldSession::handleChannelMute(WorldPacket& recvPacket)
 {
     CmsgChannelMute srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -155,7 +155,7 @@ void WorldSession::handleChannelMute(WorldPacket& recvPacket)
 void WorldSession::handleChannelUnmute(WorldPacket& recvPacket)
 {
     CmsgChannelUnmute srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -167,7 +167,7 @@ void WorldSession::handleChannelUnmute(WorldPacket& recvPacket)
 void WorldSession::handleChannelInvite(WorldPacket& recvPacket)
 {
     CmsgChannelInvite srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -179,7 +179,7 @@ void WorldSession::handleChannelInvite(WorldPacket& recvPacket)
 void WorldSession::handleChannelKick(WorldPacket& recvPacket)
 {
     CmsgChannelKick srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -191,7 +191,7 @@ void WorldSession::handleChannelKick(WorldPacket& recvPacket)
 void WorldSession::handleChannelBan(WorldPacket& recvPacket)
 {
     CmsgChannelBan srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -203,7 +203,7 @@ void WorldSession::handleChannelBan(WorldPacket& recvPacket)
 void WorldSession::handleChannelUnban(WorldPacket& recvPacket)
 {
     CmsgChannelUnban srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -215,7 +215,7 @@ void WorldSession::handleChannelUnban(WorldPacket& recvPacket)
 void WorldSession::handleChannelAnnounce(WorldPacket& recvPacket)
 {
     CmsgChannelAnnouncements srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -226,7 +226,7 @@ void WorldSession::handleChannelAnnounce(WorldPacket& recvPacket)
 void WorldSession::handleChannelModerate(WorldPacket& recvPacket)
 {
     CmsgChannelModerate srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
@@ -237,7 +237,7 @@ void WorldSession::handleChannelModerate(WorldPacket& recvPacket)
 void WorldSession::handleChannelRosterQuery(WorldPacket& recvPacket)
 {
     CmsgChannelDisplayList srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);

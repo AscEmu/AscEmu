@@ -125,7 +125,7 @@ void WorldSession::handleAchievmentQueryOpcode([[maybe_unused]] WorldPacket& rec
 {
 #if VERSION_STRING > TBC
     CmsgInspectAchievements srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     auto player = sObjectMgr.getPlayer(srlPacket.guid.getGuidLow());
@@ -172,7 +172,7 @@ void WorldSession::handleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/)
 void WorldSession::handlePageTextQueryOpcode(WorldPacket& recvPacket)
 {
     CmsgPageTextQuery srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PAGE_TEXT_QUERY: {} (pageId)", srlPacket.pageId);
@@ -196,7 +196,7 @@ void WorldSession::handlePageTextQueryOpcode(WorldPacket& recvPacket)
 void WorldSession::handleItemNameQueryOpcode(WorldPacket& recvPacket)
 {
     CmsgItemNameQuery srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ITEM_NAME_QUERY: {} (itemEntry)", srlPacket.itemEntry);

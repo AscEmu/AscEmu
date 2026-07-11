@@ -5,24 +5,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class CmsgLfgSetRoles : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
-#if VERSION_STRING < Mop
-        using RolesType = uint8_t;
-        static constexpr uint16_t packetSize = 1;
-#else
         using RolesType = uint32_t;
-        static constexpr uint16_t packetSize = 5;
-#endif
+        static constexpr uint16_t packetSize = 0;
         RolesType roles;
 
         CmsgLfgSetRoles() : CmsgLfgSetRoles(0)
@@ -36,19 +28,14 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
             packet >> roles;
-#if VERSION_STRING >= Mop
-            packet.readSkip<uint8_t>();
-#endif
+            if (m_protocol.expansion >= WoW::Expansion::_Mop)
+            {
+                packet.readSkip<uint8_t>();
+            }
             return true;
         }
-#endif
     };
 }

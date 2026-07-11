@@ -5,16 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class CmsgRemoveGlyph : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         uint16_t glyphNumber;
 
@@ -29,16 +26,10 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
             packet >> glyphNumber;
             return true;
         }
-#endif
     };
 }

@@ -27,7 +27,7 @@ using namespace AscEmu::Packets;
 void WorldSession::handleAuctionListOwnerItems(WorldPacket& recvPacket)
 {
     CmsgAuctionListOwnerItems srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUCTION_LIST_OWNER_ITEMS {} (guidLow)", srlPacket.guid.getGuidLowPart());
@@ -42,7 +42,7 @@ void WorldSession::handleAuctionListOwnerItems(WorldPacket& recvPacket)
 void WorldSession::handleAuctionListItems(WorldPacket& recvPacket)
 {
     CmsgAuctionListItems srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUCTION_LIST_ITEMS {} (guidLow)", srlPacket.guid.getGuidLowPart());
@@ -57,7 +57,7 @@ void WorldSession::handleAuctionListItems(WorldPacket& recvPacket)
 void WorldSession::handleCancelAuction(WorldPacket& recvPacket)
 {
     CmsgAuctionRemoveItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUCTION_REMOVE_ITEM {} (auctionId)", srlPacket.auctionId);
@@ -80,7 +80,7 @@ void WorldSession::handleCancelAuction(WorldPacket& recvPacket)
 void WorldSession::handleAuctionListBidderItems(WorldPacket& recvPacket)
 {
     CmsgAuctionListIBidderItemse srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUCTION_LIST_BIDDER_ITEMS {} (lowguid)", srlPacket.guid.getGuidLowPart());
@@ -96,7 +96,7 @@ void WorldSession::handleAuctionListPendingSales([[maybe_unused]] WorldPacket& r
 {
 #if VERSION_STRING > TBC
     CmsgAuctionListIPendingSales srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUCTION_LIST_PRENDING_SALES {} (lowguid)", srlPacket.guid.getGuidLowPart());
@@ -108,7 +108,7 @@ void WorldSession::handleAuctionListPendingSales([[maybe_unused]] WorldPacket& r
 void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
 {
     CmsgAuctionSellItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUCTION_SELL_ITEM");
@@ -222,7 +222,7 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
 void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)
 {
     CmsgAuctionPlaceBid srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUCTION_PLACE_BID: {} (auctionId), {} (price)", srlPacket.auctionId, srlPacket.price);

@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -28,18 +26,15 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& packet) override
+        bool internalDeserialise(WorldPacket& packet) override
         {
-            packet << displayInChatFrame;
-            return true;
-        }
+            if (m_protocol.expansion > WoW::Expansion::_TBC)
+            {
+                packet >> displayInChatFrame;
+                return true;
+            }
 
-        bool internalDeserialise([[maybe_unused]]WorldPacket& packet) override
-        {
-#if VERSION_STRING > TBC
-            packet >> displayInChatFrame;
-#endif
-            return true;
+            return false;
         }
     };
 }

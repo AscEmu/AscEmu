@@ -125,7 +125,7 @@ LanguageSkillSpell getLanguageSkillSpell(uint8_t language)
 void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 {
     CmsgMessageChat srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     auto messageLanguage = srlPacket.language;
@@ -387,7 +387,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
         return;
 
     CmsgTextEmote srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (isSessionMuted() || isFloodProtectionTriggered())
@@ -484,7 +484,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
 void WorldSession::handleEmoteOpcode(WorldPacket& recvPacket)
 {
     CmsgEmote srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (!_player->isAlive())
@@ -504,7 +504,7 @@ void WorldSession::handleReportSpamOpcode([[maybe_unused]] WorldPacket& recvPack
 {
 #if VERSION_STRING < Cata
     CmsgComplaint srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debug("REPORT SPAM: type {}, guid {}, unk1 {}, unk2 {}, unk3 {}, unk4 {}, message {}", srlPacket.spam_type, srlPacket.spammer_guid.getGuidLow(),
@@ -517,7 +517,7 @@ void WorldSession::handleReportSpamOpcode([[maybe_unused]] WorldPacket& recvPack
 void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)
 {
     CmsgChatIgnored srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto player = sObjectMgr.getPlayer(srlPacket.guid.getGuidLow());
@@ -530,7 +530,7 @@ void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)
 void WorldSession::handleChatChannelWatchOpcode(WorldPacket& recvPacket)
 {
     CmsgSetChannelWatch srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debug("Unhandled... Player {} watch channel: {}", _player->getName(), srlPacket.name);

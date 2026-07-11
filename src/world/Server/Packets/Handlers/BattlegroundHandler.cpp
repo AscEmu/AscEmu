@@ -42,7 +42,7 @@ void WorldSession::handlePVPLogDataOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::handleInspectHonorStatsOpcode(WorldPacket& recvPacket)
 {
     MsgInspectHonorStats srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_INSPECT_HONOR_STATS: {} (guidLow)", srlPacket.guid.getGuidLow());
@@ -88,7 +88,7 @@ void WorldSession::handleArenaJoinOpcode(WorldPacket& recvPacket)
         sBattlegroundManager.removePlayerFromQueues(_player);
 
     CmsgBattlemasterJoinArena srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     uint32_t battlegroundType;
@@ -117,7 +117,7 @@ void WorldSession::handleArenaJoinOpcode(WorldPacket& recvPacket)
 void WorldSession::handleBattlefieldPortOpcode(WorldPacket& recvPacket)
 {
     CmsgBattlefieldPort srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (srlPacket.action != 0)
@@ -140,7 +140,7 @@ void WorldSession::handleLeaveBattlefieldOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::handleBattlefieldListOpcode(WorldPacket& recvPacket)
 {
     CmsgBattlefieldList srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BATTLEFIELD_LIST: {} (bgType), {} (fromType)", srlPacket.bgType, srlPacket.fromType);
@@ -157,7 +157,7 @@ void WorldSession::handleBattlefieldListOpcode(WorldPacket& recvPacket)
 void WorldSession::handleBattleMasterHelloOpcode(WorldPacket& recvPacket)
 {
     CmsgBattlemasterHello srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BATTLEMASTER_HELLO: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
@@ -195,7 +195,7 @@ void WorldSession::handleAreaSpiritHealerQueueOpcode(WorldPacket& recvPacket)
         return;
 
     CmsgAreaSpiritHealerQueue srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AREA_SPIRIT_HEALER_QUEUE: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
@@ -215,7 +215,7 @@ void WorldSession::handleAreaSpiritHealerQueryOpcode(WorldPacket& recvPacket)
         return;
 
     CmsgAreaSpiritHealerQuery srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AREA_SPIRIT_HEALER_QUEUE: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
@@ -308,7 +308,7 @@ void WorldSession::handleRequestRatedBgInfoOpcode([[maybe_unused]] WorldPacket& 
 {
 #if VERSION_STRING >= Cata
     CmsgRequestRatedBgInfo srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_INFO received with unk_type = {}", srlPacket.type);

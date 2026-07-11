@@ -28,7 +28,7 @@ using namespace AscEmu::Packets;
 void WorldSession::handleArenaTeamQueryOpcode(WorldPacket& recvPacket)
 {
     CmsgArenaTeamQuery srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (auto arenaTeam = sObjectMgr.getArenaTeamById(srlPacket.teamId))
@@ -43,7 +43,7 @@ void WorldSession::handleArenaTeamQueryOpcode(WorldPacket& recvPacket)
 void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
 {
     CmsgArenaTeamInvite srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     auto arenaTeam = sObjectMgr.getArenaTeamById(srlPacket.teamId);
@@ -101,7 +101,7 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
 void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
 {
     CmsgArenaTeamRemove srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     auto arenaTeam = sObjectMgr.getArenaTeamById(srlPacket.teamId);
@@ -210,7 +210,7 @@ void WorldSession::handleArenaTeamInviteDenyOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
 {
     CmsgArenaTeamLeave srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     auto arenaTeam = sObjectMgr.getArenaTeamById(srlPacket.teamId);
@@ -252,7 +252,7 @@ void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
 void WorldSession::handleArenaTeamDisbandOpcode(WorldPacket& recvPacket)
 {
     CmsgArenaTeamDisband srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     auto arenaTeam = sObjectMgr.getArenaTeamById(srlPacket.teamId);
@@ -280,7 +280,7 @@ void WorldSession::handleArenaTeamDisbandOpcode(WorldPacket& recvPacket)
 void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)
 {
     CmsgArenaTeamLeader srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     auto arenaTeam = sObjectMgr.getArenaTeamById(srlPacket.teamId);
@@ -326,7 +326,7 @@ void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)
 void WorldSession::handleArenaTeamRosterOpcode(WorldPacket& recvPacket)
 {
     CmsgArenaTeamRoster srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (auto arenaTeam = sObjectMgr.getArenaTeamById(srlPacket.teamId))
@@ -340,7 +340,7 @@ void WorldSession::handleInspectArenaStatsOpcode([[maybe_unused]] WorldPacket& r
 {
 #if VERSION_STRING != Classic
     MsgInspectArenaTeams srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_INSPECT_ARENA_STATS: {} (guidLow)", srlPacket.guid.getGuidLow());

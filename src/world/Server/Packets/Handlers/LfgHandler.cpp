@@ -480,7 +480,7 @@ void WorldSession::sendLfgUpdateProposal([[maybe_unused]] uint32_t proposalId, [
 void WorldSession::handleLfgSetCommentOpcode(WorldPacket& recvPacket)
 {
     CmsgSetLfgComment srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SET_LFG_COMMENT playerGuid: {}, comment: {}", _player->getGuid(), srlPacket.comment);
@@ -561,7 +561,7 @@ void WorldSession::handleLfgSearchOpcode([[maybe_unused]] WorldPacket& recvPacke
 {
 #if VERSION_STRING > TBC
     CmsgSearchLfgJoin srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SEARCH_LFG_JOIN for guid {} dungeon entry: {}",
@@ -573,7 +573,7 @@ void WorldSession::handleLfgSearchLeaveOpcode([[maybe_unused]] WorldPacket& recv
 {
 #if VERSION_STRING > TBC
     CmsgSearchLfgLeave srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SEARCH_LFG_LEAVE for guid {} dungeonId: {}",
@@ -585,7 +585,7 @@ void WorldSession::handleLfgProposalResultOpcode([[maybe_unused]] WorldPacket& r
 {
 #if VERSION_STRING > TBC
     CmsgLfgProposalResult srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_PROPOSAL_RESULT guid {} proposal: {} accept: {}", 
@@ -599,7 +599,7 @@ void WorldSession::handleLfgSetRolesOpcode([[maybe_unused]] WorldPacket& recvPac
 {
 #if VERSION_STRING > TBC
     CmsgLfgSetRoles srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (auto grp = _player->getGroup())
@@ -616,7 +616,7 @@ void WorldSession::handleLfgSetBootVoteOpcode([[maybe_unused]] WorldPacket& recv
 {
 #if VERSION_STRING > TBC
     CmsgLfgSetBootVote srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_SET_BOOT_VOTE {} agree: {}",
@@ -712,7 +712,7 @@ void WorldSession::handleLfgTeleportOpcode([[maybe_unused]] WorldPacket& recvPac
 {
 #if VERSION_STRING > TBC
     CmsgLfgTeleport srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_TELEPORT guid {} out: {}", _player->getGuid(), srlPacket.teleportOut ? 1 : 0);

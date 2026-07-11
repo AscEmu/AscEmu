@@ -17,7 +17,7 @@ using namespace AscEmu::Packets;
 void WorldSession::handleUnlearnSkillOpcode(WorldPacket& recvPacket)
 {
     CmsgUnlearnSkill srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     _player->removeSkillLine(static_cast<uint16_t>(srlPacket.skillLineId));
@@ -26,7 +26,7 @@ void WorldSession::handleUnlearnSkillOpcode(WorldPacket& recvPacket)
 void WorldSession::handleLearnTalentOpcode(WorldPacket& recvPacket)
 {
     CmsgLearnTalent srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     _player->learnTalent(srlPacket.talentId, srlPacket.requestedRank);
@@ -50,7 +50,7 @@ void WorldSession::handleLearnMultipleTalentsOpcode([[maybe_unused]] WorldPacket
 #if VERSION_STRING < Cata
 #if VERSION_STRING > TBC
     CmsgLearnTalentMultiple srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debug("Recieved CMSG_LEARN_TALENTS_MULTIPLE");

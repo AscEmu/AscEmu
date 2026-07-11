@@ -118,7 +118,7 @@ void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]] WorldPa
         return;
 
     CmsgChangeSeatsOnControlledVehicle srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
 #if VERSION_STRING < Cata
@@ -165,7 +165,7 @@ void WorldSession::handleRemoveVehiclePassenger([[maybe_unused]] WorldPacket& re
     }
 
     CmsgEjectPassenger srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (srlPacket.guid == 0)
@@ -202,7 +202,7 @@ void WorldSession::handleEnterVehicle([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
     CmsgPlayerVehicleEnter srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto unit = _player->getWorldMap()->getUnit(srlPacket.guid);

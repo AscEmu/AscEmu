@@ -14,7 +14,7 @@ using namespace AscEmu::Packets;
 void WorldSession::handleAttackSwingOpcode(WorldPacket& recvPacket)
 {
     CmsgAttackSwing srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ATTACKSWING: {} (guidLow)", srlPacket.guid.getGuidLow());

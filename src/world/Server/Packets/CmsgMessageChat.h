@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "ManagedPacket.h"
 #include <cstdint>
 
-#include "ManagedPacket.h"
 #include "Chat/ChatDefines.hpp"
 #include "Server/OpcodeTable.hpp"
 
@@ -34,7 +34,6 @@ namespace AscEmu::Packets
         {
         }
 
-#if VERSION_STRING >= Cata
         struct OpcodeToChatType
         {
             uint16_t opcode;
@@ -70,177 +69,176 @@ namespace AscEmu::Packets
 
             return 0xFF;
         }
-#endif
 
     protected:
-        size_t expectedSize() const override { return m_minimum_size; }
-
-        bool internalSerialise(WorldPacket& /*packet*/) override { return true; }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Cata
-            packet >> type >> language;
-
-            switch (type)
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
-                case CHAT_MSG_EMOTE:
-                case CHAT_MSG_SAY:
-                case CHAT_MSG_YELL:
-                case CHAT_MSG_PARTY:
-                case CHAT_MSG_PARTY_LEADER:
-                case CHAT_MSG_RAID:
-                case CHAT_MSG_RAID_LEADER:
-                case CHAT_MSG_RAID_WARNING:
-                case CHAT_MSG_GUILD:
-                case CHAT_MSG_OFFICER:
-                case CHAT_MSG_BATTLEGROUND:
-                case CHAT_MSG_BATTLEGROUND_LEADER:
-                case CHAT_MSG_AFK:
-                case CHAT_MSG_DND:
-                    packet >> message;
-                    break;
-                case CHAT_MSG_WHISPER:
-                case CHAT_MSG_CHANNEL:
-                    packet >> destination >> message;
-                    break;
-                default: break;
-            }
-#else
-#if VERSION_STRING == Cata
-            type = getMessageTypeForOpcode(static_cast<uint16_t>(sOpcodeTables.getInternalIdForHex(packet.getOpcode())));
-            if (type == 0xFF)
-                return false;
+                packet >> type >> language;
 
-            //get language
-            switch (type)
-            {
-                case CHAT_MSG_SAY:
-                case CHAT_MSG_YELL:
-                case CHAT_MSG_CHANNEL:
-                case CHAT_MSG_WHISPER:
-                case CHAT_MSG_GUILD:
-                case CHAT_MSG_OFFICER:
-                case CHAT_MSG_PARTY:
-                case CHAT_MSG_RAID:
-                case CHAT_MSG_BATTLEGROUND:
-                case CHAT_MSG_RAID_WARNING:
-                    packet >> language;
-                    break;
-                default: break;
-            }
-
-            if (language >= NUM_LANGUAGES)
-                return false;
-
-            uint32_t textLength = 0;
-            uint32_t receiverLength = 0;
-
-            switch (type)
-            {
-                case CHAT_MSG_EMOTE:
-                case CHAT_MSG_SAY:
-                case CHAT_MSG_YELL:
-                case CHAT_MSG_PARTY:
-                case CHAT_MSG_PARTY_LEADER:
-                case CHAT_MSG_RAID:
-                case CHAT_MSG_RAID_LEADER:
-                case CHAT_MSG_RAID_WARNING:
-                case CHAT_MSG_GUILD:
-                case CHAT_MSG_OFFICER:
-                case CHAT_MSG_BATTLEGROUND:
-                case CHAT_MSG_BATTLEGROUND_LEADER:
-                case CHAT_MSG_AFK:
-                case CHAT_MSG_DND:
-                    textLength = packet.readBits(9);
-                    message = packet.readString(textLength);
-                    break;
-                case CHAT_MSG_WHISPER:
+                switch (type)
                 {
-                    receiverLength = packet.readBits(10);
-                    textLength = packet.readBits(9);
-                    destination = packet.readString(receiverLength);
-                    message = packet.readString(textLength);
-
-                } break;
-                case CHAT_MSG_CHANNEL:
-                {
-                    receiverLength = packet.readBits(10);
-                    textLength = packet.readBits(9);
-                    message = packet.readString(textLength);
-                    destination = packet.readString(receiverLength);
-                } break;
-                default: break;
+                    case CHAT_MSG_EMOTE:
+                    case CHAT_MSG_SAY:
+                    case CHAT_MSG_YELL:
+                    case CHAT_MSG_PARTY:
+                    case CHAT_MSG_PARTY_LEADER:
+                    case CHAT_MSG_RAID:
+                    case CHAT_MSG_RAID_LEADER:
+                    case CHAT_MSG_RAID_WARNING:
+                    case CHAT_MSG_GUILD:
+                    case CHAT_MSG_OFFICER:
+                    case CHAT_MSG_BATTLEGROUND:
+                    case CHAT_MSG_BATTLEGROUND_LEADER:
+                    case CHAT_MSG_AFK:
+                    case CHAT_MSG_DND:
+                        packet >> message;
+                        break;
+                    case CHAT_MSG_WHISPER:
+                    case CHAT_MSG_CHANNEL:
+                        packet >> destination >> message;
+                        break;
+                    default: break;
+                }
             }
-#else // Mop
-
-            type = getMessageTypeForOpcode(static_cast<uint16_t>(sOpcodeTables.getInternalIdForHex(packet.getOpcode())));
-            if (type == 0xFF)
-                return false;
-
-            //get language
-            switch (type)
+            else
             {
-                case CHAT_MSG_SAY:
-                case CHAT_MSG_YELL:
-                case CHAT_MSG_CHANNEL:
-                case CHAT_MSG_WHISPER:
-                case CHAT_MSG_GUILD:
-                case CHAT_MSG_OFFICER:
-                case CHAT_MSG_PARTY:
-                case CHAT_MSG_RAID:
-                case CHAT_MSG_BATTLEGROUND:
-                case CHAT_MSG_RAID_WARNING:
-                    packet >> language;
-                    break;
-                default: break;
-            }
-
-            if (language >= NUM_LANGUAGES)
-                return false;
-
-            uint32_t textLength = 0;
-            uint32_t receiverLength = 0;
-
-            switch (type)
-            {
-                case CHAT_MSG_EMOTE:
-                case CHAT_MSG_SAY:
-                case CHAT_MSG_YELL:
-                case CHAT_MSG_PARTY:
-                case CHAT_MSG_PARTY_LEADER:
-                case CHAT_MSG_RAID:
-                case CHAT_MSG_RAID_LEADER:
-                case CHAT_MSG_RAID_WARNING:
-                case CHAT_MSG_GUILD:
-                case CHAT_MSG_OFFICER:
-                case CHAT_MSG_BATTLEGROUND:
-                case CHAT_MSG_BATTLEGROUND_LEADER:
-                case CHAT_MSG_AFK:
-                case CHAT_MSG_DND:
-                    textLength = packet.readBits(8);
-                    message = packet.readString(textLength);
-                    break;
-                case CHAT_MSG_WHISPER:
+                if (m_protocol.expansion == WoW::Expansion::_Cata)
                 {
-                    receiverLength = packet.readBits(9);
-                    textLength = packet.readBits(8);
-                    destination = packet.readString(receiverLength);
-                    message = packet.readString(textLength);
+                    type = getMessageTypeForOpcode(static_cast<uint16_t>(sOpcodeTables.getInternalIdForHex(packet.getOpcode())));
+                    if (type == 0xFF)
+                        return false;
 
-                } break;
-                case CHAT_MSG_CHANNEL:
+                    //get language
+                    switch (type)
+                    {
+                        case CHAT_MSG_SAY:
+                        case CHAT_MSG_YELL:
+                        case CHAT_MSG_CHANNEL:
+                        case CHAT_MSG_WHISPER:
+                        case CHAT_MSG_GUILD:
+                        case CHAT_MSG_OFFICER:
+                        case CHAT_MSG_PARTY:
+                        case CHAT_MSG_RAID:
+                        case CHAT_MSG_BATTLEGROUND:
+                        case CHAT_MSG_RAID_WARNING:
+                            packet >> language;
+                            break;
+                        default: break;
+                    }
+
+                    if (language >= NUM_LANGUAGES)
+                        return false;
+
+                    uint32_t textLength = 0;
+                    uint32_t receiverLength = 0;
+
+                    switch (type)
+                    {
+                        case CHAT_MSG_EMOTE:
+                        case CHAT_MSG_SAY:
+                        case CHAT_MSG_YELL:
+                        case CHAT_MSG_PARTY:
+                        case CHAT_MSG_PARTY_LEADER:
+                        case CHAT_MSG_RAID:
+                        case CHAT_MSG_RAID_LEADER:
+                        case CHAT_MSG_RAID_WARNING:
+                        case CHAT_MSG_GUILD:
+                        case CHAT_MSG_OFFICER:
+                        case CHAT_MSG_BATTLEGROUND:
+                        case CHAT_MSG_BATTLEGROUND_LEADER:
+                        case CHAT_MSG_AFK:
+                        case CHAT_MSG_DND:
+                            textLength = packet.readBits(9);
+                            message = packet.readString(textLength);
+                            break;
+                        case CHAT_MSG_WHISPER:
+                        {
+                            receiverLength = packet.readBits(10);
+                            textLength = packet.readBits(9);
+                            destination = packet.readString(receiverLength);
+                            message = packet.readString(textLength);
+
+                        } break;
+                        case CHAT_MSG_CHANNEL:
+                        {
+                            receiverLength = packet.readBits(10);
+                            textLength = packet.readBits(9);
+                            message = packet.readString(textLength);
+                            destination = packet.readString(receiverLength);
+                        } break;
+                        default: break;
+                    }
+                }
+                else // Mop
                 {
-                    receiverLength = packet.readBits(9);
-                    textLength = packet.readBits(8);
-                    message = packet.readString(textLength);
-                    destination = packet.readString(receiverLength);
-                } break;
-                default: break;
-            }
-#endif
+                    type = getMessageTypeForOpcode(static_cast<uint16_t>(sOpcodeTables.getInternalIdForHex(packet.getOpcode())));
+                    if (type == 0xFF)
+                        return false;
 
-#endif
+                    //get language
+                    switch (type)
+                    {
+                        case CHAT_MSG_SAY:
+                        case CHAT_MSG_YELL:
+                        case CHAT_MSG_CHANNEL:
+                        case CHAT_MSG_WHISPER:
+                        case CHAT_MSG_GUILD:
+                        case CHAT_MSG_OFFICER:
+                        case CHAT_MSG_PARTY:
+                        case CHAT_MSG_RAID:
+                        case CHAT_MSG_BATTLEGROUND:
+                        case CHAT_MSG_RAID_WARNING:
+                            packet >> language;
+                            break;
+                        default: break;
+                    }
+
+                    if (language >= NUM_LANGUAGES)
+                        return false;
+
+                    uint32_t textLength = 0;
+                    uint32_t receiverLength = 0;
+
+                    switch (type)
+                    {
+                        case CHAT_MSG_EMOTE:
+                        case CHAT_MSG_SAY:
+                        case CHAT_MSG_YELL:
+                        case CHAT_MSG_PARTY:
+                        case CHAT_MSG_PARTY_LEADER:
+                        case CHAT_MSG_RAID:
+                        case CHAT_MSG_RAID_LEADER:
+                        case CHAT_MSG_RAID_WARNING:
+                        case CHAT_MSG_GUILD:
+                        case CHAT_MSG_OFFICER:
+                        case CHAT_MSG_BATTLEGROUND:
+                        case CHAT_MSG_BATTLEGROUND_LEADER:
+                        case CHAT_MSG_AFK:
+                        case CHAT_MSG_DND:
+                            textLength = packet.readBits(8);
+                            message = packet.readString(textLength);
+                            break;
+                        case CHAT_MSG_WHISPER:
+                        {
+                            receiverLength = packet.readBits(9);
+                            textLength = packet.readBits(8);
+                            destination = packet.readString(receiverLength);
+                            message = packet.readString(textLength);
+
+                        } break;
+                        case CHAT_MSG_CHANNEL:
+                        {
+                            receiverLength = packet.readBits(9);
+                            textLength = packet.readBits(8);
+                            message = packet.readString(textLength);
+                            destination = packet.readString(receiverLength);
+                        } break;
+                        default: break;
+                    }
+                }
+            }
 
             return true;
         }

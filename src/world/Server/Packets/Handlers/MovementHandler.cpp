@@ -35,7 +35,7 @@ using namespace AscEmu::Packets;
 void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
 {
     CmsgSetActiveMover srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (srlPacket.guid == m_MoverWoWGuid.getRawGuid())
@@ -550,7 +550,7 @@ void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
 void WorldSession::handleWorldTeleportOpcode(WorldPacket& recvPacket)
 {
     CmsgWorldTeleport srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (!HasGMPermissions())
@@ -603,7 +603,7 @@ void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
 {
     MsgMoveTeleportAck srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_MOVE_TELEPORT_ACK.");

@@ -28,7 +28,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
 {
 #if VERSION_STRING < Cata
     CmsgInitiateTrade srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto playerTarget = _player->getWorldMapPlayer(srlPacket.guid.getGuidLow());
@@ -180,7 +180,7 @@ void WorldSession::handleSetTradeGold(WorldPacket& recvPacket)
 {
 #if VERSION_STRING < Cata
     CmsgSetTradeGold srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto tradeMoney = srlPacket.tradeGoldAmount;
@@ -481,7 +481,7 @@ void WorldSession::handleCancelTrade(WorldPacket& /*recvPacket*/)
 void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
 {
     CmsgSetTradeItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto tradeData = _player->getTradeData();
@@ -550,7 +550,7 @@ void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
 void WorldSession::handleClearTradeItem(WorldPacket& recvPacket)
 {
     CmsgClearTradeItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto tradeData = _player->getTradeData();

@@ -63,7 +63,7 @@ using namespace AscEmu::Packets;
 void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
 {
     CmsgUseItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     Item* tmpItem = _player->getItemInterface()->GetInventoryItem(srlPacket.containerIndex, srlPacket.inventorySlot);
@@ -397,7 +397,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
 void WorldSession::handleSwapItemOpcode(WorldPacket& recvPacket)
 {
     CmsgSwapItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SWAP_ITEM: destInventorySlot {} destSlot {} srcInventorySlot {} srcInventorySlot {}",
@@ -788,7 +788,7 @@ void WorldSession::handleItemRefundInfoOpcode([[maybe_unused]] WorldPacket& recv
 {
 #if VERSION_STRING >= WotLK
     CmsgItemrefundinfo srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ITEMREFUNDINFO.");
@@ -801,7 +801,7 @@ void WorldSession::handleItemRefundRequestOpcode([[maybe_unused]] WorldPacket& r
 {
 #if VERSION_STRING >= WotLK
     CmsgItemrefundrequest srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ITEMREFUNDREQUEST.");
@@ -886,7 +886,7 @@ bool VerifyBagSlots(int8_t containerSlot, int8_t slot)
 void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
 {
     CmsgSplitItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (srlPacket.itemCount <= 0 || srlPacket.srcInventorySlot <= 0 && srlPacket.srcSlot < INVENTORY_SLOT_ITEM_START)
@@ -1015,7 +1015,7 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
 void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
 {
     CmsgSwapInvItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SWAP_INV_ITEM src slot: {} dst slot: {}",
@@ -1167,7 +1167,7 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
 void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
 {
     CmsgDestroyItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_DESTROY_ITEM SrcInv Slot: {} Src slot: {}", srlPacket.srcInventorySlot, srlPacket.srcSlot);
@@ -1224,7 +1224,7 @@ void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
 void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
 {
     CmsgAutoequipItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUTOEQUIP_ITEM Inventory slot: {} Source Slot: {}", srlPacket.srcInventorySlot, srlPacket.srcSlot);
@@ -1410,7 +1410,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
 void WorldSession::handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket)
 {
     CmsgAutoequipItemSlot srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUTOEQUIP_ITEM_SLOT");
@@ -1497,7 +1497,7 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
 {
 #if VERSION_STRING == TBC
     CmsgItemQuerySingle srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     ItemProperties const* itemProto = sMySQLStore.getItemProperties(srlPacket.item_id);
@@ -1649,7 +1649,7 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
 #else
 
     CmsgItemQuerySingle srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     auto itemProperties = sMySQLStore.getItemProperties(srlPacket.item_id);
@@ -1790,7 +1790,7 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
 void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
 {
     CmsgBuyBackItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUY_BACK_ITEM");
@@ -1874,7 +1874,7 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
 void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
 {
     CmsgSellItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SELL_ITEM");
@@ -1966,7 +1966,7 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
 void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
 {
     CmsgBuyItemInSlot srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUY_ITEM_IN_SLOT");
@@ -2147,7 +2147,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
 void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
 {
     CmsgBuyItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUY_ITEM");
@@ -2296,7 +2296,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
 void WorldSession::handleListInventoryOpcode(WorldPacket& recvPacket)
 {
     CmsgListInventory srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     Creature* unit = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
@@ -2527,7 +2527,7 @@ void WorldSession::sendInventoryList(Creature* unit)
 void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
 {
     CmsgAutostoreBagItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUTOSTORE_BAG_ITEM");
@@ -2633,7 +2633,7 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
 void WorldSession::handleReadItemOpcode(WorldPacket& recvPacket)
 {
     CmsgReadItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_READ_ITEM {}", srlPacket.srcSlot);
@@ -2652,7 +2652,7 @@ void WorldSession::handleReadItemOpcode(WorldPacket& recvPacket)
 void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
 {
     CmsgRepairItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     Creature* pCreature = _player->getWorldMap()->getCreature(srlPacket.creatureGuid.getGuidLowPart());
@@ -2725,7 +2725,7 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
 void WorldSession::handleAutoBankItemOpcode(WorldPacket& recvPacket)
 {
     CmsgAutobankItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUTO_BANK_ITEM Inventory slot: {} Source Slot: {}",
@@ -2763,7 +2763,7 @@ void WorldSession::handleAutoBankItemOpcode(WorldPacket& recvPacket)
 void WorldSession::handleAutoStoreBankItemOpcode(WorldPacket& recvPacket)
 {
     CmsgAutostoreBankItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUTOSTORE_BANK_ITEM Inventory slot: {} Source Slot: {}",
@@ -2801,7 +2801,7 @@ void WorldSession::handleAutoStoreBankItemOpcode(WorldPacket& recvPacket)
 void WorldSession::handleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket)
 {
     CmsgCancelTempEnchantment srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     Item* item = _player->getItemInterface()->GetInventoryItem(static_cast<int16_t>(srlPacket.inventorySlot));
@@ -2815,7 +2815,7 @@ void WorldSession::handleInsertGemOpcode([[maybe_unused]] WorldPacket& recvPacke
 {
 #if VERSION_STRING > Classic
     CmsgSocketGems srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     ItemInterface* itemi = _player->getItemInterface();
@@ -2994,7 +2994,7 @@ void WorldSession::handleInsertGemOpcode([[maybe_unused]] WorldPacket& recvPacke
 void WorldSession::handleWrapItemOpcode(WorldPacket& recvPacket)
 {
     CmsgWrapItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     Item* src = _player->getItemInterface()->GetInventoryItem(srlPacket.srcBagSlot, srlPacket.srcSlot);

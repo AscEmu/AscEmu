@@ -429,7 +429,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
     player->setGroupInviterId(_player->getGuidLow());
 #else
     CmsgGroupInvite srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     auto invitedPlayer = sObjectMgr.getPlayer(srlPacket.name.c_str(), false);
@@ -543,7 +543,7 @@ void WorldSession::handleGroupAcceptOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::handleGroupUninviteOpcode(WorldPacket& recvPacket)
 {
     CmsgGroupUninvite srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GROUP_UNINVITE: {} (name)", srlPacket.name);
@@ -578,7 +578,7 @@ void WorldSession::handleGroupUninviteOpcode(WorldPacket& recvPacket)
 void WorldSession::handleGroupUninviteGuidOpcode(WorldPacket& recvPacket)
 {
     CmsgGroupUninviteGuid srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GROUP_UNINVITE_GUID: {} (guidLow)", srlPacket.guid.getGuidLow());
@@ -627,7 +627,7 @@ void WorldSession::handleGroupDisbandOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::handleMinimapPingOpcode(WorldPacket& recvPacket)
 {
     MsgMinimapPing srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_MINIMAP_PING: {} (x), {} (y)", srlPacket.posX, srlPacket.posY);
@@ -645,7 +645,7 @@ void WorldSession::handleMinimapPingOpcode(WorldPacket& recvPacket)
 void WorldSession::handleGroupSetLeaderOpcode(WorldPacket& recvPacket)
 {
     CmsgGroupSetLeader srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GROUP_SET_LEADER: {} (guidLow)", srlPacket.guid.getGuidLow());
@@ -677,7 +677,7 @@ void WorldSession::handleGroupSetLeaderOpcode(WorldPacket& recvPacket)
 void WorldSession::handleLootMethodOpcode(WorldPacket& recvPacket)
 {
     CmsgLootMethod srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LOOT_METHOD: {} (method), {} (guidLow), {} (theshold)", srlPacket.method, srlPacket.guid.getGuidLow(), srlPacket.threshold);
@@ -703,7 +703,7 @@ void WorldSession::handleLootMethodOpcode(WorldPacket& recvPacket)
 void WorldSession::handleSetPlayerIconOpcode(WorldPacket& recvPacket)
 {
     MsgRaidTargetUpdate srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_RAID_TARGET_UPDATE: {} (icon)", srlPacket.icon);
@@ -739,7 +739,7 @@ void WorldSession::handleSetPlayerIconOpcode(WorldPacket& recvPacket)
 void WorldSession::handlePartyMemberStatsOpcode(WorldPacket& recvPacket)
 {
     CmsgRequestPartyMemberStats srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_PARTY_MEMBER_STATS: {} (guidLow)", srlPacket.guid.getGuidLow());
@@ -790,7 +790,7 @@ void WorldSession::handleRequestRaidInfoOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::handleGroupChangeSubGroup(WorldPacket& recvPacket)
 {
     CmsgGroupChangeSubGroup srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto playerInfo = sObjectMgr.getCachedCharacterInfoByName(srlPacket.name);
@@ -816,7 +816,7 @@ void WorldSession::handleGroupAssistantLeader(WorldPacket& recvPacket)
     }
 
     CmsgGroupAssistantLeader srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (srlPacket.isActivated)
@@ -847,7 +847,7 @@ void WorldSession::handleGroupPromote(WorldPacket& recvPacket)
     }
 
     MsgPartyAssign srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     CachedCharacterInfo* playerInfo = nullptr;
@@ -877,7 +877,7 @@ void WorldSession::handleReadyCheckOpcode(WorldPacket& recvPacket)
     else
     {
         MsgRaidReadyCheck srlPacket;
-        if (!srlPacket.deserialise(recvPacket))
+        if (!parsePacket(recvPacket, srlPacket))
             return;
 
         if (group->GetLeader())

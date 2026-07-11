@@ -74,7 +74,7 @@ using namespace AscEmu::Packets;
 void WorldSession::handleGuildQuery(WorldPacket& recvPacket)
 {
     CmsgGuildQuery srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto guild = sGuildMgr.getGuildById(uint32_t(srlPacket.guildId));
@@ -93,7 +93,7 @@ void WorldSession::handleGuildQuery(WorldPacket& recvPacket)
 void WorldSession::handleInviteToGuild(WorldPacket& recvPacket)
 {
     CmsgGuildInvite srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
@@ -111,7 +111,7 @@ void WorldSession::handleGuildInfo(WorldPacket& /*recvPacket*/)
 void WorldSession::handleSaveGuildEmblem(WorldPacket& recvPacket)
 {
     MsgSaveGuildEmblem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debug("MSG_SAVE_GUILD_EMBLEM {}: vendorGuid: {} style: {}, color: {}, borderStyle: {}, borderColor: {}, backgroundColor: {}",
@@ -182,7 +182,7 @@ void WorldSession::handleGuildPermissions(WorldPacket& /*recvPacket*/)
 void WorldSession::handleGuildBankBuyTab(WorldPacket& recvPacket)
 {
     CmsgGuildBankBuyTab srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
@@ -192,7 +192,7 @@ void WorldSession::handleGuildBankBuyTab(WorldPacket& recvPacket)
 void WorldSession::handleGuildBankLogQuery(WorldPacket& recvPacket)
 {
     MsgGuildBankLogQuery srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
@@ -202,7 +202,7 @@ void WorldSession::handleGuildBankLogQuery(WorldPacket& recvPacket)
 void WorldSession::handleSetGuildBankText(WorldPacket& recvPacket)
 {
     CmsgSetGuildBankText srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
@@ -212,7 +212,7 @@ void WorldSession::handleSetGuildBankText(WorldPacket& recvPacket)
 void WorldSession::handleGuildLeader(WorldPacket& recvPacket)
 {
     CmsgGuildLeader srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto targetPlayerInfo = sObjectMgr.getCachedCharacterInfoByName(srlPacket.name);
@@ -229,7 +229,7 @@ void WorldSession::handleGuildLeader(WorldPacket& recvPacket)
 void WorldSession::handleGuildMotd(WorldPacket& recvPacket)
 {
     CmsgGuildMotd srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
@@ -239,7 +239,7 @@ void WorldSession::handleGuildMotd(WorldPacket& recvPacket)
 void WorldSession::handleGuildAddRank(WorldPacket& recvPacket)
 {
     CmsgGuildAddRank srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
@@ -249,7 +249,7 @@ void WorldSession::handleGuildAddRank(WorldPacket& recvPacket)
 void WorldSession::handleSetGuildInfo(WorldPacket& recvPacket)
 {
     CmsgGuildInfoText srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
@@ -259,7 +259,7 @@ void WorldSession::handleSetGuildInfo(WorldPacket& recvPacket)
 void WorldSession::handleGuildRemove(WorldPacket& recvPacket)
 {
     CmsgGuildRemove srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
 #if VERSION_STRING < Cata
@@ -279,7 +279,7 @@ void WorldSession::handleGuildRemove(WorldPacket& recvPacket)
 void WorldSession::handleGuildPromote(WorldPacket& recvPacket)
 {
     CmsgGuildPromote srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
 #if VERSION_STRING < Cata
@@ -299,7 +299,7 @@ void WorldSession::handleGuildPromote(WorldPacket& recvPacket)
 void WorldSession::handleGuildDemote(WorldPacket& recvPacket)
 {
     CmsgGuildDemote srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
 #if VERSION_STRING < Cata
@@ -320,7 +320,7 @@ void WorldSession::handleGuildSetPublicNote([[maybe_unused]] WorldPacket& recvPa
 {
 #if VERSION_STRING < Cata
     CmsgGuildSetPublicNote srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto targetPlayerInfo = sObjectMgr.getCachedCharacterInfoByName(srlPacket.targetName);
@@ -336,7 +336,7 @@ void WorldSession::handleGuildSetOfficerNote([[maybe_unused]] WorldPacket& recvP
 {
 #if VERSION_STRING < Cata
     CmsgGuildSetOfficerNote srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto targetPlayerInfo = sObjectMgr.getCachedCharacterInfoByName(srlPacket.targetName);
@@ -352,7 +352,7 @@ void WorldSession::handleGuildSetNoteOpcode([[maybe_unused]] WorldPacket& recvPa
 {
 #if VERSION_STRING >= Cata
     CmsgGuildSetNote srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
@@ -367,7 +367,7 @@ void WorldSession::handleGuildDelRank([[maybe_unused]] WorldPacket& recvPacket)
         guild->handleRemoveLowestRank(this);
 #else
     CmsgGuildDelRank srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
@@ -378,7 +378,7 @@ void WorldSession::handleGuildDelRank([[maybe_unused]] WorldPacket& recvPacket)
 void WorldSession::handleGuildBankWithdrawMoney(WorldPacket& recvPacket)
 {
     CmsgGuildBankWithdrawMoney srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
@@ -388,7 +388,7 @@ void WorldSession::handleGuildBankWithdrawMoney(WorldPacket& recvPacket)
 void WorldSession::handleGuildBankDepositMoney(WorldPacket& recvPacket)
 {
     CmsgGuildBankDepositMoney srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     //\todo HasGold requires an uint32_t
@@ -400,7 +400,7 @@ void WorldSession::handleGuildBankDepositMoney(WorldPacket& recvPacket)
 void WorldSession::handleGuildBankUpdateTab(WorldPacket& recvPacket)
 {
     CmsgGuildBankUpdateTab srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (!srlPacket.tabName.empty() && !srlPacket.tabIcon.empty())
@@ -418,7 +418,7 @@ void WorldSession::handleGuildBankSwapItems(WorldPacket& recvPacket)
     }
 
     CmsgGuildBankSwapItems srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (srlPacket.bankToBank)
@@ -432,7 +432,7 @@ void WorldSession::handleGuildBankQueryText([[maybe_unused]] WorldPacket& recvPa
 {
 #if VERSION_STRING < Cata
     MsgQueryGuildBankText srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
@@ -444,7 +444,7 @@ void WorldSession::handleQueryGuildBankTabText([[maybe_unused]] WorldPacket& rec
 {
 #if VERSION_STRING >= Cata
     CmsgGuildBankQueryText srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
@@ -455,7 +455,7 @@ void WorldSession::handleQueryGuildBankTabText([[maybe_unused]] WorldPacket& rec
 void WorldSession::handleGuildBankQueryTab(WorldPacket& recvPacket)
 {
     CmsgGuildBankQueryTab srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     Guild* guild = _player->getGuild();
@@ -476,7 +476,7 @@ void WorldSession::handleGuildBankQueryTab(WorldPacket& recvPacket)
 void WorldSession::handleGuildBankerActivate(WorldPacket& recvPacket)
 {
     CmsgGuildBankerActivate srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto gameObject = _player->getWorldMap()->getGameObject(srlPacket.guid.getGuidLow());
@@ -506,7 +506,7 @@ void WorldSession::handleGuildBankMoneyWithdrawn(WorldPacket& /*recvPacket*/)
 void WorldSession::handleGuildSetRank(WorldPacket& recvPacket)
 {
     CmsgGuildSetRank srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
@@ -517,7 +517,7 @@ void WorldSession::handleGuildSetRank(WorldPacket& recvPacket)
 void WorldSession::handleCharterShowSignatures(WorldPacket& recvPacket)
 {
     CmsgPetitionShowSignatures srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (const auto charter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid))
@@ -528,7 +528,7 @@ void WorldSession::handleCharterShowSignatures(WorldPacket& recvPacket)
 void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
 {
     CmsgOfferPetition srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     Player* pTarget = _player->getWorldMap()->getPlayer(srlPacket.playerGuid.getGuidLow());
@@ -567,7 +567,7 @@ namespace PetitionSignResult
 void WorldSession::handleCharterSign(WorldPacket& recvPacket)
 {
     CmsgPetitionSign srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (const auto charter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid))
@@ -602,7 +602,7 @@ void WorldSession::handleCharterSign(WorldPacket& recvPacket)
 void WorldSession::handleCharterDecline(WorldPacket& recvPacket)
 {
     MsgPetitionDecline srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     auto const charter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid);
@@ -617,7 +617,7 @@ void WorldSession::handleCharterDecline(WorldPacket& recvPacket)
 void WorldSession::handleCharterRename(WorldPacket& recvPacket)
 {
     MsgPetitionRename srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     auto const charter1 = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid);
@@ -642,7 +642,7 @@ void WorldSession::handleCharterRename(WorldPacket& recvPacket)
 void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
 {
     CmsgTurnInPetition srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto charter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid);
@@ -745,7 +745,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
 void WorldSession::handleCharterQuery(WorldPacket& recvPacket)
 {
     CmsgPetitionQuery srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (auto const charter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid))
@@ -756,7 +756,7 @@ void WorldSession::handleCharterQuery(WorldPacket& recvPacket)
 void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 {
     CmsgPetitionBuy srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     Creature* creature = _player->getWorldMap()->getCreature(srlPacket.creatureGuid.getGuidLowPart());

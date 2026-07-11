@@ -27,7 +27,7 @@ using namespace AscEmu::Packets;
 void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
 {
     CmsgAreatrigger srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AREATRIGGER: {} (triggerId)", srlPacket.triggerId);

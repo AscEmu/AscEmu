@@ -31,7 +31,7 @@ using namespace AscEmu::Packets;
 void WorldSession::handleMarkAsReadOpcode(WorldPacket& recvPacket)
 {
     CmsgMailMarkAsRead srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     auto mailMessage = _player->m_mailBox->GetMessageById(srlPacket.messageId);
@@ -50,7 +50,7 @@ void WorldSession::handleMarkAsReadOpcode(WorldPacket& recvPacket)
 void WorldSession::handleMailDeleteOpcode(WorldPacket& recvPacket)
 {
     CmsgMailDelete srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto mailMessage = _player->m_mailBox->GetMessageById(srlPacket.messageId);
@@ -68,7 +68,7 @@ void WorldSession::handleMailDeleteOpcode(WorldPacket& recvPacket)
 void WorldSession::handleTakeMoneyOpcode(WorldPacket& recvPacket)
 {
     CmsgMailTakeMoney srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto mailMessage = _player->m_mailBox->GetMessageById(srlPacket.messageId);
@@ -98,7 +98,7 @@ void WorldSession::handleTakeMoneyOpcode(WorldPacket& recvPacket)
 void WorldSession::handleReturnToSenderOpcode(WorldPacket& recvPacket)
 {
     CmsgMailReturnToSender srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto mailMessage = _player->m_mailBox->GetMessageById(srlPacket.messageId);
@@ -130,7 +130,7 @@ void WorldSession::handleReturnToSenderOpcode(WorldPacket& recvPacket)
 void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
 {
     CmsgMailCreateTextItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto itemProperties = sMySQLStore.getItemProperties(8383);
@@ -164,7 +164,7 @@ void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
 void WorldSession::handleItemTextQueryOpcode(WorldPacket& recvPacket)
 {
     CmsgItemTextQuery srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
 #if VERSION_STRING > TBC
@@ -359,7 +359,7 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
 {
     CmsgMailTakeItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     auto mailMessage = _player->m_mailBox->GetMessageById(srlPacket.messageId);
@@ -443,7 +443,7 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
 void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
 {
     CmsgSendMail srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
     {
         SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;

@@ -53,7 +53,7 @@ using namespace AscEmu::Packets;
 void WorldSession::handleTabardVendorActivateOpcode(WorldPacket& recvPacket)
 {
     MsgTabardvendorActivate srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_TABARDVENDOR_ACTIVATE: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
@@ -77,7 +77,7 @@ void WorldSession::sendTabardHelp(Creature* creature)
 void WorldSession::handleBankerActivateOpcode(WorldPacket& recvPacket)
 {
     CmsgBankerActivate srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BANKER_ACTIVATE: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
@@ -101,7 +101,7 @@ void WorldSession::sendBankerList(Creature* creature)
 void WorldSession::handleAuctionHelloOpcode(WorldPacket& recvPacket)
 {
     MsgAuctionHello srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUCTION_HELLO: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
@@ -204,7 +204,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 void WorldSession::handleCharterShowListOpcode(WorldPacket& recvPacket)
 {
     CmsgPetitionShowlist srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_CHARTER_SHOW_LIST: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
@@ -228,7 +228,7 @@ void WorldSession::sendCharterRequest(Creature* creature)
 void WorldSession::handleGossipHelloOpcode(WorldPacket& recvPacket)
 {
     CmsgGossipHello srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GOSSIP_HELLO: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
@@ -254,7 +254,7 @@ void WorldSession::handleGossipHelloOpcode(WorldPacket& recvPacket)
 void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
 {
     CmsgGossipSelectOption srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GOSSIP_SELECT_OPTION: {} (gossipId), {} (option), {} (guidLow)",
@@ -306,7 +306,7 @@ void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
 void WorldSession::handleBinderActivateOpcode(WorldPacket& recvPacket)
 {
     CmsgBinderActivate srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BINDER_ACTIVATE: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
@@ -351,7 +351,7 @@ void WorldSession::sendInnkeeperBind(Creature* creature)
 void WorldSession::handleTrainerListOpcode(WorldPacket& recvPacket)
 {
     CmsgTrainerList srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
@@ -365,7 +365,7 @@ void WorldSession::handleTrainerListOpcode(WorldPacket& recvPacket)
 void WorldSession::handleStabledPetList(WorldPacket& recvPacket)
 {
     MsgListStabledPets srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (_player->getClass() != HUNTER)
@@ -601,7 +601,7 @@ void WorldSession::handleSpiritHealerActivateOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::handleNpcTextQueryOpcode(WorldPacket& recvPacket)
 {
     CmsgNpcTextQuery srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debug("Received: CMSG_NPC_TEXT_QUERY: {} (textId)", srlPacket.text_id);
@@ -713,7 +713,7 @@ namespace BankslotError
 void WorldSession::handleBuyBankSlotOpcode(WorldPacket& recvPacket)
 {
     CmsgBuyBankSlot srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUY_BANK_SLOT: {} (guidLow)", srlPacket.guid.getGuidLow());

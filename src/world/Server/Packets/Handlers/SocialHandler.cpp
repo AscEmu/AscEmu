@@ -17,7 +17,7 @@ using namespace AscEmu::Packets;
 void WorldSession::handleFriendListOpcode(WorldPacket& recvPacket)
 {
     CmsgContactList srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     _player->sendFriendLists(srlPacket.list_flag);
@@ -26,7 +26,7 @@ void WorldSession::handleFriendListOpcode(WorldPacket& recvPacket)
 void WorldSession::handleAddFriendOpcode(WorldPacket& recvPacket)
 {
     CmsgAddFriend srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     _player->addToFriendList(srlPacket.name, !srlPacket.note.empty() ? srlPacket.note : "");
@@ -35,7 +35,7 @@ void WorldSession::handleAddFriendOpcode(WorldPacket& recvPacket)
 void WorldSession::handleDelFriendOpcode(WorldPacket& recvPacket)
 {
     CmsgDelFriend srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     _player->removeFromFriendList(static_cast<uint32_t>(srlPacket.guid));
@@ -44,7 +44,7 @@ void WorldSession::handleDelFriendOpcode(WorldPacket& recvPacket)
 void WorldSession::handleAddIgnoreOpcode(WorldPacket& recvPacket)
 {
     CmsgAddIgnore srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     _player->addToIgnoreList(srlPacket.name);
@@ -53,7 +53,7 @@ void WorldSession::handleAddIgnoreOpcode(WorldPacket& recvPacket)
 void WorldSession::handleDelIgnoreOpcode(WorldPacket& recvPacket)
 {
     CmsgDelIgnore srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     _player->removeFromIgnoreList(static_cast<uint32_t>(srlPacket.guid));
@@ -62,7 +62,7 @@ void WorldSession::handleDelIgnoreOpcode(WorldPacket& recvPacket)
 void WorldSession::handleSetFriendNote(WorldPacket& recvPacket)
 {
     CmsgSetContactNotes srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     _player->addNoteToFriend(static_cast<uint32_t>(srlPacket.guid), srlPacket.note.size() ? srlPacket.note : "");

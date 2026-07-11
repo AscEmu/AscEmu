@@ -4,10 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #pragma once
-#include <cstdint>
 
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -27,53 +26,52 @@ namespace AscEmu::Packets
         {
         }
 
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
+    protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
             declinedNames.clear();
-#if VERSION_STRING == Mop
-            WoWGuid unpackedGuid;
-            unpackedGuid[0] = packet.readBit();
-            unpackedGuid[2] = packet.readBit();
-            unpackedGuid[1] = packet.readBit();
-            unpackedGuid[7] = packet.readBit();
-            unpackedGuid[5] = packet.readBit();
-            unpackedGuid[6] = packet.readBit();
-            unpackedGuid[4] = packet.readBit();
-            unpackedGuid[3] = packet.readBit();
-
-            uint32_t nameLength[5];
-            for (int i = 0; i < 5; ++i)
-                nameLength[i] = packet.readBits(7);
-
-            for (int i = 0; i < 5; ++i)
-                declinedNames.push_back(nameLength[i] ? packet.readString(nameLength[i]) : std::string());
-
-            packet.readByteSeq(unpackedGuid[0]);
-            packet.readByteSeq(unpackedGuid[7]);
-            packet.readByteSeq(unpackedGuid[3]);
-            packet.readByteSeq(unpackedGuid[6]);
-            packet.readByteSeq(unpackedGuid[4]);
-            packet.readByteSeq(unpackedGuid[2]);
-            packet.readByteSeq(unpackedGuid[1]);
-            packet.readByteSeq(unpackedGuid[5]);
-
-            guid = unpackedGuid.getRawGuid();
-            return true;
-#else
-            packet >> guid;
-            for (int i = 0; i < 5; ++i)
+            if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
-                std::string name;
-                packet >> name;
-                declinedNames.push_back(name);
+                WoWGuid unpackedGuid;
+                unpackedGuid[0] = packet.readBit();
+                unpackedGuid[2] = packet.readBit();
+                unpackedGuid[1] = packet.readBit();
+                unpackedGuid[7] = packet.readBit();
+                unpackedGuid[5] = packet.readBit();
+                unpackedGuid[6] = packet.readBit();
+                unpackedGuid[4] = packet.readBit();
+                unpackedGuid[3] = packet.readBit();
+
+                uint32_t nameLength[5];
+                for (int i = 0; i < 5; ++i)
+                    nameLength[i] = packet.readBits(7);
+
+                for (int i = 0; i < 5; ++i)
+                    declinedNames.push_back(nameLength[i] ? packet.readString(nameLength[i]) : std::string());
+
+                packet.readByteSeq(unpackedGuid[0]);
+                packet.readByteSeq(unpackedGuid[7]);
+                packet.readByteSeq(unpackedGuid[3]);
+                packet.readByteSeq(unpackedGuid[6]);
+                packet.readByteSeq(unpackedGuid[4]);
+                packet.readByteSeq(unpackedGuid[2]);
+                packet.readByteSeq(unpackedGuid[1]);
+                packet.readByteSeq(unpackedGuid[5]);
+
+                guid = unpackedGuid.getRawGuid();
+                return true;
             }
-            return true;
-#endif
+            else
+            {
+                packet >> guid;
+                for (int i = 0; i < 5; ++i)
+                {
+                    std::string name;
+                    packet >> name;
+                    declinedNames.push_back(name);
+                }
+                return true;
+            }
         }
     };
 }

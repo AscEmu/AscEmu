@@ -44,7 +44,7 @@ using namespace AscEmu::Packets;
 void WorldSession::handlePetAction(WorldPacket& recvPacket)
 {
     CmsgPetAction srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (srlPacket.guid.isUnit())
@@ -229,7 +229,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
 void WorldSession::handlePetNameQuery(WorldPacket& recvPacket)
 {
     CmsgPetNameQuery srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto pet = _player->getWorldMapPet(srlPacket.guid.getGuidLowPart());
@@ -328,7 +328,7 @@ static void performStableSlotSwap(Player* player, uint8_t petNumber)
 void WorldSession::handleUnstablePet(WorldPacket& recvPacket)
 {
     CmsgUnstablePet srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     // Check if player is actually performing a swap
@@ -377,7 +377,7 @@ void WorldSession::handleUnstablePet(WorldPacket& recvPacket)
 void WorldSession::handleStableSwapPet(WorldPacket& recvPacket)
 {
     CmsgStableSwapPet srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     // Pet number in packet is always the pet that is in stables
@@ -411,7 +411,7 @@ void WorldSession::handleBuyStableSlot(WorldPacket& /*recvPacket*/)
 void WorldSession::handlePetSetActionOpcode(WorldPacket& recvPacket)
 {
     CmsgPetSetAction srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (srlPacket.srcSlot >= PET_MAX_ACTION_BAR_SLOT || srlPacket.dstSlot >= PET_MAX_ACTION_BAR_SLOT)
@@ -461,7 +461,7 @@ void WorldSession::handlePetSetActionOpcode(WorldPacket& recvPacket)
 void WorldSession::handlePetRename(WorldPacket& recvPacket)
 {
     CmsgPetRename srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto pet = _player->getPet();
@@ -510,7 +510,7 @@ void WorldSession::handlePetAbandon(WorldPacket& /*recvPacket*/)
 void WorldSession::handlePetUnlearn(WorldPacket& recvPacket)
 {
     CmsgPetUnlearn srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto pet = _player->getPet();
@@ -537,7 +537,7 @@ void WorldSession::handlePetUnlearn(WorldPacket& recvPacket)
 void WorldSession::handlePetSpellAutocast(WorldPacket& recvPacket)
 {
     CmsgPetSpellAutocast srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto pet = _player->getPet();
@@ -557,7 +557,7 @@ void WorldSession::handlePetSpellAutocast(WorldPacket& recvPacket)
 void WorldSession::handlePetCancelAura(WorldPacket& recvPacket)
 {
     CmsgPetCancelAura srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.spellId);
@@ -579,7 +579,7 @@ void WorldSession::handlePetLearnTalent([[maybe_unused]] WorldPacket& recvPacket
 #if VERSION_STRING < Cata
 #if VERSION_STRING > TBC
     CmsgPetLearnTalent srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto pet = _player->getPet();
@@ -632,7 +632,7 @@ void WorldSession::handlePetLearnTalent([[maybe_unused]] WorldPacket& recvPacket
 
 #if VERSION_STRING < Mop
     CmsgPetLearnTalent srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto pet = _player->getPet();
@@ -690,7 +690,7 @@ void WorldSession::handleDismissCritter([[maybe_unused]] WorldPacket& recvPacket
 {
 #if VERSION_STRING > TBC
     CmsgDismissCritter srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (_player->getCritterGuid() == 0)

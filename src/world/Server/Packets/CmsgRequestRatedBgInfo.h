@@ -6,12 +6,12 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class CmsgRequestRatedBgInfo : public ManagedPacket
     {
-#if VERSION_STRING > WotLK
     public:
         uint8_t type;
 
@@ -26,16 +26,10 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
             packet >> type;
             return true;
         }
-#endif
     };
 }

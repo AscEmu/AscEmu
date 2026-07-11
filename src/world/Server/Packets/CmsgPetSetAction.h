@@ -5,11 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "ManagedPacket.h"
 #include <cstdint>
 
-#include "ManagedPacket.h"
 #include "Objects/Units/Creatures/PetDefines.hpp"
-#include "Network/WorldPacket.hpp"
 
 namespace AscEmu::Packets
 {
@@ -37,11 +36,6 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
             uint64_t unpacked_guid;

@@ -107,7 +107,7 @@ void WorldSession::sendDiscoverNewTaxiNode(uint32_t nodeid)
 void WorldSession::handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket)
 {
     CmsgTaxinodeStatusQuery srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debug("WORLD: Received CMSG_TAXINODE_STATUS_QUERY");
@@ -118,7 +118,7 @@ void WorldSession::handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket)
 void WorldSession::handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket)
 {
     CmsgTaxiQueryAvailableNodes srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debug("WORLD: Received CMSG_TAXIQUERYAVAILABLENODES");
@@ -147,7 +147,7 @@ void WorldSession::handleEnabletaxiOpcode([[maybe_unused]] WorldPacket& recvPack
 {
 #if VERSION_STRING > TBC
     CmsgEnabletaxi srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debug("WORLD: Received CMSG_ENABLETAXI");
@@ -172,7 +172,7 @@ void WorldSession::handleEnabletaxiOpcode([[maybe_unused]] WorldPacket& recvPack
 void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
 {
     CmsgActivateTaxi srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATE_TAXI");
@@ -203,7 +203,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
 void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
 {
     CmsgActivateTaxiExpress srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATE_TAXI_EXPRESS");

@@ -5,8 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
 #include "ManagedPacket.h"
+#include <cstdint>
+
 #include "Spell/SpellCastTargets.hpp"
 
 namespace AscEmu::Packets
@@ -45,26 +46,24 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise([[maybe_unused]] WorldPacket& packet) override
         {
-#if VERSION_STRING < Mop
-            packet >> petGuid >> castCount >> spellId >> castFlags;
-
-            targets.read(packet);
-
-            if (castFlags & 0x02)
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
-                hasAdditionalData = true;
-                packet >> projectilePitch >> projectileSpeed >> hasMovementData;
-            }
-#else // Mop
+                packet >> petGuid >> castCount >> spellId >> castFlags;
 
-#endif
+                targets.read(packet);
+
+                if (castFlags & 0x02)
+                {
+                    hasAdditionalData = true;
+                    packet >> projectilePitch >> projectileSpeed >> hasMovementData;
+                }
+            }
+            else // Mop
+            {
+                return false;
+            }
 
             return true;
         }

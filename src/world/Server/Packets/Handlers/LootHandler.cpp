@@ -78,7 +78,7 @@ Loot* WorldSession::getItemLootFromHighGuidType(WoWGuid wowGuid)
 void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
 {
     CmsgAutostoreLootItem srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     _player->interruptSpell();
@@ -314,7 +314,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::handleLootOpcode(WorldPacket& recvPacket)
 {
     CmsgLoot srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (_player->isDead())
@@ -361,7 +361,7 @@ void WorldSession::handleLootOpcode(WorldPacket& recvPacket)
 void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
 {
     CmsgLootRelease srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (uint64_t lguid = GetPlayer()->getLootGuid())
@@ -524,7 +524,7 @@ void WorldSession::doLootRelease(WoWGuid lguid)
 void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
 {
     CmsgLootMasterGive srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (_player->getGroup() == nullptr || _player->getGroup()->GetLooter() != _player->getPlayerInfo())

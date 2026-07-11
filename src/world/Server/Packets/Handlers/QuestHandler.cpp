@@ -334,7 +334,7 @@ std::unique_ptr<WorldPacket> WorldSession::buildQuestQueryResponse(QuestProperti
 void WorldSession::handleQuestPushResultOpcode(WorldPacket& recvPacket)
 {
     MsgQuestPushResult srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_QUEST_PUSH_RESULT");
@@ -354,7 +354,7 @@ void WorldSession::handleQuestPushResultOpcode(WorldPacket& recvPacket)
 void WorldSession::handleQuestgiverAcceptQuestOpcode(WorldPacket& recvPacket)
 {
     CmsgQuestgiverAcceptQuest srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     _player->acceptQuest(srlPacket.guid, srlPacket.questId);
@@ -363,7 +363,7 @@ void WorldSession::handleQuestgiverAcceptQuestOpcode(WorldPacket& recvPacket)
 void WorldSession::handleQuestQueryOpcode(WorldPacket& recvPacket)
 {
     CmsgQuestQuery srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (const auto questProperties = sMySQLStore.getQuestProperties(srlPacket.questId))
@@ -382,7 +382,7 @@ void WorldSession::handleQuestPOIQueryOpcode([[maybe_unused]] WorldPacket& recvP
 {
 #if VERSION_STRING > TBC
     CmsgQuestPoiQuery srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_QUEST_POI_QUERY");
@@ -415,7 +415,7 @@ void WorldSession::handleQuestgiverCancelOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::handleQuestgiverHelloOpcode(WorldPacket& recvPacket)
 {
     CmsgQuestgiverHello srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (const auto questGiver = _player->getWorldMap()->getCreature(srlPacket.questGiverGuid.getGuidLowPart()))
@@ -437,7 +437,7 @@ void WorldSession::handleQuestgiverHelloOpcode(WorldPacket& recvPacket)
 void WorldSession::handleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket)
 {
     CmsgQuestgiverStatusQuery srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (_player->IsInBg())
@@ -493,7 +493,7 @@ void WorldSession::handleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket)
 void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)
 {
     CmsgQuestgiverQueryQuest srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     Object* qst_giver = nullptr;
@@ -593,7 +593,7 @@ void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)
 void WorldSession::handleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
 {
     CmsgQuestlogRemoveQuest srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (srlPacket.questLogSlot >= 25)
@@ -644,7 +644,7 @@ void WorldSession::handleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
 void WorldSession::handleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket)
 {
     CmsgQuestgiverRequestReward srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     bool bValid = false;
@@ -722,7 +722,7 @@ void WorldSession::handleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket)
 void WorldSession::handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
 {
     CmsgQuestgiverCompleteQuest srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     bool bValid = false;
@@ -806,7 +806,7 @@ void WorldSession::handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
 void WorldSession::handleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 {
     CmsgQuestgiverChooseReward srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (srlPacket.rewardSlot >= 6)
@@ -888,7 +888,7 @@ void WorldSession::handleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
 {
     CmsgPushquesttoparty srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     QuestProperties const* pQuest = sMySQLStore.getQuestProperties(srlPacket.questId);

@@ -5,21 +5,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class CmsgSetGuildBankText : public ManagedPacket
     {
     public:
-#if VERSION_STRING < Cata
-        uint8_t tabId;
-#else
         uint32_t tabId;
-#endif
         std::string text;
 
         CmsgSetGuildBankText() : CmsgSetGuildBankText(0, "")
@@ -34,20 +28,28 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> tabId;
-#if VERSION_STRING < Cata
-            packet >> text;
-#else
-            const uint32_t textLen = packet.readBits(14);
-            text = packet.readString(textLen);
-#endif
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+            {
+                uint8_t tabId8;
+                packet >> tabId8;
+                tabId = tabId8;
+            }
+            else
+            {
+                packet >> tabId;
+            }
+
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+            {
+                packet >> text;
+            }
+            else
+            {
+                const uint32_t textLen = packet.readBits(14);
+                text = packet.readString(textLen);
+            }
             return true;
         }
     };

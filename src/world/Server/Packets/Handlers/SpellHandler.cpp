@@ -129,7 +129,7 @@ const SpellInfo* WorldSession::getSpellInfo(uint32_t _spellId) const
 void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
 {
     CmsgCastSpell srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto spellInfo = getSpellInfo(srlPacket.spellId);
@@ -295,7 +295,7 @@ void WorldSession::handleCancelAutoRepeatSpellOpcode(WorldPacket& /*recvPacket*/
 void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
 {
     CmsgPetCastSpell srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.spellId);

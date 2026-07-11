@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Network/WorldPacket.hpp"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -32,39 +30,38 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING <= Cata
-            packet >> uiId;
-    #if VERSION_STRING == Cata
-            packet >> uiTimestamp;
-    #endif
-            packet >> uiDecompressedSize;
-
-            if (uiDecompressedSize >= 0xFFFF)
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
-                packet.rfinish();
-                return false;
-            }
-#else // Mop
-            packet >> uiDecompressedSize;
-            packet >> uiTimestamp;
-            packet >> uiDecompressedSize;
-            uiId = packet.readBits(3);
+                packet >> uiId;
+                if (m_protocol.expansion == WoW::Expansion::_Cata)
+                {
+                    packet >> uiTimestamp;
+                }
+                packet >> uiDecompressedSize;
 
-            if (uiDecompressedSize >= 0xFFFF)
+                if (uiDecompressedSize >= 0xFFFF)
+                {
+                    packet.rfinish();
+                    return false;
+                }
+            }
+            else // Mop
             {
-                packet.rfinish();
-                return false;
-            }
+                packet >> uiDecompressedSize;
+                packet >> uiTimestamp;
+                packet >> uiDecompressedSize;
+                uiId = packet.readBits(3);
 
-            packet.rfinish();
-#endif
+                if (uiDecompressedSize >= 0xFFFF)
+                {
+                    packet.rfinish();
+                    return false;
+                }
+
+                packet.rfinish();
+            }
 
             return true;
         }

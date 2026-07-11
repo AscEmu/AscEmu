@@ -79,7 +79,7 @@ CharacterErrorCodes VerifyName(utf8_string name)
 void WorldSession::handleSetFactionAtWarOpcode(WorldPacket& recvPacket)
 {
     CmsgSetFactionAtWar srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     _player->setFactionAtWar(srlPacket.id, srlPacket.state == 1);
@@ -88,7 +88,7 @@ void WorldSession::handleSetFactionAtWarOpcode(WorldPacket& recvPacket)
 void WorldSession::handleSetFactionInactiveOpcode(WorldPacket& recvPacket)
 {
     CmsgSetFactionInactive srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     _player->setFactionInactive(srlPacket.id, srlPacket.state == 1);
@@ -97,7 +97,7 @@ void WorldSession::handleSetFactionInactiveOpcode(WorldPacket& recvPacket)
 void WorldSession::handleCharDeleteOpcode(WorldPacket& recvPacket)
 {
     CmsgCharDelete srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const uint8_t deleteResult = deleteCharacter(srlPacket.guid);
@@ -110,7 +110,7 @@ void WorldSession::handleCharFactionOrRaceChange([[maybe_unused]] WorldPacket& r
 {
 #if VERSION_STRING > TBC
     CmsgCharFactionChange srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto playerInfoPacket = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow());
@@ -191,7 +191,7 @@ void WorldSession::handleCharFactionOrRaceChange([[maybe_unused]] WorldPacket& r
 void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
 {
     CmsgPlayerLogin srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PLAYER_LOGIN {} (guidLow)", srlPacket.guid.getGuidLow());
@@ -211,7 +211,7 @@ void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
 void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
 {
     CmsgCharRename srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto playerInfo = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow());
@@ -379,7 +379,7 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
 void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
 {
     CmsgCharCreate srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto loginErrorCode = VerifyName(srlPacket.createStruct.name);
@@ -517,7 +517,7 @@ void WorldSession::handleCharCustomizeLooksOpcode([[maybe_unused]] WorldPacket& 
 {
 #if VERSION_STRING > TBC
     CmsgCharCustomize srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto loginErrorCode = VerifyName(srlPacket.createStruct.name);
@@ -761,7 +761,7 @@ void WorldSession::fullLogin(Player* player)
 void WorldSession::handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket)
 {
     CmsgSetPlayerDeclinedNames srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     //\todo check utf8 and cyrillic chars
