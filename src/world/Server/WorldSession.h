@@ -875,6 +875,7 @@ protected:
         void sendDoFlight(uint32_t mountDisplayId, uint32_t path, uint32_t pathNode = 0);
         bool sendLearnNewTaxiNode(Creature* unit);
         void sendDiscoverNewTaxiNode(uint32_t nodeid);
+        void sendActivateTaxiReply(uint32_t error);
 
     protected:
         void handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket);

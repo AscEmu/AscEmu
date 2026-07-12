@@ -39,7 +39,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Container.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Server/Opcodes.hpp"
-#include "Server/Packets/SmsgActivateTaxiReply.h"
 #include "Server/Packets/SmsgTaxinodeStatus.h"
 #include "Server/Packets/MsgTalentWipeConfirm.h"
 #include "Server/Packets/SmsgPetUnlearnConfirm.h"
@@ -10389,7 +10388,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
     // not let cheating with start flight in time of logout process || while in combat || has type state: stunned || has type state: root
     if (getSession()->IsLoggingOut() || isInCombat() || hasUnitStateFlag(UNIT_STATE_STUNNED) || hasUnitStateFlag(UNIT_STATE_ROOTED))
     {
-        getSession()->SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiPlayerBusy).serialise().get());
+        getSession()->sendActivateTaxiReply(TaxiNodeError::ERR_TaxiPlayerBusy);
         return false;
     }
 
@@ -10402,13 +10401,13 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
         // not let cheating with start flight mounted
         if (isMounted())
         {
-            getSession()->SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiPlayerAlreadyMounted).serialise().get());
+            getSession()->sendActivateTaxiReply(TaxiNodeError::ERR_TaxiPlayerAlreadyMounted);
             return false;
         }
 
         if (isInDisallowedMountForm())
         {
-            getSession()->SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiPlayerShapeshifted).serialise().get());;
+            getSession()->sendActivateTaxiReply(TaxiNodeError::ERR_TaxiPlayerShapeshifted);
             return false;
         }
     }
@@ -10437,7 +10436,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
     WDB::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.lookupEntry(sourcenode);
     if (!node)
     {
-        getSession()->SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_NoDirectPath).serialise().get());
+        getSession()->sendActivateTaxiReply(TaxiNodeError::ERR_NoDirectPath);
         return false;
     }
 
@@ -10494,7 +10493,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
     // in spell case allow 0 model
     if ((mount_display_id == 0 && spellid == 0) || sourcepath == 0)
     {
-        getSession()->SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_UnspecificError).serialise().get());
+        getSession()->sendActivateTaxiReply(TaxiNodeError::ERR_UnspecificError);
         m_taxi->clearTaxiDestinations();
         return false;
     }
@@ -10511,7 +10510,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
 
     if (money < totalcost)
     {
-        getSession()->SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_NotEnoughMoney).serialise().get());
+        getSession()->sendActivateTaxiReply(TaxiNodeError::ERR_NotEnoughMoney);
         m_taxi->clearTaxiDestinations();
         return false;
     }
@@ -10526,7 +10525,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
 #if VERSION_STRING > TBC
     updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_FOR_TRAVELLING, firstcost);
 #endif
-    getSession()->SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_Ok).serialise().get());
+    getSession()->sendActivateTaxiReply(TaxiNodeError::ERR_Ok);
     getSession()->sendDoFlight(mount_display_id, sourcepath);
     return true;
 }

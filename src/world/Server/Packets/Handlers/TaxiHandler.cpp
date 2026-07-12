@@ -104,6 +104,12 @@ void WorldSession::sendDiscoverNewTaxiNode(uint32_t nodeid)
     }
 }
 
+void WorldSession::sendActivateTaxiReply(uint32_t error)
+{
+    SmsgActivateTaxiReply sendPacket(error);
+    sendManagedPacket(sendPacket);
+}
+
 void WorldSession::handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket)
 {
     CmsgTaxinodeStatusQuery srlPacket;
@@ -127,7 +133,7 @@ void WorldSession::handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket)
     Creature* unit = GetPlayer()->getCreatureWhenICanInteract(WoWGuid(srlPacket.creatureGuid), UNIT_NPC_FLAG_TAXI);
     if (!unit)
     {
-        SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
+        sendActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway);
         return;
     }
 
@@ -156,7 +162,7 @@ void WorldSession::handleEnabletaxiOpcode([[maybe_unused]] WorldPacket& recvPack
     Creature* unit = GetPlayer()->getCreatureWhenICanInteract(srlPacket.creatureGuid, UNIT_NPC_FLAG_TAXI);
     if (!unit)
     {
-        SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
+        sendActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway);
         return;
     }
 
@@ -180,7 +186,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
     Creature* npc = GetPlayer()->getCreatureWhenICanInteract(srlPacket.guid, UNIT_NPC_FLAG_TAXI);
     if (!npc)
     {
-        SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
+        sendActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway);
         return;
     }
 
@@ -188,7 +194,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
     {
         if (!GetPlayer()->m_taxi->isTaximaskNodeKnown(srlPacket.nodes[0]) || !GetPlayer()->m_taxi->isTaximaskNodeKnown(srlPacket.nodes[1]))
         {
-            SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiNotVisited).serialise().get());
+            sendActivateTaxiReply(TaxiNodeError::ERR_TaxiNotVisited);
             return;
         }
     }
@@ -211,7 +217,7 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     Creature* npc = GetPlayer()->getCreatureWhenICanInteract(srlPacket.guid, UNIT_NPC_FLAG_TAXI);
     if (!npc)
     {
-        SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
+        sendActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway);
         return;
     }
     std::vector<uint32_t> nodes;
@@ -220,7 +226,7 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     {
         if (!GetPlayer()->m_taxi->isTaximaskNodeKnown(srlPacket.pathParts[i]) && !GetPlayer()->m_cheats.hasTaxiCheat)
         {
-            SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiNotVisited).serialise().get());
+            sendActivateTaxiReply(TaxiNodeError::ERR_TaxiNotVisited);
             return;
         }
 

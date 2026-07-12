@@ -1755,14 +1755,18 @@ void AchievementMgr::gmResetAchievement(uint32_t _achievementId, bool _finishAll
     if (_finishAll)
     {
         for (const auto& completedAchievement : m_completedAchievements)
-            getPlayer()->sendPacket(SmsgAchievementDeleted(completedAchievement.first).serialise().get());
+        {
+            SmsgAchievementDeleted sendPacket(completedAchievement.first);
+            getPlayer()->getSession()->sendManagedPacket(sendPacket);
+        }
 
         m_completedAchievements.clear();
         CharacterDatabase.execute("DELETE FROM character_achievement WHERE guid = %u", m_player->getGuidLow());
     }
     else
     {
-        getPlayer()->sendPacket(SmsgAchievementDeleted(_achievementId).serialise().get());
+        SmsgAchievementDeleted sendPacket(_achievementId);
+        getPlayer()->getSession()->sendManagedPacket(sendPacket);
 
         m_completedAchievements.erase(_achievementId);
         CharacterDatabase.execute("DELETE FROM character_achievement WHERE guid = %u AND achievement = %u", m_player->getGuidLow(), static_cast<uint32_t>(_achievementId));
