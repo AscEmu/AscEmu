@@ -63,6 +63,7 @@
 #include "Units/Players/Player.hpp"
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
+#include "Server/PacketBroadcast.hpp"
 
 // MIT
 
@@ -1395,7 +1396,8 @@ void GameObject::CastSpell(uint64_t TargetGUID, uint32_t SpellID)
 //MIT
 void GameObject::sendGameobjectCustomAnim(uint32_t anim)
 {
-    sendMessageToSet(SmsgGameobjectCustomAnim(getGuid(), anim).serialise().get(), false, false);
+    SmsgGameobjectCustomAnim sendPacket(getGuid(), anim);
+    PacketBroadcast::sendToSet(*this, sendPacket);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
