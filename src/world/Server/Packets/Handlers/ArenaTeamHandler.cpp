@@ -338,9 +338,7 @@ void WorldSession::handleArenaTeamRosterOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleInspectArenaStatsOpcode(WorldPacket& recvPacket)
 {
-    if (m_protocol.isClassic())
-        return;
-
+#if VERSION_STRING > Classic
     MsgInspectArenaTeams srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;
@@ -380,4 +378,5 @@ void WorldSession::handleInspectArenaStatsOpcode(WorldPacket& recvPacket)
         MsgInspectArenaTeams sendPacket(0, arenaTeamList);
         sendManagedPacket(sendPacket);
     }
+#endif
 }
