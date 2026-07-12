@@ -336,9 +336,11 @@ void WorldSession::handleArenaTeamRosterOpcode(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::handleInspectArenaStatsOpcode([[maybe_unused]] WorldPacket& recvPacket)
+void WorldSession::handleInspectArenaStatsOpcode(WorldPacket& recvPacket)
 {
-#if VERSION_STRING != Classic
+    if (m_protocol.isClassic())
+        return;
+
     MsgInspectArenaTeams srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;
@@ -374,6 +376,8 @@ void WorldSession::handleInspectArenaStatsOpcode([[maybe_unused]] WorldPacket& r
     }
 
     if (!arenaTeamList.empty())
-        SendPacket(MsgInspectArenaTeams(0, arenaTeamList).serialise().get());
-#endif
+    {
+        MsgInspectArenaTeams sendPacket(0, arenaTeamList);
+        sendManagedPacket(sendPacket);
+    }
 }

@@ -185,7 +185,8 @@ void WorldSession::handleBattlegroundPlayerPositionsOpcode(WorldPacket& /*recvPa
     if (hordePlayer)
         ++flagHolders;
 
-    SendPacket(MsgBattlegroundPlayerPosition(0, flagHolders, alliancePlayer, hordePlayer).serialise().get());
+    MsgBattlegroundPlayerPosition sendPacket(0, flagHolders, alliancePlayer, hordePlayer);
+    sendManagedPacket(sendPacket);
 }
 
 void WorldSession::handleAreaSpiritHealerQueueOpcode(WorldPacket& recvPacket)
