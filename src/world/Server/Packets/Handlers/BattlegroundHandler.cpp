@@ -73,7 +73,8 @@ void WorldSession::handleInspectHonorStatsOpcode(WorldPacket& recvPacket)
 #endif
 #endif
 
-    SendPacket(MsgInspectHonorStats(player->getGuid(), honorCurrency, kills, todayContrib, yesterdayContrib, lifetimeKills).serialise().get());
+    MsgInspectHonorStats sendPacket(player->getGuid(), honorCurrency, kills, todayContrib, yesterdayContrib, lifetimeKills);
+    sendManagedPacket(sendPacket);
 }
 
 void WorldSession::handleArenaJoinOpcode(WorldPacket& recvPacket)

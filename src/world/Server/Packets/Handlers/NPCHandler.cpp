@@ -392,12 +392,17 @@ void WorldSession::sendStabledPetList(uint64_t npcguid)
         stableList.emplace(cachedPet->slot, stablePet);
     }
 
-#if VERSION_STRING >= Cata
     // Since cata all stable slots are automatically unlocked
-    SendPacket(MsgListStabledPets(npcguid, PET_SLOT_MAX_STABLE_SLOT, stableList).serialise().get());
-#else
-    SendPacket(MsgListStabledPets(npcguid, _player->m_stableSlotCount, stableList).serialise().get());
-#endif
+    if (m_protocol.expansion >= WoW::Expansion::_Cata)
+    {
+        MsgListStabledPets sendPacket(npcguid, PET_SLOT_MAX_STABLE_SLOT, stableList);
+        sendManagedPacket(sendPacket);
+    }
+    else
+    {
+        MsgListStabledPets sendPacket(npcguid, _player->m_stableSlotCount, stableList);
+        sendManagedPacket(sendPacket);
+    }
 }
 
 void WorldSession::sendTrainerList(Creature* creature)
