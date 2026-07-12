@@ -53,14 +53,12 @@ namespace AscEmu::Packets
         {
         }
 
-        SmsgAuthAccount accountInfo = {
-            0, 0, 0, static_cast<uint8_t>(m_protocol.expansion)
-        };
-
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            sLogger.debug("SmsgAuthResponse::internalSerialise: for expansion {}", static_cast<unsigned int>(m_protocol.expansion));
+            SmsgAuthAccount accountInfo = { 0, 0, 0, static_cast<uint8_t>(m_protocol.expansion) };
+
+            sLogger.debug("SmsgAuthResponse::internalSerialise: for expansion {}", accountInfo.expansion);
 
             switch (sendType)
             {
