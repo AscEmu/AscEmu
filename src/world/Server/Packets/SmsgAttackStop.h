@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -29,10 +28,7 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override
-        {
-            return 8 + 8 + 4;
-        }
+        size_t expectedSize() const override { return 8 + 8 + 4; }
 
         bool internalSerialise(WorldPacket& packet) override
         {

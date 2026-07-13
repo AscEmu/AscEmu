@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -30,44 +29,44 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Mop
-            packet << guid;
-#if VERSION_STRING >= WotLK
-            packet << uint8_t(0);
-#endif
-#else
-            WoWGuid oGuid = guid;
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet << guid;
 
-            packet.writeBit(oGuid[3]);
-            packet.writeBit(oGuid[2]);
-            packet.writeBit(oGuid[4]);
-            packet.writeBit(oGuid[1]);
+                if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+                    packet << uint8_t(0);
+            }
+            else // Mop
+            {
+                WoWGuid oGuid = guid;
 
-            packet << uint8_t(0);
+                packet.writeBit(oGuid[3]);
+                packet.writeBit(oGuid[2]);
+                packet.writeBit(oGuid[4]);
+                packet.writeBit(oGuid[1]);
 
-            packet.writeBit(oGuid[7]);
-            packet.writeBit(oGuid[0]);
-            packet.writeBit(oGuid[6]);
-            packet.writeBit(oGuid[5]);
+                packet << uint8_t(0);
 
-            packet.flushBits();
+                packet.writeBit(oGuid[7]);
+                packet.writeBit(oGuid[0]);
+                packet.writeBit(oGuid[6]);
+                packet.writeBit(oGuid[5]);
 
-            packet.writeByteSeq(oGuid[0]);
-            packet.writeByteSeq(oGuid[4]);
-            packet.writeByteSeq(oGuid[7]);
-            packet.writeByteSeq(oGuid[2]);
-            packet.writeByteSeq(oGuid[6]);
-            packet.writeByteSeq(oGuid[3]);
-            packet.writeByteSeq(oGuid[1]);
-            packet.writeByteSeq(oGuid[5]);
+                packet.flushBits();
 
-#endif
+                packet.writeByteSeq(oGuid[0]);
+                packet.writeByteSeq(oGuid[4]);
+                packet.writeByteSeq(oGuid[7]);
+                packet.writeByteSeq(oGuid[2]);
+                packet.writeByteSeq(oGuid[6]);
+                packet.writeByteSeq(oGuid[3]);
+                packet.writeByteSeq(oGuid[1]);
+                packet.writeByteSeq(oGuid[5]);
+            }
+
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

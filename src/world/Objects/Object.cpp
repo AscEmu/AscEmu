@@ -54,6 +54,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Players/Player.hpp"
 #include "Utilities/Random.hpp"
 #include "Utilities/MathConstants.hpp"
+#include "Server/PacketBroadcast.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -4728,7 +4729,8 @@ void Object::SendAIReaction(uint32_t reaction)
 
 void Object::SendDestroyObject()
 {
-    sendMessageToSet(SmsgDestroyObject(getGuid()).serialise().get(), false);
+    SmsgDestroyObject sendPacket(getGuid());
+    PacketBroadcast::sendToSet(*this, sendPacket);
 }
 
 bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float & outz, bool sloppypath)

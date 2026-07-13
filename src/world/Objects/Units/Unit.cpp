@@ -85,6 +85,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgSetExtraAuraInfo.h"
 #endif
 
+#include "Server/PacketBroadcast.hpp"
+
 #include <algorithm>
 
 using namespace AscEmu::Packets;
@@ -6942,15 +6944,14 @@ uint32_t Unit::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly
 
 void Unit::smsg_AttackStop(Unit* pVictim)
 {
-    if (pVictim)
-        sendMessageToSet(SmsgAttackStop(GetNewGUID(), pVictim->GetNewGUID()).serialise().get(), true);
-    else
-        sendMessageToSet(SmsgAttackStop(GetNewGUID(), WoWGuid()).serialise().get(), true);
+    SmsgAttackStop sendPacket(GetNewGUID(), pVictim ? pVictim->GetNewGUID() : WoWGuid());
+    PacketBroadcast::sendToSet(*this, sendPacket, true);
 }
 
 void Unit::smsg_AttackStart(Unit* pVictim)
 {
-    sendMessageToSet(SmsgAttackStart(getGuid(), pVictim->getGuid()).serialise().get(), false);
+    SmsgAttackStart sendPacket(getGuid(), pVictim->getGuid());
+    PacketBroadcast::sendToSet(*this, sendPacket, false);
 
     sLogger.debug("WORLD: Sent SMSG_ATTACK_START");
 
