@@ -157,7 +157,7 @@ void ArenaTeam::destroy()
     std::vector<CachedCharacterInfo const*> toDestroyMembers;
     toDestroyMembers.reserve(m_memberCount);
 
-    std::string message = std::format("The arena team, '{}', disbanded.", m_name);
+    std::string message = fmt::format("The arena team, '{}', disbanded.", m_name);
     sendMessagePacket(message);
 
     for (uint32_t i = 0; i < m_memberCount; ++i)
@@ -295,7 +295,7 @@ void ArenaTeam::setLeader(CachedCharacterInfo const* cachedCharInfo)
 {
     if (cachedCharInfo)
     {
-        std::string message = std::format("{} is now the captain of the arena team, '{}'.", cachedCharInfo->name, m_name);
+        std::string message = fmt::format("{} is now the captain of the arena team, '{}'.", cachedCharInfo->name, m_name);
         sendMessagePacket(message);
 
         m_leader = cachedCharInfo->guid;
