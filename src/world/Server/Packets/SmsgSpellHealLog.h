@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -44,20 +43,22 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << targetGuid << casterGuid << spellId << healed;
-#if VERSION_STRING > TBC
-            packet << overHealed << absorb;
-#endif
+
+            if (m_protocol.expansion > WoW::Expansion::_TBC)
+            {
+                packet << overHealed << absorb;
+            }
+
             packet << isCritical;
-#if VERSION_STRING > Classic
-            packet << unused;
-#endif
+
+            if (m_protocol.expansion > WoW::Expansion::_Classic)
+            {
+                packet << unused;
+            }
 
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

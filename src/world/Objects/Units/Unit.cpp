@@ -2935,7 +2935,8 @@ void Unit::applyControlStatesIfNeeded()
 
 void Unit::playSpellVisual(uint32_t visual_id, uint32_t type)
 {
-    sendMessageToSet(SmsgPlaySpellVisual(getGuid(), visual_id, type).serialise().get(), true);
+    SmsgPlaySpellVisual sendPacket(getGuid(), visual_id, type);
+    PacketBroadcast::sendToSet(*this, sendPacket, true);
 }
 
 void Unit::applyDiminishingReturnTimer(uint32_t* duration, SpellInfo const* spell)
@@ -3725,12 +3726,14 @@ void Unit::sendSpellHealLog(Object* caster, Object* target, uint32_t spellId, ui
     if (caster == nullptr || target == nullptr)
         return;
 
-    target->sendMessageToSet(SmsgSpellHealLog(target->GetNewGUID(), caster->GetNewGUID(), spellId, healAmount, overHeal, absorbedHeal, isCritical).serialise().get(), true);
+    SmsgSpellHealLog sendPacket(target->GetNewGUID(), caster->GetNewGUID(), spellId, healAmount, overHeal, absorbedHeal, isCritical);
+    PacketBroadcast::sendToSet(*this, sendPacket, true);
 }
 
 void Unit::sendSpellOrDamageImmune(uint64_t casterGuid, Unit* target, uint32_t spellId)
 {
-    target->sendMessageToSet(SmsgSpellOrDamageImmune(casterGuid, target->getGuid(), spellId).serialise().get(), true);
+    SmsgSpellOrDamageImmune sendPacket(casterGuid, target->getGuid(), spellId);
+    PacketBroadcast::sendToSet(*this, sendPacket, true);
 }
 
 #if VERSION_STRING > TBC
@@ -5041,7 +5044,9 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
     }
 #endif
 
-    sendMessageToSet(SmsgAuraUpdate(getGuid(), auraUpdate, remove).serialise().get(), true);
+    SmsgAuraUpdate sendPacket(getGuid(), auraUpdate, remove);
+    PacketBroadcast::sendToSet(*this, sendPacket, true);
+
 #endif
 }
 
@@ -5097,12 +5102,11 @@ void Unit::sendFullAuraUpdate()
             }
         }
 #endif
-
         packetData.addAuraUpdate(auraUpdate);
         ++updates;
     }
 
-    sendMessageToSet(packetData.serialise().get(), true);
+    PacketBroadcast::sendToSet(*this, packetData, true);
     sLogger.debug("Unit::sendFullAuraUpdate : Updated {} auras for guid {}", updates, getGuid());
 #endif
 #endif
@@ -5135,7 +5139,9 @@ bool Unit::sendPeriodicAuraLog(const WoWGuid& casterGuid, const WoWGuid& targetG
             return false;
     }
 
-    sendMessageToSet(SmsgPeriodicAuraLog(targetGuid, casterGuid, spellInfo->getId(), auraEffect, amount, overKillOrOverHeal, school, absorbed, resisted, isCritical, miscValue, gainMultiplier).serialise().get(), true);
+    SmsgPeriodicAuraLog sendPacket(targetGuid, casterGuid, spellInfo->getId(), auraEffect, amount, overKillOrOverHeal,
+        school, absorbed, resisted, isCritical, miscValue, gainMultiplier);
+    PacketBroadcast::sendToSet(*this, sendPacket, true);
     return true;
 }
 
@@ -6106,7 +6112,8 @@ void Unit::energize(Unit* target, uint32_t spellId, uint32_t amount, PowerType t
 
 void Unit::sendSpellEnergizeLog(Unit* target, uint32_t spellId, uint32_t amount, PowerType type)
 {
-    sendMessageToSet(SmsgSpellEnergizeLog(target->GetNewGUID(), GetNewGUID(), spellId, type, amount).serialise().get(), true);
+    SmsgSpellEnergizeLog sendPacket(target->GetNewGUID(), GetNewGUID(), spellId, type, amount);
+    PacketBroadcast::sendToSet(*this, sendPacket, true);
 }
 
 uint8_t Unit::getHealthPct() const
@@ -6145,7 +6152,8 @@ void Unit::sendPowerUpdate([[maybe_unused]] bool self)
     // Save current power so the same amount is sent to player and everyone else
     const auto powerAmount = getPower(getPowerType());
 
-    sendMessageToSet(SmsgPowerUpdate(GetNewGUID(), static_cast<uint8_t>(getPowerType()), powerAmount).serialise().get(), self);
+    SmsgPowerUpdate sendPacket(GetNewGUID(), static_cast<uint8_t>(getPowerType()), powerAmount);
+    PacketBroadcast::sendToSet(*this, sendPacket, self);
 #endif
 }
 
@@ -6209,7 +6217,7 @@ void Unit::_regeneratePowersAtRegenUpdate([[maybe_unused]]PowerType type)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Chat
-std::unique_ptr<WorldPacket> Unit::createChatPacket(uint8_t type, uint32_t language, std::string msg, Unit* target/* = nullptr*/,  uint32_t sessionLanguage/* = 0*/)
+SmsgMessageChat Unit::createChatPacket(uint8_t type, uint32_t language, std::string msg, Unit* target/* = nullptr*/,  uint32_t sessionLanguage/* = 0*/)
 {
     // Note: target is not the one who receives the message
     // it is whom the message should be pointed at
@@ -6253,13 +6261,13 @@ std::unique_ptr<WorldPacket> Unit::createChatPacket(uint8_t type, uint32_t langu
         }
     }
 
-    return SmsgMessageChat(type, language, 0, msg, getGuid(), senderName, targetGuid, targetName).serialise();
+    return SmsgMessageChat(type, language, 0, msg, getGuid(), senderName, targetGuid, targetName);
 }
 
 void Unit::sendChatMessage(uint8_t type, uint32_t language, std::string msg, Unit* target/* = nullptr*/, uint32_t sessionLanguage/* = 0*/)
 {
-    const auto data = createChatPacket(type, language, msg, target, sessionLanguage);
-    sendMessageToSet(data.get(), true);
+    SmsgMessageChat data = createChatPacket(type, language, msg, target, sessionLanguage);
+    PacketBroadcast::sendToSet(*this, data, true);
 }
 
 void Unit::sendChatMessage(uint8_t type, uint32_t language, std::string msg, uint32_t delay)
@@ -6292,16 +6300,16 @@ void Unit::sendChatMessageToPlayer(uint8_t type, uint32_t language, std::string 
     if (plr == nullptr)
         return;
 
-    const auto data = createChatPacket(type, language, msg, plr, plr->getSession()->language);
-    plr->getSession()->SendPacket(data.get());
+    SmsgMessageChat data = createChatPacket(type, language, msg, plr, plr->getSession()->language);
+    plr->getSession()->sendManagedPacket(data);
 }
 
 void Unit::sendChatMessageAlternateEntry(uint32_t entry, uint8_t type, uint32_t lang, std::string  msg)
 {
     if (CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry))
     {
-        const auto data = SmsgMessageChat(type, lang, 0, msg, getGuid(), creatureProperties->Name).serialise();
-        sendMessageToSet(data.get(), true);
+        SmsgMessageChat sendPacket(type, lang, 0, msg, getGuid(), creatureProperties->Name);
+        PacketBroadcast::sendToSet(*this, sendPacket, true);
     }
 }
 
@@ -6342,7 +6350,8 @@ float Unit::getAttackSpeedModifier(WeaponDamageType type) const
 
 void Unit::sendEnvironmentalDamageLogPacket(uint64_t guid, uint8_t type, uint32_t damage, uint64_t unk /*= 0*/)
 {
-    sendMessageToSet(SmsgEnvironmentalDamageLog(guid, type, damage, unk).serialise().get(), true, false);
+    SmsgEnvironmentalDamageLog sendPacket(guid, type, damage, unk);
+    PacketBroadcast::sendToSet(*this, sendPacket, true);
 }
 
 bool Unit::isPvpFlagSet() const { return false; }
@@ -6480,7 +6489,8 @@ void Unit::emote(EmoteType emote)
         return;
 #endif
 
-    sendMessageToSet(SmsgEmote(emote, this->getGuid()).serialise().get(), true);
+    SmsgEmote sendPacket(emote, this->getGuid());
+    PacketBroadcast::sendToSet(*this, sendPacket, true);
 }
 
 void Unit::eventAddEmote(EmoteType emote, uint32_t time)
@@ -7978,8 +7988,11 @@ void Unit::mount([[maybe_unused]] uint32_t mount, [[maybe_unused]] uint32_t Vehi
             if (createVehicleKit(VehicleId, creatureEntry))
             {
                 // Send others that we now have a vehicle
-                sendMessageToSet(SmsgPlayerVehicleData(WoWGuid(getGuid()), VehicleId).serialise().get(), true);
-                sendPacket(SmsgControlVehicle().serialise().get());
+                SmsgPlayerVehicleData sendPacket(WoWGuid(getGuid()), VehicleId);
+                PacketBroadcast::sendToSet(*this, sendPacket, true);
+
+                SmsgControlVehicle smsgPacket;
+                player->getSession()->sendManagedPacket(smsgPacket);
 
                 // mounts can also have accessories
                 getVehicleKit()->initialize();
@@ -8051,7 +8064,9 @@ void Unit::dismount([[maybe_unused]] bool resummonPet/* = true*/)
     if (isPlayer() && getVehicleKit())
     {
         // Send other players that we are no longer a vehicle
-        sendMessageToSet(SmsgPlayerVehicleData().serialise().get(), true);
+        SmsgPlayerVehicleData sendPacket;
+        PacketBroadcast::sendToSet(*this, sendPacket, true);
+
         // Remove vehicle from player
         removeVehicleKit();
     }
@@ -16396,7 +16411,9 @@ void Unit::handleProcDmgShield(uint32_t flag, Unit* attacker)
             {
                 if (const auto spellInfo = sSpellMgr.getSpellInfo((*i2).m_spellId))
                 {
-                    sendMessageToSet(SmsgSpellDamageShield(this->getGuid(), attacker->getGuid(), spellInfo->getId(), (*i2).m_damage, spellInfo->getSchoolMask()).serialise().get(), true);
+                    SmsgSpellDamageShield sendPacket(this->getGuid(), attacker->getGuid(), spellInfo->getId(), (*i2).m_damage, spellInfo->getSchoolMask());
+                    PacketBroadcast::sendToSet(*this, sendPacket, true);
+
                     addSimpleDamageBatchEvent((*i2).m_damage, this);
                 }
             }

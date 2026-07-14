@@ -5,15 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class SmsgDestructibleBuildingDamage : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         WoWGuid goGuid;
         WoWGuid attackerGuid;
@@ -40,12 +38,16 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << goGuid << attackerGuid << controllerGuid << damage << spellId;
+            if (m_protocol.expansion >= WoW::Expansion::_TBC)
+            {
+                packet << goGuid << attackerGuid << controllerGuid << damage << spellId;
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
-#endif
     };
 }

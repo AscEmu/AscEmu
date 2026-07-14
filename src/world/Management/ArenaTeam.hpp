@@ -71,7 +71,7 @@ public:
     void saveToDB();
 
     void destroy();
-    void sendPacket(WorldPacket* data) const;
+    void sendMessagePacket(std::string& data) const;
 
     ArenaTeamMember* getMember(CachedCharacterInfo const* cachedCharInfo) const;
     ArenaTeamMember* getMemberByGuid(uint32_t lowGuid) const;

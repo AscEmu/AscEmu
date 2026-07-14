@@ -157,10 +157,8 @@ void ArenaTeam::destroy()
     std::vector<CachedCharacterInfo const*> toDestroyMembers;
     toDestroyMembers.reserve(m_memberCount);
 
-    char buffer[1024];
-    snprintf(buffer, 1024, "The arena team, '%s', disbanded.", m_name.c_str());
-
-    sendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
+    std::string message = std::format("The arena team, '{}', disbanded.", m_name);
+    sendMessagePacket(message);
 
     for (uint32_t i = 0; i < m_memberCount; ++i)
     {
@@ -175,14 +173,17 @@ void ArenaTeam::destroy()
     sObjectMgr.removeArenaTeam(this);
 }
 
-void ArenaTeam::sendPacket(WorldPacket* data) const
+void ArenaTeam::sendMessagePacket(std::string& data) const
 {
     for (uint32_t i = 0; i < m_memberCount; ++i)
     {
         if (m_members[i].Info)
         {
             if (Player* loggedInPlayer = sObjectMgr.getPlayer(m_members[i].Info->guid))
-                loggedInPlayer->getSession()->SendPacket(data);
+            {
+                SmsgMessageChat teamMessage(SystemMessagePacket{data});
+                loggedInPlayer->getSession()->sendManagedPacket(teamMessage);
+            }
         }
     }
 }
@@ -294,10 +295,8 @@ void ArenaTeam::setLeader(CachedCharacterInfo const* cachedCharInfo)
 {
     if (cachedCharInfo)
     {
-        char buffer[1024];
-        snprintf(buffer, 1024, "%s is now the captain of the arena team, '%s'.", cachedCharInfo->name.c_str(), m_name.c_str());
-
-        sendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
+        std::string message = std::format("{} is now the captain of the arena team, '{}'.", cachedCharInfo->name, m_name);
+        sendMessagePacket(message);
 
         m_leader = cachedCharInfo->guid;
 

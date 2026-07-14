@@ -93,6 +93,7 @@
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
 #include "Utilities/MathConstants.hpp"
+#include "Server/PacketBroadcast.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -2714,7 +2715,8 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
                     char msg[256];
                     sprintf(msg, "%sDISCOVERY! %s has discovered how to create %s.|r", MSG_COLOR_GOLD, p_caster->getName().c_str(), se->getName().c_str());
 
-                    p_caster->getWorldMap()->sendChatMessageToCellPlayers(p_caster, SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, msg, p_caster->getGuid()).serialise().get(), 2, 1, LANG_UNIVERSAL, p_caster->getSession());
+                    SmsgMessageChat messagePacket(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, msg, p_caster->getGuid());
+                    p_caster->getWorldMap()->sendChatMessageToCellPlayers(p_caster, messagePacket, 2, LANG_UNIVERSAL, p_caster->getSession());
                 }
                 else
                 {
@@ -3881,7 +3883,8 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
     // send spell dispell log packet
     if (!dispelledSpells.empty())
     {
-        m_caster->sendMessageToSet(SmsgSpellDispellLog(m_caster->getGuid(), m_unitTarget->getGuid(), getSpellInfo()->getId(), dispelledSpells).serialise().get(), true);
+        SmsgSpellDispellLog sendPacket(m_caster->getGuid(), m_unitTarget->getGuid(), getSpellInfo()->getId(), dispelledSpells);
+        PacketBroadcast::sendToSet(*m_caster, sendPacket, true);
     }
 }
 
@@ -5910,7 +5913,8 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
 
     if (!stealedSpells.empty())
     {
-        m_caster->sendMessageToSet(SmsgSpellStealLog(m_caster->getGuid(), m_unitTarget->getGuid(), getSpellInfo()->getId(), stealedSpells).serialise().get(), true);
+        SmsgSpellStealLog sendPacket(m_caster->getGuid(), m_unitTarget->getGuid(), getSpellInfo()->getId(), stealedSpells);
+        PacketBroadcast::sendToSet(*m_caster, sendPacket, true);
     }
 }
 
@@ -6439,7 +6443,8 @@ void Spell::SpellEffectForceDeselect(uint8_t /*effectIndex*/)
     //clear focus SMSG_BREAK_TARGET
 
     //clear target
-    m_caster->sendMessageToSet(SmsgClearTarget(m_caster->getGuid()).serialise().get(), true);
+    SmsgClearTarget sendPacket(m_caster->getGuid());
+    PacketBroadcast::sendToSet(*m_caster, sendPacket, true);
 
     //stop attacking and pet target
 }

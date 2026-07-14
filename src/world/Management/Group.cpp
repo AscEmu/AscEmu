@@ -347,7 +347,19 @@ void Group::Disband()
     {
         m_isqueued = false;
 
-        SendPacketToAll(SmsgMessageChat(SystemMessagePacket("A change was made to your group. Removing the arena queue.")).serialise().get());
+        SmsgMessageChat packet(SystemMessagePacket("A change was made to your group. Removing the arena queue."));
+
+        std::lock_guard lock(m_groupLock);
+
+        for (uint8_t i = 0; i < m_SubGroupCount; i++)
+        {
+            for (auto groupMember : m_SubGroups[i]->getGroupMembers())
+            {
+                if (Player* loggedInPlayer = sObjectMgr.getPlayer(groupMember->guid))
+                    if (loggedInPlayer->getSession())
+                        loggedInPlayer->getSession()->sendManagedPacket(packet);
+            }
+        }
 
         sBattlegroundManager.removeGroupFromQueues(m_Id);
     }
@@ -541,7 +553,19 @@ void Group::ExpandToRaid()
     {
         m_isqueued = false;
 
-        SendPacketToAll(SmsgMessageChat(SystemMessagePacket("A change was made to your group. Removing the arena queue.")).serialise().get());
+        SmsgMessageChat packet(SystemMessagePacket("A change was made to your group. Removing the arena queue."));
+
+        std::lock_guard lock(m_groupLock);
+
+        for (uint8_t i = 0; i < m_SubGroupCount; i++)
+        {
+            for (auto groupMember : m_SubGroups[i]->getGroupMembers())
+            {
+                if (Player* loggedInPlayer = sObjectMgr.getPlayer(groupMember->guid))
+                    if (loggedInPlayer->getSession())
+                        loggedInPlayer->getSession()->sendManagedPacket(packet);
+            }
+        }
 
         sBattlegroundManager.removeGroupFromQueues(m_Id);
     }

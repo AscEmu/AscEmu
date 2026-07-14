@@ -6420,7 +6420,8 @@ void Player::broadcastMessage(const char* Format, ...)
     vsnprintf(Message, 1024, Format, list);
     va_end(list);
 
-    m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(Message)).serialise().get());
+    SmsgMessageChat messagePacket(SystemMessagePacket{Message});
+    m_session->sendManagedPacket(messagePacket);
 }
 
 void Player::sendAreaTriggerMessage(const char* message, ...)
@@ -9535,7 +9536,8 @@ void Player::sendPlayObjectSoundPacket(uint64_t objectGuid, uint32_t soundId)
 
 void Player::sendPlaySoundPacket(uint32_t soundId)
 {
-    m_session->SendPacket(SmsgPlaySound(soundId).serialise().get());
+    SmsgPlaySound sendPacket(soundId);
+    m_session->sendManagedPacket(sendPacket);
 }
 
 void Player::sendExploreExperiencePacket(uint32_t areaId, uint32_t experience)

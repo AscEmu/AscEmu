@@ -560,31 +560,24 @@ void WorldSession::SystemMessage(const char* format, ...)
     vsnprintf(buffer, 1024, format, ap);
     va_end(ap);
 
-#if VERSION_STRING < Mop
-    SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
-#endif
+    SmsgMessageChat messagePacket(SystemMessagePacket{buffer});
+    sendManagedPacket(messagePacket);
 }
 
-void WorldSession::sendSystemMessagePacket([[maybe_unused]] std::string& _message)
+void WorldSession::sendSystemMessagePacket(std::string& _message)
 {
-#if VERSION_STRING < Mop
-    SendPacket(SmsgMessageChat(SystemMessagePacket(_message)).serialise().get());
-#endif
+    SmsgMessageChat messagePacket(SystemMessagePacket{_message});
+    sendManagedPacket(messagePacket);
 }
 
-void WorldSession::SendChatPacket(WorldPacket* data, uint32_t langpos, int32_t lang, WorldSession* originator)
+void WorldSession::sendChatPacket(AscEmu::Packets::SmsgMessageChat& data, uint32_t lang, WorldSession* originator)
 {
-    if (lang == -1)
-        *reinterpret_cast<uint32_t*>(& data->contents()[langpos]) = lang;
+    if (CanUseCommand('c') || (originator && originator->CanUseCommand('c')))
+        data.language = LANG_UNIVERSAL;
     else
-    {
-        if (CanUseCommand('c') || (originator && originator->CanUseCommand('c')))
-            *reinterpret_cast<uint32_t*>(& data->contents()[langpos]) = LANG_UNIVERSAL;
-        else
-            *reinterpret_cast<uint32_t*>(& data->contents()[langpos]) = lang;
-    }
+       data.language = lang;
 
-    SendPacket(data);
+    sendManagedPacket(data);
 }
 
 /*

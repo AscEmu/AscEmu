@@ -38,6 +38,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGameobjectDespawnAnim.h"
 #include "Server/Packets/SmsgSpellLogMiss.h"
 #include "Server/Packets/SmsgAiReaction.h"
+#include "Server/Packets/SmsgCancelAutoRepeat.h"
 #include "Movement/PathGenerator.h"
 #include "Movement/Spline/MovementPacketBuilder.h"
 #include "Server/EventMgr.h"
@@ -724,30 +725,8 @@ void Object::interruptSpellWithSpellType(CurrentSpellType spellType)
             if (isPlayer() && IsInWorld())
             {
                 // Send server-side cancel message
-                WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
-#if VERSION_STRING == Mop
-                WoWGuid guid = GetNewGUID();
-                data.writeBit(guid[1]);
-                data.writeBit(guid[3]);
-                data.writeBit(guid[0]);
-                data.writeBit(guid[4]);
-                data.writeBit(guid[6]);
-                data.writeBit(guid[7]);
-                data.writeBit(guid[5]);
-                data.writeBit(guid[2]);
-
-                data.writeByteSeq(guid[7]);
-                data.writeByteSeq(guid[6]);
-                data.writeByteSeq(guid[2]);
-                data.writeByteSeq(guid[5]);
-                data.writeByteSeq(guid[0]);
-                data.writeByteSeq(guid[4]);
-                data.writeByteSeq(guid[1]);
-                data.writeByteSeq(guid[3]);
-#else
-                data << GetNewGUID();
-#endif
-                sendMessageToSet(&data, false);
+                SmsgCancelAutoRepeat sendPacket(GetNewGUID());
+                PacketBroadcast::sendToSet(*this, sendPacket);
             }
         }
 
@@ -2344,7 +2323,8 @@ Player const* Object::getPlayerOwnerOrSelf() const { return getPlayerOwner(); }
 // Misc
 void Object::sendGameobjectDespawnAnim()
 {
-    sendMessageToSet(SmsgGameobjectDespawnAnim(this->getGuid()).serialise().get(), true);
+    SmsgGameobjectDespawnAnim sendPacket(this->getGuid());
+    PacketBroadcast::sendToSet(*this, sendPacket);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -4415,7 +4395,8 @@ void Object::SendSpellLog(Object* Caster, Object* Target, uint32_t Ability, uint
     if (Caster == nullptr || Target == nullptr || Ability == 0)
         return;
 
-    Caster->sendMessageToSet(SmsgSpellLogMiss(Ability, Caster->getGuid(), Target->getGuid(), SpellLogType).serialise().get(), true);
+    SmsgSpellLogMiss sendPacket(Ability, Caster->getGuid(), Target->getGuid(), SpellLogType);
+    PacketBroadcast::sendToSet(*Caster, sendPacket, true);
 }
 
 int32_t Object::event_GetInstanceID()
@@ -4480,7 +4461,8 @@ void Object::setZoneId(uint32_t newZone)
 
 void Object::PlaySoundToSet(uint32_t sound_entry)
 {
-    sendMessageToSet(SmsgPlaySound(sound_entry).serialise().get(), true);
+    SmsgPlaySound sendPacket(sound_entry);
+    PacketBroadcast::sendToSet(*this, sendPacket, true);
 }
 
 bool Object::IsInBg()
@@ -4623,8 +4605,8 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId,
                 if (npcScriptText->sound != 0)
                     creature->PlaySoundToSet(npcScriptText->sound);
 
-                const auto data = creature->createChatPacket(npcScriptText->type, npcScriptText->language, message, target, sessionLanguage);
-                player->sendPacket(data.get());
+                SmsgMessageChat data = creature->createChatPacket(npcScriptText->type, npcScriptText->language, message, target, sessionLanguage);
+                player->getSession()->sendManagedPacket(data);
             }
         }
     }
@@ -4724,7 +4706,8 @@ void Object::SetMapCell(MapCell* cell)
 
 void Object::SendAIReaction(uint32_t reaction)
 {
-    sendMessageToSet(SmsgAiReaction(getGuid(), reaction).serialise().get(), false);
+    SmsgAiReaction sendPacket(getGuid(), reaction);
+    PacketBroadcast::sendToSet(*this, sendPacket);
 }
 
 void Object::SendDestroyObject()

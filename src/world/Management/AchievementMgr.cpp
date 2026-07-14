@@ -2022,7 +2022,9 @@ void AchievementMgr::sendAchievementEarned(WDB::Structures::AchievementEntry con
 
                             if (!alreadySent)
                             {
-                                loggedInPlayer->getSession()->SendPacket(SmsgMessageChat(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, getPlayer()->getGuid(), "", getPlayer()->getGuid(), "", _entry->ID).serialise().get());
+                                SmsgMessageChat messagePacket(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, getPlayer()->getGuid(),
+                                    "", getPlayer()->getGuid(), "", _entry->ID);
+                                loggedInPlayer->getSession()->sendManagedPacket(messagePacket);
                                 guidList[guidCount++] = groupItr->guid;
                             }
                         }
@@ -2050,7 +2052,9 @@ void AchievementMgr::sendAchievementEarned(WDB::Structures::AchievementEntry con
                 }
                 if (!alreadySent)
                 {
-                    player->getSession()->SendPacket(SmsgMessageChat(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, getPlayer()->getGuid(), "", getPlayer()->getGuid(), "", _entry->ID).serialise().get());
+                    SmsgMessageChat messagePacket(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, getPlayer()->getGuid(),
+                        "", getPlayer()->getGuid(), "", _entry->ID);
+                    player->getSession()->sendManagedPacket(messagePacket);
                     guidList[guidCount++] = player->getGuidLow();
                 }
             }
@@ -2066,7 +2070,11 @@ void AchievementMgr::sendAchievementEarned(WDB::Structures::AchievementEntry con
             }
 
             if (!alreadySent)
-                getPlayer()->getSession()->SendPacket(SmsgMessageChat(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, getPlayer()->getGuid(), "", getPlayer()->getGuid(), "", _entry->ID).serialise().get());
+            {
+                SmsgMessageChat messagePacket(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, getPlayer()->getGuid(),
+                    "", getPlayer()->getGuid(), "", _entry->ID);
+                getPlayer()->getSession()->sendManagedPacket(messagePacket);
+            }
         }
     }
     //    GetPlayer()->sendMessageToSet(&cdata, true);

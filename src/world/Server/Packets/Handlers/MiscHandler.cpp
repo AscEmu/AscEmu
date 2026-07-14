@@ -2662,7 +2662,9 @@ void WorldSession::handleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket
 void WorldSession::handleClearTargetOpcode(WorldPacket& /*recvPacket*/)
 {
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received handleClearTargetOpcode");
-    SendPacket(SmsgClearTarget().serialise().get());
+
+    SmsgClearTarget sendPacket;
+    sendManagedPacket(sendPacket);
 }
 
 void WorldSession::handleAddonRegisteredPrefixesOpcode([[maybe_unused]] WorldPacket& recvPacket)

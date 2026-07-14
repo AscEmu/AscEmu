@@ -53,6 +53,7 @@
 #include "Server/Packets/SmsgSpellFailedOther.h"
 #include "Server/Packets/SmsgResurrectRequest.h"
 #include "Server/Packets/SmsgSpellDelayed.h"
+#include "Server/Packets/SmsgSpellLogExecute.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
 #include "Movement/MovementManager.h"
@@ -63,6 +64,7 @@
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
 #include "Utilities/MathConstants.hpp"
+#include "Server/PacketBroadcast.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -1136,7 +1138,8 @@ void Spell::AddTime(uint32_t type)
                     delay = 1;
             }
 
-            u_caster->sendMessageToSet(SmsgSpellDelayed(u_caster->GetNewGUID(), delay).serialise().get(), true);
+            SmsgSpellDelayed sendPacket(u_caster->GetNewGUID(), delay);
+            PacketBroadcast::sendToSet(*u_caster, sendPacket, true);
 
             if (p_caster == nullptr)
             {
@@ -1175,17 +1178,9 @@ void Spell::AddTime(uint32_t type)
 //\todo: Not called, should be send after targetting
 void Spell::SendLogExecute(uint32_t spellDamage, uint64_t & targetGuid)
 {
-    WorldPacket data(SMSG_SPELLLOGEXECUTE, 37);
-    data << m_caster->GetNewGUID();
-    data << getSpellInfo()->getId();
-    data << uint32_t(1);
-    data << getSpellInfo()->getSpellVisual(0);
-    data << uint32_t(1);
-    if (m_caster->getGuid() != targetGuid)
-        data << targetGuid;
-    if (spellDamage)
-        data << spellDamage;
-    m_caster->sendMessageToSet(&data, true);
+    SmsgSpellLogExecute sendPacket(getSpellInfo()->getId(), m_caster->GetNewGUID(), 1, getSpellInfo()->getSpellVisual(0), 1,
+        m_caster->getGuid() != targetGuid, targetGuid, spellDamage);
+    PacketBroadcast::sendToSet(*m_caster, sendPacket, true);
 }
 
 void Spell::SendInterrupted(uint8_t result)
@@ -1207,10 +1202,14 @@ void Spell::SendInterrupted(uint8_t result)
             plr = u_caster->m_redirectSpellPackets;
 
         if (plr != nullptr && plr->isPlayer())
-            plr->getSession()->SendPacket(SmsgSpellFailure(m_caster->GetNewGUID(), extra_cast_number, getSpellInfo()->getId(), result).serialise().get());
+        {
+            SmsgSpellFailure sendPacket(m_caster->GetNewGUID(), extra_cast_number, getSpellInfo()->getId(), result);
+            plr->getSession()->sendManagedPacket(sendPacket);
+        }
     }
 
-    m_caster->sendMessageToSet(SmsgSpellFailedOther(m_caster->GetNewGUID(), extra_cast_number, getSpellInfo()->getId(), result).serialise().get(), false);
+    SmsgSpellFailedOther sendPacket(m_caster->GetNewGUID(), extra_cast_number, getSpellInfo()->getId(), result);
+    PacketBroadcast::sendToSet(*m_caster, sendPacket);
 }
 
 void Spell::SendResurrectRequest(Player* target)

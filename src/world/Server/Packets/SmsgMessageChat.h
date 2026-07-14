@@ -73,232 +73,239 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Mop
-            // same for all chat types
-            packet << type << language << senderGuid.getRawGuid() << uint32_t(0);
-            switch (type)
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
-                case CHAT_MSG_MONSTER_SAY:
-                case CHAT_MSG_MONSTER_PARTY:
-                case CHAT_MSG_MONSTER_YELL:
-                case CHAT_MSG_MONSTER_WHISPER:
-                case CHAT_MSG_MONSTER_EMOTE:
-                case CHAT_MSG_RAID_BOSS_EMOTE:
-                case CHAT_MSG_WHISPER_MOB:
-                    packet << uint32_t(senderName.length() + 1) << senderName;
-                    packet << receiverGuid.getRawGuid();
-                    if (receiverGuid && !receiverGuid.isPlayer() && !receiverGuid.isPet() && type != CHAT_MSG_WHISPER_MOB)
+                // same for all chat types
+                packet << type << language << senderGuid.getRawGuid() << uint32_t(0);
+                switch (type)
+                {
+                    case CHAT_MSG_MONSTER_SAY:
+                    case CHAT_MSG_MONSTER_PARTY:
+                    case CHAT_MSG_MONSTER_YELL:
+                    case CHAT_MSG_MONSTER_WHISPER:
+                    case CHAT_MSG_MONSTER_EMOTE:
+                    case CHAT_MSG_RAID_BOSS_EMOTE:
+                    case CHAT_MSG_WHISPER_MOB:
                     {
-                        packet << uint32_t(receiverName.length() + 1);
-                        packet << receiverName;
-                    }
-                    packet << uint32_t(message.length() + 1) << message << flag;
-                    break;
-                case CHAT_MSG_BG_EVENT_NEUTRAL:
-                case CHAT_MSG_BG_EVENT_ALLIANCE:
-                case CHAT_MSG_BG_EVENT_HORDE:
-                    packet << receiverGuid.getRawGuid();
-                    if (receiverGuid && !receiverGuid.isPlayer())
+                        packet << uint32_t(senderName.length() + 1) << senderName;
+                        packet << receiverGuid.getRawGuid();
+                        if (receiverGuid && !receiverGuid.isPlayer() && !receiverGuid.isPet() && type != CHAT_MSG_WHISPER_MOB)
+                        {
+                            packet << uint32_t(receiverName.length() + 1);
+                            packet << receiverName;
+                        }
+                        packet << uint32_t(message.length() + 1) << message << flag;
+                    } break;
+                    case CHAT_MSG_BG_EVENT_NEUTRAL:
+                    case CHAT_MSG_BG_EVENT_ALLIANCE:
+                    case CHAT_MSG_BG_EVENT_HORDE:
                     {
-                        packet << uint32_t(receiverName.length() + 1);
-                        packet << receiverName;
-                    }
-                    packet << uint32_t(message.length() + 1) << message << flag;
-                    break;
-                case CHAT_MSG_ACHIEVEMENT:
-                case CHAT_MSG_GUILD_ACHIEVEMENT:
-                    packet << receiverGuid;
-                    packet << uint32_t(message.length() + 1) << message << flag;
+                        packet << receiverGuid.getRawGuid();
+                        if (receiverGuid && !receiverGuid.isPlayer())
+                        {
+                            packet << uint32_t(receiverName.length() + 1);
+                            packet << receiverName;
+                        }
+                        packet << uint32_t(message.length() + 1) << message << flag;
+                    } break;
+                    case CHAT_MSG_ACHIEVEMENT:
+                    case CHAT_MSG_GUILD_ACHIEVEMENT:
+                    {
+                        packet << receiverGuid;
+                        packet << uint32_t(message.length() + 1) << message << flag;
+                        packet << achievementId;
+                    } break;
+                    default:
+                    {
+                        if (type == CHAT_MSG_CHANNEL)
+                        {
+                            packet << receiverName; //channel name
+                        }
+                        packet << receiverGuid.getRawGuid();
+                        packet << uint32_t(message.length() + 1) << message << flag;
+                    } break;
+                }
+            }
+            else // Mop
+            {
+                bool hasSenderName = false;
+                bool hasReceiverName = false;
+                bool hasChannelName = false;
+                bool hasLanguage = language > 0;
+                bool hasAchievement = (type == CHAT_MSG_ACHIEVEMENT || type == CHAT_MSG_GUILD_ACHIEVEMENT) && achievementId;
+                bool isAddon = false;
+
+                WoWGuid unkGuid = 0;
+                WoWGuid unkGuid2 = 0;
+
+                switch (type)
+                {
+                    case CHAT_MSG_MONSTER_SAY:
+                    case CHAT_MSG_MONSTER_PARTY:
+                    case CHAT_MSG_MONSTER_YELL:
+                    case CHAT_MSG_MONSTER_WHISPER:
+                    case CHAT_MSG_MONSTER_EMOTE:
+                    case CHAT_MSG_RAID_BOSS_EMOTE:
+                    case CHAT_MSG_WHISPER_MOB:
+                    {
+                        hasSenderName = true;
+                        if (receiverGuid && !receiverGuid.isPlayer() && !receiverGuid.isPet() && type != CHAT_MSG_WHISPER_MOB)
+                            hasReceiverName = true;
+                    } break;
+                    case CHAT_MSG_BG_EVENT_NEUTRAL:
+                    case CHAT_MSG_BG_EVENT_ALLIANCE:
+                    case CHAT_MSG_BG_EVENT_HORDE:
+                    {
+                        if (receiverGuid && !receiverGuid.isPlayer())
+                            hasReceiverName = true;
+                    } break;
+                    case CHAT_MSG_CHANNEL:
+                    {
+                        hasChannelName = true;
+                        hasSenderName = true;
+                    } break;
+                    default:
+                        break;
+                }
+
+                packet.writeBit(!hasSenderName);
+                packet.writeBit(0);     // hide chatlog
+
+                if (hasSenderName)
+                    packet.writeBits(senderName.length(), 11);
+
+                packet.writeBit(0);
+                packet.writeBit(!hasChannelName);
+                packet.writeBit(0);
+                packet.writeBit(1);
+                packet.writeBit(!flag);
+                packet.writeBit(1);
+
+                packet.writeBit(unkGuid[0]);
+                packet.writeBit(unkGuid[1]);
+                packet.writeBit(unkGuid[5]);
+                packet.writeBit(unkGuid[4]);
+                packet.writeBit(unkGuid[3]);
+                packet.writeBit(unkGuid[2]);
+                packet.writeBit(unkGuid[6]);
+                packet.writeBit(unkGuid[7]);
+
+                if (flag)
+                    packet.writeBits(flag, 9);
+
+                packet.writeBit(0);
+
+                packet.writeBit(receiverGuid[7]);
+                packet.writeBit(receiverGuid[6]);
+                packet.writeBit(receiverGuid[1]);
+                packet.writeBit(receiverGuid[4]);
+                packet.writeBit(receiverGuid[0]);
+                packet.writeBit(receiverGuid[2]);
+                packet.writeBit(receiverGuid[3]);
+                packet.writeBit(receiverGuid[5]);
+
+                packet.writeBit(0);
+                packet.writeBit(!hasLanguage);
+                packet.writeBit(!isAddon);
+
+                packet.writeBit(senderGuid[0]);
+                packet.writeBit(senderGuid[3]);
+                packet.writeBit(senderGuid[7]);
+                packet.writeBit(senderGuid[2]);
+                packet.writeBit(senderGuid[1]);
+                packet.writeBit(senderGuid[5]);
+                packet.writeBit(senderGuid[4]);
+                packet.writeBit(senderGuid[6]);
+
+                packet.writeBit(!hasAchievement);
+                packet.writeBit(!message.length());
+
+                if (hasChannelName)
+                    packet.writeBits(receiverName.length(), 7);
+
+                if (message.length())
+                    packet.writeBits(message.length(), 12);
+
+                packet.writeBit(!hasReceiverName);
+
+                //writeBits addon name
+
+                packet.writeBit(1);
+
+                if (hasReceiverName)
+                    packet.writeBits(receiverName.length(), 11);
+
+                packet.writeBit(0);
+
+                packet.writeBit(unkGuid2[2]);
+                packet.writeBit(unkGuid2[5]);
+                packet.writeBit(unkGuid2[7]);
+                packet.writeBit(unkGuid2[4]);
+                packet.writeBit(unkGuid2[0]);
+                packet.writeBit(unkGuid2[1]);
+                packet.writeBit(unkGuid2[3]);
+                packet.writeBit(unkGuid2[6]);
+
+                packet.flushBits();
+
+                packet.writeByteSeq(unkGuid2[4]);
+                packet.writeByteSeq(unkGuid2[5]);
+                packet.writeByteSeq(unkGuid2[7]);
+                packet.writeByteSeq(unkGuid2[3]);
+                packet.writeByteSeq(unkGuid2[2]);
+                packet.writeByteSeq(unkGuid2[6]);
+                packet.writeByteSeq(unkGuid2[0]);
+                packet.writeByteSeq(unkGuid2[1]);
+
+                if (hasChannelName)
+                    packet.writeString(receiverName);
+
+                //write addon string
+
+                packet.writeByteSeq(senderGuid[4]);
+                packet.writeByteSeq(senderGuid[7]);
+                packet.writeByteSeq(senderGuid[1]);
+                packet.writeByteSeq(senderGuid[5]);
+                packet.writeByteSeq(senderGuid[0]);
+                packet.writeByteSeq(senderGuid[6]);
+                packet.writeByteSeq(senderGuid[2]);
+                packet.writeByteSeq(senderGuid[3]);
+
+                packet << uint8_t(type);
+
+                if (hasAchievement)
                     packet << achievementId;
-                    break;
-                default:
-                    if (type == CHAT_MSG_CHANNEL)
-                    {
-                        packet << receiverName; //channel name
-                    }
-                    packet << receiverGuid.getRawGuid();
-                    packet << uint32_t(message.length() + 1) << message << flag;
-                    break;
+
+                packet.writeByteSeq(unkGuid[1]);
+                packet.writeByteSeq(unkGuid[3]);
+                packet.writeByteSeq(unkGuid[4]);
+                packet.writeByteSeq(unkGuid[6]);
+                packet.writeByteSeq(unkGuid[0]);
+                packet.writeByteSeq(unkGuid[2]);
+                packet.writeByteSeq(unkGuid[5]);
+                packet.writeByteSeq(unkGuid[7]);
+
+                packet.writeByteSeq(receiverGuid[2]);
+                packet.writeByteSeq(receiverGuid[5]);
+                packet.writeByteSeq(receiverGuid[3]);
+                packet.writeByteSeq(receiverGuid[6]);
+                packet.writeByteSeq(receiverGuid[7]);
+                packet.writeByteSeq(receiverGuid[4]);
+                packet.writeByteSeq(receiverGuid[1]);
+                packet.writeByteSeq(receiverGuid[0]);
+
+                if (hasLanguage)
+                    packet << uint8_t(language);
+
+                if (message.length())
+                    packet.writeString(message);
+
+                if (hasReceiverName)
+                    packet.writeString(receiverName);
+
+                if (hasSenderName)
+                    packet.writeString(senderName);
             }
-#else // Mop
-            bool hasSenderName = false;
-            bool hasReceiverName = false;
-            bool hasChannelName = false;
-            bool hasLanguage = language > 0;
-            bool hasAchievement = (type == CHAT_MSG_ACHIEVEMENT || type == CHAT_MSG_GUILD_ACHIEVEMENT) && achievementId;
-            bool isAddon = false;
-
-            WoWGuid unkGuid = 0;
-            WoWGuid unkGuid2 = 0;
-
-            switch (type)
-            {
-                case CHAT_MSG_MONSTER_SAY:
-                case CHAT_MSG_MONSTER_PARTY:
-                case CHAT_MSG_MONSTER_YELL:
-                case CHAT_MSG_MONSTER_WHISPER:
-                case CHAT_MSG_MONSTER_EMOTE:
-                case CHAT_MSG_RAID_BOSS_EMOTE:
-                case CHAT_MSG_WHISPER_MOB:
-                {
-                    hasSenderName = true;
-                    if (receiverGuid && !receiverGuid.isPlayer() && !receiverGuid.isPet() && type != CHAT_MSG_WHISPER_MOB)
-                        hasReceiverName = true;
-                } break;
-                case CHAT_MSG_BG_EVENT_NEUTRAL:
-                case CHAT_MSG_BG_EVENT_ALLIANCE:
-                case CHAT_MSG_BG_EVENT_HORDE:
-                {
-                    if (receiverGuid && !receiverGuid.isPlayer())
-                        hasReceiverName = true;
-                } break;
-                case CHAT_MSG_CHANNEL:
-                {
-                    hasChannelName = true;
-                    hasSenderName = true;
-                } break;
-                default:
-                    break;
-            }
-
-            packet.writeBit(!hasSenderName);
-            packet.writeBit(0);     // hide chatlog
-
-            if (hasSenderName)
-                packet.writeBits(senderName.length(), 11);
-
-            packet.writeBit(0);
-            packet.writeBit(!hasChannelName);
-            packet.writeBit(0);
-            packet.writeBit(1);
-            packet.writeBit(!flag);
-            packet.writeBit(1);
-
-            packet.writeBit(unkGuid[0]);
-            packet.writeBit(unkGuid[1]);
-            packet.writeBit(unkGuid[5]);
-            packet.writeBit(unkGuid[4]);
-            packet.writeBit(unkGuid[3]);
-            packet.writeBit(unkGuid[2]);
-            packet.writeBit(unkGuid[6]);
-            packet.writeBit(unkGuid[7]);
-
-            if (flag)
-                packet.writeBits(flag, 9);
-
-            packet.writeBit(0);
-
-            packet.writeBit(receiverGuid[7]);
-            packet.writeBit(receiverGuid[6]);
-            packet.writeBit(receiverGuid[1]);
-            packet.writeBit(receiverGuid[4]);
-            packet.writeBit(receiverGuid[0]);
-            packet.writeBit(receiverGuid[2]);
-            packet.writeBit(receiverGuid[3]);
-            packet.writeBit(receiverGuid[5]);
-
-            packet.writeBit(0);
-            packet.writeBit(!hasLanguage);
-            packet.writeBit(!isAddon);
-
-            packet.writeBit(senderGuid[0]);
-            packet.writeBit(senderGuid[3]);
-            packet.writeBit(senderGuid[7]);
-            packet.writeBit(senderGuid[2]);
-            packet.writeBit(senderGuid[1]);
-            packet.writeBit(senderGuid[5]);
-            packet.writeBit(senderGuid[4]);
-            packet.writeBit(senderGuid[6]);
-
-            packet.writeBit(!hasAchievement);
-            packet.writeBit(!message.length());
-
-            if (hasChannelName)
-                packet.writeBits(receiverName.length(), 7);
-
-            if (message.length())
-                packet.writeBits(message.length(), 12);
-
-            packet.writeBit(!hasReceiverName);
-
-            //writeBits addon name
-
-            packet.writeBit(1);
-
-            if (hasReceiverName)
-                packet.writeBits(receiverName.length(), 11);
-
-            packet.writeBit(0);
-
-            packet.writeBit(unkGuid2[2]);
-            packet.writeBit(unkGuid2[5]);
-            packet.writeBit(unkGuid2[7]);
-            packet.writeBit(unkGuid2[4]);
-            packet.writeBit(unkGuid2[0]);
-            packet.writeBit(unkGuid2[1]);
-            packet.writeBit(unkGuid2[3]);
-            packet.writeBit(unkGuid2[6]);
-
-            packet.flushBits();
-
-            packet.writeByteSeq(unkGuid2[4]);
-            packet.writeByteSeq(unkGuid2[5]);
-            packet.writeByteSeq(unkGuid2[7]);
-            packet.writeByteSeq(unkGuid2[3]);
-            packet.writeByteSeq(unkGuid2[2]);
-            packet.writeByteSeq(unkGuid2[6]);
-            packet.writeByteSeq(unkGuid2[0]);
-            packet.writeByteSeq(unkGuid2[1]);
-
-            if (hasChannelName)
-                packet.writeString(receiverName);
-
-            //write addon string
-
-            packet.writeByteSeq(senderGuid[4]);
-            packet.writeByteSeq(senderGuid[7]);
-            packet.writeByteSeq(senderGuid[1]);
-            packet.writeByteSeq(senderGuid[5]);
-            packet.writeByteSeq(senderGuid[0]);
-            packet.writeByteSeq(senderGuid[6]);
-            packet.writeByteSeq(senderGuid[2]);
-            packet.writeByteSeq(senderGuid[3]);
-
-            packet << uint8_t(type);
-
-            if (hasAchievement)
-                packet << achievementId;
-
-            packet.writeByteSeq(unkGuid[1]);
-            packet.writeByteSeq(unkGuid[3]);
-            packet.writeByteSeq(unkGuid[4]);
-            packet.writeByteSeq(unkGuid[6]);
-            packet.writeByteSeq(unkGuid[0]);
-            packet.writeByteSeq(unkGuid[2]);
-            packet.writeByteSeq(unkGuid[5]);
-            packet.writeByteSeq(unkGuid[7]);
-
-            packet.writeByteSeq(receiverGuid[2]);
-            packet.writeByteSeq(receiverGuid[5]);
-            packet.writeByteSeq(receiverGuid[3]);
-            packet.writeByteSeq(receiverGuid[6]);
-            packet.writeByteSeq(receiverGuid[7]);
-            packet.writeByteSeq(receiverGuid[4]);
-            packet.writeByteSeq(receiverGuid[1]);
-            packet.writeByteSeq(receiverGuid[0]);
-
-            if (hasLanguage)
-                packet << uint8_t(language);
-
-            if (message.length())
-                packet.writeString(message);
-
-            if (hasReceiverName)
-                packet.writeString(receiverName);
-
-            if (hasSenderName)
-                packet.writeString(senderName);
-#endif
 
             return true;
         }

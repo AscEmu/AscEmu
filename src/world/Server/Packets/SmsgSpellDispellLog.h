@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-#include <utility>
-
 #include "ManagedPacket.h"
+#include <cstdint>
+
+#include <utility>
 
 namespace AscEmu::Packets
 {
@@ -42,15 +42,13 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << casterGuid << targetGuid << spellId << unk1 << displellCount;
+
             for (const auto stealedSpellId: dispellSpells)
                 packet << stealedSpellId << uint8_t(0); // 0 = dispelled, else cleansed
 
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

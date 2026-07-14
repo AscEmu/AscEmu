@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -61,20 +60,20 @@ namespace AscEmu::Packets
             {
             case 3:     //SPELL_AURA_PERIODIC_DAMAGE
             case 89:    //SPELL_AURA_PERIODIC_DAMAGE_PERCENT;
-#if VERSION_STRING > TBC
+            {
+                if (m_protocol.expansion > WoW::Expansion::_TBC)
                     packet << amount << overKillOrOverHeal << schoolMask << absorbAmount << resistedAmount << isCritical;
-#else
+                else
                     packet << amount << schoolMask << absorbAmount << resistedAmount;
-#endif
-                    break;
+            } break;
             case 8:     //SPELL_AURA_PERIODIC_HEAL
             case 20:    //SPELL_AURA_PERIODIC_HEAL_PCT
-#if VERSION_STRING > TBC
+            {
+                if (m_protocol.expansion > WoW::Expansion::_TBC)
                     packet << amount << overKillOrOverHeal << absorbAmount << isCritical;
-#else
+                else
                     packet << amount;
-#endif
-                    break;
+            } break;
             case 21:    //SPELL_AURA_PERIODIC_POWER_PCT
             case 24:    //SPELL_AURA_PERIODIC_ENERGIZE
                     packet << miscValue << amount;

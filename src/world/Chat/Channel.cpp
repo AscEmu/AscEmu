@@ -278,9 +278,20 @@ void Channel::say(Player* plr, std::string message, Player* for_gm_client, bool 
     // Send message
     const uint8_t gmFlag = plr->isGMFlagSet() ? 4U : 0U;
     if (for_gm_client != nullptr)
-        for_gm_client->sendPacket(SmsgMessageChat(CHAT_MSG_CHANNEL, LANG_UNIVERSAL, gmFlag, message, plr->getGuid(), "", 0, m_channelName).serialise().get());
+    {
+        SmsgMessageChat messagePacket(CHAT_MSG_CHANNEL, LANG_UNIVERSAL, gmFlag, message, plr->getGuid(), "", 0, m_channelName);
+        for_gm_client->getSession()->sendManagedPacket(messagePacket);
+    }
     else
-        sendToAll(SmsgMessageChat(CHAT_MSG_CHANNEL, LANG_UNIVERSAL, gmFlag, message, plr->getGuid(), plr->getName(), 0, m_channelName).serialise().get());
+    {
+        SmsgMessageChat messagePacket(CHAT_MSG_CHANNEL, LANG_UNIVERSAL, gmFlag, message, plr->getGuid(), plr->getName(), 0, m_channelName);
+
+        std::lock_guard<std::mutex> guard(m_mutexChannel);
+
+        for (auto& member : m_members)
+            if (member.first->getSession())
+                member.first->getSession()->sendManagedPacket(messagePacket);
+    }
 }
 
 void Channel::invitePlayer(Player* plr, Player* new_player)

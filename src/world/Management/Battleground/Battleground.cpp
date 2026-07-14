@@ -520,7 +520,16 @@ void Battleground::sendChatMessage(uint8_t Type, uint64_t Guid, const char* Form
     vsnprintf(msg, 500, Format, ap);
     va_end(ap);
 
-    distributePacketToAll(AscEmu::Packets::SmsgMessageChat(Type, 0, 0, msg, Guid).serialise().get());
+    AscEmu::Packets::SmsgMessageChat messagePacket(Type, 0, 0, msg, Guid);
+
+    std::lock_guard lock(m_mutex);
+
+    for (auto& m_player : m_players)
+    {
+        for (const auto itr : m_player)
+            if (itr && itr->getSession())
+                itr->getSession()->sendManagedPacket(messagePacket);
+    }
 }
 
 bool Battleground::HandleFinishBattlegroundRewardCalculation(PlayerTeam /*winningTeam*/)
@@ -559,14 +568,29 @@ void Battleground::distributePacketToTeam(WorldPacket* packet, uint32_t Team)
 
 void Battleground::playSoundToAll(uint32_t Sound)
 {
-    distributePacketToAll(AscEmu::Packets::SmsgPlaySound(Sound).serialise().get());
+    AscEmu::Packets::SmsgPlaySound sendPacket(Sound);
+
+    std::lock_guard lock(m_mutex);
+
+    for (auto& m_player : m_players)
+    {
+        for (const auto itr : m_player)
+            if (itr && itr->getSession())
+                itr->getSession()->sendManagedPacket(sendPacket);
+    }
 }
 
 bool Battleground::isFull() { return !(hasFreeSlots(0, m_type) || hasFreeSlots(1, m_type)); }
 
 void Battleground::playSoundToTeam(uint32_t Team, uint32_t Sound)
 {
-    distributePacketToTeam(AscEmu::Packets::SmsgPlaySound(Sound).serialise().get(), Team);
+    AscEmu::Packets::SmsgPlaySound sendPacket(Sound);
+
+    std::lock_guard lock(m_mutex);
+
+    for (const auto itr : m_players[Team])
+        if (itr && itr->getSession())
+            itr->getSession()->sendManagedPacket(sendPacket);
 }
 
 void Battleground::removePlayer(Player* plr, bool logout)

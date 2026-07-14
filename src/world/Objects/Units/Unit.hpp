@@ -32,6 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellDefines.hpp"
 #include "Spell/Definitions/AuraRemoveMode.hpp"
 #include "Utilities/MathConstants.hpp"
+#include "Server/Packets/SmsgMessageChat.h"
 
 namespace WDB::Structures
 {
@@ -1003,7 +1004,7 @@ public:
     // Chat
     int32_t m_modlanguage = -1;
 
-    std::unique_ptr<WorldPacket> createChatPacket(uint8_t type, uint32_t language, std::string msg, Unit* receiver = nullptr, uint32_t sessionLanguage = 0);
+    AscEmu::Packets::SmsgMessageChat createChatPacket(uint8_t type, uint32_t language, std::string msg, Unit* receiver = nullptr, uint32_t sessionLanguage = 0);
     void sendChatMessage(uint8_t type, uint32_t language, std::string msg, Unit* receiver = nullptr, uint32_t sessionLanguage = 0);
     void sendChatMessage(uint8_t type, uint32_t language, std::string msg, uint32_t delay);
     void sendChatMessage(MySQLStructure::NpcScriptText const* text, uint32_t delay, Unit* target = nullptr);

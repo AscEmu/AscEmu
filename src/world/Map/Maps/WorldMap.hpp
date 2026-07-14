@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "InstanceDefines.hpp"
 #include "Debugging/Errors.hpp"
 #include "Map/SpawnGroups.hpp"
+#include "Server/Packets/SmsgMessageChat.h"
 
 namespace AscEmu::Threading
 {
@@ -342,7 +343,7 @@ public:
     std::set<MapCell*> m_forcedcells;
 
     // Packts
-    void sendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint32_t cell_radius, uint32_t langpos, int32_t lang, WorldSession* originator);
+    void sendChatMessageToCellPlayers(Object* obj, AscEmu::Packets::SmsgMessageChat& packet, uint32_t cell_radius, uint32_t lang, WorldSession* originator);
     void sendPvPCaptureMessage(int32_t ZoneMask, uint32_t ZoneId, const char* Message, ...);
     void sendPacketToAllPlayers(WorldPacket* packet) const;
     void sendPacketToPlayersInZone(uint32_t zone, WorldPacket* packet) const;

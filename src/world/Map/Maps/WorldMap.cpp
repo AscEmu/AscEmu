@@ -1960,7 +1960,7 @@ Object* WorldMap::getObject(const uint64_t& guid)
     }
 }
 
-void WorldMap::sendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint32_t cell_radius, uint32_t langpos, int32_t lang, WorldSession* originator)
+void WorldMap::sendChatMessageToCellPlayers(Object* obj, SmsgMessageChat& packet, uint32_t cell_radius, uint32_t lang, WorldSession* originator)
 {
     uint32_t cellX = getPosX(obj->GetPositionX());
     uint32_t cellY = getPosY(obj->GetPositionY());
@@ -1985,7 +1985,7 @@ void WorldMap::sendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, ui
                     {
                         //TO< Player* >(*iter)->getSession()->SendPacket(packet);
                         if ((*iter)->GetPhase() & obj->GetPhase())
-                            static_cast<Player*>(*iter)->getSession()->SendChatPacket(packet, langpos, lang, originator);
+                            static_cast<Player*>(*iter)->getSession()->sendChatPacket(packet, lang, originator);
                     }
                 }
             }

@@ -34,6 +34,7 @@
 #include <string>
 #include "Logging/StringFormat.hpp"
 #include "Server/ClientProtocol.hpp"
+#include "Server/Packets/SmsgMessageChat.h"
 
 struct QuestProperties;
 class Player;
@@ -104,7 +105,7 @@ class SERVER_DECL WorldSession
 
         void OutPacket(uint16_t opcode);
 
-        void SendChatPacket(WorldPacket* data, uint32_t langpos, int32_t lang, WorldSession* originator);
+        void sendChatPacket(AscEmu::Packets::SmsgMessageChat& data, uint32_t lang, WorldSession* originator);
 
         uint32_t m_currMsTime;
         uint32_t m_lastPing;

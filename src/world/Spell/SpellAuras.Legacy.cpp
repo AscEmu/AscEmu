@@ -64,6 +64,7 @@
 #include "Utilities/CommonTime.hpp"
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
+#include "Server/PacketBroadcast.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -5584,7 +5585,8 @@ void Aura::SpellAuraModBlockValue(AuraEffectModifier* aurEff, bool apply)
 
 void Aura::SendChannelUpdate(uint32_t time, Object* m_caster)
 {
-    m_caster->sendMessageToSet(MsgChannelUpdate(m_caster->GetNewGUID(), time).serialise().get(), true);
+    MsgChannelUpdate sendPacket(m_caster->GetNewGUID(), time);
+    PacketBroadcast::sendToSet(*m_caster, sendPacket, true);
 }
 
 void Aura::SpellAuraExpertise(AuraEffectModifier* /*aurEff*/, bool /*apply*/)

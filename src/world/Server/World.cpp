@@ -1086,7 +1086,10 @@ void World::playSoundToAllPlayers(uint32_t soundId)
     {
         WorldSession* worldSession = itr->second.get();
         if ((worldSession->GetPlayer() != nullptr) && worldSession->GetPlayer()->IsInWorld())
-            worldSession->SendPacket(AscEmu::Packets::SmsgPlaySound(soundId).serialise().get());
+        {
+            AscEmu::Packets::SmsgPlaySound sendPacket(soundId);
+            worldSession->sendManagedPacket(sendPacket);
+        }
     }
 }
 

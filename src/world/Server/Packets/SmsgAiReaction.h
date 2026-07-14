@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -33,29 +32,32 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING <= Cata
-            packet << unpackedGuid << reaction;
-#elif VERSION_STRING == Mop
-            WoWGuid guid = unpackedGuid;
-            packet.writeBit(guid[5]);
-            packet.writeBit(guid[7]);
-            packet.writeBit(guid[0]);
-            packet.writeBit(guid[4]);
-            packet.writeBit(guid[6]);
-            packet.writeBit(guid[2]);
-            packet.writeBit(guid[3]);
-            packet.writeBit(guid[1]);
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet << unpackedGuid << reaction;
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_Mop)
+            {
+                WoWGuid guid = unpackedGuid;
+                packet.writeBit(guid[5]);
+                packet.writeBit(guid[7]);
+                packet.writeBit(guid[0]);
+                packet.writeBit(guid[4]);
+                packet.writeBit(guid[6]);
+                packet.writeBit(guid[2]);
+                packet.writeBit(guid[3]);
+                packet.writeBit(guid[1]);
 
-            packet.writeByteSeq(guid[4]);
-            packet.writeByteSeq(guid[6]);
-            packet.writeByteSeq(guid[5]);
-            packet << reaction;
-            packet.writeByteSeq(guid[7]);
-            packet.writeByteSeq(guid[1]);
-            packet.writeByteSeq(guid[2]);
-            packet.writeByteSeq(guid[0]);
-            packet.writeByteSeq(guid[3]);
-#endif
+                packet.writeByteSeq(guid[4]);
+                packet.writeByteSeq(guid[6]);
+                packet.writeByteSeq(guid[5]);
+                packet << reaction;
+                packet.writeByteSeq(guid[7]);
+                packet.writeByteSeq(guid[1]);
+                packet.writeByteSeq(guid[2]);
+                packet.writeByteSeq(guid[0]);
+                packet.writeByteSeq(guid[3]);
+            }
             return true;
         }
 

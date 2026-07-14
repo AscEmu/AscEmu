@@ -48,6 +48,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Random.hpp"
+#include "Server/PacketBroadcast.hpp"
 
 int LuaUnit::GetDisplay(lua_State* L, Unit* ptr)
 {
@@ -416,11 +417,14 @@ int LuaUnit::PlayerSendChatMessage(lua_State* L, Unit* ptr)
     if (msg == nullptr)
         return 0;
 
-    plr->getSession()->SendChatPacket(AscEmu::Packets::SmsgMessageChat(type, lang, 0, msg, plr->getGuid()).serialise().get(), 1, lang, plr->getSession());
+    AscEmu::Packets::SmsgMessageChat messagePacket(type, lang, 0, msg, plr->getGuid());
+    plr->getSession()->sendChatPacket(messagePacket, lang, plr->getSession());
+
+
     for (const auto& itr : plr->getInRangePlayersSet())
     {
-        if (itr)
-            dynamic_cast<Player*>(itr)->getSession()->SendChatPacket(AscEmu::Packets::SmsgMessageChat(type, lang, 0, msg, plr->getGuid()).serialise().get(), 1, lang, plr->getSession());
+        if (itr && dynamic_cast<Player*>(itr)->getSession())
+            dynamic_cast<Player*>(itr)->getSession()->sendChatPacket(messagePacket, lang, plr->getSession());
     }
     return 0;
 }
@@ -6487,7 +6491,7 @@ int LuaUnit::SpawnAndEnterVehicle([[maybe_unused]] lua_State* L, [[maybe_unused]
     if (cp == nullptr)
         return 0;
 
-    const Player* p = nullptr;
+    Player* p = nullptr;
     if (ptr->isPlayer())
         p = dynamic_cast<Player*>(ptr);
 

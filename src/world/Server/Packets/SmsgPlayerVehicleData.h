@@ -5,15 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class SmsgPlayerVehicleData : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         WoWGuid targetGuid;
         uint32_t vehicleId;
@@ -32,15 +30,17 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << targetGuid << vehicleId;
-
-            return true;
+            if (m_protocol.expansion > WoW::Expansion::_TBC)
+            {
+                packet << targetGuid << vehicleId;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-#endif
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

@@ -5,15 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class SmsgPowerUpdate : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         WoWGuid guid;
         uint8_t powerType;
@@ -39,44 +37,51 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING == Mop
-            packet.writeBit(guid[4]);
-            packet.writeBit(guid[6]);
-            packet.writeBit(guid[7]);
-            packet.writeBit(guid[5]);
-            packet.writeBit(guid[2]);
-            packet.writeBit(guid[3]);
-            packet.writeBit(guid[0]);
-            packet.writeBit(guid[1]);
+            if (m_protocol.expansion == WoW::Expansion::_Mop)
+            {
+                packet.writeBit(guid[4]);
+                packet.writeBit(guid[6]);
+                packet.writeBit(guid[7]);
+                packet.writeBit(guid[5]);
+                packet.writeBit(guid[2]);
+                packet.writeBit(guid[3]);
+                packet.writeBit(guid[0]);
+                packet.writeBit(guid[1]);
 
-            packet.writeBits(1, 21);
+                packet.writeBits(1, 21);
 
-            packet.flushBits();
+                packet.flushBits();
 
-            packet.writeByteSeq(guid[7]);
-            packet.writeByteSeq(guid[0]);
-            packet.writeByteSeq(guid[5]);
-            packet.writeByteSeq(guid[3]);
-            packet.writeByteSeq(guid[1]);
-            packet.writeByteSeq(guid[2]);
-            packet.writeByteSeq(guid[4]);
+                packet.writeByteSeq(guid[7]);
+                packet.writeByteSeq(guid[0]);
+                packet.writeByteSeq(guid[5]);
+                packet.writeByteSeq(guid[3]);
+                packet.writeByteSeq(guid[1]);
+                packet.writeByteSeq(guid[2]);
+                packet.writeByteSeq(guid[4]);
 
-            packet << powerType;
-            packet << power;
+                packet << powerType;
+                packet << power;
 
-            packet.writeByteSeq(guid[6]);
-#elif VERSION_STRING != Mop
-            packet << guid;
+                packet.writeByteSeq(guid[6]);
+                return true;
+            }
+            else if (m_protocol.expansion > WoW::Expansion::_TBC)
+            {
+                packet << guid;
 
-    #if VERSION_STRING == Cata
-            packet << uint32_t(1);
-    #endif
-            packet << powerType << power;
-#endif
-            return true;
+                if (m_protocol.expansion == WoW::Expansion::_Cata)
+                    packet << uint32_t(1);
+
+                packet << powerType << power;
+                return true;
+            }
+            else // Classic and TBC
+            {
+                return false;
+            }
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
-#endif
     };
 }

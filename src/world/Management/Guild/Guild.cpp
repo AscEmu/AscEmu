@@ -1340,7 +1340,8 @@ void Guild::broadcastToGuild(WorldSession* session, bool officerOnly, std::strin
                 if (player->getSession() && _hasRankRight(player->getGuid(), officerOnly ? GR_RIGHT_OFFCHATLISTEN : GR_RIGHT_GCHATLISTEN) &&
                     !player->isIgnored(session->GetPlayer()->getGuidLow()))
                 {
-                    player->getSession()->SendPacket(SmsgMessageChat(officerOnly ? CHAT_MSG_OFFICER : CHAT_MSG_GUILD, language, 0, msg).serialise().get());
+                    SmsgMessageChat messagePacket(officerOnly ? CHAT_MSG_OFFICER : CHAT_MSG_GUILD, language, 0, msg);
+                    player->getSession()->sendManagedPacket(messagePacket);
                 }
             }
         }
@@ -1358,7 +1359,8 @@ void Guild::broadcastAddonToGuild(WorldSession* session, bool officerOnly, std::
                 if (player->getSession() && _hasRankRight(player->getGuid(), officerOnly ? GR_RIGHT_OFFCHATLISTEN : GR_RIGHT_GCHATLISTEN) &&
                     !player->isIgnored(session->GetPlayer()->getGuidLow()))
                 {
-                    player->getSession()->SendPacket(SmsgMessageChat(officerOnly ? CHAT_MSG_OFFICER : CHAT_MSG_GUILD, CHAT_MSG_ADDON, 0, msg).serialise().get());
+                    SmsgMessageChat messagePacket(officerOnly ? CHAT_MSG_OFFICER : CHAT_MSG_GUILD, CHAT_MSG_ADDON, 0, msg);
+                    player->getSession()->sendManagedPacket(messagePacket);
                 }
             }
         }

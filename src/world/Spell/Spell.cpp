@@ -67,6 +67,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
 #include "Utilities/Util.hpp"
+#include "Server/PacketBroadcast.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -4606,8 +4607,8 @@ void Spell::sendChannelUpdate(const uint32_t time, const uint32_t diff/* = 0*/)
             u_caster->removeAllAurasById(getSpellInfo()->getId(), u_caster->getGuid());
         }
     }
-
-    m_caster->sendMessageToSet(MsgChannelUpdate(m_caster->GetNewGUID(), time).serialise().get(), true);
+    MsgChannelUpdate sendPacket(m_caster->GetNewGUID(), time);
+    PacketBroadcast::sendToSet(*m_caster, sendPacket, true);
 }
 
 void Spell::sendSpellStart()

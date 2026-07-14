@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -41,72 +40,75 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING <= Cata
-            packet << guid << textEmote << numEmote << nameLength;
-            if (nameLength > 1)
-                packet.append(name.c_str(), nameLength);
-            else
-                packet << uint8_t(0);
-#else // Mop
-            WoWGuid playerGuid(guid);
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet << guid << textEmote << numEmote << nameLength;
+                if (nameLength > 1)
+                    packet.append(name.c_str(), nameLength);
+                else
+                    packet << uint8_t(0);
+            }
+            else // Mop
+            {
+                WoWGuid playerGuid(guid);
 
-            packet.writeBit(playerGuid[1]);
+                packet.writeBit(playerGuid[1]);
 
-            packet.writeBit(targetGuid[7]);
+                packet.writeBit(targetGuid[7]);
 
-            packet.writeBit(playerGuid[6]);
+                packet.writeBit(playerGuid[6]);
 
-            packet.writeBit(targetGuid[5]);
+                packet.writeBit(targetGuid[5]);
 
-            packet.writeBit(playerGuid[3]);
+                packet.writeBit(playerGuid[3]);
 
-            packet.writeBit(targetGuid[6]);
-            packet.writeBit(targetGuid[2]);
+                packet.writeBit(targetGuid[6]);
+                packet.writeBit(targetGuid[2]);
 
-            packet.writeBit(playerGuid[7]);
+                packet.writeBit(playerGuid[7]);
 
-            packet.writeBit(targetGuid[0]);
-            packet.writeBit(targetGuid[1]);
+                packet.writeBit(targetGuid[0]);
+                packet.writeBit(targetGuid[1]);
 
-            packet.writeBit(playerGuid[4]);
-            packet.writeBit(playerGuid[2]);
+                packet.writeBit(playerGuid[4]);
+                packet.writeBit(playerGuid[2]);
 
-            packet.writeBit(targetGuid[3]);
-            packet.writeBit(targetGuid[4]);
+                packet.writeBit(targetGuid[3]);
+                packet.writeBit(targetGuid[4]);
 
-            packet.writeBit(playerGuid[0]);
-            packet.writeBit(playerGuid[5]);
+                packet.writeBit(playerGuid[0]);
+                packet.writeBit(playerGuid[5]);
 
-            packet.writeByteSeq(targetGuid[2]);
-            packet.writeByteSeq(targetGuid[1]);
+                packet.writeByteSeq(targetGuid[2]);
+                packet.writeByteSeq(targetGuid[1]);
 
-            packet.writeByteSeq(playerGuid[7]);
-            packet.writeByteSeq(playerGuid[4]);
+                packet.writeByteSeq(playerGuid[7]);
+                packet.writeByteSeq(playerGuid[4]);
 
-            packet.writeByteSeq(targetGuid[7]);
+                packet.writeByteSeq(targetGuid[7]);
 
-            packet.writeByteSeq(playerGuid[5]);
-            packet.writeByteSeq(playerGuid[2]);
+                packet.writeByteSeq(playerGuid[5]);
+                packet.writeByteSeq(playerGuid[2]);
 
-            packet << textEmote;
+                packet << textEmote;
 
-            packet.writeByteSeq(playerGuid[6]);
+                packet.writeByteSeq(playerGuid[6]);
 
-            packet.writeByteSeq(targetGuid[0]);
+                packet.writeByteSeq(targetGuid[0]);
 
-            packet.writeByteSeq(playerGuid[3]);
-            packet.writeByteSeq(playerGuid[1]);
+                packet.writeByteSeq(playerGuid[3]);
+                packet.writeByteSeq(playerGuid[1]);
 
-            packet.writeByteSeq(targetGuid[6]);
+                packet.writeByteSeq(targetGuid[6]);
 
-            packet.writeByteSeq(playerGuid[0]);
+                packet.writeByteSeq(playerGuid[0]);
 
-            packet.writeByteSeq(targetGuid[3]);
-            packet.writeByteSeq(targetGuid[5]);
-            packet.writeByteSeq(targetGuid[4]);
+                packet.writeByteSeq(targetGuid[3]);
+                packet.writeByteSeq(targetGuid[5]);
+                packet.writeByteSeq(targetGuid[4]);
 
-            packet << numEmote;
-#endif
+                packet << numEmote;
+            }
             return true;
         }
 

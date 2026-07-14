@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -40,11 +39,10 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING <= WotLK
-            packet << guid << type << damage << unk;
-#else       //                                    Absorbed     Resisted
-            packet << guid << type << damage << int32_t(0) << int32_t(0);
-#endif
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+                packet << guid << type << damage << unk;
+            else       //                            Absorbed     Resisted
+                packet << guid << type << damage << int32_t(0) << int32_t(0);
             return true;
         }
 

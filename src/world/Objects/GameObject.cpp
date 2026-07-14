@@ -2578,7 +2578,8 @@ void GameObject_Destructible::Damage(uint32_t damage, uint64_t AttackerGUID, uin
 void GameObject_Destructible::SendDamagePacket([[maybe_unused]] uint32_t damage, [[maybe_unused]] uint64_t AttackerGUID, [[maybe_unused]] uint64_t ControllerGUID, [[maybe_unused]] uint32_t SpellID)
 {
 #if VERSION_STRING > TBC
-    sendMessageToSet(SmsgDestructibleBuildingDamage(GetNewGUID(), AttackerGUID, ControllerGUID, damage, SpellID).serialise().get(), false, false);
+    SmsgDestructibleBuildingDamage sendPacket(GetNewGUID(), AttackerGUID, ControllerGUID, damage, SpellID);
+    PacketBroadcast::sendToSet(*this, sendPacket);
 #endif
 }
 
