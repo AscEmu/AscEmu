@@ -62,11 +62,7 @@ enum AuraUpdateFlags : uint8_t
     AFLAG_SET                   = 0x09,
     AFLAG_CANCELLABLE           = 0x10,
     AFLAG_DURATION              = 0x20,
-#if VERSION_STRING < Cata
-    AFLAG_HIDE                  = 0x40,     // Seems to hide the aura and tell client the aura was removed
-#else
     AFLAG_SEND_EFFECT_AMOUNT    = 0x40,     // used with AFLAG_EFFECT_0/1/2
-#endif
     AFLAG_NEGATIVE              = 0x80,
 
     AFLAG_MASK_ALL              = 0xFF
