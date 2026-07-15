@@ -10,8 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Management/Group.h"
 
-const uint8_t iconCount = 8;
-
 namespace AscEmu::Packets
 {
     class MsgRaidTargetUpdate : public ManagedPacket
@@ -22,6 +20,8 @@ namespace AscEmu::Packets
         uint8_t icon;
         uint64_t guid;
         Group const* group;
+
+        const uint8_t iconCount = 8;
 
         MsgRaidTargetUpdate() : MsgRaidTargetUpdate(0, 0, 0, 0, nullptr)
         {

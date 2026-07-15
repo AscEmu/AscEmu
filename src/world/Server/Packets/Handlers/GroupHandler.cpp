@@ -715,23 +715,27 @@ void WorldSession::handleSetPlayerIconOpcode(WorldPacket& recvPacket)
 
     if (srlPacket.icon == 0xFF)
     {
-        SendPacket(MsgRaidTargetUpdate(1, 0, 0, 0, group).serialise().get());
+        MsgRaidTargetUpdate managedPacket(1, 0, 0, 0, group);
+        sendManagedPacket(managedPacket);
     }
     else if (_player->isGroupLeader())
     {
-        if (srlPacket.icon >= iconCount)
+        if (srlPacket.icon >= 8)
             return;
 
-        for (uint8_t i = 0; i < iconCount; ++i)
+        for (uint8_t i = 0; i < 8; ++i)
         {
             if (group->m_targetIcons[i] == srlPacket.guid)
             {
                 group->m_targetIcons[i] = 0;
-                group->SendPacketToAll(MsgRaidTargetUpdate(0, 0, i, 0, nullptr).serialise().get());
+                MsgRaidTargetUpdate managedPacket(0, 0, i, 0, nullptr);
+                PacketBroadcast::sendFromGroup(*group, managedPacket);
             }
         }
 
-        group->SendPacketToAll(MsgRaidTargetUpdate(0, _player->getGuid(), srlPacket.icon, srlPacket.guid, nullptr).serialise().get());
+        MsgRaidTargetUpdate managedPacket(0, _player->getGuid(), srlPacket.icon, srlPacket.guid, nullptr);
+        PacketBroadcast::sendFromGroup(*group, managedPacket);
+
         group->m_targetIcons[srlPacket.icon] = srlPacket.guid;
     }
 }
