@@ -350,6 +350,12 @@ public:
         return memberNames;
     }
 
+    GuildMembersStore const& getGuildMembers() const
+    {
+        return _guildMembersStore;
+    }
+
+
     void createLogHolders();
     void createNewBankTab();
     void createDefaultGuildRanks();

@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Object.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
+#include "Management/Guild/Guild.hpp"
 
 #include <shared_mutex>
 #include <type_traits>
@@ -35,6 +36,23 @@ namespace AscEmu::Packets
             }
 
             sendFromObject(source, packet);
+        }
+
+        template <typename TPacket>
+        static void sendFromGuild(Guild const& source, TPacket& packet)
+        {
+            for (const auto& guildMember : source.getGuildMembers())
+            {
+                Player* targetPlayer = guildMember.second->getPlayerByGuid(guildMember.second->getGUID());
+                if (targetPlayer == nullptr)
+                    continue;
+
+                WorldSession* targetSession = targetPlayer->getSession();
+                if (targetSession == nullptr)
+                    continue;
+
+                targetSession->sendManagedPacket(packet);
+            }
         }
 
     private:

@@ -12,12 +12,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/WorldSession.h"
+#include "Server/PacketBroadcast.hpp"
 
-#if VERSION_STRING < Cata
 #include "Server/Packets/MsgQueryGuildBankText.h"
-#else
-#include "Server/Packets/SmsgGuildBankQueryTextResult.h"
-#endif
 
 using namespace AscEmu::Packets;
 
@@ -159,17 +156,12 @@ void GuildBankTab::sendText(Guild const* guild, WorldSession* session) const
     else
         sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "sendText (Broadcast): Tabid: {}, Text: {}", static_cast<uint32_t>(mTabId), mText);
 
-#if VERSION_STRING < Cata
+    MsgQueryGuildBankText managedPacket(mTabId, mText);
+
     if (session)
-        session->SendPacket(MsgQueryGuildBankText(mTabId, mText).serialise().get());
+        session->sendManagedPacket(managedPacket);
     else
-        guild->broadcastPacket(MsgQueryGuildBankText(mTabId, mText).serialise().get());
-#else
-    if (session)
-        session->SendPacket(SmsgGuildBankQueryTextResult(mTabId, mText).serialise().get());
-    else
-        guild->broadcastPacket(SmsgGuildBankQueryTextResult(mTabId, mText).serialise().get());
-#endif
+        PacketBroadcast::sendFromGuild(*guild, managedPacket);
 }
 
 std::string const& GuildBankTab::getName() const

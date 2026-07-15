@@ -1741,7 +1741,8 @@ uint32_t Player::getTeleportState() const { return m_teleportState; }
 
 void Player::sendTeleportPacket(LocationVector position)
 {
-    sendPacket(MsgMoveTeleport(GetNewGUID(), position, obj_movement_info).serialise().get());
+    MsgMoveTeleport managedPacket(GetNewGUID(), position, obj_movement_info);
+    m_session->sendManagedPacket(managedPacket);
 
     LocationVector oldPos = LocationVector(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
 
@@ -1756,7 +1757,8 @@ void Player::sendTeleportAckPacket(LocationVector position)
 {
     setTransferStatus(TRANSFER_PENDING);
 
-    getSession()->SendPacket(MsgMoveTeleportAck(GetNewGUID(), position, obj_movement_info).serialise().get());
+    MsgMoveTeleportAck managedPacket(GetNewGUID(), position, obj_movement_info);
+    m_session->sendManagedPacket(managedPacket);
 
 #if VERSION_STRING == TBC
     sendTeleportPacket(position);

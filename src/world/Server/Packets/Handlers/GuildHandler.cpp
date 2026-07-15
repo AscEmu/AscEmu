@@ -610,8 +610,11 @@ void WorldSession::handleCharterDecline(WorldPacket& recvPacket)
         return;
 
     Player* player = sObjectMgr.getPlayer(charter->getLeaderGuid());
-    if (player)
-        player->getSession()->SendPacket(MsgPetitionDecline(_player->getGuid()).serialise().get());
+    if (player && player->getSession())
+    {
+        MsgPetitionDecline managedPacket(_player->getGuid());
+        player->getSession()->sendManagedPacket(managedPacket);
+    }
 }
 
 void WorldSession::handleCharterRename(WorldPacket& recvPacket)
@@ -636,7 +639,8 @@ void WorldSession::handleCharterRename(WorldPacket& recvPacket)
     charter->setGuildName(srlPacket.name);
     charter->saveToDB();
 
-    SendPacket(MsgPetitionRename(srlPacket.itemGuid, srlPacket.name).serialise().get());
+    MsgPetitionRename managedPacket(srlPacket.itemGuid, srlPacket.name);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)

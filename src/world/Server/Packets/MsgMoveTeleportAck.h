@@ -32,7 +32,7 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise([[maybe_unused]] WorldPacket& packet) override
+        bool internalSerialise(WorldPacket& packet) override
         {
             if (m_protocol.isClassic())
             {

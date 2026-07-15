@@ -36,14 +36,19 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             if (m_protocol.expansion >= WoW::Expansion::_Cata)
-                return false;
-
-            packet << tabId;
-            if (tabInfo.empty())
-                packet << uint8_t(0);
+            {
+                packet.writeBits(tabInfo.length(), 14);
+                packet << tabId;
+                packet.writeString(tabInfo);
+            }
             else
-                packet << tabInfo;
-
+            {
+                packet << tabId;
+                if (tabInfo.empty())
+                    packet << uint8_t(0);
+                else
+                    packet << tabInfo;
+            }
             return true;
         }
 
