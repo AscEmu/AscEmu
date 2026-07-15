@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -35,7 +34,38 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << guid << itemId << error;
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet << guid << itemId << error;
+            }
+            else // Mop
+            {
+                WoWGuid vendorGuid = guid;
+
+                packet.writeBit(vendorGuid[6]);
+                packet.writeBit(vendorGuid[3]);
+                packet.writeBit(vendorGuid[1]);
+                packet.writeBit(vendorGuid[2]);
+                packet.writeBit(vendorGuid[4]);
+                packet.writeBit(vendorGuid[5]);
+                packet.writeBit(vendorGuid[0]);
+                packet.writeBit(vendorGuid[7]);
+
+                packet << error;
+
+                packet.writeByteSeq(vendorGuid[2]);
+                packet.writeByteSeq(vendorGuid[7]);
+
+                packet << itemId;
+
+                packet.writeByteSeq(vendorGuid[4]);
+                packet.writeByteSeq(vendorGuid[5]);
+                packet.writeByteSeq(vendorGuid[1]);
+                packet.writeByteSeq(vendorGuid[3]);
+                packet.writeByteSeq(vendorGuid[6]);
+                packet.writeByteSeq(vendorGuid[0]);
+            }
+
             return true;
         }
 

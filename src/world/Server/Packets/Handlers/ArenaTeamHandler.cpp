@@ -33,10 +33,12 @@ void WorldSession::handleArenaTeamQueryOpcode(WorldPacket& recvPacket)
 
     if (auto arenaTeam = sObjectMgr.getArenaTeamById(srlPacket.teamId))
     {
-        SendPacket(SmsgArenaTeamQueryResponse(arenaTeam->m_id, arenaTeam->m_name,
-            arenaTeam->getPlayersPerTeam(), arenaTeam->m_emblem).serialise().get());
+        SmsgArenaTeamQueryResponse managedPacket(arenaTeam->m_id, arenaTeam->m_name,
+            arenaTeam->getPlayersPerTeam(), arenaTeam->m_emblem);
+        sendManagedPacket(managedPacket);
 
-        SendPacket(SmsgArenaTeamStats(arenaTeam->m_id, arenaTeam->m_stats).serialise().get());
+        SmsgArenaTeamStats teamStatsPacket(arenaTeam->m_id, arenaTeam->m_stats);
+        sendManagedPacket(teamStatsPacket);
     }
 }
 
@@ -95,7 +97,11 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
 
     player->setInviteArenaTeamId(_player->getArenaTeam(arenaTeam->m_type)->m_id);
 
-    player->sendPacket(SmsgArenaTeamInvite(_player->getName(), _player->getArenaTeam(arenaTeam->m_type)->m_name).serialise().get());
+    if (player->getSession())
+    {
+        SmsgArenaTeamInvite managedPacket(_player->getName(), _player->getArenaTeam(arenaTeam->m_type)->m_name);
+        player->getSession()->sendManagedPacket(managedPacket);
+    }
 }
 
 void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)

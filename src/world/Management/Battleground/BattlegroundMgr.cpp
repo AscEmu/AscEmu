@@ -1266,7 +1266,8 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
         Player* loggedInLeader = sObjectMgr.getPlayer(group->GetLeader()->guid);
         if (loggedInLeader && loggedInLeader->getArenaTeam(type) == nullptr)
         {
-            session->SendPacket(SmsgArenaError(0, static_cast<uint8_t>(maxplayers)).serialise().get());
+            SmsgArenaError managedPacket(0, static_cast<uint8_t>(maxplayers));
+            session->sendManagedPacket(managedPacket);
             return;
         }
 

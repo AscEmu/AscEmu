@@ -1850,11 +1850,13 @@ void WorldSession::handleBarberShopResult([[maybe_unused]] WorldPacket& recvPack
 
     if (!_player->hasEnoughCoinage(cost))
     {
-        SendPacket(SmsgBarberShopResult(BarberShopResult::NoMoney).serialise().get());
+        SmsgBarberShopResult managedPacket(BarberShopResult::NoMoney);
+        sendManagedPacket(managedPacket);
         return;
     }
 
-    SendPacket(SmsgBarberShopResult(BarberShopResult::Ok).serialise().get());
+    SmsgBarberShopResult managedPacket(BarberShopResult::Ok);
+    sendManagedPacket(managedPacket);
 
     _player->setHairStyle(static_cast<uint8_t>(newHair));
     _player->setHairColor(static_cast<uint8_t>(newHairColor));

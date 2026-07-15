@@ -3250,7 +3250,8 @@ void WorldSession::handleEquipmentSetDelete([[maybe_unused]] WorldPacket& data)
 
 void WorldSession::sendBuyFailed(uint64_t guid, uint32_t itemid, uint8_t error)
 {
-    SendPacket(SmsgBuyFailed(guid, itemid, error).serialise().get());
+    SmsgBuyFailed managed(guid, itemid, error);
+    sendManagedPacket(managed);
 }
 
 void WorldSession::sendSellItem(uint64_t vendorguid, uint64_t itemid, uint8_t error)

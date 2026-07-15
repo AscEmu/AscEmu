@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "ManagedPacket.h"
 #include <cstdint>
 
-#include "ManagedPacket.h"
 #include "Management/ArenaTeam.hpp"
 
 namespace AscEmu::Packets
@@ -38,27 +38,34 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Cata
-            packet << id;
-            packet << name;
-            packet << playerCount;
-            packet << emblem.emblemColour;
-            packet << emblem.emblemStyle;
-            packet << emblem.borderColour;
-            packet << emblem.borderStyle;
-            packet << emblem.backgroundColour;
-#else
-            packet << id;
-            packet << name;
-            packet << playerCount;
-            packet << emblem.backgroundColour;
-            packet << emblem.emblemStyle;
-            packet << emblem.emblemColour;
-            packet << emblem.borderStyle;
-            packet << emblem.borderColour;
-#endif
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+            {
+                packet << id;
+                packet << name;
+                packet << playerCount;
+                packet << emblem.emblemColour;
+                packet << emblem.emblemStyle;
+                packet << emblem.borderColour;
+                packet << emblem.borderStyle;
+                packet << emblem.backgroundColour;
 
-            return true;
+                return true;
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_Cata)
+            {
+                packet << id;
+                packet << name;
+                packet << playerCount;
+                packet << emblem.backgroundColour;
+                packet << emblem.emblemStyle;
+                packet << emblem.emblemColour;
+                packet << emblem.borderStyle;
+                packet << emblem.borderColour;
+
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

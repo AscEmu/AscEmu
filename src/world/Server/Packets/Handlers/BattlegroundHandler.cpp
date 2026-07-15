@@ -232,7 +232,8 @@ void WorldSession::handleAreaSpiritHealerQueryOpcode(WorldPacket& recvPacket)
     else
         restTime = (restTime - static_cast<uint32_t>(UNIXTIME)) * 1000;
 
-    SendPacket(SmsgAreaSpiritHealerTime(srlPacket.guid.getRawGuid(), restTime).serialise().get());
+    SmsgAreaSpiritHealerTime managedPacket(srlPacket.guid.getRawGuid(), restTime);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleBattlefieldStatusOpcode(WorldPacket& /*recvPacket*/)
