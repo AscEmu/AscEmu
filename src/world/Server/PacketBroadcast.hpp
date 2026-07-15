@@ -9,6 +9,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Management/Guild/Guild.hpp"
+#include "Management/Group.h"
+#include "Management/ObjectMgr.hpp"
+#include "Objects/Units/Players/PlayerDefines.hpp"
 
 #include <shared_mutex>
 #include <type_traits>
@@ -52,6 +55,29 @@ namespace AscEmu::Packets
                     continue;
 
                 targetSession->sendManagedPacket(packet);
+            }
+        }
+
+        template <typename TPacket>
+        static void sendFromGroup(Group const& source, TPacket& packet, Player* skipPlayer = nullptr)
+        {
+            for (uint32_t i = 0; i < source.GetSubGroupCount(); ++i)
+            {
+                for (auto groupMember : source.GetSubGroup(i)->getGroupMembers())
+                {
+                    Player* targetPlayer = sObjectMgr.getPlayer(groupMember->guid);
+                    if (targetPlayer == nullptr)
+                        continue;
+
+                    if (targetPlayer == skipPlayer)
+                        continue;
+
+                    WorldSession* targetSession = targetPlayer->getSession();
+                    if (targetSession == nullptr)
+                        continue;
+
+                    targetSession->sendManagedPacket(packet);
+                }
             }
         }
 

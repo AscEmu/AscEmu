@@ -26,6 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGroupAssistantLeader.h"
 #include "Server/Packets/MsgPartyAssign.h"
 #include "Server/Packets/MsgRaidReadyCheck.h"
+#include "Server/PacketBroadcast.hpp"
 
 #if VERSION_STRING >= Cata
 #include "Server/Packets/SmsgGroupList.h"
@@ -870,9 +871,14 @@ void WorldSession::handleReadyCheckOpcode(WorldPacket& recvPacket)
     if (recvPacket.isEmpty())
     {
         if (group->GetLeader() == _player->getPlayerInfo() || group->GetAssistantLeader() == _player->getPlayerInfo())
-            group->SendPacketToAll(MsgRaidReadyCheck(_player->getGuid(), 0, true).serialise().get());
+        {
+            MsgRaidReadyCheck managedPacket(_player->getGuid(), 0, true);
+            PacketBroadcast::sendFromGroup(*group, managedPacket);
+        }
         else
+        {
             SendNotification("You do not have permission to perform that function.");
+        }
     }
     else
     {
@@ -880,12 +886,20 @@ void WorldSession::handleReadyCheckOpcode(WorldPacket& recvPacket)
         if (!parsePacket(recvPacket, srlPacket))
             return;
 
+        MsgRaidReadyCheck managedPacket(_player->getGuid(), srlPacket.isReady, false);
+
         if (group->GetLeader())
+        {
             if (Player* leader = sObjectMgr.getPlayer(group->GetLeader()->guid))
-                leader->sendPacket(MsgRaidReadyCheck(_player->getGuid(), srlPacket.isReady, false).serialise().get());
+                if (leader->getSession())
+                    leader->getSession()->sendManagedPacket(managedPacket);
+        }
 
         if (group->GetAssistantLeader())
+        {
             if (Player* assistant = sObjectMgr.getPlayer(group->GetAssistantLeader()->guid))
-                assistant->sendPacket(MsgRaidReadyCheck(_player->getGuid(), srlPacket.isReady, false).serialise().get());
+                if (assistant->getSession())
+                    assistant->getSession()->sendManagedPacket(managedPacket);
+        }
     }
 }

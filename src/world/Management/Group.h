@@ -190,7 +190,7 @@ public:
     Player* FindFirstPlayer();
 
     // Accessing functions
-    inline SubGroup* GetSubGroup(uint32_t Id)
+    inline SubGroup* GetSubGroup(uint32_t Id) const
     {
         if (Id >= 8)
             return 0;
@@ -198,7 +198,7 @@ public:
         return m_SubGroups[Id].get();
     }
 
-    inline uint32_t GetSubGroupCount(void) { return m_SubGroupCount; }
+    inline uint32_t GetSubGroupCount(void) const { return m_SubGroupCount; }
 
     inline uint8_t GetMethod(void) { return m_LootMethod; }
     inline uint16_t GetThreshold(void) { return m_LootThreshold; }
