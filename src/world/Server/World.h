@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Platform/PerformanceCounter.hpp"
 #include "Utilities/CallBack.hpp"
 #include "Chat/CommandTableStorage.hpp"
+#include "Server/ClientProtocol.hpp"
 
 class WorldPacket;
 class WorldSocket;
@@ -200,10 +201,9 @@ public:
     // General Functions
 private:
     std::unique_ptr<EventableObjectHolder> mEventableObjectHolder;
-#if VERSION_STRING < Cata
-    uint8_t mDbcLocaleId = 0;
-#endif
+    uint8_t m_dbcLocaleId{0};
 
+    WoW::ServerProtocol m_protocol;
 public:
     std::list<std::unique_ptr<SpellInfo>> dummySpellList;
 
@@ -213,11 +213,9 @@ public:
 
     // TODO: figure out how to get it for cata/mop
     // although this is probably not needed anymore after wotlk
-#if VERSION_STRING < Cata
     // Loads correct localization id used in name columns in DBC files
     void loadDbcLocaleLanguage();
-    uint8_t getDbcLocaleLanguageId() const;
-#endif
+    [[nodiscard]] uint8_t getDbcLocaleLanguageId() const noexcept;
 
     void loadMySQLStores();
     void loadMySQLTablesByTask();
@@ -230,6 +228,8 @@ public:
     void logoutAllPlayers();
 
     void deleteObject(Object* object);
+
+    [[nodiscard]] const WoW::ServerProtocol& getProtocol() const noexcept { return m_protocol; }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // GM Ticket System

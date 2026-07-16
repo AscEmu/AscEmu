@@ -63,18 +63,59 @@ namespace WoW {
         [[nodiscard]] bool isMop() const { return expansion == WoW::Expansion::_Mop; }
         [[nodiscard]] bool isLegacy() const { return isClassic() || isTbc(); }
     };
-//
-//#ifndef ASC_DEFAULT_EXPANSION
-//#define ASC_DEFAULT_EXPANSION 4
-//#endif
-//
-//    inline constexpr Expansion buildExpansion = static_cast<Expansion>(ASC_DEFAULT_EXPANSION);
-//
-//    // Dynamic getter: Currently returns the fixed build value, later it will read from world.conf
-//    [[nodiscard]] inline Expansion getCurrentExpansion() noexcept
-//    {
-//        return buildExpansion; // TODO: Change to sWorld.getConfigExpansion() later
-//    }
+
+    struct ServerProtocol
+    {
+        Expansion expansion{Expansion::Unknown};
+
+        [[nodiscard]] Expansion getExpansion() const noexcept { return expansion; }
+
+        [[nodiscard]] constexpr bool isAtLeast(Expansion exp) const noexcept
+        {
+            if (expansion == Expansion::Unknown || exp == Expansion::Unknown)
+            {
+                return false;
+            }
+
+            return expansion >= exp;
+        }
+
+        [[nodiscard]] constexpr bool isLessThan(Expansion exp) const noexcept
+        {
+            if (expansion == Expansion::Unknown || exp == Expansion::Unknown)
+            {
+                return false;
+            }
+
+            return expansion < exp;
+        }
+
+        [[nodiscard]] constexpr bool isBetween(Expansion min, Expansion max) const noexcept
+        {
+            if (expansion == Expansion::Unknown || min == Expansion::Unknown || max == Expansion::Unknown)
+            {
+                return false;
+            }
+
+            return expansion >= min && expansion <= max;
+        }
+    };
+
+    // Automatically map CMake build version to the Expansion enum
+#if defined(AE_CLASSIC)
+    inline constexpr Expansion buildExpansion = Expansion::_Classic;
+#elif defined(AE_TBC)
+    inline constexpr Expansion buildExpansion = Expansion::_TBC;
+#elif defined(AE_WOTLK)
+    inline constexpr Expansion buildExpansion = Expansion::_WotLK;
+#elif defined(AE_CATA)
+    inline constexpr Expansion buildExpansion = Expansion::_Cata;
+#elif defined(AE_MOP)
+    inline constexpr Expansion buildExpansion = Expansion::_Mop;
+#else
+    inline constexpr Expansion buildExpansion = Expansion::_WotLK; // Fallback
+#endif
+
 //
 //    [[nodiscard]] constexpr ClientVersion getClientVersion(Expansion expansion) noexcept
 //    {

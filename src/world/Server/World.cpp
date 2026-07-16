@@ -63,6 +63,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildFinderMgr.hpp"
 #endif
 
+using namespace WoW;
+
 std::unique_ptr<DayWatcherThread> dw = nullptr;
 
 std::unique_ptr<BroadcastMgr> broadcastMgr = nullptr;
@@ -80,6 +82,8 @@ World& World::getInstance()
 
 void World::initialize()
 {
+    m_protocol.expansion = buildExpansion;
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Uptime
     mStartTime = 0;
@@ -694,10 +698,10 @@ bool World::setInitialWorldSettings()
 
 #if VERSION_STRING < Cata
     loadDbcLocaleLanguage();
-    auto localeString = Util::getLanguagesStringFromId(mDbcLocaleId);
-    if (mDbcLocaleId == 0)
+    auto localeString = Util::getLanguagesStringFromId(m_dbcLocaleId);
+    if (m_dbcLocaleId == 0)
         localeString.append("/enUS");
-    else if (mDbcLocaleId == 10)
+    else if (m_dbcLocaleId == 10)
         localeString.append("/ptPT");
 
     sLogger.info("World : Using {} DBC locale", localeString);
@@ -808,31 +812,41 @@ bool World::loadDbcDb2Stores()
     return true;
 }
 
-#if VERSION_STRING < Cata
 void World::loadDbcLocaleLanguage()
 {
-    // Read names from warrior class in ChrClasses DBC file to get used locale language
-    const auto warr = sChrClassesStore.lookupEntry(1);
-#if VERSION_STRING == Classic
-    for (uint8_t i = 0; i < 8; ++i)
-#else
-    for (uint8_t i = 0; i < 16; ++i)
-#endif
+    if (getProtocol().isAtLeast(Expansion::_Cata))
     {
-        std::string name(warr->name[i]);
+        return;
+    }
+
+    const auto warriorClass = sChrClassesStore.lookupEntry(1);
+    if (!warriorClass)
+    {
+        return;
+    }
+
+    const uint8_t maxLocales = getProtocol().isLessThan(Expansion::_TBC) ? 8 : 16;
+
+    for (uint8_t i = 0; i < maxLocales; ++i)
+    {
+        std::string name(warriorClass->name[i]);
         if (!name.empty())
         {
-            mDbcLocaleId = i;
+            m_dbcLocaleId = i;
             break;
         }
     }
 }
 
-uint8_t World::getDbcLocaleLanguageId() const
+uint8_t World::getDbcLocaleLanguageId() const noexcept
 {
-    return mDbcLocaleId;
+    if (getProtocol().isAtLeast(Expansion::_Cata))
+    {
+        return 0; // Cata and later versions do not use DBC locale language ID
+    }
+
+    return m_dbcLocaleId;
 }
-#endif
 
 inline void runParallel(const std::vector<std::function<void()>>& tasks)
 {
