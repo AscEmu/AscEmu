@@ -63,6 +63,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildFinderMgr.hpp"
 #endif
 
+WoW::Expansion WoW::g_currentExpansion = buildExpansion;
+
 using namespace WoW;
 
 std::unique_ptr<DayWatcherThread> dw = nullptr;
@@ -83,6 +85,7 @@ World& World::getInstance()
 void World::initialize()
 {
     m_protocol.expansion = buildExpansion;
+    g_currentExpansion = buildExpansion;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Uptime

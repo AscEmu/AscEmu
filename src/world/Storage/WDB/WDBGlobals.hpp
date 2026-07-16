@@ -7,14 +7,25 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WDBContainer.hpp"
 #include "WDBLoader.hpp"
+#include "WDBStructures.hpp"
+
 #include <cstring>
 #include <filesystem>
 #include <iostream>
 
-#include "AEVersion.hpp"
-
 namespace WDB
 {
+    template <typename T>
+    class WDBStore : public std::unordered_map<uint32_t, T>
+    {
+    public:
+        [[nodiscard]] T const* lookupEntry(uint32_t id) const noexcept
+        {
+            auto const it = this->find(id);
+            return (it != this->end()) ? &it->second : nullptr;
+        }
+    };
+
     enum LocaleConstant
     {
         LOCALE_enGB = 0,
@@ -161,6 +172,81 @@ namespace WDB
 
                 _errors.push_back(dbc_file_path);
             }
+        }
+    }
+
+    template <typename RuntimeEntry, typename MapperF>
+    void loadUnifiedWDBStore(WDB::StoreProblemList& errors,
+                             WDB::WDBStore<RuntimeEntry>& storage,
+                             const std::string& dbcPath, MapperF&& mapFields)
+    {
+        using Traits = WDB::DbcTraits<RuntimeEntry>;
+        std::string const filename = Traits::filename;
+
+        std::string dbcFilePath = dbcPath + filename;
+        for (auto const& locales : fullLocaleNameList) {
+            if (std::filesystem::is_directory(dbcPath + locales.name + "/")) {
+                dbcFilePath = dbcPath + locales.name + "/" + filename;
+                break;
+            }
+        }
+
+        auto loadRows = [&]<typename T0>(T0 identity) {
+            using RawT = T0::type;
+            if constexpr (!std::is_same_v<RawT, WDB::UnsupportedVersion>) {
+                WDB::WDBContainer<RawT> rawStore;
+
+                if (WDB::WDBLoader::hasFormat(filename))
+                {
+                    std::string format = WDB::WDBLoader::getFormat(filename);
+                    auto writable = std::make_unique<char[]>(format.size() + 1);
+                    std::copy(format.begin(), format.end(), writable.get());
+                    writable[format.size()] = '\0';
+                    rawStore.setFormat(std::move(writable));
+                }
+
+                if (WDB::WDBLoader::getFormatRecordSize(rawStore.getFormat()) != sizeof(RawT))
+                {
+                    std::ostringstream stream;
+                    stream << "WDBLoader:: wrong format size for " << filename << "\n";
+                    errors.push_back(stream.str());
+                    std::cout << stream.str() << "\n";
+                    return;
+                }
+
+                if (!rawStore.load(dbcFilePath.c_str())) {
+                    errors.push_back(dbcFilePath);
+                    return;
+                }
+
+                uint32_t const numRows = rawStore.getNumRows();
+                for (uint32_t i = 0; i < numRows; ++i) {
+                    if (auto const* raw = rawStore.lookupEntry(i)) {
+                        RuntimeEntry entry;
+                        mapFields(*raw, entry);
+                        storage[raw->id] = std::move(entry);
+                    }
+                }
+            }
+            else
+            {
+                std::ostringstream stream;
+                stream << "WDBStore: File " << filename << " is not supported in this expansion layout.\n";
+                errors.push_back(stream.str());
+                std::cout << stream.str() << "\n";
+            }
+        };
+
+        switch (WoW::getCurrentExpansion())
+        {
+            case WoW::Expansion::_Classic: loadRows(std::type_identity<typename Traits::classic>{}); break;
+            case WoW::Expansion::_TBC:     loadRows(std::type_identity<typename Traits::tbc>{});     break;
+            case WoW::Expansion::_WotLK:   loadRows(std::type_identity<typename Traits::wotlk>{});   break;
+            case WoW::Expansion::_Cata:    loadRows(std::type_identity<typename Traits::cata>{});    break;
+            case WoW::Expansion::_Mop:     loadRows(std::type_identity<typename Traits::mop>{});     break;
+            default:
+                errors.push_back("WDBStore: Attempted to load DBC for an unknown or unsupported expansion.");
+                break;
         }
     }
 }

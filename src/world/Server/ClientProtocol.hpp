@@ -116,6 +116,10 @@ namespace WoW {
     inline constexpr Expansion buildExpansion = Expansion::_WotLK; // Fallback
 #endif
 
+    extern Expansion g_currentExpansion;
+
+    inline Expansion getCurrentExpansion() { return g_currentExpansion; }
+
 //
 //    [[nodiscard]] constexpr ClientVersion getClientVersion(Expansion expansion) noexcept
 //    {
