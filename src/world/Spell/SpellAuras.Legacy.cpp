@@ -2832,7 +2832,8 @@ void Aura::SpellAuraFeignDeath(AuraEffectModifier* /*aurEff*/, bool apply)
             /*if (p_target->hasUnitStateFlag(UNIT_STATE_ATTACKING))
                 p_target->removeUnitStateFlag(UNIT_STATE_ATTACKING);*/
 
-            p_target->sendPacket(SmsgCancelCombat().serialise().get());
+            SmsgCancelCombat managedPacket;
+            p_target->getSession()->sendManagedPacket(managedPacket);
 
             // Send server-side cancel message
             WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);

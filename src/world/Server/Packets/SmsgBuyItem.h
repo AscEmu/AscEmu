@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -39,11 +38,45 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << sellerGuid;
-#if VERSION_STRING > TBC
-            packet << time;
-#endif
-            packet << itemEntry << purchasedAmount;
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet << sellerGuid;
+
+                if (m_protocol.expansion > WoW::Expansion::_TBC)
+                    packet << time;
+
+                packet << itemEntry << purchasedAmount;
+            }
+            else // Mop
+            {
+                WoWGuid selGuid = sellerGuid;
+
+                packet.writeBit(selGuid[3]);
+                packet.writeBit(selGuid[4]);
+                packet.writeBit(selGuid[7]);
+                packet.writeBit(selGuid[6]);
+                packet.writeBit(selGuid[0]);
+                packet.writeBit(selGuid[2]);
+                packet.writeBit(selGuid[1]);
+                packet.writeBit(selGuid[5]);
+
+                packet.writeByteSeq(selGuid[6]);
+                packet.writeByteSeq(selGuid[7]);
+
+                packet << purchasedAmount;
+
+                packet.writeByteSeq(selGuid[1]);
+                packet.writeByteSeq(selGuid[3]);
+                packet.writeByteSeq(selGuid[5]);
+                packet.writeByteSeq(selGuid[2]);
+
+                packet << int32_t(-1);
+
+                packet.writeByteSeq(selGuid[0]);
+                packet.writeByteSeq(selGuid[4]);
+
+                packet << itemEntry;
+            }
 
             return true;
         }

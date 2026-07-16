@@ -101,7 +101,9 @@ void WorldSession::handleCharDeleteOpcode(WorldPacket& recvPacket)
         return;
 
     const uint8_t deleteResult = deleteCharacter(srlPacket.guid);
-    SendPacket(SmsgCharDelete(deleteResult).serialise().get());
+
+    SmsgCharDelete managedPacket(deleteResult);
+    sendManagedPacket(managedPacket);
 }
 
 

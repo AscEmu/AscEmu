@@ -519,7 +519,6 @@ void WorldSession::handleEmoteOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleReportSpamOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
-#if VERSION_STRING < Cata
     CmsgComplaint srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;
@@ -527,8 +526,8 @@ void WorldSession::handleReportSpamOpcode([[maybe_unused]] WorldPacket& recvPack
     sLogger.debug("REPORT SPAM: type {}, guid {}, unk1 {}, unk2 {}, unk3 {}, unk4 {}, message {}", srlPacket.spam_type, srlPacket.spammer_guid.getGuidLow(),
                   srlPacket.unk1, srlPacket.unk2, srlPacket.unk3, srlPacket.unk4, srlPacket.description);
 
-    SendPacket(SmsgComplainResult(0).serialise().get());
-#endif
+    SmsgComplainResult managedPacket(0);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)

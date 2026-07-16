@@ -1137,7 +1137,9 @@ void Spell::finish(bool successful)
         {
             getPlayerCaster()->eventAttackStop();
             getPlayerCaster()->smsg_AttackStop(getPlayerCaster()->getWorldMapUnit(getPlayerCaster()->getTargetGuid()));
-            getPlayerCaster()->sendPacket(SmsgCancelCombat().serialise().get());
+
+            SmsgCancelCombat managedPacket;
+            getPlayerCaster()->getSession()->sendManagedPacket(managedPacket);
         }
 
         if (m_Delayed)

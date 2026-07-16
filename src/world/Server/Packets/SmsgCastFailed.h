@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -36,34 +35,34 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override
-        {
-            return 1 + 4 + 1 + 4 + 4;
-        }
+        size_t expectedSize() const override { return 1 + 4 + 1 + 4 + 4; }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING == Mop
-            packet << spellId << errorMsg << multiCast;
-            packet.writeBit(1);
-            packet.writeBit(1);
-            packet.flushBits();
+            if (m_protocol.expansion == WoW::Expansion::_Mop)
+            {
+                packet << spellId << errorMsg << multiCast;
+                packet.writeBit(1);
+                packet.writeBit(1);
+                packet.flushBits();
 
-            packet.writeBits(0, extra2 ? 2 : 1);
-            if (extra1 || extra2)
-                packet << extra1;
+                packet.writeBits(0, extra2 ? 2 : 1);
+                if (extra1 || extra2)
+                    packet << extra1;
 
-            if (extra2)
-                packet << extra2;
-#else
-            packet << multiCast << spellId << errorMsg;
+                if (extra2)
+                    packet << extra2;
+            }
+            else // < Mop
+            {
+                packet << multiCast << spellId << errorMsg;
 
-            if (extra1 || extra2)
-                packet << extra1;
+                if (extra1 || extra2)
+                    packet << extra1;
 
-            if (extra2)
-                packet << extra2;
-#endif
+                if (extra2)
+                    packet << extra2;
+            }
 
             return true;
         }

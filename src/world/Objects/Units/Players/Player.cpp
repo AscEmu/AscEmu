@@ -7195,7 +7195,8 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
     addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
     setDynamicFlags(0);
 
-    m_session->SendPacket(SmsgCancelCombat().serialise().get());
+    SmsgCancelCombat managedPacket;
+    m_session->sendManagedPacket(managedPacket);
 
     WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
 #if VERSION_STRING == Mop
@@ -9587,7 +9588,8 @@ void Player::sendDismountResultPacket(uint32_t result)
 
 void Player::sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2 /*= 0*/)
 {
-    m_session->SendPacket(SmsgCastFailed(multiCast, spellId, errorMessage, extra1, extra2).serialise().get());
+    SmsgCastFailed managedPacket(multiCast, spellId, errorMessage, extra1, extra2);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendLevelupInfoPacket(uint32_t level, uint32_t hp, uint32_t mana, uint32_t stat0, uint32_t stat1, uint32_t stat2, uint32_t stat3, uint32_t stat4)
@@ -11853,8 +11855,9 @@ void Player::endDuel(uint8_t condition)
         duelingWithSummon->getThreatManager().removeMeFromThreatLists();
     }
 
-    m_session->SendPacket(SmsgCancelCombat().serialise().get());
-    m_duelPlayer->m_session->SendPacket(SmsgCancelCombat().serialise().get());
+    SmsgCancelCombat managedPacket;
+    m_session->sendManagedPacket(managedPacket);
+    m_duelPlayer->m_session->sendManagedPacket(managedPacket);
 
     smsg_AttackStop(m_duelPlayer);
     m_duelPlayer->smsg_AttackStop(this);

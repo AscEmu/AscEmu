@@ -21,11 +21,11 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override { return m_minimum_size; }
 
-        bool internalSerialise([[maybe_unused]]WorldPacket& packet) override
+        bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING == Mop
-            packet << uint64_t(0);
-#endif
+            if (m_protocol.expansion == WoW::Expansion::_Mop)
+                packet << uint64_t(0);
+
             return true;
         }
 

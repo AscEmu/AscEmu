@@ -2282,8 +2282,9 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
 
     _player->getItemInterface()->BuyItem(it, srlPacket.amount, creature);
 
-    SendPacket(SmsgBuyItem(srlPacket.sourceGuid.getRawGuid(), Util::getMSTime(), srlPacket.itemEntry,
-        srlPacket.amount * creature_item.amount).serialise().get());
+    SmsgBuyItem managedPacket(srlPacket.sourceGuid.getRawGuid(), Util::getMSTime(), srlPacket.itemEntry,
+        srlPacket.amount * creature_item.amount);
+    sendManagedPacket(managedPacket);
 
     if (creature_item.max_amount)
     {
