@@ -31,8 +31,9 @@ void WorldSession::handleDuelAccepted(WorldPacket& /*recvPacket*/)
 
     const uint32_t defaultDuelCountdown = 3000;
 
-    SendPacket(SmsgDuelCountdown(defaultDuelCountdown).serialise().get());
-    duelPlayer->sendPacket(SmsgDuelCountdown(defaultDuelCountdown).serialise().get());
+    SmsgDuelCountdown managedPacket(defaultDuelCountdown);
+    sendManagedPacket(managedPacket);
+    duelPlayer->getSession()->sendManagedPacket(managedPacket);
 
     _player->m_duelCountdownTimer = defaultDuelCountdown;
 
@@ -50,9 +51,10 @@ void WorldSession::handleDuelCancelled(WorldPacket& /*recvPacket*/)
         duelPlayer->endDuel(DUEL_WINNER_KNOCKOUT);
         return;
     }
+    SmsgDuelComplete completePacket(1);
 
-    SendPacket(SmsgDuelComplete(1).serialise().get());
-    duelPlayer->sendPacket(SmsgDuelComplete(1).serialise().get());
+    sendManagedPacket(completePacket);
+    duelPlayer->getSession()->sendManagedPacket(completePacket);
 
     _player->cancelDuel();
 }

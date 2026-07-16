@@ -167,6 +167,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Server/Packets/MsgMoveTeleport.h>
 #include <Server/Packets/MsgMoveTeleportAck.h>
 
+#include "Server/PacketBroadcast.hpp"
+
 #include <sstream>
 #include <vector>
 
@@ -11813,8 +11815,11 @@ void Player::endDuel(uint8_t condition)
 
     m_duelPlayer->m_duelState = DUEL_STATE_FINISHED;
 
-    sendMessageToSet(SmsgDuelWinner(condition, getName(), m_duelPlayer->getName()).serialise().get(), true);
-    sendMessageToSet(SmsgDuelComplete(1).serialise().get(), true);
+    SmsgDuelWinner winnerPacket(condition, getName(), m_duelPlayer->getName());
+    PacketBroadcast::sendToSet(*this, winnerPacket, true);
+
+    SmsgDuelComplete completedPacket(1);
+    PacketBroadcast::sendToSet(*this, completedPacket, true);
 
     if (condition != 0)
         sHookInterface.OnDuelFinished(m_duelPlayer, this);

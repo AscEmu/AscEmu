@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -31,14 +30,28 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override
-        {
-            return 1 + ourName.length() + enemyName.length();
-        }
+        size_t expectedSize() const override { return 1 + ourName.length() + enemyName.length(); }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << winnerCondition << ourName.c_str() << enemyName.c_str();
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet << winnerCondition << ourName.c_str() << enemyName.c_str();
+            }
+            else // Mop
+            {
+                packet.writeBit(winnerCondition);
+                packet.writeBits(enemyName.length(), 6);
+                packet.writeBits(ourName.length(), 6);
+
+                packet.flushBits();
+
+                packet << uint32_t(0);            // our realmId
+                packet.writeString(enemyName);
+
+                packet << uint32_t(0);            // enemy realmId
+                packet.writeString(ourName);
+            }
             return true;
         }
 
