@@ -195,6 +195,20 @@ namespace WDB
 
     namespace Structures
     {
+        struct AreaTableEntry
+        {
+            uint32_t id{0};
+            uint32_t map_id{0};
+            uint32_t zone{0};
+            uint32_t explore_flag{0};
+            uint32_t flags{0};
+            int32_t area_level{0};
+            std::string area_name;
+            uint32_t team{0};
+            uint32_t liquid_type_override[4]{};
+            float elevation{0.0f};
+        };
+
 #if VERSION_STRING <= Classic
 #define NAME_PATTERN 8
 #else
@@ -685,61 +699,6 @@ namespace WDB
             uint32_t next_group;                                        // 7
         };
 #endif
-
-        struct AreaTableEntry
-        {
-#if VERSION_STRING <= Cata
-            uint32_t id;                                                // 0
-            uint32_t map_id;                                            // 1
-            uint32_t zone;                                              // 2 if 0 then it's zone, else it's zone id of this area
-            uint32_t explore_flag;                                      // 3, main index
-            uint32_t flags;                                             // 4, unknown value but 312 for all cities
-#if VERSION_STRING == Cata
-            uint32_t SoundProviderPref;                                 // 5
-            uint32_t SoundProviderPrefUnderwater;                       // 6
-            uint32_t AmbienceID;                                        // 7
-            uint32_t ZoneMusic;                                         // 8
-            uint32_t IntroSound;                                        // 9 // 5-9 unused
-#endif
-            // 5-9 unused
-            int32_t area_level;                                         // 10
-#if VERSION_STRING == Cata
-            char* area_name;                                            // 11-26
-#else
-            char* area_name[NAME_PATTERN];                              // 11-26
-#endif
-            // 27, string flags, unused
-            uint32_t team;                                              // 28
-#if VERSION_STRING == Classic
-            uint32_t liquid_type_override;                              // 29-32 liquid override by type
-#else
-            uint32_t liquid_type_override[4];
-#endif
-#if VERSION_STRING == Cata
-            float MinElevation;                                         // 17
-            float AmbientMultiplier;                                    // 18 client only?
-            uint32_t LightID;                                           // 19
-            uint32_t MountFlags;                                        // 20
-            uint32_t UwIntroSound;                                      // 21 4.0.0
-            uint32_t UwZoneMusic;                                       // 22 4.0.0
-            uint32_t UwAmbience;                                        // 23 4.0.0
-            uint32_t World_pvp_ID;                                      // 24
-            int32_t PvpCombatWorldStateID;                              // 25- worldStateId4
-#endif
-#else // Mop
-            uint32_t id;                                                // 0
-            uint32_t map_id;                                            // 1
-            uint32_t zone;                                              // 2 if 0 then it's zone, else it's zone id of this area
-            uint32_t explore_flag;                                      // 3, main index
-            uint32_t flags;                                             // 4
-            // 5-11 unused
-            int32_t area_level;                                         // 12
-            char* area_name;                                            // 13
-            uint32_t team;                                              // 14
-            uint32_t liquid_type_override[4];                           // 15-18 liquid override by type
-            float elevation;                                            // 19
-#endif
-        };
 
         struct AreaTriggerEntry
         {
@@ -3091,6 +3050,89 @@ namespace WDB
 
         namespace Raw
         {
+            struct AreaTableEntryClassic
+            {
+                uint32_t id;
+                uint32_t map_id;
+                uint32_t zone;
+                uint32_t explore_flag;
+                uint32_t flags;
+                int32_t area_level;
+                char* area_name[NAME_PATTERN];
+                uint32_t team;
+                uint32_t liquid_type_override;
+            };
+
+            // Exact binary layout for The Burning Crusade (2.4.3)
+            struct AreaTableEntryTbc
+            {
+                uint32_t id;
+                uint32_t map_id;
+                uint32_t zone;
+                uint32_t explore_flag;
+                uint32_t flags;
+                int32_t area_level;
+                char* area_name[NAME_PATTERN];
+                uint32_t team;
+                uint32_t liquid_type_override[4];
+            };
+
+            // Exact binary layout for Wrath of the Lich King (3.3.5)
+            struct AreaTableEntryWotlk
+            {
+                uint32_t id;
+                uint32_t map_id;
+                uint32_t zone;
+                uint32_t explore_flag;
+                uint32_t flags;
+                int32_t area_level;
+                char* area_name[NAME_PATTERN];
+                uint32_t team;
+                uint32_t liquid_type_override[4];
+            };
+
+            // Exact binary layout for Cataclysm (4.3.4)
+            struct AreaTableEntryCata
+            {
+                uint32_t id;
+                uint32_t map_id;
+                uint32_t zone;
+                uint32_t explore_flag;
+                uint32_t flags;
+                uint32_t sound_provider_pref;
+                uint32_t sound_provider_pref_underwater;
+                uint32_t ambience_id;
+                uint32_t zone_music;
+                uint32_t intro_sound;
+                int32_t area_level;
+                char* area_name;
+                uint32_t team;
+                uint32_t liquid_type_override[4];
+                float min_elevation;
+                float ambient_multiplier;
+                uint32_t light_id;
+                uint32_t mount_flags;
+                uint32_t uw_intro_sound;
+                uint32_t uw_zone_music;
+                uint32_t uw_ambience;
+                uint32_t world_pvp_id;
+                int32_t pvp_combat_world_state_id;
+            };
+
+            // Exact binary layout for Mists of Pandaria (5.4.8)
+            struct AreaTableEntryMop
+            {
+                uint32_t id;
+                uint32_t map_id;
+                uint32_t zone;
+                uint32_t explore_flag;
+                uint32_t flags;
+                int32_t area_level;
+                char* area_name;
+                uint32_t team;
+                uint32_t liquid_type_override[4];
+                float elevation;
+            };
         }
     }
 
@@ -3105,5 +3147,16 @@ namespace WDB
             using wotlk = WotlkLayout;
             using cata = CataLayout;
             using mop = MopLayout;
+        };
+
+        template <>
+        struct DbcTraits<WDB::Structures::AreaTableEntry> : WDB::DbcVersionLayouts<
+            WDB::Structures::Raw::AreaTableEntryClassic,
+            WDB::Structures::Raw::AreaTableEntryTbc,
+            WDB::Structures::Raw::AreaTableEntryWotlk,
+            WDB::Structures::Raw::AreaTableEntryCata,
+            WDB::Structures::Raw::AreaTableEntryMop>
+        {
+            static constexpr const char* filename = "AreaTable.dbc";
         };
 }

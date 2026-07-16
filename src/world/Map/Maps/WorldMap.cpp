@@ -2736,23 +2736,17 @@ ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, LocationVector pos, 
                 {
                     if (const auto* area = MapManagement::AreaManagement::AreaStorage::getExactArea(this, pos, phaseMask))
                     {
-#if VERSION_STRING > Classic
-                        uint32_t overrideLiquid = area->liquid_type_override[liquidFlagType];
+                        uint32_t const index = (WoW::getCurrentExpansion() == WoW::Expansion::_Classic) ? 0 : liquidFlagType;
+                        uint32_t overrideLiquid = area->liquid_type_override[index];
+
                         if (!overrideLiquid && area->zone)
                         {
                             area = MapManagement::AreaManagement::AreaStorage::GetAreaById(area->zone);
                             if (area)
-                                overrideLiquid = area->liquid_type_override[liquidFlagType];
+                            {
+                                overrideLiquid = area->liquid_type_override[index];
+                            }
                         }
-#else
-                        uint32_t overrideLiquid = area->liquid_type_override;
-                        if (!overrideLiquid && area->zone)
-                        {
-                            area = MapManagement::AreaManagement::AreaStorage::GetAreaById(area->zone);
-                            if (area)
-                                overrideLiquid = area->liquid_type_override;
-                        }
-#endif
 
                         if (WDB::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.lookupEntry(overrideLiquid))
                         {
@@ -2904,23 +2898,17 @@ void WorldMap::getFullTerrainStatusForPosition(uint32_t phaseMask, float x, floa
 
         if (liquidType && liquidType < 21 && areaEntry)
         {
-#if VERSION_STRING > Classic
-            uint32_t overrideLiquid = areaEntry->liquid_type_override[liquidFlagType];
+            uint32_t const liquidIndex = (WoW::getCurrentExpansion() == WoW::Expansion::_Classic) ? 0 : liquidFlagType;
+            uint32_t overrideLiquid = areaEntry->liquid_type_override[liquidIndex];
+
             if (!overrideLiquid && areaEntry->zone)
             {
-                WDB::Structures::AreaTableEntry const* zoneEntry = sAreaStore.lookupEntry(areaEntry->zone);
-                if (zoneEntry)
-                    overrideLiquid = zoneEntry->liquid_type_override[liquidFlagType];
+                if (WDB::Structures::AreaTableEntry const* zoneEntry = sAreaStore.lookupEntry(areaEntry->zone))
+                {
+                    overrideLiquid = zoneEntry->liquid_type_override[liquidIndex];
+                }
             }
-#else
-            uint32_t overrideLiquid = areaEntry->liquid_type_override;
-            if(!overrideLiquid && areaEntry->zone)
-            {
-                WDB::Structures::AreaTableEntry const* zoneEntry = sAreaStore.lookupEntry(areaEntry->zone);
-                if (zoneEntry)
-                    overrideLiquid = zoneEntry->liquid_type_override;
-            }
-#endif
+
             if (WDB::Structures::LiquidTypeEntry const* overrideData = sLiquidTypeStore.lookupEntry(overrideLiquid))
             {
                 liquidType = overrideLiquid;
