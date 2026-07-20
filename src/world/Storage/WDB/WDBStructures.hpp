@@ -209,6 +209,15 @@ namespace WDB
             float elevation{0.0f};
         };
 
+        struct CharTitlesEntry
+        {
+            uint32_t id{0};
+            uint32_t conditionId{0};
+            std::string nameMale;
+            std::string nameFemale;
+            uint32_t bitIndex{0};
+        };
+
 #if VERSION_STRING <= Classic
 #define NAME_PATTERN 8
 #else
@@ -779,21 +788,6 @@ namespace WDB
             uint32_t PetFamilyEntry;                                    // 78
 #endif
         };
-
-#if VERSION_STRING > Classic
-        struct CharTitlesEntry
-        {
-            uint32_t ID;                                                // 0, title ids
-            //uint32_t unk1;                                            // 1 flags?
-            char* name_male[NAME_PATTERN];                              // 2-17
-            //uint32_t name_flag;                                       // 18 string flag, unused
-#if VERSION_STRING < Cata
-            char* name_female[NAME_PATTERN];                            // 19-34
-#endif
-            //const char* name2_flag;                                   // 35 string flag, unused
-            uint32_t bit_index;                                         // 36 used in PLAYER_CHOSEN_TITLE and 1<<index in PLAYER__FIELD_KNOWN_TITLES
-        };
-#endif
 
         struct ChatChannelsEntry
         {
@@ -3050,6 +3044,10 @@ namespace WDB
 
         namespace Raw
         {
+            inline constexpr size_t namePatternClassic = 8;
+            inline constexpr size_t namePatternTbcWotlk = 16;
+
+#pragma pack(push, 1)
             struct AreaTableEntryClassic
             {
                 uint32_t id;
@@ -3058,7 +3056,7 @@ namespace WDB
                 uint32_t explore_flag;
                 uint32_t flags;
                 int32_t area_level;
-                char* area_name[NAME_PATTERN];
+                char* area_name[namePatternClassic];
                 uint32_t team;
                 uint32_t liquid_type_override;
             };
@@ -3072,7 +3070,7 @@ namespace WDB
                 uint32_t explore_flag;
                 uint32_t flags;
                 int32_t area_level;
-                char* area_name[NAME_PATTERN];
+                char* area_name[namePatternTbcWotlk];
                 uint32_t team;
                 uint32_t liquid_type_override[4];
             };
@@ -3086,7 +3084,7 @@ namespace WDB
                 uint32_t explore_flag;
                 uint32_t flags;
                 int32_t area_level;
-                char* area_name[NAME_PATTERN];
+                char* area_name[namePatternTbcWotlk];
                 uint32_t team;
                 uint32_t liquid_type_override[4];
             };
@@ -3133,6 +3131,27 @@ namespace WDB
                 uint32_t liquid_type_override[4];
                 float elevation;
             };
+
+            struct CharTitlesEntryTbcWotlk
+            {
+                uint32_t id;
+                uint32_t conditionId;
+                char* nameMale[namePatternTbcWotlk];
+                uint32_t nameMaleFlags;
+                char* nameFemale[namePatternTbcWotlk];
+                uint32_t nameFemaleFlags;
+                uint32_t bitIndex;
+            };
+
+            struct CharTitlesEntryCataMop
+            {
+                uint32_t id;
+                uint32_t conditionId;
+                char* nameMale;
+                char* nameFemale;
+                uint32_t bitIndex;
+            };
+#pragma pack(pop)
         }
     }
 
@@ -3158,5 +3177,16 @@ namespace WDB
             WDB::Structures::Raw::AreaTableEntryMop>
         {
             static constexpr const char* filename = "AreaTable.dbc";
+        };
+
+        template <>
+        struct DbcTraits<WDB::Structures::CharTitlesEntry> : WDB::DbcVersionLayouts<
+            WDB::UnsupportedVersion, // Classic
+            WDB::Structures::Raw::CharTitlesEntryTbcWotlk, // TBC
+            WDB::Structures::Raw::CharTitlesEntryTbcWotlk, // WotLK
+            WDB::Structures::Raw::CharTitlesEntryCataMop, // Cata
+            WDB::Structures::Raw::CharTitlesEntryCataMop> // MoP
+        {
+            static constexpr const char* filename = "CharTitles.dbc";
         };
 }

@@ -1901,7 +1901,7 @@ void AchievementMgr::giveAchievementReward(WDB::Structures::AchievementEntry con
         {
             auto char_title = sCharTitlesStore.lookupEntry(Reward->titel_A);
             if (char_title)
-                getPlayer()->setKnownPvPTitle(static_cast<RankTitles>(char_title->bit_index), true);
+                getPlayer()->setKnownPvPTitle(static_cast<RankTitles>(char_title->bitIndex), true);
         }
     }
     if (getPlayer()->getTeam() == TEAM_HORDE)
@@ -1910,7 +1910,7 @@ void AchievementMgr::giveAchievementReward(WDB::Structures::AchievementEntry con
         {
             auto char_title = sCharTitlesStore.lookupEntry(Reward->titel_H);
             if (char_title)
-                getPlayer()->setKnownPvPTitle(static_cast<RankTitles>(char_title->bit_index), true);
+                getPlayer()->setKnownPvPTitle(static_cast<RankTitles>(char_title->bitIndex), true);
         }
     }
 

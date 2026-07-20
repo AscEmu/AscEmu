@@ -143,8 +143,8 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::StableSlotPrices> sStableSlotPric
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemDisplayInfo> sItemDisplayInfoStore;
 #endif
 
+SERVER_DECL WDB::WDBStore<WDB::Structures::CharTitlesEntry> sCharTitlesStore;
 #if VERSION_STRING >= TBC
-SERVER_DECL WDB::WDBContainer<WDB::Structures::CharTitlesEntry> sCharTitlesStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GemPropertiesEntry> sGemPropertiesStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TotemCategoryEntry> sTotemCategoryStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::WorldMapAreaEntry> sWorldMapAreaStore;
@@ -535,10 +535,33 @@ bool loadDBCs()
 
 #endif
 
+    WDB::loadUnifiedWDBStore<WDB::Structures::CharTitlesEntry>(
+        bad_dbc_files, sCharTitlesStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::CharTitlesEntry& entry) {
+            entry.id = raw.id;
+            entry.conditionId = raw.conditionId;
+            entry.bitIndex = raw.bitIndex;
+
+            if constexpr (requires { { raw.nameMale[0] } -> std::convertible_to<const char*>; }) {
+                uint8_t localeId = sWorld.getDbcLocaleLanguageId();
+                entry.nameMale = raw.nameMale[localeId] ? raw.nameMale[localeId] : "";
+            }
+            else {
+                entry.nameMale = raw.nameMale ? raw.nameMale : "";
+            }
+
+            if constexpr (requires { { raw.nameFemale[0] } -> std::convertible_to<const char*>; }) {
+                uint8_t localeId = sWorld.getDbcLocaleLanguageId();
+                entry.nameFemale = raw.nameFemale[localeId] ? raw.nameFemale[localeId] : "";
+            }
+            else {
+                entry.nameFemale = raw.nameFemale ? raw.nameFemale : "";
+            }
+        }
+    );
     /////////////////////////////////////////////////////////////////////////////////////////
     // Load multi version specific dbcs available since TBC
 #if VERSION_STRING >= TBC
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sCharTitlesStore, dbc_path, "CharTitles.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGemPropertiesStore, dbc_path, "GemProperties.dbc");
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtChanceToMeleeCritStore, dbc_path, "gtChanceToMeleeCrit.dbc");
