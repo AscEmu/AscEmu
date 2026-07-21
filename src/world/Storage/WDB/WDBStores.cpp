@@ -539,14 +539,16 @@ bool loadDBCs()
         bad_dbc_files, sCharTitlesStore, dbc_path,
         []<typename RawType>(const RawType& raw, WDB::Structures::CharTitlesEntry& entry) {
             entry.id = raw.id;
-            entry.conditionId = raw.conditionId;
             entry.bitIndex = raw.bitIndex;
 
             if constexpr (requires { { raw.nameMale[0] } -> std::convertible_to<const char*>; }) {
                 uint8_t localeId = sWorld.getDbcLocaleLanguageId();
                 entry.nameMale = raw.nameMale[localeId] ? raw.nameMale[localeId] : "";
             }
-            else {
+            else if constexpr (requires { raw.name; }) {
+                entry.nameMale = raw.name ? raw.name : "";
+            }
+            else if constexpr (requires { raw.nameMale; }) {
                 entry.nameMale = raw.nameMale ? raw.nameMale : "";
             }
 
@@ -554,8 +556,11 @@ bool loadDBCs()
                 uint8_t localeId = sWorld.getDbcLocaleLanguageId();
                 entry.nameFemale = raw.nameFemale[localeId] ? raw.nameFemale[localeId] : "";
             }
-            else {
+            else if constexpr (requires { raw.nameFemale; }) {
                 entry.nameFemale = raw.nameFemale ? raw.nameFemale : "";
+            }
+            else {
+                entry.nameFemale = entry.nameMale;
             }
         }
     );

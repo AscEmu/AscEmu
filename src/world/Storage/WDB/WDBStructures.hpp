@@ -3135,20 +3135,15 @@ namespace WDB
             struct CharTitlesEntryTbcWotlk
             {
                 uint32_t id;
-                uint32_t conditionId;
                 char* nameMale[namePatternTbcWotlk];
-                uint32_t nameMaleFlags;
                 char* nameFemale[namePatternTbcWotlk];
-                uint32_t nameFemaleFlags;
                 uint32_t bitIndex;
             };
 
             struct CharTitlesEntryCataMop
             {
                 uint32_t id;
-                uint32_t conditionId;
-                char* nameMale;
-                char* nameFemale;
+                char* name;
                 uint32_t bitIndex;
             };
 #pragma pack(pop)
