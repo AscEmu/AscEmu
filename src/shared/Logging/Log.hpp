@@ -65,11 +65,8 @@ public:
     bool isSessionLogOpen();
     void closeSessionLog();
 
-    void write(const char* format, ...);
-
+    //////////////////////////////////////////////////////////////////////////////////////////
     // WorldSession.cpp
-    void write(WorldSession* session, const char* format, ...);
-
     template <typename... Args>
     void writefromsession(WorldSession* session, fmt::format_string<Args...> format, Args&&... args)
     {
@@ -78,4 +75,3 @@ public:
 
     void writefromsession(WorldSession* session,std::string_view message);
 };
-

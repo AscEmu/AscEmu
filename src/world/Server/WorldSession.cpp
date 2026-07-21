@@ -514,38 +514,6 @@ void SessionLog::writefromsession(WorldSession* session, std::string_view messag
     fflush(mSessionLogFile);
 }
 
-void SessionLog::write(WorldSession* session, const char* format, ...)
-{
-    if (isSessionLogOpen())
-    {
-        va_list ap;
-        va_start(ap, format);
-
-        // Get current time
-        std::string current_time = "[" + Util::GetCurrentDateTimeString() + "] ";
-
-        // Format the fixed part of the log entry using AscEmu::StringFormat
-        std::string logEntry = AscEmu::StringFormat("{}Account {} [{}], IP {}, Player {} :: ",
-            current_time,
-            session->GetAccountId(),
-            session->GetAccountName(),
-            session->GetSocket() ? session->GetSocket()->getRemoteIp() : "NOIP",
-            session->GetPlayer() ? session->GetPlayer()->getName() : "nologin");
-
-        // Use a buffer to format the variable arguments (like vsnprintf)
-        char messageBuffer[1024];
-        vsnprintf(messageBuffer, sizeof(messageBuffer), format, ap);
-        va_end(ap);
-
-        // Append the formatted message to the log entry
-        logEntry += messageBuffer;
-
-        // Write to the log file
-        fprintf(mSessionLogFile, "%s\n", logEntry.c_str());
-        fflush(mSessionLogFile);
-    }
-}
-
 void WorldSession::sendSystemMessagePacket(std::string& _message)
 {
     SmsgMessageChat messagePacket(SystemMessagePacket{_message});

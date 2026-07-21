@@ -75,7 +75,6 @@ void WorldPacketLog::disablePacketLog()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // SessionLog functions
-
 SessionLog::SessionLog(const char* filename, bool open)
 {
 #if defined(linux) || defined(__linux) || defined(FreeBSD) || defined(__FreeBSD__) || defined(__APPLE__)
@@ -118,24 +117,5 @@ void SessionLog::closeSessionLog()
         fflush(mSessionLogFile);
         fclose(mSessionLogFile);
         mSessionLogFile = nullptr;
-    }
-}
-
-void SessionLog::write(const char* format, ...)
-{
-    if (mSessionLogFile != nullptr)
-    {
-        char out[32768];
-        va_list ap;
-
-        va_start(ap, format);
-
-        std::string current_time = "[" + Util::GetCurrentDateTimeString() + "] ";
-        sprintf(out, current_time.c_str());
-
-        size_t l = strlen(out);
-        vsnprintf(&out[l], 32768 - l, format, ap);
-        fprintf(mSessionLogFile, "%s\n", out);
-        va_end(ap);
     }
 }
