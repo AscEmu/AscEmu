@@ -61,15 +61,14 @@
 #include "Utilities/Util.hpp"
 #include "Threading/ThreadPool.hpp"
 
-#if VERSION_STRING == Mop
 #include "Data/WoWDynamicObject.hpp"
+#if VERSION_STRING == Mop
 #include "Data/WoWGameObject.hpp"
 #include "Data/WoWItem.hpp"
 #include "Data/WoWObject.hpp"
 #include "Data/WoWPlayer.hpp"
 #include "Data/WoWUnit.hpp"
 #endif
-
 
 #include <atomic>
 #include <chrono>
@@ -96,6 +95,8 @@
     #include "Database/AE/DatabaseSelfTest.hpp"
 #endif
 
+using namespace WoW;
+
 namespace fs = std::filesystem;
 
 namespace
@@ -107,8 +108,40 @@ namespace
     void printBanner()
     {
         sLogger.info("<< AscEmu {}/{}-{} {} :: World Server >>",
-            BuildInfo::hash, BuildInfo::config, BuildInfo::platform, BuildInfo::architecture);
+                     BuildInfo::hash, BuildInfo::config, BuildInfo::platform, BuildInfo::architecture);
         sLogger.info("========================================================");
+
+        sLogger.info("The key combination <Ctrl-C> will safely shut down the server.");
+    }
+
+    void printDiagnostics()
+    {
+        const Expansion serverExpansion = g_currentExpansion;
+        const Expansion compileExpansion = buildExpansion;
+
+        sLogger.info("Server Expansion: ID {} ({})", static_cast<uint32_t>(serverExpansion), getExpansionName(serverExpansion));
+        sLogger.info("Build Expansion:  ID {} ({})", static_cast<uint32_t>(compileExpansion), getExpansionName(compileExpansion));
+
+        const uint32_t expectedWoWObjectSize = (serverExpansion < Expansion::_Cata) ? 6 : 8;
+
+        if (serverExpansion == Expansion::_Mop)
+        {
+            sLogger.info("Size of WoWObject: {} / {}", static_cast<uint32_t>(sizeof(WoWObject) / sizeof(uint32_t)), expectedWoWObjectSize);
+            sLogger.info("Size of WoWUnit: {} / 160", static_cast<uint32_t>(sizeof(WoWUnit) / sizeof(uint32_t)));
+            sLogger.info("Size of WoWPlayer: {} / 1987", static_cast<uint32_t>(sizeof(WoWPlayer) / sizeof(uint32_t)));
+            sLogger.info("Size of WoWGameObject: {} / 20", static_cast<uint32_t>(sizeof(WoWGameObject) / sizeof(uint32_t)));
+            sLogger.info("Size of WoWDynamicObject: {} / 14", static_cast<uint32_t>(sizeof(WoWDynamicObject) / sizeof(uint32_t)));
+            sLogger.info("Size of WoWItem: {} / 69", static_cast<uint32_t>(sizeof(WoWItem) / sizeof(uint32_t)));
+        }
+        else
+        {
+            sLogger.info("Size of WoWObject: {} / {}", static_cast<uint32_t>(sizeof(WoWObject) / sizeof(uint32_t)), expectedWoWObjectSize);
+            sLogger.info("Size of WoWUnit: {}", static_cast<uint32_t>(sizeof(WoWUnit) / sizeof(uint32_t)));
+            sLogger.info("Size of WoWPlayer: {}", static_cast<uint32_t>(sizeof(WoWPlayer) / sizeof(uint32_t)));
+            sLogger.info("Size of WoWGameObject: {}", static_cast<uint32_t>(sizeof(WoWGameObject) / sizeof(uint32_t)));
+            sLogger.info("Size of WoWDynamicObject: {}", static_cast<uint32_t>(sizeof(WoWDynamicObject) / sizeof(uint32_t)));
+            sLogger.info("Size of WoWItem: {}", static_cast<uint32_t>(sizeof(WoWItem) / sizeof(uint32_t)));
+        }
     }
 
     void startRemoteConsole(AscEmu::Threading::AEThreadPool& threadPool)
@@ -376,17 +409,6 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     sLogger.initializeLogger("world");
     printBanner();
 
-#if VERSION_STRING == Mop
-    sLogger.info("Size of WoWObject {} / 8", static_cast<uint32_t>(sizeof(WoWObject) / sizeof(uint32_t)));
-    sLogger.info("Size of WoWUnit {} / 160", static_cast<uint32_t>(sizeof(WoWUnit) / sizeof(uint32_t)));
-    sLogger.info("Size of WoWPlayer {} / 1987", static_cast<uint32_t>(sizeof(WoWPlayer) / sizeof(uint32_t)));
-    sLogger.info("Size of WoWGameObject {} / 20", static_cast<uint32_t>(sizeof(WoWGameObject) / sizeof(uint32_t)));
-    sLogger.info("Size of WoWDynamicObject {} / 14", static_cast<uint32_t>(sizeof(WoWDynamicObject) / sizeof(uint32_t)));
-    sLogger.info("Size of WoWItem {} / 69", static_cast<uint32_t>(sizeof(WoWItem) / sizeof(uint32_t)));
-#endif
-
-    sLogger.info("The key combination <Ctrl-C> will safely shut down the server.");
-
 #ifndef _WIN32
     if (geteuid() == 0 || getegid() == 0)
         sLogger.warning("You are running AscEmu as root. This is not needed, and may be a possible security risk. It is advised to hit CTRL+C now and start as a non-privileged user.");
@@ -400,6 +422,8 @@ bool Master::run(int /*argc*/, char** /*argv*/)
 
     sWorld.initialize();
     sWorld.loadWorldConfigValues();
+
+    printDiagnostics();
 
     sLogger.setMinimumMessageType(static_cast<AscEmu::Logging::MessageType>(worldConfig.logger.minimumMessageType));
     sLogger.setDebugFlags(static_cast<AscEmu::Logging::DebugFlags>(worldConfig.logger.debugFlags));

@@ -192,31 +192,59 @@ namespace WDB
             }
         }
 
+        auto const currentExpansion = WoW::getCurrentExpansion();
+        auto const expansionId = static_cast<uint32_t>(currentExpansion);
+        auto const expansionName = WoW::getExpansionName(currentExpansion);
+
         auto loadRows = [&]<typename T0>(T0 identity) {
             using RawT = T0::type;
             if constexpr (!std::is_same_v<RawT, WDB::UnsupportedVersion>) {
                 WDB::WDBContainer<RawT> rawStore;
 
-                if (WDB::WDBLoader::hasFormat(filename))
-                {
-                    std::string format = WDB::WDBLoader::getFormat(filename);
-                    auto writable = std::make_unique<char[]>(format.size() + 1);
-                    std::copy(format.begin(), format.end(), writable.get());
-                    writable[format.size()] = '\0';
-                    rawStore.setFormat(std::move(writable));
-                }
-
-                if (WDB::WDBLoader::getFormatRecordSize(rawStore.getFormat()) != sizeof(RawT))
-                {
+                // Check if format string exists
+                if (!WDB::WDBLoader::hasFormat(filename)) {
                     std::ostringstream stream;
-                    stream << "WDBLoader:: wrong format size for " << filename << "\n";
+                    stream << "WDBLoader:: no format found for " << filename
+                        << " on expansion " << expansionName << " (ID: " << expansionId << ")\n";
                     errors.push_back(stream.str());
                     std::cout << stream.str() << "\n";
                     return;
                 }
 
+                std::string format = WDB::WDBLoader::getFormat(filename);
+                auto writable = std::make_unique<char[]>(format.size() + 1);
+                std::copy(format.begin(), format.end(), writable.get());
+                writable[format.size()] = '\0';
+                rawStore.setFormat(std::move(writable));
+
+                // Check format record size vs struct size
+                if (WDB::WDBLoader::getFormatRecordSize(rawStore.getFormat()) != sizeof(RawT))
+                {
+                    std::ostringstream stream;
+                    stream << "WDBLoader:: wrong format size for " << filename
+                        << " on expansion " << expansionName << " (ID: " << expansionId << ")\n";
+                    errors.push_back(stream.str());
+                    std::cout << stream.str() << "\n";
+                    return;
+                }
+
+                // Increment global file counter
+                ++g_dbc_file_count;
+
+                // Load DBC file and validate
                 if (!rawStore.load(dbcFilePath.c_str())) {
-                    errors.push_back(dbcFilePath);
+                    if (std::filesystem::exists(dbcFilePath)) {
+                        std::ostringstream stream;
+                        stream << dbcFilePath << " exists, and has " << rawStore.getFieldCount()
+                            << " field(s) (expected " << format.size()
+                            << "). Extracted file might be from wrong client version or a database-update has been forgotten.\n";
+                        errors.push_back(stream.str());
+                        std::cout << stream.str() << "\n";
+                    }
+                    else {
+                        std::cout << dbcFilePath << " does not exist\n";
+                        errors.push_back(dbcFilePath);
+                    }
                     return;
                 }
 
@@ -232,7 +260,8 @@ namespace WDB
             else
             {
                 std::ostringstream stream;
-                stream << "WDBStore: File " << filename << " is not supported in this expansion layout.\n";
+                stream << "WDBStore: File " << filename << " is not supported on expansion "
+                    << expansionName << " (ID: " << expansionId << ").\n";
                 errors.push_back(stream.str());
                 std::cout << stream.str() << "\n";
             }

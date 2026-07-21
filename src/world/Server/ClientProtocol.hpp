@@ -150,24 +150,24 @@ namespace WoW {
 //        }
 //    }
 //
-//    [[nodiscard]] constexpr std::string_view getExpansionName(Expansion expansion) noexcept
-//    {
-//        switch (expansion)
-//        {
-//            case Expansion::_Classic: return "Classic";
-//            case Expansion::_TBC: return "The Burning Crusade";
-//            case Expansion::_WotLK: return "Wrath of the Lich King";
-//            case Expansion::_Cata: return "Cataclysm";
-//            case Expansion::_Mop: return "Mists of Pandaria";
-//            case Expansion::WoD: return "Warlords of Draenor";
-//            case Expansion::Legion: return "Legion";
-//            case Expansion::BfA: return "Battle for Azeroth";
-//            case Expansion::SL: return "Shadowlands";
-//            case Expansion::DF: return "Dragonflight";
-//            case Expansion::TWW: return "The War Within";
-//            case Expansion::MN: return "Midnight";
-//            case Expansion::Unknown:
-//            default: return "Unknown expansion";
-//        }
-//    }
+    [[nodiscard]] constexpr std::string_view getExpansionName(Expansion expansion) noexcept
+    {
+        switch (expansion)
+        {
+            case Expansion::_Classic: return "Classic";
+            case Expansion::_TBC: return "The Burning Crusade";
+            case Expansion::_WotLK: return "Wrath of the Lich King";
+            case Expansion::_Cata: return "Cataclysm";
+            case Expansion::_Mop: return "Mists of Pandaria";
+            case Expansion::WoD: return "Warlords of Draenor";
+            case Expansion::Legion: return "Legion";
+            case Expansion::BfA: return "Battle for Azeroth";
+            case Expansion::SL: return "Shadowlands";
+            case Expansion::DF: return "Dragonflight";
+            case Expansion::TWW: return "The War Within";
+            case Expansion::MN: return "Midnight";
+            case Expansion::Unknown:
+            default: return "Unknown expansion";
+        }
+    }
 }
