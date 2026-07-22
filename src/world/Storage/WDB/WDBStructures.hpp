@@ -3221,7 +3221,7 @@ namespace WDB
         };
 
         template <>
-        struct WDB::DbcTraits<WDB::Structures::ChrClassesEntry> : WDB::DbcVersionLayouts<
+        struct DbcTraits<WDB::Structures::ChrClassesEntry> : WDB::DbcVersionLayouts<
             WDB::Structures::Raw::ChrClassesEntryClassic,
             WDB::Structures::Raw::ChrClassesEntryTbc,
             WDB::Structures::Raw::ChrClassesEntryWotlk,
