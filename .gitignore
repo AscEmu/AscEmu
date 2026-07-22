@@ -35,3 +35,11 @@ bin/lib/*.a
 bin/*.so
 bin/*
 
+# Visual Studio cache & metadata
+.vs/
+# Visual Studio CMake build output
+out/
+
+# Generic & local CMake config
+CMakePresets.json
+CMakeUserPresets.json
