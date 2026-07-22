@@ -218,6 +218,19 @@ namespace WDB
             uint32_t bitIndex{0};
         };
 
+        struct ChrClassesEntry
+        {
+            uint32_t classId{0};
+            uint32_t powerType{0};
+            std::string name;
+            uint32_t spellClassSet{0};
+            uint32_t cinematicSequenceId{0};
+            uint32_t requiredExpansion{0};
+            uint32_t apPerStr{0};
+            uint32_t apPerAgi{0};
+            uint32_t rapPerAgi{0};
+        };
+
 #if VERSION_STRING <= Classic
 #define NAME_PATTERN 8
 #else
@@ -797,31 +810,6 @@ namespace WDB
             //uint32_t name_pattern_flags;                              // 19
             //char* channel_name[16];                                   // 20-35
             //uint32_t channel_name_flags;                              // 36
-        };
-
-        struct ChrClassesEntry
-        {
-            uint32_t class_id;                                          // 0
-            //uint32_t unk1;                                            // 1
-            //uint32_t unk2;                                            // 2
-            uint32_t power_type;                                        // 3
-            //uint32_t unk3;                                            // 4
-            char* name[NAME_PATTERN];                                              // 5-12
-            //uint32_t nameflags;                                       // 13
-            //uint32_t unk4;                                            // 14
-            uint32_t spellfamily;                                       // 15
-            //uint32_t unk4;                                            // 16
-#if VERSION_STRING > TBC
-            uint32_t cinematic_id;                                      // 58 CinematicSequences.dbc
-#if VERSION_STRING < Mop
-            uint32_t expansion;                                         // 59
-#endif
-#endif
-#if VERSION_STRING > WotLK
-            uint32_t apPerStr;                                          // 11
-            uint32_t apPerAgi;                                          // 12
-            uint32_t rapPerAgi;                                         // 13
-#endif
         };
 
         struct ChrRacesEntry
@@ -3061,7 +3049,6 @@ namespace WDB
                 uint32_t liquid_type_override;
             };
 
-            // Exact binary layout for The Burning Crusade (2.4.3)
             struct AreaTableEntryTbc
             {
                 uint32_t id;
@@ -3075,7 +3062,6 @@ namespace WDB
                 uint32_t liquid_type_override[4];
             };
 
-            // Exact binary layout for Wrath of the Lich King (3.3.5)
             struct AreaTableEntryWotlk
             {
                 uint32_t id;
@@ -3089,7 +3075,6 @@ namespace WDB
                 uint32_t liquid_type_override[4];
             };
 
-            // Exact binary layout for Cataclysm (4.3.4)
             struct AreaTableEntryCata
             {
                 uint32_t id;
@@ -3117,7 +3102,6 @@ namespace WDB
                 int32_t pvp_combat_world_state_id;
             };
 
-            // Exact binary layout for Mists of Pandaria (5.4.8)
             struct AreaTableEntryMop
             {
                 uint32_t id;
@@ -3145,6 +3129,57 @@ namespace WDB
                 uint32_t id;
                 char* name;
                 uint32_t bitIndex;
+            };
+
+            struct ChrClassesEntryClassic
+            {
+                uint32_t id;
+                uint32_t powerType;
+                char* name[namePatternClassic];
+                uint32_t spellClassSet;
+            };
+
+            struct ChrClassesEntryTbc
+            {
+                uint32_t id;
+                uint32_t powerType;
+                char* name[namePatternTbcWotlk];
+                uint32_t spellClassSet;
+            };
+
+            struct ChrClassesEntryWotlk
+            {
+                uint32_t id;
+                uint32_t powerType;
+                char* name[namePatternTbcWotlk];
+                uint32_t spellClassSet;
+                uint32_t cinematicSequenceId;
+                uint32_t requiredExpansion;
+            };
+
+            struct ChrClassesEntryCata
+            {
+                uint32_t id;
+                uint32_t powerType;
+                char* name;
+                uint32_t spellClassSet;
+                uint32_t cinematicSequenceId;
+                uint32_t requiredExpansion;
+                uint32_t apPerStr;
+                uint32_t apPerAgi;
+                uint32_t rapPerAgi;
+            };
+
+            struct ChrClassesEntryMop
+            {
+                uint32_t id;
+                uint32_t powerType;
+                char* name;
+                uint32_t spellClassSet;
+                uint32_t cinematicSequenceId;
+                uint32_t apPerStr;
+                uint32_t apPerAgi;
+                uint32_t rapPerAgi;
             };
 #pragma pack(pop)
         }
@@ -3183,5 +3218,16 @@ namespace WDB
             WDB::Structures::Raw::CharTitlesEntryCataMop> // MoP
         {
             static constexpr const char* filename = "CharTitles.dbc";
+        };
+
+        template <>
+        struct WDB::DbcTraits<WDB::Structures::ChrClassesEntry> : WDB::DbcVersionLayouts<
+            WDB::Structures::Raw::ChrClassesEntryClassic,
+            WDB::Structures::Raw::ChrClassesEntryTbc,
+            WDB::Structures::Raw::ChrClassesEntryWotlk,
+            WDB::Structures::Raw::ChrClassesEntryCata,
+            WDB::Structures::Raw::ChrClassesEntryMop>
+        {
+            static constexpr const char* filename = "ChrClasses.dbc";
         };
 }

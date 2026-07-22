@@ -211,10 +211,8 @@ public:
     void resetCharacterLoginBannState();
     bool loadDbcDb2Stores();
 
-    // TODO: figure out how to get it for cata/mop
-    // although this is probably not needed anymore after wotlk
-    // Loads correct localization id used in name columns in DBC files
-    void loadDbcLocaleLanguage();
+    // Loads correct localization id used in name columns in DBC files before Cata expansion
+    void setDbcLocaleLanguageId(uint8_t id) { m_dbcLocaleId = id; }
     [[nodiscard]] uint8_t getDbcLocaleLanguageId() const noexcept;
 
     void loadMySQLStores();

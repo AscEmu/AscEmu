@@ -283,7 +283,7 @@ bool handlePlayerInfoCommand(BaseConsole* baseConsole, int argumentCount, std::s
     baseConsole->Write("Class: %s\r\n", player->getDbcClassEntry()->name[sWorld.getDbcLocaleLanguageId()]);
 #else
     baseConsole->Write("Race: %s\r\n", player->getDbcRaceEntry()->name);
-    baseConsole->Write("Class: %s\r\n", player->getDbcClassEntry()->name);
+    baseConsole->Write("Class: %s\r\n", player->getDbcClassEntry()->name.c_str());
 #endif
     baseConsole->Write("IP: %s\r\n", player->getSession()->GetSocket() ? player->getSession()->GetSocket()->getRemoteIp().c_str() : "disconnected");
     baseConsole->Write("Level: %u\r\n", player->getLevel());

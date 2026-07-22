@@ -166,7 +166,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AuctionHouseEntry> sAuctio
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BankBagSlotPrices> sBankBagSlotPricesStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChatChannelsEntry> sChatChannelsStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CharStartOutfitEntry> sCharStartOutfitStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrClassesEntry> sChrClassesStore;
+extern SERVER_DECL WDB::WDBStore<WDB::Structures::ChrClassesEntry> sChrClassesStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrRacesEntry> sChrRacesStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoEntry> sCreatureDisplayInfoStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore;

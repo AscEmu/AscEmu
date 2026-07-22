@@ -9414,8 +9414,8 @@ void Player::sendCinematicOnFirstLogin()
 #if VERSION_STRING > TBC
         if (const auto charEntry = sChrClassesStore.lookupEntry(getClass()))
         {
-            if (charEntry->cinematic_id != 0)
-                sendPacket(SmsgTriggerCinematic(charEntry->cinematic_id).serialise().get());
+            if (charEntry->cinematicSequenceId != 0)
+                sendPacket(SmsgTriggerCinematic(charEntry->cinematicSequenceId).serialise().get());
             else if (const auto raceEntry = sChrRacesStore.lookupEntry(getRace()))
                 sendPacket(SmsgTriggerCinematic(raceEntry->cinematic_id).serialise().get());
         }
@@ -14515,7 +14515,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     initialiseNoseLevel();
 
     // set power type
-    setPowerType(static_cast<uint8_t>(m_dbcClass->power_type));
+    setPowerType(static_cast<uint8_t>(m_dbcClass->powerType));
 
     // obtain player create m_playerCreateInfo
     m_playerCreateInfo = sMySQLStore.getPlayerCreateInfo(getRace(), getClass());

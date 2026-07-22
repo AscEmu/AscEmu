@@ -700,7 +700,6 @@ bool World::setInitialWorldSettings()
         return false;
 
 #if VERSION_STRING < Cata
-    loadDbcLocaleLanguage();
     auto localeString = Util::getLanguagesStringFromId(m_dbcLocaleId);
     if (m_dbcLocaleId == 0)
         localeString.append("/enUS");
@@ -813,32 +812,6 @@ bool World::loadDbcDb2Stores()
     }
 
     return true;
-}
-
-void World::loadDbcLocaleLanguage()
-{
-    if (getProtocol().isAtLeast(Expansion::_Cata))
-    {
-        return;
-    }
-
-    const auto warriorClass = sChrClassesStore.lookupEntry(1);
-    if (!warriorClass)
-    {
-        return;
-    }
-
-    const uint8_t maxLocales = getProtocol().isLessThan(Expansion::_TBC) ? 8 : 16;
-
-    for (uint8_t i = 0; i < maxLocales; ++i)
-    {
-        std::string name(warriorClass->name[i]);
-        if (!name.empty())
-        {
-            m_dbcLocaleId = i;
-            break;
-        }
-    }
 }
 
 uint8_t World::getDbcLocaleLanguageId() const noexcept

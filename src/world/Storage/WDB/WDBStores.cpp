@@ -62,7 +62,7 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::ChatChannelsEntry> sChatChannelsS
 SERVER_DECL WDB::WDBContainer<WDB::Structures::CharStartOutfitEntry> sCharStartOutfitStore;
 std::map<uint32_t, WDB::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrClassesEntry> sChrClassesStore;
+SERVER_DECL WDB::WDBStore<WDB::Structures::ChrClassesEntry> sChrClassesStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrRacesEntry> sChrRacesStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoEntry> sCreatureDisplayInfoStore;
@@ -243,6 +243,56 @@ bool loadDBCs()
     WDB::StoreProblemList bad_dbc_files;
     std::string dbc_path = sWorld.settings.server.dataDir + "dbc/";
 
+    // Load ChrClasses.dbc first to ensure the dbcLocaleId is set correctly before loading other DBC files that may depend on it
+    WDB::loadUnifiedWDBStore<WDB::Structures::ChrClassesEntry>(
+        bad_dbc_files, sChrClassesStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::ChrClassesEntry& entry) {
+            entry.classId = raw.id;
+            entry.powerType = raw.powerType;
+            entry.spellClassSet = raw.spellClassSet;
+
+            if constexpr (requires { raw.cinematicSequenceId; }) {
+                entry.cinematicSequenceId = raw.cinematicSequenceId;
+            }
+
+            if constexpr (requires { raw.requiredExpansion; }) {
+                entry.requiredExpansion = raw.requiredExpansion;
+            }
+
+            if constexpr (requires { raw.apPerStr; }) {
+                entry.apPerStr = raw.apPerStr;
+                entry.apPerAgi = raw.apPerAgi;
+                entry.rapPerAgi = raw.rapPerAgi;
+            }
+
+            // Pre-Cata: Array of localized strings
+            if constexpr (requires { { raw.name[0] } -> std::convertible_to<const char*>; }) {
+                constexpr size_t arraySize = std::extent_v<decltype(raw.name)>;
+
+                // Auto-detect DBC locale ID on Warrior entry (ID 1)
+                if (raw.id == 1) {
+                    for (size_t i = 0; i < arraySize; ++i) {
+                        if (raw.name[i] && raw.name[i][0] != '\0') {
+                            uint8_t const detectedLocale = static_cast<uint8_t>(i);
+                            sWorld.setDbcLocaleLanguageId(detectedLocale);
+                            sLogger.info("DBC: Auto-detected locale ID {} ({}) from ChrClasses.dbc",
+                                         detectedLocale,
+                                         Util::getLanguagesStringFromId(detectedLocale));
+                            break;
+                        }
+                    }
+                }
+
+                uint8_t const localeId = sWorld.getDbcLocaleLanguageId();
+                entry.name = (localeId < arraySize && raw.name[localeId]) ? raw.name[localeId] : (raw.name[0] ? raw.name[0] : "");
+            }
+            // Cata / MoP: Single string
+            else if constexpr (requires { raw.name; }) {
+                entry.name = raw.name ? raw.name : "";
+            }
+        }
+    );
+
     WDB::loadUnifiedWDBStore<WDB::Structures::AreaTableEntry>(
         bad_dbc_files, sAreaStore, dbc_path,
         []<typename RawType>(const RawType& raw, WDB::Structures::AreaTableEntry& entry) {
@@ -296,7 +346,6 @@ bool loadDBCs()
         if (WDB::Structures::CharStartOutfitEntry const* outfit = sCharStartOutfitStore.lookupEntry(i))
             sCharStartOutfitMap[outfit->Race | outfit->Class << 8 | outfit->Gender << 16] = outfit;
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChrClassesStore, dbc_path, "ChrClasses.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChrRacesStore, dbc_path, "ChrRaces.dbc");
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sCreatureDisplayInfoStore, dbc_path, "CreatureDisplayInfo.dbc");
