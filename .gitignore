@@ -43,3 +43,9 @@ out/
 # Generic & local CMake config
 CMakePresets.json
 CMakeUserPresets.json
+
+# Local editor and analyzer overrides
+.editorconfig
+
+# Local ReSharper user settings
+*.DotSettings.user
