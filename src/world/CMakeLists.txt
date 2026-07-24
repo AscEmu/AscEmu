@@ -37,20 +37,23 @@ add_executable(${EXECUTABLE_NAME}
     ${APP_ICON_RESOURCE_WINDOWS}
 )
 
-include_directories(
+include_directories(SYSTEM
     ${OPENSSL_INCLUDE_DIR}
+    ${ZLIB_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Recast/Include
+    ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
+    ${CMAKE_SOURCE_DIR}/dep/lualib/src
+)
+
+include_directories(
     ${CMAKE_SOURCE_DIR}/src/collision
     ${CMAKE_SOURCE_DIR}/src/collision/Management
     ${CMAKE_SOURCE_DIR}/src/collision/Maps
     ${CMAKE_SOURCE_DIR}/src/collision/Models
-    ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
-    ${CMAKE_SOURCE_DIR}/dep/lualib/src
     ${CMAKE_SOURCE_DIR}/src/shared
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${ZLIB_INCLUDE_DIRS}
 )
 
 if (WIN32 AND NOT AE_USE_PCH)
@@ -79,3 +82,6 @@ if (AE_USE_PCH)
 endif ()
 
 install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION .)
+
+# Enable this if you want to use clang-tidy for static analysis in MS Visual Studio. You need to have clang-tidy installed and available in your PATH.
+#enable_clang_tidy(world)

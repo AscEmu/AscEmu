@@ -39,12 +39,15 @@ ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(${LIBRARY_NAME} STATIC ${SHARED_SRCS})
 
-target_include_directories(${LIBRARY_NAME} PUBLIC 
+target_include_directories(${LIBRARY_NAME} SYSTEM PUBLIC 
     ${OPENSSL_INCLUDE_DIR}
     ${ZLIB_INCLUDE_DIRS}
     ${MYSQL_INCLUDE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/dep/utf8cpp
+)
+
+target_include_directories(${LIBRARY_NAME} PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 # include library dependencies.
@@ -64,5 +67,8 @@ if (AE_USE_PCH)
     message(STATUS "Generate PCH for ${LIBRARY_NAME}")
     target_precompile_headers(${LIBRARY_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchShared.hpp)
 endif ()
+
+#Enable this if you want to use clang-tidy for static code analysis in MS Visual Studio. You need to have clang-tidy installed and available in your PATH.
+#enable_clang_tidy(shared)
 
 unset(SHARED_SRCS)

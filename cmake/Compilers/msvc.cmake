@@ -55,3 +55,15 @@ if (BUILD_WITH_WARNINGS)
 else ()
     add_compile_options(/W0)
 endif ()
+
+function(enable_clang_tidy target_name)
+    if (MSVC)
+        set_target_properties(${target_name} PROPERTIES
+            VS_GLOBAL_RunCodeAnalysis "true"
+            VS_GLOBAL_EnableMicrosoftCodeAnalysis "false"
+            VS_GLOBAL_EnableClangTidyCodeAnalysis "true"
+            VS_GLOBAL_ClangTidyTreatWarningAsError "false"
+            VS_GLOBAL_ClangTidyChecks "-*,bugprone-*,-bugprone-easily-swappable-parameters,-bugprone-unchecked-string-to-number-conversion,-bugprone-narrowing-conversions,-clang-diagnostic-ignored-attributes"
+        )
+    endif()
+endfunction()
