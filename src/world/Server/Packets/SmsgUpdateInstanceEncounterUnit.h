@@ -52,12 +52,14 @@ namespace AscEmu::Packets
                 case EncounterFrameAddTimer:
                 case EncounterFrameEnableObjective:
                 case EncounterFrameDisableObjective:
-                if (m_protocol.expansion > WoW::Expansion::_WotLK)
-                {
-                    case EncounterFrameSetCombatResLimit:
-                }
                 {
                     packet << valueA;
+                } break;
+                case EncounterFrameSetCombatResLimit:
+                {
+                    if (m_protocol.expansion > WoW::Expansion::_WotLK)
+                        packet << valueA;
+
                 } break;
 
                 case EncounterFrameUpdateObjective:
