@@ -12,7 +12,6 @@ namespace AscEmu::Packets
 {
     class SmsgAttackSwingBadFacing : public ManagedPacket
     {
-#if VERSION_STRING < Mop
     public:
 
         SmsgAttackSwingBadFacing() :
@@ -25,10 +24,12 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& /*packet*/) override
         {
+            if (m_protocol.isMop())
+                return false;
+
             return true;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
-#endif
     };
 }

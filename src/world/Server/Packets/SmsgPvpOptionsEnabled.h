@@ -11,7 +11,6 @@ namespace AscEmu::Packets
 {
     class SmsgPvpOptionsEnabled : public ManagedPacket
     {
-#if VERSION_STRING > WotLK
     public:
         bool wargamesEnabled;
         bool ratedBgEnabled;
@@ -34,6 +33,9 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+                return false;
+
             packet.writeBit(1);
             packet.writeBit(wargamesEnabled);
             packet.writeBit(1);
@@ -49,6 +51,5 @@ namespace AscEmu::Packets
         {
             return false;
         }
-#endif
     };
 }

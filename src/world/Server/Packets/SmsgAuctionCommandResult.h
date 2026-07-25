@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -17,14 +16,8 @@ namespace AscEmu::Packets
         uint32_t auctionId;
         uint32_t command;
         uint32_t error;
-
-#if VERSION_STRING >= Cata
         uint64_t outBid;
         uint64_t highestBid;
-#else
-        uint32_t outBid;
-        uint32_t highestBid;
-#endif
         uint32_t bidError;
         uint64_t highestBidderGuid;
 
@@ -32,9 +25,10 @@ namespace AscEmu::Packets
         {
         }
 
-#if VERSION_STRING >= Cata
-        SmsgAuctionCommandResult(uint32_t auctionId, uint32_t command, uint32_t error, uint64_t outBid = 0, uint64_t highestBid = 0, uint32_t bidError = 0, uint64_t highestBidderGuid = 0) :
-            ManagedPacket(SMSG_AUCTION_COMMAND_RESULT, 20),
+        SmsgAuctionCommandResult(uint32_t auctionId, uint32_t command, uint32_t error,
+            uint64_t outBid = 0, uint64_t highestBid = 0, uint32_t bidError = 0,
+            uint64_t highestBidderGuid = 0) :
+            ManagedPacket(SMSG_AUCTION_COMMAND_RESULT, 0),
             auctionId(auctionId),
             command(command),
             error(error),
@@ -42,38 +36,42 @@ namespace AscEmu::Packets
             highestBid(highestBid),
             bidError(bidError),
             highestBidderGuid(highestBidderGuid)
-#else
-        SmsgAuctionCommandResult(uint32_t auctionId, uint32_t command, uint32_t error, uint32_t outBid = 0, uint32_t highestBid = 0, uint32_t bidError = 0, uint64_t highestBidderGuid = 0) :
-            ManagedPacket(SMSG_AUCTION_COMMAND_RESULT, 12),
-            auctionId(auctionId),
-            command(command),
-            error(error),
-            outBid(outBid),
-            highestBid(highestBid),
-            bidError(bidError),
-            highestBidderGuid(highestBidderGuid)
-#endif
         {
         }
 
     protected:
-        size_t expectedSize() const override { return m_minimum_size; }
+        size_t expectedSize() const override
+        {
+            return m_protocol.expansion < WoW::Expansion::_Cata ? 28 : 36;
+        }
 
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << auctionId << command << error;
 
+            const auto writeBidAmount = [this, &packet](uint64_t amount)
+            {
+                if (m_protocol.expansion < WoW::Expansion::_Cata)
+                    packet << static_cast<uint32_t>(amount);
+                else
+                    packet << amount;
+            };
+
             switch (error)
             {
                 case 0:     // AUCTION_ERROR_NONE
                     if (command == 2)   // AUCTION_ACTION_BID
-                        packet << outBid;
+                        writeBidAmount(outBid);
                     break;
                 case 1:     // AUCTION_ERROR_INVENTORY
                     packet << bidError;
                     break;
                 case 5:     // AUCTION_ERROR_HIGHER_BID
-                    packet << highestBidderGuid << highestBid << outBid;
+                    packet << highestBidderGuid;
+                    writeBidAmount(highestBid);
+                    writeBidAmount(outBid);
+                    break;
+                default:
                     break;
             }
 

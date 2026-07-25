@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include <cstdint>
+#include <string>
 
 namespace AscEmu::Packets
 {

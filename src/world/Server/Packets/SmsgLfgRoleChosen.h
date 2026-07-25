@@ -5,15 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class SmsgLfgRoleChosen : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         uint64_t guid;
         uint8_t isReady;
@@ -36,11 +34,13 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion <= WoW::Expansion::_TBC)
+                return false;
+
             packet << guid << isReady << roles;
             return true;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
-#endif
     };
 }

@@ -7,11 +7,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 
+#include <cstdint>
+
 namespace AscEmu::Packets
 {
     class SmsgRatedBgInfo : public ManagedPacket
     {
-#if VERSION_STRING > WotLK
     public:
         uint32_t unk;
 
@@ -30,6 +31,9 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+                return false;
+
             for (uint8_t i = 0; i < 18; ++i)
             {
                 packet << uint32_t(unk);
@@ -42,6 +46,5 @@ namespace AscEmu::Packets
         {
             return false;
         }
-#endif
     };
 }

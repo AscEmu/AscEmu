@@ -5,9 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+
+#include <cstdint>
+#include <vector>
 
 namespace AscEmu::Packets
 {
@@ -71,48 +72,60 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             //\Todo: MOP needs to be implemented
-#if VERSION_STRING == Mop
-            packet.writeBit(0);
-            packet.writeBits(spell_ids.size(), 22);
-            packet.flushBits();
-
-            for (uint32_t spell_id : spell_ids)
+            if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
-                packet << spell_id;
+                packet.writeBit(0);
+                packet.writeBits(spell_ids.size(), 22);
+                packet.flushBits();
+
+                for (uint32_t spell_id : spell_ids)
+                {
+                    packet << spell_id;
+                }
+                packet.flushBits();
             }
-            packet.flushBits();
-#else
-            packet << unk1;
-            packet << uint16_t(spell_ids.size());
-            for (auto spell_id : spell_ids)
+            else
             {
-#if VERSION_STRING <= TBC
-                packet << uint16_t(spell_id);
-#else
-                packet << spell_id;
-#endif
-                ///\todo check out when we should send 0x0 and when we should send 0xeeee this is not slot, values is always eeee or 0, seems to be cooldown
-                packet << uint16_t(0);
+                packet << unk1;
+                packet << uint16_t(spell_ids.size());
+                for (auto spell_id : spell_ids)
+                {
+                if (m_protocol.expansion <= WoW::Expansion::_TBC)
+                {
+                        packet << uint16_t(spell_id);
+                }
+                else
+                {
+                        packet << spell_id;
+                }
+                    ///\todo check out when we should send 0x0 and when we should send 0xeeee this is not slot, values is always eeee or 0, seems to be cooldown
+                    packet << uint16_t(0);
+                }
+
+                packet << uint16_t(spell_cooldowns.size());
+
+                for (auto &cd : spell_cooldowns)
+                {
+                if (m_protocol.expansion <= WoW::Expansion::_TBC)
+                {
+                        packet << uint16_t(cd.spell_id);
+                }
+                else
+                {
+                        packet << cd.spell_id;
+                }
+                if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+                {
+                        packet << uint16_t(cd.item_id);
+                }
+                else
+                {
+                        packet << cd.item_id;
+                }
+
+                    packet << cd.spell_category << cd.spell_remaining_cooldown_ms << cd.category_remaining_cooldown_ms;
+                }
             }
-
-            packet << uint16_t(spell_cooldowns.size());
-
-            for (auto &cd : spell_cooldowns)
-            {
-#if VERSION_STRING <= TBC
-                packet << uint16_t(cd.spell_id);
-#else
-                packet << cd.spell_id;
-#endif
-#if VERSION_STRING <= WotLK
-                packet << uint16_t(cd.item_id);
-#else
-                packet << cd.item_id;
-#endif
-
-                packet << cd.spell_category << cd.spell_remaining_cooldown_ms << cd.category_remaining_cooldown_ms;
-            }
-#endif
 
             return true;
         }

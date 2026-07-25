@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -37,43 +36,46 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Mop
-            if (isQuestXp == false)
-                packet << guid << normalXp << uint8_t(0) << restedXp << float(1.0f);
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                if (isQuestXp == false)
+                    packet << guid << normalXp << uint8_t(0) << restedXp << float(1.0f);
+                else
+                    packet << uint64_t(0) << normalXp << uint8_t(1) << uint8_t(0);
+
+            }
             else
-                packet << uint64_t(0) << normalXp << uint8_t(1) << uint8_t(0);
+            {
+                WoWGuid victim;
+                victim.init(guid);
 
-#else // Mop
-            WoWGuid victim;
-            victim.init(guid);
-
-            packet.writeBit(0);
-            packet.writeBit(victim[1]);
-            packet.writeBit(victim[2]);
-            packet.writeBit(victim[7]);
-            packet.writeBit(victim[4]);
-            packet.writeBit(victim[3]);
-            packet.writeBit(0);
-            packet.writeBit(victim[0]);
-            packet.writeBit(victim[5]);
-            packet.writeBit(victim[6]);
-            packet.writeBit(0);
-            packet.writeByteSeq(victim[4]);
-            packet.writeByteSeq(victim[2]);
-            packet << uint8_t(0);
-            packet << float(1);
-            packet.writeByteSeq(victim[7]);
-            packet.writeByteSeq(victim[1]);
-            packet.writeByteSeq(victim[3]);
-            packet.writeByteSeq(victim[6]);
-            packet << uint32_t(normalXp);
-
-            if (!victim.isEmpty())
+                packet.writeBit(0);
+                packet.writeBit(victim[1]);
+                packet.writeBit(victim[2]);
+                packet.writeBit(victim[7]);
+                packet.writeBit(victim[4]);
+                packet.writeBit(victim[3]);
+                packet.writeBit(0);
+                packet.writeBit(victim[0]);
+                packet.writeBit(victim[5]);
+                packet.writeBit(victim[6]);
+                packet.writeBit(0);
+                packet.writeByteSeq(victim[4]);
+                packet.writeByteSeq(victim[2]);
+                packet << uint8_t(0);
+                packet << float(1);
+                packet.writeByteSeq(victim[7]);
+                packet.writeByteSeq(victim[1]);
+                packet.writeByteSeq(victim[3]);
+                packet.writeByteSeq(victim[6]);
                 packet << uint32_t(normalXp);
 
-            packet.writeByteSeq(victim[0]);
-            packet.writeByteSeq(victim[5]);
-#endif
+                if (!victim.isEmpty())
+                    packet << uint32_t(normalXp);
+
+                packet.writeByteSeq(victim[0]);
+                packet.writeByteSeq(victim[5]);
+            }
             return true;
         }
 

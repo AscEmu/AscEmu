@@ -5,15 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class SmsgLearnedDanceMoves : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         uint32_t unknown1;
         uint32_t unknown2;
@@ -32,14 +30,13 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion <= WoW::Expansion::_TBC)
+                return false;
+
             packet << unknown1 << unknown2;
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-#endif
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

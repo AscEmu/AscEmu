@@ -5,15 +5,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+
+#include <cstdint>
+#include <string>
+#include <vector>
 
 namespace AscEmu::Packets
 {
     class SmsgMotd : public ManagedPacket
     {
-#if VERSION_STRING > Classic
     public:
         std::vector<std::string> motdLines;
         uint32_t lineCount;
@@ -34,31 +35,33 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Mop
+            if (m_protocol.isClassic())
+                return false;
 
-            packet << lineCount;
-            for (const auto& line : motdLines)
-                packet << line;
-
-#else
-
-            packet.writeBits(lineCount, 4);
-
-            ByteBuffer stringBuffer;
-
-            for (const auto& line : motdLines)
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
-                packet.writeBits(strlen(line.c_str()), 7);
-                stringBuffer.writeString(line);
+                packet << lineCount;
+                for (const auto& line : motdLines)
+                    packet << line;
             }
+            else
+            {
+                packet.writeBits(lineCount, 4);
 
-            packet.flushBits();
-            packet.append(stringBuffer);
-#endif
+                ByteBuffer stringBuffer;
+
+                for (const auto& line : motdLines)
+                {
+                    packet.writeBits(strlen(line.c_str()), 7);
+                    stringBuffer.writeString(line);
+                }
+
+                packet.flushBits();
+                packet.append(stringBuffer);
+            }
             return true;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
-#endif
     };
 }

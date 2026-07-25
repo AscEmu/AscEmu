@@ -5,9 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+
+#include <cstdint>
+#include <string>
 
 namespace AscEmu::Packets
 {
@@ -33,13 +34,16 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Mop
-            packet << unknown << splitState << dateFormat;
-#else
-            packet << unknown << splitState;
-            packet.writeBits(dateFormat.size(), 7);
-            packet.writeString(dateFormat);
-#endif
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet << unknown << splitState << dateFormat;
+            }
+            else
+            {
+                packet << unknown << splitState;
+                packet.writeBits(dateFormat.size(), 7);
+                packet.writeString(dateFormat);
+            }
             return true;
         }
 

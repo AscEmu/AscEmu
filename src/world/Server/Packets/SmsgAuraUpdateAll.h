@@ -6,9 +6,10 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
-#include <cstdint>
-
 #include "Spell/SpellAuraDefines.hpp"
+
+#include <cstdint>
+#include <vector>
 
 namespace AscEmu::Packets
 {

@@ -5,9 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
+#include <string>
+#include <vector>
 
 namespace AscEmu::Packets
 {
@@ -47,36 +48,39 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING == Classic
-            packet << uint8_t(listCount);
-            for (const auto listMember : contactMemberList)
+            if (m_protocol.expansion == WoW::Expansion::_Classic)
             {
-                packet << listMember.guid;
-                packet << listMember.isOnline;
-                if (listMember.isOnline)
-                    packet << listMember.zoneId << listMember.level << listMember.playerClass;
-            }
-#endif
-
-#if VERSION_STRING > Classic
-            packet << socialFlag << listCount;
-
-            for (const auto listMember : contactMemberList)
-            {
-                packet << listMember.guid;
-    #if VERSION_STRING == Mop
-                packet << uint32_t(0) << uint32_t(0);
-    #endif
-                packet << listMember.flag << listMember.note;
-
-                if (listMember.flag & 0x1)
+                packet << uint8_t(listCount);
+                for (const auto listMember : contactMemberList)
                 {
+                    packet << listMember.guid;
                     packet << listMember.isOnline;
                     if (listMember.isOnline)
                         packet << listMember.zoneId << listMember.level << listMember.playerClass;
                 }
             }
-#endif
+
+            if (m_protocol.expansion > WoW::Expansion::_Classic)
+            {
+                packet << socialFlag << listCount;
+
+                for (const auto listMember : contactMemberList)
+                {
+                    packet << listMember.guid;
+                    if (m_protocol.expansion == WoW::Expansion::_Mop)
+                    {
+                        packet << uint32_t(0) << uint32_t(0);
+                    }
+                    packet << listMember.flag << listMember.note;
+
+                    if (listMember.flag & 0x1)
+                    {
+                        packet << listMember.isOnline;
+                        if (listMember.isOnline)
+                            packet << listMember.zoneId << listMember.level << listMember.playerClass;
+                    }
+                }
+            }
 
             return true;
         }

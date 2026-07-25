@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include <string>
 
 namespace AscEmu::Packets
 {
@@ -29,19 +30,22 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Cata
-            packet << text;
-
-#elif VERSION_STRING == Cata
-            packet.writeBits(text.size(), 13);
-            packet.flushBits();
-            packet.append(text.c_str(), text.size());
-
-#else
-            packet.writeBits(text.size(), 12);
-            packet.flushBits();
-            packet.append(text.c_str(), text.size());
-#endif
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+            {
+                packet << text;
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_Cata)
+            {
+                packet.writeBits(text.size(), 13);
+                packet.flushBits();
+                packet.append(text.c_str(), text.size());
+            }
+            else
+            {
+                packet.writeBits(text.size(), 12);
+                packet.flushBits();
+                packet.append(text.c_str(), text.size());
+            }
 
             return true;
         }

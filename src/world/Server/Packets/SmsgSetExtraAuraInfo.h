@@ -5,13 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "ManagedPacket.h"
+
 #include <cstdint>
 #include <memory>
 #include <utility>
 
-#include "ManagedPacket.h"
-
-#ifdef AE_TBC
 namespace AscEmu::Packets
 {
     class SmsgSetExtraAuraInfo : public ManagedPacket
@@ -40,6 +39,9 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (!m_protocol.isTbc())
+                return false;
+
             if (!guid)
                 return false;
 
@@ -53,4 +55,3 @@ namespace AscEmu::Packets
         }
     };
 }
-#endif

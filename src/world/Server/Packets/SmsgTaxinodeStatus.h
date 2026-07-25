@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "AEVersion.hpp"
 #include "ManagedPacket.h"
+
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -35,11 +35,14 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << guid;
-#if VERSION_STRING < Cata
-            packet << static_cast<uint8_t>(isNodeKnown ? 1 : 0);
-#else
-            packet << static_cast<uint8_t>(isNodeKnown ? 1 : 2);
-#endif
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+            {
+                packet << static_cast<uint8_t>(isNodeKnown ? 1 : 0);
+            }
+            else
+            {
+                packet << static_cast<uint8_t>(isNodeKnown ? 1 : 2);
+            }
             return true;
         }
 

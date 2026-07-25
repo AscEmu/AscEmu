@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -29,14 +28,16 @@ namespace AscEmu::Packets
         {
             if (sendEmptyList)
             {
-#if VERSION_STRING <= TBC
-                packet << uint64_t(0) << uint64_t(0) << uint64_t(0);
-#endif
+                if (m_protocol.expansion <= WoW::Expansion::_TBC)
+                {
+                    packet << uint64_t(0) << uint64_t(0) << uint64_t(0);
+                }
 
-#if VERSION_STRING > TBC
-                packet << uint8_t(0x10) << uint8_t(0) << uint8_t(0) << uint8_t(0);
-                packet << uint64_t(0) << uint32_t(0) << uint32_t(0) << uint64_t(0);
-#endif
+                if (m_protocol.expansion > WoW::Expansion::_TBC)
+                {
+                    packet << uint8_t(0x10) << uint8_t(0) << uint8_t(0) << uint8_t(0);
+                    packet << uint64_t(0) << uint32_t(0) << uint32_t(0) << uint64_t(0);
+                }
             }
 
             return true;

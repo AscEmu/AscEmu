@@ -5,9 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+
+#include <cstdint>
+#include <ctime>
 
 namespace AscEmu::Packets
 {
@@ -37,32 +38,41 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
-#if VERSION_STRING >= WotLK
-            return sizeof(uint64_t);
-#else
-            return sizeof(uint32_t);
-#endif
+            if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            {
+                return sizeof(uint64_t);
+            }
+            else
+            {
+                return sizeof(uint32_t);
+            }
         }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING >= WotLK
-            packet << time;
-#else
-            packet << static_cast<uint32_t>(time);
-#endif
+            if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            {
+                packet << time;
+            }
+            else
+            {
+                packet << static_cast<uint32_t>(time);
+            }
             return true;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING >= WotLK
-            packet >> time;
-#else
-            uint32_t time_32;
-            packet >> time_32;
-            time = static_cast<uint64_t>(time_32);
-#endif
+            if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            {
+                packet >> time;
+            }
+            else
+            {
+                uint32_t time_32;
+                packet >> time_32;
+                time = static_cast<uint64_t>(time_32);
+            }
             return true;
         }
     };

@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -38,458 +38,464 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING <= WotLK
-            if (!status)
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
-                packet << uint32_t(0) << uint64_t(0);
-                return true;
+                if (!status)
+                {
+                    packet << uint32_t(0) << uint64_t(0);
+                    return true;
+                }
+
+                uint8_t arenaType;
+                switch (type)
+                {
+                case 4:
+                    arenaType = 2;
+                    break;
+                case 5:
+                    arenaType = 3;
+                    break;
+                case 6:
+                    arenaType = 5;
+                    break;
+                default:
+                    arenaType = 0;
+                    break;
+                }
+
+                packet << uint32_t(0);          // Queueslot
+                packet << arenaType;
+                packet << uint8_t(isArena ? 0xE : 0x0);
+                packet << uint32_t(isArena ? 6 : type);
+                packet << uint16_t(0x1F90);
+            if (m_protocol.expansion > WoW::Expansion::_TBC)
+            {
+                    packet << uint8_t(0);           // 3.3.0 - minLevel
+                    packet << uint8_t(0);           // 3.3.0 - maxLevel
+            }
+                packet << uint32_t(isArena ? 11 : instanceId);
+                packet << uint8_t(isArena ? ratedMatch : 0);
+
+                packet << status;
+                switch (status)
+                {
+                    case 1:                     // BGSTATUS_INQUEUE
+                        packet << uint32_t(60);
+                        packet << uint32_t(0);  // Time / Elapsed time
+                        break;
+                    case 2:                     // BGSTATUS_READY
+                        packet << mapId;
+                if (m_protocol.expansion > WoW::Expansion::_TBC)
+                {
+                            packet << uint64_t(0);
+                }
+                        packet << time;
+                        break;
+                    case 3:                     // BGSTATUS_TIME
+                        packet << mapId;
+                if (m_protocol.expansion > WoW::Expansion::_TBC)
+                {
+                            packet << uint64_t(0);
+                }
+                        packet << uint32_t(0);
+                        packet << time;
+                        if (isArena)
+                            packet << uint8_t(0);
+                        else
+                            packet << uint8_t(1);
+                        break;
+                }
             }
 
-            uint8_t arenaType;
-            switch (type)
+            if (m_protocol.expansion == WoW::Expansion::_Cata)
             {
-            case 4:
-                arenaType = 2;
-                break;
-            case 5:
-                arenaType = 3;
-                break;
-            case 6:
-                arenaType = 5;
-                break;
-            default:
-                arenaType = 0;
-                break;
-            }
+                WoWGuid bgGuid(type, 0, HIGHGUID_TYPE_BATTLEGROUND);
 
-            packet << uint32_t(0);          // Queueslot
-            packet << arenaType;
-            packet << uint8_t(isArena ? 0xE : 0x0);
-            packet << uint32_t(isArena ? 6 : type);
-            packet << uint16_t(0x1F90);
-#if VERSION_STRING > TBC
-            packet << uint8_t(0);           // 3.3.0 - minLevel
-            packet << uint8_t(0);           // 3.3.0 - maxLevel
-#endif
-            packet << uint32_t(isArena ? 11 : instanceId);
-            packet << uint8_t(isArena ? ratedMatch : 0);
+                switch (status)
+                {
+                    case 0:
+                    {
+                        packet.writeBit(guid[0]);
+                        packet.writeBit(guid[4]);
+                        packet.writeBit(guid[7]);
+                        packet.writeBit(guid[1]);
+                        packet.writeBit(guid[6]);
+                        packet.writeBit(guid[3]);
+                        packet.writeBit(guid[5]);
+                        packet.writeBit(guid[2]);
 
-            packet << status;
-            switch (status)
-            {
-                case 1:                     // BGSTATUS_INQUEUE
-                    packet << uint32_t(60);
-                    packet << uint32_t(0);  // Time / Elapsed time
-                    break;
-                case 2:                     // BGSTATUS_READY
-                    packet << mapId;
-#if VERSION_STRING > TBC
-                    packet << uint64_t(0);
-#endif
-                    packet << time;
-                    break;
-                case 3:                     // BGSTATUS_TIME
-                    packet << mapId;
-#if VERSION_STRING > TBC
-                    packet << uint64_t(0);
-#endif
-                    packet << uint32_t(0);
-                    packet << time;
-                    if (isArena)
+                        packet.writeByteSeq(guid[5]);
+                        packet.writeByteSeq(guid[6]);
+                        packet.writeByteSeq(guid[7]);
+                        packet.writeByteSeq(guid[2]);
+                        packet << uint32_t(type ? type : 1);
+                        packet.writeByteSeq(guid[3]);
+                        packet.writeByteSeq(guid[1]);
+                        packet << uint32_t(0);                    // queue slot
+                        packet << uint32_t(0);                    // join time
+                        packet.writeByteSeq(guid[0]);
+                        packet.writeByteSeq(guid[4]);
+                        break;
+                    }
+                    case 1:
+                    {
+                        packet.initialize(SMSG_BATTLEFIELD_STATUS_QUEUED);
+
+                        packet.writeBit(guid[3]);
+                        packet.writeBit(guid[0]);
+                        packet.writeBit(bgGuid[3]);
+                        packet.writeBit(guid[2]);
+                        packet.writeBit(1);
+                        packet.writeBit(0);
+                        packet.writeBit(bgGuid[2]);
+                        packet.writeBit(guid[1]);
+                        packet.writeBit(bgGuid[0]);
+                        packet.writeBit(bgGuid[6]);
+                        packet.writeBit(bgGuid[4]);
+                        packet.writeBit(guid[6]);
+                        packet.writeBit(guid[7]);
+                        packet.writeBit(bgGuid[7]);
+                        packet.writeBit(bgGuid[5]);
+                        packet.writeBit(guid[4]);
+                        packet.writeBit(guid[5]);
+                        packet.writeBit(ratedMatch);
+                        packet.writeBit(0);
+                        packet.writeBit(bgGuid[1]);
+
+                        packet.flushBits();
+
+                        packet.writeByteSeq(guid[0]);
+                        packet << uint32_t(isArena ? type : 1);
+                        packet.writeByteSeq(bgGuid[5]);
+                        packet.writeByteSeq(guid[3]);
+                        packet << uint32_t(60);                   // wait time
+                        packet.writeByteSeq(bgGuid[7]);
+                        packet.writeByteSeq(bgGuid[1]);
+                        packet.writeByteSeq(bgGuid[2]);
                         packet << uint8_t(0);
-                    else
-                        packet << uint8_t(1);
-                    break;
+                        packet.writeByteSeq(bgGuid[4]);
+                        packet.writeByteSeq(guid[2]);
+                        packet << uint8_t(0);
+                        packet.writeByteSeq(bgGuid[6]);
+                        packet.writeByteSeq(guid[7]);
+                        packet.writeByteSeq(bgGuid[3]);
+                        packet.writeByteSeq(guid[6]);
+                        packet.writeByteSeq(bgGuid[0]);
+                        packet << uint32_t(time);                 // join time
+                        packet << uint32_t(0);                    // queue slot
+                        packet << uint8_t(0);                     // minlevel
+                        packet << uint32_t(time);                 // time in queue
+                        packet.writeByteSeq(guid[1]);
+                        packet.writeByteSeq(guid[5]);
+                        packet << uint32_t(instanceId);
+                        packet.writeByteSeq(guid[4]);
+                        break;
+                    }
+                    case 2:
+                    {
+                        packet.initialize(SMSG_BATTLEFIELD_STATUS_NEEDCONFIRMATION);
+
+                        packet << uint32_t(instanceId);
+                        packet << uint32_t(0);                    // time until closed
+                        packet << uint8_t(0);
+                        packet << uint32_t(0);                    // queue slot
+                        packet << uint32_t(time);                 // join time
+                        packet << uint8_t(0);                     // minlevel
+                        packet << uint32_t(isArena ? type : 1);
+                        packet << uint32_t(mapId);
+                        packet << uint8_t(0);
+
+                        packet.writeBit(guid[5]);
+                        packet.writeBit(guid[2]);
+                        packet.writeBit(guid[1]);
+                        packet.writeBit(bgGuid[2]);
+                        packet.writeBit(guid[4]);
+                        packet.writeBit(bgGuid[6]);
+                        packet.writeBit(bgGuid[3]);
+                        packet.writeBit(ratedMatch);
+                        packet.writeBit(guid[7]);
+                        packet.writeBit(guid[3]);
+                        packet.writeBit(bgGuid[7]);
+                        packet.writeBit(bgGuid[0]);
+                        packet.writeBit(bgGuid[4]);
+                        packet.writeBit(guid[6]);
+                        packet.writeBit(bgGuid[1]);
+                        packet.writeBit(bgGuid[5]);
+                        packet.writeBit(guid[0]);
+
+                        packet.writeByteSeq(bgGuid[6]);
+                        packet.writeByteSeq(bgGuid[5]);
+                        packet.writeByteSeq(bgGuid[7]);
+                        packet.writeByteSeq(bgGuid[2]);
+                        packet.writeByteSeq(guid[0]);
+                        packet.writeByteSeq(guid[7]);
+                        packet.writeByteSeq(bgGuid[4]);
+                        packet.writeByteSeq(guid[1]);
+                        packet.writeByteSeq(bgGuid[0]);
+                        packet.writeByteSeq(guid[4]);
+                        packet.writeByteSeq(bgGuid[1]);
+                        packet.writeByteSeq(guid[5]);
+                        packet.writeByteSeq(bgGuid[3]);
+                        packet.writeByteSeq(guid[6]);
+                        packet.writeByteSeq(guid[2]);
+                        packet.writeByteSeq(guid[3]);
+                        break;
+                    }
+                    case 3:
+                    {
+                        packet.initialize(SMSG_BATTLEFIELD_STATUS_ACTIVE);
+
+                        packet.writeBit(guid[2]);
+                        packet.writeBit(guid[7]);
+                        packet.writeBit(bgGuid[7]);
+                        packet.writeBit(bgGuid[1]);
+                        packet.writeBit(guid[5]);
+                        packet.writeBit(isArena ? 1 : 0);
+                        packet.writeBit(bgGuid[0]);
+                        packet.writeBit(guid[1]);
+                        packet.writeBit(bgGuid[3]);
+                        packet.writeBit(guid[6]);
+                        packet.writeBit(bgGuid[5]);
+                        packet.writeBit(ratedMatch);
+                        packet.writeBit(guid[4]);
+                        packet.writeBit(bgGuid[6]);
+                        packet.writeBit(bgGuid[4]);
+                        packet.writeBit(bgGuid[2]);
+                        packet.writeBit(guid[3]);
+                        packet.writeBit(guid[0]);
+
+                        packet.flushBits();
+
+                        packet.writeByteSeq(bgGuid[4]);
+                        packet.writeByteSeq(bgGuid[5]);
+                        packet.writeByteSeq(guid[5]);
+                        packet.writeByteSeq(bgGuid[1]);
+                        packet.writeByteSeq(bgGuid[6]);
+                        packet.writeByteSeq(bgGuid[3]);
+                        packet.writeByteSeq(bgGuid[7]);
+                        packet.writeByteSeq(guid[6]);
+
+                        packet << uint32_t(0);                    // join time
+                        packet << uint8_t(0);
+
+                        packet.writeByteSeq(guid[4]);
+                        packet.writeByteSeq(guid[1]);
+
+                        packet << uint32_t(0);                    // queue slot
+                        packet << uint8_t(0);
+                        packet << uint32_t(isArena ? type : 1);
+                        packet << uint32_t(mapId);
+                        packet << uint8_t(0);                     // minlevel
+                        packet << uint32_t(time);                 // elapsed time
+
+                        packet.writeByteSeq(guid[2]);
+                        packet << uint32_t(0);                    // remaining time
+
+                        packet.writeByteSeq(guid[0]);
+                        packet.writeByteSeq(guid[3]);
+                        packet.writeByteSeq(bgGuid[2]);
+
+                        packet << uint32_t(instanceId);
+
+                        packet.writeByteSeq(bgGuid[0]);
+                        packet.writeByteSeq(guid[7]);
+                        break;
+                    }
+                }
             }
-#endif
 
-#if VERSION_STRING == Cata
-            WoWGuid bgGuid(type, 0, HIGHGUID_TYPE_BATTLEGROUND);
-
-            switch (status)
+            if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
-                case 0:
+                WoWGuid bgGuid(type, 0, HIGHGUID_TYPE_BATTLEGROUND);
+                switch (status)
                 {
-                    packet.writeBit(guid[0]);
-                    packet.writeBit(guid[4]);
-                    packet.writeBit(guid[7]);
-                    packet.writeBit(guid[1]);
-                    packet.writeBit(guid[6]);
-                    packet.writeBit(guid[3]);
-                    packet.writeBit(guid[5]);
-                    packet.writeBit(guid[2]);
+                    case 0:
+                    {
+                        packet.initialize(SMSG_BATTLEFIELD_STATUS);
 
-                    packet.writeByteSeq(guid[5]);
-                    packet.writeByteSeq(guid[6]);
-                    packet.writeByteSeq(guid[7]);
-                    packet.writeByteSeq(guid[2]);
-                    packet << uint32_t(type ? type : 1);
-                    packet.writeByteSeq(guid[3]);
-                    packet.writeByteSeq(guid[1]);
-                    packet << uint32_t(0);                    // queue slot
-                    packet << uint32_t(0);                    // join time
-                    packet.writeByteSeq(guid[0]);
-                    packet.writeByteSeq(guid[4]);
-                    break;
-                }
-                case 1:
-                {
-                    packet.initialize(SMSG_BATTLEFIELD_STATUS_QUEUED);
+                        packet << uint32_t(time);                 // join time
+                        packet << uint32_t(0);
+                        packet << uint32_t(0);                    // queue slot
 
-                    packet.writeBit(guid[3]);
-                    packet.writeBit(guid[0]);
-                    packet.writeBit(bgGuid[3]);
-                    packet.writeBit(guid[2]);
-                    packet.writeBit(1);
-                    packet.writeBit(0);
-                    packet.writeBit(bgGuid[2]);
-                    packet.writeBit(guid[1]);
-                    packet.writeBit(bgGuid[0]);
-                    packet.writeBit(bgGuid[6]);
-                    packet.writeBit(bgGuid[4]);
-                    packet.writeBit(guid[6]);
-                    packet.writeBit(guid[7]);
-                    packet.writeBit(bgGuid[7]);
-                    packet.writeBit(bgGuid[5]);
-                    packet.writeBit(guid[4]);
-                    packet.writeBit(guid[5]);
-                    packet.writeBit(ratedMatch);
-                    packet.writeBit(0);
-                    packet.writeBit(bgGuid[1]);
+                        packet.writeBit(guid[2]);
+                        packet.writeBit(guid[0]);
+                        packet.writeBit(guid[4]);
+                        packet.writeBit(guid[5]);
+                        packet.writeBit(guid[3]);
+                        packet.writeBit(guid[7]);
+                        packet.writeBit(guid[1]);
+                        packet.writeBit(guid[6]);
 
-                    packet.flushBits();
+                        packet.writeByteSeq(guid[3]);
+                        packet.writeByteSeq(guid[5]);
+                        packet.writeByteSeq(guid[6]);
+                        packet.writeByteSeq(guid[4]);
+                        packet.writeByteSeq(guid[2]);
+                        packet.writeByteSeq(guid[0]);
+                        packet.writeByteSeq(guid[1]);
+                        packet.writeByteSeq(guid[7]);
+                        break;
+                    }
+                    case 1:
+                    {
+                        packet.initialize(SMSG_BATTLEFIELD_STATUS_QUEUED);
 
-                    packet.writeByteSeq(guid[0]);
-                    packet << uint32_t(isArena ? type : 1);
-                    packet.writeByteSeq(bgGuid[5]);
-                    packet.writeByteSeq(guid[3]);
-                    packet << uint32_t(60);                   // wait time
-                    packet.writeByteSeq(bgGuid[7]);
-                    packet.writeByteSeq(bgGuid[1]);
-                    packet.writeByteSeq(bgGuid[2]);
-                    packet << uint8_t(0);
-                    packet.writeByteSeq(bgGuid[4]);
-                    packet.writeByteSeq(guid[2]);
-                    packet << uint8_t(0);
-                    packet.writeByteSeq(bgGuid[6]);
-                    packet.writeByteSeq(guid[7]);
-                    packet.writeByteSeq(bgGuid[3]);
-                    packet.writeByteSeq(guid[6]);
-                    packet.writeByteSeq(bgGuid[0]);
-                    packet << uint32_t(time);                 // join time
-                    packet << uint32_t(0);                    // queue slot
-                    packet << uint8_t(0);                     // minlevel
-                    packet << uint32_t(time);                 // time in queue
-                    packet.writeByteSeq(guid[1]);
-                    packet.writeByteSeq(guid[5]);
-                    packet << uint32_t(instanceId);
-                    packet.writeByteSeq(guid[4]);
-                    break;
-                }
-                case 2:
-                {
-                    packet.initialize(SMSG_BATTLEFIELD_STATUS_NEEDCONFIRMATION);
+                        packet.writeBit(bgGuid[1]);
+                        packet.writeBit(bgGuid[5]);
+                        packet.writeBit(guid[0]);
+                        packet.writeBit(bgGuid[7]);
+                        packet.writeBit(ratedMatch);
+                        packet.writeBit(0);
+                        packet.writeBit(1);
+                        packet.writeBit(guid[6]);
+                        packet.writeBit(guid[4]);
+                        packet.writeBit(guid[1]);
+                        packet.writeBit(guid[3]);
+                        packet.writeBit(guid[7]);
+                        packet.writeBit(guid[5]);
+                        packet.writeBit(0);
+                        packet.writeBit(bgGuid[3]);
+                        packet.writeBit(bgGuid[0]);
+                        packet.writeBit(bgGuid[2]);
+                        packet.writeBit(guid[2]);
+                        packet.writeBit(bgGuid[6]);
+                        packet.writeBit(bgGuid[4]);
 
-                    packet << uint32_t(instanceId);
-                    packet << uint32_t(0);                    // time until closed
-                    packet << uint8_t(0);
-                    packet << uint32_t(0);                    // queue slot
-                    packet << uint32_t(time);                 // join time
-                    packet << uint8_t(0);                     // minlevel
-                    packet << uint32_t(isArena ? type : 1);
-                    packet << uint32_t(mapId);
-                    packet << uint8_t(0);
+                        packet.flushBits();
 
-                    packet.writeBit(guid[5]);
-                    packet.writeBit(guid[2]);
-                    packet.writeBit(guid[1]);
-                    packet.writeBit(bgGuid[2]);
-                    packet.writeBit(guid[4]);
-                    packet.writeBit(bgGuid[6]);
-                    packet.writeBit(bgGuid[3]);
-                    packet.writeBit(ratedMatch);
-                    packet.writeBit(guid[7]);
-                    packet.writeBit(guid[3]);
-                    packet.writeBit(bgGuid[7]);
-                    packet.writeBit(bgGuid[0]);
-                    packet.writeBit(bgGuid[4]);
-                    packet.writeBit(guid[6]);
-                    packet.writeBit(bgGuid[1]);
-                    packet.writeBit(bgGuid[5]);
-                    packet.writeBit(guid[0]);
+                        packet.writeByteSeq(bgGuid[4]);
+                        packet.writeByteSeq(guid[6]);
+                        packet << uint32_t(0);
+                        packet.writeByteSeq(bgGuid[5]);
+                        packet << uint32_t(time);                 // wait time
+                        packet.writeByteSeq(bgGuid[3]);
+                        packet.writeByteSeq(guid[3]);
+                        packet.writeByteSeq(guid[4]);
+                        packet.writeByteSeq(guid[0]);
+                        packet << uint8_t(0);                     // minlevel
+                        packet.writeByteSeq(bgGuid[0]);
+                        packet << uint32_t(0);                    // join time
+                        packet << uint8_t(isArena ? type : 1);
+                        packet.writeByteSeq(bgGuid[1]);
+                        packet << uint32_t(0);                    // time in queue
+                        packet.writeByteSeq(bgGuid[7]);
+                        packet << uint32_t(0);                    // queueslot
+                        packet.writeByteSeq(guid[2]);
+                        packet.writeByteSeq(bgGuid[6]);
+                        packet << uint8_t(0);                     // maxlevel
+                        packet.writeByteSeq(bgGuid[2]);
+                        packet.writeByteSeq(guid[5]);
+                        packet.writeByteSeq(guid[1]);
+                        packet << uint32_t(instanceId);
+                        packet.writeByteSeq(guid[7]);
+                        break;
+                    }
+                    case 2:
+                    {
+                        packet.initialize(SMSG_BATTLEFIELD_STATUS_NEEDCONFIRMATION);
 
-                    packet.writeByteSeq(bgGuid[6]);
-                    packet.writeByteSeq(bgGuid[5]);
-                    packet.writeByteSeq(bgGuid[7]);
-                    packet.writeByteSeq(bgGuid[2]);
-                    packet.writeByteSeq(guid[0]);
-                    packet.writeByteSeq(guid[7]);
-                    packet.writeByteSeq(bgGuid[4]);
-                    packet.writeByteSeq(guid[1]);
-                    packet.writeByteSeq(bgGuid[0]);
-                    packet.writeByteSeq(guid[4]);
-                    packet.writeByteSeq(bgGuid[1]);
-                    packet.writeByteSeq(guid[5]);
-                    packet.writeByteSeq(bgGuid[3]);
-                    packet.writeByteSeq(guid[6]);
-                    packet.writeByteSeq(guid[2]);
-                    packet.writeByteSeq(guid[3]);
-                    break;
-                }
-                case 3:
-                {
-                    packet.initialize(SMSG_BATTLEFIELD_STATUS_ACTIVE);
+                        packet.writeBit(guid[7]);
+                        packet.writeBit(guid[5]);
+                        packet.writeBit(guid[4]);
+                        packet.writeBit(guid[1]);
+                        packet.writeBit(bgGuid[3]);
+                        packet.writeBit(bgGuid[2]);
+                        packet.writeBit(1);
+                        packet.writeBit(bgGuid[0]);
+                        packet.writeBit(guid[0]);
+                        packet.writeBit(guid[6]);
+                        packet.writeBit(bgGuid[7]);
+                        packet.writeBit(bgGuid[4]);
+                        packet.writeBit(bgGuid[1]);
+                        packet.writeBit(ratedMatch);
+                        packet.writeBit(guid[2]);
+                        packet.writeBit(bgGuid[6]);
+                        packet.writeBit(guid[3]);
+                        packet.writeBit(bgGuid[5]);
 
-                    packet.writeBit(guid[2]);
-                    packet.writeBit(guid[7]);
-                    packet.writeBit(bgGuid[7]);
-                    packet.writeBit(bgGuid[1]);
-                    packet.writeBit(guid[5]);
-                    packet.writeBit(isArena ? 1 : 0);
-                    packet.writeBit(bgGuid[0]);
-                    packet.writeBit(guid[1]);
-                    packet.writeBit(bgGuid[3]);
-                    packet.writeBit(guid[6]);
-                    packet.writeBit(bgGuid[5]);
-                    packet.writeBit(ratedMatch);
-                    packet.writeBit(guid[4]);
-                    packet.writeBit(bgGuid[6]);
-                    packet.writeBit(bgGuid[4]);
-                    packet.writeBit(bgGuid[2]);
-                    packet.writeBit(guid[3]);
-                    packet.writeBit(guid[0]);
+                        packet.writeByteSeq(guid[1]);
+                        packet.writeByteSeq(bgGuid[1]);
+                        packet.writeByteSeq(guid[2]);
+                        packet << uint8_t(isArena ? type : 1);
+                        packet << uint32_t(0);                    // queueslot
+                        packet << uint32_t(instanceId);
+                        packet.writeByteSeq(bgGuid[6]);
+                        packet.writeByteSeq(bgGuid[7]);
+                        packet << uint32_t(time);                 // join time
+                        packet.writeByteSeq(guid[7]);
+                        packet << uint8_t(0);                     // maxlevel
+                        packet.writeByteSeq(guid[4]);
+                        packet.writeByteSeq(bgGuid[2]);
+                        packet.writeByteSeq(bgGuid[4]);
+                        packet << uint32_t(0);                    // time until close
+                        packet << uint8_t(0);                     // minlevel
+                        packet.writeByteSeq(guid[3]);
+                        packet.writeByteSeq(bgGuid[0]);
+                        packet.writeByteSeq(guid[5]);
+                        packet.writeByteSeq(guid[6]);
+                        packet << uint32_t(0);
+                        packet.writeByteSeq(bgGuid[3]);
+                        packet.writeByteSeq(guid[0]);
+                        packet.writeByteSeq(bgGuid[5]);
+                        packet << uint32_t(mapId);
+                        break;
+                    }
+                    case 3:
+                    {
+                        packet.initialize(SMSG_BATTLEFIELD_STATUS_ACTIVE);
 
-                    packet.flushBits();
+                        packet.writeBit(guid[0]);
+                        packet.writeBit(bgGuid[3]);
+                        packet.writeBit(guid[3]);
+                        packet.writeBit(bgGuid[2]);
+                        packet.writeBit(guid[2]);
+                        packet.writeBit(bgGuid[5]);
+                        packet.writeBit(bgGuid[1]);
+                        packet.writeBit(guid[7]);
+                        packet.writeBit(0);                     // left early
+                        packet.writeBit(guid[6]);
+                        packet.writeBit(bgGuid[0]);
+                        packet.writeBit(isArena ? 1 : 0);
+                        packet.writeBit(bgGuid[6]);
+                        packet.writeBit(bgGuid[7]);
+                        packet.writeBit(bgGuid[4]);
+                        packet.writeBit(guid[1]);
+                        packet.writeBit(guid[4]);
+                        packet.writeBit(guid[5]);
+                        packet.writeBit(ratedMatch);
 
-                    packet.writeByteSeq(bgGuid[4]);
-                    packet.writeByteSeq(bgGuid[5]);
-                    packet.writeByteSeq(guid[5]);
-                    packet.writeByteSeq(bgGuid[1]);
-                    packet.writeByteSeq(bgGuid[6]);
-                    packet.writeByteSeq(bgGuid[3]);
-                    packet.writeByteSeq(bgGuid[7]);
-                    packet.writeByteSeq(guid[6]);
+                        packet.flushBits();
 
-                    packet << uint32_t(0);                    // join time
-                    packet << uint8_t(0);
-
-                    packet.writeByteSeq(guid[4]);
-                    packet.writeByteSeq(guid[1]);
-
-                    packet << uint32_t(0);                    // queue slot
-                    packet << uint8_t(0);
-                    packet << uint32_t(isArena ? type : 1);
-                    packet << uint32_t(mapId);
-                    packet << uint8_t(0);                     // minlevel
-                    packet << uint32_t(time);                 // elapsed time
-
-                    packet.writeByteSeq(guid[2]);
-                    packet << uint32_t(0);                    // remaining time
-
-                    packet.writeByteSeq(guid[0]);
-                    packet.writeByteSeq(guid[3]);
-                    packet.writeByteSeq(bgGuid[2]);
-
-                    packet << uint32_t(instanceId);
-
-                    packet.writeByteSeq(bgGuid[0]);
-                    packet.writeByteSeq(guid[7]);
-                    break;
-                }
-            }
-#endif
-
-#if VERSION_STRING == Mop
-            WoWGuid bgGuid(type, 0, HIGHGUID_TYPE_BATTLEGROUND);
-            switch (status)
-            {
-                case 0:
-                {
-                    packet.initialize(SMSG_BATTLEFIELD_STATUS);
-
-                    packet << uint32_t(time);                 // join time
-                    packet << uint32_t(0);
-                    packet << uint32_t(0);                    // queue slot
-
-                    packet.writeBit(guid[2]);
-                    packet.writeBit(guid[0]);
-                    packet.writeBit(guid[4]);
-                    packet.writeBit(guid[5]);
-                    packet.writeBit(guid[3]);
-                    packet.writeBit(guid[7]);
-                    packet.writeBit(guid[1]);
-                    packet.writeBit(guid[6]);
-
-                    packet.writeByteSeq(guid[3]);
-                    packet.writeByteSeq(guid[5]);
-                    packet.writeByteSeq(guid[6]);
-                    packet.writeByteSeq(guid[4]);
-                    packet.writeByteSeq(guid[2]);
-                    packet.writeByteSeq(guid[0]);
-                    packet.writeByteSeq(guid[1]);
-                    packet.writeByteSeq(guid[7]);
-                    break;
-                }
-                case 1:
-                {
-                    packet.initialize(SMSG_BATTLEFIELD_STATUS_QUEUED);
-
-                    packet.writeBit(bgGuid[1]);
-                    packet.writeBit(bgGuid[5]);
-                    packet.writeBit(guid[0]);
-                    packet.writeBit(bgGuid[7]);
-                    packet.writeBit(ratedMatch);
-                    packet.writeBit(0);
-                    packet.writeBit(1);
-                    packet.writeBit(guid[6]);
-                    packet.writeBit(guid[4]);
-                    packet.writeBit(guid[1]);
-                    packet.writeBit(guid[3]);
-                    packet.writeBit(guid[7]);
-                    packet.writeBit(guid[5]);
-                    packet.writeBit(0);
-                    packet.writeBit(bgGuid[3]);
-                    packet.writeBit(bgGuid[0]);
-                    packet.writeBit(bgGuid[2]);
-                    packet.writeBit(guid[2]);
-                    packet.writeBit(bgGuid[6]);
-                    packet.writeBit(bgGuid[4]);
-
-                    packet.flushBits();
-
-                    packet.writeByteSeq(bgGuid[4]);
-                    packet.writeByteSeq(guid[6]);
-                    packet << uint32_t(0);
-                    packet.writeByteSeq(bgGuid[5]);
-                    packet << uint32_t(time);                 // wait time
-                    packet.writeByteSeq(bgGuid[3]);
-                    packet.writeByteSeq(guid[3]);
-                    packet.writeByteSeq(guid[4]);
-                    packet.writeByteSeq(guid[0]);
-                    packet << uint8_t(0);                     // minlevel
-                    packet.writeByteSeq(bgGuid[0]);
-                    packet << uint32_t(0);                    // join time
-                    packet << uint8_t(isArena ? type : 1);
-                    packet.writeByteSeq(bgGuid[1]);
-                    packet << uint32_t(0);                    // time in queue
-                    packet.writeByteSeq(bgGuid[7]);
-                    packet << uint32_t(0);                    // queueslot
-                    packet.writeByteSeq(guid[2]);
-                    packet.writeByteSeq(bgGuid[6]);
-                    packet << uint8_t(0);                     // maxlevel
-                    packet.writeByteSeq(bgGuid[2]);
-                    packet.writeByteSeq(guid[5]);
-                    packet.writeByteSeq(guid[1]);
-                    packet << uint32_t(instanceId);
-                    packet.writeByteSeq(guid[7]);
-                    break;
-                }
-                case 2:
-                {
-                    packet.initialize(SMSG_BATTLEFIELD_STATUS_NEEDCONFIRMATION);
-
-                    packet.writeBit(guid[7]);
-                    packet.writeBit(guid[5]);
-                    packet.writeBit(guid[4]);
-                    packet.writeBit(guid[1]);
-                    packet.writeBit(bgGuid[3]);
-                    packet.writeBit(bgGuid[2]);
-                    packet.writeBit(1);
-                    packet.writeBit(bgGuid[0]);
-                    packet.writeBit(guid[0]);
-                    packet.writeBit(guid[6]);
-                    packet.writeBit(bgGuid[7]);
-                    packet.writeBit(bgGuid[4]);
-                    packet.writeBit(bgGuid[1]);
-                    packet.writeBit(ratedMatch);
-                    packet.writeBit(guid[2]);
-                    packet.writeBit(bgGuid[6]);
-                    packet.writeBit(guid[3]);
-                    packet.writeBit(bgGuid[5]);
-
-                    packet.writeByteSeq(guid[1]);
-                    packet.writeByteSeq(bgGuid[1]);
-                    packet.writeByteSeq(guid[2]);
-                    packet << uint8_t(isArena ? type : 1);
-                    packet << uint32_t(0);                    // queueslot
-                    packet << uint32_t(instanceId);
-                    packet.writeByteSeq(bgGuid[6]);
-                    packet.writeByteSeq(bgGuid[7]);
-                    packet << uint32_t(time);                 // join time
-                    packet.writeByteSeq(guid[7]);
-                    packet << uint8_t(0);                     // maxlevel
-                    packet.writeByteSeq(guid[4]);
-                    packet.writeByteSeq(bgGuid[2]);
-                    packet.writeByteSeq(bgGuid[4]);
-                    packet << uint32_t(0);                    // time until close
-                    packet << uint8_t(0);                     // minlevel
-                    packet.writeByteSeq(guid[3]);
-                    packet.writeByteSeq(bgGuid[0]);
-                    packet.writeByteSeq(guid[5]);
-                    packet.writeByteSeq(guid[6]);
-                    packet << uint32_t(0);
-                    packet.writeByteSeq(bgGuid[3]);
-                    packet.writeByteSeq(guid[0]);
-                    packet.writeByteSeq(bgGuid[5]);
-                    packet << uint32_t(mapId);
-                    break;
-                }
-                case 3:
-                {
-                    packet.initialize(SMSG_BATTLEFIELD_STATUS_ACTIVE);
-
-                    packet.writeBit(guid[0]);
-                    packet.writeBit(bgGuid[3]);
-                    packet.writeBit(guid[3]);
-                    packet.writeBit(bgGuid[2]);
-                    packet.writeBit(guid[2]);
-                    packet.writeBit(bgGuid[5]);
-                    packet.writeBit(bgGuid[1]);
-                    packet.writeBit(guid[7]);
-                    packet.writeBit(0);                     // left early
-                    packet.writeBit(guid[6]);
-                    packet.writeBit(bgGuid[0]);
-                    packet.writeBit(isArena ? 1 : 0);
-                    packet.writeBit(bgGuid[6]);
-                    packet.writeBit(bgGuid[7]);
-                    packet.writeBit(bgGuid[4]);
-                    packet.writeBit(guid[1]);
-                    packet.writeBit(guid[4]);
-                    packet.writeBit(guid[5]);
-                    packet.writeBit(ratedMatch);
-
-                    packet.flushBits();
-
-                    packet.writeByteSeq(guid[3]);
-                    packet << uint32_t(0);                    // join time
-                    packet << uint32_t(60);                   // remaining time
-                    packet.writeByteSeq(bgGuid[7]);
-                    packet.writeByteSeq(bgGuid[5]);
-                    packet.writeByteSeq(guid[1]);
-                    packet.writeByteSeq(bgGuid[6]);
-                    packet << uint32_t(time);                 // elapsed time
-                    packet << uint8_t(0);                     // maxlevel
-                    packet.writeByteSeq(bgGuid[1]);
-                    packet.writeByteSeq(bgGuid[2]);
-                    packet << uint32_t(0);                    // queueslot
-                    packet.writeByteSeq(guid[4]);
-                    packet << uint8_t(0);                     // minlevel
-                    packet.writeByteSeq(guid[6]);
-                    packet << uint32_t(mapId);
-                    packet.writeByteSeq(guid[0]);
-                    packet.writeByteSeq(guid[5]);
-                    packet.writeByteSeq(guid[7]);
-                    packet.writeByteSeq(bgGuid[4]);
-                    packet << uint32_t(instanceId);
-                    packet.writeByteSeq(guid[2]);
-                    packet << uint8_t(isArena ? type : 1);
-                    packet << uint32_t(0);
-                    packet.writeByteSeq(bgGuid[3]);
-                    packet.writeByteSeq(bgGuid[0]);
-                    break;
+                        packet.writeByteSeq(guid[3]);
+                        packet << uint32_t(0);                    // join time
+                        packet << uint32_t(60);                   // remaining time
+                        packet.writeByteSeq(bgGuid[7]);
+                        packet.writeByteSeq(bgGuid[5]);
+                        packet.writeByteSeq(guid[1]);
+                        packet.writeByteSeq(bgGuid[6]);
+                        packet << uint32_t(time);                 // elapsed time
+                        packet << uint8_t(0);                     // maxlevel
+                        packet.writeByteSeq(bgGuid[1]);
+                        packet.writeByteSeq(bgGuid[2]);
+                        packet << uint32_t(0);                    // queueslot
+                        packet.writeByteSeq(guid[4]);
+                        packet << uint8_t(0);                     // minlevel
+                        packet.writeByteSeq(guid[6]);
+                        packet << uint32_t(mapId);
+                        packet.writeByteSeq(guid[0]);
+                        packet.writeByteSeq(guid[5]);
+                        packet.writeByteSeq(guid[7]);
+                        packet.writeByteSeq(bgGuid[4]);
+                        packet << uint32_t(instanceId);
+                        packet.writeByteSeq(guid[2]);
+                        packet << uint8_t(isArena ? type : 1);
+                        packet << uint32_t(0);
+                        packet.writeByteSeq(bgGuid[3]);
+                        packet.writeByteSeq(bgGuid[0]);
+                        break;
+                    }
                 }
             }
-#endif
 
             return true;
         }

@@ -5,21 +5,25 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+
+#include <cstdint>
+#include <utility>
+#include <vector>
 
 namespace AscEmu::Packets
 {
     class SmsgSetPctSpellModifier : public ManagedPacket
     {
     public:
-#if VERSION_STRING < Cata
-        uint8_t spellGroup;
-        uint8_t spellType;
-        uint32_t modifier;
+        uint8_t spellGroup = 0;
+        uint8_t spellType = 0;
+        uint32_t modifier = 0;
+        uint32_t unknown = 1;
+        std::vector<std::pair<uint8_t, float>> modifierValues;
 
-        SmsgSetPctSpellModifier() : SmsgSetPctSpellModifier(0, 0, 0)
+        SmsgSetPctSpellModifier() :
+            ManagedPacket(SMSG_SET_PCT_SPELL_MODIFIER, 0)
         {
         }
 
@@ -30,48 +34,37 @@ namespace AscEmu::Packets
             modifier(modifier)
         {
         }
-#else
-        uint32_t unk; // probably count for different modifier types in packet
-        uint32_t modCount;
-        uint8_t spellType;
-        std::vector<std::pair<uint8_t, float>> modValues;
 
-        SmsgSetPctSpellModifier() : SmsgSetPctSpellModifier(0, {})
-        {
-        }
-
-        SmsgSetPctSpellModifier(uint8_t spellType, std::vector<std::pair<uint8_t, float>> modValues) :
+        SmsgSetPctSpellModifier(uint8_t spellType, std::vector<std::pair<uint8_t, float>> modifierValues) :
             ManagedPacket(SMSG_SET_PCT_SPELL_MODIFIER, 0),
             spellType(spellType),
-            modValues(modValues),
-            unk(1),
-            modCount(static_cast<uint32_t>(modValues.size()))
+            modifierValues(std::move(modifierValues))
         {
         }
-#endif
 
     protected:
         size_t expectedSize() const override
         {
-#if VERSION_STRING < Cata
-            return 1 + 1 + 4;
-#else
-            return 4 + 4 + 1 + ((1 + 4) * modValues.size());
-#endif
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+                return 6;
+
+            return 9 + (5 * modifierValues.size());
         }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Cata
-            packet << spellGroup << spellType << modifier;
-#else
-            packet << unk << modCount << spellType;
-
-            for (const auto& mod : modValues)
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
-                packet << mod.first << mod.second;
+                packet << spellGroup << spellType << modifier;
             }
-#endif
+            else
+            {
+                packet << unknown << static_cast<uint32_t>(modifierValues.size()) << spellType;
+
+                for (const auto& modifierValue : modifierValues)
+                    packet << modifierValue.first << modifierValue.second;
+            }
+
             return true;
         }
 

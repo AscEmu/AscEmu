@@ -5,15 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class SmsgFeatureSystemStatus : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         uint8_t unknown1;
         uint8_t unknown2;
@@ -32,63 +30,73 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
-#if VERSION_STRING > Cata
-            return 4 + 4 + 4 + 1 + 4 + 2 + 4 + 4 + 4 + 4 + 4 + 4 + 4;
-#elif VERSION_STRING > WotLK
-            return 1 + 4 + 4 + 4 + 4 + 2 + 4 + 4 + 4 + 4 + 4 + 4 + 4;
-#else
-            return 1 + 1;
-#endif
+            if (m_protocol.expansion > WoW::Expansion::_Cata)
+            {
+                return 4 + 4 + 4 + 1 + 4 + 2 + 4 + 4 + 4 + 4 + 4 + 4 + 4;
+            }
+            else if (m_protocol.expansion > WoW::Expansion::_WotLK)
+            {
+                return 1 + 4 + 4 + 4 + 4 + 2 + 4 + 4 + 4 + 4 + 4 + 4 + 4;
+            }
+            else
+            {
+                return 1 + 1;
+            }
         }
 
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING == Cata
-            bool featureBitFour = true;
+            if (m_protocol.expansion <= WoW::Expansion::_TBC)
+                return false;
 
-            packet << unknown1 << uint32_t(1) << uint32_t(1) << uint32_t(2) << uint32_t(0);
-            packet.writeBit(1);
-            packet.writeBit(1);
-            packet.writeBit(0);
-            packet.writeBit(featureBitFour);
-            packet.writeBit(0);
-            packet.writeBit(0);
-            packet.flushBits();
-            if (featureBitFour)
-                packet << uint32_t(1) << uint32_t(0) << uint32_t(10) << uint32_t(60);
-#elif VERSION_STRING == Mop
-            bool isFeedbackSysEnabled = false;
-            bool isExcessiveWarningEnabled = false;
+            if (m_protocol.expansion == WoW::Expansion::_Cata)
+            {
+                bool featureBitFour = true;
 
-            packet << uint32_t(0) << uint32_t(0) << uint32_t(0) << uint8_t(2) << uint32_t(0);
-            packet.writeBit(0);
-            packet.writeBit(1);
-            packet.writeBit(0);
-            packet.writeBit(0);
-            packet.writeBit(0);
-            packet.writeBit(1);
-            packet.writeBit(0);
-            packet.writeBit(isExcessiveWarningEnabled);
-            packet.writeBit(0);
-            packet.writeBit(isFeedbackSysEnabled);
-            packet.flushBits();
+                packet << unknown1 << uint32_t(1) << uint32_t(1) << uint32_t(2) << uint32_t(0);
+                packet.writeBit(1);
+                packet.writeBit(1);
+                packet.writeBit(0);
+                packet.writeBit(featureBitFour);
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.flushBits();
 
-            if (isExcessiveWarningEnabled)
-                packet << uint32_t(14400) << uint32_t(0) << uint32_t(0);
+                if (featureBitFour)
+                    packet << uint32_t(1) << uint32_t(0) << uint32_t(10) << uint32_t(60);
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_Mop)
+            {
+                bool isFeedbackSysEnabled = false;
+                bool isExcessiveWarningEnabled = false;
 
-            if (isFeedbackSysEnabled)
-                packet << uint32_t(0) << uint32_t(1) << uint32_t(10) << uint32_t(60000);
-#else
-            packet << unknown1 << unknown2;
-#endif
+                packet << uint32_t(0) << uint32_t(0) << uint32_t(0) << uint8_t(2) << uint32_t(0);
+                packet.writeBit(0);
+                packet.writeBit(1);
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.writeBit(1);
+                packet.writeBit(0);
+                packet.writeBit(isExcessiveWarningEnabled);
+                packet.writeBit(0);
+                packet.writeBit(isFeedbackSysEnabled);
+                packet.flushBits();
+
+                if (isExcessiveWarningEnabled)
+                    packet << uint32_t(14400) << uint32_t(0) << uint32_t(0);
+
+                if (isFeedbackSysEnabled)
+                    packet << uint32_t(0) << uint32_t(1) << uint32_t(10) << uint32_t(60000);
+            }
+            else
+            {
+                packet << unknown1 << unknown2;
+            }
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-#endif
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

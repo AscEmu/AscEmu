@@ -5,9 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+
+#include <cstdint>
+#include <string>
+#include <vector>
 
 namespace AscEmu::Packets
 {
@@ -45,12 +47,13 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING >= TBC
-            if (chatQuery)
-                packet << uint8_t(0);
-            else
-                packet << uint8_t(1);
-#endif
+            if (m_protocol.expansion >= WoW::Expansion::_TBC)
+            {
+                if (chatQuery)
+                    packet << uint8_t(0);
+                else
+                    packet << uint8_t(1);
+            }
 
             packet << channelName << channelFlags << membersCount;
             for (const auto member : members)

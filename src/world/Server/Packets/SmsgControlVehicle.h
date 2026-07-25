@@ -11,7 +11,6 @@ namespace AscEmu::Packets
 {
     class SmsgControlVehicle : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
 
         SmsgControlVehicle() :
@@ -24,10 +23,12 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& /*packet*/) override
         {
+            if (m_protocol.expansion <= WoW::Expansion::_TBC)
+                return false;
+
             return true;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
-#endif
     };
 }

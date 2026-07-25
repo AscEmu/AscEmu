@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -31,35 +30,35 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING == Mop
-            WoWGuid guid = itemGuid;
-            packet.writeBit(guid[5]);
-            packet.writeBit(guid[3]);
-            packet.writeBit(guid[4]);
-            packet.writeBit(guid[1]);
-            packet.writeBit(guid[2]);
-            packet.writeBit(guid[6]);
-            packet.writeBit(guid[0]);
-            packet.writeBit(guid[7]);
+            if (m_protocol.expansion == WoW::Expansion::_Mop)
+            {
+                WoWGuid guid = itemGuid;
+                packet.writeBit(guid[5]);
+                packet.writeBit(guid[3]);
+                packet.writeBit(guid[4]);
+                packet.writeBit(guid[1]);
+                packet.writeBit(guid[2]);
+                packet.writeBit(guid[6]);
+                packet.writeBit(guid[0]);
+                packet.writeBit(guid[7]);
 
-            packet.writeByteSeq(guid[2]);
-            packet.writeByteSeq(guid[6]);
-            packet.writeByteSeq(guid[7]);
-            packet.writeByteSeq(guid[4]);
-            packet.writeByteSeq(guid[0]);
-            packet.writeByteSeq(guid[3]);
-            packet.writeByteSeq(guid[5]);
-            packet.writeByteSeq(guid[1]);
-            packet << duration;
-#else
-            packet << itemGuid << duration;
-#endif
+                packet.writeByteSeq(guid[2]);
+                packet.writeByteSeq(guid[6]);
+                packet.writeByteSeq(guid[7]);
+                packet.writeByteSeq(guid[4]);
+                packet.writeByteSeq(guid[0]);
+                packet.writeByteSeq(guid[3]);
+                packet.writeByteSeq(guid[5]);
+                packet.writeByteSeq(guid[1]);
+                packet << duration;
+            }
+            else
+            {
+                packet << itemGuid << duration;
+            }
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

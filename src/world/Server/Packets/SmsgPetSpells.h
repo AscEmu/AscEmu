@@ -5,10 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "AEVersion.hpp"
 #include "ManagedPacket.h"
 
+#include <array>
 #include <cstdint>
+#include <utility>
+#include <vector>
 
 namespace AscEmu::Packets
 {
@@ -72,15 +74,15 @@ namespace AscEmu::Packets
         }
 
     protected:
-#if VERSION_STRING < WotLK
-        size_t expectedSize() const override { return resetSpells ?
-            8 :
-            static_cast<size_t>(8 + 4 + 1 + 1 + 2 + (4 * MAX_ACTION_SLOT)) + 1 + (4 * spells.size()) + 1; }
-#else
-        size_t expectedSize() const override { return resetSpells ?
-            8 :
-            static_cast<size_t>(8 + 2 + 4 + 1 + 1 + 2 + (4 * MAX_ACTION_SLOT)) + 1 + (4 * spells.size()) + 1; }
-#endif
+size_t expectedSize() const override
+        {
+            if (resetSpells)
+                return 8;
+
+            const size_t familySize = m_protocol.expansion >= WoW::Expansion::_WotLK ? 2 : 0;
+            return 8 + familySize + 4 + 1 + 1 + 2 + (4 * MAX_ACTION_SLOT) + 1 +
+                (4 * spells.size()) + 1;
+        }
 
         bool internalSerialise(WorldPacket& packet) override
         {
@@ -91,9 +93,10 @@ namespace AscEmu::Packets
             }
 
             packet << guid;
-#if VERSION_STRING >= WotLK
-            packet << family;
-#endif
+            if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            {
+                packet << family;
+            }
             packet << expireDuration << reactState << petAction << flags;
             // Action bar
             for (const auto slot : actions)

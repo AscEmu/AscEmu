@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -41,13 +41,16 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Mop
-            packet << type << current << max << regen << paused << spellId;
-#else
-            packet << max << spellId << type << regen << current;
-            packet.writeBit(paused);
-            packet.flushBits();
-#endif
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet << type << current << max << regen << paused << spellId;
+            }
+            else
+            {
+                packet << max << spellId << type << regen << current;
+                packet.writeBit(paused);
+                packet.flushBits();
+            }
             return true;
         }
 

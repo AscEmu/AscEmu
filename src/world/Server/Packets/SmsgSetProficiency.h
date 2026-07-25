@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -36,11 +36,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING != Mop
-            packet << itemClass << proficiency;
-#elif VERSION_STRING == Mop
-            packet << proficiency << itemClass;
-#endif
+            if (m_protocol.expansion != WoW::Expansion::_Mop)
+            {
+                packet << itemClass << proficiency;
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_Mop)
+            {
+                packet << proficiency << itemClass;
+            }
             return true;
         }
 

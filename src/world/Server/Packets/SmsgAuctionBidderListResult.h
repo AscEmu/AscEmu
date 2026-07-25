@@ -5,11 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-#include <utility>
-
 #include "ManagedPacket.h"
 #include "Management/AuctionHouse.h"
+
+#include <cstdint>
+#include <utility>
+#include <vector>
 
 namespace AscEmu::Packets
 {

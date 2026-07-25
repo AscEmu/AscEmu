@@ -5,16 +5,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-#include <utility>
-
 #include "ManagedPacket.h"
+
+#include <cstdint>
+#include <string>
+#include <utility>
 
 namespace AscEmu::Packets
 {
     class SmsgServerFirstAchievement : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         std::string playerName;
         uint64_t guid;
@@ -39,12 +39,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion <= WoW::Expansion::_TBC)
+                return false;
+
             packet << playerName << guid << achivementId << nameClickable;
 
             return true;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
-#endif
     };
 }

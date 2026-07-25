@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatDefines.hpp"
 
 #include <cstdint>
+#include <string>
 #include <utility>
 
 namespace AscEmu::Packets

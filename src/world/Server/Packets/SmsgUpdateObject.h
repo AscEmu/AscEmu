@@ -5,11 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
 
-#ifdef AE_TBC
+#include <cstdint>
+#include <vector>
+
 namespace AscEmu::Packets
 {
     class SmsgUpdateObject : public ManagedPacket
@@ -30,6 +30,9 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (!m_protocol.isTbc())
+                return false;
+
             packet << ((m_out_of_range_guids.size() > 0) ? m_creation_count + 1 : m_creation_count);
 
             return true;
@@ -41,5 +44,3 @@ namespace AscEmu::Packets
         }
     };
 }
-
-#endif

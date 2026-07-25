@@ -5,10 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
+
+#include <cstdint>
+#include <string>
 
 //\todo send friend note based on status.
 namespace AscEmu::Packets
@@ -57,9 +58,6 @@ namespace AscEmu::Packets
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

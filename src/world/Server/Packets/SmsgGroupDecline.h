@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "Utilities/utf8String.hpp"
 
+#include <string>
+
 namespace AscEmu::Packets
 {
     class SmsgGroupDecline : public ManagedPacket

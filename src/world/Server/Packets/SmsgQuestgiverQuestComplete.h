@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -41,29 +41,32 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Cata
-            packet << questId << xp << rewardMoney << bonusHonor << bonusTalent << bonusArenaPoints;
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+            {
+                packet << questId << xp << rewardMoney << bonusHonor << bonusTalent << bonusArenaPoints;
 
-            // seems to be ignored by client
-            // uint32_t reward item count
-            // for (uint8_t i = 0; i < 4; ++i)
-            // {
-            //     if (qst->reward_item[i])
-            //     {
-            //         data << uint32_t(qst->reward_item[i]);
-            //         data << uint32_t(qst->reward_itemcount[i]);
-            //     }
-            // }
-#else
-            packet << bonusTalent;
-            packet << uint32_t(0);  // skillpoints
-            packet << rewardMoney << xp << questId;
-            packet << uint32_t(0);  // skillid
+                // seems to be ignored by client
+                // uint32_t reward item count
+                // for (uint8_t i = 0; i < 4; ++i)
+                // {
+                //     if (qst->reward_item[i])
+                //     {
+                //         data << uint32_t(qst->reward_item[i]);
+                //         data << uint32_t(qst->reward_itemcount[i]);
+                //     }
+                // }
+            }
+            else
+            {
+                packet << bonusTalent;
+                packet << uint32_t(0);  // skillpoints
+                packet << rewardMoney << xp << questId;
+                packet << uint32_t(0);  // skillid
 
-            packet.writeBit(0);     // reward items?
-            packet.writeBit(1);
-            packet.flushBits();
-#endif
+                packet.writeBit(0);     // reward items?
+                packet.writeBit(1);
+                packet.flushBits();
+            }
 
             return true;
         }

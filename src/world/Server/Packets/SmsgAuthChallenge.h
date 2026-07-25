@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -29,26 +28,33 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < WotLK
-            packet << seed;
+            if (m_protocol.expansion < WoW::Expansion::_WotLK)
+            {
+                packet << seed;
 
-#elif VERSION_STRING == WotLK
-            packet << uint32_t(1) << seed << uint32_t(0xC0FFEEEE) << uint32_t(0x00BABE00) << uint32_t(0xDF1697E5) << uint32_t(0x1234ABCD);
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_WotLK)
+            {
+                packet << uint32_t(1) << seed << uint32_t(0xC0FFEEEE) << uint32_t(0x00BABE00) << uint32_t(0xDF1697E5) << uint32_t(0x1234ABCD);
 
-#elif VERSION_STRING == Cata
-            for (int i = 0; i < 8; ++i)
-                packet << uint32_t(0);
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_Cata)
+            {
+                for (int i = 0; i < 8; ++i)
+                    packet << uint32_t(0);
     
-            packet << seed << uint8_t(1);
+                packet << seed << uint8_t(1);
 
-#elif VERSION_STRING == Mop
-            packet << uint16_t(0);
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_Mop)
+            {
+                packet << uint16_t(0);
 
-            for (int i = 0; i < 8; ++i)
-                packet << uint32_t(0);
+                for (int i = 0; i < 8; ++i)
+                    packet << uint32_t(0);
 
-            packet << uint8_t(1) << seed;
-#endif
+                packet << uint8_t(1) << seed;
+            }
             return true;
         }
 

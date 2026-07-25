@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
 #include "Server/Script/ScriptMgr.hpp"
+
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -52,9 +52,10 @@ namespace AscEmu::Packets
                 case EncounterFrameAddTimer:
                 case EncounterFrameEnableObjective:
                 case EncounterFrameDisableObjective:
-#if VERSION_STRING > WotLK
-                case EncounterFrameSetCombatResLimit:
-#endif
+                if (m_protocol.expansion > WoW::Expansion::_WotLK)
+                {
+                    case EncounterFrameSetCombatResLimit:
+                }
                 {
                     packet << valueA;
                 } break;

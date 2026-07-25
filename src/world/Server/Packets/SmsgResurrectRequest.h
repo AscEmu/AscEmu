@@ -5,9 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+
+#include <cstdint>
+#include <string>
 
 namespace AscEmu::Packets
 {
@@ -41,16 +42,20 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << casterGuid << stringSize << spellId << casterName;
-#if VERSION_STRING == Cata
-            packet << uint8_t(0);
-#endif
+            if (m_protocol.expansion == WoW::Expansion::_Cata)
+            {
+                packet << uint8_t(0);
+            }
             packet << isSicknessAffected;
 
-#if VERSION_STRING < Cata
-            packet << overrideTimer;
-#else
-            packet << spellId;
-#endif
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+            {
+                packet << overrideTimer;
+            }
+            else
+            {
+                packet << spellId;
+            }
 
             return true;
         }

@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -28,9 +27,10 @@ namespace AscEmu::Packets
 
         bool internalSerialise([[maybe_unused]]WorldPacket& packet) override
         {
-#if VERSION_STRING > WotLK
-            packet << percent;
-#endif
+            if (m_protocol.expansion > WoW::Expansion::_WotLK)
+            {
+                packet << percent;
+            }
             return true;
         }
 

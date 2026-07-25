@@ -5,15 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class SmsgCharCustomize : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         uint8_t result;
         uint64_t guid = 0;
@@ -40,6 +38,9 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion <= WoW::Expansion::_TBC)
+                return false;
+
             if (result != 0)
             {
                 packet << result;
@@ -52,10 +53,6 @@ namespace AscEmu::Packets
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-#endif
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

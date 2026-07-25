@@ -5,11 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-#include <utility>
-
 #include "ManagedPacket.h"
 #include "Chat/ChannelDefines.hpp"
+
+#include <cstdint>
+#include <string>
+#include <utility>
 
 namespace AscEmu::Packets
 {
@@ -71,17 +72,21 @@ namespace AscEmu::Packets
                     packet << playerName;
                 break;
                 case CHANNEL_NOTIFY_FLAG_YOUJOINED:
-#if VERSION_STRING == Classic
-                    packet << extraFlag << uint32_t(0);
-#else
-                    packet << extraFlag << channelId << uint32_t(0);
-#endif
+                    if (m_protocol.expansion == WoW::Expansion::_Classic)
+                    {
+                        packet << extraFlag << uint32_t(0);
+                    }
+                    else
+                    {
+                        packet << extraFlag << channelId << uint32_t(0);
+                    }
                 break;
-#if VERSION_STRING >= TBC
                 case CHANNEL_NOTIFY_FLAG_YOULEFT:
-                    packet << channelId << uint8_t(channelId != 0);
-                break;
-#endif
+                    if (m_protocol.expansion >= WoW::Expansion::_TBC)
+                    {
+                        packet << channelId << uint8_t(channelId != 0);
+                    }
+                    break;
                 case CHANNEL_NOTIFY_FLAG_MODE_CHG:
                     packet << guid << extraFlag << extraFlags2;
                 break;

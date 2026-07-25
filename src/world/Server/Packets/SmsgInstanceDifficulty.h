@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
 #include "Map/Maps/InstanceDefines.hpp"
+
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -37,11 +37,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise([[maybe_unused]] WorldPacket& packet) override
         {
-#if VERSION_STRING < Mop
-            packet << difficulty << isHeroic;
-#else
-
-#endif
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet << difficulty << isHeroic;
+            }
+            else
+            {
+                return false;
+            }
             return true;
         }
 

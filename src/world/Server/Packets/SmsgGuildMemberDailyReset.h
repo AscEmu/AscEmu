@@ -11,7 +11,6 @@ namespace AscEmu::Packets
 {
     class SmsgGuildMemberDailyReset : public ManagedPacket
     {
-#if VERSION_STRING >= Cata
     public:
 
         SmsgGuildMemberDailyReset() :
@@ -24,10 +23,12 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& /*packet*/) override
         {
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+                return false;
+
             return true;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
-#endif
     };
 }

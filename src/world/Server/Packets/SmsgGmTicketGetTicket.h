@@ -5,10 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
 #include "Network/WorldPacket.hpp"
+
+#include <cstdint>
+#include <string>
 
 namespace AscEmu::Packets
 {
@@ -44,28 +45,31 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << error;
-#if VERSION_STRING < Cata
-            if (error == 6)                             // No current ticket
-                packet << message.c_str() << mapId;     // mapId is uint8_t, valid for cata/mop?
 
-#else
-            if (error == 6)
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
-                packet << uint32_t(ticketGuid);
-                packet << message;
-                packet << uint8_t(0);         // unk
-                packet << float(ticketTimestamp);
-                packet << float(0);           // unk
-                packet << float(0);           // unk
-
-                packet << uint8_t(2);         // escalate?
-                packet << uint8_t(comment.empty() ? 0 : 1);
-
-                std::string unkstring;
-                packet << unkstring;
-                packet << uint32_t(0);        // wait time
+                if (error == 6)                             // No current ticket
+                    packet << message.c_str() << mapId;     // mapId is uint8_t, valid for cata/mop?
             }
-#endif
+            else
+            {
+                if (error == 6)
+                {
+                    packet << uint32_t(ticketGuid);
+                    packet << message;
+                    packet << uint8_t(0);         // unk
+                    packet << float(ticketTimestamp);
+                    packet << float(0);           // unk
+                    packet << float(0);           // unk
+
+                    packet << uint8_t(2);         // escalate?
+                    packet << uint8_t(comment.empty() ? 0 : 1);
+
+                    std::string unkstring;
+                    packet << unkstring;
+                    packet << uint32_t(0);        // wait time
+                }
+            }
 
             return true;
         }

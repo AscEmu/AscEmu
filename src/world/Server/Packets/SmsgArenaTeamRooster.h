@@ -5,11 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-#include <utility>
-
 #include "ManagedPacket.h"
 #include "Management/ArenaTeam.hpp"
+
+#include <cstdint>
+#include <utility>
+#include <vector>
 
 namespace AscEmu::Packets
 {
@@ -42,9 +43,10 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << teamId;
-#if VERSION_STRING > TBC
-            packet << unknown;
-#endif
+            if (m_protocol.expansion > WoW::Expansion::_TBC)
+            {
+                packet << unknown;
+            }
             packet << memberCount << playersPerTeam;
 
             for (const auto teamListMember : arenaTeamList)
@@ -56,9 +58,6 @@ namespace AscEmu::Packets
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

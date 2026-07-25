@@ -5,12 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
-#include "Spell/SpellAura.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Spell/SpellAura.hpp"
+
+#include <cstdint>
 
 namespace AscEmu::Packets
 {

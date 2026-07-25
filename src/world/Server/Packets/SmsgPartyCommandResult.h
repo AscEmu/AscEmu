@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
+#include <string>
 
 namespace AscEmu::Packets
 {
@@ -43,9 +43,10 @@ namespace AscEmu::Packets
 
             packet << error;
 
-#if VERSION_STRING >= Cata
-            packet << uint64_t(0);
-#endif
+            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            {
+                packet << uint64_t(0);
+            }
             return true;
         }
 

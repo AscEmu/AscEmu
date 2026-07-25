@@ -5,11 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
-#if VERSION_STRING <= TBC
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -38,15 +35,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion > WoW::Expansion::_TBC)
+                return false;
+
             FastGUIDPack(packet, guid);
             packet << spell_id;
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
-            return true;
-        }
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }
-#endif

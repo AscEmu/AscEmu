@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -20,19 +19,16 @@ namespace AscEmu::Packets
         uint32_t randomSuffix;
         uint32_t randomPropertyId;
         uint64_t winnerGuid;
-#if VERSION_STRING >=Cata
         uint32_t highestRoll;
-#else
-        uint8_t highestRoll;
-#endif
         uint8_t highestType;
 
         SmsgLootRollWon() : SmsgLootRollWon(0, 0, 0, 0, 0, 0, 0, 0)
         {
         }
 
-        SmsgLootRollWon(uint64_t itemGuid, uint32_t slotId, uint32_t itemId, uint32_t randomSuffix, uint32_t randomPropertyId, uint64_t winnerGuid, uint8_t highestRoll, uint8_t highestType) :
-            ManagedPacket(SMSG_LOOT_ROLL_WON, 34),
+        SmsgLootRollWon(uint64_t itemGuid, uint32_t slotId, uint32_t itemId, uint32_t randomSuffix,
+            uint32_t randomPropertyId, uint64_t winnerGuid, uint32_t highestRoll, uint8_t highestType) :
+            ManagedPacket(SMSG_LOOT_ROLL_WON, 0),
             itemGuid(itemGuid),
             slotId(slotId),
             itemId(itemId),
@@ -45,17 +41,24 @@ namespace AscEmu::Packets
         }
 
     protected:
+        size_t expectedSize() const override
+        {
+            return m_protocol.expansion < WoW::Expansion::_Cata ? 33 : 36;
+        }
+
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << itemGuid << slotId << itemId << randomSuffix << randomPropertyId
-                << winnerGuid << highestRoll << highestType;
+            packet << itemGuid << slotId << itemId << randomSuffix << randomPropertyId << winnerGuid;
 
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+                packet << static_cast<uint8_t>(highestRoll);
+            else
+                packet << highestRoll;
+
+            packet << highestType;
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

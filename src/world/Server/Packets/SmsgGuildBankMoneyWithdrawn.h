@@ -5,15 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class SmsgGuildBankMoneyWithdrawn : public ManagedPacket
     {
-#if VERSION_STRING >= Cata
     public:
         int64_t amount;
 
@@ -32,14 +30,13 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+                return false;
+
             packet << amount;
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
-#endif
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

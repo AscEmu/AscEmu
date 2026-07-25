@@ -5,9 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+
+#include <cstdint>
+#include <string>
+#include <utility>
 
 namespace AscEmu::Packets
 {
@@ -15,54 +17,47 @@ namespace AscEmu::Packets
     {
     public:
         uint8_t result;
-
-#if VERSION_STRING > TBC
         uint64_t guid;
-#else
         uint32_t textId;
-#endif
         std::string text;
 
         SmsgItemTextQueryResponse() : SmsgItemTextQueryResponse(0, 0, "")
         {
         }
-#if VERSION_STRING > TBC
-        SmsgItemTextQueryResponse(uint8_t result, uint64_t guid, std::string text) :
+
+        SmsgItemTextQueryResponse(uint8_t result, uint64_t identifier, std::string text) :
             ManagedPacket(SMSG_ITEM_TEXT_QUERY_RESPONSE, 0),
             result(result),
-            guid(guid),
-            text(text)
+            guid(identifier),
+            textId(static_cast<uint32_t>(identifier)),
+            text(std::move(text))
         {
         }
-#else
-        SmsgItemTextQueryResponse(uint8_t result, uint32_t textId, std::string text) :
-            ManagedPacket(SMSG_ITEM_TEXT_QUERY_RESPONSE, 0),
-            result(result),
-            textId(textId),
-            text(text)
-        {
-        }
-#endif
 
     protected:
-        size_t expectedSize() const override { return 1 + 8 + text.size(); }
+        size_t expectedSize() const override
+        {
+            return m_protocol.expansion > WoW::Expansion::_TBC ?
+                1 + (result == 0 ? 8 + text.size() + 1 : 0) :
+                4 + text.size() + 1;
+        }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING > TBC
-            packet << result;
-            if (!result)
-                packet << guid << text;
-#else
-            packet << textId << text;
-#endif
+            if (m_protocol.expansion > WoW::Expansion::_TBC)
+            {
+                packet << result;
+                if (result == 0)
+                    packet << guid << text;
+            }
+            else
+            {
+                packet << textId << text;
+            }
 
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

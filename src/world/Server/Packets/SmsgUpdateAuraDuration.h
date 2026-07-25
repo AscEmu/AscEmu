@@ -5,11 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
 
-#if VERSION_STRING < WotLK
+#include <cstdint>
+
 namespace AscEmu::Packets
 {
     class SmsgUpdateAuraDuration : public ManagedPacket
@@ -37,6 +36,9 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+                return false;
+
             packet << slot << duration;
             return true;
         }
@@ -48,4 +50,3 @@ namespace AscEmu::Packets
         }
     };
 }
-#endif

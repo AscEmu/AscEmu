@@ -7,6 +7,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 
+#include <cstdint>
+#include <string>
+
 namespace AscEmu::Packets
 {
     class SmsgGroupSetLeader : public ManagedPacket
@@ -29,14 +32,17 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING < Mop
-            packet << name;
-#else
-            packet << uint8_t(0);
-            packet.writeBits(uint8_t(name.size()), 6);
-            packet.flushBits();
-            packet.writeString(name);
-#endif
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet << name;
+            }
+            else
+            {
+                packet << uint8_t(0);
+                packet.writeBits(uint8_t(name.size()), 6);
+                packet.flushBits();
+                packet.writeString(name);
+            }
 
             return true;
         }

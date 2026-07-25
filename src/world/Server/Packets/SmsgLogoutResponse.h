@@ -5,18 +5,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
     class SmsgLogoutResponse : public ManagedPacket
     {
     public:
-        bool logout_denied;
-
-        uint32_t fail_reason;
+        bool logoutDenied;
+        uint32_t failReason;
         uint8_t result;
         bool instant;
 
@@ -24,56 +22,57 @@ namespace AscEmu::Packets
         {
         }
 
-#if VERSION_STRING == Classic
-        SmsgLogoutResponse(uint8_t result) :
-            ManagedPacket(SMSG_LOGOUT_RESPONSE, 1),
+        explicit SmsgLogoutResponse(uint8_t result) :
+            ManagedPacket(SMSG_LOGOUT_RESPONSE, 0),
+            logoutDenied(false),
+            failReason(0),
             result(result),
             instant(false)
         {
         }
-#else
-        SmsgLogoutResponse(bool logout_denied) :
-            ManagedPacket(SMSG_LOGOUT_RESPONSE, 5),
-            logout_denied(logout_denied),
-            fail_reason(logout_denied ? 1u : 0u),
+
+        explicit SmsgLogoutResponse(bool logoutDenied) :
+            ManagedPacket(SMSG_LOGOUT_RESPONSE, 0),
+            logoutDenied(logoutDenied),
+            failReason(logoutDenied ? 1u : 0u),
             result(0),
             instant(false)
         {
         }
-#endif
 
-#if VERSION_STRING == Mop
         SmsgLogoutResponse(uint32_t logoutResult, bool instantLogout) :
-            ManagedPacket(SMSG_LOGOUT_RESPONSE, 5),
-            logout_denied(logoutResult != 0),
-            fail_reason(logoutResult),
+            ManagedPacket(SMSG_LOGOUT_RESPONSE, 0),
+            logoutDenied(logoutResult != 0),
+            failReason(logoutResult),
             result(0),
             instant(instantLogout)
         {
         }
-#endif
 
     protected:
+        size_t expectedSize() const override
+        {
+            return m_protocol.isClassic() ? 1 : 5;
+        }
+
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING == Classic
-            packet << result;
+            if (m_protocol.isClassic())
+                packet << result;
+            else
+                packet << failReason << static_cast<uint8_t>(instant ? 1 : 0);
+
             return true;
-#else
-            packet << fail_reason << static_cast<uint8_t>(instant ? 1 : 0);
-            return true;
-#endif
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING == Classic
-            packet >> result;
+            if (m_protocol.isClassic())
+                packet >> result;
+            else
+                packet >> failReason >> result;
+
             return true;
-#else
-            packet >> fail_reason >> result;
-            return true;
-#endif
         }
     };
 }

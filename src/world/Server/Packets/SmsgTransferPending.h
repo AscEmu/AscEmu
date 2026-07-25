@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
+
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -37,10 +37,11 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING >= Cata
-            packet.writeBit(0);
-            packet.writeBit(0);
-#endif
+            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            {
+                packet.writeBit(0);
+                packet.writeBit(0);
+            }
             packet << newMapId;
 
             if (isTransport)

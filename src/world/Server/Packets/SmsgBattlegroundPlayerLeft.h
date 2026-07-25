@@ -27,59 +27,57 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING <= WotLK
-            packet << guid;
-#else
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+            {
+                packet << guid;
+            }
+            else
+            {
+                if (m_protocol.expansion == WoW::Expansion::_Cata)
+                {
+                    packet.writeBit(guid[7]);
+                    packet.writeBit(guid[6]);
+                    packet.writeBit(guid[2]);
+                    packet.writeBit(guid[4]);
+                    packet.writeBit(guid[5]);
+                    packet.writeBit(guid[1]);
+                    packet.writeBit(guid[3]);
+                    packet.writeBit(guid[0]);
 
-#if VERSION_STRING == Cata
+                    packet.writeByteSeq(guid[4]);
+                    packet.writeByteSeq(guid[2]);
+                    packet.writeByteSeq(guid[5]);
+                    packet.writeByteSeq(guid[7]);
+                    packet.writeByteSeq(guid[0]);
+                    packet.writeByteSeq(guid[6]);
+                    packet.writeByteSeq(guid[1]);
+                    packet.writeByteSeq(guid[3]);
+                }
+                else if (m_protocol.expansion == WoW::Expansion::_Mop)
+                {
+                    packet.writeBit(guid[3]);
+                    packet.writeBit(guid[5]);
+                    packet.writeBit(guid[6]);
+                    packet.writeBit(guid[0]);
+                    packet.writeBit(guid[1]);
+                    packet.writeBit(guid[2]);
+                    packet.writeBit(guid[7]);
+                    packet.writeBit(guid[4]);
 
-            packet.writeBit(guid[7]);
-            packet.writeBit(guid[6]);
-            packet.writeBit(guid[2]);
-            packet.writeBit(guid[4]);
-            packet.writeBit(guid[5]);
-            packet.writeBit(guid[1]);
-            packet.writeBit(guid[3]);
-            packet.writeBit(guid[0]);
-
-            packet.writeByteSeq(guid[4]);
-            packet.writeByteSeq(guid[2]);
-            packet.writeByteSeq(guid[5]);
-            packet.writeByteSeq(guid[7]);
-            packet.writeByteSeq(guid[0]);
-            packet.writeByteSeq(guid[6]);
-            packet.writeByteSeq(guid[1]);
-            packet.writeByteSeq(guid[3]);
-
-#elif VERSION_STRING == Mop
-
-            packet.writeBit(guid[3]);
-            packet.writeBit(guid[5]);
-            packet.writeBit(guid[6]);
-            packet.writeBit(guid[0]);
-            packet.writeBit(guid[1]);
-            packet.writeBit(guid[2]);
-            packet.writeBit(guid[7]);
-            packet.writeBit(guid[4]);
-
-            packet.writeByteSeq(guid[0]);
-            packet.writeByteSeq(guid[6]);
-            packet.writeByteSeq(guid[5]);
-            packet.writeByteSeq(guid[7]);
-            packet.writeByteSeq(guid[2]);
-            packet.writeByteSeq(guid[1]);
-            packet.writeByteSeq(guid[3]);
-            packet.writeByteSeq(guid[4]);
-
-#endif
-#endif
+                    packet.writeByteSeq(guid[0]);
+                    packet.writeByteSeq(guid[6]);
+                    packet.writeByteSeq(guid[5]);
+                    packet.writeByteSeq(guid[7]);
+                    packet.writeByteSeq(guid[2]);
+                    packet.writeByteSeq(guid[1]);
+                    packet.writeByteSeq(guid[3]);
+                    packet.writeByteSeq(guid[4]);
+                }
+            }
 
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
-            return false;
-        }
+        bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

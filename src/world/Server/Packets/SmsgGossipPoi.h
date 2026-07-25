@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-#include <utility>
-
 #include "ManagedPacket.h"
+#include <cstdint>
+#include <string>
+#include <utility>
 
 namespace AscEmu::Packets
 {

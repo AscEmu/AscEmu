@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "ManagedPacket.h"
 #include "Network/WorldPacket.hpp"
+
+#include <cstdint>
 
 namespace AscEmu::Packets
 {
@@ -30,30 +30,33 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING <= Cata
-            packet << guid;
-#else
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet << guid;
+            }
+            else
+            {
 
-            WoWGuid wowGuid;
-            wowGuid.init(guid);
-            packet.writeBit(wowGuid[2]);
-            packet.writeBit(wowGuid[4]);
-            packet.writeBit(wowGuid[3]);
-            packet.writeBit(wowGuid[6]);
-            packet.writeBit(wowGuid[5]);
-            packet.writeBit(wowGuid[1]);
-            packet.writeBit(wowGuid[7]);
-            packet.writeBit(wowGuid[0]);
+                WoWGuid wowGuid;
+                wowGuid.init(guid);
+                packet.writeBit(wowGuid[2]);
+                packet.writeBit(wowGuid[4]);
+                packet.writeBit(wowGuid[3]);
+                packet.writeBit(wowGuid[6]);
+                packet.writeBit(wowGuid[5]);
+                packet.writeBit(wowGuid[1]);
+                packet.writeBit(wowGuid[7]);
+                packet.writeBit(wowGuid[0]);
 
-            packet.writeByteSeq(wowGuid[7]);
-            packet.writeByteSeq(wowGuid[0]);
-            packet.writeByteSeq(wowGuid[5]);
-            packet.writeByteSeq(wowGuid[3]);
-            packet.writeByteSeq(wowGuid[6]);
-            packet.writeByteSeq(wowGuid[1]);
-            packet.writeByteSeq(wowGuid[4]);
-            packet.writeByteSeq(wowGuid[2]);
-#endif
+                packet.writeByteSeq(wowGuid[7]);
+                packet.writeByteSeq(wowGuid[0]);
+                packet.writeByteSeq(wowGuid[5]);
+                packet.writeByteSeq(wowGuid[3]);
+                packet.writeByteSeq(wowGuid[6]);
+                packet.writeByteSeq(wowGuid[1]);
+                packet.writeByteSeq(wowGuid[4]);
+                packet.writeByteSeq(wowGuid[2]);
+            }
             return true;
         }
 
