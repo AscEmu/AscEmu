@@ -96,11 +96,9 @@ typedef std::pair<RangeStatus, float> RangeStatusPair;
 
 enum EncounterFrameType
 {
-#if VERSION_STRING > WotLK
-    EncounterFrameSetCombatResLimit,
+    EncounterFrameSetCombatResLimit, // > WotLK = 0
     EncounterFrameResetCombatResLimit,
-#endif
-    EncounterFrameEngage,
+    EncounterFrameEngage, // <= WotLK = 0
     EncounterFrameDisengaged,
     EncounterFrameUpdatePriority,
     EncounterFrameAddTimer,
@@ -108,9 +106,7 @@ enum EncounterFrameType
     EncounterFrameUpdateObjective,
     EncounterFrameDisableObjective,
     EncounterFrameUnknown,
-#if VERSION_STRING > WotLK
     EncounterFrameAddCombatResLimit,
-#endif
 };
 
 enum EncounterStates : uint8_t
