@@ -35,11 +35,11 @@
 #include "Logging/StringFormat.hpp"
 #include "Server/ClientProtocol.hpp"
 #include "Server/Packets/SmsgMessageChat.h"
+#include "Server/WorldSocket.hpp"
 
 struct QuestProperties;
 class Player;
 class WorldPacket;
-class WorldSocket;
 class WorldSession;
 class MapMgr;
 class Creature;
@@ -218,27 +218,18 @@ class SERVER_DECL WorldSession
         uint16_t GetClientBuild() { return client_build; }
         void SetClientBuild(uint16_t build) { client_build = build; }
 #endif
-        void setClientProtocol(WoW::ClientProtocol protocol)
-        {
-            m_protocol = protocol;
-        }
-
-        [[nodiscard]] WoW::ClientProtocol getClientProtocol() const
-        {
-            return m_protocol;
-        }
 
         template <typename TPacket>
         bool parsePacket(WorldPacket& packet, TPacket& managedPacket)
         {
-            managedPacket.setClientProtocol(m_protocol);
+            managedPacket.setClientProtocol(_socket->getClientProtocol());
             return managedPacket.deserialise(packet);
         }
 
         template <typename TPacket>
         std::unique_ptr<WorldPacket> buildPacket(TPacket& managedPacket)
         {
-            managedPacket.setClientProtocol(m_protocol);
+            managedPacket.setClientProtocol(_socket->getClientProtocol());
             return managedPacket.serialise();
         }
 
@@ -248,8 +239,6 @@ class SERVER_DECL WorldSession
             auto packet = buildPacket(managedPacket);
             SendPacket(packet.get());
         }
-
-        WoW::ClientProtocol m_protocol{};
 
         bool bDeleted;
         uint32_t GetInstance() { return instanceId; }

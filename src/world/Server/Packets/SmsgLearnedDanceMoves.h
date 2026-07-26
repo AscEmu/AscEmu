@@ -30,7 +30,8 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion <= WoW::Expansion::_TBC)
+            if (m_protocol.expansion <= WoW::Expansion::_TBC ||
+                m_protocol.expansion == WoW::Expansion::_Mop)
                 return false;
 
             packet << unknown1 << unknown2;

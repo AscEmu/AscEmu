@@ -17,6 +17,11 @@ class CachedCharacterInfo;
 class Player;
 class WorldPacket;
 
+namespace AscEmu::Packets
+{
+    class PacketBroadcast;
+}
+
 typedef std::map<Player*, uint8_t> MemberMap;
 
 class SERVER_DECL Channel
@@ -68,6 +73,8 @@ public:
     void sendToAll(WorldPacket* data, Player* skipPlayer);
 
 private:
+    friend class AscEmu::Packets::PacketBroadcast;
+
     std::string m_channelName = std::string();
     std::string m_channelPassword = std::string();
 

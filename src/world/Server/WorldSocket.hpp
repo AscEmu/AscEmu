@@ -29,8 +29,9 @@ public:
     void onDisconnect() override;
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // helper for protocol setup
+    // helper for protocol
     void setClientProtocol(WoW::ClientProtocol protocol);
+    WoW::ClientProtocol getClientProtocol();
     void setCurrentVersionAsProtocol();
     void setClientProtocolByBuild(uint32_t build);
 

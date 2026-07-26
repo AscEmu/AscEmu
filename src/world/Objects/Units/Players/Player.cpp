@@ -9188,7 +9188,8 @@ void Player::sendFriendLists(uint32_t flags)
         }
     }
 
-    sendPacket(SmsgContactList(flags, contactMemberList).serialise().get());
+    SmsgContactList contactListPacket(flags, contactMemberList);
+    m_session->sendManagedPacket(contactListPacket);
 }
 
 void Player::addToIgnoreList(std::string name)
@@ -9445,14 +9446,14 @@ void Player::sendPetUnlearnConfirmPacket()
 
 void Player::sendDungeonDifficultyPacket()
 {
-    m_session->SendPacket(MsgSetDungeonDifficulty(m_dungeonDifficulty, 1, isInGroup()).serialise().get());
+    MsgSetDungeonDifficulty managedPacket(m_dungeonDifficulty, 1, isInGroup());
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendRaidDifficultyPacket()
 {
-#if VERSION_STRING > TBC
-    m_session->SendPacket(MsgSetRaidDifficulty(m_raidDifficulty, 1, isInGroup()).serialise().get());
-#endif
+    MsgSetRaidDifficulty managedPacket(m_raidDifficulty, 1, isInGroup());
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendResetFailedNotify(uint32_t mapid)
@@ -9464,9 +9465,8 @@ void Player::sendResetFailedNotify(uint32_t mapid)
 
 void Player::sendInstanceDifficultyPacket([[maybe_unused]] uint8_t difficulty)
 {
-#if VERSION_STRING < Mop
-    m_session->SendPacket(SmsgInstanceDifficulty(difficulty).serialise().get());
-#endif
+    SmsgInstanceDifficulty managedPacket(difficulty);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendNewDrunkStatePacket(uint32_t state, uint32_t itemId)
@@ -9575,7 +9575,8 @@ void Player::sendSpellModifierPacket(uint8_t spellType, std::vector<std::pair<ui
 
 void Player::sendLoginVerifyWorldPacket()
 {
-    m_session->SendPacket(SmsgLoginVerifyWorld(this).serialise().get());
+    SmsgLoginVerifyWorld managedPacket(this);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendMountResultPacket(uint32_t result)

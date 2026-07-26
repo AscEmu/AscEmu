@@ -615,19 +615,17 @@ void WorldSession::fullLogin(Player* player)
     player->setLoginPosition();
     //////////////////////////////////////////////////////////////////////////////////////////
 
-#if VERSION_STRING > TBC
     //////////////////////////////////////////////////////////////////////////////////////////
     // send feature packet... mostly unknown content.
-    SendPacket(SmsgFeatureSystemStatus(2, 0).serialise().get());
+    SmsgFeatureSystemStatus featurePacket(2, 0);
+    sendManagedPacket(featurePacket);
     //////////////////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // dance moves - unknown 2x uint32_t(0)
-#if VERSION_STRING != Mop
-    SendPacket(SmsgLearnedDanceMoves(0, 0).serialise().get());
-#endif
+    SmsgLearnedDanceMoves dancePacket(0, 0);
+    sendManagedPacket(dancePacket);
     //////////////////////////////////////////////////////////////////////////////////////////
-#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // hotfix data for cata
@@ -942,7 +940,8 @@ void WorldSession::characterEnumProc(QueryResult* result)
     }
 
     sLogger.debug("Character Enum Built in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-    SendPacket(SmsgEnumCharactersResult(charRealCount, enumData).serialise().get());
+    SmsgEnumCharactersResult enumPacket(charRealCount, enumData);
+    sendManagedPacket(enumPacket);
 }
 
 void WorldSession::handleCharEnumOpcode(WorldPacket& /*recvPacket*/)

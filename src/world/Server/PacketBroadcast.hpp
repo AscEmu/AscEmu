@@ -42,6 +42,25 @@ namespace AscEmu::Packets
         }
 
         template <typename TPacket>
+        static void sendFromChannel(Channel& source, TPacket& packet, Player* skipPlayer = nullptr)
+        {
+            std::lock_guard<std::mutex> guard(source.m_mutexChannel);
+
+            for (const auto& memberEntry : source.m_members)
+            {
+                Player* targetPlayer = memberEntry.first;
+                if (targetPlayer == nullptr || targetPlayer == skipPlayer)
+                    continue;
+
+                WorldSession* targetSession = targetPlayer->getSession();
+                if (targetSession == nullptr)
+                    continue;
+
+                targetSession->sendManagedPacket(packet);
+            }
+        }
+
+        template <typename TPacket>
         static void sendFromGuild(Guild const& source, TPacket& packet)
         {
             for (const auto& guildMember : source.getGuildMembers())

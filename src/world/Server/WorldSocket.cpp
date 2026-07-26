@@ -221,7 +221,15 @@ void WorldSocket::onDisconnect()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // helper for protocol setup
-void WorldSocket::setClientProtocol(WoW::ClientProtocol protocol) { m_protocol = protocol; }
+void WorldSocket::setClientProtocol(WoW::ClientProtocol protocol)
+{
+    m_protocol = protocol;
+}
+
+WoW::ClientProtocol WorldSocket::getClientProtocol()
+{
+    return m_protocol;
+}
 
 void WorldSocket::setCurrentVersionAsProtocol()
 {
@@ -436,7 +444,8 @@ void WorldSocket::sendClientConnectionPacket()
 
 void WorldSocket::sendAuthChallengePacket()
 {
-    sendPacket(SmsgAuthChallenge(m_socketSeed).serialise().get());
+    SmsgAuthChallenge challengePacket(m_socketSeed);
+    sendManagedPacket(challengePacket);
 }
 
 void WorldSocket::sendVerifyConnectPacket()
@@ -773,7 +782,6 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     pSession->m_lastPing = static_cast<uint32_t>(UNIXTIME);
     pSession->language = Util::getLanguagesIdFromString(lang);
     pSession->m_muted = muted;
-    pSession->setClientProtocol(m_protocol);
 
     for (uint8_t i = 0; i < 8; ++i)
         pSession->SetAccountData(i, nullptr, true, 0);

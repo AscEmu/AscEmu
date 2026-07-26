@@ -393,7 +393,7 @@ void WorldSession::sendStabledPetList(uint64_t npcguid)
     }
 
     // Since cata all stable slots are automatically unlocked
-    if (m_protocol.expansion >= WoW::Expansion::_Cata)
+    if (_socket->getClientProtocol().expansion >= WoW::Expansion::_Cata)
     {
         MsgListStabledPets sendPacket(npcguid, PET_SLOT_MAX_STABLE_SLOT, stableList);
         sendManagedPacket(sendPacket);

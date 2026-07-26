@@ -2929,12 +2929,16 @@ void WorldSession::sendMOTD()
     if (pos < str_motd.length())
         motdLines.push_back(str_motd.substr(pos));
 
-#if VERSION_STRING > Classic
-    SendPacket(SmsgMotd(motdLines).serialise().get());
-#else
-    for (const auto& line : motdLines)
-        GetPlayer()->sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, line.c_str());
-#endif
+    if (_socket->getClientProtocol().expansion > WoW::Expansion::_Classic)
+    {
+        SmsgMotd managedPacket(motdLines);
+        sendManagedPacket(managedPacket);
+    }
+    else
+    {
+        for (const auto& line : motdLines)
+            GetPlayer()->sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, line.c_str());
+    }
 }
 
 void WorldSession::handleInstanceLockResponse(WorldPacket& recvPacket)
