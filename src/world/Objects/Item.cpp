@@ -888,7 +888,8 @@ void Item::setDurabilityToMax() { setDurability(getMaxDurability()); }
 
 void Item::sendDurationUpdate()
 {
-    m_owner->sendPacket(SmsgItemTimeUpdate(this->getGuid(), this->getDuration()).serialise().get());
+    SmsgItemTimeUpdate managedPacket(this->getGuid(), this->getDuration());
+    m_owner->getSession()->sendManagedPacket(managedPacket);
 }
 
 bool Item::repairItem(Player* player, bool isGuildMoney, int32_t* repairCost /*= nullptr*/)

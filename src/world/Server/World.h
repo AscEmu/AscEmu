@@ -52,10 +52,17 @@ enum ServerMessageType
 class SpellInfo;
 class Object;
 
+namespace AscEmu::Packets
+{
+    class PacketBroadcast;
+}
+
 typedef std::set<WorldSession*> SessionSet;
 
 class SERVER_DECL World : public EventableObject
 {
+    friend class AscEmu::Packets::PacketBroadcast;
+
 private:
     World();
     ~World();

@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Objects/Object.hpp"
 #include "Objects/Units/Players/Player.hpp"
-#include "Server/WorldSession.h"
 #include "Management/Guild/Guild.hpp"
 #include "Management/Group.h"
 #include "Management/ObjectMgr.hpp"
@@ -15,6 +14,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <shared_mutex>
 #include <type_traits>
+
+class World;
+class WorldSession;
 
 namespace AscEmu::Packets
 {
@@ -89,6 +91,35 @@ namespace AscEmu::Packets
 
                     sendToPlayer(targetPlayer, packet);
                 }
+            }
+        }
+
+        template <typename TSource, typename TPacket>
+        static void sendFromZone(TSource& source, TPacket& packet, uint32_t zoneId, WorldSession* skipSession = nullptr)
+        {
+            static_assert(
+                std::is_same_v<std::remove_cv_t<TSource>, World>,
+                "PacketBroadcast::sendFromZone requires World as source."
+                );
+
+            std::lock_guard<std::mutex> guard(source.mSessionLock);
+
+            for (const auto& sessionEntry : source.mActiveSessionMapStore)
+            {
+                auto* targetSession = sessionEntry.second.get();
+
+                if (targetSession == nullptr || targetSession == skipSession)
+                    continue;
+
+                auto* targetPlayer = targetSession->GetPlayer();
+
+                if (targetPlayer == nullptr || !targetPlayer->IsInWorld())
+                    continue;
+
+                if (targetPlayer->getZoneId() != zoneId)
+                    continue;
+
+                targetSession->sendManagedPacket(packet);
             }
         }
 

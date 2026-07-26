@@ -69,16 +69,13 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
         response.hasData = false;
     }
 
-    if (auto responsePacket = response.serialise())
-    {
-        SendPacket(responsePacket.get());
-    }
+    sendManagedPacket(response);
 }
 
 void WorldSession::handleGameObjectQueryOpcode(WorldPacket& recvData)
 {
     CmsgGameobjectQuery srlPacket;
-    if (!srlPacket.deserialise(recvData))
+    if (!parsePacket(recvData, srlPacket))
     {
         Disconnect();
         return;
@@ -92,13 +89,15 @@ void WorldSession::handleGameObjectQueryOpcode(WorldPacket& recvData)
     const auto name = loc ? loc->name : gameobject_info->name.c_str();
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GAMEOBJECT_QUERY for entry: {} name : {}", srlPacket.entry, name);
-    SendPacket(SmsgGameobjectQueryResponse(*gameobject_info, name).serialise().get());
+
+    SmsgGameobjectQueryResponse responsePacket(*gameobject_info, name);
+    sendManagedPacket(responsePacket);
 }
 
 void WorldSession::handleCreatureQueryOpcode(WorldPacket& recvData)
 {
     CmsgCreatureQuery srlPacket;
-    if (!srlPacket.deserialise(recvData))
+    if (!parsePacket(recvData, srlPacket))
     {
         Disconnect();
         return;
@@ -113,17 +112,19 @@ void WorldSession::handleCreatureQueryOpcode(WorldPacket& recvData)
     const auto subName = loc ? loc->subName : creature_info->SubName.c_str();
 
     sLogger.debug("Received CMSG_CREATURE_QUERY for entry: {} ({})", srlPacket.entry, name);
-    SendPacket(SmsgCreatureQueryResponse(creature_info, srlPacket.entry, name, subName).serialise().get());
+
+    SmsgCreatureQueryResponse responsePacket(creature_info, srlPacket.entry, name, subName);
+    sendManagedPacket(responsePacket);
 }
 
 void WorldSession::handleQueryTimeOpcode(WorldPacket& /*recvPacket*/)
 {
-    SendPacket(SmsgQueryTimeResponse(UNIXTIME).serialise().get());
+    SmsgQueryTimeResponse responsePacket(UNIXTIME);
+    sendManagedPacket(responsePacket);
 }
 
 void WorldSession::handleAchievmentQueryOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
-#if VERSION_STRING > TBC
     CmsgInspectAchievements srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;
@@ -136,8 +137,6 @@ void WorldSession::handleAchievmentQueryOpcode([[maybe_unused]] WorldPacket& rec
     player->getAchievementMgr()->sendRespondInspectAchievements(_player);
 #else
     player->getAchievementMgr()->sendAllAchievementData(_player);
-#endif
-
 #endif
 }
 
@@ -156,17 +155,14 @@ void WorldSession::handleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/)
             if (creature->isQuestGiver())
             {
                 temp.rawGuid = creature->getGuid();
-#if VERSION_STRING < Cata
-                temp.status = static_cast<uint8_t>(sQuestMgr.CalcStatus(creature, _player));
-#else
                 temp.status = sQuestMgr.CalcStatus(creature, _player);
-#endif
                 questgiverSet.push_back(temp);
             }
         }
     }
 
-    SendPacket(SmsgQuestgiverStatusMultiple(uint32_t(questgiverSet.size()), questgiverSet).serialise().get());
+    SmsgQuestgiverStatusMultiple responsePacket(uint32_t(questgiverSet.size()), questgiverSet);
+    sendManagedPacket(responsePacket);
 }
 
 void WorldSession::handlePageTextQueryOpcode(WorldPacket& recvPacket)
@@ -187,7 +183,8 @@ void WorldSession::handlePageTextQueryOpcode(WorldPacket& recvPacket)
         const auto localizedPage = language > 0 ? sMySQLStore.getLocalizedItemPages(pageId, language) : nullptr;
         const auto pageText = localizedPage ? localizedPage->text : itemPage->text.c_str();
 
-        SendPacket(SmsgPageTextQueryResponse(pageId, pageText, itemPage->nextPage).serialise().get());
+        SmsgPageTextQueryResponse responsePacket(pageId, pageText, itemPage->nextPage);
+        sendManagedPacket(responsePacket);
 
         pageId = itemPage->nextPage;
     }
@@ -208,7 +205,8 @@ void WorldSession::handleItemNameQueryOpcode(WorldPacket& recvPacket)
     const auto localizedItem = language > 0 ? sMySQLStore.getLocalizedItem(srlPacket.itemEntry, language) : nullptr;
     const auto name = localizedItem ? localizedItem->name : itemProperties->Name.c_str();
 
-    SendPacket(SmsgItemNameQueryResponse(srlPacket.itemEntry, name, itemProperties->InventoryType).serialise().get());
+    SmsgItemNameQueryResponse responsePacket(srlPacket.itemEntry, name, itemProperties->InventoryType);
+    sendManagedPacket(responsePacket);
 }
 
 void WorldSession::handleCorpseQueryOpcode(WorldPacket& /*recvPacket*/)
@@ -220,12 +218,14 @@ void WorldSession::handleCorpseQueryOpcode(WorldPacket& /*recvPacket*/)
     const auto mapInfo = sMySQLStore.getWorldMapInfo(corpse->GetMapId());
     if (mapInfo == nullptr || mapInfo->isWorldMap() || mapInfo->isBattlegroundOrArena())
     {
-        SendPacket(MsgCorspeQuery(uint8_t(1), corpse->GetMapId(), corpse->GetPosition(), corpse->GetMapId(), uint32_t(0)).serialise().get());
+        MsgCorspeQuery responsePacket(uint8_t(1), corpse->GetMapId(), corpse->GetPosition(), corpse->GetMapId(), uint32_t(0));
+        sendManagedPacket(responsePacket);
     }
     else
     {
         // type INSTANCE_RAID, INSTANCE_DUNGEON, INSTANCE_MULTIMODE
-        SendPacket(MsgCorspeQuery(uint8_t(1), mapInfo->repopmapid, 
-            LocationVector(mapInfo->repopx, mapInfo->repopy, mapInfo->repopz), corpse->GetMapId(), uint32_t(0)).serialise().get());
+        MsgCorspeQuery responsePacket(uint8_t(1), mapInfo->repopmapid, 
+            LocationVector(mapInfo->repopx, mapInfo->repopy, mapInfo->repopz), corpse->GetMapId(), uint32_t(0));
+        sendManagedPacket(responsePacket);
     }
 }

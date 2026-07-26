@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgWeather.h"
 #include "Utilities/Random.hpp"
 #include "Utilities/Util.hpp"
+#include "Server/PacketBroadcast.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -127,7 +128,8 @@ void WeatherMgr::sendWeather(Player* plr)
     auto zoneWeatherItr = m_zoneWeathers.find(plr->getZoneId());
     if (zoneWeatherItr == m_zoneWeathers.end())
     {
-        plr->getSession()->SendPacket(SmsgWeather(0, 0, 0).serialise().get());
+        SmsgWeather managedPacket(0, 0, 0);
+        plr->getSession()->sendManagedPacket(managedPacket);
         plr->m_lastSeenWeather = 0;
     }
     else
@@ -139,7 +141,9 @@ void WeatherMgr::sendWeather(Player* plr)
 void WeatherMgr::sendWeatherForZone(uint32_t type, float density, uint32_t zoneId)
 {
     const uint32_t sound = getSound(type, density);
-    sWorld.sendZoneMessage(SmsgWeather(type, density, sound).serialise().get(), zoneId);
+
+    SmsgWeather managedPacket(type, density, sound);
+    PacketBroadcast::sendFromZone(sWorld, managedPacket, zoneId);
 }
 
 void WeatherMgr::sendWeatherForPlayer(uint32_t type, float density, Player* player)
@@ -147,7 +151,9 @@ void WeatherMgr::sendWeatherForPlayer(uint32_t type, float density, Player* play
     if (player != nullptr)
     {
         const uint32_t sound = getSound(type, density);
-        player->sendPacket(SmsgWeather(type, density, sound).serialise().get());
+
+        SmsgWeather managedPacket(type, density, sound);
+        player->getSession()->sendManagedPacket(managedPacket);
     }
 }
 
@@ -234,7 +240,9 @@ void WeatherInfo::update()
 void WeatherInfo::sendUpdate() const
 {
     const uint32_t sound = sWeatherMgr.getSound(m_currentEffect, m_currentDensity);
-    sWorld.sendZoneMessage(SmsgWeather(m_currentEffect, m_currentDensity, sound).serialise().get(), m_zoneId);
+
+    SmsgWeather managedPacket(m_currentEffect, m_currentDensity, sound);
+    PacketBroadcast::sendFromZone(sWorld, managedPacket, m_zoneId);
 }
 
 void WeatherInfo::sendUpdate(Player* player) const
@@ -245,5 +253,7 @@ void WeatherInfo::sendUpdate(Player* player) const
     player->m_lastSeenWeather = m_currentEffect;
 
     const uint32_t sound = sWeatherMgr.getSound(m_currentEffect, m_currentDensity);
-    player->getSession()->SendPacket(SmsgWeather(m_currentEffect, m_currentDensity, sound).serialise().get());
+
+    SmsgWeather managedPacket(m_currentEffect, m_currentDensity, sound);
+    player->getSession()->sendManagedPacket(managedPacket);
 }
