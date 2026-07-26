@@ -37,23 +37,26 @@ add_executable(${EXECUTABLE_NAME}
     ${APP_ICON_RESOURCE_WINDOWS}
 )
 
-include_directories(SYSTEM
-    ${OPENSSL_INCLUDE_DIR}
-    ${ZLIB_INCLUDE_DIRS}
-    ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
-    ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Recast/Include
-    ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
-    ${CMAKE_SOURCE_DIR}/dep/lualib/src
+# zlib is intentionally not added here. The world executable receives the
+# single selected zlib implementation transitively through the shared target.
+target_include_directories(${EXECUTABLE_NAME}
+    SYSTEM PRIVATE
+        ${OPENSSL_INCLUDE_DIR}
+        ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
+        ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Recast/Include
+        ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
+        ${CMAKE_SOURCE_DIR}/dep/lualib/src
 )
 
-include_directories(
-    ${CMAKE_SOURCE_DIR}/src/collision
-    ${CMAKE_SOURCE_DIR}/src/collision/Management
-    ${CMAKE_SOURCE_DIR}/src/collision/Maps
-    ${CMAKE_SOURCE_DIR}/src/collision/Models
-    ${CMAKE_SOURCE_DIR}/src/shared
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_SOURCE_DIR}
+target_include_directories(${EXECUTABLE_NAME}
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/src/collision
+        ${CMAKE_SOURCE_DIR}/src/collision/Management
+        ${CMAKE_SOURCE_DIR}/src/collision/Maps
+        ${CMAKE_SOURCE_DIR}/src/collision/Models
+        ${CMAKE_SOURCE_DIR}/src/shared
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 if (WIN32 AND NOT AE_USE_PCH)
@@ -66,19 +69,19 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h.in ${CMAKE_CURRENT_SOURCE
 
 # include library dependencies.
 target_link_libraries(${EXECUTABLE_NAME}
-  PUBLIC
-    shared
-    collision
-    g3dlite
-    Detour
-    Recast
+    PUBLIC
+        shared
+        collision
+        g3dlite
+        Detour
+        Recast
 )
 
 # generate precompiled header.
 if (AE_USE_PCH)
-  message(STATUS "Generate PCH for ${EXECUTABLE_NAME}")
-  target_sources(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchWorld.hpp)
-  target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchWorld.hpp)
+    message(STATUS "Generate PCH for ${EXECUTABLE_NAME}")
+    target_sources(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchWorld.hpp)
+    target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchWorld.hpp)
 endif ()
 
 install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION .)
