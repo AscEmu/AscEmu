@@ -44,18 +44,16 @@ namespace AscEmu::Packets
         {
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
-
                 packet << guid;
-            if (m_protocol.expansion > WoW::Expansion::_Classic)
-            {
+
+                if (m_protocol.expansion > WoW::Expansion::_Classic)
                     packet << isGlobalCooldown;
-            }
+
                 for (auto const& cooldowns : spellMap)
                     packet << cooldowns.spellId << cooldowns.duration;
             }
             else
             {
-
                 packet.writeBit(guid[0]);
                 packet.writeBit(guid[6]);
                 packet.writeBit(isGlobalCooldown);
@@ -79,6 +77,7 @@ namespace AscEmu::Packets
                 packet.writeByteSeq(guid[2]);
                 packet.writeByteSeq(guid[6]);
             }
+
             return true;
         }
 

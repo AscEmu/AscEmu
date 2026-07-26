@@ -1140,7 +1140,6 @@ uint8_t Pet::getSpentTalentPoints() const
 }
 #endif
 
-#if VERSION_STRING < Mop
 uint32_t Pet::getUntrainCost()
 {
     // Get days since last reset
@@ -1160,7 +1159,6 @@ uint32_t Pet::getUntrainCost()
 
     return m_talentResetCost;
 }
-#endif
 
 void Pet::_addSpell(SpellInfo const* spellInfo, [[maybe_unused]] bool silently, uint8_t spellState)
 {

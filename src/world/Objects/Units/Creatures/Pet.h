@@ -168,11 +168,9 @@ public:
     uint8_t getSpentTalentPoints() const;
 #endif
 
-#if VERSION_STRING < Mop
     // Talent reset cost in wotlk and cata
     // Beast training reset cost in classic and tbc
     uint32_t getUntrainCost();
-#endif
 
 private:
     PetSpellMap mSpells;

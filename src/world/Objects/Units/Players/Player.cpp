@@ -2838,17 +2838,19 @@ void Player::sendInitialLogonPackets()
 {
     sLogger.debug("Player {} gets prepared for login.", getName());
 
-#if VERSION_STRING == Mop
-    m_session->SendPacket(SmsgBindPointUpdate(getBindPosition(), getBindMapId(), getBindZoneId()).serialise().get());
+    SmsgBindPointUpdate bindPointPacket(getBindPosition(), getBindMapId(), getBindZoneId());
+    m_session->sendManagedPacket(bindPointPacket);
 
     std::vector<uint32_t> tutorials;
     for (auto tutorial : m_tutorials)
         tutorials.push_back(tutorial);
 
-    m_session->SendPacket(SmsgTutorialFlags(tutorials).serialise().get());
+    SmsgTutorialFlags tutorialPacket(tutorials);
+    m_session->sendManagedPacket(tutorialPacket);
 
     smsg_TalentsInfo(false);
 
+#if VERSION_STRING == Mop
     WorldPacket data(SMSG_WORLD_SERVER_INFO, 4 + 4 + 1 + 1);
     data.writeBit(0);
     data.writeBit(0);
@@ -2860,25 +2862,32 @@ void Player::sendInitialLogonPackets()
     data << uint32_t(0);       // reset weekly quest time
     data << uint32_t(0);
     getSession()->SendPacket(&data);
+#endif
 
     sendSmsgInitialSpells();
 
-    getSession()->SendPacket(SmsgSendUnlearnSpells().serialise().get());
+    SmsgSendUnlearnSpells unlearnPacket;
+    m_session->sendManagedPacket(unlearnPacket);
 
     sendActionBars(0);
 
     sendSmsgInitialFactions();
 
+#if VERSION_STRING == Mop
     data.initialize(SMSG_LOAD_EQUIPMENT_SET);
     data.writeBits(0, 19);
     getSession()->SendPacket(&data);
+#endif
 
-    m_session->SendPacket(SmsgLoginSetTimeSpeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
+    SmsgLoginSetTimeSpeed timeSpeedPacket(Util::getGameTime(), 0.0166666669777748f);
+    m_session->sendManagedPacket(timeSpeedPacket);
 
     updateSpeed();
 
-    m_session->SendPacket(SmsgUpdateWorldState(0xC77, worldConfig.arena.arenaProgress, 0xF3D, worldConfig.arena.arenaSeason).serialise().get());
+    SmsgUpdateWorldState worldStatePacket(0xC77, worldConfig.arena.arenaProgress, 0xF3D, worldConfig.arena.arenaSeason);
+    m_session->sendManagedPacket(worldStatePacket);
 
+#if VERSION_STRING == Mop
     data.initialize(SMSG_SET_FORCED_REACTIONS, 1 + 4 + 4);
     data.writeBits(0, 6);
     data.flushBits();
@@ -2908,34 +2917,6 @@ void Player::sendInitialLogonPackets()
     data.writeByteSeq(guid[5]);
     data.writeByteSeq(guid[1]);
     getSession()->SendPacket(&data);
-
-#else
-    m_session->SendPacket(SmsgBindPointUpdate(getBindPosition(), getBindMapId(), getBindZoneId()).serialise().get());
-
-    std::vector<uint32_t> tutorials;
-    for (auto tutorial : m_tutorials)
-        tutorials.push_back(tutorial);
-
-    m_session->SendPacket(SmsgTutorialFlags(tutorials).serialise().get());
-
-#if VERSION_STRING > TBC
-    smsg_TalentsInfo(false);
-#endif
-
-    sendSmsgInitialSpells();
-
-    m_session->SendPacket(SmsgSendUnlearnSpells().serialise().get());
-
-    sendActionBars(0);
-    sendSmsgInitialFactions();
-
-    m_session->SendPacket(SmsgLoginSetTimeSpeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
-
-    updateSpeed();
-
-#if VERSION_STRING > TBC
-    m_session->SendPacket(SmsgUpdateWorldState(0xC77, worldConfig.arena.arenaProgress, 0xF3D, worldConfig.arena.arenaSeason).serialise().get());
-#endif
 #endif
 
     sLogger.info("WORLD: Sent initial logon packets for {}.", getName());
@@ -3825,7 +3806,7 @@ void Player::sendSmsgInitialSpells()
         smsgInitialSpells.addSpellCooldown(itr2->first, itr2->second.ItemId, static_cast<uint16_t>(itr2->first), 0, itr2->second.ExpireTime - mstime);
     }
 
-    getSession()->SendPacket(smsgInitialSpells.serialise().get());
+    getSession()->sendManagedPacket(smsgInitialSpells);
 }
 
 void Player::sendPreventSchoolCast(uint32_t spellSchool, uint32_t timeMs)
@@ -3850,7 +3831,8 @@ void Player::sendPreventSchoolCast(uint32_t spellSchool, uint32_t timeMs)
             }
         }
     }
-    getSession()->SendPacket(SmsgSpellCooldown(getGuid(), 0x0, spellCoodlownMap).serialise().get());
+    SmsgSpellCooldown managedPacket(getGuid(), 0x0, spellCoodlownMap);
+    getSession()->sendManagedPacket(managedPacket);
 }
 
 void Player::resetSpells()
@@ -4233,7 +4215,8 @@ void Player::sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t 
 
     spellMap.push_back(mapMembers);
 
-    sendMessageToSet(SmsgSpellCooldown(GetNewGUID(), isGcd, spellMap).serialise().get(), true);
+    SmsgSpellCooldown managedPacket(GetNewGUID(), isGcd, spellMap);
+    PacketBroadcast::sendToSet(*this, managedPacket, true);
 }
 
 void Player::clearCooldownForSpell(uint32_t spellId)
@@ -9199,19 +9182,22 @@ void Player::addToIgnoreList(std::string name)
         // we can not add us ;)
         if (targetPlayer->getGuidLow() == getGuidLow())
         {
-            m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_SELF, getGuid()).serialise().get());
+            SmsgFriendStatus managedPacket(FRIEND_IGNORE_SELF, getGuid());
+            m_session->sendManagedPacket(managedPacket);
             return;
         }
 
         if (targetPlayer->isGMFlagSet())
         {
-            m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_NOT_FOUND).serialise().get());
+            SmsgFriendStatus managedPacket(FRIEND_IGNORE_NOT_FOUND);
+            m_session->sendManagedPacket(managedPacket);
             return;
         }
 
         if (isIgnored(targetPlayer->getGuidLow()))
         {
-            m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_ALREADY, targetPlayer->getGuidLow()).serialise().get());
+            SmsgFriendStatus managedPacket(FRIEND_IGNORE_ALREADY, targetPlayer->getGuidLow());
+            m_session->sendManagedPacket(managedPacket);
             return;
         }
 
@@ -9222,11 +9208,13 @@ void Player::addToIgnoreList(std::string name)
         std::lock_guard<std::mutex> guard(m_mutexIgnoreList);
         m_socialIgnoring.push_back(targetPlayer->getGuidLow());
 
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_ADDED, targetPlayer->getGuidLow()).serialise().get());
+        SmsgFriendStatus managedPacket(FRIEND_IGNORE_ADDED, targetPlayer->getGuidLow());
+        m_session->sendManagedPacket(managedPacket);
     }
     else
     {
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_NOT_FOUND).serialise().get());
+        SmsgFriendStatus managedPacket(FRIEND_IGNORE_NOT_FOUND);
+        m_session->sendManagedPacket(managedPacket);
     }
 }
 
@@ -9239,11 +9227,13 @@ void Player::removeFromIgnoreList(uint32_t guid)
         std::lock_guard<std::mutex> guard(m_mutexIgnoreList);
         m_socialIgnoring.erase(std::remove(m_socialIgnoring.begin(), m_socialIgnoring.end(), guid), m_socialIgnoring.end());
 
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_REMOVED, guid).serialise().get());
+        SmsgFriendStatus managedPacket(FRIEND_IGNORE_REMOVED, guid);
+        m_session->sendManagedPacket(managedPacket);
     }
     else
     {
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_IGNORE_NOT_FOUND).serialise().get());
+        SmsgFriendStatus managedPacket(FRIEND_IGNORE_NOT_FOUND);
+        m_session->sendManagedPacket(managedPacket);
     }
 }
 
@@ -9277,9 +9267,8 @@ bool Player::isGMFlagSet() const
 
 void Player::sendMovie([[maybe_unused]]uint32_t movieId)
 {
-#if VERSION_STRING > TBC
-    m_session->SendPacket(SmsgTriggerMovie(movieId).serialise().get());
-#endif
+    SmsgTriggerMovie managedPacket(movieId);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 PlayerSpec& Player::getActiveSpec()
@@ -9412,24 +9401,29 @@ void Player::sendCinematicOnFirstLogin()
 {
     if (m_firstLogin && !worldConfig.player.skipCinematics)
     {
+        uint32_t cinematicId = 0;
 #if VERSION_STRING > TBC
         if (const auto charEntry = sChrClassesStore.lookupEntry(getClass()))
         {
             if (charEntry->cinematicSequenceId != 0)
-                sendPacket(SmsgTriggerCinematic(charEntry->cinematicSequenceId).serialise().get());
+                cinematicId = charEntry->cinematicSequenceId;
             else if (const auto raceEntry = sChrRacesStore.lookupEntry(getRace()))
-                sendPacket(SmsgTriggerCinematic(raceEntry->cinematic_id).serialise().get());
+                cinematicId = raceEntry->cinematic_id;
         }
 #else
         if (const auto raceEntry = sChrRacesStore.lookupEntry(getRace()))
-            sendPacket(SmsgTriggerCinematic(raceEntry->cinematic_id).serialise().get());
+            cinematicId = raceEntry->cinematic_id;
 #endif
+
+        SmsgTriggerCinematic managedPacket(cinematicId);
+        m_session->sendManagedPacket(managedPacket);
     }
 }
 
 void Player::sendTalentResetConfirmPacket()
 {
-    m_session->SendPacket(MsgTalentWipeConfirm(getGuid(), calcTalentResetCost(getTalentResetsCount())).serialise().get());
+    MsgTalentWipeConfirm managedPacket(getGuid(), calcTalentResetCost(getTalentResetsCount()));
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendPetUnlearnConfirmPacket()
@@ -9437,11 +9431,8 @@ void Player::sendPetUnlearnConfirmPacket()
     if (getPet() == nullptr)
         return;
 
-#if VERSION_STRING < Mop
-    m_session->SendPacket(SmsgPetUnlearnConfirm(getPet()->getGuid(), getPet()->getUntrainCost()).serialise().get());
-#else
-    m_session->SendPacket(SmsgPetUnlearnConfirm(getPet()->getGuid(), 0).serialise().get());
-#endif
+    SmsgPetUnlearnConfirm managedPacket(getPet()->getGuid(), getPet()->getUntrainCost());
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendDungeonDifficultyPacket()
@@ -9471,34 +9462,38 @@ void Player::sendInstanceDifficultyPacket([[maybe_unused]] uint8_t difficulty)
 
 void Player::sendNewDrunkStatePacket(uint32_t state, uint32_t itemId)
 {
-    sendMessageToSet(SmsgCrossedInebriationThreshold(getGuid(), state, itemId).serialise().get(), true);
+    SmsgCrossedInebriationThreshold managedPacket(getGuid(), state, itemId);
+    PacketBroadcast::sendToSet(*this, managedPacket, true);
 }
 
 void Player::sendSetProficiencyPacket(uint8_t itemClass, uint32_t proficiency)
 {
-    m_session->SendPacket(SmsgSetProficiency(itemClass, proficiency).serialise().get());
+    SmsgSetProficiency managedPacket(itemClass, proficiency);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendPartyKillLogPacket(uint64_t killedGuid)
 {
-    sendMessageToSet(SmsgPartyKillLog(getGuid(), killedGuid).serialise().get(), true);
+    SmsgPartyKillLog managedPacket(getGuid(), killedGuid);
+    PacketBroadcast::sendToSet(*this, managedPacket, true);
 }
 
 void Player::sendDestroyObjectPacket(uint64_t destroyedGuid)
 {
-    m_session->SendPacket(SmsgDestroyObject(destroyedGuid).serialise().get());
+    SmsgDestroyObject managedPacket(destroyedGuid);
+    m_session->sendManagedPacket(managedPacket);
 }
 
-void Player::sendEquipmentSetUseResultPacket([[maybe_unused]] uint8_t result)
+void Player::sendEquipmentSetUseResultPacket(uint8_t result)
 {
-#if VERSION_STRING > TBC
-    m_session->SendPacket(SmsgEquipmentSetUseResult(result).serialise().get());
-#endif
+    SmsgEquipmentSetUseResult managedPacket(result);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendTotemCreatedPacket(uint8_t slot, uint64_t guid, uint32_t duration, uint32_t spellId)
 {
-    m_session->SendPacket(SmsgTotemCreated(slot, guid, duration, spellId).serialise().get());
+    SmsgTotemCreated managedPacket(slot, guid, duration, spellId);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendPetTameFailure(uint8_t result) const
@@ -9510,7 +9505,8 @@ void Player::sendPetTameFailure(uint8_t result) const
 
 void Player::sendGossipPoiPacket(float posX, float posY, uint32_t icon, uint32_t flags, uint32_t data, std::string name)
 {
-    m_session->SendPacket(SmsgGossipPoi(flags, posX, posY, icon, data, name).serialise().get());
+    SmsgGossipPoi managedPacket(flags, posX, posY, icon, data, name);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendPoiById(uint32_t id)
@@ -9526,33 +9522,38 @@ void Player::sendPoiById(uint32_t id)
 
 void Player::sendStopMirrorTimerPacket(MirrorTimerTypes type)
 {
-    m_session->SendPacket(SmsgStopMirrorTimer(type).serialise().get());
+    SmsgStopMirrorTimer managedPacket(type);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendMeetingStoneSetQueuePacket(uint32_t dungeonId, uint8_t status)
 {
-    m_session->SendPacket(SmsgMeetingstoneSetQueue(dungeonId, status).serialise().get());
+    SmsgMeetingstoneSetQueue managedPacket(dungeonId, status);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendPlayObjectSoundPacket(uint64_t objectGuid, uint32_t soundId)
 {
-    sendMessageToSet(SmsgPlayObjectSound(soundId, objectGuid).serialise().get(), true);
+    SmsgPlayObjectSound managedPacket(soundId, objectGuid);
+    PacketBroadcast::sendToSet(*this, managedPacket, true);
 }
 
 void Player::sendPlaySoundPacket(uint32_t soundId)
 {
-    SmsgPlaySound sendPacket(soundId);
-    m_session->sendManagedPacket(sendPacket);
+    SmsgPlaySound managedPacket(soundId);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendExploreExperiencePacket(uint32_t areaId, uint32_t experience)
 {
-    m_session->SendPacket(SmsgExplorationExperience(areaId, experience).serialise().get());
+    SmsgExplorationExperience managedPacket(areaId, experience);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendSpellCooldownEventPacket(uint32_t spellId)
 {
-    m_session->SendPacket(SmsgCooldownEvent(spellId, getGuid()).serialise().get());
+    SmsgCooldownEvent managedPacket(spellId, getGuid());
+    m_session->sendManagedPacket(managedPacket);
 }
 
 #if VERSION_STRING < Cata
@@ -9581,12 +9582,14 @@ void Player::sendLoginVerifyWorldPacket()
 
 void Player::sendMountResultPacket(uint32_t result)
 {
-    m_session->SendPacket(SmsgMountResult(result).serialise().get());
+    SmsgMountResult managedPacket(result);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendDismountResultPacket(uint32_t result)
 {
-    m_session->SendPacket(SmsgDismountResult(result).serialise().get());
+    SmsgDismountResult managedPacket(result);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2 /*= 0*/)
@@ -9597,7 +9600,8 @@ void Player::sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_
 
 void Player::sendLevelupInfoPacket(uint32_t level, uint32_t hp, uint32_t mana, uint32_t stat0, uint32_t stat1, uint32_t stat2, uint32_t stat3, uint32_t stat4)
 {
-    m_session->SendPacket(SmsgLevelupInfo(level, hp, mana, stat0, stat1, stat2, stat3, stat4).serialise().get());
+    SmsgLevelupInfo managedPacket(level, hp, mana, stat0, stat1, stat2, stat3, stat4);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendItemPushResultPacket(bool created, bool recieved, bool sendtoset, uint8_t destbagslot, uint32_t destslot, uint32_t count, uint32_t entry, uint32_t suffix, uint32_t randomprop, uint32_t stack)
@@ -9610,7 +9614,8 @@ void Player::sendItemPushResultPacket(bool created, bool recieved, bool sendtose
 
 void Player::sendClientControlPacket(Unit* target, uint8_t allowMove)
 {
-    sendPacket(SmsgClientControlUpdate(target->GetNewGUID(), allowMove).serialise().get());
+    SmsgClientControlUpdate managedPacket(target->GetNewGUID(), allowMove);
+    m_session->sendManagedPacket(managedPacket);
 
     if (target == this)
         setMover(this);
@@ -9621,7 +9626,8 @@ void Player::sendGuildMotd()
     if (!getGuild())
         return;
 
-    sendPacket(SmsgGuildEvent(GE_MOTD, { getGuild()->getMOTD() }, 0).serialise().get());
+    SmsgGuildEvent managedPacket(GE_MOTD, { getGuild()->getMOTD() }, 0);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendEquipmentSetList()
@@ -9645,7 +9651,8 @@ void Player::sendEquipmentSetSaved([[maybe_unused]] uint32_t setId, [[maybe_unus
 
 void Player::sendEmptyPetSpellList()
 {
-    m_session->SendPacket(SmsgPetSpells(0).serialise().get());
+    SmsgPetSpells managedPacket(0);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendInitialWorldstates()
