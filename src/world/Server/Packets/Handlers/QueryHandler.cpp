@@ -38,7 +38,7 @@ using namespace AscEmu::Packets;
 void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
 {
     CmsgNameQuery srlPacket;
-    if (!srlPacket.deserialise(recvData))
+    if (!parsePacket(recvData, srlPacket))
     {
         sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Failed to deserialize CMSG_NAME_QUERY.");
         Disconnect();

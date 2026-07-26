@@ -15,6 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Random.hpp"
 #include "Utilities/Util.hpp"
 
+using namespace AscEmu::Packets;
+
 enum WeatherTypes
 {
     WEATHER_TYPE_NORMAL         = 0,
@@ -125,7 +127,7 @@ void WeatherMgr::sendWeather(Player* plr)
     auto zoneWeatherItr = m_zoneWeathers.find(plr->getZoneId());
     if (zoneWeatherItr == m_zoneWeathers.end())
     {
-        plr->getSession()->SendPacket(AscEmu::Packets::SmsgWeather(0, 0, 0).serialise().get());
+        plr->getSession()->SendPacket(SmsgWeather(0, 0, 0).serialise().get());
         plr->m_lastSeenWeather = 0;
     }
     else
@@ -137,7 +139,7 @@ void WeatherMgr::sendWeather(Player* plr)
 void WeatherMgr::sendWeatherForZone(uint32_t type, float density, uint32_t zoneId)
 {
     const uint32_t sound = getSound(type, density);
-    sWorld.sendZoneMessage(AscEmu::Packets::SmsgWeather(type, density, sound).serialise().get(), zoneId);
+    sWorld.sendZoneMessage(SmsgWeather(type, density, sound).serialise().get(), zoneId);
 }
 
 void WeatherMgr::sendWeatherForPlayer(uint32_t type, float density, Player* player)
@@ -145,7 +147,7 @@ void WeatherMgr::sendWeatherForPlayer(uint32_t type, float density, Player* play
     if (player != nullptr)
     {
         const uint32_t sound = getSound(type, density);
-        player->sendPacket(AscEmu::Packets::SmsgWeather(type, density, sound).serialise().get());
+        player->sendPacket(SmsgWeather(type, density, sound).serialise().get());
     }
 }
 
@@ -232,7 +234,7 @@ void WeatherInfo::update()
 void WeatherInfo::sendUpdate() const
 {
     const uint32_t sound = sWeatherMgr.getSound(m_currentEffect, m_currentDensity);
-    sWorld.sendZoneMessage(AscEmu::Packets::SmsgWeather(m_currentEffect, m_currentDensity, sound).serialise().get(), m_zoneId);
+    sWorld.sendZoneMessage(SmsgWeather(m_currentEffect, m_currentDensity, sound).serialise().get(), m_zoneId);
 }
 
 void WeatherInfo::sendUpdate(Player* player) const
@@ -243,5 +245,5 @@ void WeatherInfo::sendUpdate(Player* player) const
     player->m_lastSeenWeather = m_currentEffect;
 
     const uint32_t sound = sWeatherMgr.getSound(m_currentEffect, m_currentDensity);
-    player->getSession()->SendPacket(AscEmu::Packets::SmsgWeather(m_currentEffect, m_currentDensity, sound).serialise().get());
+    player->getSession()->SendPacket(SmsgWeather(m_currentEffect, m_currentDensity, sound).serialise().get());
 }

@@ -185,10 +185,8 @@ private:
     void _setDefaultActionBar();
     std::array<PetActionButtonData, PET_MAX_ACTION_BAR_SLOT> m_actionBar = { 0 };
 
-#if VERSION_STRING < Mop
     time_t m_talentResetTime = 0;
     uint32_t m_talentResetCost = 0;
-#endif
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
