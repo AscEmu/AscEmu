@@ -50,11 +50,7 @@ namespace AscEmu::Packets
                 if (targetPlayer == nullptr)
                     continue;
 
-                WorldSession* targetSession = targetPlayer->getSession();
-                if (targetSession == nullptr)
-                    continue;
-
-                targetSession->sendManagedPacket(packet);
+                sendToPlayer(targetPlayer, packet);
             }
         }
 
@@ -72,16 +68,25 @@ namespace AscEmu::Packets
                     if (targetPlayer == skipPlayer)
                         continue;
 
-                    WorldSession* targetSession = targetPlayer->getSession();
-                    if (targetSession == nullptr)
-                        continue;
-
-                    targetSession->sendManagedPacket(packet);
+                    sendToPlayer(targetPlayer, packet);
                 }
             }
         }
 
     private:
+        template <typename TPacket>
+        static void sendToPlayer(Player* targetPlayer, TPacket& packet)
+        {
+            if (targetPlayer == nullptr)
+                return;
+
+            WorldSession* targetSession = targetPlayer->getSession();
+            if (targetSession == nullptr)
+                return;
+
+            targetSession->sendManagedPacket(packet);
+        }
+
         template <typename TPacket>
         static void sendFromPlayer(Player& sourcePlayer, TPacket& packet, bool sendToSelf,
             bool ownTeamOnly, bool isChatMessage)
