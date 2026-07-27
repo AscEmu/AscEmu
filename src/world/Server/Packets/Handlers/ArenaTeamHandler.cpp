@@ -332,7 +332,10 @@ void WorldSession::handleArenaTeamRosterOpcode(WorldPacket& recvPacket)
     if (auto arenaTeam = sObjectMgr.getArenaTeamById(srlPacket.teamId))
     {
         const auto memberList = arenaTeam->getRoosterMembers();
-        SendPacket(SmsgArenaTeamRooster(arenaTeam->m_id, static_cast<uint32_t>(memberList.size()), arenaTeam->getPlayersPerTeam(), memberList).serialise().get());
+
+        SmsgArenaTeamRooster managedPacket(arenaTeam->m_id, static_cast<uint32_t>(memberList.size()),
+            arenaTeam->getPlayersPerTeam(), memberList);
+        sendManagedPacket(managedPacket);
     }
 }
 

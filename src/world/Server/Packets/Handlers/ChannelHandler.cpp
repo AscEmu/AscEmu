@@ -57,7 +57,10 @@ void WorldSession::handleGetChannelMemberCount(WorldPacket& recvPacket)
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
     if (channel)
-        SendPacket(SmgsChannelMemberCount(srlPacket.name, channel->getChannelFlags(), uint32_t(channel->getMemberCount())).serialise().get());
+    {
+        SmgsChannelMemberCount managedPacket(srlPacket.name, channel->getChannelFlags(), uint32_t(channel->getMemberCount()));
+        sendManagedPacket(managedPacket);
+    }
 }
 
 void WorldSession::handleChannelLeave(WorldPacket& recvPacket)

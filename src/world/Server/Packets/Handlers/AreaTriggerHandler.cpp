@@ -68,71 +68,77 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
         {
             char buffer[200];
 
-            const auto session = _player->getSession();
-
-            switch (denyReason)
+            if (const auto session = _player->getSession())
             {
-                case CANNOT_ENTER_NOT_IN_RAID:
+                switch (denyReason)
                 {
-                    _player->sendPacket(SmsgRaidGroupOnly(0, 2).serialise().get());
-                } break;
-                case CANNOT_ENTER_CORPSE_IN_DIFFERENT_INSTANCE:
-                {
-                    WorldPacket data(SMSG_CORPSE_NOT_IN_INSTANCE, 0);
-                    _player->sendPacket(&data);
-                } break;
-                case CANNOT_ENTER_INSTANCE_BIND_MISMATCH:
-                {
-                    _player->sendPacket(SmsgTransferAborted(areaTrigger->mapId, INSTANCE_ABORT_ERROR).serialise().get());
-                } break;
-                case CANNOT_ENTER_TOO_MANY_INSTANCES:
-                {
-                    _player->sendPacket(SmsgTransferAborted(areaTrigger->mapId, INSTANCE_ABORT_TOO_MANY).serialise().get());
-                } break;
-                case CANNOT_ENTER_MAX_PLAYERS:
-                {
-                    _player->sendPacket(SmsgTransferAborted(areaTrigger->mapId, INSTANCE_ABORT_FULL).serialise().get());
-                } break;
-                case CANNOT_ENTER_ENCOUNTER:
-                {
-                    _player->sendPacket(SmsgTransferAborted(areaTrigger->mapId, INSTANCE_ABORT_ENCOUNTER).serialise().get());
-                } break;
-                case CANNOT_ENTER_MIN_LEVEL:
-                {
-                    snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X), areaTrigger->requiredLevel);
-                    _player->sendAreaTriggerMessage(buffer);
-                } break;
-                case CANNOT_ENTER_ATTUNE_ITEM:
-                {
-                    const auto itemProperties = sMySQLStore.getItemProperties(mapInfo->required_item);
-                    snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name.c_str() : "UNKNOWN");
-                    _player->sendAreaTriggerMessage(buffer);
-                } break;
-                case CANNOT_ENTER_ATTUNE_QA:
-                {
-                    const auto questProperties = sMySQLStore.getQuestProperties(mapInfo->required_quest_A);
-                    snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), questProperties ? questProperties->title.c_str() : "UNKNOWN");
-                    _player->sendAreaTriggerMessage(buffer);
-                } break;
-                case CANNOT_ENTER_ATTUNE_QH:
-                {
-                    const auto questProperties = sMySQLStore.getQuestProperties(mapInfo->required_quest_H);
-                    snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), questProperties ? questProperties->title.c_str() : "UNKNOWN");
-                    _player->sendAreaTriggerMessage(buffer);
-                } break;
-                case CANNOT_ENTER_KEY:
-                {
-                    const auto itemProperties = sMySQLStore.getItemProperties(mapInfo->heroic_key_1);
-                    snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name.c_str() : "UNKNOWN");
-                    _player->sendAreaTriggerMessage(buffer);
-                } break;
-                case CANNOT_ENTER_MIN_LEVEL_HC:
-                {
-                    snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X), mapInfo->minlevel_heroic);
-                    _player->sendAreaTriggerMessage(buffer);
-                } break;
-                default:
-                    break;
+                    case CANNOT_ENTER_NOT_IN_RAID:
+                    {
+                        SmsgRaidGroupOnly managedPacket(0, 2);
+                        session->sendManagedPacket(managedPacket);
+                    } break;
+                    case CANNOT_ENTER_CORPSE_IN_DIFFERENT_INSTANCE:
+                    {
+                        WorldPacket data(SMSG_CORPSE_NOT_IN_INSTANCE, 0);
+                        _player->sendPacket(&data);
+                    } break;
+                    case CANNOT_ENTER_INSTANCE_BIND_MISMATCH:
+                    {
+                        SmsgTransferAborted managedPacket(areaTrigger->mapId, INSTANCE_ABORT_ERROR);
+                        session->sendManagedPacket(managedPacket);
+                    } break;
+                    case CANNOT_ENTER_TOO_MANY_INSTANCES:
+                    {
+                        SmsgTransferAborted managedPacket(areaTrigger->mapId, INSTANCE_ABORT_TOO_MANY);
+                        session->sendManagedPacket(managedPacket);
+                    } break;
+                    case CANNOT_ENTER_MAX_PLAYERS:
+                    {
+                        SmsgTransferAborted managedPacket(areaTrigger->mapId, INSTANCE_ABORT_FULL);
+                        session->sendManagedPacket(managedPacket);
+                    } break;
+                    case CANNOT_ENTER_ENCOUNTER:
+                    {
+                        SmsgTransferAborted managedPacket(areaTrigger->mapId, INSTANCE_ABORT_ENCOUNTER);
+                        session->sendManagedPacket(managedPacket);
+                    } break;
+                    case CANNOT_ENTER_MIN_LEVEL:
+                    {
+                        snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X), areaTrigger->requiredLevel);
+                        _player->sendAreaTriggerMessage(buffer);
+                    } break;
+                    case CANNOT_ENTER_ATTUNE_ITEM:
+                    {
+                        const auto itemProperties = sMySQLStore.getItemProperties(mapInfo->required_item);
+                        snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name.c_str() : "UNKNOWN");
+                        _player->sendAreaTriggerMessage(buffer);
+                    } break;
+                    case CANNOT_ENTER_ATTUNE_QA:
+                    {
+                        const auto questProperties = sMySQLStore.getQuestProperties(mapInfo->required_quest_A);
+                        snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), questProperties ? questProperties->title.c_str() : "UNKNOWN");
+                        _player->sendAreaTriggerMessage(buffer);
+                    } break;
+                    case CANNOT_ENTER_ATTUNE_QH:
+                    {
+                        const auto questProperties = sMySQLStore.getQuestProperties(mapInfo->required_quest_H);
+                        snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), questProperties ? questProperties->title.c_str() : "UNKNOWN");
+                        _player->sendAreaTriggerMessage(buffer);
+                    } break;
+                    case CANNOT_ENTER_KEY:
+                    {
+                        const auto itemProperties = sMySQLStore.getItemProperties(mapInfo->heroic_key_1);
+                        snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name.c_str() : "UNKNOWN");
+                        _player->sendAreaTriggerMessage(buffer);
+                    } break;
+                    case CANNOT_ENTER_MIN_LEVEL_HC:
+                    {
+                        snprintf(buffer, 200, session->LocalizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X), mapInfo->minlevel_heroic);
+                        _player->sendAreaTriggerMessage(buffer);
+                    } break;
+                    default:
+                        break;
+                }
             }
             return;
         }

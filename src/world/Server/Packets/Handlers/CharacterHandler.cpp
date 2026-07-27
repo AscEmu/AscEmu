@@ -118,7 +118,8 @@ void WorldSession::handleCharFactionOrRaceChange([[maybe_unused]] WorldPacket& r
     const auto playerInfoPacket = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow());
     if (playerInfoPacket == nullptr)
     {
-        SendPacket(SmsgCharFactionChange(E_CHAR_CREATE_ERROR).serialise().get());
+        SmsgCharFactionChange managedPacket(E_CHAR_CREATE_ERROR);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -132,7 +133,8 @@ void WorldSession::handleCharFactionOrRaceChange([[maybe_unused]] WorldPacket& r
         uint16_t loginFlags = loginFlagsQuery->fetch()[0].asUint16();
         if (!(loginFlags & used_loginFlag))
         {
-            SendPacket(SmsgCharFactionChange(E_CHAR_CREATE_ERROR).serialise().get());
+            SmsgCharFactionChange managedPacket(E_CHAR_CREATE_ERROR);
+            sendManagedPacket(managedPacket);
             return;
         }
         newflags = loginFlags - used_loginFlag;
@@ -140,14 +142,16 @@ void WorldSession::handleCharFactionOrRaceChange([[maybe_unused]] WorldPacket& r
 
     if (!sMySQLStore.getPlayerCreateInfo(srlPacket.charCreate._race, playerInfoPacket->cl))
     {
-        SendPacket(SmsgCharFactionChange(E_CHAR_CREATE_ERROR).serialise().get());
+        SmsgCharFactionChange managedPacket(E_CHAR_CREATE_ERROR);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     const auto loginErrorCode = VerifyName(srlPacket.charCreate.name);
     if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {
-        SendPacket(SmsgCharFactionChange(loginErrorCode).serialise().get());
+        SmsgCharFactionChange managedPacket(loginErrorCode);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -159,7 +163,8 @@ void WorldSession::handleCharFactionOrRaceChange([[maybe_unused]] WorldPacket& r
         {
             if (bannedNamesQuery->fetch()[0].asUint32() > 0)
             {
-                SendPacket(SmsgCharFactionChange(E_CHAR_NAME_RESERVED).serialise().get());
+                SmsgCharFactionChange managedPacket(E_CHAR_NAME_RESERVED);
+                sendManagedPacket(managedPacket);
                 return;
             }
         }
@@ -168,7 +173,8 @@ void WorldSession::handleCharFactionOrRaceChange([[maybe_unused]] WorldPacket& r
     const auto playerInfo = sObjectMgr.getCachedCharacterInfoByName(srlPacket.charCreate.name);
     if (playerInfo != nullptr && playerInfo->guid != srlPacket.guid.getGuidLow())
     {
-        SendPacket(SmsgCharFactionChange(E_CHAR_CREATE_NAME_IN_USE).serialise().get());
+        SmsgCharFactionChange managedPacket(E_CHAR_CREATE_NAME_IN_USE);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -186,7 +192,8 @@ void WorldSession::handleCharFactionOrRaceChange([[maybe_unused]] WorldPacket& r
     CharacterDatabase.execute("UPDATE `characters` set name = '%s', login_flags = %u, race = %u WHERE guid = %u",
         newname.c_str(), newflags, static_cast<uint32_t>(srlPacket.charCreate._race), srlPacket.guid.getGuidLow());
 
-    SendPacket(SmsgCharFactionChange(0, srlPacket.guid, srlPacket.charCreate).serialise().get());
+    SmsgCharFactionChange managedPacket(0, srlPacket.guid, srlPacket.charCreate);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -200,7 +207,8 @@ void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
 
     if (sObjectMgr.getPlayer(srlPacket.guid.getGuidLow()) != nullptr || m_loggingInPlayer || _player)
     {
-        SendPacket(SmsgCharacterLoginFailed(E_CHAR_LOGIN_DUPLICATE_CHARACTER).serialise().get());
+        SmsgCharacterLoginFailed managedPacket(E_CHAR_LOGIN_DUPLICATE_CHARACTER);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -228,7 +236,8 @@ void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
     const auto loginErrorCode = VerifyName(srlPacket.name);
     if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {
-        SendPacket(SmsgCharRename(srlPacket.size, loginErrorCode, srlPacket.guid, srlPacket.name).serialise().get());
+        SmsgCharRename managedPacket(srlPacket.size, loginErrorCode, srlPacket.guid, srlPacket.name);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -238,14 +247,16 @@ void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
     {
         if (result2->fetch()[0].asUint32() > 0)
         {
-            SendPacket(SmsgCharRename(srlPacket.size, E_CHAR_NAME_PROFANE, srlPacket.guid, srlPacket.name).serialise().get());
+            SmsgCharRename managedPacket(srlPacket.size, E_CHAR_NAME_PROFANE, srlPacket.guid, srlPacket.name);
+            sendManagedPacket(managedPacket);
             return;
         }
     }
 
     if (sObjectMgr.getCachedCharacterInfoByName(srlPacket.name) != nullptr)
     {
-        SendPacket(SmsgCharRename(srlPacket.size, E_CHAR_CREATE_NAME_IN_USE, srlPacket.guid, srlPacket.name).serialise().get());
+        SmsgCharRename managedPacket(srlPacket.size, E_CHAR_CREATE_NAME_IN_USE, srlPacket.guid, srlPacket.name);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -263,21 +274,24 @@ void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
     CharacterDatabase.waitExecute("UPDATE characters SET login_flags = %u WHERE guid = %u",
         static_cast<uint32_t>(LOGIN_NO_FLAG), srlPacket.guid.getGuidLow());
 
-    SendPacket(SmsgCharRename(srlPacket.size, E_RESPONSE_SUCCESS, srlPacket.guid, newName).serialise().get());
+    SmsgCharRename managedPacket(srlPacket.size, E_RESPONSE_SUCCESS, srlPacket.guid, newName);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
 {
     if (results.empty())
     {
-        SendPacket(SmsgCharacterLoginFailed(E_CHAR_LOGIN_NO_CHARACTER).serialise().get());
+        SmsgCharacterLoginFailed managedPacket(E_CHAR_LOGIN_NO_CHARACTER);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     QueryResult* result = results[0].result.get();
     if (result == nullptr)
     {
-        SendPacket(SmsgCharacterLoginFailed(E_CHAR_LOGIN_NO_CHARACTER).serialise().get());
+        SmsgCharacterLoginFailed managedPacket(E_CHAR_LOGIN_NO_CHARACTER);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -290,7 +304,8 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
     if (player == nullptr)
     {
         sLogger.failure("Unknown class {}!", _class);
-        SendPacket(SmsgCharacterLoginFailed(E_CHAR_LOGIN_NO_CHARACTER).serialise().get());
+        SmsgCharacterLoginFailed managedPacket(E_CHAR_LOGIN_NO_CHARACTER);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -387,20 +402,23 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     const auto loginErrorCode = VerifyName(srlPacket.createStruct.name);
     if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {
-        SendPacket(SmsgCharCreate(loginErrorCode).serialise().get());
+        SmsgCharCreate managedPacket(loginErrorCode);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     const auto isAllowed = sMySQLStore.isCharacterNameAllowed(srlPacket.createStruct.name);
     if (!isAllowed)
     {
-        SendPacket(SmsgCharCreate(E_CHAR_NAME_PROFANE).serialise().get());
+        SmsgCharCreate managedPacket(E_CHAR_NAME_PROFANE);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     if (sObjectMgr.getCachedCharacterInfoByName(srlPacket.createStruct.name) != nullptr)
     {
-        SendPacket(SmsgCharCreate(E_CHAR_CREATE_NAME_IN_USE).serialise().get());
+        SmsgCharCreate managedPacket(E_CHAR_CREATE_NAME_IN_USE);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -408,7 +426,8 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
         this, srlPacket.createStruct.name.c_str());
     if (!isValid)
     {
-        SendPacket(SmsgCharCreate(E_CHAR_CREATE_ERROR).serialise().get());
+        SmsgCharCreate managedPacket(E_CHAR_CREATE_ERROR);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -418,7 +437,8 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     {
         if (bannedNamesQuery->fetch()[0].asUint32() > 0)
         {
-            SendPacket(SmsgCharCreate(E_CHAR_NAME_PROFANE).serialise().get());
+            SmsgCharCreate managedPacket(E_CHAR_NAME_PROFANE);
+            sendManagedPacket(managedPacket);
             return;
         }
     }
@@ -426,7 +446,8 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING > TBC
     if (worldConfig.player.deathKnightLimit && has_dk && srlPacket.createStruct._class == DEATHKNIGHT)
     {
-        SendPacket(SmsgCharCreate(E_CHAR_CREATE_UNIQUE_CLASS_LIMIT).serialise().get());
+        SmsgCharCreate managedPacket(E_CHAR_CREATE_UNIQUE_CLASS_LIMIT);
+        sendManagedPacket(managedPacket);
         return;
     }
 #endif
@@ -436,7 +457,8 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     {
         if (charactersQuery->fetch()[0].asUint32() >= 10)
         {
-            SendPacket(SmsgCharCreate(E_CHAR_CREATE_SERVER_LIMIT).serialise().get());
+            SmsgCharCreate managedPacket(E_CHAR_CREATE_SERVER_LIMIT);
+            sendManagedPacket(managedPacket);
             return;
         }
     }
@@ -449,7 +471,8 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
         newPlayer->m_isReadyToBeRemoved = true;
         delete newPlayer;
 
-        SendPacket(SmsgCharCreate(E_CHAR_CREATE_FAILED).serialise().get());
+        SmsgCharCreate managedPacket(E_CHAR_CREATE_FAILED);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -461,7 +484,8 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
             newPlayer->m_isReadyToBeRemoved = true;
             delete newPlayer;
 
-            SendPacket(SmsgCharCreate(E_CHAR_CREATE_PVP_TEAMS_VIOLATION).serialise().get());
+            SmsgCharCreate managedPacket(E_CHAR_CREATE_PVP_TEAMS_VIOLATION);
+            sendManagedPacket(managedPacket);
             return;
         }
     }
@@ -472,7 +496,8 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
         newPlayer->m_isReadyToBeRemoved = true;
         delete newPlayer;
 
-        SendPacket(SmsgCharCreate(E_CHAR_CREATE_LEVEL_REQUIREMENT).serialise().get());
+        SmsgCharCreate managedPacket(E_CHAR_CREATE_LEVEL_REQUIREMENT);
+        sendManagedPacket(managedPacket);
         return;
     }
 #endif
@@ -510,7 +535,8 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     newPlayer->m_isReadyToBeRemoved = true;
     delete newPlayer;
 
-    SendPacket(SmsgCharCreate(E_CHAR_CREATE_SUCCESS).serialise().get());
+    SmsgCharCreate managedPacket(E_CHAR_CREATE_SUCCESS);
+    sendManagedPacket(managedPacket);
 
     sLogonCommHandler.updateAccountCount(GetAccountId(), 1);
 }
@@ -525,7 +551,8 @@ void WorldSession::handleCharCustomizeLooksOpcode([[maybe_unused]] WorldPacket& 
     const auto loginErrorCode = VerifyName(srlPacket.createStruct.name);
     if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {
-        SendPacket(SmsgCharCustomize(loginErrorCode).serialise().get());
+        SmsgCharCustomize managedPacket(loginErrorCode);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -535,7 +562,8 @@ void WorldSession::handleCharCustomizeLooksOpcode([[maybe_unused]] WorldPacket& 
     {
         if (result->fetch()[0].asUint32() > 0)
         {
-            SendPacket(SmsgCharCustomize(E_CHAR_NAME_PROFANE).serialise().get());
+            SmsgCharCustomize managedPacket(E_CHAR_NAME_PROFANE);
+            sendManagedPacket(managedPacket);
             return;
         }
     }
@@ -543,7 +571,8 @@ void WorldSession::handleCharCustomizeLooksOpcode([[maybe_unused]] WorldPacket& 
     const auto playerInfo = sObjectMgr.getCachedCharacterInfoByName(srlPacket.createStruct.name);
     if (playerInfo != nullptr && playerInfo->guid != srlPacket.guid.getGuidLow())
     {
-        SendPacket(SmsgCharCustomize(E_CHAR_CREATE_NAME_IN_USE).serialise().get());
+        SmsgCharCustomize managedPacket(E_CHAR_CREATE_NAME_IN_USE);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -558,7 +587,8 @@ void WorldSession::handleCharCustomizeLooksOpcode([[maybe_unused]] WorldPacket& 
         srlPacket.createStruct.face, srlPacket.createStruct.hairStyle, srlPacket.createStruct.hairColor,
         srlPacket.createStruct.facialHair);
 
-    SendPacket(SmsgCharCustomize(E_RESPONSE_SUCCESS, srlPacket.guid, srlPacket.createStruct).serialise().get());
+    SmsgCharCustomize managedPacket(E_RESPONSE_SUCCESS, srlPacket.guid, srlPacket.createStruct);
+    sendManagedPacket(managedPacket);
 #endif
 }
 

@@ -43,6 +43,9 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion == WoW::Expansion::_Classic)
+                return false;
+
             for (const auto& teamMembers : arenaTeams)
             {
                 packet << teamMembers.playerGuid << teamMembers.teamType << teamMembers.teamId << 
@@ -53,6 +56,9 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion == WoW::Expansion::_Classic)
+                return false;
+
             uint64_t unpackedGuid;
             packet >> unpackedGuid;
             guid.init(unpackedGuid);
