@@ -98,7 +98,7 @@ namespace AscEmu::Packets
         static void sendFromZone(TSource& source, TPacket& packet, uint32_t zoneId, WorldSession* skipSession = nullptr)
         {
             static_assert(
-                std::is_same_v<std::remove_cv_t<TSource>, World>,
+                std::is_same_v<std::remove_cvref_t<TSource>, ::World>,
                 "PacketBroadcast::sendFromZone requires World as source."
                 );
 
