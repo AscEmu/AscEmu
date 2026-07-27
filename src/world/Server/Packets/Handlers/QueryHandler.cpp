@@ -135,7 +135,7 @@ void WorldSession::handleAchievmentQueryOpcode([[maybe_unused]] WorldPacket& rec
 
 #if VERSION_STRING >= Cata
     player->getAchievementMgr()->sendRespondInspectAchievements(_player);
-#else
+#elif VERSION_STRING == WotLK
     player->getAchievementMgr()->sendAllAchievementData(_player);
 #endif
 }
