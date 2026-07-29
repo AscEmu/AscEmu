@@ -154,13 +154,13 @@ void GameEvent::DestroyAllEntities()
 
 void GameEvent::CreateNPCs()
 {
-    for (const auto npc : npc_data)
+    for (const auto& npc : npc_data)
     {
-        auto mapmgr = sMapMgr.findWorldMap(npc.map_id);
-        if (mapmgr == nullptr)
+        auto mapMgr = sMapMgr.findWorldMap(npc.map_id);
+        if (mapMgr == nullptr)
             continue;
 
-        Creature* creature = mapmgr->createCreature(npc.entry);
+        Creature* creature = mapMgr->createCreature(npc.entry);
         CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(npc.entry);
         if (creatureProperties == nullptr)
         {
@@ -194,7 +194,7 @@ void GameEvent::CreateNPCs()
         }
         if (addToWorld)
         {
-            creature->AddToWorld(mapmgr);
+            creature->AddToWorld(mapMgr);
             active_npcs.push_back(creature);
         }
         else

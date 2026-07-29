@@ -188,10 +188,9 @@ void BaseMap::loadSpawns(bool reload)
         GameObjectOverrides m_overrides = GAMEOBJECT_NORMAL_DISTANCE;
         if (GameObjectProperties const* gameobject_properties = sMySQLStore.getGameObjectProperties(go_spawn->entry))
         {
-            
             // Check if GameObject is Large
             if (gameobject_properties->isLargeGameObject())
-                m_overrides = GAMEOBJECT_AREAWIDE;  // not implemented yet
+                m_overrides = GAMEOBJECT_AREAWIDE; // not implemented yet
 
             // Check if GameObject is Infinite
             if (gameobject_properties->isInfiniteGameObject())
@@ -201,32 +200,34 @@ void BaseMap::loadSpawns(bool reload)
         switch (m_overrides)
         {
             case GAMEOBJECT_NORMAL_DISTANCE:
-            {
-                uint32_t cellx = CellHandler<MapMgr>::getPosX(go_spawn->spawnPoint.x);
-                uint32_t celly = CellHandler<MapMgr>::getPosY(go_spawn->spawnPoint.y);
-                if (spawns[cellx] == nullptr)
                 {
-                    spawns[cellx] = std::make_unique<std::array<std::unique_ptr<CellSpawns>, Map::Cell::_sizeY>>();
-                    std::fill(spawns[cellx]->begin(), spawns[cellx]->end(), nullptr);
-                }
+                    uint32_t cellx = CellHandler<MapMgr>::getPosX(go_spawn->spawnPoint.x);
+                    uint32_t celly = CellHandler<MapMgr>::getPosY(go_spawn->spawnPoint.y);
+                    if (spawns[cellx] == nullptr)
+                    {
+                        spawns[cellx] = std::make_unique<std::array<std::unique_ptr<CellSpawns>, Map::Cell::_sizeY>>();
+                        std::fill(spawns[cellx]->begin(), spawns[cellx]->end(), nullptr);
+                    }
 
-                if ((*spawns[cellx])[celly] == nullptr)
-                    (*spawns[cellx])[celly] = std::make_unique<CellSpawns>();
+                    if ((*spawns[cellx])[celly] == nullptr)
+                        (*spawns[cellx])[celly] = std::make_unique<CellSpawns>();
 
-                (*spawns[cellx])[celly]->GameobjectSpawns.push_back(go_spawn);
+                    (*spawns[cellx])[celly]->GameobjectSpawns.push_back(go_spawn);
 
-                ++GameObjectSpawnCount;
-            } break;
+                    ++GameObjectSpawnCount;
+                } break;
             case GAMEOBJECT_MAPWIDE:
-            {
-                mapWideSpawns.GameobjectSpawns.push_back(go_spawn);
-                ++GameObjectSpawnCount;
-            } break;
+                {
+                    mapWideSpawns.GameobjectSpawns.push_back(go_spawn);
+                    ++GameObjectSpawnCount;
+                } break;
             case GAMEOBJECT_AREAWIDE:
-            {
-                areaWideSpawns.GameobjectSpawns.push_back(go_spawn);
-                ++GameObjectSpawnCount;
-            } break;
+                {
+                    areaWideSpawns.GameobjectSpawns.push_back(go_spawn);
+                    ++GameObjectSpawnCount;
+                } break;
+            default:
+                break;
         }
     }
     sLogger.info("MapMgr : {} creatures / {} gobjects on map {} cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);

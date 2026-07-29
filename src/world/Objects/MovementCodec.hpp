@@ -141,9 +141,8 @@ private:
         {
             case Cond::NoReadOptWrite:     return false;
             case Cond::ReadOptWrite:       return true;
+            default:                       return true;
         }
-
-        return true;
     }
 
     static bool checkWriteCondition(Cond cond, [[maybe_unused]] MovementInfo const& movementInfo, bool withGuid)
@@ -152,9 +151,8 @@ private:
         {
             case Cond::NoReadOptWrite:     return withGuid;
             case Cond::ReadOptWrite:       return withGuid;
+            default:                       return true;
         }
-
-        return true;
     }
 
     static bool isUnknownDescriptor(std::span<MovementStep const> descriptor)
@@ -309,20 +307,22 @@ private:
             } break;
 
             case MovementOp::SkipBit:
-            {
-                uint8_t bit = buffer.readBit();
-                sLogger.debugFlag(AscEmu::Logging::LF_MOVE, "MovementCodec::executeReadStep: {} : SkipBit is {}",
-                    sOpcodeTables.getNameForOpcode(opcode), bit);
-            } break;
+                {
+                    uint8_t bit = buffer.readBit();
+                    sLogger.debugFlag(AscEmu::Logging::LF_MOVE, "MovementCodec::executeReadStep: {} : SkipBit is {}",
+                                      sOpcodeTables.getNameForOpcode(opcode), bit);
+                } break;
 
             case MovementOp::SkipUInt32:
-            {
-                uint32_t uint;
-                buffer >> uint;
-                //buffer.readSkip<uint32_t>();
-                sLogger.debugFlag(AscEmu::Logging::LF_MOVE, "MovementCodec::executeReadStep: {} : SkipUInt32 is {}",
-                    sOpcodeTables.getNameForOpcode(opcode), uint);
-            } break;
+                {
+                    uint32_t uint;
+                    buffer >> uint;
+                    //buffer.readSkip<uint32_t>();
+                    sLogger.debugFlag(AscEmu::Logging::LF_MOVE, "MovementCodec::executeReadStep: {} : SkipUInt32 is {}",
+                                      sOpcodeTables.getNameForOpcode(opcode), uint);
+                } break;
+            default:
+                break;
         }
     }
 
@@ -440,16 +440,18 @@ private:
             case MovementOp::NewSpeed: data << movementInfo.newSpeed; break;
 
             case MovementOp::SkipForcesCountUInt32:
-            {
-                //for (uint32_t i = 0; i < movementInfo.forcesCount; ++i)
-                //    data << uint32_t(0);
-            } break;
+                {
+                    //for (uint32_t i = 0; i < movementInfo.forcesCount; ++i)
+                    //    data << uint32_t(0);
+                } break;
 
             case MovementOp::WriteBit0: data.writeBit(0); break;
             case MovementOp::WriteBit1: data.writeBit(1); break;
             case MovementOp::WriteUInt32_0: data << static_cast<uint32_t>(0); break;
-            case MovementOp::WriteUInt8_1:  data << static_cast<uint8_t>(1); break;
+            case MovementOp::WriteUInt8_1: data << static_cast<uint8_t>(1); break;
             case MovementOp::FlushBits: data.flushBits(); break;
+            default:
+                break;
         }
     }
 

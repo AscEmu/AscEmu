@@ -743,7 +743,7 @@ uint32_t GameObject::getTransportPeriod() const
     return 0;
 }
 
-class GameObjectModelOwnerImpl : public GameObjectModelOwnerBase
+class GameObjectModelOwnerImpl final : public GameObjectModelOwnerBase
 {
 public:
     explicit GameObjectModelOwnerImpl(GameObject const* owner) : _owner(owner) { }
@@ -2241,9 +2241,9 @@ void GameObject_Ritual::onUse(Player* player)
             }
         }
 
-        if (gameobject_properties->entry == 36727 || gameobject_properties->entry == 194108)   // summon portal
+        if (gameobject_properties->entry == 36727 || gameobject_properties->entry == 194108) // summon portal
         {
-            if (!GetRitual()->GetTargetGUID() == 0)
+            if (GetRitual()->GetTargetGUID() == 0)
                 return;
 
             SpellInfo const* info = sSpellMgr.getSpellInfo(gameobject_properties->summoning_ritual.spell_id);
@@ -2258,7 +2258,7 @@ void GameObject_Ritual::onUse(Player* player)
             targets.setUnitTarget(target->getGuid());
             spell->prepare(&targets);
         }
-        else if (gameobject_properties->entry == 177193)    // doom portal
+        else if (gameobject_properties->entry == 177193) // doom portal
         {
             uint32_t victimid = Util::getRandomUInt(GetRitual()->GetMaxMembers() - 1);
 
@@ -2283,7 +2283,7 @@ void GameObject_Ritual::onUse(Player* player)
             SpellCastTargets targets2(pCaster->getGuid());
             spell->prepare(&targets2);
         }
-        else if (gameobject_properties->entry == 179944)    // Summoning portal for meeting stones
+        else if (gameobject_properties->entry == 179944) // Summoning portal for meeting stones
         {
             plr = player->getWorldMap()->getPlayer(GetRitual()->GetTargetGUID());
             if (!plr)
@@ -2304,7 +2304,7 @@ void GameObject_Ritual::onUse(Player* player)
         else if (gameobject_properties->entry == 186811 || gameobject_properties->entry == 181622)
         {
             SpellInfo const* info = sSpellMgr.getSpellInfo(gameobject_properties->summoning_ritual.spell_id);
-            if (info == NULL)
+            if (info == nullptr)
                 return;
 
             spell = sSpellMgr.newSpell(player->getWorldMap()->getPlayer(GetRitual()->GetCasterGUID()), info, true, nullptr);

@@ -164,8 +164,8 @@ public:
     uint32_t mMaxCount;
     uint32_t mCastCount;
     void setMaxCastCount(uint32_t castCount);
-    const uint32_t getMaxCastCount();
-    const uint32_t getCastCount();
+    uint32_t getMaxCastCount() const;
+    uint32_t getCastCount() const;
     void setCastCount(uint32_t count) { mCastCount = count; }
     void increaseCastCount() { ++mCastCount; }
 
@@ -191,6 +191,7 @@ public:
         uint8_t mType;
         uint32_t mSoundId;
     };
+
     typedef std::vector<AISpellEmotes> AISpellEmoteArray;
     AISpellEmoteArray mAISpellEmote;
 
@@ -202,20 +203,20 @@ public:
     uint32_t mMaxStackCount;
 
     void setMaxStackCount(uint32_t stackCount);
-    const uint32_t getMaxStackCount();
+    uint32_t getMaxStackCount() const;
 
     float mMinPositionRangeToCast;
     float mMaxPositionRangeToCast;
 
-    const bool isDistanceInRange(float targetDistance);
+    bool isDistanceInRange(float targetDistance) const;
     void setMinMaxDistance(float minDistance, float maxDistance);
 
     // if it is not a random target type it sets the hp range when the creature can cast this spell
-    // if it is a random target it controles when the spell can be cast based on the target hp
+    // if it is a random target it controls when the spell can be cast based on the target hp
     float mMinHpRangeToCast;
     float mMaxHpRangeToCast;
 
-    const bool isHpInPercentRange(float targetHp);
+    bool isHpInPercentRange(float targetHp) const;
     void setMinMaxPercentHp(float minHp, float maxHp);
 
     typedef std::vector<uint32_t> ScriptPhaseList;

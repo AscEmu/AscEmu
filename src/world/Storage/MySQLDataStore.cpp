@@ -232,7 +232,6 @@ void MySQLDataStore::loadItemPropertiesTable()
     auto item_result = getWorldDBQuery("SELECT * FROM item_properties base "
         "WHERE build=(SELECT MAX(build) FROM item_properties spec WHERE base.entry = spec.entry AND build <= %u)", VERSION_STRING);
 
-
     if (item_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `item_properties` is empty!");
@@ -668,7 +667,6 @@ void MySQLDataStore::loadItemPropertiesStatsTable()
     auto item_result = getWorldDBQuery("SELECT * FROM item_properties_stats base "
         "WHERE build=(SELECT MAX(build) FROM item_properties_stats spec WHERE base.entry = spec.entry AND build <= %u)", VERSION_STRING);
 
-
     if (item_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `item_properties_stats` is empty!");
@@ -692,7 +690,6 @@ void MySQLDataStore::loadItemPropertiesStatsTable()
     } while (item_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} item_properties_stats in {} ms!", stat_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-
 
     startTime = Util::TimeNow();
     uint32_t assignedCount = 0;
@@ -2354,7 +2351,6 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
 
     sLogger.info("MySQLDataLoads : Table `totemdisplayids` has {} columns", totemdisplayids_result->getFieldCount());
 
-    uint32_t totemdisplayids_count = 0;
     do
     {
         Field* fields = totemdisplayids_result->fetch();
@@ -2366,8 +2362,6 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
         totemDisplayId.race_specific_id = fields[2].asUint32();
 
         _totemDisplayIdsStore.push_back(totemDisplayId);
-
-        ++totemdisplayids_count;
     } while (totemdisplayids_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `totemdisplayids` table in {} ms!", static_cast<uint32_t>(_totemDisplayIdsStore.size()), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -2692,7 +2686,6 @@ void MySQLDataStore::loadPlayerCreateInfoBars()
         return;
     }
 
-    uint32_t player_create_info_bars_count = 0;
     do
     {
         Field* fields = player_create_info_bars_result->fetch();
@@ -2709,10 +2702,7 @@ void MySQLDataStore::loadPlayerCreateInfoBars()
             bar.misc = fields[5].asUint8();
 
             playerCreateInfo->actionbars.push_back(bar);
-
-            ++player_create_info_bars_count;
         }
-
     } while (player_create_info_bars_result->nextRow());
 }
 
@@ -3331,7 +3321,6 @@ void MySQLDataStore::loadBroadcastTable()
         broadcast.text = fields[3].asCString();
 
         ++broadcast_count;
-
     } while (broadcast_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `worldbroadcast` table in {} ms!", broadcast_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -3401,7 +3390,6 @@ void MySQLDataStore::loadAreaTriggerTable()
 
         _areaTriggerStore[areaTrigger.id] = areaTrigger;
         ++areaTrigger_count;
-
     } while (area_trigger_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `areatriggers` table in {} ms!", areaTrigger_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -3527,7 +3515,6 @@ void MySQLDataStore::loadWordFilterCharacterNames()
         _wordFilterCharacterNamesStore.push_back(wfCharacterNames);
 
         ++filter_character_names_count;
-
     } while (filter_character_names_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `wordfilter_character_names` table in {} ms!", filter_character_names_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -3583,7 +3570,6 @@ void MySQLDataStore::loadWordFilterChat()
         _wordFilterChatStore.push_back(wfChat);
 
         ++filter_chat_count;
-
     } while (filter_chat_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `wordfilter_chat` table in {} ms!", filter_chat_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -3606,10 +3592,8 @@ void MySQLDataStore::loadLocalesAchievementReward()
     sLogger.info("MySQLDataLoads : Table `locales_achievement_reward` has {} columns", result->getFieldCount());
 
     uint32_t load_count = 0;
-    uint32_t i = 0;
     do
     {
-        ++i;
         Field* fields = result->fetch();
 
         MySQLStructure::LocalesAchievementReward localAchievementReward;
@@ -3624,7 +3608,6 @@ void MySQLDataStore::loadLocalesAchievementReward()
         _localesAchievementRewardStore.push_back(localAchievementReward);
 
         ++load_count;
-
     } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_achievement_reward` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -3677,7 +3660,6 @@ void MySQLDataStore::loadLocalesCreature()
         localCreature.subName = strdup(fields[3].asCString());
 
         ++load_count;
-
     } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_creature` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -3728,7 +3710,6 @@ void MySQLDataStore::loadLocalesGameobject()
         localGameobject.name = strdup(fields[2].asCString());
 
         ++load_count;
-
     } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_gameobject` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -3765,10 +3746,8 @@ void MySQLDataStore::loadLocalesGossipMenuOption()
     _localesGossipMenuOptionStore.rehash(result->getRowCount());
 
     uint32_t load_count = 0;
-    uint32_t i = 0;
     do
     {
-        ++i;
         Field* fields = result->fetch();
 
         MySQLStructure::LocalesGossipMenuOption& localGossipMenuOption = _localesGossipMenuOptionStore[1];
@@ -3779,7 +3758,6 @@ void MySQLDataStore::loadLocalesGossipMenuOption()
         localGossipMenuOption.name = strdup(fields[2].asCString());
 
         ++load_count;
-
     } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_gossip_menu_option` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -4402,7 +4380,6 @@ void MySQLDataStore::loadProfessionDiscoveriesTable()
         professionDiscovery->Chance = fields[3].asFloat();
 
         ++load_count;
-
     } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `professiondiscoveries` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -4445,7 +4422,6 @@ void MySQLDataStore::loadTransportDataTable()
         transportData.name = fields[1].asCString();
 
         ++load_count;
-
     } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `transport_data` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -4472,7 +4448,6 @@ void MySQLDataStore::loadTransportEntrys()
         transportEntrys.entry = entry;
 
         ++load_count;
-
     } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `transport_entrys` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -4498,7 +4473,6 @@ void MySQLDataStore::loadTransportMaps()
         _transportMapStore.push_back(mapId);
 
         ++load_count;
-
     } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} maps from `transport_maps` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -4664,7 +4638,6 @@ void MySQLDataStore::loadCreatureSpawns()
 
                 _creatureSpawnsStore[cspawn->mapId].push_back(cspawn);
                 ++count;
-
             } while (creature_spawn_result->nextRow());
         }
     }
@@ -4693,7 +4666,7 @@ void MySQLDataStore::loadGameobjectSpawns()
                 Field* fields = gobject_spawn_result->fetch();
                 uint32_t spawnId = fields[0].asUint32();
                 uint32_t gameobject_entry = fields[3].asUint32();
-                
+
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(gameobject_entry);
                 if (gameobject_info == nullptr)
                 {
@@ -4946,7 +4919,7 @@ void MySQLDataStore::loadCreatureGroupSpawns()
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Spawn data with ID ({}) not found, but is listed as a member of spawn group {}!", spawnId, groupId);
             continue;
-        } 
+        }
     } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `creature_group_spawn` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -5068,7 +5041,7 @@ void MySQLDataStore::loadCreatureSplineChains()
 
 std::vector<SplineChainLink> const* MySQLDataStore::getSplineChain(uint32_t entry, uint16_t chainId) const
 {
-    auto it = _splineChainsStore.find({ entry, chainId });
+    auto it = _splineChainsStore.find({entry, chainId});
     if (it == _splineChainsStore.end())
         return nullptr;
 

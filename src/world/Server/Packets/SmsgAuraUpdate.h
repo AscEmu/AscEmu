@@ -25,7 +25,7 @@ namespace AscEmu::Packets
             uint16_t flags = 0;
             uint8_t level = 0;
             uint8_t stackCount = 0;
-            WoWGuid casterGuid;
+            WoWGuid casterGuid{};
             uint32_t duration = 0;
             uint32_t timeLeft = 0;
             int32_t effAmount[5] = {0}; // 3 spell effects up till cata, 5 in mop
@@ -33,7 +33,7 @@ namespace AscEmu::Packets
 
         AuraUpdate aura_updates;
 
-        SmsgAuraUpdate() : SmsgAuraUpdate(WoWGuid(), {0}, false)
+        SmsgAuraUpdate() : SmsgAuraUpdate(WoWGuid(), {}, false)
         {
         }
 

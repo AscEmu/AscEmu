@@ -191,23 +191,21 @@ namespace MapManagement::AreaManagement
 
     uint32_t AreaStorage::GetIdByFlag(uint32_t area_flag)
     {
-        auto area = AreaStorage::GetAreaByFlag(area_flag);
-        if (area)
+        if (auto area = AreaStorage::GetAreaByFlag(area_flag))
             return area->id;
-        else
-            return 0;
+
+        return 0;
     }
 
     uint32_t AreaStorage::GetIdByMapId(uint32_t map_id)
     {
-        auto area = AreaStorage::GetAreaByMapId(map_id);
-        if (area)
+        if (auto area = AreaStorage::GetAreaByMapId(map_id))
             return area->id;
-        else
-            return 0;
+
+        return 0;
     }
 
-    const uint32_t AreaStorage::GetFlagByPosition(uint32_t area_flag_without_adt_id, uint32_t tileMapHeight, bool have_area_info, uint32_t /*mogp_flags*/, int32_t adt_id, int32_t root_id, int32_t group_id, uint32_t map_id, float /*x*/, float /*y*/, float z, bool* /*_out_is_outdoors*/)
+    uint32_t AreaStorage::GetFlagByPosition(uint32_t area_flag_without_adt_id, uint32_t tileMapHeight, bool have_area_info, uint32_t /*mogp_flags*/, int32_t adt_id, int32_t root_id, int32_t group_id, uint32_t map_id, float /*x*/, float /*y*/, float z, bool* /*_out_is_outdoors*/)
     {
         ::WDB::Structures::AreaTableEntry const* at_entry = nullptr;
         // floor is the height we are closer to (but only if above)
@@ -226,15 +224,13 @@ namespace MapManagement::AreaManagement
         {
             return at_entry->explore_flag;
         }
-        else
+
+        if (area_flag_without_adt_id)
         {
-            if (area_flag_without_adt_id)
-            {
-                return area_flag_without_adt_id;
-            }
-            
-            return AreaStorage::GetFlagByMapId(map_id);
+            return area_flag_without_adt_id;
         }
+
+        return AreaStorage::GetFlagByMapId(map_id);
 
         /*if (_out_is_outdoors)
         {
@@ -247,7 +243,7 @@ namespace MapManagement::AreaManagement
                 *_out_is_outdoors = true;
             }
         }*/
-        
+
         // Unused
         //return area_flag;
     }

@@ -61,7 +61,7 @@ bool ChatCommandHandler::HandleRecallAddCommand(const char* args, WorldSession* 
     if (!*args)
         return false;
 
-    if (const auto recall = sMySQLStore.getRecallByName(args))
+    if (sMySQLStore.getRecallByName(args))
     {
         redSystemMessage(m_session, "Location name is already in use. Please choose another name.");
         return true;

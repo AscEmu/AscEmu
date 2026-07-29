@@ -33,7 +33,7 @@ namespace AscEmu::AE::Database
         }
 
         template <typename T>
-        T get(std::size_t index) const
+        T get(std::size_t /*index*/) const
         {
             static_assert(sizeof(T) == 0, "Unsupported RowView::get<T>().");
         }

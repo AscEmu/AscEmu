@@ -25,7 +25,7 @@
 #include "Objects/Units/Unit.hpp"
 #include "Objects/Units/Players/Player.hpp"
 
-class TwinBladesOfAzzinothSpellProc : public SpellProc
+class TwinBladesOfAzzinothSpellProc final : public SpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<TwinBladesOfAzzinothSpellProc>(); }
@@ -43,7 +43,7 @@ public:
         {
             uint32_t mhs = mh->getItemProperties()->Delay;
             uint32_t ohs = of->getItemProperties()->Delay;
-            setProcChance(mhs * ohs / (800 * (mhs + ohs)));     // 0.75 ppm
+            setProcChance(mhs * ohs / (800 * (mhs + ohs))); // 0.75 ppm
         }
     }
 };

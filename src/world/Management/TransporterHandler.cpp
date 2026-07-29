@@ -69,13 +69,15 @@ void TransportHandler::spawnContinentTransports()
 
     uint32_t createCount = 0;
 
-    for (auto& it : sMySQLStore._transportDataStore)
+    for (uint32_t entry : sMySQLStore._transportDataStore | std::views::keys)
     {
-        uint32_t entry = it.first;
         if (TransportTemplate const* tInfo = getTransportTemplate(entry))
-            if (!tInfo->inInstance)
-                if (const auto trans = createTransport(entry))
-                    ++createCount;
+        {
+            if (!tInfo->inInstance && createTransport(entry) != nullptr)
+            {
+                ++createCount;
+            }
+        }
     }
 
     sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Transporter Handler : Spawned {} Continent Transports", createCount);
@@ -341,27 +343,36 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
 
     // find the rest of the distances between key points
     // Every path segment has its own spline
-    uint16_t start = 0;
-    for (uint16_t i = 1; i < keyFrames.size(); ++i)
+    size_t start = 0;
+    for (size_t i = 1; i < keyFrames.size(); ++i)
     {
         if (keyFrames[i - 1].Teleport || i + 1 == keyFrames.size())
         {
             auto extra = !keyFrames[i - 1].Teleport ? 1 : 0;
+            const auto count = static_cast<int>(i - start + extra);
+
             std::shared_ptr<TransportSpline> spline = std::make_shared<TransportSpline>();
-            spline->init_spline(&splinePath[start], i - start + extra, MovementMgr::SplineBase::ModeCatmullrom);
+            spline->init_spline(&splinePath[start], count, MovementMgr::SplineBase::ModeCatmullrom);
             spline->initLengths();
+
             for (auto j = start; j < i + extra; ++j)
             {
-                keyFrames[j].Index = j - start + 1;
-                keyFrames[j].DistFromPrev = float(spline->length(j - start, j + 1 - start));
+                const auto firstIdx = static_cast<int>(j - start);
+                const auto lastIdx = static_cast<int>(j + 1 - start);
+
+                keyFrames[j].Index = static_cast<int>(j - start + 1);
+                keyFrames[j].DistFromPrev = static_cast<float>(spline->length(firstIdx, lastIdx));
+
                 if (j > 0)
+                {
                     keyFrames[j - 1].NextDistFromPrev = keyFrames[j].DistFromPrev;
+                }
                 keyFrames[j].Spline = spline;
             }
 
             if (keyFrames[i - 1].Teleport)
             {
-                keyFrames[i].Index = i - start + 1;
+                keyFrames[i].Index = static_cast<int>(i - start + 1);
                 keyFrames[i].DistFromPrev = 0.0f;
                 keyFrames[i - 1].NextDistFromPrev = 0.0f;
                 keyFrames[i].Spline = spline;
@@ -374,8 +385,8 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
         {
             // remember first stop frame
             if (firstStop == -1)
-                firstStop = i;
-            lastStop = i;
+                firstStop = static_cast<int32_t>(i);
+            lastStop = static_cast<int32_t>(i);
         }
     }
 
@@ -384,31 +395,42 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     if (firstStop == -1 || lastStop == -1)
         firstStop = lastStop = 0;
 
+    const size_t totalFrames = keyFrames.size();
+    const size_t lastStopIdx = static_cast<size_t>(lastStop);
+    const size_t firstStopIdx = static_cast<size_t>(firstStop);
+
     // at stopping keyframes, we define distSinceStop == 0,
     // and distUntilStop is to the next stopping keyframe.
     // this is required to properly handle cases of two stopping frames in a row (yes they do exist)
     float tmpDist = 0.0f;
-    for (size_t i = 0; i < keyFrames.size(); ++i)
+    for (size_t i = 0; i < totalFrames; ++i)
     {
-        auto j = (i + lastStop) % keyFrames.size();
-        if (keyFrames[j].isStopFrame() || j == lastStop)
+        const size_t j = (i + lastStopIdx) % totalFrames;
+        if (keyFrames[j].isStopFrame() || j == lastStopIdx)
+        {
             tmpDist = 0.0f;
+        }
         else
+        {
             tmpDist += keyFrames[j].DistFromPrev;
+        }
         keyFrames[j].DistSinceStop = tmpDist;
     }
 
     tmpDist = 0.0f;
-    for (int32_t i = static_cast<int32_t>(keyFrames.size()) - 1; i >= 0; i--)
+    for (size_t i = totalFrames; i > 0; --i)
     {
-        int32_t j = (i + firstStop) % keyFrames.size();
-        tmpDist += keyFrames[(j + 1) % keyFrames.size()].DistFromPrev;
+        const size_t idx = i - 1;
+        const size_t j = (idx + firstStopIdx) % totalFrames;
+        tmpDist += keyFrames[(j + 1) % totalFrames].DistFromPrev;
         keyFrames[j].DistUntilStop = tmpDist;
-        if (keyFrames[j].isStopFrame() || j == firstStop)
+        if (keyFrames[j].isStopFrame() || j == firstStopIdx)
+        {
             tmpDist = 0.0f;
+        }
     }
 
-    for (size_t i = 0; i < keyFrames.size(); ++i)
+    for (size_t i = 0; i < totalFrames; ++i)
     {
         float total_dist = keyFrames[i].DistSinceStop + keyFrames[i].DistUntilStop;
         if (total_dist < 2 * accel_dist) // won't reach full speed
@@ -444,11 +466,13 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
 
     // calculate tFrom times from tTo times
     float segmentTime = 0.0f;
-    for (size_t i = 0; i < keyFrames.size(); ++i)
+    for (size_t i = 0; i < totalFrames; ++i)
     {
-        auto j = (i + lastStop) % keyFrames.size();
-        if (keyFrames[j].isStopFrame() || j == lastStop)
+        const size_t j = (i + lastStopIdx) % totalFrames;
+        if (keyFrames[j].isStopFrame() || j == lastStopIdx)
+        {
             segmentTime = keyFrames[j].TimeTo;
+        }
         keyFrames[j].TimeFrom = segmentTime - keyFrames[j].TimeTo;
     }
 

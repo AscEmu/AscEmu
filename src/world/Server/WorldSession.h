@@ -95,58 +95,59 @@ class SERVER_DECL WorldSession
 {
     friend class WorldSocket;
 
-    public:
-        WorldSession(uint32_t id, std::string name, WorldSocket* sock);
-        ~WorldSession();
+public:
+    WorldSession(uint32_t id, std::string name, WorldSocket* sock);
+    ~WorldSession();
 
-        Player* m_loggingInPlayer;
+    Player* m_loggingInPlayer;
 
-        void SendPacket(WorldPacket* packet);
+    void SendPacket(WorldPacket* packet);
 
-        void OutPacket(uint16_t opcode);
+    void OutPacket(uint16_t opcode);
 
-        void sendChatPacket(AscEmu::Packets::SmsgMessageChat& data, uint32_t lang, WorldSession* originator);
+    void sendChatPacket(AscEmu::Packets::SmsgMessageChat& data, uint32_t lang, WorldSession* originator);
 
-        uint32_t m_currMsTime;
-        uint32_t m_lastPing;
-        uint32_t m_loginTime;
+    uint32_t m_currMsTime;
+    uint32_t m_lastPing;
+    uint32_t m_loginTime;
 
-        uint32_t GetAccountId() const { return _accountId; }
-        Player* GetPlayer() { return _player; }
-        Player* GetPlayerOrThrow();
+    uint32_t GetAccountId() const { return _accountId; }
+    Player* GetPlayer() { return _player; }
+    Player* GetPlayerOrThrow();
 
-        // Acct flags
-        void SetAccountFlags(uint32_t /*flags*/)
+    // Acct flags
+    void SetAccountFlags(uint32_t /*flags*/)
+    {
+        // TODO: add a config to determine what flags are allowed on the server.
+        // For now, override the db value depending on the AE Version.
+        // _accountFlags = flags;
+
+        switch (getAEVersion())
         {
-            // TODO: add a config to determine what flags are allowed on the server.
-            // For now, override the db value depending on the AE Version.
-            // _accountFlags = flags;
-
-            switch (getAEVersion())
-            {
-                case 5875:
-                    _accountFlags = 0;
-                    break;
-                case 8606:
-                    _accountFlags = ACCOUNT_FLAG_XPACK_01;
-                    break;
-                case 12340:
-                    _accountFlags = AF_FULL_WOTLK;
-                    break;
-                case 15595:
-                    _accountFlags = AF_FULL_CATA;
-                    break;
-                case 18414:
-                    _accountFlags = AF_FULL_MOP;
-                    break;
-            }
+            case 5875:
+                _accountFlags = 0;
+                break;
+            case 8606:
+                _accountFlags = ACCOUNT_FLAG_XPACK_01;
+                break;
+            case 12340:
+                _accountFlags = AF_FULL_WOTLK;
+                break;
+            case 15595:
+                _accountFlags = AF_FULL_CATA;
+                break;
+            case 18414:
+                _accountFlags = AF_FULL_MOP;
+                break;
         }
-        bool HasFlag(uint32_t flag) { return (_accountFlags & flag) != 0; }
-        uint32_t GetFlags() { return _accountFlags; }
+    }
 
-        // GM Permission System
-        void LoadSecurity(std::string securitystring);
-        std::unique_ptr<char[]> GetPermissions() const;
+    bool HasFlag(uint32_t flag) { return (_accountFlags & flag) != 0; }
+    uint32_t GetFlags() { return _accountFlags; }
+
+    // GM Permission System
+    void LoadSecurity(std::string securitystring);
+    std::unique_ptr<char[]> GetPermissions() const;
 
     //MIT
     bool hasPermissions() const;
@@ -236,8 +237,10 @@ class SERVER_DECL WorldSession
         template <typename TPacket>
         void sendManagedPacket(TPacket& managedPacket)
         {
-            auto packet = buildPacket(managedPacket);
-            SendPacket(packet.get());
+            if (auto packet = buildPacket(managedPacket))
+            {
+                SendPacket(packet.get());
+            }
         }
 
         bool bDeleted;
@@ -246,7 +249,6 @@ class SERVER_DECL WorldSession
         int32_t m_moveDelayTime;
         int32_t m_clientTimeDelay;
 
-        
         bool IsLoggingOut() { return _loggingOut; }
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -304,7 +306,6 @@ class SERVER_DECL WorldSession
         void handleRequestRatedBgStatsOpcode(WorldPacket& /*recvPacket*/);  //>= Cata
         void handleRequestPvPRewardsOpcode(WorldPacket& /*recvPacket*/);    //>= Cata
         void handleRequestPvpOptionsOpcode(WorldPacket& /*recvPacket*/);    //>= Cata
-
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // CalendarHandler.cpp
@@ -375,7 +376,7 @@ protected:
 
         void handleCharFactionOrRaceChange(WorldPacket& recvPacket);    //> TBC
         void handleCharCustomizeLooksOpcode(WorldPacket& recvPacket);   //> TBC
-        
+
         //////////////////////////////////////////////////////////////////////////////////////////
         // ChatHandler.cpp
     public:
@@ -594,7 +595,7 @@ protected:
         void sendLfgQueueStatus(uint32_t dungeon, int32_t waitTime, int32_t avgWaitTime, int32_t waitTimeTanks, int32_t waitTimeHealer, int32_t waitTimeDps, uint32_t queuedTime, uint8_t tanks, uint8_t healers, uint8_t dps);
         void sendLfgPlayerReward(uint32_t RandomDungeonEntry, uint32_t DungeonEntry, uint8_t done, const LfgReward* reward, QuestProperties const* qReward);
         void sendLfgBootPlayer(const LfgPlayerBoot* pBoot);
-        void sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal *pProp);
+        void sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal* pProp);
 
     protected:
         void handleLfgSetCommentOpcode(WorldPacket& recvPacket);
@@ -609,7 +610,7 @@ protected:
         void handleLfgSetBootVoteOpcode(WorldPacket& recvPacket);   //> TBC
         void handleLfgPlayerLockInfoRequestOpcode(WorldPacket& recvPacket); //> TBC
         void handleLfgTeleportOpcode(WorldPacket& recvPacket);      //> TBC
-        void handleLfgPartyLockInfoRequestOpcode(WorldPacket& recvPacket);  //> TBC
+        void handleLfgPartyLockInfoRequestOpcode(WorldPacket& recvPacket); //> TBC
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // LootHandler.cpp
@@ -713,8 +714,8 @@ protected:
         void handleGameObjectUse(WorldPacket& recvPacket);
         void handleInspectOpcode(WorldPacket& recvPacket);
 
-    //\todo move to seperated file
-    private:
+    // \todo move to seperated file
+private:
         bool isAddonMessageFiltered;                                        //>= Cata
         std::vector<std::string> mRegisteredAddonPrefixesVector;            //>= Cata
         typedef std::list<AddonEntry> AddonsList;                           //>= Cata
@@ -965,10 +966,10 @@ protected:
 public:
     static void registerOpcodeHandler();
 
-        uint32_t floodLines;
-        time_t floodTime;
+    uint32_t floodLines;
+    time_t floodTime;
 
-        void SystemMessage(const char* format, ...);
+    void SystemMessage(const char* format, ...);
 
     void sendSystemMessagePacket(std::string& _message);
 
@@ -983,8 +984,8 @@ public:
         sendSystemMessagePacket(formattedMessage);
     }
 
-        uint32_t language;
-        uint32_t m_muted;
+    uint32_t language;
+    uint32_t m_muted;
 };
 
 #endif // WORLDSESSION_H

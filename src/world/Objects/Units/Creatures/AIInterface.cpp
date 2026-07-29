@@ -87,13 +87,13 @@ static inline constexpr uint16_t TARGET_UPDATE_TIMER = 1500;
 
 AIInterface::AIInterface()
     :
-    m_fleeTimer(std::make_unique<Util::SmallTimeTracker>(0)),
-    m_boundaryCheckTime(std::make_unique<Util::SmallTimeTracker>(2500)),
-    mSpellWaitTimer(std::make_unique<Util::SmallTimeTracker>(AISPELL_GLOBAL_COOLDOWN)),
-    m_outOfCombatSpellTimer(std::make_unique<Util::SmallTimeTracker>(AISPELL_GLOBAL_COOLDOWN)),
-    m_noTargetTimer(std::make_unique<Util::SmallTimeTracker>(3000)),
+    m_targetUpdateTimer(std::make_unique<Util::SmallTimeTracker>(1500)),
     m_cannotReachTimer(std::make_unique<Util::SmallTimeTracker>(500)),
-    m_targetUpdateTimer(std::make_unique<Util::SmallTimeTracker>(1500))
+    m_boundaryCheckTime(std::make_unique<Util::SmallTimeTracker>(2500)),
+    m_fleeTimer(std::make_unique<Util::SmallTimeTracker>(0)),
+    m_outOfCombatSpellTimer(std::make_unique<Util::SmallTimeTracker>(AISPELL_GLOBAL_COOLDOWN)),
+    mSpellWaitTimer(std::make_unique<Util::SmallTimeTracker>(AISPELL_GLOBAL_COOLDOWN)),
+    m_noTargetTimer(std::make_unique<Util::SmallTimeTracker>(3000))
 {
     m_boundaries.clear();
     m_assistTargets.clear();
@@ -819,7 +819,7 @@ bool AIInterface::canOwnerAttackUnit(Unit* pUnit) const
 #endif
     {
         // Guards can detect feign death
-        // TODO: other than guards can also detect but its based on chance
+        // TODO: other than guards can also detect, but it's based on chance
         if (!isGuard())
             return false;
     }
@@ -829,7 +829,7 @@ bool AIInterface::canOwnerAttackUnit(Unit* pUnit) const
         if (m_Unit->getWorldMap()->getBaseMap()->isInstanceMap())
             return true;
 
-        if (!(m_Unit->ToCreature()->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_BOSS) != 0 || m_Unit->hasAuraWithAuraEffect(SPELL_AURA_MOD_TAUNT))
+        if ((m_Unit->ToCreature()->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_BOSS) == 0 || m_Unit->hasAuraWithAuraEffect(SPELL_AURA_MOD_TAUNT))
             return true;
     }
 
@@ -840,17 +840,17 @@ bool AIInterface::canOwnerAttackUnit(Unit* pUnit) const
     {
         return pUnit->IsWithinDistInMap(unit, distance);
     }
-    else
-    {
-        // include sizes for huge npcs
-        distance += m_Unit->getCombatReach() + pUnit->getCombatReach();
 
-        // to prevent creatures in air ignore attacks because distance is already too high...
-        if (m_Unit->ToCreature()->getMovementTemplate().isFlightAllowed())
-            return pUnit->isInDist2d(m_Unit->GetSpawnPosition(), distance);
-        else
-            return pUnit->isInDist(m_Unit->GetSpawnPosition(), distance);
+    // include sizes for huge npcs
+    distance += m_Unit->getCombatReach() + pUnit->getCombatReach();
+
+    // to prevent creatures in air ignore attacks because distance is already too high...
+    if (m_Unit->ToCreature()->getMovementTemplate().isFlightAllowed())
+    {
+        return pUnit->isInDist2d(m_Unit->GetSpawnPosition(), distance);
     }
+
+    return pUnit->isInDist(m_Unit->GetSpawnPosition(), distance);
 }
 
 bool AIInterface::canOwnerAssistUnit(Unit const* pUnit) const
@@ -1966,17 +1966,19 @@ void AIInterface::handleAgentSpell(uint32_t spellId)
                 switch (AIspell->spell->getPowerType())
                 {
                     case POWER_TYPE_MANA:
-                    {
-                        if (m_Unit->getPower(POWER_TYPE_MANA) > AIspell->spell->getManaCost())
-                            canCastSpell = true;
-                    }
-                    break;
+                        {
+                            if (m_Unit->getPower(POWER_TYPE_MANA) > AIspell->spell->getManaCost())
+                                canCastSpell = true;
+                        }
+                        break;
                     case POWER_TYPE_FOCUS:
-                    {
-                        if (m_Unit->getPower(POWER_TYPE_FOCUS) > AIspell->spell->getManaCost())
-                            canCastSpell = true;
-                    }
-                    break;
+                        {
+                            if (m_Unit->getPower(POWER_TYPE_FOCUS) > AIspell->spell->getManaCost())
+                                canCastSpell = true;
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -3575,7 +3577,7 @@ void CreatureAISpells::setMaxStackCount(uint32_t stackCount)
     mMaxStackCount = stackCount;
 }
 
-const uint32_t CreatureAISpells::getMaxStackCount()
+uint32_t CreatureAISpells::getMaxStackCount() const
 {
     return mMaxStackCount;
 }
@@ -3585,17 +3587,17 @@ void CreatureAISpells::setMaxCastCount(uint32_t castCount)
     mMaxCount = castCount;
 }
 
-const uint32_t CreatureAISpells::getMaxCastCount()
+uint32_t CreatureAISpells::getMaxCastCount() const
 {
     return mMaxCount;
 }
 
-const uint32_t CreatureAISpells::getCastCount()
+uint32_t CreatureAISpells::getCastCount() const
 {
     return mCastCount;
 }
 
-const bool CreatureAISpells::isDistanceInRange(float targetDistance)
+bool CreatureAISpells::isDistanceInRange(float targetDistance) const
 {
     if (targetDistance >= mMinPositionRangeToCast && targetDistance <= mMaxPositionRangeToCast)
         return true;
@@ -3609,7 +3611,7 @@ void CreatureAISpells::setMinMaxDistance(float minDistance, float maxDistance)
     mMaxPositionRangeToCast = maxDistance;
 }
 
-const bool CreatureAISpells::isHpInPercentRange(float targetHp)
+bool CreatureAISpells::isHpInPercentRange(float targetHp) const
 {
     if (targetHp >= mMinHpRangeToCast && targetHp <= mMaxHpRangeToCast)
         return true;

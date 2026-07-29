@@ -51,7 +51,7 @@ bool Loot::fillLoot(uint32_t lootId, LootTemplateMap const& tempelateStore, Play
         // Player allowed to Loot this Round
         roundRobinPlayer = lootOwner->getGuid();
 
-        for (uint8_t i = 0; i < group->GetSubGroupCount(); ++i)
+        for (uint32_t i = 0; i < group->GetSubGroupCount(); ++i)
         {
             if (group->GetSubGroup(i) != nullptr)
             {
@@ -63,11 +63,12 @@ bool Loot::fillLoot(uint32_t lootId, LootTemplateMap const& tempelateStore, Play
             }
         }
 
-        for (uint8_t i = 0; i < items.size(); ++i)
+        for (auto& item : items)
         {
-            if (items[i].itemproto)
-                if (items[i].itemproto->Quality < group->GetThreshold())
-                    items[i].is_underthreshold = true;
+            if (item.itemproto && item.itemproto->Quality < group->GetThreshold())
+            {
+                item.is_underthreshold = true;
+            }
         }
     }
     // ... for personal loot

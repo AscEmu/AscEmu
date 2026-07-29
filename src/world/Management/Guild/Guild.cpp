@@ -44,7 +44,8 @@ Guild::Guild() : m_id(0), m_leaderGuid(0), m_createdDate(0), m_bankMoney(0),
     m_level(1), m_experience(0), m_todayExperience(0), mAccountsNumber(0),
     mEventLog(nullptr), mBankEventLog{ nullptr }, mNewsLog(nullptr)
 {
-    memset(&mBankEventLog, 0, (MAX_GUILD_BANK_TABS + 1) * sizeof(GuildLogHolder*));
+    // No memset needed: std::array of std::unique_ptr is automatically initialized with nullptr
+    // memset(&mBankEventLog, 0, (MAX_GUILD_BANK_TABS + 1) * sizeof(GuildLogHolder*));
 }
 
 inline uint32_t GetGuildBankTabPrice(uint8_t tabId)

@@ -188,14 +188,14 @@ void SplineBase::InitLinear(Vector3 const* controls, index_type count, index_typ
 
     points.resize(real_size);
 
-    memcpy(&points[0], controls, sizeof(Vector3) * count);
+    std::ranges::copy_n(controls, count, points.begin());
 
     // first and last two indexes are space for special 'virtual points'
-    // these points are required for proper C_Evaluate and C_Evaluate_Derivative methtod work
+    // these points are required for proper C_Evaluate and C_Evaluate_Derivative method work
     if (cyclic)
         points[count] = controls[cyclic_point];
     else
-        points[count] = controls[count-1];
+        points[count] = controls[count - 1];
 
     index_lo = 0;
     index_hi = cyclic ? count : (count - 1);
@@ -203,47 +203,47 @@ void SplineBase::InitLinear(Vector3 const* controls, index_type count, index_typ
 
 void SplineBase::InitCatmullRom(Vector3 const* controls, index_type count, index_type cyclic_point)
 {
-    const int real_size = count + (cyclic ? (1+2) : (1+1));
+    const int real_size = count + (cyclic ? (1 + 2) : (1 + 1));
 
     points.resize(real_size);
 
     int lo_index = 1;
     int high_index = lo_index + count - 1;
 
-    memcpy(&points[lo_index], controls, sizeof(Vector3) * count);
+    std::ranges::copy_n(controls, count, points.begin() + lo_index);
 
     // first and last two indexes are space for special 'virtual points'
-    // these points are required for proper C_Evaluate and C_Evaluate_Derivative methtod work
+    // these points are required for proper C_Evaluate and C_Evaluate_Derivative method work
     if (cyclic)
     {
         if (cyclic_point == 0)
-            points[0] = controls[count-1];
+            points[0] = controls[count - 1];
         else
-            points[0] = controls[0] - G3D::Vector3{ std::cos(initialOrientation), std::sin(initialOrientation), 0.0f };
+            points[0] = controls[0] - G3D::Vector3{std::cos(initialOrientation), std::sin(initialOrientation), 0.0f};
 
-        points[high_index+1] = controls[cyclic_point];
-        points[high_index+2] = controls[cyclic_point+1];
+        points[high_index + 1] = controls[cyclic_point];
+        points[high_index + 2] = controls[cyclic_point + 1];
     }
     else
     {
-        points[0] = controls[0] - G3D::Vector3{ std::cos(initialOrientation), std::sin(initialOrientation), 0.0f };
-        points[high_index+1] = controls[count-1];
+        points[0] = controls[0] - G3D::Vector3{std::cos(initialOrientation), std::sin(initialOrientation), 0.0f};
+        points[high_index + 1] = controls[count - 1];
     }
 
     index_lo = lo_index;
     index_hi = high_index + (cyclic ? 1 : 0);
 }
 
-void SplineBase::InitBezier3(Vector3 const* controls, index_type count, index_type /*cyclic_point*/)
+void SplineBase::InitBezier3(Vector3 const* controls, index_type count, [[maybe_unused]] index_type cyclic_point)
 {
-    index_type c = count / 3u * 3u;
-    index_type t = c / 3u;
+    index_type c = count / 3 * 3;
+    index_type t = c / 3;
 
     points.resize(c);
-    memcpy(&points[0], controls, sizeof(Vector3) * c);
+    std::ranges::copy_n(controls, c, points.begin());
 
     index_lo = 0;
-    index_hi = t-1;
+    index_hi = t - 1;
     //mov_assert(points.size() % 3 == 0);
 }
 
@@ -257,13 +257,15 @@ void SplineBase::clear()
 std::string SplineBase::ToString() const
 {
     std::stringstream str;
-    const char * mode_str[ModesEnd] = {"Linear", "CatmullRom", "Bezier3", "Uninitialized"};
+    const char* modeStr[ModesEnd] = {"Linear", "CatmullRom", "Bezier3", "Uninitialized"};
 
-    auto count = points.size();
-    str << "mode: " << mode_str[mode()] << "\n";
-    str << "points count: " << count << "\n";
-    for (index_type i = 0; i < count; ++i)
+    str << "mode: " << modeStr[mode()] << "\n";
+    str << "points count: " << points.size() << "\n";
+
+    for (size_t i = 0; i < points.size(); ++i)
+    {
         str << "point " << i << " : " << points[i].toString() << "\n";
+    }
 
     return str.str();
 }

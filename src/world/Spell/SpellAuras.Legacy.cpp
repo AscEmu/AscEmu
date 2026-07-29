@@ -5670,7 +5670,7 @@ void Aura::HandleAuraControlVehicle([[maybe_unused]] AuraEffectModifier* aurEff,
     if (!getCaster()->isCreatureOrPlayer())
         return;
 
-    if (m_target->isCreature() && !m_target->isVehicle() || !m_target->getVehicleKit())
+    if ((m_target->isCreature() && !m_target->isVehicle()) || !m_target->getVehicleKit())
         return;
 
     Unit* caster = static_cast<Unit*>(getCaster());

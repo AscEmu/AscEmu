@@ -12,12 +12,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 ConsoleSocket::ConsoleSocket(SOCKET iFd) :
     Socket(iFd, 10000, 1000),
+    isWebClient(false),
     mInputBufferLength(ConsoleDefines::localBuffer),
     mInputBufferPosition(0),
     mConsoleSocketState(ConsoleDefines::RemoteConsoleState::WaitForUsername),
-    mFailedLoginCount(0),
     mRequestId(0),
-    isWebClient(false)
+    mFailedLoginCount(0)
 {
     mInputBuffer = std::make_unique<char[]>(ConsoleDefines::localBuffer);
     mRemoteConsole = std::make_unique<RemoteConsole>(this);
@@ -73,7 +73,7 @@ void ConsoleSocket::handleConsoleInput()
     mInputBufferPosition += readLength;
 
     char* inputChar = strchr(mInputBuffer.get(), '\n');
-    while (inputChar != NULL)
+    while (inputChar != nullptr)
     {
         uint32_t inputLength = (uint32_t)((inputChar + 1) - mInputBuffer.get());
         if (*(inputChar - 1) == '\r')
@@ -88,42 +88,39 @@ void ConsoleSocket::handleConsoleInput()
             switch (mConsoleSocketState)
             {
                 case ConsoleDefines::RemoteConsoleState::WaitForUsername:
-                {
-                    mConsoleAuthName = std::string(mInputBuffer.get());
-                    mRemoteConsole->Write("password: ");
-                    mConsoleSocketState = ConsoleDefines::RemoteConsoleState::WaitForPassword;
-
-                } break;
+                    {
+                        mConsoleAuthName = std::string(mInputBuffer.get());
+                        mRemoteConsole->Write("password: ");
+                        mConsoleSocketState = ConsoleDefines::RemoteConsoleState::WaitForPassword;
+                    } break;
                 case ConsoleDefines::RemoteConsoleState::WaitForPassword:
-                {
-                    mConsoleAuthPassword = std::string(mInputBuffer.get());
-                    mRemoteConsole->Write("\r\nAttempting to authenticate. Please wait.\r\n");
+                    {
+                        mConsoleAuthPassword = std::string(mInputBuffer.get());
+                        mRemoteConsole->Write("\r\nAttempting to authenticate. Please wait.\r\n");
 
-                    mRequestId = sConsoleAuthMgr.getGeneratedId();
-                    sConsoleAuthMgr.addRequestIdSocket(mRequestId, this);
+                        mRequestId = sConsoleAuthMgr.getGeneratedId();
+                        sConsoleAuthMgr.addRequestIdSocket(mRequestId, this);
 
-                    testConsoleLogin(mConsoleAuthName, mConsoleAuthPassword, mRequestId);
-
-                } break;
+                        testConsoleLogin(mConsoleAuthName, mConsoleAuthPassword, mRequestId);
+                    } break;
                 case ConsoleDefines::RemoteConsoleState::UserLoggedIn:
-                {
-                    if (AscEmu::Util::Strings::isEqual(mInputBuffer.get(), "quit"))
                     {
-                        disconnect();
-                        break;
-                    }
+                        if (AscEmu::Util::Strings::isEqual(mInputBuffer.get(), "quit"))
+                        {
+                            disconnect();
+                            break;
+                        }
 
-                    if (AscEmu::Util::Strings::isEqual(mInputBuffer.get(), "webclient"))
-                    {
-                        isWebClient = true;
-                        break;
+                        if (AscEmu::Util::Strings::isEqual(mInputBuffer.get(), "webclient"))
+                        {
+                            isWebClient = true;
+                            break;
+                        }
                     }
-                }
                 default:
-                {
-                    processConsoleInput(mRemoteConsole.get(), mInputBuffer.get(), isWebClient);
-
-                } break;
+                    {
+                        processConsoleInput(mRemoteConsole.get(), mInputBuffer.get(), isWebClient);
+                    } break;
             }
         }
 

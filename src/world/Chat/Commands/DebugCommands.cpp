@@ -741,20 +741,17 @@ bool ChatCommandHandler::HandleDebugDumpMovementCommand(const char* /*args*/, Wo
 //.debug infront
 bool ChatCommandHandler::HandleDebugInFrontCommand(const char* /*args*/, WorldSession* m_session)
 {
-    Object* obj;
+    Object* obj = m_session->GetPlayer();
 
     uint64_t guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
-        if ((obj = m_session->GetPlayer()->getWorldMap()->getUnit(guid)) == 0)
+        obj = m_session->GetPlayer()->getWorldMap()->getUnit(guid);
+        if (obj == nullptr)
         {
             systemMessage(m_session, "You should select a character or a creature.");
             return true;
         }
-    }
-    else
-    {
-        obj = m_session->GetPlayer();
     }
 
     systemMessage(m_session, "In front result: {}", m_session->GetPlayer()->isInFront(obj));
@@ -797,20 +794,17 @@ bool ChatCommandHandler::HandleShowReactionCommand(const char* args, WorldSessio
 //.debug dist
 bool ChatCommandHandler::HandleDistanceCommand(const char* /*args*/, WorldSession* m_session)
 {
-    Object* obj;
+    Object* obj = m_session->GetPlayer();
 
     uint64_t guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
-        if ((obj = m_session->GetPlayer()->getWorldMap()->getUnit(guid)) == 0)
+        obj = m_session->GetPlayer()->getWorldMap()->getUnit(guid);
+        if (obj == nullptr)
         {
             systemMessage(m_session, "You should select a character or a creature.");
             return true;
         }
-    }
-    else
-    {
-        obj = m_session->GetPlayer();
     }
 
     float dist = m_session->GetPlayer()->CalcDistance(obj);
@@ -839,7 +833,6 @@ bool ChatCommandHandler::HandleAIMoveCommand(const char* args, WorldSession* m_s
 
     uint32_t Move = 1;
     uint32_t Run = 0;
-    uint32_t Time = 0;
     uint32_t Meth = 0;
 
     char* pMove = strtok((char*)args, " ");
@@ -849,10 +842,6 @@ bool ChatCommandHandler::HandleAIMoveCommand(const char* args, WorldSession* m_s
     char* pRun = strtok(nullptr, " ");
     if (pRun)
         Run = atoi(pRun);
-
-    char* pTime = strtok(nullptr, " ");
-    if (pTime)
-        Time = atoi(pTime);
 
     char* pMeth = strtok(nullptr, " ");
     if (pMeth)

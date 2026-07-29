@@ -111,7 +111,6 @@ bool ChatCommandHandler::HandleAdminMassSummonCommand(const char* args, WorldSes
     {
         faction = 0;
         snprintf(Buffer, 170, "%s%s Has requested a mass summon of all Alliance players. Do not feel obliged to accept the summon, as it is most likely for an event or a test of sorts", MSG_COLOR_GOLD, m_session->GetPlayer()->getName().c_str());
-
     }
     else if (*args == 'h')
     {
@@ -125,22 +124,16 @@ bool ChatCommandHandler::HandleAdminMassSummonCommand(const char* args, WorldSes
 
     uint32_t summon_count = 0;
     std::lock_guard guard(sObjectMgr.m_playerLock);
-    for (const auto playerPair : sObjectMgr.getPlayerStorage())
+    for (const auto& playerPair : sObjectMgr.getPlayerStorage())
     {
         Player* player = playerPair.second;
         if (player->getSession() && player->IsInWorld())
         {
-            if (faction > -1 && player->getTeam() == static_cast<uint32_t>(faction))
+            if (faction == -1 || player->getTeam() == static_cast<uint32_t>(faction))
             {
                 player->sendSummonRequest(summon_player->getGuidLow(), summon_player->getZoneId(), summon_player->GetMapId(), summon_player->GetInstanceID(), summon_player->GetPosition());
                 ++summon_count;
             }
-            else if (faction == -1)
-            {
-                player->sendSummonRequest(summon_player->getGuidLow(), summon_player->getZoneId(), summon_player->GetMapId(), summon_player->GetInstanceID(), summon_player->GetPosition());
-                ++summon_count;
-            }
-
         }
     }
 
@@ -155,14 +148,16 @@ bool ChatCommandHandler::HandleAdminPlayGlobalSoundCommand(const char* args, Wor
     if (!*args)
         return false;
 
-    uint32_t sound_id = atoi(args);
-    if (sound_id == 0)
+    char* endPtr = nullptr;
+    uint32_t soundId = static_cast<uint32_t>(std::strtoul(args, &endPtr, 10));
+
+    if (endPtr == args || soundId == 0)
         return false;
 
-    sWorld.playSoundToAllPlayers(sound_id);
+    sWorld.playSoundToAllPlayers(soundId);
 
-    blueSystemMessage(m_session, "Broadcasted sound {} to all players.", sound_id);
-    sGMLog.writefromsession(m_session, "Broadcasted sound {} to all players.", sound_id);
+    blueSystemMessage(m_session, "Broadcasted sound {} to all players.", soundId);
+    sGMLog.writefromsession(m_session, "Broadcasted sound {} to all players.", soundId);
 
     return true;
 }

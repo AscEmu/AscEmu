@@ -50,7 +50,7 @@ public:
     GameObject* createGOPassenger(MySQLStructure::GameobjectSpawn* data);
 
     // Build Update for Player
-    uint32_t  buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
+    uint32_t buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target) override;
     void UpdateForMap(WorldMap* map);
 
     // Removes transport from map

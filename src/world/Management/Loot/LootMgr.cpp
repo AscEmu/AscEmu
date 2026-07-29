@@ -123,8 +123,6 @@ bool LootMgr::isFishable(uint32_t zoneid) const
 
 void LootMgr::loadLoot()
 {
-    auto startTime = Util::TimeNow();
-
     //THIS MUST BE CALLED AFTER LOADING OF ITEMS
     is_loading = true;
     loadLootProp();

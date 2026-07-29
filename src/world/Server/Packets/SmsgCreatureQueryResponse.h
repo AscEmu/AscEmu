@@ -14,12 +14,12 @@ namespace AscEmu::Packets
     class SmsgCreatureQueryResponse : public ManagedPacket
     {
     public:
-        CreatureProperties const* info;
+        CreatureProperties const* info = nullptr;
         uint32_t entry;
         const char* name;
         const char* subName;
 
-        SmsgCreatureQueryResponse() : SmsgCreatureQueryResponse(info, 0, "", "")
+        SmsgCreatureQueryResponse() : SmsgCreatureQueryResponse(nullptr, 0, "", "")
         {
         }
 
@@ -100,7 +100,6 @@ namespace AscEmu::Packets
                         packet << uint32_t(0);
                     }
                 }
-
             }
             else
             {

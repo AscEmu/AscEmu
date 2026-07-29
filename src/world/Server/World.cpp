@@ -787,9 +787,9 @@ bool World::setInitialWorldSettings()
     sLogger.info("World : Starting BattlegroundManager...");
     sBattlegroundManager.initialize();
 
-    dw = std::move(std::make_unique<DayWatcherThread>());
+    dw = std::make_unique<DayWatcherThread>();
 
-    broadcastMgr = std::move(std::make_unique<BroadcastMgr>());
+    broadcastMgr = std::make_unique<BroadcastMgr>();
 
     sLogger.info("World: init in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 

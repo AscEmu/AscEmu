@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 std::chrono::milliseconds SchedulerArgs::randtime(std::chrono::milliseconds min, std::chrono::milliseconds max)
 {
     long long diff = max.count() - min.count();
-    ASSERT(diff >= 0)
-    ASSERT(diff <= (uint32_t)-1)
+    ASSERT(diff >= 0);
+    ASSERT(diff <= (uint32_t)-1);
 
     auto& rng = Util::getRandomEngine();
     std::uniform_int_distribution<long long> uni(0, diff);

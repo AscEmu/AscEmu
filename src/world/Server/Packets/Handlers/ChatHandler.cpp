@@ -120,7 +120,7 @@ LanguageSkillSpell getLanguageSkillSpell(uint8_t language)
         if (languageSkillSpell.languageId == language)
             return languageSkillSpell;
     }
-    return { LANG_UNIVERSAL, 0, 0 };
+    return {LANG_UNIVERSAL, 0, 0};
 }
 
 void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
@@ -132,7 +132,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
     auto messageLanguage = srlPacket.language;
     auto player_can_speak_language = true;
 
-    if (messageLanguage != LANG_ADDON)
+    if (messageLanguage != static_cast<uint32_t>(LANG_ADDON))
     {
         if (messageLanguage <= languageSpellSkillStore.size())
         {
@@ -170,13 +170,13 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         case CHAT_MSG_YELL:
         case CHAT_MSG_WHISPER:
         case CHAT_MSG_CHANNEL:
-        {
-            if (m_muted >= static_cast<uint32_t>(UNIXTIME))
             {
-                SystemMessage("You are currently muted by a moderator.");
-                return;
-            }
-        } break;
+                if (m_muted >= static_cast<uint32_t>(UNIXTIME))
+                {
+                    SystemMessage("You are currently muted by a moderator.");
+                    return;
+                }
+            } break;
         default:
             break;
     }
@@ -256,7 +256,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 
             if (auto const group = _player->getGroup())
             {
-                if (srlPacket.type == CHAT_MSG_PARTY || srlPacket.type == CHAT_MSG_PARTY_LEADER && group->isRaid())
+                if (srlPacket.type == CHAT_MSG_PARTY || (srlPacket.type == CHAT_MSG_PARTY_LEADER && group->isRaid()))
                 {
                     if (auto* const subgroup = group->GetSubGroup(_player->getSubGroupSlot()))
                     {
@@ -335,7 +335,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                         playerTarget->getSession()->sendManagedPacket(messagePacket);
                     }
 
-                    if (messageLanguage != LANG_ADDON)
+                    if (messageLanguage != static_cast<uint32_t>(LANG_ADDON))
                     {
                         // TODO Verify should this be LANG_UNIVERSAL?
                         SmsgMessageChat messagePacket(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, gmFlag, srlPacket.message, playerTarget->getGuid());
@@ -362,37 +362,36 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             }
         } break;
         case CHAT_MSG_CHANNEL:
-        {
-            if (auto channel = sChannelMgr.getChannel(srlPacket.destination, _player))
-                channel->say(_player, srlPacket.message, nullptr, false);
-
-        } break;
+            {
+                if (auto channel = sChannelMgr.getChannel(srlPacket.destination, _player))
+                    channel->say(_player, srlPacket.message, nullptr, false);
+            } break;
         case CHAT_MSG_AFK:
-        {
-            _player->setAFKReason(srlPacket.message);
-            _player->toggleAfk();
-        } break;
+            {
+                _player->setAFKReason(srlPacket.message);
+                _player->toggleAfk();
+            } break;
         case CHAT_MSG_DND:
-        {
-            _player->setAFKReason(srlPacket.message);
-            _player->toggleDnd();
-        } break;
+            {
+                _player->setAFKReason(srlPacket.message);
+                _player->toggleDnd();
+            } break;
         case CHAT_MSG_BATTLEGROUND:
         case CHAT_MSG_BATTLEGROUND_LEADER:
-        {
-            if (!player_can_speak_language || !_player->m_bg)
-                break;
+            {
+                if (!player_can_speak_language || !_player->m_bg)
+                    break;
 
 #if VERSION_STRING >= Cata
-            // Use correct type for group leader
-            if (auto const group = _player->getGroup())
-                if (group->GetLeader() == _player->getPlayerInfo())
-                    srlPacket.type = CHAT_MSG_BATTLEGROUND_LEADER;
+                // Use correct type for group leader
+                if (auto const group = _player->getGroup())
+                    if (group->GetLeader() == _player->getPlayerInfo())
+                        srlPacket.type = CHAT_MSG_BATTLEGROUND_LEADER;
 #endif
 
-            _player->m_bg->distributePacketToTeam(SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), _player->getTeam());
-        } break;
-        default: 
+                _player->m_bg->distributePacketToTeam(SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), _player->getTeam());
+            } break;
+        default:
             break;
     }
 }

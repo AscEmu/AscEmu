@@ -28,10 +28,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/TimeTracker.hpp"
 
 CreatureAIScript::CreatureAIScript(Creature* creature) :
-mScriptPhase(0), summons(creature), mCreatureTimerCount(0), mAIUpdateFrequency(defaultUpdateFrequency), isIdleEmoteEnabled(false), idleEmoteTimerId(0),
-idleEmoteTimeMin(0), idleEmoteTimeMax(0), _creature(creature), linkedCreatureAI(nullptr),
-mCreatureAIScheduler(std::make_shared<CreatureAIFunctionScheduler>(this)),
-m_oldAIUpdate(std::make_unique<Util::SmallTimeTracker>(1000))
+    mScriptPhase(0), summons(creature), mCreatureTimerCount(0), mCreatureAIScheduler(std::make_shared<CreatureAIFunctionScheduler>(this)), mAIUpdateFrequency(defaultUpdateFrequency), m_oldAIUpdate(std::make_unique<Util::SmallTimeTracker>(1000)),
+    isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0),
+    _creature(creature),
+    linkedCreatureAI(nullptr)
 {
     mCreatureTimerIds.clear();
     mCreatureTimer.clear();
@@ -949,7 +949,7 @@ bool CreatureAIScript::_isTimerFinished(uint32_t timerId)
 
 void CreatureAIScript::_cancelAllTimers()
 {
-    if (InstanceScript* inScript = getInstanceScript())
+    if (getInstanceScript() != nullptr)
     {
         for (auto& timer : mCreatureTimerIds)
             _removeTimer(timer);
@@ -966,7 +966,7 @@ void CreatureAIScript::_cancelAllTimers()
 
 uint32_t CreatureAIScript::_getTimerCount()
 {
-    if (InstanceScript* inScript = getInstanceScript())
+    if (getInstanceScript() != nullptr)
         return static_cast<uint32_t>(mCreatureTimerIds.size());
 
     return static_cast<uint32_t>(mCreatureTimer.size());
@@ -996,7 +996,7 @@ void CreatureAIScript::displayCreatureTimerList(Player* player)
     }
     else
     {
-        if (InstanceScript* inScript = getInstanceScript())
+        if (getInstanceScript() != nullptr)
         {
             for (const auto& intTimer : mCreatureTimerIds)
                 player->broadcastMessage("  TimerId (%u)  %u ms left", intTimer, _getTimeForTimer(intTimer));

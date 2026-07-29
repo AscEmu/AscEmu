@@ -259,7 +259,8 @@ void BattlegroundManager::handleBattlegroundJoin(WorldSession* session, WorldPac
     else
         plr->setIsQueuedForRbg(false);
 
-    if (srlPacket.bgType >= BATTLEGROUND_NUM_TYPES || srlPacket.bgType == 0 || m_bgMaps.find(srlPacket.bgType) == m_bgMaps.end() && srlPacket.bgType != BattlegroundDef::TYPE_RANDOM)
+    if (srlPacket.bgType >= BATTLEGROUND_NUM_TYPES || srlPacket.bgType == 0 ||
+        (!m_bgMaps.contains(srlPacket.bgType) && srlPacket.bgType != BattlegroundDef::TYPE_RANDOM))
     {
         sCheatLog.writefromsession(session, "Attempted to join invalid battleground type: {}.", srlPacket.bgType);
         plr->softDisconnect();
@@ -802,7 +803,10 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
                 }
 
                 uint32_t minPlayers = sBattlegroundManager.getMinimumPlayers(bgToStart);
-                if (forceStart || tempPlayerVec[0].size() >= minPlayers && tempPlayerVec[1].size() >= minPlayers && bgToStart != BattlegroundDef::TYPE_RANDOM)
+                const bool isNotRandom = (bgToStart != BattlegroundDef::TYPE_RANDOM);
+                const bool hasEnoughPlayers = (tempPlayerVec[0].size() >= minPlayers) && (tempPlayerVec[1].size() >= minPlayers);
+
+                if (forceStart || (hasEnoughPlayers && isNotRandom))
                 {
                     if (canCreateInstance(bgToStart, _levelGroup))
                     {

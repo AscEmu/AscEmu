@@ -45,39 +45,39 @@ Arena::Arena(WorldMap* _worldMap, uint32_t _id, uint32_t _levelGroup, uint32_t _
 
     switch (_arenaType)
     {
-    case BattlegroundDef::TYPE_ARENA_5V5:
-        m_arenateamtype = 2;
-        break;
-    case BattlegroundDef::TYPE_ARENA_3V3:
-        m_arenateamtype = 1;
-        break;
-    case BattlegroundDef::TYPE_ARENA_2V2:
-        m_arenateamtype = 0;
-        break;
-    default:
-        m_arenateamtype = 0;
-        break;
+        case BattlegroundDef::TYPE_ARENA_5V5:
+            m_arenateamtype = 2;
+            break;
+        case BattlegroundDef::TYPE_ARENA_3V3:
+            m_arenateamtype = 1;
+            break;
+        case BattlegroundDef::TYPE_ARENA_2V2:
+            m_arenateamtype = 0;
+            break;
+        default:
+            m_arenateamtype = 0;
+            break;
     }
 
     switch (m_mapMgr->getBaseMap()->getMapId())
     {
-    case 559:
-        m_zoneId = 3698;
-        break;
-    case 562:
-        m_zoneId = 3702;
-        break;
-    case 572:
-        m_zoneId = 3968;
-        break;
-    case 617:
-        m_zoneId = 4378;
-        break;
-    case 618:
-        m_zoneId = 4408;
-        break;
-    default:
-        break;
+        case 559:
+            m_zoneId = 3698;
+            break;
+        case 562:
+            m_zoneId = 3702;
+            break;
+        case 572:
+            m_zoneId = 3968;
+            break;
+        case 617:
+            m_zoneId = 4378;
+            break;
+        case 618:
+            m_zoneId = 4408;
+            break;
+        default:
+            break;
     }
 }
 

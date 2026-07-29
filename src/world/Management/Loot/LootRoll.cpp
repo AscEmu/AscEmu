@@ -24,8 +24,8 @@ This file is released under the MIT license. See README-MIT for more information
 using namespace AscEmu::Packets;
 
 LootRoll::LootRoll(uint32_t timer, uint32_t groupcount, uint64_t guid, uint8_t slotid, uint32_t itemid, uint32_t randomsuffixid, uint32_t randompropertyid, WorldMap* mgr) :
-    EventableObject(), _mgr(mgr), _groupcount(groupcount), _guid(guid), _slotid(slotid), _itemid(itemid),
-    _randomsuffixid(randomsuffixid), _randompropertyid(randompropertyid), _remaining(groupcount)
+    EventableObject(), _groupcount(groupcount), _slotid(slotid), _itemid(itemid), _randomsuffixid(randomsuffixid), _randompropertyid(randompropertyid),
+    _remaining(groupcount), _guid(guid), _mgr(mgr)
 {
     sEventMgr.AddEvent(this, &LootRoll::finalize, EVENT_LOOT_ROLL_FINALIZE, timer, 1, 0);
 }

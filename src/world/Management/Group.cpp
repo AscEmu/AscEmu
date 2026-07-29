@@ -203,7 +203,7 @@ void Group::Update()
 
     Player* pNewLeader = nullptr;
 
-    if (!m_Leader || m_Leader && sObjectMgr.getPlayer(m_Leader->guid))
+    if (!m_Leader || (m_Leader && sObjectMgr.getPlayer(m_Leader->guid)))
     {
         pNewLeader = FindFirstPlayer();
         if (pNewLeader)
@@ -322,10 +322,16 @@ void Group::Update()
                 data << uint8_t(0);   // 3.3 - unk
 
                 if (Player* loggedInPlayer = sObjectMgr.getPlayer(characterInfo->guid))
+                {
                     if (!loggedInPlayer->IsInWorld())
+                    {
                         loggedInPlayer->copyAndSendDelayedPacket(&data);
+                    }
                     else
+                    {
                         loggedInPlayer->getSession()->SendPacket(&data);
+                    }
+                }
             }
         }
     }
@@ -826,7 +832,7 @@ void Group::SaveToDB()
         uint8_t j = 0;
 
         // For each member in the group, while membercount is less than 5 (guard clause), add their ID to query
-        for (const auto itr : m_SubGroups[i]->getGroupMembers())
+        for (const auto& itr : m_SubGroups[i]->getGroupMembers())
         {
             ss << itr->guid << ",";
             ++j;
@@ -840,8 +846,11 @@ void Group::SaveToDB()
     }
 
     // Fill remaining empty slots
-    for (membersNotFilled; membersNotFilled > 0; --membersNotFilled)
+    while (membersNotFilled > 0)
+    {
         ss << "0,";
+        --membersNotFilled;
+    }
 
     //for (uint32_t i = 0; i < fillers; ++i)
     //    ss << "0, 0, 0, 0, 0,";
@@ -1105,9 +1114,10 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
                     uint16_t questIdOffset = 5;
 #endif
 
+                    const uint32_t startBit = getOffsetForStructuredField(WoWPlayer, quests);
+
                     for (uint8_t x = 0; x < WOWPLAYER_QUEST_COUNT; ++x)
                     {
-                        const uint32_t startBit = getOffsetForStructuredField(WoWPlayer, quests);
                         if (plr->getQuestLogEntryForSlot(x))
                         {
                             for (uint16_t j = startBit * x; j < startBit * x + questIdOffset; ++j)
@@ -1742,15 +1752,13 @@ void Group::updateLooterGuid(Object* pLootedObject)
                 {
                     continue;
                 }
-                else
+
+                if (m_SubGroups[i]->m_GroupMembers.begin() != m_SubGroups[i]->m_GroupMembers.end())
                 {
-                    if (m_SubGroups[i]->m_GroupMembers.begin() != m_SubGroups[i]->m_GroupMembers.end())
-                    {
-                        member = m_SubGroups[i]->m_GroupMembers.begin();
-                        if ((*member))
-                            if (Player const* loggedInPlayer = sObjectMgr.getPlayer((*member)->guid))
-                                pNewLooter = (*member);
-                    }
+                    member = m_SubGroups[i]->m_GroupMembers.begin();
+                    if ((*member))
+                        if (sObjectMgr.getPlayer((*member)->guid))
+                            pNewLooter = (*member);
                 }
             }
         }
@@ -1765,7 +1773,7 @@ void Group::updateLooterGuid(Object* pLootedObject)
                     member = m_SubGroups[x]->m_GroupMembers.begin();
                     if ((*member))
                     {
-                        if (Player const* loggedInPlayer = sObjectMgr.getPlayer((*member)->guid))
+                        if (sObjectMgr.getPlayer((*member)->guid))
                         {
                             if ((*member) != oldLooter)
                             {

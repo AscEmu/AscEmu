@@ -169,6 +169,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/PacketBroadcast.hpp"
 
+#include <algorithm>
 #include <sstream>
 #include <vector>
 
@@ -208,11 +209,11 @@ CachedCharacterInfo::~CachedCharacterInfo()
 
 Player::Player(uint32_t guid) :
     m_updateMgr(this, static_cast<size_t>(worldConfig.server.compressionThreshold), 40000, 30000, 1000),
-    m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
-    m_mailBox(std::make_unique<Mailbox>(guid)),
-    m_speedCheatDetector(std::make_unique<SpeedCheatDetector>()),
+    m_TradeData(nullptr),
     m_groupUpdateFlags(GROUP_UPDATE_FLAG_NONE),
-    m_TradeData(nullptr)
+    m_speedCheatDetector(std::make_unique<SpeedCheatDetector>()),
+    m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
+    m_mailBox(std::make_unique<Mailbox>(guid))
 {
     //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_PLAYER;
@@ -1680,7 +1681,7 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
         m_underwaterState &= ~UNDERWATERSTATE_UNDERWATER;
 
     // can only fly in outlands or northrend (northrend requires cold weather flying)
-    if (m_flyingAura && ((m_mapId != 530) && (m_mapId != 571 || !hasSpell(54197) && getDeathState() == ALIVE)))
+    if (m_flyingAura && ((m_mapId != 530) && (m_mapId != 571 || (!hasSpell(54197) && getDeathState() == ALIVE))))
     {
         removeAllAurasById(m_flyingAura);
         m_flyingAura = 0;
@@ -1711,7 +1712,7 @@ void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
         speedCheatDelay(10000);
 
         // can only fly in outlands or northrend (northrend requires cold weather flying)
-        if (m_flyingAura && ((m_mapId != 530) && (m_mapId != 571 || !hasSpell(54197) && getDeathState() == ALIVE)))
+        if (m_flyingAura && ((m_mapId != 530) && (m_mapId != 571 || (!hasSpell(54197) && getDeathState() == ALIVE))))
         {
             removeAllAurasById(m_flyingAura);
             m_flyingAura = 0;
@@ -2022,7 +2023,7 @@ void Player::eventExploration()
         if (areaTableEntry->flags & MapManagement::AreaManagement::AREA_FLAG_CAPITAL)
         {
             // check faction
-            if (areaTableEntry->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance() || (areaTableEntry->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
+            if ((areaTableEntry->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (areaTableEntry->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
                 rest_on = true;
             else if (areaTableEntry->team != AREAC_ALLIANCE_TERRITORY && areaTableEntry->team != AREAC_HORDE_TERRITORY)
                 rest_on = true;
@@ -2035,7 +2036,7 @@ void Player::eventExploration()
                 auto at2 = AreaStorage::GetAreaById(areaTableEntry->zone);
                 if (at2 && (at2->flags & MapManagement::AreaManagement::AREA_FLAG_CAPITAL))
                 {
-                    if (at2->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance() || (at2->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
+                    if ((at2->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (at2->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
                         rest_on = true;
                     else if (at2->team != AREAC_ALLIANCE_TERRITORY && at2->team != AREAC_HORDE_TERRITORY)
                         rest_on = true;
@@ -7212,7 +7213,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
         m_WorldMap->getScript()->OnPlayerDeath(this, unitAttacker);
 
     uint32_t selfResSpellId = 0;
-    if (!m_bg || m_bg && !m_bg->isArena())
+    if (!m_bg || (m_bg && !m_bg->isArena()))
     {
         selfResSpellId = getSelfResurrectSpell();
 
@@ -7450,7 +7451,7 @@ void Player::repopRequest()
 
     buildRepop();
 
-    if (!m_bg || m_bg && m_bg->hasStarted())
+    if (!m_bg || (m_bg && m_bg->hasStarted()))
     {
         if (const auto mapInfo = sMySQLStore.getWorldMapInfo(GetMapId()))
         {
@@ -9072,13 +9073,13 @@ void Player::removeFromFriendList(uint32_t guid)
 void Player::addNoteToFriend(uint32_t guid, std::string note)
 {
     std::lock_guard<std::mutex> guard(m_mutexFriendList);
-    for (const auto friends : m_socialIFriends)
+    for (const auto& friends : m_socialIFriends)
     {
         if (friends.friendGuid == guid)
         {
             friends.note = note;
             CharacterDatabase.execute("UPDATE social_friends SET note = \'%s\' WHERE character_guid = %u AND friend_guid = %u",
-                !note.empty() ? CharacterDatabase.escapeString(note).c_str() : "", getGuidLow(), guid);
+                                      !note.empty() ? CharacterDatabase.escapeString(note).c_str() : "", getGuidLow(), guid);
         }
     }
 }
@@ -9086,12 +9087,9 @@ void Player::addNoteToFriend(uint32_t guid, std::string note)
 bool Player::isFriended(uint32_t guid) const
 {
     std::lock_guard<std::mutex> guard(m_mutexFriendList);
-    for (const auto friends : m_socialIFriends)
-    {
-        if (friends.friendGuid == guid)
-            return true;
-    }
-    return false;
+    return std::ranges::any_of(m_socialIFriends, [guid](auto const& entry) {
+        return entry.friendGuid == guid;
+    });
 }
 
 void Player::sendFriendStatus(bool comesOnline)
@@ -11523,9 +11521,8 @@ bool Player::addNewFaction(WDB::Structures::FactionEntry const* factionEntry, in
 
     for (uint8_t i = 0; i < 4; ++i)
     {
-        if ((factionEntry->RaceMask[i] & getRaceMask() || 
-            factionEntry->RaceMask[i] == 0 && factionEntry->ClassMask[i] != 0) && 
-            (factionEntry->ClassMask[i] & getClassMask() || factionEntry->ClassMask[i] == 0))
+        if (((factionEntry->RaceMask[i] & getRaceMask()) != 0 || (factionEntry->RaceMask[i] == 0 && factionEntry->ClassMask[i] != 0)) &&
+            ((factionEntry->ClassMask[i] & getClassMask()) != 0 || factionEntry->ClassMask[i] == 0))
         {
             const auto flag = static_cast<uint8_t>(factionEntry->repFlags[i]);
             const auto baseStanding = factionEntry->baseRepValue[i];
@@ -16147,10 +16144,14 @@ void Player::completeLoading()
     }
     else if (hasPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE))
     {
-        if (const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow()))
+        if (sObjectMgr.getCorpseByOwner(getGuidLow()) != nullptr)
+        {
             setDeathState(CORPSE);
+        }
         else
+        {
             sEventMgr.AddEvent(this, &Player::repopAtGraveyard, GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId(), EVENT_PLAYER_CHECKFORCHEATS, 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        }
     }
 
     if (isDead())
@@ -16502,7 +16503,7 @@ void Player::saveAuras(std::stringstream& ss)
 void Player::calculateDamage()
 {
     float rangeDamage;
-    
+
     // Mainhand
     float attackPowerBonus = getCalculatedAttackPower() / 14000.0f;
     float deltaDone = (float)getModDamageDonePositive(SCHOOL_NORMAL) - (float)getModDamageDoneNegative(SCHOOL_NORMAL);
@@ -16512,7 +16513,7 @@ void Player::calculateDamage()
         float damageMod = 1;
         for (std::map<uint32_t, WeaponModifier>::iterator i = m_damageDone.begin(); i != m_damageDone.end(); ++i)
         {
-            if (i->second.wclass == (uint32_t)-1)  // applying only "any weapon" modifiers
+            if (i->second.wclass == (uint32_t)-1) // applying only "any weapon" modifiers
                 damageMod += i->second.value;
         }
 

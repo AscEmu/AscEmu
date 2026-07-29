@@ -77,7 +77,7 @@ namespace
         std::abort();
     }
 
-    int tryRunWorldCrashTests(std::string test)
+    [[maybe_unused]] int tryRunWorldCrashTests(std::string_view test)
     {
         if (test == "--crash-test-stack")
             return runWorldCrashTestStack();

@@ -59,6 +59,9 @@ public:
         mTime = settings.getSubmitTime();
     }
 
+    // Default copy assignment operator
+    MembershipRequest& operator=(MembershipRequest const&) = default;
+
     MembershipRequest(uint32_t playerGUID, uint32_t guildId, uint32_t availability, uint32_t classRoles, uint32_t interests, std::string& comment, time_t submitTime) :
         mComment(comment), mGuildId(guildId), mPlayerGUID(playerGUID), mAvailability(static_cast<uint8_t>(availability)),
         mClassRoles(static_cast<uint8_t>(classRoles)), mInterests(static_cast<uint8_t>(interests)), mTime(submitTime)  {}
@@ -72,7 +75,7 @@ public:
     uint8_t getClassRoles() const { return mClassRoles; }
     uint8_t getInterests() const { return mInterests; }
     time_t getSubmitTime() const { return mTime; }
-    time_t getExpiryTime() const { return time_t(mTime + 30 * 24 * 3600); }
+    time_t getExpiryTime() const { return mTime + (30LL * 24 * 3600); }
     std::string const& getComment() const { return mComment; }
 
 private:
@@ -127,6 +130,9 @@ public:
         mLevel = settings.getLevel();
     }
 
+    // Default copy assignment operator
+    LFGuildPlayer& operator=(LFGuildPlayer const&) = default;
+
     uint32_t getGUID() const { return mGuid; }
     uint8_t getClassRoles() const { return mRoles; }
     uint8_t getAvailability() const { return mAvailability; }
@@ -158,6 +164,9 @@ public:
 
     LFGuildSettings(LFGuildSettings const& settings) :
         LFGuildPlayer(settings), mIsListed(settings.isListed()), mTeam(settings.getTeam()) {}
+
+    // Default copy assignment operator
+    LFGuildSettings& operator=(LFGuildSettings const&) = default;
 
     bool isListed() const { return mIsListed; }
     void setListed(bool state) { mIsListed = state; }

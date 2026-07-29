@@ -2653,7 +2653,7 @@ bool Creature::isCritter()
         return false;
 }
 
-void Creature::die(Unit* pAttacker, uint32_t /*damage*/, uint32_t spellid)
+void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32_t spellid)
 {
 #ifdef FT_VEHICLES
     // Exit Vehicle
@@ -2664,14 +2664,6 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, uint32_t spellid)
     if (pAttacker != nullptr && !sHookInterface.OnPreUnitDie(pAttacker, this))
         return;
 
-    // on die and an target die proc
-    {
-        SpellInfo const* killerspell;
-        if (spellid)
-            killerspell = sSpellMgr.getSpellInfo(spellid);
-        else killerspell = NULL;
-    }
-
     setDeathState(JUST_DIED);
     getAIInterface()->enterEvadeMode();
 
@@ -2681,7 +2673,6 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, uint32_t spellid)
 
         if (spl != NULL)
         {
-
             for (uint8_t i = 0; i < 3; i++)
             {
                 if (spl->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
@@ -2751,7 +2742,7 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, uint32_t spellid)
         {
             sQuestMgr.OnPlayerKill(static_cast<Player*>(vehicle_owner), this, true);
         }
-     }
+    }
 
     addUnitFlags(UNIT_FLAG_DEAD);
 
@@ -2768,8 +2759,8 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, uint32_t spellid)
     else if (pAttacker != nullptr && pAttacker->isCreature())
     {
         looter = pAttacker->getPlayerOwner();
-    }   
-    
+    }
+
     // Setup Loot and Round Robin Player in group case
     if (looter)
     {

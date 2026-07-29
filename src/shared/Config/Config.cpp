@@ -94,7 +94,7 @@ namespace
         return std::strtof(buffer.c_str(), &endPtr);
     }
 
-    [[nodiscard]] bool startsWith(std::string_view value, std::string_view prefix) noexcept
+    [[nodiscard]] [[maybe_unused]] bool startsWith(std::string_view value, std::string_view prefix) noexcept
     {
         return value.size() >= prefix.size() && value.substr(0, prefix.size()) == prefix;
     }

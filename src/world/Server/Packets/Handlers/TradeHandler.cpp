@@ -752,19 +752,19 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
         }
     }
 #else
-    data << uint32_t(0);                  // unk
-    data << uint32_t(0);                  // unk
+    data << uint32_t(0); // unk
+    data << uint32_t(0); // unk
     data << uint64_t(tradeData->getTradeMoney());
     data << uint32_t(tradeData->getSpell());
     data << uint32_t(TRADE_SLOT_COUNT);
-    data << uint32_t(0);                  // unk
+    data << uint32_t(0); // unk
     data << uint8_t(tradeState ? 1 : 0);
     data << uint32_t(TRADE_SLOT_COUNT);
 
     uint8_t count = 0;
     for (uint8_t i = 0; i < TRADE_SLOT_COUNT; ++i)
     {
-        if (Item* item = tradeData->getTradeItem(TradeSlots(i)))
+        if (tradeData->getTradeItem(TradeSlots(i)) != nullptr)
             ++count;
     }
 
@@ -779,7 +779,7 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
 
             data.writeBit(giftCreatorGuid[7]);
             data.writeBit(giftCreatorGuid[1]);
-            bool notWrapped = data.writeBit(!item->hasFlags(ITEM_FLAG_WRAPPED));     //wrapped
+            bool notWrapped = data.writeBit(!item->hasFlags(ITEM_FLAG_WRAPPED)); //wrapped
             data.writeBit(giftCreatorGuid[3]);
 
             if (notWrapped)
@@ -834,7 +834,7 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
 
                 data.writeByteSeq(creatorGuid[3]);
 
-                data << uint32_t(0);                      // unk
+                data << uint32_t(0); // unk
 
                 data.writeByteSeq(creatorGuid[0]);
 
@@ -857,7 +857,7 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
 
             data.writeByteSeq(giftCreatorGuid[5]);
 
-            data << uint8_t(i);                           // slot
+            data << uint8_t(i); // slot
 
             data.writeByteSeq(giftCreatorGuid[2]);
             data.writeByteSeq(giftCreatorGuid[3]);

@@ -428,7 +428,7 @@ void Pet::unSummon()
     {
         plrOwner->addGroupUpdateFlag(GROUP_UPDATE_PET);
 
-        if (const auto battleground = plrOwner->getBattleground())
+        if (plrOwner->getBattleground() != nullptr)
         {
             // If owner is in battleground, save pet id or spell so it will be spawned on resurrect
             // Do not reset on temporary pet so previous permanent pet can be summoned
@@ -2183,19 +2183,11 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
     }
 }
 
-void Pet::die(Unit* pAttacker, uint32_t /*damage*/, uint32_t spellid)
+void Pet::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32_t spellid)
 {
     // general hook for die
     if (pAttacker != nullptr && !sHookInterface.OnPreUnitDie(pAttacker, this))
         return;
-
-    // on die and an target die proc
-    {
-        SpellInfo const* killerspell;
-        if (spellid)
-            killerspell = sSpellMgr.getSpellInfo(spellid);
-        else killerspell = NULL;
-    }
 
     setDeathState(JUST_DIED);
     getAIInterface()->enterEvadeMode();

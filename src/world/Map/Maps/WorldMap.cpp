@@ -703,34 +703,34 @@ void WorldMap::PushObject(Object* obj)
             switch (obj->GetTypeFromGUID())
             {
                 case HIGHGUID_TYPE_PET:
-                {
-                    m_PetStorage[obj->GetUIdFromGUID()] = static_cast<Pet*>(obj);
-                } break;
+                    {
+                        m_PetStorage[obj->GetUIdFromGUID()] = static_cast<Pet*>(obj);
+                    } break;
                 case HIGHGUID_TYPE_UNIT:
                 case HIGHGUID_TYPE_VEHICLE:
-                {
-                    if (obj->GetUIdFromGUID() <= m_CreatureHighGuid)
                     {
-                        m_CreatureStorage[obj->GetUIdFromGUID()] = static_cast<Creature*>(obj);
-                        if (static_cast<Creature*>(obj)->m_spawn != nullptr)
+                        if (obj->GetUIdFromGUID() <= m_CreatureHighGuid)
                         {
-                            _sqlids_creatures.insert(std::make_pair(static_cast<Creature*>(obj)->m_spawn->id, static_cast<Creature*>(obj)));
+                            m_CreatureStorage[obj->GetUIdFromGUID()] = static_cast<Creature*>(obj);
+                            if (static_cast<Creature*>(obj)->m_spawn != nullptr)
+                            {
+                                _sqlids_creatures.insert(std::make_pair(static_cast<Creature*>(obj)->m_spawn->id, static_cast<Creature*>(obj)));
+                            }
                         }
-                    }
-                } break;
+                    } break;
                 case HIGHGUID_TYPE_GAMEOBJECT:
-                {
-                    m_GameObjectStorage[obj->GetUIdFromGUID()] = static_cast<GameObject*>(obj);
-                    if (static_cast<GameObject*>(obj)->m_spawn != nullptr)
                     {
-                        _sqlids_gameobjects.insert(std::make_pair(static_cast<GameObject*>(obj)->m_spawn->id, static_cast<GameObject*>(obj)));
-                    }
-                } break;
+                        m_GameObjectStorage[obj->GetUIdFromGUID()] = static_cast<GameObject*>(obj);
+                        if (static_cast<GameObject*>(obj)->m_spawn != nullptr)
+                        {
+                            _sqlids_gameobjects.insert(std::make_pair(static_cast<GameObject*>(obj)->m_spawn->id, static_cast<GameObject*>(obj)));
+                        }
+                    } break;
 
                 case HIGHGUID_TYPE_DYNAMICOBJECT:
-                {
-                    m_DynamicObjectStorage[obj->getGuidLow()] = static_cast<DynamicObject*>(obj);
-                } break;
+                    {
+                        m_DynamicObjectStorage[obj->getGuidLow()] = static_cast<DynamicObject*>(obj);
+                    } break;
             }
         }
 
@@ -953,22 +953,29 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
     }
 
     // Remove the session from our set if it is a player.
-    if (obj->isPlayer() || obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->m_playerControler != nullptr)
+    if (obj->isPlayer() || (obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->m_playerControler != nullptr))
     {
-        for (auto _mapWideStaticObject : _mapWideStaticObjects)
+        if (plObj)
         {
-            if (_mapWideStaticObject != nullptr && plObj)
-                plObj->getUpdateMgr().pushOutOfRangeGuid(_mapWideStaticObject->GetNewGUID());
-        }
+            for (const auto* mapWideStaticObject : _mapWideStaticObjects)
+            {
+                if (mapWideStaticObject != nullptr)
+                {
+                    plObj->getUpdateMgr().pushOutOfRangeGuid(mapWideStaticObject->GetNewGUID());
+                }
+            }
 
-        // Setting an instance ID here will trigger the session to be removed by WorldMap::run(). :)
-        if (plObj && plObj->getSession())
-        {
-            plObj->getSession()->SetInstance(0);
+            // Setting an instance ID here will trigger the session to be removed by WorldMap::run(). :)
+            if (plObj->getSession())
+            {
+                plObj->getSession()->SetInstance(0);
 
-            // Add it to the global session set. Don't "re-add" to session if it is being deleted.
-            if (!plObj->getSession()->bDeleted)
-                sWorld.addGlobalSession(plObj->getSession());
+                // Add it to the global session set. Don't "re-add" to session if it is being deleted.
+                if (!plObj->getSession()->bDeleted)
+                {
+                    sWorld.addGlobalSession(plObj->getSession());
+                }
+            }
         }
     }
 }
@@ -1516,15 +1523,17 @@ void WorldMap::changeObjectLocation(Object* obj)
 
         // if player we need to update cell activity radius = 2 is used in order to update
         // both old and new cells
-        if (obj->isPlayer() || obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->m_playerControler != nullptr)
+        if (obj->isPlayer() || (obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->m_playerControler != nullptr))
         {
             // have to unlock/lock here to avoid a deadlock situation.
             updateCellActivity(cellX, cellY, 2U + cellNumber);
             if (pOldCell != nullptr)
             {
+                const auto threshold = 2 + static_cast<int>(cellNumber);
+
                 // only do the second check if there's -/+ 2 difference
-                if (abs(static_cast<int>(cellX) - static_cast<int>(pOldCell->_x)) > 2 + cellNumber ||
-                    abs(static_cast<int>(cellY) - static_cast<int>(pOldCell->_y)) > 2 + cellNumber)
+                if (std::abs(static_cast<int>(cellX) - static_cast<int>(pOldCell->_x)) > threshold ||
+                    std::abs(static_cast<int>(cellY) - static_cast<int>(pOldCell->_y)) > threshold)
                 {
                     updateCellActivity(pOldCell->_x, pOldCell->_y, cellNumber);
                 }
@@ -1931,6 +1940,8 @@ Unit* WorldMap::getUnit(const uint64_t& guid)
             return getPlayer(wowGuid.getGuidLowPart());
         case HighGuid::Pet:
             return getPet(wowGuid.getGuidLowPart());
+        default:
+            break;
     }
 
     return nullptr;

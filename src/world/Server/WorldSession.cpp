@@ -55,6 +55,7 @@ WorldSession::WorldSession(uint32_t id, std::string name, WorldSocket* sock) :
     m_loggingInPlayer(nullptr),
     m_currMsTime(Util::getMSTime()),
     m_lastPing(0),
+    m_loginTime(0),
     bDeleted(false),
     m_moveDelayTime(0),
     m_clientTimeDelay(0),
@@ -80,8 +81,7 @@ WorldSession::WorldSession(uint32_t id, std::string name, WorldSocket* sock) :
     floodLines(0),
     floodTime(UNIXTIME),
     language(0),
-    m_muted(0),
-    m_loginTime(0)
+    m_muted(0)
 {
 #if VERSION_STRING >= Cata
     isAddonMessageFiltered = false;
@@ -693,6 +693,9 @@ void WorldSession::nothingToHandle(WorldPacket& recv_data)
 
 void WorldSession::SendPacket(WorldPacket* packet)
 {
+    if (!packet)
+        return;
+
     if (packet->getOpcode() == 0x0000)
     {
         sLogger.failure("Return, packet 0x0000 is not a valid packet!");

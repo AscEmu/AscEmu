@@ -100,7 +100,6 @@ namespace AscEmu::Packets
                 bool hasTransport = false;
                 bool hasUnkField = false;
                 uint32_t unkCounter = 0;
-                uint32_t unkMoveCounter = 0;
                 [[maybe_unused]] bool hasPitch = false;
                 bool hasTimestamp = false;
 
@@ -172,7 +171,7 @@ namespace AscEmu::Packets
                     moveGuid[4] = packet.readBit();
                     moveGuid[3] = packet.readBit();
                     hasTimestamp = !packet.readBit();
-                    unkMoveCounter = !packet.readBit();
+                    [[maybe_unused]] uint32_t unkMoveCounter = !packet.readBit();
                     [[maybe_unused]] bool hasMovementFlags = !packet.readBit();
 
                     if (hasMovementFlags2)

@@ -50,8 +50,8 @@ namespace AscEmu::Packets
         {
             if (m_protocol.expansion == WoW::Expansion::_Classic)
             {
-                packet << uint8_t(listCount);
-                for (const auto listMember : contactMemberList)
+                packet << static_cast<uint8_t>(listCount);
+                for (const auto& listMember : contactMemberList)
                 {
                     packet << listMember.guid;
                     packet << listMember.isOnline;
@@ -64,12 +64,12 @@ namespace AscEmu::Packets
             {
                 packet << socialFlag << listCount;
 
-                for (const auto listMember : contactMemberList)
+                for (const auto& listMember : contactMemberList)
                 {
                     packet << listMember.guid;
                     if (m_protocol.expansion == WoW::Expansion::_Mop)
                     {
-                        packet << uint32_t(0) << uint32_t(0);
+                        packet << static_cast<uint32_t>(0) << static_cast<uint32_t>(0);
                     }
                     packet << listMember.flag << listMember.note;
 

@@ -59,11 +59,11 @@ Milliseconds CreatureAIFunction::getCastTimer() { return functionArgs.getCastTim
 
 // Usages
 void CreatureAIFunction::setCount(uint32_t count) { mCount = count; }
-const uint32_t CreatureAIFunction::getCount() { return mCount; }
+uint32_t CreatureAIFunction::getCount() { return mCount; }
 void CreatureAIFunction::increaseCount() { ++mCount; }
 bool CreatureAIFunction::usesLeft() { return schedulerArgs.getMaxCount() ? getCount() < schedulerArgs.getMaxCount() : true; }
 
-const bool CreatureAIFunction::isHpInPercentRange(float targetHp)
+bool CreatureAIFunction::isHpInPercentRange(float targetHp)
 {
     if (targetHp >= schedulerArgs.getMinHPRange() && targetHp <= schedulerArgs.getMaxHPRange())
         return true;

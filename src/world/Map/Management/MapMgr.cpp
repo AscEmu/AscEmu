@@ -81,29 +81,39 @@ void MapMgr::removeInstance(uint32_t instanceId)
     // get the Lock so we cant Update and Delete at the same time :)
     std::scoped_lock<std::mutex> lock(m_mapsLock);
 
-    auto ini = m_InstancedMaps.find(instanceId);
-    if (ini != m_InstancedMaps.end())
+    if (const auto ini = m_InstancedMaps.find(instanceId); ini != m_InstancedMaps.end())
     {
         if (ini->second->isUnloadPending())
         {
-            auto&& mapHolder = std::move(m_InstancedMaps.extract(ini));
-            mapHolder.mapped()->shutdownMapThread();
+            auto node = m_InstancedMaps.extract(ini);
+            auto mapPtr = std::move(node.mapped());
+
+            mapPtr->shutdownMapThread();
+
             // Wait for thread to finish its work before freeing memory
-            m_pendingRemoveMaps.emplace_back(std::move(mapHolder.mapped()));
+            m_pendingRemoveMaps.emplace_back(std::move(mapPtr));
         }
     }
 }
 
 void MapMgr::addMapToRemovePool(WorldMap const* map)
 {
-    std::scoped_lock<std::mutex> lock(m_mapsLock);
-    auto itr = m_WorldMaps.find(map->getBaseMap()->getMapId());
-    if (itr != m_WorldMaps.cend())
+    if (map == nullptr || map->getBaseMap() == nullptr)
     {
-        auto&& mapHolder = std::move(m_WorldMaps.extract(itr));
-        mapHolder.mapped()->shutdownMapThread();
+        return;
+    }
+
+    std::scoped_lock<std::mutex> lock(m_mapsLock);
+
+    if (const auto itr = m_WorldMaps.find(map->getBaseMap()->getMapId()); itr != m_WorldMaps.cend())
+    {
+        auto node = m_WorldMaps.extract(itr);
+        auto mapPtr = std::move(node.mapped());
+
+        mapPtr->shutdownMapThread();
+
         // Wait for thread to finish its work before freeing memory
-        m_pendingRemoveMaps.emplace_back(std::move(mapHolder.mapped()));
+        m_pendingRemoveMaps.emplace_back(std::move(mapPtr));
     }
 }
 

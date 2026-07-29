@@ -17,8 +17,8 @@ namespace AscEmu::Packets
     public:
         uint32_t id;
         ArenaTeamStats stats;
-        
-        SmsgArenaTeamStats() : SmsgArenaTeamStats(0, {0})
+
+        SmsgArenaTeamStats() : SmsgArenaTeamStats(0, {})
         {
         }
 

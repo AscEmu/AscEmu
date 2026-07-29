@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-static const uint32_t TeamCountToId[6] =
+[[maybe_unused]] static const uint32_t TeamCountToId[6] =
 {
     0,                      // 0
     0,                      // 1
@@ -27,7 +27,7 @@ static const uint32_t TeamCountToId[6] =
     ARENA_TEAM_TYPE_5V5,    // 5
 };
 
-static const uint32_t IdToTeamCount[6] =
+[[maybe_unused]] static const uint32_t IdToTeamCount[6] =
 {
     3,
     4,

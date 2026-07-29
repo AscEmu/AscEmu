@@ -933,7 +933,7 @@ void AchievementMgr::updateAchievementCriteria(AchievementCriteriaTypes _type)
                 uint32_t completed = 0;
                 for (const uint32_t finishedQuestId : getPlayer()->getFinishedQuests())
                 {
-                    if (QuestProperties const* qst = sMySQLStore.getQuestProperties(finishedQuestId))
+                    if (sMySQLStore.getQuestProperties(finishedQuestId) != nullptr)
                         if (finishedQuestId == achievementCriteria->complete_quest.questID)
                             ++completed;
                 }

@@ -1050,7 +1050,9 @@ void Channel::setOwner(Player* plr, Player const* newOwner)
 
     if (oldOwner != nullptr)
     {
-        SmsgChannelNotify sendPacket(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_channelName, oldOwner->getGuid(), oldOwnerFlags, 0, (oldOwnerFlags &= ~CHANNEL_MEMBER_FLAG_OWNER));
+        uint8_t const flagsBefore = oldOwnerFlags;
+        oldOwnerFlags &= ~CHANNEL_MEMBER_FLAG_OWNER;
+        SmsgChannelNotify sendPacket(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_channelName, oldOwner->getGuid(), flagsBefore, 0, oldOwnerFlags);
         PacketBroadcast::sendFromChannel(*this, sendPacket);
     }
 
@@ -1065,7 +1067,9 @@ void Channel::setOwner(Player* plr, Player const* newOwner)
 
     // Send the mode change
     {
-        SmsgChannelNotify sendPacket(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_channelName, owner->getGuid(), oldMemberFlags, 0, (oldMemberFlags |= CHANNEL_MEMBER_FLAG_OWNER));
+        const auto previousFlags = oldMemberFlags;
+        oldMemberFlags |= CHANNEL_MEMBER_FLAG_OWNER;
+        SmsgChannelNotify sendPacket(CHANNEL_NOTIFY_FLAG_MODE_CHG, m_channelName, owner->getGuid(), previousFlags, 0, oldMemberFlags);
         PacketBroadcast::sendFromChannel(*this, sendPacket);
     }
 }

@@ -307,7 +307,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
 
     // Initialize spell cast time
     m_castTime = 0;
-    if (!(m_triggeredByAura != nullptr || m_triggeredSpell && (getSpellInfo()->getManaCost() > 0 || getSpellInfo()->getManaCostPercentage() > 0)))
+    if (!(m_triggeredByAura != nullptr || (m_triggeredSpell && getSpellInfo()->getManaCost() > 0) || getSpellInfo()->getManaCostPercentage() > 0))
     {
         m_castTime = static_cast<int32_t>(GetCastTime(sSpellCastTimesStore.lookupEntry(getSpellInfo()->getCastingTimeIndex())));
         if (m_castTime > 0 && u_caster != nullptr)
@@ -4625,17 +4625,17 @@ void Spell::sendSpellStart()
         return;
 
     uint32_t castFlags = 0x02; // trajectory
-    if (((m_triggeredSpell && !getSpellInfo()->isRangedAutoRepeat() || m_triggeredByAura)))
+    if ((m_triggeredSpell && !getSpellInfo()->isRangedAutoRepeat()) || m_triggeredByAura)
         castFlags |= 0x01; // pending
 
-    if ((m_caster->GetNewGUID().isPlayer()|| (m_caster->GetNewGUID().isUnit() && m_caster->GetNewGUID().isPet()))
+    if ((m_caster->GetNewGUID().isPlayer() || (m_caster->GetNewGUID().isUnit() && m_caster->GetNewGUID().isPet()))
         && getSpellInfo()->getPowerType() != POWER_TYPE_HEALTH)
         castFlags |= 0x800; // power left
 
     if (getSpellInfo()->getRuneCostID() && getSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
         castFlags |= 0x40000; // runes
 
-    WoWGuid casterGuid = i_caster ? i_caster ->getGuid() : m_caster->getGuid();
+    WoWGuid casterGuid = i_caster ? i_caster->getGuid() : m_caster->getGuid();
     WoWGuid casterUnitGuid = m_caster->getGuid();
     WoWGuid targetGuid = m_targets.getUnitTargetGuid();
     WoWGuid itemTargetGuid = m_targets.getItemTargetGuid();
@@ -4694,14 +4694,12 @@ void Spell::sendSpellStart()
 
     if (hasDestLocation)
     {
-
     }
 
     data.writeBit(!hasAmmoDisplayId);
 
     if (hasSourceLocation)
     {
-
     }
 
     data.writeBit(0); // Fake Bit
@@ -4745,8 +4743,6 @@ void Spell::sendSpellStart()
     data.writeBit(casterGuid[0]);
     data.writeBit(casterUnitGuid[3]);
     data.writeBit(1); // Unk uint8_t
-
-
 
     //for (uint32_t i = 0; i < missTypeCount; ++i)
     //{
@@ -4793,9 +4789,6 @@ void Spell::sendSpellStart()
     data.writeByteSeq(unkGuid[6]);
     data.writeByteSeq(unkGuid[7]);
     data.writeByteSeq(unkGuid[0]);
-
-
-
 
     data.writeByteSeq(casterGuid[4]);
 
@@ -5095,7 +5088,6 @@ void Spell::sendSpellGo()
     data.writeByteSeq(unkGuid[3]);
     data.writeByteSeq(unkGuid[5]);
     data.writeByteSeq(unkGuid[0]);
-
 
     data << uint32_t(Util::getMSTime());
 

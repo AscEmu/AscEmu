@@ -1058,10 +1058,10 @@ bool Battleground::hasFreeSlots(uint32_t Team, uint32_t type)
     if (isTypeArena(type))
         return m_players[Team].size() + m_pendPlayers[Team].size() < maxPlayers;
 
-        uint32_t size[2];
-        size[0] = uint32_t(m_players[0].size() + m_pendPlayers[0].size());
-        size[1] = uint32_t(m_players[1].size() + m_pendPlayers[1].size());
-        return (size[Team] < maxPlayers) && ((static_cast<int>(size[Team]) - static_cast<int>(size[1 - Team])) <= 0);
+    uint32_t size[2];
+    size[0] = uint32_t(m_players[0].size() + m_pendPlayers[0].size());
+    size[1] = uint32_t(m_players[1].size() + m_pendPlayers[1].size());
+    return (size[Team] < maxPlayers) && ((static_cast<int>(size[Team]) - static_cast<int>(size[1 - Team])) <= 0);
 }
 
 bool Battleground::isTypeArena(uint32_t x)

@@ -1474,7 +1474,6 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* _object, uint32_t _gossipMenu
 
     sQuestMgr.FillQuestMenu(dynamic_cast<Creature*>(_object), _player, menu);
 
-    typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
     auto gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(_gossipMenuId);
     for (const auto& itr : std::ranges::subrange(gossipEqualRange.first, gossipEqualRange.second))
     {
@@ -1520,7 +1519,6 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* _object, Player* 
 
     // bool openSubMenu = true;
 
-    typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
     auto gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(_gossipMenuId);
     for (const auto& itr : std::ranges::subrange(gossipEqualRange.first, gossipEqualRange.second))
     {

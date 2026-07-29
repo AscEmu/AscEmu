@@ -20,6 +20,8 @@ namespace WDB
     class WDBStore : public std::unordered_map<uint32_t, T>
     {
     public:
+        WDBStore() noexcept = default;
+
         [[nodiscard]] T const* lookupEntry(uint32_t id) const noexcept
         {
             auto const it = this->find(id);

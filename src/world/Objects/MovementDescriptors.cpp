@@ -2881,7 +2881,7 @@ namespace
         MovementStep{ MovementOp::End }
     };
 
-    static constexpr std::array CataCMSG_FORCE_TURN_RATE_CHANGE_ACKDescriptor
+    [[maybe_unused]] static constexpr std::array CataCMSG_FORCE_TURN_RATE_CHANGE_ACKDescriptor
     {
         MovementStep{ MovementOp::End }
     };
@@ -3040,7 +3040,7 @@ namespace
         MovementStep{ MovementOp::End }
     };
 
-    static constexpr std::array CataCMSG_FORCE_PITCH_RATE_CHANGE_ACKDescriptor
+    [[maybe_unused]] static constexpr std::array CataCMSG_FORCE_PITCH_RATE_CHANGE_ACKDescriptor
     {
         MovementStep{ MovementOp::End }
     };
@@ -3618,7 +3618,7 @@ namespace
         MovementStep{ MovementOp::End }
     };
 
-    static constexpr std::array CataMSG_MOVE_SET_TURN_RATEDescriptor
+    [[maybe_unused]] static constexpr std::array CataMSG_MOVE_SET_TURN_RATEDescriptor
     {
         MovementStep{ MovementOp::End }
     };
@@ -3771,7 +3771,7 @@ namespace
         MovementStep{ MovementOp::End }
     };
 
-    static constexpr std::array CataMSG_MOVE_SET_PITCH_RATEDescriptor
+    [[maybe_unused]] static constexpr std::array CataMSG_MOVE_SET_PITCH_RATEDescriptor
     {
         MovementStep{ MovementOp::End }
     };
@@ -4799,7 +4799,7 @@ namespace
         MovementStep{ MovementOp::End }
     };
 
-    static constexpr std::array MopCMSG_CAST_SPELL_CMSG_PET_CAST_SPELL_CMSG_USE_ITEMDescriptor
+    [[maybe_unused]] static constexpr std::array MopCMSG_CAST_SPELL_CMSG_PET_CAST_SPELL_CMSG_USE_ITEMDescriptor
     {
         MovementStep{ MovementOp::PosZ },
         MovementStep{ MovementOp::PosY },

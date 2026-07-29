@@ -17,7 +17,7 @@ namespace WDB
         typedef std::list<std::unique_ptr<char[]>> StringPoolList;
 
     public:
-        WDBContainer() : m_row_count(0), m_field_count(0), m_data_table(nullptr)
+        WDBContainer() noexcept : m_row_count(0), m_field_count(0), m_data_table(nullptr)
         {
             m_index_table.as_t = nullptr;
         }

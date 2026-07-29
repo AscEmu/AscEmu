@@ -43,12 +43,12 @@ public:
 
     // Usages
     void setCount(uint32_t count);
-    const uint32_t getCount();
+    uint32_t getCount();
     void increaseCount();
     bool usesLeft();
 
     // Health
-    const bool isHpInPercentRange(float targetHp);
+    bool isHpInPercentRange(float targetHp);
 
     // Chances
     bool isChanceMeet(float rolled);

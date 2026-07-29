@@ -34,10 +34,9 @@ bool ChatCommandHandler::handleCommandsCommand(const char* args, WorldSession* m
 
     output = "Available commands: \n\n";
 
-    for (const auto table : sCommandTableStorage.getCommandRegistry())
+    for (const auto& table : sCommandTableStorage.getCommandRegistry())
     {
-        std::string top;
-        if (*args && !resolveTopLevelAbbrev(args, m_session, top))
+        if (std::string top; *args && !resolveTopLevelAbbrev(args, m_session, top))
             continue;
 
         if (table.commandPermission == "z")
@@ -66,7 +65,7 @@ bool ChatCommandHandler::handleCommandsCommand(const char* args, WorldSession* m
         }
 
         count++;
-        if (count == 5)  // 5 per line
+        if (count == 5) // 5 per line
         {
             output += "\n";
             count = 0;

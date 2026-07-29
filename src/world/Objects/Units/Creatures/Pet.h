@@ -183,7 +183,7 @@ private:
     void _removeAISpell(uint32_t spellId);
 
     void _setDefaultActionBar();
-    std::array<PetActionButtonData, PET_MAX_ACTION_BAR_SLOT> m_actionBar = { 0 };
+    std::array<PetActionButtonData, PET_MAX_ACTION_BAR_SLOT> m_actionBar = {{}};
 
     time_t m_talentResetTime = 0;
     uint32_t m_talentResetCost = 0;
@@ -198,25 +198,25 @@ public:
 public:
     // MIT END
 
-        void ApplySummonLevelAbilities();
-        void ApplyPetLevelAbilities();
-        void UpdateAP();
-        void LoadPetAuras(int32_t id);
+    void ApplySummonLevelAbilities();
+    void ApplyPetLevelAbilities();
+    void UpdateAP();
+    void LoadPetAuras(int32_t id);
 
-        void WipeTalents();
+    void WipeTalents();
 
 #if VERSION_STRING == WotLK || VERSION_STRING == Cata
-        // talents
-        void SendTalentsToOwner();                                                                              // Send talentpoints and talent spells to owner
+    // talents
+    void SendTalentsToOwner(); // Send talentpoints and talent spells to owner
 #endif
 
-        void HandleAutoCastEvent(AutoCastEvents Type);
-        AI_Spell* HandleAutoCastEvent();
+    void HandleAutoCastEvent(AutoCastEvents Type);
+    AI_Spell* HandleAutoCastEvent();
 
-        void die(Unit* pAttacker, uint32_t damage, uint32_t spellid);
+    void die(Unit* pAttacker, uint32_t damage, uint32_t spellid) override;
 
-    protected:
-        uint32_t GetAutoCastTypeForSpell(SpellInfo const* ent);
+protected:
+    uint32_t GetAutoCastTypeForSpell(SpellInfo const* ent);
 
     std::list<AI_Spell*> m_autoCastSpells[AUTOCAST_EVENT_COUNT];
 };

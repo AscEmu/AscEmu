@@ -19,8 +19,8 @@ namespace AscEmu::Packets
         utf8_string name;
         uint32_t playerCount;
         ArenaTeamEmblem emblem;
-        
-        SmsgArenaTeamQueryResponse() : SmsgArenaTeamQueryResponse(0, "", 0, {0})
+
+        SmsgArenaTeamQueryResponse() : SmsgArenaTeamQueryResponse(0, "", 0, {})
         {
         }
 

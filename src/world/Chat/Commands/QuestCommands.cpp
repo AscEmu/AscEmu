@@ -98,7 +98,7 @@ bool ChatCommandHandler::HandleQuestStatusCommand(const char* args, WorldSession
     }
     std::string recout = "|cff00ff00";
 
-    if (QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id))
+    if (sMySQLStore.getQuestProperties(quest_id))
     {
         if (plr->hasQuestFinished(quest_id))
         {
@@ -810,17 +810,6 @@ bool ChatCommandHandler::HandleQuestAddStartCommand(const char* args, WorldSessi
 
     sQuestMgr.LoadExtraQuestStuff();
 
-    QuestRelation* qstrel = nullptr;
-    qstrel->qst = qst;
-    qstrel->type = QUESTGIVER_QUEST_START;
-
-    uint8_t qstrelid;
-    if (unit->HasQuests())
-    {
-        qstrelid = (uint8_t)unit->GetQuestRelation(quest_id);
-        unit->DeleteQuest(qstrel);
-    }
-
     unit->_LoadQuests();
 
     std::string qname = qst->title;
@@ -896,13 +885,6 @@ bool ChatCommandHandler::HandleQuestAddFinishCommand(const char* args, WorldSess
     QuestRelation* qstrel = nullptr;
     qstrel->qst = qst;
     qstrel->type = QUESTGIVER_QUEST_END;
-
-    uint8_t qstrelid;
-    if (unit->HasQuests())
-    {
-        qstrelid = (uint8_t)unit->GetQuestRelation(quest_id);
-        unit->DeleteQuest(qstrel);
-    }
 
     unit->_LoadQuests();
 
@@ -992,12 +974,6 @@ bool ChatCommandHandler::HandleQuestDelStartCommand(const char* args, WorldSessi
     qstrel->qst = qst;
     qstrel->type = QUESTGIVER_QUEST_START;
 
-    uint8_t qstrelid;
-    if (unit->HasQuests())
-    {
-        qstrelid = (uint8_t)unit->GetQuestRelation(quest_id);
-        unit->DeleteQuest(qstrel);
-    }
     unit->_LoadQuests();
 
     std::string qname = qst->title;
@@ -1067,17 +1043,6 @@ bool ChatCommandHandler::HandleQuestDelFinishCommand(const char* args, WorldSess
     WorldDatabase.query(my_delete1.c_str(), VERSION_STRING, VERSION_STRING);
 
     sQuestMgr.LoadExtraQuestStuff();
-
-    QuestRelation* qstrel = nullptr;
-    qstrel->qst = qst;
-    qstrel->type = QUESTGIVER_QUEST_END;
-
-    uint8_t qstrelid;
-    if (unit->HasQuests())
-    {
-        qstrelid = (uint8_t)unit->GetQuestRelation(quest_id);
-        unit->DeleteQuest(qstrel);
-    }
 
     unit->_LoadQuests();
 

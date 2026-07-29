@@ -111,8 +111,8 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if ((itemProto->Flags2 & ITEM_FLAG2_HORDE_ONLY) && _player->getTeam() != TEAM_HORDE ||
-        (itemProto->Flags2 & ITEM_FLAG2_ALLIANCE_ONLY) && _player->getTeam() != TEAM_ALLIANCE)
+    if (((itemProto->Flags2 & ITEM_FLAG2_HORDE_ONLY) && _player->getTeam() != TEAM_HORDE) ||
+        ((itemProto->Flags2 & ITEM_FLAG2_ALLIANCE_ONLY) && _player->getTeam() != TEAM_ALLIANCE))
     {
         _player->getItemInterface()->buildInventoryChangeError(tmpItem, nullptr, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM);
         return;
@@ -889,7 +889,7 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    if (srlPacket.itemCount <= 0 || srlPacket.srcInventorySlot <= 0 && srlPacket.srcSlot < INVENTORY_SLOT_ITEM_START)
+    if (srlPacket.itemCount <= 0 || (srlPacket.srcInventorySlot <= 0 && srlPacket.srcSlot < INVENTORY_SLOT_ITEM_START))
     {
         sCheatLog.writefromsession(this, "Attempted item split: srcInventorySlot: {}, srcSlot: {}, destInventorySlot: {}, destSlot: {}, itemCount: {}.",
                                           srlPacket.srcInventorySlot, srlPacket.srcSlot, srlPacket.destInventorySlot, srlPacket.destSlot, srlPacket.itemCount);
@@ -913,7 +913,7 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
     const uint32_t itemMaxStack1 = inventoryItem1->getOwner()->m_cheats.hasItemStackCheat ? 0x7fffffff : inventoryItem1->getItemProperties()->MaxCount;
     const uint32_t itemMaxStack2 = inventoryItem2 ? (inventoryItem2->getOwner()->m_cheats.hasItemStackCheat
         ? 0x7fffffff : inventoryItem2->getItemProperties()->MaxCount) : 0;
-    if (inventoryItem1->m_wrappedItemId || inventoryItem2 && inventoryItem2->m_wrappedItemId || count > itemMaxStack1)
+    if (inventoryItem1->m_wrappedItemId || (inventoryItem2 && inventoryItem2->m_wrappedItemId) || count > itemMaxStack1)
     {
         _player->getItemInterface()->buildInventoryChangeError(inventoryItem1, inventoryItem2, INV_ERR_ITEM_CANT_STACK);
         return;
@@ -1138,8 +1138,8 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
             // "213" value not found in achievement or criteria entries, have to hard-code it here?
             // Achievement ID:557 description Equip a superior item in every slot with a minimum item level of 187.
             // "187" value not found in achievement or criteria entries, have to hard-code it here?
-            if (dstItem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && dstItem->getItemProperties()->ItemLevel >= 187 ||
-                dstItem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && dstItem->getItemProperties()->ItemLevel >= 213)
+            if ((dstItem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && dstItem->getItemProperties()->ItemLevel >= 187) ||
+                (dstItem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && dstItem->getItemProperties()->ItemLevel >= 213))
                 _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, srlPacket.srcSlot,
                     dstItem->getItemProperties()->Quality, 0);
         }
@@ -1153,8 +1153,8 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
             // "213" value not found in achievement or criteria entries, have to hard-code it here?
             // Achievement ID:557 description Equip a superior item in every slot with a minimum item level of 187.
             // "187" value not found in achievement or criteria entries, have to hard-code it here?
-            if (srcItem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && srcItem->getItemProperties()->ItemLevel >= 187 ||
-                srcItem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && srcItem->getItemProperties()->ItemLevel >= 213)
+            if ((srcItem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && srcItem->getItemProperties()->ItemLevel >= 187) ||
+                (srcItem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && srcItem->getItemProperties()->ItemLevel >= 213))
                 _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, srlPacket.destSlot,
                     srcItem->getItemProperties()->Quality, 0);
         }
@@ -1397,8 +1397,8 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
         // "213" value not found in achievement or criteria entries, have to hard-code it here? :(
         // Achievement ID:557 description Equip a superior item in every slot with a minimum item level of 187.
         // "187" value not found in achievement or criteria entries, have to hard-code it here? :(
-        if (eitem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && eitem->getItemProperties()->ItemLevel >= 187 ||
-            eitem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && eitem->getItemProperties()->ItemLevel >= 213)
+        if ((eitem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && eitem->getItemProperties()->ItemLevel >= 187) ||
+            (eitem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && eitem->getItemProperties()->ItemLevel >= 213))
             _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, Slot,
                 eitem->getItemProperties()->Quality, 0);
 #endif
@@ -2831,9 +2831,9 @@ void WorldSession::handleInsertGemOpcode([[maybe_unused]] WorldPacket& recvPacke
     uint32_t FilledSlots = 0;
 
     //cheat -> tried to socket same gem multiple times
-    if (srlPacket.gemGuid[0]
-        && (srlPacket.gemGuid[0] == srlPacket.gemGuid[1]  || srlPacket.gemGuid[0] == srlPacket.gemGuid[2])
-        || srlPacket.gemGuid[1] && srlPacket.gemGuid[1] == srlPacket.gemGuid[2])
+    if ((srlPacket.gemGuid[0] && srlPacket.gemGuid[0] == srlPacket.gemGuid[1]) ||
+        srlPacket.gemGuid[0] == srlPacket.gemGuid[2] ||
+        (srlPacket.gemGuid[1] && srlPacket.gemGuid[1] == srlPacket.gemGuid[2]))
     {
         return;
     }
@@ -2868,7 +2868,7 @@ void WorldSession::handleInsertGemOpcode([[maybe_unused]] WorldPacket& recvPacke
             }
         }
 
-        if (srlPacket.gemGuid[i])  //add or replace gem
+        if (srlPacket.gemGuid[i]) //add or replace gem
         {
             Item* it = nullptr;
             ItemProperties const* ip = nullptr;
@@ -2982,7 +2982,7 @@ void WorldSession::handleInsertGemOpcode([[maybe_unused]] WorldPacket& recvPacke
             if (spell_item_enchant != nullptr)
                 TargetItem->addEnchantment(TargetItem->getItemProperties()->SocketBonus, BONUS_ENCHANTMENT_SLOT, 0);
         }
-        else  //remove
+        else //remove
         {
             TargetItem->removeSocketBonusEnchant();
         }

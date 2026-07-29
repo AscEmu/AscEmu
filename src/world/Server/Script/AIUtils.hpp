@@ -51,11 +51,11 @@ public:
     void removeFilter(uint32_t filter) { pFilter &= ~filter; }
     bool hasFilter(TargetFilter filter) const { return (getTargetFilter() & filter) != 0; }
 
-    const float getMinRange() { return minRange; }
-    const float getMaxRange() { return maxRange; }
-    const float getMinHPRange() { return minHPRange; }
-    const float getMaxHPRange() { return maxHPRange; }
-    const int32_t getAuraId() { return auraId; }
+    float getMinRange() { return minRange; }
+    float getMaxRange() { return maxRange; }
+    float getMinHPRange() { return minHPRange; }
+    float getMaxHPRange() { return maxHPRange; }
+    int32_t getAuraId() { return auraId; }
 
 private:
     uint32_t pFilter = 0;
@@ -103,7 +103,7 @@ public:
 
     // Usages
     void setMaxCount(uint32_t count) { mMaxCount = count; }
-    const uint32_t getMaxCount() { return mMaxCount; }
+    uint32_t getMaxCount() { return mMaxCount; }
 
     // Chances
     void setChance(float chance) { mChance = chance; }

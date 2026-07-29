@@ -164,27 +164,24 @@ uint32_t QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool
         status = QuestStatus::NotAvailable;
 
     // Check One of Quest Prequest
-    bool questscompleted = false;
     if (!qst->quest_list.empty())
     {
-        for (auto iter = qst->quest_list.begin(); iter != qst->quest_list.end(); ++iter)
+        bool questsCompleted = false;
+        for (unsigned int questId : qst->quest_list)
         {
-            if (QuestProperties const* questcheck = sMySQLStore.getQuestProperties(*iter))
+            if (sMySQLStore.getQuestProperties(questId) != nullptr && plr->hasQuestFinished(questId))
             {
-                if (plr->hasQuestFinished((*iter)))
-                {
-                    questscompleted = true;
-                    break;
-                }
+                questsCompleted = true;
+                break;
             }
         }
-        if (!questscompleted)   // If none of listed quests is done, next part isn't available.
+        if (!questsCompleted) // If none of listed quests is done, next part isn't available.
             return QuestStatus::NotAvailable;
     }
 
-    for (uint8_t i = 0; i < 4; ++i)
+    for (unsigned int requiredQuest : qst->required_quests)
     {
-        if (qst->required_quests[i] > 0 && !plr->hasQuestFinished(qst->required_quests[i]))
+        if (requiredQuest > 0 && !plr->hasQuestFinished(requiredQuest))
         {
             return QuestStatus::NotAvailable;
         }

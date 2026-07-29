@@ -49,9 +49,9 @@ namespace AscEmu::Packets
             }
             packet << memberCount << playersPerTeam;
 
-            for (const auto teamListMember : arenaTeamList)
+            for (const auto& teamListMember : arenaTeamList)
             {
-                packet << teamListMember.guid << teamListMember.isLoggedIn << teamListMember.name << teamListMember.isLeader << teamListMember.lastLevel << teamListMember.cl 
+                packet << teamListMember.guid << teamListMember.isLoggedIn << teamListMember.name << teamListMember.isLeader << teamListMember.lastLevel << teamListMember.cl
                     << teamListMember.playedWeek << teamListMember.wonWeek << teamListMember.playedSeason << teamListMember.wonSeason << teamListMember.rating;
             }
 

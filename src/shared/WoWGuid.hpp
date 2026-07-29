@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define BitCount4(x) ( BitCount2(x) + BitCount2((x)>>2) )
 #define BitCount8(x) ( BitCount4(x) + BitCount4((x)>>4) )
 
-enum HIGHGUID_TYPE
+enum HIGHGUID_TYPE : uint32_t
 {
     HIGHGUID_TYPE_PLAYER        = 0x00000000,
     HIGHGUID_TYPE_CORPSE        = 0x30000000,

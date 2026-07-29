@@ -25,7 +25,6 @@ public:
 
 private:
     GuildLog mLog;
-    uint32_t mGuildId;
     uint32_t mMaxRecords;
     uint32_t mNextGUID;
 };

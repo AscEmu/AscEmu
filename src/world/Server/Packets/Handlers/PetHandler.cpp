@@ -566,7 +566,7 @@ void WorldSession::handlePetCancelAura(WorldPacket& recvPacket)
 
     const auto creature = _player->getWorldMapCreature(srlPacket.guid.getGuidLow());
 #ifdef FT_VEHICLES
-    if (creature != nullptr && (creature->getPlayerOwner() == _player  || _player->getVehicleKit() && _player->getVehicleKit()->isControler(_player)))
+    if (creature != nullptr && (creature->getPlayerOwner() == _player || (_player->getVehicleKit() && _player->getVehicleKit()->isControler(_player))))
         creature->removeAllAurasById(srlPacket.spellId);
 #else
     if (creature != nullptr && (creature->getPlayerOwner() == _player))

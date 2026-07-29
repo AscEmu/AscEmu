@@ -40,7 +40,7 @@ namespace AscEmu::Packets
         SmsgAuraUpdateAll(WoWGuid guid, std::vector<AuraUpdate> aura_updates) :
             ManagedPacket(SMSG_AURA_UPDATE_ALL, 200),
             guid(guid),
-            aura_updates(move(aura_updates))
+            aura_updates(std::move(aura_updates))
         {
         }
 
@@ -180,7 +180,7 @@ namespace AscEmu::Packets
                     }
 
                     packet << uint8_t(auras.stackCount);
-                    packet << uint32_t(0);    //effekt mask
+                    packet << uint32_t(0); // effect mask
 
                     if (auras.flags & AFLAG_SEND_EFFECT_AMOUNT)
                     {

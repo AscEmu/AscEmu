@@ -32,7 +32,7 @@ class SERVER_DECL SpellProc
 
 public:
     SpellProc();
-    ~SpellProc();
+    virtual ~SpellProc();
 
     // NOTE these virtual methods are legacy script functions
     // please use SpellScript class

@@ -577,7 +577,7 @@ bool ChatCommandHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // transport
-    if (auto transporter = creature_target->GetTransport())
+    if (creature_target->GetTransport())
     {
         systemMessage(m_session, "Creature is on Transporter!");
 #if VERSION_STRING < Cata

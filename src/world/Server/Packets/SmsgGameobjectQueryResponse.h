@@ -17,10 +17,10 @@ namespace AscEmu::Packets
     class SmsgGameobjectQueryResponse : public ManagedPacket
     {
     public:
-        GameObjectProperties info;
+        GameObjectProperties info{};
         const char* name;
 
-        SmsgGameobjectQueryResponse() : SmsgGameobjectQueryResponse(info, "")
+        SmsgGameobjectQueryResponse() : SmsgGameobjectQueryResponse({}, "")
         {
         }
 
@@ -77,7 +77,7 @@ namespace AscEmu::Packets
                         << info.raw.parameter_30 << info.raw.parameter_31;
 
                     packet << float(info.size);
-                    packet << uint8_t(6);       // quest item count
+                    packet << uint8_t(6); // quest item count
                     for (uint8_t i = 0; i < 6; ++i)
                         packet << uint32_t(info.QuestItems[i]);
 

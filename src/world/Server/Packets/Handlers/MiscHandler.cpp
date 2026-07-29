@@ -108,7 +108,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
     PlayerTeam const team = _player->getTeam();
 
     [[maybe_unused]] uint32_t sent_count = 0;
-    uint32_t total_count = 0;
+    [[maybe_unused]] uint32_t total_count = 0;
 
     WorldPacket data;
     data.setOpcode(SMSG_WHO);
@@ -156,7 +156,8 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
 
         // level check
         // skip players outside of level range
-        if (srlPacket.min_level > 0 && srlPacket.max_level > 0 && player->getLevel() < srlPacket.min_level || player->getLevel() > srlPacket.max_level)
+        if ((srlPacket.min_level > 0 && player->getLevel() < srlPacket.min_level) ||
+            (srlPacket.max_level && player->getLevel() > srlPacket.max_level))
         {
             continue;
         }

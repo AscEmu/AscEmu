@@ -92,11 +92,11 @@ This file is released under the MIT license. See README-MIT for more information
 using namespace AscEmu::Packets;
 
 Unit::Unit() :
+    m_combatHandler(this),
     movespline(std::make_unique<MovementMgr::MoveSpline>()),
     i_movementManager(std::make_unique<MovementManager>(this)),
-    m_summonInterface(std::make_unique<SummonHandler>(this)),
-    m_combatHandler(this),
     m_aiInterface(std::make_unique<AIInterface>()),
+    m_summonInterface(std::make_unique<SummonHandler>(this)),
 #ifdef FT_VEHICLES
     m_vehicleKit(nullptr),
 #endif
@@ -7475,13 +7475,13 @@ WDB::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t m
             if (!(mountCapability->flag & MOUNT_FLAG_CAN_SWIM))
                 continue;
         }
-        else if (!(mountCapability->flag & 0x1))   // unknown flags, checked in 4.2.2 14545 client
+        else if (!(mountCapability->flag & 0x1)) // unknown flags, checked in 4.2.2 14545 client
         {
             if (!(mountCapability->flag & 0x2))
                 continue;
         }
 
-        if (mountCapability->reqMap != -1 && int32_t(GetMapId()) != mountCapability->reqMap)
+        if (mountCapability->reqMap != std::numeric_limits<uint32_t>::max() && GetMapId() != mountCapability->reqMap)
             continue;
 
         if (mountCapability->reqArea && (mountCapability->reqArea != zoneId && mountCapability->reqArea != areaId))
@@ -8725,7 +8725,7 @@ uint32_t Unit::doDamageSplitTarget(uint32_t res, SchoolMask schoolMask, bool isM
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///Removes and deletes reflects from unit by spell id, does not remove aura which created it
-///In specific cases reflects can be created by a dummy spelleffect (eg. spell 28332 or 13043), then we need to remove it in ~unit
+///In specific cases reflects can be created by a dummy spelleffect (e.g. spell 28332 or 13043), then we need to remove it in ~unit
 //////////////////////////////////////////////////////////////////////////////////////////
 void Unit::removeReflect(uint32_t spellId, bool apply)
 {
@@ -8761,25 +8761,29 @@ void Unit::removeReflect(uint32_t spellId, bool apply)
                     targets = 2;
                 else if (player->hasAurasWithId(59089))
                     targets = 4;
-
-                group->Lock();
-                for (uint32_t subGroupNumber = 0; subGroupNumber < group->GetSubGroupCount(); ++subGroupNumber)
+                if (targets > 0)
                 {
-                    SubGroup* subGroup = group->GetSubGroup(subGroupNumber);
-                    for (auto subGroupMember : subGroup->getGroupMembers())
+                    group->Lock();
+                    for (uint32_t subGroupNumber = 0; subGroupNumber < group->GetSubGroupCount() && targets > 0; ++subGroupNumber)
                     {
-                        Player* member = sObjectMgr.getPlayer(subGroupMember->guid);
-                        if (member == nullptr || member == player || !member->IsInWorld() || !member->isAlive() || member->hasAurasWithId(59725))
-                            continue;
+                        SubGroup* subGroup = group->GetSubGroup(subGroupNumber);
+                        for (auto subGroupMember : subGroup->getGroupMembers())
+                        {
+                            if (targets <= 0)
+                                break;
+                            Player* member = sObjectMgr.getPlayer(subGroupMember->guid);
+                            if (member == nullptr || member == player || !member->IsInWorld() || !member->isAlive() || member->hasAurasWithId(59725))
+                                continue;
 
-                        if (!member->isInRange(player, 20))
-                            continue;
+                            if (!member->isInRange(player, 20))
+                                continue;
 
-                        player->castSpell(member, 59725, true);
-                        targets -= 1;
+                            player->castSpell(member, 59725, true);
+                            targets -= 1;
+                        }
                     }
+                    group->Unlock();
                 }
-                group->Unlock();
             }
         }
     }
@@ -9665,21 +9669,21 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
 
         switch (weapon_damage_type)
         {
-        case MELEE:   // melee main hand weapon
-            it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-            hitmodifier += pr->calcRating(CR_HIT_MELEE);
-            self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_MAINHAND));
-            break;
-        case OFFHAND: // melee offhand weapon (dualwield)
-            it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-            hitmodifier += pr->calcRating(CR_HIT_MELEE);
-            self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_OFFHAND));
-            break;
-        case RANGED:  // ranged weapon
-            it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-            hitmodifier += pr->calcRating(CR_HIT_RANGED);
-            self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_RANGED));
-            break;
+            case MELEE: // melee main hand weapon
+                it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                hitmodifier += pr->calcRating(CR_HIT_MELEE);
+                self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_MAINHAND));
+                break;
+            case OFFHAND: // melee offhand weapon (dualwield)
+                it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                hitmodifier += pr->calcRating(CR_HIT_MELEE);
+                self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_OFFHAND));
+                break;
+            case RANGED: // ranged weapon
+                it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+                hitmodifier += pr->calcRating(CR_HIT_RANGED);
+                self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_RANGED));
+                break;
         }
 
         // erm. some spells don't use ranged weapon skill but are still a ranged spell and use melee stats instead
@@ -9689,24 +9693,24 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
             switch (ability->getId())
             {
                 //SPELL_HASH_HAMMER_OF_WRATH
-            case 24239:
-            case 24274:
-            case 24275:
-            case 27180:
-            case 32772:
-            case 37251:
-            case 37255:
-            case 37259:
-            case 48805:
-            case 48806:
-            case 51384:
-            {
-                it = pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                hitmodifier += pr->calcRating(CR_HIT_MELEE);
-                self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_MAINHAND));
-            } break;
-            default:
-                break;
+                case 24239:
+                case 24274:
+                case 24275:
+                case 27180:
+                case 32772:
+                case 37251:
+                case 37255:
+                case 37259:
+                case 48805:
+                case 48806:
+                case 51384:
+                    {
+                        it = pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                        hitmodifier += pr->calcRating(CR_HIT_MELEE);
+                        self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_MAINHAND));
+                    } break;
+                default:
+                    break;
             }
         }
 
@@ -9727,10 +9731,9 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
 #if VERSION_STRING <= Cata
                 SubClassSkill = SKILL_FERAL_COMBAT;
 #endif
-                self_skill += pr->getLevel() * 5;           // Adjust skill for Level * 5 for Feral Combat
+                self_skill += pr->getLevel() * 5; // Adjust skill for Level * 5 for Feral Combat
             }
         }
-
 
         self_skill += pr->getSkillLineCurrent(SubClassSkill);
     }
@@ -9741,24 +9744,9 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
         {
             Creature* c = static_cast<Creature*>(this);
             if (c->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
-                self_skill = std::max(self_skill, (static_cast<int32_t>(pVictim->getLevel()) + 3) * 5);        //used max to avoid situation when lowlvl hits boss.
+                self_skill = std::max(self_skill, (static_cast<int32_t>(pVictim->getLevel()) + 3) * 5); //used max to avoid situation when lowlvl hits boss.
         }
     }
-    //////////////////////////////////////////////////////////////////////////////////////////
-    //Special Chances Base Calculation
-    //<THE SHIT> to avoid Linux bug.
-    float diffVcapped = static_cast<float>(self_skill);
-    if (static_cast<int32_t>(pVictim->getLevel() * 5) > victim_skill)
-        diffVcapped -= static_cast<float>(victim_skill);
-    else
-        diffVcapped -= static_cast<float>(pVictim->getLevel() * 5);
-
-    float diffAcapped = static_cast<float>(victim_skill);
-    if (static_cast<int32_t>(this->getLevel() * 5) > self_skill)
-        diffAcapped -= static_cast<float>(self_skill);
-    else
-        diffAcapped -= static_cast<float>(getLevel() * 5);
-    //<SHIT END>
 
     // by victim state
     if (pVictim->isPlayer() && pVictim->getStandState()) //every not standing state is>0
@@ -9777,20 +9765,20 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
     float vsk = static_cast<float>(self_skill) - static_cast<float>(victim_skill);
     dodge = std::max(0.0f, dodge - vsk * 0.04f);
 
-    if (parry)
+    if (parry > 0.0f)
         parry = std::max(0.0f, parry - vsk * 0.04f);
 
-    if (block)
+    if (block > 0.0f)
         block = std::max(0.0f, block - vsk * 0.04f);
 
-    if (vsk > 0)
+    if (vsk > 0.0f)
         hitchance = std::max(hitchance, 95.0f + vsk * 0.02f + hitmodifier);
     else
     {
         if (pVictim->isPlayer())
-            hitchance = std::max(hitchance, 95.0f + vsk * 0.1f + hitmodifier);      //wowwiki multiplier - 0.04 but i think 0.1 more balanced
+            hitchance = std::max(hitchance, 95.0f + vsk * 0.1f + hitmodifier); // wowwiki multiplier - 0.04 but i think 0.1 more balanced
         else
-            hitchance = std::max(hitchance, 100.0f + vsk * 0.6f + hitmodifier);     //not wowwiki but more balanced
+            hitchance = std::max(hitchance, 100.0f + vsk * 0.6f + hitmodifier); // not wowwiki but more balanced
     }
 
     if (ability != nullptr && castingSpell != nullptr)
@@ -9814,7 +9802,6 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
     chances[2] = chances[1] + parry;
     chances[3] = chances[2] + block;
 
-
     // roll
     float Roll = Util::getRandomFloat(100.0f);
     uint32_t r = 0;
@@ -9824,7 +9811,7 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
         r++;
     }
 
-    uint32_t roll_results[5] = { SPELL_DID_HIT_MISS, SPELL_DID_HIT_DODGE, SPELL_DID_HIT_PARRY, SPELL_DID_HIT_BLOCK, SPELL_DID_HIT_SUCCESS };
+    uint32_t roll_results[5] = {SPELL_DID_HIT_MISS, SPELL_DID_HIT_DODGE, SPELL_DID_HIT_PARRY, SPELL_DID_HIT_BLOCK, SPELL_DID_HIT_SUCCESS};
     return roll_results[r];
 }
 
@@ -9864,7 +9851,6 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     float crit = 0.0f;
     float crush = 0.0f;
 
-    uint32_t targetEvent = 0;
     uint32_t hit_status = HITSTATUS_NORMALSWING;
 
     VisualState vstate = VisualState::ATTACK;
@@ -9980,33 +9966,35 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
 
         switch (dmg.weaponType)
         {
-        case MELEE:   // melee main hand weapon
-            it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-            self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_MAINHAND));
-            if (it)
-            {
-                dmg.schoolMask = static_cast<SchoolMask>(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
-                if (it->getItemProperties()->SubClass == ITEM_SUBCLASS_WEAPON_MACE)
-                    ArmorPctReduce += m_ignoreArmorPctMaceSpec;
-            }
-            break;
-        case OFFHAND: // melee offhand weapon (dualwield)
-            it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-            self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_OFFHAND));
-            hit_status |= HITSTATUS_DUALWIELD;//animation
-            if (it)
-            {
-                dmg.schoolMask = static_cast<SchoolMask>(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
-                if (it->getItemProperties()->SubClass == ITEM_SUBCLASS_WEAPON_MACE)
-                    ArmorPctReduce += m_ignoreArmorPctMaceSpec;
-            }
-            break;
-        case RANGED:  // ranged weapon
-            it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-            self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_RANGED));
-            if (it)
-                dmg.schoolMask = static_cast<SchoolMask>(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
-            break;
+            case MELEE: // melee main hand weapon
+                it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_MAINHAND));
+                if (it)
+                {
+                    dmg.schoolMask = static_cast<SchoolMask>(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
+                    if (it->getItemProperties()->SubClass == ITEM_SUBCLASS_WEAPON_MACE)
+                        ArmorPctReduce += m_ignoreArmorPctMaceSpec;
+                }
+                break;
+            case OFFHAND: // melee offhand weapon (dualwield)
+                it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_OFFHAND));
+                hit_status |= HITSTATUS_DUALWIELD;//animation
+                if (it)
+                {
+                    dmg.schoolMask = static_cast<SchoolMask>(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
+                    if (it->getItemProperties()->SubClass == ITEM_SUBCLASS_WEAPON_MACE)
+                        ArmorPctReduce += m_ignoreArmorPctMaceSpec;
+                }
+                break;
+            case RANGED: // ranged weapon
+                it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+                self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_RANGED));
+                if (it)
+                    dmg.schoolMask = static_cast<SchoolMask>(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
+                break;
+            default:
+                break;
         }
 
         if (it)
@@ -10017,7 +10005,6 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         }
         else
             SubClassSkill = SKILL_UNARMED;
-
 
         //chances in feral form don't depend on weapon skill
         if (pr->isInFeralForm())
@@ -10042,9 +10029,9 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         {
             Creature* c = static_cast<Creature*>(this);
             if (c->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
-                self_skill = std::max(self_skill, (static_cast<int32_t>(pVictim->getLevel()) + 3) * 5);    //used max to avoid situation when lowlvl hits boss.
+                self_skill = std::max(self_skill, (static_cast<int32_t>(pVictim->getLevel()) + 3) * 5); //used max to avoid situation when lowlvl hits boss.
         }
-        crit = 5.0f;        //will be modified later
+        crit = 5.0f; //will be modified later
 
         if (dmg.weaponType == OFFHAND)
             hit_status |= HITSTATUS_DUALWIELD;
@@ -10275,14 +10262,13 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         hit_status |= HITSTATUS_MISS;
         vstate = VisualState::MISS;
         break;
-    case 1:     //dodge
+    case 1: //dodge
         if (pVictim->IsInWorld() && pVictim->isCreature() && static_cast<Creature*>(pVictim)->GetScript())
             static_cast<Creature*>(pVictim)->GetScript()->OnTargetDodged(this);
 
         if (IsInWorld() && isCreature() && static_cast<Creature*>(this)->GetScript())
             static_cast<Creature*>(this)->GetScript()->OnDodged(this);
 
-        targetEvent = 1;
         vstate = VisualState::DODGE;
         pVictim->emote(EMOTE_ONESHOT_PARRYUNARMED); // Animation
 
@@ -10299,7 +10285,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
 
         // Rune strike
 #if VERSION_STRING > TBC
-        if (pVictim->isPlayer() && pVictim->getClass() == DEATHKNIGHT)   // omg! dirty hack!
+        if (pVictim->isPlayer() && pVictim->getClass() == DEATHKNIGHT) // omg! dirty hack!
             pVictim->castSpell(pVictim, 56817, true);
 #endif
 
@@ -10316,7 +10302,6 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         if (IsInWorld() && isCreature() && static_cast<Creature*>(this)->GetScript())
             static_cast<Creature*>(this)->GetScript()->OnParried(this);
 
-        targetEvent = 3;
         vstate = VisualState::PARRY;
         pVictim->emote(EMOTE_ONESHOT_PARRYUNARMED); // Animation
 
@@ -10516,8 +10501,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 Item* shield = static_cast<Player*>(pVictim)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                 if (shield != nullptr)
                 {
-                    targetEvent = 2;
-                    pVictim->emote(EMOTE_ONESHOT_PARRYSHIELD);// Animation
+                    pVictim->emote(EMOTE_ONESHOT_PARRYSHIELD); // Animation
 
                     if (shield->getItemProperties()->InventoryType == INVTYPE_SHIELD)
                     {

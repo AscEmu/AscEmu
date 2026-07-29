@@ -11,7 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <array>
 #include <cstddef>
 
-#define getOffsetForStructuredField(s,m) static_cast<uint32_t>(offsetof(s,m) / 4)
+#define getOffsetForStructuredField(s, m) \
+    static_cast<uint32_t>(reinterpret_cast<uintptr_t>(&(reinterpret_cast<s const*>(0x1000)->m)) - 0x1000) / 4
 
 template <typename T>
 concept isStdArray = Util::is_size_based_specialization_of_v<T, std::array>;
@@ -19,8 +20,8 @@ concept isStdArray = Util::is_size_based_specialization_of_v<T, std::array>;
 // Works for both std::array and C style arrays
 #define getOffsetForStructuredArrayField(s,m,index) \
     (isStdArray<decltype(s::m)> || std::is_array_v<decltype(s::m)> ? \
-        static_cast<uint32_t>((offsetof(s,m) + sizeof(s::m[0]) * index) / 4) : \
-        getOffsetForStructuredField(s,m))
+        (getOffsetForStructuredField(s, m) + static_cast<uint32_t>((sizeof(s::m[0]) * (index)) / 4)) : \
+        getOffsetForStructuredField(s, m))
 
 #define getSizeOfStructure(s) static_cast<uint32_t>(sizeof(s) / 4)
 

@@ -500,13 +500,12 @@ void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSession::handleForceSpeedChangeAck: Counter {}, speed {} received",
-        movementInfo.counter, movementInfo.newSpeed);
+                      movementInfo.counter, movementInfo.newSpeed);
+
     // client ACK send one packet for mounted/run case and need skip all except last from its
     // in other cases anti-cheat check can be fail in false case
     UnitSpeedType move_type;
     UnitSpeedType force_move_type;
-
-    static char const* move_type_name[MAX_SPEED_TYPE] = { "Walk", "Run", "RunBack", "Swim", "SwimBack", "TurnRate", "Flight", "FlightBack", "PitchRate" };
 
     const auto opcode = sOpcodeTables.getInternalIdForHex(recvPacket.getOpcode());
     switch (opcode)
@@ -536,11 +535,11 @@ void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
 
     if (!_player->GetTransport() && std::fabs(_player->getSpeedRate(move_type, false) - movementInfo.newSpeed) > 0.01f)
     {
-        if (_player->getSpeedRate(move_type, false) > movementInfo.newSpeed)         // must be greater - just correct
+        if (_player->getSpeedRate(move_type, false) > movementInfo.newSpeed) // must be greater - just correct
         {
             _player->setSpeedRate(move_type, _player->getSpeedRate(move_type, false), false);
         }
-        else                                                            // must be lesser - cheating
+        else // must be lesser - cheating
         {
             // handle something here
         }

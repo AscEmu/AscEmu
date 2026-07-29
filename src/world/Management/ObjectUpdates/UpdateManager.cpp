@@ -14,15 +14,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 UpdateManager::UpdateManager(Player* owner, size_t compressionThreshold, size_t creationBufferInitialSize, size_t updateBufferInitialSize, size_t outOfRangeIdsInitialSize)
     : 
-    m_owner(owner),
     m_compressionThreshold(compressionThreshold),
-    m_updateCount(0),
-    m_creationCount(0),
-    m_outOfRangeIdCount(0),
-    m_processPending(false),
     m_creationBuffer(creationBufferInitialSize),
+    m_creationCount(0),
     m_updateBuffer(updateBufferInitialSize),
-    m_outOfRangeIds(outOfRangeIdsInitialSize)
+    m_processPending(false),
+    m_outOfRangeIds(outOfRangeIdsInitialSize),
+    m_updateCount(0),
+    m_outOfRangeIdCount(0),
+    m_owner(owner)
 {
 }
 

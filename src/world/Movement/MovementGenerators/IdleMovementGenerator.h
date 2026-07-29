@@ -53,7 +53,7 @@ public:
 
 private:
     uint32_t _timer;
-    float _orientation;
+    [[maybe_unused]] float _orientation;
 };
 
 class AssistanceDistractMovementGenerator : public DistractMovementGenerator

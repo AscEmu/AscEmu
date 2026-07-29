@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/GuildMacros.hpp"
 #include "Management/Guild/GuildDefinitions.hpp"
 
-GuildLogHolder::GuildLogHolder(uint32_t guildId, uint32_t maxRecords) : mGuildId(guildId), mMaxRecords(maxRecords), mNextGUID(uint32_t(UNK_EVENT_LOG_GUID))
+GuildLogHolder::GuildLogHolder(uint32_t /*guildId*/, uint32_t maxRecords) : mMaxRecords(maxRecords), mNextGUID(static_cast<uint32_t>(UNK_EVENT_LOG_GUID))
 {
 }
 

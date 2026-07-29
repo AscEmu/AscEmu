@@ -599,8 +599,10 @@ void TotemSummon::setupSpells()
         totemSpell->hasEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA) ||
         totemSpell->hasEffect(SPELL_EFFECT_APPLY_RAID_AREA_AURA) ||
         totemSpell->hasEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA) ||
-        totemSpell->hasEffect(SPELL_EFFECT_APPLY_AURA) && totemSpell->appliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_SPELL))
+        (totemSpell->hasEffect(SPELL_EFFECT_APPLY_AURA) && totemSpell->appliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_SPELL)))
+    {
         isCastingTotem = false;
+    }
 
     if (!isCastingTotem)
     {

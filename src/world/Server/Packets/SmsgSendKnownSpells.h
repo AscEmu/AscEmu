@@ -32,11 +32,11 @@ namespace AscEmu::Packets
         {
         }
 
-        SmsgSendKnownSpells(std::vector<uint32_t> spell_ids, std::vector<SpellCooldown> spell_cooldowns) :
+        SmsgSendKnownSpells(std::vector<uint32_t> spellIds, std::vector<SpellCooldown> spellCooldowns) :
             ManagedPacket(SMSG_SEND_KNOWN_SPELLS, 0),
             unk1(0),
-            spell_ids(move(spell_ids)),
-            spell_cooldowns(move(spell_cooldowns))
+            spell_ids(std::move(spellIds)),
+            spell_cooldowns(std::move(spellCooldowns))
         {
         }
 
@@ -46,7 +46,7 @@ namespace AscEmu::Packets
         }
 
         void addSpellCooldown(uint32_t spell_id, uint32_t item_id, uint16_t spell_category,
-            uint32_t spell_remaining_cooldown_ms, uint32_t category_remaining_cooldown_ms)
+                              uint32_t spell_remaining_cooldown_ms, uint32_t category_remaining_cooldown_ms)
         {
             SpellCooldown cd;
             cd.spell_id = spell_id;
@@ -90,14 +90,14 @@ namespace AscEmu::Packets
                 packet << uint16_t(spell_ids.size());
                 for (auto spell_id : spell_ids)
                 {
-                if (m_protocol.expansion <= WoW::Expansion::_TBC)
-                {
+                    if (m_protocol.expansion <= WoW::Expansion::_TBC)
+                    {
                         packet << uint16_t(spell_id);
-                }
-                else
-                {
+                    }
+                    else
+                    {
                         packet << spell_id;
-                }
+                    }
                     ///\todo check out when we should send 0x0 and when we should send 0xeeee this is not slot, values is always eeee or 0, seems to be cooldown
                     packet << uint16_t(0);
                 }
@@ -106,22 +106,22 @@ namespace AscEmu::Packets
 
                 for (auto &cd : spell_cooldowns)
                 {
-                if (m_protocol.expansion <= WoW::Expansion::_TBC)
-                {
+                    if (m_protocol.expansion <= WoW::Expansion::_TBC)
+                    {
                         packet << uint16_t(cd.spell_id);
-                }
-                else
-                {
+                    }
+                    else
+                    {
                         packet << cd.spell_id;
-                }
-                if (m_protocol.expansion <= WoW::Expansion::_WotLK)
-                {
+                    }
+                    if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+                    {
                         packet << uint16_t(cd.item_id);
-                }
-                else
-                {
+                    }
+                    else
+                    {
                         packet << cd.item_id;
-                }
+                    }
 
                     packet << cd.spell_category << cd.spell_remaining_cooldown_ms << cd.category_remaining_cooldown_ms;
                 }

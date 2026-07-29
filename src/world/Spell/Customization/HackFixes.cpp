@@ -45,8 +45,8 @@ void SpellMgr::createDummySpell(uint32_t id)
     auto sp = std::make_unique<SpellInfo>();
     sp->setId(id);
     sp->setAttributes(ATTRIBUTES_NO_CAST | ATTRIBUTES_NO_VISUAL_AURA); //384
-    sp->setAttributesEx(ATTRIBUTESEX_UNK30);    //268435456
-    sp->setAttributesExB(ATTRIBUTESEXB_IGNORE_LINE_OF_SIGHT);   //4
+    sp->setAttributesEx(ATTRIBUTESEX_UNK30); //268435456
+    sp->setAttributesExB(ATTRIBUTESEXB_IGNORE_LINE_OF_SIGHT); //4
     sp->setCastingTimeIndex(1);
     sp->setProcChance(75);
     sp->setRangeIndex(13);
@@ -2427,17 +2427,16 @@ void SpellMgr::applyHackFixes()
                 sp->setEffectImplicitTargetA(EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET, 0);
                 break;
 
-            // Ritual of Summoning summons a GameObject that triggers an inexistant spell.
-            // This will copy an existant Summon Player spell used for another Ritual Of Summoning
+            // Ritual of Summoning summons a GameObject that triggers an in existent spell.
+            // This will copy an existent Summon Player spell used for another Ritual Of Summoning
             // to the one taught by Warlock trainers.
             case 7720:
             {
-                const uint32_t ritOfSummId = 62330;
-                SpellInfo* ritOfSumm = getMutableSpellInfo(ritOfSummId);
-                if (ritOfSumm != NULL)
+                constexpr uint32_t ritOfSummonId = 62330;
+                if (SpellInfo* ritOfSummon = getMutableSpellInfo(ritOfSummonId))
                 {
-                    memcpy(ritOfSumm, sp.get(), sizeof(SpellInfo));
-                    ritOfSumm->setId(ritOfSummId);
+                    *ritOfSummon = *sp;
+                    ritOfSummon->setId(ritOfSummonId);
                 }
             } break;
 

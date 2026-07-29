@@ -25,23 +25,23 @@ public:
 
     bool initialize(const char* Hostname, unsigned int port,
         const char* Username, const char* Password, const char* DatabaseName,
-        uint32_t ConnectionCount, uint32_t BufferSize, bool useLegacyAuth = false);
+        uint32_t ConnectionCount, uint32_t BufferSize, bool useLegacyAuth = false) override;
 
-    void shutdown();
+    void shutdown() override;
 
-    std::string escapeString(std::string Escape);
-    void escapeLongString(const char* str, uint32_t len, std::stringstream& out);
-    std::string escapeString(const char* esc, DatabaseConnection* con);
+    std::string escapeString(std::string Escape) override;
+    void escapeLongString(const char* str, uint32_t len, std::stringstream& out) override;
+    std::string escapeString(const char* esc, DatabaseConnection* con) override;
 
-    bool supportsReplaceInto() { return true; }
-    bool supportsTableLocking() { return true; }
+    bool supportsReplaceInto() override { return true; }
+    bool supportsTableLocking() override { return true; }
 
 protected:
     bool _handleError(MySQLDatabaseConnection*, uint32_t ErrorNumber);
-    bool _sendQuery(DatabaseConnection* con, const char* Sql, bool Self = false);
+    bool _sendQuery(DatabaseConnection* con, const char* Sql, bool Self = false) override;
 
-    void _beginTransaction(DatabaseConnection* conn);
-    void _endTransaction(DatabaseConnection* conn);
+    void _beginTransaction(DatabaseConnection* conn) override;
+    void _endTransaction(DatabaseConnection* conn) override;
     bool _reconnect(MySQLDatabaseConnection* conn);
 
     std::unique_ptr<QueryResult> _storeQueryResult(DatabaseConnection* con) override;

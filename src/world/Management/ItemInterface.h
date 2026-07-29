@@ -147,7 +147,7 @@ private:
         RefundableMap m_refundableitems;
 
         // Returns item in tuple with result if failed to add item, nullptr on success
-        std::tuple<AddItemResult, std::unique_ptr<Item>> m_AddItem(std::unique_ptr<Item> itemHolder, int8_t ContainerSlot, int16_t slot);
+        std::tuple<AddItemResult, std::unique_ptr<Item>> m_AddItem(std::unique_ptr<Item> itemHolder, int16_t ContainerSlot, int16_t slot);
 
     public:
         Arcemu::EquipmentSetMgr m_EquipmentSets;
@@ -165,18 +165,18 @@ private:
         void mSaveItemsToDatabase(bool first, QueryBuffer* buf);
 
         Item* GetInventoryItem(int16_t slot);
-        Item* GetInventoryItem(int8_t ContainerSlot, int16_t slot);
-        Container* GetContainer(int8_t containerSlot);
+        Item* GetInventoryItem(int16_t ContainerSlot, int16_t slot);
+        Container* GetContainer(int16_t containerSlot);
         int16_t GetInventorySlotById(uint32_t ID);
         int16_t GetInventorySlotByGuid(uint64_t guid);
         int16_t GetBagSlotByGuid(uint64_t guid);
 
         Item* SafeAddItem(uint32_t ItemId, int8_t ContainerSlot, int16_t slot);
         // Returns item in tuple with result if failed to add item, nullptr on success
-        std::tuple<AddItemResult, std::unique_ptr<Item>> SafeAddItem(std::unique_ptr<Item> pItem, int8_t ContainerSlot, int16_t slot);
-        std::unique_ptr<Item> SafeRemoveAndRetreiveItemFromSlot(int8_t ContainerSlot, int16_t slot, bool destroy);  // doesn't destroy item from memory
+        std::tuple<AddItemResult, std::unique_ptr<Item>> SafeAddItem(std::unique_ptr<Item> pItem, int16_t ContainerSlot, int16_t slot);
+        std::unique_ptr<Item> SafeRemoveAndRetreiveItemFromSlot(int16_t ContainerSlot, int16_t slot, bool destroy);  // doesn't destroy item from memory
         std::unique_ptr<Item> SafeRemoveAndRetreiveItemByGuid(uint64_t guid, bool destroy);
-        bool SafeFullRemoveItemFromSlot(int8_t ContainerSlot, int16_t slot);                        // destroys item fully
+        bool SafeFullRemoveItemFromSlot(int16_t ContainerSlot, int16_t slot);                        // destroys item fully
         bool SafeFullRemoveItemByGuid(uint64_t guid);                                             // destroys item fully
         // Returns item in tuple with result if failed to add item, nullptr on success
         std::tuple<AddItemResult, std::unique_ptr<Item>> AddItemToFreeSlot(std::unique_ptr<Item> item);

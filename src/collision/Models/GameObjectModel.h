@@ -39,6 +39,8 @@ struct GameObjectDisplayInfoEntry;
 class GameObjectModelOwnerBase
 {
 public:
+    virtual ~GameObjectModelOwnerBase() = default;
+
     virtual bool IsSpawned() const { return false; }
     virtual uint32_t GetDisplayId() const { return 0; }
     virtual uint32_t GetPhaseMask() const { return 0; }

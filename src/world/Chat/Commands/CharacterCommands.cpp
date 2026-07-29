@@ -1838,25 +1838,24 @@ bool ChatCommandHandler::HandleCharListSkillsCommand(const char* /*args*/, World
     if (player_target == nullptr)
         return true;
 
-    uint16_t nobonus = 0;
-    int16_t bonus = 0;
-    uint16_t max = 0;
-
     blueSystemMessage(m_session, "===== {} has skills =====", player_target->getName());
 
-    for (uint16_t SkillId = 0; SkillId <= SkillNameManager->maxskill; SkillId++)
+    for (uint32_t skillId32 = 0; skillId32 <= SkillNameManager->maxskill; skillId32++)
     {
+        const auto SkillId = static_cast<uint16_t>(skillId32);
         if (player_target->hasSkillLine(SkillId))
         {
-            char* SkillName = SkillNameManager->SkillNames[SkillId].get();
+            const char* SkillName = SkillNameManager->SkillNames[SkillId].get();
             if (!SkillName)
             {
                 redSystemMessage(m_session, "Invalid skill: {}", SkillId);
                 continue;
             }
-            nobonus = player_target->getSkillLineCurrent(SkillId, false);
-            bonus = player_target->getSkillLineCurrent(SkillId, true) - nobonus;
-            max = player_target->getSkillLineMax(SkillId);
+
+            uint16_t nobonus = player_target->getSkillLineCurrent(SkillId, false);
+            int16_t bonus = static_cast<int16_t>(player_target->getSkillLineCurrent(SkillId, true) - nobonus);
+            uint16_t max = player_target->getSkillLineMax(SkillId);
+
             blueSystemMessage(m_session, " {}: Value: {}, MaxValue: {}. (+ {} bonus)", SkillName, nobonus, max, bonus);
         }
     }
@@ -1927,14 +1926,12 @@ bool ChatCommandHandler::HandleCharListItemsCommand(const char* /*args*/, WorldS
         return true;
 
     systemMessage(m_session, "==== {} has items ====", player_target->getName());
-    int itemcount = 0;
     ItemIterator itr(player_target->getItemInterface());
     itr.BeginSearch();
     for (; !itr.End(); itr.Increment())
     {
         if (!(*itr))
             return false;
-        itemcount++;
         sendItemLinkToPlayer((*itr)->getItemProperties(), m_session, true, player_target, m_session->language);
     }
     itr.EndSearch();

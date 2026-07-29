@@ -33,7 +33,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Warrior ProcScripts
-class DamageShieldSpellProc : public SpellProc
+class DamageShieldSpellProc final : public SpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<DamageShieldSpellProc>(); }
@@ -60,7 +60,7 @@ public:
     }
 };
 
-class JuggernautSpellProc : public SpellProc
+class JuggernautSpellProc final : public SpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<JuggernautSpellProc>(); }
@@ -173,7 +173,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Shaman ProcScripts
-class FrostBrandAttackSpellProc : public SpellProc
+class FrostBrandAttackSpellProc final : public SpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<FrostBrandAttackSpellProc>(); }
@@ -190,7 +190,7 @@ public:
     }
 };
 
-class FlametongueWeaponSpellProc : public SpellProc
+class FlametongueWeaponSpellProc final : public SpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<FlametongueWeaponSpellProc>(); }
@@ -340,7 +340,7 @@ protected:
     uint32_t mProcPerMinute;
 };
 
-class WoundPoisonSpellProc : public PoisonSpellProc
+class WoundPoisonSpellProc final : public PoisonSpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<WoundPoisonSpellProc>(); }
@@ -353,7 +353,7 @@ public:
     }
 };
 
-class InstantPoisonSpellProc : public PoisonSpellProc
+class InstantPoisonSpellProc final : public PoisonSpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<InstantPoisonSpellProc>(); }
@@ -366,7 +366,7 @@ public:
     }
 };
 
-class WaylaySpellProc : public SpellProc
+class WaylaySpellProc final : public SpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<WaylaySpellProc>(); }
@@ -380,7 +380,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Priest ProcScripts
-class SpiritTapSpellProc : public SpellProc
+class SpiritTapSpellProc final : public SpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<SpiritTapSpellProc>(); }
@@ -391,7 +391,7 @@ public:
     }
 };
 
-class ImprovedDevouringPlagueSpellProc : public SpellProc
+class ImprovedDevouringPlagueSpellProc final : public SpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<ImprovedDevouringPlagueSpellProc>(); }
@@ -411,7 +411,7 @@ public:
     }
 };
 
-class EmpoweredRenewSpellProc : public SpellProc
+class EmpoweredRenewSpellProc final : public SpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<EmpoweredRenewSpellProc>(); }
@@ -444,7 +444,7 @@ public:
     }
 };
 
-class MiserySpellProc : public SpellProc
+class MiserySpellProc final : public SpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<MiserySpellProc>(); }
@@ -458,7 +458,7 @@ public:
     }
 };
 
-class PrayerOfMendingProc : public SpellProc
+class PrayerOfMendingProc final : public SpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<PrayerOfMendingProc>(); }
@@ -506,7 +506,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Paladin ProcScripts
-class GraceOfTheNaaruSpellProc : public SpellProc
+class GraceOfTheNaaruSpellProc final : public SpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<GraceOfTheNaaruSpellProc>(); }
@@ -517,7 +517,7 @@ public:
     }
 };
 
-class SpiritualAttunementSpellProc : public SpellProc
+class SpiritualAttunementSpellProc final : public SpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<SpiritualAttunementSpellProc>(); }
@@ -533,7 +533,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // DeathKnight ProcScripts
-class BladeBarrierSpellProc : public SpellProc
+class BladeBarrierSpellProc final : public SpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<BladeBarrierSpellProc>(); }
@@ -560,7 +560,7 @@ private:
     DeathKnight* dk;
 };
 
-class DeathRuneMasterySpellProc : public SpellProc
+class DeathRuneMasterySpellProc final : public SpellProc
 {
 public:
     static std::unique_ptr<SpellProc> Create() { return std::make_unique<DeathRuneMasterySpellProc>(); }

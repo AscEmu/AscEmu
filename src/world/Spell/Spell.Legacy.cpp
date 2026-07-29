@@ -1886,7 +1886,6 @@ uint8_t Spell::CanCast(bool /*tolerate*/)
             // if the target is not the unit caster and not the masters pet
             if (target != u_caster && !m_caster->isPet())
             {
-
                 /***********************************************************
                 * Inface checks, these are checked in 2 ways
                 * 1e way is check for damage type, as 3 is always ranged
@@ -1929,15 +1928,20 @@ uint8_t Spell::CanCast(bool /*tolerate*/)
                     case 68014:
                     case 68015:
                     case 68016:
-                    {
-                        if (getSpellInfo()->getEffect(0) == SPELL_EFFECT_DUMMY && !u_caster->isFriendlyTo(target))
-                            facing_flags = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-                    } break;
+                        {
+                            if (getSpellInfo()->getEffect(0) == SPELL_EFFECT_DUMMY && !u_caster->isFriendlyTo(target))
+                                facing_flags = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
+                        } break;
+                }
+
+                if (facing_flags & SPELL_INFRONT_STATUS_REQUIRE_INFRONT && !u_caster->isInFront(target))
+                {
+                    return SPELL_FAILED_UNIT_NOT_INFRONT;
                 }
             }
 
             // fishing spells
-            if (getSpellInfo()->getEffectImplicitTargetA(0) == EFF_TARGET_SELF_FISHING)  //||
+            if (getSpellInfo()->getEffectImplicitTargetA(0) == EFF_TARGET_SELF_FISHING) //||
                 //GetProto()->EffectImplicitTargetA[1] == EFF_TARGET_SELF_FISHING ||
                 //GetProto()->EffectImplicitTargetA[2] == EFF_TARGET_SELF_FISHING)
             {

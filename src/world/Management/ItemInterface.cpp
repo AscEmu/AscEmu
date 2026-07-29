@@ -437,14 +437,14 @@ Item* ItemInterface::SafeAddItem(uint32_t ItemId, int8_t ContainerSlot, int16_t 
 
 // Creates and adds a item that can be manipulated after
 // Returns item in tuple with result if failed to add item, nullptr on success
-std::tuple<AddItemResult, std::unique_ptr<Item>> ItemInterface::SafeAddItem(std::unique_ptr<Item> pItem, int8_t ContainerSlot, int16_t slot)
+std::tuple<AddItemResult, std::unique_ptr<Item>> ItemInterface::SafeAddItem(std::unique_ptr<Item> pItem, int16_t ContainerSlot, int16_t slot)
 {
     return m_AddItem(std::move(pItem), ContainerSlot, slot);
 }
 
 // Adds items to player inventory, this includes all types of slots.
 // Returns item in tuple with result if failed to add item, nullptr on success
-std::tuple<AddItemResult, std::unique_ptr<Item>> ItemInterface::m_AddItem(std::unique_ptr<Item> itemHolder, int8_t ContainerSlot, int16_t slot)
+std::tuple<AddItemResult, std::unique_ptr<Item>> ItemInterface::m_AddItem(std::unique_ptr<Item> itemHolder, int16_t ContainerSlot, int16_t slot)
 {
     if (slot >= MAX_INVENTORY_SLOT)
     {
@@ -630,7 +630,7 @@ bool ItemInterface::IsBagSlot(int16_t slot)
 }
 
 /// Removes the item safely and returns it back for usage
-std::unique_ptr<Item> ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8_t ContainerSlot, int16_t slot, bool destroy)
+std::unique_ptr<Item> ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int16_t ContainerSlot, int16_t slot, bool destroy)
 {
     if (slot >= MAX_INVENTORY_SLOT)
     {
@@ -807,7 +807,7 @@ std::unique_ptr<Item> ItemInterface::SafeRemoveAndRetreiveItemByGuid(uint64_t gu
 
 /// Completely removes item from player
 /// \return true if item removal was succefull
-bool ItemInterface::SafeFullRemoveItemFromSlot(int8_t ContainerSlot, int16_t slot)
+bool ItemInterface::SafeFullRemoveItemFromSlot(int16_t ContainerSlot, int16_t slot)
 {
     if (slot >= MAX_INVENTORY_SLOT)
     {
@@ -991,7 +991,7 @@ Item* ItemInterface::GetInventoryItem(int16_t slot)
 }
 
 /// Gets a Item from inventory or container
-Item* ItemInterface::GetInventoryItem(int8_t ContainerSlot, int16_t slot)
+Item* ItemInterface::GetInventoryItem(int16_t ContainerSlot, int16_t slot)
 {
     if (ContainerSlot <= INVENTORY_SLOT_NOT_SET)
     {
@@ -1013,7 +1013,7 @@ Item* ItemInterface::GetInventoryItem(int8_t ContainerSlot, int16_t slot)
     return nullptr;
 }
 
-Container* ItemInterface::GetContainer(int8_t containerSlot)
+Container* ItemInterface::GetContainer(int16_t containerSlot)
 {
     if (!IsBagSlot(containerSlot))
         return nullptr;
@@ -3651,7 +3651,7 @@ SlotResult ItemInterface::FindFreeInventorySlot(ItemProperties const* proto)
         }
     }
 
-    //backpack
+    // backpack
     for (uint32_t i = INVENTORY_SLOT_ITEM_START; i < INVENTORY_SLOT_ITEM_END; ++i)
     {
         Item* item = GetInventoryItem(static_cast<int16_t>(i));
@@ -3719,7 +3719,7 @@ SlotResult ItemInterface::FindFreeBankSlot(ItemProperties const* proto)
         }
     }
 
-    //backpack
+    // backpack
     for (uint32_t i = BANK_SLOT_ITEM_START; i < BANK_SLOT_ITEM_END; ++i)
     {
         Item* item = GetInventoryItem(static_cast<int16_t>(i));
@@ -3732,7 +3732,7 @@ SlotResult ItemInterface::FindFreeBankSlot(ItemProperties const* proto)
         }
     }
 
-    //bags
+    // bags
     for (uint32_t i = BANK_SLOT_BAG_START; i < BANK_SLOT_BAG_END; ++i)
     {
         Item* item = GetInventoryItem(static_cast<int16_t>(i));
@@ -3780,7 +3780,7 @@ SlotResult ItemInterface::FindAmmoBag()
 void ItemInterface::ReduceItemDurability()
 {
     uint32_t f = Util::getRandomUInt(100);
-    if (f <= 10)   //10% chance to loose 1 dur from a random valid item.
+    if (f <= 10) // 10% chance to lose 1 dur from a random valid item.
     {
         int32_t slot = static_cast<int32_t>(Util::getRandomUInt(EQUIPMENT_SLOT_END));
         Item* pItem = GetInventoryItem(INVENTORY_SLOT_NOT_SET, static_cast<int16_t>(slot));
@@ -3791,10 +3791,9 @@ void ItemInterface::ReduceItemDurability()
                 pItem->setDurability(pItem->getMaxDurability() - 1);
                 pItem->m_isDirty = true;
                 //check final durability
-                if (!pItem->getDurability())   //no dur left
+                if (!pItem->getDurability()) //no dur left
                 {
                     m_pOwner->applyItemMods(pItem, static_cast<int16_t>(slot), false, true);
-
                 }
             }
         }
@@ -3992,7 +3991,6 @@ uint32_t ItemInterface::GetItemCountByLimitId(uint32_t LimitId, bool IncBank)
 /// Look for items with limited duration and send the remaining time to the client
 void ItemInterface::HandleItemDurations()
 {
-
     for (uint16_t i = EQUIPMENT_SLOT_START; i <= CURRENCYTOKEN_SLOT_END; ++i)
     {
         Item* item1 = this->GetInventoryItem(static_cast<int16_t>(i));
@@ -4000,7 +3998,6 @@ void ItemInterface::HandleItemDurations()
 
         if (item1 != nullptr && item1->isContainer())
         {
-
             for (uint32_t j = 0; j < item1->getItemProperties()->ContainerSlots; ++j)
             {
                 Item* item2 = dynamic_cast<Container*>(item1)->getItem(static_cast<int16_t>(j));
@@ -4008,7 +4005,6 @@ void ItemInterface::HandleItemDurations()
                 if (item2 != nullptr && item2->getItemProperties()->ExistingDuration > 0)
                     realitem = item2;
             }
-
         }
         else
         {
@@ -4024,8 +4020,8 @@ void ItemInterface::HandleItemDurations()
 /// Inserts a new entry into the RefundableMap. This should be called when purchasing the item
 void ItemInterface::AddRefundable(uint64_t GUID, uint32_t extendedcost)
 {
-    std::pair< time_t, uint32_t > RefundableEntry;
-    std::pair< uint64_t, std::pair< time_t, uint32_t > > insertpair;
+    std::pair<time_t, uint32_t> RefundableEntry;
+    std::pair<uint64_t, std::pair<time_t, uint32_t>> insertpair;
 
     Item* item = this->GetItemByGUID(GUID);
     if (item == nullptr)
@@ -4033,8 +4029,8 @@ void ItemInterface::AddRefundable(uint64_t GUID, uint32_t extendedcost)
 
     uint32_t* played = this->GetOwner()->getPlayedTime();
 
-    RefundableEntry.first = played[1];               // time of purchase in playedtime
-    RefundableEntry.second = extendedcost;          // extendedcost
+    RefundableEntry.first = played[1]; // time of purchase in playedtime
+    RefundableEntry.second = extendedcost; // extendedcost
 
     insertpair.first = GUID;
     insertpair.second = RefundableEntry;
@@ -4046,15 +4042,15 @@ void ItemInterface::AddRefundable(uint64_t GUID, uint32_t extendedcost)
 
 void ItemInterface::AddRefundable(uint64_t GUID, uint32_t extendedcost, time_t buytime)
 {
-    std::pair< time_t, uint32_t > RefundableEntry;
-    std::pair< uint64_t, std::pair< time_t, uint32_t > > insertpair;
+    std::pair<time_t, uint32_t> RefundableEntry;
+    std::pair<uint64_t, std::pair<time_t, uint32_t>> insertpair;
 
     Item* item = this->GetItemByGUID(GUID);
     if (item == nullptr)
         return;
 
-    RefundableEntry.first = buytime;               // time of purchase in playedtime
-    RefundableEntry.second = extendedcost;      // extendedcost
+    RefundableEntry.first = buytime; // time of purchase in playedtime
+    RefundableEntry.second = extendedcost; // extendedcost
 
     insertpair.first = GUID;
     insertpair.second = RefundableEntry;
@@ -4066,13 +4062,13 @@ void ItemInterface::AddRefundable(uint64_t GUID, uint32_t extendedcost, time_t b
 
 void ItemInterface::AddRefundable(Item* item, uint32_t extendedcost, time_t buytime)
 {
-    std::pair< time_t, uint32_t > RefundableEntry;
-    std::pair< uint64_t, std::pair< time_t, uint32_t > > insertpair;
+    std::pair<time_t, uint32_t> RefundableEntry;
+    std::pair<uint64_t, std::pair<time_t, uint32_t>> insertpair;
 
     if (item == nullptr)
         return;
 
-    RefundableEntry.first = buytime;      // time of purchase in playedtime
+    RefundableEntry.first = buytime; // time of purchase in playedtime
     RefundableEntry.second = extendedcost; // extendedcost
 
     insertpair.first = item->getGuid();
@@ -4093,8 +4089,8 @@ void ItemInterface::RemoveRefundable(uint64_t GUID)
 std::pair<time_t, uint32_t> ItemInterface::LookupRefundable(uint64_t GUID)
 {
     std::pair<time_t, uint32_t> RefundableEntry;
-    RefundableEntry.first = 0;          // time of purchase in playedtime
-    RefundableEntry.second = 0;         // extendedcost
+    RefundableEntry.first = 0; // time of purchase in playedtime
+    RefundableEntry.second = 0; // extendedcost
 
     RefundableMap::iterator itr = this->m_refundableitems.find(GUID);
     if (itr != this->m_refundableitems.end())
@@ -4155,7 +4151,7 @@ bool ItemInterface::AddItemById(uint32_t itemid, uint32_t count, int32_t randomp
 
         if (it->Bonding == ITEM_BIND_ON_PICKUP)
         {
-            if (it->Flags & ITEM_FLAG_ACCOUNTBOUND)   // don't "Soulbind" account-bound items
+            if (it->Flags & ITEM_FLAG_ACCOUNTBOUND) // don't "Soulbind" account-bound items
                 itemHolder->addFlags(ITEM_FLAG_ACCOUNTBOUND);
             else
                 itemHolder->addFlags(ITEM_FLAG_SOULBOUND);
@@ -4164,7 +4160,6 @@ bool ItemInterface::AddItemById(uint32_t itemid, uint32_t count, int32_t randomp
         // Let's try to autogenerate randomprop / randomsuffix
         if (randomprop == 0)
         {
-
             if ((it->RandomPropId != 0) && (it->RandomSuffixId != 0))
             {
                 sLogger.failure("Item {} ({}) has both RandomPropId and RandomSuffixId.", itemid, it->Name);
@@ -4250,7 +4245,7 @@ bool ItemInterface::SwapItems(int8_t DstInvSlot, int8_t DstSlot, int8_t SrcInvSl
     bool adderror = false;
     int8_t error;
 
-    if (DstInvSlot == SrcSlot && SrcInvSlot == -1)   // player trying to add self container to self container slots
+    if (DstInvSlot == SrcSlot && SrcInvSlot == -1) // player trying to add self container to self container slots
     {
         buildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEMS_CANT_BE_SWAPPED);
         return false;
@@ -4271,7 +4266,7 @@ bool ItemInterface::SwapItems(int8_t DstInvSlot, int8_t DstSlot, int8_t SrcInvSl
     if (DstItem)
     {
         //check if it will go to equipment slot
-        if (SrcInvSlot == INVENTORY_SLOT_NOT_SET)  //not bag
+        if (SrcInvSlot == INVENTORY_SLOT_NOT_SET) //not bag
         {
             if (DstItem->isContainer())
             {
@@ -4390,13 +4385,13 @@ bool ItemInterface::SwapItems(int8_t DstInvSlot, int8_t DstSlot, int8_t SrcInvSl
 #endif
     }
 
-    if (SrcInvSlot == DstInvSlot)  //in 1 bag
+    if (SrcInvSlot == DstInvSlot) //in 1 bag
     {
-        if (SrcInvSlot == INVENTORY_SLOT_NOT_SET)   //in backpack
+        if (SrcInvSlot == INVENTORY_SLOT_NOT_SET) //in backpack
         {
             SwapItemSlots(SrcSlot, DstSlot);
         }
-        else//in bag
+        else //in bag
         {
             static_cast<Container*>(GetInventoryItem(SrcInvSlot))->swapItems(SrcSlot, DstSlot);
         }

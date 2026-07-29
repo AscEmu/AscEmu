@@ -23,6 +23,24 @@ struct DatabaseConnection
     std::recursive_mutex Busy;
 };
 
+class SERVER_DECL QueryResult
+{
+public:
+    QueryResult(uint32_t fields, uint32_t rows) : m_fieldCount(fields), m_rowCount(rows), m_currentRow(nullptr) {}
+    virtual ~QueryResult() {}
+
+    virtual bool nextRow() = 0;
+
+    inline Field* fetch() { return m_currentRow.get(); }
+    inline uint32_t getFieldCount() const { return m_fieldCount; }
+    inline uint32_t getRowCount() const { return m_rowCount; }
+
+protected:
+    uint32_t m_fieldCount;
+    uint32_t m_rowCount;
+    std::unique_ptr<Field[]> m_currentRow;
+};
+
 struct SERVER_DECL AsyncQueryResult
 {
     std::unique_ptr<QueryResult> result;
@@ -132,22 +150,4 @@ protected:
 
     int32_t m_connectionCount = -1;
     uint32_t m_counter = 0;
-};
-
-class SERVER_DECL QueryResult
-{
-public:
-    QueryResult(uint32_t fields, uint32_t rows) : m_fieldCount(fields), m_rowCount(rows), m_currentRow(nullptr) {}
-    virtual ~QueryResult() {}
-
-    virtual bool nextRow() = 0;
-
-    inline Field* fetch() { return m_currentRow.get(); }
-    inline uint32_t getFieldCount() const { return m_fieldCount; }
-    inline uint32_t getRowCount() const { return m_rowCount; }
-
-protected:
-    uint32_t m_fieldCount;
-    uint32_t m_rowCount;
-    std::unique_ptr<Field[]> m_currentRow;
 };
