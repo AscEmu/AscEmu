@@ -1207,21 +1207,22 @@ bool ChatCommandHandler::HandlePlayerInfo(const char* args, WorldSession* m_sess
     }
     WorldSession* sess = plr->getSession();
 
-    static const char* classes[MAX_PLAYER_CLASSES] =
-    { "None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "None", "Druid" };
-#if VERSION_STRING < Cata
-    // wrong for classic!
-    static const char* races[11 + 1] =
-    { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "None", "Blood Elf", "Draenei" };
-#else
-    static const char* races[DBC_NUM_RACES] =
-    { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "Goblin", "Blood Elf", "Draenei", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "Worgen" };
-#endif
+    std::string raceName = "Unknown Race";
+    if (auto const* raceEntry = sChrRacesStore.lookupEntry(plr->getRace()))
+    {
+        raceName = raceEntry->name;
+    }
+
+    std::string className = "Unknown Class";
+    if (auto const* classEntry = sChrClassesStore.lookupEntry(plr->getClass()))
+    {
+        className = classEntry->name;
+    }
 
     char playedLevel[64];
     char playedTotal[64];
 
-    int seconds = (plr->getPlayedTime())[0];
+    int seconds = plr->getPlayedTime()[0];
     int mins = 0;
     int hours = 0;
     int days = 0;
@@ -1277,7 +1278,7 @@ bool ChatCommandHandler::HandlePlayerInfo(const char* args, WorldSession* m_sess
     }
     snprintf(playedTotal, 64, "[%d days, %d hours, %d minutes, %d seconds]", days, hours, mins, seconds);
 
-    greenSystemMessage(m_session, "{} is a {} {} {}", plr->getName(), (plr->getGender() ? "Female" : "Male"), races[plr->getRace()], classes[plr->getClass()]);
+    greenSystemMessage(m_session, "{} is a {} {} {}", plr->getName(), plr->getGender() ? "Female" : "Male", raceName, className);
 
     blueSystemMessage(m_session, "{} has played {} at this level", (plr->getGender() ? "She" : "He"), playedLevel);
     blueSystemMessage(m_session, "and {} overall", playedTotal);

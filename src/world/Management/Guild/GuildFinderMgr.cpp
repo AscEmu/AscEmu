@@ -62,7 +62,7 @@ void GuildFinderMgr::loadGuildSettingsFromDB()
         PlayerTeam guildTeam = TEAM_ALLIANCE;
         if (auto raceEntry = sChrRacesStore.lookupEntry(fields[7].asUint8()))
         {
-            if (raceEntry->team_id == 1)
+            if (raceEntry->teamId == 1)
             {
                 guildTeam = TEAM_HORDE;
             }

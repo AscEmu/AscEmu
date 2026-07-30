@@ -2260,7 +2260,7 @@ bool Player::create(CharCreate& charCreateContent)
         return false;
     }
 
-    if (m_dbcRace->team_id == 7)
+    if (m_dbcRace->teamId == 7)
         m_team = 0;
     else
         m_team = 1;
@@ -2275,7 +2275,7 @@ bool Player::create(CharCreate& charCreateContent)
         sLogger.failure("No class levelstats found!");
 
     if (const auto raceEntry = sChrRacesStore.lookupEntry(charCreateContent._race))
-        setFaction(raceEntry->faction_id);
+        setFaction(raceEntry->factionId);
     else
         setFaction(0);
 
@@ -2430,12 +2430,12 @@ void Player::setInitialDisplayIds(uint8_t gender, uint8_t race)
         switch (gender)
         {
             case GENDER_MALE:
-                setDisplayId(raceEntry->model_male);
-                setNativeDisplayId(raceEntry->model_male);
+                setDisplayId(raceEntry->modelMale);
+                setNativeDisplayId(raceEntry->modelMale);
                 break;
             case GENDER_FEMALE:
-                setDisplayId(raceEntry->model_female);
-                setNativeDisplayId(raceEntry->model_female);
+                setDisplayId(raceEntry->modelFemale);
+                setNativeDisplayId(raceEntry->modelFemale);
                 break;
             default:
                 sLogger.failure("Gender {} is not valid for Player charecters!", gender);
@@ -2557,11 +2557,11 @@ PlayerTeam Player::getBgTeam() const { return m_bgTeam == TEAM_ALLIANCE ? TEAM_A
 void Player::setTeam(uint32_t team) { m_team = team; m_bgTeam = team; }
 void Player::setBgTeam(uint32_t team) { m_bgTeam = team; }
 
-uint32_t Player::getInitialTeam() const { return m_dbcRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; }
+uint32_t Player::getInitialTeam() const { return m_dbcRace->teamId == 7 ? TEAM_ALLIANCE : TEAM_HORDE; }
 
 void Player::resetTeam()
 {
-    m_team = m_dbcRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE;
+    m_team = m_dbcRace->teamId == 7 ? TEAM_ALLIANCE : TEAM_HORDE;
     m_bgTeam = m_team;
 }
 
@@ -9406,11 +9406,11 @@ void Player::sendCinematicOnFirstLogin()
             if (charEntry->cinematicSequenceId != 0)
                 cinematicId = charEntry->cinematicSequenceId;
             else if (const auto raceEntry = sChrRacesStore.lookupEntry(getRace()))
-                cinematicId = raceEntry->cinematic_id;
+                cinematicId = raceEntry->cinematicId;
         }
 #else
         if (const auto raceEntry = sChrRacesStore.lookupEntry(getRace()))
-            cinematicId = raceEntry->cinematic_id;
+            cinematicId = raceEntry->cinematicId;
 #endif
 
         SmsgTriggerCinematic managedPacket(cinematicId);
@@ -11617,7 +11617,7 @@ void Player::initialiseReputation()
 uint32_t Player::getInitialFactionId()
 {
     if (const auto raceEntry = sChrRacesStore.lookupEntry(getRace()))
-        return raceEntry->faction_id;
+        return raceEntry->factionId;
 
     return 0;
 }
@@ -14512,7 +14512,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
         return;
     }
 
-    if (m_dbcRace->team_id == 7)
+    if (m_dbcRace->teamId == 7)
         m_bgTeam = m_team = 0;
     else
         m_bgTeam = m_team = 1;
@@ -14648,7 +14648,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     eventModelChange();
 
     if (const auto raceEntry = sChrRacesStore.lookupEntry(getRace()))
-        setFaction(raceEntry->faction_id);
+        setFaction(raceEntry->factionId);
     else
         setFaction(0);
 

@@ -220,11 +220,15 @@ namespace WDB
                 rawStore.setFormat(std::move(writable));
 
                 // Check format record size vs struct size
-                if (WDB::WDBLoader::getFormatRecordSize(rawStore.getFormat()) != sizeof(RawT))
+                size_t const expectedSize = WDB::WDBLoader::getFormatRecordSize(rawStore.getFormat());
+                size_t const actualSize = sizeof(RawT);
+
+                if (expectedSize != actualSize)
                 {
                     std::ostringstream stream;
                     stream << "WDBLoader:: wrong format size for " << filename
-                        << " on expansion " << expansionName << " (ID: " << expansionId << ")\n";
+                        << " on expansion " << expansionName << " (ID: " << expansionId << ")"
+                        << " - Expected: " << expectedSize << " bytes, Struct: " << actualSize << " bytes\n";
                     errors.push_back(stream.str());
                     std::cout << stream.str() << "\n";
                     return;

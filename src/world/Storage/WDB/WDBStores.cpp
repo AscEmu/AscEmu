@@ -63,7 +63,7 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::CharStartOutfitEntry> sCharStartO
 std::map<uint32_t, WDB::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
 
 SERVER_DECL WDB::WDBStore<WDB::Structures::ChrClassesEntry> sChrClassesStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrRacesEntry> sChrRacesStore;
+SERVER_DECL WDB::WDBStore<WDB::Structures::ChrRacesEntry> sChrRacesStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoEntry> sCreatureDisplayInfoStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore;
@@ -346,7 +346,54 @@ bool loadDBCs()
         if (WDB::Structures::CharStartOutfitEntry const* outfit = sCharStartOutfitStore.lookupEntry(i))
             sCharStartOutfitMap[outfit->Race | outfit->Class << 8 | outfit->Gender << 16] = outfit;
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChrRacesStore, dbc_path, "ChrRaces.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::ChrRacesEntry>(
+        bad_dbc_files, sChrRacesStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::ChrRacesEntry& entry) {
+            entry.raceId = raw.id;
+            entry.flags = raw.flags;
+            entry.factionId = raw.faction_id;
+            entry.modelMale = raw.model_male;
+            entry.modelFemale = raw.model_female;
+            entry.cinematicId = raw.cinematic_id;
+
+            if constexpr (requires { raw.team_id; })
+            {
+                entry.teamId = raw.team_id;
+            }
+            else
+            {
+                entry.teamId = 0;
+            }
+
+            if constexpr (requires { { raw.name[0] } -> std::convertible_to<const char*>; })
+            {
+                uint8_t localeId = sWorld.getDbcLocaleLanguageId();
+                entry.name = raw.name[localeId] ? raw.name[localeId] : "";
+            }
+            else
+            {
+                entry.name = raw.name ? raw.name : "";
+            }
+
+            if constexpr (requires { raw.start_taxi_mask; }) // Classic
+            {
+                entry.startTaxiMask = raw.start_taxi_mask;
+            }
+            else
+            {
+                entry.startTaxiMask = 0;
+            }
+
+            if constexpr (requires { raw.expansion; }) // >= TBC
+            {
+                entry.expansion = raw.expansion;
+            }
+            else
+            {
+                entry.expansion = 0; // Classic
+            }
+        }
+    );
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sCreatureDisplayInfoStore, dbc_path, "CreatureDisplayInfo.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sCreatureDisplayInfoExtraStore, dbc_path, "CreatureDisplayInfoExtra.dbc");

@@ -231,6 +231,20 @@ namespace WDB
             uint32_t rapPerAgi{0};
         };
 
+        struct ChrRacesEntry
+        {
+            uint32_t raceId = 0;
+            uint32_t flags = 0;
+            uint32_t factionId = 0;
+            uint32_t modelMale = 0;
+            uint32_t modelFemale = 0;
+            uint32_t teamId = 0;
+            uint32_t startTaxiMask = 0;
+            uint32_t cinematicId = 0;
+            std::string name;
+            uint32_t expansion = 0;
+        };
+
 #if VERSION_STRING <= Classic
 #define NAME_PATTERN 8
 #else
@@ -810,33 +824,6 @@ namespace WDB
             //uint32_t name_pattern_flags;                              // 19
             //char* channel_name[16];                                   // 20-35
             //uint32_t channel_name_flags;                              // 36
-        };
-
-        struct ChrRacesEntry
-        {
-            uint32_t race_id;                                           // 0
-            uint32_t flags;                                             // 1
-            uint32_t faction_id;                                        // 2
-            //uint32_t unk1;                                            // 3
-            uint32_t model_male;                                        // 4
-            uint32_t model_female;                                      // 5
-            //uint32_t unk2;                                            // 6
-            //uint32_t unk3;                                            // 7
-            uint32_t team_id;                                           // 8
-            //uint32_t unk4[4];                                         // 9-12
-            //uint32_t unk5;                                            // 13
-#if VERSION_STRING == Classic
-            uint32_t start_taxi_mask;                                   // 14
-#endif
-            //uint32_t unk6;                                            // 15
-            uint32_t cinematic_id;                                      // 16 CinematicSequences.dbc
-            char* name[NAME_PATTERN];                                   // 17-24
-            //uint32_t name_flags                                       // 25
-            //uint32_t unk7[2]                                          // 26-27
-            //uint32_t unk8;                                            // 28
-#if VERSION_STRING > Classic
-            uint32_t expansion;                                         // 68
-#endif
         };
 
         struct CreatureDisplayInfoEntry
@@ -3181,6 +3168,60 @@ namespace WDB
                 uint32_t apPerAgi;
                 uint32_t rapPerAgi;
             };
+
+            struct ChrRacesEntryClassic
+            {
+                uint32_t id;
+                uint32_t flags;
+                uint32_t faction_id;
+                uint32_t model_male;
+                uint32_t model_female;
+                uint32_t team_id;
+                uint32_t start_taxi_mask;
+                uint32_t cinematic_id;
+                char const* name[namePatternClassic];
+            };
+
+            struct ChrRacesEntryTbc
+            {
+                uint32_t id;
+                uint32_t flags;
+                uint32_t faction_id;
+                uint32_t model_male;
+                uint32_t model_female;
+                uint32_t base_language;
+                uint32_t cinematic_id;
+                char const* name[namePatternTbcWotlk];
+                uint32_t expansion;
+            };
+
+            using ChrRacesEntryWotlk = ChrRacesEntryTbc;
+
+            struct ChrRacesEntryCata
+            {
+                uint32_t id;
+                uint32_t flags;
+                uint32_t faction_id;
+                uint32_t model_male;
+                uint32_t model_female;
+                uint32_t base_language;
+                uint32_t cinematic_id;
+                char const* name;
+                uint32_t expansion;
+            };
+
+            struct ChrRacesEntryMop
+            {
+                uint32_t id;
+                uint32_t flags;
+                uint32_t faction_id;
+                uint32_t model_male;
+                uint32_t model_female;
+                uint32_t base_language;
+                uint32_t cinematic_id;
+                char const* name;
+                uint32_t expansion;
+            };
 #pragma pack(pop)
         }
     }
@@ -3199,35 +3240,46 @@ namespace WDB
         };
 
         template <>
-        struct DbcTraits<WDB::Structures::AreaTableEntry> : WDB::DbcVersionLayouts<
-            WDB::Structures::Raw::AreaTableEntryClassic,
-            WDB::Structures::Raw::AreaTableEntryTbc,
-            WDB::Structures::Raw::AreaTableEntryWotlk,
-            WDB::Structures::Raw::AreaTableEntryCata,
-            WDB::Structures::Raw::AreaTableEntryMop>
+        struct DbcTraits<Structures::AreaTableEntry> : DbcVersionLayouts<
+            Structures::Raw::AreaTableEntryClassic,
+            Structures::Raw::AreaTableEntryTbc,
+            Structures::Raw::AreaTableEntryWotlk,
+            Structures::Raw::AreaTableEntryCata,
+            Structures::Raw::AreaTableEntryMop>
         {
             static constexpr const char* filename = "AreaTable.dbc";
         };
 
         template <>
-        struct DbcTraits<WDB::Structures::CharTitlesEntry> : WDB::DbcVersionLayouts<
-            WDB::UnsupportedVersion, // Classic
-            WDB::Structures::Raw::CharTitlesEntryTbcWotlk, // TBC
-            WDB::Structures::Raw::CharTitlesEntryTbcWotlk, // WotLK
-            WDB::Structures::Raw::CharTitlesEntryCataMop, // Cata
-            WDB::Structures::Raw::CharTitlesEntryCataMop> // MoP
+        struct DbcTraits<Structures::CharTitlesEntry> : DbcVersionLayouts<
+            UnsupportedVersion, // Classic
+            Structures::Raw::CharTitlesEntryTbcWotlk, // TBC
+            Structures::Raw::CharTitlesEntryTbcWotlk, // WotLK
+            Structures::Raw::CharTitlesEntryCataMop, // Cata
+            Structures::Raw::CharTitlesEntryCataMop> // MoP
         {
             static constexpr const char* filename = "CharTitles.dbc";
         };
 
         template <>
-        struct DbcTraits<WDB::Structures::ChrClassesEntry> : WDB::DbcVersionLayouts<
-            WDB::Structures::Raw::ChrClassesEntryClassic,
-            WDB::Structures::Raw::ChrClassesEntryTbc,
-            WDB::Structures::Raw::ChrClassesEntryWotlk,
-            WDB::Structures::Raw::ChrClassesEntryCata,
-            WDB::Structures::Raw::ChrClassesEntryMop>
+        struct DbcTraits<Structures::ChrClassesEntry> : DbcVersionLayouts<
+            Structures::Raw::ChrClassesEntryClassic,
+            Structures::Raw::ChrClassesEntryTbc,
+            Structures::Raw::ChrClassesEntryWotlk,
+            Structures::Raw::ChrClassesEntryCata,
+            Structures::Raw::ChrClassesEntryMop>
         {
             static constexpr const char* filename = "ChrClasses.dbc";
+        };
+
+        template <>
+        struct DbcTraits<Structures::ChrRacesEntry> : DbcVersionLayouts<
+            Structures::Raw::ChrRacesEntryClassic,
+            Structures::Raw::ChrRacesEntryTbc,
+            Structures::Raw::ChrRacesEntryWotlk,
+            Structures::Raw::ChrRacesEntryCata,
+            Structures::Raw::ChrRacesEntryMop>
+        {
+            static constexpr const char* filename = "ChrRaces.dbc";
         };
 }
