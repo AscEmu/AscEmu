@@ -258,11 +258,11 @@ CommandTableStorage::CommandTableStorage()
         {"gobject set state",             "o", 1, wrap(&ChatCommandHandler::HandleGOSetStateCommand),             "Sets the state byte of the GO" },
         {"gobject spawn",                 "o", 1, wrap(&ChatCommandHandler::HandleGOSpawnCommand),               "Spawns a GameObject by ID" },
 
-        {"gocreature",                    "v", 1, wrap(&ChatCommandHandler::HandleGoCreatureSpawnCommand),        "Teleports you to the creature with <spwn_id>." },
-        {"gogameobject",                  "v", 1, wrap(&ChatCommandHandler::HandleGoGameObjectSpawnCommand),      "Teleports you to the gameobject with <spawn_id>." },
-        {"gostartlocation",               "m", 1, wrap(&ChatCommandHandler::HandleGoStartLocationCommand),        "Teleports you to a starting location" },
-        {"gotrig",                        "v", 1, wrap(&ChatCommandHandler::HandleGoTriggerCommand),              "Teleports you to the areatrigger with <id>." },
-        {"gps",                           "0", 0, wrap(&ChatCommandHandler::HandleGPSCommand),                    "Shows position of targeted unit" },
+        {"gocreature",                    "v", 1, wrap(&ChatCommandHandler::HandleGoCreatureSpawnCommand),        "Teleports you to the creature with <spawn_id>."},
+        {"gogameobject",                  "v", 1, wrap(&ChatCommandHandler::HandleGoGameObjectSpawnCommand),      "Teleports you to the gameobject with <spawn_id>."},
+        {"gostartlocation",               "m", 1, wrap(&ChatCommandHandler::HandleGoStartLocationCommand),        "Teleports you to a starting location"},
+        {"gotrig",                        "v", 1, wrap(&ChatCommandHandler::HandleGoTriggerCommand),              "Teleports you to the areatrigger with <id>."},
+        {"gps",                           "0", 0, wrap(&ChatCommandHandler::HandleGPSCommand),                    "Shows position of targeted unit"},
 
         {"guild",                         "0", 0 },
         {"guild create",                  "m", 1, wrap(&ChatCommandHandler::HandleGuildCreateCommand),            "Creates a guild." },
@@ -530,7 +530,7 @@ void CommandTableStorage::overridePermission(const char* command, const char* le
         return;
 
     std::string strCommand = command;
-    
+
     AscEmu::Util::Strings::toLowerCase(strCommand);
 
     bool exists = false;

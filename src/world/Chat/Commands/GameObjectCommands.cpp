@@ -529,8 +529,11 @@ bool ChatCommandHandler::HandleGOSelectCommand(const char* args, WorldSession* m
     m_session->GetPlayer()->m_goLastXRotation = 0.0f;
     m_session->GetPlayer()->m_goLastYRotation = 0.0f;
 
+    auto* props = sMySQLStore.getGameObjectProperties(GObj->getEntry());
+    std::string goName = props ? props->name : "Unknown GameObject";
+
     greenSystemMessage(m_session, "Selected GameObject [ {} ] which is {} meters away from you.",
-        sMySQLStore.getGameObjectProperties(GObj->getEntry())->name, m_session->GetPlayer()->CalcDistance(GObj));
+                       goName, m_session->GetPlayer()->CalcDistance(GObj));
 
     return true;
 }
@@ -538,23 +541,37 @@ bool ChatCommandHandler::HandleGOSelectCommand(const char* args, WorldSession* m
 //.gobject selectguid
 bool ChatCommandHandler::HandleGOSelectGuidCommand(const char* args, WorldSession* m_session)
 {
-    uint32_t guid = 0;
-    if (sscanf(args, "%u", &guid) != 1)
+    if (!args || *args == '\0')
     {
         redSystemMessage(m_session, "Wrong Syntax! Use: .gobject selectguid <guid>");
         return true;
     }
 
-    auto gameobject = m_session->GetPlayer()->getWorldMap()->getGameObject(guid);
+    uint32_t guid = 0;
+    auto [ptr, ec] = std::from_chars(args, args + std::strlen(args), guid);
+
+    if (ec != std::errc{})
+    {
+        redSystemMessage(m_session, "Wrong Syntax! Use: .gobject selectguid <guid>");
+        return true;
+    }
+
+    Player* player = m_session->GetPlayer();
+    auto gameobject = player->getWorldMap()->getGameObject(guid);
+
     if (gameobject == nullptr)
     {
         redSystemMessage(m_session, "No GameObject found with guid {}", guid);
         return true;
     }
 
-    m_session->GetPlayer()->setSelectedGo(gameobject->getGuid());
+    player->setSelectedGo(gameobject->getGuid());
+
+    auto* props = gameobject->GetGameObjectProperties();
+    std::string goName = props ? props->name : "Unknown GameObject";
+
     greenSystemMessage(m_session, "GameObject [ {} ] with distance {} to your position selected.",
-        gameobject->GetGameObjectProperties()->name, m_session->GetPlayer()->CalcDistance(gameobject));
+                       goName, player->CalcDistance(gameobject));
     return true;
 }
 

@@ -81,7 +81,7 @@ bool ChatCommandHandler::handleCommandsCommand(const char* args, WorldSession* m
 
 bool ChatCommandHandler::showHelpForCommand(WorldSession* m_session, const char* args)
 {
-    auto &reg = sCommandTableStorage.getCommandRegistry();
+    auto& reg = sCommandTableStorage.getCommandRegistry();
 
     // normalize input: strip leading spaces and an optional dot
     std::string_view sv = args ? std::string_view(args) : std::string_view{};
@@ -90,7 +90,7 @@ bool ChatCommandHandler::showHelpForCommand(WorldSession* m_session, const char*
     while (i < sv.size() && std::isspace(static_cast<unsigned char>(sv[i])))
         ++i;
 
-    // be consequent if you allow '.' or '!' in the normalization, you need to allow it here too 
+    // be consequent if you allow '.' or '!' in the normalization, you need to allow it here too
     if (i < sv.size() && (sv[i] == '.' || sv[i] == '!'))
         ++i;
 
@@ -132,7 +132,7 @@ bool ChatCommandHandler::showHelpForCommand(WorldSession* m_session, const char*
 
     auto lo = [](char c) {
         return static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
-        };
+    };
 
     auto istarts_with = [&](std::string_view a, std::string_view b) {
         if (b.size() > a.size())
@@ -151,7 +151,6 @@ bool ChatCommandHandler::showHelpForCommand(WorldSession* m_session, const char*
     // Try to find an entry exactly at that depth: first word == resolved top-level,
     // the remaining words are matched by abbreviation.
     const ChatCommand* match = nullptr;
-    std::string matchCmd;
 
     for (const auto& e : reg)
     {
@@ -162,12 +161,12 @@ bool ChatCommandHandler::showHelpForCommand(WorldSession* m_session, const char*
         std::vector<std::string> words;
         {
             std::istringstream is(e.command);
-            for (std::string w; is >> w; )
+            for (std::string w; is >> w;)
                 words.push_back(std::move(w));
         }
 
         if (words.size() != wantedDepth)
-            continue;     // exact depth only
+            continue; // exact depth only
 
         if (words.empty())
             continue;
@@ -175,14 +174,20 @@ bool ChatCommandHandler::showHelpForCommand(WorldSession* m_session, const char*
         // first word must equal resolved top (case-insensitive)
         if (words[0].size() != top.size())
         {
-            // handled below by per-char compare anyway
+            continue;
         }
+
+
+        bool eq = true;
+        for (size_t k = 0; k < top.size(); ++k)
         {
-            bool eq = true;
-            for (size_t k=0; k<top.size(); ++k)
-                if (lo(words[0][k]) != lo(top[k])) { eq = false; break; }
-            if (!eq) continue;
+            if (lo(words[0][k]) != lo(top[k]))
+            {
+                eq = false; break;
+            }
         }
+        if (!eq) continue;
+
 
         // remaining words matched by abbreviation
         bool ok = true;
@@ -203,7 +208,6 @@ bool ChatCommandHandler::showHelpForCommand(WorldSession* m_session, const char*
             continue;
 
         match = &e;
-        matchCmd = e.command;
         break;
     }
 
@@ -232,7 +236,7 @@ bool ChatCommandHandler::showHelpForCommand(WorldSession* m_session, const char*
     const std::string listPrefix = top + ' ';
 
     bool any = false;
-    for (const auto &cmd : reg)
+    for (const auto& cmd : reg)
     {
         if (cmd.command.size() <= listPrefix.size())
             continue;
@@ -342,8 +346,16 @@ bool ChatCommandHandler::HandleDismountCommand(const char* /*args*/, WorldSessio
 //.gocreature
 bool ChatCommandHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSession* m_session)
 {
-    uint32_t spawn_id;
-    if (sscanf(args, "%u", &spawn_id) != 1)
+    if (!args || *args == '\0')
+    {
+        redSystemMessage(m_session, "Command must be in format: .gocreature <creature_spawnid>.");
+        return true;
+    }
+
+    uint32_t spawnId = 0;
+    auto [ptr, ec] = std::from_chars(args, args + std::strlen(args), spawnId);
+
+    if (ec != std::errc{})
     {
         redSystemMessage(m_session, "Command must be in format: .gocreature <creature_spawnid>.");
         return true;
@@ -351,9 +363,12 @@ bool ChatCommandHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSes
 
     for (const auto& creatureSpawnMap : sMySQLStore._creatureSpawnsStore)
     {
+        if (creatureSpawnMap.empty())
+            continue;
+
         for (const auto& creatureSpawn : creatureSpawnMap)
         {
-            if (creatureSpawn->id == spawn_id)
+            if (creatureSpawn->id == spawnId)
             {
                 m_session->GetPlayer()->safeTeleport(creatureSpawn->mapId, 0, LocationVector(creatureSpawn->x, creatureSpawn->y, creatureSpawn->z));
                 return true;
@@ -361,15 +376,23 @@ bool ChatCommandHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSes
         }
     }
 
-    redSystemMessage(m_session, "No creature found in creature_spawns table with id {}.", spawn_id);
+    redSystemMessage(m_session, "No creature found in creature_spawns table with id {}.", spawnId);
     return true;
 }
 
 //.gogameobject
 bool ChatCommandHandler::HandleGoGameObjectSpawnCommand(const char* args, WorldSession* m_session)
 {
-    uint32_t spawn_id;
-    if (sscanf(args, "%u", &spawn_id) != 1)
+    if (!args || *args == '\0')
+    {
+        redSystemMessage(m_session, "Command must be in format: .gogameobject <gameobject_spawnid>.");
+        return true;
+    }
+
+    uint32_t spawnId = 0;
+    auto [ptr, ec] = std::from_chars(args, args + std::strlen(args), spawnId);
+
+    if (ec != std::errc{})
     {
         redSystemMessage(m_session, "Command must be in format: .gogameobject <gameobject_spawnid>.");
         return true;
@@ -377,9 +400,12 @@ bool ChatCommandHandler::HandleGoGameObjectSpawnCommand(const char* args, WorldS
 
     for (const auto& goSpawnMap : sMySQLStore._gameobjectSpawnsStore)
     {
+        if (goSpawnMap.empty())
+            continue;
+
         for (const auto& goSpawn : goSpawnMap)
         {
-            if (goSpawn->id == spawn_id)
+            if (goSpawn->id == spawnId)
             {
                 m_session->GetPlayer()->safeTeleport(goSpawn->map, 0, LocationVector(goSpawn->spawnPoint.x, goSpawn->spawnPoint.y, goSpawn->spawnPoint.z));
                 return true;
@@ -387,7 +413,7 @@ bool ChatCommandHandler::HandleGoGameObjectSpawnCommand(const char* args, WorldS
         }
     }
 
-    redSystemMessage(m_session, "No gameobject found in gameobject_spawns table with id {}.", spawn_id);
+    redSystemMessage(m_session, "No gameobject found in gameobject_spawns table with id {}.", spawnId);
     return true;
 }
 
@@ -1178,6 +1204,8 @@ bool ChatCommandHandler::HandleBlockSummonCommand(const char* args, WorldSession
     return true;
 }
 
+
+
 //.playerinfo
 bool ChatCommandHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
 {
@@ -1219,64 +1247,20 @@ bool ChatCommandHandler::HandlePlayerInfo(const char* args, WorldSession* m_sess
         className = classEntry->name;
     }
 
-    char playedLevel[64];
-    char playedTotal[64];
-
-    int seconds = plr->getPlayedTime()[0];
-    int mins = 0;
-    int hours = 0;
-    int days = 0;
-    if (seconds >= 60)
+    auto formatPlayedTime = [](uint32_t totalSeconds) -> std::string
     {
-        mins = seconds / 60;
-        if (mins)
-        {
-            seconds -= mins * 60;
-            if (mins >= 60)
-            {
-                hours = mins / 60;
-                if (hours)
-                {
-                    mins -= hours * 60;
-                    if (hours >= 24)
-                    {
-                        days = hours / 24;
-                        if (days)
-                            hours -= days * 24;
-                    }
-                }
-            }
-        }
-    }
-    snprintf(playedLevel, 64, "[%d days, %d hours, %d minutes, %d seconds]", days, hours, mins, seconds);
+        uint32_t days = totalSeconds / 86400;
+        uint32_t hours = (totalSeconds / 3600) % 24;
+        uint32_t mins = (totalSeconds / 60) % 60;
+        uint32_t secs = totalSeconds % 60;
 
-    seconds = (plr->getPlayedTime())[1];
-    mins = 0;
-    hours = 0;
-    days = 0;
-    if (seconds >= 60)
-    {
-        mins = seconds / 60;
-        if (mins)
-        {
-            seconds -= mins * 60;
-            if (mins >= 60)
-            {
-                hours = mins / 60;
-                if (hours)
-                {
-                    mins -= hours * 60;
-                    if (hours >= 24)
-                    {
-                        days = hours / 24;
-                        if (days)
-                            hours -= days * 24;
-                    }
-                }
-            }
-        }
-    }
-    snprintf(playedTotal, 64, "[%d days, %d hours, %d minutes, %d seconds]", days, hours, mins, seconds);
+        return std::format("[{} days, {} hours, {} minutes, {} seconds]", days, hours, mins, secs);
+    };
+
+    auto const& playedTime = plr->getPlayedTime();
+
+    std::string playedLevel = formatPlayedTime(playedTime[0]);
+    std::string playedTotal = formatPlayedTime(playedTime[1]);
 
     greenSystemMessage(m_session, "{} is a {} {} {}", plr->getName(), plr->getGender() ? "Female" : "Male", raceName, className);
 
