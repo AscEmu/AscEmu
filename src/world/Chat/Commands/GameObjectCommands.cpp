@@ -16,6 +16,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
+#include <charconv>
+
 //.gobject damage
 bool ChatCommandHandler::HandleGODamageCommand(const char* args, WorldSession* session)
 {
