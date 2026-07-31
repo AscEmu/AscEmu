@@ -346,12 +346,6 @@ bool ChatCommandHandler::HandleDismountCommand(const char* /*args*/, WorldSessio
 //.gocreature
 bool ChatCommandHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSession* m_session)
 {
-    if (!args || *args == '\0')
-    {
-        redSystemMessage(m_session, "Command must be in format: .gocreature <creature_spawnid>.");
-        return true;
-    }
-
     uint32_t spawnId = 0;
     auto [ptr, ec] = std::from_chars(args, args + std::strlen(args), spawnId);
 
@@ -383,12 +377,6 @@ bool ChatCommandHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSes
 //.gogameobject
 bool ChatCommandHandler::HandleGoGameObjectSpawnCommand(const char* args, WorldSession* m_session)
 {
-    if (!args || *args == '\0')
-    {
-        redSystemMessage(m_session, "Command must be in format: .gogameobject <gameobject_spawnid>.");
-        return true;
-    }
-
     uint32_t spawnId = 0;
     auto [ptr, ec] = std::from_chars(args, args + std::strlen(args), spawnId);
 

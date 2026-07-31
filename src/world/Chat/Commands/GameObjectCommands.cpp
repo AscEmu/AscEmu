@@ -16,6 +16,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
+#include <cctype>
+#include <charconv>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <sstream>
+#include <string>
+#include <system_error>
+#include <vector>
+
 //.gobject damage
 bool ChatCommandHandler::HandleGODamageCommand(const char* args, WorldSession* session)
 {
@@ -541,25 +551,16 @@ bool ChatCommandHandler::HandleGOSelectCommand(const char* args, WorldSession* m
 //.gobject selectguid
 bool ChatCommandHandler::HandleGOSelectGuidCommand(const char* args, WorldSession* m_session)
 {
-    if (!args || *args == '\0')
-    {
-        redSystemMessage(m_session, "Wrong Syntax! Use: .gobject selectguid <guid>");
-        return true;
-    }
-
     uint32_t guid = 0;
     auto [ptr, ec] = std::from_chars(args, args + std::strlen(args), guid);
 
     if (ec != std::errc{})
-    {
-        redSystemMessage(m_session, "Wrong Syntax! Use: .gobject selectguid <guid>");
-        return true;
-    }
+        return false;
 
     Player* player = m_session->GetPlayer();
     auto gameobject = player->getWorldMap()->getGameObject(guid);
 
-    if (gameobject == nullptr)
+    if (!gameobject)
     {
         redSystemMessage(m_session, "No GameObject found with guid {}", guid);
         return true;

@@ -6213,8 +6213,12 @@ void Player::saveTutorials()
 {
     if (m_tutorialsDirty)
     {
-        CharacterDatabase.execute("DELETE FROM tutorials WHERE playerid = %u;", getGuidLow());
-        CharacterDatabase.execute("INSERT INTO tutorials VALUES('%u','%u','%u','%u','%u','%u','%u','%u','%u');", getGuidLow(), m_tutorials[0], m_tutorials[1], m_tutorials[2], m_tutorials[3], m_tutorials[4], m_tutorials[5], m_tutorials[6], m_tutorials[7]);
+        CharacterDatabase.execute(
+            "REPLACE INTO tutorials VALUES('%u','%u','%u','%u','%u','%u','%u','%u','%u');",
+            getGuidLow(),
+            m_tutorials[0], m_tutorials[1], m_tutorials[2], m_tutorials[3],
+            m_tutorials[4], m_tutorials[5], m_tutorials[6], m_tutorials[7]
+        );
 
         m_tutorialsDirty = false;
     }
@@ -6232,7 +6236,7 @@ void Player::setActionButton(uint8_t button, uint32_t action, uint8_t type, uint
     getActiveSpec().getActionButton(button).Type = type;
 }
 
-void Player::sendActionBars([[maybe_unused]]uint8_t action)
+void Player::sendActionBars([[maybe_unused]] uint8_t action)
 {
 #if VERSION_STRING < Mop
     WorldPacket data(SMSG_UPDATE_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1);

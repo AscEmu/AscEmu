@@ -30,7 +30,6 @@ public:
 
 private:
     std::vector<ChatCommand> m_commandRegistry;
-
 };
 
 #define sCommandTableStorage CommandTableStorage::getInstance()

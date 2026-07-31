@@ -1526,8 +1526,9 @@ bool ChatCommandHandler::HandleCharSetPhaseCommand(const char* args, WorldSessio
 //.character set speed
 bool ChatCommandHandler::HandleCharSetSpeedCommand(const char* args, WorldSession* m_session)
 {
-    float speed = float(atof(args));
-    if (speed == 0.0f || speed > 255.0f || speed < 0.1f)
+    char* endPtr = nullptr;
+    float speed = std::strtof(args, &endPtr);
+    if (endPtr == args || speed > 255.0f || speed < 0.1f)
     {
         redSystemMessage(m_session, "Invalid speed set. Value range 0.1f ... 255.0f Use .character set speed <speed>");
         return true;
@@ -1540,7 +1541,11 @@ bool ChatCommandHandler::HandleCharSetSpeedCommand(const char* args, WorldSessio
     if (player_target != m_session->GetPlayer())
     {
         blueSystemMessage(m_session, "Setting the speed of {} to {}.", player_target->getName(), speed);
-        greenSystemMessage(player_target->getSession(), "{} set your speed to {}.", m_session->GetPlayer()->getName(), speed);
+
+        if (WorldSession* targetSession = player_target->getSession())
+        {
+            greenSystemMessage(targetSession, "{} set your speed to {}.", m_session->GetPlayer()->getName(), speed);
+        }
         sGMLog.writefromsession(m_session, "Modified speed of {} to {:.2f}.", player_target->getName(), speed);
     }
     else
@@ -1550,7 +1555,7 @@ bool ChatCommandHandler::HandleCharSetSpeedCommand(const char* args, WorldSessio
 
     player_target->setSpeedRate(TYPE_RUN, speed, true);
     player_target->setSpeedRate(TYPE_SWIM, speed, true);
-    player_target->setSpeedRate(TYPE_RUN_BACK, speed / 2, true);
+    player_target->setSpeedRate(TYPE_RUN_BACK, speed * 0.5f, true);
     player_target->setSpeedRate(TYPE_FLY, speed * 2, true);
 
     return true;
