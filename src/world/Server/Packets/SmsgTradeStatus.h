@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
-
+#include "Objects/Units/Players/PlayerDefines.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -69,6 +69,9 @@ namespace AscEmu::Packets
                         packet.writeByteSeq(wGuid[7]);
                         packet.writeByteSeq(wGuid[6]);
                         packet.writeByteSeq(wGuid[5]);
+
+                        packet << uint32_t(0);              // unk
+
                         break;
                     }
                     case TRADE_STATUS_INITIATED:

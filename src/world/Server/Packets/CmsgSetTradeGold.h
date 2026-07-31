@@ -28,7 +28,17 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> tradeGoldAmount;
+            if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+            {
+                packet >> tradeGoldAmount;
+            }
+            else // > WotLK
+            {
+                uint64_t tradeAmount = 0;
+                packet >> tradeAmount;
+
+                tradeGoldAmount = static_cast<uint32_t>(tradeAmount);
+            }
             return true;
         }
     };

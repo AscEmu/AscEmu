@@ -26,35 +26,11 @@ using namespace AscEmu::Packets;
 
 void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
 {
-#if VERSION_STRING < Cata
     CmsgInitiateTrade srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
     const auto playerTarget = _player->getWorldMapPlayer(srlPacket.guid.getGuidLow());
-#else
-    WoWGuid targetGuid;
-
-    targetGuid[0] = recvPacket.readBit();
-    targetGuid[3] = recvPacket.readBit();
-    targetGuid[5] = recvPacket.readBit();
-    targetGuid[1] = recvPacket.readBit();
-    targetGuid[4] = recvPacket.readBit();
-    targetGuid[6] = recvPacket.readBit();
-    targetGuid[7] = recvPacket.readBit();
-    targetGuid[2] = recvPacket.readBit();
-
-    recvPacket.readByteSeq(targetGuid[7]);
-    recvPacket.readByteSeq(targetGuid[4]);
-    recvPacket.readByteSeq(targetGuid[3]);
-    recvPacket.readByteSeq(targetGuid[5]);
-    recvPacket.readByteSeq(targetGuid[1]);
-    recvPacket.readByteSeq(targetGuid[2]);
-    recvPacket.readByteSeq(targetGuid[6]);
-    recvPacket.readByteSeq(targetGuid[0]);
-
-    const auto playerTarget = _player->getWorldMapPlayer(static_cast<uint32_t>(targetGuid));
-#endif
 
     if (_player->m_TradeData != nullptr)
     {
@@ -125,36 +101,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
     _player->m_TradeData = std::make_unique<TradeData>(_player, playerTarget);
     playerTarget->m_TradeData = std::make_unique<TradeData>(playerTarget, _player);
 
-#if VERSION_STRING < Cata
     playerTarget->m_session->sendTradeResult(TRADE_STATUS_PROPOSED, _player->getGuid());
-#else
-    WorldPacket data(SMSG_TRADE_STATUS, 12);
-    data.writeBit(false);
-    data.writeBits(TRADE_STATUS_PROPOSED, 5);
-
-    WoWGuid source_guid = _player->getGuid();
-    data.writeByteMask(source_guid[2]);
-    data.writeByteMask(source_guid[4]);
-    data.writeByteMask(source_guid[6]);
-    data.writeByteMask(source_guid[0]);
-    data.writeByteMask(source_guid[1]);
-    data.writeByteMask(source_guid[3]);
-    data.writeByteMask(source_guid[7]);
-    data.writeByteMask(source_guid[5]);
-
-    data.writeByteSeq(source_guid[4]);
-    data.writeByteSeq(source_guid[1]);
-    data.writeByteSeq(source_guid[2]);
-    data.writeByteSeq(source_guid[3]);
-    data.writeByteSeq(source_guid[0]);
-    data.writeByteSeq(source_guid[7]);
-    data.writeByteSeq(source_guid[6]);
-    data.writeByteSeq(source_guid[5]);
-
-    data << uint32_t(0);              // unk
-
-    playerTarget->getSession()->SendPacket(&data);
-#endif
 }
 
 void WorldSession::handleBeginTradeOpcode(WorldPacket& /*recvPacket*/)
@@ -178,22 +125,15 @@ void WorldSession::handleBeginTradeOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleSetTradeGold(WorldPacket& recvPacket)
 {
-#if VERSION_STRING < Cata
     CmsgSetTradeGold srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;
-
-    const auto tradeMoney = srlPacket.tradeGoldAmount;
-#else
-    uint64_t tradeMoney;
-    recvPacket >> tradeMoney;
-#endif
 
     const auto tradeData = _player->getTradeData();
     if (tradeData == nullptr)
         return;
 
-    tradeData->setTradeMoney(tradeMoney);
+    tradeData->setTradeMoney(srlPacket.tradeGoldAmount);
 }
 
 void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
