@@ -12009,9 +12009,8 @@ void Player::giveXp(uint32_t xp, const uint64_t& guid, bool allowBonus)
 
 void Player::sendLogXpGainPacket([[maybe_unused]] uint64_t guid, [[maybe_unused]] uint32_t normalXp, [[maybe_unused]] uint32_t restedXp, [[maybe_unused]] bool type)
 {
-#if VERSION_STRING < Mop
-    m_session->SendPacket(SmsgLogXpGain(guid, normalXp, restedXp, type).serialise().get());
-#endif
+    SmsgLogXpGain managedPacket(guid, normalXp, restedXp, type);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::toggleXpGain() { m_isXpGainAllowed ? m_isXpGainAllowed = false : m_isXpGainAllowed = true; }
