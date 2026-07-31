@@ -91,7 +91,7 @@ void DatabaseUpdater::setupDatabase(const std::string& database, Database& dbPoi
         }
 
         for (const auto& statements : seglist)
-            dbPointer.executeNA(statements.c_str());
+            dbPointer.waitExecuteNA(statements.c_str());
     }
 }
 
