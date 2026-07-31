@@ -358,7 +358,8 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             }
             else
             {
-                SendPacket(SmsgChatPlayerNotFound(srlPacket.destination).serialise().get());
+                SmsgChatPlayerNotFound messagePacket(srlPacket.destination);
+                sendManagedPacket(messagePacket);
             }
         } break;
         case CHAT_MSG_CHANNEL:
@@ -539,7 +540,8 @@ void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)
     if (player == nullptr || player->getSession() == nullptr)
         return;
 
-    player->getSession()->SendPacket(SmsgMessageChat(CHAT_MSG_IGNORED, LANG_UNIVERSAL, 0, _player->getName(), _player->getGuid()).serialise().get());
+    SmsgMessageChat messagePacket(CHAT_MSG_IGNORED, LANG_UNIVERSAL, 0, _player->getName(), _player->getGuid());
+    player->getSession()->sendManagedPacket(messagePacket);
 }
 
 void WorldSession::handleChatChannelWatchOpcode(WorldPacket& recvPacket)

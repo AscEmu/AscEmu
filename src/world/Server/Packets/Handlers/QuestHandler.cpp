@@ -407,7 +407,8 @@ void WorldSession::handleQuestPOIQueryOpcode([[maybe_unused]] WorldPacket& recvP
 
 void WorldSession::handleQuestgiverCancelOpcode(WorldPacket& /*recvPacket*/)
 {
-    SendPacket(SmsgGossipComplete().serialise().get());
+    SmsgGossipComplete managedPacket;
+    sendManagedPacket(managedPacket);
 
     sLogger.debug("Sent SMSG_GOSSIP_COMPLETE");
 }
@@ -489,7 +490,9 @@ void WorldSession::handleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket)
 #else
     const auto questStatus = sQuestMgr.CalcStatus(qst_giver, _player);
 #endif
-    SendPacket(SmsgQuestgiverStatus(srlPacket.questGiverGuid.getRawGuid(), questStatus).serialise().get());
+
+    SmsgQuestgiverStatus managedPacket(srlPacket.questGiverGuid.getRawGuid(), questStatus);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)

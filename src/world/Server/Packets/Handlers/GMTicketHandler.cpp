@@ -47,7 +47,8 @@ enum GMTicketSystem
 
 void WorldSession::handleGMTicketSystemStatusOpcode(WorldPacket& /*recvPacket*/)
 {
-    SendPacket(SmsgGmTicketSystemstatus(sWorld.getGmTicketStatus() ? TicketSystemOK : TicketSystemDisabled).serialise().get());
+    SmsgGmTicketSystemstatus managedPacket(sWorld.getGmTicketStatus() ? TicketSystemOK : TicketSystemDisabled);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleGMTicketToggleSystemStatusOpcode(WorldPacket& /*recvPacket*/)
@@ -103,19 +104,20 @@ void WorldSession::handleGMTicketUpdateOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
+    auto ticketError = GMTNoTicketFound;
+
     GM_Ticket* ticket = sTicketMgr.getGMTicketByPlayer(_player->getGuid());
-    if (ticket == nullptr)
-    {
-        SendPacket(SmsgGmTicketUpdateText(GMTNoTicketFound).serialise().get());
-    }
-    else
+    if (ticket)
     {
         ticket->message = srlPacket.message;
         ticket->timestamp = static_cast<uint32_t>(UNIXTIME);
         sTicketMgr.updateGMTicket(ticket);
 
-        SendPacket(SmsgGmTicketUpdateText(GMTNoErrors).serialise().get());
+        ticketError = GMTNoErrors;
     }
+
+    SmsgGmTicketUpdateText managedPacket(ticketError);
+    sendManagedPacket(managedPacket);
 
 #ifndef GM_TICKET_MY_MASTER_COMPATIBLE
     auto channel = sChannelMgr.getChannel(sWorld.getGmClientChannel(), _player);
@@ -137,7 +139,8 @@ void WorldSession::handleGMTicketDeleteOpcode(WorldPacket& /*recvPacket*/)
 
     sTicketMgr.removeGMTicketByPlayer(_player->getGuid());
 
-    SendPacket(SmsgGmTicketDeleteTicket(GMTTicketRemoved).serialise().get());
+    SmsgGmTicketDeleteTicket managedPacket(GMTTicketRemoved);
+    sendManagedPacket(managedPacket);
 
     auto channel = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), _player);
     if (channel != nullptr && ticket != nullptr)
@@ -193,7 +196,8 @@ void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
 
     auto* ticket = sTicketMgr.createGMTicket(_player, srlPacket);
 
-    SendPacket(SmsgGmTicketCreate(GMTNoErrors).serialise().get());
+    SmsgGmTicketCreate managedPacket(GMTNoErrors);
+    sendManagedPacket(managedPacket);
 
     // send message indicating new ticket
     auto channel = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), _player);
@@ -221,7 +225,8 @@ void WorldSession::handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/)
     {
         if (!ticket->deleted)
         {
-            SendPacket(SmsgGmTicketGetTicket(GMTCurrentTicketFound, ticket->message, 0, ticket->guid, ticket->timestamp, ticket->comment).serialise().get());
+            SmsgGmTicketGetTicket managedPacket(GMTCurrentTicketFound, ticket->message, 0, ticket->guid, ticket->timestamp, ticket->comment);
+            sendManagedPacket(managedPacket);
         }
 #if VERSION_STRING > WotLK
         else
@@ -254,7 +259,8 @@ void WorldSession::handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/)
     }
     else
     {
-        SendPacket(SmsgGmTicketGetTicket(GMTNoCurrentTicket, "", 0, 0, 0, "").serialise().get());
+        SmsgGmTicketGetTicket managedPacket(GMTNoCurrentTicket, "", 0, 0, 0, "");
+        sendManagedPacket(managedPacket);
     }
 }
 
