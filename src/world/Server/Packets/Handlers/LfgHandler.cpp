@@ -57,7 +57,8 @@ void BuildPartyLockDungeonBlock(WorldPacket& data, const LfgLockPartyMap& lockMa
 void WorldSession::sendLfgUpdateSearch([[maybe_unused]] bool update)
 {
 #if VERSION_STRING > TBC
-    SendPacket(SmsgLfgUpdateSearch(update).serialise().get());
+    SmsgLfgUpdateSearch managedPacket(update);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -73,14 +74,16 @@ void WorldSession::sendLfgDisabled()
 void WorldSession::sendLfgOfferContinue([[maybe_unused]] uint32_t dungeonEntry)
 {
 #if VERSION_STRING > TBC
-    SendPacket(SmsgLfgOfferContinue(dungeonEntry).serialise().get());
+    SmsgLfgOfferContinue managedPacket(dungeonEntry);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
 void WorldSession::sendLfgTeleportError([[maybe_unused]] uint8_t error)
 {
 #if VERSION_STRING > TBC
-    SendPacket(SmsgLfgTeleportDenied(error).serialise().get());
+    SmsgLfgTeleportDenied managedPacket(error);
+    sendManagedPacket(managedPacket);
 #endif
 }
 

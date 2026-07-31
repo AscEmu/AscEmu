@@ -80,6 +80,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Random.hpp"
 #include "Utilities/Strings.hpp"
 #include <Server/Packets/SmsgClearTarget.h>
+#include "Server/PacketBroadcast.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -382,7 +383,8 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
     if (!sHookInterface.OnLogoutRequest(_player))
         reason = 1;
 
-    SendPacket(SmsgLogoutResponse(reason, instantLogout).serialise().get());
+    SmsgLogoutResponse managedPacket(reason, instantLogout);
+    sendManagedPacket(managedPacket);
 
     if (reason)
         return;
@@ -401,7 +403,8 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
 #else
     if (!sHookInterface.OnLogoutRequest(_player))
     {
-        SendPacket(SmsgLogoutResponse(true).serialise().get());
+        SmsgLogoutResponse managedPacket(true);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -409,7 +412,8 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
     {
         if (_player->getCombatHandler().isInCombat() || _player->m_duelPlayer != nullptr)
         {
-            SendPacket(SmsgLogoutResponse(true).serialise().get());
+            SmsgLogoutResponse managedPacket(true);
+            sendManagedPacket(managedPacket);
             return;
         }
 
@@ -429,7 +433,8 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
         }
     }
 
-    SendPacket(SmsgLogoutResponse(false).serialise().get());
+    SmsgLogoutResponse managedPacket(false);
+    sendManagedPacket(managedPacket);
 
     _player->setMoveRoot(true);
     LoggingOut = true;
@@ -467,7 +472,8 @@ void WorldSession::handlePlayedTimeOpcode(WorldPacket& recvPacket)
         _player->m_playedTime[2] += playedTime;
     }
 
-    SendPacket(SmsgPlayedTime(_player->m_playedTime[1], _player->m_playedTime[0], srlPacket.displayInChatFrame).serialise().get());
+    SmsgPlayedTime managedPacket(_player->m_playedTime[1], _player->m_playedTime[0], srlPacket.displayInChatFrame);
+    sendManagedPacket(managedPacket);
 
     sLogger.debug("Sent SMSG_PLAYED_TIME total: {} level: {}", _player->m_playedTime[1], _player->m_playedTime[0]);
 }
@@ -537,9 +543,15 @@ void WorldSession::handleRandomRollOpcode(WorldPacket& recvPacket)
     uint32_t randomRoll = Util::getRandomUInt(maxValue - minValue) + minValue;
 
     if (_player->isInGroup())
-        _player->getGroup()->SendPacketToAll(MsgRandomRoll(minValue, maxValue, randomRoll, _player->getGuid()).serialise().get());
+    {
+        MsgRandomRoll managedPacket(minValue, maxValue, randomRoll, _player->getGuid());
+        PacketBroadcast::sendFromGroup(*_player->getGroup(), managedPacket);
+    }
     else
-        SendPacket(MsgRandomRoll(minValue, maxValue, randomRoll, _player->getGuid()).serialise().get());
+    {
+        MsgRandomRoll managedPacket(minValue, maxValue, randomRoll, _player->getGuid());
+        sendManagedPacket(managedPacket);
+    }
 }
 
 void WorldSession::handleRealmSplitOpcode(WorldPacket& recvPacket)
@@ -552,7 +564,8 @@ void WorldSession::handleRealmSplitOpcode(WorldPacket& recvPacket)
 
     const std::string dateFormat = "01/01/01";
 
-    SendPacket(SmsgRealmSplit(srlPacket.unknown, 0, dateFormat).serialise().get());
+    SmsgRealmSplit managedPacket(srlPacket.unknown, 0, dateFormat);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleSetTaxiBenchmarkOpcode(WorldPacket& recvPacket)
@@ -567,7 +580,8 @@ void WorldSession::handleSetTaxiBenchmarkOpcode(WorldPacket& recvPacket)
 void WorldSession::handleWorldStateUITimerUpdate(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    SendPacket(SmsgWorldStateUiTimerUpdate(static_cast<uint32_t>(UNIXTIME)).serialise().get());
+    SmsgWorldStateUiTimerUpdate managedPacket(static_cast<uint32_t>(UNIXTIME));
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -946,7 +960,8 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
     {
         SetAccountData(srlPacket.uiId, NULL, false, 0);
 #if VERSION_STRING > TBC
-        SendPacket(SmsgUpdateAccountDataComplete(srlPacket.uiId, 0).serialise().get());
+        SmsgUpdateAccountDataComplete managedPacket(srlPacket.uiId, 0);
+        sendManagedPacket(managedPacket);
 #endif
         return;
     }
@@ -992,7 +1007,8 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
     }
 
 #if VERSION_STRING > TBC
-    SendPacket(SmsgUpdateAccountDataComplete(srlPacket.uiId, 0).serialise().get());
+    SmsgUpdateAccountDataComplete managedPacket(srlPacket.uiId, 0);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -1223,7 +1239,8 @@ void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)
 
     SetLogoutTimer(0);
 
-    SendPacket(SmsgLogoutCancelAck().serialise().get());
+    SmsgLogoutCancelAck managedPacket;
+    sendManagedPacket(managedPacket);
 
     _player->setMoveRoot(false);
 
@@ -1270,19 +1287,22 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
 
     if (wowGuid.getGuidLowPart() != _player->getGuidLow() && corpse->getFlags() == 5)
     {
-        SendPacket(SmsgResurrectFailed(1).serialise().get());
+        SmsgResurrectFailed managedPacket(1);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     if (corpse->GetDistance2dSq(_player) > CORPSE_MINIMUM_RECLAIM_RADIUS_SQ)
     {
-        SendPacket(SmsgResurrectFailed(1).serialise().get());
+        SmsgResurrectFailed managedPacket(1);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     if (time(nullptr) < corpse->getDeathClock() + CORPSE_RECLAIM_TIME)
     {
-        SendPacket(SmsgResurrectFailed(1).serialise().get());
+        SmsgResurrectFailed managedPacket(1);
+        sendManagedPacket(managedPacket);
         return;
     }
 

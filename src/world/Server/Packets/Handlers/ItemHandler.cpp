@@ -1078,7 +1078,9 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
             if (srlPacket.srcSlot < INVENTORY_KEYRING_END)
             {
                 const uint32_t reqLevel = dstItem->getItemProperties()->RequiredLevel;
-                SendPacket(SmsgInventoryChangeFailure(error, srcItem->getGuid(), dstItem->getGuid(), reqLevel, true).serialise().get());
+
+                SmsgInventoryChangeFailure managedPacket(error, srcItem->getGuid(), dstItem->getGuid(), reqLevel, true);
+                sendManagedPacket(managedPacket);
                 return;
             }
         }
@@ -1960,7 +1962,8 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
         }
     }
 
-    SendPacket(SmsgSellItem(srlPacket.vendorGuid.getRawGuid(), srlPacket.itemGuid).serialise().get());
+    SmsgSellItem managedPacket(srlPacket.vendorGuid.getRawGuid(), srlPacket.itemGuid);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
@@ -2644,9 +2647,15 @@ void WorldSession::handleReadItemOpcode(WorldPacket& recvPacket)
     {
         // Check if it has pagetext
         if (item->getItemProperties()->PageId)
-            SendPacket(SmsgReadItemOk(item->getGuid()).serialise().get());
+        {
+            SmsgReadItemOk managedPacket(item->getGuid());
+            sendManagedPacket(managedPacket);
+        }
         else
-            SendPacket(SmsgReadItemFailed(item->getGuid(), 2).serialise().get());
+        {
+            SmsgReadItemFailed managedPacket(item->getGuid(), 2);
+            sendManagedPacket(managedPacket);
+        }
     }
 }
 

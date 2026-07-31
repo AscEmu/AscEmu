@@ -30,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/HookInterface.hpp"
 #include "Spell/Spell.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/PacketBroadcast.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -243,7 +244,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
 
     // Delete container if empty
     if (loot->isLooted() && wowGuid.isItem())
-        _player->getSession()->doLootRelease(wowGuid);
+        doLootRelease(wowGuid);
 
     if (!_player->isInGroup())
     {
@@ -256,7 +257,9 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
             else
             {
                 _player->modCoinage(money);
-                _player->getSession()->SendPacket(SmsgLootMoneyNotify(money, 1).serialise().get());
+
+                SmsgLootMoneyNotify managedPacket(money, 1);
+                sendManagedPacket(managedPacket);
 #if VERSION_STRING > TBC
                 _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, money);
 #endif
@@ -300,7 +303,9 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
                 else
                 {
                     player->modCoinage(sharedMoney);
-                    player->getSession()->SendPacket(SmsgLootMoneyNotify(sharedMoney, groupMembers.size() <= 1).serialise().get());
+
+                    SmsgLootMoneyNotify managedPacket(sharedMoney, groupMembers.size() <= 1);
+                    player->getSession()->sendManagedPacket(managedPacket);
 
 #if VERSION_STRING > TBC
                     player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, sharedMoney);
@@ -351,7 +356,8 @@ void WorldSession::handleLootOpcode(WorldPacket& recvPacket)
                 }
                 group->Unlock();
 
-                group->SendPacketToAll(SmsgLootMasterList(onlineGroupMembers).serialise().get());
+                SmsgLootMasterList managedPacket(onlineGroupMembers);
+                PacketBroadcast::sendFromGroup(*group, managedPacket);
             }
         }
     }
@@ -374,7 +380,8 @@ void WorldSession::doLootRelease(WoWGuid lguid)
     Player* player = GetPlayer();
     Loot* loot = nullptr;
 
-    SendPacket(SmsgLootReleaseResponse(lguid.getRawGuid(), 1).serialise().get());
+    SmsgLootReleaseResponse managedPacket(lguid.getRawGuid(), 1);
+    sendManagedPacket(managedPacket);
 
     _player->setLootGuid(0);
     _player->removeUnitFlags(UNIT_FLAG_LOOTING);

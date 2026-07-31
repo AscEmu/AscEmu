@@ -62,7 +62,8 @@ void WorldSession::handleTabardVendorActivateOpcode(WorldPacket& recvPacket)
     if (creature == nullptr)
         return;
 
-    SendPacket(MsgTabardvendorActivate(srlPacket.guid).serialise().get());
+    MsgTabardvendorActivate managedPacket(srlPacket.guid);
+    sendManagedPacket(managedPacket);
 }
 
 // helper
@@ -71,7 +72,8 @@ void WorldSession::sendTabardHelp(Creature* creature)
     if (creature == nullptr)
         return;
 
-    SendPacket(MsgTabardvendorActivate(creature->getGuid()).serialise().get());
+    MsgTabardvendorActivate managedPacket(creature->getGuid());
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleBankerActivateOpcode(WorldPacket& recvPacket)
@@ -86,7 +88,8 @@ void WorldSession::handleBankerActivateOpcode(WorldPacket& recvPacket)
     if (creature == nullptr)
         return;
 
-    SendPacket(SmsgShowBank(srlPacket.guid).serialise().get());
+    SmsgShowBank managedPacket(srlPacket.guid);
+    sendManagedPacket(managedPacket);
 }
 
 // helper
@@ -95,7 +98,8 @@ void WorldSession::sendBankerList(Creature* creature)
     if (creature == nullptr)
         return;
 
-    SendPacket(SmsgShowBank(creature->getGuid()).serialise().get());
+    SmsgShowBank managedPacket(creature->getGuid());
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleAuctionHelloOpcode(WorldPacket& recvPacket)
@@ -130,7 +134,8 @@ void WorldSession::sendAuctionList(Creature* creature)
 // helper
 void WorldSession::sendSpiritHealerRequest(Creature* creature)
 {
-    SendPacket(SmsgSpiritHealerConfirm(creature->getGuid()).serialise().get());
+    SmsgSpiritHealerConfirm managedPacket(creature->getGuid());
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
@@ -199,7 +204,8 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
             _player->removeSpell(trainerSpell->deleteSpell, true);
     }
 
-    SendPacket(SmsgTrainerBuySucceeded(srlPacket.guid.getRawGuid(), srlPacket.spellId).serialise().get());
+    SmsgTrainerBuySucceeded managedPacket(srlPacket.guid.getRawGuid(), srlPacket.spellId);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleCharterShowListOpcode(WorldPacket& recvPacket)
@@ -223,7 +229,8 @@ void WorldSession::sendCharterRequest(Creature* creature)
     if (creature == nullptr)
         return;
 
-    SendPacket(SmsgPetitionShowlist(creature->getGuid(), creature->isTabardDesigner()).serialise().get());
+    SmsgPetitionShowlist managedPacket(creature->getGuid(), creature->isTabardDesigner());
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleGossipHelloOpcode(WorldPacket& recvPacket)
@@ -325,7 +332,8 @@ void WorldSession::sendInnkeeperBind(Creature* creature)
     // but do not send error if player has no Hearthstone
     if (_player->hasItem(6948) && _player->isInRange(_player->getBindPosition(), 10.0f * 10.0f))
     {
-        SendPacket(SmsgGossipComplete().serialise().get());
+        SmsgGossipComplete managedPacket;
+        sendManagedPacket(managedPacket);
 
         // Send "already bound here" packet
         WorldPacket data(SMSG_PLAYERBINDERROR, 1);
@@ -336,16 +344,19 @@ void WorldSession::sendInnkeeperBind(Creature* creature)
 
     if (!_player->m_hasBindDialogOpen)
     {
-        SendPacket(SmsgGossipComplete().serialise().get());
+        SmsgGossipComplete managedPacket;
+        sendManagedPacket(managedPacket);
 
-        SendPacket(SmsgBinderConfirm(creature->getGuid(), _player->getZoneId()).serialise().get());
+        SmsgBinderConfirm managedbinderPacket(creature->getGuid(), _player->getZoneId());
+        sendManagedPacket(managedbinderPacket);
 
         _player->m_hasBindDialogOpen = true;
         return;
     }
 
     _player->m_hasBindDialogOpen = false;
-    SendPacket(SmsgGossipComplete().serialise().get());
+    SmsgGossipComplete managedPacket;
+    sendManagedPacket(managedPacket);
     creature->castSpell(_player->getGuid(), 3286, true);
 }
 
@@ -727,7 +738,8 @@ void WorldSession::handleBuyBankSlotOpcode(WorldPacket& recvPacket)
     const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr || !creature->isBanker())
     {
-        SendPacket(SmsgBuyBankSlotResult(BankslotError::NotABanker).serialise().get());
+        SmsgBuyBankSlotResult managedPacket(BankslotError::NotABanker);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -735,14 +747,16 @@ void WorldSession::handleBuyBankSlotOpcode(WorldPacket& recvPacket)
     const auto bank_bag_slot_prices = sBankBagSlotPricesStore.lookupEntry(slots);
     if (bank_bag_slot_prices == nullptr)
     {
-        SendPacket(SmsgBuyBankSlotResult(BankslotError::TooMany).serialise().get());
+        SmsgBuyBankSlotResult managedPacket(BankslotError::TooMany);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     const auto price = bank_bag_slot_prices->Price;
     if (!_player->hasEnoughCoinage(price))
     {
-        SendPacket(SmsgBuyBankSlotResult(BankslotError::InsufficientFunds).serialise().get());
+        SmsgBuyBankSlotResult managedPacket(BankslotError::InsufficientFunds);
+        sendManagedPacket(managedPacket);
         return;
     }
 

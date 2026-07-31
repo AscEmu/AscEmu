@@ -56,13 +56,15 @@ void WorldSession::handleMailDeleteOpcode(WorldPacket& recvPacket)
     const auto mailMessage = _player->m_mailBox->GetMessageById(srlPacket.messageId);
     if (mailMessage == nullptr)
     {
-        SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_DELETED, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_DELETED, MAIL_ERR_INTERNAL_ERROR);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     _player->m_mailBox->DeleteMessage(srlPacket.messageId, true);
 
-    SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_DELETED, MAIL_OK).serialise().get());
+    SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_DELETED, MAIL_OK);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleTakeMoneyOpcode(WorldPacket& recvPacket)
@@ -74,7 +76,8 @@ void WorldSession::handleTakeMoneyOpcode(WorldPacket& recvPacket)
     const auto mailMessage = _player->m_mailBox->GetMessageById(srlPacket.messageId);
     if (mailMessage == nullptr || !mailMessage->money)
     {
-        SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_MONEY_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_MONEY_TAKEN, MAIL_ERR_INTERNAL_ERROR);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -92,7 +95,8 @@ void WorldSession::handleTakeMoneyOpcode(WorldPacket& recvPacket)
 
     CharacterDatabase.waitExecute("UPDATE mailbox SET money = 0 WHERE message_id = %u", mailMessage->message_id);
 
-    SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_MONEY_TAKEN, MAIL_OK).serialise().get());
+    SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_MONEY_TAKEN, MAIL_OK);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleReturnToSenderOpcode(WorldPacket& recvPacket)
@@ -104,7 +108,8 @@ void WorldSession::handleReturnToSenderOpcode(WorldPacket& recvPacket)
     const auto mailMessage = _player->m_mailBox->GetMessageById(srlPacket.messageId);
     if (mailMessage == nullptr)
     {
-        SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_RETURNED_TO_SENDER, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_RETURNED_TO_SENDER, MAIL_ERR_INTERNAL_ERROR);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -124,7 +129,8 @@ void WorldSession::handleReturnToSenderOpcode(WorldPacket& recvPacket)
 
     sMailSystem.DeliverMessage(message.player_guid, &message);
 
-    SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_RETURNED_TO_SENDER, MAIL_OK).serialise().get());
+    SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_RETURNED_TO_SENDER, MAIL_OK);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
@@ -137,14 +143,16 @@ void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
     auto message = _player->m_mailBox->GetMessageById(srlPacket.messageId);
     if (message == nullptr || !itemProperties)
     {
-        SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     const auto slotResult = _player->getItemInterface()->FindFreeInventorySlot(itemProperties);
     if (slotResult.Result == 0)
     {
-        SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -158,7 +166,10 @@ void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
     // TODO: if add fails, should item be sent in mail? now it's destroyed
     const auto [addResult, _] = _player->getItemInterface()->AddItemToFreeSlot(std::move(item));
     if (addResult)
-        SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_MADE_PERMANENT, MAIL_OK).serialise().get());
+    {
+        SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_MADE_PERMANENT, MAIL_OK);
+        sendManagedPacket(managedPacket);
+    }
 }
 
 void WorldSession::handleItemTextQueryOpcode(WorldPacket& recvPacket)
@@ -169,14 +180,26 @@ void WorldSession::handleItemTextQueryOpcode(WorldPacket& recvPacket)
 
 #if VERSION_STRING > TBC
     if (const auto item = _player->getItemInterface()->GetItemByGUID(srlPacket.itemGuid))
-        SendPacket(SmsgItemTextQueryResponse(0, srlPacket.itemGuid, item->getText()).serialise().get());
+    {
+        SmsgItemTextQueryResponse managedPacket(0, srlPacket.itemGuid, item->getText());
+        sendManagedPacket(managedPacket);
+    }
     else
-        SendPacket(SmsgItemTextQueryResponse(1, 0, "").serialise().get());
+    {
+        SmsgItemTextQueryResponse managedPacket(1, 0, "");
+        sendManagedPacket(managedPacket);
+    }
 #else
     if (auto itemPage = sMySQLStore.getItemPage(srlPacket.itemTextId))
-        SendPacket(SmsgItemTextQueryResponse(0, itemPage->id, itemPage->text).serialise().get());
+    {
+        SmsgItemTextQueryResponse managedPacket(0, itemPage->id, itemPage->text);
+        sendManagedPacket(managedPacket);
+    }
     else
-        SendPacket(SmsgItemTextQueryResponse(1, 0, "").serialise().get());
+    {
+        SmsgItemTextQueryResponse managedPacket(1, 0, "");
+        sendManagedPacket(managedPacket);
+    }
 #endif
 }
 
@@ -365,14 +388,16 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
     auto mailMessage = _player->m_mailBox->GetMessageById(srlPacket.messageId);
     if (mailMessage == nullptr || mailMessage->items.empty())
     {
-        SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     const auto itr = std::find(mailMessage->items.begin(), mailMessage->items.end(), srlPacket.lowGuid);
     if (itr == mailMessage->items.end())
     {
-        SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -380,7 +405,8 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
     {
         if (!_player->hasEnoughCoinage(mailMessage->cod))
         {
-            SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_NOT_ENOUGH_MONEY).serialise().get());
+            SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_NOT_ENOUGH_MONEY);
+            sendManagedPacket(managedPacket);
             return;
         }
     }
@@ -388,14 +414,16 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
     auto itemHolder = sObjectMgr.loadItem(srlPacket.lowGuid);
     if (itemHolder == nullptr)
     {
-        SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     const auto slotResult = _player->getItemInterface()->FindFreeInventorySlot(itemHolder->getItemProperties());
     if (slotResult.Result == 0)
     {
-        SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_BAG_FULL, INV_ERR_INVENTORY_FULL).serialise().get());
+        SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_BAG_FULL, INV_ERR_INVENTORY_FULL);
+        sendManagedPacket(managedPacket);
         return;
     }
     itemHolder->m_isDirty = true;
@@ -408,7 +436,8 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
         const auto [addResult2, _] = _player->getItemInterface()->AddItemToFreeSlot(std::move(returnedItem));
         if (!addResult2)
         {
-            SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_BAG_FULL, INV_ERR_INVENTORY_FULL).serialise().get());
+            SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_BAG_FULL, INV_ERR_INVENTORY_FULL);
+            sendManagedPacket(managedPacket);
             return;
         }
     }
@@ -421,7 +450,8 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
     mailMessage->items.erase(itr);
     sMailSystem.SaveMessageToSQL(mailMessage);
 
-    SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_OK, item->getGuidLow(), item->getStackCount()).serialise().get());
+    SmsgSendMailResult managedPacket(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_OK, item->getGuidLow(), item->getStackCount());
+    sendManagedPacket(managedPacket);
 
     if (mailMessage->cod > 0)
     {
@@ -445,20 +475,23 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
     CmsgSendMail srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
     {
-        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SmsgSendMailResult managedPacket(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     if (srlPacket.itemCount > MAIL_MAX_ITEM_SLOT)
     {
-        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_TOO_MANY_ATTACHMENTS).serialise().get());
+        SmsgSendMailResult managedPacket(0, MAIL_RES_MAIL_SENT, MAIL_ERR_TOO_MANY_ATTACHMENTS);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     const auto playerReceiverInfo = sObjectMgr.getCachedCharacterInfoByName(srlPacket.receiverName);
     if (playerReceiverInfo == nullptr)
     {
-        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_RECIPIENT_NOT_FOUND).serialise().get());
+        SmsgSendMailResult managedPacket(0, MAIL_RES_MAIL_SENT, MAIL_ERR_RECIPIENT_NOT_FOUND);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -468,13 +501,15 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
         Item* pItem = _player->getItemInterface()->GetItemByGUID(srlPacket.itemGuid[i]);
         if (pItem == nullptr || pItem->isSoulbound() || pItem->hasFlags(ITEM_FLAG_CONJURED))
         {
-            SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+            SmsgSendMailResult managedPacket(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR);
+            sendManagedPacket(managedPacket);
             return;
         }
 
         if (pItem->isAccountbound() && GetAccountId() != playerReceiverInfo->acct)
         {
-            SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_BAG_FULL, INV_ERR_ARTEFACTS_ONLY_FOR_OWN_CHARACTERS).serialise().get());
+            SmsgSendMailResult managedPacket(0, MAIL_RES_MAIL_SENT, MAIL_ERR_BAG_FULL, INV_ERR_ARTEFACTS_ONLY_FOR_OWN_CHARACTERS);
+            sendManagedPacket(managedPacket);
             return;
         }
         attachedItems.push_back(pItem);
@@ -488,19 +523,22 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
 
     if (playerReceiverInfo->team != _player->getTeam() && !isInterfactionMailAllowed)
     {
-        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_NOT_YOUR_ALLIANCE).serialise().get());
+        SmsgSendMailResult managedPacket(0, MAIL_RES_MAIL_SENT, MAIL_ERR_NOT_YOUR_ALLIANCE);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     if (playerReceiverInfo->name == _player->getName() && !hasPermissions())
     {
-        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_CANNOT_SEND_TO_SELF).serialise().get());
+        SmsgSendMailResult managedPacket(0, MAIL_RES_MAIL_SENT, MAIL_ERR_CANNOT_SEND_TO_SELF);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     if (srlPacket.stationery == MAIL_STATIONERY_GM && !HasGMPermissions())
     {
-        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
+        SmsgSendMailResult managedPacket(0, MAIL_RES_MAIL_SENT, MAIL_ERR_INTERNAL_ERROR);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -514,7 +552,8 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
 
     if (!_player->hasEnoughCoinage(cost))
     {
-        SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_NOT_ENOUGH_MONEY).serialise().get());
+        SmsgSendMailResult managedPacket(0, MAIL_RES_MAIL_SENT, MAIL_ERR_NOT_ENOUGH_MONEY);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -570,5 +609,6 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
 
     CharacterDatabase.execute("UPDATE characters SET gold = %u WHERE guid = %u", _player->getCoinage(), _player->m_playerInfo->guid);
 
-    SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_OK).serialise().get());
+    SmsgSendMailResult managedPacket(0, MAIL_RES_MAIL_SENT, MAIL_OK);
+    sendManagedPacket(managedPacket);
 }

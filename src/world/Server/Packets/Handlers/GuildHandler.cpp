@@ -104,7 +104,10 @@ void WorldSession::handleGuildInfo(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING < Cata
     if (const auto guild = _player->getGuild())
-        SendPacket(SmsgGuildInfo(guild->getName(), guild->getCreatedDate(), guild->getMembersCount(), guild->getAccountCount()).serialise().get());
+    {
+        SmsgGuildInfo managedPacket(guild->getName(), guild->getCreatedDate(), guild->getMembersCount(), guild->getAccountCount());
+        sendManagedPacket(managedPacket);
+    }
 #endif
 }
 
@@ -121,13 +124,15 @@ void WorldSession::handleSaveGuildEmblem(WorldPacket& recvPacket)
     Guild* guild = _player->getGuild();
     if (guild == nullptr)
     {
-        SendPacket(MsgSaveGuildEmblem(GEM_ERROR_NOGUILD).serialise().get());
+        MsgSaveGuildEmblem managedPacket(GEM_ERROR_NOGUILD);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     if (guild->getLeaderGUID() != _player->getGuid())
     {
-        SendPacket(MsgSaveGuildEmblem(GEM_ERROR_NOTGUILDMASTER).serialise().get());
+        MsgSaveGuildEmblem managedPacket(GEM_ERROR_NOTGUILDMASTER);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -150,9 +155,14 @@ void WorldSession::handleGuildDecline(WorldPacket& /*recvPacket*/)
 void WorldSession::handleGuildRoster(WorldPacket& /*recvPacket*/)
 {
     if (Guild* guild = _player->getGuild())
+    {
         guild->handleRoster(this);
+    }
     else
-        SendPacket(SmsgGuildCommandResult(GC_TYPE_ROSTER, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
+    {
+        SmsgGuildCommandResult managedPacket(GC_TYPE_ROSTER, "", GC_ERROR_PLAYER_NOT_IN_GUILD);
+        sendManagedPacket(managedPacket);
+    }
 }
 
 void WorldSession::handleGuildLeave(WorldPacket& /*recvPacket*/)
@@ -218,7 +228,8 @@ void WorldSession::handleGuildLeader(WorldPacket& recvPacket)
     const auto targetPlayerInfo = sObjectMgr.getCachedCharacterInfoByName(srlPacket.name);
     if (targetPlayerInfo == nullptr)
     {
-        SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, srlPacket.name, GC_ERROR_PLAYER_NOT_FOUND_S).serialise().get());
+        SmsgGuildCommandResult managedPacket(GC_TYPE_CREATE, srlPacket.name, GC_ERROR_PLAYER_NOT_FOUND_S);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -486,7 +497,8 @@ void WorldSession::handleGuildBankerActivate(WorldPacket& recvPacket)
     Guild* guild = _player->getGuild();
     if (guild == nullptr)
     {
-        SendPacket(SmsgGuildCommandResult(GC_TYPE_VIEW_TAB, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
+        SmsgGuildCommandResult managedPacket(GC_TYPE_VIEW_TAB, "", GC_ERROR_PLAYER_NOT_IN_GUILD);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -521,8 +533,11 @@ void WorldSession::handleCharterShowSignatures(WorldPacket& recvPacket)
         return;
 
     if (const auto charter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid))
-        _player->getSession()->SendPacket(SmsgPetitionShowSignatures(srlPacket.itemGuid, charter->getLeaderGuid(), charter->getId(), charter->getSignatureCount(),
-            charter->getAvailableSlots(), charter->getSignatures()).serialise().get());
+    {
+        SmsgPetitionShowSignatures managedPacket(srlPacket.itemGuid, charter->getLeaderGuid(), charter->getId(),
+            charter->getSignatureCount(), charter->getAvailableSlots(), charter->getSignatures());
+        _player->getSession()->sendManagedPacket(managedPacket);
+    }
 }
 
 void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
@@ -551,8 +566,10 @@ void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
         return;
     }
 
-    pTarget->getSession()->SendPacket(SmsgPetitionShowSignatures(srlPacket.itemGuid, pCharter->getLeaderGuid(), pCharter->getId(), pCharter->getSignatureCount(),
-        pCharter->getAvailableSlots(), pCharter->getSignatures()).serialise().get());
+    SmsgPetitionShowSignatures managedPacket(srlPacket.itemGuid, pCharter->getLeaderGuid(), pCharter->getId(),
+        pCharter->getSignatureCount(), pCharter->getAvailableSlots(), pCharter->getSignatures());
+
+    pTarget->getSession()->sendManagedPacket(managedPacket);
 }
 
 namespace PetitionSignResult
@@ -577,7 +594,9 @@ void WorldSession::handleCharterSign(WorldPacket& recvPacket)
             if (playerGuid == _player->getGuid())
             {
                 SendNotification(_player->getSession()->LocalizedWorldSrv(ServerString::SS_ALREADY_SIGNED_CHARTER));
-                SendPacket(SmsgPetitionSignResult(srlPacket.itemGuid, _player->getGuid(), PetitionSignResult::AlreadySigned).serialise().get());
+
+                SmsgPetitionSignResult managedPacket(srlPacket.itemGuid, _player->getGuid(), PetitionSignResult::AlreadySigned);
+                sendManagedPacket(managedPacket);
                 return;
             }
         }
@@ -594,8 +613,11 @@ void WorldSession::handleCharterSign(WorldPacket& recvPacket)
         if (player == nullptr)
             return;
 
-        player->sendPacket(SmsgPetitionSignResult(srlPacket.itemGuid, _player->getGuid(), PetitionSignResult::OK).serialise().get());
-        SendPacket(SmsgPetitionSignResult(srlPacket.itemGuid, uint64_t(charter->getLeaderGuid()), PetitionSignResult::OK).serialise().get());
+        SmsgPetitionSignResult managedSigneePacket(srlPacket.itemGuid, _player->getGuid(), PetitionSignResult::OK);
+        player->getSession()->sendManagedPacket(managedSigneePacket);
+
+        SmsgPetitionSignResult managedPacket(srlPacket.itemGuid, uint64_t(charter->getLeaderGuid()), PetitionSignResult::OK);
+        sendManagedPacket(managedPacket);
     }
 }
 
@@ -753,8 +775,11 @@ void WorldSession::handleCharterQuery(WorldPacket& recvPacket)
         return;
 
     if (auto const charter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid))
-        SendPacket(SmsgPetitionQueryResponse(srlPacket.charterId, charter->getLeaderGuid(),
-            charter->getGuildName(), charter->getCharterType(), charter->getAvailableSlots()).serialise().get());
+    {
+        SmsgPetitionQueryResponse managedPacket(srlPacket.charterId, charter->getLeaderGuid(),
+            charter->getGuildName(), charter->getCharterType(), charter->getAvailableSlots());
+        sendManagedPacket(managedPacket);
+    }
 }
 
 void WorldSession::handleCharterBuy(WorldPacket& recvPacket)

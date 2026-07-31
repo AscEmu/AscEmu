@@ -29,6 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Spell.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/MathConstants.hpp"
+#include "Server/PacketBroadcast.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -563,7 +564,8 @@ void WorldSession::handleWorldTeleportOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleMountSpecialAnimOpcode(WorldPacket& /*recvPacket*/)
 {
-    _player->sendMessageToSet(SmsgMountspecialAnim(_player->getGuid()).serialise().get(), true);
+    SmsgMountspecialAnim managedPacket(_player->getGuid());
+    PacketBroadcast::sendToSet(*_player, managedPacket, true);
 }
 
 void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
@@ -587,7 +589,8 @@ void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
         _player->SetMapId(transporter->GetMapId());
         _player->SetPosition(transportPositionX, transportPositionY, transportPositionZ, _player->GetOrientation());
 
-        SendPacket(SmsgNewWorld(transporter->GetMapId(), positionOnTransport).serialise().get());
+        SmsgNewWorld managedPacket(transporter->GetMapId(), positionOnTransport);
+        sendManagedPacket(managedPacket);
     }
     else
     {
