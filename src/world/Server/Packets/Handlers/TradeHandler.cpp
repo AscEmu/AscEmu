@@ -612,81 +612,11 @@ void WorldSession::handleUnacceptTrade(WorldPacket& /*recvPacket*/)
 #endif
 }
 
-#if VERSION_STRING < Cata
 void WorldSession::sendTradeResult(TradeStatus result, uint64_t guid /*= 0*/)
 {
-    SendPacket(SmsgTradeStatus(result, guid).serialise().get());
+    SmsgTradeStatus managedPacket(result, guid);
+    sendManagedPacket(managedPacket);
 }
-#else
-void WorldSession::sendTradeResult(TradeStatus result, uint64_t /*guid = 0*/)
-{
-    WorldPacket data(SMSG_TRADE_STATUS, 4 + 8);
-    data.writeBit(false);
-    data.writeBits(result, 5);
-
-    switch (result)
-    {
-        case TRADE_STATUS_PROPOSED:
-        {
-            WoWGuid guid;
-
-            data.writeBit(guid[2]);
-            data.writeBit(guid[4]);
-            data.writeBit(guid[6]);
-            data.writeBit(guid[0]);
-            data.writeBit(guid[1]);
-            data.writeBit(guid[3]);
-            data.writeBit(guid[7]);
-            data.writeBit(guid[5]);
-
-            data.flushBits();
-
-            data.writeByteSeq(guid[4]);
-            data.writeByteSeq(guid[1]);
-            data.writeByteSeq(guid[2]);
-            data.writeByteSeq(guid[3]);
-            data.writeByteSeq(guid[0]);
-            data.writeByteSeq(guid[7]);
-            data.writeByteSeq(guid[6]);
-            data.writeByteSeq(guid[5]);
-            break;
-        }
-        case TRADE_STATUS_INITIATED:
-        {
-            data.flushBits();
-            data << uint32_t(0);
-            break;
-        }
-        case TRADE_STATUS_FAILED:
-        {
-            data.writeBit(false);
-            data.flushBits();
-            data << uint32_t(0);
-            data << uint32_t(0);
-            break;
-        }
-        case TRADE_STATUS_LOOT_ITEM:
-        case TRADE_STATUS_ONLY_CONJURED:
-        {
-            data.flushBits();
-            data << uint8_t(0);
-            break;
-        }
-        case TRADE_STATUS_CURRENCY_NOT_TRADEABLE:
-        case TRADE_STATUS_CURRENCY:
-        {
-            data.flushBits();
-            data << uint32_t(0);
-            data << uint32_t(0);
-        }
-        default:
-            data.flushBits();
-            break;
-    }
-
-    SendPacket(&data);
-}
-#endif
 
 void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
 {

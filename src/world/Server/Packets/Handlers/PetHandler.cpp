@@ -219,7 +219,8 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
             break;
         }
 
-        SendPacket(SmsgPetActionSound(summonedPetGuid, 1).serialise().get());
+        SmsgPetActionSound managedPacket(summonedPetGuid, 1);
+        sendManagedPacket(managedPacket);
     }
 
     if (!alive_summon)
@@ -236,7 +237,8 @@ void WorldSession::handlePetNameQuery(WorldPacket& recvPacket)
     if (pet == nullptr)
         return;
 
-    SendPacket(SmsgPetNameQuery(srlPacket.petNumber, pet->getName(), pet->getPetNameTimestamp(), 0).serialise().get());
+    SmsgPetNameQuery managedPacket(srlPacket.petNumber, pet->getName(), pet->getPetNameTimestamp(), 0);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleStablePet(WorldPacket& /*recvPacket*/)
@@ -266,7 +268,8 @@ void WorldSession::handleStablePet(WorldPacket& /*recvPacket*/)
 
     if (!petId.has_value())
     {
-        SendPacket(SmsgStableResult(PetStableResult::Error).serialise().get());
+        SmsgStableResult managedPacket(PetStableResult::Error);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -275,14 +278,16 @@ void WorldSession::handleStablePet(WorldPacket& /*recvPacket*/)
     // Check if player has a free stable slot
     if (!foundSlot.has_value())
     {
-        SendPacket(SmsgStableResult(PetStableResult::Error).serialise().get());
+        SmsgStableResult managedPacket(PetStableResult::Error);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     if (!_player->tryPutPetToSlot(petId.value(), foundSlot.value()))
         return;
 
-    SendPacket(SmsgStableResult(PetStableResult::StableSuccess).serialise().get());
+    SmsgStableResult managedPacket(PetStableResult::StableSuccess);
+    sendManagedPacket(managedPacket);
 }
 
 static void performStableSlotSwap(Player* player, uint8_t petNumber)
@@ -315,14 +320,16 @@ static void performStableSlotSwap(Player* player, uint8_t petNumber)
 
     if (!currentPetSlot.has_value())
     {
-        player->sendPacket(SmsgStableResult(PetStableResult::Error).serialise().get());
+        SmsgStableResult managedPacket(PetStableResult::Error);
+        player->getSession()->sendManagedPacket(managedPacket);
         return;
     }
 
     if (!player->tryPutPetToSlot(petNumber, currentPetSlot.value()))
         return;
 
-    player->sendPacket(SmsgStableResult(PetStableResult::UnstableSuccess).serialise().get());
+    SmsgStableResult managedPacket(PetStableResult::UnstableSuccess);
+    player->getSession()->sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleUnstablePet(WorldPacket& recvPacket)
@@ -371,7 +378,8 @@ void WorldSession::handleUnstablePet(WorldPacket& recvPacket)
         }
     }
 
-    SendPacket(SmsgStableResult(PetStableResult::UnstableSuccess).serialise().get());
+    SmsgStableResult managedPacket(PetStableResult::UnstableSuccess);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleStableSwapPet(WorldPacket& recvPacket)
@@ -397,13 +405,15 @@ void WorldSession::handleBuyStableSlot(WorldPacket& /*recvPacket*/)
 
     if (!_player->hasEnoughCoinage(stable_cost))
     {
-        SendPacket(SmsgStableResult(PetStableResult::NotEnoughMoney).serialise().get());
+        SmsgStableResult managedPacket(PetStableResult::NotEnoughMoney);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     _player->modCoinage(-static_cast<int32_t>(stable_cost));
 
-    SendPacket(SmsgStableResult(PetStableResult::BuySuccess).serialise().get());
+    SmsgStableResult managedPacket(PetStableResult::BuySuccess);
+    sendManagedPacket(managedPacket);
 
     _player->m_stableSlotCount++;
 }

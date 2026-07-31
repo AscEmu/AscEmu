@@ -39,7 +39,8 @@ void WorldSession::sendTaxiStatus(WoWGuid guid)
     if (nearest == 0)
         return;
 
-    SendPacket(SmsgTaxinodeStatus(guid.getRawGuid(), player->m_taxi->isTaximaskNodeKnown(nearest)).serialise().get());
+    SmsgTaxinodeStatus managedPacket(guid.getRawGuid(), player->m_taxi->isTaximaskNodeKnown(nearest));
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::sendTaxiMenu(Creature* unit)
@@ -54,7 +55,8 @@ void WorldSession::sendTaxiMenu(Creature* unit)
         GetPlayer()->m_cheats.hasTaxiCheat = true; // Grimwing in Ebon Hold, special case. NOTE: Not perfect, Zul'Aman should not be included according to WoWhead, and I think taxicheat includes it.
 
     const auto& taxiMask = GetPlayer()->getTaxiData()->getTaxiMask(GetPlayer()->m_cheats.hasTaxiCheat);
-    SendPacket(SmsgShowTaxiNodes(unit->getGuid(), nearestNode, taxiMask).serialise().get());
+    SmsgShowTaxiNodes managedPacket(unit->getGuid(), nearestNode, taxiMask);
+    sendManagedPacket(managedPacket);
 
     GetPlayer()->m_cheats.hasTaxiCheat = lastTaxiCheaterState;
 }
@@ -88,8 +90,12 @@ bool WorldSession::sendLearnNewTaxiNode(Creature* unit)
 
     if (GetPlayer()->m_taxi->setTaximaskNode(curloc))
     {
-        SendPacket(SmsgNewTaxiPath().serialise().get());
-        SendPacket(SmsgTaxinodeStatus(unit->getGuid(), true).serialise().get());
+        SmsgNewTaxiPath managedPathPacket;
+        sendManagedPacket(managedPathPacket);
+
+        SmsgTaxinodeStatus managedPacket(unit->getGuid(), true);
+        sendManagedPacket(managedPacket);
+
         return true;
     }
 
@@ -100,7 +106,8 @@ void WorldSession::sendDiscoverNewTaxiNode(uint32_t nodeid)
 {
     if (GetPlayer()->m_taxi->setTaximaskNode(nodeid))
     {
-        GetPlayer()->sendPacket(SmsgNewTaxiPath().serialise().get());
+        SmsgNewTaxiPath managedPacket;
+        sendManagedPacket(managedPacket);
     }
 }
 
