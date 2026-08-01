@@ -13,6 +13,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgChannelList.h"
 #include "Server/Packets/SmsgChannelNotify.h"
 #include "Server/Packets/SmsgMessageChat.h"
+#include "Server/Packets/SmsgUserlistAdd.h"
+#include "Server/Packets/SmsgUserlistUpdate.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 
@@ -154,64 +156,17 @@ void Channel::attemptJoin(Player* plr, std::string password, bool skipCheck/* = 
             targetSession->sendManagedPacket(sendPacket);
     }
 
-#if VERSION_STRING == Mop
-    WorldPacket data(m_channelId != 0 ? SMSG_USERLIST_ADD : SMSG_USERLIST_UPDATE, 8 + 1 + 1 + 4 + m_channelName.size());
-    WoWGuid guid = plr->getGuid();
+    // Userlist only implemented for Mop
     if (m_channelId != 0)
     {
-        data << uint32_t(m_channelId);
-        data << uint8_t(m_channelFlags);
-        data << uint8_t(memberFlags);
-        data.writeBit(guid[7]);
-        data.writeBits(m_channelName.size(), 7);
-        data.writeBit(guid[0]);
-        data.writeBit(guid[5]);
-        data.writeBit(guid[4]);
-        data.writeBit(guid[6]);
-        data.writeBit(guid[1]);
-        data.writeBit(guid[3]);
-        data.writeBit(guid[2]);
-
-        data.flushBits();
-        data.writeByteSeq(guid[4]);
-        data.writeByteSeq(guid[5]);
-        data.writeByteSeq(guid[7]);
-        data.writeByteSeq(guid[1]);
-        data.writeByteSeq(guid[2]);
-        data.writeByteSeq(guid[3]);
-        data.writeByteSeq(guid[6]);
-        data.writeByteSeq(guid[0]);
-        data << m_channelName;
-        sendToAll(&data, plr);
+        SmsgUserlistAdd managedPacket(m_channelId, m_channelFlags, memberFlags, m_channelName, plr->getGuid());
+        PacketBroadcast::sendFromChannel(*this, managedPacket, plr);
     }
     else
     {
-        data.writeBit(guid[2]);
-        data.writeBit(guid[6]);
-        data.writeBit(guid[3]);
-        data.writeBit(guid[7]);
-        data.writeBit(guid[5]);
-        data.writeBit(guid[1]);
-        data.writeBit(guid[0]);
-        data.writeBits(m_channelName.size(), 7);
-        data.writeBit(guid[4]);
-
-        data.flushBits();
-        data.writeByteSeq(guid[0]);
-        data.writeByteSeq(guid[2]);
-        data.writeByteSeq(guid[6]);
-        data.writeByteSeq(guid[5]);
-        data << uint8_t(m_channelFlags);
-        data.writeByteSeq(guid[7]);
-        data.writeByteSeq(guid[3]);
-        data << uint32_t(m_channelId);
-        data << m_channelName;
-        data.writeByteSeq(guid[1]);
-        data.writeByteSeq(guid[4]);
-        data << uint8_t(memberFlags);
-        sendToAll(&data);
+        SmsgUserlistUpdate managedPacket(m_channelId, m_channelFlags, memberFlags, m_channelName, plr->getGuid());
+        PacketBroadcast::sendFromChannel(*this, managedPacket);
     }
-#endif
 }
 
 void Channel::leaveChannel(Player* plr, bool sendPacket/* = true*/)
