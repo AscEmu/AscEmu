@@ -156,9 +156,11 @@ bool ChatCommandHandler::HandleTicketCloseCommand(const char* args, WorldSession
         ticketOwner->getSession()->SystemMessage("Your Ticket was closed by %s Comment: %s", player->getName().c_str(), comment);
 
         // Notify player about removing ticket
-        ticketOwner->getSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
+        SmsgGmTicketDeleteTicket deletePacket(9);
+        ticketOwner->getSession()->sendManagedPacket(deletePacket);
         // Response - Send GM Survey
-        ticketOwner->getSession()->SendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
+        SmsgGmTicketStatusUpdate statusPacket(3);
+        ticketOwner->getSession()->sendManagedPacket(statusPacket);
     }
     else
     {

@@ -142,10 +142,12 @@ bool ChatCommandHandler::HandleGMTicketRemoveByIdCommand(const char* args, World
         return true;
 
     // Notify player about removing ticket
-    plr->getSession()->SendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
+    SmsgGmTicketDeleteTicket deletePacket(9);
+    plr->getSession()->sendManagedPacket(deletePacket);
 
     // Response - Send GM Survey
-    plr->getSession()->SendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
+    SmsgGmTicketStatusUpdate statusPacket(3);
+    plr->getSession()->sendManagedPacket(statusPacket);
 
     return true;
 }

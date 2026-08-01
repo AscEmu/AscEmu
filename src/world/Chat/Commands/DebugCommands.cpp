@@ -32,6 +32,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 
+using namespace AscEmu::Packets;
+
 bool ChatCommandHandler::HandleMoveDBCItemSetsToDB(const char* /*args*/, WorldSession* /*session*/)
 {
 #if VERSION_STRING >= Cata
@@ -1003,7 +1005,8 @@ bool ChatCommandHandler::HandleKnockBackCommand(const char* args, WorldSession* 
 
     float z = f * 0.66f;
 
-    m_session->SendPacket(AscEmu::Packets::SmsgMoveKnockBack(m_session->GetPlayer()->GetNewGUID(), Util::getMSTime(), dy, dx, f, z).serialise().get());
+    SmsgMoveKnockBack managedPacket(m_session->GetPlayer()->GetNewGUID(), Util::getMSTime(), dy, dx, f, z);
+    m_session->sendManagedPacket(managedPacket);
     return true;
 }
 

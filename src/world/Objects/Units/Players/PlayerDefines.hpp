@@ -684,7 +684,12 @@ enum TradeStatus
     TRADE_STATUS_TARGET_LOGOUT      = 0x14, // That player is logging out
     TRADE_STATUS_TRIAL_ACCOUNT      = 0x15, // Trial accounts cannot perform that action
     TRADE_STATUS_ONLY_CONJURED      = 0x16, // You may only trade conjured items to players from other realms
-    TRADE_STATUS_LOOT_ITEM          = 0x17  // You may only trade bound items to players that were originally eligible to loot the item
+    TRADE_STATUS_LOOT_ITEM          = 0x17, // You may only trade bound items to players that were originally eligible to loot the item
+
+    // just for multi version compatibility
+    TRADE_STATUS_CURRENCY_NOT_TRADEABLE,
+    TRADE_STATUS_CURRENCY,
+
 };
 #endif
 

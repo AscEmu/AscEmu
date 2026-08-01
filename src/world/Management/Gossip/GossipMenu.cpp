@@ -46,12 +46,14 @@ void GossipMenu::removeQuest(uint32_t questId)
 
 void GossipMenu::sendGossipPacket(Player* player) const
 {
-    player->getSession()->SendPacket(SmsgGossipMessage(m_senderGuid, m_gossipId, m_textId, m_sessionLanguage, _gossipItemMap, _gossipQuestMap).serialise().get());
+    SmsgGossipMessage managedPacket(m_senderGuid, m_gossipId, m_textId, m_sessionLanguage, _gossipItemMap, _gossipQuestMap);
+    player->getSession()->sendManagedPacket(managedPacket);
 }
 
 void GossipMenu::sendSimpleMenu(uint64_t guid, uint32_t textId, Player* player)
 {
-    player->getSession()->SendPacket(SmsgGossipMessage(guid, 0, textId, 0, {}, {}).serialise().get());
+    SmsgGossipMessage managedPacket(guid, 0, textId, 0, {}, {});
+    player->getSession()->sendManagedPacket(managedPacket);
 }
 
 void GossipMenu::sendQuickMenu(uint64_t guid, uint32_t textId, Player* player, uint32_t itemId, uint8_t itemIcon, std::string itemText, uint32_t requiredMoney/*=0*/, std::string moneyText/*=""*/, bool extra/*=false*/)
@@ -60,10 +62,12 @@ void GossipMenu::sendQuickMenu(uint64_t guid, uint32_t textId, Player* player, u
     const GossipItem tempItem(itemIcon, itemText, 0, extra, requiredMoney, moneyText);
     tempItemList.insert(std::make_pair(itemId, tempItem));
 
-    player->getSession()->SendPacket(SmsgGossipMessage(guid, 0, textId, 0, tempItemList, {}).serialise().get());
+    SmsgGossipMessage managedPacket(guid, 0, textId, 0, tempItemList, {});
+    player->getSession()->sendManagedPacket(managedPacket);
 }
 
 void GossipMenu::senGossipComplete(Player* player)
 {
-    player->sendPacket(SmsgGossipComplete().serialise().get());
+    SmsgGossipComplete managedPacket;
+    player->getSession()->sendManagedPacket(managedPacket);
 }

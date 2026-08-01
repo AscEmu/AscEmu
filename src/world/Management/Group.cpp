@@ -392,8 +392,11 @@ void SubGroup::Disband()
             {
                 if (loggedInPlayer->getSession() != nullptr)
                 {
-                    loggedInPlayer->getSession()->SendPacket(SmsgPartyCommandResult(2, "", loggedInPlayer->getDungeonDifficulty()).serialise().get());
-                    loggedInPlayer->getSession()->SendPacket(SmsgGroupDestroyed().serialise().get());
+                    SmsgPartyCommandResult partyPacket(2, "", loggedInPlayer->getDungeonDifficulty());
+                    loggedInPlayer->getSession()->sendManagedPacket(partyPacket);
+
+                    SmsgGroupDestroyed managedPacket;
+                    loggedInPlayer->getSession()->sendManagedPacket(managedPacket);
 #if VERSION_STRING >= Cata
                     loggedInPlayer->getSession()->sendEmptyGroupList(loggedInPlayer);
 #else
@@ -495,9 +498,13 @@ void Group::RemovePlayer(CachedCharacterInfo* info)
             SendNullUpdate(pPlayer);
 #endif
 
-            pPlayer->getSession()->SendPacket(SmsgGroupDestroyed().serialise().get());
+            SmsgGroupDestroyed managedPacket;
+            pPlayer->getSession()->sendManagedPacket(managedPacket);
 
-            pPlayer->getSession()->SendPacket(SmsgPartyCommandResult(2, pPlayer->getName(), ERR_PARTY_NO_ERROR).serialise().get());
+            SmsgPartyCommandResult partyPacket(2, pPlayer->getName(), ERR_PARTY_NO_ERROR);
+            pPlayer->getSession()->sendManagedPacket(partyPacket);
+
+                    
 #if VERSION_STRING >= Cata
             pPlayer->getSession()->sendEmptyGroupList(pPlayer);
 #endif

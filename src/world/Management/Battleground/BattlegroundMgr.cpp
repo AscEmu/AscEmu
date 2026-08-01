@@ -1323,7 +1323,9 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
                 loggedInPlayer->setQueuedBgInstanceId(0);
                 loggedInPlayer->setBgQueueType(battlegroundType);
                 //\todo error/bgtype missing, always send all arenas (from legacy)
-                loggedInPlayer->getSession()->SendPacket(SmsgGroupJoinedBattleground(6).serialise().get());
+                SmsgGroupJoinedBattleground managedPacket(6);
+                loggedInPlayer->getSession()->sendManagedPacket(managedPacket);
+
                 loggedInPlayer->setBGEntryPoint(loggedInPlayer->GetPositionX(), loggedInPlayer->GetPositionY(), loggedInPlayer->GetPositionZ(),
                     loggedInPlayer->GetOrientation(), loggedInPlayer->GetMapId(), loggedInPlayer->GetInstanceID());
             }

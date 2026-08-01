@@ -370,7 +370,9 @@ void AuctionHouse::sendBidListPacket(Player* player, WorldPacket* /*packet*/)
         }
     }
 
-    player->sendPacket(SmsgAuctionBidderListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size()), 300).serialise().get());
+    SmsgAuctionBidderListResult managedPacket(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList,
+        static_cast<uint32_t>(auctionPacketList.size()), 300);
+    player->getSession()->sendManagedPacket(managedPacket);
 }
 
 void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
@@ -382,13 +384,17 @@ void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
         if (!outbid)
             outbid = 1;
 
-        bidder->getSession()->SendPacket(SmsgAuctionBidderNotification(getId(), auction->Id, auction->highestBidderGuid, 0, outbid, auction->auctionItem->getEntry()).serialise().get());
+        SmsgAuctionBidderNotification managedPacket(getId(), auction->Id, auction->highestBidderGuid,
+            0, outbid, auction->auctionItem->getEntry());
+        bidder->getSession()->sendManagedPacket(managedPacket);
     }
 
     Player* owner = sObjectMgr.getPlayer(auction->ownerGuid.getGuidLow());
     if (owner && owner->IsInWorld())
     {
-        owner->getSession()->SendPacket(SmsgAuctionOwnerNotification(auction->Id, static_cast<uint32_t>(auction->highestBid), auction->auctionItem->getEntry()).serialise().get());
+        SmsgAuctionOwnerNotification managedPacket(auction->Id, static_cast<uint32_t>(auction->highestBid),
+            auction->auctionItem->getEntry());
+        owner->getSession()->sendManagedPacket(managedPacket);
     }
 }
 
@@ -401,7 +407,9 @@ void AuctionHouse::sendAuctionOutBidNotificationPacket(Auction* auction, uint64_
         if (!outbid)
             outbid = 1;
 
-        bidder->getSession()->SendPacket(SmsgAuctionBidderNotification(getId(), auction->Id, newBidder, newHighestBid, outbid, auction->auctionItem->getEntry()).serialise().get());
+        SmsgAuctionBidderNotification managedPacket(getId(), auction->Id, newBidder, newHighestBid, outbid,
+            auction->auctionItem->getEntry());
+        bidder->getSession()->sendManagedPacket(managedPacket);
     }
 }
 
