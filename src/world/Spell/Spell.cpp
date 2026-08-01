@@ -49,6 +49,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgCancelCombat.h"
 #include "Server/Packets/MsgChannelUpdate.h"
 #include "Server/Packets/MsgChannelStart.h"
+#include "Server/Packets/SmsgSpellStart.h"
+#include "Server/Packets/SmsgSpellGo.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Unit.hpp"
@@ -4857,7 +4859,8 @@ void Spell::sendSpellStart()
     data.writeByteSeq(casterGuid[3]);
 
     m_caster->sendMessageToSet(&data, true);
-#else
+#else // < Mop
+
     if (!m_caster->IsInWorld())
         return;
 
@@ -4865,9 +4868,6 @@ void Spell::sendSpellStart()
     if (!(getSpellInfo()->isChanneled() || getSpellInfo()->getSpeed() > 0.0f || getSpellInfo()->getSpellVisual(0) != 0 ||
         getSpellInfo()->getSpellVisual(1) != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
         return;
-
-    // Not sure about the size -Appled
-    WorldPacket data(SMSG_SPELL_START, 30);
 
     // Set cast flags
     uint32_t castFlags = SPELL_PACKET_FLAGS_DEFAULT;
@@ -4881,53 +4881,18 @@ void Spell::sendSpellStart()
         castFlags |= SPELL_PACKET_FLAGS_POWER_UPDATE;
 #endif
 
-#if VERSION_STRING >= Cata
-    // Health update for healing spells
-    ///\ todo: fix me!
-    /*for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
-        if ((m_castTime > 0 && getSpellInfo()->getEffect(i) == SPELL_EFFECT_HEAL) ||
-            getSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_HEAL)
-        {
-            castFlags |= SPELL_PACKET_FLAGS_HEALTH_UPDATE;
-            break;
-        }
-    }*/
-#endif
-
-    if (i_caster != nullptr)
-        data << i_caster->GetNewGUID();
-    else
-        data << m_caster->GetNewGUID();
-    data << m_caster->GetNewGUID();
-
-#if VERSION_STRING >= WotLK
-    data << uint8_t(extra_cast_number);
-    data << uint32_t(getSpellInfo()->getId());
-    data << uint32_t(castFlags);
-#else
-    data << uint32_t(getSpellInfo()->getId());
-#if VERSION_STRING != Classic
-    data << uint8_t(extra_cast_number);
-#endif
-    data << uint16_t(castFlags);
-#endif
-    data << uint32_t(m_timer);
-#if VERSION_STRING >= Cata
-    data << uint32_t(m_castTime);
-#endif
-
-    m_targets.write(data);
+    SmsgSpellStart managedPacket(i_caster ? i_caster->GetNewGUID() : m_caster->GetNewGUID(),
+        m_caster->GetNewGUID(), getSpellInfo()->getId(), castFlags, extra_cast_number, m_timer, m_castTime, m_targets);
 
 #if VERSION_STRING >= WotLK
     if (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE && u_caster != nullptr)
-        data << uint32_t(u_caster->getPower(getSpellInfo()->getPowerType()));
+        managedPacket.powerType = u_caster->getPower(getSpellInfo()->getPowerType());
 #endif
 
     if (castFlags & SPELL_PACKET_FLAGS_RANGED)
-        writeProjectileDataToPacket(&data);
+        writeProjectileDataToPacket(managedPacket.projectile);
 
-    m_caster->sendMessageToSet(&data, true);
+    PacketBroadcast::sendToSet(*m_caster, managedPacket, true);
 #endif
 }
 
@@ -5128,7 +5093,9 @@ void Spell::sendSpellGo()
     data.writeByteSeq(casterGuid[7]);
 
     m_caster->sendMessageToSet(&data, true);
-#else
+
+#else // < Mop
+
     if (!m_caster->IsInWorld())
         return;
 
@@ -5136,9 +5103,6 @@ void Spell::sendSpellGo()
     if (!(getSpellInfo()->isChanneled() || getSpellInfo()->getSpeed() > 0.0f || getSpellInfo()->getSpellVisual(0) != 0 ||
         getSpellInfo()->getSpellVisual(1) != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
         return;
-
-    // Size should be enough
-    WorldPacket data(SMSG_SPELL_GO, 60);
 
     // Set cast flags
     uint32_t castFlags = 0;
@@ -5172,98 +5136,35 @@ void Spell::sendSpellGo()
         castFlags |= SPELL_PACKET_FLAGS_POWER_UPDATE;
 #endif
 
-    if (i_caster != nullptr)
-        data << i_caster->GetNewGUID();
-    else
-        data << m_caster->GetNewGUID();
-
-    data << m_caster->GetNewGUID();
+    SmsgSpellGo managedPacket(i_caster ? i_caster->GetNewGUID() : m_caster->GetNewGUID(), m_caster->GetNewGUID(),
+        getSpellInfo()->getId(), castFlags, extra_cast_number, m_timer, Util::getMSTime(),
+        m_targets);
 
 #if VERSION_STRING >= WotLK
-    data << uint8_t(extra_cast_number);
-    data << uint32_t(getSpellInfo()->getId());
-    data << uint32_t(castFlags);
-#else
-    data << uint32_t(getSpellInfo()->getId());
-    data << uint16_t(castFlags);
-#endif
-#if VERSION_STRING >= Cata
-    data << uint32_t(m_timer);
-#endif
-#if VERSION_STRING != Classic
-    data << uint32_t(Util::getMSTime());
-#endif
-
-    // Add hitted targets
-    data << uint8_t(m_uniqueHittedTargets.size());
-    for (const auto& uniqueTarget : m_uniqueHittedTargets)
-    {
-        data << uint64_t(uniqueTarget.first);
-    }
-
-#if VERSION_STRING >= WotLK
-    // Add missed targets
-    if (castFlags & SPELL_PACKET_FLAGS_EXTRA_MESSAGE)
-    {
-        data << uint8_t(m_missedTargets.size());
-        writeSpellMissedTargets(&data);
-    }
-    else
-    {
-        data << uint8_t(0);
-    }
-
-    m_targets.write(data);
-
-
     if (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE && u_caster != nullptr)
-        data << uint32_t(u_caster->getPower(getSpellInfo()->getPowerType()));
-#else
-    data << uint8_t(m_missedTargets.size());
-
-    if (castFlags & SPELL_PACKET_FLAGS_EXTRA_MESSAGE)
-        writeSpellMissedTargets(&data);
-
-    m_targets.write(data);
+        managedPacket.powerType = u_caster->getPower(getSpellInfo()->getPowerType());
 #endif
 
     if (castFlags & SPELL_PACKET_FLAGS_RANGED)
-        writeProjectileDataToPacket(&data);
+        writeProjectileDataToPacket(managedPacket.projectile);
 
-#if VERSION_STRING >= WotLK
-    //data order depending on flags : 0x800, 0x200000, 0x20000, 0x20, 0x80000, 0x40 (this is not spellgoflag but seems to be from spellentry or packet..)
-    //.text:00401110                 mov     eax, [ecx+14h] -> them
-    //.text:00401115                 cmp     eax, [ecx+10h] -> us
-    if (castFlags & SPELL_PACKET_FLAGS_RUNE_UPDATE)
-    {
-        data << uint8_t(m_rune_avail_before);
-        data << uint8_t(currentRunes);
-        for (uint8_t i = 0; i < MAX_RUNES; ++i)
-        {
-            const uint8_t runeMask = 1U << i;
-            if ((runeMask & m_rune_avail_before) != (runeMask & currentRunes))
-                data << uint8_t(0); // Value of the rune converted into byte. We just think it is 0 but maybe it is not
-        }
-    }
+    managedPacket.hittedTargets = m_uniqueHittedTargets;
+    managedPacket.missedTargets = m_missedTargets;
 
-    if (castFlags & SPELL_PACKET_FLAGS_UPDATE_MISSILE)
-    {
-        data << float(m_missilePitch);
-        data << uint32_t(m_missileTravelTime);
-    }
+    managedPacket.runeAvailableBefore = m_rune_avail_before;
+    managedPacket.currentRunes = currentRunes;
 
-    // Some spells require this
-    if (m_targets.hasDestination())
-        data << uint8_t(0);
-#endif
+    managedPacket.missilePitch = m_missilePitch;
+    managedPacket.missileTravelTime = m_missileTravelTime;
 
-    m_caster->sendMessageToSet(&data, true);
+    PacketBroadcast::sendToSet(*m_caster, managedPacket, true);
 #endif
 }
 
 void Spell::sendChannelStart(const uint32_t duration)
 {
-    m_caster->sendMessageToSet(MsgChannelStart(m_caster->GetNewGUID(), getSpellInfo()->getId(), duration).serialise().get(), true);
+    MsgChannelStart managedPacket(m_caster->GetNewGUID(), getSpellInfo()->getId(), duration);
+    PacketBroadcast::sendToSet(*m_caster, managedPacket, true);
 
     Object const* channelTarget = nullptr;
     if (!m_uniqueHittedTargets.empty())
@@ -5391,6 +5292,116 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
     }
 
     caster->sendCastFailedPacket(getSpellInfo()->getId(), result, castCount, parameter1, parameter2);
+}
+
+void Spell::writeProjectileDataToPacket(ProjectileData& data)
+{
+    ItemProperties const* ammoItem = nullptr;
+#if VERSION_STRING < Cata
+    if (p_caster != nullptr)
+    {
+        const auto rangedItem = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+        if (rangedItem != nullptr)
+        {
+            if (getSpellInfo()->getId() == SPELL_RANGED_THROW)
+            {
+                ammoItem = rangedItem->getItemProperties();
+            }
+            else
+            {
+                if (p_caster->getAmmoId() != 0)
+                {
+                    ammoItem = sMySQLStore.getItemProperties(p_caster->getAmmoId());
+                }
+                else
+                {
+                    // Use Rough Arrow if ammo id is not found
+                    ammoItem = sMySQLStore.getItemProperties(2512);
+                }
+            }
+        }
+    }
+    else if (u_caster != nullptr)
+    {
+        // Get creature's ranged weapon
+        // Need to loop through all weapon slots because NPCs can have the ranged weapon in main hand
+        for (uint8_t i = 0; i <= RANGED; ++i)
+        {
+#if VERSION_STRING > TBC
+            const auto entryId = u_caster->getVirtualItemSlotId(i);
+#else
+            const auto entryId = dynamic_cast<Creature*>(u_caster)->getVirtualItemEntry(i);
+#endif
+            if (entryId == 0)
+                continue;
+
+#if VERSION_STRING > TBC
+            // Get the item data from DBC files
+            const auto itemDBC = sItemStore.lookupEntry(entryId);
+            if (itemDBC == nullptr || itemDBC->Class != ITEM_CLASS_WEAPON)
+                continue;
+
+            switch (itemDBC->SubClass)
+            {
+                case ITEM_SUBCLASS_WEAPON_BOW:
+                case ITEM_SUBCLASS_WEAPON_CROSSBOW:
+                    // Use Rough Arrow for bows
+                    ammoItem = sMySQLStore.getItemProperties(2512);
+                    break;
+                case ITEM_SUBCLASS_WEAPON_GUN:
+                    // Use Light Shot for guns
+                    ammoItem = sMySQLStore.getItemProperties(2516);
+                    break;
+                case ITEM_SUBCLASS_WEAPON_THROWN:
+                    ammoItem = sMySQLStore.getItemProperties(entryId);
+                    break;
+                default:
+                    break;
+            }
+#else
+            // Get the item data from unitdata
+            const auto itemData = u_caster->getVirtualItemInfoFields(i);
+            if (itemData.fields.item_class != ITEM_CLASS_WEAPON)
+                continue;
+
+            switch (itemData.fields.item_subclass)
+            {
+                case ITEM_SUBCLASS_WEAPON_BOW:
+                case ITEM_SUBCLASS_WEAPON_CROSSBOW:
+                    // Use Rough Arrow for bows
+                    ammoItem = sMySQLStore.getItemProperties(2512);
+                    break;
+                case ITEM_SUBCLASS_WEAPON_GUN:
+                    // Use Light Shot for guns
+                    ammoItem = sMySQLStore.getItemProperties(2516);
+                    break;
+                case ITEM_SUBCLASS_WEAPON_THROWN:
+                    ammoItem = sMySQLStore.getItemProperties(entryId);
+                    break;
+                default:
+                    break;
+            }
+#endif
+
+            // No need to continue if ammo has been found
+            if (ammoItem != nullptr)
+                break;
+        }
+    }
+#endif
+
+    if (ammoItem != nullptr)
+    {
+        data.displayInfo = ammoItem->DisplayInfoID;
+        data.inventoryType = ammoItem->InventoryType;
+    }
+#if VERSION_STRING > TBC
+    else
+    {
+        data.displayInfo = 0;
+        data.inventoryType = 0;
+    }
+#endif
 }
 
 void Spell::writeProjectileDataToPacket(WorldPacket *data)
