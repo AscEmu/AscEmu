@@ -77,7 +77,7 @@ namespace AscEmu::Packets
                 targets.write(packet);
 
                 if (m_protocol.expansion >= WoW::Expansion::_WotLK)
-                    packet << uint32_t(powerValue);
+                    packet << uint32_t(powerType);
 
                 if (m_protocol.expansion >= WoW::Expansion::_WotLK)
                 {
