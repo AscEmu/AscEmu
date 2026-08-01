@@ -346,7 +346,8 @@ bool Item::addEnchantment(uint32_t enchantmentId, EnchantmentSlot slot, uint32_t
         return true;
 #endif
 
-    m_owner->sendPacket(SmsgEnchantmentLog(m_owner->getGuid(), m_owner->getGuid(), getEntry(), Enchantment->Id).serialise().get());
+    SmsgEnchantmentLog managedPacket(m_owner->getGuid(), m_owner->getGuid(), getEntry(), Enchantment->Id);
+    m_owner->getSession()->sendManagedPacket(managedPacket);
 
     // Apply enchantment bonus only if the item is equipped
     // but send enchant time update packet for items in inventory as well
@@ -635,7 +636,8 @@ void Item::applyEnchantmentBonus(EnchantmentSlot slot, bool apply)
 
 void Item::sendEnchantTimeUpdate(uint32_t slot, uint32_t duration)
 {
-    m_owner->sendPacket(SmsgItemEnchantmentTimeUpdate(getGuid(), slot, duration, m_owner->getGuid()).serialise().get());
+    SmsgItemEnchantmentTimeUpdate managedPacket(getGuid(), slot, duration, m_owner->getGuid());
+    m_owner->getSession()->sendManagedPacket(managedPacket);
 }
 
 void Item::removeFromRefundableMap()

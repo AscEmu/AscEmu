@@ -660,7 +660,10 @@ void Transporter::TeleportPlayers(float x, float y, float z, float o, uint32_t n
             TransportBase::CalculatePassengerPosition(destX, destY, destZ, &destO, x, y, z, o);
 
             if (newMap)
-                player->getSession()->SendPacket(SmsgTransferPending(newMapId, true, getEntry(), oldMapId).serialise().get());
+            {
+                SmsgTransferPending managedPacket(newMapId, true, getEntry(), oldMapId);
+                player->getSession()->sendManagedPacket(managedPacket);
+            }
 
             bool teleport_successful = player->teleport(LocationVector(destX, destY, destZ, destO), getWorldMap());
             if (!teleport_successful)

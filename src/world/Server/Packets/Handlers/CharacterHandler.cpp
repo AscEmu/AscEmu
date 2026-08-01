@@ -797,7 +797,8 @@ void WorldSession::handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket)
     //\todo check utf8 and cyrillic chars
     const uint32_t error = 0;     // 0 = success, 1 = error
 
-    SendPacket(SmsgSetPlayerDeclinedNamesResult(error, srlPacket.guid).serialise().get());
+    SmsgSetPlayerDeclinedNamesResult managedPacket(error, srlPacket.guid);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::characterEnumProc(QueryResult* result)

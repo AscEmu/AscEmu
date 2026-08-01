@@ -2021,7 +2021,8 @@ void WorldMap::sendPvPCaptureMessage(int32_t ZoneMask, uint32_t ZoneId, const ch
         if ((ZoneMask != ZONE_MASK_ALL && plr->getZoneId() != static_cast<uint32_t>(ZoneMask)))
             continue;
 
-        plr->getSession()->SendPacket(SmsgDefenseMessage(ZoneId, msgbuf).serialise().get());
+        SmsgDefenseMessage managedPacket(ZoneId, msgbuf);
+        plr->getSession()->sendManagedPacket(managedPacket);
     }
 }
 

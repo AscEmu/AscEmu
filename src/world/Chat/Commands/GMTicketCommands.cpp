@@ -296,10 +296,12 @@ bool ChatCommandHandler::HandleGMTicketRemoveByIdCommand(const char* args, World
         return true;
 
     // Notify player about removing ticket
-    plr->getSession()->sendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
+    SmsgGmTicketDeleteTicket managedDeletePacket(9);
+    plr->getSession()->sendManagedPacket(managedDeletePacket);
 
     // Response - Send GM Survey
-    plr->getSession()->sendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
+    SmsgGmTicketStatusUpdate managedPacket(3);
+    plr->getSession()->sendManagedPacket(managedPacket);
 
     systemMessage(plr->getSession(), "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");
     return true;
@@ -532,10 +534,12 @@ bool ChatCommandHandler::HandleGMTicketDeletePermanentCommand(const char* args, 
     if (plr != nullptr && plr->IsInWorld())
     {
         // Notify player about removing ticket
-        plr->getSession()->sendPacket(SmsgGmTicketDeleteTicket(9).serialise().get());
+        SmsgGmTicketDeleteTicket managedDeletePacket(9);
+        plr->getSession()->sendManagedPacket(managedDeletePacket);
 
         // Response - Send GM Survey
-        plr->getSession()->sendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
+        SmsgGmTicketStatusUpdate managedPacket(3);
+        plr->getSession()->sendManagedPacket(managedPacket);
 
         systemMessage(plr->getSession(), "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");
     }

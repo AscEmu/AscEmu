@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Utilities/Random.hpp"
 #include "Utilities/TimeTracker.hpp"
+#include "Server/PacketBroadcast.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -119,10 +120,12 @@ void LootRoll::finalize()
 
         if (_player != nullptr)
         {
+            SmsgLootAllPassed managedPacket(_guid, _groupcount, _itemid, _randomsuffixid, _randompropertyid);
+
             if (_player->isInGroup())
-                _player->getGroup()->SendPacketToAll(SmsgLootAllPassed(_guid, _groupcount, _itemid, _randomsuffixid, _randompropertyid).serialise().get());
+                PacketBroadcast::sendFromGroup(*_player->getGroup(), managedPacket);
             else
-                _player->getSession()->SendPacket(SmsgLootAllPassed(_guid, _groupcount, _itemid, _randomsuffixid, _randompropertyid).serialise().get());
+                _player->getSession()->sendManagedPacket(managedPacket);
         }
 
         /* item can now be looted by anyone :) */
@@ -132,10 +135,12 @@ void LootRoll::finalize()
         return;
     }
 
+    SmsgLootRollWon managedPacket(_guid, _slotid, _itemid, _randomsuffixid, _randompropertyid, _player->getGuid(), highest, hightype);
+
     if (_player->isInGroup())
-        _player->getGroup()->SendPacketToAll(SmsgLootRollWon(_guid, _slotid, _itemid, _randomsuffixid, _randompropertyid, _player->getGuid(), highest, hightype).serialise().get());
+        PacketBroadcast::sendFromGroup(*_player->getGroup(), managedPacket);
     else
-        _player->getSession()->SendPacket(SmsgLootRollWon(_guid, _slotid, _itemid, _randomsuffixid, _randompropertyid, _player->getGuid(), highest, hightype).serialise().get());
+        _player->getSession()->sendManagedPacket(managedPacket);
 
     LootItem const& item = _slotid >= pLoot->items.size() ? pLoot->quest_items[_slotid - pLoot->items.size()] : pLoot->items[_slotid];
 
@@ -187,10 +192,12 @@ bool LootRoll::playerRolled(Player* player, uint8_t choice)
             break;
     }
 
+    SmsgLootRoll managedPacket(_guid, _slotid, player->getGuid(), _itemid, _randomsuffixid, _randompropertyid, roll, choice);
+
     if (player->isInGroup())
-        player->getGroup()->SendPacketToAll(SmsgLootRoll(_guid, _slotid, player->getGuid(), _itemid, _randomsuffixid, _randompropertyid, roll, choice).serialise().get());
+        PacketBroadcast::sendFromGroup(*player->getGroup(), managedPacket);
     else
-        player->getSession()->SendPacket(SmsgLootRoll(_guid, _slotid, player->getGuid(), _itemid, _randomsuffixid, _randompropertyid, roll, choice).serialise().get());
+        player->getSession()->sendManagedPacket(managedPacket);
 
     // check for early completion
     --_remaining;

@@ -266,7 +266,11 @@ void ItemInterface::buildInventoryChangeError(Item const* srcItem, Item const* d
             break;
     }
 
-    m_pOwner->sendPacket(SmsgInventoryChangeFailure(inventoryError, srcGuid, destGuid, extraData, sendExtraData).serialise().get());
+    if (m_pOwner->getSession())
+    {
+        SmsgInventoryChangeFailure managedPacket(inventoryError, srcGuid, destGuid, extraData, sendExtraData);
+        m_pOwner->getSession()->sendManagedPacket(managedPacket);
+    }
 }
 
 void ItemInterface::setOwnerInventoryItem(uint8_t slot, uint64_t guid)

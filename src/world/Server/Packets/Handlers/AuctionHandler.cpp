@@ -72,7 +72,8 @@ void WorldSession::handleCancelAuction(WorldPacket& recvPacket)
 
     creature->auctionHouse->queueDeletion(auction, AUCTION_REMOVE_CANCELLED);
 
-    SendPacket(SmsgAuctionCommandResult(srlPacket.auctionId, AUCTION_ACTION_CANCEL, AUCTION_ERROR_NONE).serialise().get());
+    SmsgAuctionCommandResult managedPacket(srlPacket.auctionId, AUCTION_ACTION_CANCEL, AUCTION_ERROR_NONE);
+    sendManagedPacket(managedPacket);
 
     creature->auctionHouse->sendOwnerListPacket(_player, nullptr);
 }
@@ -235,25 +236,29 @@ void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)
     const auto auction = auctionHouse->getAuction(srlPacket.auctionId);
     if (auction == nullptr || !auction->ownerGuid)
     {
-        SendPacket(SmsgAuctionCommandResult(0, AUCTION_ACTION_BID, AUCTION_ERROR_INTERNAL, 0).serialise().get());
+        SmsgAuctionCommandResult managedPacket(0, AUCTION_ACTION_BID, AUCTION_ERROR_INTERNAL, 0);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     if (auction->ownerGuid == _player->getGuid())
     {
-        SendPacket(SmsgAuctionCommandResult(0, AUCTION_ACTION_BID, AUCTION_ERROR_BID_OWN_AUCTION, 0).serialise().get());
+        SmsgAuctionCommandResult managedPacket(0, AUCTION_ACTION_BID, AUCTION_ERROR_BID_OWN_AUCTION, 0);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     if (auction->highestBid > srlPacket.price && srlPacket.price != auction->buyoutPrice)
     {
-        SendPacket(SmsgAuctionCommandResult(0, AUCTION_ACTION_BID, AUCTION_ERROR_INTERNAL, 0).serialise().get());
+        SmsgAuctionCommandResult managedPacket(0, AUCTION_ACTION_BID, AUCTION_ERROR_INTERNAL, 0);
+        sendManagedPacket(managedPacket);
         return;
     }
 
     if (!_player->hasEnoughCoinage(srlPacket.price))
     {
-        SendPacket(SmsgAuctionCommandResult(0, AUCTION_ACTION_BID, AUCTION_ERROR_MONEY, 0).serialise().get());
+        SmsgAuctionCommandResult managedPacket(0, AUCTION_ACTION_BID, AUCTION_ERROR_MONEY, 0);
+        sendManagedPacket(managedPacket);
         return;
     }
 
@@ -275,7 +280,8 @@ void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)
 
         auctionHouse->queueDeletion(auction, AUCTION_REMOVE_WON);
 
-        SendPacket(SmsgAuctionCommandResult(auction->Id, AUCTION_ACTION_BID, AUCTION_ERROR_NONE, 0).serialise().get());
+        SmsgAuctionCommandResult managedPacket(auction->Id, AUCTION_ACTION_BID, AUCTION_ERROR_NONE, 0);
+        sendManagedPacket(managedPacket);
         auctionHouse->sendAuctionBuyOutNotificationPacket(auction);
     }
     else
@@ -284,6 +290,7 @@ void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)
         auction->highestBid = srlPacket.price;
         auction->updateInDB();
 
-        SendPacket(SmsgAuctionCommandResult(auction->Id, AUCTION_ACTION_BID, AUCTION_ERROR_NONE, 0).serialise().get());
+        SmsgAuctionCommandResult managedPacket(auction->Id, AUCTION_ACTION_BID, AUCTION_ERROR_NONE, 0);
+        sendManagedPacket(managedPacket);
     }
 }

@@ -1228,7 +1228,12 @@ void Spell::SendResurrectRequest(Player* target)
     if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_IGNORE_RESURRECTION_TIMER)
         overrideTimer = true;
 
-    target->getSession()->SendPacket(SmsgResurrectRequest(m_caster->getGuid(), casterName, resurrectionSickness, overrideTimer, getSpellInfo()->getId()).serialise().get());
+    if (target->getSession())
+    {
+        SmsgResurrectRequest managedPacket(m_caster->getGuid(), casterName, resurrectionSickness, overrideTimer, getSpellInfo()->getId());
+        target->getSession()->sendManagedPacket(managedPacket);
+    }
+
     target->setResurrecterGuid(m_caster->getGuid());
 }
 

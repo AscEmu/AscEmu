@@ -4323,7 +4323,12 @@ void Aura::SpellAuraForceReaction(AuraEffectModifier* aurEff, bool apply)
     Standing factionRank = Standing(aurEff->getEffectDamage());
 
     p_target->applyForcedReaction(factionId, factionRank, apply);
-    p_target->getSession()->SendPacket(SmsgSetForceReactions(p_target->m_forcedReactions).serialise().get());
+
+    if (p_target->getSession())
+    {
+        SmsgSetForceReactions managedPacket(p_target->m_forcedReactions);
+        p_target->getSession()->sendManagedPacket(managedPacket);
+    }
 }
 
 void Aura::SpellAuraModRangedHaste(AuraEffectModifier* aurEff, bool apply)

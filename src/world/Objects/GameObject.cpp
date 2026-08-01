@@ -1925,7 +1925,8 @@ void GameObject_Goober::onUse(Player* player)
 
     if (info->goober.page_id)    // show page...
     {
-        player->sendPacket(SmsgGameobjectPagetext(getGuid()).serialise().get());
+        SmsgGameobjectPagetext managedPacket(getGuid());
+        player->getSession()->sendManagedPacket(managedPacket);
     }
 
     // possible quest objective for active quests
@@ -2024,7 +2025,10 @@ void GameObject_Camera::onUse(Player* player)
         return;
 
     if (gameobject_properties->camera.cinematic_id != 0)
-        player->getSession()->SendPacket(SmsgTriggerCinematic(gameobject_properties->camera.cinematic_id).serialise().get());
+    {
+        SmsgTriggerCinematic managedPacket(gameobject_properties->camera.cinematic_id);
+        player->getSession()->sendManagedPacket(managedPacket);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2112,7 +2116,8 @@ void GameObject_FishingNode::onUse(Player* player)
         default:
         {
             setLootState(GO_JUST_DEACTIVATED);
-            player->sendPacket(SmsgFishNotHooked().serialise().get());
+            SmsgFishNotHooked managedPacket;
+            player->getSession()->sendManagedPacket(managedPacket);
             break;
         }
     }
@@ -2160,7 +2165,8 @@ void GameObject_FishingNode::_internalUpdateOnState(unsigned long /*timeDiff*/)
             if (caster)
             {
                 caster->removeGameObject(this, false);
-                caster->sendPacket(SmsgFishEscaped().serialise().get());
+                SmsgFishEscaped managedPacket;
+                caster->getSession()->sendManagedPacket(managedPacket);
 
                 // Fishing is channeled spell
                 auto channelledSpell = caster->getCurrentSpell(CURRENT_CHANNELED_SPELL);
@@ -2506,7 +2512,8 @@ void GameObject_BarberChair::onUse(Player* player)
     player->updateSpeed();
 
     //send barber shop menu to player
-    player->sendPacket(SmsgEnableBarberShop().serialise().get());
+    SmsgEnableBarberShop managedPacket;
+    player->getSession()->sendManagedPacket(managedPacket);
 
     player->setStandState(STANDSTATE_SIT_HIGH_CHAIR);
 #endif

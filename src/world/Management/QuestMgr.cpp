@@ -1046,7 +1046,8 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
         }
     }
 
-    plr->sendPacket(SmsgQuestgiverQuestComplete(qst->id, xp, GenerateRewardMoney(plr, qst), qst->bonushonor * 10, rewardtalents, qst->bonusarenapoints).serialise().get());
+    SmsgQuestgiverQuestComplete managedPacket(qst->id, xp, GenerateRewardMoney(plr, qst), qst->bonushonor * 10, rewardtalents, qst->bonusarenapoints);
+    plr->getSession()->sendManagedPacket(managedPacket);
 }
 
 void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32_t language)
@@ -1184,7 +1185,8 @@ void QuestMgr::BuildQuestUpdateComplete(WorldPacket* data, QuestProperties const
 
 void QuestMgr::SendPushToPartyResponse(Player* plr, Player* pTarget, uint8_t response)
 {
-    plr->getSession()->SendPacket(MsgQuestPushResult(pTarget->getGuid(), 0, response).serialise().get());
+    MsgQuestPushResult managedPacket(pTarget->getGuid(), 0, response);
+    plr->getSession()->sendManagedPacket(managedPacket);
 }
 
 bool QuestMgr::OnGameObjectActivate(Player* plr, GameObject* go)
@@ -2148,7 +2150,8 @@ void QuestMgr::SendQuestInvalid(INVALID_REASON reason, Player* plyr)
     if (!plyr)
         return;
 
-    plyr->sendPacket(SmsgQuestgiverQuestInvalid(reason).serialise().get());
+    SmsgQuestgiverQuestInvalid managedPacket(reason);
+    plyr->getSession()->sendManagedPacket(managedPacket);
 
     sLogger.debug("WORLD:Sent SMSG_QUESTGIVER_QUEST_INVALID");
 }
@@ -2158,7 +2161,8 @@ void QuestMgr::SendQuestFailed(FAILED_REASON failed, QuestProperties const* qst,
     if (!plyr)
         return;
 
-    plyr->sendPacket(SmsgQuestgiverQuestFailed(qst->id, failed).serialise().get());
+    SmsgQuestgiverQuestFailed managedPacket(qst->id, failed);
+    plyr->getSession()->sendManagedPacket(managedPacket);
 
     sLogger.debug("WORLD:Sent SMSG_QUESTGIVER_QUEST_FAILED");
 }
@@ -2168,7 +2172,8 @@ void QuestMgr::SendQuestUpdateFailedTimer(QuestProperties const* pQuest, Player*
     if (!plyr)
         return;
 
-    plyr->sendPacket(SmsgQuestupdateFailedTimer(pQuest->id).serialise().get());
+    SmsgQuestupdateFailedTimer managedPacket(pQuest->id);
+    plyr->getSession()->sendManagedPacket(managedPacket);
 
     sLogger.debug("WORLD:Sent SMSG_QUESTUPDATE_FAILEDTIMER");
 }
@@ -2178,7 +2183,8 @@ void QuestMgr::SendQuestUpdateFailed(QuestProperties const* pQuest, Player* plyr
     if (!plyr)
         return;
 
-    plyr->sendPacket(SmsgQuestupdateFailed(pQuest->id).serialise().get());
+    SmsgQuestupdateFailed managedPacket(pQuest->id);
+    plyr->getSession()->sendManagedPacket(managedPacket);
 
     sLogger.debug("WORLD:Sent SMSG_QUESTUPDATE_FAILED");
 }
@@ -2188,7 +2194,9 @@ void QuestMgr::SendQuestLogFull(Player* plyr)
     if (!plyr)
         return;
 
-    plyr->sendPacket(SmsgQuestLogFull().serialise().get());
+    SmsgQuestLogFull managedPacket;
+    plyr->getSession()->sendManagedPacket(managedPacket);
+
     sLogger.debug("WORLD:Sent QUEST_LOG_FULL_MESSAGE");
 }
 

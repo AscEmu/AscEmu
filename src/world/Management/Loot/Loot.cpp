@@ -257,9 +257,14 @@ void Loot::itemRemoved(uint8_t lootIndex)
     for (auto playerGuid : PlayersLooting)
     {
         if (const auto* player = sObjectMgr.getPlayer(playerGuid))
-            player->getSession()->SendPacket(SmsgLootRemoved(lootIndex).serialise().get());
+        {
+            SmsgLootRemoved managedPacket(lootIndex);
+            player->getSession()->sendManagedPacket(managedPacket);
+        }
         else
+        {
             removeLooter(playerGuid);
+        }
     }
 }
 

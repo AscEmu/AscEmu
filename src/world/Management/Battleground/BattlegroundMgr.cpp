@@ -1205,7 +1205,8 @@ void BattlegroundManager::deleteBattleground(Battleground* battleground)
 
 void BattlegroundManager::sendBattlefieldStatus(Player* player, BattlegroundDef::Status status, uint32_t type, uint32_t instanceId, uint32_t time, uint32_t mapId, uint8_t ratedMatch)
 {
-    player->sendPacket(SmsgBattlefieldStatus(player->GetNewGUID(), status, type, instanceId, time, mapId, ratedMatch, Battleground::isTypeArena(type)).serialise().get());
+    SmsgBattlefieldStatus managedPacket(player->GetNewGUID(), status, type, instanceId, time, mapId, ratedMatch, Battleground::isTypeArena(type));
+    player->getSession()->sendManagedPacket(managedPacket);
 }
 
 void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battlegroundType, uint8_t asGroup, uint8_t ratedMatch)

@@ -728,7 +728,8 @@ void Group::MovePlayer(CachedCharacterInfo* info, uint8_t subgroup)
 
 void Group::SendNullUpdate(Player* pPlayer)
 {
-    pPlayer->sendPacket(SmsgGroupList().serialise().get());
+    SmsgGroupList managedPacket;
+    pPlayer->getSession()->sendManagedPacket(managedPacket);
 }
 
 void Group::LoadFromDB(Field* fields)
@@ -1237,12 +1238,17 @@ void Group::resetInstances(uint8_t method, bool isRaid, Player* SendMsgTo)
                 isEmpty = !map->getPlayerCount();
         }
 
-        if (SendMsgTo)
+        if (SendMsgTo && SendMsgTo->getSession())
         {
             if (!isEmpty)
+            {
                 SendMsgTo->sendResetInstanceFailed(0, instanceSave->getMapId());
+            }
             else
-                SendMsgTo->sendPacket(SmsgInstanceReset(instanceSave->getMapId()).serialise().get());
+            {
+                SmsgInstanceReset managedPacket(instanceSave->getMapId());
+                SendMsgTo->getSession()->sendManagedPacket(managedPacket);
+            }
         }
 
         if (isEmpty || method == INSTANCE_RESET_GROUP_DISBAND || method == INSTANCE_RESET_CHANGE_DIFFICULTY)

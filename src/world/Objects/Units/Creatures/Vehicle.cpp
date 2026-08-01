@@ -563,6 +563,9 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
     WDB::Structures::VehicleSeatEntry const* veSeat = Seat->second._seatInfo;
     VehicleSeatAddon const* veSeatAddon = Seat->second._seatAddon;
 
+    if (veSeat->hasFlag(WDB::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_PASSENGER_NOT_SELECTABLE))
+        passenger->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
+
     Player* player = passenger->ToPlayer();
     if (player)
     {
@@ -574,12 +577,10 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
             // Unsummon Pets
             player->unSummonPetTemporarily();
         }
+
+        AscEmu::Packets::SmsgControlVehicle managedPacket;
+        player->getSession()->sendManagedPacket(managedPacket);
     }
-
-    if (veSeat->hasFlag(WDB::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_PASSENGER_NOT_SELECTABLE))
-        passenger->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-
-    passenger->sendPacket(AscEmu::Packets::SmsgControlVehicle().serialise().get());
 
     float o = veSeatAddon ? veSeatAddon->seatOrientationOffset : 0.f;
     float x = veSeat->attachmentOffsetX;
@@ -603,9 +604,14 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
     if (getBase()->isCreature() && passenger->isPlayer() &&
         veSeat->hasFlag(WDB::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_CAN_CONTROL))
     {
-        passenger->sendPacket(AscEmu::Packets::SmsgControlVehicle().serialise().get());
-        static_cast<Player*>(passenger)->setFarsightGuid(getBase()->getGuid());
-        static_cast<Player*>(passenger)->sendClientControlPacket(getBase(), 1);
+        if (player)
+        {
+            AscEmu::Packets::SmsgControlVehicle managedPacket;
+            player->getSession()->sendManagedPacket(managedPacket);
+
+            player->setFarsightGuid(getBase()->getGuid());
+            player->sendClientControlPacket(getBase(), 1);
+        }
 
         passenger->setCharmGuid(getBase()->getGuid());
         getBase()->setCharmedByGuid(passenger->getGuid());

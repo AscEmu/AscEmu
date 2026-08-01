@@ -413,7 +413,9 @@ void WorldSession::LogoutPlayer(bool Save)
         delete _player;
         _player = nullptr;
 
-        SendPacket(SmsgLogoutComplete().serialise().get());
+        SmsgLogoutComplete managedPacket;
+        sendManagedPacket(managedPacket);
+
         sLogger.debug("SESSION: Sent SMSG_LOGOUT_COMPLETE Message");
     }
     _loggingOut = false;
@@ -501,7 +503,8 @@ void WorldSession::SendNotification(const char* message, ...)
     vsnprintf(msg1, 1024, message, ap);
     va_end(ap);
 
-    SendPacket(SmsgNotification(msg1).serialise().get());
+    SmsgNotification managedPacket(msg1);
+    sendManagedPacket(managedPacket);
 }
 
 void SessionLog::writefromsession(WorldSession* session, std::string_view message)

@@ -219,7 +219,8 @@ void WorldSession::sendLfgRoleChosen([[maybe_unused]] uint64_t guid, [[maybe_unu
 #if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_ROLE_CHOSEN {} guid: {} roles: {}", _player->getGuid(), guid, roles);
 
-    SendPacket(SmsgLfgRoleChosen(guid, roles > 0 ? 1 : 0, roles).serialise().get());
+    SmsgLfgRoleChosen managedPacket(guid, roles > 0 ? 1 : 0, roles);
+    sendManagedPacket(managedPacket);
 #endif
 }
 

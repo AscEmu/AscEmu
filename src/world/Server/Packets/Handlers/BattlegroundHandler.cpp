@@ -316,7 +316,8 @@ void WorldSession::handleRequestRatedBgInfoOpcode([[maybe_unused]] WorldPacket& 
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_INFO received with unk_type = {}", srlPacket.type);
 
-    SendPacket(SmsgRatedBgInfo(0).serialise().get());
+    SmsgRatedBgInfo managedPacket(0);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -325,7 +326,8 @@ void WorldSession::handleRequestRatedBgStatsOpcode(WorldPacket& /*recvPacket*/)
 #if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_STATS received");
 
-    SendPacket(SmsgRatedBgStats(3).serialise().get());
+    SmsgRatedBgStats managedPacket(3);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -351,7 +353,8 @@ void WorldSession::handleRequestPvpOptionsOpcode(WorldPacket& /*recvPacket*/)
 #if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_STATS received");
 
-    SendPacket(SmsgPvpOptionsEnabled(true, true, true).serialise().get());
+    SmsgPvpOptionsEnabled managedPacket(true, true, true);
+    sendManagedPacket(managedPacket);
 #endif
 }
 

@@ -331,7 +331,8 @@ void AuctionHouse::sendOwnerListPacket(Player* player, WorldPacket* /*packet*/)
         }
     }
 
-    player->sendPacket(SmsgAuctionOwnerListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size())).serialise().get());
+    SmsgAuctionOwnerListResult managedPacket(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size()));
+    player->getSession()->sendManagedPacket(managedPacket);
 }
 
 void AuctionHouse::updateOwner(uint32_t oldGuid, uint32_t newGuid)
@@ -519,5 +520,6 @@ void AuctionHouse::sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionL
         ++totalcount;
     }
 
-    player->sendPacket(SmsgAuctionListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, totalcount, 300).serialise().get());
+    SmsgAuctionListResult managedPacket(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, totalcount, 300);
+    player->getSession()->sendManagedPacket(managedPacket);
 }

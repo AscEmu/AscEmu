@@ -1124,7 +1124,8 @@ void AchievementMgr::gmResetCriteria(uint32_t _criteriaId, bool _finishAll/* = f
     {
         for (const auto& criteriaProgress : m_criteriaProgress)
         {
-            getPlayer()->sendPacket(SmsgCriteriaDeleted(criteriaProgress.first).serialise().get());
+            SmsgCriteriaDeleted managedPacket(criteriaProgress.first);
+            getPlayer()->getSession()->sendManagedPacket(managedPacket);
         }
 
         m_criteriaProgress.clear();
@@ -1132,7 +1133,8 @@ void AchievementMgr::gmResetCriteria(uint32_t _criteriaId, bool _finishAll/* = f
     }
     else
     {
-        getPlayer()->sendPacket(SmsgCriteriaDeleted(_criteriaId).serialise().get());
+        SmsgCriteriaDeleted managedPacket(_criteriaId);
+        getPlayer()->getSession()->sendManagedPacket(managedPacket);
 
         m_criteriaProgress.erase(_criteriaId);
         CharacterDatabase.execute("DELETE FROM character_achievement_progress WHERE guid = %u AND criteria = %u", m_player->getGuidLow(), static_cast<uint32_t>(_criteriaId));
@@ -2196,7 +2198,9 @@ void AchievementMgr::sendCriteriaUpdate(const CriteriaProgress* _criteriaProgres
     if (_criteriaProgress == nullptr || isCharacterLoading)
         return;
 
-    getPlayer()->sendPacket(SmsgCriteriaUpdate(_criteriaProgress->id, _criteriaProgress->counter, getPlayer()->GetNewGUID(), secsToTimeBitFields(_criteriaProgress->date)).serialise().get());
+    SmsgCriteriaUpdate managedPacket(_criteriaProgress->id, _criteriaProgress->counter, getPlayer()->GetNewGUID(),
+        secsToTimeBitFields(_criteriaProgress->date));
+    getPlayer()->getSession()->sendManagedPacket(managedPacket);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -1583,7 +1583,8 @@ void Player::handleKnockback(Object* object, float horizontal, float vertical)
     float sin = sinf(angle);
     float cos = cosf(angle);
 
-    getSession()->SendPacket(SmsgMoveKnockBack(GetNewGUID(), Util::getMSTime(), cos, sin, horizontal, -vertical).serialise().get());
+    SmsgMoveKnockBack managedPacket(GetNewGUID(), Util::getMSTime(), cos, sin, horizontal, -vertical);
+    getSession()->sendManagedPacket(managedPacket);
 
     m_blinked = true;
     speedCheatDelay(10000);
@@ -1724,8 +1725,11 @@ void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
         m_mapId = mgr->getBaseMap()->getMapId();
         m_instanceId = mgr->getInstanceId();
 
-        getSession()->SendPacket(SmsgTransferPending(mgr->getBaseMap()->getMapId()).serialise().get());
-        getSession()->SendPacket(SmsgNewWorld(mgr->getBaseMap()->getMapId(), vec).serialise().get());
+        SmsgTransferPending managedTransferPacket(mgr->getBaseMap()->getMapId());
+        getSession()->sendManagedPacket(managedTransferPacket);
+
+        SmsgNewWorld managedPacket(mgr->getBaseMap()->getMapId(), vec);
+        getSession()->sendManagedPacket(managedPacket);
 
         setTransferStatus(TRANSFER_PENDING);
         m_sentTeleportPosition = vec;
@@ -1847,12 +1851,11 @@ void Player::setPhase(uint8_t command, uint32_t newPhase)
 
     if (getSession())
     {
-#if VERSION_STRING == WotLK
-        sendPacket(SmsgPhaseShiftChange(newPhase, getGuid()).serialise().get());
-#elif VERSION_STRING > WotLK
+#if VERSION_STRING >= WotLK
 
         uint32_t phaseFlags = 0;
 
+#if VERSION_STRING > WotLK
         for (uint32_t i = 0; i < sPhaseStore.getNumRows(); ++i)
         {
             if (WDB::Structures::PhaseEntry const* phase = sPhaseStore.lookupEntry(i))
@@ -1864,8 +1867,11 @@ void Player::setPhase(uint8_t command, uint32_t newPhase)
                 }
             }
         }
+#endif
 
-        sendPacket(SmsgPhaseShiftChange(newPhase, getGuid(), phaseFlags, GetMapId()).serialise().get());
+        SmsgPhaseShiftChange managedPacket(newPhase, getGuid(), phaseFlags, GetMapId());
+        getSession()->sendManagedPacket(managedPacket);
+
 #endif
     }
 
@@ -2171,7 +2177,8 @@ void Player::sendSummonRequest(uint32_t requesterId, uint32_t zoneId, uint32_t m
     m_summonData.summonerId = requesterId;
     m_summonData.mapId = mapId;
 
-    m_session->SendPacket(SmsgSummonRequest(requesterId, zoneId, 120000).serialise().get());
+    SmsgSummonRequest managedPacket(requesterId, zoneId, 120000);
+    getSession()->sendManagedPacket(managedPacket);
 }
 
 void Player::setAFKReason(std::string reason) { afkReason = reason; }
@@ -2933,7 +2940,10 @@ void Player::removePendingPlayer()
     if (m_session)
     {
         uint8_t respons = E_CHAR_LOGIN_NO_CHARACTER;
-        sendPacket(SmsgCharacterLoginFailed(respons).serialise().get());
+
+        SmsgCharacterLoginFailed managedPacket(respons);
+        m_session->sendManagedPacket(managedPacket);
+
         m_session->m_loggingInPlayer = nullptr;
     }
 
@@ -3902,7 +3912,8 @@ void Player::sendAvailSpells(WDB::Structures::SpellShapeshiftFormEntry const* sh
         actions[8] = 0;
         actions[9] = 0;
 
-        getSession()->SendPacket(SmsgPetSpells(getGuid(), 0, 0, 0, 0, 0, std::move(actions), SmsgPetSpellsVector()).serialise().get());
+        SmsgPetSpells managedPacket(getGuid(), 0, 0, 0, 0, 0, std::move(actions), SmsgPetSpellsVector());
+        getSession()->sendManagedPacket(managedPacket);
     }
     else
     {
@@ -4227,7 +4238,8 @@ void Player::clearCooldownForSpell(uint32_t spellId)
         return;
 
     // Send cooldown clear packet
-    getSession()->SendPacket(SmsgClearCooldown(spellId, getGuid()).serialise().get());
+    SmsgClearCooldown managedPacket(spellId, getGuid());
+    getSession()->sendManagedPacket(managedPacket);
 
     for (uint8_t i = 0; i < NUM_COOLDOWN_TYPES; ++i)
     {
@@ -4267,7 +4279,8 @@ void Player::resetAllCooldowns()
         for (auto itr = m_cooldownMap[i].begin(); itr != m_cooldownMap[i].end();)
         {
             auto spellId = (*itr).second.SpellId;
-            getSession()->SendPacket(SmsgClearCooldown(spellId, getGuid()).serialise().get());
+            SmsgClearCooldown managedPacket(spellId, getGuid());
+            getSession()->sendManagedPacket(managedPacket);
             itr = m_cooldownMap[i].erase(itr);
         }
     }
@@ -5327,9 +5340,15 @@ void Player::_addSpell(uint32_t spellId, uint16_t fromSkill/* = 0*/, bool learni
         {
             // If previous rank was found overwrite it in client with smsg_superceded packet
             if (supercededSpellId > 0)
-                getSession()->SendPacket(SmsgSupercededSpell(supercededSpellId, spellInfo->getId()).serialise().get());
+            {
+                SmsgSupercededSpell managedPacket(supercededSpellId, spellInfo->getId());
+                getSession()->sendManagedPacket(managedPacket);
+            }
             else
-                getSession()->SendPacket(SmsgLearnedSpell(spellInfo->getId()).serialise().get());
+            {
+                SmsgLearnedSpell managedPacket(spellInfo->getId());
+                getSession()->sendManagedPacket(managedPacket);
+            }
         }
 
         // Cast talents and auto castable spells with learn spell effect
@@ -5456,7 +5475,10 @@ bool Player::_removeSpell(uint32_t spellId, bool moveToDeleted, bool silently/* 
             }
 
             if (IsInWorld() && !silently && activatedPreviousRank)
-                getSession()->SendPacket(SmsgSupercededSpell(spellId, previousSpell->getId()).serialise().get());
+            {
+                SmsgSupercededSpell managedPacket(spellId, previousSpell->getId());
+                getSession()->sendManagedPacket(managedPacket);
+            }
         }
     }
 
@@ -5494,7 +5516,10 @@ bool Player::_removeSpell(uint32_t spellId, bool moveToDeleted, bool silently/* 
     }
 
     if (IsInWorld() && !silently && !activatedPreviousRank)
-        getSession()->SendPacket(SmsgRemovedSpell(spellId).serialise().get());
+    {
+        SmsgRemovedSpell managedPacket(spellId);
+        getSession()->sendManagedPacket(managedPacket);
+    }
 
     if (spellInfo->hasSpellRanks())
     {
@@ -6348,7 +6373,8 @@ void Player::sendAuctionCommandResult(Auction* auction, uint32_t action, uint32_
         highestBidderGuid = auction->highestBidderGuid;
     }
 
-    sendPacket(SmsgAuctionCommandResult(auctionId, action, errorCode, outBid, highestBid, bidError, highestBidderGuid).serialise().get());
+    SmsgAuctionCommandResult managedPacket(auctionId, action, errorCode, outBid, highestBid, bidError, highestBidderGuid);
+    getSession()->sendManagedPacket(managedPacket);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -6424,7 +6450,8 @@ void Player::sendAreaTriggerMessage(const char* message, ...)
     vsnprintf(msg, 500, message, list);
     va_end(list);
 
-    m_session->SendPacket(SmsgAreaTriggerMessage(0, msg, 0).serialise().get());
+    SmsgAreaTriggerMessage managedPacket(0, msg, 0);
+    getSession()->sendManagedPacket(managedPacket);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -7491,8 +7518,11 @@ void Player::repopRequest()
             if (const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow()))
                 corpse->resetDeathClock();
 
-        m_session->SendPacket(SmsgDeathReleaseLoc(m_mapId, m_position).serialise().get());
-        m_session->SendPacket(SmsgCorpseReclaimDelay(CORPSE_RECLAIM_TIME_MS).serialise().get());
+        SmsgDeathReleaseLoc managedPacket(m_mapId, m_position);
+        getSession()->sendManagedPacket(managedPacket);
+
+        SmsgCorpseReclaimDelay managedReclaimPacket(CORPSE_RECLAIM_TIME_MS);
+        getSession()->sendManagedPacket(managedReclaimPacket);
     }
 }
 
@@ -7588,7 +7618,8 @@ void Player::resurrect()
 void Player::buildRepop()
 {
 #if VERSION_STRING > TBC
-    getSession()->SendPacket(SmsgPreResurrect(getGuid()).serialise().get());
+    SmsgPreResurrect managedPacket(getGuid());
+    getSession()->sendManagedPacket(managedPacket);
 #endif
 
     uint32_t AuraIds[] = { 20584, 9036, 8326, 0 };
@@ -7623,7 +7654,8 @@ void Player::buildRepop()
 
 void Player::calcDeathDurabilityLoss(double percent)
 {
-    sendPacket(SmsgDurabilityDamageDeath(static_cast<uint32_t>(percent)).serialise().get());
+    SmsgDurabilityDamageDeath managedPacket(static_cast<uint32_t>(percent));
+    getSession()->sendManagedPacket(managedPacket);
 
     for (uint8_t i = 0; i < EQUIPMENT_SLOT_END; ++i)
     {
@@ -8417,7 +8449,8 @@ void Player::setKnownPvPTitle([[maybe_unused]] RankTitles title, [[maybe_unused]
     else
         setKnownTitles(index, current & ~1 << (title % 32));
 
-    m_session->SendPacket(SmsgTitleEarned(title, set ? 1 : 0).serialise().get());
+    SmsgTitleEarned managedPacket(title, set ? 1 : 0);
+    getSession()->sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -9004,36 +9037,42 @@ void Player::addToFriendList(std::string name, std::string note)
         // we can not add us ;)
         if (targetPlayer->getGuidLow() == getGuidLow())
         {
-            m_session->SendPacket(SmsgFriendStatus(FRIEND_SELF, getGuid()).serialise().get());
+            SmsgFriendStatus managedPacket(FRIEND_SELF, getGuid());
+            getSession()->sendManagedPacket(managedPacket);
             return;
         }
 
         if (targetPlayer->isGMFlagSet())
         {
-            m_session->SendPacket(SmsgFriendStatus(FRIEND_NOT_FOUND).serialise().get());
+            SmsgFriendStatus managedPacket(FRIEND_NOT_FOUND);
+            getSession()->sendManagedPacket(managedPacket);
             return;
         }
 
         if (isFriended(targetPlayer->getGuidLow()))
         {
-            m_session->SendPacket(SmsgFriendStatus(FRIEND_ALREADY, targetPlayer->getGuidLow()).serialise().get());
+            SmsgFriendStatus managedPacket(FRIEND_ALREADY, targetPlayer->getGuidLow());
+            getSession()->sendManagedPacket(managedPacket);
             return;
         }
 
         if (targetPlayer->getPlayerInfo()->team != getInitialTeam() && !m_session->hasPermissions() && !worldConfig.player.isInterfactionFriendsEnabled)
         {
-            m_session->SendPacket(SmsgFriendStatus(FRIEND_ENEMY, targetPlayer->getGuidLow()).serialise().get());
+            SmsgFriendStatus managedPacket(FRIEND_ENEMY, targetPlayer->getGuidLow());
+            getSession()->sendManagedPacket(managedPacket);
             return;
         }
 
         if (targetPlayer->getSession())
         {
-            m_session->SendPacket(SmsgFriendStatus(FRIEND_ADDED_ONLINE, targetPlayer->getGuidLow(), note, 1,
-                targetPlayer->getZoneId(), targetPlayer->getLevel(), targetPlayer->getClass()).serialise().get());
+            SmsgFriendStatus managedPacket(FRIEND_ADDED_ONLINE, targetPlayer->getGuidLow(), note, 1,
+                targetPlayer->getZoneId(), targetPlayer->getLevel(), targetPlayer->getClass());
+            getSession()->sendManagedPacket(managedPacket);
         }
         else
         {
-            m_session->SendPacket(SmsgFriendStatus(FRIEND_ADDED_OFFLINE, targetPlayer->getGuidLow()).serialise().get());
+            SmsgFriendStatus managedPacket(FRIEND_ADDED_OFFLINE, targetPlayer->getGuidLow());
+            getSession()->sendManagedPacket(managedPacket);
         }
 
         // todo: missing FRIEND_LIST_FULL when friend list is full
@@ -9050,7 +9089,8 @@ void Player::addToFriendList(std::string name, std::string note)
     }
     else
     {
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_NOT_FOUND).serialise().get());
+        SmsgFriendStatus managedPacket(FRIEND_NOT_FOUND);
+        getSession()->sendManagedPacket(managedPacket);
     }
 }
 
@@ -9058,7 +9098,8 @@ void Player::removeFromFriendList(uint32_t guid)
 {
     if (isFriended(guid))
     {
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_REMOVED, guid).serialise().get());
+        SmsgFriendStatus managedPacket(FRIEND_REMOVED, guid);
+        getSession()->sendManagedPacket(managedPacket);
 
         CharacterDatabase.execute("DELETE FROM social_friends WHERE character_guid = %u AND friend_guid = %u", getGuidLow(), guid);
 
@@ -9070,7 +9111,8 @@ void Player::removeFromFriendList(uint32_t guid)
     }
     else
     {
-        m_session->SendPacket(SmsgFriendStatus(FRIEND_NOT_FOUND).serialise().get());
+        SmsgFriendStatus managedPacket(FRIEND_NOT_FOUND);
+        getSession()->sendManagedPacket(managedPacket);
     }
 }
 
@@ -9108,9 +9150,15 @@ void Player::sendFriendStatus(bool comesOnline)
                 if (targetPlayer->getSession())
                 {
                     if (comesOnline)
-                        targetPlayer->sendPacket(SmsgFriendStatus(FRIEND_ONLINE, getGuid(), "", 1, getAreaId(), getLevel(), getClass()).serialise().get());
+                    {
+                        SmsgFriendStatus managedPacket(FRIEND_ONLINE, getGuid(), "", 1, getAreaId(), getLevel(), getClass());
+                        targetPlayer->getSession()->sendManagedPacket(managedPacket);
+                    }
                     else
-                        targetPlayer->sendPacket(SmsgFriendStatus(FRIEND_OFFLINE, getGuid()).serialise().get());
+                    {
+                        SmsgFriendStatus managedPacket(FRIEND_OFFLINE, getGuid());
+                        targetPlayer->getSession()->sendManagedPacket(managedPacket);
+                    }
                 }
             }
         }
@@ -9328,7 +9376,8 @@ bool Player::logOntoTransport()
             if (GetMapId() != transporter->GetMapId())
             {
                 SetMapId(transporter->GetMapId());
-                sendPacket(AscEmu::Packets::SmsgNewWorld(transporter->GetMapId(), positionOnTransport).serialise().get());
+                SmsgNewWorld managedPacket(transporter->GetMapId(), positionOnTransport);
+                getSession()->sendManagedPacket(managedPacket);
 
                 success = false;
             }
@@ -9562,17 +9611,29 @@ void Player::sendSpellCooldownEventPacket(uint32_t spellId)
 void Player::sendSpellModifierPacket(uint8_t spellGroup, uint8_t spellType, int32_t modifier, bool isPct)
 {
     if (isPct)
-        m_session->SendPacket(SmsgSetPctSpellModifier(spellGroup, spellType, modifier).serialise().get());
+    {
+        SmsgSetPctSpellModifier managedPacket(spellGroup, spellType, modifier);
+        getSession()->sendManagedPacket(managedPacket);
+    }
     else
-        m_session->SendPacket(SmsgSetFlatSpellModifier(spellGroup, spellType, modifier).serialise().get());
+    {
+        SmsgSetFlatSpellModifier managedPacket(spellGroup, spellType, modifier);
+        getSession()->sendManagedPacket(managedPacket);
+    }
 }
 #else
 void Player::sendSpellModifierPacket(uint8_t spellType, std::vector<std::pair<uint8_t, float>> modValues, bool isPct)
 {
     if (isPct)
-        m_session->SendPacket(SmsgSetPctSpellModifier(spellType, modValues).serialise().get());
+    {
+        SmsgSetPctSpellModifier managedPacket(spellType, modValues);
+        getSession()->sendManagedPacket(managedPacket);
+    }
     else
-        m_session->SendPacket(SmsgSetFlatSpellModifier(spellType, modValues).serialise().get());
+    {
+        SmsgSetFlatSpellModifier managedPacket(spellType, modValues);
+        getSession()->sendManagedPacket(managedPacket);
+    }
 }
 #endif
 
@@ -9608,10 +9669,12 @@ void Player::sendLevelupInfoPacket(uint32_t level, uint32_t hp, uint32_t mana, u
 
 void Player::sendItemPushResultPacket(bool created, bool recieved, bool sendtoset, uint8_t destbagslot, uint32_t destslot, uint32_t count, uint32_t entry, uint32_t suffix, uint32_t randomprop, uint32_t stack)
 {
+    SmsgItemPushResult managedPacket(getGuid(), recieved, created, destbagslot, destslot, entry, suffix, randomprop, count, stack);
+
     if (sendtoset && isInGroup())
-        getGroup()->SendPacketToAll(SmsgItemPushResult(getGuid(), recieved, created, destbagslot, destslot, entry, suffix, randomprop, count, stack).serialise().get());
+        PacketBroadcast::sendFromGroup(*getGroup(), managedPacket);
     else
-        m_session->SendPacket(SmsgItemPushResult(getGuid(), recieved, created, destbagslot, destslot, entry, suffix, randomprop, count, stack).serialise().get());
+        getSession()->sendManagedPacket(managedPacket);
 }
 
 void Player::sendClientControlPacket(Unit* target, uint8_t allowMove)
@@ -9772,12 +9835,14 @@ void Player::removeSanctuaryFlag()
 
 void Player::sendPvpCredit(uint32_t honor, uint64_t victimGuid, uint32_t victimRank)
 {
-    this->sendPacket(SmsgPvpCredit(honor, victimGuid, victimRank).serialise().get());
+    SmsgPvpCredit managedPacket(honor, victimGuid, victimRank);
+    getSession()->sendManagedPacket(managedPacket);
 }
 
 void Player::sendRaidGroupOnly(uint32_t timeInMs, uint32_t type)
 {
-    this->sendPacket(SmsgRaidGroupOnly(timeInMs, type).serialise().get());
+    SmsgRaidGroupOnly managedPacket(timeInMs, type);
+    getSession()->sendManagedPacket(managedPacket);
 }
 
 void Player::setVisibleItemFields(uint32_t slot, Item* item)
@@ -10103,7 +10168,8 @@ void Player::sendUpdateDataToSet(ByteBuffer* groupBuf, ByteBuffer* nonGroupBuf, 
 
 void Player::sendWorldStateUpdate(uint32_t worldState, uint32_t value)
 {
-    m_session->SendPacket(SmsgUpdateWorldState(worldState, value).serialise().get());
+    SmsgUpdateWorldState managedPacket(worldState, value);
+    getSession()->sendManagedPacket(managedPacket);
 }
 
 bool Player::canBuyAt(MySQLStructure::VendorRestrictions const* vendor)
@@ -10165,7 +10231,9 @@ void Player::sendCinematicCamera(uint32_t id)
 {
     m_WorldMap->changeObjectLocation(this);
     SetPosition(float(GetPositionX() + 0.01), float(GetPositionY() + 0.01), float(GetPositionZ() + 0.01), GetOrientation());
-    m_session->SendPacket(SmsgTriggerCinematic(id).serialise().get());
+
+    SmsgTriggerCinematic managedPacket(id);
+    getSession()->sendManagedPacket(managedPacket);
 }
 
 void Player::setMover(Unit* target)
@@ -10209,7 +10277,8 @@ void Player::resetTimeSync()
 
 void Player::sendTimeSync()
 {
-    getSession()->SendPacket(SmsgTimeSyncRequest(m_timeSyncCounter++).serialise().get());
+    SmsgTimeSyncRequest managedPacket(m_timeSyncCounter++);
+    getSession()->sendManagedPacket(managedPacket);
 
     // Schedule next sync in 10 sec
     m_timeSyncTimer = 10000;
@@ -10651,7 +10720,8 @@ void Player::sendTaxiNodeStatusMultiple()
         if (nearestNode == 0)
             continue;
 
-        getSession()->SendPacket(SmsgTaxinodeStatus(creature->getGuid(), m_taxi->isTaximaskNodeKnown(nearestNode)).serialise().get());
+        SmsgTaxinodeStatus managedPacket(creature->getGuid(), m_taxi->isTaximaskNodeKnown(nearestNode));
+        getSession()->sendManagedPacket(managedPacket);
     }
 }
 
@@ -11064,7 +11134,8 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
     // questitems use the blocked field for other purposes
     if (!questItem && item->is_blocked)
     {
-        sendPacket(SmsgLootReleaseResponse(getLootGuid(), 1).serialise().get());
+        SmsgLootReleaseResponse managedPacket(getLootGuid(), 1);
+        getSession()->sendManagedPacket(managedPacket);
         return nullptr;
     }
 
@@ -11078,9 +11149,14 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
         questItem->is_looted = true;
         //freeforall is 1 if everyone's supposed to get the quest item.
         if (item->is_ffa || _loot->getPlayerQuestItems().size() == 1)
-            getSession()->SendPacket(SmsgLootRemoved(slot).serialise().get());
+        {
+            SmsgLootRemoved managedPacket(slot);
+            getSession()->sendManagedPacket(managedPacket);
+        }
         else
+        {
             _loot->itemRemoved(questItem->index);
+        }
     }
     else
     {
@@ -11088,7 +11164,8 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
         {
             //freeforall case, notify only one player of the removal
             ffaItem->is_looted = true;
-            getSession()->SendPacket(SmsgLootRemoved(slot).serialise().get());
+            SmsgLootRemoved managedPacket(slot);
+            getSession()->sendManagedPacket(managedPacket);
         }
         else
         {
@@ -11502,7 +11579,10 @@ void Player::onTalkReputation(WDB::Structures::FactionEntry const* factionEntry)
         return;
 
     if (factionReputation->setVisible(true) && IsInWorld())
-        sendPacket(SmsgSetFactionVisible(factionEntry->RepListId).serialise().get());
+    {
+        SmsgSetFactionVisible managedPacket(factionEntry->RepListId);
+        getSession()->sendManagedPacket(managedPacket);
+    }
 }
 
 void Player::setFactionInactive(uint32_t faction, bool set)
@@ -11547,12 +11627,18 @@ void Player::onModStanding(WDB::Structures::FactionEntry const* factionEntry, Fa
         return;
 
     if (reputation->setVisible(true) && IsInWorld())
-        sendPacket(SmsgSetFactionVisible(factionEntry->RepListId).serialise().get());
+    {
+        SmsgSetFactionVisible managedPacket(factionEntry->RepListId);
+        getSession()->sendManagedPacket(managedPacket);
+    }
 
     reputation->setAtWar(getReputationRankFromStanding(reputation->standing) <= Standing::HOSTILE);
 
     if (reputation->isVisible() && IsInWorld())
-        sendPacket(SmsgSetFactionStanding(factionEntry->RepListId, reputation->calcStanding()).serialise().get());
+    {
+        SmsgSetFactionStanding managedPacket(factionEntry->RepListId, reputation->calcStanding());
+        getSession()->sendManagedPacket(managedPacket);
+    }
 }
 
 uint32_t Player::getExaltedCount() const
@@ -11717,7 +11803,8 @@ void Player::requestDuel(Player* target)
 
         addGameObject(goFlag);
 
-        target->getSession()->SendPacket(SmsgDuelRequested(goFlag->getGuid(), getGuid()).serialise().get());
+        SmsgDuelRequested managedPacket(goFlag->getGuid(), getGuid());
+        target->getSession()->sendManagedPacket(managedPacket);
     }
 }
 
@@ -11743,7 +11830,8 @@ void Player::testDuelBoundary()
             {
                 m_duelCountdownTimer = 10000;
 
-                sendPacket(SmsgDuelOutOfBounds(m_duelCountdownTimer).serialise().get());
+                SmsgDuelOutOfBounds managedPacket(m_duelCountdownTimer);
+                getSession()->sendManagedPacket(managedPacket);
                 m_duelStatus = DUEL_STATUS_OUTOFBOUNDS;
             }
         }
@@ -11751,7 +11839,8 @@ void Player::testDuelBoundary()
         {
             if (m_duelStatus == DUEL_STATUS_OUTOFBOUNDS)
             {
-                sendPacket(SmsgDuelInbounds().serialise().get());
+                SmsgDuelInbounds managedPacket;
+                getSession()->sendManagedPacket(managedPacket);
                 m_duelStatus = DUEL_STATUS_INBOUNDS;
             }
         }
@@ -12196,7 +12285,10 @@ bool Player::tryPutPetToSlot(uint8_t petId, uint8_t newSlot, bool sendErrors/* =
     if (petItr == m_cachedPets.cend())
     {
         if (sendErrors)
-            sendPacket(SmsgStableResult(PetStableResult::Error).serialise().get());
+        {
+            SmsgStableResult managedPacket(PetStableResult::Error);
+            getSession()->sendManagedPacket(managedPacket);
+        }
 
         return false;
     }
@@ -12205,7 +12297,10 @@ bool Player::tryPutPetToSlot(uint8_t petId, uint8_t newSlot, bool sendErrors/* =
     if (petItr->second->slot == newSlot)
     {
         if (sendErrors)
-            sendPacket(SmsgStableResult(PetStableResult::Error).serialise().get());
+        {
+            SmsgStableResult managedPacket(PetStableResult::Error);
+            getSession()->sendManagedPacket(managedPacket);
+        }
 
         return false;
     }
@@ -12234,7 +12329,10 @@ bool Player::tryPutPetToSlot(uint8_t petId, uint8_t newSlot, bool sendErrors/* =
             if (creatureProperties->isExotic() && !hasAuraWithAuraEffect(SPELL_AURA_ALLOW_TAME_PET_TYPE))
             {
                 if (sendErrors)
-                    sendPacket(SmsgStableResult(PetStableResult::ExoticNotAvailable).serialise().get());
+                {
+                    SmsgStableResult managedPacket(PetStableResult::ExoticNotAvailable);
+                    getSession()->sendManagedPacket(managedPacket);
+                }
 
                 return false;
             }
@@ -12249,7 +12347,10 @@ bool Player::tryPutPetToSlot(uint8_t petId, uint8_t newSlot, bool sendErrors/* =
             if (creatureProperties->isExotic() && !hasAuraWithAuraEffect(SPELL_AURA_ALLOW_TAME_PET_TYPE))
             {
                 if (sendErrors)
-                    sendPacket(SmsgStableResult(PetStableResult::ExoticNotAvailable).serialise().get());
+                {
+                    SmsgStableResult managedPacket(PetStableResult::ExoticNotAvailable);
+                    getSession()->sendManagedPacket(managedPacket);
+                }
 
                 return false;
             }
@@ -12263,7 +12364,10 @@ bool Player::tryPutPetToSlot(uint8_t petId, uint8_t newSlot, bool sendErrors/* =
         if (oldSlotPet->type != PET_TYPE_HUNTER)
         {
             if (sendErrors)
-                sendPacket(SmsgStableResult(PetStableResult::Error).serialise().get());
+            {
+                SmsgStableResult managedPacket(PetStableResult::Error);
+                getSession()->sendManagedPacket(managedPacket);
+            }
 
             return false;
         }
@@ -12904,7 +13008,10 @@ void Player::resetInstances(uint8_t method, bool isRaid)
 
         // since this is a solo instance there should not be any players inside
         if (method == INSTANCE_RESET_ALL || method == INSTANCE_RESET_CHANGE_DIFFICULTY)
-            sendPacket(SmsgInstanceReset(p->getMapId()).serialise().get());
+        {
+            SmsgInstanceReset managedPacket(p->getMapId());
+            getSession()->sendManagedPacket(managedPacket);
+        }
 
         p->deleteFromDB();
         m_boundInstances[diff].erase(itr++);
@@ -13543,9 +13650,9 @@ void Player::_eventAttack(bool offhand)
     {
         if (m_AttackMsgTimer != 1)
         {
-#if VERSION_STRING < Mop
-            sendPacket(SmsgAttackSwingNotInRange().serialise().get());
-#endif
+            SmsgAttackSwingNotInRange managedPacket;
+            getSession()->sendManagedPacket(managedPacket);
+
             m_AttackMsgTimer = 1;
         }
         setAttackTimer(offhand == true ? OFFHAND : MELEE, 300);
@@ -13555,9 +13662,9 @@ void Player::_eventAttack(bool offhand)
         // We still have to do this one.
         if (m_AttackMsgTimer != 2)
         {
-#if VERSION_STRING < Mop
-            sendPacket(SmsgAttackSwingBadFacing().serialise().get());
-#endif
+            SmsgAttackSwingBadFacing managedPacket;
+            getSession()->sendManagedPacket(managedPacket);
+
             m_AttackMsgTimer = 2;
         }
         setAttackTimer(offhand == true ? OFFHAND : MELEE, 300);
@@ -13638,9 +13745,9 @@ void Player::eventCharmAttack()
         {
             if (m_AttackMsgTimer == 0)
             {
-#if VERSION_STRING < Mop
-                sendPacket(SmsgAttackSwingBadFacing().serialise().get());
-#endif
+                SmsgAttackSwingBadFacing managedPacket;
+                getSession()->sendManagedPacket(managedPacket);
+
                 m_AttackMsgTimer = 2000; // 2 sec till next msg.
             }
 
@@ -15843,7 +15950,10 @@ void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending
 {
     // this func must only be called when switching between maps!
     if (sendpending && mapid != m_mapId && force_new_world)
-        m_session->SendPacket(SmsgTransferPending(mapid).serialise().get());
+    {
+        SmsgTransferPending managedPacket(mapid);
+        getSession()->sendManagedPacket(managedPacket);
+    }
 
     bool sendpacket = (mapid == m_mapId);
     // Dismount before teleport and before being removed from world,
@@ -15858,7 +15968,8 @@ void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending
         WorldMap* map = sMapMgr.createMap(mapid, this, instance_id);
         if (!map)
         {
-            m_session->SendPacket(SmsgTransferAborted(mapid, INSTANCE_ABORT_NOT_FOUND).serialise().get());
+            SmsgTransferAborted managedPacket(mapid, INSTANCE_ABORT_NOT_FOUND);
+            getSession()->sendManagedPacket(managedPacket);
             return;
         }
         else if (map->getBaseMap()->isInstanceMap())
@@ -15868,20 +15979,29 @@ void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending
                 switch (state)
                 {
                     case CANNOT_ENTER_DIFFICULTY_UNAVAILABLE:
-                        m_session->SendPacket(SmsgTransferAborted(mapid, INSTANCE_ABORT_HEROIC_MODE_NOT_AVAILABLE).serialise().get());
-                        break;
+                    {
+                        SmsgTransferAborted managedPacket(mapid, INSTANCE_ABORT_HEROIC_MODE_NOT_AVAILABLE);
+                        getSession()->sendManagedPacket(managedPacket);
+                    } break;
                     case CANNOT_ENTER_INSTANCE_BIND_MISMATCH:
+                    {
                         m_session->systemMessage("Another group is already inside this instance of the dungeon.");
-                        break;
+                    } break;
                     case CANNOT_ENTER_TOO_MANY_INSTANCES:
-                        m_session->SendPacket(SmsgTransferAborted(mapid, INSTANCE_ABORT_TOO_MANY).serialise().get());
-                        break;
+                    {
+                        SmsgTransferAborted managedPacket(mapid, INSTANCE_ABORT_TOO_MANY);
+                        getSession()->sendManagedPacket(managedPacket);
+                    } break;
                     case CANNOT_ENTER_MAX_PLAYERS:
-                        m_session->SendPacket(SmsgTransferAborted(mapid, INSTANCE_ABORT_FULL).serialise().get());
-                        break;
+                    {
+                        SmsgTransferAborted managedPacket(mapid, INSTANCE_ABORT_FULL);
+                        getSession()->sendManagedPacket(managedPacket);
+                    } break;
                     case CANNOT_ENTER_ENCOUNTER:
-                        m_session->SendPacket(SmsgTransferAborted(mapid, INSTANCE_ABORT_ENCOUNTER).serialise().get());
-                        break;
+                    {
+                        SmsgTransferAborted managedPacket(mapid, INSTANCE_ABORT_ENCOUNTER);
+                        getSession()->sendManagedPacket(managedPacket);
+                    } break;
                     default:
                         break;
                 }
@@ -15917,7 +16037,8 @@ void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending
         if (IsInWorld())
             removeFromWorld();
 
-        m_session->SendPacket(SmsgNewWorld(mapid, v).serialise().get());
+        SmsgNewWorld managedPacket(mapid, v);
+        getSession()->sendManagedPacket(managedPacket);
 
         SetMapId(mapid);
         SetInstanceID(map->getInstanceId());
@@ -16054,7 +16175,8 @@ void Player::sendMirrorTimer(MirrorTimerTypes mirrorType, uint32_t max, uint32_t
         return;
     }
 
-    getSession()->SendPacket(SmsgStartMirrorTimer(mirrorType, current, max, regen).serialise().get());
+    SmsgStartMirrorTimer managedPacket(mirrorType, current, max, regen);
+    getSession()->sendManagedPacket(managedPacket);
 }
 
 float Player::calcRating(PlayerCombatRating index)
@@ -16164,7 +16286,8 @@ void Player::completeLoading()
             if (const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow()))
                 corpse->resetDeathClock();
 
-            getSession()->SendPacket(SmsgCorpseReclaimDelay(CORPSE_RECLAIM_TIME_MS).serialise().get());
+            SmsgCorpseReclaimDelay managedPacket(CORPSE_RECLAIM_TIME_MS);
+            getSession()->sendManagedPacket(managedPacket);
         }
     }
 

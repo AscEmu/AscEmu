@@ -27,7 +27,8 @@
 void DeathKnight::SendRuneUpdate([[maybe_unused]] uint8_t slot)
 {
 #if VERSION_STRING > TBC
-    getSession()->SendPacket(AscEmu::Packets::SmsgConvertRune(slot, m_runes[slot].type).serialise().get());
+    AscEmu::Packets::SmsgConvertRune managedPacket(slot, m_runes[slot].type);
+    getSession()->sendManagedPacket(managedPacket);
 #endif
 }
 

@@ -59,7 +59,8 @@ inline uint32_t GetGuildBankTabPrice(uint8_t tabId)
 
 void Guild::sendGuildCommandResult(WorldSession* session, uint32_t guildCommand, std::string text, uint32_t error)
 {
-    session->SendPacket(SmsgGuildCommandResult(guildCommand, text, error).serialise().get());
+    SmsgGuildCommandResult managedPacket(guildCommand, text, error);
+    session->sendManagedPacket(managedPacket);
 }
 
 void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName)
@@ -69,37 +70,45 @@ void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName
 
     if (invitedPlayer == nullptr)
     {
-        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedName, GC_ERROR_PLAYER_NOT_FOUND_S).serialise().get());
+        SmsgGuildCommandResult managedPacket(GC_TYPE_INVITE, invitedName, GC_ERROR_PLAYER_NOT_FOUND_S);
+        session->sendManagedPacket(managedPacket);
         return;
     }
 
     if (guild == nullptr)
     {
-        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD).serialise().get());
+        SmsgGuildCommandResult managedPacket(GC_TYPE_CREATE, "", GC_ERROR_PLAYER_NOT_IN_GUILD);
+        session->sendManagedPacket(managedPacket);
         return;
     }
 
     if (invitedPlayer->getGuildId())
     {
-        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedPlayer->getName(), GC_ERROR_ALREADY_IN_GUILD_S).serialise().get());
+        SmsgGuildCommandResult managedPacket(GC_TYPE_INVITE, invitedPlayer->getName(), GC_ERROR_ALREADY_IN_GUILD_S);
+        session->sendManagedPacket(managedPacket);
         return;
     }
 
     if (invitedPlayer->getInvitedByGuildId())
     {
-        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedPlayer->getName(), GC_ERROR_ALREADY_INVITED_TO_GUILD).serialise().get());
+        SmsgGuildCommandResult managedPacket(GC_TYPE_INVITE, invitedPlayer->getName(), GC_ERROR_ALREADY_INVITED_TO_GUILD);
+        session->sendManagedPacket(managedPacket);
         return;
     }
 
     if (!session->GetPlayer()->getGuild()->_hasRankRight(session->GetPlayer()->getGuid(), GR_RIGHT_INVITE))
     {
-        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_PERMISSIONS).serialise().get());
+        SmsgGuildCommandResult managedPacket(GC_TYPE_INVITE, "", GC_ERROR_PERMISSIONS);
+        session->sendManagedPacket(managedPacket);
         return;
     }
 
-    if (invitedPlayer->getTeam() != session->GetPlayer()->getTeam() && !session->GetPlayer()->getSession()->hasPermissions() && !worldConfig.player.isInterfactionGuildEnabled)
+    if (invitedPlayer->getTeam() != session->GetPlayer()->getTeam()
+        && !session->GetPlayer()->getSession()->hasPermissions()
+        && !worldConfig.player.isInterfactionGuildEnabled)
     {
-        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_NOT_ALLIED).serialise().get());
+        SmsgGuildCommandResult managedPacket(GC_TYPE_INVITE, "", GC_ERROR_NOT_ALLIED);
+        session->sendManagedPacket(managedPacket);
         return;
     }
 
@@ -110,18 +119,15 @@ void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName
         return;
     }
 
-    session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, invitedName, GC_ERROR_SUCCESS).serialise().get());
+    SmsgGuildCommandResult managedPacket(GC_TYPE_INVITE, invitedName, GC_ERROR_SUCCESS);
+    session->sendManagedPacket(managedPacket);
 
     guild->logEvent(GE_LOG_INVITE_PLAYER, session->GetPlayer()->getGuidLow(), invitedPlayer->getGuidLow());
     invitedPlayer->setInvitedByGuildId(guild->getId());
 
-#if VERSION_STRING < Cata
-    invitedPlayer->getSession()->SendPacket(SmsgGuildInvite(session->GetPlayer()->getName(), guild->getName()).serialise().get());
-
-#else
-    invitedPlayer->getSession()->SendPacket(SmsgGuildInvite(session->GetPlayer()->getName(), guild->getName(), guild->getLevel(),
-        guild->getEmblemInfo(), guild->getId(), guild->getGUID()).serialise().get());
-#endif
+    SmsgGuildInvite invitePacket(session->GetPlayer()->getName(), guild->getName(), guild->getLevel(),
+        guild->getEmblemInfo(), guild->getId(), guild->getGUID());
+    invitedPlayer->getSession()->sendManagedPacket(invitePacket);
 }
 
 Guild::~Guild() = default;
@@ -495,7 +501,8 @@ void Guild::handleSetMOTD(WorldSession* session, std::string const& motd)
 
     if (!_hasRankRight(session->GetPlayer()->getGuid(), GR_RIGHT_SETMOTD))
     {
-        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_EDIT_MOTD, "", GC_ERROR_PERMISSIONS).serialise().get());
+        SmsgGuildCommandResult managedPacket(GC_TYPE_EDIT_MOTD, "", GC_ERROR_PERMISSIONS);
+        session->sendManagedPacket(managedPacket);
     }
     else
     {
@@ -522,11 +529,13 @@ void Guild::handleSetEmblem(WorldSession* session, const EmblemInfo& emblemInfo)
     Player* player = session->GetPlayer();
     if (!isLeader(player))
     {
-        session->SendPacket(MsgSaveGuildEmblem(GEM_ERROR_NOTGUILDMASTER).serialise().get());
+        MsgSaveGuildEmblem managedPacket(GEM_ERROR_NOTGUILDMASTER);
+        session->sendManagedPacket(managedPacket);
     }
     else if (!player->hasEnoughCoinage(uint64_t(EMBLEM_PRICE)))
     {
-        session->SendPacket(MsgSaveGuildEmblem(GEM_ERROR_NOTENOUGHMONEY).serialise().get());
+        MsgSaveGuildEmblem managedPacket(GEM_ERROR_NOTENOUGHMONEY);
+        session->sendManagedPacket(managedPacket);
     }
     else
     {
@@ -534,7 +543,8 @@ void Guild::handleSetEmblem(WorldSession* session, const EmblemInfo& emblemInfo)
         m_emblemInfo = emblemInfo;
         m_emblemInfo.saveEmblemInfoToDB(m_id);
 
-        session->SendPacket(MsgSaveGuildEmblem(GEM_ERROR_SUCCESS).serialise().get());
+        MsgSaveGuildEmblem managedPacket(GEM_ERROR_SUCCESS);
+        session->sendManagedPacket(managedPacket);
         handleQuery(session);
     }
 }
@@ -544,7 +554,8 @@ void Guild::handleSetNewGuildMaster(WorldSession* session, std::string const& na
     Player* player = session->GetPlayer();
     if (!isLeader(player))
     {
-        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_CHANGE_LEADER, "", GC_ERROR_PERMISSIONS).serialise().get());
+        SmsgGuildCommandResult managedPacket(GC_TYPE_CHANGE_LEADER, "", GC_ERROR_PERMISSIONS);
+        session->sendManagedPacket(managedPacket);
     }
     else if (GuildMember* oldGuildMaster = getMember(player->getGuid()))
     {
@@ -574,7 +585,8 @@ void Guild::handleSetMemberNote(WorldSession* session, std::string const& note, 
 {
     if (!_hasRankRight(session->GetPlayer()->getGuid(), isPublic ? GR_RIGHT_EPNOTE : GR_RIGHT_EOFFNOTE))
     {
-        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_PUBLIC_NOTE, "", GC_ERROR_PERMISSIONS).serialise().get());
+        SmsgGuildCommandResult managedPacket(GC_TYPE_PUBLIC_NOTE, "", GC_ERROR_PERMISSIONS);
+        session->sendManagedPacket(managedPacket);
     }
     else if (GuildMember* member = getMember(guid))
     {
@@ -591,7 +603,8 @@ void Guild::handleSetRankInfo(WorldSession* session, uint8_t rankId, std::string
 {
     if (!isLeader(session->GetPlayer()))
     {
-        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_CHANGE_RANK, "", GC_ERROR_PERMISSIONS).serialise().get());
+        SmsgGuildCommandResult managedPacket(GC_TYPE_CHANGE_RANK, "", GC_ERROR_PERMISSIONS);
+        session->sendManagedPacket(managedPacket);
     }
     else if (GuildRankInfo* rankInfo = getRankInfo(rankId))
     {
@@ -663,10 +676,16 @@ void Guild::handleLeaveMember(WorldSession* session)
     if (isLeader(player))
     {
         if (_guildMembersStore.size() > 1)
-            session->SendPacket(SmsgGuildCommandResult(GC_TYPE_QUIT, "", GC_ERROR_LEADER_LEAVE).serialise().get());
+        {
+            SmsgGuildCommandResult managedPacket(GC_TYPE_QUIT, "", GC_ERROR_LEADER_LEAVE);
+            session->sendManagedPacket(managedPacket);
+        }
 #if VERSION_STRING >= Cata
         else if (getLevel() >= worldConfig.guild.undeletableLevel)
-            session->SendPacket(SmsgGuildCommandResult(GC_TYPE_QUIT, "", GC_ERROR_UNDELETABLE_DUE_TO_LEVEL).serialise().get());
+        {
+            SmsgGuildCommandResult managedPacket(GC_TYPE_QUIT, "", GC_ERROR_UNDELETABLE_DUE_TO_LEVEL);
+            session->sendManagedPacket(managedPacket);
+        }
 #endif
         else
             disband();
@@ -678,7 +697,8 @@ void Guild::handleLeaveMember(WorldSession* session)
         logEvent(GE_LOG_LEAVE_GUILD, player->getGuidLow());
         broadcastEvent(GE_LEFT, player->getGuid(), { player->getName() });
 
-        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_QUIT, m_name, GC_ERROR_SUCCESS).serialise().get());
+        SmsgGuildCommandResult managedPacket(GC_TYPE_QUIT, m_name, GC_ERROR_SUCCESS);
+        session->sendManagedPacket(managedPacket);
     }
 }
 
@@ -688,7 +708,8 @@ void Guild::handleRemoveMember(WorldSession* session, uint64_t guid)
 
     if (!_hasRankRight(player->getGuid(), GR_RIGHT_REMOVE))
     {
-        session->SendPacket(SmsgGuildCommandResult(GC_TYPE_REMOVE, "", GC_ERROR_PERMISSIONS).serialise().get());
+        SmsgGuildCommandResult managedPacket(GC_TYPE_REMOVE, "", GC_ERROR_PERMISSIONS);
+        session->sendManagedPacket(managedPacket);
     }
     else if (GuildMember* member = getMember(guid))
     {
@@ -696,21 +717,25 @@ void Guild::handleRemoveMember(WorldSession* session, uint64_t guid)
 
         if (member->isRank(GR_GUILDMASTER))
         {
-            session->SendPacket(SmsgGuildCommandResult(GC_TYPE_REMOVE, "", GC_ERROR_LEADER_LEAVE).serialise().get());
+            SmsgGuildCommandResult managedPacket(GC_TYPE_REMOVE, "", GC_ERROR_LEADER_LEAVE);
+            session->sendManagedPacket(managedPacket);
         }
         else
         {
             GuildMember const* memberMe = getMember(player->getGuid());
             if (memberMe == nullptr || member->isRankNotLower(memberMe->getRankId()))
             {
-                session->SendPacket(SmsgGuildCommandResult(GC_TYPE_REMOVE, name, GC_ERROR_RANK_TOO_HIGH_S).serialise().get());
+                SmsgGuildCommandResult managedPacket(GC_TYPE_REMOVE, name, GC_ERROR_RANK_TOO_HIGH_S);
+                session->sendManagedPacket(managedPacket);
             }
             else
             {
                 deleteMember(guid, false, true);
                 logEvent(GE_LOG_UNINVITE_PLAYER, player->getGuidLow(), WoWGuid::getGuidLowPartFromUInt64(guid));
                 broadcastEvent(GE_REMOVED, 0, { name, player->getName() });
-                session->SendPacket(SmsgGuildCommandResult(GC_TYPE_REMOVE, name, GC_ERROR_SUCCESS).serialise().get());
+
+                SmsgGuildCommandResult managedPacket(GC_TYPE_REMOVE, name, GC_ERROR_SUCCESS);
+                session->sendManagedPacket(managedPacket);
             }
         }
     }
@@ -723,7 +748,8 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
 
     if (!_hasRankRight(player->getGuid(), demote ? GR_RIGHT_DEMOTE : GR_RIGHT_PROMOTE))
     {
-        session->SendPacket(SmsgGuildCommandResult(type, "", GC_ERROR_PERMISSIONS).serialise().get());
+        SmsgGuildCommandResult managedPacket(type, "", GC_ERROR_PERMISSIONS);
+        session->sendManagedPacket(managedPacket);
     }
     else if (GuildMember* member = getMember(guid))
     {
@@ -731,7 +757,8 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
 
         if (member->isSamePlayer(player->getGuid()))
         {
-            session->SendPacket(SmsgGuildCommandResult(type, "", GC_ERROR_NAME_INVALID).serialise().get());
+            SmsgGuildCommandResult managedPacket(type, "", GC_ERROR_NAME_INVALID);
+            session->sendManagedPacket(managedPacket);
             return;
         }
 
@@ -742,13 +769,15 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
             {
                 if (member->isRankNotLower(rankId))
                 {
-                    session->SendPacket(SmsgGuildCommandResult(type, name, GC_ERROR_RANK_TOO_HIGH_S).serialise().get());
+                    SmsgGuildCommandResult managedPacket(type, name, GC_ERROR_RANK_TOO_HIGH_S);
+                    session->sendManagedPacket(managedPacket);
                     return;
                 }
 
                 if (member->getRankId() >= _getLowestRankId())
                 {
-                    session->SendPacket(SmsgGuildCommandResult(type, name, GC_ERROR_RANK_TOO_LOW_S).serialise().get());
+                    SmsgGuildCommandResult managedPacket(type, name, GC_ERROR_RANK_TOO_LOW_S);
+                    session->sendManagedPacket(managedPacket);
                     return;
                 }
             }
@@ -756,7 +785,8 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
             {
                 if (member->isRankNotLower(rankId + 1U))
                 {
-                    session->SendPacket(SmsgGuildCommandResult(type, name, GC_ERROR_RANK_TOO_HIGH_S).serialise().get());
+                    SmsgGuildCommandResult managedPacket(type, name, GC_ERROR_RANK_TOO_HIGH_S);
+                    session->sendManagedPacket(managedPacket);
                     return;
                 }
             }
@@ -770,11 +800,7 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
     }
 }
 
-#if VERSION_STRING >= Cata
-void Guild::handleSetMemberRank(WorldSession* session, uint64_t targetGuid, uint64_t setterGuid, uint32_t rank)
-#else
-void Guild::handleSetMemberRank(WorldSession* session, uint64_t targetGuid, uint64_t /*setterGuid*/, uint32_t rank)
-#endif
+void Guild::handleSetMemberRank(WorldSession* session, [[maybe_unused]]uint64_t targetGuid, uint64_t setterGuid, uint32_t rank)
 {
     Player* player = session->GetPlayer();
     if (player == nullptr)
@@ -795,13 +821,15 @@ void Guild::handleSetMemberRank(WorldSession* session, uint64_t targetGuid, uint
 
     if (!_hasRankRight(player->getGuid(), rights))
     {
-        session->SendPacket(SmsgGuildCommandResult(type, "", GC_ERROR_PERMISSIONS).serialise().get());
+        SmsgGuildCommandResult managedPacket(type, "", GC_ERROR_PERMISSIONS);
+        session->sendManagedPacket(managedPacket);
         return;
     }
 
     if (member->isSamePlayer(player->getGuid()))
     {
-        session->SendPacket(SmsgGuildCommandResult(type, "", GC_ERROR_NAME_INVALID).serialise().get());
+        SmsgGuildCommandResult managedPacket(type, "", GC_ERROR_NAME_INVALID);
+        session->sendManagedPacket(managedPacket);
         return;
     }
 
@@ -1068,15 +1096,20 @@ void Guild::sendMoneyInfo(WorldSession* session) const
     const int32_t amount = getMemberRemainingMoney(member);
 
 #if VERSION_STRING >= Cata
-    session->SendPacket(SmsgGuildBankMoneyWithdrawn(amount).serialise().get());
+    SmsgGuildBankMoneyWithdrawn managedPacket(amount);
 #else
-    session->SendPacket(MsgGuildBankMoneyWithdrawn(amount).serialise().get());
+    MsgGuildBankMoneyWithdrawn managedPacket(amount);
 #endif
+
+    session->sendManagedPacket(managedPacket);
 }
 
 void Guild::sendLoginInfo(WorldSession* session)
 {
-    session->SendPacket(SmsgGuildEvent(GE_MOTD, { m_motd }, 0).serialise().get());
+    {
+        SmsgGuildEvent managedPacket(GE_MOTD, { m_motd }, 0);
+        session->sendManagedPacket(managedPacket);
+    }
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_EVENT {} MOTD", session->GetPlayer()->getName());
 
@@ -1097,7 +1130,10 @@ void Guild::sendLoginInfo(WorldSession* session)
     sendGuildRankInfo(session);
     broadcastEvent(GE_SIGNED_ON, player->getGuid(), { player->getName() });
 
-    session->SendPacket(SmsgGuildMemberDailyReset().serialise().get());
+    {
+        SmsgGuildMemberDailyReset managedPacket;
+        session->sendManagedPacket(managedPacket);
+    }
 
     if (worldConfig.guild.levelingEnabled == false)
         return;
@@ -2167,7 +2203,8 @@ void Guild::resetTimes(bool weekly)
         itr->second->resetValues(weekly);
         if (Player* player = itr->second->getPlayerByGuid(itr->second->getGUID()))
         {
-            player->getSession()->SendPacket(SmsgGuildMemberDailyReset().serialise().get());
+            SmsgGuildMemberDailyReset managedPacket;
+            player->getSession()->sendManagedPacket(managedPacket);
         }
     }
 }

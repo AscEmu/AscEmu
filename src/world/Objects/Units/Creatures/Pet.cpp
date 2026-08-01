@@ -187,8 +187,15 @@ void Pet::sendSpellsToController(Unit* controller, uint32_t duration)
             petSpells.emplace_back(AscEmu::Packets::packPetActionButtonData(spell.first, spell.second));
     }
 
-    controller->sendPacket(AscEmu::Packets::SmsgPetSpells(getGuid(), familyId, duration, getAIInterface()->getReactState(),
-        m_petAction, petFlags, std::move(petActions), std::move(petSpells)).serialise().get());
+    if (controller->isPlayer())
+    {
+        if (auto player = controller->ToPlayer())
+        {
+            AscEmu::Packets::SmsgPetSpells managedPacket(getGuid(), familyId, duration, getAIInterface()->getReactState(),
+                m_petAction, petFlags, std::move(petActions), std::move(petSpells));
+            player->getSession()->sendManagedPacket(managedPacket);
+        }
+    }
 }
 
 void Pet::setDeathState(DeathState s)
@@ -1251,7 +1258,10 @@ void Pet::_addSpell(SpellInfo const* spellInfo, [[maybe_unused]] bool silently, 
     if (!silently && !(spellInfo->getAttributes() & ATTRIBUTES_NO_CAST))
     {
         if (auto* const plrOwner = getPlayerOwner())
-            plrOwner->sendPacket(AscEmu::Packets::SmsgPetLearnedSpell(spellInfo->getId()).serialise().get());
+        {
+            AscEmu::Packets::SmsgPetLearnedSpell managedPacket(spellInfo->getId());
+            plrOwner->getSession()->sendManagedPacket(managedPacket);
+        }
     }
 #endif
 
@@ -1301,7 +1311,10 @@ std::tuple<bool, uint8_t> Pet::_removeSpell(uint32_t spellId, [[maybe_unused]]bo
         if (auto* const plrOwner = getPlayerOwner())
         {
             if (plrOwner->IsInWorld())
-                plrOwner->sendPacket(AscEmu::Packets::SmsgPetUnlearnedSpell(spellId).serialise().get());
+            {
+                AscEmu::Packets::SmsgPetUnlearnedSpell managedPacket(spellId);
+                plrOwner->getSession()->sendManagedPacket(managedPacket);
+            }
         }
     }
 #endif
@@ -1463,7 +1476,8 @@ void Pet::sendActionFeedback(PetActionFeedback feedback)
     if (plrOwner == nullptr)
         return;
 
-    plrOwner->sendPacket(AscEmu::Packets::SmsgPetActionFeedback(feedback).serialise().get());
+    AscEmu::Packets::SmsgPetActionFeedback managedPacket(feedback);
+    plrOwner->getSession()->sendManagedPacket(managedPacket);
 }
 
 void Pet::sendPetCastFailed(uint32_t spellId, uint8_t reason)
@@ -1472,7 +1486,8 @@ void Pet::sendPetCastFailed(uint32_t spellId, uint8_t reason)
     if (plrOwner == nullptr)
         return;
 
-    plrOwner->sendPacket(AscEmu::Packets::SmsgPetCastFailed(spellId, reason).serialise().get());
+    AscEmu::Packets::SmsgPetCastFailed managedPacket(spellId, reason);
+    plrOwner->getSession()->sendManagedPacket(managedPacket);
 }
 
 // MIT END

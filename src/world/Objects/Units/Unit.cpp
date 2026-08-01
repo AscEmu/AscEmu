@@ -1389,7 +1389,14 @@ void Unit::setStandState(uint8_t standState)
     write(unitData()->field_bytes_1.s.stand_state, standState);
 
     if (isPlayer())
-        dynamic_cast<Player*>(this)->sendPacket(SmsgStandStateUpdate(standState).serialise().get());
+    {
+        Player* player = ToPlayer();
+        if (player && player->getSession())
+        {
+            SmsgStandStateUpdate managedPacket(standState);
+            player->getSession()->sendManagedPacket(managedPacket);
+        }
+    }
 
     if (standState != STANDSTATE_SIT)
         removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_STAND_UP);
@@ -7072,8 +7079,8 @@ void Unit::knockbackFrom(float x, float y, float speedXY, float speedZ)
     }
     else
     {
-        player->getSession()->SendPacket(SmsgMoveKnockBack(player->GetNewGUID(), Util::getMSTime(), cosf(player->GetOrientation()), sinf(player->GetOrientation()), speedXY, -speedZ).serialise().get());
-
+        SmsgMoveKnockBack managedPacket(player->GetNewGUID(), Util::getMSTime(), cosf(player->GetOrientation()), sinf(player->GetOrientation()), speedXY, -speedZ);
+        player->getSession()->sendManagedPacket(managedPacket);
 #if VERSION_STRING >= TBC
         if (player->hasAuraWithAuraEffect(SPELL_AURA_ENABLE_FLIGHT2) || player->hasAuraWithAuraEffect(SPELL_AURA_FLY))
             player->setMoveCanFly(true);
@@ -9827,10 +9834,15 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         const auto spellTargetMask = ability != nullptr ? ability->getRequiredTargetMask(true) : 0;
         if (!(ability && ability->getAttributesEx() & ATTRIBUTESEX_IGNORE_IN_FRONT) && !(spellTargetMask & SPELL_TARGET_AREA_MASK))
         {
-#if VERSION_STRING < Mop
             if (isPlayer())
-                dynamic_cast<Player*>(this)->sendPacket(SmsgAttackSwingBadFacing().serialise().get());
-#endif
+            {
+                Player* player = ToPlayer();
+                if (player && player->getSession())
+                {
+                    SmsgAttackSwingBadFacing managedPacket;
+                    player->getSession()->sendManagedPacket(managedPacket);
+                }
+            }
 
             return DamageInfo();
         }

@@ -2385,9 +2385,14 @@ void Spell::SpellEffectBind(uint8_t effectIndex)
 
     m_playerTarget->setBindPoint(m_playerTarget->GetPositionX(), m_playerTarget->GetPositionY(), m_playerTarget->GetPositionZ(), m_playerTarget->GetOrientation(), mapid, areaid);
 
-    m_playerTarget->getSession()->SendPacket(SmsgBindPointUpdate(m_playerTarget->getBindPosition(), m_playerTarget->getBindMapId(), m_playerTarget->getBindZoneId()).serialise().get());
+    if (m_playerTarget->getSession())
+    {
+        SmsgBindPointUpdate managedUpdatePacket(m_playerTarget->getBindPosition(), m_playerTarget->getBindMapId(), m_playerTarget->getBindZoneId());
+        m_playerTarget->getSession()->sendManagedPacket(managedUpdatePacket);
 
-    m_playerTarget->getSession()->SendPacket(SmsgPlayerBound(m_caster->getGuid(), m_playerTarget->getBindZoneId()).serialise().get());
+        SmsgPlayerBound managedPacket(m_caster->getGuid(), m_playerTarget->getBindZoneId());
+        m_playerTarget->getSession()->sendManagedPacket(managedPacket);
+    }
 }
 
 void Spell::SpellEffectQuestComplete(uint8_t effectIndex) // Quest Complete
@@ -3189,7 +3194,11 @@ void Spell::SpellEffectLeap(uint8_t effectIndex) // Leap
         if (m_playerTarget == nullptr)  //let client handle this for players
             return;
 
-        m_playerTarget->getSession()->SendPacket(SmsgMoveKnockBack(m_playerTarget->GetNewGUID(), Util::getMSTime(), cosf(m_playerTarget->GetOrientation()), sinf(m_playerTarget->GetOrientation()), radius, -10.0f).serialise().get());
+        if (m_playerTarget->getSession())
+        {
+            SmsgMoveKnockBack managedPacket(m_playerTarget->GetNewGUID(), Util::getMSTime(), cosf(m_playerTarget->GetOrientation()), sinf(m_playerTarget->GetOrientation()), radius, -10.0f);
+            m_playerTarget->getSession()->sendManagedPacket(managedPacket);
+        }
     }
 }
 
@@ -5478,7 +5487,11 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         // Send a message to the died player, telling him he has to resurrect at the graveyard.
         // Send an empty corpse location too, :P
 
-        m_playerTarget->sendPacket(MsgCorspeQuery(0).serialise().get());
+        if (m_playerTarget->getSession())
+        {
+            MsgCorspeQuery managedPacket(0);
+            m_playerTarget->getSession()->sendManagedPacket(managedPacket);
+        }
 
         // don't allow him to spawn a corpse
         m_playerTarget->setAllowedToCreateCorpse(false);
@@ -5499,7 +5512,11 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
             if (!owner->getBattleground())
                 return;
 
-            owner->sendPacket(MsgCorspeQuery(0).serialise().get());
+            if (owner->getSession())
+            {
+                MsgCorspeQuery managedPacket(0);
+                owner->getSession()->sendManagedPacket(managedPacket);
+            }
         }
 
         if (corpse->getDynamicFlags() != 1)

@@ -246,8 +246,15 @@ void Creature::sendSpellsToController(Unit* controller, uint32_t duration)
     }
 
     const auto familyId = static_cast<uint16_t>(creature_properties->Family);
-    controller->sendPacket(AscEmu::Packets::SmsgPetSpells(getGuid(), familyId, duration,
-        PET_STATE_PASSIVE, PET_ACTION_FOLLOW, flags, std::move(actions), AscEmu::Packets::SmsgPetSpellsVector()).serialise().get());
+    if (controller->isPlayer())
+    {
+        if (auto player = controller->ToPlayer())
+        {
+            AscEmu::Packets::SmsgPetSpells managedPacket(getGuid(), familyId, duration,
+                PET_STATE_PASSIVE, PET_ACTION_FOLLOW, flags, std::move(actions), AscEmu::Packets::SmsgPetSpellsVector());
+            player->getSession()->sendManagedPacket(managedPacket);
+        }
+    }
 }
 
 bool Creature::isVendor() const { return getNpcFlags() & UNIT_NPC_FLAG_VENDOR; }

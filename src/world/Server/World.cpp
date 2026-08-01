@@ -660,7 +660,10 @@ void World::sendZoneUnderAttackMessage(uint32_t areaId, uint8_t teamId)
         if (player != nullptr && player->IsInWorld())
         {
             if (player->getTeam() == teamId)
-                activeSessions->second->SendPacket(AscEmu::Packets::SmsgZoneUnderAttack(areaId).serialise().get());
+            {
+                AscEmu::Packets::SmsgZoneUnderAttack managedPacket(areaId);
+                activeSessions->second->sendManagedPacket(managedPacket);
+            }
         }
     }
 }
