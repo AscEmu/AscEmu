@@ -27,7 +27,8 @@ namespace AscEmu::Packets
 
         SpellCastTargets targets;
 
-        uint32_t powerType {0};
+        uint8_t powerType {0};
+        uint32_t powerValue {0};
 
         Spell::ProjectileData projectile {0,0};
 
@@ -76,7 +77,7 @@ namespace AscEmu::Packets
                 targets.write(packet);
 
                 if (m_protocol.expansion >= WoW::Expansion::_WotLK)
-                    packet << uint32_t(powerType);
+                    packet << uint32_t(powerValue);
 
                 if (m_protocol.expansion >= WoW::Expansion::_WotLK)
                 {
@@ -84,8 +85,200 @@ namespace AscEmu::Packets
                     packet << uint32_t(projectile.inventoryType);
                 }
             }
-            else
+            else // Mop
             {
+                WoWGuid targetGuid = targets.getUnitTargetGuid();
+                WoWGuid itemTargetGuid = targets.getItemTargetGuid();
+                WoWGuid unkGuid = 0;
+                bool hasDestLocation = (targets.getTargetMask() & TARGET_FLAG_DEST_LOCATION) && targets.getDestination().isSet();
+                bool hasSourceLocation = (targets.getTargetMask() & TARGET_FLAG_SOURCE_LOCATION) && targets.getDestination().isSet();
+                bool hasTargetString = targets.getTargetMask() & TARGET_FLAG_STRING;
+                bool hasPredictedHeal = false;
+                bool hasPredictedType = false;
+                bool hasTargetMask = targets.getTargetMask() != 0;
+                bool hasCastImmunities = false;
+                bool hasCastSchoolImmunities = false;
+                bool hasElevation = false;
+                bool hasVisualChain = false;
+                bool hasAmmoInventoryType = false;
+                bool hasAmmoDisplayId = false;
+                uint8_t runeCooldownPassedCount = 0;
+                uint8_t predictedPowerCount = castFlags & 0x800 ? 1 : 0;
+
+                packet.writeBits(0, 24);
+                packet.writeBit(casterGuid[5]);
+
+                packet.writeBit(1); // Unk read
+                packet.writeBit(0); // Fake Bit
+                packet.writeBit(casterUnitGuid[4]);
+                packet.writeBit(casterGuid[2]);
+                packet.writeBits(runeCooldownPassedCount, 3);
+                packet.writeBit(casterUnitGuid[2]);
+                packet.writeBit(casterUnitGuid[6]);
+                packet.writeBits(0, 25);
+                packet.writeBits(0, 13); // Unknown Bits
+                packet.writeBit(casterGuid[4]);
+                packet.writeBits(0, 24); // Hit Count
+                packet.writeBit(casterUnitGuid[7]);
+
+                packet.writeBit(hasSourceLocation);
+                packet.writeBits(predictedPowerCount, 21);
+
+                packet.writeBit(itemTargetGuid[3]);
+                packet.writeBit(itemTargetGuid[0]);
+                packet.writeBit(itemTargetGuid[1]);
+                packet.writeBit(itemTargetGuid[7]);
+                packet.writeBit(itemTargetGuid[2]);
+                packet.writeBit(itemTargetGuid[6]);
+                packet.writeBit(itemTargetGuid[4]);
+                packet.writeBit(itemTargetGuid[5]);
+
+                packet.writeBit(!hasElevation);
+                packet.writeBit(!hasTargetString);
+                packet.writeBit(!hasAmmoInventoryType);
+                packet.writeBit(hasDestLocation);
+                packet.writeBit(1); // Unk Read32
+                packet.writeBit(casterGuid[3]);
+
+                packet.writeBit(!hasAmmoDisplayId);
+
+                packet.writeBit(0); // Fake Bit
+                packet.writeBit(casterGuid[6]);
+
+                packet.writeBit(unkGuid[2]);
+                packet.writeBit(unkGuid[1]);
+                packet.writeBit(unkGuid[7]);
+                packet.writeBit(unkGuid[6]);
+                packet.writeBit(unkGuid[0]);
+                packet.writeBit(unkGuid[5]);
+                packet.writeBit(unkGuid[3]);
+                packet.writeBit(unkGuid[4]);
+
+                packet.writeBit(!hasTargetMask);
+
+                if (hasTargetMask)
+                    packet.writeBits(targets.getTargetMask(), 20);
+
+                packet.writeBit(casterGuid[1]);
+                packet.writeBit(!hasPredictedHeal);
+                packet.writeBit(1); // Unk read int8_t
+                packet.writeBit(!hasCastSchoolImmunities);
+                packet.writeBit(casterUnitGuid[5]);
+                packet.writeBit(0); // Fake Bit
+                packet.writeBits(0, 20); // Not used
+
+                packet.writeBit(targetGuid[1]);
+                packet.writeBit(targetGuid[4]);
+                packet.writeBit(targetGuid[6]);
+                packet.writeBit(targetGuid[7]);
+                packet.writeBit(targetGuid[5]);
+                packet.writeBit(targetGuid[3]);
+                packet.writeBit(targetGuid[0]);
+                packet.writeBit(targetGuid[2]);
+
+                packet.writeBit(casterGuid[0]);
+                packet.writeBit(casterUnitGuid[3]);
+                packet.writeBit(1); // Unk uint8_t
+
+                packet.writeBit(!hasCastImmunities);
+                packet.writeBit(casterUnitGuid[1]);
+                packet.writeBit(hasVisualChain);
+                packet.writeBit(casterGuid[7]);
+                packet.writeBit(!hasPredictedType);
+                packet.writeBit(casterUnitGuid[0]);
+
+                packet.flushBits();
+
+                packet.writeByteSeq(itemTargetGuid[1]);
+                packet.writeByteSeq(itemTargetGuid[7]);
+                packet.writeByteSeq(itemTargetGuid[6]);
+                packet.writeByteSeq(itemTargetGuid[0]);
+                packet.writeByteSeq(itemTargetGuid[4]);
+                packet.writeByteSeq(itemTargetGuid[2]);
+                packet.writeByteSeq(itemTargetGuid[3]);
+                packet.writeByteSeq(itemTargetGuid[5]);
+
+                packet.writeByteSeq(targetGuid[4]);
+                packet.writeByteSeq(targetGuid[5]);
+                packet.writeByteSeq(targetGuid[1]);
+                packet.writeByteSeq(targetGuid[7]);
+                packet.writeByteSeq(targetGuid[6]);
+                packet.writeByteSeq(targetGuid[3]);
+                packet.writeByteSeq(targetGuid[2]);
+                packet.writeByteSeq(targetGuid[0]);
+
+                packet << uint32_t(castTime);
+
+                packet.writeByteSeq(unkGuid[4]);
+                packet.writeByteSeq(unkGuid[5]);
+                packet.writeByteSeq(unkGuid[3]);
+                packet.writeByteSeq(unkGuid[2]);
+                packet.writeByteSeq(unkGuid[1]);
+                packet.writeByteSeq(unkGuid[6]);
+                packet.writeByteSeq(unkGuid[7]);
+                packet.writeByteSeq(unkGuid[0]);
+
+                packet.writeByteSeq(casterGuid[4]);
+
+                if (hasCastSchoolImmunities)
+                    packet << uint32_t(0);
+
+                packet.writeByteSeq(casterGuid[2]);
+
+                if (hasCastImmunities)
+                    packet << uint32_t(0);
+
+                if (hasVisualChain)
+                {
+                    packet << uint32_t(0);
+                    packet << uint32_t(0);
+                }
+
+                if (predictedPowerCount > 0)
+                {
+                    packet << uint8_t(powerType);
+                    packet << int32_t(powerValue);
+                }
+
+                packet << uint32_t(castFlags);
+
+                packet.writeByteSeq(casterGuid[5]);
+                packet.writeByteSeq(casterGuid[7]);
+                packet.writeByteSeq(casterGuid[1]);
+
+                packet << uint8_t(extraCastNumber);
+
+                packet.writeByteSeq(casterUnitGuid[7]);
+                packet.writeByteSeq(casterUnitGuid[0]);
+                packet.writeByteSeq(casterGuid[6]);
+                packet.writeByteSeq(casterGuid[0]);
+                packet.writeByteSeq(casterUnitGuid[1]);
+
+                if (hasAmmoInventoryType)
+                    packet << uint8_t(0);
+
+                if (hasPredictedHeal)
+                    packet << uint32_t(0);
+
+                packet.writeByteSeq(casterUnitGuid[6]);
+                packet.writeByteSeq(casterUnitGuid[3]);
+
+                packet << uint32_t(spellId);
+
+                if (hasAmmoDisplayId)
+                    packet << uint32_t(0);
+
+                packet.writeByteSeq(casterUnitGuid[4]);
+                packet.writeByteSeq(casterUnitGuid[5]);
+                packet.writeByteSeq(casterUnitGuid[2]);
+
+                if (hasTargetString)
+                    packet.writeString(targets.getStringTarget());
+
+                if (hasPredictedType)
+                    packet << uint8_t(0);
+
+                packet.writeByteSeq(casterGuid[3]);
             }
             return true;
         }
