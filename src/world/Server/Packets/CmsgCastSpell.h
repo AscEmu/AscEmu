@@ -46,7 +46,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion == WoW::Expansion::_Mop)
+            if (m_protocol.expansion != WoW::Expansion::_Mop)
             {
                 if (m_protocol.expansion <= WoW::Expansion::_TBC)
                 {

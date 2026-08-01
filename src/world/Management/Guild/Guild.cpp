@@ -800,7 +800,7 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
     }
 }
 
-void Guild::handleSetMemberRank(WorldSession* session, [[maybe_unused]]uint64_t targetGuid, uint64_t setterGuid, uint32_t rank)
+void Guild::handleSetMemberRank(WorldSession* session, [[maybe_unused]] uint64_t targetGuid, [[maybe_unused]] uint64_t setterGuid, uint32_t rank)
 {
     Player* player = session->GetPlayer();
     if (player == nullptr)
