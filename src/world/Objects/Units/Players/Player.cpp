@@ -6251,13 +6251,15 @@ void Player::saveTutorials()
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Actionbar
-void Player::setActionButton(uint8_t button, uint32_t action, uint8_t type, uint8_t misc)
+void Player::setActionButton(uint8_t button, uint32_t action, uint8_t type, [[maybe_unused]]uint8_t misc)
 {
     if (button >= PLAYER_ACTION_BUTTON_COUNT)
         return;
 
     getActiveSpec().getActionButton(button).Action = action;
+#if VERSION_STRING < Mop
     getActiveSpec().getActionButton(button).Misc = misc;
+#endif
     getActiveSpec().getActionButton(button).Type = type;
 }
 
@@ -6291,7 +6293,18 @@ void Player::sendActionBars([[maybe_unused]] uint8_t action)
 #else
     WorldPacket data(SMSG_UPDATE_ACTION_BUTTONS, (PLAYER_ACTION_BUTTON_COUNT * 8) + 1);
 
-    uint8_t buttons[PLAYER_ACTION_BUTTON_COUNT][8];
+    static_assert(sizeof(ActionButton) == 8);
+
+    uint8_t buttons[PLAYER_ACTION_BUTTON_COUNT][8] = {};
+    auto* packedButtons = reinterpret_cast<ActionButton*>(buttons);
+
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+    {
+        auto const& button = getActiveSpec().getActionButton(i);
+
+        packedButtons[i].Action = static_cast<uint32_t>(button.Action);
+        packedButtons[i].Type = static_cast<uint32_t>(button.Type);
+    }
 
     // Bits
     for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
@@ -14326,7 +14339,11 @@ void Player::saveToDB(bool newCharacter /* =false */)
         {
             ss << uint32_t(m_specs[s].getActionButton(i).Action) << ","
                 << uint32_t(m_specs[s].getActionButton(i).Type) << ","
+#if VERSION_STRING < Mop
                 << uint32_t(m_specs[s].getActionButton(i).Misc) << ",";
+#else
+                << uint32_t(0) << ",";
+#endif
         }
         ss << "'" << ", ";
     }
@@ -14877,13 +14894,19 @@ void Player::loadFromDBProc(QueryResultVector& results)
             if (!end)
                 break;
             *end = 0;
+#if VERSION_STRING < Mop
             m_specs[0 + s].getActionButton(Counter).Type = static_cast<uint8_t>(std::stoul(start));
+#else
+            m_specs[0 + s].getActionButton(Counter).Type = std::stoul(start);
+#endif
             start = end + 1;
             end = strchr(start, ',');
             if (!end)
                 break;
             *end = 0;
+#if VERSION_STRING < Mop
             m_specs[0 + s].getActionButton(Counter).Misc = static_cast<uint8_t>(std::stoul(start));
+#endif
             start = end + 1;
 
             Counter++;

@@ -1038,12 +1038,20 @@ enum FactionFlags
 };
 
 #pragma pack(push,1)
+#if VERSION_STRING == Mop
+struct ActionButton
+{
+    uint32_t Action = 0;
+    uint32_t Type = 0;
+};
+#else
 struct ActionButton
 {
     uint32_t Action = 0;
     uint8_t Type = 0;
     uint8_t Misc = 0;
 };
+#endif
 #pragma pack(pop)
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1300,7 +1308,9 @@ public:
         {
             mActions[i].Action = 0;
             mActions[i].Type = 0;
+#if VERSION_STRING < Mop
             mActions[i].Misc = 0;
+#endif
         }
     }
 
