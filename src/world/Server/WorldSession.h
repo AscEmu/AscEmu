@@ -705,6 +705,7 @@ protected:
         void handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/);  //>= Cata
         void sendItemDb2Reply(uint32_t entry);                              //>= Cata
         void sendItemSparseDb2Reply(uint32_t entry);                        //>= Cata
+        void sendBroadcastDb2Reply(uint32_t entry);                         //>= Mop
 
         void handleRemoveGlyph(WorldPacket& recvPacket);                    //> TBC
         void handleBarberShopResult(WorldPacket& recvPacket);               //> TBC

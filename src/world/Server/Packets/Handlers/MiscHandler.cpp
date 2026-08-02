@@ -81,6 +81,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Strings.hpp"
 #include <Server/Packets/SmsgClearTarget.h>
 #include "Server/PacketBroadcast.hpp"
+#include "Server/Packets/CmsgRequestHotfix.h"
 
 using namespace AscEmu::Packets;
 
@@ -1651,146 +1652,88 @@ void WorldSession::sendItemSparseDb2Reply([[maybe_unused]] uint32_t entry)
 #endif
 }
 
-void WorldSession::handleRequestHotfix([[maybe_unused]] WorldPacket& recvPacket)
+void WorldSession::sendBroadcastDb2Reply(uint32_t entry)
 {
-#if VERSION_STRING >= Cata
-#if VERSION_STRING == Cata
-    uint32_t type;
-    recvPacket >> type;
+    ByteBuffer buffer;
+    std::string defaultText = LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
+    std::string alternativeText = LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
 
-    uint32_t count = recvPacket.readBits(23);
+    const auto localesNpcText = (language > 0) ? sMySQLStore.getLocalizedNpcGossipText(entry, language) : nullptr;
+    const auto pGossip = sMySQLStore.getNpcGossipText(entry);
 
-    auto guids = std::make_unique<WoWGuid[]>(count);
-    for (uint32_t i = 0; i < count; ++i)
+    if (localesNpcText)
     {
-        guids[i][0] = recvPacket.readBit();
-        guids[i][4] = recvPacket.readBit();
-        guids[i][7] = recvPacket.readBit();
-        guids[i][2] = recvPacket.readBit();
-        guids[i][5] = recvPacket.readBit();
-        guids[i][3] = recvPacket.readBit();
-        guids[i][6] = recvPacket.readBit();
-        guids[i][1] = recvPacket.readBit();
+        defaultText = localesNpcText->texts[0][0];
+        alternativeText = localesNpcText->texts[0][1];
+    }
+    else if (pGossip)
+    {
+        defaultText = pGossip->textHolder[0].texts[0];
+        alternativeText = pGossip->textHolder[0].texts[1];
     }
 
-    uint32_t entry;
-    for (uint32_t i = 0; i < count; ++i)
-    {
-        recvPacket.readByteSeq(guids[i][5]);
-        recvPacket.readByteSeq(guids[i][6]);
-        recvPacket.readByteSeq(guids[i][7]);
-        recvPacket.readByteSeq(guids[i][0]);
-        recvPacket.readByteSeq(guids[i][1]);
-        recvPacket.readByteSeq(guids[i][3]);
-        recvPacket.readByteSeq(guids[i][4]);
-        recvPacket >> entry;
-        recvPacket.readByteSeq(guids[i][2]);
+    uint16_t defaultTextLength = static_cast<uint16_t>(defaultText.length());
+    uint16_t altTextLength = static_cast<uint16_t>(alternativeText.length());
 
-        switch (type)
-        {
-            case DB2_REPLY_ITEM:
-                sendItemDb2Reply(entry);
-                break;
-            case DB2_REPLY_SPARSE:
-                sendItemSparseDb2Reply(entry);
-                break;
-            default:
-                sLogger.debug("Received unknown hotfix type {}", type);
-                recvPacket.clear();
-                break;
-        }
-    }
-#elif VERSION_STRING == Mop
-    uint32_t type;
-    recvPacket >> type;
+    buffer << uint32_t(entry);
+    buffer << uint32_t(pGossip ? pGossip->textHolder[0].language : 0);
+    buffer << uint16_t(defaultTextLength);
 
-    if (type != DB2_REPLY_ITEM && type != DB2_REPLY_SPARSE && type != DB2_REPLY_BROADCAST)
-    {
-        recvPacket.rfinish();
+    if (defaultTextLength)
+        buffer << std::string(defaultText);
+
+    buffer << uint16_t(altTextLength);
+
+    if (altTextLength)
+        buffer << std::string(alternativeText);
+
+    for (uint8_t j = 0; j < 8; j++)
+        buffer << uint32_t(0);
+
+    buffer << uint32_t(1);
+
+    WorldPacket data(SMSG_DB_REPLY, (4 + 4 + 4 + 4 + buffer.size()));
+    data << uint32_t(entry);
+    data << uint32_t(time(NULL));
+    data << uint32_t(DB2_REPLY_BROADCAST);
+    data << uint32_t(buffer.size());
+    data.append(buffer);
+
+    SendPacket(&data);
+}
+
+void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
+{
+    CmsgRequestHotfix srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
         return;
-    }
 
-    uint32_t count = recvPacket.readBits(21);
-
-    auto guids = std::make_unique<WoWGuid[]>(count);
-    uint32_t entry;
-    for (uint32_t i = 0; i < count; ++i)
+    auto const protocol = _socket->getClientProtocol();
+    switch (srlPacket.type)
     {
-        guids[i][6] = recvPacket.readBit();
-        guids[i][3] = recvPacket.readBit();
-        guids[i][0] = recvPacket.readBit();
-        guids[i][1] = recvPacket.readBit();
-        guids[i][4] = recvPacket.readBit();
-        guids[i][5] = recvPacket.readBit();
-        guids[i][7] = recvPacket.readBit();
-        guids[i][2] = recvPacket.readBit();
-    
-        recvPacket.readByteSeq(guids[i][1]);
-
-        recvPacket >> entry;
-
-        recvPacket.readByteSeq(guids[i][0]);
-        recvPacket.readByteSeq(guids[i][5]);
-        recvPacket.readByteSeq(guids[i][6]);
-        recvPacket.readByteSeq(guids[i][4]);
-        recvPacket.readByteSeq(guids[i][7]);
-        recvPacket.readByteSeq(guids[i][2]);
-        recvPacket.readByteSeq(guids[i][3]);
-
-        if (type == DB2_REPLY_BROADCAST)
+        case DB2_REPLY_ITEM:
         {
-            ByteBuffer buffer;
-            std::string defaultText = LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
-            std::string alternativeText = LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
-
-            const auto localesNpcText = (language > 0) ? sMySQLStore.getLocalizedNpcGossipText(entry, language) : nullptr;
-            const auto pGossip = sMySQLStore.getNpcGossipText(entry);
-
-            if (localesNpcText)
-            {
-                defaultText = localesNpcText->texts[0][0];
-                alternativeText = localesNpcText->texts[0][1];
-            }
-            else if (pGossip)
-            {
-                defaultText = pGossip->textHolder[0].texts[0];
-                alternativeText = pGossip->textHolder[0].texts[1];
-            }
-
-            uint16_t defaultTextLength = static_cast<uint16_t>(defaultText.length());
-            uint16_t altTextLength = static_cast<uint16_t>(alternativeText.length());
-
-            buffer << uint32_t(entry);
-            buffer << uint32_t(pGossip ? pGossip->textHolder[0].language : 0);
-            buffer << uint16_t(defaultTextLength);
-
-            if (defaultTextLength)
-                buffer << std::string(defaultText);
-
-            buffer << uint16_t(altTextLength);
-
-            if (altTextLength)
-                buffer << std::string(alternativeText);
-
-            for (uint8_t j = 0; j < 8; j++)
-                buffer << uint32_t(0);
-
-            buffer << uint32_t(1);
-
-            WorldPacket data(SMSG_DB_REPLY, (4 + 4 + 4 + 4 + buffer.size()));
-            data << uint32_t(entry);
-            data << uint32_t(time(NULL));
-            data << uint32_t(DB2_REPLY_BROADCAST);
-            data << uint32_t(buffer.size());
-            data.append(buffer);
-
-            SendPacket(&data);
+            if (protocol.isCata())
+                sendItemDb2Reply(srlPacket.entry);
         }
-
-        sLogger.debug("Received unknown hotfix type {}", type);
+        break;
+        case DB2_REPLY_SPARSE:
+        {
+            if (protocol.isCata())
+                sendItemSparseDb2Reply(srlPacket.entry);
+        }
+        break;
+        case DB2_REPLY_BROADCAST:
+        {
+            if (protocol.isMop())
+                sendBroadcastDb2Reply(srlPacket.entry);
+        } break;
+        default:
+        {
+            sLogger.debug("Received unknown hotfix type {} entry {}", srlPacket.type, srlPacket.entry);
+            recvPacket.clear();
+        } break;
     }
-#endif
-#endif
 }
 
 void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
@@ -1832,8 +1775,6 @@ void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
     }
 #endif
 }
-
-
 
 void WorldSession::handleRemoveGlyph([[maybe_unused]] WorldPacket& recvPacket)
 {
