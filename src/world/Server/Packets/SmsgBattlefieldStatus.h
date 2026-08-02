@@ -49,18 +49,18 @@ namespace AscEmu::Packets
                 uint8_t arenaType;
                 switch (type)
                 {
-                case 4:
-                    arenaType = 2;
-                    break;
-                case 5:
-                    arenaType = 3;
-                    break;
-                case 6:
-                    arenaType = 5;
-                    break;
-                default:
-                    arenaType = 0;
-                    break;
+                    case 4:
+                        arenaType = 2;
+                        break;
+                    case 5:
+                        arenaType = 3;
+                        break;
+                    case 6:
+                        arenaType = 5;
+                        break;
+                    default:
+                        arenaType = 0;
+                        break;
                 }
 
                 packet << uint32_t(0);          // Queueslot
@@ -68,11 +68,12 @@ namespace AscEmu::Packets
                 packet << uint8_t(isArena ? 0xE : 0x0);
                 packet << uint32_t(isArena ? 6 : type);
                 packet << uint16_t(0x1F90);
-            if (m_protocol.expansion > WoW::Expansion::_TBC)
-            {
+
+                if (m_protocol.expansion > WoW::Expansion::_TBC)
+                {
                     packet << uint8_t(0);           // 3.3.0 - minLevel
                     packet << uint8_t(0);           // 3.3.0 - maxLevel
-            }
+                }
                 packet << uint32_t(isArena ? 11 : instanceId);
                 packet << uint8_t(isArena ? ratedMatch : 0);
 
@@ -85,18 +86,18 @@ namespace AscEmu::Packets
                         break;
                     case 2:                     // BGSTATUS_READY
                         packet << mapId;
-                if (m_protocol.expansion > WoW::Expansion::_TBC)
-                {
+                        if (m_protocol.expansion > WoW::Expansion::_TBC)
+                        {
                             packet << uint64_t(0);
-                }
+                        }
                         packet << time;
                         break;
                     case 3:                     // BGSTATUS_TIME
                         packet << mapId;
-                if (m_protocol.expansion > WoW::Expansion::_TBC)
-                {
+                        if (m_protocol.expansion > WoW::Expansion::_TBC)
+                        {
                             packet << uint64_t(0);
-                }
+                        }
                         packet << uint32_t(0);
                         packet << time;
                         if (isArena)

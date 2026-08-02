@@ -82,9 +82,8 @@ namespace AscEmu::Packets
                     packet << sMySQLStore.getLocaleGossipTitleOrElse(questListItem.first, locale);
                 }
             }
-            else
+            else // Mop
             {
-
                 packet.writeBits(static_cast<uint8_t>(gossipQuestList.size()), 19);
 
                 for (const auto& questListItem : gossipQuestList)

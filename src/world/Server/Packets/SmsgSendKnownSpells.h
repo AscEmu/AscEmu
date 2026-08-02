@@ -71,11 +71,11 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            //\Todo: MOP needs to be implemented
             if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
-                packet.writeBit(0);
-                packet.writeBits(spell_ids.size(), 22);
+                packet.writeBit(unk1);
+                packet.writeBits(static_cast<uint16_t>(spell_ids.size()), 22);
+
                 packet.flushBits();
 
                 for (uint32_t spell_id : spell_ids)
@@ -130,9 +130,6 @@ namespace AscEmu::Packets
             return true;
         }
 
-        bool internalDeserialise(WorldPacket&) override
-        {
-            return false;
-        }
+        bool internalDeserialise(WorldPacket&) override { return false; }
     };
 }

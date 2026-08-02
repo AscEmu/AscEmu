@@ -1343,53 +1343,54 @@ void WorldSession::handleTimeSyncRespOpcode([[maybe_unused]] WorldPacket& recvPa
 void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
 {
     sLogger.info("WORLD: handleObjectUpdateFailedOpcode ENTERED size={}", static_cast<unsigned>(recvPacket.size()));
-#if VERSION_STRING >= Cata
-    // Cata/MoP: 8 bits + 8 bytes for GUID. If packet is smaller (e.g. MoP sends 1–3 bytes),
-   // treat as "our" object failed; for MoP resend create + SetActiveMover so client can finish loading.
-   // Don't require isEnteringWorld() — by the time we process the packet it may already be false.
-    const size_t minSizeForGuid = 9u;
-    if (recvPacket.size() < minSizeForGuid)
-    {
-        Player* target = _player != nullptr ? _player : m_loggingInPlayer;
-        sLogger.info("WORLD: CMSG_OBJECT_UPDATE_FAILED small packet size {}, _player={}, target={}", static_cast<unsigned>(recvPacket.size()), _player != nullptr ? "set" : "null", target != nullptr ? "set" : "null");
-#if VERSION_STRING == Mop
-        if (target != nullptr)
-        {
-            // size==2 may be packed GUID (1 byte mask + 1 byte): client reports which object failed.
-            if (recvPacket.size() >= 2u)
-            {
-                uint8_t mask = recvPacket.read<uint8_t>();
-                uint8_t field = recvPacket.read<uint8_t>();
-                WoWGuid failedGuid;
-                failedGuid.init(mask, &field);
-                if (failedGuid == target->getGuid())
-                {
-                    sLogger.info("WORLD: MoP resend create+active mover for {}", target->getName());
-                    target->resendCreateAndActiveMoverForMoP();
-                }
-                else if (Item* item = target->getItemInterface()->GetItemByGUID(failedGuid.getRawGuid()))
-                {
-                    ByteBuffer buf(2500);
-                    uint32_t count = item->buildCreateUpdateBlockForPlayer(&buf, target);
-                    target->getUpdateMgr().pushCreationData(&buf, count);
-                    target->processPendingUpdates();
-                    sLogger.debug("WORLD: MoP resend create for item guid {}", failedGuid.getRawGuid());
-                }
-                else
-                {
-                    sLogger.debug("WORLD: MoP OBJECT_UPDATE_FAILED size=2 guid {} not player and not found as item, resend player create", failedGuid.getRawGuid());
-                    target->resendCreateAndActiveMoverForMoP();
-                }
-            }
-            else
-            {
-                sLogger.info("WORLD: MoP resend create+active mover for {}", target->getName());
-                target->resendCreateAndActiveMoverForMoP();
-            }
-        }
-#endif
-        return;
-    }
+// Zyres: the minimum size is not correct here. if the bits are false there will be no value for sequenz, leading to a minimum size of 2 at least for Mop
+//#if VERSION_STRING >= Cata
+//    // Cata/MoP: 8 bits + 8 bytes for GUID. If packet is smaller (e.g. MoP sends 1–3 bytes),
+//   // treat as "our" object failed; for MoP resend create + SetActiveMover so client can finish loading.
+//   // Don't require isEnteringWorld() — by the time we process the packet it may already be false.
+//    const size_t minSizeForGuid = 9u;
+//    if (recvPacket.size() < minSizeForGuid)
+//    {
+//        Player* target = _player != nullptr ? _player : m_loggingInPlayer;
+//        sLogger.info("WORLD: CMSG_OBJECT_UPDATE_FAILED small packet size {}, _player={}, target={}", static_cast<unsigned>(recvPacket.size()), _player != nullptr ? "set" : "null", target != nullptr ? "set" : "null");
+//#if VERSION_STRING == Mop
+//        if (target != nullptr)
+//        {
+//            // size==2 may be packed GUID (1 byte mask + 1 byte): client reports which object failed.
+//            if (recvPacket.size() >= 2u)
+//            {
+//                uint8_t mask = recvPacket.read<uint8_t>();
+//                uint8_t field = recvPacket.read<uint8_t>();
+//                WoWGuid failedGuid;
+//                failedGuid.init(mask, &field);
+//                if (failedGuid == target->getGuid())
+//                {
+//                    sLogger.info("WORLD: MoP resend create+active mover for {}", target->getName());
+//                    target->resendCreateAndActiveMoverForMoP();
+//                }
+//                else if (Item* item = target->getItemInterface()->GetItemByGUID(failedGuid.getRawGuid()))
+//                {
+//                    ByteBuffer buf(2500);
+//                    uint32_t count = item->buildCreateUpdateBlockForPlayer(&buf, target);
+//                    target->getUpdateMgr().pushCreationData(&buf, count);
+//                    target->processPendingUpdates();
+//                    sLogger.debug("WORLD: MoP resend create for item guid {}", failedGuid.getRawGuid());
+//                }
+//                else
+//                {
+//                    sLogger.debug("WORLD: MoP OBJECT_UPDATE_FAILED size=2 guid {} not player and not found as item, resend player create", failedGuid.getRawGuid());
+//                    target->resendCreateAndActiveMoverForMoP();
+//                }
+//            }
+//            else
+//            {
+//                sLogger.info("WORLD: MoP resend create+active mover for {}", target->getName());
+//                target->resendCreateAndActiveMoverForMoP();
+//            }
+//        }
+//#endif
+//        return;
+//    }
     WoWGuid guid;
 
 #if VERSION_STRING == Cata
@@ -1448,11 +1449,12 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
     }
 
     //_player->updateVisibility();
-#endif
+//#endif
 }
 
-#define DB2_REPLY_SPARSE 2442913102
-#define DB2_REPLY_ITEM   1344507586
+#define DB2_REPLY_SPARSE    2442913102
+#define DB2_REPLY_ITEM      1344507586
+#define DB2_REPLY_BROADCAST   35137211
 
 void WorldSession::sendItemDb2Reply([[maybe_unused]] uint32_t entry)
 {
@@ -1702,7 +1704,7 @@ void WorldSession::handleRequestHotfix([[maybe_unused]] WorldPacket& recvPacket)
     uint32_t type;
     recvPacket >> type;
 
-    if (type != DB2_REPLY_ITEM && type != DB2_REPLY_SPARSE)
+    if (type != DB2_REPLY_ITEM && type != DB2_REPLY_SPARSE && type != DB2_REPLY_BROADCAST)
     {
         recvPacket.rfinish();
         return;
@@ -1734,6 +1736,56 @@ void WorldSession::handleRequestHotfix([[maybe_unused]] WorldPacket& recvPacket)
         recvPacket.readByteSeq(guids[i][7]);
         recvPacket.readByteSeq(guids[i][2]);
         recvPacket.readByteSeq(guids[i][3]);
+
+        if (type == DB2_REPLY_BROADCAST)
+        {
+            ByteBuffer buffer;
+            std::string defaultText = LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
+            std::string alternativeText = LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
+
+            const auto localesNpcText = (language > 0) ? sMySQLStore.getLocalizedNpcGossipText(entry, language) : nullptr;
+            const auto pGossip = sMySQLStore.getNpcGossipText(entry);
+
+            if (localesNpcText)
+            {
+                defaultText = localesNpcText->texts[0][0];
+                alternativeText = localesNpcText->texts[0][1];
+            }
+            else if (pGossip)
+            {
+                defaultText = pGossip->textHolder[0].texts[0];
+                alternativeText = pGossip->textHolder[0].texts[1];
+            }
+
+            uint16_t defaultTextLength = static_cast<uint16_t>(defaultText.length());
+            uint16_t altTextLength = static_cast<uint16_t>(alternativeText.length());
+
+            buffer << uint32_t(entry);
+            buffer << uint32_t(pGossip ? pGossip->textHolder[0].language : 0);
+            buffer << uint16_t(defaultTextLength);
+
+            if (defaultTextLength)
+                buffer << std::string(defaultText);
+
+            buffer << uint16_t(altTextLength);
+
+            if (altTextLength)
+                buffer << std::string(alternativeText);
+
+            for (uint8_t j = 0; j < 8; j++)
+                buffer << uint32_t(0);
+
+            buffer << uint32_t(1);
+
+            WorldPacket data(SMSG_DB_REPLY, (4 + 4 + 4 + 4 + buffer.size()));
+            data << uint32_t(entry);
+            data << uint32_t(time(NULL));
+            data << uint32_t(DB2_REPLY_BROADCAST);
+            data << uint32_t(buffer.size());
+            data.append(buffer);
+
+            SendPacket(&data);
+        }
 
         sLogger.debug("Received unknown hotfix type {}", type);
     }

@@ -629,8 +629,8 @@ void WorldSession::handleNpcTextQueryOpcode(WorldPacket& recvPacket)
     data.initialize(SMSG_NPC_TEXT_UPDATE);
     data << srlPacket.text_id;
 
-#if VERSION_STRING <= Cata
     const auto localesNpcText = (language > 0) ? sMySQLStore.getLocalizedNpcGossipText(srlPacket.text_id, language) : nullptr;
+#if VERSION_STRING <= Cata
 
     if (const auto pGossip = sMySQLStore.getNpcGossipText(srlPacket.text_id))
     {
@@ -690,22 +690,54 @@ void WorldSession::handleNpcTextQueryOpcode(WorldPacket& recvPacket)
     }
 #else // Mop
     ByteBuffer buffer;
-    /*if (const auto pGossip = sMySQLStore.getNpcGossipText(srlPacket.text_id))
+    if (const auto pGossip = sMySQLStore.getNpcGossipText(srlPacket.text_id))
     {
+        if (localesNpcText)
+        {
+            for (uint8_t i = 0; i < 8; ++i)
+                buffer << float(pGossip->textHolder[i].probability); //probability
+
+            for (uint8_t i = 0; i < 8; ++i)
+                buffer << uint32_t(srlPacket.text_id);  //broadcast text id
+
+            for (uint8_t i = 0; i < 8; ++i)
+            {
+                if (strlen(localesNpcText->texts[i][0]) == 0)
+                    buffer << localesNpcText->texts[i][1];
+                else
+                    buffer << localesNpcText->texts[i][0];
+            }
+        }
+        else
+        {
+            for (uint8_t i = 0; i < 8; ++i)
+                buffer << float(pGossip->textHolder[i].probability); //probability
+
+            for (uint8_t i = 0; i < 8; ++i)
+                buffer << uint32_t(srlPacket.text_id);  //broadcast text id
+
+            for (uint8_t i = 0; i < 8; ++i)
+            {
+                if (pGossip->textHolder[i].texts[0].empty())
+                    buffer << pGossip->textHolder[i].texts[1];
+                else
+                    buffer << pGossip->textHolder[i].texts[0];
+            }
+        }
     }
-    else*/
+    else
     {
         buffer << uint32_t(1);  //unk 
 
-        for (uint8_t i = 0; i < 8; ++i)
+        for (uint8_t i = 0; i < 7; ++i)
             buffer << uint32_t(0);  //probability
 
         buffer << uint32_t(1);  //unk
 
-        for (uint8_t i = 0; i < 8; ++i)
+        for (uint8_t i = 0; i < 7; ++i)
             buffer << uint32_t(0);  //broadcast text id
 
-        buffer << std::string("Test AscEmu 1");
+        buffer << std::string(_player->getSession()->LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU));
     }
 
     data << uint32_t(buffer.size());
