@@ -117,9 +117,7 @@ private:
 
     void sendCastResult(Player* caster, uint8_t castCount, SpellCastResult result, uint32_t parameter1, uint32_t parameter2);
 
-    void writeProjectileDataToPacket(ProjectileData& data);
-    void writeProjectileDataToPacket(WorldPacket* data);
-    void writeSpellMissedTargets(WorldPacket* data);
+    void addProjectileDataToPacket(ProjectileData& data);
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////

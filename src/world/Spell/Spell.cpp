@@ -4649,7 +4649,7 @@ void Spell::sendSpellStart()
 #endif
 
     if (castFlags & SPELL_PACKET_FLAGS_RANGED)
-        writeProjectileDataToPacket(managedPacket.projectile);
+        addProjectileDataToPacket(managedPacket.projectile);
 
     PacketBroadcast::sendToSet(*m_caster, managedPacket, true);
 }
@@ -4675,12 +4675,12 @@ void Spell::sendSpellGo()
     if (!m_missedTargets.empty())
         castFlags |= SPELL_PACKET_FLAGS_EXTRA_MESSAGE;
 
+    uint8_t currentRunes = 0;
 #if VERSION_STRING >= WotLK
     if (m_missileTravelTime != 0)
         castFlags |= SPELL_PACKET_FLAGS_UPDATE_MISSILE;
 
     // Rune update
-    uint8_t currentRunes = 0;
     if (p_caster != nullptr && p_caster->isClassDeathKnight())
     {
         // Get current available runes in bitmask
@@ -4709,7 +4709,7 @@ void Spell::sendSpellGo()
 #endif
 
     if (castFlags & SPELL_PACKET_FLAGS_RANGED)
-        writeProjectileDataToPacket(managedPacket.projectile);
+        addProjectileDataToPacket(managedPacket.projectile);
 
     managedPacket.hittedTargets = m_uniqueHittedTargets;
     managedPacket.missedTargets = m_missedTargets;
@@ -4856,7 +4856,7 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
     caster->sendCastFailedPacket(getSpellInfo()->getId(), result, castCount, parameter1, parameter2);
 }
 
-void Spell::writeProjectileDataToPacket(ProjectileData& data)
+void Spell::addProjectileDataToPacket(ProjectileData& data)
 {
     ItemProperties const* ammoItem = nullptr;
 #if VERSION_STRING < Cata
@@ -4964,139 +4964,6 @@ void Spell::writeProjectileDataToPacket(ProjectileData& data)
         data.inventoryType = 0;
     }
 #endif
-}
-
-void Spell::writeProjectileDataToPacket(WorldPacket *data)
-{
-    ItemProperties const* ammoItem = nullptr;
-#if VERSION_STRING < Cata
-    if (p_caster != nullptr)
-    {
-        const auto rangedItem = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-        if (rangedItem != nullptr)
-        {
-            if (getSpellInfo()->getId() == SPELL_RANGED_THROW)
-            {
-                ammoItem = rangedItem->getItemProperties();
-            }
-            else
-            {
-                if (p_caster->getAmmoId() != 0)
-                {
-                    ammoItem = sMySQLStore.getItemProperties(p_caster->getAmmoId());
-                }
-                else
-                {
-                    // Use Rough Arrow if ammo id is not found
-                    ammoItem = sMySQLStore.getItemProperties(2512);
-                }
-            }
-        }
-    }
-    else if (u_caster != nullptr)
-    {
-        // Get creature's ranged weapon
-        // Need to loop through all weapon slots because NPCs can have the ranged weapon in main hand
-        for (uint8_t i = 0; i <= RANGED; ++i)
-        {
-#if VERSION_STRING > TBC
-            const auto entryId = u_caster->getVirtualItemSlotId(i);
-#else
-            const auto entryId = dynamic_cast<Creature*>(u_caster)->getVirtualItemEntry(i);
-#endif
-            if (entryId == 0)
-                continue;
-
-#if VERSION_STRING > TBC
-            // Get the item data from DBC files
-            const auto itemDBC = sItemStore.lookupEntry(entryId);
-            if (itemDBC == nullptr || itemDBC->Class != ITEM_CLASS_WEAPON)
-                continue;
-
-            switch (itemDBC->SubClass)
-            {
-                case ITEM_SUBCLASS_WEAPON_BOW:
-                case ITEM_SUBCLASS_WEAPON_CROSSBOW:
-                    // Use Rough Arrow for bows
-                    ammoItem = sMySQLStore.getItemProperties(2512);
-                    break;
-                case ITEM_SUBCLASS_WEAPON_GUN:
-                    // Use Light Shot for guns
-                    ammoItem = sMySQLStore.getItemProperties(2516);
-                    break;
-                case ITEM_SUBCLASS_WEAPON_THROWN:
-                    ammoItem = sMySQLStore.getItemProperties(entryId);
-                    break;
-                default:
-                    break;
-            }
-#else
-            // Get the item data from unitdata
-            const auto itemData = u_caster->getVirtualItemInfoFields(i);
-            if (itemData.fields.item_class != ITEM_CLASS_WEAPON)
-                continue;
-
-            switch (itemData.fields.item_subclass)
-            {
-                case ITEM_SUBCLASS_WEAPON_BOW:
-                case ITEM_SUBCLASS_WEAPON_CROSSBOW:
-                    // Use Rough Arrow for bows
-                    ammoItem = sMySQLStore.getItemProperties(2512);
-                    break;
-                case ITEM_SUBCLASS_WEAPON_GUN:
-                    // Use Light Shot for guns
-                    ammoItem = sMySQLStore.getItemProperties(2516);
-                    break;
-                case ITEM_SUBCLASS_WEAPON_THROWN:
-                    ammoItem = sMySQLStore.getItemProperties(entryId);
-                    break;
-                default:
-                    break;
-            }
-#endif
-
-            // No need to continue if ammo has been found
-            if (ammoItem != nullptr)
-                break;
-        }
-    }
-#endif
-
-    if (ammoItem != nullptr)
-    {
-        *data << uint32_t(ammoItem->DisplayInfoID);
-        *data << uint32_t(ammoItem->InventoryType);
-    }
-#if VERSION_STRING > TBC
-    else
-    {
-        *data << uint32_t(0);
-        *data << uint32_t(0);
-    }
-#endif
-}
-
-void Spell::writeSpellMissedTargets(WorldPacket *data)
-{
-    if (u_caster != nullptr && u_caster->isAlive())
-    {
-        for (const auto& target : m_missedTargets)
-        {
-            *data << uint64_t(target.targetGuid);
-            *data << uint8_t(target.hitResult);
-            // Need to send hit result for the reflected spell
-            if (target.hitResult == SPELL_DID_HIT_REFLECT)
-                *data << uint8_t(target.extendedHitResult);
-        }
-    }
-    else
-    {
-        for (const auto& target : m_missedTargets)
-        {
-            *data << uint64_t(target.targetGuid);
-            *data << uint8_t(target.hitResult);
-        }
-    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
