@@ -821,7 +821,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, false, true, true, true);
 
     // Action Buttons
-    registry.registerOpcode(CMSG_SET_ACTION_BUTTON, &WorldSession::handleSetActionButtonOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_SET_ACTION_BUTTON, &WorldSession::handleSetActionButtonOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_REPOP_REQUEST, &WorldSession::handleRepopRequestOpcode, true, true, true, true, false);
 
     // Loot

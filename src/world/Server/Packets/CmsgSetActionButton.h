@@ -67,8 +67,8 @@ namespace AscEmu::Packets
                 packet.readByteSeq(buttonStream[4]);
                 packet.readByteSeq(buttonStream[0]);
 
-                action = buttonStream.getGuidLowPart();
-                type = buttonStream.getGuidHighPart();
+                action = (buttonStream.getRawGuid() & 0x00000000FFFFFFFFULL);
+                type = (buttonStream.getRawGuid() & 0xFFFFFFFF00000000ULL) >> 56;
                 misc = 0; // not sent in packet
             }
 
