@@ -82,6 +82,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Server/Packets/SmsgClearTarget.h>
 #include "Server/PacketBroadcast.hpp"
 #include "Server/Packets/CmsgRequestHotfix.h"
+#include "Server/Packets/SmsgDbReply.h"
 
 using namespace AscEmu::Packets;
 
@@ -1457,204 +1458,173 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
 #define DB2_REPLY_ITEM      1344507586
 #define DB2_REPLY_BROADCAST   35137211
 
-void WorldSession::sendItemDb2Reply([[maybe_unused]] uint32_t entry)
+void WorldSession::sendItemDb2Reply(uint32_t entry)
 {
-#if VERSION_STRING >= Cata
-#if VERSION_STRING < Mop
-    WorldPacket data(SMSG_DB_REPLY, 44);
     ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
-    if (!proto)
+    if (proto)
     {
-        data << uint32_t(-1);                                   // entry
-        data << uint32_t(DB2_REPLY_ITEM);
-        data << uint32_t(1322512289);                           // hotfix date
-        data << uint32_t(0);                                    // size of next block
-        return;
+        ByteBuffer buff;
+
+        buff << uint32_t(entry);
+        buff << uint32_t(proto->Class);
+        buff << uint32_t(proto->SubClass);
+        buff << int32_t(0);                                         // unk?
+        buff << uint32_t(proto->LockMaterial);
+        buff << uint32_t(proto->DisplayInfoID);
+        buff << uint32_t(proto->InventoryType);
+        buff << uint32_t(proto->SheathID);
+
+        SmsgDbReply replyPacket(entry, DB2_REPLY_ITEM, buff);
+        sendManagedPacket(replyPacket);
     }
-
-    data << uint32_t(entry);
-    data << uint32_t(DB2_REPLY_ITEM);
-    data << uint32_t(1322512290);                               // hotfix date
-
-    ByteBuffer buff;
-    buff << uint32_t(entry);
-    buff << uint32_t(proto->Class);
-    buff << uint32_t(proto->SubClass);
-    buff << int32_t(0);                                         // unk?
-    buff << uint32_t(proto->LockMaterial);
-    buff << uint32_t(proto->DisplayInfoID);
-    buff << uint32_t(proto->InventoryType);
-    buff << uint32_t(proto->SheathID);
-
-    data << uint32_t(buff.size());
-    data.append(buff);
-
-    SendPacket(&data);
-#endif
-#endif
 }
 
-void WorldSession::sendItemSparseDb2Reply([[maybe_unused]] uint32_t entry)
+void WorldSession::sendItemSparseDb2Reply(uint32_t entry)
 {
-#if VERSION_STRING >= Cata
-#if VERSION_STRING < Mop
-    WorldPacket data(SMSG_DB_REPLY, 526);
     ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
-    if (!proto)
+    if (proto)
     {
-        data << uint32_t(-1);                                   // entry
-        data << uint32_t(DB2_REPLY_SPARSE);
-        data << uint32_t(1322512289);                           // hotfix date
-        data << uint32_t(0);                                    // size of next block
-        return;
+        ByteBuffer buff;
+
+        buff << uint32_t(entry);
+        buff << uint32_t(proto->Quality);
+        buff << uint32_t(proto->Flags);
+        buff << uint32_t(proto->Flags2);
+        buff << float(1.0f);
+        buff << float(1.0f);
+        buff << uint32_t(proto->MaxCount);
+        buff << int32_t(proto->BuyPrice);
+        buff << uint32_t(proto->SellPrice);
+        buff << uint32_t(proto->InventoryType);
+        buff << int32_t(proto->AllowableClass);
+        buff << int32_t(proto->AllowableRace);
+        buff << uint32_t(proto->ItemLevel);
+        buff << uint32_t(proto->RequiredLevel);
+        buff << uint32_t(proto->RequiredSkill);
+        buff << uint32_t(proto->RequiredSkillRank);
+        buff << uint32_t(0);                                        // req spell
+        buff << uint32_t(proto->RequiredPlayerRank1);
+        buff << uint32_t(proto->RequiredPlayerRank2);
+        buff << uint32_t(proto->RequiredFactionStanding);
+        buff << uint32_t(proto->RequiredFaction);
+        buff << int32_t(proto->MaxCount);
+        buff << int32_t(0);                                         // stackable
+        buff << uint32_t(proto->ContainerSlots);
+
+        auto it = proto->generalStatsMap.begin();
+        for (uint8_t i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
+        {
+            if (it != proto->generalStatsMap.end())
+            {
+                buff << it->first;
+                ++it;
+            }
+            else
+            {
+                buff << uint32_t(0);
+            }
+        }
+
+        auto it2 = proto->generalStatsMap.begin();
+        for (uint8_t i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
+        {
+            if (it2 != proto->generalStatsMap.end())
+            {
+                buff << it2->second;
+                ++it;
+            }
+            else
+            {
+                buff << int32_t(0);
+            }
+        }
+
+        for (uint32_t x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
+            buff << int32_t(0);                                     // unk
+
+        for (uint32_t x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
+            buff << int32_t(0);                                     // unk
+
+        buff << uint32_t(proto->ScalingStatsEntry);
+        buff << uint32_t(0);                                        // damage type
+        buff << uint32_t(proto->Delay);
+        buff << float(40);                                          // ranged range
+
+        for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+            buff << int32_t(0);
+
+        for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+            buff << uint32_t(0);
+
+        for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+            buff << int32_t(0);
+
+        for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+            buff << int32_t(0);
+
+        for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+            buff << uint32_t(0);
+
+        for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+            buff << int32_t(0);
+
+        buff << uint32_t(proto->Bonding);
+
+        // item name
+        utf8_string name = proto->Name;
+        buff << uint16_t(name.length());
+        if (name.length())
+            buff << name;
+
+        for (uint32_t i = 0; i < 3; ++i)                            // other 3 names
+            buff << uint16_t(0);
+
+        std::string desc = proto->Description;
+        buff << uint16_t(desc.length());
+        if (desc.length())
+            buff << desc;
+
+        buff << uint32_t(proto->PageId);
+        buff << uint32_t(proto->PageLanguage);
+        buff << uint32_t(proto->PageMaterial);
+        buff << uint32_t(proto->QuestId);
+        buff << uint32_t(proto->LockId);
+        buff << int32_t(proto->LockMaterial);
+        buff << uint32_t(proto->SheathID);
+        buff << int32_t(proto->RandomPropId);
+        buff << int32_t(proto->RandomSuffixId);
+        buff << uint32_t(proto->ItemSet);
+
+        buff << uint32_t(0);// area
+        buff << uint32_t(proto->MapID);
+        buff << uint32_t(proto->BagFamily);
+        buff << uint32_t(proto->TotemCategory);
+
+        for (uint32_t x = 0; x < MAX_ITEM_PROTO_SOCKETS; ++x)
+            buff << uint32_t(proto->Sockets[x].SocketColor);
+
+        for (uint32_t x = 0; x < MAX_ITEM_PROTO_SOCKETS; ++x)
+            buff << uint32_t(proto->Sockets[x].Unk);
+
+        buff << uint32_t(proto->SocketBonus);
+        buff << uint32_t(proto->GemProperties);
+        buff << float(proto->ArmorDamageModifier);
+        buff << int32_t(proto->ExistingDuration);
+        buff << uint32_t(proto->ItemLimitCategory);
+        buff << uint32_t(proto->HolidayId);
+        buff << float(proto->ScalingStatsFlag);                     // StatScalingFactor
+        buff << uint32_t(0);                                        // archaeology unk
+        buff << uint32_t(0);                                        // archaeology findinds count
+
+        SmsgDbReply replyPacket(entry, DB2_REPLY_SPARSE, buff);
+        sendManagedPacket(replyPacket);
     }
-
-    data << uint32_t(entry);
-    data << uint32_t(DB2_REPLY_SPARSE);
-    data << uint32_t(1322512290);                               // hotfix date
-
-    ByteBuffer buff;
-    buff << uint32_t(entry);
-    buff << uint32_t(proto->Quality);
-    buff << uint32_t(proto->Flags);
-    buff << uint32_t(proto->Flags2);
-    buff << float(1.0f);
-    buff << float(1.0f);
-    buff << uint32_t(proto->MaxCount);
-    buff << int32_t(proto->BuyPrice);
-    buff << uint32_t(proto->SellPrice);
-    buff << uint32_t(proto->InventoryType);
-    buff << int32_t(proto->AllowableClass);
-    buff << int32_t(proto->AllowableRace);
-    buff << uint32_t(proto->ItemLevel);
-    buff << uint32_t(proto->RequiredLevel);
-    buff << uint32_t(proto->RequiredSkill);
-    buff << uint32_t(proto->RequiredSkillRank);
-    buff << uint32_t(0);                                        // req spell
-    buff << uint32_t(proto->RequiredPlayerRank1);
-    buff << uint32_t(proto->RequiredPlayerRank2);
-    buff << uint32_t(proto->RequiredFactionStanding);
-    buff << uint32_t(proto->RequiredFaction);
-    buff << int32_t(proto->MaxCount);
-    buff << int32_t(0);                                         // stackable
-    buff << uint32_t(proto->ContainerSlots);
-
-    auto it = proto->generalStatsMap.begin();
-    for (uint8_t i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
-    {
-        if (it != proto->generalStatsMap.end())
-        {
-            data << it->first;
-            ++it;
-        }
-        else
-        {
-            data << uint32_t(0);
-        }
-    }
-
-    auto it2 = proto->generalStatsMap.begin();
-    for (uint8_t i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
-    {
-        if (it2 != proto->generalStatsMap.end())
-        {
-            data << it2->second;
-            ++it;
-        }
-        else
-        {
-            data << int32_t(0);
-        }
-    }
-
-    for (uint32_t x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
-        buff << int32_t(0);                                     // unk
-
-    for (uint32_t x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
-        buff << int32_t(0);                                     // unk
-
-    buff << uint32_t(proto->ScalingStatsEntry);
-    buff << uint32_t(0);                                        // damage type
-    buff << uint32_t(proto->Delay);
-    buff << float(40);                                          // ranged range
-
-    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
-        buff << int32_t(0);
-
-    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
-        buff << uint32_t(0);
-
-    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
-        buff << int32_t(0);
-
-    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
-        buff << int32_t(0);
-
-    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
-        buff << uint32_t(0);
-
-    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
-        buff << int32_t(0);
-
-    buff << uint32_t(proto->Bonding);
-
-    // item name
-    utf8_string name = proto->Name;
-    buff << uint16_t(name.length());
-    if (name.length())
-        buff << name;
-
-    for (uint32_t i = 0; i < 3; ++i)                            // other 3 names
-        buff << uint16_t(0);
-
-    std::string desc = proto->Description;
-    buff << uint16_t(desc.length());
-    if (desc.length())
-        buff << desc;
-
-    buff << uint32_t(proto->PageId);
-    buff << uint32_t(proto->PageLanguage);
-    buff << uint32_t(proto->PageMaterial);
-    buff << uint32_t(proto->QuestId);
-    buff << uint32_t(proto->LockId);
-    buff << int32_t(proto->LockMaterial);
-    buff << uint32_t(proto->SheathID);
-    buff << int32_t(proto->RandomPropId);
-    buff << int32_t(proto->RandomSuffixId);
-    buff << uint32_t(proto->ItemSet);
-
-    buff << uint32_t(0);// area
-    buff << uint32_t(proto->MapID);
-    buff << uint32_t(proto->BagFamily);
-    buff << uint32_t(proto->TotemCategory);
-
-    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SOCKETS; ++x)
-        buff << uint32_t(proto->Sockets[x].SocketColor);
-
-    for (uint32_t x = 0; x < MAX_ITEM_PROTO_SOCKETS; ++x)
-        buff << uint32_t(proto->Sockets[x].Unk);
-
-    buff << uint32_t(proto->SocketBonus);
-    buff << uint32_t(proto->GemProperties);
-    buff << float(proto->ArmorDamageModifier);
-    buff << int32_t(proto->ExistingDuration);
-    buff << uint32_t(proto->ItemLimitCategory);
-    buff << uint32_t(proto->HolidayId);
-    buff << float(proto->ScalingStatsFlag);                     // StatScalingFactor
-    buff << uint32_t(0);                                        // archaeology unk
-    buff << uint32_t(0);                                        // archaeology findinds count
-
-    data << uint32_t(buff.size());
-    data.append(buff);
-
-    SendPacket(&data);
-#endif
-#endif
 }
 
 void WorldSession::sendBroadcastDb2Reply(uint32_t entry)
 {
     ByteBuffer buffer;
+
     std::string defaultText = LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
     std::string alternativeText = LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
 
@@ -1692,14 +1662,8 @@ void WorldSession::sendBroadcastDb2Reply(uint32_t entry)
 
     buffer << uint32_t(1);
 
-    WorldPacket data(SMSG_DB_REPLY, (4 + 4 + 4 + 4 + buffer.size()));
-    data << uint32_t(entry);
-    data << uint32_t(time(NULL));
-    data << uint32_t(DB2_REPLY_BROADCAST);
-    data << uint32_t(buffer.size());
-    data.append(buffer);
-
-    SendPacket(&data);
+    SmsgDbReply replyPacket(entry, DB2_REPLY_BROADCAST, buffer);
+    sendManagedPacket(replyPacket);
 }
 
 void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
@@ -1713,14 +1677,12 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
     {
         case DB2_REPLY_ITEM:
         {
-            if (protocol.isCata())
-                sendItemDb2Reply(srlPacket.entry);
+            sendItemDb2Reply(srlPacket.entry);
         }
         break;
         case DB2_REPLY_SPARSE:
         {
-            if (protocol.isCata())
-                sendItemSparseDb2Reply(srlPacket.entry);
+            sendItemSparseDb2Reply(srlPacket.entry);
         }
         break;
         case DB2_REPLY_BROADCAST:
