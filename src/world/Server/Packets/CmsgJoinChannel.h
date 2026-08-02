@@ -13,7 +13,7 @@ namespace AscEmu::Packets
     class CmsgJoinChannel : public ManagedPacket
     {
     public:
-        utf8_string channelName;
+        std::string channelName;
         std::string password;
         uint32_t dbcId;
         uint16_t unk;

@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include <cstdint>
 
+#include "Spell/SpellCastTargets.hpp"
+
 namespace AscEmu::Packets
 {
     class CmsgCastSpell : public ManagedPacket

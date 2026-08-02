@@ -701,11 +701,8 @@ protected:
         void handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/);        //>= Cata
         void handleTimeSyncRespOpcode(WorldPacket& recvPacket);             //>= Cata
         void handleObjectUpdateFailedOpcode(WorldPacket& recvPacket);       //>= Cata
-        void handleRequestHotfix(WorldPacket& recvPacket);                  //>= Cata
+        
         void handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/);  //>= Cata
-        void sendItemDb2Reply(uint32_t entry);                              //>= Cata
-        void sendItemSparseDb2Reply(uint32_t entry);                        //>= Cata
-        void sendBroadcastDb2Reply(uint32_t entry);                         //>= Mop
 
         void handleRemoveGlyph(WorldPacket& recvPacket);                    //> TBC
         void handleBarberShopResult(WorldPacket& recvPacket);               //> TBC
@@ -714,6 +711,14 @@ protected:
         void handleAmmoSetOpcode(WorldPacket& recvPacket);
         void handleGameObjectUse(WorldPacket& recvPacket);
         void handleInspectOpcode(WorldPacket& recvPacket);
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // HotfixHandler.cpp
+
+        void handleRequestHotfix(WorldPacket& recvPacket);                  //>= Cata
+        void sendItemDb2Reply(uint32_t entry);                              //>= Cata
+        void sendItemSparseDb2Reply(uint32_t entry);                        //>= Cata
+        void sendBroadcastDb2Reply(uint32_t entry);                         //>= Mop
 
     // \todo move to seperated file
 private:

@@ -27,6 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Strings.hpp"
+#include "Server/WorldSession.h"
 
 using namespace AscEmu::Packets;
 

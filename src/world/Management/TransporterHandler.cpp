@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include <ranges>
 
 TransportHandler& TransportHandler::getInstance()
 {

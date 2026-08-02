@@ -26,6 +26,7 @@
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Packets/SmsgReceivedMail.h"
 #include "Utilities/CommonTime.hpp"
+#include "Server/WorldSession.h"
 
 MailSystem& MailSystem::getInstance()
 {

@@ -11,6 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Group.h"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
+#include "Chat/Channel.hpp"
+#include "Server/WorldSession.h"
 
 #include <shared_mutex>
 #include <type_traits>

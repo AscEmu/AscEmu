@@ -45,6 +45,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Summons/SummonHandler.hpp"
 #include "Utilities/Random.hpp"
+#include "Server/WorldSession.h"
 
 uint8_t CreatureProperties::generateRandomDisplayIdAndReturnGender(uint32_t* displayId) const
 {

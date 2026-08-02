@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WDBDefines.hpp"
 
 #include <cstring>
+#include <string>
 #include <map>
 #include <set>
 

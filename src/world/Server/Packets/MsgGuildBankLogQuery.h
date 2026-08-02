@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include <cstdint>
 
+#include "Utilities/Util.hpp"
+
 struct GuildBankMoneyLog
 {
     uint8_t action;
@@ -54,7 +56,7 @@ namespace AscEmu::Packets
                 if (tabId < 6)
                     packet << log.stackCount;
 
-                const uint32_t currentTime = static_cast<uint32_t>(UNIXTIME);
+                const uint32_t currentTime = ::Util::getMSTime();
                 packet << uint32_t(currentTime - log.timestamp);
             }
             return true;

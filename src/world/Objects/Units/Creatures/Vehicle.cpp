@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/EventMgr.h"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Server/WorldSession.h"
 
 #ifdef FT_VEHICLES
 
