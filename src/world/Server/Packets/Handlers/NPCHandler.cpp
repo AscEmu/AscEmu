@@ -695,10 +695,10 @@ void WorldSession::handleNpcTextQueryOpcode(WorldPacket& recvPacket)
         if (localesNpcText)
         {
             for (uint8_t i = 0; i < 8; ++i)
-                buffer << float(pGossip->textHolder[i].probability); //probability
+                buffer << float(pGossip->textHolder[i].probability); // probability
 
             for (uint8_t i = 0; i < 8; ++i)
-                buffer << uint32_t(srlPacket.text_id);  //broadcast text id
+                buffer << uint32_t(srlPacket.text_id); // broadcast text id
 
             for (uint8_t i = 0; i < 8; ++i)
             {
@@ -711,10 +711,10 @@ void WorldSession::handleNpcTextQueryOpcode(WorldPacket& recvPacket)
         else
         {
             for (uint8_t i = 0; i < 8; ++i)
-                buffer << float(pGossip->textHolder[i].probability); //probability
+                buffer << float(pGossip->textHolder[i].probability); // probability
 
             for (uint8_t i = 0; i < 8; ++i)
-                buffer << uint32_t(srlPacket.text_id);  //broadcast text id
+                buffer << uint32_t(srlPacket.text_id); // broadcast text id
 
             for (uint8_t i = 0; i < 8; ++i)
             {
@@ -727,22 +727,22 @@ void WorldSession::handleNpcTextQueryOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        buffer << uint32_t(1);  //unk 
+        buffer << uint32_t(1); // unk 
 
         for (uint8_t i = 0; i < 7; ++i)
-            buffer << uint32_t(0);  //probability
+            buffer << uint32_t(0); // probability
 
         buffer << uint32_t(1);  //unk
 
         for (uint8_t i = 0; i < 7; ++i)
-            buffer << uint32_t(0);  //broadcast text id
+            buffer << uint32_t(0); // broadcast text id
 
-        buffer << std::string(_player->getSession()->LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU));
+        buffer << std::string(_player->getSession()->localizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU));
     }
 
     data << uint32_t(buffer.size());
     data.append(buffer);
-    data.writeBit(1); //write cache?
+    data.writeBit(1); // write cache?
     data.flushBits();
 #endif
 
