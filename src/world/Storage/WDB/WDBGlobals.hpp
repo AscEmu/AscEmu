@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WDBContainer.hpp"
 #include "WDBLoader.hpp"
 #include "WDBStructures.hpp"
+#include "WDBTraits.hpp"
 
 #include <cstring>
 #include <filesystem>
@@ -183,7 +184,7 @@ namespace WDB
                              WDB::WDBStore<RuntimeEntry>& storage,
                              const std::string& dbcPath, MapperF&& mapFields)
     {
-        using Traits = WDB::DbcTraits<RuntimeEntry>;
+        using Traits = DbcTraits<RuntimeEntry>;
         std::string const filename = Traits::filename;
 
         std::string dbcFilePath = dbcPath + filename;

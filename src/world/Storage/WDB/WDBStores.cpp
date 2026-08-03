@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AEVersion.hpp"
 #include "Server/World.h"
+#include "WDBContainer.hpp"
 #include "WDBGlobals.hpp"
 #include "WDBStructures.hpp"
 #include "Logging/Logger.hpp"
@@ -18,6 +19,13 @@ This file is released under the MIT license. See README-MIT for more information
     #include "Objects/Units/Players/PlayerDefines.hpp"
     #include "Spell/SpellAura.hpp"
 #endif
+
+#include <algorithm>
+#include <concepts>
+#include <cstdint>
+#include <iterator>
+#include <string>
+#include <type_traits>
 
 float SERVER_DECL GetRadius(WDB::Structures::SpellRadiusEntry const* radius)
 {
