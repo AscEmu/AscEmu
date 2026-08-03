@@ -555,7 +555,7 @@ void WorldSession::handleWorldTeleportOpcode(WorldPacket& recvPacket)
 
     if (!HasGMPermissions())
     {
-        SendNotification("You do not have permission to use this function.");
+        sendNotification("You do not have permission to use this function.");
         return;
     }
 

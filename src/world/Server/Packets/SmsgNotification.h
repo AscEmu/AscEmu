@@ -19,8 +19,8 @@ namespace AscEmu::Packets
         {
         }
 
-        SmsgNotification(std::string text) :
-            ManagedPacket(SMSG_NOTIFICATION, text.size() + 2),
+        SmsgNotification(std::string_view text) :
+            ManagedPacket(SMSG_NOTIFICATION, 0),
             text(text)
         {
         }

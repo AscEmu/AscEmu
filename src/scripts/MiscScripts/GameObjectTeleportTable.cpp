@@ -50,7 +50,7 @@ public:
 
             if (required_level > pPlayer->getLevel())
             {
-                pPlayer->broadcastMessage("You must be at least level %u to use this portal", required_level);
+                pPlayer->broadcastMessage("You must be at least level {} to use this portal", required_level);
                 return;
             }
             else if (req_class != 0 && req_class != pPlayer->getClass())

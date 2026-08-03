@@ -221,7 +221,7 @@ bool handleKickPlayerCommand(BaseConsole* baseConsole, int argumentCount, std::s
     worldAnnounce << MSG_COLOR_LIGHTBLUE << "Console:|r " << player->getName().c_str() << " was removed from the server. Reason: " << kickReason;
     sWorld.sendMessageToAll(worldAnnounce.str());
 
-    player->broadcastMessage("You are now being removed by the game by an administrator via the console. Reason: %s", kickReason.c_str());
+    player->broadcastMessage("You are now being removed by the game by an administrator via the console. Reason: {}", kickReason);
     player->kickFromServer(5000);
     baseConsole->Write("Kicked player %s.\r\n", player->getName().c_str());
 
@@ -336,10 +336,9 @@ bool handleSendWAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std
     if (argumentCount > 0 && consoleInput.empty())
         return false;
 
-    std::stringstream areaMessage;
-    areaMessage << MSG_COLOR_LIGHTBLUE << "Console: |r" << consoleInput;
+    const auto areaMessage = fmt::format("{}Console: |r{}", MSG_COLOR_LIGHTBLUE, consoleInput);
 
-    sWorld.sendAreaTriggerMessage(areaMessage.str());
+    sWorld.sendAreaTriggerMessage(areaMessage);
     baseConsole->Write("Message '%s'  has been sent to all clients.\r\n", consoleInput.c_str());
 
     return true;

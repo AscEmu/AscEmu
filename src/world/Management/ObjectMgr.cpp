@@ -1493,7 +1493,7 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* _object, uint32_t _gossipMenu
             if (gossipMenuItem.requirementType == 3)
             {
                 if (_player->canGainXp())
-                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, _player->getSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
+                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, _player->getSession()->localizedGossipOption(gossipMenuItem.onChooseData2));
 
                 continue;
             }
@@ -1501,7 +1501,7 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* _object, uint32_t _gossipMenu
             if (gossipMenuItem.requirementType == 4)
             {
                 if (!_player->canGainXp())
-                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, _player->getSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
+                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, _player->getSession()->localizedGossipOption(gossipMenuItem.onChooseData2));
 
                 continue;
             }
@@ -1572,7 +1572,7 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* _object, Player* 
                     if (_player->getFactionStanding(itr.second.onChooseData) >= static_cast<int32_t>(itr.second.onChooseData2))
                         _player->castSpell(_player, sSpellMgr.getSpellInfo(itr.second.onChooseData3), true);
                     else
-                        _player->broadcastMessage(_player->getSession()->LocalizedWorldSrv(itr.second.onChooseData4));
+                        _player->broadcastMessage(_player->getSession()->localizedWorldSrv(itr.second.onChooseData4));
 
                     GossipMenu::senGossipComplete(_player);
                 }

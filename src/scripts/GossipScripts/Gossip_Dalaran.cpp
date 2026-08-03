@@ -23,7 +23,7 @@ class DedicationOfHonorGossip : public GossipScript
 public:
     void onHello(Object* object, Player* player) override
     {
-        GossipMenu::sendQuickMenu(object->getGuid(), GT_DEDICATION_OF_HONOR, player, 1, GOSSIP_ICON_CHAT, player->getSession()->LocalizedGossipOption(GI_SEE_FALL_LICH_KING));
+        GossipMenu::sendQuickMenu(object->getGuid(), GT_DEDICATION_OF_HONOR, player, 1, GOSSIP_ICON_CHAT, player->getSession()->localizedGossipOption(GI_SEE_FALL_LICH_KING));
     }
 
     void onSelectOption(Object* /*object*/, Player* player, uint32_t /*id*/, const char* /*enteredCode*/, uint32_t /*gossipId*/) override

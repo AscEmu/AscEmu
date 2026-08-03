@@ -145,7 +145,7 @@ public:
     bool HandleBGMenuCommand(const char* args, WorldSession* m_session);
     bool HandleBGPauseCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleBGPlaySoundCommand(const char* args, WorldSession* m_session);
-    bool HandleBGStartCommand(const char* /*args*/, WorldSession* m_session);
+    bool handleBGStartCommand(std::string_view /*args*/, WorldSession* session);
     bool HandleBGSendStatusCommand(const char* args, WorldSession* m_session);
     bool HandleBGSetScoreCommand(const char* args, WorldSession* m_session);
     bool HandleBGSetWorldStateCommand(const char* args, WorldSession* m_session);
@@ -465,12 +465,12 @@ public:
     bool HandleServerSaveCommand(const char* args, WorldSession* m_session);
     bool HandleServerSaveAllCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleServerSetMotdCommand(const char* args, WorldSession* m_session);
-    bool HandleServerShutdownCommand(const char* args, WorldSession* m_session);
+    bool handleServerShutdownCommand(std::string_view args, WorldSession* m_session);
     bool HandleServerCancelShutdownCommand(const char* /*args*/, WorldSession* m_session);
-    bool HandleServerRestartCommand(const char* args, WorldSession* m_session);
+    bool handleServerRestartCommand(std::string_view args, WorldSession* m_session);
     bool HandleServerReloadScriptsCommand(const char* /*args*/, WorldSession* m_session);
 
-    //Server reload commands
+    // Server reload commands
     bool HandleReloadGameobjectsCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleReloadCreaturesCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleReloadAreaTriggersCommand(const char* /*args*/, WorldSession* m_session);
@@ -525,7 +525,7 @@ public:
     bool HandleAppearCommand(const char* args, WorldSession* m_session);
     bool HandleBlockAppearCommand(const char* args, WorldSession* m_session);
     bool HandleAnnounceCommand(const char* args, WorldSession* m_session);
-    bool HandleWAnnounceCommand(const char* args, WorldSession* m_session);
+    bool handleWAnnounceCommand(std::string_view args, WorldSession* m_session);
     bool HandlePlayerInfo(const char* args, WorldSession* m_session);
     bool HandleIPUnBanCommand(const char* args, WorldSession* m_session);
     bool HandleUnBanCharacterCommand(const char* args, WorldSession* m_session);

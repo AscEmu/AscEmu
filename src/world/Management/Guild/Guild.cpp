@@ -115,7 +115,7 @@ void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName
     const auto memberCount = guild->getMembersCount();
     if (worldConfig.guild.maxMembers > 0 && memberCount >= worldConfig.guild.maxMembers)
     {
-        session->SystemMessage("Your guild is full.");
+        session->systemMessage("Your guild is full.");
         return;
     }
 

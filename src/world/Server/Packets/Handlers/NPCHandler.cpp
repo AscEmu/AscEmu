@@ -430,7 +430,7 @@ void WorldSession::sendTrainerList(Creature* creature)
 
     std::string uiMessage;
     if (trainer->UIMessage == "DMSG")
-        uiMessage = _player->getSession()->LocalizedWorldSrv(ServerString::SS_WHAT_CAN_I_TEACH_YOU);
+        uiMessage = _player->getSession()->localizedWorldSrv(ServerString::SS_WHAT_CAN_I_TEACH_YOU);
     else
         uiMessage = trainer->UIMessage;
 
@@ -677,8 +677,8 @@ void WorldSession::handleNpcTextQueryOpcode(WorldPacket& recvPacket)
         for (uint8_t i = 0; i < 8; ++i)
         {
             data << float(1.0f);              // Prob
-            data << _player->getSession()->LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
-            data << _player->getSession()->LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
+            data << _player->getSession()->localizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
+            data << _player->getSession()->localizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
             data << uint32_t(0x00);           // Language
 
             for (uint8_t e = 0; e < GOSSIP_EMOTE_COUNT; e++)

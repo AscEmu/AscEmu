@@ -269,7 +269,7 @@ void Channel::say(Player* plr, std::string message, Player* for_gm_client, bool 
 
     if (plr->getLevel() < m_minimumLevel)
     {
-        plr->broadcastMessage("You must be level %u to speak in the channel, '%s'.", m_minimumLevel, m_channelName.c_str());
+        plr->broadcastMessage("You must be level {} to speak in the channel, '{}'.", m_minimumLevel, m_channelName);
         return;
     }
 

@@ -652,7 +652,7 @@ void WorldSession::handleReadyCheckOpcode(WorldPacket& recvPacket)
         }
         else
         {
-            SendNotification("You do not have permission to perform that function.");
+            sendNotification("You do not have permission to perform that function.");
         }
     }
     else

@@ -153,7 +153,7 @@ bool ChatCommandHandler::HandleTicketCloseCommand(const char* args, WorldSession
 
     if (ticketOwner != nullptr)
     {
-        ticketOwner->getSession()->SystemMessage("Your Ticket was closed by %s Comment: %s", player->getName().c_str(), comment);
+        ticketOwner->getSession()->systemMessage("Your Ticket was closed by %s Comment: %s", player->getName().c_str(), comment);
 
         // Notify player about removing ticket
         SmsgGmTicketDeleteTicket deletePacket(9);

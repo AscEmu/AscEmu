@@ -65,7 +65,7 @@ CommandTableStorage::CommandTableStorage()
         {"battleground setscore",         "e", 1, wrap(&ChatCommandHandler::HandleBGSetScoreCommand),           "Sets bg score <Teamid> <Score>." },
         {"battleground setworldstate",    "e", 1, wrap(&ChatCommandHandler::HandleBGSetWorldStateCommand),      "Sets singe worldsate value." },
         {"battleground setworldstates",   "e", 1, wrap(&ChatCommandHandler::HandleBGSetWorldStatesCommand),     "Sets multipe worldstate values for start/end id" },
-        {"battleground start",            "e", 0, wrap(&ChatCommandHandler::HandleBGStartCommand),              "Starts current battleground match." },
+        {"battleground start",            "e", 0, wrap(&ChatCommandHandler::handleBGStartCommand),              "Starts current battleground match." },
 
         {"blockappear",                   "v", 0, wrap(&ChatCommandHandler::HandleBlockAppearCommand),          "Blocks appearance to your position." },
         {"blocksummon",                   "v", 0, wrap(&ChatCommandHandler::HandleBlockSummonCommand),          "Blocks summons to others position." },
@@ -431,9 +431,9 @@ CommandTableStorage::CommandTableStorage()
         {"server save",                   "s", 0, wrap(&ChatCommandHandler::HandleServerSaveCommand),             "Save targeted or named player." },
         {"server saveall",                "s", 0, wrap(&ChatCommandHandler::HandleServerSaveAllCommand),          "Save all online player." },
         {"server setmotd",                "m", 1, wrap(&ChatCommandHandler::HandleServerSetMotdCommand),          "Sets server MessageOfTheDay." },
-        {"server shutdown",               "z", 0, wrap(&ChatCommandHandler::HandleServerShutdownCommand),         "Initiates server shutdown in <x> seconds." },
+        {"server shutdown",               "z", 0, wrap(&ChatCommandHandler::handleServerShutdownCommand),         "Initiates server shutdown in <x> seconds." },
         {"server cancelshutdown",         "z", 0, wrap(&ChatCommandHandler::HandleServerCancelShutdownCommand),   "Cancels a Server Restart/Shutdown." },
-        {"server restart",                "z", 0, wrap(&ChatCommandHandler::HandleServerRestartCommand),          "Initiates server restart in <x> seconds." },
+        {"server restart",                "z", 0, wrap(&ChatCommandHandler::handleServerRestartCommand),          "Initiates server restart in <x> seconds." },
 
         {"server reloadtable",                      "m", 0 },
         {"server reloadtable gameobjects",          "z", 0, wrap(&ChatCommandHandler::HandleReloadGameobjectsCommand),       "Reload gameobjets" },
@@ -488,7 +488,7 @@ CommandTableStorage::CommandTableStorage()
         {"vehicle addpassenger",          "m", 1, wrap(&ChatCommandHandler::HandleVehicleAddPassengerCommand),       "Adds a new NPC passenger to the vehicle" },
 #endif
 
-        {"wannounce",                     "u", 1, wrap(&ChatCommandHandler::HandleWAnnounceCommand),              "Sends a widescreen announcement to all players." },
+        {"wannounce",                     "u", 1, wrap(&ChatCommandHandler::handleWAnnounceCommand),              "Sends a widescreen announcement to all players." },
 
         {"waypoint",                      "0", 0 },
         {"waypoint add",                  "w", 0, wrap(&ChatCommandHandler::HandleWayPointAddCommand),           "Add wp for selected creature at current pos." },

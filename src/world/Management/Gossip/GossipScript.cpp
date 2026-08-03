@@ -97,8 +97,8 @@ void GossipTrainer::onHello(Object* object, Player* player)
                 if (pos != std::string::npos)
                     name = name.substr(0, pos);
 
-                auto msg = std::string(player->getSession()->LocalizedGossipOption(ISEEK));
-                msg += std::string(player->getSession()->LocalizedGossipOption(TRAINING)) + ", " + name + ".";
+                auto msg = std::string(player->getSession()->localizedGossipOption(ISEEK));
+                msg += std::string(player->getSession()->localizedGossipOption(TRAINING)) + ", " + name + ".";
                 menu.addItem(GOSSIP_ICON_TRAINER, 0, 1, msg);
 
                 if (creature->isVendor())
@@ -161,7 +161,7 @@ void GossipAuctioneer::onHello(Object* object, Player* player)
         if (!sMySQLStore.getNpcGossipText(gossipTextId))
             gossipTextId = DefaultGossipTextId;
 
-        GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_VENDOR, player->getSession()->LocalizedGossipOption(AUCTIONEER));
+        GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_VENDOR, player->getSession()->localizedGossipOption(AUCTIONEER));
     }
 }
 
@@ -247,9 +247,9 @@ void GossipCharterGiver::onHello(Object* object, Player* player)
             gossipTextId = DefaultGossipTextId;
 
         if (creature->isTabardDesigner())
-            GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->getSession()->LocalizedGossipOption(FOUND_GUILD));
+            GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->getSession()->localizedGossipOption(FOUND_GUILD));
         else
-            GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->getSession()->LocalizedGossipOption(FOUND_ARENATEAM));
+            GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->getSession()->localizedGossipOption(FOUND_ARENATEAM));
     }
 }
 
@@ -317,7 +317,7 @@ void GossipStableMaster::onHello(Object* object, Player* player)
         gossipTextId = DefaultGossipTextId;
 
     if (player->getClass() == ::HUNTER)
-        GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->getSession()->LocalizedGossipOption(STABLE_MY_PET));
+        GossipMenu::sendQuickMenu(object->getGuid(), gossipTextId, player, 1, GOSSIP_ICON_CHAT, player->getSession()->localizedGossipOption(STABLE_MY_PET));
     else
         GossipMenu::sendSimpleMenu(object->getGuid(), gossipTextId, player);
 }
@@ -359,7 +359,7 @@ void GossipPetTrainer::onSelectOption(Object* object, Player* player, uint32_t I
         } break;
         case 2:
         {
-            GossipMenu::sendQuickMenu(object->getGuid(), TXTID_PETUNTRAIN, player, 3, GOSSIP_ICON_CHAT, player->getSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET));
+            GossipMenu::sendQuickMenu(object->getGuid(), TXTID_PETUNTRAIN, player, 3, GOSSIP_ICON_CHAT, player->getSession()->localizedGossipOption(PETTRAINER_TALENTRESET));
         } break;
         default:
         {
@@ -394,7 +394,7 @@ void GossipClassTrainer::onHello(Object* object, Player* player)
             {
                 menu.setTextID(trainer->Can_Train_Gossip_TextId);
 
-                std::string menuItemName = playerSession->LocalizedGossipOption(ISEEK);
+                std::string menuItemName = playerSession->localizedGossipOption(ISEEK);
                 std::string creatureName = creature->GetCreatureProperties()->Name;
 
                 std::string::size_type pos = creatureName.find(' ');
@@ -405,42 +405,42 @@ void GossipClassTrainer::onHello(Object* object, Player* player)
                 switch (playerClass)
                 {
                     case ::MAGE:
-                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_MAGE));
+                        menuItemName += std::string(playerSession->localizedGossipOption(GI_MAGE));
                         break;
                     case ::SHAMAN:
-                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_SHAMAN));
+                        menuItemName += std::string(playerSession->localizedGossipOption(GI_SHAMAN));
                         break;
                     case ::WARRIOR:
-                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_WARRIOR));
+                        menuItemName += std::string(playerSession->localizedGossipOption(GI_WARRIOR));
                         break;
                     case ::PALADIN:
-                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_PALADIN));
+                        menuItemName += std::string(playerSession->localizedGossipOption(GI_PALADIN));
                         break;
                     case ::WARLOCK:
-                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_WARLOCK));
+                        menuItemName += std::string(playerSession->localizedGossipOption(GI_WARLOCK));
                         break;
                     case ::HUNTER:
-                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_HUNTER));
+                        menuItemName += std::string(playerSession->localizedGossipOption(GI_HUNTER));
                         break;
                     case ::ROGUE:
-                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_ROGUE));
+                        menuItemName += std::string(playerSession->localizedGossipOption(GI_ROGUE));
                         break;
                     case ::DRUID:
-                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_DRUID));
+                        menuItemName += std::string(playerSession->localizedGossipOption(GI_DRUID));
                         break;
                     case ::PRIEST:
-                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_PRIEST));
+                        menuItemName += std::string(playerSession->localizedGossipOption(GI_PRIEST));
                         break;
     #if VERSION_STRING > TBC
                     case ::DEATHKNIGHT:
-                        menuItemName += std::string(playerSession->LocalizedGossipOption(GI_DEATHKNIGHT));
+                        menuItemName += std::string(playerSession->localizedGossipOption(GI_DEATHKNIGHT));
                         break;
     #endif
                     default:
                         break;
                 }
                 menuItemName += " ";
-                menuItemName += std::string(playerSession->LocalizedGossipOption(TRAINING)) + ", " + creatureName + ".";
+                menuItemName += std::string(playerSession->localizedGossipOption(TRAINING)) + ", " + creatureName + ".";
 
                 menu.addItem(GOSSIP_ICON_TRAINER, 0, 1, menuItemName);
 
@@ -473,7 +473,7 @@ void GossipClassTrainer::onSelectOption(Object* object, Player* player, uint32_t
         } break;
         case 2:
         {
-            GossipMenu::sendQuickMenu(object->getGuid(), TXTID_TALENTRESET, player, 3, GOSSIP_ICON_CHAT, playerSession->LocalizedGossipOption(CLASSTRAINER_TALENTCONFIRM), 3);
+            GossipMenu::sendQuickMenu(object->getGuid(), TXTID_TALENTRESET, player, 3, GOSSIP_ICON_CHAT, playerSession->localizedGossipOption(CLASSTRAINER_TALENTCONFIRM), 3);
         } break;
         case 3:
         {
@@ -482,14 +482,14 @@ void GossipClassTrainer::onSelectOption(Object* object, Player* player, uint32_t
         } break;
         case 4:
         {
-            GossipMenu::sendQuickMenu(object->getGuid(), TXTID_DUALSPECPURCHASE, player, 5, GOSSIP_ICON_CHAT, playerSession->LocalizedWorldSrv(PURCHASE_DTS), 10000000, playerSession->LocalizedWorldSrv(SURE_TO_PURCHASE_DTS));
+            GossipMenu::sendQuickMenu(object->getGuid(), TXTID_DUALSPECPURCHASE, player, 5, GOSSIP_ICON_CHAT, playerSession->localizedWorldSrv(PURCHASE_DTS), 10000000, playerSession->localizedWorldSrv(SURE_TO_PURCHASE_DTS));
         } break;
         case 5:
         {
             if (!player->hasEnoughCoinage(10000000))
             {
                 GossipMenu::senGossipComplete(player);
-                playerSession->SendNotification(playerSession->LocalizedWorldSrv(NOT_ENOUGH_MONEY_DTS));
+                playerSession->sendNotification(playerSession->localizedWorldSrv(NOT_ENOUGH_MONEY_DTS));
             }
             else
             {

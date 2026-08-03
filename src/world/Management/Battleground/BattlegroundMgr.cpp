@@ -275,7 +275,7 @@ void BattlegroundManager::handleBattlegroundJoin(WorldSession* session, WorldPac
         const auto itr = m_instances[srlPacket.bgType].find(srlPacket.instanceId);
         if (itr == m_instances[srlPacket.bgType].end())
         {
-            session->systemMessage(session->LocalizedWorldSrv(SS_JOIN_INVALID_INSTANCE));
+            session->systemMessage(session->localizedWorldSrv(SS_JOIN_INVALID_INSTANCE));
             return;
         }
     }
@@ -348,7 +348,7 @@ void BattlegroundManager::handleGetBattlegroundQueueCommand(WorldSession* sessio
 
             foundSomething = true;
 
-            ss << session->LocalizedWorldSrv(GetBattlegroundCaption(static_cast<BattlegroundDef::Types>(_bgType)));
+            ss << session->localizedWorldSrv(GetBattlegroundCaption(static_cast<BattlegroundDef::Types>(_bgType)));
 
             switch (_levelGroup)
             {
@@ -407,7 +407,7 @@ void BattlegroundManager::handleGetBattlegroundQueueCommand(WorldSession* sessio
                 ss << ")";
             }
 
-            session->SystemMessage(ss.str().c_str());
+            session->systemMessage(ss.str().c_str());
             ss.rdbuf()->str("");
         }
 
@@ -417,17 +417,17 @@ void BattlegroundManager::handleGetBattlegroundQueueCommand(WorldSession* sessio
             {
                 foundSomething = true;
 
-                ss << session->LocalizedWorldSrv(GetBattlegroundCaption(static_cast<BattlegroundDef::Types>(_bgType))) << " (rated): ";
+                ss << session->localizedWorldSrv(GetBattlegroundCaption(static_cast<BattlegroundDef::Types>(_bgType))) << " (rated): ";
                 ss << static_cast<uint32_t>(m_queuedGroups[_bgType].size()) << " groups queued";
 
-                session->SystemMessage(ss.str().c_str());
+                session->systemMessage(ss.str().c_str());
                 ss.rdbuf()->str("");
             }
         }
     }
 
     if (!foundSomething)
-        session->SystemMessage("There's nobody queued.");
+        session->systemMessage("There's nobody queued.");
 }
 
 void BattlegroundManager::eventQueueUpdate()
@@ -609,7 +609,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
                     if (iitr == m_instances[_bgType].end())
                     {
                         // queue no longer valid, since instance has closed since queuing
-                        player->getSession()->SystemMessage(player->getSession()->LocalizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_DELETED), player->getQueuedBgInstanceId());
+                        player->getSession()->systemMessage(player->getSession()->localizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_DELETED), player->getQueuedBgInstanceId());
                         player->setIsQueuedForBg(false);
                         player->setBgQueueType(0);
                         player->setQueuedBgInstanceId(0);
@@ -1187,7 +1187,7 @@ void BattlegroundManager::deleteBattleground(Battleground* battleground)
         {
             if (plr->getQueuedBgInstanceId() == battleground->getId())
             {
-                plr->getSession()->systemMessage(plr->getSession()->LocalizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_LONGER_EXISTS), battleground->getId());
+                plr->getSession()->systemMessage(plr->getSession()->localizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_LONGER_EXISTS), battleground->getId());
                 sendBattlefieldStatus(plr, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
                 plr->setIsQueuedForBg(false);
                 m_queuedPlayers[type][levelGroup].erase(it2);
@@ -1222,12 +1222,12 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
     {
         if (group->GetSubGroupCount() != 1)
         {
-            session->SystemMessage(session->LocalizedWorldSrv(SS_SORRY_RAID_GROUPS_JOINING_BG_ARE_UNSUPPORTED));
+            session->systemMessage(session->localizedWorldSrv(SS_SORRY_RAID_GROUPS_JOINING_BG_ARE_UNSUPPORTED));
             return;
         }
         if (group->GetLeader() != session->GetPlayer()->getPlayerInfo())
         {
-            session->SystemMessage(session->LocalizedWorldSrv(SS_MUST_BE_PARTY_LEADER_TO_ADD_GROUP_AN_ARENA));
+            session->systemMessage(session->localizedWorldSrv(SS_MUST_BE_PARTY_LEADER_TO_ADD_GROUP_AN_ARENA));
             return;
         }
 
@@ -1281,14 +1281,14 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
         {
             if (maxplayers == 0)
             {
-                session->SystemMessage(session->LocalizedWorldSrv(SS_TOO_MANY_PLAYERS_PARTY_TO_JOIN_OF_ARENA));
+                session->systemMessage(session->localizedWorldSrv(SS_TOO_MANY_PLAYERS_PARTY_TO_JOIN_OF_ARENA));
                 group->Unlock();
                 return;
             }
 
             if (itx->lastLevel < PLAYER_ARENA_MIN_LEVEL)
             {
-                session->SystemMessage(session->LocalizedWorldSrv(SS_SORRY_SOME_OF_PARTY_MEMBERS_ARE_NOT_LVL_70));
+                session->systemMessage(session->localizedWorldSrv(SS_SORRY_SOME_OF_PARTY_MEMBERS_ARE_NOT_LVL_70));
                 group->Unlock();
                 return;
             }
@@ -1297,7 +1297,7 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
             {
                 if (loggedInPlayer->getBattleground() || loggedInPlayer->isQueuedForBg())
                 {
-                    session->SystemMessage(session->LocalizedWorldSrv(
+                    session->systemMessage(session->localizedWorldSrv(
                         SS_ONE_OR_MORE_OF_PARTY_MEMBERS_ARE_ALREADY_QUEUED_OR_INSIDE_BG));
                     group->Unlock();
                     return;
@@ -1305,7 +1305,7 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
 
                 if (loggedInPlayer->getArenaTeam(type) != loggedInLeader->getArenaTeam(type))
                 {
-                    session->SystemMessage(session->LocalizedWorldSrv(
+                    session->systemMessage(session->localizedWorldSrv(
                         SS_ONE_OR_MORE_OF_YOUR_PARTY_MEMBERS_ARE_NOT_MEMBERS_OF_YOUR_TEAM));
                     group->Unlock();
                     return;

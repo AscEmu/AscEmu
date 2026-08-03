@@ -48,7 +48,7 @@ bool WorldSession::isSessionMuted()
 {
     if (m_muted && m_muted >= static_cast<uint32_t>(UNIXTIME))
     {
-        SystemMessage("Your voice is currently muted by a moderator.");
+        systemMessage("Your voice is currently muted by a moderator.");
         return true;
     }
 
@@ -69,8 +69,7 @@ bool WorldSession::isFloodProtectionTriggered()
         {
             if (worldConfig.chat.enableSendFloodProtectionMessage)
             {
-                _player->broadcastMessage("Your message has triggered serverside flood protection. You can speak again in %ld seconds.",
-                    floodTime - UNIXTIME);
+                _player->broadcastMessage("Your message has triggered serverside flood protection. You can speak again in {} seconds.", floodTime - UNIXTIME);
             }
             return true;
         }
@@ -173,7 +172,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             {
                 if (m_muted >= static_cast<uint32_t>(UNIXTIME))
                 {
-                    SystemMessage("You are currently muted by a moderator.");
+                    systemMessage("You are currently muted by a moderator.");
                     return;
                 }
             } break;
@@ -192,7 +191,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 
     if (g_chatFilter->isBlockedOrReplaceWord(srlPacket.message))
     {
-        SystemMessage("Your chat message was blocked by a server-side filter.");
+        systemMessage("Your chat message was blocked by a server-side filter.");
         return;
     }
 

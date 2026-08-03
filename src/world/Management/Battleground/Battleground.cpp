@@ -301,7 +301,7 @@ void Battleground::portPlayer(Player* plr, bool skip_teleport)
 
     if (m_hasEnded)
     {
-        plr->getSession()->systemMessage(plr->getSession()->LocalizedWorldSrv(ServerString::SS_YOU_CANNOT_JOIN_BG_AS_IT_HAS_ALREADY_ENDED));
+        plr->getSession()->systemMessage(plr->getSession()->localizedWorldSrv(ServerString::SS_YOU_CANNOT_JOIN_BG_AS_IT_HAS_ALREADY_ENDED));
         sBattlegroundManager.sendBattlefieldStatus(plr, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
         plr->setPendingBattleground(nullptr);
         return;
@@ -700,8 +700,8 @@ void Battleground::eventCountdown()
         {
             for (const auto itr : m_player)
                 if (itr && itr->getSession())
-                    itr->getSession()->SystemMessage(itr->getSession()->LocalizedWorldSrv(ServerString::SS_BATTLE_BEGIN_ONE_MINUTE),
-                                                     itr->getSession()->LocalizedWorldSrv(GetNameID()));
+                    itr->getSession()->systemMessage(itr->getSession()->localizedWorldSrv(ServerString::SS_BATTLE_BEGIN_ONE_MINUTE),
+                                                     itr->getSession()->localizedWorldSrv(GetNameID()));
         }
     }
     else if (m_countdownStage == 2)
@@ -714,8 +714,8 @@ void Battleground::eventCountdown()
         {
             for (const auto itr : m_player)
                 if (itr && itr->getSession())
-                    itr->getSession()->SystemMessage(itr->getSession()->LocalizedWorldSrv(ServerString::SS_THIRTY_SECONDS_UNTIL_THE_BATTLE),
-                                                     itr->getSession()->LocalizedWorldSrv(GetNameID()));
+                    itr->getSession()->systemMessage(itr->getSession()->localizedWorldSrv(ServerString::SS_THIRTY_SECONDS_UNTIL_THE_BATTLE),
+                                                     itr->getSession()->localizedWorldSrv(GetNameID()));
         }
     }
     else if (m_countdownStage == 3)
@@ -728,8 +728,8 @@ void Battleground::eventCountdown()
         {
             for (const auto itr : m_player)
                 if (itr && itr->getSession())
-                    itr->getSession()->SystemMessage(itr->getSession()->LocalizedWorldSrv(ServerString::SS_FIFTEEN_SECONDS_UNTIL_THE_BATTLE),
-                                                     itr->getSession()->LocalizedWorldSrv(GetNameID()));
+                    itr->getSession()->systemMessage(itr->getSession()->localizedWorldSrv(ServerString::SS_FIFTEEN_SECONDS_UNTIL_THE_BATTLE),
+                                                     itr->getSession()->localizedWorldSrv(GetNameID()));
         }
 
         sEventMgr.ModifyEventTime(this, EVENT_BATTLEGROUND_COUNTDOWN, 150);
@@ -742,8 +742,8 @@ void Battleground::eventCountdown()
         {
             for (const auto itr : m_player)
                 if (itr && itr->getSession())
-                    itr->getSession()->SystemMessage(itr->getSession()->LocalizedWorldSrv(ServerString::SS_THE_BATTLE_FOR_HAS_BEGUN),
-                                                     itr->getSession()->LocalizedWorldSrv(GetNameID()));
+                    itr->getSession()->systemMessage(itr->getSession()->localizedWorldSrv(ServerString::SS_THE_BATTLE_FOR_HAS_BEGUN),
+                                                     itr->getSession()->localizedWorldSrv(GetNameID()));
         }
 
         sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_COUNTDOWN);

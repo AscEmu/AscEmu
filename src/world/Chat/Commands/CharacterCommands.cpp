@@ -756,7 +756,7 @@ bool ChatCommandHandler::HandleCharAddItemSetCommand(const char* args, WorldSess
 
         if (!player->getItemInterface()->AddItemById(it->ItemId, 1, 0))
         {
-            m_session->SendNotification("No free slots left!");
+            m_session->sendNotification("No free slots left!");
             return true;
         }
 

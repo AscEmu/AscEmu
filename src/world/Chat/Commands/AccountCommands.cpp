@@ -77,7 +77,7 @@ bool ChatCommandHandler::handleAccountMuteCommand(const char* args, WorldSession
     if (pSession != nullptr)
     {
         pSession->m_muted = banned;
-        pSession->SystemMessage("Your account has been muted until %s by a GM. Until then, you will not be able to use chat.", tsstr.c_str());
+        pSession->systemMessage("Your account has been muted until %s by a GM. Until then, you will not be able to use chat.", tsstr.c_str());
     }
 
     return true;
@@ -94,7 +94,7 @@ bool ChatCommandHandler::handleAccountUnmuteCommand(const char* args, WorldSessi
     if (pSession != nullptr)
     {
         pSession->m_muted = 0;
-        pSession->SystemMessage("Your voice has restored. You may speak again.");
+        pSession->systemMessage("Your voice has restored. You may speak again.");
     }
 
     return true;

@@ -13,15 +13,15 @@ namespace AscEmu::Packets
     class SmsgAreaTriggerMessage : public ManagedPacket
     {
     public:
-        uint32_t unknown1;  //probably size
-        const char* text;
+        uint32_t unknown1; // probably size
+        std::string text;
         uint8_t unknown2;
 
         SmsgAreaTriggerMessage() : SmsgAreaTriggerMessage(0, "", 0)
         {
         }
 
-        SmsgAreaTriggerMessage(uint32_t unknown1, const char* text, uint8_t unknown2) :
+        SmsgAreaTriggerMessage(uint32_t unknown1, std::string_view text, uint8_t unknown2) :
             ManagedPacket(SMSG_AREA_TRIGGER_MESSAGE, 0),
             unknown1(unknown1),
             text(text),
@@ -32,7 +32,7 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
-            return 4 + strlen(text) + 1 + 1;
+            return sizeof(unknown1) + text.size() + 1 + sizeof(unknown2);
         }
 
         bool internalSerialise(WorldPacket& packet) override

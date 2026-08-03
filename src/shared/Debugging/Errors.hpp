@@ -25,10 +25,10 @@ inline void assertFailed(const char* fileName, int line, const char* expression)
     {                                                                                \
         if (!(EXPR))                                                                 \
         {                                                                            \
-            assertFailed(__FILE__, __LINE__, #EXPR);                              \
+            assertFailed(__FILE__, __LINE__, #EXPR);                                 \
             std::abort();                                                            \
         }                                                                            \
-    } while (0)                                                                     \
+    } while (0)                                                                      \
     ANALYSIS_ASSUME(EXPR)
 
 #define WPError(assertion, errmsg)                                                   \

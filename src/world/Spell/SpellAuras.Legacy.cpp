@@ -5982,7 +5982,10 @@ void Aura::SpellAuraPhase(AuraEffectModifier* aurEff, bool apply)
     if (m_target->getAuraCountForId(SPELL_AURA_PHASE) > 1)
     {
         if (m_target->isPlayer())
-            static_cast< Player* >(m_target)->getSession()->SystemMessage("You can have only one phase aura!");
+        {
+            auto* player = static_cast<Player*>(m_target);
+            player->getSession()->systemMessage("You can have only one phase aura!");
+        }
         removeAura();
         return;
     }

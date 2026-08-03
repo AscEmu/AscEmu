@@ -550,19 +550,19 @@ void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
     const auto pCharter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid);
     if (pCharter == nullptr)
     {
-        SendNotification(_player->getSession()->LocalizedWorldSrv(ServerString::SS_ITEM_NOT_FOUND));
+        sendNotification(_player->getSession()->localizedWorldSrv(ServerString::SS_ITEM_NOT_FOUND));
         return;
     }
 
     if (pTarget == nullptr || pTarget->getTeam() != _player->getTeam() || (pTarget == _player && !worldConfig.player.isInterfactionGuildEnabled))
     {
-        SendNotification(_player->getSession()->LocalizedWorldSrv(ServerString::SS_TARGET_WRONG_FACTION));
+        sendNotification(_player->getSession()->localizedWorldSrv(ServerString::SS_TARGET_WRONG_FACTION));
         return;
     }
 
     if (!pTarget->canSignCharter(pCharter, _player))
     {
-        SendNotification(_player->getSession()->LocalizedWorldSrv(ServerString::SS_CANNOT_SIGN_MORE_REASONS));
+        sendNotification(_player->getSession()->localizedWorldSrv(ServerString::SS_CANNOT_SIGN_MORE_REASONS));
         return;
     }
 
@@ -593,8 +593,7 @@ void WorldSession::handleCharterSign(WorldPacket& recvPacket)
         {
             if (playerGuid == _player->getGuid())
             {
-                SendNotification(_player->getSession()->LocalizedWorldSrv(ServerString::SS_ALREADY_SIGNED_CHARTER));
-
+                sendNotification(_player->getSession()->localizedWorldSrv(ServerString::SS_ALREADY_SIGNED_CHARTER));
                 SmsgPetitionSignResult managedPacket(srlPacket.itemGuid, _player->getGuid(), PetitionSignResult::AlreadySigned);
                 sendManagedPacket(managedPacket);
                 return;
@@ -653,7 +652,7 @@ void WorldSession::handleCharterRename(WorldPacket& recvPacket)
     auto charter = sObjectMgr.getCharterByName(srlPacket.name, static_cast<CharterTypes>(charter1->getCharterType()));
     if (charter || guild)
     {
-        SendNotification("That name is in use by another guild.");
+        sendNotification("That name is in use by another guild.");
         return;
     }
 
@@ -718,13 +717,13 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
                 break;
 
             default:
-                SendNotification("Chartertype not allowed for Arena");
+                sendNotification("Chartertype not allowed for Arena");
                 return;
         }
 
         if (_player->getArenaTeam(charter->getCharterType() - 1U) != nullptr)
         {
-            systemMessage(LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
+            systemMessage(localizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
             return;
         }
 
@@ -803,32 +802,32 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         const auto arena_type = static_cast<uint8_t>(srlPacket.arenaIndex - 1);
         if (_player->getArenaTeam(arena_type))
         {
-            SendNotification(_player->getSession()->LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
+            sendNotification(_player->getSession()->localizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
             return;
         }
 
         const auto arenaTeam = sObjectMgr.getArenaTeamByName(srlPacket.name, arena_type);
         if (arenaTeam != nullptr)
         {
-           systemMessage(_player->getSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
+           systemMessage(_player->getSession()->localizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
             return;
         }
 
         if (sObjectMgr.getCharterByName(srlPacket.name, static_cast<CharterTypes>(srlPacket.arenaIndex)))
         {
-            systemMessage(_player->getSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
+            systemMessage(_player->getSession()->localizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
             return;
         }
 
         if (_player->m_charters[srlPacket.arenaIndex])
         {
-            SendNotification(_player->getSession()->LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_CHARTER));
+            sendNotification(_player->getSession()->localizedWorldSrv(ServerString::SS_ALREADY_ARENA_CHARTER));
             return;
         }
 
         if (_player->getLevel() < PLAYER_ARENA_MIN_LEVEL)
         {
-            SendNotification("You must be at least level %u to buy Arena charter", PLAYER_ARENA_MIN_LEVEL);
+            sendNotification("You must be at least level {} to buy Arena charter", PLAYER_ARENA_MIN_LEVEL);
             return;
         }
 
@@ -837,7 +836,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 
         if (!_player->hasEnoughCoinage(costs[arena_type]))
         {
-            SendNotification("You do not have enough gold to purchase this charter");
+            sendNotification("You do not have enough gold to purchase this charter");
             return;
         }
 
@@ -904,13 +903,13 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         auto const charter = sObjectMgr.getCharterByName(srlPacket.name, CHARTER_TYPE_GUILD);
         if (guild != nullptr || charter != nullptr)
         {
-            SendNotification(_player->getSession()->LocalizedWorldSrv(ServerString::SS_GUILD_NAME_ALREADY_IN_USE));
+            sendNotification(_player->getSession()->localizedWorldSrv(ServerString::SS_GUILD_NAME_ALREADY_IN_USE));
             return;
         }
 
         if (_player->m_charters[CHARTER_TYPE_GUILD])
         {
-            SendNotification(_player->getSession()->LocalizedWorldSrv(ServerString::SS_ALREADY_GUILD_CHARTER));
+            sendNotification(_player->getSession()->localizedWorldSrv(ServerString::SS_ALREADY_GUILD_CHARTER));
             return;
         }
 

@@ -949,7 +949,7 @@ bool ChatCommandHandler::HandleAnnounceCommand(const char* args, WorldSession* m
 {
     if (!*args || strlen(args) < 4 || strchr(args, '%'))
     {
-        m_session->SystemMessage("Announcement must be at least 4 characters long and cannot contain the '%%' character.");
+        m_session->systemMessage("Announcement must be at least 4 characters long and cannot contain the '%%' character.");
         return true;
     }
 
@@ -991,41 +991,36 @@ bool ChatCommandHandler::HandleAnnounceCommand(const char* args, WorldSession* m
     return true;
 }
 
-//.wannounce
-bool ChatCommandHandler::HandleWAnnounceCommand(const char* args, WorldSession* m_session)
+// .wannounce
+bool ChatCommandHandler::handleWAnnounceCommand(std::string_view args, WorldSession* m_session)
 {
-    if (!*args)
+    if (args.empty())
         return false;
 
-    std::stringstream colored_widescreen_text;
-    colored_widescreen_text << worldConfig.getColorStringForNumber(worldConfig.announce.tagColor);
-    colored_widescreen_text << "[";
-    colored_widescreen_text << worldConfig.announce.announceTag;
-    colored_widescreen_text << "]";
-    colored_widescreen_text << worldConfig.getColorStringForNumber(worldConfig.announce.tagGmColor);
+    const auto& announce = worldConfig.announce;
+    const auto& playerName = m_session->GetPlayer()->getName();
 
-    if (worldConfig.announce.enableGmAdminTag)
+    std::string gmTag;
+    if (announce.enableGmAdminTag)
     {
         if (m_session->CanUseCommand('z'))
-            colored_widescreen_text << "<Admin>";
+            gmTag = "<Admin>";
         else if (m_session->hasPermissions())
-            colored_widescreen_text << "<GM>";
+            gmTag = "<GM>";
     }
 
-    if (worldConfig.announce.showNameInWAnnounce)
+    std::string coloredWidescreenText = fmt::format("{}[{}]{}{}", worldConfig.getColorStringForNumber(announce.tagColor), announce.announceTag, worldConfig.getColorStringForNumber(announce.tagGmColor),gmTag);
+
+    if (announce.showNameInWAnnounce)
     {
-        colored_widescreen_text << "|r" << worldConfig.getColorStringForNumber(worldConfig.announce.tagColor) << "[";
-        colored_widescreen_text << m_session->GetPlayer()->getName().c_str();
-        colored_widescreen_text << "]:|r " << worldConfig.getColorStringForNumber(worldConfig.announce.msgColor);
+        coloredWidescreenText += fmt::format("|r{}[{}]:|r {}{}", worldConfig.getColorStringForNumber(announce.tagColor), playerName, worldConfig.getColorStringForNumber(announce.msgColor), args);
     }
-    else if (!worldConfig.announce.showNameInWAnnounce)
+    else
     {
-        colored_widescreen_text << ": "; colored_widescreen_text << worldConfig.getColorStringForNumber(worldConfig.announce.msgColor);
+        coloredWidescreenText += fmt::format(": {}{}", worldConfig.getColorStringForNumber(announce.msgColor), args);
     }
 
-    colored_widescreen_text << args;
-
-    sWorld.sendAreaTriggerMessage(colored_widescreen_text.str());
+    sWorld.sendAreaTriggerMessage(coloredWidescreenText);
 
     sGMLog.writefromsession(m_session, "Sent wannounce: [{}].", args);
 

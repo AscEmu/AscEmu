@@ -48,10 +48,10 @@ LordMarrowgarAI::LordMarrowgarAI(Creature* pCreature) : CreatureAIScript(pCreatu
     _setRangedDisabled(true);
 
     // Messages
-    addEmoteForEvent(Event_OnCombatStart, SAY_MARR_AGGRO);     // The Scourge will wash over this world as a swarm of death and destruction!
+    addEmoteForEvent(Event_OnCombatStart, SAY_MARR_AGGRO);      // The Scourge will wash over this world as a swarm of death and destruction!
     addEmoteForEvent(Event_OnTargetDied, SAY_MARR_KILL_1);      // More bones for the offering!
     addEmoteForEvent(Event_OnTargetDied, SAY_MARR_KILL_2);      // Languish in damnation!
-    addEmoteForEvent(Event_OnDied, SAY_MARR_DEATH);            // I see... Only darkness.
+    addEmoteForEvent(Event_OnDied, SAY_MARR_DEATH);             // I see... Only darkness.
 }
 
 CreatureAIScript* LordMarrowgarAI::Create(Creature* pCreature) { return new LordMarrowgarAI(pCreature); }

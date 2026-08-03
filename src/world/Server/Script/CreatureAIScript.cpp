@@ -988,7 +988,7 @@ void CreatureAIScript::updateAITimers(unsigned long time_passed)
 
 void CreatureAIScript::displayCreatureTimerList(Player* player)
 {
-    player->broadcastMessage("=== Timers for creature %s ===", getCreature()->GetCreatureProperties()->Name.c_str());
+    player->broadcastMessage("=== Timers for creature {} ===", getCreature()->GetCreatureProperties()->Name);
 
     if (mCreatureTimerIds.empty() && mCreatureTimer.empty())
     {
@@ -999,12 +999,12 @@ void CreatureAIScript::displayCreatureTimerList(Player* player)
         if (getInstanceScript() != nullptr)
         {
             for (const auto& intTimer : mCreatureTimerIds)
-                player->broadcastMessage("  TimerId (%u)  %u ms left", intTimer, _getTimeForTimer(intTimer));
+                player->broadcastMessage("  TimerId ({})  {} ms left", intTimer, _getTimeForTimer(intTimer));
         }
         else
         {
             for (const auto& intTimer : mCreatureTimer)
-                player->broadcastMessage("  TimerId (%u)  %u ms left", intTimer.first, intTimer.second);
+                player->broadcastMessage("  TimerId ({})  {} ms left", intTimer.first, intTimer.second);
         }
     }
 }
