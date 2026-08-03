@@ -1940,7 +1940,8 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool /*withConten
             player->getSession()->SendPacket(&data);
         }
     }
-#else
+}
+#elif VERSION_STRING == Cata
 void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent, bool withTabInfo) const
 {
     GuildMember const* member = getMember(session->GetPlayer()->getGuid());
@@ -2039,8 +2040,109 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
     data << uint32_t(getMemberRemainingSlots(member, tabId));
 
     session->SendPacket(&data);
-#endif
 }
+#elif VERSION_STRING == Mop
+void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent, bool withTabInfo) const
+{
+    GuildMember const* member = getMember(session->GetPlayer()->getGuid());
+    if (member == nullptr)
+        return;
+
+    ByteBuffer tabData;
+
+    WorldPacket data(SMSG_GUILD_BANK_LIST, 500);
+    data << uint32_t(tabId);
+    data << uint64_t(m_bankMoney);
+    data << uint32_t(getMemberRemainingSlots(member, tabId));
+
+    data.writeBit(0);
+
+    uint32_t itemCount = 0;
+    if (withContent && memberHasTabRights(session->GetPlayer()->getGuid(), tabId, GB_RIGHT_VIEW_TAB))
+    {
+        if (GuildBankTab const* tab = getBankTab(tabId))
+        {
+            for (uint8_t slotId = 0; slotId < MAX_GUILD_BANK_SLOTS; ++slotId)
+            {
+                if (tab->getItem(slotId))
+                {
+                    ++itemCount;
+                }
+            }
+        }
+    }
+
+    data.writeBits(withTabInfo ? _getPurchasedTabsSize() : 0, 21);
+    data.writeBits(itemCount, 18);
+
+    if (withTabInfo)
+    {
+        for (uint8_t i = 0; i < _getPurchasedTabsSize(); ++i)
+        {
+            data.writeBits(_guildBankTabsStore[i]->getIcon().length(), 9);
+            data.writeBits(_guildBankTabsStore[i]->getName().length(), 7);
+        }
+    }
+
+    if (withContent && memberHasTabRights(session->GetPlayer()->getGuid(), tabId, GB_RIGHT_VIEW_TAB))
+    {
+        if (GuildBankTab const* tab = getBankTab(tabId))
+        {
+            for (uint8_t slotId = 0; slotId < MAX_GUILD_BANK_SLOTS; ++slotId)
+            {
+                if (Item* tabItem = tab->getItem(slotId))
+                {
+                    tabData << uint32_t(0);
+                    tabData << uint32_t(0);
+
+                    uint32_t enchants = 0;
+                    for (uint32_t ench = 0; ench < MAX_ENCHANTMENT_SLOT; ++ench)
+                    {
+                        if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(ench))))
+                        {
+                            tabData << uint32_t(enchantId);
+                            tabData << uint32_t(ench);
+                            ++enchants;
+                        }
+                    }
+
+                    data.writeBit(0);
+                    data.writeBits(enchants, 21);
+
+                    tabData << uint32_t(0);
+                    tabData << uint32_t(0);
+                    tabData << uint32_t(tabItem->getEntry());
+                    tabData << uint32_t(abs(tabItem->getSpellCharges(0)));
+                    tabData << uint32_t(tabItem->getStackCount());
+                    tabData << uint32_t(slotId);
+                    tabData << uint32_t(tabItem->getRandomPropertiesId());
+                    tabData << uint32_t(tabItem->getPropertySeed());
+                }
+            }
+        }
+    }
+
+    data.flushBits();
+
+    if (tabData.size())
+    {
+        data.append(tabData);
+    }
+
+    if (withTabInfo)
+    {
+        for (uint8_t i = 0; i < _getPurchasedTabsSize(); ++i)
+        {
+            data << uint32_t(i);
+            data.writeString(_guildBankTabsStore[i]->getIcon());
+            data.writeString(_guildBankTabsStore[i]->getName());
+        }
+    }
+
+    session->SendPacket(&data);
+}
+#endif
+
 
 #if VERSION_STRING >= Cata
 void Guild::sendGuildRanksUpdate(uint64_t setterGuid, uint64_t targetGuid, uint32_t rank)
@@ -2497,7 +2599,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlo
         data.put<uint32_t>(rempos, numSlots);
         player->getSession()->SendPacket(&data);
     }
-#else
+#elif VERSION_STRING == Cata
     if (GuildBankTab const* guildBankTab = getBankTab(tabId))
     {
         ByteBuffer tabData;
@@ -2598,6 +2700,123 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlo
 
         size_t rempos = data.wpos();
         data << uint32_t(0);
+
+        for (GuildMembersStore::const_iterator itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
+        {
+            if (memberHasTabRights(itr->second->getGUID(), tabId, GB_RIGHT_VIEW_TAB))
+            {
+                if (Player* player = itr->second->getPlayerByGuid(itr->second->getGUID()))
+                {
+                    data.put<uint32_t>(rempos, uint32_t(getMemberRemainingSlots(itr->second.get(), tabId)));
+                    player->getSession()->SendPacket(&data);
+                }
+            }
+        }
+
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_GUILD_BANK_LIST");
+    }
+#elif VERSION_STRING == Mop
+    if (GuildBankTab const* guildBankTab = getBankTab(tabId))
+    {
+        ByteBuffer tabData;
+        WorldPacket data(SMSG_GUILD_BANK_LIST, 1200);
+        data << uint32_t(tabId);
+        data << uint64_t(m_bankMoney);
+
+        size_t rempos = data.wpos();
+        data << uint32_t(0);
+
+        data.writeBit(0);
+        data.writeBits(0, 22);
+
+        if (sendAllSlots)
+            data.writeBits(MAX_GUILD_BANK_SLOTS, 18);
+        else
+            data.writeBits(slots.size(), 18);
+
+        if (sendAllSlots)
+        {
+            for (uint8_t slotId = 0; slotId < MAX_GUILD_BANK_SLOTS; ++slotId)
+            {
+                if (const auto tab = getBankTab(tabId))
+                {
+                    Item* tabItem = tab->getItem(slotId);
+
+                    tabData << uint32_t(0);
+                    tabData << uint32_t(0);
+                    
+
+                    uint32_t enchantCount = 0;
+                    if (tabItem)
+                    {
+                        for (uint32_t enchSlot = 0; enchSlot < MAX_ENCHANTMENT_SLOT; ++enchSlot)
+                        {
+                            if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(enchSlot))))
+                            {
+                                tabData << uint32_t(enchantId);
+                                tabData << uint32_t(enchSlot);
+                                ++enchantCount;
+                            }
+                        }
+                    }
+
+                    data.writeBit(0);
+                    data.writeBits(enchantCount, 21);
+
+                    tabData << uint32_t(0);
+                    tabData << uint32_t(0);
+                    tabData << uint32_t(tabItem ? tabItem->getEntry() : 0);
+                    tabData << uint32_t(tabItem ? tabItem->getSpellCharges(0) : 0);
+                    tabData << uint32_t(tabItem ? tabItem->getStackCount() : 0);
+                    tabData << uint32_t(slotId);
+                    tabData << uint32_t(tabItem ? tabItem->getRandomPropertiesId() : 0);
+                    tabData << uint32_t(tabItem ? tabItem->getPropertySeed() : 0);
+                }
+            }
+        }
+        else
+        {
+            for (auto itr = slots.begin(); itr != slots.end(); ++itr)
+            {
+                tabData << uint32_t(0);
+                tabData << uint32_t(0);
+
+                Item* tabItem = guildBankTab->getItem(*itr);
+                uint32_t enchantCount = 0;
+                if (tabItem)
+                {
+                    for (uint32_t enchSlot = 0; enchSlot < MAX_ENCHANTMENT_SLOT; ++enchSlot)
+                    {
+                        if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(enchSlot))))
+                        {
+                            tabData << uint32_t(enchantId);
+                            tabData << uint32_t(enchSlot);
+                            ++enchantCount;
+                        }
+                    }
+                }
+
+                data.writeBit(0);
+                data.writeBits(enchantCount, 21);
+
+                
+                tabData << uint32_t(0);
+                tabData << uint32_t(0);
+                tabData << uint32_t(tabItem ? tabItem->getEntry() : 0);
+                tabData << uint32_t(tabItem ? tabItem->getSpellCharges(0) : 0);
+                tabData << uint32_t(tabItem ? tabItem->getStackCount() : 0);
+                tabData << uint32_t(*itr);
+                tabData << uint32_t(tabItem ? tabItem->getRandomPropertiesId() : 0);
+                tabData << uint32_t(tabItem ? tabItem->getPropertySeed() : 0);
+            }
+        }
+
+        data.flushBits();
+
+        if (tabData.size())
+        {
+            data.append(tabData);
+        }
 
         for (GuildMembersStore::const_iterator itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
         {

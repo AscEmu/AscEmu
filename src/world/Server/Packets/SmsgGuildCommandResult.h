@@ -35,7 +35,18 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << command << message << error;
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet << command << message << error;
+            }
+            else // Mop
+            {
+                packet << command << error;
+
+                packet.writeBits(message.size(), 8);
+                packet.flushBits();
+                packet.writeString(message);
+            }
             return true;
         }
 

@@ -1086,7 +1086,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(MSG_QUERY_GUILD_BANK_TEXT, &WorldSession::handleGuildBankQueryText, true, true, true, false, false);
     registry.registerOpcode(CMSG_SET_GUILD_BANK_TEXT, &WorldSession::handleSetGuildBankText, true, true, true, true, false);
     registry.registerOpcode(MSG_GUILD_EVENT_LOG_QUERY, &WorldSession::handleGuildLog, true, true, true, false, false);
-    registry.registerOpcode(CMSG_GUILD_BANKER_ACTIVATE, &WorldSession::handleGuildBankerActivate, true, true, true, true, false);
+    registry.registerOpcode(CMSG_GUILD_BANKER_ACTIVATE, &WorldSession::handleGuildBankerActivate, true, true, true, true, true);
     registry.registerOpcode(CMSG_GUILD_BANK_BUY_TAB, &WorldSession::handleGuildBankBuyTab, true, true, true, true, false);
     registry.registerOpcode(MSG_GUILD_BANK_MONEY_WITHDRAWN, &WorldSession::handleGuildBankMoneyWithdrawn, true, true, true, false, false);
     registry.registerOpcode(CMSG_GUILD_BANK_UPDATE_TAB, &WorldSession::handleGuildBankUpdateTab, true, true, true, true, false);
