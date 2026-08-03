@@ -492,18 +492,9 @@ AccountDataEntry* WorldSession::GetAccountData(uint32_t index)
     return nullptr;
 }
 
-void WorldSession::SendNotification(const char* message, ...)
+void WorldSession::sendNotification(std::string_view message)
 {
-    if (!message)
-        return;
-
-    va_list ap;
-    va_start(ap, message);
-    char msg1[1024];
-    vsnprintf(msg1, 1024, message, ap);
-    va_end(ap);
-
-    SmsgNotification managedPacket(msg1);
+    SmsgNotification managedPacket(message);
     sendManagedPacket(managedPacket);
 }
 
@@ -513,12 +504,12 @@ void SessionLog::writefromsession(WorldSession* session, std::string_view messag
         return;
 
     fmt::println(mSessionLogFile, "[{}] Account {} [{}], IP {}, Player {} :: {}",
-            Util::GetCurrentDateTimeString(),
-            session->GetAccountId(),
-            session->GetAccountName(),
-            session->GetSocket() ? session->GetSocket()->getRemoteIp() : "NOIP",
-            session->GetPlayer() ? session->GetPlayer()->getName() : "nologin",
-            message);
+        Util::GetCurrentDateTimeString(),
+        session->GetAccountId(),
+        session->GetAccountName(),
+        session->GetSocket() ? session->GetSocket()->getRemoteIp() : "NOIP",
+        session->GetPlayer() ? session->GetPlayer()->getName() : "nologin",
+        message);
 
     fflush(mSessionLogFile);
 }
@@ -555,18 +546,6 @@ void SessionLog::write(WorldSession* session, const char* format, ...)
     }
 }
 
-void WorldSession::SystemMessage(const char* format, ...)
-{
-    char buffer[1024];
-    va_list ap;
-    va_start(ap, format);
-    vsnprintf(buffer, 1024, format, ap);
-    va_end(ap);
-
-    SmsgMessageChat messagePacket(SystemMessagePacket{buffer});
-    sendManagedPacket(messagePacket);
-}
-
 void WorldSession::sendSystemMessagePacket(std::string& _message)
 {
     SmsgMessageChat messagePacket(SystemMessagePacket{_message});
@@ -583,102 +562,67 @@ void WorldSession::sendChatPacket(AscEmu::Packets::SmsgMessageChat& data, uint32
     sendManagedPacket(data);
 }
 
-/*
-   2008/10/04 MultiLanguages on each player session. LocalizedWorldSrv
-   translating core message from sql. LocalizedMapName translating MAP Title
-   from sql. LocalizedBroadCast translating new broadcast system from sql.
-   Full merged from p2wow 's branch (p2branch). cebernic@gmail.com */
-
-char szError[64];
-
-
-// Returns a gossip menu option indexed by id
-// These strings can be found in gossip_menu_option tables in the database
-const char* WorldSession::LocalizedGossipOption(uint32_t id)
+// MIT 
+std::string WorldSession::localizedGossipOption(uint32_t id) const
 {
-    MySQLStructure::GossipMenuOption const* wst = sMySQLStore.getGossipMenuOption(id);
-    if (!wst)
+    const auto* gossip = sMySQLStore.getGossipMenuOption(id);
+    if (!gossip)
+        sLogger.failure("ID:{} is a bad GossipMenuOption TEXT!", id);
+
+    if (language > 0)
     {
-        memset(szError, 0, 64);
-        sprintf(szError, "ID:%u is a bad GossipMenuOption TEXT!", id);
-        return szError;
+        if (const auto* locale = sMySQLStore.getLocalizedGossipMenuOption(id, language))
+            return locale->name;
     }
 
-    MySQLStructure::LocalesGossipMenuOption const* lpi = (language > 0) ? sMySQLStore.getLocalizedGossipMenuOption(id, language) : nullptr;
-    if (lpi != nullptr)
-    {
-        return lpi->name;
-    }
-    else
-    {
-        return wst->text.c_str();
-    }
+    return gossip->text;
 }
 
-// Returns a worldstring indexed by id
-// These strings can be found in the worldstring tables in the database
-const char* WorldSession::LocalizedWorldSrv(uint32_t id)
+std::string WorldSession::localizedWorldSrv(uint32_t id) const
 {
-    MySQLStructure::WorldStringTable const* wst = sMySQLStore.getWorldString(id);
-    if (!wst)
+    const auto* worldString = sMySQLStore.getWorldString(id);
+    if (!worldString)
+        sLogger.failure("ID:{} is a bad WorldString TEXT!", id);
+
+    if (language > 0)
     {
-        memset(szError, 0, 64);
-        sprintf(szError, "ID:%u is a bad WorldString TEXT!", id);
-        return szError;
+        if (const auto* locale = sMySQLStore.getLocalizedWorldStringTable(id, language))
+            return locale->text;
     }
 
-    MySQLStructure::LocalesWorldStringTable const* lpi = (language > 0) ? sMySQLStore.getLocalizedWorldStringTable(id, language) : nullptr;
-    if (lpi != nullptr)
-    {
-        return lpi->text;
-    }
-    else
-    {
-        return wst->text.c_str();
-    }
+    return worldString->text;
 }
 
-const char* WorldSession::LocalizedMapName(uint32_t id)
+std::string WorldSession::localizedMapName(uint32_t id) const
 {
-    MySQLStructure::MapInfo const* mi = sMySQLStore.getWorldMapInfo(id);
-    if (!mi)
+    const auto* map = sMySQLStore.getWorldMapInfo(id);
+    if (!map)
+        sLogger.failure("ID:{} still has no map title yet!", id);
+
+    if (language > 0)
     {
-        memset(szError, 0, 64);
-        sprintf(szError, "ID:%u still have no map title yet!", id);
-        return szError;
+        if (const auto* locale = sMySQLStore.getLocalizedWorldmapInfo(id, language))
+            return locale->text;
     }
 
-    MySQLStructure::LocalesWorldmapInfo const* lpi = (language > 0) ? sMySQLStore.getLocalizedWorldmapInfo(id, language) : nullptr;
-    if (lpi != nullptr)
-    {
-        return lpi->text;
-    }
-    else
-    {
-        return mi->name.c_str();
-    }
+    return map->name;
 }
 
-const char* WorldSession::LocalizedBroadCast(uint32_t id)
+std::string WorldSession::localizedBroadCast(uint32_t id) const
 {
-    MySQLStructure::WorldBroadCast const* wb = sMySQLStore.getWorldBroadcastById(id);
-    if (!wb)
+    const auto* broadcast = sMySQLStore.getWorldBroadcastById(id);
+    if (!broadcast)
+        sLogger.failure("ID:{} is an invalid WorldBroadCast message!", id);
+
+    if (language > 0)
     {
-        memset(szError, 0, 64);
-        sprintf(szError, "ID:%u is a invalid WorldBroadCast message!", id);
-        return szError;
+        if (const auto* locale = sMySQLStore.getLocalizedWorldbroadcast(id, language))
+            return locale->text;
     }
 
-    MySQLStructure::LocalesWorldbroadcast const* lpi = (language > 0) ? sMySQLStore.getLocalizedWorldbroadcast(id, language) : nullptr;
-    if (lpi)
-    {
-        return lpi->text;
-    }
-    else
-    {
-        return wb->text.c_str();
-    }
+    return broadcast->text;
 }
+// MIT end
 
 void WorldSession::Unhandled(WorldPacket& recv_data)
 {
@@ -736,7 +680,7 @@ void WorldSession::Disconnect()
     }
 }
 
-//MIT
+// MIT
 void WorldSession::registerOpcodeHandler()
 {
     // Register opcodes using the new OpcodeHandlerRegistry

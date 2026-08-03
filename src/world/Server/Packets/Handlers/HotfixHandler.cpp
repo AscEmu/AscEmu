@@ -213,8 +213,8 @@ void WorldSession::sendBroadcastDb2Reply(uint32_t entry)
 {
     ByteBuffer buffer;
 
-    std::string defaultText = LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
-    std::string alternativeText = LocalizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
+    std::string defaultText = localizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
+    std::string alternativeText = localizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
 
     const auto localesNpcText = (language > 0) ? sMySQLStore.getLocalizedNpcGossipText(entry, language) : nullptr;
     const auto pGossip = sMySQLStore.getNpcGossipText(entry);

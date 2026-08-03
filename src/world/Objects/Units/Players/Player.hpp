@@ -1063,10 +1063,23 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Messages
 public:
-    void sendReportToGmMessage(std::string playerName, std::string damageLog);
-    void broadcastMessage(const char* Format, ...);
-    void sendAreaTriggerMessage(const char* message, ...);
+    template <typename... Args>
+    void broadcastMessage(fmt::format_string<Args...> format, Args&&... args)
+    {
+        broadcastMessage(fmt::format(format, std::forward<Args>(args)...));
+    }
 
+    void broadcastMessage(std::string_view message);
+    
+    template <typename... Args>
+    void sendAreaTriggerMessage(fmt::format_string<Args...> format, Args&&... args)
+    {
+        sendAreaTriggerMessage(fmt::format(format, std::forward<Args>(args)...));
+    }
+
+void sendAreaTriggerMessage(std::string_view message);
+
+    void sendReportToGmMessage(std::string playerName, std::string damageLog);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Commands

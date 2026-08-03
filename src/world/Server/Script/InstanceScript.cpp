@@ -376,22 +376,22 @@ void InstanceScript::sendUnitEncounter(uint32_t type, Unit* unit, uint8_t value_
 
 void InstanceScript::displayDataStateList(Player* player)
 {
-    player->broadcastMessage("=== DataState for instance %s ===", mInstance->getBaseMap()->getMapInfo()->name.c_str());
+    player->broadcastMessage("=== DataState for instance {} ===", mInstance->getBaseMap()->getMapInfo()->name);
 
     for (const auto& encounters : bosses)
     {
         CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounters.entry);
         if (creature != nullptr)
         {
-            player->broadcastMessage("  Boss '%s' (%u) - %s", creature->Name.c_str(), encounters.entry, getDataStateString(encounters.state).c_str());
+            player->broadcastMessage("  Boss '{}' ({}) - {}", creature->Name, encounters.entry, getDataStateString(encounters.state));
         }
         else
         {
             GameObjectProperties const* gameobject = sMySQLStore.getGameObjectProperties(encounters.entry);
             if (gameobject != nullptr)
-                player->broadcastMessage("  Object '%s' (%u) - %s", gameobject->name.c_str(), encounters.entry, getDataStateString(encounters.state).c_str());
+                player->broadcastMessage("  Object '{}' ({}) - {}", gameobject->name, encounters.entry, getDataStateString(encounters.state));
             else
-                player->broadcastMessage("  MiscData %u - %s", encounters.entry, getDataStateString(encounters.state).c_str());
+                player->broadcastMessage("  MiscData {} - {}", encounters.entry, getDataStateString(encounters.state));
         }
     }
 }
@@ -474,7 +474,7 @@ void InstanceScript::updateTimers()
 
 void InstanceScript::displayTimerList(Player* player)
 {
-    player->broadcastMessage("=== Timers for instance %s ===", mInstance->getBaseMap()->getMapInfo()->name.c_str());
+    player->broadcastMessage("=== Timers for instance {} ===", mInstance->getBaseMap()->getMapInfo()->name);
 
     if (mTimers.empty())
     {
@@ -483,7 +483,7 @@ void InstanceScript::displayTimerList(Player* player)
     else
     {
         for (const auto& intTimer : mTimers)
-            player->broadcastMessage("  TimerId (%u)  %u ms left", intTimer.first, intTimer.second);
+            player->broadcastMessage("  TimerId ({})  {} ms left", intTimer.first, intTimer.second);
     }
 }
 
@@ -597,7 +597,7 @@ CreatureSet InstanceScript::getCreatureSetForEntry(uint32_t entry, bool debug /*
     if (debug == true)
     {
         if (player != nullptr)
-            player->broadcastMessage("%u Creatures with entry %u found.", countCreatures, entry);
+            player->broadcastMessage("{} Creatures with entry {} found.", countCreatures, entry);
     }
 
     return creatureSet;

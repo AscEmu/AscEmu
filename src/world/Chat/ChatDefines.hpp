@@ -62,7 +62,7 @@ enum ChatMsg : uint8_t
     CHAT_MSG_PARTY_LEADER               = 51
 };
 
-enum Languages :int32_t
+enum Languages : int32_t
 {
     LANG_ADDON              = -1,
     LANG_UNIVERSAL          = 0x000,

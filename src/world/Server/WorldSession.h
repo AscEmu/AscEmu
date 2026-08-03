@@ -172,7 +172,7 @@ public:
             sAccountData[index].data = std::move(data);
             sAccountData[index].sz = sz;
 
-            if (!initial && !sAccountData[index].bIsDirty)      // Mark as "changed" or "dirty"
+            if (!initial && !sAccountData[index].bIsDirty) // Mark as "changed" or "dirty"
                 sAccountData[index].bIsDirty = true;
             else if (initial)
                 sAccountData[index].bIsDirty = false;
@@ -201,16 +201,24 @@ public:
         uint8_t Update(uint32_t InstanceID);
         uint8_t processQueuedPackets(uint32_t InstanceID);
 
-        void SendNotification(const char* message, ...);
+        template <typename... Args>
+        void sendNotification(fmt::format_string<Args...> format, Args&&... args)
+        {
+            sendNotification(fmt::format(format, std::forward<Args>(args)...));
+        }
+
+        void sendNotification(std::string_view message);
 
         void SetInstance(uint32_t Instance) { instanceId = Instance; }
         uint32_t GetLatency() const { return _latency; }
+
         std::string GetAccountName() { return _accountName; }
         const char* GetAccountNameS() const { return _accountName.c_str(); }
-        const char* LocalizedWorldSrv(uint32_t id);
-        const char* LocalizedGossipOption(uint32_t id);
-        const char* LocalizedMapName(uint32_t id);
-        const char* LocalizedBroadCast(uint32_t id);
+
+        [[nodiscard]] std::string localizedGossipOption(uint32_t id) const;
+        [[nodiscard]] std::string localizedWorldSrv(uint32_t id) const;
+        [[nodiscard]] std::string localizedMapName(uint32_t id) const;
+        [[nodiscard]] std::string localizedBroadCast(uint32_t id) const;
 
 #if VERSION_STRING != Cata
         uint32_t GetClientBuild() { return client_build; }
@@ -714,14 +722,13 @@ protected:
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // HotfixHandler.cpp
-
         void handleRequestHotfix(WorldPacket& recvPacket);                  //>= Cata
         void sendItemDb2Reply(uint32_t entry);                              //>= Cata
         void sendItemSparseDb2Reply(uint32_t entry);                        //>= Cata
         void sendBroadcastDb2Reply(uint32_t entry);                         //>= Mop
 
     // \todo move to seperated file
-private:
+    private:
         bool isAddonMessageFiltered;                                        //>= Cata
         std::vector<std::string> mRegisteredAddonPrefixesVector;            //>= Cata
         typedef std::list<AddonEntry> AddonsList;                           //>= Cata
@@ -974,8 +981,6 @@ public:
 
     uint32_t floodLines;
     time_t floodTime;
-
-    void SystemMessage(const char* format, ...);
 
     void sendSystemMessagePacket(std::string& _message);
 

@@ -61,37 +61,37 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
     auto player = sObjectMgr.getPlayer(srlPacket.playerName.c_str(), false);
     if (player == nullptr)
     {
-        SystemMessage("Player `%s` is non-existent or not online.", srlPacket.playerName.c_str());
+        systemMessage("Player `{}` is non-existent or not online.", srlPacket.playerName);
         return;
     }
 
     if (arenaTeam->m_leader != _player->getGuidLow())
     {
-        SystemMessage("You are not the captain of this arena team.");
+        systemMessage("You are not the captain of this arena team.");
         return;
     }
 
     if (player->getLevel() < PLAYER_ARENA_MIN_LEVEL)
     {
-        SystemMessage("Player must be level %u to join an arena team.", PLAYER_ARENA_MIN_LEVEL);
+        systemMessage("Player must be level {} to join an arena team.", PLAYER_ARENA_MIN_LEVEL);
         return;
     }
 
     if (player->getArenaTeam(arenaTeam->m_type) != nullptr)
     {
-        SystemMessage("That player is already in an arena team of this type.");
+        systemMessage("That player is already in an arena team of this type.");
         return;
     }
 
     if (player->getInviteArenaTeamId() != 0)
     {
-        SystemMessage("That player is already invited to an arena team");
+        systemMessage("That player is already invited to an arena team");
         return;
     }
 
     if (player->getTeam() != _player->getTeam() && !HasGMPermissions())
     {
-        SystemMessage("That player is a member of a different faction.");
+        systemMessage("That player is a member of a different faction.");
         return;
     }
 
@@ -121,26 +121,26 @@ void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
 
     if ((arenaTeam = _player->getArenaTeam(slot)) == nullptr)
     {
-        SystemMessage("You are not in an arena team of this type.");
+        systemMessage("You are not in an arena team of this type.");
         return;
     }
 
     if (arenaTeam->m_leader != _player->getGuidLow())
     {
-        SystemMessage("You are not the leader of this team.");
+        systemMessage("You are not the leader of this team.");
         return;
     }
 
     const auto playerInfo = sObjectMgr.getCachedCharacterInfoByName(srlPacket.playerName);
     if (playerInfo == nullptr)
     {
-        SystemMessage("That player cannot be found.");
+        systemMessage("That player cannot be found.");
         return;
     }
 
     if (!arenaTeam->isMember(playerInfo->guid))
     {
-        SystemMessage("That player is not in your arena team.");
+        systemMessage("That player is not in your arena team.");
         return;
     }
 
@@ -149,7 +149,7 @@ void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
         std::string message = fmt::format("{} was removed from the arena team '{}'", playerInfo->name, arenaTeam->m_name);
         arenaTeam->sendMessagePacket(message);
 
-        SystemMessage("Removed %s from the arena team '%s'.", playerInfo->name.c_str(), arenaTeam->m_name.c_str());
+        systemMessage("Removed %s from the arena team '%s'.", playerInfo->name.c_str(), arenaTeam->m_name.c_str());
     }
 }
 
@@ -157,26 +157,26 @@ void WorldSession::handleArenaTeamInviteAcceptOpcode(WorldPacket& /*recvPacket*/
 {
     if (_player->getInviteArenaTeamId() == 0)
     {
-        SystemMessage("You have not been invited into another arena team.");
+        systemMessage("You have not been invited into another arena team.");
         return;
     }
 
     auto arenaTeam = sObjectMgr.getArenaTeamById(_player->getInviteArenaTeamId());
     if (arenaTeam == nullptr)
     {
-        SystemMessage("That arena team no longer exists.");
+        systemMessage("That arena team no longer exists.");
         return;
     }
 
     if (arenaTeam->m_memberCount >= arenaTeam->m_slots)
     {
-        SystemMessage("That team is now full.");
+        systemMessage("That team is now full.");
         return;
     }
 
     if (_player->getArenaTeam(arenaTeam->m_type) != nullptr)
     {
-        SystemMessage("You have already been in an arena team of that size.");
+        systemMessage("You have already been in an arena team of that size.");
         return;
     }
 
@@ -189,7 +189,7 @@ void WorldSession::handleArenaTeamInviteAcceptOpcode(WorldPacket& /*recvPacket*/
     }
     else
     {
-        SendNotification("Internal error.");
+        sendNotification("Internal error.");
     }
 }
 
@@ -197,7 +197,7 @@ void WorldSession::handleArenaTeamInviteDenyOpcode(WorldPacket& /*recvPacket*/)
 {
     if (_player->getInviteArenaTeamId() == 0)
     {
-        SystemMessage("You were not invited.");
+        systemMessage("You were not invited.");
         return;
     }
 
@@ -206,7 +206,7 @@ void WorldSession::handleArenaTeamInviteDenyOpcode(WorldPacket& /*recvPacket*/)
         return;
 
     if (const auto player = sObjectMgr.getPlayer(team->m_leader))
-        player->getSession()->SystemMessage("%s denied your arena team invitation for %s.", _player->getName().c_str(), team->m_name.c_str());
+        player->getSession()->systemMessage("{} denied your arena team invitation for %s.", _player->getName().c_str(), team->m_name.c_str());
 }
 
 void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
@@ -224,7 +224,7 @@ void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
 
     if ((arenaTeam = _player->getArenaTeam(arenaTeam->m_type)) == nullptr)
     {
-        SystemMessage("You are not in an arena team of this type.");
+        systemMessage("You are not in an arena team of this type.");
         return;
     }
 
@@ -236,7 +236,7 @@ void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
 
     if (arenaTeam->m_leader == _player->getGuidLow())
     {
-        SystemMessage("You cannot leave the team yet, promote someone else to captain first.");
+        systemMessage("You cannot leave the team yet, promote someone else to captain first.");
         return;
     }
 
@@ -245,7 +245,7 @@ void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
         std::string message = fmt::format("{} left the arena team, '{}'", _player->getName(), arenaTeam->m_name);
         arenaTeam->sendMessagePacket(message);
 
-        SystemMessage("You have left the arena team, '%s'.", arenaTeam->m_name.c_str());
+        systemMessage("You have left the arena team, '%s'.", arenaTeam->m_name.c_str());
     }
 }
 
@@ -264,13 +264,13 @@ void WorldSession::handleArenaTeamDisbandOpcode(WorldPacket& recvPacket)
 
     if ((arenaTeam = _player->getArenaTeam(arenaTeam->m_type)) == nullptr)
     {
-        SystemMessage("You are not in an arena team of this type.");
+        systemMessage("You are not in an arena team of this type.");
         return;
     }
 
     if (arenaTeam->m_leader != _player->getGuidLow())
     {
-        SystemMessage("You aren't the captain of this team.");
+        systemMessage("You are not the captain of this team.");
         return;
     }
 
@@ -297,26 +297,26 @@ void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)
 
     if ((arenaTeam = _player->getArenaTeam(slot)) == nullptr)
     {
-        SystemMessage("You are not in an arena team of this type.");
+        systemMessage("You are not in an arena team of this type.");
         return;
     }
 
     if (arenaTeam->m_leader != _player->getGuidLow())
     {
-        SystemMessage("You aren't the captain of this team.");
+        systemMessage("You are not the captain of this team.");
         return;
     }
 
     const auto playerInfo = sObjectMgr.getCachedCharacterInfoByName(srlPacket.playerName);
     if (playerInfo == nullptr)
     {
-        SystemMessage("That player cannot be found.");
+        systemMessage("That player cannot be found.");
         return;
     }
 
     if (!arenaTeam->isMember(playerInfo->guid))
     {
-        SystemMessage("That player is not a member of your arena team.");
+        systemMessage("That player is not a member of your arena team.");
         return;
     }
 

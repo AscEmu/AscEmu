@@ -2681,7 +2681,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
 
                 if (dspellproto != nullptr)
                 {
-                    p_caster->broadcastMessage("%sDISCOVERY! You discovered the %s !|r", MSG_COLOR_YELLOW, dspellproto->getName().c_str());
+                    p_caster->broadcastMessage("{}DISCOVERY! You discovered the {} !|r", MSG_COLOR_YELLOW, dspellproto->getName());
                     p_caster->addSpell(learn_spell);
                 }
                 else
@@ -4090,7 +4090,7 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
         ItemProperties const* it = sMySQLStore.getItemProperties(itemid);
         if (it == nullptr)
         {
-            p_caster->getSession()->SystemMessage("Item is missing, report this to devs. Entry: %u", itemid);
+            p_caster->getSession()->systemMessage("Item is missing, report this to devs. Entry: {}", itemid);
             return;
         }
 

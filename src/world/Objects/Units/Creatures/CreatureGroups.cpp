@@ -151,7 +151,7 @@ void FormationMgr::loadCreatureFormations()
         }
     }
 
-    sLogger.debug("FormationMgr : Loaded {} creatures in formations in {} ms", count, Util::GetTimeDifferenceToNow(oldMSTime));
+    sLogger.info("FormationMgr : Loaded {} creatures in formations in {} ms", count, Util::GetTimeDifferenceToNow(oldMSTime));
 }
 
 FormationInfo* FormationMgr::getFormationInfo(uint32_t spawnId)

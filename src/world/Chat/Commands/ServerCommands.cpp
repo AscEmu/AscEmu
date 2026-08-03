@@ -174,33 +174,30 @@ bool ChatCommandHandler::HandleServerSetMotdCommand(const char* args, WorldSessi
 }
 
 //.server shutdown
-bool ChatCommandHandler::HandleServerShutdownCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::handleServerShutdownCommand(std::string_view args, WorldSession* m_session)
 {
-    uint32_t shutdowntime;
-    if (!args)
-        shutdowntime = 30;
-    else
-        shutdowntime = std::stoul(args);
+    uint32_t shutdowntime = 30;
+
+    if (!args.empty())
+        shutdowntime = static_cast<uint32_t>(std::stoul(std::string(args)));
 
     if (shutdowntime < 30)
         shutdowntime = 30;
 
-    std::stringstream teamAnnounce;
-    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str();
-    teamAnnounce << "|h[" << m_session->GetPlayer()->getName().c_str() << "]|h:" << MSG_COLOR_YELLOW << " initiated server shutdown timer " << shutdowntime << " sec";
+    const auto& playerName = m_session->GetPlayer()->getName();
 
-    sWorld.sendMessageToOnlineGms(teamAnnounce.str());
+    const auto teamAnnounce = fmt::format("{}[Team]{} |Hplayer:{}|h[{}]|h:{} initiated server shutdown timer {} sec.",
+        MSG_COLOR_RED, MSG_COLOR_GREEN, playerName, playerName, MSG_COLOR_YELLOW, shutdowntime);
+
+    sWorld.sendMessageToOnlineGms(teamAnnounce);
 
     sGMLog.writefromsession(m_session, "Initiated server shutdown timer {} sec...", shutdowntime);
+    const auto worldAnnounce = fmt::format("Server is shutting down in {} seconds.", shutdowntime);
 
-    std::stringstream worldAnnounce;
-    worldAnnounce << "Server is shutting down in " << shutdowntime << " seconds.";
+    sWorld.sendMessageToAll(worldAnnounce);
+    sWorld.sendAreaTriggerMessage(worldAnnounce);
 
-    sWorld.sendMessageToAll(worldAnnounce.str());
-    sWorld.sendAreaTriggerMessage(worldAnnounce.str());
-
-    shutdowntime *= 1000;
-    sMaster().triggerShutdown(shutdowntime, false);
+    sMaster().triggerShutdown(shutdowntime * 1000, false);
 
     return true;
 }
@@ -237,32 +234,30 @@ bool ChatCommandHandler::HandleServerCancelShutdownCommand(const char* /*args*/,
 }
 
 //.server restart
-bool ChatCommandHandler::HandleServerRestartCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::handleServerRestartCommand(std::string_view args, WorldSession* m_session)
 {
-    uint32_t shutdowntime;
-    if (!args)
-        shutdowntime = 30;
-    else
-        shutdowntime = std::stoul(args);
+    uint32_t shutdowntime = 30;
+
+    if (!args.empty())
+        shutdowntime = static_cast<uint32_t>(std::stoul(std::string(args)));
 
     if (shutdowntime < 30)
         shutdowntime = 30;
 
-    std::stringstream teamAnnounce;
-    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str() << "|h[" << m_session->GetPlayer()->getName().c_str();
-    teamAnnounce << "]|h:" << MSG_COLOR_YELLOW << " initiated server restart timer " << shutdowntime << " sec...";
+    const auto& playerName = m_session->GetPlayer()->getName();
 
-    sWorld.sendMessageToOnlineGms(teamAnnounce.str());
+    const auto teamAnnounce = fmt::format("{}[Team]{} |Hplayer:{}|h[{}]|h:{} initiated server restart timer {} sec...", 
+        MSG_COLOR_RED, MSG_COLOR_GREEN, playerName, playerName, MSG_COLOR_YELLOW, shutdowntime);
+
+    sWorld.sendMessageToOnlineGms(teamAnnounce);
+
     sGMLog.writefromsession(m_session, "Initiated server restart timer {} sec...", shutdowntime);
+    const auto worldAnnounce = fmt::format("Server is restarting in {} seconds.", shutdowntime);
 
-    std::stringstream worldAnnounce;
-    worldAnnounce << "Server is restarting in " << shutdowntime << " seconds.";
+    sWorld.sendMessageToAll(worldAnnounce);
+    sWorld.sendAreaTriggerMessage(worldAnnounce);
 
-    sWorld.sendMessageToAll(worldAnnounce.str());
-    sWorld.sendAreaTriggerMessage(worldAnnounce.str());
-
-    shutdowntime *= 1000;
-    sMaster().triggerShutdown(shutdowntime, true);
+    sMaster().triggerShutdown(shutdowntime * 1000, true);
 
     return true;
 }

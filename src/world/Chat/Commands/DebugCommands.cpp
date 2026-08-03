@@ -454,6 +454,7 @@ bool ChatCommandHandler::HandleDebugFly(const char* /*args*/, WorldSession* m_se
         greenSystemMessage(m_session, "Set Fly for creature {}.", selected_creature->GetCreatureProperties()->Name);
         selected_creature->setMoveCanFly(true);
     }
+
     return true;
 }
 
@@ -1025,7 +1026,7 @@ bool ChatCommandHandler::HandleFadeCommand(const char* args, WorldSession* m_ses
 
     target->modThreatModifyer(atoi(v));
 
-    systemMessage(m_session, "threat is now reduced by: {}", target->getThreatModifyer());
+    systemMessage(m_session, "Threat is now reduced by: {}", target->getThreatModifyer());
     return true;
 }
 
@@ -1042,7 +1043,7 @@ bool ChatCommandHandler::HandleThreatModCommand(const char* args, WorldSession* 
 
     target->modGeneratedThreatModifyer(0, atoi(v));
 
-    systemMessage(m_session, "new threat caused is now reduced by: {} %", target->getGeneratedThreatModifyer(0));
+    systemMessage(m_session, "New threat caused is now reduced by: {} %", target->getGeneratedThreatModifyer(0));
     return true;
 }
 
@@ -1247,11 +1248,12 @@ bool ChatCommandHandler::HandleAuraUpdateRemove(const char* args, WorldSession* 
     Aura* AuraPtr = Pl->getAuraWithId(Pl->getVisualAuraList().at(VisualSlot));
     if (!AuraPtr)
     {
-        systemMessage(m_session, "No auraid found in slot %u", VisualSlot);
+        systemMessage(m_session, "No auraid found in slot {}", VisualSlot);
         return true;
     }
     systemMessage(m_session, "SMSG_AURA_UPDATE (remove): VisualSlot {} - SpellID 0", VisualSlot);
     AuraPtr->removeAura();
+
     return true;
 }
 
@@ -1285,10 +1287,11 @@ bool ChatCommandHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_s
         Spell* SpellPtr = sSpellMgr.newSpell(Pl, Sp, false, nullptr);
         auto auraHolder = sSpellMgr.newAura(Sp, SpellPtr->getDuration(), Pl, Pl);
         systemMessage(m_session, "SMSG_AURA_UPDATE (add): VisualSlot {} - SpellID {} - Flags {} - StackCount {}", auraHolder->m_visualSlot, SpellID, Flags, StackCount);
-        Pl->addAura(std::move(auraHolder));       // Serves purpose to just add the aura to our auraslots
+        Pl->addAura(std::move(auraHolder)); // Serves purpose to just add the aura to our auraslots
 
         delete SpellPtr;
     }
+
     return true;
 }
 
@@ -1316,7 +1319,7 @@ bool ChatCommandHandler::HandleSimpleDistanceCommand(const char* args, WorldSess
         m_session->GetPlayer()->GetPositionZ(),
         toX, toY, toZ);
 
-    m_session->SystemMessage("Your distance to location (%f, %f, %f) is %0.2f meters.", toX, toY, toZ, distance);
+    m_session->systemMessage("Your distance to location (%f, %f, %f) is %0.2f meters.", toX, toY, toZ, distance);
 
     return true;
 }
@@ -1325,26 +1328,26 @@ bool ChatCommandHandler::HandleSimpleDistanceCommand(const char* args, WorldSess
 bool ChatCommandHandler::HandleRangeCheckCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint64_t guid = m_session->GetPlayer()->getTargetGuid();
-    m_session->SystemMessage("=== RANGE CHECK ===");
+    m_session->systemMessage("=== RANGE CHECK ===");
     if (guid == 0)
     {
-        m_session->SystemMessage("No selection.");
+        m_session->systemMessage("No selection.");
         return true;
     }
 
     Unit* unit = m_session->GetPlayer()->getWorldMap()->getUnit(guid);
     if (!unit)
     {
-        m_session->SystemMessage("Invalid selection.");
+        m_session->systemMessage("Invalid selection.");
         return true;
     }
     float DistSq = unit->getDistanceSq(m_session->GetPlayer());
-    m_session->SystemMessage("getDistanceSq  :   %u", Util::float2int32(DistSq));
+    m_session->systemMessage("getDistanceSq  :   {}", Util::float2int32(DistSq));
     LocationVector locvec(m_session->GetPlayer()->GetPositionX(), m_session->GetPlayer()->GetPositionY(), m_session->GetPlayer()->GetPositionZ());
     float DistReal = unit->CalcDistance(locvec);
-    m_session->SystemMessage("CalcDistance   :   %u", Util::float2int32(DistReal));
+    m_session->systemMessage("CalcDistance   :   {}", Util::float2int32(DistReal));
     float Dist2DSq = unit->GetDistance2dSq(m_session->GetPlayer());
-    m_session->SystemMessage("GetDistance2dSq:   %u", Util::float2int32(Dist2DSq));
+    m_session->systemMessage("GetDistance2dSq:   {}", Util::float2int32(Dist2DSq));
     return true;
 }
 

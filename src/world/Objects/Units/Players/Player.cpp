@@ -1630,13 +1630,13 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
     {
         if (mapInfo->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
         {
-            sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, getSession()->LocalizedWorldSrv(SS_MUST_HAVE_BC));
+            sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, getSession()->localizedWorldSrv(SS_MUST_HAVE_BC));
             return false;
         }
 
         if (mapInfo->flags & WMI_INSTANCE_XPACK_02 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
         {
-            sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, getSession()->LocalizedWorldSrv(SS_MUST_HAVE_WOTLK));
+            sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, getSession()->localizedWorldSrv(SS_MUST_HAVE_WOTLK));
             return false;
         }
     }
@@ -6343,27 +6343,15 @@ void Player::sendReportToGmMessage(std::string playerName, std::string damageLog
     sWorld.sendMessageToOnlineGms(gm_ann);
 }
 
-void Player::broadcastMessage(const char* Format, ...)
+void Player::broadcastMessage(std::string_view message)
 {
-    va_list list;
-    va_start(list, Format);
-    char Message[1024];
-    vsnprintf(Message, 1024, Format, list);
-    va_end(list);
-
-    SmsgMessageChat messagePacket(SystemMessagePacket{Message});
+    SmsgMessageChat messagePacket(SystemMessagePacket{std::string(message)});
     m_session->sendManagedPacket(messagePacket);
 }
 
-void Player::sendAreaTriggerMessage(const char* message, ...)
+void Player::sendAreaTriggerMessage(std::string_view message)
 {
-    va_list list;
-    va_start(list, message);
-    char msg[500];
-    vsnprintf(msg, 500, message, list);
-    va_end(list);
-
-    SmsgAreaTriggerMessage managedPacket(0, msg, 0);
+    SmsgAreaTriggerMessage managedPacket(0, std::string(message), 0);
     getSession()->sendManagedPacket(managedPacket);
 }
 
@@ -7866,7 +7854,7 @@ void Player::setArenaTeam(uint8_t type, ArenaTeam* arenaTeam)
     m_arenaTeams[type] = arenaTeam;
 
     if (arenaTeam)
-        getSession()->SystemMessage("You are now a member of the arena team'%s'.", arenaTeam->m_name.c_str());
+        getSession()->systemMessage("You are now a member of the arena team '{}'.", arenaTeam->m_name);
 }
 
 ArenaTeam* Player::getArenaTeam(uint8_t type) { return m_arenaTeams[type]; }
@@ -8369,7 +8357,7 @@ void Player::removeFromBgQueue()
         return;
 
     m_pendingBattleground->removePendingPlayer(this);
-    m_session->systemMessage(getSession()->LocalizedWorldSrv(ServerString::SS_BG_REMOVE_QUEUE_INF));
+    m_session->systemMessage(getSession()->localizedWorldSrv(ServerString::SS_BG_REMOVE_QUEUE_INF));
 }
 
 bool Player::hasWonRbgToday() const { return this->m_hasWonRbgToday; }
@@ -8523,7 +8511,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
 
     if (qst_giver->isCreature() && dynamic_cast<Creature*>(qst_giver)->m_escorter != nullptr)
     {
-        m_session->SystemMessage("You cannot accept this quest at this time.");
+        m_session->systemMessage("You cannot accept this quest at this time.");
         return;
     }
 
@@ -16060,8 +16048,8 @@ void Player::completeLoading()
     if (isBanned())
     {
         kickFromServer(10000);
-        broadcastMessage(getSession()->LocalizedWorldSrv(ServerString::SS_NOT_ALLOWED_TO_PLAY));
-        broadcastMessage(getSession()->LocalizedWorldSrv(ServerString::SS_BANNED_FOR_TIME), getBanReason().c_str());
+        broadcastMessage(getSession()->localizedWorldSrv(ServerString::SS_NOT_ALLOWED_TO_PLAY));
+        broadcastMessage(getSession()->localizedWorldSrv(ServerString::SS_BANNED_FOR_TIME), getBanReason());
     }
 
     if (m_playerInfo->m_Group)

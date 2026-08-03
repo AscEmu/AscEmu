@@ -401,15 +401,16 @@ void World::disconnectSessionByAccountName(const std::string& accountName, World
         if (accountName == session->GetAccountName())
         {
             isUserFound = true;
-            worldSession->SystemMessage("Disconnecting user with account `%s` IP `%s` Player `%s`.", session->GetAccountNameS(),
-                session->GetSocket() ? session->GetSocket()->getRemoteIp().c_str() : "noip", session->GetPlayer() ? session->GetPlayer()->getName().c_str() : "noplayer");
+            worldSession->systemMessage("Disconnecting user with account `{}` IP `{}` Player `{}`.", 
+                session->GetAccountNameS(), session->GetSocket() ? session->GetSocket()->getRemoteIp() : "noip",
+                session->GetPlayer() ? session->GetPlayer()->getName() : "noplayer");
 
             session->Disconnect();
         }
     }
 
     if (!isUserFound)
-        worldSession->SystemMessage("There is nobody online with account [%s]", accountName.c_str());
+        worldSession->systemMessage("There is nobody online with account [{}].", accountName);
 }
 
 void World::disconnectSessionByIp(const std::string& ipString, WorldSession* worldSession)
@@ -428,15 +429,16 @@ void World::disconnectSessionByIp(const std::string& ipString, WorldSession* wor
         if (ipString == ip2)
         {
             isUserFound = true;
-            worldSession->SystemMessage("Disconnecting user with account `%s` IP `%s` Player `%s`.", session->GetAccountNameS(),
-                ip2.c_str(), session->GetPlayer() ? session->GetPlayer()->getName().c_str() : "noplayer");
+
+            worldSession->systemMessage("Disconnecting user with account `{}` IP `{}` Player `{}`.",
+                session->GetAccountNameS(), ip2, session->GetPlayer() ? session->GetPlayer()->getName() : "noplayer");
 
             session->Disconnect();
         }
     }
 
     if (!isUserFound)
-        worldSession->SystemMessage("There is nobody online with ip [%s]", ipString.c_str());
+        worldSession->systemMessage("There is nobody online with IP [{}].", ipString);
 }
 
 void World::disconnectSessionByPlayerName(const std::string& playerName, WorldSession* worldSession)
@@ -454,15 +456,17 @@ void World::disconnectSessionByPlayerName(const std::string& playerName, WorldSe
         if (playerName == session->GetPlayer()->getName())
         {
             isUserFound = true;
-            worldSession->SystemMessage("Disconnecting user with account `%s` IP `%s` Player `%s`.", session->GetAccountNameS(),
-                session->GetSocket() ? session->GetSocket()->getRemoteIp().c_str() : "noip", session->GetPlayer() ? session->GetPlayer()->getName().c_str() : "noplayer");
+
+            worldSession->systemMessage("Disconnecting user with account `{}` IP `{}` Player `{}`.",
+                session->GetAccountNameS(), session->GetSocket() ? session->GetSocket()->getRemoteIp() : "noip",
+                session->GetPlayer() ? session->GetPlayer()->getName() : "noplayer");
 
             session->Disconnect();
         }
     }
 
     if (!isUserFound)
-        worldSession->SystemMessage("There is no body online with the name [%s]", playerName.c_str());
+        worldSession->systemMessage("There is no body online with the name [{}]", playerName);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -676,7 +680,7 @@ void World::sendBroadcastMessageById(uint32_t broadcastId)
     {
         if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld())
         {
-            const char* text = activeSessions->second->LocalizedBroadCast(broadcastId);
+            const auto text = activeSessions->second->localizedBroadCast(broadcastId);
 
             const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, text).serialise();
 

@@ -4235,7 +4235,7 @@ bool ItemInterface::AddItemById(uint32_t itemid, uint32_t count, int32_t randomp
         else
         {
             freeslots = false;
-            chr->getSession()->SendNotification("No free slots were found in your inventory!");
+            chr->getSession()->sendNotification("No free slots were found in your inventory!");
         }
     }
     return freeslots;

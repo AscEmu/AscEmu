@@ -1218,7 +1218,7 @@ void WorldSession::handleSummonResponseOpcode(WorldPacket& recvPacket)
 
     if (!_player->m_summonData.summonerId)
     {
-        SendNotification("You do not have permission to perform that function.");
+        sendNotification("You do not have permission to perform that function.");
         return;
     }
 
@@ -1263,7 +1263,7 @@ void WorldSession::handlePlayerLogoutOpcode([[maybe_unused]] WorldPacket& recvPa
 #else
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PLAYER_LOGOUT");
     if (!HasGMPermissions())
-        SendNotification("You do not have permission to perform that function.");
+        sendNotification("You do not have permission to perform that function.");
     else
         LogoutPlayer(true);
 #endif
@@ -1552,20 +1552,20 @@ void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
 
     if (!_player->getSession()->CanUseCommand('3'))
     {
-        SendNotification("You do not have permission to perform that function.");
+        sendNotification("You do not have permission to perform that function.");
         return;
     }
 
     if (srlPacket.characterName.empty())
     {
-        SendNotification("You did not enter a character name!");
+        sendNotification("You did not enter a character name!");
         return;
     }
 
     auto resultAcctId = CharacterDatabase.query("SELECT acct FROM characters WHERE name = '%s'", srlPacket.characterName.c_str());
     if (!resultAcctId)
     {
-        SendNotification("%s does not exit!", srlPacket.characterName.c_str());
+        sendNotification("{} does not exist!", srlPacket.characterName);
         return;
     }
 
@@ -1576,7 +1576,7 @@ void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
     auto accountInfoResult = CharacterDatabase.query("SELECT acct, login, gm, email, lastip, muted FROM accounts WHERE acct = %u", accId);
     if (!accountInfoResult)
     {
-        SendNotification("Account information for %s not found!", srlPacket.characterName.c_str());
+        sendNotification("Account information for {} not found!", srlPacket.characterName);
         return;
     }
 

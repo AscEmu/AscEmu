@@ -45,7 +45,6 @@ LadyDeathwhisperAI::LadyDeathwhisperAI(Creature* pCreature) : CreatureAIScript(p
 
     waveCounter = 0;
     nextVengefulShadeTargetGUID = 0;
-          
 
     // Messages
     addEmoteForEvent(Event_OnCombatStart, SAY_LADY_AGGRO);     
