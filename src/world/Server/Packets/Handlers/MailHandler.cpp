@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgItemTextQueryResponse.h"
 #include "Server/Packets/CmsgSendMail.h"
 #include "Server/Packets/CmsgMailTakeItem.h"
+#include "Server/Packets/SmsgMailListResult.h"
 #include "Server/WorldSession.h"
 #include "Management/MailMgr.h"
 #include "Server/World.h"
@@ -238,142 +239,8 @@ void WorldSession::handleMailTimeOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
 {
-    WorldPacket data(SMSG_MAIL_LIST_RESULT, 200);
-    uint32_t realCount = 0;
-    uint8_t count = 0;
-
-#if VERSION_STRING > TBC
-    data << uint32_t(0);
-#endif
-    data << uint8_t(0);
-
-    for (auto& message : _player->m_mailBox->Messages)
-    {
-        if (message.second.expire_time && static_cast<uint32_t>(UNIXTIME) > message.second.expire_time)
-            continue;
-
-        if (static_cast<uint32_t>(UNIXTIME) < message.second.delivery_time)
-            continue;
-
-        if (count >= 50)
-        {
-            ++realCount;
-            continue;
-        }
-
-        uint8_t guidSize;
-        if (message.second.message_type == 0)
-            guidSize = 8;
-        else
-            guidSize = 4;
-#if VERSION_STRING <= TBC
-        const size_t messageSize = 2 + 4 + 1 + guidSize + 4 * 8 + (message.second.subject.size() + 1)  + 1 + (
-            message.second.items.size() * (1 + 4 + 4 + MAX_INSPECTED_ENCHANTMENT_SLOT * 3 * 4 + 4 + 4 + 1 + 4 + 4 + 4));
-#elif VERSION_STRING < Cata
-        const size_t messageSize = 2 + 4 + 1 + guidSize + 4 * 8 + (message.second.subject.size() + 1) + (message.second.body.size() + 1) + 1 + (
-            message.second.items.size() * (1 + 4 + 4 + MAX_INSPECTED_ENCHANTMENT_SLOT * 3 * 4 + 4 + 4 + 4 + 4 + 4 + 4 + 1));
-#else
-        const size_t messageSize = 2 + 4 + 1 + guidSize + 4 * 8 + (message.second.subject.size() + 1) + (message.second.body.size() + 1) + 1 + (
-            message.second.items.size() * (1 + 4 + 4 + MAX_INSPECTED_ENCHANTMENT_SLOT * 3 * 4 + 4 + 4 + 4 + 4 + 4 + 4 + 1));
-#endif
-
-        data << uint16_t(messageSize);
-        data << uint32_t(message.second.message_id);
-        data << uint8_t(message.second.message_type);
-
-        switch (message.second.message_type)
-        {
-            case MAIL_TYPE_NORMAL:
-                data << uint64_t(message.second.sender_guid);
-                break;
-            case MAIL_TYPE_COD:
-            case MAIL_TYPE_AUCTION:
-            case MAIL_TYPE_ITEM:
-                data << uint32_t(WoWGuid::getGuidLowPartFromUInt64(message.second.sender_guid));
-                break;
-            case MAIL_TYPE_GAMEOBJECT:
-            case MAIL_TYPE_CREATURE:
-                data << uint32_t(static_cast<uint32_t>(message.second.sender_guid));
-                break;
-        }
-
-#if VERSION_STRING < Cata
-        data << uint32_t(message.second.cod);
-#else
-        data << uint64_t(message.second.cod);
-#endif
-#if VERSION_STRING < WotLK
-        uint32_t itemPageEntry = 0;
-        if (!message.second.body.empty())
-        {
-            itemPageEntry = sMySQLStore.getItemPageEntryByText(message.second.body);
-            if (itemPageEntry == 0)
-            {
-                itemPageEntry = sObjectMgr.generateItemPageEntry();
-                sMySQLStore.addItemPage(itemPageEntry, message.second.body);
-            }
-        }
-        data << uint32_t(itemPageEntry);
-
-#endif
-        data << uint32_t(0);
-        data << uint32_t(message.second.stationery);
-#if VERSION_STRING < Cata
-        data << uint32_t(message.second.money);
-#else
-        data << uint64_t(message.second.money);
-#endif
-        data << uint32_t(message.second.checked_flag);
-        data << float(float((message.second.expire_time - uint32_t(UNIXTIME)) / DAY));
-        data << uint32_t(0);
-
-        data << message.second.subject;
-#if VERSION_STRING > TBC
-        data << message.second.body;
-#endif
-
-        data << uint8_t(message.second.items.size());
-
-        uint8_t i = 0;
-        if (!message.second.items.empty())
-        {
-            for (auto itemEntry : message.second.items)
-            {
-                const auto item = sObjectMgr.loadItem(itemEntry);
-                if (item == nullptr)
-                    continue;
-
-                data << uint8_t(i++);
-                data << uint32_t(item->getGuidLow());
-                data << uint32_t(item->getEntry());
-
-                for (uint8_t j = 0; j < MAX_INSPECTED_ENCHANTMENT_SLOT; ++j)
-                {
-                    data << uint32_t(item->getEnchantmentId(j));
-                    data << uint32_t(item->getEnchantmentDuration(j));
-                    data << uint32_t(item->getEnchantmentCharges(j));
-                }
-
-                data << uint32_t(item->getRandomPropertiesId());
-                data << uint32_t(item->getPropertySeed());
-                data << uint32_t(item->getStackCount());
-                data << uint32_t(item->getChargesLeft());
-                data << uint32_t(item->getMaxDurability());
-                data << uint32_t(item->getDurability());
-                data << uint8_t(item->m_isLocked ? 1 : 0);
-            }
-        }
-        ++count;
-        ++realCount;
-    }
-#if VERSION_STRING > TBC
-    data.put<uint32_t>(0, realCount);
-    data.put<uint8_t>(4, count);
-#else
-    data.put<uint8_t>(0, count);
-#endif
-
-    SendPacket(&data);
+    SmsgMailListResult managedPacket(_player->m_mailBox->Messages);
+    sendManagedPacket(managedPacket);
 
     // do cleanup on request mail
     _player->m_mailBox->CleanupExpiredMessages();

@@ -1040,7 +1040,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_AUCTION_LIST_PENDING_SALES, &WorldSession::handleAuctionListPendingSales, false, true, true, true, false);
 
     // Mail System
-    registry.registerOpcode(CMSG_GET_MAIL_LIST, &WorldSession::handleGetMailOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_GET_MAIL_LIST, &WorldSession::handleGetMailOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_ITEM_TEXT_QUERY, &WorldSession::handleItemTextQueryOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_SEND_MAIL, &WorldSession::handleSendMailOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_MAIL_TAKE_MONEY, &WorldSession::handleTakeMoneyOpcode, true, true, true, true, false);
