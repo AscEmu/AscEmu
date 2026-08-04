@@ -68,7 +68,7 @@ public:
 
     void listMembers(Player* plr, bool chatQuery);
 
-    // Packets
+    // Packets LUA
     void sendToAll(WorldPacket* data);
     void sendToAll(WorldPacket* data, Player* skipPlayer);
 

@@ -136,6 +136,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgTransferPending.h"
 #include "Server/Packets/SmsgTutorialFlags.h"
 #include "Server/Packets/SmsgUpdateWorldState.h"
+#include "Server/Packets/SmsgCancelAutoRepeat.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Warden/SpeedDetector.h"
@@ -7228,30 +7229,8 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
     SmsgCancelCombat managedPacket;
     m_session->sendManagedPacket(managedPacket);
 
-    WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
-#if VERSION_STRING == Mop
-    WoWGuid guid = GetNewGUID();
-    data.writeBit(guid[1]);
-    data.writeBit(guid[3]);
-    data.writeBit(guid[0]);
-    data.writeBit(guid[4]);
-    data.writeBit(guid[6]);
-    data.writeBit(guid[7]);
-    data.writeBit(guid[5]);
-    data.writeBit(guid[2]);
-
-    data.writeByteSeq(guid[7]);
-    data.writeByteSeq(guid[6]);
-    data.writeByteSeq(guid[2]);
-    data.writeByteSeq(guid[5]);
-    data.writeByteSeq(guid[0]);
-    data.writeByteSeq(guid[4]);
-    data.writeByteSeq(guid[1]);
-    data.writeByteSeq(guid[3]);
-#else
-    data << GetNewGUID();
-#endif
-    sendMessageToSet(&data, false);
+    SmsgCancelAutoRepeat repeatPacket(GetNewGUID());
+    PacketBroadcast::sendToSet(*this, repeatPacket, false);
 
     if (unitAttacker != nullptr && m_WorldMap && m_WorldMap->getScript())
         m_WorldMap->getScript()->OnPlayerDeath(this, unitAttacker);

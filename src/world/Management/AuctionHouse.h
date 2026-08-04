@@ -161,9 +161,9 @@ public:
     Auction* getAuction(uint32_t id);
     void queueDeletion(Auction* auction, uint32_t reasonType);
 
-    void sendOwnerListPacket(Player* player, WorldPacket* packet);
+    void sendOwnerListPacket(Player* player);
     void updateOwner(uint32_t oldGuid, uint32_t newGuid);
-    void sendBidListPacket(Player* player, WorldPacket* packet);
+    void sendBidListPacket(Player* player);
     void sendAuctionBuyOutNotificationPacket(Auction* auction);
     void sendAuctionOutBidNotificationPacket(Auction* auction, uint64_t newBidder, uint32_t newHighestBid);
     void sendAuctionExpiredNotificationPacket(Auction* auction);

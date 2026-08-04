@@ -36,7 +36,7 @@ void WorldSession::handleAuctionListOwnerItems(WorldPacket& recvPacket)
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
-    creature->auctionHouse->sendOwnerListPacket(_player, nullptr);
+    creature->auctionHouse->sendOwnerListPacket(_player);
 }
 
 void WorldSession::handleAuctionListItems(WorldPacket& recvPacket)
@@ -75,7 +75,7 @@ void WorldSession::handleCancelAuction(WorldPacket& recvPacket)
     SmsgAuctionCommandResult managedPacket(srlPacket.auctionId, AUCTION_ACTION_CANCEL, AUCTION_ERROR_NONE);
     sendManagedPacket(managedPacket);
 
-    creature->auctionHouse->sendOwnerListPacket(_player, nullptr);
+    creature->auctionHouse->sendOwnerListPacket(_player);
 }
 
 void WorldSession::handleAuctionListBidderItems(WorldPacket& recvPacket)
@@ -90,7 +90,7 @@ void WorldSession::handleAuctionListBidderItems(WorldPacket& recvPacket)
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
-    creature->auctionHouse->sendBidListPacket(_player, &recvPacket);
+    creature->auctionHouse->sendBidListPacket(_player);
 }
 
 void WorldSession::handleAuctionListPendingSales([[maybe_unused]] WorldPacket& recvPacket)
@@ -217,7 +217,7 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
         _player->sendAuctionCommandResult(nullptr, AUCTION_ACTION_CREATE, AUCTION_ERROR_NONE);
     }
 
-    auctionHouse->sendOwnerListPacket(_player, &recvPacket);
+    auctionHouse->sendOwnerListPacket(_player);
 }
 
 void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)

@@ -65,6 +65,7 @@
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
 #include "Server/PacketBroadcast.hpp"
+#include "Server/Packets/SmsgCancelAutoRepeat.h"
 
 using namespace AscEmu::Packets;
 
@@ -2674,15 +2675,8 @@ void Aura::SpellAuraIncreaseSwimSpeed(AuraEffectModifier* aurEff, bool apply)
         m_target->setSpeedRate(TYPE_SWIM, 0.04722222f * (100 + aurEff->getEffectDamage()), true);
     }
     else
-        m_target->setSpeedRate(TYPE_SWIM, m_target->getSpeedRate(TYPE_SWIM, false), false);
-
-    if (p_target != nullptr)
     {
-        WorldPacket data(SMSG_FORCE_SWIM_SPEED_CHANGE, 17);
-        data << p_target->GetNewGUID();
-        data << (uint32_t)2;
-        data << m_target->getSpeedRate(TYPE_SWIM, true);
-        p_target->getSession()->SendPacket(&data);
+        m_target->setSpeedRate(TYPE_SWIM, m_target->getSpeedRate(TYPE_SWIM, false), false);
     }
 }
 
@@ -2836,9 +2830,8 @@ void Aura::SpellAuraFeignDeath(AuraEffectModifier* /*aurEff*/, bool apply)
             p_target->getSession()->sendManagedPacket(managedPacket);
 
             // Send server-side cancel message
-            WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
-            data << p_target->GetNewGUID();
-            p_target->sendMessageToSet(&data, false);
+            SmsgCancelAutoRepeat repeatPacket(p_target->GetNewGUID());
+            PacketBroadcast::sendToSet(*p_target, repeatPacket, false);
         }
         else
         {

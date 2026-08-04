@@ -1082,6 +1082,7 @@ void Channel::listMembers(Player* plr, bool chatQuery)
     }
 }
 
+// Packets LUA
 void Channel::sendToAll(WorldPacket* data)
 {
     std::lock_guard<std::mutex> guard(m_mutexChannel);

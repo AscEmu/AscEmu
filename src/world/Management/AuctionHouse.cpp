@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAuctionBidderListResult.h"
 #include "Server/Packets/SmsgAuctionListResult.h"
 #include "Server/Packets/CmsgAuctionListItems.h"
+#include "Server/Packets/SmsgAuctionRemovedNotification.h"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Strings.hpp"
@@ -170,7 +171,7 @@ void AuctionHouse::updateAuctions()
             if (auction->highestBidderGuid.getGuidLow() == 0)
             {
                 auction->removedType = AUCTION_REMOVE_EXPIRED;
-                this->sendAuctionExpiredNotificationPacket(auction.get());
+                sendAuctionExpiredNotificationPacket(auction.get());
             }
             else
             {
@@ -313,7 +314,7 @@ void AuctionHouse::queueDeletion(Auction* auction, uint32_t reasonType)
     removalList.push_back(auction);
 }
 
-void AuctionHouse::sendOwnerListPacket(Player* player, WorldPacket* /*packet*/)
+void AuctionHouse::sendOwnerListPacket(Player* player)
 {
     std::vector<AuctionPacketList> auctionPacketList{};
 
@@ -353,7 +354,7 @@ void AuctionHouse::updateOwner(uint32_t oldGuid, uint32_t newGuid)
     }
 }
 
-void AuctionHouse::sendBidListPacket(Player* player, WorldPacket* /*packet*/)
+void AuctionHouse::sendBidListPacket(Player* player)
 {
     std::vector<AuctionPacketList> auctionPacketList{};
 
@@ -414,23 +415,18 @@ void AuctionHouse::sendAuctionOutBidNotificationPacket(Auction* auction, uint64_
     }
 }
 
-void AuctionHouse::sendAuctionExpiredNotificationPacket(Auction* /*auct*/)
+void AuctionHouse::sendAuctionExpiredNotificationPacket(Auction* auction)
 {
-    ///\todo I don't know the net code... so: TODO ;-)
-
-    //Player* owner = sObjectMgr.GetPlayer(auct->ownerGuid.getGuidLow());
-    //if (owner && owner->IsInWorld())
-    //{
-    //  WorldPacket data(SMSG_AUCTION_REMOVED_NOTIFICATION, ??);
-    //  data << GetID();
-    //  data << auct->Id;
-    //  data << uint32_t(0);   // I don't have an active blizz account..so I can't get the netcode by myself.
-    //  data << uint32_t(0);
-    //  data << uint32_t(0);
-    //  data << auct->pItem->getEntry();
-    //  data << uint32_t(0);
-    //  owner->getSession()->sendPacket(&data);
-    //}
+    if (auction)
+    {
+        Player* owner = sObjectMgr.getPlayer(auction->ownerGuid.getGuidLow());
+        if (owner && owner->getSession())
+        {
+            SmsgAuctionRemovedNotification managedPacket(auction->Id, auction->auctionItem->getEntry(),
+                auction->auctionItem->getRandomPropertiesId());
+            owner->getSession()->sendManagedPacket(managedPacket);
+        }
+    }
 }
 
 void AuctionHouse::sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionListItems srlPacket)
