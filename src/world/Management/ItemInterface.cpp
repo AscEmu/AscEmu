@@ -2852,7 +2852,7 @@ int8_t ItemInterface::CanAffordItem(ItemProperties const* item, uint32_t amount,
     if (item->RequiredFaction)
     {
         WDB::Structures::FactionEntry const* factdbc = sFactionStore.lookupEntry(item->RequiredFaction);
-        if (!factdbc || factdbc->RepListId < 0)
+        if (!factdbc || factdbc->reputationIndex < 0)
             return INV_ERR_OK;
 
         if (getReputationRankFromStanding(m_pOwner->getFactionStanding(item->RequiredFaction).value_or(0)) < static_cast<Standing>(item->RequiredFactionStanding))

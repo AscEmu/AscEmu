@@ -226,6 +226,27 @@ namespace WDB::Structures
         uint32_t expansion = 0;
     };
 
+    struct FactionEntry
+    {
+        uint32_t id{0};
+        int32_t reputationIndex{-1};
+        uint32_t reputationRaceMask[4]{};
+        uint32_t reputationClassMask[4]{};
+        int32_t reputationBase[4]{};
+        uint32_t reputationFlags[4]{};
+        uint32_t parentFactionId{0};
+        float spilloverRateIn{0.0f};
+        float spilloverRateOut{0.0f};
+        uint32_t spilloverMaxIn{0};
+        uint32_t expansion{0};
+        std::string name;
+
+        [[nodiscard]] bool canHaveReputation() const
+        {
+            return reputationIndex >= 0;
+        }
+    };
+
     inline constexpr std::size_t maxFactionRelations = 4;
 
     struct FactionTemplateEntry
@@ -1044,35 +1065,6 @@ namespace WDB::Structures
         //uint32_t unk9;                                            // 16
         //uint32_t unk10;                                           // 17
         //uint32_t unk11;                                           // 18
-    };
-
-    struct FactionEntry
-    {
-        uint32_t ID;                                                // 0
-        int32_t RepListId;                                          // 1
-        uint32_t RaceMask[4];                                       // 2-5
-        uint32_t ClassMask[4];                                      // 6-9
-        int32_t baseRepValue[4];                                    // 10-13
-        uint32_t repFlags[4];                                       // 14-17
-        uint32_t parentFaction;                                     // 18
-#if VERSION_STRING >= WotLK
-        float spillover_rate_in;                                    // 19
-        float spillover_rate_out;                                   // 20
-        uint32_t spillover_max_in;                                  // 21
-#endif
-        char* Name[NAME_PATTERN];                                   // 19-34
-        //uint32_t name_flags;                                      // 35
-        //uint32_t Description[16];                                 // 36-51
-        //uint32_t description_flags;                               // 52
-#if VERSION_STRING >= Mop
-        uint32_t GroupExpansion;                                    // 25
-#endif
-
-        // helpers
-        bool canHaveReputation() const
-        {
-            return RepListId >= 0;
-        }
     };
 
     struct GameObjectDisplayInfoEntry

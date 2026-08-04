@@ -84,7 +84,7 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityQualityEntry> sDurabili
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::EmotesTextEntry> sEmotesTextStore;
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::FactionEntry> sFactionStore;
+SERVER_DECL WDB::WDBStore<WDB::Structures::FactionEntry> sFactionStore;
 SERVER_DECL WDB::WDBStore<WDB::Structures::FactionTemplateEntry> sFactionTemplateStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GameObjectDisplayInfoEntry> sGameObjectDisplayInfoStore;
@@ -414,7 +414,47 @@ bool loadDBCs()
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sEmotesTextStore, dbc_path, "EmotesText.dbc");
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sFactionStore, dbc_path, "Faction.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::FactionEntry>(
+        bad_dbc_files, sFactionStore, dbc_path,
+        [](const auto& raw, WDB::Structures::FactionEntry& entry) {
+            entry.id = raw.id;
+            entry.reputationIndex = raw.reputationIndex;
+            entry.parentFactionId = raw.parentFactionId;
+
+            for (std::size_t i = 0; i < 4; ++i)
+            {
+                entry.reputationRaceMask[i] = raw.reputationRaceMask[i];
+                entry.reputationClassMask[i] = raw.reputationClassMask[i];
+                entry.reputationBase[i] = raw.reputationBase[i];
+                entry.reputationFlags[i] = raw.reputationFlags[i];
+            }
+
+            // Spillover (ab WotLK/TBC)
+            if constexpr (requires { raw.spilloverRateIn; })
+            {
+                entry.spilloverRateIn = raw.spilloverRateIn;
+                entry.spilloverRateOut = raw.spilloverRateOut;
+                entry.spilloverMaxIn = raw.spilloverMaxIn;
+            }
+
+            // Expansion (ab Cata/MoP)
+            if constexpr (requires { raw.expansion; })
+            {
+                entry.expansion = raw.expansion;
+            }
+
+            // Namens-Lokalisierung
+            if constexpr (requires { { raw.name[0] } -> std::convertible_to<const char*>; })
+            {
+                uint8_t localeId = sWorld.getDbcLocaleLanguageId();
+                entry.name = raw.name[localeId] ? raw.name[localeId] : "";
+            }
+            else if constexpr (requires { { raw.name } -> std::convertible_to<const char*>; })
+            {
+                entry.name = raw.name ? raw.name : "";
+            }
+        }
+    );
 
     WDB::loadUnifiedWDBStore<WDB::Structures::FactionTemplateEntry>(
         bad_dbc_files, sFactionTemplateStore, dbc_path,

@@ -28,6 +28,11 @@ namespace WDB
             auto const it = this->find(id);
             return (it != this->end()) ? &it->second : nullptr;
         }
+
+        [[nodiscard]] std::size_t getNumRows() const noexcept
+        {
+            return this->size();
+        }
     };
 
     enum LocaleConstant

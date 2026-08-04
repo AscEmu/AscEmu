@@ -2392,7 +2392,7 @@ void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
 
             getUnit()->setFaction(properties_difficulty->Faction);
 
-            if (!(getUnit()->m_factionEntry->RepListId == -1 && getUnit()->m_factionTemplate->hostileMask == 0 && getUnit()->m_factionTemplate->friendlyMask == 0))
+            if (!(getUnit()->m_factionEntry->reputationIndex == -1 && getUnit()->m_factionTemplate->hostileMask == 0 && getUnit()->m_factionTemplate->friendlyMask == 0))
             {
                 m_Unit->getAIInterface()->setCanCallForHelp(true);
             }

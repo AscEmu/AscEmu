@@ -69,6 +69,17 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::FactionEntry> : DbcVersionLayouts<
+            Structures::Raw::FactionEntryClassic,
+            Structures::Raw::FactionEntryTbc,
+            Structures::Raw::FactionEntryWotlk,
+            Structures::Raw::FactionEntryCata,
+            Structures::Raw::FactionEntryMop>
+    {
+        static constexpr const char* filename = "Faction.dbc";
+    };
+
+    template <>
     struct DbcTraits<Structures::FactionTemplateEntry> : DbcVersionLayouts<
             Structures::Raw::FactionTemplateEntryAll,
             Structures::Raw::FactionTemplateEntryAll,

@@ -1886,7 +1886,7 @@ Standing Object::getFactionStandingWith(Object const* target) const
         {
             if (m_factionEntry != nullptr && m_factionEntry->canHaveReputation())
             {
-                auto standing = playerTargetOwner->getFactionStandingRank(m_factionEntry->ID);
+                auto standing = playerTargetOwner->getFactionStandingRank(m_factionEntry->id);
                 // If at war with faction, standing cannot be higher than neutral
                 if (playerTargetOwner->isHostileBasedOnReputation(m_factionEntry, true))
                     standing = std::min(Standing::NEUTRAL, standing);
@@ -1971,7 +1971,7 @@ bool Object::isNeutralToAll() const
     if (m_factionTemplate == nullptr || m_factionEntry == nullptr)
         return true;
 
-    if (m_factionEntry->RepListId >= 0)
+    if (m_factionEntry->reputationIndex >= 0)
         return false;
 
     return m_factionTemplate->isNeutralToAll();
@@ -4473,7 +4473,7 @@ bool Object::IsInBg()
 uint32_t Object::GetTeam() const
 {
 
-    switch (m_factionEntry->ID)
+    switch (m_factionEntry->id)
     {
         // Human
     case 1:

@@ -3720,11 +3720,11 @@ bool Player::loadReputations(QueryResult* result)
         const auto standing = field[3].asInt32();
 
         const auto faction = sFactionStore.lookupEntry(id);
-        if (faction == nullptr || faction->RepListId < 0 || faction->RepListId >= PLAYER_REPUTATION_COUNT)
+        if (faction == nullptr || faction->reputationIndex < 0 || faction->reputationIndex >= PLAYER_REPUTATION_COUNT)
             continue;
 
         const auto [repItr, _] = m_reputation.insert_or_assign(id, std::make_unique<FactionReputation>(standing, flag, basestanding));
-        m_reputationByListId[faction->RepListId] = repItr->second.get();
+        m_reputationByListId[faction->reputationIndex] = repItr->second.get();
     } while (result->nextRow());
 
     return true;
@@ -11281,7 +11281,7 @@ static constexpr bool hasReputationRankChangedFlat(int32_t Standing, int32_t New
 void Player::setFactionStanding(uint32_t faction, int32_t value)
 {
     const auto factionEntry = sFactionStore.lookupEntry(faction);
-    if (factionEntry == nullptr || factionEntry->RepListId < 0)
+    if (factionEntry == nullptr || factionEntry->reputationIndex < 0)
         return;
 
     if (value < StandingValues::HATED)
@@ -11301,7 +11301,7 @@ void Player::setFactionStanding(uint32_t faction, int32_t value)
         if (reputation->second->standing >= StandingValues::EXALTED)
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
 
-        updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, reputation->second->standing, 0);
+        updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->id, reputation->second->standing, 0);
 #endif
 
         updateInrangeSetsBasedOnReputation();
@@ -11322,7 +11322,7 @@ void Player::setFactionStanding(uint32_t faction, int32_t value)
             updateInrangeSetsBasedOnReputation();
 
 #ifdef FT_ACHIEVEMENTS
-            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, value, 0);
+            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->id, value, 0);
 #endif
         }
         else
@@ -11356,7 +11356,7 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
         return;
 
     const auto factionEntry = sFactionStore.lookupEntry(faction);
-    if (factionEntry == nullptr || factionEntry->RepListId < 0)
+    if (factionEntry == nullptr || factionEntry->reputationIndex < 0)
         return;
 
     if ((getWorldMap()->getBaseMap()->getMapInfo()->minlevel == 80 ||
@@ -11381,7 +11381,7 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
         if (itr->second->standing >= StandingValues::EXALTED)
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
 
-        updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, itr->second->standing, 0);
+        updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->id, itr->second->standing, 0);
 #endif
 
         updateInrangeSetsBasedOnReputation();
@@ -11405,7 +11405,7 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
             updateInrangeSetsBasedOnReputation();
 
 #ifdef FT_ACHIEVEMENTS
-            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, itr->second->standing, 0);
+            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->id, itr->second->standing, 0);
             if (itr->second->standing >= StandingValues::EXALTED)
                 updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
             else if ((itr->second->standing - value) >= StandingValues::EXALTED)
@@ -11466,16 +11466,16 @@ bool Player::isHostileBasedOnReputation(WDB::Structures::FactionEntry const* fac
     if (factionEntry == nullptr)
         return false;
 
-    if (!factionEntry->canHaveReputation() || factionEntry->RepListId >= PLAYER_REPUTATION_COUNT)
+    if (!factionEntry->canHaveReputation() || factionEntry->reputationIndex >= PLAYER_REPUTATION_COUNT)
         return false;
 
-    const auto* const factionReputation = m_reputationByListId[factionEntry->RepListId];
+    const auto* const factionReputation = m_reputationByListId[factionEntry->reputationIndex];
     if (factionReputation == nullptr)
         return false;
 
     if (!skipForcedReactions)
     {
-        const auto itr = m_forcedReactions.find(factionEntry->ID);
+        const auto itr = m_forcedReactions.find(factionEntry->id);
         if (itr != m_forcedReactions.cend())
             return itr->second <= Standing::HOSTILE;
     }
@@ -11533,7 +11533,7 @@ void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
     }
 
     const auto team = getTeam();
-    if (const auto modifier = sObjectMgr.getReputationModifier(unit->getEntry(), unit->getServersideFactionEntry()->ID))
+    if (const auto modifier = sObjectMgr.getReputationModifier(unit->getEntry(), unit->getServersideFactionEntry()->id))
     {
         for (auto& mod : modifier->mods)
         {
@@ -11553,26 +11553,26 @@ void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
         if (IS_INSTANCE(GetMapId()) && sObjectMgr.handleInstanceReputationModifiers(this, unit))
             return;
 
-        if (unit->getServersideFactionEntry()->RepListId < 0)
+        if (unit->getServersideFactionEntry()->reputationIndex < 0)
             return;
 
         const auto change = static_cast<int32_t>(-5.0f * worldConfig.getFloatRate(RATE_KILLREPUTATION));
-        modFactionStanding(unit->getServersideFactionEntry()->ID, change);
+        modFactionStanding(unit->getServersideFactionEntry()->id, change);
     }
 }
 
 void Player::onTalkReputation(WDB::Structures::FactionEntry const* factionEntry)
 {
-    if (factionEntry == nullptr || factionEntry->RepListId < 0 || factionEntry->RepListId >= PLAYER_REPUTATION_COUNT)
+    if (factionEntry == nullptr || factionEntry->reputationIndex < 0 || factionEntry->reputationIndex >= PLAYER_REPUTATION_COUNT)
         return;
 
-    auto* const factionReputation = m_reputationByListId[factionEntry->RepListId];
+    auto* const factionReputation = m_reputationByListId[factionEntry->reputationIndex];
     if (factionReputation == nullptr)
         return;
 
     if (factionReputation->setVisible(true) && IsInWorld())
     {
-        SmsgSetFactionVisible managedPacket(factionEntry->RepListId);
+        SmsgSetFactionVisible managedPacket(factionEntry->reputationIndex);
         getSession()->sendManagedPacket(managedPacket);
     }
 }
@@ -11592,20 +11592,20 @@ void Player::setFactionInactive(uint32_t faction, bool set)
 
 bool Player::addNewFaction(WDB::Structures::FactionEntry const* factionEntry, int32_t standing, bool base)
 {
-    if (factionEntry == nullptr || factionEntry->RepListId < 0 || factionEntry->RepListId >= PLAYER_REPUTATION_COUNT)
+    if (factionEntry == nullptr || factionEntry->reputationIndex < 0 || factionEntry->reputationIndex >= PLAYER_REPUTATION_COUNT)
         return false;
 
     for (uint8_t i = 0; i < 4; ++i)
     {
-        if (((factionEntry->RaceMask[i] & getRaceMask()) != 0 || (factionEntry->RaceMask[i] == 0 && factionEntry->ClassMask[i] != 0)) &&
-            ((factionEntry->ClassMask[i] & getClassMask()) != 0 || factionEntry->ClassMask[i] == 0))
+        if (((factionEntry->reputationRaceMask[i] & getRaceMask()) != 0 || (factionEntry->reputationRaceMask[i] == 0 && factionEntry->reputationClassMask[i] != 0)) &&
+            ((factionEntry->reputationClassMask[i] & getClassMask()) != 0 || factionEntry->reputationClassMask[i] == 0))
         {
-            const auto flag = static_cast<uint8_t>(factionEntry->repFlags[i]);
-            const auto baseStanding = factionEntry->baseRepValue[i];
-            const auto m_standing = (base) ? factionEntry->baseRepValue[i] : standing;
+            const auto flag = static_cast<uint8_t>(factionEntry->reputationFlags[i]);
+            const auto baseStanding = factionEntry->reputationBase[i];
+            const auto m_standing = (base) ? factionEntry->reputationBase[i] : standing;
 
-            const auto [repItr, _] = m_reputation.insert_or_assign(factionEntry->ID, std::make_unique<FactionReputation>(m_standing, flag, baseStanding));
-            m_reputationByListId[factionEntry->RepListId] = repItr->second.get();
+            const auto [repItr, _] = m_reputation.insert_or_assign(factionEntry->id, std::make_unique<FactionReputation>(m_standing, flag, baseStanding));
+            m_reputationByListId[factionEntry->reputationIndex] = repItr->second.get();
 
             return true;
         }
@@ -11620,7 +11620,7 @@ void Player::onModStanding(WDB::Structures::FactionEntry const* factionEntry, Fa
 
     if (reputation->setVisible(true) && IsInWorld())
     {
-        SmsgSetFactionVisible managedPacket(factionEntry->RepListId);
+        SmsgSetFactionVisible managedPacket(factionEntry->reputationIndex);
         getSession()->sendManagedPacket(managedPacket);
     }
 
@@ -11628,7 +11628,7 @@ void Player::onModStanding(WDB::Structures::FactionEntry const* factionEntry, Fa
 
     if (reputation->isVisible() && IsInWorld())
     {
-        SmsgSetFactionStanding managedPacket(factionEntry->RepListId, reputation->calcStanding());
+        SmsgSetFactionStanding managedPacket(factionEntry->reputationIndex, reputation->calcStanding());
         getSession()->sendManagedPacket(managedPacket);
     }
 }

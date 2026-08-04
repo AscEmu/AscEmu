@@ -211,6 +211,76 @@ namespace WDB::Structures::Raw
         uint32_t expansion;
     };
 
+    struct FactionEntryClassic
+    {
+        uint32_t id;
+        int32_t reputationIndex;
+        uint32_t reputationRaceMask[4];
+        uint32_t reputationClassMask[4];
+        int32_t reputationBase[4];
+        uint32_t reputationFlags[4];
+        uint32_t parentFactionId;
+        char const* name[namePatternClassic];
+    };
+
+    struct FactionEntryTbc
+    {
+        uint32_t id;
+        int32_t reputationIndex;
+        uint32_t reputationRaceMask[4];
+        uint32_t reputationClassMask[4];
+        int32_t reputationBase[4];
+        uint32_t reputationFlags[4];
+        uint32_t parentFactionId;
+        char const* name[namePatternTbcWotlk];
+    };
+
+    struct FactionEntryWotlk
+    {
+        uint32_t id;
+        int32_t reputationIndex;
+        uint32_t reputationRaceMask[4];
+        uint32_t reputationClassMask[4];
+        int32_t reputationBase[4];
+        uint32_t reputationFlags[4];
+        uint32_t parentFactionId;
+        float spilloverRateIn;
+        float spilloverRateOut;
+        uint32_t spilloverMaxIn;
+        char const* name[namePatternTbcWotlk];
+    };
+
+    struct FactionEntryCata
+    {
+        uint32_t id;
+        int32_t reputationIndex;
+        uint32_t reputationRaceMask[4];
+        uint32_t reputationClassMask[4];
+        int32_t reputationBase[4];
+        uint32_t reputationFlags[4];
+        uint32_t parentFactionId;
+        float spilloverRateIn;
+        float spilloverRateOut;
+        uint32_t spilloverMaxIn;
+        char const* name;
+    };
+
+    struct FactionEntryMop
+    {
+        uint32_t id;
+        int32_t reputationIndex;
+        uint32_t reputationRaceMask[4];
+        uint32_t reputationClassMask[4];
+        int32_t reputationBase[4];
+        uint32_t reputationFlags[4];
+        uint32_t parentFactionId;
+        float spilloverRateIn;
+        float spilloverRateOut;
+        uint32_t spilloverMaxIn;
+        char const* name;
+        uint32_t expansion;
+    };
+
     struct FactionTemplateEntryAll
     {
         uint32_t id;

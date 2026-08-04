@@ -376,19 +376,13 @@ bool ChatCommandHandler::HandleLookupFactionCommand(const char* args, WorldSessi
         WDB::Structures::FactionEntry const* faction = sFactionStore.lookupEntry(index);
         if (faction != nullptr)
         {
-#if VERSION_STRING < Cata
-            std::string y = std::string(faction->Name[sWorld.getDbcLocaleLanguageId()]);
-#else
-            std::string y = std::string(faction->Name[0]);
-#endif
+            std::string y = std::string(faction->name);
+
             AscEmu::Util::Strings::toLowerCase(y);
             if (AscEmu::Util::Strings::contains(x, y))
             {
-#if VERSION_STRING < Cata
-                SendHighlightedName(m_session, "Faction", faction->Name[sWorld.getDbcLocaleLanguageId()], y, x, faction->ID);
-#else
-                SendHighlightedName(m_session, "Faction", faction->Name[0], y, x, faction->ID);
-#endif
+                SendHighlightedName(m_session, "Faction", faction->name.c_str(), y, x, faction->id);
+
                 ++count;
                 if (count == 25)
                 {
