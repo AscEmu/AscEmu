@@ -14,22 +14,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <map>
 #include <set>
 
-enum FactionTemplateFlags
-{
-    FACTION_TEMPLATE_FLAG_PVP = 0x00000800,                 // flagged for PvP
-    FACTION_TEMPLATE_FLAG_CONTESTED_GUARD = 0x00001000,     // faction will attack players that were involved in PvP combats
-    FACTION_TEMPLATE_FLAG_HOSTILE_BY_DEFAULT = 0x00002000
-};
-
-enum FactionMasks
-{
-    FACTION_MASK_PLAYER = 1,        // any player
-    FACTION_MASK_ALLIANCE = 2,      // player or creature from alliance team
-    FACTION_MASK_HORDE = 4,         // player or creature from horde team
-    FACTION_MASK_MONSTER = 8        // aggressive creature from monster team
-    // if none flags set then non-aggressive creature
-};
-
 struct WMOAreaTableTripple
 {
     WMOAreaTableTripple(int32_t r, int32_t a, int32_t g) : groupId(g), rootId(r), adtId(a) { }
@@ -240,6 +224,69 @@ namespace WDB::Structures
         uint32_t cinematicId = 0;
         std::string name;
         uint32_t expansion = 0;
+    };
+
+    inline constexpr std::size_t maxFactionRelations = 4;
+
+    struct FactionTemplateEntry
+    {
+        uint32_t id{0};
+        uint32_t faction{0};
+        uint32_t factionFlags{0};
+        uint32_t ourMask{0};
+        uint32_t friendlyMask{0};
+        uint32_t hostileMask{0};
+        uint32_t enemyFaction[maxFactionRelations]{};
+        uint32_t friendFaction[maxFactionRelations]{};
+
+        [[nodiscard]] bool isFriendlyTo(FactionTemplateEntry const& entry) const
+        {
+            if (entry.faction != 0)
+            {
+                for (std::size_t i = 0; i < maxFactionRelations; ++i)
+                    if (enemyFaction[i] == entry.faction)
+                        return false;
+
+                for (std::size_t i = 0; i < maxFactionRelations; ++i)
+                    if (friendFaction[i] == entry.faction)
+                        return true;
+            }
+            return (friendlyMask & entry.ourMask) != 0 || (ourMask & entry.friendlyMask) != 0;
+        }
+
+        [[nodiscard]] bool isHostileTo(FactionTemplateEntry const& entry) const
+        {
+            if (entry.faction != 0)
+            {
+                for (std::size_t i = 0; i < maxFactionRelations; ++i)
+                    if (enemyFaction[i] == entry.faction)
+                        return true;
+
+                for (std::size_t i = 0; i < maxFactionRelations; ++i)
+                    if (friendFaction[i] == entry.faction)
+                        return false;
+            }
+            return (hostileMask & entry.ourMask) != 0;
+        }
+
+        [[nodiscard]] bool isHostileToPlayers() const
+        {
+            return (hostileMask & FACTION_MASK_PLAYER) != 0;
+        }
+
+        [[nodiscard]] bool isNeutralToAll() const
+        {
+            for (std::size_t i = 0; i < maxFactionRelations; ++i)
+                if (enemyFaction[i] != 0)
+                    return false;
+
+            return hostileMask == 0 && friendlyMask == 0;
+        }
+
+        [[nodiscard]] bool isContestedGuardFaction() const
+        {
+            return (factionFlags & FACTION_TEMPLATE_FLAG_CONTESTED_GUARD) != 0;
+        }
     };
 
 #if VERSION_STRING <= Classic
@@ -1026,61 +1073,6 @@ namespace WDB::Structures
         {
             return RepListId >= 0;
         }
-    };
-
-#define MAX_FACTION_RELATIONS 4
-
-    struct FactionTemplateEntry
-    {
-        uint32_t ID;                                                // 0
-        uint32_t Faction;                                           // 1
-        uint32_t FactionGroup;                                      // 2
-        uint32_t Mask;                                              // 3
-        uint32_t FriendlyMask;                                      // 4
-        uint32_t HostileMask;                                       // 5
-        uint32_t EnemyFactions[MAX_FACTION_RELATIONS];              // 6-9
-        uint32_t FriendlyFactions[MAX_FACTION_RELATIONS];           // 10-13
-
-        // Helpers
-        bool isFriendlyTo(FactionTemplateEntry const& entry) const
-        {
-            if (entry.Faction)
-            {
-                for (int i = 0; i < MAX_FACTION_RELATIONS; ++i)
-                    if (EnemyFactions[i] == entry.Faction)
-                        return false;
-                for (int i = 0; i < MAX_FACTION_RELATIONS; ++i)
-                    if (FriendlyFactions[i] == entry.Faction)
-                        return true;
-            }
-            return (FriendlyMask & entry.Mask) || (Mask & entry.FriendlyMask);
-        }
-
-        bool isHostileTo(FactionTemplateEntry const& entry) const
-        {
-            if (entry.Faction)
-            {
-                for (int i = 0; i < MAX_FACTION_RELATIONS; ++i)
-                    if (EnemyFactions[i] == entry.Faction)
-                        return true;
-                for (int i = 0; i < MAX_FACTION_RELATIONS; ++i)
-                    if (FriendlyFactions[i] == entry.Faction)
-                        return false;
-            }
-            return (HostileMask & entry.Mask) != 0;
-        }
-
-        bool isHostileToPlayers() const { return (HostileMask & FACTION_MASK_PLAYER) != 0; }
-
-        bool isNeutralToAll() const
-        {
-            for (int i = 0; i < MAX_FACTION_RELATIONS; ++i)
-                if (EnemyFactions[i] != 0)
-                    return false;
-            return HostileMask == 0 && FriendlyMask == 0;
-        }
-
-        bool isContestedGuardFaction() const { return (FactionGroup & FACTION_TEMPLATE_FLAG_CONTESTED_GUARD) != 0; }
     };
 
     struct GameObjectDisplayInfoEntry

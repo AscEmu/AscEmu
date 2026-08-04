@@ -1781,13 +1781,13 @@ void Object::setServersideFaction()
     }
     else
     {
-        m_factionEntry = sFactionStore.lookupEntry(m_factionTemplate->Faction);
+        m_factionEntry = sFactionStore.lookupEntry(m_factionTemplate->faction);
     }
 }
 
 uint32_t Object::getServersideFaction() const
 {
-    return m_factionTemplate->Faction;
+    return m_factionTemplate->faction;
 }
 
 WDB::Structures::FactionTemplateEntry const* Object::getServersideFactionTemplate() const
@@ -1901,32 +1901,32 @@ Standing Object::getFactionStandingWith(Object const* target) const
     // Neutral by default
     auto standing = Standing::NEUTRAL;
 
-    for (uint8_t i = 0; i < MAX_FACTION_RELATIONS; ++i)
+    for (uint8_t i = 0; i < WDB::Structures::maxFactionRelations; ++i)
     {
-        if (target->m_factionTemplate->Faction != 0)
+        if (target->m_factionTemplate->faction != 0)
         {
-            if (m_factionTemplate->EnemyFactions[i] == target->m_factionTemplate->Faction)
+            if (m_factionTemplate->enemyFaction[i] == target->m_factionTemplate->faction)
             {
                 standing = Standing::HOSTILE;
                 break;
             }
 
-            if (m_factionTemplate->FriendlyFactions[i] == target->m_factionTemplate->Faction)
+            if (m_factionTemplate->friendFaction[i] == target->m_factionTemplate->faction)
             {
                 standing = Standing::FRIENDLY;
                 break;
             }
         }
 
-        if (m_factionTemplate->Faction != 0)
+        if (m_factionTemplate->faction != 0)
         {
-            if (target->m_factionTemplate->EnemyFactions[i] == m_factionTemplate->Faction)
+            if (target->m_factionTemplate->enemyFaction[i] == m_factionTemplate->faction)
             {
                 standing = Standing::HOSTILE;
                 break;
             }
 
-            if (target->m_factionTemplate->FriendlyFactions[i] == m_factionTemplate->Faction)
+            if (target->m_factionTemplate->friendFaction[i] == m_factionTemplate->faction)
             {
                 standing = Standing::FRIENDLY;
                 break;
@@ -1934,15 +1934,15 @@ Standing Object::getFactionStandingWith(Object const* target) const
         }
     }
 
-    if ((m_factionTemplate->HostileMask & target->m_factionTemplate->Mask) ||
-        (m_factionTemplate->Mask & target->m_factionTemplate->HostileMask))
+    if ((m_factionTemplate->hostileMask & target->m_factionTemplate->ourMask) ||
+        (m_factionTemplate->ourMask & target->m_factionTemplate->hostileMask))
         standing = Standing::HOSTILE;
 
-    if (m_factionTemplate->FriendlyMask & target->m_factionTemplate->Mask ||
-        m_factionTemplate->Mask & target->m_factionTemplate->FriendlyMask)
+    if (m_factionTemplate->friendlyMask & target->m_factionTemplate->ourMask ||
+        m_factionTemplate->ourMask & target->m_factionTemplate->friendlyMask)
         standing = Standing::FRIENDLY;
 
-    if (m_factionTemplate->FactionGroup & FACTION_TEMPLATE_FLAG_HOSTILE_BY_DEFAULT)
+    if (m_factionTemplate->factionFlags & WDB::Structures::FACTION_TEMPLATE_FLAG_HOSTILE_BY_DEFAULT)
         standing = Standing::HOSTILE;
 
     return standing;
@@ -1963,7 +1963,7 @@ bool Object::isNeutralTo(Object const* target) const
     if (target == nullptr || target->m_factionTemplate == nullptr || m_factionTemplate == nullptr)
         return false;
 
-    return !(m_factionTemplate->HostileMask & target->m_factionTemplate->Mask) && !(m_factionTemplate->FriendlyMask & target->m_factionTemplate->Mask);
+    return !(m_factionTemplate->hostileMask & target->m_factionTemplate->ourMask) && !(m_factionTemplate->friendlyMask & target->m_factionTemplate->ourMask);
 }
 
 bool Object::isNeutralToAll() const

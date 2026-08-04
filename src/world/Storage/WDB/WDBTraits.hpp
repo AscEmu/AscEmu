@@ -67,4 +67,15 @@ namespace WDB
     {
         static constexpr const char* filename = "ChrRaces.dbc";
     };
+
+    template <>
+    struct DbcTraits<Structures::FactionTemplateEntry> : DbcVersionLayouts<
+            Structures::Raw::FactionTemplateEntryAll,
+            Structures::Raw::FactionTemplateEntryAll,
+            Structures::Raw::FactionTemplateEntryAll,
+            Structures::Raw::FactionTemplateEntryAll,
+            Structures::Raw::FactionTemplateEntryAll>
+    {
+        static constexpr const char* filename = "FactionTemplate.dbc";
+    };
 }

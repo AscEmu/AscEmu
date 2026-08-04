@@ -1743,7 +1743,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8_t mode, MySQLStr
     m_aiInterface->timed_emotes = sObjectMgr.getTimedEmoteList(spawn->id);
 
     // not a neutral creature
-    if (!(m_factionEntry != nullptr && m_factionEntry->RepListId == -1 && m_factionTemplate->HostileMask == 0 && m_factionTemplate->FriendlyMask == 0))
+    if (!(m_factionEntry != nullptr && m_factionEntry->RepListId == -1 && m_factionTemplate->hostileMask == 0 && m_factionTemplate->friendlyMask == 0))
     {
         getAIInterface()->setCanCallForHelp(true);
     }
@@ -1981,7 +1981,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     m_spawnLocation.changeCoords({ x, y, z, o });
 
     // not a neutral creature
-    if (m_factionEntry && !(m_factionEntry->RepListId == -1 && m_factionTemplate->HostileMask == 0 && m_factionTemplate->FriendlyMask == 0))
+    if (m_factionEntry && !(m_factionEntry->RepListId == -1 && m_factionTemplate->hostileMask == 0 && m_factionTemplate->friendlyMask == 0))
     {
         getAIInterface()->setCanCallForHelp(true);
     }

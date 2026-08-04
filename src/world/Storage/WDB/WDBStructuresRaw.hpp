@@ -210,5 +210,17 @@ namespace WDB::Structures::Raw
         char const* name;
         uint32_t expansion;
     };
+
+    struct FactionTemplateEntryAll
+    {
+        uint32_t id;
+        uint32_t faction;
+        uint32_t factionFlags;
+        uint32_t ourMask;
+        uint32_t friendlyMask;
+        uint32_t hostileMask;
+        uint32_t enemyFaction[4];
+        uint32_t friendFaction[4];
+    };
 #pragma pack(pop)
 }

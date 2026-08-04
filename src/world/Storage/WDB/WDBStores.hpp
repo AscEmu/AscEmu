@@ -177,7 +177,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityCostsEntry> sDur
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityQualityEntry> sDurabilityQualityStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::EmotesTextEntry> sEmotesTextStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::FactionEntry> sFactionStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::FactionTemplateEntry> sFactionTemplateStore;
+extern SERVER_DECL WDB::WDBStore<WDB::Structures::FactionTemplateEntry> sFactionTemplateStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GameObjectDisplayInfoEntry> sGameObjectDisplayInfoStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemSetEntry> sItemSetStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemRandomPropertiesEntry> sItemRandomPropertiesStore;

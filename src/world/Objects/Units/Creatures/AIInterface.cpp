@@ -692,7 +692,7 @@ Unit* AIInterface::findTarget()
             //on blizz there is no Z limit check
             const float dist = m_Unit->GetDistance2dSq(pUnit);
 
-            if (pUnit->m_factionTemplate != nullptr && pUnit->m_factionTemplate->Faction == 28)// only Attack a critter if there is no other Enemy in range
+            if (pUnit->m_factionTemplate != nullptr && pUnit->m_factionTemplate->faction == 28) // only Attack a critter if there is no other Enemy in range
             {
                 if (dist < 10.0f)
                     critterTarget = pUnit;
@@ -2392,7 +2392,7 @@ void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
 
             getUnit()->setFaction(properties_difficulty->Faction);
 
-            if (!(getUnit()->m_factionEntry->RepListId == -1 && getUnit()->m_factionTemplate->HostileMask == 0 && getUnit()->m_factionTemplate->FriendlyMask == 0))
+            if (!(getUnit()->m_factionEntry->RepListId == -1 && getUnit()->m_factionTemplate->hostileMask == 0 && getUnit()->m_factionTemplate->friendlyMask == 0))
             {
                 m_Unit->getAIInterface()->setCanCallForHelp(true);
             }

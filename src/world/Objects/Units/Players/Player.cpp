@@ -11456,7 +11456,7 @@ std::optional<Standing> Player::getForcedReputationRank(WDB::Structures::Faction
     if (factionTemplateEntry == nullptr)
         return std::nullopt;
 
-    const auto itr = m_forcedReactions.find(factionTemplateEntry->Faction);
+    const auto itr = m_forcedReactions.find(factionTemplateEntry->faction);
     if (itr != m_forcedReactions.cend())
         return itr->second;
 

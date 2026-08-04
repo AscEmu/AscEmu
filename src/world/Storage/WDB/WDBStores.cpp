@@ -85,7 +85,7 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityQualityEntry> sDurabili
 SERVER_DECL WDB::WDBContainer<WDB::Structures::EmotesTextEntry> sEmotesTextStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::FactionEntry> sFactionStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::FactionTemplateEntry> sFactionTemplateStore;
+SERVER_DECL WDB::WDBStore<WDB::Structures::FactionTemplateEntry> sFactionTemplateStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GameObjectDisplayInfoEntry> sGameObjectDisplayInfoStore;
 
@@ -415,7 +415,24 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sEmotesTextStore, dbc_path, "EmotesText.dbc");
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sFactionStore, dbc_path, "Faction.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sFactionTemplateStore, dbc_path, "FactionTemplate.dbc");
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::FactionTemplateEntry>(
+        bad_dbc_files, sFactionTemplateStore, dbc_path,
+        [](const auto& raw, WDB::Structures::FactionTemplateEntry& entry) {
+            entry.id = raw.id;
+            entry.faction = raw.faction;
+            entry.factionFlags = raw.factionFlags;
+            entry.ourMask = raw.ourMask;
+            entry.friendlyMask = raw.friendlyMask;
+            entry.hostileMask = raw.hostileMask;
+
+            for (std::size_t i = 0; i < WDB::Structures::maxFactionRelations; ++i)
+            {
+                entry.enemyFaction[i] = raw.enemyFaction[i];
+                entry.friendFaction[i] = raw.friendFaction[i];
+            }
+        }
+    );
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGameObjectDisplayInfoStore, dbc_path, "GameObjectDisplayInfo.dbc");
 
