@@ -144,7 +144,7 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemExtendedCostEntry> sItemExten
 #if VERSION_STRING < Cata
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore; // todo: available for versions > Classic
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore; // todo: available for versions > Classic
-SERVER_DECL WDB::WDBContainer<WDB::Structures::StableSlotPrices> sStableSlotPricesStore;
+SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStableSlotPricesStore;
 #endif
 
 #ifdef AE_TBC
@@ -688,10 +688,14 @@ bool loadDBCs()
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Load multi version specific dbcs - WotLK, TBC and/or Classic
-#if VERSION_STRING < Cata
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sStableSlotPricesStore, dbc_path, "StableSlotPrices.dbc");
 
-#endif
+    WDB::loadUnifiedWDBStore<WDB::Structures::StableSlotPricesEntry>(
+        bad_dbc_files, sStableSlotPricesStore, dbc_path,
+        [](const auto& raw, WDB::Structures::StableSlotPricesEntry& entry) {
+            entry.id = raw.id;
+            entry.price = raw.price;
+        }
+    );
 
     WDB::loadUnifiedWDBStore<WDB::Structures::CharTitlesEntry>(
         bad_dbc_files, sCharTitlesStore, dbc_path,

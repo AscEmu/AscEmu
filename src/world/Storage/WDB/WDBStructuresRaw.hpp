@@ -316,6 +316,12 @@ namespace WDB::Structures::Raw
         uint32_t socketMask;
     };
 
+    struct StableSlotPricesEntryClassicTbcWotlk
+    {
+        uint32_t id;
+        uint32_t price;
+    };
+
     struct TotemCategoryEntryTbcWotlkCataMop
     {
         uint32_t id;

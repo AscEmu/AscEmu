@@ -400,7 +400,7 @@ void WorldSession::handleBuyStableSlot(WorldPacket& /*recvPacket*/)
     const auto stableSlotPrices = sStableSlotPricesStore.lookupEntry(_player->getStableSlotCount() + 1);
 
     if (stableSlotPrices != nullptr)
-        stable_cost = stableSlotPrices->Price;
+        stable_cost = stableSlotPrices->price;
 #endif
 
     if (!_player->hasEnoughCoinage(stable_cost))

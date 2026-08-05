@@ -333,6 +333,12 @@ namespace WDB::Structures
         uint32_t socketMask{0};
     };
 
+    struct StableSlotPricesEntry
+    {
+        uint32_t id{0};
+        uint32_t price{0};
+    };
+
     struct TotemCategoryEntry
     {
         uint32_t id{0};
@@ -1679,14 +1685,6 @@ namespace WDB::Structures
         //uint32_t reqTP;                                           // 13
         //uint32_t reqtrainpoints;                                  // 14
     };
-
-#if VERSION_STRING <= WotLK
-    struct StableSlotPrices
-    {
-        uint32_t Id;                                                // 0
-        uint32_t Price;                                             // 1
-    };
-#endif
 
 #if VERSION_STRING >= Cata
 

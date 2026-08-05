@@ -124,6 +124,17 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::StableSlotPricesEntry> : DbcVersionLayouts<
+            Structures::Raw::StableSlotPricesEntryClassicTbcWotlk,
+            Structures::Raw::StableSlotPricesEntryClassicTbcWotlk,
+            Structures::Raw::StableSlotPricesEntryClassicTbcWotlk,
+            UnsupportedVersion, // Cata
+            UnsupportedVersion> // MoP
+    {
+        static constexpr const char* filename = "StableSlotPrices.dbc";
+    };
+
+    template <>
     struct DbcTraits<Structures::TotemCategoryEntry> : DbcVersionLayouts<
             UnsupportedVersion, // Classic
             Structures::Raw::TotemCategoryEntryTbcWotlkCataMop,

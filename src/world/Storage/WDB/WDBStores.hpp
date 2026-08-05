@@ -71,11 +71,11 @@ namespace WDB::Structures
     struct TaxiPathNodeEntry;
     struct MapDifficulty;
 
+    struct StableSlotPricesEntry;
+
 #if VERSION_STRING < Cata
     struct GtOCTRegenHPEntry;
     struct GtRegenHPPerSptEntry;
-
-    struct StableSlotPrices;
 #endif
 
 #ifdef AE_TBC
@@ -224,11 +224,11 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemEntry> sItemStore; // 
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemExtendedCostEntry> sItemExtendedCostStore; // todo: available for versions > Classic
 
 #if VERSION_STRING < Cata
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore; // todo: available for versions > Classic
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore; // todo: available for versions > Classic
-
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::StableSlotPrices> sStableSlotPricesStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore; // todo: available for versions > Classic
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore; // todo: available for versions > Classic
 #endif
+
+extern SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStableSlotPricesStore;
 
 #ifdef AE_TBC
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemDisplayInfo> sItemDisplayInfoStore;
