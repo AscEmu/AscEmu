@@ -197,6 +197,15 @@ namespace WDB::Structures
         float elevation{0.0f};
     };
 
+    struct BarberShopStyleEntry
+    {
+        uint32_t id{0};
+        uint32_t type{0};
+        uint32_t race{0};
+        uint32_t gender{0};
+        uint32_t hairId{0};
+    };
+
     struct CharTitlesEntry
     {
         uint32_t id{0};
@@ -830,23 +839,6 @@ namespace WDB::Structures
         uint32_t Id;                                                // 0
         uint32_t Price;                                             // 1
     };
-
-#if VERSION_STRING >= WotLK
-    struct BarberShopStyleEntry
-    {
-        uint32_t id;                                                // 0
-        uint32_t type;                                              // 1 value 0 -> hair, value 2 -> facialhair
-        //char* name;                                               // 2 string hairstyle name
-        //char* name[15];                                           // 3-17 name of hairstyle
-        //uint32_t name_flags;                                      // 18
-        //uint32_t unk_name[16];                                    // 19-34, all empty
-        //uint32_t unk_flags;                                       // 35
-        //float unk3;                                               // 36 values 1 and 0,75
-        uint32_t race;                                              // 37 race
-        uint32_t gender;                                            // 38 0 male, 1 female
-        uint32_t hair_id;                                           // 39 Hair ID
-    };
-#endif
 
 #if VERSION_STRING >= Cata
     struct BannedAddOnsEntry

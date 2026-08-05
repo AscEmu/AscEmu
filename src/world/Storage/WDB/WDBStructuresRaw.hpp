@@ -98,6 +98,15 @@ namespace WDB::Structures::Raw
         float elevation;
     };
 
+    struct BarberShopStyleEntryWotlkCataMop
+    {
+        uint32_t id;
+        uint32_t type;
+        uint32_t race;
+        uint32_t gender;
+        uint32_t hairId;
+    };
+
     struct CharTitlesEntryTbcWotlk
     {
         uint32_t id;

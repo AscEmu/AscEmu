@@ -1548,7 +1548,7 @@ void WorldSession::handleBarberShopResult([[maybe_unused]] WorldPacket& recvPack
     if (!barberShopHair)
         return;
 
-    const auto newHair = barberShopHair->hair_id;
+    const auto newHair = barberShopHair->hairId;
 
     const auto newHairColor = srlPacket.hairColor;
 
@@ -1556,7 +1556,7 @@ void WorldSession::handleBarberShopResult([[maybe_unused]] WorldPacket& recvPack
     if (!barberShopFacial)
         return;
 
-    const auto newFacial = barberShopFacial->hair_id;
+    const auto newFacial = barberShopFacial->hairId;
 
     const auto barberShopSkinColor = sBarberShopStyleStore.lookupEntry(srlPacket.skinColor);
     if (barberShopSkinColor && barberShopSkinColor->race != _player->getRace())
@@ -1592,7 +1592,7 @@ void WorldSession::handleBarberShopResult([[maybe_unused]] WorldPacket& recvPack
     _player->setHairColor(static_cast<uint8_t>(newHairColor));
     _player->setFacialFeatures(static_cast<uint8_t>(newFacial));
     if (barberShopSkinColor)
-        _player->setSkinColor(static_cast<uint8_t>(barberShopSkinColor->hair_id));
+        _player->setSkinColor(static_cast<uint8_t>(barberShopSkinColor->hairId));
 
     _player->modCoinage(-static_cast<int32_t>(cost));
 

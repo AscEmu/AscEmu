@@ -47,6 +47,17 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::BarberShopStyleEntry> : DbcVersionLayouts<
+            UnsupportedVersion, // Classic
+            UnsupportedVersion, // TBC
+            Structures::Raw::BarberShopStyleEntryWotlkCataMop,
+            Structures::Raw::BarberShopStyleEntryWotlkCataMop,
+            Structures::Raw::BarberShopStyleEntryWotlkCataMop>
+    {
+        static constexpr const char* filename = "BarberShopStyle.dbc";
+    };
+
+    template <>
     struct DbcTraits<Structures::CharTitlesEntry> : DbcVersionLayouts<
             UnsupportedVersion, // Classic
             Structures::Raw::CharTitlesEntryTbcWotlk, // TBC
