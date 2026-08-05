@@ -87,9 +87,8 @@ void WorldSession::handleGroupInviteResponseOpcode([[maybe_unused]] WorldPacket&
         group_inviter->setGroupInviterId(0);
         _player->setGroupInviterId(0);
 
-        WorldPacket data(SMSG_GROUP_DECLINE, strlen(_player->getName().c_str()));
-        data << _player->getName().c_str();
-        group_inviter->getSession()->SendPacket(&data);
+        SmsgGroupDecline declinePacket(_player->getName());
+        group_inviter->getSession()->sendManagedPacket(declinePacket);
     }
 #endif
 }

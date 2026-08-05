@@ -6,8 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
-#include "Utilities/utf8String.hpp"
-
 #include <string>
 
 namespace AscEmu::Packets
@@ -15,20 +13,16 @@ namespace AscEmu::Packets
     class SmsgGroupDecline : public ManagedPacket
     {
     public:
-        utf8_string name;
-
-        SmsgGroupDecline() : SmsgGroupDecline("")
-        {
-        }
+        std::string name;
 
         SmsgGroupDecline(std::string name) :
-            ManagedPacket(SMSG_GROUP_DECLINE, 100),
+            ManagedPacket(SMSG_GROUP_DECLINE, 0),
             name(name)
         {
         }
 
     protected:
-        size_t expectedSize() const override { return m_minimum_size; }
+        size_t expectedSize() const override { return name.size(); }
 
         bool internalSerialise(WorldPacket& packet) override
         {
