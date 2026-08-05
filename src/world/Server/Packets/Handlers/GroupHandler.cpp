@@ -26,6 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGroupAssistantLeader.h"
 #include "Server/Packets/MsgPartyAssign.h"
 #include "Server/Packets/MsgRaidReadyCheck.h"
+#include "Server/Packets/CmsgGroupInviteResponse.h"
 #include "Server/PacketBroadcast.hpp"
 
 #if VERSION_STRING >= Cata
@@ -43,13 +44,15 @@ void WorldSession::sendEmptyGroupList([[maybe_unused]] Player* player)
 #endif
 }
 
-void WorldSession::handleGroupInviteResponseOpcode([[maybe_unused]] WorldPacket& recvPacket)
+void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
 {
-#if VERSION_STRING >= Cata
-    recvPacket.readBit();                    //unk
-    bool acceptInvite = recvPacket.readBit();
+    CmsgGroupInviteResponse srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
-    if (acceptInvite)
+#if VERSION_STRING >= Cata
+
+    if (srlPacket.isAccepted)
     {
         if (_player->getGroup() != nullptr)
             return;

@@ -1255,7 +1255,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_MESSAGECHAT_RAID, &WorldSession::handleMessageChatOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_MESSAGECHAT_RAID_WARNING, &WorldSession::handleMessageChatOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_MESSAGECHAT_BATTLEGROUND, &WorldSession::handleMessageChatOpcode, false, false, false, true, false);
-    registry.registerOpcode(CMSG_GROUP_INVITE_RESPONSE, &WorldSession::handleGroupInviteResponseOpcode, false, false, false, true, false);
+    registry.registerOpcode(CMSG_GROUP_INVITE_RESPONSE, &WorldSession::handleGroupInviteResponseOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_GROUP_SET_ROLES, &WorldSession::handleGroupSetRolesOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_GROUP_REQUEST_JOIN_UPDATES, &WorldSession::handleGroupRequestJoinUpdatesOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_ROLE_CHECK_BEGIN, &WorldSession::handleGroupRoleCheckBeginOpcode, false, false, false, true, false);
