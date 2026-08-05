@@ -423,15 +423,15 @@ bool SpellMgr::checkLocation(SpellInfo const* spellInfo, uint32_t zone_id, uint3
         {
             for (uint8_t i = 0; i < 6; ++i)
             {
-                if (areaGroup->AreaId[i] == zone_id || areaGroup->AreaId[i] == area_id)
+                if (areaGroup->areaId[i] == zone_id || areaGroup->areaId[i] == area_id)
                     found = true;
             }
 
-            if (found || areaGroup->next_group == 0)
+            if (found || areaGroup->nextGroup == 0)
                 break;
 
             // Try next group
-            areaGroup = sAreaGroupStore.lookupEntry(areaGroup->next_group);
+            areaGroup = sAreaGroupStore.lookupEntry(areaGroup->nextGroup);
         }
 
         if (!found)

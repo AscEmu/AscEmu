@@ -11,6 +11,13 @@ namespace WDB::Structures::Raw
     inline constexpr size_t namePatternTbcWotlk = 16;
 
 #pragma pack(push, 1)
+    struct AreaGroupEntryWotlkCataMop
+    {
+        uint32_t id;
+        uint32_t areaId[6];
+        uint32_t nextGroup;
+    };
+
     struct AreaTableEntryClassic
     {
         uint32_t id;

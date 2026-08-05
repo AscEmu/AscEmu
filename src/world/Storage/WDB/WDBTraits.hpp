@@ -25,6 +25,17 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::AreaGroupEntry> : DbcVersionLayouts<
+            UnsupportedVersion,
+            UnsupportedVersion,
+            Structures::Raw::AreaGroupEntryWotlkCataMop,
+            Structures::Raw::AreaGroupEntryWotlkCataMop,
+            Structures::Raw::AreaGroupEntryWotlkCataMop>
+    {
+        static constexpr const char* filename = "AreaGroup.dbc";
+    };
+
+    template <>
     struct DbcTraits<Structures::AreaTableEntry> : DbcVersionLayouts<
             Structures::Raw::AreaTableEntryClassic,
             Structures::Raw::AreaTableEntryTbc,

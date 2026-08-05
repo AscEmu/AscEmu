@@ -89,10 +89,11 @@ namespace WDB::Structures
     struct WorldMapAreaEntry;
 #endif
 
+    struct AreaGroupEntry;
+
 #if VERSION_STRING >= WotLK
     struct AchievementEntry;
     struct AchievementCriteriaEntry;
-    struct AreaGroupEntry;
     struct BarberShopStyleEntry;
     struct CurrencyTypesEntry;
     struct DungeonEncounterEntry;
@@ -243,10 +244,11 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemExtendedCostEntry> sIt
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::WorldMapAreaEntry> sWorldMapAreaStore;
 #endif
 
+    extern SERVER_DECL WDB::WDBStore<WDB::Structures::AreaGroupEntry> sAreaGroupStore;
+
 #if VERSION_STRING >= WotLK
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AchievementEntry> sAchievementStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AchievementCriteriaEntry> sAchievementCriteriaStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AreaGroupEntry> sAreaGroupStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CurrencyTypesEntry> sCurrencyTypesStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::DungeonEncounterEntry> sDungeonEncounterStore;

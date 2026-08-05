@@ -176,6 +176,13 @@ enum MapTypes : uint8_t
 
 namespace WDB::Structures
 {
+    struct AreaGroupEntry
+    {
+        uint32_t id{0};
+        uint32_t areaId[6]{};
+        uint32_t nextGroup{0};
+    };
+
     struct AreaTableEntry
     {
         uint32_t id{0};
@@ -791,13 +798,6 @@ namespace WDB::Structures
 #if VERSION_STRING >= Mop
         uint32_t criteriaTreeID;
 #endif
-    };
-
-    struct AreaGroupEntry
-    {
-        uint32_t AreaGroupId;                                       // 0
-        uint32_t AreaId[6];                                         // 1-6
-        uint32_t next_group;                                        // 7
     };
 #endif
 

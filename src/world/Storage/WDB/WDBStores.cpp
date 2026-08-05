@@ -158,10 +158,11 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::TotemCategoryEntry> sTotemCategor
 SERVER_DECL WDB::WDBContainer<WDB::Structures::WorldMapAreaEntry> sWorldMapAreaStore;
 #endif
 
+SERVER_DECL WDB::WDBStore<WDB::Structures::AreaGroupEntry> sAreaGroupStore;
+
 #if VERSION_STRING >= WotLK
 SERVER_DECL WDB::WDBContainer<WDB::Structures::AchievementEntry> sAchievementStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::AchievementCriteriaEntry> sAchievementCriteriaStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::AreaGroupEntry> sAreaGroupStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
 
@@ -756,12 +757,24 @@ bool loadDBCs()
     #endif
 #endif
 
+        WDB::loadUnifiedWDBStore<WDB::Structures::AreaGroupEntry>(
+            bad_dbc_files, sAreaGroupStore, dbc_path,
+            [](const auto& raw, WDB::Structures::AreaGroupEntry& entry) {
+                entry.id = raw.id;
+                entry.nextGroup = raw.nextGroup;
+
+                for (std::size_t i = 0; i < 6; ++i)
+                {
+                    entry.areaId[i] = raw.areaId[i];
+                }
+            }
+        );
+
     /////////////////////////////////////////////////////////////////////////////////////////
     // Load multi version specific dbcs available since WotLK
 #if VERSION_STRING >= WotLK
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sAchievementStore, dbc_path, "Achievement.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sAchievementCriteriaStore, dbc_path, "Achievement_Criteria.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sAreaGroupStore, dbc_path, "AreaGroup.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sBarberShopStyleStore, dbc_path, "BarberShopStyle.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sCurrencyTypesStore, dbc_path, "CurrencyTypes.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sDungeonEncounterStore, dbc_path, "DungeonEncounter.dbc");

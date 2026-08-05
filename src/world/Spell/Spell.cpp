@@ -2144,7 +2144,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             auto areaGroup = sAreaGroupStore.lookupEntry(requireAreaId);
             while (areaGroup != nullptr)
             {
-                for (const auto& i : areaGroup->AreaId)
+                for (const auto& i : areaGroup->areaId)
                 {
                     if (i == areaEntry->id || (areaEntry->zone != 0 && i == areaEntry->zone))
                     {
@@ -2158,10 +2158,10 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     }
                 }
 
-                if (found || areaGroup->next_group == 0)
+                if (found || areaGroup->nextGroup == 0)
                     break;
 
-                areaGroup = sAreaGroupStore.lookupEntry(areaGroup->next_group);
+                areaGroup = sAreaGroupStore.lookupEntry(areaGroup->nextGroup);
             }
 
             if (!found)
@@ -4781,7 +4781,7 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
 #elif VERSION_STRING >= WotLK
                 // Send the first area id from areagroup to player
                 auto areaGroup = sAreaGroupStore.lookupEntry(static_cast<uint32_t>(getSpellInfo()->getRequiresAreaId()));
-                for (const auto& areaId : areaGroup->AreaId)
+                for (const auto& areaId : areaGroup->areaId)
                 {
                     if (areaId != 0)
                     {
