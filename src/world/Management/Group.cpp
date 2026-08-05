@@ -45,6 +45,7 @@
 #include "Server/Packets/SmsgGroupList.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgInstanceReset.h"
+#include "Server/Packets/SmsgPartyMemberStats.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Random.hpp"
@@ -874,7 +875,7 @@ void Group::SaveToDB()
     CharacterDatabase.execute(ss.str().c_str());
 }
 
-void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket* Packet)
+void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute)
 {
     if (pPlayer == nullptr)
         return;
@@ -885,168 +886,18 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
 
     if (mask & GROUP_UPDATE_FLAG_PET_POWER_TYPE)            // same for pets
         mask |= (GROUP_UPDATE_FLAG_PET_CUR_POWER | GROUP_UPDATE_FLAG_PET_MAX_POWER);
-    std::unique_ptr<WorldPacket> dataHolder;
-    WorldPacket* data = Packet;
-    if (!Packet)
-    {
-        dataHolder = std::make_unique<WorldPacket>(SMSG_PARTY_MEMBER_STATS, 500);
-        data = dataHolder.get();
-    }
+
     if (pPlayer->m_isGmInvisible)
         mask = GROUP_UPDATE_FLAG_STATUS;
+
     uint32_t byteCount = 0;
     for (uint8_t i = 1; i < GROUP_UPDATE_FLAGS_COUNT; ++i)
         if (mask & (1 << i))
             byteCount += GroupUpdateLength[i];
-    data->initialize(SMSG_PARTY_MEMBER_STATS, 8 + 4 + byteCount);
-    *data << pPlayer->GetNewGUID();
-    *data << mask;
 
-    if (mask & GROUP_UPDATE_FLAG_STATUS)
-    {
-        if (!pPlayer->m_isGmInvisible)
-            *data << uint16_t(pPlayer->getGroupStatus());
-        else
-            *data << uint16_t(MEMBER_STATUS_OFFLINE);
-    }
+    SmsgPartyMemberStats statsPacket(pPlayer->GetNewGUID(), mask);
+    statsPacket.playerMember = pPlayer;
 
-    if (mask & GROUP_UPDATE_FLAG_CUR_HP)
-        *data << uint32_t(pPlayer->getHealth());
-
-    if (mask & GROUP_UPDATE_FLAG_MAX_HP)
-        *data << uint32_t(pPlayer->getMaxHealth());
-
-    auto powerType = pPlayer->getPowerType();
-    if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)
-        *data << uint8_t(powerType);
-
-    if (mask & GROUP_UPDATE_FLAG_CUR_POWER)
-        *data << uint16_t(pPlayer->getPower(powerType));
-
-    if (mask & GROUP_UPDATE_FLAG_MAX_POWER)
-        *data << uint16_t(pPlayer->getMaxPower(powerType));
-
-    if (mask & GROUP_UPDATE_FLAG_LEVEL)
-        *data << uint16_t(pPlayer->getLevel());
-
-    if (mask & GROUP_UPDATE_FLAG_ZONE)
-        *data << uint16_t(pPlayer->getZoneId());
-
-    if (mask & GROUP_UPDATE_FLAG_POSITION)
-    {
-        *data << uint16_t(pPlayer->GetPositionX());
-        *data << uint16_t(pPlayer->GetPositionY());
-    }
-
-    if (mask & GROUP_UPDATE_FLAG_AURAS)
-    {
-        uint64_t auramask = pPlayer->getAuraUpdateMaskForRaid();
-        *data << uint64_t(auramask);
-        for (uint8_t i = 0; i < 64; ++i)
-        {
-            if (auramask & (uint64_t(1) << i))
-            {
-                Aura * aurApp = pPlayer->getAuraWithVisualSlot(i);
-                *data << uint32_t(aurApp ? aurApp->getSpellId() : 0);
-                *data << uint8_t(1);
-            }
-        }
-    }
-
-    Pet* pet = pPlayer->getPet();
-    if (mask & GROUP_UPDATE_FLAG_PET_GUID)
-    {
-        if (pet)
-            *data << pet->getGuid();
-        else
-            *data << (uint64_t)0;
-    }
-
-    if (mask & GROUP_UPDATE_FLAG_PET_NAME)
-    {
-        if (pet)
-            *data << pet->getName().c_str();
-        else
-            *data << uint8_t(0);
-    }
-
-    if (mask & GROUP_UPDATE_FLAG_PET_MODEL_ID)
-    {
-        if (pet)
-            *data << uint16_t(pet->getDisplayId());
-        else
-            *data << uint16_t(0);
-    }
-
-    if (mask & GROUP_UPDATE_FLAG_PET_CUR_HP)
-    {
-        if (pet)
-            *data << uint32_t(pet->getHealth());
-        else
-            *data << uint32_t(0);
-    }
-
-    if (mask & GROUP_UPDATE_FLAG_PET_MAX_HP)
-    {
-        if (pet)
-            *data << uint32_t(pet->getMaxHealth());
-        else
-            *data << uint32_t(0);
-    }
-
-    if (mask & GROUP_UPDATE_FLAG_PET_POWER_TYPE)
-    {
-        if (pet)
-            *data << uint8_t(pet->getPowerType());
-        else
-            *data << uint8_t(0);
-    }
-
-    if (mask & GROUP_UPDATE_FLAG_PET_CUR_POWER)
-    {
-        if (pet)
-            *data << uint16_t(pet->getPower(pet->getPowerType()));
-        else
-            *data << uint16_t(0);
-    }
-
-    if (mask & GROUP_UPDATE_FLAG_PET_MAX_POWER)
-    {
-        if (pet)
-            *data << uint16_t(pet->getMaxPower(pet->getPowerType()));
-        else
-            *data << uint16_t(0);
-    }
-
-    if (mask & GROUP_UPDATE_FLAG_VEHICLE_SEAT)
-    {
-#if VERSION_STRING < Cata
-#ifdef FT_VEHICLES
-        if (Vehicle* veh = pPlayer->getVehicleKit())
-            *data << uint32_t(veh->getVehicleInfo()->seatID[pPlayer->getMovementInfo()->transport_seat]);
-#endif
-#endif
-    }
-
-    if (mask & GROUP_UPDATE_FLAG_PET_AURAS)
-    {
-        if (pet)
-        {
-            uint64_t auramask = pet->getAuraUpdateMaskForRaid();
-            *data << uint64_t(auramask);
-            for (uint8_t i = 0; i < 64; ++i)
-            {
-                if (auramask & (uint64_t(1) << i))
-                {
-                    Aura * aurApp = pet->getAuraWithVisualSlot(i);
-                    *data << uint32_t(aurApp ? aurApp->getSpellId() : 0);
-                    *data << uint8_t(1);
-                }
-            }
-        }
-        else
-            *data << uint64_t(0);
-    }
     if (Distribute && pPlayer->IsInWorld())
     {
         float dist = pPlayer->getWorldMap()->getVisibilityRange();
@@ -1062,7 +913,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
                 if (plr && plr != pPlayer)
                 {
                     if (plr->GetDistance2dSq(pPlayer) > dist)
-                        plr->getSession()->SendPacket(data);
+                        plr->getSession()->sendManagedPacket(statsPacket);
                 }
             }
         }
@@ -1076,8 +927,7 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
         return;
 
     // tell the other players about us
-    WorldPacket data2(150);
-    UpdateOutOfRangePlayer(pPlayer, true, &data2);
+    UpdateOutOfRangePlayer(pPlayer, true);
 
     UpdateMask myMask;
     myMask.SetCount(getSizeOfStructure(WoWPlayer));
@@ -1100,7 +950,7 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
 
             if (!plr->isVisibleObject(pPlayer->getGuid()))
             {
-                UpdateOutOfRangePlayer(plr, false, &data);
+                UpdateOutOfRangePlayer(plr, false);
                 pPlayer->getSession()->SendPacket(&data);
             }
             else
@@ -1656,10 +1506,8 @@ void Group::GoOffline(Player* p)
         if (mask & (1 << i))
             byteCount += GroupUpdateLength[i];
 
-    WorldPacket data(SMSG_PARTY_MEMBER_STATS, 8 + 4 + byteCount);
-    data << p->GetNewGUID();
-    data << mask;
-    data << uint16_t(MEMBER_STATUS_OFFLINE);
+    SmsgPartyMemberStats statsPacket(p->GetNewGUID(), mask);
+    statsPacket.playerMember = p;
 
     if (p->IsInWorld())
     {
@@ -1673,8 +1521,8 @@ void Group::GoOffline(Player* p)
             for (const auto itr : m_SubGroups[i]->getGroupMembers())
             {
                 Player* plr = sObjectMgr.getPlayer(itr->guid);
-                if (plr && plr != p)
-                    plr->sendPacket(&data);
+                if (plr && plr != p && plr->getSession())
+                    plr->getSession()->sendManagedPacket(statsPacket);
             }
         }
     }

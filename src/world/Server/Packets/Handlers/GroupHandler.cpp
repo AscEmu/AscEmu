@@ -593,8 +593,10 @@ void WorldSession::handlePartyMemberStatsOpcode(WorldPacket& recvPacket)
     const auto requestedPlayer = _player->getWorldMap()->getPlayer(srlPacket.guid.getGuidLow());
     if (_player->getGroup() == nullptr || requestedPlayer == nullptr)
     {
+#if VERSION_STRING < Mop
         SmsgPartyMemberStatsFull managedPacket(srlPacket.guid, nullptr);
         sendManagedPacket(managedPacket);
+#endif
         return;
     }
 

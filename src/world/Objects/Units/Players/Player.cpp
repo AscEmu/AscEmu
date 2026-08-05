@@ -2013,7 +2013,7 @@ void Player::eventExploration()
             addGroupUpdateFlag(GROUP_UPDATE_FULL);
 
             if (getGroup())
-                getGroup()->UpdateOutOfRangePlayer(this, true, nullptr);
+                getGroup()->UpdateOutOfRangePlayer(this, true);
         }
 
         if (areaTableEntry->zone == 0 && m_zoneId != areaTableEntry->id)
@@ -7838,7 +7838,7 @@ void Player::sendUpdateToOutOfRangeGroupMembers()
         return;
 
     if (auto group = getGroup())
-        group->UpdateOutOfRangePlayer(this, true, nullptr);
+        group->UpdateOutOfRangePlayer(this, true);
 
     m_groupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
 
