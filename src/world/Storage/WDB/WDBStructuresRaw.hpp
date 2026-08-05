@@ -322,5 +322,12 @@ namespace WDB::Structures::Raw
         uint32_t categoryType;
         uint32_t categoryMask;
     };
+
+    struct WorldMapAreaEntryTbcWotlkCataMop
+    {
+        uint32_t id;
+        uint32_t zoneId;
+        int32_t continentMapId;
+    };
 #pragma pack(pop)
 }

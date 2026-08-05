@@ -154,12 +154,8 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemDisplayInfo> sItemDisplayInfo
 SERVER_DECL WDB::WDBStore<WDB::Structures::CharTitlesEntry> sCharTitlesStore;
 SERVER_DECL WDB::WDBStore<WDB::Structures::GemPropertiesEntry> sGemPropertiesStore;
 SERVER_DECL WDB::WDBStore<WDB::Structures::TotemCategoryEntry> sTotemCategoryStore;
-#if VERSION_STRING >= TBC
-SERVER_DECL WDB::WDBContainer<WDB::Structures::WorldMapAreaEntry> sWorldMapAreaStore;
-#endif
-
+SERVER_DECL WDB::WDBStore<WDB::Structures::WorldMapAreaEntry> sWorldMapAreaStore;
 SERVER_DECL WDB::WDBStore<WDB::Structures::AreaGroupEntry> sAreaGroupStore;
-
 SERVER_DECL WDB::WDBStore<WDB::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
 
 #if VERSION_STRING >= WotLK
@@ -745,6 +741,15 @@ bool loadDBCs()
         }
     );
 
+    WDB::loadUnifiedWDBStore<WDB::Structures::WorldMapAreaEntry>(
+        bad_dbc_files, sWorldMapAreaStore, dbc_path,
+        [](const auto& raw, WDB::Structures::WorldMapAreaEntry& entry) {
+            entry.mapId = raw.id;
+            entry.zoneId = raw.zoneId;
+            entry.continentMapId = raw.continentMapId;
+        }
+    );
+
     /////////////////////////////////////////////////////////////////////////////////////////
     // Load multi version specific dbcs available since TBC
 #if VERSION_STRING >= TBC
@@ -757,7 +762,6 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtRegenMPPerSptStore, dbc_path, "gtRegenMPPerSpt.dbc");     //loaded but not used
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemRandomSuffixStore, dbc_path, "ItemRandomSuffix.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSummonPropertiesStore, dbc_path, "SummonProperties.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sWorldMapAreaStore, dbc_path, "WorldMapArea.dbc");
 
     #if VERSION_STRING < Cata
         WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtOCTRegenHPStore, dbc_path, "gtOCTRegenHP.dbc");

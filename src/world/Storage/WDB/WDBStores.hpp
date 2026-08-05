@@ -84,11 +84,8 @@ namespace WDB::Structures
 
     struct CharTitlesEntry;
     struct GemPropertiesEntry;
-#if VERSION_STRING >= TBC
     struct TotemCategoryEntry;
     struct WorldMapAreaEntry;
-#endif
-
     struct AreaGroupEntry;
     struct BarberShopStyleEntry;
 
@@ -240,10 +237,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemExtendedCostEntry> sIt
     extern SERVER_DECL WDB::WDBStore<WDB::Structures::CharTitlesEntry> sCharTitlesStore;
     extern SERVER_DECL WDB::WDBStore<WDB::Structures::GemPropertiesEntry> sGemPropertiesStore;
     extern SERVER_DECL WDB::WDBStore<WDB::Structures::TotemCategoryEntry> sTotemCategoryStore;
-#if VERSION_STRING >= TBC
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::WorldMapAreaEntry> sWorldMapAreaStore;
-#endif
-
+    extern SERVER_DECL WDB::WDBStore<WDB::Structures::WorldMapAreaEntry> sWorldMapAreaStore;
     extern SERVER_DECL WDB::WDBStore<WDB::Structures::AreaGroupEntry> sAreaGroupStore;
     extern SERVER_DECL WDB::WDBStore<WDB::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
 

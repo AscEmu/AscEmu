@@ -340,6 +340,13 @@ namespace WDB::Structures
         uint32_t categoryMask{0};
     };
 
+    struct WorldMapAreaEntry
+    {
+        uint32_t mapId{0};
+        uint32_t zoneId{0};
+        int32_t continentMapId{-1};
+    };
+
 #if VERSION_STRING <= Classic
 #define NAME_PATTERN 8
 #else
@@ -2385,21 +2392,6 @@ namespace WDB::Structures
         //char Name[16];                                            // 11-26
         //uint32_t nameflags;                                       // 27
     };
-
-#if VERSION_STRING >= TBC
-    struct WorldMapAreaEntry
-    {
-        //uint32_t id;                                              // 0
-        uint32_t mapId;                                             // 1
-        uint32_t zoneId;                                            // 2
-        //char const* name;                                         // 3
-        //float y1;                                                 // 4
-        //float y2;                                                 // 5
-        //float x1;                                                 // 6
-        //float x2;                                                 // 7
-        int32_t continentMapId;                                     // 8 Map id of the continent where the area actually exists (-1 value means that mapId already has the continent map id)
-    };
-#endif
 
     struct WorldMapOverlayEntry
     {

@@ -133,4 +133,15 @@ namespace WDB
     {
         static constexpr const char* filename = "TotemCategory.dbc";
     };
+
+    template <>
+    struct DbcTraits<Structures::WorldMapAreaEntry> : DbcVersionLayouts<
+            UnsupportedVersion, // Classic
+            Structures::Raw::WorldMapAreaEntryTbcWotlkCataMop,
+            Structures::Raw::WorldMapAreaEntryTbcWotlkCataMop,
+            Structures::Raw::WorldMapAreaEntryTbcWotlkCataMop,
+            Structures::Raw::WorldMapAreaEntryTbcWotlkCataMop>
+    {
+        static constexpr const char* filename = "WorldMapArea.dbc";
+    };
 }
