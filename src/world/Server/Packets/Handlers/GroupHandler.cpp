@@ -27,6 +27,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgPartyAssign.h"
 #include "Server/Packets/MsgRaidReadyCheck.h"
 #include "Server/Packets/CmsgGroupInviteResponse.h"
+#include "Server/Packets/CmsgGroupSetRoles.h"
+#include "Server/Packets/SmsgGroupSetRoles.h"
 #include "Server/PacketBroadcast.hpp"
 
 #if VERSION_STRING >= Cata
@@ -96,96 +98,20 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGroupSetRolesOpcode([[maybe_unused]] WorldPacket& recvPacket)
+void WorldSession::handleGroupSetRolesOpcode(WorldPacket& recvPacket)
 {
-#if VERSION_STRING >= Cata
-    uint32_t newRole;
+    CmsgGroupSetRoles srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
-    recvPacket >> newRole;
+    WoWGuid playerGuid = _player->getGuid();
 
-    WoWGuid target_guid; // Target GUID
-    WoWGuid player_guid = _player->getGuid();
-
-    target_guid[2] = recvPacket.readBit();
-    target_guid[6] = recvPacket.readBit();
-    target_guid[3] = recvPacket.readBit();
-    target_guid[7] = recvPacket.readBit();
-    target_guid[5] = recvPacket.readBit();
-    target_guid[1] = recvPacket.readBit();
-    target_guid[0] = recvPacket.readBit();
-    target_guid[4] = recvPacket.readBit();
-
-    recvPacket.readByteSeq(target_guid[6]);
-    recvPacket.readByteSeq(target_guid[4]);
-    recvPacket.readByteSeq(target_guid[1]);
-    recvPacket.readByteSeq(target_guid[3]);
-    recvPacket.readByteSeq(target_guid[0]);
-    recvPacket.readByteSeq(target_guid[5]);
-    recvPacket.readByteSeq(target_guid[2]);
-    recvPacket.readByteSeq(target_guid[7]);
-
-    WorldPacket data(SMSG_GROUP_SET_ROLE, 24);
-
-    data.writeBit(player_guid[1]);
-
-    data.writeBit(target_guid[0]);
-    data.writeBit(target_guid[2]);
-    data.writeBit(target_guid[4]);
-    data.writeBit(target_guid[7]);
-    data.writeBit(target_guid[3]);
-
-    data.writeBit(player_guid[7]);
-
-    data.writeBit(target_guid[5]);
-
-    data.writeBit(player_guid[5]);
-    data.writeBit(player_guid[4]);
-    data.writeBit(player_guid[3]);
-
-    data.writeBit(target_guid[6]);
-
-    data.writeBit(player_guid[2]);
-    data.writeBit(player_guid[6]);
-
-    data.writeBit(target_guid[1]);
-
-    data.writeBit(player_guid[0]);
-
-    data.writeByteSeq(player_guid[7]);
-
-    data.writeByteSeq(target_guid[3]);
-
-    data.writeByteSeq(player_guid[6]);
-
-    data.writeByteSeq(target_guid[4]);
-    data.writeByteSeq(target_guid[0]);
-
-    data << uint32_t(newRole);        // role
-
-    data.writeByteSeq(target_guid[6]);
-    data.writeByteSeq(target_guid[2]);
-
-    data.writeByteSeq(player_guid[0]);
-    data.writeByteSeq(player_guid[4]);
-
-    data.writeByteSeq(target_guid[1]);
-
-    data.writeByteSeq(player_guid[3]);
-    data.writeByteSeq(player_guid[5]);
-    data.writeByteSeq(player_guid[2]);
-
-    data.writeByteSeq(target_guid[5]);
-    data.writeByteSeq(target_guid[7]);
-
-    data.writeByteSeq(player_guid[1]);
-
-    data << uint32_t(0);              // unk
+    SmsgGroupSetRoles managedPacket(srlPacket.targetGuid, playerGuid, srlPacket.newRole);
 
     if (_player->getGroup())
-        _player->getGroup()->SendPacketToAll(&data);
+        PacketBroadcast::sendFromGroup(*_player->getGroup(), managedPacket);
     else
-        SendPacket(&data);
-#endif
+        sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleGroupRequestJoinUpdatesOpcode(WorldPacket& /*recvPacket*/)
