@@ -152,9 +152,9 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemDisplayInfo> sItemDisplayInfo
 #endif
 
 SERVER_DECL WDB::WDBStore<WDB::Structures::CharTitlesEntry> sCharTitlesStore;
+SERVER_DECL WDB::WDBStore<WDB::Structures::GemPropertiesEntry> sGemPropertiesStore;
+SERVER_DECL WDB::WDBStore<WDB::Structures::TotemCategoryEntry> sTotemCategoryStore;
 #if VERSION_STRING >= TBC
-SERVER_DECL WDB::WDBContainer<WDB::Structures::GemPropertiesEntry> sGemPropertiesStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::TotemCategoryEntry> sTotemCategoryStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::WorldMapAreaEntry> sWorldMapAreaStore;
 #endif
 
@@ -726,10 +726,28 @@ bool loadDBCs()
             }
         }
     );
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::GemPropertiesEntry>(
+        bad_dbc_files, sGemPropertiesStore, dbc_path,
+        [](const auto& raw, WDB::Structures::GemPropertiesEntry& entry) {
+            entry.id = raw.id;
+            entry.enchantmentId = raw.enchantmentId;
+            entry.socketMask = raw.socketMask;
+        }
+    );
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::TotemCategoryEntry>(
+        bad_dbc_files, sTotemCategoryStore, dbc_path,
+        [](const auto& raw, WDB::Structures::TotemCategoryEntry& entry) {
+            entry.id = raw.id;
+            entry.categoryType = raw.categoryType;
+            entry.categoryMask = raw.categoryMask;
+        }
+    );
+
     /////////////////////////////////////////////////////////////////////////////////////////
     // Load multi version specific dbcs available since TBC
 #if VERSION_STRING >= TBC
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGemPropertiesStore, dbc_path, "GemProperties.dbc");
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtChanceToMeleeCritStore, dbc_path, "gtChanceToMeleeCrit.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtChanceToMeleeCritBaseStore, dbc_path, "gtChanceToMeleeCritBase.dbc");
@@ -739,7 +757,6 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtRegenMPPerSptStore, dbc_path, "gtRegenMPPerSpt.dbc");     //loaded but not used
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemRandomSuffixStore, dbc_path, "ItemRandomSuffix.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSummonPropertiesStore, dbc_path, "SummonProperties.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTotemCategoryStore, dbc_path, "TotemCategory.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sWorldMapAreaStore, dbc_path, "WorldMapArea.dbc");
 
     #if VERSION_STRING < Cata

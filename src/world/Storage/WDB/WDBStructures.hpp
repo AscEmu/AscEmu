@@ -326,6 +326,20 @@ namespace WDB::Structures
         }
     };
 
+    struct GemPropertiesEntry
+    {
+        uint32_t id{0};
+        uint32_t enchantmentId{0};
+        uint32_t socketMask{0};
+    };
+
+    struct TotemCategoryEntry
+    {
+        uint32_t id{0};
+        uint32_t categoryType{0};
+        uint32_t categoryMask{0};
+    };
+
 #if VERSION_STRING <= Classic
 #define NAME_PATTERN 8
 #else
@@ -1073,17 +1087,6 @@ namespace WDB::Structures
         float maxZ;                                                 // 17
 #endif
     };
-
-#if VERSION_STRING > Classic
-    struct GemPropertiesEntry
-    {
-        uint32_t Entry;                                             // 0
-        uint32_t EnchantmentID;                                     // 1
-        //uint32_t unk1;                                            // 2 bool
-        //uint32_t unk2;                                            // 3 bool
-        uint32_t SocketMask;                                        // 4
-    };
-#endif
 
 #if VERSION_STRING >= WotLK
     struct GlyphPropertiesEntry
@@ -2172,17 +2175,6 @@ namespace WDB::Structures
         uint32_t departureEventID;                                  // 10
 #endif
     };
-
-#if VERSION_STRING >= TBC
-    struct TotemCategoryEntry
-    {
-        uint32_t id;                                                // 0
-        //char* name[16];                                           // 1-16
-        //uint32_t unk;                                             // 17
-        uint32_t categoryType;                                      // 18
-        uint32_t categoryMask;                                      // 19
-    };
-#endif
 
     struct TransportAnimationEntry
     {

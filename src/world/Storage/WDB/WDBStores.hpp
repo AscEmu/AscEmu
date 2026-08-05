@@ -83,8 +83,8 @@ namespace WDB::Structures
 #endif
 
     struct CharTitlesEntry;
-#if VERSION_STRING >= TBC
     struct GemPropertiesEntry;
+#if VERSION_STRING >= TBC
     struct TotemCategoryEntry;
     struct WorldMapAreaEntry;
 #endif
@@ -238,9 +238,9 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemExtendedCostEntry> sIt
 #endif
 
     extern SERVER_DECL WDB::WDBStore<WDB::Structures::CharTitlesEntry> sCharTitlesStore;
+    extern SERVER_DECL WDB::WDBStore<WDB::Structures::GemPropertiesEntry> sGemPropertiesStore;
+    extern SERVER_DECL WDB::WDBStore<WDB::Structures::TotemCategoryEntry> sTotemCategoryStore;
 #if VERSION_STRING >= TBC
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GemPropertiesEntry> sGemPropertiesStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TotemCategoryEntry> sTotemCategoryStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::WorldMapAreaEntry> sWorldMapAreaStore;
 #endif
 

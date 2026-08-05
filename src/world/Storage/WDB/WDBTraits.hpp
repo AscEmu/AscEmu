@@ -111,4 +111,26 @@ namespace WDB
     {
         static constexpr const char* filename = "FactionTemplate.dbc";
     };
+
+    template <>
+    struct DbcTraits<Structures::GemPropertiesEntry> : DbcVersionLayouts<
+            UnsupportedVersion, // Classic
+            Structures::Raw::GemPropertiesEntryTbcWotlkCataMop,
+            Structures::Raw::GemPropertiesEntryTbcWotlkCataMop,
+            Structures::Raw::GemPropertiesEntryTbcWotlkCataMop,
+            Structures::Raw::GemPropertiesEntryTbcWotlkCataMop>
+    {
+        static constexpr const char* filename = "GemProperties.dbc";
+    };
+
+    template <>
+    struct DbcTraits<Structures::TotemCategoryEntry> : DbcVersionLayouts<
+            UnsupportedVersion, // Classic
+            Structures::Raw::TotemCategoryEntryTbcWotlkCataMop,
+            Structures::Raw::TotemCategoryEntryTbcWotlkCataMop,
+            Structures::Raw::TotemCategoryEntryTbcWotlkCataMop,
+            Structures::Raw::TotemCategoryEntryTbcWotlkCataMop>
+    {
+        static constexpr const char* filename = "TotemCategory.dbc";
+    };
 }

@@ -2871,7 +2871,7 @@ void WorldSession::handleInsertGemOpcode([[maybe_unused]] WorldPacket& recvPacke
             // Skip checks for enchanting/blacksmithing prismatic socket slots
             // Also skip check if this gem is about to be replaced
             if (gem_properties && TargetProto->Sockets[i].SocketColor && !srlPacket.gemGuid[i] &&
-                !(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
+                !(gem_properties->socketMask & TargetProto->Sockets[i].SocketColor))
             {
                 ColorMatch = false;
             }
@@ -2940,7 +2940,7 @@ void WorldSession::handleInsertGemOpcode([[maybe_unused]] WorldPacket& recvPacke
 
             auto itemHolder = itemi->SafeRemoveAndRetreiveItemByGuid(srlPacket.gemGuid[i], true);
             if (!itemHolder)
-                return; //someone sending hacked packets to crash server
+                return; // Someone sending hacked packets to crash server
 
             gem_properties = sGemPropertiesStore.lookupEntry(itemHolder->getItemProperties()->GemProperties);
             itemHolder = nullptr;
@@ -2949,18 +2949,18 @@ void WorldSession::handleInsertGemOpcode([[maybe_unused]] WorldPacket& recvPacke
                 continue;
 
             // Skip checks for enchanting/blacksmithing prismatic socket slots
-            if (TargetProto->Sockets[i].SocketColor && !(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
+            if (TargetProto->Sockets[i].SocketColor && !(gem_properties->socketMask & TargetProto->Sockets[i].SocketColor))
                 ColorMatch = false;
 
-            //this is ok in few cases
-            if (!gem_properties->EnchantmentID)
+            // This is ok in few cases
+            if (!gem_properties->enchantmentId)
                 continue;
 
-            //Meta gems only go in meta sockets.
-            if (TargetProto->Sockets[i].SocketColor != GEM_META_SOCKET && gem_properties->SocketMask == GEM_META_SOCKET)
+            // Meta gems only go in meta sockets.
+            if (TargetProto->Sockets[i].SocketColor != GEM_META_SOCKET && gem_properties->socketMask == GEM_META_SOCKET)
                 continue;
 
-            //replace gem
+            // Replace gem
             if (EI)
             {
                 // Remove previous gem
@@ -2973,13 +2973,13 @@ void WorldSession::handleInsertGemOpcode([[maybe_unused]] WorldPacket& recvPacke
                     FilledSlots++;
             }
 
-            spell_item_enchant = sSpellItemEnchantmentStore.lookupEntry(gem_properties->EnchantmentID);
+            spell_item_enchant = sSpellItemEnchantmentStore.lookupEntry(gem_properties->enchantmentId);
             if (spell_item_enchant != nullptr)
-                TargetItem->addEnchantment(gem_properties->EnchantmentID, enchantmentSlot, 0);
+                TargetItem->addEnchantment(gem_properties->enchantmentId, enchantmentSlot, 0);
         }
     }
 
-    //Add color match bonus
+    // Add color match bonus
     if (TargetItem->getItemProperties()->SocketBonus)
     {
         if (ColorMatch && FilledSlots >= TargetItem->getSocketSlotCount(false))
@@ -2991,7 +2991,7 @@ void WorldSession::handleInsertGemOpcode([[maybe_unused]] WorldPacket& recvPacke
             if (spell_item_enchant != nullptr)
                 TargetItem->addEnchantment(TargetItem->getItemProperties()->SocketBonus, BONUS_ENCHANTMENT_SLOT, 0);
         }
-        else //remove
+        else // remove
         {
             TargetItem->removeSocketBonusEnchant();
         }

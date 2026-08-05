@@ -308,5 +308,19 @@ namespace WDB::Structures::Raw
         uint32_t enemyFaction[4];
         uint32_t friendFaction[4];
     };
+
+    struct GemPropertiesEntryTbcWotlkCataMop
+    {
+        uint32_t id;
+        uint32_t enchantmentId;
+        uint32_t socketMask;
+    };
+
+    struct TotemCategoryEntryTbcWotlkCataMop
+    {
+        uint32_t id;
+        uint32_t categoryType;
+        uint32_t categoryMask;
+    };
 #pragma pack(pop)
 }
