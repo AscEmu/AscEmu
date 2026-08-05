@@ -31,6 +31,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/MathConstants.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Server/Packets/SmsgSpellStart.h"
+#include "Server/Packets/SmsgSpellGo.h"
 
 using namespace AscEmu::Packets;
 
@@ -1533,29 +1535,16 @@ bool ChatCommandHandler::HandleCastSpellNECommand(const char* args, WorldSession
     }
     blueSystemMessage(m_session, "Casting spell {} on target.", spellId);
 
-    WorldPacket data;
+    SpellCastTargets spellTarget;
+    spellTarget.setTargetMask(2);
+    spellTarget.setUnitTarget(target->getGuid());
 
-    data.initialize(SMSG_SPELL_START);
-    data << caster->GetNewGUID();
-    data << caster->GetNewGUID();
-    data << spellId;
-    data << uint8_t(0);
-    data << uint16_t(0);
-    data << uint32_t(0);
-    data << uint16_t(2);
-    data << target->getGuid();
-    m_session->SendPacket(&data);
+    SmsgSpellStart startPacket(caster->GetNewGUID(), caster->GetNewGUID(), spellId, 0, 0, 0, 0, spellTarget);
+    m_session->sendManagedPacket(startPacket);
 
-    data.initialize(SMSG_SPELL_GO);
-    data << caster->GetNewGUID();
-    data << caster->GetNewGUID();
-    data << spellId;
-    data << uint8_t(0) << uint8_t(1) << uint8_t(1);
-    data << target->getGuid();
-    data << uint8_t(0);
-    data << uint16_t(2);
-    data << target->getGuid();
-    m_session->SendPacket(&data);
+    SmsgSpellGo goPacket(caster->GetNewGUID(), caster->GetNewGUID(), spellId, 0, 0, 0, 0, spellTarget);
+    goPacket.hittedTargets.push_back(SpellUniqueTarget(target->getGuid(), {}));
+    m_session->sendManagedPacket(goPacket);
 
     switch (target->getObjectTypeId())
     {

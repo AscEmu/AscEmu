@@ -40,8 +40,13 @@
 #include "Server/Packets/SmsgBattlegroundPlayerLeft.h"
 #include "Server/Packets/SmsgBattlegroundPlayerJoined.h"
 #include "Server/Packets/SmsgMessageChat.h"
+#include "Server/Packets/SmsgSpellStart.h"
+#include "Server/Packets/SmsgSpellGo.h"
+#include "Server/PacketBroadcast.hpp"
 #include "Storage/WorldStrings.h"
 #include <cstdarg>
+
+using namespace AscEmu::Packets;
 
 Battleground::Battleground(WorldMap* worldMap, uint32_t id, uint32_t levelGroup, uint32_t type) : m_mapMgr(worldMap), m_id(id), m_type(type), m_levelGroup(levelGroup)
 {
@@ -928,29 +933,16 @@ void Battleground::eventResurrectPlayers()
             Player* plr = m_mapMgr->getPlayer(itr);
             if (plr && plr->isDead())
             {
-                WorldPacket data(SMSG_SPELL_START, 50);
-                data << plr->GetNewGUID();
-                data << plr->GetNewGUID();
-                data << uint32_t(BattlegroundDef::RESURRECT);
-                data << uint8_t(0);
-                data << uint16_t(0);
-                data << uint32_t(0);
-                data << uint16_t(2);
-                data << plr->getGuid();
-                plr->sendMessageToSet(&data, true);
+                SpellCastTargets target;
+                target.setTargetMask(2);
+                target.setUnitTarget(plr->getGuid());
 
-                data.initialize(SMSG_SPELL_GO);
-                data << plr->GetNewGUID();
-                data << plr->GetNewGUID();
-                data << uint32_t(BattlegroundDef::RESURRECT);
-                data << uint8_t(0);
-                data << uint8_t(1);
-                data << uint8_t(1);
-                data << plr->getGuid();
-                data << uint8_t(0);
-                data << uint16_t(2);
-                data << plr->getGuid();
-                plr->sendMessageToSet(&data, true);
+                SmsgSpellStart startPacket(plr->GetNewGUID(), plr->GetNewGUID(), BattlegroundDef::RESURRECT, 0, 0, 0, 0, target);
+                PacketBroadcast::sendToSet(*plr, startPacket, true);
+
+                SmsgSpellGo goPacket(plr->GetNewGUID(), plr->GetNewGUID(), BattlegroundDef::RESURRECT, 0, 0, 0, 0, target);
+                goPacket.hittedTargets.push_back(SpellUniqueTarget(plr->getGuid(), {}));
+                PacketBroadcast::sendToSet(*plr, goPacket, true);
 
                 plr->resurrect();
                 plr->setHealth(plr->getMaxHealth());

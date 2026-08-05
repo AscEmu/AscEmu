@@ -49,6 +49,8 @@
 #include "Server/Packets/SmsgQuestupdateFailedTimer.h"
 #include "Server/Packets/SmsgQuestupdateFailed.h"
 #include "Server/Packets/SmsgQuestgiverQuestFailed.h"
+#include "Server/Packets/SmsgSpellStart.h"
+#include "Server/Packets/SmsgSpellGo.h"
 #include "Storage/WorldStrings.h"
 #include "Utilities/Strings.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
@@ -1791,30 +1793,16 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         {
             if (!plr->hasSpell(qst->reward_spell))
             {
-                // "Teaching" effect
-                WorldPacket data(SMSG_SPELL_START, 42);
-                data << qst_giver->GetNewGUID();
-                data << qst_giver->GetNewGUID();
-                data << uint32_t(7763);
-                data << uint8_t(0);
-                data << uint16_t(0);
-                data << uint32_t(0);
-                data << uint16_t(2);
-                data << plr->getGuid();
-                plr->getSession()->SendPacket(&data);
+                SpellCastTargets target;
+                target.setTargetMask(2);
+                target.setUnitTarget(plr->getGuid());
 
-                data.initialize(SMSG_SPELL_GO);
-                data << qst_giver->GetNewGUID();
-                data << qst_giver->GetNewGUID();
-                data << uint32_t(7763);             // spellID
-                data << uint8_t(0);
-                data << uint8_t(1);                 // flags
-                data << uint8_t(1);                 // amount of targets
-                data << plr->getGuid();             // target
-                data << uint8_t(0);
-                data << uint16_t(2);
-                data << plr->getGuid();
-                plr->getSession()->SendPacket(&data);
+                SmsgSpellStart startPacket(qst_giver->GetNewGUID(), qst_giver->GetNewGUID(), 7763, 0, 0, 0, 0, target);
+                plr->getSession()->sendManagedPacket(startPacket);
+
+                SmsgSpellGo goPacket(qst_giver->GetNewGUID(), qst_giver->GetNewGUID(), 7763, 0, 0, 0, 0, target);
+                goPacket.hittedTargets.push_back(SpellUniqueTarget(plr->getGuid(), {}));
+                plr->getSession()->sendManagedPacket(goPacket);
 
                 // Teach the spell
                 plr->addSpell(qst->reward_spell);

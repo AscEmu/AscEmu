@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "Spell/SpellCastTargets.hpp"
+#include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/Spell.hpp"
 #include <cstdint>
 
