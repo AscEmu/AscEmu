@@ -1513,7 +1513,7 @@ void WorldSession::handleRemoveGlyph([[maybe_unused]] WorldPacket& recvPacket)
     _player->setGlyph(srlPacket.glyphNumber, 0);
     _player->removeAllAurasById(glyphPropertiesEntry->SpellID);
     _player->m_specs[_player->m_talentActiveSpec].setGlyph(0, srlPacket.glyphNumber);
-    _player->smsg_TalentsInfo(false);
+    _player->sendTalentsInfo();
 #endif
 }
 

@@ -1007,7 +1007,7 @@ public:
 
     uint32_t getTalentPointsFromQuests() const;
     void setTalentPointsFromQuests(uint32_t talentPoints);
-    void smsg_TalentsInfo(bool SendPetTalents); // TODO: classic and tbc
+    void sendTalentsInfo(); // TODO: classic and tbc
 
     void activateTalentSpec(uint8_t specId);
 

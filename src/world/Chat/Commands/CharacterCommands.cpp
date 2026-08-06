@@ -1628,7 +1628,7 @@ bool ChatCommandHandler::HandleCharSetTalentpointsCommand(const char* args, Worl
     player_target->m_spec.setTalentPoints(primary_amount);
 #endif
 
-    player_target->smsg_TalentsInfo(false);
+    player_target->sendTalentsInfo();
 
     if (player_target != m_session->GetPlayer())
     {

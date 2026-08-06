@@ -137,6 +137,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgTutorialFlags.h"
 #include "Server/Packets/SmsgUpdateWorldState.h"
 #include "Server/Packets/SmsgCancelAutoRepeat.h"
+#include "Server/Packets/SmsgUpdateTalentData.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Warden/SpeedDetector.h"
@@ -2543,7 +2544,7 @@ void Player::applyLevelInfo(uint32_t newLevel)
         }
     }
 
-    smsg_TalentsInfo(false);
+    sendTalentsInfo();
 
     m_playedTime[0] = 0;
 }
@@ -2857,7 +2858,7 @@ void Player::sendInitialLogonPackets()
     SmsgTutorialFlags tutorialPacket(tutorials);
     m_session->sendManagedPacket(tutorialPacket);
 
-    smsg_TalentsInfo(false);
+    sendTalentsInfo();
 
 #if VERSION_STRING == Mop
     WorldPacket data(SMSG_WORLD_SERVER_INFO, 4 + 4 + 1 + 1);
@@ -6013,7 +6014,7 @@ void Player::setInitialTalentPoints(bool talentsResetted /*= false*/)
     }
 
     setTalentPoints(talentPoints - usedTalentPoints, false);
-    smsg_TalentsInfo(false);
+    sendTalentsInfo();
 }
 
 uint32_t Player::getTalentPointsFromQuests() const
@@ -6026,89 +6027,11 @@ void Player::setTalentPointsFromQuests(uint32_t talentPoints)
     m_talentPointsFromQuests = talentPoints;
 }
 
-void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
+void Player::sendTalentsInfo()
 {
     // TODO: classic and tbc
-#if VERSION_STRING < Mop
-#if VERSION_STRING >= WotLK
-    WorldPacket data(SMSG_UPDATE_TALENT_DATA, 1000);
-    data << uint8_t(SendPetTalents ? 1 : 0);
-    if (SendPetTalents)
-    {
-        if (getPet() != nullptr)
-            getPet()->SendTalentsToOwner();
-        return;
-    }
-    else
-    {
-        data << uint32_t(getActiveSpec().getTalentPoints()); // Free talent points
-        data << uint8_t(m_talentSpecsCount); // How many specs player has
-        data << uint8_t(m_talentActiveSpec); // Which spec is active right now
-
-        if (m_talentSpecsCount > MAX_SPEC_COUNT)
-            m_talentSpecsCount = MAX_SPEC_COUNT;
-
-        // Loop through specs
-        for (uint8_t specId = 0; specId < m_talentSpecsCount; ++specId)
-        {
-            PlayerSpec spec = m_specs[specId];
-
-#if VERSION_STRING >= Cata
-            // Send primary talent tree
-            data << uint32_t(m_FirstTalentTreeLock);
-#endif
-
-            // How many talents player has learnt
-            data << uint8_t(spec.getTalents().size());
-            for (const auto& [talentId, rank] : spec.getTalents())
-            {
-                data << uint32_t(talentId);
-                data << uint8_t(rank);
-            }
-
-            // What kind of glyphs player has
-            data << uint8_t(GLYPHS_COUNT);
-            for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
-            {
-                data << uint16_t(getGlyph(specId, i));
-            }
-        }
-    }
-    getSession()->SendPacket(&data);
-#endif
-#else // Mop
-    WorldPacket data(SMSG_UPDATE_TALENT_DATA, 50);
-    data << uint8_t(m_talentActiveSpec); // Which spec is active right now
-    data.writeBits(m_talentSpecsCount, 19);
-
-    auto wpos = std::make_unique<size_t[]>(m_talentSpecsCount);
-    for (int i = 0; i < m_talentSpecsCount; ++i)
-    {
-        wpos[i] = data.bitwpos();
-        data.writeBits(0, 23);
-    }
-
-    data.flushBits();
-
-    for (uint8_t specId = 0; specId < m_talentSpecsCount; ++specId)
-    {
-        PlayerSpec spec = m_specs[specId];
-
-        for (uint8_t i = 0; i < 6; ++i)
-            data << uint16_t(getGlyph(specId, i));
-
-        int32_t talentCount = 0;
-        for (const auto& [talentId, rank] : spec.getTalents())
-        {
-            data << uint16_t(talentId);
-            talentCount++;
-        }
-        data.putBits(wpos[specId], talentCount, 23);
-        data << uint32_t(spec.getTalentPoints());
-    }
-
-    getSession()->SendPacket(&data);
-#endif
+    SmsgUpdateTalentData managedPacket(this);
+    getSession()->sendManagedPacket(managedPacket);
 }
 
 void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)

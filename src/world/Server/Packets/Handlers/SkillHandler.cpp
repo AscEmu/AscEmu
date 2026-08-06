@@ -30,7 +30,7 @@ void WorldSession::handleLearnTalentOpcode(WorldPacket& recvPacket)
         return;
 
     _player->learnTalent(srlPacket.talentId, srlPacket.requestedRank);
-    _player->smsg_TalentsInfo(false);
+    _player->sendTalentsInfo();
 }
 
 void WorldSession::handleUnlearnTalents(WorldPacket& /*recvPacket*/)
@@ -58,7 +58,7 @@ void WorldSession::handleLearnMultipleTalentsOpcode([[maybe_unused]] WorldPacket
     for (auto learnTalent : srlPacket.multipleTalents)
         _player->learnTalent(learnTalent.talentId, learnTalent.talentRank);
 
-    _player->smsg_TalentsInfo(false);
+    _player->sendTalentsInfo();
 #endif
 #endif
 }
@@ -82,6 +82,6 @@ void WorldSession::handleLearnPreviewTalentsOpcode([[maybe_unused]] WorldPacket&
         _player->learnTalent(talent_id, talent_rank);
     }
 
-    _player->smsg_TalentsInfo(false);
+    _player->sendTalentsInfo();
 #endif
 }
