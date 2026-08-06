@@ -5824,12 +5824,9 @@ int LuaUnit::GetTalentPoints(lua_State* L, Unit* ptr)
         return 0;
     }
 
-#ifdef FT_DUAL_SPEC
     const uint32_t spec = static_cast<uint32_t>(luaL_checkinteger(L, 1)); //0 or 1
     PlayerSpec plrSpec = dynamic_cast<Player*>(ptr)->m_specs[spec];
-#else
-    PlayerSpec plrSpec = static_cast<Player*>(ptr)->m_spec;
-#endif
+
     //uint32_t Lvl = static_cast<Player*>(ptr)->getLevel();
     const uint32_t FreePoints = plrSpec.getTalentPoints();
 

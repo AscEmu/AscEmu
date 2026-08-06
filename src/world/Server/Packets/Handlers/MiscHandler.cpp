@@ -1863,11 +1863,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     data << uint8_t(inspectedPlayer->m_talentActiveSpec);
     for (uint8_t s = 0; s < inspectedPlayer->m_talentSpecsCount; ++s)
     {
-#ifdef FT_DUAL_SPEC
         const PlayerSpec playerSpec = inspectedPlayer->m_specs[s];
-#else
-        const PlayerSpec playerSpec = inspectedPlayer->m_spec;
-#endif
 
         uint8_t talentCount = 0;
         const auto talentCountPos = data.wpos();

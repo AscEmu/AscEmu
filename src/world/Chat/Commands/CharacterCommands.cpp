@@ -1600,11 +1600,7 @@ bool ChatCommandHandler::HandleCharSetTalentpointsCommand(const char* args, Worl
     if (!args)
     {
         redSystemMessage(m_session, "No amount of talentpoints entered.");
-#ifdef FT_DUAL_SPEC
         redSystemMessage(m_session, "Use: .character set talentpoints <primary_amount> <secondary_amount>");
-#else
-        redSystemMessage(m_session, "Use: .character set talentpoints <amount>");
-#endif
         return true;
     }
 
@@ -1617,38 +1613,22 @@ bool ChatCommandHandler::HandleCharSetTalentpointsCommand(const char* args, Worl
 
     std::stringstream ss(args);
     ss >> primary_amount;
-#ifdef FT_DUAL_SPEC
     ss >> secondary_amount;
-#endif
 
-#ifdef FT_DUAL_SPEC
     player_target->m_specs[SPEC_PRIMARY].setTalentPoints(primary_amount);
     player_target->m_specs[SPEC_SECONDARY].setTalentPoints(secondary_amount);
-#else
-    player_target->m_spec.setTalentPoints(primary_amount);
-#endif
 
     player_target->sendTalentsInfo();
 
     if (player_target != m_session->GetPlayer())
     {
-#ifdef FT_DUAL_SPEC
         blueSystemMessage(m_session, "Set talent points for player {}: primary {}, secondary {}.", player_target->getName(), primary_amount, secondary_amount);
         greenSystemMessage(player_target->getSession(), "{} set your talent points: primary {}, secondary {}.", m_session->GetPlayer()->getName(), primary_amount, secondary_amount);
         sGMLog.writefromsession(m_session, "Set talent points for player {}: primary {}, secondary {}.", player_target->getName(), primary_amount, secondary_amount);
-#else
-        blueSystemMessage(m_session, "Set talent points for player {}: {}.", player_target->getName(), primary_amount);
-        greenSystemMessage(player_target->getSession(), "{} set your talent points to {}.", m_session->GetPlayer()->getName(), primary_amount);
-        sGMLog.writefromsession(m_session, "Set talent points for player {}: {}.", player_target->getName(), primary_amount);
-#endif
     }
     else
     {
-#ifdef FT_DUAL_SPEC
         blueSystemMessage(m_session, "Your talent points were set - primary: {}, secondary: {}.", primary_amount, secondary_amount);
-#else
-        blueSystemMessage(m_session, "Your talent points were set to {}.", primary_amount);
-#endif
     }
 
     return true;

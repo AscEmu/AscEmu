@@ -1338,7 +1338,6 @@ public:
         return false;
     }
 
-#ifdef FT_GLYPHS
     uint16_t getGlyph(uint16_t slot) const
     {
         if (slot >= GLYPHS_COUNT)
@@ -1356,7 +1355,6 @@ public:
     }
 
     std::array<uint16_t, GLYPHS_COUNT> const& getGlyphs() const { return mGlyphs; }
-#endif
 
     std::map<uint32_t, uint8_t> const& getTalents() const { return mTalents; }
     ActionButton& getActionButton(uint8_t slot) { return mActions[slot]; }
@@ -1366,9 +1364,8 @@ private:
     uint32_t mTalentPoints = 0;
     std::map<uint32_t, uint8_t> mTalents;
 
-#ifdef FT_GLYPHS
     std::array<uint16_t, GLYPHS_COUNT> mGlyphs = { 0 };
-#endif
+
     std::array<ActionButton, PLAYER_ACTION_BUTTON_COUNT> mActions = { ActionButton() };
 };
 

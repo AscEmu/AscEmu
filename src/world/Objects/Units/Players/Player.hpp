@@ -1993,21 +1993,17 @@ public:
     uint16_t m_maxTalentPoints = 0;
     uint8_t m_talentSpecsCount = 1;
     uint8_t m_talentActiveSpec = 0;
-#if VERSION_STRING >= Cata
-    uint32_t m_FirstTalentTreeLock = 0;
-#endif
 
-#ifdef FT_DUAL_SPEC
+    // since Cata - lock first talentTree
+    uint32_t m_FirstTalentTreeLock = 0;
+
+    // only on for versions <= TBC
     PlayerSpec m_specs[MAX_SPEC_COUNT];
-#else
-    PlayerSpec m_spec;
-#endif
 
     PlayerSpec& getActiveSpec();
 
-#ifdef FT_GLYPHS
+    // since WotLK
     uint16_t getGlyph(uint8_t spec, uint16_t slot) const { return m_specs[spec].getGlyph(slot); }
-#endif
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Attack stuff

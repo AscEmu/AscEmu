@@ -5862,9 +5862,7 @@ void Player::resetTalents()
 
     // Clear talents
     getActiveSpec().clearTalents();
-#if VERSION_STRING >= Cata
     m_FirstTalentTreeLock = 0;
-#endif
 
     // Reset talent point amount
     setInitialTalentPoints(true);
@@ -9238,11 +9236,7 @@ void Player::sendMovie([[maybe_unused]]uint32_t movieId)
 
 PlayerSpec& Player::getActiveSpec()
 {
-#ifdef FT_DUAL_SPEC
     return m_specs[m_talentActiveSpec];
-#else
-    return m_spec;
-#endif
 }
 
 void Player::logIntoBattleground()
@@ -14229,7 +14223,6 @@ void Player::saveToDB(bool newCharacter /* =false */)
     saveReputations(newCharacter, buf);
 
     // Add player action bars
-#ifdef FT_DUAL_SPEC
     for (uint8_t s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         ss << "'";
@@ -14245,16 +14238,6 @@ void Player::saveToDB(bool newCharacter /* =false */)
         }
         ss << "'" << ", ";
     }
-#else
-    ss << "'";
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-    {
-        ss << uint32_t(m_spec.getActionButton(i).Action) << ","
-            << uint32_t(m_spec.getActionButton(i).Type) << ","
-            << uint32_t(m_spec.getActionButton(i).Misc) << ",";
-    }
-    ss << "'" << ", " << "''" << ", ";
-#endif
 
     if (!newCharacter)
     {
@@ -14283,7 +14266,6 @@ void Player::saveToDB(bool newCharacter /* =false */)
     ss << uint32_t(getDrunkValue()) << ", ";
 
     // TODO Remove
-#ifdef FT_DUAL_SPEC
     for (uint8_t s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         ss << "'";
@@ -14296,22 +14278,11 @@ void Player::saveToDB(bool newCharacter /* =false */)
 
         ss << "'" << ", ";
     }
-#else
-    ss << "'', '";
-    for (const auto& [talentId, rank] : m_spec.getTalents())
-        ss << talentId << "," << rank << ",";
-
-    ss << "', '', '', ";
-#endif
 
     ss << uint32_t(m_talentSpecsCount) << ", " << uint32_t(m_talentActiveSpec) << ", ";
 
     ss << "'";
-#ifdef FT_DUAL_SPEC
     ss << uint32_t(m_specs[SPEC_PRIMARY].getTalentPoints()) << " " << uint32_t(m_specs[SPEC_SECONDARY].getTalentPoints());
-#else
-    ss << uint32_t(m_spec.getTalentPoints()) << " 0";
-#endif
     ss << "'" << ", ";
 
 #if VERSION_STRING < Cata
@@ -14772,7 +14743,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     uint8_t Counter = 0;
     char* start = nullptr;
     char* end = nullptr;
-#if VERSION_STRING > TBC
+
     for (uint8_t s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         start = (char*)field[67 + s].asCString();
@@ -14810,40 +14781,6 @@ void Player::loadFromDBProc(QueryResultVector& results)
             Counter++;
         }
     }
-#else
-    {
-        auto& spec = m_spec;
-
-        start = (char*)field[67].asCString();
-        Counter = 0;
-        while (Counter < PLAYER_ACTION_BUTTON_COUNT)
-        {
-            if (start == nullptr)
-                break;
-
-            end = strchr(start, ',');
-            if (!end)
-                break;
-            *end = 0;
-            spec.getActionButton(Counter).Action = (uint32_t)std::stoul(start);
-            start = end + 1;
-            end = strchr(start, ',');
-            if (!end)
-                break;
-            *end = 0;
-            spec.getActionButton(Counter).Type = (uint8_t)std::stoul(start);
-            start = end + 1;
-            end = strchr(start, ',');
-            if (!end)
-                break;
-            *end = 0;
-            spec.getActionButton(Counter).Misc = (uint8_t)std::stoul(start);
-            start = end + 1;
-
-            Counter++;
-        }
-    }
-#endif
 
     if (m_firstLogin)
     {
@@ -14936,7 +14873,6 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     setServersideDrunkValue(uint16_t(soberFactor * field[79].asUint32()));
 
-#if VERSION_STRING > TBC
     for (uint8_t s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         start = (char*)field[80 + 2 * s].asCString();
@@ -14972,37 +14908,10 @@ void Player::loadFromDBProc(QueryResultVector& results)
             m_specs[s].addTalent(talentid, rank);
         }
     }
-#else
-    {
-        auto& spec = m_spec;
-
-        //Load talents for spec	
-        start = (char*)field[81].asCString();  // talents1
-        while (end != nullptr)
-        {
-            end = strchr(start, ',');
-            if (!end)
-                break;
-            *end = 0;
-            uint32_t talentid = std::stoul(start);
-            start = end + 1;
-
-            end = strchr(start, ',');
-            if (!end)
-                break;
-            *end = 0;
-            uint8_t rank = static_cast<uint8_t>(std::stoul(start));
-            start = end + 1;
-
-            spec.addTalent(talentid, rank);
-        }
-    }
-#endif
 
     m_talentSpecsCount = field[84].asUint8();
     m_talentActiveSpec = field[85].asUint8();
 
-#if VERSION_STRING > TBC
     {
         if (auto talentPoints = field[86].asCString())
         {
@@ -15019,22 +14928,6 @@ void Player::loadFromDBProc(QueryResultVector& results)
         setFreeTalentPoints(getActiveSpec().getTalentPoints());
 #endif
     }
-#else
-    {
-        if (auto talentPoints = field[86].asCString())
-        {
-            uint32_t tps[2] = { 0,0 };
-
-            auto talentPointsVector = AscEmu::Util::Strings::split(talentPoints, " ");
-            for (uint8_t i = 0; i < 2; ++i)
-                tps[i] = std::stoi(talentPointsVector[i]);
-
-            m_spec.setTalentPoints(tps[0]);
-        }
-
-        setFreeTalentPoints(getActiveSpec().getTalentPoints());
-    }
-#endif
 
 #if VERSION_STRING >= Cata
     m_FirstTalentTreeLock = field[87].asUint32(); // Load First Set Talent Tree
