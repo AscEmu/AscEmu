@@ -95,7 +95,7 @@ time_t InstanceSaved::getResetTimeForDB()
 {
     // only save the reset time for normal instances
     WDB::Structures::MapEntry const* entry = sMapStore.lookupEntry(getMapId());
-    if (!entry || entry->map_type == MAP_RAID || getDifficulty() == InstanceDifficulty::Difficulties::DUNGEON_HEROIC)
+    if (!entry || entry->mapType == WDB::Structures::MAP_RAID || getDifficulty() == InstanceDifficulty::Difficulties::DUNGEON_HEROIC)
         return 0;
     else
         return getResetTime();
@@ -497,7 +497,7 @@ InstanceSaved* InstanceMgr::addInstanceSave(uint32_t mapId, uint32_t instanceId,
     {
         // initialize reset time
         // for normal instances if no creatures are killed the instance will reset in two hours
-        if (entry->map_type == MAP_RAID || difficulty > InstanceDifficulty::Difficulties::DUNGEON_NORMAL)
+        if (entry->mapType == WDB::Structures::MAP_RAID || difficulty > InstanceDifficulty::Difficulties::DUNGEON_NORMAL)
         {
             resetTime = getResetTimeFor(static_cast<uint16_t>(mapId), difficulty);
         }

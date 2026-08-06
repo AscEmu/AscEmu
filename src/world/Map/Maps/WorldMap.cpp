@@ -2685,7 +2685,7 @@ uint32_t WorldMap::getAreaId(uint32_t phaseMask, LocationVector const& pos)
     }
 
     if (!areaId)
-        areaId = getBaseMap()->getMapEntry()->linked_zone;
+        areaId = getBaseMap()->getMapEntry()->linkedZone;
 
     return areaId;
 }
@@ -2892,7 +2892,7 @@ void WorldMap::getFullTerrainStatusForPosition(uint32_t phaseMask, float x, floa
     }
 
     if (!data.areaId)
-        data.areaId = getBaseMap()->getMapEntry()->linked_zone;
+        data.areaId = getBaseMap()->getMapEntry()->linkedZone;
 
     WDB::Structures::AreaTableEntry const* areaEntry = sAreaStore.lookupEntry(data.areaId);
 

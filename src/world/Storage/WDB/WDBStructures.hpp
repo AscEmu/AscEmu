@@ -165,15 +165,6 @@ struct DBCPosition3D
     float Z;
 };
 
-enum MapTypes : uint8_t
-{
-    MAP_WORLD           = 0, // none
-    MAP_DUNGEON         = 1, // party
-    MAP_RAID            = 2, // raid
-    MAP_BATTLEGROUND    = 3, // pvp
-    MAP_ARENA           = 4  // arena
-};
-
 namespace WDB::Structures
 {
     struct AreaGroupEntry
@@ -331,6 +322,75 @@ namespace WDB::Structures
         uint32_t id{0};
         uint32_t enchantmentId{0};
         uint32_t socketMask{0};
+    };
+
+    struct MapDifficulty
+    {
+        uint32_t resetTime{0};
+        uint32_t maxPlayers{0};
+        bool hasErrorMessage{false};
+
+        MapDifficulty() = default;
+
+        MapDifficulty(uint32_t resetTime_, uint32_t maxPlayers_, bool hasErrorMessage_)
+            : resetTime(resetTime_), maxPlayers(maxPlayers_), hasErrorMessage(hasErrorMessage_) {}
+    };
+
+    struct MapDifficultyEntry
+    {
+        uint32_t id{0};
+        uint32_t mapId{0};
+        uint32_t difficulty{0};
+        std::string message;
+        uint32_t raidDuration{0};
+        uint32_t maxPlayers{0};
+    };
+
+    struct MapEntry
+    {
+        uint32_t id{0};
+        uint32_t mapType{0};
+        std::string mapName;
+        uint32_t linkedZone{0};
+        uint32_t multimapId{0};
+        int32_t parentMap{-1};
+        float startX{0.0f};
+        float startY{0.0f};
+        uint32_t resetRaidTime{0};
+        uint32_t resetHeroicTime{0};
+        uint32_t addon{0};
+        uint32_t unkTime{0};
+        uint32_t maxPlayers{0};
+        uint32_t nextPhaseMap{0};
+
+        [[nodiscard]] bool isDungeon() const { return mapType == MAP_DUNGEON; }
+        [[nodiscard]] bool isRaid() const { return mapType == MAP_RAID; }
+        [[nodiscard]] bool isBattleground() const { return mapType == MAP_BATTLEGROUND; }
+        [[nodiscard]] bool isArena() const { return mapType == MAP_ARENA; }
+        [[nodiscard]] bool isWorldMap() const { return mapType == MAP_WORLD; }
+
+        [[nodiscard]] bool isInstanceMap() const { return isDungeon() || isRaid(); }
+        [[nodiscard]] bool isBattlegroundOrArena() const { return isBattleground() || isArena(); }
+        [[nodiscard]] bool isInstanceableMap() const { return isInstanceMap() || isBattlegroundOrArena(); }
+
+        [[nodiscard]] bool isContinent() const
+        {
+            return id == 0 || id == 1 || id == 530 || id == 571;
+        }
+
+        [[nodiscard]] bool getEntrancePos(int32_t& mapid, float& x, float& y) const
+        {
+            if (parentMap < 0)
+                return false;
+            mapid = parentMap;
+            x = startX;
+            y = startY;
+            return true;
+        }
+
+        [[nodiscard]] uint32_t getAddon() const { return addon; }
+        [[nodiscard]] uint32_t getResetTimeNormal() const { return resetRaidTime; }
+        [[nodiscard]] uint32_t getResetTimeHeroic() const { return resetHeroicTime; }
     };
 
     struct StableSlotPricesEntry
@@ -1386,117 +1446,6 @@ namespace WDB::Structures
         //float unused2[15]                                         // 19-34
         //uint32_t flags2                                           // 35 name flags, unused
     };
-
-    struct MapEntry
-    {
-        uint32_t id;                                                // 0
-        //char* name_internal;                                      // 1
-        uint32_t map_type;                                          // 2
-        //uint32_t is_pvp_zone;                                     // 3 -0 false -1 true
-        char* map_name[NAME_PATTERN];                               // 4-19
-        //uint32_t name_flags;                                      // 20
-        uint32_t linked_zone;                                       // 22 common zone for instance and continent map
-        //char* horde_intro[16];                                    // 23-38 horde text for PvP Zones
-        //uint32_t hordeIntro_flags;                                // 39
-        //char* alliance_intro[16];                                 // 40-55 alliance text for PvP Zones
-        //uint32_t allianceIntro_flags;                             // 56
-        uint32_t multimap_id;                                       // 57
-#if VERSION_STRING >= TBC
-        int32_t parent_map;                                         // 59 map_id of parent map
-        float start_x;                                              // 60 enter x coordinate (if exist single entry)
-        float start_y;                                              // 61 enter y coordinate (if exist single entry)
-        //uint32_t dayTime;                                         // 62
-#if VERSION_STRING == TBC
-        uint32_t reset_raid_time;
-        uint32_t reset_heroic_tim;
-#endif
-        uint32_t addon;                                             // 63 0-original maps, 1-tbc addon, 2-wotlk addon
-#endif
-#if VERSION_STRING >= WotLK
-        uint32_t unk_time;                                          // 64
-        uint32_t max_players;                                       // 65
-#endif
-#if VERSION_STRING >= Cata
-        uint32_t next_phase_map;                                    // 19
-#endif
-
-        bool isDungeon() const { return map_type == MAP_DUNGEON; }
-        bool isRaid() const { return map_type == MAP_RAID; }
-        bool isBattleground() const { return map_type == MAP_BATTLEGROUND; }
-        bool isArena() const { return map_type == MAP_ARENA; }
-
-        bool isInstanceMap() const { return isDungeon() || isRaid(); }
-        bool isBattlegroundOrArena() const { return isBattleground() || isArena(); }
-        bool isWorldMap() const { return map_type == MAP_WORLD; }
-        bool isInstanceableMap() const { return isInstanceMap() || isBattlegroundOrArena(); }
-
-        uint32_t getAddon() const
-        {
-#ifdef AE_CLASSIC
-            const uint32_t addon = 0;
-#endif
-            return addon;
-        }
-
-#if VERSION_STRING <= TBC
-        uint32_t getResetTimeNormal() const
-        {
-#ifdef AE_CLASSIC
-        const uint32_t reset_raid_time = 604800;
-#endif
-        return reset_raid_time;
-        }
-
-        uint32_t getResetTimeHeroic() const
-        {
-#ifdef AE_CLASSIC
-        const uint32_t reset_heroic_tim = 0;
-#endif
-        return reset_heroic_tim;
-        }
-#endif
-
-#if VERSION_STRING >= TBC
-        bool getEntrancePos(int32_t& mapid, float& x, float& y) const
-        {
-            if (parent_map < 0)
-                return false;
-            mapid = parent_map;
-            x = start_x;
-            y = start_y;
-            return true;
-        }
-#endif
-
-        bool isContinent() const
-        {
-            return id == 0 || id == 1 || id == 530 || id == 571;
-        }
-    };
-
-    struct MapDifficulty
-    {
-        MapDifficulty() : resetTime(0), maxPlayers(0), hasErrorMessage(false) { }
-        MapDifficulty(uint32_t _resetTime, uint32_t _maxPlayers, bool _hasErrorMessage) : resetTime(_resetTime), maxPlayers(_maxPlayers), hasErrorMessage(_hasErrorMessage) { }
-
-        uint32_t resetTime;
-        uint32_t maxPlayers;
-        bool hasErrorMessage;
-    };
-
-#if VERSION_STRING >= WotLK
-    struct MapDifficultyEntry
-    {
-        //uint32_t ID;                                              // 0
-        uint32_t MapID;                                             // 1
-        uint32_t Difficulty;                                        // 2 (for arenas: arena slot)
-        char const* Message;                                        // 3-18 text showed when transfer to map failed (missing requirements)
-        //uint32_t Message_lang_mask;                               // 19
-        uint32_t RaidDuration;                                      // 20
-        uint32_t MaxPlayers;                                        // 21
-        //char const* Difficultystring;                             // 22
-    };
-#endif
 
 #if VERSION_STRING >= Cata
     struct MountCapabilityEntry

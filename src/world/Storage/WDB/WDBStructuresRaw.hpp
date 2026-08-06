@@ -316,6 +316,70 @@ namespace WDB::Structures::Raw
         uint32_t socketMask;
     };
 
+    struct MapDifficultyEntryWotlkCataMop
+    {
+        uint32_t mapId;
+        uint32_t difficulty;
+        char const* message;
+        uint32_t raidDuration;
+        uint32_t maxPlayers;
+    };
+
+    struct MapEntryClassic
+    {
+        uint32_t id;
+        uint32_t mapType;
+        char const* mapName[namePatternClassic]; // 8
+        uint32_t linkedZone;
+        uint32_t multimapId;
+    };
+
+    struct MapEntryTbc
+    {
+        uint32_t id;
+        uint32_t mapType;
+        char const* mapName[namePatternTbcWotlk]; // 16
+        uint32_t linkedZone;
+        uint32_t multimapId;
+        int32_t parentMap;
+        float startX;
+        float startY;
+        uint32_t resetRaidTime;
+        uint32_t resetHeroicTime;
+        uint32_t addon;
+    };
+
+    struct MapEntryWotlk
+    {
+        uint32_t id;
+        uint32_t mapType;
+        char const* mapName[namePatternTbcWotlk]; // 16
+        uint32_t linkedZone;
+        uint32_t multimapId;
+        int32_t parentMap;
+        float startX;
+        float startY;
+        uint32_t addon;
+        uint32_t unkTime;
+        uint32_t maxPlayers;
+    };
+
+    struct MapEntryCataMop
+    {
+        uint32_t id;
+        uint32_t mapType;
+        char const* mapName;
+        uint32_t linkedZone;
+        uint32_t multimapId;
+        int32_t parentMap;
+        float startX;
+        float startY;
+        uint32_t addon;
+        uint32_t unkTime;
+        uint32_t maxPlayers;
+        uint32_t nextPhaseMap;
+    };
+
     struct StableSlotPricesEntryClassicTbcWotlk
     {
         uint32_t id;

@@ -89,6 +89,8 @@ namespace WDB::Structures
     struct AreaGroupEntry;
     struct BarberShopStyleEntry;
 
+    struct MapDifficultyEntry;
+
 #if VERSION_STRING >= WotLK
     struct AchievementEntry;
     struct AchievementCriteriaEntry;
@@ -100,7 +102,6 @@ namespace WDB::Structures
     struct GtBarberShopCostBaseEntry;
     struct HolidaysEntry;
     struct ItemLimitCategoryEntry;
-    struct MapDifficultyEntry;
     struct QuestXP;
     struct ScalingStatDistributionEntry;
     struct ScalingStatValuesEntry;
@@ -183,7 +184,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::LFGDungeonEntry> sLFGDunge
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::LiquidTypeEntry> sLiquidTypeStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::LockEntry> sLockStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::MailTemplateEntry> sMailTemplateStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::MapEntry> sMapStore;
+extern SERVER_DECL WDB::WDBStore<WDB::Structures::MapEntry> sMapStore;
 extern MapDifficultyMap sMapDifficultyMap;
 
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::NameGenEntry> sNameGenStore;
@@ -241,6 +242,8 @@ extern SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
     extern SERVER_DECL WDB::WDBStore<WDB::Structures::AreaGroupEntry> sAreaGroupStore;
     extern SERVER_DECL WDB::WDBStore<WDB::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
 
+    extern SERVER_DECL WDB::WDBStore<WDB::Structures::MapDifficultyEntry> sMapDifficultyStore;
+
 #if VERSION_STRING >= WotLK
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AchievementEntry> sAchievementStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AchievementCriteriaEntry> sAchievementCriteriaStore;
@@ -252,7 +255,6 @@ extern SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::HolidaysEntry> sHolidaysStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::MapDifficultyEntry> sMapDifficultyStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::QuestXP> sQuestXPStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ScalingStatDistributionEntry> sScalingStatDistributionStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ScalingStatValuesEntry> sScalingStatValuesStore;
@@ -307,15 +309,12 @@ extern SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
     uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerIndex);
 #endif
 
-#if VERSION_STRING >= WotLK
-    WDB::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty);
-#endif
+WDB::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty);
+WDB::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty);
 
 WDB::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32_t root_id, int32_t adt_id, int32_t group_id);
 
 WDB::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t race, uint8_t class_, uint8_t gender);
-
-WDB::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty);
 
 std::string generateName(uint32_t type = 0);
 

@@ -96,7 +96,7 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::LFGDungeonEntry> sLFGDungeonStore
 SERVER_DECL WDB::WDBContainer<WDB::Structures::LiquidTypeEntry> sLiquidTypeStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::LockEntry> sLockStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::MailTemplateEntry> sMailTemplateStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::MapEntry> sMapStore;
+SERVER_DECL WDB::WDBStore<WDB::Structures::MapEntry> sMapStore;
 MapDifficultyMap sMapDifficultyMap;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::NameGenEntry> sNameGenStore;
@@ -144,8 +144,9 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemExtendedCostEntry> sItemExten
 #if VERSION_STRING < Cata
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore; // todo: available for versions > Classic
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore; // todo: available for versions > Classic
-SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStableSlotPricesStore;
 #endif
+
+SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStableSlotPricesStore;
 
 #ifdef AE_TBC
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemDisplayInfo> sItemDisplayInfoStore;
@@ -157,6 +158,8 @@ SERVER_DECL WDB::WDBStore<WDB::Structures::TotemCategoryEntry> sTotemCategorySto
 SERVER_DECL WDB::WDBStore<WDB::Structures::WorldMapAreaEntry> sWorldMapAreaStore;
 SERVER_DECL WDB::WDBStore<WDB::Structures::AreaGroupEntry> sAreaGroupStore;
 SERVER_DECL WDB::WDBStore<WDB::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
+
+SERVER_DECL WDB::WDBStore<WDB::Structures::MapDifficultyEntry> sMapDifficultyStore;
 
 #if VERSION_STRING >= WotLK
 SERVER_DECL WDB::WDBContainer<WDB::Structures::AchievementEntry> sAchievementStore;
@@ -175,8 +178,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::GtBarberShopCostBaseEntry> sBarbe
 SERVER_DECL WDB::WDBContainer<WDB::Structures::HolidaysEntry> sHolidaysStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore;
-
-SERVER_DECL WDB::WDBContainer<WDB::Structures::MapDifficultyEntry> sMapDifficultyStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::QuestXP> sQuestXPStore;
 
@@ -481,11 +482,92 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sLockStore, dbc_path, "Lock.dbc");
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sMailTemplateStore, dbc_path, "MailTemplate.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sMapStore, dbc_path, "Map.dbc");
-    // note: generate map related data
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::MapDifficultyEntry>(
+        bad_dbc_files, sMapDifficultyStore, dbc_path,
+        [](const auto& raw, WDB::Structures::MapDifficultyEntry& entry) {
+            entry.mapId = raw.mapId;
+            entry.difficulty = raw.difficulty;
+            entry.message = raw.message ? raw.message : "";
+            entry.raidDuration = raw.raidDuration;
+            entry.maxPlayers = raw.maxPlayers;
+        }
+    );
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::MapEntry>(
+        bad_dbc_files, sMapStore, dbc_path,
+        [](const auto& raw, WDB::Structures::MapEntry& entry) {
+            entry.id = raw.id;
+            entry.mapType = raw.mapType;
+            entry.linkedZone = raw.linkedZone;
+            entry.multimapId = raw.multimapId;
+
+            if constexpr (requires { { raw.mapName[0] } -> std::convertible_to<const char*>; })
+            {
+                uint8_t localeId = sWorld.getDbcLocaleLanguageId();
+                entry.mapName = raw.mapName[localeId] ? raw.mapName[localeId] : "";
+            }
+            else if constexpr (requires { { raw.mapName } -> std::convertible_to<const char*>; })
+            {
+                entry.mapName = raw.mapName ? raw.mapName : "";
+            }
+
+            if constexpr (requires { raw.parentMap; })
+            {
+                entry.parentMap = raw.parentMap;
+                entry.startX = raw.startX;
+                entry.startY = raw.startY;
+                entry.addon = raw.addon;
+            }
+            else
+            {
+                // Classic fallback
+                entry.parentMap = -1;
+                entry.startX = 0.0f;
+                entry.startY = 0.0f;
+                entry.addon = 0;
+            }
+
+            if constexpr (requires { raw.resetRaidTime; })
+            {
+                entry.resetRaidTime = raw.resetRaidTime;
+                entry.resetHeroicTime = raw.resetHeroicTime;
+            }
+            else
+            {
+                entry.resetRaidTime = 604800; // Classic default: 7 days
+                entry.resetHeroicTime = 0;
+            }
+
+            if constexpr (requires { raw.maxPlayers; })
+            {
+                entry.unkTime = raw.unkTime;
+                entry.maxPlayers = raw.maxPlayers;
+            }
+
+            if constexpr (requires { raw.nextPhaseMap; })
+            {
+                entry.nextPhaseMap = raw.nextPhaseMap;
+            }
+        }
+    );
+
+    for (uint32_t i = 0; i < sMapDifficultyStore.getNumRows(); ++i)
     {
-#if VERSION_STRING <= TBC
-        // classic & BC has no MapDifficulty.dbc so generate that data
+        if (auto entry = sMapDifficultyStore.lookupEntry(i))
+        {
+            uint32_t key = Util::MAKE_PAIR32(static_cast<uint16_t>(entry->mapId), static_cast<uint16_t>(entry->difficulty));
+            sMapDifficultyMap[key] = WDB::Structures::MapDifficulty(
+                entry->raidDuration,
+                entry->maxPlayers,
+                !entry->message.empty()
+            );
+        }
+    }
+
+    // note: generate map related data
+    if (sMapDifficultyStore.getNumRows() == 0)
+    {
         for (uint32_t i = 0; i < sMapStore.getNumRows(); ++i)
         {
             if (auto entry = sMapStore.lookupEntry(i))
@@ -496,24 +578,26 @@ bool loadDBCs()
                 else
                     maxPlayers = entry->isRaid() ? 25 : 5;
 
-                // Classic has only one Difficulty - Same reset Time - and only 5 or 40 man Raids
                 if (!entry->getResetTimeHeroic())
-                    sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry->id), InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] = WDB::Structures::MapDifficulty(entry->getResetTimeNormal(), maxPlayers, false);
+                {
+                    sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry->id), InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] =
+                        WDB::Structures::MapDifficulty(entry->getResetTimeNormal(), maxPlayers, false);
+                }
                 else
-                    sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry->id), InstanceDifficulty::Difficulties::DUNGEON_HEROIC)] = WDB::Structures::MapDifficulty(entry->getResetTimeHeroic(), maxPlayers, false);
+                {
+                    sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry->id), InstanceDifficulty::Difficulties::DUNGEON_HEROIC)] =
+                        WDB::Structures::MapDifficulty(entry->getResetTimeHeroic(), maxPlayers, false);
+                }
             }
         }
-#endif
+    }
 
-        // note: This was missing for TBC
-        const auto area_map_collection = MapManagement::AreaManagement::AreaStorage::GetMapCollection();
-        for (uint32_t i = 0; i < sMapStore.getNumRows(); ++i)
+    const auto area_map_collection = MapManagement::AreaManagement::AreaStorage::GetMapCollection();
+    for (uint32_t i = 0; i < sMapStore.getNumRows(); ++i)
+    {
+        if (const auto map_object = sMapStore.lookupEntry(i))
         {
-            const auto map_object = sMapStore.lookupEntry(i);
-            if (map_object == nullptr)
-                continue;
-
-            area_map_collection->insert(std::pair(map_object->id, map_object->linked_zone));
+            area_map_collection->insert(std::pair(map_object->id, map_object->linkedZone));
         }
     }
 
@@ -819,15 +903,6 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sBarberShopCostBaseStore, dbc_path, "gtBarberShopCostBase.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sHolidaysStore, dbc_path, "Holidays.dbc");       //loaded but not used
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemLimitCategoryStore, dbc_path, "ItemLimitCategory.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sMapDifficultyStore, dbc_path, "MapDifficulty.dbc");
-    // note: generate map difficulty map in new storage
-    {
-        for (uint32_t i = 0; i < sMapDifficultyStore.getNumRows(); ++i)
-        {
-            if (auto entry = sMapDifficultyStore.lookupEntry(i))
-                sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry->MapID), static_cast<uint16_t>(entry->Difficulty))] = WDB::Structures::MapDifficulty(entry->RaidDuration, entry->MaxPlayers, entry->Message[0] != '\0');
-        }
-    }
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sQuestXPStore, dbc_path, "QuestXP.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sScalingStatDistributionStore, dbc_path, "ScalingStatDistribution.dbc");
@@ -964,7 +1039,7 @@ WDB::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t ma
         if (tmpDiff > 1) // heroic, downscale to normal
             tmpDiff -= 2;
         else
-            tmpDiff -= 1;   // any non-normal mode for raids like tbc (only one mode)
+            tmpDiff -= 1; // any non-normal mode for raids like tbc (only one mode)
 
         // pull new data
         mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff)); // we are 10 normal or 25 normal

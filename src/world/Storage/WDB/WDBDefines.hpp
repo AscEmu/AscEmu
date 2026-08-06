@@ -14,6 +14,15 @@ static constexpr uint8_t MAX_SPELL_TOTEM_CATEGORIES = 2;
 
 namespace WDB::Structures
 {
+    enum MapTypes : uint8_t
+    {
+        MAP_WORLD = 0, // none
+        MAP_DUNGEON = 1, // party
+        MAP_RAID = 2, // raid
+        MAP_BATTLEGROUND = 3, // pvp
+        MAP_ARENA = 4 // arena
+    };
+
     enum FactionTemplateFlags : uint32_t
     {
         FACTION_TEMPLATE_FLAG_PVP = 0x00000800, // flagged for PvP

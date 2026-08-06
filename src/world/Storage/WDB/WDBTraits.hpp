@@ -124,6 +124,28 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::MapDifficultyEntry> : DbcVersionLayouts<
+            UnsupportedVersion, // Classic
+            UnsupportedVersion, // TBC
+            Structures::Raw::MapDifficultyEntryWotlkCataMop,
+            Structures::Raw::MapDifficultyEntryWotlkCataMop,
+            Structures::Raw::MapDifficultyEntryWotlkCataMop>
+    {
+        static constexpr const char* filename = "MapDifficulty.dbc";
+    };
+
+    template <>
+    struct DbcTraits<Structures::MapEntry> : DbcVersionLayouts<
+            Structures::Raw::MapEntryClassic,
+            Structures::Raw::MapEntryTbc,
+            Structures::Raw::MapEntryWotlk,
+            Structures::Raw::MapEntryCataMop,
+            Structures::Raw::MapEntryCataMop>
+    {
+        static constexpr const char* filename = "Map.dbc";
+    };
+
+    template <>
     struct DbcTraits<Structures::StableSlotPricesEntry> : DbcVersionLayouts<
             Structures::Raw::StableSlotPricesEntryClassicTbcWotlk,
             Structures::Raw::StableSlotPricesEntryClassicTbcWotlk,

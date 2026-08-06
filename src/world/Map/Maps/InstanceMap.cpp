@@ -375,7 +375,7 @@ uint32_t InstanceMap::getMaxPlayers()
         return mapDiff->maxPlayers;
 
 #if VERSION_STRING > TBC
-    return getBaseMap()->getMapEntry()->max_players;
+    return getBaseMap()->getMapEntry()->maxPlayers;
 #else
     return getBaseMap()->getMapInfo()->playerlimit;
 #endif

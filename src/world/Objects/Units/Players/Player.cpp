@@ -12660,11 +12660,7 @@ void Player::loadBoundInstances()
             bool deleteInstance = false;
 
             WDB::Structures::MapEntry const* mapEntry = sMapStore.lookupEntry(mapId);
-#if VERSION_STRING > WotLK
-            std::string mapname = mapEntry ? mapEntry->map_name[0] : "Unknown";
-#else
-            std::string mapname = mapEntry ? mapEntry->map_name[sWorld.getDbcLocaleLanguageId()] : "Unknown";
-#endif
+            std::string mapname = mapEntry ? mapEntry->mapName : "Unknown";
 
             if (!mapEntry || !mapEntry->isInstanceMap())
             {
@@ -12982,7 +12978,7 @@ void Player::resetInstances(uint8_t method, bool isRaid)
         if (method == INSTANCE_RESET_ALL)
         {
             // the "reset all instances" method can only reset normal maps
-            if (entry->map_type == MAP_RAID || diff == InstanceDifficulty::Difficulties::DUNGEON_HEROIC)
+            if (entry->mapType == WDB::Structures::MAP_RAID || diff == InstanceDifficulty::Difficulties::DUNGEON_HEROIC)
             {
                 ++itr;
                 continue;

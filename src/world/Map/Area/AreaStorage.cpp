@@ -115,7 +115,7 @@ namespace MapManagement::AreaManagement
 
         if (areaEntry == nullptr)
         {
-            if (const auto linkedZoneId = worldMap->getBaseMap()->getMapEntry()->linked_zone)
+            if (const auto linkedZoneId = worldMap->getBaseMap()->getMapEntry()->linkedZone)
                 areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(linkedZoneId);
         }
 

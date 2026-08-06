@@ -1070,7 +1070,7 @@ void Group::resetInstances(uint8_t method, bool isRaid, Player* SendMsgTo)
         if (method == INSTANCE_RESET_ALL)
         {
             // the "reset all instances" method can only reset normal maps
-            if (entry->map_type == MAP_RAID || diff == InstanceDifficulty::Difficulties::DUNGEON_HEROIC)
+            if (entry->mapType == WDB::Structures::MAP_RAID || diff == InstanceDifficulty::Difficulties::DUNGEON_HEROIC)
             {
                 ++itr;
                 continue;

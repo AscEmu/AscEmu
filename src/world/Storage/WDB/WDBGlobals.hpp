@@ -265,17 +265,21 @@ namespace WDB
                     if (auto const* raw = rawStore.lookupEntry(i)) {
                         RuntimeEntry entry;
                         mapFields(*raw, entry);
-                        storage[raw->id] = std::move(entry);
+                        if constexpr (requires { raw->id; })
+                        {
+                            storage[raw->id] = std::move(entry);
+                        }
+                        else
+                        {
+                            storage[i] = std::move(entry);
+                        }
                     }
                 }
             }
             else
             {
-                std::ostringstream stream;
-                stream << "WDBStore: File " << filename << " is not supported on expansion "
-                    << expansionName << " (ID: " << expansionId << ").\n";
-                errors.push_back(stream.str());
-                std::cout << stream.str() << "\n";
+                sLogger.debug("WDBStore: File {} is not supported on expansion {} (ID: {}).",
+                              filename, expansionName, expansionId);
             }
         };
 
