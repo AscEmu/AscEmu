@@ -14282,7 +14282,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
     ss << uint32_t(m_talentSpecsCount) << ", " << uint32_t(m_talentActiveSpec) << ", ";
 
     ss << "'";
-    ss << uint32_t(m_specs[SPEC_PRIMARY].getTalentPoints()) << " " << uint32_t(m_specs[SPEC_SECONDARY].getTalentPoints());
+    ss << uint32_t(m_specs[SPEC_PRIMARY].getTalentPoints()) << " " << uint32_t(MAX_SPEC_COUNT > 1 ? m_specs[SPEC_SECONDARY].getTalentPoints() : 0);
     ss << "'" << ", ";
 
 #if VERSION_STRING < Cata
@@ -14921,8 +14921,12 @@ void Player::loadFromDBProc(QueryResultVector& results)
             for (uint8_t i = 0; i < 2; ++i)
                 tps[i] = std::stoi(talentPointsVector[i]);
 
-            m_specs[SPEC_PRIMARY].setTalentPoints(tps[0]);
-            m_specs[SPEC_SECONDARY].setTalentPoints(tps[1]);
+#ifndef FT_DUAL_SPEC
+        getActiveSpec().setTalentPoints(tps[0]);
+#else
+        m_specs[SPEC_PRIMARY].setTalentPoints(tps[0]);
+        m_specs[SPEC_SECONDARY].setTalentPoints(tps[1]);
+#endif
         }
 #if VERSION_STRING < Cata
         setFreeTalentPoints(getActiveSpec().getTalentPoints());

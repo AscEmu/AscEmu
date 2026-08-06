@@ -1615,8 +1615,12 @@ bool ChatCommandHandler::HandleCharSetTalentpointsCommand(const char* args, Worl
     ss >> primary_amount;
     ss >> secondary_amount;
 
-    player_target->m_specs[SPEC_PRIMARY].setTalentPoints(primary_amount);
-    player_target->m_specs[SPEC_SECONDARY].setTalentPoints(secondary_amount);
+#ifndef FT_DUAL_SPEC
+        player_target->getActiveSpec().setTalentPoints(primary_amount);
+#else
+        player_target->m_specs[SPEC_PRIMARY].setTalentPoints(primary_amount);
+        player_target->m_specs[SPEC_SECONDARY].setTalentPoints(secondary_amount);
+#endif
 
     player_target->sendTalentsInfo();
 
