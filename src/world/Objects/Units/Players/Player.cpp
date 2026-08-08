@@ -138,6 +138,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgUpdateWorldState.h"
 #include "Server/Packets/SmsgCancelAutoRepeat.h"
 #include "Server/Packets/SmsgUpdateTalentData.h"
+#include "Server/Packets/SmsgSetActiveMover.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Warden/SpeedDetector.h"
@@ -2907,26 +2908,8 @@ void Player::sendInitialLogonPackets()
     data.writeBits(0, 21);
     getSession()->SendPacket(&data);
 
-    WoWGuid guid = getGuid();
-    data.initialize(SMSG_MOVE_SET_ACTIVE_MOVER, 9);
-    data.writeBit(guid[5]);
-    data.writeBit(guid[1]);
-    data.writeBit(guid[4]);
-    data.writeBit(guid[2]);
-    data.writeBit(guid[3]);
-    data.writeBit(guid[7]);
-    data.writeBit(guid[0]);
-    data.writeBit(guid[6]);
-
-    data.writeByteSeq(guid[4]);
-    data.writeByteSeq(guid[6]);
-    data.writeByteSeq(guid[2]);
-    data.writeByteSeq(guid[0]);
-    data.writeByteSeq(guid[3]);
-    data.writeByteSeq(guid[7]);
-    data.writeByteSeq(guid[5]);
-    data.writeByteSeq(guid[1]);
-    getSession()->SendPacket(&data);
+    SmsgSetActiveMover moverPacket(getGuid());
+    getSession()->sendManagedPacket(moverPacket);
 #endif
 
     sLogger.info("WORLD: Sent initial logon packets for {}.", getName());
@@ -10150,30 +10133,8 @@ void Player::setMover(Unit* target)
     m_session->m_MoverWoWGuid.init(target->getGuid());
     m_controledUnit = target;
 
-#if VERSION_STRING > WotLK
-    WoWGuid guid = target->getGuid();
-
-    WorldPacket data(SMSG_MOVE_SET_ACTIVE_MOVER, 9);
-    data.writeBit(guid[5]);
-    data.writeBit(guid[7]);
-    data.writeBit(guid[3]);
-    data.writeBit(guid[6]);
-    data.writeBit(guid[0]);
-    data.writeBit(guid[4]);
-    data.writeBit(guid[1]);
-    data.writeBit(guid[2]);
-
-    data.writeByteSeq(guid[6]);
-    data.writeByteSeq(guid[2]);
-    data.writeByteSeq(guid[3]);
-    data.writeByteSeq(guid[0]);
-    data.writeByteSeq(guid[5]);
-    data.writeByteSeq(guid[7]);
-    data.writeByteSeq(guid[1]);
-    data.writeByteSeq(guid[4]);
-
-    sendPacket(&data);
-#endif
+    SmsgSetActiveMover moverPacket(target->getGuid());
+    getSession()->sendManagedPacket(moverPacket);
 }
 
 void Player::resetTimeSync()
@@ -13445,25 +13406,8 @@ void Player::resendCreateAndActiveMoverForMoP()
     // MoP: send in order client may expect - verify world first, then mover, then create (mirrors panda-core flow).
     sendLoginVerifyWorldPacket();
 
-    WoWGuid guid = getGuid();
-    WorldPacket data(SMSG_MOVE_SET_ACTIVE_MOVER, 9);
-    data.writeBit(guid[5]);
-    data.writeBit(guid[1]);
-    data.writeBit(guid[4]);
-    data.writeBit(guid[2]);
-    data.writeBit(guid[3]);
-    data.writeBit(guid[7]);
-    data.writeBit(guid[0]);
-    data.writeBit(guid[6]);
-    data.writeByteSeq(guid[4]);
-    data.writeByteSeq(guid[6]);
-    data.writeByteSeq(guid[2]);
-    data.writeByteSeq(guid[0]);
-    data.writeByteSeq(guid[3]);
-    data.writeByteSeq(guid[7]);
-    data.writeByteSeq(guid[5]);
-    data.writeByteSeq(guid[1]);
-    m_session->SendPacket(&data);
+    SmsgSetActiveMover moverPacket(getGuid());
+    getSession()->sendManagedPacket(moverPacket);
 
     ByteBuffer pbuf(10000);
     const uint32_t count = buildCreateUpdateBlockForPlayer(&pbuf, this);
