@@ -63,6 +63,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAccountDataTimes.h"
 #include "Server/Packets/SmsgLogoutCancelAck.h"
 #include "Server/Packets/SmsgMotd.h"
+#include "Server/Packets/SmsgRequestCemeteryListResponse.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Objects/Transporter.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
@@ -1456,40 +1457,47 @@ void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
 {
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_CEMETERY_LIST");
 
-#if VERSION_STRING == Cata
-    auto result = WorldDatabase.query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->getTeam());
-    if (result)
+    struct GraveyardDistance
     {
-        WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE, 8 * result->getRowCount());
-        data.writeBit(false); // unk bit
-        data.flushBits();
-        data.writeBits(result->getRowCount(), 24);
-        data.flushBits();
+        MySQLStructure::Graveyards const* graveyard;
+        float distance;
+    };
 
-        do
-        {
-            Field* field = result->fetch();
-            data << uint32_t(field[0].asUint32());
-        } while (result->nextRow());
+    std::vector<GraveyardDistance> graveyards;
 
-        SendPacket(&data);
-    }
-#else // Mop
-    auto result = WorldDatabase.query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->getTeam());
-    if (result)
+    for (const auto& graveyardStore : *sMySQLStore.getGraveyardsStore())
     {
-        WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE, 8 * result->getRowCount());
-        data.writeBits(result->getRowCount(), 22);
-        data.writeBit(false); // triggered gossip
-        do
-        {
-            Field* field = result->fetch();
-            data << uint32_t(field[0].asUint32());
-        } while (result->nextRow());
+        MySQLStructure::Graveyards const* graveyard =
+            sMySQLStore.getGraveyard(graveyardStore.second.id);
 
-        SendPacket(&data);
+        if (!graveyard || graveyard->mapId != _player->GetMapId())
+            continue;
+
+        if (graveyard->factionId != _player->getTeam() && graveyard->factionId != 3)
+            continue;
+
+        LocationVector graveyardLocation(graveyard->position_x, graveyard->position_y, graveyard->position_z);
+
+        graveyards.push_back({ graveyard, _player->GetPosition().distanceSquare(graveyardLocation) });
     }
-#endif
+
+    std::sort(
+        graveyards.begin(),
+        graveyards.end(),
+        [](const GraveyardDistance& a, const GraveyardDistance& b)
+        {
+            return a.distance < b.distance;
+        }
+    );
+
+    SmsgRequestCemeteryListResponse cemeteryPacket;
+    for (auto nearGraveyards : graveyards)
+    {
+        if (cemeteryPacket.graveyards.size() < 16)
+            cemeteryPacket.graveyards.push_back(nearGraveyards.graveyard->id);
+    }
+
+    sendManagedPacket(cemeteryPacket);
 }
 
 void WorldSession::handleRemoveGlyph([[maybe_unused]] WorldPacket& recvPacket)
