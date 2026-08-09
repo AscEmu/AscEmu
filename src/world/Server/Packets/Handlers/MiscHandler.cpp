@@ -64,6 +64,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLogoutCancelAck.h"
 #include "Server/Packets/SmsgMotd.h"
 #include "Server/Packets/SmsgRequestCemeteryListResponse.h"
+#include "Server/Packets/CmsgObjectUpdateFailed.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Objects/Transporter.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
@@ -1344,100 +1345,17 @@ void WorldSession::handleTimeSyncRespOpcode([[maybe_unused]] WorldPacket& recvPa
 void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
 {
     sLogger.info("WORLD: handleObjectUpdateFailedOpcode ENTERED size={}", static_cast<unsigned>(recvPacket.size()));
-// Zyres: the minimum size is not correct here. if the bits are false there will be no value for sequenz, leading to a minimum size of 2 at least for Mop
-//#if VERSION_STRING >= Cata
-//    // Cata/MoP: 8 bits + 8 bytes for GUID. If packet is smaller (e.g. MoP sends 1–3 bytes),
-//   // treat as "our" object failed; for MoP resend create + SetActiveMover so client can finish loading.
-//   // Don't require isEnteringWorld() — by the time we process the packet it may already be false.
-//    const size_t minSizeForGuid = 9u;
-//    if (recvPacket.size() < minSizeForGuid)
-//    {
-//        Player* target = _player != nullptr ? _player : m_loggingInPlayer;
-//        sLogger.info("WORLD: CMSG_OBJECT_UPDATE_FAILED small packet size {}, _player={}, target={}", static_cast<unsigned>(recvPacket.size()), _player != nullptr ? "set" : "null", target != nullptr ? "set" : "null");
-//#if VERSION_STRING == Mop
-//        if (target != nullptr)
-//        {
-//            // size==2 may be packed GUID (1 byte mask + 1 byte): client reports which object failed.
-//            if (recvPacket.size() >= 2u)
-//            {
-//                uint8_t mask = recvPacket.read<uint8_t>();
-//                uint8_t field = recvPacket.read<uint8_t>();
-//                WoWGuid failedGuid;
-//                failedGuid.init(mask, &field);
-//                if (failedGuid == target->getGuid())
-//                {
-//                    sLogger.info("WORLD: MoP resend create+active mover for {}", target->getName());
-//                    target->resendCreateAndActiveMoverForMoP();
-//                }
-//                else if (Item* item = target->getItemInterface()->GetItemByGUID(failedGuid.getRawGuid()))
-//                {
-//                    ByteBuffer buf(2500);
-//                    uint32_t count = item->buildCreateUpdateBlockForPlayer(&buf, target);
-//                    target->getUpdateMgr().pushCreationData(&buf, count);
-//                    target->processPendingUpdates();
-//                    sLogger.debug("WORLD: MoP resend create for item guid {}", failedGuid.getRawGuid());
-//                }
-//                else
-//                {
-//                    sLogger.debug("WORLD: MoP OBJECT_UPDATE_FAILED size=2 guid {} not player and not found as item, resend player create", failedGuid.getRawGuid());
-//                    target->resendCreateAndActiveMoverForMoP();
-//                }
-//            }
-//            else
-//            {
-//                sLogger.info("WORLD: MoP resend create+active mover for {}", target->getName());
-//                target->resendCreateAndActiveMoverForMoP();
-//            }
-//        }
-//#endif
-//        return;
-//    }
-    WoWGuid guid;
 
-#if VERSION_STRING == Cata
-    guid[6] = recvPacket.readBit();
-    guid[7] = recvPacket.readBit();
-    guid[4] = recvPacket.readBit();
-    guid[0] = recvPacket.readBit();
-    guid[1] = recvPacket.readBit();
-    guid[5] = recvPacket.readBit();
-    guid[3] = recvPacket.readBit();
-    guid[2] = recvPacket.readBit();
+    CmsgObjectUpdateFailed srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
-    recvPacket.readByteSeq(guid[6]);
-    recvPacket.readByteSeq(guid[7]);
-    recvPacket.readByteSeq(guid[2]);
-    recvPacket.readByteSeq(guid[3]);
-    recvPacket.readByteSeq(guid[1]);
-    recvPacket.readByteSeq(guid[4]);
-    recvPacket.readByteSeq(guid[0]);
-    recvPacket.readByteSeq(guid[5]);
-#elif VERSION_STRING == Mop
-    guid[3] = recvPacket.readBit();
-    guid[5] = recvPacket.readBit();
-    guid[6] = recvPacket.readBit();
-    guid[0] = recvPacket.readBit();
-    guid[1] = recvPacket.readBit();
-    guid[2] = recvPacket.readBit();
-    guid[7] = recvPacket.readBit();
-    guid[4] = recvPacket.readBit();
-
-    recvPacket.readByteSeq(guid[0]);
-    recvPacket.readByteSeq(guid[6]);
-    recvPacket.readByteSeq(guid[5]);
-    recvPacket.readByteSeq(guid[7]);
-    recvPacket.readByteSeq(guid[2]);
-    recvPacket.readByteSeq(guid[1]);
-    recvPacket.readByteSeq(guid[3]);
-    recvPacket.readByteSeq(guid[4]);
-#endif
-
-    sLogger.failure("handleObjectUpdateFailedOpcode : Object update failed for playerguid {}", WoWGuid::getGuidLowPartFromUInt64(guid));
+    sLogger.failure("handleObjectUpdateFailedOpcode : Object update failed for playerguid {}", srlPacket.guid.getGuidLowPart());
 
     if (_player == nullptr)
         return;
 
-    if (_player->getGuid() == guid)
+    if (_player->getGuid() == srlPacket.guid)
     {
         // Do not disconnect during world enter: client may send this transiently before full load.
         if (_player->isEnteringWorld())
@@ -1448,9 +1366,6 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
         LogoutPlayer(true);
         return;
     }
-
-    //_player->updateVisibility();
-//#endif
 }
 
 void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
