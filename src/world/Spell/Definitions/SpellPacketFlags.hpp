@@ -25,7 +25,7 @@ enum SpellPacketFlags : uint32_t
     SPELL_PACKET_FLAGS_UNK2000                  = 0x2000,
     SPELL_PACKET_FLAGS_UNK4000                  = 0x4000,
     SPELL_PACKET_FLAGS_UNK8000                  = 0x8000, // seems to make server send extra 2 bytes before SPELL_GO_FLAGS_UNK1 and after SPELL_GO_FLAGS_UNK20000
-#if VERSION_STRING >= WotLK
+// Since WotLK
     SPELL_PACKET_FLAGS_UNK10000                 = 0x10000,
     SPELL_PACKET_FLAGS_UPDATE_MISSILE           = 0x20000,
     SPELL_PACKET_FLAGS_UNK40000                 = 0x40000, // related to cooldowns
@@ -36,13 +36,11 @@ enum SpellPacketFlags : uint32_t
     SPELL_PACKET_FLAGS_UNK800000                = 0x800000,
     SPELL_PACKET_FLAGS_UNK1000000               = 0x1000000,
     SPELL_PACKET_FLAGS_UNK2000000               = 0x2000000,
-    SPELL_PACKET_FLAGS_UNK4000000               = 0x4000000,
+    SPELL_PACKET_FLAGS_IMMUNE                   = 0x4000000,
     SPELL_PACKET_FLAGS_UNK8000000               = 0x8000000,
-#endif
-#if VERSION_STRING >= Cata
+// Since Cata
     SPELL_PACKET_FLAGS_UNK10000000              = 0x10000000,
     SPELL_PACKET_FLAGS_UNK20000000              = 0x20000000,
     SPELL_PACKET_FLAGS_HEALTH_UPDATE            = 0x40000000, // used with healing spells
     SPELL_PACKET_FLAGS_UNK80000000              = 0x80000000,
-#endif
 };

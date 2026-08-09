@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "Spell/SpellCastTargets.hpp"
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
+#include "Spell/Definitions/SpellPacketFlags.hpp"
 #include "Spell/Spell.hpp"
 #include <cstdint>
 
@@ -111,7 +112,7 @@ namespace AscEmu::Packets
 
                 if (m_protocol.expansion >= WoW::Expansion::_WotLK)
                 {
-                    if (castFlags & 0x200000) // SPELL_PACKET_FLAGS_RUNE_UPDATE
+                    if (castFlags & SPELL_PACKET_FLAGS_RUNE_UPDATE) // SPELL_PACKET_FLAGS_RUNE_UPDATE
                     {
                         packet << uint8_t(runeAvailableBefore);
                         packet << uint8_t(currentRunes);
@@ -123,7 +124,7 @@ namespace AscEmu::Packets
                         }
                     }
 
-                    if (castFlags & 0x20000) // SPELL_PACKET_FLAGS_UPDATE_MISSILE
+                    if (castFlags & SPELL_PACKET_FLAGS_UPDATE_MISSILE) // SPELL_PACKET_FLAGS_UPDATE_MISSILE
                     {
                         packet << float(missilePitch);
                         packet << uint32_t(missileTravelTime);
