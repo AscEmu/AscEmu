@@ -2899,11 +2899,6 @@ void Player::sendInitialLogonPackets()
     m_session->sendManagedPacket(worldStatePacket);
 
 #if VERSION_STRING == Mop
-    data.initialize(SMSG_SET_FORCED_REACTIONS, 1 + 4 + 4);
-    data.writeBits(0, 6);
-    data.flushBits();
-    getSession()->SendPacket(&data);
-
     data.initialize(SMSG_SETUP_CURRENCY, 3 + 1 + 4 + 4 + 4 + 4);
     data.writeBits(0, 21);
     getSession()->SendPacket(&data);

@@ -29,16 +29,29 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << mapSize;
-            for (const auto& reactions : reactionMap)
-                packet << reactions.first << static_cast<uint32_t>(reactions.second);
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet << mapSize;
+                for (const auto& reactions : reactionMap)
+                    packet << reactions.first << static_cast<uint32_t>(reactions.second);
 
-            return true;
-        }
+                return true;
+            }
+            else if (m_protocol.isMop())
+            {
+                packet.writeBits(mapSize, 6);
 
-        bool internalDeserialise(WorldPacket& /*packet*/) override
-        {
+                packet.flushBits();
+
+                for (const auto& reactions : reactionMap)
+                    packet << reactions.first << static_cast<uint32_t>(reactions.second);
+
+                return true;
+            }
+
             return false;
         }
+
+        bool internalDeserialise(WorldPacket& /*packet*/) override{ return false; }
     };
 }
