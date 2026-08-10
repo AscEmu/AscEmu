@@ -205,7 +205,7 @@ void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PLAYER_LOGIN {} (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debugOpcode("Received CMSG_PLAYER_LOGIN {} (guidLow)", srlPacket.guid.getGuidLow());
 
     if (sObjectMgr.getPlayer(srlPacket.guid.getGuidLow()) != nullptr || m_loggingInPlayer || _player)
     {

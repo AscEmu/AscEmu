@@ -188,7 +188,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATE_TAXI");
+    sLogger.debugOpcode("Received CMSG_ACTIVATE_TAXI");
 
     Creature* npc = GetPlayer()->getCreatureWhenICanInteract(srlPacket.guid, UNIT_NPC_FLAG_TAXI);
     if (!npc)
@@ -219,7 +219,7 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATE_TAXI_EXPRESS");
+    sLogger.debugOpcode("Received CMSG_ACTIVATE_TAXI_EXPRESS");
 
     Creature* npc = GetPlayer()->getCreatureWhenICanInteract(srlPacket.guid, UNIT_NPC_FLAG_TAXI);
     if (!npc)
@@ -248,7 +248,7 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleMoveSplineDoneOpcode(WorldPacket& recvData)
 {
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WORLD: Received CMSG_MOVE_SPLINE_DONE");
+    sLogger.debugOpcode("WORLD: Received CMSG_MOVE_SPLINE_DONE");
 
     WoWGuid guid;
     recvData >> guid;

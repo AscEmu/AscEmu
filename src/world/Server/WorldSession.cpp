@@ -601,7 +601,7 @@ void WorldSession::nothingToHandle(WorldPacket& recv_data)
 {
     if (!recv_data.isEmpty())
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Opcode {} [{}] (0x{:04X}) received. Apply nothingToHandle handler but size is {}!",
+        sLogger.debugOpcode("Opcode {} [{}] (0x{:04X}) received. Apply nothingToHandle handler but size is {}!",
             sOpcodeTables.getNameForOpcode(recv_data.getOpcode()), sOpcodeTables.getNameForAEVersion(), recv_data.getOpcode(), recv_data.size());
     }
 }

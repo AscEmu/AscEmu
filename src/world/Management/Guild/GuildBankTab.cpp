@@ -152,9 +152,9 @@ void GuildBankTab::setText(std::string const& text)
 void GuildBankTab::sendText(Guild const* guild, WorldSession* session) const
 {
     if (session)
-        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "sendText % s: Tabid: % u, Text : % s", session->GetPlayer()->getName(), static_cast<uint32_t>(mTabId), mText);
+        sLogger.debugOpcode("sendText: Player: {}, TabId: {}, Text: \"{}\"", session->GetPlayer()->getName(), mTabId, mText);
     else
-        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "sendText (Broadcast): Tabid: {}, Text: {}", static_cast<uint32_t>(mTabId), mText);
+        sLogger.debugOpcode("sendText: Broadcast, TabId: {}, Text: \"{}\"", mTabId, mText);
 
     MsgQueryGuildBankText managedPacket(mTabId, mText);
 
