@@ -457,7 +457,7 @@ void GuildMgr::loadGuildXpForLevelFromDB()
 
         if (level >= worldConfig.guild.maxLevel)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `guild_xp_for_level` includes invalid xp definitions for level {} which is higher than the defined levelcap in your config file! <skipped>", level);
+            sLogger.debugDbTables("Table `guild_xp_for_level` includes invalid xp definitions for level {} which is higher than the defined levelcap in your config file! <skipped>", level);
             continue;
         }
 

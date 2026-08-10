@@ -2436,7 +2436,7 @@ void QuestMgr::LoadExtraQuestStuff()
                     else
                     {
                         // if quest has neither valid gameobject, log it.
-                        sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Quest {} has required_mobtype[{}]=={}, it's not a valid GameObject.", qst->id, i, qst->required_mob_or_go[i]);
+                        sLogger.debugDbTables("Quest {} has required_mobtype[{}]=={}, it's not a valid GameObject.", qst->id, i, qst->required_mob_or_go[i]);
                     }
                 }
                 else
@@ -2447,7 +2447,7 @@ void QuestMgr::LoadExtraQuestStuff()
                     else
                     {
                         // if quest has neither valid creature, log it.
-                        sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Quest {} has required_mobtype[{}]=={}, it's not a valid Creature.", qst->id, i, qst->required_mob_or_go[i]);
+                        sLogger.debugDbTables("Quest {} has required_mobtype[{}]=={}, it's not a valid Creature.", qst->id, i, qst->required_mob_or_go[i]);
                     }
                 }
 
@@ -2495,7 +2495,7 @@ void QuestMgr::LoadExtraQuestStuff()
             if (auto qst = sMySQLStore.getQuestProperties(quest))
                 addCreatureQuest(entry, qst, 1);  // 1 = starter
             else
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add starter to npc {} for non-existent quest {} in table creature_quest_starter.", entry, quest);
+                sLogger.debugDbTables("Tried to add starter to npc {} for non-existent quest {} in table creature_quest_starter.", entry, quest);
         } while (pResult->nextRow());
     }
 
@@ -2511,7 +2511,7 @@ void QuestMgr::LoadExtraQuestStuff()
             if (auto qst = sMySQLStore.getQuestProperties(quest))
                 addCreatureQuest(entry, qst, 2); // 2 = finisher
             else
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add finisher to npc {} for non-existent quest {} in table creature_quest_finisher.", entry, quest);
+                sLogger.debugDbTables("Tried to add finisher to npc {} for non-existent quest {} in table creature_quest_finisher.", entry, quest);
         } while (pResult->nextRow());
     }
 
@@ -2527,7 +2527,7 @@ void QuestMgr::LoadExtraQuestStuff()
             if (auto qst = sMySQLStore.getQuestProperties(quest))
                 addGameObjectQuest(entry, qst, 1); // 1 = starter
             else
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add starter to go {} for non-existent quest {} in table gameobject_quest_starter.", entry, quest);
+                sLogger.debugDbTables("Tried to add starter to go {} for non-existent quest {} in table gameobject_quest_starter.", entry, quest);
         } while (pResult->nextRow());
     }
 
@@ -2543,7 +2543,7 @@ void QuestMgr::LoadExtraQuestStuff()
             if (auto qst = sMySQLStore.getQuestProperties(quest))
                 addGameObjectQuest(entry, qst, 2); // 2 = finish
             else
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add finisher to go {} for non-existent quest {} in table gameobject_quest_finisher.", entry, quest);
+                sLogger.debugDbTables("Tried to add finisher to go {} for non-existent quest {} in table gameobject_quest_finisher.", entry, quest);
         } while (pResult->nextRow());
     }
 
@@ -2566,7 +2566,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add association to item {} for non-existent quest {}.", item, quest);
+                sLogger.debugDbTables("Tried to add association to item {} for non-existent quest {}.", item, quest);
             }
             else
             {

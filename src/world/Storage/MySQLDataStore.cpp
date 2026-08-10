@@ -820,7 +820,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Male_DisplayID);
             if (creature_display == nullptr)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table creature_properties includes invalid Male_DisplayID {} for npc entry: {}. Set to 0!", creatureProperties.Male_DisplayID, entry);
+                sLogger.debugDbTables("Table creature_properties includes invalid Male_DisplayID {} for npc entry: {}. Set to 0!", creatureProperties.Male_DisplayID, entry);
                 creatureProperties.Male_DisplayID = 0;
             }
         }
@@ -830,7 +830,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Female_DisplayID);
             if (creature_display == nullptr)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table creature_properties includes invalid Female_DisplayID {} for npc entry: {}. Set to 0!", creatureProperties.Female_DisplayID, entry);
+                sLogger.debugDbTables("Table creature_properties includes invalid Female_DisplayID {} for npc entry: {}. Set to 0!", creatureProperties.Female_DisplayID, entry);
                 creatureProperties.Female_DisplayID = 0;
             }
         }
@@ -840,7 +840,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Male_DisplayID2);
             if (creature_display == nullptr)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table creature_properties includes invalid Male_DisplayID2 {} for npc entry: {}. Set to 0!", creatureProperties.Male_DisplayID2, entry);
+                sLogger.debugDbTables("Table creature_properties includes invalid Male_DisplayID2 {} for npc entry: {}. Set to 0!", creatureProperties.Male_DisplayID2, entry);
                 creatureProperties.Male_DisplayID2 = 0;
             }
         }
@@ -850,7 +850,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(creatureProperties.Female_DisplayID2);
             if (creature_display == nullptr)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table creature_properties includes invalid Female_DisplayID2 {} for npc entry: {}. Set to 0!", creatureProperties.Female_DisplayID2, entry);
+                sLogger.debugDbTables("Table creature_properties includes invalid Female_DisplayID2 {} for npc entry: {}. Set to 0!", creatureProperties.Female_DisplayID2, entry);
                 creatureProperties.Female_DisplayID2 = 0;
             }
         }
@@ -881,7 +881,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         }
         else
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_properties` MinHealth = 0 is not a valid value! Default set to 1 for entry: {}.", entry);
+            sLogger.debugDbTables("Table `creature_properties` MinHealth = 0 is not a valid value! Default set to 1 for entry: {}.", entry);
             creatureProperties.MinHealth = 1;
         }
 
@@ -891,7 +891,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         }
         else
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_properties` MaxHealth = 0 is not a valid value! Default set to 1 for entry: {}.", entry);
+            sLogger.debugDbTables("Table `creature_properties` MaxHealth = 0 is not a valid value! Default set to 1 for entry: {}.", entry);
             creatureProperties.MaxHealth = 1;
         }
 
@@ -905,7 +905,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         }
         else
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_properties` attacktime = 0 is not a valid value! Default set to 2000 for entry: {}.", entry);
+            sLogger.debugDbTables("Table `creature_properties` attacktime = 0 is not a valid value! Default set to 2000 for entry: {}.", entry);
             creatureProperties.AttackTime = 2000;
         }
 
@@ -915,7 +915,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         }
         else
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_properties` AttackType: {} is not a valid value! Default set to 0 for entry: {}.", fields[10].asUint32(), entry);
+            sLogger.debugDbTables("Table `creature_properties` AttackType: {} is not a valid value! Default set to 0 for entry: {}.", fields[10].asUint32(), entry);
             creatureProperties.attackSchool = SCHOOL_NORMAL;
         }
 
@@ -925,7 +925,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         }
         else
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_properties` mindamage = 0 is not a valid value! Default set to 5 for entry: {}.", entry);
+            sLogger.debugDbTables("Table `creature_properties` mindamage = 0 is not a valid value! Default set to 5 for entry: {}.", entry);
             creatureProperties.MinDamage = 5;
         }
 
@@ -935,7 +935,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         }
         else
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_properties` maxdamage = 0 or is lower than mindamage! Default set to mindamage + 5 for entry: {}.", entry);
+            sLogger.debugDbTables("Table `creature_properties` maxdamage = 0 or is lower than mindamage! Default set to mindamage + 5 for entry: {}.", entry);
             creatureProperties.MaxDamage = creatureProperties.MinDamage + 5;
         }
 
@@ -970,7 +970,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                 if (sp == nullptr)
                 {
                     uint8_t spell_number = i;
-                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "spell {} in table creature_properties column spell{} for creature entry: {} is not a valid spell!", creatureProperties.AISpells[i], spell_number + 1, entry);
+                    sLogger.debugDbTables("spell {} in table creature_properties column spell{} for creature entry: {} is not a valid spell!", creatureProperties.AISpells[i], spell_number + 1, entry);
                     continue;
                 }
                 else
@@ -1452,7 +1452,7 @@ void MySQLDataStore::loadQuestPropertiesTable()
                 {
                     if (!getCreatureProperties(questInfo.required_mob_or_go[i]))
                     {
-                        sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Quest {} has `ReqCreatureOrGOId{}` = {} but creature with entry {} does not exist in creature_properties table!",
+                        sLogger.debugDbTables("Quest {} has `ReqCreatureOrGOId{}` = {} but creature with entry {} does not exist in creature_properties table!",
                             entry, i, questInfo.required_mob_or_go[i], questInfo.required_mob_or_go[i]);
                     }
                 }
@@ -1460,7 +1460,7 @@ void MySQLDataStore::loadQuestPropertiesTable()
                 {
                     if (!getGameObjectProperties(-questInfo.required_mob_or_go[i]))
                     {
-                        sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Quest {} has `ReqCreatureOrGOId{}` = {} but gameobject {} does not exist in gameobject_properties table!",
+                        sLogger.debugDbTables("Quest {} has `ReqCreatureOrGOId{}` = {} but gameobject {} does not exist in gameobject_properties table!",
                             entry, i, questInfo.required_mob_or_go[i], -questInfo.required_mob_or_go[i]);
                     }
                 }
@@ -1596,7 +1596,7 @@ void MySQLDataStore::loadGameObjectQuestItemBindingTable()
             GameObjectProperties const* gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
             if (gameobject_properties == nullptr)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `gameobject_quest_item_binding` includes data for invalid gameobject_properties entry: {}. Skipped!", entry);
+                sLogger.debugDbTables("Table `gameobject_quest_item_binding` includes data for invalid gameobject_properties entry: {}. Skipped!", entry);
                 continue;
             }
 
@@ -1604,7 +1604,7 @@ void MySQLDataStore::loadGameObjectQuestItemBindingTable()
             QuestProperties const* quest = sMySQLStore.getQuestProperties(quest_entry);
             if (quest == nullptr)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `gameobject_quest_item_binding` includes data for invalid quest_properties : {}. Skipped!", quest_entry);
+                sLogger.debugDbTables("Table `gameobject_quest_item_binding` includes data for invalid quest_properties : {}. Skipped!", quest_entry);
                 continue;
             }
             else
@@ -1638,7 +1638,7 @@ void MySQLDataStore::loadGameObjectQuestPickupBindingTable()
             GameObjectProperties const* gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
             if (gameobject_properties == nullptr)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `gameobject_quest_pickup_binding` includes data for invalid gameobject_properties entry: {}. Skipped!", entry);
+                sLogger.debugDbTables("Table `gameobject_quest_pickup_binding` includes data for invalid gameobject_properties entry: {}. Skipped!", entry);
                 continue;
             }
 
@@ -1646,7 +1646,7 @@ void MySQLDataStore::loadGameObjectQuestPickupBindingTable()
             QuestProperties const* quest = sMySQLStore.getQuestProperties(quest_entry);
             if (quest == nullptr)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `gameobject_quest_pickup_binding` includes data for invalid quest_properties : {}. Skipped!", quest_entry);
+                sLogger.debugDbTables("Table `gameobject_quest_pickup_binding` includes data for invalid quest_properties : {}. Skipped!", quest_entry);
                 continue;
             }
             else
@@ -2401,7 +2401,7 @@ void MySQLDataStore::loadSpellClickSpellsTable()
         CreatureProperties const* cInfo = sMySQLStore.getCreatureProperties(npc_entry);
         if (!cInfo)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table npc_spellclick_spells references unknown creature_properties {}. Skipping entry.", npc_entry);
+            sLogger.debugDbTables("Table npc_spellclick_spells references unknown creature_properties {}. Skipping entry.", npc_entry);
             continue;
         }
 
@@ -2409,14 +2409,14 @@ void MySQLDataStore::loadSpellClickSpellsTable()
         SpellInfo const* spellinfo = sSpellMgr.getSpellInfo(spellid);
         if (!spellinfo)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table npc_spellclick_spells creature: {} references unknown spellid {}. Skipping entry.", npc_entry, spellid);
+            sLogger.debugDbTables("Table npc_spellclick_spells creature: {} references unknown spellid {}. Skipping entry.", npc_entry, spellid);
             continue;
         }
 
         uint8_t userType = fields[3].asUint8();
         if (userType >= SPELL_CLICK_USER_MAX)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table npc_spellclick_spells creature: {} references unknown user type {}. Skipping entry.", npc_entry, uint32_t(userType));
+            sLogger.debugDbTables("Table npc_spellclick_spells creature: {} references unknown user type {}. Skipping entry.", npc_entry, uint32_t(userType));
             continue;
         }
         uint8_t castFlags = fields[2].asUint8();
@@ -2612,19 +2612,19 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
         if (sMySQLStore.getItemProperties(itemId) || sItemStore.lookupEntry(itemId))
             const_cast<CreatureProperties*>(creature_properties)->itemslot_1 = itemId;
         else
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_1 {} for creature {}", itemId, entry);
+            sLogger.debugDbTables("MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_1 {} for creature {}", itemId, entry);
 
         itemId = fields[2].asUint32();
         if (sMySQLStore.getItemProperties(itemId) || sItemStore.lookupEntry(itemId))
             const_cast<CreatureProperties*>(creature_properties)->itemslot_2 = itemId;
         else
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_2 {} for creature {}", itemId, entry);
+            sLogger.debugDbTables("MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_2 {} for creature {}", itemId, entry);
 
         itemId = fields[3].asUint32();
         if (sMySQLStore.getItemProperties(itemId) || sItemStore.lookupEntry(itemId))
             const_cast<CreatureProperties*>(creature_properties)->itemslot_3 = itemId;
         else
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_3 {} for creature {}", itemId, entry);
+            sLogger.debugDbTables("MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_3 {} for creature {}", itemId, entry);
 
         ++initial_equipment_count;
 
@@ -2986,7 +2986,7 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
             {
                 if (info->level_stats[level].strength == 0)
                 {
-                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Race {} Class {} Level {} does not have stats data. Using stats data of level {}.", _race, _class, level + 1, level);
+                    sLogger.debugDbTables("Race {} Class {} Level {} does not have stats data. Using stats data of level {}.", _race, _class, level + 1, level);
                     info->level_stats[level] = info->level_stats[level - 1U];
                 }
             }
@@ -3124,7 +3124,7 @@ void MySQLDataStore::loadPlayerXpToLevelTable()
 
         if (current_level >= worldConfig.player.playerLevelCap)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `player_xp_for_level` includes invalid xp definitions for level {} which is higher than the defined levelcap in your config file! <skipped>", current_level);
+            sLogger.debugDbTables("Table `player_xp_for_level` includes invalid xp definitions for level {} which is higher than the defined levelcap in your config file! <skipped>", current_level);
             continue;
         }
 
@@ -3175,7 +3175,7 @@ void MySQLDataStore::loadSpellOverrideTable()
                 SpellInfo const* spell = sSpellMgr.getSpellInfo(spellid);
                 if (spell == nullptr)
                 {
-                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `spelloverride` includes invalid spellId {} for overrideId {}! <skipped>", spellid, distinct_override_id);
+                    sLogger.debugDbTables("Table `spelloverride` includes invalid spellId {} for overrideId {}! <skipped>", spellid, distinct_override_id);
                     continue;
                 }
 
@@ -3215,7 +3215,7 @@ void MySQLDataStore::loadNpcGossipTextIdTable()
         auto creature_properties = sMySQLStore.getCreatureProperties(entry);
         if (creature_properties == nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `npc_gossip_properties` includes invalid creatureid {}! <skipped>", entry);
+            sLogger.debugDbTables("Table `npc_gossip_properties` includes invalid creatureid {}! <skipped>", entry);
             continue;
         }
 
@@ -3371,20 +3371,20 @@ void MySQLDataStore::loadAreaTriggerTable()
         WDB::Structures::AreaTriggerEntry const* area_trigger_entry = sAreaTriggerStore.lookupEntry(areaTrigger.id);
         if (!area_trigger_entry)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "AreaTrigger : Area trigger (ID:{}) does not exist in `AreaTrigger.dbc`.", areaTrigger.id);
+            sLogger.debugDbTables("AreaTrigger : Area trigger (ID:{}) does not exist in `AreaTrigger.dbc`.", areaTrigger.id);
             continue;
         }
 
         WDB::Structures::MapEntry const* map_entry = sMapStore.lookupEntry(areaTrigger.mapId);
         if (!map_entry)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "AreaTrigger : Area trigger (ID:{}) target map (ID: {}) does not exist in `Map.dbc`.", areaTrigger.id, areaTrigger.mapId);
+            sLogger.debugDbTables("AreaTrigger : Area trigger (ID:{}) target map (ID: {}) does not exist in `Map.dbc`.", areaTrigger.id, areaTrigger.mapId);
             continue;
         }
 
         if (areaTrigger.x == 0 && areaTrigger.y == 0 && areaTrigger.z == 0 && (areaTrigger.type == ATTYPE_INSTANCE || areaTrigger.type == ATTYPE_TELEPORT))    // check target coordinates only for teleport triggers
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "AreaTrigger : Area trigger (ID:{}) target coordinates not provided.", areaTrigger.id);
+            sLogger.debugDbTables("AreaTrigger : Area trigger (ID:{}) target coordinates not provided.", areaTrigger.id);
             continue;
         }
 
@@ -4573,7 +4573,7 @@ void MySQLDataStore::loadCreatureSpawns()
                 auto creature_properties = sMySQLStore.getCreatureProperties(creature_entry);
                 if (creature_properties == nullptr)
                 {
-                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Creature spawn ID: {} has invalid entry: {} which is not in creature_properties table! Skipped loading.", cspawn->id, creature_entry);
+                    sLogger.debugDbTables("Creature spawn ID: {} has invalid entry: {} which is not in creature_properties table! Skipped loading.", cspawn->id, creature_entry);
                     delete cspawn;
                     continue;
                 }
@@ -4591,7 +4591,7 @@ void MySQLDataStore::loadCreatureSpawns()
                     const auto* creature_display = sObjectMgr.getCreatureDisplayInfoData(cspawn->displayid);
                     if (!creature_display)
                     {
-                        sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table creature_spawns includes invalid displayid {} for npc entry: {}, spawn_id: {}. Set to a random modelid!", cspawn->displayid, cspawn->entry, cspawn->id);
+                        sLogger.debugDbTables("Table creature_spawns includes invalid displayid {} for npc entry: {}, spawn_id: {}. Set to a random modelid!", cspawn->displayid, cspawn->entry, cspawn->id);
                         cspawn->displayid = creature_properties->getRandomModelId();
                     }
                 }
@@ -4670,7 +4670,7 @@ void MySQLDataStore::loadGameobjectSpawns()
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(gameobject_entry);
                 if (gameobject_info == nullptr)
                 {
-                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Gameobject spawn ID: {} has invalid entry: {} which is not in gameobject_properties table! Skipped loading.", spawnId, gameobject_entry);
+                    sLogger.debugDbTables("Gameobject spawn ID: {} has invalid entry: {} which is not in gameobject_properties table! Skipped loading.", spawnId, gameobject_entry);
                     continue;
                 }
 
@@ -4756,19 +4756,19 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
 
         if (getCreatureProperties(creature_entry) == nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid creature entry {} <skipped>", creature_entry);
+            sLogger.debugDbTables("Table `creature_ai_scripts` includes invalid creature entry {} <skipped>", creature_entry);
             continue;
         }
 
         if (spellId != 0 && sSpellMgr.getSpellInfo(spellId) == nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid spellId for creature entry {} <skipped>", spellId, creature_entry);
+            sLogger.debugDbTables("Table `creature_ai_scripts` includes invalid spellId for creature entry {} <skipped>", spellId, creature_entry);
             continue;
         }
 
         if (textId != 0 && sMySQLStore.getNpcScriptText(textId) == nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid textId for creature entry {} <skipped>", textId, creature_entry);
+            sLogger.debugDbTables("Table `creature_ai_scripts` includes invalid textId for creature entry {} <skipped>", textId, creature_entry);
             continue;
         }
 
@@ -4903,7 +4903,7 @@ void MySQLDataStore::loadCreatureGroupSpawns()
 
                     else if (groupTemplate.mapId != creatureSpawn->mapId && !(groupTemplate.groupFlags & SPAWNGROUP_FLAG_SYSTEM))
                     {
-                        sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Spawn group {} has map ID {}, but spawn ({}) has map id {} - spawn NOT added to group!", groupId, groupTemplate.mapId, spawnId, creatureSpawn->mapId);
+                        sLogger.debugDbTables("Spawn group {} has map ID {}, but spawn ({}) has map id {} - spawn NOT added to group!", groupId, groupTemplate.mapId, spawnId, creatureSpawn->mapId);
                         continue;
                     }
 
@@ -4917,7 +4917,7 @@ void MySQLDataStore::loadCreatureGroupSpawns()
 
         if (!data)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Spawn data with ID ({}) not found, but is listed as a member of spawn group {}!", spawnId, groupId);
+            sLogger.debugDbTables("Spawn data with ID ({}) not found, but is listed as a member of spawn group {}!", spawnId, groupId);
             continue;
         }
     } while (result->nextRow());
