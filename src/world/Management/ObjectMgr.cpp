@@ -638,7 +638,7 @@ void ObjectMgr::loadVendors()
             {
                 const auto item_extended_cost = sItemExtendedCostStore.lookupEntry(fields[5].asUint32());
                 if (item_extended_cost == nullptr)
-                    sLogger.debugDbTables("LoadVendors : Extendedcost for item {} references nonexistent EC {}", fields[1].asUint32(), fields[5].asUint32());
+                    sLogger.debugDbTables("LoadVendors : Extendedcost for item {} references nonexistent EC {}.", fields[1].asUint32(), fields[5].asUint32());
                 else
                     itm.extended_cost = item_extended_cost;
             }
@@ -704,7 +704,7 @@ void ObjectMgr::loadAchievementRewards()
 
         if (sAchievementStore.lookupEntry(entry) == nullptr)
         {
-            sLogger.debugDbTables("ObjectMgr : Achievement reward entry {} has wrong achievement, ignore", entry);
+            sLogger.debugDbTables("ObjectMgr : Achievement reward entry {} has wrong achievement, ignore.", entry);
             continue;
         }
 
@@ -729,7 +729,7 @@ void ObjectMgr::loadAchievementRewards()
             if (iter.second.gender == GENDER_NONE || reward.gender == GENDER_NONE)
             {
                 dup = true;
-                sLogger.debugDbTables("ObjectMgr : Achievement reward {} must have single GENDER_NONE ({}), ignore duplicate case", entry, GENDER_NONE);
+                sLogger.debugDbTables("ObjectMgr : Achievement reward {} must have single GENDER_NONE ({}), ignore duplicate case.", entry, GENDER_NONE);
                 break;
             }
         }
@@ -755,7 +755,7 @@ void ObjectMgr::loadAchievementRewards()
 
             if (reward.subject.empty() || reward.text.empty())
             {
-                sLogger.debugDbTables("ObjectMgr : achievement_reward {} has invalid mail text data (subject, text), ignored", entry);
+                sLogger.debugDbTables("ObjectMgr : achievement_reward {} has invalid mail text data (subject, text), ignored.", entry);
                 continue;
             }
         }
@@ -764,26 +764,26 @@ void ObjectMgr::loadAchievementRewards()
         {
             if (sMySQLStore.getItemProperties(reward.itemId) == nullptr)
             {
-                sLogger.debugDbTables("ObjectMgr : achievement_reward {} has invalid item id {}, ignore", entry, reward.itemId);
+                sLogger.debugDbTables("ObjectMgr : achievement_reward {} has invalid item id {}, ignore.", entry, reward.itemId);
                 continue;
             }
 
             if (reward.sender == 0)
             {
-                sLogger.debugDbTables("ObjectMgr : achievement_reward {} has item id {} but has no sender, ignore", entry, reward.itemId);
+                sLogger.debugDbTables("ObjectMgr : achievement_reward {} has item id {} but has no sender, ignore.", entry, reward.itemId);
                 continue;
             }
         }
 
         if (reward.titel_A != 0 && sCharTitlesStore.lookupEntry(reward.titel_A) == nullptr)
         {
-            sLogger.debugDbTables("ObjectMgr : achievement_reward {} has invalid title id ({}) in `title_A`, ignore", entry, reward.titel_A);
+            sLogger.debugDbTables("ObjectMgr : achievement_reward {} has invalid title id ({}) in `title_A`, ignore.", entry, reward.titel_A);
             continue;
         }
 
         if (reward.titel_H != 0 && sCharTitlesStore.lookupEntry(reward.titel_H) == nullptr)
         {
-            sLogger.debugDbTables("ObjectMgr : achievement_reward {} has invalid title id ({}) in `title_H`, ignore", entry, reward.titel_H);
+            sLogger.debugDbTables("ObjectMgr : achievement_reward {} has invalid title id ({}) in `title_H`, ignore.", entry, reward.titel_H);
             continue;
         }
 

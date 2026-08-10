@@ -18,25 +18,25 @@ using namespace AscEmu::Packets;
 void WorldSession::handleCalendarGetCalendar(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarGetCalendar Not handled");
+    sLogger.debugOpcode("HandleCalendarGetCalendar Not handled.");
 
     /* Get all events for the player */
     uint32_t guid = static_cast<uint32_t>(_player->getGuid());
-    sLogger.debugOpcode("HandleCalendarGetCalendar CMSG_CALENDAR_GET_CALENDAR for guid {}", guid);
+    sLogger.debugOpcode("HandleCalendarGetCalendar CMSG_CALENDAR_GET_CALENDAR for guid {}.", guid);
 #endif
 }
 
 void WorldSession::handleCalendarComplain(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarComplain Not handled");
+    sLogger.debugOpcode("HandleCalendarComplain Not handled.");
 #endif
 }
 
 void WorldSession::handleCalendarGetNumPending(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarGetNumPending Not handled");
+    sLogger.debugOpcode("HandleCalendarGetNumPending Not handled.");
 
     SmsgCalendarSendNumPending managedPacket(0);
     sendManagedPacket(managedPacket);
@@ -47,7 +47,7 @@ void WorldSession::handleCalendarAddEvent([[maybe_unused]] WorldPacket& recvPack
 {
 #if VERSION_STRING > TBC
     // Create an Event and save it to char db 
-    sLogger.debugOpcode("HandleCalendarAddEvent Not handled");
+    sLogger.debugOpcode("HandleCalendarAddEvent Not handled.");
 
     uint32_t guid = static_cast<uint32_t>(_player->getGuid());
 
@@ -72,7 +72,7 @@ void WorldSession::handleCalendarAddEvent([[maybe_unused]] WorldPacket& recvPack
     recvPacket >> flags;
 
     // \todo save it to db
-    sLogger.debugOpcode("HandleCalendarAddEvent Playerguid: {} sends Calendarevent: Title: {}, Description: {}, Type: {}, Repeatable: {}, maxInvites: {}, dungeonId: {}, PackedTime: {}, unkPackedTime: {}, Flags: {},",
+    sLogger.debugOpcode("HandleCalendarAddEvent Playerguid: {} sends Calendarevent: Title: {}, Description: {}, Type: {}, Repeatable: {}, maxInvites: {}, dungeonId: {}, PackedTime: {}, unkPackedTime: {}, Flags: {}.",
         guid, title, description, type, repeatable, maxInvites, dungeonId, eventPackedTime, unkPackedTime, flags);
 #endif
 }
@@ -80,84 +80,84 @@ void WorldSession::handleCalendarAddEvent([[maybe_unused]] WorldPacket& recvPack
 void WorldSession::handleCalendarGetEvent(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarGetEvent Not handled");
+    sLogger.debugOpcode("HandleCalendarGetEvent Not handled.");
 #endif
 }
 
 void WorldSession::handleCalendarGuildFilter(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarGuildFilter Not handled");
+    sLogger.debugOpcode("HandleCalendarGuildFilter Not handled.");
 #endif
 }
 
 void WorldSession::handleCalendarArenaTeam(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarArenaTeam Not handled");
+    sLogger.debugOpcode("HandleCalendarArenaTeam Not handled.");
 #endif
 }
 
 void WorldSession::handleCalendarUpdateEvent(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarUpdateEvent Not handled");
+    sLogger.debugOpcode("HandleCalendarUpdateEvent Not handled.");
 #endif
 }
 
 void WorldSession::handleCalendarRemoveEvent(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarRemoveEvent Not handled");
+    sLogger.debugOpcode("HandleCalendarRemoveEvent Not handled.");
 #endif
 }
 
 void WorldSession::handleCalendarCopyEvent(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarCopyEvent Not handled");
+    sLogger.debugOpcode("HandleCalendarCopyEvent Not handled.");
 #endif
 }
 
 void WorldSession::handleCalendarEventInvite(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarEventInvite Not handled");
+    sLogger.debugOpcode("HandleCalendarEventInvite Not handled.");
 #endif
 }
 
 void WorldSession::handleCalendarEventRsvp(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarEventRsvp Not handled");
+    sLogger.debugOpcode("HandleCalendarEventRsvp Not handled.");
 #endif
 }
 
 void WorldSession::handleCalendarEventRemoveInvite(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarEventRemoveInvite Not handled");
+    sLogger.debugOpcode("HandleCalendarEventRemoveInvite Not handled.");
 #endif
 }
 
 void WorldSession::handleCalendarEventStatus(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarEventStatus Not handled");
+    sLogger.debugOpcode("HandleCalendarEventStatus Not handled.");
 #endif
 }
 
 void WorldSession::handleCalendarEventModeratorStatus(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarEventModeratorStatus Not handled");
+    sLogger.debugOpcode("HandleCalendarEventModeratorStatus Not handled.");
 #endif
 }
 
 void WorldSession::sendCalendarRaidLockout([[maybe_unused]] InstanceSaved const* save, [[maybe_unused]] bool add)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("SMSG_CALENDAR_RAID_LOCKOUT_ADDED/REMOVED");
+    sLogger.debugOpcode("SMSG_CALENDAR_RAID_LOCKOUT_ADDED/REMOVED.");
     const auto now = Util::getTimeNow();
     time_t currTime = now;
 
@@ -172,7 +172,7 @@ void WorldSession::sendCalendarRaidLockoutUpdated([[maybe_unused]] InstanceSaved
     if (!save)
         return;
 
-    sLogger.debugOpcode("SMSG_CALENDAR_RAID_LOCKOUT_UPDATED [{}] Map: {}, Difficulty {}", _player->getGuid(), save->getMapId(), save->getDifficulty());
+    sLogger.debugOpcode("SMSG_CALENDAR_RAID_LOCKOUT_UPDATED [{}] Map: {}, Difficulty {}.", _player->getGuid(), save->getMapId(), save->getDifficulty());
 
     const auto now = Util::getTimeNow();
     time_t currTime = now;

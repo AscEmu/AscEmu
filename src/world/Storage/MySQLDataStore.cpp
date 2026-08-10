@@ -2612,19 +2612,19 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
         if (sMySQLStore.getItemProperties(itemId) || sItemStore.lookupEntry(itemId))
             const_cast<CreatureProperties*>(creature_properties)->itemslot_1 = itemId;
         else
-            sLogger.debugDbTables("MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_1 {} for creature {}", itemId, entry);
+            sLogger.debugDbTables("MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_1 {} for creature {}.", itemId, entry);
 
         itemId = fields[2].asUint32();
         if (sMySQLStore.getItemProperties(itemId) || sItemStore.lookupEntry(itemId))
             const_cast<CreatureProperties*>(creature_properties)->itemslot_2 = itemId;
         else
-            sLogger.debugDbTables("MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_2 {} for creature {}", itemId, entry);
+            sLogger.debugDbTables("MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_2 {} for creature {}.", itemId, entry);
 
         itemId = fields[3].asUint32();
         if (sMySQLStore.getItemProperties(itemId) || sItemStore.lookupEntry(itemId))
             const_cast<CreatureProperties*>(creature_properties)->itemslot_3 = itemId;
         else
-            sLogger.debugDbTables("MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_3 {} for creature {}", itemId, entry);
+            sLogger.debugDbTables("MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_3 {} for creature {}.", itemId, entry);
 
         ++initial_equipment_count;
 

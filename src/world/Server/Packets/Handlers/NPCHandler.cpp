@@ -58,7 +58,7 @@ void WorldSession::handleTabardVendorActivateOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_TABARDVENDOR_ACTIVATE: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugOpcode("Received CMSG_TABARDVENDOR_ACTIVATE: {} (guidLowPart).", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
@@ -84,7 +84,7 @@ void WorldSession::handleBankerActivateOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_BANKER_ACTIVATE: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugOpcode("Received CMSG_BANKER_ACTIVATE: {} (guidLowPart).", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
@@ -110,7 +110,7 @@ void WorldSession::handleAuctionHelloOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_AUCTION_HELLO: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugOpcode("Received CMSG_AUCTION_HELLO: {} (guidLowPart).", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
@@ -146,7 +146,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise((recvPacket)))
         return;
 
-    sLogger.debugOpcode("Received CMSG_TRAINER_BUY_SPELL: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugOpcode("Received CMSG_TRAINER_BUY_SPELL: {} (guidLowPart).", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->getWorldMapCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
@@ -216,7 +216,7 @@ void WorldSession::handleCharterShowListOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_CHARTER_SHOW_LIST: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugOpcode("Received CMSG_CHARTER_SHOW_LIST: {} (guidLowPart).", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
@@ -241,7 +241,7 @@ void WorldSession::handleGossipHelloOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_GOSSIP_HELLO: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugOpcode("Received CMSG_GOSSIP_HELLO: {} (guidLowPart).", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature != nullptr)
@@ -267,7 +267,7 @@ void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_GOSSIP_SELECT_OPTION: {} (gossipId), {} (option), {} (guidLow)",
+    sLogger.debugOpcode("Received CMSG_GOSSIP_SELECT_OPTION: {} (gossipId), {} (option), {} (guidLow).",
         srlPacket.gossip_id, srlPacket.option, srlPacket.guid.getGuidLow());
 
 
@@ -319,7 +319,7 @@ void WorldSession::handleBinderActivateOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_BINDER_ACTIVATE: {} (guidLowPart)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugOpcode("Received CMSG_BINDER_ACTIVATE: {} (guidLowPart).", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr)
@@ -665,7 +665,7 @@ void WorldSession::handleBuyBankSlotOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_BUY_BANK_SLOT: {} (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debugOpcode("Received CMSG_BUY_BANK_SLOT: {} (guidLow).", srlPacket.guid.getGuidLow());
 
     const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr || !creature->isBanker())

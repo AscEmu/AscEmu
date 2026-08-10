@@ -146,7 +146,7 @@ void Transporter::Update(unsigned long time_passed)
     uint32_t timer = m_goValue.PathProgress % getTransportPeriod();
     bool justStopped = false;
 
-    //sLogger.debug("Transporter: current node {} and pathprogress {} \n", _currentFrame->Index, GetTimer());
+    //sLogger.debug("Transporter: current node {} and pathprogress {}.", _currentFrame->Index, GetTimer());
 
     for (;;)
     {
@@ -399,7 +399,7 @@ void Transporter::LoadStaticPassengers()
     if (GetGameObjectProperties()->mo_transport.map_id == 0)
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "TransportHandler : Start populating transport {} ", getEntry());
+    sLogger.debugMap("TransportHandler : Start populating transport {}.", getEntry());
     {
         for (auto creature_spawn : sMySQLStore._creatureSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
         {
@@ -730,7 +730,7 @@ void Transporter::DoEventIfAny(KeyFrame const& node, bool departure)
 {
     if (uint32_t eventid = departure ? node.Node.DepartureEventID : node.Node.ArrivalEventID)
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Taxi {} event {}", departure ? "departure" : "arrival", eventid);
+        sLogger.debugMap("Taxi {} event {}.", departure ? "departure" : "arrival", eventid);
 
         // Use MapScript Interface to Handle these if not handle it here
         if (getWorldMap() && getWorldMap()->getScript())
