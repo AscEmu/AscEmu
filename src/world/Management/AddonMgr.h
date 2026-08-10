@@ -135,7 +135,6 @@ public:
 
     void SaveAddon(AddonEntry const& addon);
 
-public:
     SavedAddon const* getAddonInfoForAddonName(const std::string& name);
     BannedAddonList const* getBannedAddonsList();
 

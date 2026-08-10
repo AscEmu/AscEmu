@@ -41,7 +41,6 @@ class PatchJob
     uint8_t* m_dataPointer;
 
     public:
-
         PatchJob(Patch* patch, AuthSocket* client, uint32_t skip) : m_patchToSend(patch), m_client(client), m_bytesSent(skip), m_bytesLeft(patch->FileSize - skip), m_dataPointer(patch->Data.get() + skip) {}
         inline AuthSocket* GetClient() { return m_client; }
         bool Update();

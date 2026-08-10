@@ -4722,7 +4722,7 @@ void Aura::SpellAuraIncreaseHealingByAttribute([[maybe_unused]] AuraEffectModifi
         stat = static_cast<uint8_t>(aurEff->getEffectMiscValue());
     else
     {
-        sLogger.failure("Aura::SpellAuraIncreaseHealingByAttribute::Unknown spell attribute type {} in spell {}.\n", aurEff->getEffectMiscValue(), getSpellId());
+        sLogger.failure("Aura::SpellAuraIncreaseHealingByAttribute::Unknown spell attribute type {} in spell {}.", aurEff->getEffectMiscValue(), getSpellId());
         return;
     }
 

@@ -353,13 +353,10 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
 
     std::stringstream sstext;
     sstext << "Key: ";
-    char buf[3];
     for (int i = 0; i < 20; ++i)
-    {
-        snprintf(buf, 3, "%.2X", key[i]);
-        sstext << buf;
-    }
-    //sLogger.info(sstext); FIX fmt
+        sstext << fmt::format("{:02X}", key[i]);
+
+    sLogger.info("{}", sstext.str());
 
     _rwCrypto.setup(key, 20);
     _sendCrypto.setup(key, 20);

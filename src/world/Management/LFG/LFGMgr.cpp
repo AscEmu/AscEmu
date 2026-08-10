@@ -95,7 +95,7 @@ void LfgMgr::LoadRewards()
     auto result = WorldDatabase.query("SELECT dungeon_id, max_level, quest_id_1, money_var_1, xp_var_1, quest_id_2, money_var_2, xp_var_2 FROM lfg_dungeon_rewards ORDER BY dungeon_id, max_level ASC");
     if (result == nullptr)
     {
-        sLogger.failure("Loaded 0 lfg dungeon rewards.DB table `lfg_dungeon_rewards` is empty!\n");
+        sLogger.failure("Loaded 0 LFG dungeon rewards. Table `lfg_dungeon_rewards` is empty!");
         return;
     }
 

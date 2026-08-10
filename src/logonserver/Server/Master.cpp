@@ -347,7 +347,7 @@ bool MasterLogon::StartDb()
                 errorMessage += "    Name\r\n";
         }
 
-        //sLogger.fatal(errorMessage); FIX fmt
+        sLogger.fatal("{}", errorMessage);
         return false;
     }
 

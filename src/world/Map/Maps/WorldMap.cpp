@@ -665,7 +665,7 @@ void WorldMap::PushObject(Object* obj)
             }
             else
             {
-                sLogger.fatal("MapCell for x f% and y f% seems to be invalid!", x, y);
+                sLogger.fatal("MapCell for x {} and y {} seems to be invalid!", x, y);
                 return;
             }
         }
@@ -2143,7 +2143,7 @@ void WorldMap::loadRespawnTimes()
         }
         else
         {
-            sLogger.debug("Loading saved respawn time of %" PRIu64 " for spawnid ({},{}) - invalid spawn type, ignoring", respawnTime, uint32_t(type), spawnId);
+            sLogger.debug("Loading saved respawn time of {} for spawnid ({}, {}) - invalid spawn type, ignoring", respawnTime, static_cast<uint32_t>(type), spawnId);
         }
 
     } while (result->nextRow());
@@ -2194,7 +2194,7 @@ void WorldMap::saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t 
     if (startup)
     {
         if (!success)
-            sLogger.failure("Attempt to load saved respawn %" PRIu64 " for ({},{}) failed - duplicate respawn? Skipped.", respawnTime, uint32_t(type), spawnId);
+            sLogger.failure("Attempt to load saved respawn {} for ({},{}) failed - duplicate respawn? Skipped.", respawnTime, static_cast<uint32_t>(type), spawnId);
     }
     else if (success)
     {

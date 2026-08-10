@@ -1826,7 +1826,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
     if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), effectIndex, this))
         return;
 
-    sLogger.failure("Unhandled Teleport effect Index %hhu for Spell {} ({}).", effectIndex, m_spellInfo->getId(), m_spellInfo->getName());
+    sLogger.failure("Unhandled Teleport effect Index {} for Spell {} ({}).", static_cast<uint32_t>(effectIndex), m_spellInfo->getId(), m_spellInfo->getName());
 }
 
 void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
@@ -4853,7 +4853,7 @@ void Spell::SpellEffectActivateObject(uint8_t effectIndex) // Activate Object
 
     if (!m_gameObjTarget)
     {
-        sLogger.failure("Spell {} ({}) effect %hhu not handled because no target was found. ", m_spellInfo->getId(), m_spellInfo->getName(), effectIndex);
+        sLogger.failure("Spell {} ({}) effect {} not handled because no target was found.", m_spellInfo->getId(), m_spellInfo->getName(), static_cast<uint32_t>(effectIndex));
         return;
     }
 
@@ -4875,7 +4875,7 @@ void Spell::SpellEffectBuildingDamage(uint8_t effectIndex)
 {
     if (m_gameObjTarget == nullptr)
     {
-        sLogger.failure("Spell {} ({}) effect %hhu not handled because no target was found. ", m_spellInfo->getId(), m_spellInfo->getName(), effectIndex);
+        sLogger.failure("Spell {} ({}) effect {} not handled because no target was found.", m_spellInfo->getId(), m_spellInfo->getName(), static_cast<uint32_t>(effectIndex));
         return;
     }
 

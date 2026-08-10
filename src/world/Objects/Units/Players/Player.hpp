@@ -1086,7 +1086,7 @@ public:
         sendAreaTriggerMessage(fmt::format(format, std::forward<Args>(args)...));
     }
 
-void sendAreaTriggerMessage(std::string_view message);
+    void sendAreaTriggerMessage(std::string_view message);
 
     void sendReportToGmMessage(std::string playerName, std::string damageLog);
 
