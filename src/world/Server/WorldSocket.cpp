@@ -677,8 +677,7 @@ void WorldSocket::handleMsgVerifyConnection(std::unique_ptr<WorldPacket> recvPac
     std::string ClientToServerMsg;
     *recvPacket >> ClientToServerMsg;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE,
-        "WorldSocket::handleMsgVerifyConnection:Received client Message: {}", ClientToServerMsg);
+    sLogger.debugOpcode("WorldSocket::handleMsgVerifyConnection Received client Message: {}.", ClientToServerMsg);
 
     m_handshakeReceived = true;
 

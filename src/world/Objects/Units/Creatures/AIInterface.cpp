@@ -264,7 +264,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
             } break;
             default:
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "unhandled event with eventId {}", eventId);
+                sLogger.debugScript("Unhandled event with eventId {}.", eventId);
             } break;
         }
     }
@@ -334,7 +334,7 @@ void AIInterface::addSpellFromDatabase(std::vector<MySQLStructure::CreatureAIScr
         else
             castChance = ((75.0f / static_cast<float_t>(spellCounter)) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[spell.spell_type]);
 
-        sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_SPELL, "spell {} chance {}", spell.spellId, castChance);
+        sLogger.debugSpell("Spell {} chance {}.", spell.spellId, castChance);
 
         auto spellCooldown = Util::getRandomUInt(spell.cooldownMin, spell.cooldownMax);
         if (spellCooldown == 0)
@@ -3698,7 +3698,7 @@ void AIInterface::UpdateAISpells()
                     const float targetDistance = getUnit()->GetPosition().distance2DSq({ mCurrentSpellTarget->GetPositionX(), mCurrentSpellTarget->GetPositionY() });
                     if (!mLastCastedSpell->isDistanceInRange(targetDistance))
                     {
-                        sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "Target outside of spell range ({})! Min: {} Max: {}, distance to Target: {}", mLastCastedSpell->mSpellInfo->getId(), mLastCastedSpell->mMinPositionRangeToCast, mLastCastedSpell->mMaxPositionRangeToCast, targetDistance);
+                        sLogger.debugScript("Target outside of spell range ({})! Min: {} Max: {}, distance to Target: {}.", mLastCastedSpell->mSpellInfo->getId(), mLastCastedSpell->mMinPositionRangeToCast, mLastCastedSpell->mMaxPositionRangeToCast, targetDistance);
                         getUnit()->interruptSpell();
                         mLastCastedSpell = nullptr;
                         mCurrentSpellTarget = nullptr;
