@@ -17,7 +17,7 @@ void WorldSession::handleAttackSwingOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_ATTACKSWING: {} (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debugOpcode("Received CMSG_ATTACKSWING: {} (guidLow).", srlPacket.guid.getGuidLow());
 
     if (_player->isFeared() || _player->isStunned() || _player->isPacified() || _player->isDead())
         return;

@@ -40,7 +40,7 @@ void GameEventMgr::StartArenaEvents()
         auto gameEvent = GetEventById(i);
         if (gameEvent == nullptr)
         {
-            sLogger.debugDbTables("Missing arena event (id: {})", i);
+            sLogger.debugDbTables("Missing arena event (id: {}).", i);
             continue;
         }
 
@@ -245,7 +245,7 @@ void GameEventMgr::LoadFromDB()
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
                 {
-                    sLogger.debugDbTables("Could not find event for gameobject_spawns entry {}", event_id);
+                    sLogger.debugDbTables("Could not find event for gameobject_spawns entry {}.", event_id);
                     continue;
                 }
 
@@ -256,7 +256,7 @@ void GameEventMgr::LoadFromDB()
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(dbResult.entry);
                 if (gameobject_info == nullptr)
                 {
-                    sLogger.debugDbTables("Could not create GameobjectSpawn for invalid entry {} (missing in table gameobject_properties)", dbResult.entry);
+                    sLogger.debugDbTables("Could not create GameobjectSpawn for invalid entry {} (missing in table gameobject_properties).", dbResult.entry);
                     continue;
                 }
                 dbResult.map_id = field[2].asUint32();

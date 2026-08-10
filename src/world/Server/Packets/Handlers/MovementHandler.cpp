@@ -500,7 +500,7 @@ void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
     if (movementInfo.getGuid() != mover->getGuid())
         return;
 
-    sLogger.debugOpcode("WorldSession::handleForceSpeedChangeAck: Counter {}, speed {} received", movementInfo.counter, movementInfo.newSpeed);
+    sLogger.debugOpcode("WorldSession::handleForceSpeedChangeAck: Counter {}, speed {} received.", movementInfo.counter, movementInfo.newSpeed);
 
     // client ACK send one packet for mounted/run case and need skip all except last from its
     // in other cases anti-cheat check can be fail in false case
@@ -573,7 +573,7 @@ void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
     if (_player->IsInWorld())
         return;
 
-    sLogger.debugOpcode("Received CMSG_MOVE_WORLDPORT_ACK");
+    sLogger.debugOpcode("Received CMSG_MOVE_WORLDPORT_ACK.");
 
     if (_player->GetTransport() && _player->GetMapId() != _player->GetTransport()->GetMapId())
     {

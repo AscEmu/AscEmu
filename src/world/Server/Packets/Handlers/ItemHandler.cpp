@@ -404,7 +404,7 @@ void WorldSession::handleSwapItemOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_SWAP_ITEM: destInventorySlot {} destSlot {} srcInventorySlot {} srcInventorySlot {}",
+    sLogger.debugOpcode("Received CMSG_SWAP_ITEM: destInventorySlot {} destSlot {} srcInventorySlot {} srcInventorySlot {}.",
         srlPacket.destInventorySlot, srlPacket.destSlot, srlPacket.srcInventorySlot, srlPacket.srcSlot);
 
     _player->getItemInterface()->SwapItems(srlPacket.destInventorySlot,
@@ -1001,7 +1001,7 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_SWAP_INV_ITEM src slot: {} dst slot: {}",
+    sLogger.debugOpcode("Received CMSG_SWAP_INV_ITEM src slot: {} dst slot: {}.",
         static_cast<uint32_t>(srlPacket.srcSlot), static_cast<uint32_t>(srlPacket.destSlot));
 
     // player trying to add item to the same slot
@@ -1155,7 +1155,7 @@ void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_DESTROY_ITEM SrcInv Slot: {} Src slot: {}", srlPacket.srcInventorySlot, srlPacket.srcSlot);
+    sLogger.debugOpcode("Received CMSG_DESTROY_ITEM SrcInv Slot: {} Src slot: {}.", srlPacket.srcInventorySlot, srlPacket.srcSlot);
 
     if (Item* srcItem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcInventorySlot, srlPacket.srcSlot))
     {
@@ -1212,7 +1212,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_AUTOEQUIP_ITEM Inventory slot: {} Source Slot: {}", srlPacket.srcInventorySlot, srlPacket.srcSlot);
+    sLogger.debugOpcode("Received CMSG_AUTOEQUIP_ITEM Inventory slot: {} Source Slot: {}.", srlPacket.srcInventorySlot, srlPacket.srcSlot);
 
     Item* eitem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcInventorySlot, srlPacket.srcSlot);
 
@@ -1398,7 +1398,7 @@ void WorldSession::handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_AUTOEQUIP_ITEM_SLOT");
+    sLogger.debugOpcode("Received CMSG_AUTOEQUIP_ITEM_SLOT.");
 
     int8_t srcSlot = static_cast<int8_t>(_player->getItemInterface()->GetInventorySlotByGuid(srlPacket.itemGuid));
     Item* item = _player->getItemInterface()->GetItemByGUID(srlPacket.itemGuid);
@@ -1551,7 +1551,7 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_BUY_BACK_ITEM");
+    sLogger.debugOpcode("Received CMSG_BUY_BACK_ITEM.");
 
     srlPacket.buybackSlot -= 74;
 
@@ -1627,7 +1627,7 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_SELL_ITEM");
+    sLogger.debugOpcode("Received CMSG_SELL_ITEM.");
 
     _player->interruptSpell();
 
@@ -1720,7 +1720,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_BUY_ITEM_IN_SLOT");
+    sLogger.debugOpcode("Received CMSG_BUY_ITEM_IN_SLOT.");
 
     int8_t slot = srlPacket.slot;
     uint8_t amount = srlPacket.amount;
@@ -1897,7 +1897,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_BUY_ITEM");
+    sLogger.debugOpcode("Received CMSG_BUY_ITEM.");
 
     uint8_t error = 0;
     SlotResult slotResult;
@@ -2278,7 +2278,7 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_AUTOSTORE_BAG_ITEM");
+    sLogger.debugOpcode("Received CMSG_AUTOSTORE_BAG_ITEM.");
 
     Item* srcitem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcContainerSlot, srlPacket.srcSlot);
 
@@ -2384,7 +2384,7 @@ void WorldSession::handleReadItemOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_READ_ITEM {}", srlPacket.srcSlot);
+    sLogger.debugOpcode("Received CMSG_READ_ITEM {}.", srlPacket.srcSlot);
 
     Item* item = _player->getItemInterface()->GetInventoryItem(srlPacket.srcContainerSlot, srlPacket.srcSlot);
     if (item)
@@ -2473,7 +2473,7 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
             }
         }
     }
-    sLogger.debugOpcode("Received CMSG_REPAIR_ITEM {}", srlPacket.itemGuid);
+    sLogger.debugOpcode("Received CMSG_REPAIR_ITEM {}.", srlPacket.itemGuid);
 }
 
 void WorldSession::handleAutoBankItemOpcode(WorldPacket& recvPacket)
@@ -2482,7 +2482,7 @@ void WorldSession::handleAutoBankItemOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_AUTO_BANK_ITEM Inventory slot: {} Source Slot: {}",
+    sLogger.debugOpcode("Received CMSG_AUTO_BANK_ITEM Inventory slot: {} Source Slot: {}.",
         static_cast<uint32_t>(srlPacket.srcInventorySlot), static_cast<uint32_t>(srlPacket.srcSlot));
 
     Item* eitem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcInventorySlot, srlPacket.srcSlot);
@@ -2520,7 +2520,7 @@ void WorldSession::handleAutoStoreBankItemOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_AUTOSTORE_BANK_ITEM Inventory slot: {} Source Slot: {}",
+    sLogger.debugOpcode("Received CMSG_AUTOSTORE_BANK_ITEM Inventory slot: {} Source Slot: {}.",
         static_cast<uint32_t>(srlPacket.srcInventorySlot), static_cast<uint32_t>(srlPacket.srcSlot));
 
     Item* eitem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcInventorySlot, srlPacket.srcSlot);
@@ -2873,7 +2873,7 @@ void WorldSession::handleWrapItemOpcode(WorldPacket& recvPacket)
 void WorldSession::handleEquipmentSetUse([[maybe_unused]] WorldPacket& data)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("Received CMSG_EQUIPMENT_SET_USE");
+    sLogger.debugOpcode("Received CMSG_EQUIPMENT_SET_USE.");
 
     WoWGuid guid;
     int8_t SrcBagID;
@@ -2946,7 +2946,7 @@ void WorldSession::handleEquipmentSetUse([[maybe_unused]] WorldPacket& data)
 void WorldSession::handleEquipmentSetSave([[maybe_unused]] WorldPacket& data)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("Received CMSG_EQUIPMENT_SET_SAVE");
+    sLogger.debugOpcode("Received CMSG_EQUIPMENT_SET_SAVE.");
 
     WoWGuid guid;
 
@@ -2988,7 +2988,7 @@ void WorldSession::handleEquipmentSetSave([[maybe_unused]] WorldPacket& data)
 void WorldSession::handleEquipmentSetDelete([[maybe_unused]] WorldPacket& data)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("Received CMSG_EQUIPMENT_SET_DELETE");
+    sLogger.debugOpcode("Received CMSG_EQUIPMENT_SET_DELETE.");
 
     WoWGuid guid;
 

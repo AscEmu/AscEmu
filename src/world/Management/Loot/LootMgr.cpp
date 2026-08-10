@@ -220,7 +220,7 @@ void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* Lo
         const auto itemProto = sMySQLStore.getItemProperties(itemId);
         if (itemProto == nullptr)
         {
-            sLogger.debugDbTables("LootMgr::loadLootTables : Invalid Item with entry {} set in {}", itemId, szTableName);
+            sLogger.debugDbTables("LootMgr::loadLootTables : Invalid Item with entry {} set in {}.", itemId, szTableName);
             continue;
         }
 
