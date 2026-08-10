@@ -1086,7 +1086,7 @@ void WorldMap::updateAllCells(bool apply, uint32_t areamask)
     getTerrain()->getCellLimits(StartX, EndX, StartY, EndY);
 
     if (!areamask)
-        sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Updating all cells for map {:03}, server might lag.", getBaseMap()->getMapId());
+        sLogger.debugMapCell("Updating all cells for map {:03}, server might lag.", getBaseMap()->getMapId());
 
     for (uint32_t x = StartX; x < EndX; x++)
     {
@@ -1113,7 +1113,7 @@ void WorldMap::updateAllCells(bool apply, uint32_t areamask)
                 {   // Cell doesn't exist, create it.
                     cellInfo = create(x, y);
                     cellInfo->init(x, y, this);
-                    sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Created cell [{},{}] on map {} (instance {}).", x, y, getBaseMap()->getMapId(), getInstanceId());
+                    sLogger.debugMapCell("Created cell [{},{}] on map {} (instance {}).", x, y, getBaseMap()->getMapId(), getInstanceId());
                 }
 
                 spawns = _map->getSpawnsList(x, y);
@@ -1133,7 +1133,7 @@ void WorldMap::updateAllCells(bool apply, uint32_t areamask)
     }
 
     if (!areamask)
-        sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Cell updating success for map {:03}", getBaseMap()->getMapId());
+        sLogger.debugMapCell("Cell updating success for map {:03}.", getBaseMap()->getMapId());
 }
 
 void WorldMap::updateAllCells(bool apply)
@@ -1157,7 +1157,7 @@ void WorldMap::updateAllCells(bool apply)
                 {   // Cell doesn't exist, create it.
                     cellInfo = create(x, y);
                     cellInfo->init(x, y, this);
-                    sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Created cell [{},{}] on map {} (instance {}).", x, y, getBaseMap()->getMapId(), getInstanceId());
+                    sLogger.debugMapCell("Created cell [{},{}] on map {} (instance {}).", x, y, getBaseMap()->getMapId(), getInstanceId());
                 }
 
                 spawns = _map->getSpawnsList(cellInfo->getPositionX(), cellInfo->getPositionY());
@@ -1175,7 +1175,7 @@ void WorldMap::updateAllCells(bool apply)
             }
         }
     }
-    sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Cell updating success for map {:03}", getBaseMap()->getMapId());
+    sLogger.debugMapCell("Cell updating success for map {:03}.", getBaseMap()->getMapId());
 }
 
 void WorldMap::updateCellActivity(uint32_t x, uint32_t y, uint32_t radius)
