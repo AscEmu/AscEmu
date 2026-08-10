@@ -492,7 +492,7 @@ const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
 
 void Spell::spellEffectNotImplemented(uint8_t effIndex)
 {
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Spells: Unhandled spell effect {} in spell {}.", getSpellInfo()->getEffect(effIndex), getSpellInfo()->getId());
+    sLogger.debugSpellEffect("Spells: Unhandled spell effect {} in spell {}.", getSpellInfo()->getEffect(effIndex), getSpellInfo()->getId());
 }
 
 void Spell::spellEffectNotUsed(uint8_t /*effIndex*/)
@@ -514,7 +514,8 @@ void Spell::spellEffectDummy(uint8_t effectIndex)
     if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), effectIndex, this))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Spell::spellEffectDummy : Spell {} ({}) has a dummy effect index (%hhu), but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName(), effectIndex);
+    sLogger.debugSpellEffect("Spell::spellEffectDummy: Spell {} ({}) has a dummy effect index {}, but no handler for it.",
+        m_spellInfo->getId(), m_spellInfo->getName(), effectIndex);
 }
 
 void Spell::spellEffectHealthLeech(uint8_t effIndex)
@@ -4350,7 +4351,7 @@ void Spell::SpellEffectSendEvent(uint8_t effectIndex) //Send Event
     if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->getId(), effectIndex, this))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Spell ID: {} ({}) has a scripted effect index ({}) but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName(), effectIndex);
+    sLogger.debugSpellEffect("Spell ID: {} ({}) has a scripted effect index ({}) but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName(), effectIndex);
 
 }
 
@@ -5112,7 +5113,7 @@ void Spell::SpellEffectDisenchant(uint8_t /*effectIndex*/)
         sLootMgr.fillItemLoot(p_caster, it->m_loot.get(), it->getEntry(), 0);
     }
 
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Successfully disenchanted item {}", uint32_t(it->getEntry()));
+    sLogger.debugSpellEffect("Successfully disenchanted item {}.", uint32_t(it->getEntry()));
     p_caster->sendLoot(it->getGuid(), LOOT_DISENCHANTING, p_caster->GetMapId());
 
     //We can increase Enchanting skill up to 60
@@ -5942,12 +5943,12 @@ void Spell::SpellEffectProspecting(uint8_t /*effectIndex*/)
 
     if (m_itemTarget->m_loot->items.size() > 0)
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Successfully prospected item {}", uint32_t(m_itemTarget->getEntry()));
+        sLogger.debugSpellEffect("Successfully prospected item {}.", uint32_t(m_itemTarget->getEntry()));
         p_caster->sendLoot(m_itemTarget->getGuid(), LOOT_PROSPECTING, p_caster->GetMapId());
     }
     else // this should never happen either
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Prospecting failed, item {} has no loot", uint32_t(m_itemTarget->getEntry()));
+        sLogger.debugSpellEffect("Prospecting failed, item {} has no loot.", uint32_t(m_itemTarget->getEntry()));
         sendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
     }
 }
@@ -5996,7 +5997,7 @@ void Spell::SpellEffectForgetSpecialization(uint8_t effectIndex)
     uint32_t spellid = getSpellInfo()->getEffectTriggerSpell(effectIndex);
     m_playerTarget->removeSpell(spellid, false);
 
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Player {} have forgot spell {} from spell {} (caster: {})", m_playerTarget->getGuidLow(), spellid, getSpellInfo()->getId(), m_caster->getGuidLow());
+    sLogger.debugSpellEffect("Player {} have forgot spell {} from spell {} (caster: {}).", m_playerTarget->getGuidLow(), spellid, getSpellInfo()->getId(), m_caster->getGuidLow());
 }
 
 void Spell::SpellEffectKillCredit(uint8_t effectIndex)
@@ -6159,12 +6160,12 @@ void Spell::SpellEffectMilling(uint8_t /*effectIndex*/)
 
     if (m_itemTarget->m_loot->items.size() > 0)
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Successfully milled item {}", uint32_t(m_itemTarget->getEntry()));
+        sLogger.debugSpellEffect("Successfully milled item {}.", uint32_t(m_itemTarget->getEntry()));
         p_caster->sendLoot(m_itemTarget->getGuid(), LOOT_MILLING, p_caster->GetMapId());
     }
     else // this should never happen either
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Milling failed, item {} has no loot", uint32_t(m_itemTarget->getEntry()));
+        sLogger.debugSpellEffect("Milling failed, item {} has no loot.", uint32_t(m_itemTarget->getEntry()));
         sendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
     }
 }

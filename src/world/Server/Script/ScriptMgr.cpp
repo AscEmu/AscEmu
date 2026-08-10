@@ -683,7 +683,7 @@ void ScriptMgr::register_dummy_spell(uint32_t entry, exp_handle_dummy_spell call
     }
 
     if (!sp->hasEffect(SPELL_EFFECT_DUMMY) && !sp->hasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->hasEffect(SPELL_EFFECT_SEND_EVENT))
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr registered a dummy handler for Spell ID: {} ({}), but spell has no dummy/script/send event effect!", entry, sp->getName());
+        sLogger.debugSpellEffect("ScriptMgr registered a dummy handler for Spell ID: {} ({}), but spell has no dummy/script/send event effect!", entry, sp->getName());
 
     _spells.insert(HandleDummySpellMap::value_type(entry, callback));
 }
@@ -762,19 +762,19 @@ void ScriptMgr::register_script_effect(uint32_t entry, exp_handle_script_effect 
 
     if (itr != SpellScriptEffects.end())
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr tried to register more than 1 script effect handlers for Spell {}", entry);
+        sLogger.debugSpellEffect("ScriptMgr tried to register more than 1 script effect handlers for Spell {}.", entry);
         return;
     }
 
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == nullptr)
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr tried to register a script effect handler for invalid Spell {}.", entry);
+        sLogger.debugSpellEffect("ScriptMgr tried to register a script effect handler for invalid Spell {}.", entry);
         return;
     }
 
     if (!sp->hasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->hasEffect(SPELL_EFFECT_SEND_EVENT))
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr registered a script effect handler for Spell ID: {} ({}), but spell has no scripted effect!", entry, sp->getName());
+        sLogger.debugSpellEffect("ScriptMgr registered a script effect handler for Spell ID: {} ({}), but spell has no scripted effect!", entry, sp->getName());
 
     SpellScriptEffects.insert(std::pair< uint32_t, exp_handle_script_effect >(entry, callback));
 }

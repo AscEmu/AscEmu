@@ -1523,7 +1523,7 @@ void SpellMgr::loadSpellEffectOverride()
         auto spellInfo = getMutableSpellInfo(seo_SpellId);
         if (spellInfo == nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Table `spell_effects_override` has invalid spell entry {}, skipped", seo_SpellId);
+            sLogger.debugSpellEffect("Table `spell_effects_override` has invalid spell entry {}, skipped.", seo_SpellId);
             continue;
         }
 
