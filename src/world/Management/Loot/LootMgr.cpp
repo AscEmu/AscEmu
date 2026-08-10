@@ -171,7 +171,7 @@ void LootMgr::loadLootProp()
             auto item_random_suffix = sItemRandomSuffixStore.lookupEntry(eid);
             if (item_random_suffix == nullptr)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "LootMgr::loadLootProp : RandomSuffix group {} references non-existent randomsuffix {}.", id, eid);
+                sLogger.debugDbTables("LootMgr::loadLootProp : RandomSuffix group {} references non-existent randomsuffix {}.", id, eid);
                 continue;
             }
 
@@ -220,7 +220,7 @@ void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* Lo
         const auto itemProto = sMySQLStore.getItemProperties(itemId);
         if (itemProto == nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "LootMgr::loadLootTables : Invalid Item with entry {} set in {}", itemId, szTableName);
+            sLogger.debugDbTables("LootMgr::loadLootTables : Invalid Item with entry {} set in {}", itemId, szTableName);
             continue;
         }
 
