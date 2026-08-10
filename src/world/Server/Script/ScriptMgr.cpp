@@ -655,13 +655,13 @@ void ScriptMgr::register_dummy_aura(uint32_t entry, exp_handle_dummy_aura callba
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == nullptr)
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a dummy aura handler for invalid Spell ID: {}.", entry);
+        sLogger.debugSpell("ScriptMgr tried to register a dummy aura handler for invalid Spell ID: {}.", entry);
         return;
     }
 
 #if VERSION_STRING >= TBC
     if (!sp->hasEffectApplyAuraName(SPELL_AURA_DUMMY) && !sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_DUMMY))
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr registered a dummy aura handler for Spell ID: {} ({}), but spell has no dummy aura!", entry, sp->getName());
+        sLogger.debugSpell("ScriptMgr registered a dummy aura handler for Spell ID: {} ({}), but spell has no dummy aura!", entry, sp->getName());
 #endif
 
     _auras.insert(HandleDummyAuraMap::value_type(entry, callback));
@@ -671,14 +671,14 @@ void ScriptMgr::register_dummy_spell(uint32_t entry, exp_handle_dummy_spell call
 {
     if (_spells.contains(entry))
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a script for Spell ID: {} but this spell has already one", entry);
+        sLogger.debugSpell("ScriptMgr tried to register a script for Spell ID: {} but this spell has already one", entry);
         return;
     }
 
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == nullptr)
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a dummy handler for invalid Spell ID: {}.", entry);
+        sLogger.debugSpell("ScriptMgr tried to register a dummy handler for invalid Spell ID: {}.", entry);
         return;
     }
 
