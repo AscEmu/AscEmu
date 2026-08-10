@@ -76,6 +76,70 @@ namespace AscEmu::Logging
             log(getSeverityConsoleColorByDebugFlag(log_flags), MessageType::DEBUG, StringFormat(fmt, std::forward<Args>(args)...));
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // specialized debug helpers for frequently used logging categories: forwards to debugFlag().
+        template<typename... Args>
+        inline void debugOpcode(std::string_view fmt, Args&&... args)
+        {
+            debugFlag(AscEmu::Logging::LF_OPCODE, fmt, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        inline void debugDbTables(std::string_view fmt, Args&&... args)
+        {
+            debugFlag(AscEmu::Logging::LF_DB_TABLES, fmt, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        inline void debugMap(std::string_view fmt, Args&&... args)
+        {
+            debugFlag(AscEmu::Logging::LF_MAP, fmt, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        inline void debugMapCell(std::string_view fmt, Args&&... args)
+        {
+            debugFlag(AscEmu::Logging::LF_MAP_CELL, fmt, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        inline void debugMove(std::string_view fmt, Args&&... args)
+        {
+            debugFlag(AscEmu::Logging::LF_MOVE, fmt, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        inline void debugSpell(std::string_view fmt, Args&&... args)
+        {
+            debugFlag(AscEmu::Logging::LF_SPELL, fmt, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        inline void debugSpellEffect(std::string_view fmt, Args&&... args)
+        {
+            debugFlag(AscEmu::Logging::LF_SPELL_EFF, fmt, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        inline void debugAura(std::string_view fmt, Args&&... args)
+        {
+            debugFlag(AscEmu::Logging::LF_AURA, fmt, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        inline void debugAuraEffect(std::string_view fmt, Args&&... args)
+        {
+            debugFlag(AscEmu::Logging::LF_AURA_EFF, fmt, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        inline void debugScript(std::string_view fmt, Args&&... args)
+        {
+            debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, fmt, std::forward<Args>(args)...);
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // standard logging helpers for different message severities.
         template<typename... Args>
         inline void info(std::string_view fmt, Args&&... args)
         {
@@ -106,6 +170,8 @@ namespace AscEmu::Logging
             log(severity, messageType, StringFormat(fmt, std::forward<Args>(args)...));
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // formatted file logging interface.
         template<typename... Args>
         inline void file(Severity severity, MessageType messageType, std::string_view fmt, Args&&... args)
         {

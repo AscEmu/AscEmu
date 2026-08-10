@@ -451,12 +451,12 @@ void Spell::castMe(const bool doReCheck)
     else if (m_caster->isCreature())
     {
         const auto creature = static_cast<Creature*>(m_caster);
-        sLogger.debugSpell("Spell::castMe : Creature guid {} (entry {}) casted spell {} (id {})",
+        sLogger.debugSpell("Spell::castMe : Creature guid {} (entry {}) casted spell {} (id {}).",
             creature->spawnid, creature->getEntry(), getSpellInfo()->getName(), getSpellInfo()->getId());
     }
     else
     {
-        sLogger.debugSpell("Spell::castMe : Spell id {} casted, caster guid {}", getSpellInfo()->getId(), m_caster->getGuid());
+        sLogger.debugSpell("Spell::castMe : Spell id {} casted, caster guid {}.", getSpellInfo()->getId(), m_caster->getGuid());
     }
 
     // Check cast again if spell had cast time
@@ -912,7 +912,7 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
         return;
     }
 
-    sLogger.debugSpell("Spell::handleHittedEffect : Spell effect {}, spell id {}, damage {}", effectId, getSpellInfo()->getId(), damage);
+    sLogger.debugSpell("Spell::handleHittedEffect : Spell effect {}, spell id {}, damage {}.", effectId, getSpellInfo()->getId(), damage);
 
     const auto scriptResult = sScriptMgr.callScriptedSpellBeforeSpellEffect(this, effIndex);
 
@@ -2260,7 +2260,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 const auto gameObjectInfo = obj->GetGameObjectProperties();
                 if (gameObjectInfo == nullptr)
                 {
-                    sLogger.debugSpell("Spell::canCast : Found gameobject entry {} with invalid gameobject properties, spawn id {}", obj->getEntry(), obj->getGuidLow());
+                    sLogger.debugSpell("Spell::canCast : Found gameobject entry {} with invalid gameobject properties, spawn id {}.", obj->getEntry(), obj->getGuidLow());
                     continue;
                 }
 
@@ -5646,7 +5646,7 @@ void Spell::_updateCasterPointers(Object* caster)
             g_caster = dynamic_cast<GameObject*>(caster);
             break;
         default:
-            sLogger.debugSpell("Spell::_updateCasterPointers : Incompatible object type (type {}) for spell caster", caster->getObjectTypeId());
+            sLogger.debugSpell("Spell::_updateCasterPointers : Incompatible object type (type {}) for spell caster.", caster->getObjectTypeId());
             break;
     }
 }

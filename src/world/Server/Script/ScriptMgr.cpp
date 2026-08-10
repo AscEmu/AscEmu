@@ -671,7 +671,7 @@ void ScriptMgr::register_dummy_spell(uint32_t entry, exp_handle_dummy_spell call
 {
     if (_spells.contains(entry))
     {
-        sLogger.debugSpell("ScriptMgr tried to register a script for Spell ID: {} but this spell has already one", entry);
+        sLogger.debugSpell("ScriptMgr tried to register a script for Spell ID: {} but this spell has already one.", entry);
         return;
     }
 
