@@ -1387,7 +1387,7 @@ void SpellMgr::loadSpellCustomOverride()
         auto spellInfo = getMutableSpellInfo(fields[0].asUint32());
         if (spellInfo == nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Table `spell_custom_override` has unknown spell entry {}, skipped", fields[0].asUint32());
+            sLogger.debugSpell("Table `spell_custom_override` has unknown spell entry {}, skipped.", fields[0].asUint32());
             continue;
         }
 
@@ -1481,7 +1481,7 @@ void SpellMgr::loadSpellAIThreat()
         auto spellInfo = getMutableSpellInfo(spellId);
         if (spellInfo == nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Table `ai_threattospellid` has invalid spell entry {}, skipped", spellId);
+            sLogger.debugSpell("Table `ai_threattospellid` has invalid spell entry {}, skipped.", spellId);
             continue;
         }
 
@@ -1631,7 +1631,7 @@ void SpellMgr::loadSpellAreas()
             const auto areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(spellArea.areaId);
             if (areaEntry == nullptr)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Table `spell_area` has invalid area id {} for spell entry {}, skipped", spellArea.areaId, spellId);
+                sLogger.debugSpell("Table `spell_area` has invalid area id {} for spell entry {}, skipped.", spellArea.areaId, spellId);
                 continue;
             }
         }

@@ -259,7 +259,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
 {
     if (!m_caster->IsInWorld())
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Object {} is casting spell ID {} while not in world", std::to_string(m_caster->getGuid()), getSpellInfo()->getId());
+        sLogger.debugSpell("Object {} is casting spell ID {} while not in world.", std::to_string(m_caster->getGuid()), getSpellInfo()->getId());
         delete this;
         return SPELL_FAILED_DONT_REPORT;
     }
@@ -372,7 +372,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
             m_triggeredByAura->removeAura();
         }
 
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::prepare : canCast result {} for spell id {} (refer to SpellFailure.hpp to work out why)", cancastresult, getSpellInfo()->getId());
+        sLogger.debugSpell("Spell::prepare : canCast result {} for spell id {} (refer to SpellFailure.hpp to work out why).", cancastresult, getSpellInfo()->getId());
 
         finish(false);
         return cancastresult;
@@ -445,18 +445,18 @@ void Spell::castMe(const bool doReCheck)
     if (m_caster->isPlayer())
     {
         const auto plr = static_cast<Player*>(m_caster);
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::castMe : Player guid {} casted spell {} (id {})",
+        sLogger.debugSpell("Spell::castMe : Player guid {} casted spell {} (id {}).",
             plr->getGuidLow(), getSpellInfo()->getName(), getSpellInfo()->getId());
     }
     else if (m_caster->isCreature())
     {
         const auto creature = static_cast<Creature*>(m_caster);
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::castMe : Creature guid {} (entry {}) casted spell {} (id {})",
+        sLogger.debugSpell("Spell::castMe : Creature guid {} (entry {}) casted spell {} (id {})",
             creature->spawnid, creature->getEntry(), getSpellInfo()->getName(), getSpellInfo()->getId());
     }
     else
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::castMe : Spell id {} casted, caster guid {}", getSpellInfo()->getId(), m_caster->getGuid());
+        sLogger.debugSpell("Spell::castMe : Spell id {} casted, caster guid {}", getSpellInfo()->getId(), m_caster->getGuid());
     }
 
     // Check cast again if spell had cast time
@@ -912,7 +912,7 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
         return;
     }
 
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::handleHittedEffect : Spell effect {}, spell id {}, damage {}", effectId, getSpellInfo()->getId(), damage);
+    sLogger.debugSpell("Spell::handleHittedEffect : Spell effect {}, spell id {}, damage {}", effectId, getSpellInfo()->getId(), damage);
 
     const auto scriptResult = sScriptMgr.callScriptedSpellBeforeSpellEffect(this, effIndex);
 
@@ -2260,7 +2260,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 const auto gameObjectInfo = obj->GetGameObjectProperties();
                 if (gameObjectInfo == nullptr)
                 {
-                    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::canCast : Found gameobject entry {} with invalid gameobject properties, spawn id {}", obj->getEntry(), obj->getGuidLow());
+                    sLogger.debugSpell("Spell::canCast : Found gameobject entry {} with invalid gameobject properties, spawn id {}", obj->getEntry(), obj->getGuidLow());
                     continue;
                 }
 
@@ -5646,7 +5646,7 @@ void Spell::_updateCasterPointers(Object* caster)
             g_caster = dynamic_cast<GameObject*>(caster);
             break;
         default:
-            sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::_updateCasterPointers : Incompatible object type (type {}) for spell caster", caster->getObjectTypeId());
+            sLogger.debugSpell("Spell::_updateCasterPointers : Incompatible object type (type {}) for spell caster", caster->getObjectTypeId());
             break;
     }
 }
