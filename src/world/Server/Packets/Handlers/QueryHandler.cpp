@@ -43,7 +43,7 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
     CmsgNameQuery srlPacket;
     if (!parsePacket(recvData, srlPacket))
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Failed to deserialize CMSG_NAME_QUERY.");
+        sLogger.debugOpcode("Failed to deserialize CMSG_NAME_QUERY.");
         Disconnect();
         return;
     }
@@ -53,7 +53,7 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
 
     if (const auto info = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow()))
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_NAME_QUERY for name: {}, race: {}, gender: {}, class: {}, level: {}",
+        sLogger.debugOpcode("Received CMSG_NAME_QUERY for name: {}, race: {}, gender: {}, class: {}, level: {}",
             info->name, info->race, info->gender, info->cl, info->lastLevel);
 
         response.hasData = true;
@@ -68,7 +68,7 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
     }
     else
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "CMSG_NAME_QUERY for unknown GUID: {}", srlPacket.guid.getGuidLow());
+        sLogger.debugOpcode("CMSG_NAME_QUERY for unknown GUID: {}", srlPacket.guid.getGuidLow());
         response.hasData = false;
     }
 
@@ -115,7 +115,7 @@ void WorldSession::handleGameObjectQueryOpcode(WorldPacket& recvData)
     const auto loc = (language > 0) ? sMySQLStore.getLocalizedGameobject(srlPacket.entry, language) : nullptr;
     const auto name = loc ? loc->name : gameobject_info->name.c_str();
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_GAMEOBJECT_QUERY for entry: {} name : {}", srlPacket.entry, name);
+    sLogger.debugOpcode("Received CMSG_GAMEOBJECT_QUERY for entry: {} name : {}", srlPacket.entry, name);
 
     SmsgGameobjectQueryResponse responsePacket(*gameobject_info, name);
     sendManagedPacket(responsePacket);
@@ -198,7 +198,7 @@ void WorldSession::handlePageTextQueryOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PAGE_TEXT_QUERY: {} (pageId)", srlPacket.pageId);
+    sLogger.debugOpcode("Received CMSG_PAGE_TEXT_QUERY: {} (pageId)", srlPacket.pageId);
 
     uint32_t pageId = srlPacket.pageId;
     while (pageId)
@@ -223,7 +223,7 @@ void WorldSession::handleItemNameQueryOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ITEM_NAME_QUERY: {} (itemEntry)", srlPacket.itemEntry);
+    sLogger.debugOpcode("Received CMSG_ITEM_NAME_QUERY: {} (itemEntry)", srlPacket.itemEntry);
 
     const auto itemProperties = sMySQLStore.getItemProperties(srlPacket.itemEntry);
     if (itemProperties == nullptr)

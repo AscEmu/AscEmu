@@ -31,7 +31,7 @@ void WorldSession::sendVoidStorageTransferResult([[maybe_unused]] uint8_t result
 void WorldSession::handleVoidStorageUnlock([[maybe_unused]] WorldPacket& recvData)
 {
 #if VERSION_STRING >= Cata
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_VOID_STORAGE_UNLOCK");
+    sLogger.debugOpcode("Received CMSG_VOID_STORAGE_UNLOCK");
 
     Player* player = GetPlayer();
 
@@ -82,7 +82,7 @@ void WorldSession::handleVoidStorageUnlock([[maybe_unused]] WorldPacket& recvDat
 void WorldSession::handleVoidStorageQuery([[maybe_unused]] WorldPacket& recvData)
 {
 #if VERSION_STRING >= Cata
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_VOID_STORAGE_QUERY");
+    sLogger.debugOpcode("Received CMSG_VOID_STORAGE_QUERY");
     Player* player = GetPlayer();
 
     WoWGuid npcGuid;
@@ -132,7 +132,7 @@ void WorldSession::handleVoidStorageQuery([[maybe_unused]] WorldPacket& recvData
 void WorldSession::handleVoidStorageTransfer([[maybe_unused]] WorldPacket& recvData)
 {
 #if VERSION_STRING >= Cata
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_VOID_STORAGE_TRANSFER");
+    sLogger.debugOpcode("Received CMSG_VOID_STORAGE_TRANSFER");
     Player* player = GetPlayer();
 
     // Read everything
@@ -339,7 +339,7 @@ void WorldSession::handleVoidStorageTransfer([[maybe_unused]] WorldPacket& recvD
 void WorldSession::handleVoidSwapItem([[maybe_unused]] WorldPacket& recvData)
 {
 #if VERSION_STRING >= Cata
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_VOID_SWAP_ITEM");
+    sLogger.debugOpcode("Received CMSG_VOID_SWAP_ITEM");
 
     Player* player = GetPlayer();
     uint32_t newSlot;
