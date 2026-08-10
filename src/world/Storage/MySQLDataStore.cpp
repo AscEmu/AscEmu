@@ -93,9 +93,9 @@ void MySQLDataStore::loadAdditionalTableConfig()
 
     for (auto additionalTable : MySQLAdditionalTables)
     {
-        sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_DB_TABLES, "MySQLDataLoads : Table {} has additional tables:", additionalTable.mainTable);
+        sLogger.debugDbTables("MySQLDataLoads : Table {} has additional tables:", additionalTable.mainTable);
         for (auto additionalTableList : additionalTable.tableVector)
-            sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_DB_TABLES, "MySQLDataLoads : - {} ", additionalTableList);
+            sLogger.debugDbTables("MySQLDataLoads : - {} ", additionalTableList);
     }
 }
 
@@ -154,17 +154,17 @@ std::unique_ptr<QueryResult> MySQLDataStore::getWorldDBQuery(const char* query, 
                         completeQuery += " UNION ";
                         completeQuery += changeQuery;
 
-                        sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_DB_TABLES, "MySQLDataLoads : Added additional query '{}'", changeQuery);
+                        sLogger.debugDbTables("MySQLDataLoads : Added additional query '{}'.", changeQuery);
                     }
                 }
             }
 
-            sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_DB_TABLES, "MySQLDataLoads : AdditionalTableLoading - Query: '{}'", completeQuery);
+            sLogger.debugDbTables("MySQLDataLoads : AdditionalTableLoading - Query: '{}'.", completeQuery);
             return WorldDatabase.query(completeQuery.c_str());
         }
     }
 
-    sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_DB_TABLES, "MySQLDataLoads : Query: '{}'", preparedQuery);
+    sLogger.debugDbTables("MySQLDataLoads : Query: '{}'.", preparedQuery);
     // no additional tables defined, just send our query
     return WorldDatabase.query(preparedQuery.c_str());
 }

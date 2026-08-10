@@ -40,9 +40,7 @@ bool OpcodeHandlerRegistry::handleOpcode(WorldSession& session, WorldPacket& pac
 
     if (entry.state.has_value() && entry.state.value() == STATUS_LOGGEDIN && !session.GetPlayer())
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE,
-                          "Received packet for invalid state. Internal ID: 0x{:04X}, Required State: {}, Name {}",
-                          internalId, entry.state.value(), opcodeName);
+        sLogger.debugOpcode("Received packet for invalid state. Internal ID: 0x{:04X}, Required State: {}, Name {}.", internalId, entry.state.value(), opcodeName);
         return false;
     }
 
@@ -60,6 +58,5 @@ void OpcodeHandlerRegistry::logUnhandledOpcode(uint16_t rawOpcode, uint32_t inte
     if (ignoredOpcodes.contains(rawOpcode))
         return;
 
-    sLogger.warning("[Session] Unhandled opcode: Internal ID : 0x{:04X}, Raw Opcode : 0x{:04X}, Name {}",
-        internalId, rawOpcode, name);
+    sLogger.warning("[Session] Unhandled opcode: Internal ID : 0x{:04X}, Raw Opcode : 0x{:04X}, Name {}.", internalId, rawOpcode, name);
 }
