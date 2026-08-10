@@ -1584,7 +1584,7 @@ SpellEntry *spellInfo = sSpellStore.lookupEntry(TriggerSpellId);
 
 if (!spellInfo)
 {
-sLogger.failure("WORLD: unknown spell id {}\n", TriggerSpellId);
+sLogger.failure("WORLD: unknown spell id {}.", TriggerSpellId);
 return;
 }
 
