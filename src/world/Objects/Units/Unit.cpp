@@ -3140,7 +3140,7 @@ void Unit::eventCastSpell(Unit* target, SpellInfo const* spellInfo)
     if (spellInfo != nullptr)
         castSpell(target, spellInfo, forcedBasePoints, true);
     else
-        sLogger.failure("Unit::eventCastSpell tried to cast invalid spell with no spellInfo (nullptr)");
+        sLogger.failure("Unit::eventCastSpell tried to cast invalid spell with no spellInfo (nullptr).");
 }
 
 SpellCastResult Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered)

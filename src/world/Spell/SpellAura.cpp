@@ -327,7 +327,7 @@ void Aura::applyModifiers(bool apply, AuraEffect applyOnlyFor/* = SPELL_AURA_NON
 
         m_auraEffects[i].applyEffect(apply);
 
-        sLogger.debugFlag(AscEmu::Logging::LF_AURA, "Aura::applyModifiers : Spell Id {}, Aura Effect {} ({}), Target GUID {}, EffectIndex {}, Duration {}, Damage {}, MiscValue {}",
+        sLogger.debugAura("Aura::applyModifiers : Spell Id {}, Aura Effect {} ({}), Target GUID {}, EffectIndex {}, Duration {}, Damage {}, MiscValue {}.",
             getSpellInfo()->getId(), m_auraEffects[i].getAuraEffectType(), SpellAuraNames[m_auraEffects[i].getAuraEffectType()], getOwner()->getGuid(), i, getTimeLeft(), m_auraEffects[i].getEffectDamage(), m_auraEffects[i].getEffectMiscValue());
     }
 
@@ -1169,7 +1169,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             if (sScriptMgr.CallScriptedDummyAura(getSpellId(), aurEff->getEffectIndex(), this, true))
                 break;
 
-            sLogger.debugFlag(AscEmu::Logging::LF_AURA_EFF, "Spell aura {} has a periodic trigger dummy effect but no handler for it", getSpellId());
+            sLogger.debugAuraEffect("Spell aura {} has a periodic trigger dummy effect but no handler for it.", getSpellId());
         } break;
 #endif
         default:
