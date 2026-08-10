@@ -281,8 +281,7 @@ private:
             case MovementOp::ForcesCount:
             {
                 movementInfo.forcesCount = buffer.readBits(22);
-                sLogger.debugFlag(AscEmu::Logging::LF_MOVE, "{} : ForcesCount is {}",
-                    sOpcodeTables.getNameForOpcode(opcode), movementInfo.forcesCount);
+                sLogger.debugMove("{} : ForcesCount is {}.", sOpcodeTables.getNameForOpcode(opcode), movementInfo.forcesCount);
             } break;
 
             case MovementOp::Count:
@@ -290,8 +289,7 @@ private:
                 uint32_t counter;
                 buffer >> counter;
                 //buffer.readSkip<uint32_t>();
-                sLogger.debugFlag(AscEmu::Logging::LF_MOVE, "MovementCodec::executeReadStep: {} : Count is {}",
-                    sOpcodeTables.getNameForOpcode(opcode), counter);
+                sLogger.debugMove("MovementCodec::executeReadStep: {} : Count is {}.", sOpcodeTables.getNameForOpcode(opcode), counter);
             } break;
 
             case MovementOp::NewSpeed: buffer >> movementInfo.newSpeed; break;
@@ -303,16 +301,14 @@ private:
                     uint32_t force;
                     buffer >> force;
                     //buffer.readSkip<uint32_t>();
-                    sLogger.debugFlag(AscEmu::Logging::LF_MOVE, "MovementCodec::executeReadStep: {} : SkipForcesCountUInt32 {} is {}",
-                        sOpcodeTables.getNameForOpcode(opcode), i, force);
+                    sLogger.debugMove("MovementCodec::executeReadStep: {} : SkipForcesCountUInt32 {} is {}.", sOpcodeTables.getNameForOpcode(opcode), i, force);
                 }
             } break;
 
             case MovementOp::SkipBit:
                 {
                     uint8_t bit = buffer.readBit();
-                    sLogger.debugFlag(AscEmu::Logging::LF_MOVE, "MovementCodec::executeReadStep: {} : SkipBit is {}",
-                                      sOpcodeTables.getNameForOpcode(opcode), bit);
+                    sLogger.debugMove("MovementCodec::executeReadStep: {} : SkipBit is {}.", sOpcodeTables.getNameForOpcode(opcode), bit);
                 } break;
 
             case MovementOp::SkipUInt32:
@@ -320,8 +316,7 @@ private:
                     uint32_t uint;
                     buffer >> uint;
                     //buffer.readSkip<uint32_t>();
-                    sLogger.debugFlag(AscEmu::Logging::LF_MOVE, "MovementCodec::executeReadStep: {} : SkipUInt32 is {}",
-                                      sOpcodeTables.getNameForOpcode(opcode), uint);
+                    sLogger.debugMove("MovementCodec::executeReadStep: {} : SkipUInt32 is {}.", sOpcodeTables.getNameForOpcode(opcode), uint);
                 } break;
             default:
                 break;
