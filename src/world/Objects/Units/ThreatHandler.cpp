@@ -13,6 +13,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Spell/SpellInfo.hpp"
+#include "Server/PacketBroadcast.hpp"
+#include "Server/Packets/SmsgHighestThreatUpdate.h"
+#include "Server/Packets/SmsgThreatUpdate.h"
+#include "Server/Packets/SmsgThreatClear.h"
+#include "Server/Packets/SmsgThreatRemove.h"
+
+using namespace AscEmu::Packets;
 
 void ThreatReference::addThreat(float amount)
 {
@@ -708,25 +715,14 @@ void ThreatManager::unregisterRedirectThreat(uint32_t spellId, uint64_t const& v
 
 void ThreatManager::sendClearAllThreatToClients() const
 {
-    ByteBuffer packedGuidOwner;
-    packedGuidOwner.appendPackGuid(_owner->getGuid());
-
-    WorldPacket data(SMSG_THREAT_CLEAR, 8);
-    data.append(packedGuidOwner);
-    _owner->sendMessageToSet(&data, false);
+    SmsgThreatClear threatPacket(_owner->GetNewGUID());
+    PacketBroadcast::sendToSet(*_owner, threatPacket, false);
 }
 
 void ThreatManager::sendRemoveToClients(Unit const* victim) const
 {
-    ByteBuffer packedGuidOwner;
-    ByteBuffer packedGuidVictim;
-    packedGuidOwner.appendPackGuid(_owner->getGuid());
-    packedGuidVictim.appendPackGuid(victim->getGuid());
-
-    WorldPacket data(SMSG_THREAT_REMOVE, 16);
-    data.append(packedGuidOwner);
-    data.append(packedGuidVictim);
-    _owner->sendMessageToSet(&data, false);
+    SmsgThreatRemove threatPacket(_owner->GetNewGUID(), victim->GetNewGUID());
+    PacketBroadcast::sendToSet(*_owner, threatPacket, false);
 }
 
 void ThreatManager::sendThreatListToClients(bool newHighest) const
@@ -734,30 +730,18 @@ void ThreatManager::sendThreatListToClients(bool newHighest) const
     if ((_owner == nullptr ) || (_currentVictimRef == nullptr))
         return;
 
-    ByteBuffer packedGuidOwner;
-    ByteBuffer packedGuidVictim1;
-    packedGuidOwner.appendPackGuid(_owner->getGuid());
-    packedGuidVictim1.appendPackGuid(_currentVictimRef->getVictim()->getGuid());
-
-    WorldPacket data(static_cast<uint16_t>(newHighest ? SMSG_HIGHEST_THREAT_UPDATE : SMSG_THREAT_UPDATE), (_sortedThreatList.size() + 2) * 8); // guess
-    data.append(packedGuidOwner);
     if (newHighest)
-        data.append(packedGuidVictim1);
-    size_t countPos = data.wpos();
-    data << uint32_t(0); // placeholder
-    uint32_t count = 0;
-    for (const auto& ref : _sortedThreatList)
     {
-        if (!ref->isAvailable())
-            continue;
-        ByteBuffer packedGuidVictim2;
-        packedGuidVictim2.appendPackGuid(ref->getVictim()->getGuid());
-        data.append(packedGuidVictim2);
-        data << uint32_t(ref->getThreat() * 100);
-        ++count;
+        SmsgHighestThreatUpdate threatPacket(_owner->GetNewGUID(), _currentVictimRef->getVictim()->GetNewGUID());
+        threatPacket.threadList = _sortedThreatList;
+        PacketBroadcast::sendToSet(*_owner, threatPacket, false);
     }
-    data.put<uint32_t>(countPos, count);
-    _owner->sendMessageToSet(&data, false);
+    else
+    {
+        SmsgThreatUpdate threatPacket(_owner->GetNewGUID());
+        threatPacket.threadList = _sortedThreatList;
+        PacketBroadcast::sendToSet(*_owner, threatPacket, false);
+    }
 }
 
 void ThreatManager::putThreatListRef(uint64_t const& guid, std::shared_ptr<ThreatReference> ref)
