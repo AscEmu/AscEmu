@@ -49,14 +49,30 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << level << hp << mana;
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet << level << hp << mana;
 
-            for (uint8_t i = 0; i < 6; ++i)
-                packet << uint32_t(0);
+                for (uint8_t i = 0; i < 6; ++i)
+                    packet << uint32_t(0);
 
-            packet << stat0 << stat1 << stat2 << stat3 << stat4;
+                packet << stat0 << stat1 << stat2 << stat3 << stat4;
 
-            return true;
+                return true;
+            }
+            else if (m_protocol.isMop())
+            {
+                packet << hp;
+                packet << stat0 << stat1 << stat2 << stat3 << stat4;
+                packet << bool(false);
+                packet << level << mana;
+
+                for (uint8_t i = 0; i < 4; ++i)
+                    packet << uint32_t(0);
+
+                return true;
+            }
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
