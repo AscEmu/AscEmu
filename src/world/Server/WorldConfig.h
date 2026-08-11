@@ -105,7 +105,16 @@ public:
     struct LoggerSettings
     {
         uint8_t minimumMessageType;
-        uint32_t debugFlags;
+        bool enableOpcodeLog;
+        bool enableDbTablesLog;
+        bool enableMapLog;
+        bool enableMapCellLog;
+        bool enableMoveLog;
+        bool enableSpellLog;
+        bool enableSpellEffectLog;
+        bool enableAuraLog;
+        bool enableAuraEffectLog;
+        bool enableScriptLog;
         bool enableWorldPacketLog;
         std::string extendedLogsDir;
         bool enableCheaterLog;

@@ -273,7 +273,16 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
 
     // world.conf - Logger Settings
     Config.MainConfig.tryGetInt("Logger", "MinimumMessageType", &logger.minimumMessageType);
-    Config.MainConfig.tryGetInt("Logger", "DebugFlags", &logger.debugFlags);
+    Config.MainConfig.tryGetBool("Logger", "EnableOpcodeLog", &logger.enableOpcodeLog);
+    Config.MainConfig.tryGetBool("Logger", "EnableDbTablesLog", &logger.enableDbTablesLog);
+    Config.MainConfig.tryGetBool("Logger", "EnableMapLog", &logger.enableMapLog);
+    Config.MainConfig.tryGetBool("Logger", "EnableMapCellLog", &logger.enableMapCellLog);
+    Config.MainConfig.tryGetBool("Logger", "EnableMoveLog", &logger.enableMoveLog);
+    Config.MainConfig.tryGetBool("Logger", "EnableSpellLog", &logger.enableSpellLog);
+    Config.MainConfig.tryGetBool("Logger", "EnableSpellEffectLog", &logger.enableSpellEffectLog);
+    Config.MainConfig.tryGetBool("Logger", "EnableAuraLog", &logger.enableAuraLog);
+    Config.MainConfig.tryGetBool("Logger", "EnableAuraEffectLog", &logger.enableAuraEffectLog);
+    Config.MainConfig.tryGetBool("Logger", "EnableScriptLog", &logger.enableScriptLog);
     Config.MainConfig.tryGetBool("Logger", "EnableWorldPacketLog", &logger.enableWorldPacketLog);
 
     Config.MainConfig.tryGetString("Logger", "ExtendedLogDir", &logger.extendedLogsDir);

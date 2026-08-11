@@ -423,7 +423,17 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     printDiagnostics();
 
     sLogger.setMinimumMessageType(static_cast<AscEmu::Logging::MessageType>(worldConfig.logger.minimumMessageType));
-    sLogger.setDebugFlags(static_cast<AscEmu::Logging::DebugFlags>(worldConfig.logger.debugFlags));
+
+    sLogger.setDebugFlags(AscEmu::Logging::LF_OPCODE, worldConfig.logger.enableOpcodeLog);
+    sLogger.setDebugFlags(AscEmu::Logging::LF_DB_TABLES, worldConfig.logger.enableDbTablesLog);
+    sLogger.setDebugFlags(AscEmu::Logging::LF_MAP, worldConfig.logger.enableMapLog);
+    sLogger.setDebugFlags(AscEmu::Logging::LF_MAP_CELL, worldConfig.logger.enableMapCellLog);
+    sLogger.setDebugFlags(AscEmu::Logging::LF_MOVE, worldConfig.logger.enableMoveLog);
+    sLogger.setDebugFlags(AscEmu::Logging::LF_SPELL, worldConfig.logger.enableSpellLog);
+    sLogger.setDebugFlags(AscEmu::Logging::LF_SPELL_EFF, worldConfig.logger.enableSpellEffectLog);
+    sLogger.setDebugFlags(AscEmu::Logging::LF_AURA, worldConfig.logger.enableAuraLog);
+    sLogger.setDebugFlags(AscEmu::Logging::LF_AURA_EFF, worldConfig.logger.enableAuraEffectLog);
+    sLogger.setDebugFlags(AscEmu::Logging::LF_SCRIPT_MGR, worldConfig.logger.enableScriptLog);
 
     createExtendedLogDir();
     if (!checkRequiredDirs())

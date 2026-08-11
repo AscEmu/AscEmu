@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
@@ -52,7 +52,7 @@ void WorldSession::sendLfgUpdateSearch([[maybe_unused]] bool update)
 //not used cata
 void WorldSession::sendLfgDisabled()
 {
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_DISABLED {}", _player->getGuid());
+    sLogger.debugOpcode("SMSG_LFG_DISABLED {}.", _player->getGuid());
 
     SmsgLfgDisabled managedPacket;
     sendManagedPacket(managedPacket);
@@ -77,7 +77,7 @@ void WorldSession::sendLfgTeleportError([[maybe_unused]] uint8_t error)
 void WorldSession::sendLfgJoinResult([[maybe_unused]] const LfgJoinResultData& joinData)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_JOIN_RESULT {} heckResult: {} checkValue: {}", _player->getGuid(), joinData.result, joinData.state);
+    sLogger.debugOpcode("SMSG_LFG_JOIN_RESULT {} heckResult: {} checkValue: {}.", _player->getGuid(), joinData.result, joinData.state);
 
     SmsgLfgJoinResult managedPacket(uint32_t(joinData.result), uint32_t(joinData.state), joinData.lockmap, _player->getGuid());
     sendManagedPacket(managedPacket);
@@ -105,7 +105,7 @@ void WorldSession::sendLfgUpdatePlayer([[maybe_unused]] const LfgUpdateData& upd
             break;
     }
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_UPDATE_PLAYER {} updatetype: {}", _player->getGuid(), updateData.updateType);
+    sLogger.debugOpcode("SMSG_LFG_UPDATE_PLAYER {} updatetype: {}", _player->getGuid(), updateData.updateType);
 
     SmsgLfgUpdatePlayer managedPacket(uint8_t(updateData.updateType), uint8_t(extrainfo), uint8_t(queued), updateData.dungeons, updateData.comment);
     sendManagedPacket(managedPacket);
@@ -141,7 +141,7 @@ void WorldSession::sendLfgUpdateParty([[maybe_unused]] const LfgUpdateData& upda
             break;
     }
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_UPDATE_PARTY {} updatetype: {}", _player->getGuid(), updateData.updateType);
+    sLogger.debugOpcode("SMSG_LFG_UPDATE_PARTY {} updatetype: {}", _player->getGuid(), updateData.updateType);
 
     SmsgLfgUpdateParty managedPacket(uint8_t(updateData.updateType), uint8_t(hasExtraInfo), uint8_t(isJoining), uint8_t(isQueued), updateData.dungeons, updateData.comment);
     sendManagedPacket(managedPacket);
@@ -151,7 +151,7 @@ void WorldSession::sendLfgUpdateParty([[maybe_unused]] const LfgUpdateData& upda
 void WorldSession::sendLfgRoleChosen([[maybe_unused]] uint64_t guid, [[maybe_unused]] uint8_t roles)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_ROLE_CHOSEN {} guid: {} roles: {}", _player->getGuid(), guid, roles);
+    sLogger.debugOpcode("SMSG_LFG_ROLE_CHOSEN {} guid: {} roles: {}.", _player->getGuid(), guid, roles);
 
     SmsgLfgRoleChosen managedPacket(guid, roles > 0 ? 1 : 0, roles);
     sendManagedPacket(managedPacket);
@@ -180,7 +180,8 @@ void WorldSession::sendLfgRoleCheckUpdate([[maybe_unused]] const LfgRoleCheck* p
 void WorldSession::sendLfgQueueStatus([[maybe_unused]] uint32_t dungeon, [[maybe_unused]] int32_t waitTime, [[maybe_unused]] int32_t avgWaitTime, [[maybe_unused]] int32_t waitTimeTanks, [[maybe_unused]] int32_t waitTimeHealer, [[maybe_unused]] int32_t waitTimeDps, [[maybe_unused]] uint32_t queuedTime, [[maybe_unused]] uint8_t tanks, [[maybe_unused]] uint8_t healers, [[maybe_unused]] uint8_t dps)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_QUEUE_STATUS {} dungeon: {} - waitTime: {} - avgWaitTime: {} - waitTimeTanks: {} - waitTimeHealer: {} - waitTimeDps: {} - queuedTime: {} - tanks: {} - healers: {} - dps: {}", _player->getGuid(), dungeon, waitTime, avgWaitTime, waitTimeTanks, waitTimeHealer, waitTimeDps, queuedTime, tanks, healers, dps);
+    sLogger.debugOpcode("SMSG_LFG_QUEUE_STATUS {} dungeon: {} - waitTime: {} - avgWaitTime: {} - waitTimeTanks: {} - waitTimeHealer: {} - waitTimeDps: {} - queuedTime: {} - tanks: {} - healers: {} - dps: {}.",
+        _player->getGuid(), dungeon, waitTime, avgWaitTime, waitTimeTanks, waitTimeHealer, waitTimeDps, queuedTime, tanks, healers, dps);
 
     SmsgLfgQueueStatus managedPacket(dungeon, avgWaitTime, waitTime, waitTimeTanks, waitTimeHealer, waitTimeDps, tanks, healers, dps, queuedTime, _player->getGuid());
     sendManagedPacket(managedPacket);
@@ -193,7 +194,7 @@ void WorldSession::sendLfgPlayerReward([[maybe_unused]] uint32_t RandomDungeonEn
     if (!RandomDungeonEntry || !DungeonEntry || !qReward)
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_PLAYER_REWARD {} rdungeonEntry: {} - sdungeonEntry: {} - done: {}", _player->getGuid(), RandomDungeonEntry, DungeonEntry, done);
+    sLogger.debugOpcode("SMSG_LFG_PLAYER_REWARD {} rdungeonEntry: {} - sdungeonEntry: {} - done: {}", _player->getGuid(), RandomDungeonEntry, DungeonEntry, done);
 
     SmsgLfgPlayerReward managedPacket(RandomDungeonEntry, DungeonEntry, done, reward, qReward);
     sendManagedPacket(managedPacket);
@@ -219,7 +220,7 @@ void WorldSession::sendLfgBootPlayer([[maybe_unused]] const LfgPlayerBoot* pBoot
         }
     }
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_BOOT_PROPOSAL_UPDATE {} inProgress: {} - didVote: {} - agree: {} - victim: {} votes: {} - agrees: {} - left: {} - needed: {} - reason {}",
+    sLogger.debugOpcode("SMSG_LFG_BOOT_PROPOSAL_UPDATE {} inProgress: {} - didVote: {} - agree: {} - victim: {} votes: {} - agrees: {} - left: {} - needed: {} - reason {}.",
         guid, uint8_t(pBoot->inProgress), uint8_t(playerVote != LFG_ANSWER_PENDING), uint8_t(playerVote == LFG_ANSWER_AGREE),
         pBoot->victim, votesNum, agreeNum, secsleft, pBoot->votedNeeded, pBoot->reason);
 
@@ -265,9 +266,9 @@ void WorldSession::sendLfgUpdateProposal([[maybe_unused]] uint32_t proposalId, [
             queueGuid = originalGroup->GetGUID();
     }
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_PROPOSAL_UPDATE {} state: {}", _player->getGuid(), pProp->state);
+    sLogger.debugOpcode("SMSG_LFG_PROPOSAL_UPDATE {} state: {}", _player->getGuid(), pProp->state);
 
-    if (!isContinue)                                                    // Only show proposal dungeon if it's continue
+    if (!isContinue) // Only show proposal dungeon if it's continue
     {
         LfgDungeonSet playerDungeons = sLfgMgr.GetSelectedDungeons(guid);
         if (playerDungeons.size() == 1)
@@ -332,7 +333,7 @@ void WorldSession::handleLfgSetCommentOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SET_LFG_COMMENT playerGuid: {}, comment: {}", _player->getGuid(), srlPacket.comment);
+    sLogger.debugOpcode("Received CMSG_SET_LFG_COMMENT playerGuid: {}, comment: {}.", _player->getGuid(), srlPacket.comment);
 
     sLfgMgr.SetComment(_player->getGuid(), srlPacket.comment);
 }
@@ -342,7 +343,7 @@ void WorldSession::handleLfgLockInfoOpcode([[maybe_unused]] WorldPacket& recvPac
 #if VERSION_STRING >= Cata
     const bool requestFromPlayer = recvPacket.readBit();
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_LOCK_INFO_REQUEST from {}", requestFromPlayer ? "player" : "group");
+    sLogger.debugOpcode("Received CMSG_LFG_LOCK_INFO_REQUEST from {}.", requestFromPlayer ? "player" : "group");
 
     //\todo handle player lock info and group lock info here
 #endif
@@ -398,7 +399,7 @@ void WorldSession::handleLfgLeaveOpcode(WorldPacket& /*recvPacket*/)
 #if VERSION_STRING > TBC
     const auto group = _player->getGroup();
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_LEAVE {} in group: {}", _player->getGuid(), group ? 1 : 0);
+    sLogger.debugOpcode("Received CMSG_LFG_LEAVE {} in group: {}.", _player->getGuid(), group ? 1 : 0);
 
     // Check cheating - only leader can leave the queue
     if (!group || group->GetLeader()->guid == _player->getGuid())
@@ -413,8 +414,7 @@ void WorldSession::handleLfgSearchOpcode([[maybe_unused]] WorldPacket& recvPacke
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SEARCH_LFG_JOIN for guid {} dungeon entry: {}",
-                      _player->getGuid(), srlPacket.entry);
+    sLogger.debugOpcode("Received CMSG_SEARCH_LFG_JOIN for guid {} dungeon entry: {}.", _player->getGuid(), srlPacket.entry);
 #endif
 }
 
@@ -425,8 +425,7 @@ void WorldSession::handleLfgSearchLeaveOpcode([[maybe_unused]] WorldPacket& recv
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SEARCH_LFG_LEAVE for guid {} dungeonId: {}",
-                      _player->getGuid(), srlPacket.entry);
+    sLogger.debugOpcode("Received CMSG_SEARCH_LFG_LEAVE for guid {} dungeonId: {}.", _player->getGuid(), srlPacket.entry);
 #endif
 }
 
@@ -437,7 +436,7 @@ void WorldSession::handleLfgProposalResultOpcode([[maybe_unused]] WorldPacket& r
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_PROPOSAL_RESULT guid {} proposal: {} accept: {}", 
+    sLogger.debugOpcode("Received CMSG_LFG_PROPOSAL_RESULT guid {} proposal: {} accept: {}.", 
                       _player->getGuid(), srlPacket.lfgGroupId, srlPacket.accept ? 1 : 0);
 
     sLfgMgr.UpdateProposal(srlPacket.lfgGroupId, _player->getGuid(), srlPacket.accept);
@@ -453,7 +452,7 @@ void WorldSession::handleLfgSetRolesOpcode([[maybe_unused]] WorldPacket& recvPac
 
     if (auto grp = _player->getGroup())
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_SET_ROLES: Group {}, Player {}, Roles: {}",
+        sLogger.debugOpcode("Received CMSG_LFG_SET_ROLES: Group {}, Player {}, Roles: {}.",
                           grp->GetGUID(), _player->getGuid(), srlPacket.roles);
 
         sLfgMgr.UpdateRoleCheck(grp->GetGUID(), _player->getGuid(), static_cast<uint8_t>(srlPacket.roles));
@@ -468,8 +467,7 @@ void WorldSession::handleLfgSetBootVoteOpcode([[maybe_unused]] WorldPacket& recv
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_SET_BOOT_VOTE {} agree: {}",
-                      _player->getGuid(), srlPacket.voteFor ? 1 : 0);
+    sLogger.debugOpcode("Received CMSG_LFG_SET_BOOT_VOTE {} agree: {}.", _player->getGuid(), srlPacket.voteFor ? 1 : 0);
 
     sLfgMgr.UpdateBoot(_player, srlPacket.voteFor);
 #endif
@@ -480,7 +478,7 @@ void WorldSession::handleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvPacke
 #if VERSION_STRING > TBC
     uint64_t guid = _player->getGuid();
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFD_PLAYER_LOCK_INFO_REQUEST {}", guid);
+    sLogger.debugOpcode("Received CMSG_LFD_PLAYER_LOCK_INFO_REQUEST {}.", guid);
 
     // Get Random dungeons that can be done at a certain level and expansion
     // todo FIXME - Should return seasonals (when not disabled)
@@ -514,7 +512,7 @@ void WorldSession::handleLfgTeleportOpcode([[maybe_unused]] WorldPacket& recvPac
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_TELEPORT guid {} out: {}", _player->getGuid(), srlPacket.teleportOut ? 1 : 0);
+    sLogger.debugOpcode("Received CMSG_LFG_TELEPORT guid {} out: {}.", _player->getGuid(), srlPacket.teleportOut ? 1 : 0);
     sLfgMgr.TeleportPlayer(_player, srlPacket.teleportOut, true);
 #endif
 }
@@ -524,7 +522,7 @@ void WorldSession::handleLfgPartyLockInfoRequestOpcode(WorldPacket& /*recvPacket
 #if VERSION_STRING > TBC
     uint64_t guid = _player->getGuid();
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFD_PARTY_LOCK_INFO_REQUEST guid {}", guid);
+    sLogger.debugOpcode("Received CMSG_LFD_PARTY_LOCK_INFO_REQUEST guid {}.", guid);
 
     auto grp = _player->getGroup();
     if (!grp)
