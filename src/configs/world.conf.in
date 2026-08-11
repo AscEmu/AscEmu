@@ -1,6 +1,6 @@
 ################################################################################
 # AscEmu World Configuration File
-# Last edited: 09/05/2024
+# Last edited: 08/11/2026
 ################################################################################
 
 ################################################################################
@@ -144,20 +144,65 @@
 #        0 = Trace; 1 = Debug; 2 = Minor; 3= Major;
 #        Default: 2 (Minor)
 #
-#    DebugFlags
-#        This directive controls which debug messages the server
-#        will write to console or log files. This requires to set
-#        MinimumMessageType to 1.
-#         0 = None                       128 = Spell (Effect)
-#         1 = Opcodes                    256 = Aura (Effect)
-#         2 = Map Objects                512 = ScriptMgr
-#         4 = MapCell (activity)        1024 = Database
-#         8 = VMap                      2048 = Movement
-#        16 = MMap
-#        32 = Spell
-#        64 = Aura
-#        You can combine these flags: Map + Spell + Database = 1058.
-#        Default: 0 (none)
+#    EnableOpcodeLog
+#        If this directive is turned on, debug messages related to opcodes
+#        will be written to the console or log files.
+#        Set the parameter value to 1 (enabled) or 0 (disabled).
+#        Default: 0 (disabled)
+#
+#    EnableDbTablesLog
+#        If this directive is turned on, debug messages related to database tables
+#        will be written to the console or log files.
+#        Set the parameter value to 1 (enabled) or 0 (disabled).
+#        Default: 0 (disabled)
+#
+#    EnableMapLog
+#        If this directive is turned on, debug messages related to maps
+#        will be written to the console or log files.
+#        Set the parameter value to 1 (enabled) or 0 (disabled).
+#        Default: 0 (disabled)
+#
+#    EnableMapCellLog
+#        If this directive is turned on, debug messages related to map cells
+#        will be written to the console or log files.
+#        Set the parameter value to 1 (enabled) or 0 (disabled).
+#        Default: 0 (disabled)
+#
+#    EnableMoveLog
+#        If this directive is turned on, debug messages related to movement
+#        will be written to the console or log files.
+#        Set the parameter value to 1 (enabled) or 0 (disabled).
+#        Default: 0 (disabled)
+#
+#    EnableSpellLog
+#        If this directive is turned on, debug messages related to spells
+#        will be written to the console or log files.
+#        Set the parameter value to 1 (enabled) or 0 (disabled).
+#        Default: 0 (disabled)
+#
+#    EnableSpellEffectLog
+#        If this directive is turned on, debug messages related to spell effects
+#        will be written to the console or log files.
+#        Set the parameter value to 1 (enabled) or 0 (disabled).
+#        Default: 0 (disabled)
+#
+#    EnableAuraLog
+#        If this directive is turned on, debug messages related to auras
+#        will be written to the console or log files.
+#        Set the parameter value to 1 (enabled) or 0 (disabled).
+#        Default: 0 (disabled)
+#
+#    EnableAuraEffectLog
+#        If this directive is turned on, debug messages related to aura effects
+#        will be written to the console or log files.
+#        Set the parameter value to 1 (enabled) or 0 (disabled).
+#        Default: 0 (disabled)
+#
+#    EnableScriptLog
+#        If this directive is turned on, debug messages related to scripts
+#        will be written to the console or log files.
+#        Set the parameter value to 1 (enabled) or 0 (disabled).
+#        Default: 0 (disabled)
 #
 #    EnableWorldPacketLog
 #        If this directive is turned on, a file called `world.log`
@@ -196,7 +241,16 @@
 #
 
 <Logger MinimumMessageType   = "2"
-        DebugFlags           = "0"
+        EnableOpcodeLog      = "0"
+        EnableDbTablesLog    = "0"
+        EnableMapLog         = "0"
+        EnableMapCellLog     = "0"
+        EnableMoveLog        = "0"
+        EnableSpellLog       = "0"
+        EnableSpellEffectLog = "0"
+        EnableAuraLog        = "0"
+        EnableAuraEffectLog  = "0"
+        EnableScriptLog      = "0"
         EnableWorldPacketLog = "0"
         ExtendedLogDir       = "logs"
         EnableCheaterLog     = "0"
@@ -1006,54 +1060,61 @@
 
 ################################################################################
 # BattleGround settings
-# Set Rules for Min / Max players ---- PS. Min and Max per each side.
+# Note: Set the minimum and maximum number of players on each team. (default value).
 #
-#  Defaults:
 #    Alterac Valley
-#        AV_MIN = 10
-#        AV_MAX = 40
+#        Standard number of players required for each team.
+#        Default: 10 (AV_MIN) to 40 (AV_MAX).
 #
 #    Arathi Basin
-#        AB_MIN = 5
-#        AB_MAX = 15
+#        Standard number of players required for each team.
+#        Default: 5 (AB_MIN) to 15 (AB_MAX).
 #
 #    Warsong Gulch
-#        WSG_MIN = 5
-#        WSG_MAX = 15
+#        Standard number of players required for each team.
+#        Default: 5 (WSG_MIN) to 15 (WSG_MAX).
 #
 #    Eye Of The Storm.
-#        EOTS_MIN = 5
-#        EOTS_MAX = 15
+#        Standard number of players required for each team.
+#        Default: 5 (EOTS_MIN) to 15 (EOTS_MAX).
 #
 #    Strand Of The Ancients
-#        SOTA_MIN = 5
-#        SOTA_MAX = 15
+#        Standard number of players required for each team.
+#        Default: 5 (SOTA_MIN) to 15 (SOTA_MAX).
 #
 #    Isle Of Conquest
-#        IOC_MIN = 10
-#        IOC_MAX = 40
+#        Standard number of players required for each team.
+#        Default: 10 (IOC_MIN) to 40 (IOC_MAX).
 #
-#    Random battleground system
+#
+# Random Battleground system.
+#
 #    RBG_FIRST_WIN_HONOR
-#        How many honoroable kills worth of additional honor received for
-#        winning RBG first time in a day?
+#        Additional honor received for winning a random battleground
+#        for the first time in a day, expressed as honorable kills.
 #        Default 30 (Blizzlike)
+#
 #    RBG_FIRST_WIN_ARENA
-#        Amount of arena points received for winning RBG first time in a day.
+#        Amount of arena points received for winning a random battleground
+#        for the first time in a day.
 #        Default 25
+#
 #    RBG_WIN_HONOR
-#        How many honoroable kills worth of additional honor received for
-#        winning RBG?
+#        Additional honor received for winning a random battleground,
+#        expressed as honorable kills.
 #        Default 15
+#
 #    RBG_WIN_ARENA
-#        Amount of arena points received for winning RBG.
+#        Amount of arena points received for winning a random battleground.
 #        Default 0
+#
 #    RBG_LOSE_HONOR
-#        How many honoroable kills worth of additional honor received for
-#        losing RBG?
+#        Additional honor received for losing a random battleground,
+#        expressed as honorable kills.
 #        Default 5
+#
 #    RBG_LOSE_ARENA
-#        Amount of arena points received for losing RBG.
+#        Amount of arena points received for losing a random battleground.
 #        Default 0
 #
 
@@ -1069,6 +1130,7 @@
               SOTA_MAX             = "15"
               IOC_MIN              = "10"
               IOC_MAX              = "40"
+ 
               RBG_FIRST_WIN_HONOR  = "30"
               RBG_FIRST_WIN_ARENA  = "25"
               RBG_WIN_HONOR        = "15"

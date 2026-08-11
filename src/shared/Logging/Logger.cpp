@@ -80,10 +80,13 @@ namespace AscEmu::Logging
         this->minimumMessageType = _minimumMessageType;
     }
 
-    void Logger::setDebugFlags(DebugFlags debug_flags)
-    {
-        this->aelog_debug_flags = debug_flags;
-    }
+    void Logger::setDebugFlags(DebugFlags debug_flags, bool enabled)
+{
+    if (enabled)
+        aelog_debug_flags |= debug_flags;
+    else
+        aelog_debug_flags &= ~debug_flags;
+}
 
     void Logger::log(Severity severity, MessageType messageType, std::string_view message)
     {

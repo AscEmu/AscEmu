@@ -54,7 +54,7 @@ namespace AscEmu::Logging
 
         void setMinimumMessageType(MessageType messsageType);
 
-        void setDebugFlags(DebugFlags debug_flags);
+        void setDebugFlags(DebugFlags debug_flags, bool enabled);
 
         template<typename... Args>
         inline void trace(std::string_view fmt, Args&&... args)
@@ -77,7 +77,7 @@ namespace AscEmu::Logging
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        // specialized debug helpers for frequently used logging categories: forwards to debugFlag().
+        // specialized debug helpers for frequently used logging categories.
         template<typename... Args>
         inline void debugOpcode(std::string_view fmt, Args&&... args)
         {
