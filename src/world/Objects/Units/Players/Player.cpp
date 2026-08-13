@@ -140,6 +140,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgUpdateTalentData.h"
 #include "Server/Packets/SmsgSetActiveMover.h"
 #include "Server/Packets/SmsgRaidInstanceMessage.h"
+#include "Server/Packets/SmsgInstanceResetFailed.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Warden/SpeedDetector.h"
@@ -12855,10 +12856,9 @@ void Player::sendResetInstanceFailed(uint32_t reason, uint32_t MapId)
     // 0: There are players inside the instance.
     // 1: There are players offline in your party.
     // 2: There are players in your party attempting to zone into an instance.
-    WorldPacket data(SMSG_INSTANCE_RESET_FAILED, 4);
-    data << uint32_t(reason);
-    data << uint32_t(MapId);
-    sendPacket(&data);
+
+    SmsgInstanceResetFailed failedPacket(reason, MapId);
+    getSession()->sendManagedPacket(failedPacket);
 }
 
 void Player::loadInstanceTimeRestrictions()
