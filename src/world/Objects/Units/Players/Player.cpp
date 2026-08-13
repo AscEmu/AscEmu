@@ -141,6 +141,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgSetActiveMover.h"
 #include "Server/Packets/SmsgRaidInstanceMessage.h"
 #include "Server/Packets/SmsgInstanceResetFailed.h"
+#include "Server/Packets/SmsgResetFailedNotify.h"
+#include "Server/Packets/SmsgPetTameFailure.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Warden/SpeedDetector.h"
@@ -9377,9 +9379,8 @@ void Player::sendRaidDifficultyPacket()
 
 void Player::sendResetFailedNotify(uint32_t mapid)
 {
-    WorldPacket data(SMSG_RESET_FAILED_NOTIFY, 4);
-    data << uint32_t(mapid);
-    sendPacket(&data);
+    SmsgResetFailedNotify managedPacket(mapid);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendInstanceDifficultyPacket([[maybe_unused]] uint8_t difficulty)
@@ -9426,9 +9427,8 @@ void Player::sendTotemCreatedPacket(uint8_t slot, uint64_t guid, uint32_t durati
 
 void Player::sendPetTameFailure(uint8_t result) const
 {
-    WorldPacket data(SMSG_PET_TAME_FAILURE, 1);
-    data << uint8_t(result);
-    m_session->SendPacket(&data);
+    SmsgPetTameFailure managedPacket(result);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendGossipPoiPacket(float posX, float posY, uint32_t icon, uint32_t flags, uint32_t data, std::string name)
