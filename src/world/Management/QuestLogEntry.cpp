@@ -16,6 +16,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/EventMgr.h"
 #include "Server/Script/QuestScript.hpp"
+#include "Server/Packets/SmsgQuestupdateComplete.h"
+
+using namespace AscEmu::Packets;
 
 QuestLogEntry::QuestLogEntry(QuestProperties const* questProperties, Player* player, uint8_t slot) : m_slot(slot), m_questProperties(questProperties), m_player(player)
 {
@@ -399,9 +402,8 @@ void QuestLogEntry::updatePlayerFields()
 
 void QuestLogEntry::sendQuestComplete()
 {
-    WorldPacket data(SMSG_QUESTUPDATE_COMPLETE, 4);
-    data << m_questProperties->id;
-    m_player->getSession()->SendPacket(&data);
+    SmsgQuestupdateComplete completePacket(m_questProperties->id);
+    m_player->getSession()->sendManagedPacket(completePacket);
 
     m_player->updateNearbyQuestGameObjects();
 

@@ -51,6 +51,8 @@
 #include "Server/Packets/SmsgQuestgiverQuestFailed.h"
 #include "Server/Packets/SmsgSpellStart.h"
 #include "Server/Packets/SmsgSpellGo.h"
+#include "Server/Packets/SmsgQuestupdateAddItem.h"
+#include "Server/Packets/SmsgQuestupdateAddKill.h"
 #include "Storage/WorldStrings.h"
 #include "Utilities/Strings.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
@@ -1159,30 +1161,10 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
     }
 }
 
-void QuestMgr::BuildQuestUpdateAddItem(WorldPacket* data, uint32_t itemid, uint32_t count)
-{
-    data->initialize(SMSG_QUESTUPDATE_ADD_ITEM);
-    *data << itemid;
-    *data << count;
-}
-
 void QuestMgr::SendQuestUpdateAddKill(Player* plr, uint32_t questid, uint32_t entry, uint32_t count, uint32_t tcount, uint64_t guid)
 {
-    WorldPacket data(32);
-    data.setOpcode(SMSG_QUESTUPDATE_ADD_KILL);
-    data << questid;
-    data << entry;
-    data << count;
-    data << tcount;
-    data << guid;
-    plr->getSession()->SendPacket(&data);
-}
-
-void QuestMgr::BuildQuestUpdateComplete(WorldPacket* data, QuestProperties const* qst)
-{
-    data->initialize(SMSG_QUESTUPDATE_COMPLETE);
-
-    *data << qst->id;
+    SmsgQuestupdateAddKill addPacket(questid, entry, count, tcount, guid);
+    plr->getSession()->sendManagedPacket(addPacket);
 }
 
 void QuestMgr::SendPushToPartyResponse(Player* plr, Player* pTarget, uint8_t response)
@@ -1416,11 +1398,8 @@ void QuestMgr::OnPlayerItemPickup(Player* plr, Item* item)
 
                     if (pcount < questLog->getQuestProperties()->required_itemcount[j])
                     {
-                        WorldPacket data(8);
-                        data.setOpcode(SMSG_QUESTUPDATE_ADD_ITEM);
-                        data << questLog->getQuestProperties()->required_item[j];
-                        data << uint32_t(1);
-                        plr->getSession()->SendPacket(&data);
+                        SmsgQuestupdateAddItem addPacket(questLog->getQuestProperties()->required_item[j], 1);
+                        plr->getSession()->sendManagedPacket(addPacket);
                     }
                     else
                     {

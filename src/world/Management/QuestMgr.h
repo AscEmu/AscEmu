@@ -133,8 +133,6 @@ public:
         bool isRepeatableQuestFinished(Player* plr, QuestProperties const* qst);
 
         void SendQuestUpdateAddKill(Player* plr, uint32_t questid, uint32_t entry, uint32_t count, uint32_t tcount, uint64_t guid);
-        void BuildQuestUpdateAddItem(WorldPacket* data, uint32_t itemid, uint32_t count);
-        void BuildQuestUpdateComplete(WorldPacket* data, QuestProperties const* qst);
         void BuildQuestPOIResponse(WorldPacket & data, uint32_t questid);
         void SendPushToPartyResponse(Player* plr, Player* pTarget, uint8_t response);
 
