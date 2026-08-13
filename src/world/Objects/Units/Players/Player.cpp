@@ -139,6 +139,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgCancelAutoRepeat.h"
 #include "Server/Packets/SmsgUpdateTalentData.h"
 #include "Server/Packets/SmsgSetActiveMover.h"
+#include "Server/Packets/SmsgRaidInstanceMessage.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Warden/SpeedDetector.h"
@@ -12793,30 +12794,8 @@ void Player::sendInstanceResetWarning(uint32_t mapid, InstanceDifficulty::Diffic
     else
         type = RAID_INSTANCE_WARNING_MIN_SOON;
 
-#if VERSION_STRING <= Cata
-    WorldPacket data(SMSG_RAID_INSTANCE_MESSAGE, 4 + 4 + 4 + 4);
-    data << uint32_t(type);
-    data << uint32_t(mapid);
-    data << uint32_t(difficulty);
-    data << uint32_t(time);
-
-    if (type == RAID_INSTANCE_WELCOME)
-    {
-        data << uint8_t(0); // is locked
-        data << uint8_t(0); // is extended, ignored if prev field is 0
-    }
-#else // Mop
-    WorldPacket data(SMSG_RAID_INSTANCE_MESSAGE, 4 + 4 + 4 + 4);
-    data.writeBit(0); // is locked
-    data.writeBit(0); // is extended, ignored if prev field is 0
-    data.flushBits();
-    data << uint32_t(mapid);
-    data << uint8_t(type);
-    data << uint32_t(time);
-    data << uint32_t(difficulty);
-#endif
-
-    sendPacket(&data);
+    SmsgRaidInstanceMessage messagePacket(type, mapid, difficulty, time);
+    getSession()->sendManagedPacket(messagePacket);
 }
 
 void Player::resetInstances(uint8_t method, bool isRaid)
