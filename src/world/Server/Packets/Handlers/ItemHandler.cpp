@@ -1962,7 +1962,7 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
         }
     }
 
-    SmsgSellItem managedPacket(srlPacket.vendorGuid.getRawGuid(), srlPacket.itemGuid);
+    SmsgSellItem managedPacket(srlPacket.vendorGuid, srlPacket.itemGuid, 0);
     sendManagedPacket(managedPacket);
 }
 
@@ -3266,9 +3266,6 @@ void WorldSession::sendBuyFailed(uint64_t guid, uint32_t itemid, uint8_t error)
 
 void WorldSession::sendSellItem(uint64_t vendorguid, uint64_t itemid, uint8_t error)
 {
-    WorldPacket data(SMSG_SELL_ITEM, 17);
-    data << vendorguid;
-    data << itemid;
-    data << error;
-    SendPacket(&data);
+    SmsgSellItem managedPacket(vendorguid, itemid, error);
+    sendManagedPacket(managedPacket);
 }
