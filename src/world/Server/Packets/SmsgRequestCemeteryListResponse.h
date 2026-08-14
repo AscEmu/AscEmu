@@ -18,11 +18,19 @@ namespace AscEmu::Packets
         std::vector<uint32_t> graveyards;
 
         SmsgRequestCemeteryListResponse() :
-            ManagedPacket(SMSG_REQUEST_CEMETERY_LIST_RESPONSE, 4 + graveyards.size() * 2 * 4)
+            ManagedPacket(SMSG_REQUEST_CEMETERY_LIST_RESPONSE, 4)
         {
         }
 
     protected:
+        size_t expectedSize() const override
+        {
+            constexpr size_t baseReserve = 4;
+            constexpr size_t entryReserve = 4;
+
+            return baseReserve + graveyards.size() * entryReserve;
+        }
+
         bool internalSerialise(WorldPacket& packet) override
         {
             if (m_protocol.isCata())
@@ -43,7 +51,7 @@ namespace AscEmu::Packets
                 packet.writeBit(false); //unk
 
                 for (const auto& id : graveyards)
-                    packet << id;
+                    packet << uint32_t(id);
 
                 return true;
             }

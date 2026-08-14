@@ -455,7 +455,8 @@ void WorldSession::handleSetSheathedOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    _player->setSheathType(static_cast<uint8_t>(srlPacket.type));
+    if (srlPacket.type < 3)
+        _player->setSheathType(static_cast<uint8_t>(srlPacket.type));
 }
 
 void WorldSession::handlePlayedTimeOpcode(WorldPacket& recvPacket)

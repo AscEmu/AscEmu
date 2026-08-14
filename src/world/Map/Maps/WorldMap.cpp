@@ -229,14 +229,16 @@ void WorldMap::Do()
 
     if (!m_terminateThread)
     {
-        const auto exec_start = Util::getMSTime();
+        const auto execStart = Util::getMSTime();
 
         // Time In Milliseconds ( exact Difftime Since last update Cycle )
-        const uint32_t diffTime = exec_start - m_lastUpdateTime;
+        const uint32_t diffTime = execStart - m_lastUpdateTime;
 
         //first push to world new objects
+        try
         {
             std::scoped_lock<std::mutex> lock(m_objectinsertlock);
+
             if (!m_objectinsertpool.empty())
             {
                 for (const auto& o : m_objectinsertpool)
@@ -245,9 +247,32 @@ void WorldMap::Do()
                 m_objectinsertpool.clear();
             }
         }
+        catch (const std::bad_alloc&)
+        {
+            sLogger.failure(
+                "bad_alloc during PushToWorld: mapId={}, instanceId={}",
+                getBaseMap()->getMapId(),
+                getInstanceId()
+            );
 
-        // Update Our Map
-        update(diffTime);
+            throw;
+        }
+
+        try
+        {
+            // Update Our Map
+            update(diffTime);
+        }
+        catch (const std::bad_alloc&)
+        {
+            sLogger.failure(
+                "bad_alloc during WorldMap::update: mapId={}, instanceId={}",
+                getBaseMap()->getMapId(),
+                getInstanceId()
+            );
+
+            throw;
+        }
 
         m_lastUpdateTime = Util::getMSTime();
         return;

@@ -20,14 +20,20 @@ namespace AscEmu::Packets
         std::list<std::shared_ptr<ThreatReference>> threadList;
 
         SmsgHighestThreatUpdate(WoWGuid guid, WoWGuid unitGuid) :
-            ManagedPacket(SMSG_HIGHEST_THREAT_UPDATE, 8 + 8 + ((threadList.size() + 2) * 8)),
+            ManagedPacket(SMSG_HIGHEST_THREAT_UPDATE, 32),
             guid(guid),
             unitGuid(unitGuid)
         {
         }
 
     protected:
-        size_t expectedSize() const override { return m_minimum_size; }
+        size_t expectedSize() const override
+        {
+            constexpr size_t baseReserve = 32;
+            constexpr size_t entryReserve = 8;
+
+            return baseReserve + threadList.size() * entryReserve;
+        }
 
         bool internalSerialise(WorldPacket& packet) override
         {

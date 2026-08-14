@@ -14,7 +14,7 @@ namespace AscEmu::Packets
     {
     public:
         uint32_t type;
-
+        bool hasData = false;
         CmsgSetSheathed() : CmsgSetSheathed(0)
         {
         }
@@ -29,6 +29,10 @@ namespace AscEmu::Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             packet >> type;
+
+            if (m_protocol.isMop())
+                hasData = packet.readBit();
+
             return true;
         }
     };
