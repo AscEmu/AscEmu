@@ -3213,23 +3213,23 @@ void WorldSession::handleEquipmentSetSave([[maybe_unused]] WorldPacket& data)
     if (setGUID == 0)
         setGUID = sObjectMgr.generateEquipmentSetId();
 
-    auto equipmentSet = std::make_unique<Arcemu::EquipmentSet>();
+    auto equipmentSet = std::make_unique<EquipmentSet>();
 
-    equipmentSet->SetGUID = setGUID;
+    equipmentSet->setGuid = setGUID;
 
-    data >> equipmentSet->SetID;
-    data >> equipmentSet->SetName;
-    data >> equipmentSet->IconName;
+    data >> equipmentSet->setId;
+    data >> equipmentSet->setName;
+    data >> equipmentSet->iconName;
 
     for (uint32_t i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
     {
         guid.clear();
         data >> guid;
-        equipmentSet->ItemGUID[i] = guid.getGuidLowPart();
+        equipmentSet->itemGuid[i] = guid.getGuidLowPart();
     }
 
-    const auto setId = equipmentSet->SetID;
-    if (_player->getItemInterface()->m_EquipmentSets.AddEquipmentSet(setGUID, std::move(equipmentSet)))
+    const auto setId = equipmentSet->setId;
+    if (_player->getItemInterface()->m_EquipmentSets.addEquipmentSet(setId, std::move(equipmentSet)))
     {
         sLogger.debug("Player {} successfully stored equipment set {} at slot {} ", _player->getGuidLow(), setGUID, setId);
         _player->sendEquipmentSetSaved(setId, setGUID);
@@ -3250,7 +3250,7 @@ void WorldSession::handleEquipmentSetDelete([[maybe_unused]] WorldPacket& data)
 
     data >> guid;
 
-    if (_player->getItemInterface()->m_EquipmentSets.DeleteEquipmentSet(guid.getGuidLowPart()))
+    if (_player->getItemInterface()->m_EquipmentSets.deleteEquipmentSet(guid.getGuidLowPart()))
         sLogger.debug("Equipmentset with GUID {} was successfully deleted.", guid.getGuidLowPart());
     else
         sLogger.debug("Equipmentset with GUID {} couldn't be deleted.", guid.getGuidLowPart());

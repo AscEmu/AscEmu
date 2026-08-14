@@ -143,6 +143,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgInstanceResetFailed.h"
 #include "Server/Packets/SmsgResetFailedNotify.h"
 #include "Server/Packets/SmsgPetTameFailure.h"
+#include "Server/Packets/SmsgInitWorldStates.h"
+#include "Server/Packets/SmsgEquipmentSetSaved.h"
+#include "Server/Packets/SmsgEquipmentSetList.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Warden/SpeedDetector.h"
@@ -9574,21 +9577,14 @@ void Player::sendGuildMotd()
 
 void Player::sendEquipmentSetList()
 {
-#if VERSION_STRING > TBC
-    WorldPacket data(SMSG_EQUIPMENT_SET_LIST, 1000);
-    getItemInterface()->m_EquipmentSets.FillEquipmentSetListPacket(data);
-    m_session->SendPacket(&data);
-#endif
+    SmsgEquipmentSetList managedPacket(getItemInterface()->m_EquipmentSets.getEquipmentSets());
+    m_session->sendManagedPacket(managedPacket);
 }
 
-void Player::sendEquipmentSetSaved([[maybe_unused]] uint32_t setId, [[maybe_unused]] uint32_t setGuid)
+void Player::sendEquipmentSetSaved(uint32_t setId, uint32_t setGuid)
 {
-#if VERSION_STRING > TBC
-    WorldPacket data(SMSG_EQUIPMENT_SET_SAVED, 12);
-    data << uint32_t(setId);
-    data << WoWGuid(uint64_t(setGuid));
-    m_session->SendPacket(&data);
-#endif
+    SmsgEquipmentSetSaved managedPacket(setId, setGuid);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::sendEmptyPetSpellList()
@@ -9599,11 +9595,12 @@ void Player::sendEmptyPetSpellList()
 
 void Player::sendInitialWorldstates()
 {
-#if VERSION_STRING < Cata
-    WorldPacket data(SMSG_INIT_WORLD_STATES, 100);
-    m_WorldMap->getWorldStatesHandler().BuildInitWorldStatesForZone(m_zoneId, m_areaId, data);
-    m_session->SendPacket(&data);
-#endif
+    SmsgInitWorldStates managedPacket(m_mapId, m_zoneId, m_areaId);
+    managedPacket.zoneWorldStates = m_WorldMap->getWorldStatesHandler().getWorldStatesForZone(m_zoneId);
+    managedPacket.arenaSeason = worldConfig.arena.arenaSeason;
+    managedPacket.arenaProgress = worldConfig.arena.arenaProgress;
+
+    m_session->sendManagedPacket(managedPacket);
 }
 
 bool Player::isPvpFlagSet() const
@@ -14239,7 +14236,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
     // Inventory
     getItemInterface()->mSaveItemsToDatabase(newCharacter, buf);
 
-    getItemInterface()->m_EquipmentSets.SavetoDB(buf);
+    getItemInterface()->m_EquipmentSets.saveToDB(buf);
 
     // save quest progress
     _saveQuestLogEntry(buf);
@@ -14899,7 +14896,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     _loadPlayerCooldowns(results[PlayerQuery::Cooldowns].result.get());
     _loadQuestLogEntry(results[PlayerQuery::Questlog].result.get());
     getItemInterface()->mLoadItemsFromDatabase(results[PlayerQuery::Items].result.get());
-    getItemInterface()->m_EquipmentSets.LoadfromDB(results[PlayerQuery::EquipmentSets].result.get());
+    getItemInterface()->m_EquipmentSets.loadFromDB(results[PlayerQuery::EquipmentSets].result.get());
 
 #if VERSION_STRING > WotLK
     loadVoidStorage();

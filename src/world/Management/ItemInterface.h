@@ -150,7 +150,7 @@ private:
         std::tuple<AddItemResult, std::unique_ptr<Item>> m_AddItem(std::unique_ptr<Item> itemHolder, int16_t ContainerSlot, int16_t slot);
 
     public:
-        Arcemu::EquipmentSetMgr m_EquipmentSets;
+        EquipmentSetMgr m_EquipmentSets;
         friend class ItemIterator;
         ItemInterface(Player* pPlayer);
         ~ItemInterface();

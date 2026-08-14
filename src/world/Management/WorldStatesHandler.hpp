@@ -48,15 +48,6 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////
     uint32_t GetWorldStateForZone(uint32_t _zone, uint32_t _area, uint32_t _field) const;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////
-    // Builds the initial worldstates packet, that tells the client what worldstates exist
-    // \param  uint32_t zone        -  The zone we are building the packet for
-    // \param  uint32_t area        -  The area we are building the packet for
-    // \param  WorldPacket &data  -  The packet we will fill with the worldstates data
-    //
-    // \return none
-    ////////////////////////////////////////////////////////////////////////////////////////////
-    void BuildInitWorldStatesForZone(uint32_t _zone, uint32_t _area, WorldPacket& _data) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Sets up this worldstate handler with the initial data
@@ -67,6 +58,8 @@ public:
     void InitWorldStates(std::multimap<uint32_t, WorldState> const* _states);
 
     void setObserver(WorldStatesObserver* _observer);
+
+    std::unordered_map<uint32_t, uint32_t> getWorldStatesForZone(uint32_t zone);
 
 private:
     std::unordered_map<uint32_t, std::unordered_map<uint32_t, uint32_t>> m_worldStates;

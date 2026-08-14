@@ -33,6 +33,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Server/Packets/SmsgSpellStart.h"
 #include "Server/Packets/SmsgSpellGo.h"
+#include "Server/Packets/SmsgInitWorldStates.h"
 
 using namespace AscEmu::Packets;
 
@@ -1222,14 +1223,10 @@ bool ChatCommandHandler::HandleClearWorldStatesCommand(const char* /*args*/, Wor
 
     blueSystemMessage(session, "Clearing worldstates for zone {}", zone);
 
-    WorldPacket data(SMSG_INIT_WORLD_STATES, 16);
+    SmsgInitWorldStates managedPacket(p->GetMapId(), p->getZoneId(), p->getAreaId());
+    managedPacket.clear = true;
 
-    data << uint32_t(p->GetMapId());
-    data << uint32_t(p->getZoneId());
-    data << uint32_t(p->getAreaId());
-    data << uint16_t(0);
-
-    p->sendPacket(&data);
+    p->getSession()->sendManagedPacket(managedPacket);
 
     return true;
 }

@@ -1,22 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Management/EquipmentSetMgr.h"
 
@@ -30,134 +15,113 @@
 #include "Server/DatabaseDefinition.hpp"
 #include "Utilities/Util.hpp"
 
-namespace Arcemu
+
+EquipmentSet::EquipmentSet(Field const* fields)
 {
-    EquipmentSet::EquipmentSet(Field const* fields)
+    setGuid = fields[1].asUint32();
+    setId = fields[2].asUint32();
+    setName = fields[3].asCString();
+    iconName = fields[4].asCString();
+    for (uint32_t i = 0; i < itemGuid.size(); ++i)
+        itemGuid[i] = fields[5 + i].asUint32();
+}
+
+EquipmentSetMgr::~EquipmentSetMgr() = default;
+
+EquipmentSet* EquipmentSetMgr::getEquipmentSet(uint32_t setGuid)
+{
+    auto itr = m_equipmentSets.find(setGuid);
+    if (itr != m_equipmentSets.end())
+        return itr->second.get();
+
+    return nullptr;
+}
+
+bool EquipmentSetMgr::addEquipmentSet(uint32_t setGuid, std::unique_ptr<EquipmentSet> set)
+{
+    const auto retval = m_equipmentSets.emplace(setGuid, std::move(set));
+    return retval.second;
+}
+
+bool EquipmentSetMgr::deleteEquipmentSet(uint32_t setGuid)
+{
+    auto itr = m_equipmentSets.find(setGuid);
+    if (itr != m_equipmentSets.end())
     {
-        SetGUID = fields[1].asUint32();
-        SetID = fields[2].asUint32();
-        SetName = fields[3].asCString();
-        IconName = fields[4].asCString();
-        for (uint32_t i = 0; i < ItemGUID.size(); ++i)
-            ItemGUID[i] = fields[5 + i].asUint32();
+        m_equipmentSets.erase(itr);
+        return true;
     }
 
-    EquipmentSetMgr::~EquipmentSetMgr() = default;
+    return false;
+}
 
-    EquipmentSet* EquipmentSetMgr::GetEquipmentSet(uint32_t id)
+bool EquipmentSetMgr::loadFromDB(QueryResult* result)
+{
+    if (result == nullptr)
+        return false;
+
+    uint32_t setcount = 0;
+
+    do
     {
-        EquipmentSetStorage::iterator itr;
-
-        itr = EquipmentSets.find(id);
-
-        if (itr != EquipmentSets.end())
-            return itr->second.get();
-        else
-            return NULL;
-    }
-
-    bool EquipmentSetMgr::AddEquipmentSet(uint32_t setGUID, std::unique_ptr<EquipmentSet> set)
-    {
-        const auto retval = EquipmentSets.emplace(setGUID, std::move(set));
-        return retval.second;
-    }
-
-    bool EquipmentSetMgr::DeleteEquipmentSet(uint32_t setGUID)
-    {
-        auto itr = EquipmentSets.find(setGUID);
-        if (itr != EquipmentSets.end())
+        if (setcount >= 10)
         {
-            EquipmentSets.erase(itr);
+            sLogger.failure("There were more than 10 equipment sets for GUID: {}", m_ownerGuid);
             return true;
         }
-        else
-            return false;
-    }
 
-    bool EquipmentSetMgr::LoadfromDB(QueryResult* result)
-    {
-        if (result == NULL)
-            return false;
+        Field* fields = result->fetch();
 
-        uint32_t setcount = 0;
-
-        do
-        {
-            if (setcount >= 10)
-            {
-                sLogger.failure("There were more than 10 equipment sets for GUID: {}", ownerGUID);
-                return true;
-            }
-
-            Field* fields = result->fetch();
-
-            EquipmentSets.try_emplace(fields[1].asUint32(), Util::LazyInstanceCreator([fields] {
-                return std::make_unique<EquipmentSet>(fields);
+        m_equipmentSets.try_emplace(fields[1].asUint32(), Util::LazyInstanceCreator([fields] {
+            return std::make_unique<EquipmentSet>(fields);
             }));
 
-            setcount++;
-        }
-        while (result->nextRow());
+        setcount++;
+    } while (result->nextRow());
 
-        return true;
-    }
+    return true;
+}
 
-    bool EquipmentSetMgr::SavetoDB(QueryBuffer* buf)
+bool EquipmentSetMgr::saveToDB(QueryBuffer* bufffer)
+{
+    if (bufffer == nullptr)
+        return false;
+
+    std::stringstream ds;
+    ds << "DELETE FROM equipmentsets WHERE ownerguid = ";
+    ds << m_ownerGuid;
+
+    bufffer->addQueryNA(ds.str().c_str());
+
+    for (EquipmentSetStorage::iterator itr = m_equipmentSets.begin(); itr != m_equipmentSets.end(); ++itr)
     {
-        if (buf == NULL)
-            return false;
+        const auto& set = itr->second;
 
-        std::stringstream ds;
-        ds << "DELETE FROM equipmentsets WHERE ownerguid = ";
-        ds << ownerGUID;
+        std::stringstream ss;
 
-        buf->addQueryNA(ds.str().c_str());
+        ss << "INSERT INTO equipmentsets VALUES('";
+        ss << m_ownerGuid << "','";
+        ss << set->setGuid << "','";
+        ss << set->setId << "','";
+        ss << CharacterDatabase.escapeString(set->setName) << "','";
+        ss << set->iconName << "'";
 
-        for (EquipmentSetStorage::iterator itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
+        for (uint32_t j = 0; j < set->itemGuid.size(); ++j)
         {
-            const auto& set = itr->second;
-
-            std::stringstream ss;
-
-            ss << "INSERT INTO equipmentsets VALUES('";
-            ss << ownerGUID << "','";
-            ss << set->SetGUID << "','";
-            ss << set->SetID << "','";
-            ss << CharacterDatabase.escapeString(set->SetName) << "','";
-            ss << set->IconName << "'";
-
-            for (uint32_t j = 0; j < set->ItemGUID.size(); ++j)
-            {
-                ss << ",'";
-                ss << set->ItemGUID[j];
-                ss << "'";
-            }
-
-            ss << ")";
-
-            buf->addQueryNA(ss.str().c_str());
+            ss << ",'";
+            ss << set->itemGuid[j];
+            ss << "'";
         }
 
-        return true;
+        ss << ")";
+
+        bufffer->addQueryNA(ss.str().c_str());
     }
 
-    void EquipmentSetMgr::FillEquipmentSetListPacket(WorldPacket& data)
-    {
-        data << uint32_t(EquipmentSets.size());
+    return true;
+}
 
-        for (EquipmentSetStorage::iterator itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
-        {
-            const auto& set = itr->second;
-
-            data << WoWGuid(uint64_t(set->SetGUID));
-            data << uint32_t(set->SetID);
-            data << std::string(set->SetName);
-            data << std::string(set->IconName);
-
-            for (uint32_t i = 0; i < set->ItemGUID.size(); ++i)
-            {
-                data << WoWGuid(uint64_t(WoWGuid::createItemGuid(set->ItemGUID[i])));
-            }
-        }
-    }
+const EquipmentSetStorage& EquipmentSetMgr::getEquipmentSets() const noexcept
+{
+    return m_equipmentSets;
 }
