@@ -39,6 +39,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgMessageChat.h"
+#include "Server/Packets/SmsgMonsterMove.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
@@ -49,6 +50,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Random.hpp"
 #include "Server/PacketBroadcast.hpp"
+
+using namespace AscEmu::Packets;
 
 int LuaUnit::GetDisplay(lua_State* L, Unit* ptr)
 {
@@ -1961,20 +1964,10 @@ int LuaUnit::SetPosition(lua_State* L, Unit* ptr)
     ptr->setFacing(o);
     ptr->SetOrientation(o);
 
-    WorldPacket data(SMSG_MONSTER_MOVE, 50);
-    data << ptr->GetNewGUID();
-    data << uint8_t(0);
-    data << ptr->GetPositionX();
-    data << ptr->GetPositionY();
-    data << ptr->GetPositionZ();
-    data << Util::getMSTime();
-    data << uint8_t(0x00);
-    data << uint32_t(256);
-    data << uint32_t(1);
-    data << uint32_t(1);
-    data << x << y << z;
+    SmsgMonsterMove managedPacket(ptr->GetNewGUID(), ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ(),
+        Util::getMSTime(), uint32_t(256), uint32_t(1), x, y, z);
+    PacketBroadcast::sendToSet(*ptr, managedPacket, true);
 
-    ptr->sendMessageToSet(&data, true);
     ptr->SetPosition(x, y, z, o, true);
     return 0;
 }
@@ -4848,20 +4841,10 @@ int LuaUnit::MovePlayerTo(lua_State* L, Unit* ptr)
     ptr->SetOrientation(o);
     const float distance = ptr->CalcDistance(ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ(), x, y, z);
     const uint32_t moveTime = uint32_t(distance / moveSpeed);
-    WorldPacket data(SMSG_MONSTER_MOVE, 50);
-    data << ptr->GetNewGUID();
-    data << uint8_t(0);
-    data << ptr->GetPositionX();
-    data << ptr->GetPositionY();
-    data << ptr->GetPositionZ();
-    data << Util::getMSTime();
-    data << uint8_t(0x00);
-    data << uint32_t(mov_flag);
-    data << moveTime;
-    data << uint32_t(1);
-    data << x << y << z;
+    SmsgMonsterMove managedPacket(ptr->GetNewGUID(), ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ(),
+        Util::getMSTime(), mov_flag, moveTime, x, y, z);
+    PacketBroadcast::sendToSet(*ptr, managedPacket, true);
 
-    ptr->sendMessageToSet(&data, true);
     ptr->SetPosition(x, y, z, o);
     return 0;
 }
@@ -6300,21 +6283,11 @@ int LuaUnit::TeleportCreature(lua_State* L, Unit* ptr)
     const float y = CHECK_FLOAT(L, 2);
     const float z = CHECK_FLOAT(L, 3);
     ptr->SetPosition(x, y, z, ptr->GetOrientation());
-    WorldPacket data(SMSG_MONSTER_MOVE, 50);
-    data << ptr->GetNewGUID();
-    data << uint8_t(0);
-    data << ptr->GetPositionX();
-    data << ptr->GetPositionY();
-    data << ptr->GetPositionZ();
-    data << Util::getMSTime();
-    data << uint8_t(0x0);
-    data << uint32_t(0x100);
-    data << uint32_t(1);
-    data << uint32_t(1);
-    data << x;
-    data << y;
-    data << z;
-    ptr->sendMessageToSet(&data, false);
+
+    SmsgMonsterMove managedPacket(ptr->GetNewGUID(), ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ(),
+        Util::getMSTime(), uint32_t(0x100), uint32_t(1), x, y, z);
+    PacketBroadcast::sendToSet(*ptr, managedPacket, false);
+
     return 0;
 }
 
