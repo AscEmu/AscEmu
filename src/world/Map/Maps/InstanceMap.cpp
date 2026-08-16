@@ -16,11 +16,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Definitions.h"
 #include "Server/Opcodes.hpp"
+#include "Server/Packets/SmsgInstanceLockWarningQuery.h"
+#include "Server/Packets/SmsgInstanceSaveCreated.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/Script/InstanceScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+
+using namespace AscEmu::Packets;
 
 InstanceMap::InstanceMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t InstanceId, uint8_t SpawnMode, PlayerTeam InstanceTeam)
     : WorldMap(baseMap, id, expiry, InstanceId, SpawnMode), instanceTeam(InstanceTeam)
@@ -102,9 +106,8 @@ void InstanceMap::permBindAllPlayers()
         else
         {
             player->bindToInstance(save, true);
-            WorldPacket data(SMSG_INSTANCE_SAVE_CREATED, 4);
-            data << uint32_t(0);
-            player->sendPacket(&data);
+            SmsgInstanceSaveCreated managedPacket;
+            player->getSession()->sendManagedPacket(managedPacket);
 #if VERSION_STRING > TBC
             player->getSession()->sendCalendarRaidLockout(save, true);
 #endif
@@ -186,11 +189,8 @@ bool InstanceMap::addPlayerToMap(Player* player)
                         // players also become permanently bound when they enter
                         if (groupBind->perm)
                         {
-                            WorldPacket data(SMSG_INSTANCE_LOCK_WARNING_QUERY, 9);
-                            data << uint32_t(60000);
-                            data << uint32_t(getScript() ? getScript()->getCompletedEncounterMask() : 0);
-                            data << uint8_t(0);
-                            player->sendPacket(&data);
+                            SmsgInstanceLockWarningQuery managedPacket{ uint32_t(getScript() ? getScript()->getCompletedEncounterMask() : 0) };
+                            player->getSession()->sendManagedPacket(managedPacket);
                             player->setPendingBind(mapSave->getInstanceId(), 60000);
                         }
                     }
