@@ -14,7 +14,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/Guild/Guild.hpp"
 #include "Management/ObjectMgr.hpp"
+#include "Server/Packets/SmsgLfGuildApplicantListUpdated.h"
+#include "Server/Packets/SmsgLfGuildApplicationsListChanged.h"
+#include "Server/PacketBroadcast.hpp"
 #include "Storage/WDB/WDBStores.hpp"
+
+using namespace AscEmu::Packets;
 
 GuildFinderMgr& GuildFinderMgr::getInstance()
 {
@@ -319,18 +324,18 @@ void GuildFinderMgr::deleteGuild(uint32_t guildId)
 
 void GuildFinderMgr::sendApplicantListUpdate(Guild& guild)
 {
-    WorldPacket data(SMSG_LF_GUILD_APPLICANT_LIST_UPDATED, 0);
+    SmsgLfGuildApplicantListUpdated managedPacket;
     if (Player* player = sObjectMgr.getPlayer(WoWGuid::getGuidLowPartFromUInt64(guild.getLeaderGUID())))
     {
-        player->sendMessageToSet(&data, false);
+        PacketBroadcast::sendToSet(*player, managedPacket, false);
     }
 
-    guild.broadcastPacketToRank(&data, GR_OFFICER);
+    guild.broadcastPacketToRank(managedPacket.serialise().get(), GR_OFFICER);
 }
 
 void GuildFinderMgr::sendMembershipRequestListUpdate(Player& player)
 {
-    WorldPacket data(SMSG_LF_GUILD_APPLICATIONS_LIST_CHANGED, 0);
-    player.sendMessageToSet(&data, false);
+    SmsgLfGuildApplicationsListChanged managedPacket;
+    PacketBroadcast::sendToSet(player, managedPacket, false);
 }
 #endif
