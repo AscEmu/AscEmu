@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/SmsgArenaError.h"
 #include "Server/Packets/CmsgBattlemasterJoin.h"
+#include "Server/Packets/SmsgBattlefieldList.h"
 #include "Server/Packets/SmsgGroupJoinedBattleground.h"
 #include "Server/Packets/SmsgBattlefieldStatus.h"
 #include "Storage/WorldStrings.h"
@@ -71,113 +72,37 @@ void BattlegroundManager::registerMapForBgType(uint32_t type, uint32_t map)
 }
 
 #if VERSION_STRING <= WotLK
-void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, uint32_t battlegroundType, [[maybe_unused]] uint8_t from)
+void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, uint32_t battlegroundType, uint8_t from)
 {
-    WorldPacket data(SMSG_BATTLEFIELD_LIST, 18);
+    SmsgBattlefieldList managedPacket;
+    managedPacket.playerGuid = session->GetPlayer()->getGuid();
+    managedPacket.from = from;
+    managedPacket.battlegroundType = battlegroundType;
 
-#if VERSION_STRING == WotLK
-    // Send 0 instead of GUID when using the BG UI instead of Battlemaster
-    if (from == 0)
-        data << uint64_t(session->GetPlayer()->getGuid());
-    else
-        data << uint64_t(0);
-
-    data << from;
-    data << uint32_t(battlegroundType);                                     // typeid
-
-    data << uint8_t(0);                                                     // unk
-    data << uint8_t(0);                                                     // unk
-
-    // Rewards
-    data << uint8_t(0);                                                     // 3.3.3 hasWin
-    data << uint32_t(0);                                                    // 3.3.3 winHonor
-    data << uint32_t(0);                                                    // 3.3.3 winArena
-    data << uint32_t(0);                                                    // 3.3.3 lossHonor
-
-    uint8_t isRandom = battlegroundType == BattlegroundDef::TYPE_RANDOM;
-    data << uint8_t(isRandom);                                              // 3.3.3 isRandom
-
-    // Random bgs
-    if (isRandom == 1)
+    if (battlegroundType == BattlegroundDef::TYPE_RANDOM)
     {
-        auto hasWonRbgToday = session->GetPlayer()->hasWonRbgToday();
-        uint32_t honorPointsForWinning, honorPointsForLosing, arenaPointsForWinning, arenaPointsForLosing;
+        managedPacket.hasWonRbgToday = session->GetPlayer()->hasWonRbgToday();
+        uint32_t arenaPointsForLosing;
 
-        session->GetPlayer()->fillRandomBattlegroundReward(true, honorPointsForWinning, arenaPointsForWinning);
-        session->GetPlayer()->fillRandomBattlegroundReward(false, honorPointsForLosing, arenaPointsForLosing);
-
-        // rewards
-        data << uint8_t(hasWonRbgToday);
-        data << uint32_t(honorPointsForWinning);
-        data << uint32_t(arenaPointsForWinning);
-        data << uint32_t(honorPointsForLosing);
+        session->GetPlayer()->fillRandomBattlegroundReward(true, managedPacket.honorPointsForWinning, managedPacket.arenaPointsForWinning);
+        session->GetPlayer()->fillRandomBattlegroundReward(false, managedPacket.honorPointsForLosing, arenaPointsForLosing);
     }
 
-    if (Battleground::isTypeArena(battlegroundType))
+    if (!Battleground::isTypeArena(battlegroundType))
     {
-        data << uint32_t(0);
-        session->SendPacket(&data);
-        return;
-    }
-
-    if (battlegroundType >= BATTLEGROUND_NUM_TYPES) // VLack: Nasty hackers might try to abuse this packet to crash us...
-        return;
-
-    uint32_t Count = 0;
-    const size_t pos = data.wpos();
-
-    data << uint32_t(0); // Count
-
-    // Append the battlegrounds
-    std::lock_guard instanceLock(m_instanceLock);
-    for (auto itr : m_instances[battlegroundType])
-    {
-        if (itr.second->CanPlayerJoin(session->GetPlayer(), battlegroundType) && !itr.second->hasEnded())
-        {
-            data << uint32_t(itr.first);
-            ++Count;
-        }
-    }
-
-    data.put<uint32_t>(pos, Count);
-#elif VERSION_STRING <= TBC
-
-    data << uint64_t(session->GetPlayer()->getGuid());
-    data << uint32_t(battlegroundType);
-
-    if (Battleground::isTypeArena(battlegroundType))
-    {
-        data << uint8_t(5);
-        data << uint32_t(0);
-    }
-    else
-    {
-        data << uint8_t(0);
-
         if (battlegroundType >= BATTLEGROUND_NUM_TYPES) // VLack: Nasty hackers might try to abuse this packet to crash us...
             return;
-
-        uint32_t Count = 0;
-        const size_t pos = data.wpos();
-
-        data << uint32_t(0); // Count
 
         // Append the battlegrounds
         std::lock_guard instanceLock(m_instanceLock);
         for (auto itr : m_instances[battlegroundType])
         {
             if (itr.second->CanPlayerJoin(session->GetPlayer(), battlegroundType) && !itr.second->hasEnded())
-            {
-                data << uint32_t(itr.first);
-                ++Count;
-            }
+                managedPacket.bgInstanceIds.push_back(itr.first);
         }
-
-        data.put<uint32_t>(pos, Count);
     }
-#endif
 
-    session->SendPacket(&data);
+    session->sendManagedPacket(managedPacket);
 }
 #else
 void BattlegroundManager::handleBattlegroundListPacket(WoWGuid& wowGuid, WorldSession* session, uint32_t battlegroundType)
@@ -187,7 +112,9 @@ void BattlegroundManager::handleBattlegroundListPacket(WoWGuid& wowGuid, WorldSe
     if (session->m_currMsTime - session->m_loginTime < 5 * 1000)
         return;
 
-    std::vector<uint32_t> _bgList;
+    SmsgBattlefieldList managedPacket;
+    managedPacket.guid = wowGuid;
+    managedPacket.battlegroundType = battlegroundType;
 
     std::lock_guard instanceLock(m_instanceLock);
     for (auto itr : m_instances[battlegroundType])
@@ -196,51 +123,11 @@ void BattlegroundManager::handleBattlegroundListPacket(WoWGuid& wowGuid, WorldSe
         {
             if (session->GetPlayer()->getLevelGrouping() != itr.second->getLevelGroup())
                 continue;
-            _bgList.push_back(itr.second->getId());
+            managedPacket.bgInstanceIds.push_back(itr.second->getId());
         }
     }
 
-    WorldPacket data(SMSG_BATTLEFIELD_LIST, 38 + _bgList.size());
-
-    data << int32_t(0);
-    data << int32_t(0);
-    data << int32_t(0);
-    data << int32_t(battlegroundType);
-    data << int32_t(0);
-    data << int32_t(0);
-    data << int32_t(0);
-    data << uint8_t(80);
-    data << uint8_t(10);
-
-    data.writeBit(wowGuid[0]);
-    data.writeBit(wowGuid[1]);
-    data.writeBit(wowGuid[7]);
-    data.writeBit(0);
-    data.writeBit(0);
-    data.writeBits(_bgList.size(), 24);
-    data.writeBit(wowGuid[6]);
-    data.writeBit(wowGuid[4]);
-    data.writeBit(wowGuid[2]);
-    data.writeBit(wowGuid[3]);
-    data.writeBit(1);
-    data.writeBit(wowGuid[5]);
-    data.writeBit(0);
-    data.flushBits();
-
-    data.writeByteSeq(wowGuid[6]);
-    data.writeByteSeq(wowGuid[1]);
-    data.writeByteSeq(wowGuid[7]);
-    data.writeByteSeq(wowGuid[5]);
-
-    for (int32_t bgId : _bgList)
-        data << int32_t(bgId);
-
-    data.writeByteSeq(wowGuid[0]);
-    data.writeByteSeq(wowGuid[2]);
-    data.writeByteSeq(wowGuid[4]);
-    data.writeByteSeq(wowGuid[3]);
-
-    session->SendPacket(&data);
+    session->sendManagedPacket(managedPacket);
 }
 #endif
 
