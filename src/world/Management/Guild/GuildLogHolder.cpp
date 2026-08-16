@@ -48,9 +48,17 @@ void GuildLogHolder::addEvent(std::unique_ptr<GuildLogEntry> entry)
 
 void GuildLogHolder::writeLogHolderPacket(WorldPacket& data) const
 {
-#if VERSION_STRING >= Cata
+#if VERSION_STRING == Cata
     ByteBuffer buffer;
     data.writeBits(mLog.size(), 23);
+    for (GuildLog::const_iterator itr = mLog.begin(); itr != mLog.end(); ++itr)
+        (*itr)->writeGuildLogPacket(data, buffer);
+
+    data.flushBits();
+    data.append(buffer);
+#elif VERSION_STRING == Mop
+    ByteBuffer buffer;
+    data.writeBits(mLog.size(), 21);
     for (GuildLog::const_iterator itr = mLog.begin(); itr != mLog.end(); ++itr)
         (*itr)->writeGuildLogPacket(data, buffer);
 

@@ -285,10 +285,10 @@ struct GuildReward
 };
 
 uint32_t const minNewItemLevel[4] = { 61, 90, 200, 353 };
-uint32_t const guildChallengeGoldReward[4] = { 0, 250, 1000, 500 };
-uint32_t const guildChallengeMaxLevelGoldReward[4] = { 0, 125, 500, 250 };
-uint32_t const guildChallengeXPReward[4] = { 0, 300000, 3000000, 1500000 };
-uint32_t const guildChallengesPerWeek[4] = { 0, 7, 1, 3 };
+uint32_t const guildChallengeWeeklyMaximum[6] = { 0, 7, 1, 3, 15, 3 };
+uint32_t const guildChallengeGoldReward[6] = { 0, 125, 500, 250, 125, 250 };
+uint32_t const guildChallengeMaxLevelGoldReward[6] = { 0, 250, 1000, 500, 250, 500 };
+uint32_t const guildChallengeXPReward[6] = { 0, 300000, 3000000, 1500000, 50000, 1000000 };
 
 inline std::string _GetGuildEventString(GuildEvents event)
 {

@@ -23,35 +23,22 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLfgRoleChosen.h"
 #include "Server/Packets/CmsgSearchLfgJoin.h"
 #include "Server/Packets/CmsgSearchLfgLeave.h"
+#include "Server/Packets/SmsgLfgDisabled.h"
+#include "Server/Packets/SmsgLfgJoinResult.h"
+#include "Server/Packets/SmsgLfgUpdatePlayer.h"
+#include "Server/Packets/SmsgLfgUpdateParty.h"
+#include "Server/Packets/SmsgLfgRoleCheckUpdate.h"
+#include "Server/Packets/SmsgLfgQueueStatus.h"
+#include "Server/Packets/SmsgLfgPlayerReward.h"
+#include "Server/Packets/SmsgLfgBootProposalUpdate.h"
+#include "Server/Packets/SmsgLfgProposalUpdate.h"
+#include "Server/Packets/SmsgLfgPlayerInfo.h"
+#include "Server/Packets/SmsgLfgPartyInfo.h"
 #include "Server/Script/InstanceScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 
 using namespace AscEmu::Packets;
-
-void BuildPlayerLockDungeonBlock(WorldPacket& data, const LfgLockMap& lockMap)
-{
-    sLogger.debug("BUILD PLAYER LOCK DUNGEON BLOCK");
-
-    data << uint32_t(lockMap.size());
-    for (const auto& lock : lockMap)
-    {
-        data << uint32_t(lock.first);
-        data << uint32_t(lock.second);
-    }
-}
-
-void BuildPartyLockDungeonBlock(WorldPacket& data, const LfgLockPartyMap& lockMap)
-{
-    sLogger.debug("BUILD PARTY LOCK DUNGEON BLOCK");
-
-    data << uint8_t(lockMap.size());
-    for (const auto&  lock : lockMap)
-    {
-        data << uint64_t(lock.first);
-        BuildPlayerLockDungeonBlock(data, lock.second);
-    }
-}
 
 //not used cata
 void WorldSession::sendLfgUpdateSearch([[maybe_unused]] bool update)
@@ -67,8 +54,8 @@ void WorldSession::sendLfgDisabled()
 {
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_DISABLED {}", _player->getGuid());
 
-    WorldPacket data(SMSG_LFG_DISABLED, 0);
-    SendPacket(&data);
+    SmsgLfgDisabled managedPacket;
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::sendLfgOfferContinue([[maybe_unused]] uint32_t dungeonEntry)
@@ -90,19 +77,10 @@ void WorldSession::sendLfgTeleportError([[maybe_unused]] uint8_t error)
 void WorldSession::sendLfgJoinResult([[maybe_unused]] const LfgJoinResultData& joinData)
 {
 #if VERSION_STRING > TBC
-    uint32_t size = 0;
-    for (auto lock : joinData.lockmap)
-        size += 8 + 4 + uint32_t(lock.second.size()) * (4 + 4);
-
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_JOIN_RESULT {} heckResult: {} checkValue: {}", _player->getGuid(), joinData.result, joinData.state);
 
-    WorldPacket data(SMSG_LFG_JOIN_RESULT, 4 + 4 + size);
-
-    data << uint32_t(joinData.result); // Check Result
-    data << uint32_t(joinData.state); // Check Value
-    if (!joinData.lockmap.empty())
-        BuildPartyLockDungeonBlock(data, joinData.lockmap);
-    SendPacket(&data);
+    SmsgLfgJoinResult managedPacket(uint32_t(joinData.result), uint32_t(joinData.state), joinData.lockmap, _player->getGuid());
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -127,30 +105,10 @@ void WorldSession::sendLfgUpdatePlayer([[maybe_unused]] const LfgUpdateData& upd
             break;
     }
 
-    uint64_t guid = _player->getGuid();
-    uint8_t size = uint8_t(updateData.dungeons.size());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_UPDATE_PLAYER {} updatetype: {}", _player->getGuid(), updateData.updateType);
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_UPDATE_PLAYER {} updatetype: {}", guid, updateData.updateType);
-
-    WorldPacket data(SMSG_LFG_UPDATE_PLAYER, 1 + 1 + (extrainfo ? 1 : 0) * (1 + 1 + 1 + 1 + size * 4 + updateData.comment.length()));
-
-    data << uint8_t(updateData.updateType);       // Lfg Update type
-    data << uint8_t(extrainfo);                   // Extra info
-    if (extrainfo)
-    {
-        data << uint8_t(queued);                  // Join the queue
-        data << uint8_t(0);                       // unk - Always 0
-        data << uint8_t(0);                       // unk - Always 0
-        data << uint8_t(size);
-        if (size)
-        {
-            for (auto dungeonEntry : updateData.dungeons)
-                data << uint32_t(dungeonEntry);
-        }
-
-        data << updateData.comment;
-    }
-    SendPacket(&data);
+    SmsgLfgUpdatePlayer managedPacket(uint8_t(updateData.updateType), uint8_t(extrainfo), uint8_t(queued), updateData.dungeons, updateData.comment);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -183,34 +141,10 @@ void WorldSession::sendLfgUpdateParty([[maybe_unused]] const LfgUpdateData& upda
             break;
     }
 
-    uint8_t dungeonSize = uint8_t(updateData.dungeons.size());
-
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_UPDATE_PARTY {} updatetype: {}", _player->getGuid(), updateData.updateType);
 
-    WorldPacket data(SMSG_LFG_UPDATE_PARTY, 1 + 1 + (hasExtraInfo ? 1 : 0) * (1 + 1 + 1 + 1 + 1 + dungeonSize * 4 + updateData.comment.length()));
-
-    data << uint8_t(updateData.updateType);         // Lfg Update type
-    data << uint8_t(hasExtraInfo);                  // Extra info
-    if (hasExtraInfo)
-    {
-        data << uint8_t(isJoining);                 // LFG Join
-        data << uint8_t(isQueued);                  // Join the queue
-        data << uint8_t(0);                         // unk - Always 0
-        data << uint8_t(0);                         // unk - Always 0
-        for (uint8_t i = 0; i < 3; ++i)
-            data << uint8_t(0);                     // unk - Always 0
-
-        data << uint8_t(dungeonSize);
-
-        if (dungeonSize)
-        {
-            for (auto dungeonEntry : updateData.dungeons)
-                data << uint32_t(dungeonEntry);
-        }
-
-        data << updateData.comment;
-    }
-    SendPacket(&data);
+    SmsgLfgUpdateParty managedPacket(uint8_t(updateData.updateType), uint8_t(hasExtraInfo), uint8_t(isJoining), uint8_t(isQueued), updateData.dungeons, updateData.comment);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -238,57 +172,8 @@ void WorldSession::sendLfgRoleCheckUpdate([[maybe_unused]] const LfgRoleCheck* p
 
     sLogger.debug("Sent SMSG_LFG_ROLE_CHECK_UPDATE {}", _player->getGuid());
 
-    WorldPacket data(SMSG_LFG_ROLE_CHECK_UPDATE, 4 + 1 + 1 + dungeons.size() * 4 + 1 + pRoleCheck->roles.size() * (8 + 1 + 4 + 1));
-
-    data << uint32_t(pRoleCheck->state);                                // Check result
-    data << uint8_t(pRoleCheck->state == LFG_ROLECHECK_INITIALITING);
-    data << uint8_t(dungeons.size());                                   // Number of dungeons
-#if VERSION_STRING < Cata
-    if (!dungeons.empty())
-    {
-        for (auto dungeonEntry : dungeons)
-        {
-            auto dungeon = sLFGDungeonStore.lookupEntry(dungeonEntry);
-            data << uint32_t(dungeon ? dungeon->Entry() : 0);
-        }
-    }
-#endif
-
-    data << uint8_t(pRoleCheck->roles.size());                          // Players in group
-    if (!pRoleCheck->roles.empty())
-    {
-        // Leader info MUST be sent 1st :S
-        uint64_t guid = pRoleCheck->leader;
-        uint8_t roles = pRoleCheck->roles.find(guid)->second;
-        data << uint64_t(guid);                                         // Guid
-        data << uint8_t(roles > 0);                                     // Ready
-        data << uint32_t(roles);                                        // Roles
-
-        WoWGuid wowGuid;
-        wowGuid.init(guid);
-
-        Player* player = sObjectMgr.getPlayer(wowGuid.getGuidLowPart());
-        data << uint8_t(player ? player->getLevel() : 0);               // Level
-
-        for (const auto rolePair : pRoleCheck->roles)
-        {
-            if (rolePair.first == pRoleCheck->leader)
-                continue;
-
-            WoWGuid guidItr;
-            guidItr.init(rolePair.first);
-
-            guid = rolePair.first;
-            roles = rolePair.second;
-            data << uint64_t(guid);                                     // Guid
-            data << uint8_t(roles > 0);                                 // Ready
-            data << uint32_t(roles);                                    // Roles
-
-            player = sObjectMgr.getPlayer(guidItr.getGuidLowPart());
-            data << uint8_t(player ? player->getLevel() : 0);           // Level
-        }
-    }
-    SendPacket(&data);
+    SmsgLfgRoleCheckUpdate managedPacket(uint32_t(pRoleCheck->state), dungeons, pRoleCheck->roles, pRoleCheck->leader);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -297,20 +182,8 @@ void WorldSession::sendLfgQueueStatus([[maybe_unused]] uint32_t dungeon, [[maybe
 #if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_QUEUE_STATUS {} dungeon: {} - waitTime: {} - avgWaitTime: {} - waitTimeTanks: {} - waitTimeHealer: {} - waitTimeDps: {} - queuedTime: {} - tanks: {} - healers: {} - dps: {}", _player->getGuid(), dungeon, waitTime, avgWaitTime, waitTimeTanks, waitTimeHealer, waitTimeDps, queuedTime, tanks, healers, dps);
 
-    WorldPacket data(SMSG_LFG_QUEUE_STATUS, 4 + 4 + 4 + 4 + 4 + 4 + 1 + 1 + 1 + 4);
-
-    data << uint32_t(dungeon);                                          // Dungeon
-    data << int32_t(avgWaitTime);                                       // Average Wait time
-    data << int32_t(waitTime);                                          // Wait Time
-    data << int32_t(waitTimeTanks);                                     // Wait Tanks
-    data << int32_t(waitTimeHealer);                                    // Wait Healers
-    data << int32_t(waitTimeDps);                                       // Wait Dps
-    data << uint8_t(tanks);                                             // Tanks needed
-    data << uint8_t(healers);                                           // Healers needed
-    data << uint8_t(dps);                                               // Dps needed
-    data << uint32_t(queuedTime);                                       // Player wait time in queue
-
-    SendPacket(&data);
+    SmsgLfgQueueStatus managedPacket(dungeon, avgWaitTime, waitTime, waitTimeTanks, waitTimeHealer, waitTimeDps, tanks, healers, dps, queuedTime, _player->getGuid());
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -320,37 +193,10 @@ void WorldSession::sendLfgPlayerReward([[maybe_unused]] uint32_t RandomDungeonEn
     if (!RandomDungeonEntry || !DungeonEntry || !qReward)
         return;
 
-    uint8_t itemNum = uint8_t(qReward->GetRewardItemCount());
-
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_PLAYER_REWARD {} rdungeonEntry: {} - sdungeonEntry: {} - done: {}", _player->getGuid(), RandomDungeonEntry, DungeonEntry, done);
 
-    WorldPacket data(SMSG_LFG_PLAYER_REWARD, 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4 + 1 + itemNum * (4 + 4 + 4));
-
-    data << uint32_t(RandomDungeonEntry);                               // Random Dungeon Finished
-    data << uint32_t(DungeonEntry);                                     // Dungeon Finished
-    data << uint8_t(done);
-    data << uint32_t(1);
-    data << uint32_t(qReward->reward_money);
-    data << uint32_t(qReward->reward_xp);
-    data << uint32_t(reward->reward[done].variableMoney);
-    data << uint32_t(reward->reward[done].variableXP);
-    data << uint8_t(itemNum);
-
-    if (itemNum)
-    {
-        for (uint8_t i = 0; i < 4; ++i)
-        {
-            if (!qReward->reward_item[i])
-                continue;
-
-            auto itemProperties = sMySQLStore.getItemProperties(qReward->reward_item[i]);
-
-            data << uint32_t(qReward->reward_item[i]);
-            data << uint32_t(itemProperties ? itemProperties->DisplayInfoID : 0);
-            data << uint32_t(qReward->reward_itemcount[i]);
-        }
-    }
-    SendPacket(&data);
+    SmsgLfgPlayerReward managedPacket(RandomDungeonEntry, DungeonEntry, done, reward, qReward);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -377,19 +223,9 @@ void WorldSession::sendLfgBootPlayer([[maybe_unused]] const LfgPlayerBoot* pBoot
         guid, uint8_t(pBoot->inProgress), uint8_t(playerVote != LFG_ANSWER_PENDING), uint8_t(playerVote == LFG_ANSWER_AGREE),
         pBoot->victim, votesNum, agreeNum, secsleft, pBoot->votedNeeded, pBoot->reason);
 
-    WorldPacket data(SMSG_LFG_BOOT_PROPOSAL_UPDATE, 1 + 1 + 1 + 8 + 4 + 4 + 4 + 4 + pBoot->reason.length());
-
-    data << uint8_t(pBoot->inProgress);                                 // Vote in progress
-    data << uint8_t(playerVote != LFG_ANSWER_PENDING);                  // Did Vote
-    data << uint8_t(playerVote == LFG_ANSWER_AGREE);                    // Agree
-    data << uint64_t(pBoot->victim);                                    // Victim GUID
-    data << uint32_t(votesNum);                                         // Total Votes
-    data << uint32_t(agreeNum);                                         // Agree Count
-    data << uint32_t(secsleft);                                         // Time Left
-    data << uint32_t(pBoot->votedNeeded);                               // Needed Votes
-    data << pBoot->reason.c_str();                                      // Kick reason
-
-    SendPacket(&data);
+    SmsgLfgBootProposalUpdate managedPacket(uint8_t(pBoot->inProgress), uint8_t(playerVote != LFG_ANSWER_PENDING), uint8_t(playerVote == LFG_ANSWER_AGREE),
+        pBoot->victim, uint32_t(votesNum), uint32_t(agreeNum), secsleft, pBoot->votedNeeded, pBoot->reason);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -420,8 +256,16 @@ void WorldSession::sendLfgUpdateProposal([[maybe_unused]] uint32_t proposalId, [
         isSameDungeon = _player->getGroup() == group && isContinue;
     }
 
+    // Mop: SMSG_LFG_PROPOSAL_UPDATE keys its bit-packed guid section off the player's original
+    // group (falling back to their own guid when not grouped)
+    uint64_t queueGuid = guid;
+    if (pLowGroupGuid)
+    {
+        if (const auto originalGroup = sObjectMgr.getGroupById(pLowGroupGuid))
+            queueGuid = originalGroup->GetGUID();
+    }
+
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_PROPOSAL_UPDATE {} state: {}", _player->getGuid(), pProp->state);
-    WorldPacket data(SMSG_LFG_PROPOSAL_UPDATE, 4 + 1 + 4 + 4 + 1 + 1 + pProp->players.size() * (4 + 1 + 1 + 1 + 1 + 1));
 
     if (!isContinue)                                                    // Only show proposal dungeon if it's continue
     {
@@ -452,32 +296,33 @@ void WorldSession::sendLfgUpdateProposal([[maybe_unused]] uint32_t proposalId, [
     }
 #endif
 
-    data << uint32_t(dungeonId);                                        // Dungeon
-    data << uint8_t(pProp->state);                                      // Result state
-    data << uint32_t(proposalId);                                       // Internal Proposal ID
-    data << uint32_t(completedEncounters);                              // Bosses killed
-    data << uint8_t(isSameDungeon);                                     // Silent (show client window)
-    data << uint8_t(pProp->players.size());                             // Group size
-
+    std::vector<SmsgLfgProposalUpdatePlayer> players;
+    players.reserve(pProp->players.size());
     for (itPlayer = pProp->players.begin(); itPlayer != pProp->players.end(); ++itPlayer)
     {
         ppPlayer = itPlayer->second.get();
-        data << uint32_t(ppPlayer->role);                               // Role
-        data << uint8_t(itPlayer->first == guid);                       // Self player
-        if (!ppPlayer->groupLowGuid)                                    // Player not it a group
+
+        SmsgLfgProposalUpdatePlayer playerEntry;
+        playerEntry.role = uint32_t(ppPlayer->role);                               // Role
+        playerEntry.isSelfPlayer = uint8_t(itPlayer->first == guid);               // Self player
+        if (!ppPlayer->groupLowGuid)                                               // Player not it a group
         {
-            data << uint8_t(0);                                         // Not in dungeon
-            data << uint8_t(0);                                         // Not same group
+            playerEntry.inDungeon = 0;                                            // Not in dungeon
+            playerEntry.sameGroup = 0;                                            // Not same group
         }
         else
         {
-            data << uint8_t(ppPlayer->groupLowGuid == dLowGuid);        // In dungeon (silent)
-            data << uint8_t(ppPlayer->groupLowGuid == pLowGroupGuid);   // Same Group than player
+            playerEntry.inDungeon = uint8_t(ppPlayer->groupLowGuid == dLowGuid);      // In dungeon (silent)
+            playerEntry.sameGroup = uint8_t(ppPlayer->groupLowGuid == pLowGroupGuid); // Same Group than player
         }
-        data << uint8_t(ppPlayer->accept != LFG_ANSWER_PENDING);        // Answered
-        data << uint8_t(ppPlayer->accept == LFG_ANSWER_AGREE);          // Accepted
+        playerEntry.answered = uint8_t(ppPlayer->accept != LFG_ANSWER_PENDING);    // Answered
+        playerEntry.accepted = uint8_t(ppPlayer->accept == LFG_ANSWER_AGREE);      // Accepted
+
+        players.push_back(playerEntry);
     }
-    SendPacket(&data);
+
+    SmsgLfgProposalUpdate managedPacket(dungeonId, uint8_t(pProp->state), proposalId, completedEncounters, uint8_t(isSameDungeon), players, queueGuid);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -654,61 +499,11 @@ void WorldSession::handleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvPacke
 
     // Get player locked Dungeons
     LfgLockMap lock = sLfgMgr.GetLockedDungeons(guid);
-    const uint32_t rsize = uint32_t(randomDungeons.size());
-    const uint32_t lsize = uint32_t(lock.size());
 
     sLogger.debug("Received SMSG_LFG_PLAYER_INFO {}", guid);
-    WorldPacket data(SMSG_LFG_PLAYER_INFO, 1 + rsize * (4 + 1 + 4 + 4 + 4 + 4 + 1 + 4 + 4 + 4) + 4 + lsize * (1 + 4 + 4 + 4 + 4 + 1 + 4 + 4 + 4));
 
-    data << uint8_t(randomDungeons.size());                 // Random Dungeon count
-    for (auto randomDungeon : randomDungeons)
-    {
-        data << uint32_t(randomDungeon);                    // Dungeon Entry (id + type)
-        LfgReward const* reward = sLfgMgr.GetRandomDungeonReward(randomDungeon, level);
-        QuestProperties const* qRew = nullptr;
-        uint8_t done = 0;
-        if (reward)
-        {
-            qRew = sMySQLStore.getQuestProperties(reward->reward[0].questId);
-            if (qRew)
-            {
-                done = _player->hasQuestFinished(qRew->id);
-                if (done)
-                    qRew = sMySQLStore.getQuestProperties(reward->reward[1].questId);
-            }
-        }
-        if (qRew)
-        {
-            data << uint8_t(done);
-            data << uint32_t(qRew->reward_money);
-            data << uint32_t(qRew->reward_xp);
-            data << uint32_t(reward->reward[done].variableMoney);
-            data << uint32_t(reward->reward[done].variableXP);
-            // todo FIXME Linux: error: cast from const uint32_t* {aka const unsigned int*} to uint8_t {aka unsigned char} loses precision 
-            // can someone check this now ?
-
-            data << uint8_t(qRew->GetRewardItemCount());
-            for (uint8_t i = 0; i < 4; ++i)
-                if (qRew->reward_item[i] != 0)
-                {
-                    ItemProperties const* item = sMySQLStore.getItemProperties(qRew->reward_item[i]);
-                    data << uint32_t(qRew->reward_item[i]);
-                    data << uint32_t(item ? item->DisplayInfoID : 0);
-                    data << uint32_t(qRew->reward_itemcount[i]);
-                }
-        }
-        else
-        {
-            data << uint8_t(0);
-            data << uint32_t(0);
-            data << uint32_t(0);
-            data << uint32_t(0);
-            data << uint32_t(0);
-            data << uint8_t(0);
-        }
-    }
-    BuildPlayerLockDungeonBlock(data, lock);
-    SendPacket(&data);
+    SmsgLfgPlayerInfo managedPacket(randomDungeons, lock, level, _player);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -750,14 +545,9 @@ void WorldSession::handleLfgPartyLockInfoRequestOpcode(WorldPacket& /*recvPacket
         lockMap[pguid] = sLfgMgr.GetLockedDungeons(pguid);
     }
 
-    uint32_t size = 0;
-    for (auto lock : lockMap)
-        size += 8 + 4 + uint32_t(lock.second.size()) * (4 + 4);
-
     sLogger.debug("Sent SMSG_LFG_PARTY_INFO {}", guid);
 
-    WorldPacket data(SMSG_LFG_PARTY_INFO, 1 + size);
-    BuildPartyLockDungeonBlock(data, lockMap);
-    SendPacket(&data);
+    SmsgLfgPartyInfo managedPacket(lockMap);
+    sendManagedPacket(managedPacket);
 #endif
 }

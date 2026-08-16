@@ -29,7 +29,7 @@ void GuildEventLogEntry::saveGuildLogToDB() const
         mGuildId, mGuid, uint8_t(mEventType), mPlayerGuid1, mPlayerGuid2, (uint32_t)mNewRank, mTimestamp);
 }
 
-#if VERSION_STRING >= Cata
+#if VERSION_STRING == Cata
 void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const
 {
     WoWGuid guid1(mPlayerGuid1, 0, HIGHGUID_TYPE_PLAYER);
@@ -77,6 +77,54 @@ void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& cont
     content.writeByteSeq(guid1[2]);
     content.writeByteSeq(guid1[6]);
     content.writeByteSeq(guid1[1]);
+#elif VERSION_STRING == Mop
+void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const
+{
+    WoWGuid guid1(mPlayerGuid1, 0, HIGHGUID_TYPE_PLAYER);
+    WoWGuid guid2(mPlayerGuid2, 0, HIGHGUID_TYPE_PLAYER);
+
+    data.writeBit(guid1[6]);
+    data.writeBit(guid1[1]);
+    data.writeBit(guid2[5]);
+    data.writeBit(guid2[1]);
+    data.writeBit(guid2[3]);
+    data.writeBit(guid2[0]);
+    data.writeBit(guid2[4]);
+    data.writeBit(guid1[4]);
+    data.writeBit(guid2[7]);
+    data.writeBit(guid1[0]);
+    data.writeBit(guid1[2]);
+    data.writeBit(guid1[7]);
+    data.writeBit(guid1[3]);
+    data.writeBit(guid1[5]);
+    data.writeBit(guid2[2]);
+    data.writeBit(guid2[6]);
+
+    content.writeByteSeq(guid1[5]);
+    content.writeByteSeq(guid1[4]);
+    content.writeByteSeq(guid2[6]);
+    content.writeByteSeq(guid1[2]);
+    content.writeByteSeq(guid2[4]);
+
+    content << uint8_t(mEventType);
+
+    content.writeByteSeq(guid2[0]);
+    content.writeByteSeq(guid1[7]);
+    content.writeByteSeq(guid1[3]);
+    content.writeByteSeq(guid2[5]);
+    content.writeByteSeq(guid2[2]);
+    content.writeByteSeq(guid1[0]);
+
+    content << uint32_t(::time(nullptr) - mTimestamp);
+
+    content.writeByteSeq(guid1[1]);
+    content.writeByteSeq(guid1[6]);
+    content.writeByteSeq(guid2[7]);
+    content.writeByteSeq(guid2[1]);
+
+    content << uint8_t(mNewRank);
+
+    content.writeByteSeq(guid2[3]);
 #else
 void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& /*content*/) const
 {
