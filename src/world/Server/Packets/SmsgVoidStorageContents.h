@@ -117,7 +117,7 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else if (m_protocol.isCata())
+            else if (m_protocol.isMop())
             {
                 uint8_t count = 0;
                 for (uint8_t i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)

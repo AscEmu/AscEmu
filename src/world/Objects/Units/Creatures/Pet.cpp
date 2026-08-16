@@ -37,6 +37,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/EventMgr.h"
+#include "Server/Packets/SmsgUpdateTalentData.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Spell/SpellAura.hpp"
@@ -63,6 +64,8 @@
 
 #include <algorithm>
 #include <ranges>
+
+using namespace AscEmu::Packets;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // MIT START
@@ -1782,58 +1785,12 @@ void Pet::SendTalentsToOwner()
     if (plrOwner == nullptr)
         return;
 
-    WorldPacket data(SMSG_UPDATE_TALENT_DATA, 50);
-    data << uint8_t(1);                               // Pet talent packet identificator
-    data << uint32_t(getPetTalentPoints());           // Unspent talent points
-
-    uint8_t count = 0;
-    size_t pos = data.wpos();
-    data << uint8_t(0);                               // Amount of known talents (will be filled later)
-
-    WDB::Structures::CreatureFamilyEntry const* cfe = sCreatureFamilyStore.lookupEntry(GetCreatureProperties()->Family);
-    if (!cfe || static_cast<int32_t>(cfe->talenttree) < 0)
-        return;
-
-    // go through talent trees
-    for (uint32_t tte_id = PET_TALENT_TREE_START; tte_id <= PET_TALENT_TREE_END; tte_id++)
-    {
-        auto talent_tab = sTalentTabStore.lookupEntry(tte_id);
-        if (talent_tab == nullptr)
-            continue;
-
-        // check if we match talent tab
-        if (!(talent_tab->PetTalentMask & (1 << cfe->talenttree)))
-            continue;
-
-        for (uint32_t t_id = 1; t_id < sTalentStore.getNumRows(); t_id++)
-        {
-            // get talent entries for our talent tree
-            auto talent = sTalentStore.lookupEntry(t_id);
-            if (talent == nullptr)
-                continue;
-
-            if (talent->TalentTree != tte_id)
-                continue;
-
-            // check our spells
-            for (uint8_t j = 0; j < 5; j++)
-                if (talent->RankID[j] > 0 && hasSpell(talent->RankID[j]))
-                {
-                    // if we have the spell, include it in packet
-                    data << talent->TalentID;       // Talent ID
-                    data << j;                      // Rank
-                    ++count;
-                }
-        }
-        // tab loaded, we can exit
-        break;
-    }
-    // fill count of talents
-    data.put< uint8_t >(pos, count);
-
     // send the packet to owner
     if (plrOwner->getSession() != NULL)
-        plrOwner->getSession()->SendPacket(&data);
+    {
+        SmsgUpdateTalentData managedPacket{ this };
+        plrOwner->getSession()->sendManagedPacket(managedPacket);
+    }
 }
 #endif
 

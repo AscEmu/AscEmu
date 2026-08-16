@@ -110,62 +110,53 @@ namespace AscEmu::Packets
             }
             else if (m_protocol.isMop())
             {
+                // writeByteSeq() already skips emitting
+                // an actual byte when the value is 0, so this is safe (and correct) even
+                // when one of the guids is a default/empty WoWGuid.
                 packet.writeBit(!usedSrcSlot);
 
-                if (usedSrcSlot)
-                {
-                    packet.writeBit(itemId[4]);
-                    packet.writeBit(itemId[1]);
-                    packet.writeBit(itemId[6]);
-                    packet.writeBit(itemId[0]);
-                    packet.writeBit(itemId[3]);
-                    packet.writeBit(itemId[7]);
-                    packet.writeBit(itemId[2]);
-                    packet.writeBit(itemId[5]);
-                }
+                packet.writeBit(itemId[4]);
+                packet.writeBit(itemId[1]);
+                packet.writeBit(itemId[6]);
+                packet.writeBit(itemId[0]);
+                packet.writeBit(itemId[3]);
+                packet.writeBit(itemId[7]);
+                packet.writeBit(itemId[2]);
+                packet.writeBit(itemId[5]);
 
                 packet.writeBit(!usedDestSlot);
-                
-                if (usedDestSlot)
-                {
-                    packet.writeBit(itemIdDest[6]);
-                    packet.writeBit(itemIdDest[0]);
-                    packet.writeBit(itemIdDest[3]);
-                    packet.writeBit(itemIdDest[2]);
-                    packet.writeBit(itemIdDest[1]);
-                    packet.writeBit(itemIdDest[5]);
-                    packet.writeBit(itemIdDest[7]);
-                    packet.writeBit(itemIdDest[4]);
-                }
 
-                packet.writeBit(!false); // unk
-                packet.writeBit(!usedSrcSlot); // unk
+                packet.writeBit(itemIdDest[6]);
+                packet.writeBit(itemIdDest[0]);
+                packet.writeBit(itemIdDest[3]);
+                packet.writeBit(itemIdDest[2]);
+                packet.writeBit(itemIdDest[1]);
+                packet.writeBit(itemIdDest[5]);
+                packet.writeBit(itemIdDest[7]);
+                packet.writeBit(itemIdDest[4]);
+
+                packet.writeBit(!false); // unk 
+                packet.writeBit(!usedDestSlot); // unk
 
                 packet.flushBits();
 
-                if (usedDestSlot)
-                {
-                    packet.writeByteSeq(itemIdDest[3]);
-                    packet.writeByteSeq(itemIdDest[7]);
-                    packet.writeByteSeq(itemIdDest[2]);
-                    packet.writeByteSeq(itemIdDest[5]);
-                    packet.writeByteSeq(itemIdDest[0]);
-                    packet.writeByteSeq(itemIdDest[1]);
-                    packet.writeByteSeq(itemIdDest[4]);
-                    packet.writeByteSeq(itemIdDest[6]);
-                }
+                packet.writeByteSeq(itemIdDest[3]);
+                packet.writeByteSeq(itemIdDest[7]);
+                packet.writeByteSeq(itemIdDest[2]);
+                packet.writeByteSeq(itemIdDest[5]);
+                packet.writeByteSeq(itemIdDest[0]);
+                packet.writeByteSeq(itemIdDest[1]);
+                packet.writeByteSeq(itemIdDest[4]);
+                packet.writeByteSeq(itemIdDest[6]);
 
-                if (usedSrcSlot)
-                {
-                    packet.writeByteSeq(itemId[0]);
-                    packet.writeByteSeq(itemId[2]);
-                    packet.writeByteSeq(itemId[7]);
-                    packet.writeByteSeq(itemId[5]);
-                    packet.writeByteSeq(itemId[6]);
-                    packet.writeByteSeq(itemId[4]);
-                    packet.writeByteSeq(itemId[3]);
-                    packet.writeByteSeq(itemId[1]);
-                }
+                packet.writeByteSeq(itemId[0]);
+                packet.writeByteSeq(itemId[2]);
+                packet.writeByteSeq(itemId[7]);
+                packet.writeByteSeq(itemId[5]);
+                packet.writeByteSeq(itemId[6]);
+                packet.writeByteSeq(itemId[4]);
+                packet.writeByteSeq(itemId[3]);
+                packet.writeByteSeq(itemId[1]);
 
                 if (usedDestSlot)
                     packet << uint32_t(newSlot);
