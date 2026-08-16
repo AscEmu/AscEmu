@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemProperties.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/Packets/SmsgLootClearMoney.h"
 #include "Server/Packets/SmsgLootRemoved.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
@@ -275,8 +276,8 @@ void Loot::moneyRemoved()
     {
         if (const auto* player = sObjectMgr.getPlayer(playerGuid))
         {
-            WorldPacket data(SMSG_LOOT_CLEAR_MONEY, 0);
-            player->getSession()->SendPacket(&data);
+            SmsgLootClearMoney managedPacket;
+            player->getSession()->sendManagedPacket(managedPacket);
         }
         else
         {
