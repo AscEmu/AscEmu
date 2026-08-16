@@ -29,6 +29,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGroupInviteResponse.h"
 #include "Server/Packets/CmsgGroupSetRoles.h"
 #include "Server/Packets/SmsgGroupSetRoles.h"
+#include "Server/Packets/SmsgRealGroupUpdate.h"
+#include "Server/Packets/SmsgRoleCheckBegin.h"
 #include "Server/PacketBroadcast.hpp"
 
 #if VERSION_STRING >= Cata
@@ -120,11 +122,8 @@ void WorldSession::handleGroupRequestJoinUpdatesOpcode(WorldPacket& /*recvPacket
     auto group = _player->getGroup();
     if (group != nullptr)
     {
-        WorldPacket data(SMSG_REAL_GROUP_UPDATE, 13);
-        data << uint8_t(group->getGroupType());
-        data << uint32_t(group->GetMembersCount());
-        data << uint64_t(0);  // unk
-        SendPacket(&data);
+        SmsgRealGroupUpdate managedPacket(uint8_t(group->getGroupType()), uint32_t(group->GetMembersCount()));
+        sendManagedPacket(managedPacket);
     }
 #endif
 }
@@ -143,26 +142,8 @@ void WorldSession::handleGroupRoleCheckBeginOpcode([[maybe_unused]] WorldPacket&
 
         WoWGuid guid = _player->getGuid();
 
-        WorldPacket data(SMSG_ROLE_CHECK_BEGIN, 8);
-        data.writeBit(guid[1]);
-        data.writeBit(guid[5]);
-        data.writeBit(guid[7]);
-        data.writeBit(guid[3]);
-        data.writeBit(guid[2]);
-        data.writeBit(guid[4]);
-        data.writeBit(guid[0]);
-        data.writeBit(guid[6]);
-
-        data.writeByteSeq(guid[4]);
-        data.writeByteSeq(guid[7]);
-        data.writeByteSeq(guid[0]);
-        data.writeByteSeq(guid[5]);
-        data.writeByteSeq(guid[1]);
-        data.writeByteSeq(guid[6]);
-        data.writeByteSeq(guid[2]);
-        data.writeByteSeq(guid[3]);
-
-        group->SendPacketToAll(&data);
+        SmsgRoleCheckBegin managedPacket(guid.getRawGuid());
+        PacketBroadcast::sendFromGroup(*group, managedPacket);
     }
 #endif
 }
