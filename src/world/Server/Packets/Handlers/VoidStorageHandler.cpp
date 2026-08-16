@@ -13,13 +13,18 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Item.hpp"
+#include "Server/Packets/SmsgVoidTransferResult.h"
+#include "Server/Packets/SmsgVoidStorageContents.h"
+#include "Server/Packets/SmsgVoidStorageTransferChanges.h"
+#include "Server/Packets/SmsgVoidItemSwapResponse.h"
+
+using namespace AscEmu::Packets;
 
 void WorldSession::sendVoidStorageTransferResult([[maybe_unused]] uint8_t result)
 {
 #if VERSION_STRING >= Cata
-    WorldPacket data(SMSG_VOID_TRANSFER_RESULT, 4);
-    data << uint32_t(result);
-    SendPacket(&data);
+    SmsgVoidTransferResult managedPacket{ uint32_t(result) };
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -119,76 +124,8 @@ void WorldSession::handleVoidStorageQuery([[maybe_unused]] WorldPacket& recvData
         return;
     }
 
-    uint8_t count = 0;
-    for (uint8_t i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
-        if (player->getVoidStorageItem(i))
-            ++count;
-
-    WorldPacket data(SMSG_VOID_STORAGE_CONTENTS, 2 * count + (14 + 4 + 4 + 4 + 4) * count);
-
-    data.writeBits(count, 8);
-
-    ByteBuffer itemData((14 + 4 + 4 + 4 + 4) * count);
-
-    for (uint8_t i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
-    {
-        VoidStorageItem* item = player->getVoidStorageItem(i);
-        if (!item)
-            continue;
-
-        WoWGuid itemId = item->itemId;
-        WoWGuid creatorGuid = item->creatorGuid;
-
-        data.writeBit(creatorGuid[3]);
-        data.writeBit(itemId[5]);
-        data.writeBit(creatorGuid[6]);
-        data.writeBit(creatorGuid[1]);
-        data.writeBit(itemId[1]);
-        data.writeBit(itemId[3]);
-        data.writeBit(itemId[6]);
-        data.writeBit(creatorGuid[5]);
-        data.writeBit(creatorGuid[2]);
-        data.writeBit(itemId[2]);
-        data.writeBit(creatorGuid[4]);
-        data.writeBit(itemId[0]);
-        data.writeBit(itemId[4]);
-        data.writeBit(itemId[7]);
-        data.writeBit(creatorGuid[0]);
-        data.writeBit(creatorGuid[7]);
-
-        itemData.writeByteSeq(creatorGuid[3]);
-
-        itemData << uint32_t(item->itemSuffixFactor);
-
-        itemData.writeByteSeq(creatorGuid[4]);
-
-        itemData << uint32_t(i);
-
-        itemData.writeByteSeq(itemId[0]);
-        itemData.writeByteSeq(itemId[6]);
-        itemData.writeByteSeq(creatorGuid[0]);
-
-        itemData << uint32_t(item->itemRandomPropertyId);
-
-        itemData.writeByteSeq(itemId[4]);
-        itemData.writeByteSeq(itemId[5]);
-        itemData.writeByteSeq(itemId[2]);
-        itemData.writeByteSeq(creatorGuid[2]);
-        itemData.writeByteSeq(creatorGuid[6]);
-        itemData.writeByteSeq(itemId[1]);
-        itemData.writeByteSeq(itemId[3]);
-        itemData.writeByteSeq(creatorGuid[5]);
-        itemData.writeByteSeq(creatorGuid[7]);
-
-        itemData << uint32_t(item->itemEntry);
-
-        itemData.writeByteSeq(itemId[7]);
-    }
-
-    data.flushBits();
-    data.append(itemData);
-
-    SendPacket(&data);
+    SmsgVoidStorageContents managedPacket(player);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -390,96 +327,8 @@ void WorldSession::handleVoidStorageTransfer([[maybe_unused]] WorldPacket& recvD
         player->deleteVoidStorageItem(slot);
     }
 
-    WorldPacket data(SMSG_VOID_STORAGE_TRANSFER_CHANGES, ((5 + 5 + (7 + 7) * depositCount +
-        7 * withdrawCount) / 8) + 7 * withdrawCount + (7 + 7 + 4 * 4) * depositCount);
-
-    data.writeBits(depositCount, 5);
-    data.writeBits(withdrawCount, 5);
-
-    for (uint8_t i = 0; i < depositCount; ++i)
-    {
-        WoWGuid itemId = depositItems[i].first.itemId;
-        WoWGuid creatorGuid = depositItems[i].first.creatorGuid;
-        data.writeBit(creatorGuid[7]);
-        data.writeBit(itemId[7]);
-        data.writeBit(itemId[4]);
-        data.writeBit(creatorGuid[6]);
-        data.writeBit(creatorGuid[5]);
-        data.writeBit(itemId[3]);
-        data.writeBit(itemId[5]);
-        data.writeBit(creatorGuid[4]);
-        data.writeBit(creatorGuid[2]);
-        data.writeBit(creatorGuid[0]);
-        data.writeBit(creatorGuid[3]);
-        data.writeBit(creatorGuid[1]);
-        data.writeBit(itemId[2]);
-        data.writeBit(itemId[0]);
-        data.writeBit(itemId[1]);
-        data.writeBit(itemId[6]);
-    }
-
-    for (uint8_t i = 0; i < withdrawCount; ++i)
-    {
-        WoWGuid itemId = withdrawItems[i].itemId;
-        data.writeBit(itemId[1]);
-        data.writeBit(itemId[7]);
-        data.writeBit(itemId[3]);
-        data.writeBit(itemId[5]);
-        data.writeBit(itemId[6]);
-        data.writeBit(itemId[2]);
-        data.writeBit(itemId[4]);
-        data.writeBit(itemId[0]);
-    }
-
-    data.flushBits();
-
-    for (uint8_t i = 0; i < withdrawCount; ++i)
-    {
-        WoWGuid itemId = withdrawItems[i].itemId;
-        data.writeByteSeq(itemId[3]);
-        data.writeByteSeq(itemId[1]);
-        data.writeByteSeq(itemId[0]);
-        data.writeByteSeq(itemId[2]);
-        data.writeByteSeq(itemId[7]);
-        data.writeByteSeq(itemId[5]);
-        data.writeByteSeq(itemId[6]);
-        data.writeByteSeq(itemId[4]);
-    }
-
-    for (uint8_t i = 0; i < depositCount; ++i)
-    {
-        WoWGuid itemId = depositItems[i].first.itemId;
-        WoWGuid creatorGuid = depositItems[i].first.creatorGuid;
-
-        data << uint32_t(depositItems[i].first.itemSuffixFactor);
-
-        data.writeByteSeq(itemId[6]);
-        data.writeByteSeq(itemId[4]);
-        data.writeByteSeq(creatorGuid[4]);
-        data.writeByteSeq(itemId[2]);
-        data.writeByteSeq(creatorGuid[1]);
-        data.writeByteSeq(creatorGuid[3]);
-        data.writeByteSeq(itemId[3]);
-        data.writeByteSeq(creatorGuid[0]);
-        data.writeByteSeq(itemId[0]);
-        data.writeByteSeq(creatorGuid[6]);
-        data.writeByteSeq(itemId[5]);
-        data.writeByteSeq(creatorGuid[5]);
-        data.writeByteSeq(creatorGuid[7]);
-
-        data << uint32_t(depositItems[i].first.itemEntry);
-
-        data.writeByteSeq(itemId[1]);
-
-        data << uint32_t(depositItems[i].second); // slot
-
-        data.writeByteSeq(creatorGuid[2]);
-        data.writeByteSeq(itemId[7]);
-
-        data << uint32_t(depositItems[i].first.itemRandomPropertyId);
-    }
-
-    SendPacket(&data);
+    SmsgVoidStorageTransferChanges managedPacket(depositItems, depositCount, withdrawItems, withdrawCount);
+    sendManagedPacket(managedPacket);
 
     sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_NO_ERROR);
 
@@ -572,72 +421,8 @@ void WorldSession::handleVoidSwapItem([[maybe_unused]] WorldPacket& recvData)
         return;
     }
 
-    WorldPacket data(SMSG_VOID_ITEM_SWAP_RESPONSE, 1 + (usedSrcSlot + usedDestSlot) * (1 + 7 + 4));
-
-    data.writeBit(!usedDestSlot);
-    data.writeBit(!usedSrcSlot);
-
-    if (usedSrcSlot)
-    {
-        data.writeBit(itemId[5]);
-        data.writeBit(itemId[2]);
-        data.writeBit(itemId[1]);
-        data.writeBit(itemId[4]);
-        data.writeBit(itemId[0]);
-        data.writeBit(itemId[6]);
-        data.writeBit(itemId[7]);
-        data.writeBit(itemId[3]);
-    }
-
-    data.writeBit(!usedDestSlot); // unk
-
-    if (usedDestSlot)
-    {
-        data.writeBit(itemIdDest[7]);
-        data.writeBit(itemIdDest[3]);
-        data.writeBit(itemIdDest[4]);
-        data.writeBit(itemIdDest[0]);
-        data.writeBit(itemIdDest[5]);
-        data.writeBit(itemIdDest[1]);
-        data.writeBit(itemIdDest[2]);
-        data.writeBit(itemIdDest[6]);
-    }
-
-    data.writeBit(!usedSrcSlot); // unk
-
-    data.flushBits();
-
-    if (usedDestSlot)
-    {
-        data.writeByteSeq(itemIdDest[4]);
-        data.writeByteSeq(itemIdDest[6]);
-        data.writeByteSeq(itemIdDest[5]);
-        data.writeByteSeq(itemIdDest[2]);
-        data.writeByteSeq(itemIdDest[3]);
-        data.writeByteSeq(itemIdDest[1]);
-        data.writeByteSeq(itemIdDest[7]);
-        data.writeByteSeq(itemIdDest[0]);
-    }
-
-    if (usedSrcSlot)
-    {
-        data.writeByteSeq(itemId[6]);
-        data.writeByteSeq(itemId[3]);
-        data.writeByteSeq(itemId[5]);
-        data.writeByteSeq(itemId[0]);
-        data.writeByteSeq(itemId[1]);
-        data.writeByteSeq(itemId[2]);
-        data.writeByteSeq(itemId[4]);
-        data.writeByteSeq(itemId[7]);
-    }
-
-    if (usedDestSlot)
-        data << uint32_t(oldSlot);
-
-    if (usedSrcSlot)
-        data << uint32_t(newSlot);
-
-    SendPacket(&data);
+    SmsgVoidItemSwapResponse managedPacket(usedSrcSlot, usedDestSlot, itemId, itemIdDest, oldSlot, newSlot);
+    sendManagedPacket(managedPacket);
 
     player->saveVoidStorage();
 #endif
