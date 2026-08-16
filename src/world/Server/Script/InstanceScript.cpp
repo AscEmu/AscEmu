@@ -20,9 +20,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/EventMgr.h"
 #include "Server/World.h"
+#include "Server/Packets/SmsgPlayMusic.h"
 #include "Server/Packets/SmsgUpdateInstanceEncounterUnit.h"
+#include "Server/PacketBroadcast.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+
+using namespace AscEmu::Packets;
 
 InstanceScript::InstanceScript(WorldMap* pMapMgr) : mInstance(pMapMgr)
 {
@@ -45,9 +49,8 @@ void InstanceScript::updateAchievementCriteria(AchievementCriteriaTypes type, ui
 
 void InstanceScript::setZoneMusic(uint32_t zoneId, uint32_t musicId)
 {
-    WorldPacket data(SMSG_PLAY_MUSIC, 4);
-    data << uint32_t(musicId);
-    sWorld.sendZoneMessage(&data, zoneId);
+    SmsgPlayMusic managedPacket(musicId);
+    PacketBroadcast::sendFromZone(sWorld, managedPacket, zoneId);
 }
 
 WorldMap* InstanceScript::getWorldMap() { return mInstance; }
