@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Packets/SmsgTransferAborted.h"
 #include "Server/Packets/SmsgRaidGroupOnly.h"
+#include "Server/Packets/SmsgCorpseNotInInstance.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/InstanceScript.hpp"
 
@@ -77,8 +78,8 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
                     } break;
                     case CANNOT_ENTER_CORPSE_IN_DIFFERENT_INSTANCE:
                     {
-                        WorldPacket data(SMSG_CORPSE_NOT_IN_INSTANCE, 0);
-                        _player->sendPacket(&data);
+                        SmsgCorpseNotInInstance managedPacket;
+                        session->sendManagedPacket(managedPacket);
                     } break;
                     case CANNOT_ENTER_INSTANCE_BIND_MISMATCH:
                     {
