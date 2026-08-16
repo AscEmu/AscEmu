@@ -22,6 +22,8 @@
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Opcodes.hpp"
+#include "Server/PacketBroadcast.hpp"
+#include "Server/Packets/SmsgMonsterMove.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
@@ -29,6 +31,8 @@
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/DispelType.hpp"
 #include "Utilities/MathConstants.hpp"
+
+using namespace AscEmu::Packets;
 
 enum
 {
@@ -222,25 +226,13 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
 
         uint32_t time = uint32_t((unitTarget->CalcDistance(s->getCaster()) / ((unitTarget->getSpeedRate(TYPE_RUN, true) * 3.5f) * 0.001f)) + 0.5f);
 
-        WorldPacket data(SMSG_MONSTER_MOVE, 60);
-        data << unitTarget->GetNewGUID();
-        data << uint8_t(0); //VLack: the usual change in SMSG_MONSTER_MOVE packets, initial idea from Mangos
-        data << unitTarget->GetPositionX();
-        data << unitTarget->GetPositionY();
-        data << unitTarget->GetPositionZ();
-        data << uint32_t(Util::getMSTime());
-        data << uint8_t(0x00);
-        data << uint32_t(0x00001000);
-        data << time;
-        data << uint32_t(1);
-        data << posX;
-        data << posY;
-        data << posZ;
+        SmsgMonsterMove managedPacket(unitTarget->GetNewGUID(), unitTarget->GetPositionX(), unitTarget->GetPositionY(), unitTarget->GetPositionZ(),
+            uint32_t(Util::getMSTime()), uint32_t(0x00001000), time, posX, posY, posZ);
 
         if (unitTarget->isCreature())
             unitTarget->pauseMovement(2000);
 
-        unitTarget->sendMessageToSet(&data, true);
+        PacketBroadcast::sendToSet(*unitTarget, managedPacket, true);
         unitTarget->SetPosition(posX, posY, posZ, alpha, true);
         unitTarget->addUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
         unitTarget->smsg_AttackStart(unitTarget);

@@ -54,6 +54,7 @@
 #include "Server/Packets/SmsgResurrectRequest.h"
 #include "Server/Packets/SmsgSpellDelayed.h"
 #include "Server/Packets/SmsgSpellLogExecute.h"
+#include "Server/Packets/SmsgMonsterMove.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
 #include "Movement/MovementManager.h"
@@ -2653,23 +2654,10 @@ void Spell::HandleTeleport(LocationVector pos, uint32_t mapid, Unit* Target)
             return;
         }
 
-        WorldPacket data(SMSG_MONSTER_MOVE, 50);
+        SmsgMonsterMove managedPacket(Target->GetNewGUID(), Target->GetPositionX(), Target->GetPositionY(), Target->GetPositionZ(),
+            Util::getMSTime(), uint32_t(256), uint32_t(1), float(pos.x), float(pos.y), float(pos.z));
+        PacketBroadcast::sendToSet(*Target, managedPacket, true);
 
-        data << Target->GetNewGUID();
-        data << uint8_t(0);
-        data << Target->GetPositionX();
-        data << Target->GetPositionY();
-        data << Target->GetPositionZ();
-        data << Util::getMSTime();
-        data << uint8_t(0x00);
-        data << uint32_t(256);
-        data << uint32_t(1);
-        data << uint32_t(1);
-        data << float(pos.x);
-        data << float(pos.y);
-        data << float(pos.z);
-
-        Target->sendMessageToSet(&data, true);
         Target->SetPosition(pos.x, pos.y, pos.z, pos.o);
     }
 }

@@ -21,11 +21,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Opcodes.hpp"
+#include "Server/PacketBroadcast.hpp"
+#include "Server/Packets/SmsgMonsterMove.h"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Spell/SpellInfo.hpp"
 #include "Utilities/Random.hpp"
 #include "Utilities/TimeTracker.hpp"
+
+using namespace AscEmu::Packets;
 
 CreatureAIScript::CreatureAIScript(Creature* creature) :
     mScriptPhase(0), summons(creature), mCreatureTimerCount(0), mCreatureAIScheduler(std::make_shared<CreatureAIFunctionScheduler>(this)), mAIUpdateFrequency(defaultUpdateFrequency), m_oldAIUpdate(std::make_unique<Util::SmallTimeTracker>(1000)),
@@ -423,21 +427,9 @@ void CreatureAIScript::MoveTeleport(float posX, float posY, float posZ, float po
 {
     getCreature()->SetPosition(posX, posY, posZ, posO, false);
 
-    WorldPacket data(SMSG_MONSTER_MOVE, 50);
-    data << getCreature()->GetNewGUID();
-    data << uint8_t(0);
-    data << getCreature()->GetPositionX();
-    data << getCreature()->GetPositionY();
-    data << getCreature()->GetPositionZ();
-    data << Util::getMSTime();
-    data << uint8_t(0x0);
-    data << uint32_t(0x100);
-    data << uint32_t(1);
-    data << uint32_t(1);
-    data << posX;
-    data << posY;
-    data << posZ;
-    getCreature()->sendMessageToSet(&data, false);
+    SmsgMonsterMove managedPacket(getCreature()->GetNewGUID(), getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(),
+        Util::getMSTime(), uint32_t(0x100), uint32_t(1), posX, posY, posZ);
+    PacketBroadcast::sendToSet(*getCreature(), managedPacket, false);
 }
 
 // Replace this with splines
@@ -445,21 +437,9 @@ void CreatureAIScript::MoveTeleport(LocationVector loc)
 {
     getCreature()->SetPosition(loc, false);
 
-    WorldPacket data(SMSG_MONSTER_MOVE, 50);
-    data << getCreature()->GetNewGUID();
-    data << uint8_t(0);
-    data << getCreature()->GetPositionX();
-    data << getCreature()->GetPositionY();
-    data << getCreature()->GetPositionZ();
-    data << Util::getMSTime();
-    data << uint8_t(0x0);
-    data << uint32_t(0x100);
-    data << uint32_t(1);
-    data << uint32_t(1);
-    data << loc.x;
-    data << loc.y;
-    data << loc.z;
-    getCreature()->sendMessageToSet(&data, false);
+    SmsgMonsterMove managedPacket(getCreature()->GetNewGUID(), getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(),
+        Util::getMSTime(), uint32_t(0x100), uint32_t(1), loc.x, loc.y, loc.z);
+    PacketBroadcast::sendToSet(*getCreature(), managedPacket, false);
 }
 
 void CreatureAIScript::moveToUnit(Unit* unit)

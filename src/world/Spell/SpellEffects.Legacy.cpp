@@ -63,6 +63,7 @@
 #include "Definitions/SpellEffects.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
+#include "Server/Packets/SmsgMonsterMove.h"
 #include "Server/Packets/SmsgBindPointUpdate.h"
 #include "Server/Packets/SmsgClearTarget.h"
 #include "Server/Packets/SmsgSpellStealLog.h"
@@ -5849,23 +5850,9 @@ void Spell::SpellEffectPlayerPull(uint8_t /*effectIndex*/)
 
     p_target->SetOrientation(pullO);
 
-    WorldPacket data(SMSG_MONSTER_MOVE, 60);
-    data << p_target->GetNewGUID();
-    data << uint8_t(0);
-    data << p_target->GetPositionX();
-    data << p_target->GetPositionY();
-    data << p_target->GetPositionZ();
-    data << Util::getMSTime();
-    data << uint8_t(4);
-    data << pullO;
-    data << uint32_t(0x00001000);
-    data << time;
-    data << uint32_t(1);
-    data << pullX;
-    data << pullY;
-    data << pullZ;
-
-    p_target->sendMessageToSet(&data, true);
+    SmsgMonsterMove managedPacket(p_target->GetNewGUID(), p_target->GetPositionX(), p_target->GetPositionY(), p_target->GetPositionZ(),
+        Util::getMSTime(), uint32_t(0x00001000), time, pullX, pullY, pullZ, true, pullO);
+    PacketBroadcast::sendToSet(*p_target, managedPacket, true);
 }
 
 void Spell::SpellEffectReduceThreatPercent(uint8_t /*effectIndex*/)
