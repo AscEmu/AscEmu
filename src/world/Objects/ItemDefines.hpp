@@ -191,60 +191,45 @@ enum AddItemResult
 // -1 from client enchantment slot number
 enum EnchantmentSlot : uint8_t
 {
-#if VERSION_STRING <= TBC
-    PERM_ENCHANTMENT_SLOT                   = 0,
-    TEMP_ENCHANTMENT_SLOT                   = 1,
-    SOCK_ENCHANTMENT_SLOT1                  = 2,
-    SOCK_ENCHANTMENT_SLOT2                  = 3,
-    SOCK_ENCHANTMENT_SLOT3                  = 4,
-    BONUS_ENCHANTMENT_SLOT                  = 5,
-    MAX_INSPECTED_ENCHANTMENT_SLOT          = 6,
+ // identical on all versions
+    PERM_ENCHANTMENT_SLOT          = 0,
+    TEMP_ENCHANTMENT_SLOT          = 1,
+    SOCK_ENCHANTMENT_SLOT1         = 2,
+    SOCK_ENCHANTMENT_SLOT2         = 3,
+    SOCK_ENCHANTMENT_SLOT3         = 4,
+    BONUS_ENCHANTMENT_SLOT         = 5,
 
-    PROP_ENCHANTMENT_SLOT_0                 = 6,  // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_1                 = 7,  // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_2                 = 8,  // used with RandomSuffix and RandomProperty
-    PROP_ENCHANTMENT_SLOT_3                 = 9,  // used with RandomProperty
-    PROP_ENCHANTMENT_SLOT_4                 = 10, // used with RandomProperty
-    MAX_ENCHANTMENT_SLOT                    = 11
-#endif
-
-#if VERSION_STRING == WotLK
-    PERM_ENCHANTMENT_SLOT                   = 0,
-    TEMP_ENCHANTMENT_SLOT                   = 1,
-    SOCK_ENCHANTMENT_SLOT1                  = 2,
-    SOCK_ENCHANTMENT_SLOT2                  = 3,
-    SOCK_ENCHANTMENT_SLOT3                  = 4,
-    BONUS_ENCHANTMENT_SLOT                  = 5,
-    PRISMATIC_ENCHANTMENT_SLOT              = 6,
-    MAX_INSPECTED_ENCHANTMENT_SLOT          = 7,
-
-    PROP_ENCHANTMENT_SLOT_0                 = 7,  // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_1                 = 8,  // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_2                 = 9,  // used with RandomSuffix and RandomProperty
-    PROP_ENCHANTMENT_SLOT_3                 = 10, // used with RandomProperty
-    PROP_ENCHANTMENT_SLOT_4                 = 11, // used with RandomProperty
-    MAX_ENCHANTMENT_SLOT                    = 12
+#if VERSION_STRING >= WotLK
+    PRISMATIC_ENCHANTMENT_SLOT     = 6,
 #endif
 
 #if VERSION_STRING >= Cata
-    PERM_ENCHANTMENT_SLOT                   = 0,
-    TEMP_ENCHANTMENT_SLOT                   = 1,
-    SOCK_ENCHANTMENT_SLOT1                  = 2,
-    SOCK_ENCHANTMENT_SLOT2                  = 3,
-    SOCK_ENCHANTMENT_SLOT3                  = 4,
-    BONUS_ENCHANTMENT_SLOT                  = 5,
-    PRISMATIC_ENCHANTMENT_SLOT              = 6,
+    // slot 7 is not used on Cata?
+    REFORGE_ENCHANTMENT_SLOT       = 8,
+    TRANSMOGRIFY_ENCHANTMENT_SLOT  = 9,
+#endif
 
-    REFORGE_ENCHANTMENT_SLOT                = 8,
-    TRANSMOGRIFY_ENCHANTMENT_SLOT           = 9,
-    MAX_INSPECTED_ENCHANTMENT_SLOT          = 10,
+#if VERSION_STRING <= TBC
+    MAX_INSPECTED_ENCHANTMENT_SLOT = 6,
+#elif VERSION_STRING == WotLK
+    MAX_INSPECTED_ENCHANTMENT_SLOT = 7,
+#elif VERSION_STRING >= Cata
+    MAX_INSPECTED_ENCHANTMENT_SLOT = 10,
+#endif
 
-    PROP_ENCHANTMENT_SLOT_0                 = 10, // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_1                 = 11, // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_2                 = 12, // used with RandomSuffix and RandomProperty
-    PROP_ENCHANTMENT_SLOT_3                 = 13, // used with RandomProperty
-    PROP_ENCHANTMENT_SLOT_4                 = 14, // used with RandomProperty
-    MAX_ENCHANTMENT_SLOT                    = 15
+    // These slots begins after inspected enchantments
+    PROP_ENCHANTMENT_SLOT_0 = MAX_INSPECTED_ENCHANTMENT_SLOT,
+    PROP_ENCHANTMENT_SLOT_1,
+    PROP_ENCHANTMENT_SLOT_2,
+    PROP_ENCHANTMENT_SLOT_3,
+    PROP_ENCHANTMENT_SLOT_4,
+
+    MAX_ENCHANTMENT_SLOT,
+
+#if VERSION_STRING < Cata
+    // add definition to keep multiversion stuff available
+    REFORGE_ENCHANTMENT_SLOT,
+    TRANSMOGRIFY_ENCHANTMENT_SLOT,
 #endif
 };
 
