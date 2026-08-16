@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgAreaSpiritHealerQueue.h"
 #include "Server/Packets/CmsgAreaSpiritHealerQuery.h"
 #include "Server/Packets/SmsgAreaSpiritHealerTime.h"
+#include "Server/Packets/SmsgGroupJoinedBattleground.h"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Management/Battleground/Battleground.hpp"
@@ -29,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgPvpOptionsEnabled.h"
 #include "Server/Packets/SmsgRatedBgInfo.h"
 #include "Server/Packets/SmsgRatedBgStats.h"
+#include "Server/Packets/SmsgRequestPvpRewardsResponse.h"
 #endif
 
 using namespace AscEmu::Packets;
@@ -253,9 +255,9 @@ void WorldSession::handleBattleMasterJoinOpcode(WorldPacket& recvPacket)
 {
     if (_player->hasAurasWithId(BattlegroundDef::DESERTER))
     {
-        WorldPacket data(SMSG_GROUP_JOINED_BATTLEGROUND, 4);
-        data << uint32_t(0xFFFFFFFE);
-        _player->getSession()->SendPacket(&data);
+        SmsgGroupJoinedBattleground managedPacket(static_cast<int32_t>(0xFFFFFFFE));
+        if (const auto session = _player->getSession())
+            session->sendManagedPacket(managedPacket);
         return;
     }
 
@@ -336,15 +338,8 @@ void WorldSession::handleRequestPvPRewardsOpcode(WorldPacket& /*recvPacket*/)
 #if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_RATED_BG_STATS received");
 
-    WorldPacket packet(SMSG_REQUEST_PVP_REWARDS_RESPONSE, 24);
-    packet << uint32_t(0);    // unknown currency week cap conquest points
-    packet << uint32_t(0);    // unknown currency on week conquest points
-    packet << uint32_t(0);    // unknown currency week cap conquest arena
-    packet << uint32_t(0);    // unknown currency on week conquest random baattleground
-    packet << uint32_t(0);    // unknown currency on week conquest arena
-    packet << uint32_t(0);    // unknown currency week cap conquest points
-
-    SendPacket(&packet);
+    SmsgRequestPvpRewardsResponse managedPacket(0, 0, 0, 0, 0, 0);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
