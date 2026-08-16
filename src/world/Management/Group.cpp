@@ -43,9 +43,11 @@
 #include "Server/Packets/SmsgGroupSetLeader.h"
 #include "Server/Packets/SmsgGroupDestroyed.h"
 #include "Server/Packets/SmsgGroupList.h"
+#include "Server/Packets/SmsgLootList.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgInstanceReset.h"
 #include "Server/Packets/SmsgPartyMemberStats.h"
+#include "Server/PacketBroadcast.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Random.hpp"
@@ -232,9 +234,9 @@ void Group::Update()
                 if (!sObjectMgr.getPlayer(characterInfo->guid))
                     continue;
 
-                WorldPacket data(SMSG_GROUP_LIST, (50 + (m_MemberCount * 20)));
-                data << uint8_t(m_GroupType);
-                data << uint8_t(characterInfo->subGroup);
+                SmsgGroupList managedPacket(false);
+                managedPacket.groupType = uint8_t(m_GroupType);
+                managedPacket.requesterSubGroup = uint8_t(characterInfo->subGroup);
 
                 uint8_t flags = 0;
                 if (characterInfo == m_assistantLeader)
@@ -243,25 +245,21 @@ void Group::Update()
                     flags |= 2;
                 if (characterInfo == m_mainAssist)
                     flags |= 4;
-                data << uint8_t(flags);
+                managedPacket.requesterFlags = flags;
 
-                if (m_Leader && sObjectMgr.getPlayer(m_Leader->guid) && sObjectMgr.getPlayer(m_Leader->guid)->IsInBg())
-                    data << uint8_t(1);   //if the leader is in a BG, then the group is a BG group
-                else
-                    data << uint8_t(0);
+                //if the leader is in a BG, then the group is a BG group
+                managedPacket.isBattlegroundGroup = (m_Leader && sObjectMgr.getPlayer(m_Leader->guid) && sObjectMgr.getPlayer(m_Leader->guid)->IsInBg());
 
-                if (m_GroupType & GROUP_TYPE_LFD)
+                managedPacket.isLfgGroup = (m_GroupType & GROUP_TYPE_LFD) != 0;
+                if (managedPacket.isLfgGroup)
                 {
-                    data << uint8_t(sLfgMgr.GetState(GetID()) == LFG_STATE_FINISHED_DUNGEON ? 2 : 0);
-                    data << uint32_t(sLfgMgr.GetDungeon(GetID()));
-#if VERSION_STRING >= Cata
-                    data << uint8_t(0); //unk
-#endif
+                    managedPacket.lfgState = uint8_t(sLfgMgr.GetState(GetID()) == LFG_STATE_FINISHED_DUNGEON ? 2 : 0);
+                    managedPacket.lfgDungeon = uint32_t(sLfgMgr.GetDungeon(GetID()));
                 }
 
-                data << uint64_t(GetID());            // Group guid
-                data << uint32_t(updatecounter++);    // 3.3 - increments every time a group list update is being sent to client
-                data << uint32_t(m_MemberCount - 1);  // we don't include self
+                managedPacket.groupGuid = uint64_t(GetID());            // Group guid
+                managedPacket.updateCounter = uint32_t(updatecounter++); // 3.3 - increments every time a group list update is being sent to client
+                managedPacket.memberCount = uint32_t(m_MemberCount - 1); // we don't include self
 
                 for (uint8_t j = 0; j < m_SubGroupCount; j++)
                 {
@@ -277,60 +275,53 @@ void Group::Update()
                                 continue;
 
                             Player* plr = sObjectMgr.getPlayer(characterInfo2->guid);
-                            data << (plr ? plr->getName().c_str() : characterInfo2->name.c_str());
-                            if(plr)
-                                data << plr->getGuid();
-                            else
-                                data << characterInfo2->guid << uint32_t(0); // highguid
 
-                            if (sObjectMgr.getPlayer(characterInfo2->guid))
-                                data << uint8_t(1);
-                            else
-                                data << uint8_t(0);
+                            SmsgGroupListMember member;
+                            member.name = plr ? plr->getName() : characterInfo2->name;
+                            member.guid = plr ? plr->getGuid() : uint64_t(characterInfo2->guid); // highguid 0
+                            member.isOnline = sObjectMgr.getPlayer(characterInfo2->guid) != nullptr;
+                            member.subGroup = uint8_t(characterInfo2->subGroup);
 
-                            data << uint8_t(characterInfo2->subGroup);
-
-                            flags = 0;
-
+                            uint8_t memberFlags = 0;
                             if (characterInfo2 == m_assistantLeader)
-                                flags |= 1;
+                                memberFlags |= 1;
                             if (characterInfo2 == m_mainTank)
-                                flags |= 2;
+                                memberFlags |= 2;
                             if (characterInfo2 == m_mainAssist)
-                                flags |= 4;
+                                memberFlags |= 4;
 
-                            data << uint8_t(flags);
-                            data << uint8_t(plr ? plr->retRoles() : 0);   // Player roles
+                            member.flags = memberFlags;
+                            member.roles = uint8_t(plr ? plr->retRoles() : 0);   // Player roles
+
+                            managedPacket.members.push_back(std::move(member));
                         }
                     }
                 }
 
+                managedPacket.hasLeader = (m_Leader != nullptr);
                 if (m_Leader)
-                    data << m_Leader->guid << uint32_t(0);
-                else
-                    data << uint64_t(0);
+                    managedPacket.leaderGuid = uint64_t(m_Leader->guid);
 
-                data << uint8_t(m_LootMethod);
+                managedPacket.lootMethod = uint8_t(m_LootMethod);
 
+                managedPacket.hasLooter = (m_Looter != nullptr);
                 if (m_Looter)
-                    data << m_Looter->guid << uint32_t(0);
-                else
-                    data << uint64_t(0);
+                    managedPacket.looterGuid = uint64_t(m_Looter->guid);
 
-                data << uint8_t(m_LootThreshold);
-                data << uint8_t(m_difficulty);
-                data << uint8_t(m_raiddifficulty);
-                data << uint8_t(0);   // 3.3 - unk
+                managedPacket.lootThreshold = uint8_t(m_LootThreshold);
+                managedPacket.difficulty = uint8_t(m_difficulty);
+                managedPacket.raidDifficulty = uint8_t(m_raiddifficulty);
 
                 if (Player* loggedInPlayer = sObjectMgr.getPlayer(characterInfo->guid))
                 {
                     if (!loggedInPlayer->IsInWorld())
                     {
-                        loggedInPlayer->copyAndSendDelayedPacket(&data);
+                        if (auto packet = loggedInPlayer->getSession()->buildPacket(managedPacket))
+                            loggedInPlayer->copyAndSendDelayedPacket(packet.get());
                     }
                     else
                     {
-                        loggedInPlayer->getSession()->SendPacket(&data);
+                        loggedInPlayer->getSession()->sendManagedPacket(managedPacket);
                     }
                 }
             }
@@ -1530,16 +1521,16 @@ void Group::GoOffline(Player* p)
 
 void Group::sendLooter(Creature* creature, Player* groupLooter)
 {
-    WorldPacket data(SMSG_LOOT_LIST, (8 + 8));
-    data << uint64_t(creature->getGuid());
-    data << uint8_t(0); // unk1
+    SmsgLootList managedPacket{ creature->GetNewGUID() };
 
     if (groupLooter)
-        data.append(groupLooter->getGuid());
-    else
-        data << uint8_t(0);
+    {
+        managedPacket.hasGroupLooter = true;
+        managedPacket.groupLooterGuid = groupLooter->GetNewGUID();
+        managedPacket.looterGuid = GetLooter()->guid;
+    }
 
-    SendPacketToAll(&data);
+    PacketBroadcast::sendFromGroup(*this, managedPacket);
 }
 
 void Group::updateLooterGuid(Object* pLootedObject)
