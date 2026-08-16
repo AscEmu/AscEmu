@@ -50,6 +50,8 @@ namespace AscEmu::Packets
 
                 return true;
             }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

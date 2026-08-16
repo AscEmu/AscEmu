@@ -52,6 +52,7 @@ namespace AscEmu::Packets
                 // getPetTalentPoints()/TalentEntry::TalentTree/TalentEntry::RankID only exist for
                 // VERSION_STRING < Mop, so this whole branch must stay compile-time gated.
 #if VERSION_STRING < Mop
+    #if VERSION_STRING > TBC
                 // Pet::SendTalentsToOwner is only ever compiled for WotLK/Cata server builds.
                 if (m_protocol.expansion != WoW::Expansion::_WotLK && m_protocol.expansion != WoW::Expansion::_Cata)
                     return false;
@@ -106,6 +107,7 @@ namespace AscEmu::Packets
                 packet.put<uint8_t>(countPos, count);
 
                 return true;
+    #endif
 #else
                 return false;
 #endif
