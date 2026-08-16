@@ -103,6 +103,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAttackSwingBadFacing.h"
 #include "Server/Packets/SmsgAttackSwingNotInRange.h"
 #include "Server/Packets/SmsgBindPointUpdate.h"
+#include "Server/Packets/SmsgLoadEquipmentSet.h"
+#include "Server/Packets/SmsgSetupCurrency.h"
 #include "Server/Packets/SmsgCancelCombat.h"
 #include "Server/Packets/SmsgCharacterLoginFailed.h"
 #include "Server/Packets/SmsgCorpseReclaimDelay.h"
@@ -146,6 +148,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgInitWorldStates.h"
 #include "Server/Packets/SmsgEquipmentSetSaved.h"
 #include "Server/Packets/SmsgEquipmentSetList.h"
+#include "Server/Packets/SmsgLoadCufProfiles.h"
+#include "Server/Packets/SmsgWorldServerInfo.h"
+#include "Server/Packets/SmsgUpdateActionButtons.h"
+#include "Server/Packets/SmsgLootList.h"
+#include "Server/Packets/SmsgInitializeFactions.h"
+#include "Server/Packets/SmsgInstanceSaveCreated.h"
+#include "Server/Packets/SmsgRaidInstanceInfo.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Warden/SpeedDetector.h"
@@ -718,12 +727,10 @@ void Player::OnPushToWorld()
 #if VERSION_STRING == Mop
     updateVisibility();
 
-    WorldPacket data(SMSG_LOAD_CUF_PROFILES, 1);
-    data.writeBits(0, 20);
-    data.flushBits();
-    sendPacket(&data);
+    SmsgLoadCufProfiles cufProfilesPacket;
+    getSession()->sendManagedPacket(cufProfilesPacket);
 
-    data.initialize(SMSG_BATTLE_PET_JOURNAL);
+    WorldPacket data(SMSG_BATTLE_PET_JOURNAL, WorldPacket::defaultReserve);
     data.writeBits(0, 19);
     data.writeBit(0);
     data.writeBits(0, 25);
@@ -2869,17 +2876,8 @@ void Player::sendInitialLogonPackets()
     sendTalentsInfo();
 
 #if VERSION_STRING == Mop
-    WorldPacket data(SMSG_WORLD_SERVER_INFO, 4 + 4 + 1 + 1);
-    data.writeBit(0);
-    data.writeBit(0);
-    data.writeBit(0);
-    data.writeBit(0);
-    data.flushBits();
-
-    data << uint8_t(0);
-    data << uint32_t(0);       // reset weekly quest time
-    data << uint32_t(0);
-    getSession()->SendPacket(&data);
+    SmsgWorldServerInfo worldServerInfoPacket;
+    getSession()->sendManagedPacket(worldServerInfoPacket);
 #endif
 
     sendSmsgInitialSpells();
@@ -2892,9 +2890,8 @@ void Player::sendInitialLogonPackets()
     sendSmsgInitialFactions();
 
 #if VERSION_STRING == Mop
-    data.initialize(SMSG_LOAD_EQUIPMENT_SET);
-    data.writeBits(0, 19);
-    getSession()->SendPacket(&data);
+    SmsgLoadEquipmentSet equipmentSetPacket;
+    getSession()->sendManagedPacket(equipmentSetPacket);
 #endif
 
     SmsgLoginSetTimeSpeed timeSpeedPacket(Util::getGameTime(), 0.0166666669777748f);
@@ -2906,9 +2903,8 @@ void Player::sendInitialLogonPackets()
     m_session->sendManagedPacket(worldStatePacket);
 
 #if VERSION_STRING == Mop
-    data.initialize(SMSG_SETUP_CURRENCY, 3 + 1 + 4 + 4 + 4 + 4);
-    data.writeBits(0, 21);
-    getSession()->SendPacket(&data);
+    SmsgSetupCurrency setupCurrencyPacket;
+    getSession()->sendManagedPacket(setupCurrencyPacket);
 
     SmsgSetActiveMover moverPacket(getGuid());
     getSession()->sendManagedPacket(moverPacket);
@@ -6172,103 +6168,12 @@ void Player::setActionButton(uint8_t button, uint32_t action, uint8_t type, [[ma
 
 void Player::sendActionBars([[maybe_unused]] uint8_t action)
 {
-#if VERSION_STRING < Mop
-    WorldPacket data(SMSG_UPDATE_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1);
-
-#if VERSION_STRING == WotLK
-    data << uint8_t(action);
-#endif
-
+    std::array<ActionButton, PLAYER_ACTION_BUTTON_COUNT> buttons{};
     for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-    {
-        // TODO: this needs investigation
-        // action, as in spell id, can be and will be over uint16_t max (65535) on wotlk and cata
-        // but if I send action in uint32_t, client ignores the button completely and leaves an empty button slot, or corrupts other slots as well
-        // however casting the action to uint16_t seems to somehow work. I tested it with a spell id over 65535.
-        // but this is not a solution and can cause undefined behaviour... (previously ActionButton::Action was stored in uint16_t)
-        // I believe client accepts at most 4 bytes per button -Appled
-        data << uint16_t(getActiveSpec().getActionButton(i).Action);
-#if VERSION_STRING < WotLK
-        data << getActiveSpec().getActionButton(i).Type;
-        data << getActiveSpec().getActionButton(i).Misc;
-#else
-        // Since Wotlk misc needs to be sent before type
-        data << getActiveSpec().getActionButton(i).Misc;
-        data << getActiveSpec().getActionButton(i).Type;
-#endif
-    }
-#else
-    WorldPacket data(SMSG_UPDATE_ACTION_BUTTONS, (PLAYER_ACTION_BUTTON_COUNT * 8) + 1);
+        buttons[i] = getActiveSpec().getActionButton(i);
 
-    static_assert(sizeof(ActionButton) == 8);
-
-    uint8_t buttons[PLAYER_ACTION_BUTTON_COUNT][8] = {};
-    auto* packedButtons = reinterpret_cast<ActionButton*>(buttons);
-
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-    {
-        auto const& button = getActiveSpec().getActionButton(i);
-
-        packedButtons[i].Action = static_cast<uint32_t>(button.Action);
-        packedButtons[i].Type = static_cast<uint32_t>(button.Type);
-    }
-
-    // Bits
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeBit(buttons[i][4]);
-
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeBit(buttons[i][5]);
-
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeBit(buttons[i][3]);
-
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeBit(buttons[i][1]);
-
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeBit(buttons[i][6]);
-
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeBit(buttons[i][7]);
-
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeBit(buttons[i][0]);
-
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeBit(buttons[i][2]);
-
-    // Data
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeByteSeq(buttons[i][0]);
-
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeByteSeq(buttons[i][1]);
-
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeByteSeq(buttons[i][4]);
-
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeByteSeq(buttons[i][6]);
-
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeByteSeq(buttons[i][7]);
-
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeByteSeq(buttons[i][2]);
-
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeByteSeq(buttons[i][5]);
-
-    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        data.writeByteSeq(buttons[i][3]);
-#endif
-
-#if VERSION_STRING >= Cata
-    data << uint8_t(action);
-#endif
-
-    getSession()->SendPacket(&data);
+    SmsgUpdateActionButtons managedPacket(buttons, action);
+    getSession()->sendManagedPacket(managedPacket);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -10315,6 +10220,8 @@ VoidStorageItem* Player::getVoidStorageItem(uint64_t id, uint8_t& slot) const
 
     return nullptr;
 }
+#else
+VoidStorageItem* Player::getVoidStorageItem([[maybe_unused]]uint8_t slot) const { return nullptr; }
 #endif
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -10962,11 +10869,8 @@ void Player::sendLootUpdate(Object* object)
 
 void Player::sendLooter(Creature* creature)
 {
-    WorldPacket data(SMSG_LOOT_LIST, 8 + 1 + 1);
-    data << uint64_t(creature->getGuid());
-    data << uint8_t(0); // unk1
-    data << uint8_t(0); // no group looter
-    sendMessageToSet(&data, true);
+    SmsgLootList managedPacket(creature->getGuid());
+    PacketBroadcast::sendToSet(*this, managedPacket, true);
 }
 
 Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
@@ -11503,48 +11407,8 @@ uint32_t Player::getExaltedCount() const
 
 void Player::sendSmsgInitialFactions()
 {
-#if VERSION_STRING == Mop
-    ByteBuffer buffer;
-
-    WorldPacket data(SMSG_INITIALIZE_FACTIONS, PLAYER_REPUTATION_COUNT * (1 + 4) + 32);
-    for (const auto* const factionReputation : m_reputationByListId)
-    {
-        if (factionReputation == nullptr)
-        {
-            data << static_cast<uint8_t>(0);
-            data << static_cast<uint32_t>(0);
-        }
-        else
-        {
-            data << factionReputation->flag;
-            data << static_cast<uint32_t>(factionReputation->calcStanding());
-        }
-        buffer.writeBit(0);
-    }
-
-    buffer.flushBits();
-
-    data.append(buffer);
-#else
-    WorldPacket data(SMSG_INITIALIZE_FACTIONS, 764);
-    data << uint32_t(PLAYER_REPUTATION_COUNT);
-
-    for (const auto* const factionReputation : m_reputationByListId)
-    {
-        if (factionReputation == nullptr)
-        {
-            data << uint8_t(0);
-            data << uint32_t(0);
-        }
-        else
-        {
-            data << uint8_t(factionReputation->flag);
-            data << uint32_t(factionReputation->calcStanding());
-        }
-    }
-
-#endif
-    m_session->SendPacket(&data);
+    SmsgInitializeFactions managedPacket(m_reputationByListId);
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::initialiseReputation()
@@ -12670,9 +12534,8 @@ void Player::bindToInstance()
     if (!mapSave)
         return;
 
-    WorldPacket data(SMSG_INSTANCE_SAVE_CREATED, 4);
-    data << uint32_t(0);
-    sendPacket(&data);
+    SmsgInstanceSaveCreated managedPacket;
+    getSession()->sendManagedPacket(managedPacket);
     if (!isGMFlagSet())
     {
         bindToInstance(mapSave, true, EXTEND_STATE_KEEP);
@@ -12690,14 +12553,7 @@ void Player::setPendingBind(uint32_t instanceId, uint32_t bindTimer)
 
 void Player::sendRaidInfo()
 {
-    uint32_t counter = 0;
-
-    WorldPacket data(SMSG_RAID_INSTANCE_INFO, 4);
-
-    size_t p_counter = data.wpos();
-    data << uint32_t(counter);
-
-    const auto now = Util::getTimeNow();
+    std::vector<SmsgRaidInstanceInfo::PermanentBind> permanentBinds;
 
     for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
     {
@@ -12705,37 +12561,12 @@ void Player::sendRaidInfo()
         {
             InstancePlayerBind const& bind = itr->second;
             if (bind.perm)
-            {
-                InstanceSaved* save = bind.save;
-                data << uint32_t(save->getMapId());
-#if VERSION_STRING > TBC
-                data << uint32_t(save->getDifficulty());
-                data << uint64_t(save->getInstanceId());
-                data << uint8_t(bind.extendState != EXTEND_STATE_EXPIRED);
-                data << uint8_t(bind.extendState == EXTEND_STATE_EXTENDED);
-
-                time_t nextReset = save->getResetTime();
-                if (bind.extendState == EXTEND_STATE_EXTENDED)
-                    nextReset = sInstanceMgr.getSubsequentResetTime(save->getMapId(), save->getDifficulty(), save->getResetTime());
-
-                data << uint32_t(nextReset - now);
-#else
-                time_t nextReset = save->getResetTime();
-                if (bind.extendState == EXTEND_STATE_EXTENDED)
-                    nextReset = sInstanceMgr.getSubsequentResetTime(save->getMapId(), save->getDifficulty(), save->getResetTime());
-
-                data << uint32_t(nextReset - now);
-
-                data << uint32_t(save->getInstanceId());
-                data << uint32_t(counter);
-#endif
-
-                ++counter;
-            }
+                permanentBinds.push_back({ bind.save, static_cast<uint8_t>(bind.extendState) });
         }
     }
-    data.put<uint32_t>(p_counter, counter);
-    sendPacket(&data);
+
+    SmsgRaidInstanceInfo managedPacket(std::move(permanentBinds));
+    getSession()->sendManagedPacket(managedPacket);
 }
 
 void Player::sendSavedInstances()
@@ -13375,10 +13206,8 @@ void Player::resendCreateAndActiveMoverForMoP()
     processPendingUpdates();
 
     // MoP: client may be waiting for CUF profiles after create to finish loading (Trinity SendInitialPacketsAfterAddToMap).
-    WorldPacket cuf(SMSG_LOAD_CUF_PROFILES, 1);
-    cuf.writeBits(0, 20);
-    cuf.flushBits();
-    sendPacket(&cuf);
+    SmsgLoadCufProfiles cufProfilesPacket;
+    getSession()->sendManagedPacket(cufProfilesPacket);
 
     // MoP: schedule one delayed retry in 2s (after throttle) in case client missed the first resend; stop when cap reached.
     if (m_objectUpdateFailedResendCount < kMaxObjectUpdateFailedResends)
