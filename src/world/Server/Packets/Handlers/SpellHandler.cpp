@@ -16,8 +16,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
+#include "Server/PacketBroadcast.hpp"
 #include "Server/Packets/CmsgCastSpell.h"
 #include "Server/Packets/CmsgPetCastSpell.h"
+#include "Server/Packets/SmsgSetProjectilePosition.h"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
 #include "Storage/WDB/WDBStores.hpp"
@@ -451,12 +453,7 @@ void WorldSession::handleUpdateProjectilePosition(WorldPacket& recvPacket)
     curSpell->m_targets.setDestination(LocationVector(x, y, z));
 
 #if VERSION_STRING > TBC
-    WorldPacket data(SMSG_SET_PROJECTILE_POSITION, 21);
-    data << uint64_t(casterGuid);
-    data << uint8_t(castCount);
-    data << float(x);
-    data << float(y);
-    data << float(z);
-    caster->sendMessageToSet(&data, true);
+    SmsgSetProjectilePosition managedPacket(casterGuid, castCount, x, y, z);
+    PacketBroadcast::sendToSet(*caster, managedPacket, true);
 #endif
 }
