@@ -67,6 +67,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING >= Cata
 #include "Management/Guild/GuildFinderMgr.hpp"
+#include "Server/Packets/SmsgGuildMaxDailyXp.h"
+#include "Server/Packets/SmsgGuildRewardsList.h"
+#include "Server/Packets/SmsgLfGuildBrowseUpdated.h"
+#include "Server/Packets/SmsgLfGuildMembershipListUpdated.h"
+#include "Server/Packets/SmsgLfGuildRecruitListUpdated.h"
+#include "Server/Packets/SmsgLfGuildPostUpdated.h"
 #endif
 
 using namespace AscEmu::Packets;
@@ -1168,9 +1174,8 @@ void WorldSession::handleGuildRequestMaxDailyXP([[maybe_unused]] WorldPacket& re
     {
         if (guild->isMember(_player->getGuid()))
         {
-            WorldPacket data(SMSG_GUILD_MAX_DAILY_XP, 8);
-            data << uint64_t(worldConfig.guild.maxXpPerDay);
-            SendPacket(&data);
+            SmsgGuildMaxDailyXp managedPacket(worldConfig.guild.maxXpPerDay);
+            sendManagedPacket(managedPacket);
         }
     }
 #endif
@@ -1200,22 +1205,8 @@ void WorldSession::handleGuildRewardsQueryOpcode([[maybe_unused]] WorldPacket& r
     {
         std::vector<GuildReward> const& rewards = sGuildMgr.getGuildRewards();
 
-        WorldPacket data(SMSG_GUILD_REWARDS_LIST, 3 + rewards.size() * (4 + 4 + 4 + 8 + 4 + 4));
-        data.writeBits(rewards.size(), 21);
-        data.flushBits();
-
-        for (uint32_t i = 0; i < rewards.size(); ++i)
-        {
-            data << uint32_t(rewards[i].standing);
-            data << int32_t(rewards[i].racemask);
-            data << uint32_t(rewards[i].entry);
-            data << uint64_t(rewards[i].price);
-            data << uint32_t(0);
-            data << uint32_t(rewards[i].achievementId);
-        }
-        data << uint32_t(time(nullptr));
-
-        SendPacket(&data);
+        SmsgGuildRewardsList managedPacket(rewards);
+        sendManagedPacket(managedPacket);
     }
 #endif
 }
@@ -1368,86 +1359,36 @@ void WorldSession::handleGuildFinderBrowse([[maybe_unused]] WorldPacket& recvPac
 
     LFGuildPlayer settings(player->getGuidLow(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), ANY_FINDER_LEVEL);
     LFGuildStore guildList = sGuildFinderMgr.getGuildsMatchingSetting(settings, player->getTeam());
-    uint32_t guildCount = static_cast<uint32_t>(guildList.size());
 
-    if (guildCount == 0)
-    {
-        WorldPacket packet(SMSG_LF_GUILD_BROWSE_UPDATED, 0);
-        player->sendPacket(&packet);
-        return;
-    }
-
-    ByteBuffer bufferData(65 * guildCount);
-    WorldPacket data(SMSG_LF_GUILD_BROWSE_UPDATED, 3 + guildCount * 65);
-    data.writeBits(guildCount, 19);
+    std::vector<SmsgLfGuildBrowseEntry> guildEntries;
+    guildEntries.reserve(guildList.size());
 
     for (LFGuildStore::const_iterator itr = guildList.begin(); itr != guildList.end(); ++itr)
     {
         LFGuildSettings guildSettings = itr->second;
         Guild* guild = sGuildMgr.getGuildById(itr->first);
 
-        WoWGuid guildGUID = guild->getGUID();
+        SmsgLfGuildBrowseEntry entry;
+        entry.guildGuid = guild->getGUID();
+        entry.name = guild->getName();
+        entry.comment = guildSettings.getComment();
+        entry.emblemColor = guild->getEmblemInfo().getColor();
+        entry.emblemBorderStyle = guild->getEmblemInfo().getBorderStyle();
+        entry.emblemStyle = guild->getEmblemInfo().getStyle();
+        entry.emblemBackgroundColor = guild->getEmblemInfo().getBackgroundColor();
+        entry.emblemBorderColor = guild->getEmblemInfo().getBorderColor();
+        entry.level = guild->getLevel();
+        entry.interests = guildSettings.getInterests();
+        entry.availability = guildSettings.getAvailability();
+        entry.classRoles = guildSettings.getClassRoles();
+        entry.membersCount = guild->getMembersCount();
+        entry.hasRequest = sGuildFinderMgr.hasRequest(player->getGuidLow(), guild->getId());
 
-        data.writeBit(guildGUID[7]);
-        data.writeBit(guildGUID[5]);
-
-        data.writeBits(guild->getName().size(), 8);
-
-        data.writeBit(guildGUID[0]);
-
-        data.writeBits(guildSettings.getComment().size(), 11);
-
-        data.writeBit(guildGUID[4]);
-        data.writeBit(guildGUID[1]);
-        data.writeBit(guildGUID[2]);
-        data.writeBit(guildGUID[6]);
-        data.writeBit(guildGUID[3]);
-
-        bufferData << uint32_t(guild->getEmblemInfo().getColor());
-        bufferData << uint32_t(guild->getEmblemInfo().getBorderStyle());
-        bufferData << uint32_t(guild->getEmblemInfo().getStyle());
-
-        bufferData.writeString(guildSettings.getComment());
-
-        bufferData << uint8_t(0);
-
-        bufferData.writeByteSeq(guildGUID[5]);
-
-        bufferData << uint32_t(guildSettings.getInterests());
-
-        bufferData.writeByteSeq(guildGUID[6]);
-        bufferData.writeByteSeq(guildGUID[4]);
-
-        bufferData << uint32_t(guild->getLevel());
-
-        bufferData.writeString(guild->getName());
-
-        bufferData << uint32_t(0); // Achievment
-
-        bufferData.writeByteSeq(guildGUID[7]);
-
-        bufferData << uint8_t(sGuildFinderMgr.hasRequest(player->getGuidLow(), guild->getId()));
-
-        bufferData.writeByteSeq(guildGUID[2]);
-        bufferData.writeByteSeq(guildGUID[0]);
-
-        bufferData << uint32_t(guildSettings.getAvailability());
-
-        bufferData.writeByteSeq(guildGUID[1]);
-
-        bufferData << uint32_t(guild->getEmblemInfo().getBackgroundColor());
-        bufferData << uint32_t(0);
-        bufferData << uint32_t(guild->getEmblemInfo().getBorderColor());
-        bufferData << uint32_t(guildSettings.getClassRoles());
-
-        bufferData.writeByteSeq(guildGUID[3]);
-        bufferData << uint32_t(guild->getMembersCount());
+        guildEntries.push_back(entry);
     }
 
-    data.flushBits();
-    data.append(bufferData);
-
-    player->sendPacket(&data);
+    SmsgLfGuildBrowseUpdated managedPacket(guildEntries);
+    player->getSession()->sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -1488,66 +1429,31 @@ void WorldSession::handleGuildFinderGetApplications(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING >= Cata
     std::list<MembershipRequest> applicatedGuilds = sGuildFinderMgr.getAllMembershipRequestsForPlayer(_player->getGuidLow());
-    uint32_t applicationsCount = static_cast<uint32_t>(applicatedGuilds.size());
-    WorldPacket data(SMSG_LF_GUILD_MEMBERSHIP_LIST_UPDATED, 7 + 54 * applicationsCount);
-    data.writeBits(applicationsCount, 20);
 
-    if (applicationsCount > 0)
+    std::vector<SmsgLfGuildMembershipEntry> applications;
+    applications.reserve(applicatedGuilds.size());
+
+    for (std::list<MembershipRequest>::const_iterator itr = applicatedGuilds.begin(); itr != applicatedGuilds.end(); ++itr)
     {
-        ByteBuffer bufferData(54 * applicationsCount);
-        for (std::list<MembershipRequest>::const_iterator itr = applicatedGuilds.begin(); itr != applicatedGuilds.end(); ++itr)
-        {
-            Guild* guild = sGuildMgr.getGuildById(itr->getGuildId());
-            LFGuildSettings guildSettings = sGuildFinderMgr.getGuildSettings(itr->getGuildId());
-            MembershipRequest request = *itr;
+        Guild* guild = sGuildMgr.getGuildById(itr->getGuildId());
+        LFGuildSettings guildSettings = sGuildFinderMgr.getGuildSettings(itr->getGuildId());
+        MembershipRequest request = *itr;
 
-            WoWGuid guildGuid = guild->getGUID();
+        SmsgLfGuildMembershipEntry entry;
+        entry.guildGuid = guild->getGUID();
+        entry.name = guild->getName();
+        entry.comment = request.getComment();
+        entry.availability = guildSettings.getAvailability();
+        entry.classRoles = guildSettings.getClassRoles();
+        entry.interests = guildSettings.getInterests();
+        entry.submitTime = request.getSubmitTime();
+        entry.expiryTime = request.getExpiryTime();
 
-            data.writeBit(guildGuid[1]);
-            data.writeBit(guildGuid[0]);
-            data.writeBit(guildGuid[5]);
-
-            data.writeBits(request.getComment().size(), 11);
-
-            data.writeBit(guildGuid[3]);
-            data.writeBit(guildGuid[7]);
-            data.writeBit(guildGuid[4]);
-            data.writeBit(guildGuid[6]);
-            data.writeBit(guildGuid[2]);
-
-            data.writeBits(guild->getName().size(), 8);
-
-            bufferData.writeByteSeq(guildGuid[2]);
-
-            bufferData.writeString(request.getComment());
-
-            bufferData.writeByteSeq(guildGuid[5]);
-
-            bufferData.writeString(guild->getName());
-
-            bufferData << uint32_t(guildSettings.getAvailability());
-            bufferData << uint32_t(request.getExpiryTime() - time(nullptr));
-
-            bufferData.writeByteSeq(guildGuid[0]);
-            bufferData.writeByteSeq(guildGuid[6]);
-            bufferData.writeByteSeq(guildGuid[3]);
-            bufferData.writeByteSeq(guildGuid[7]);
-
-            bufferData << uint32_t(guildSettings.getClassRoles());
-
-            bufferData.writeByteSeq(guildGuid[4]);
-            bufferData.writeByteSeq(guildGuid[1]);
-
-            bufferData << uint32_t(time(nullptr) - request.getSubmitTime());
-            bufferData << uint32_t(guildSettings.getInterests());
-        }
-
-        data.flushBits();
-        data.append(bufferData);
+        applications.push_back(entry);
     }
-    data << uint32_t(10 - sGuildFinderMgr.countRequestsFromPlayer(_player->getGuidLow()));
 
-    _player->sendPacket(&data);
+    SmsgLfGuildMembershipListUpdated managedPacket(applications, 10 - sGuildFinderMgr.countRequestsFromPlayer(_player->getGuidLow()));
+    _player->getSession()->sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -1562,11 +1468,9 @@ void WorldSession::handleGuildFinderGetRecruits([[maybe_unused]] WorldPacket& re
         return;
 
     std::vector<MembershipRequest> recruitsList = sGuildFinderMgr.getAllMembershipRequestsForGuild(player->getGuildId());
-    uint32_t recruitCount = static_cast<uint32_t>(recruitsList.size());
 
-    ByteBuffer dataBuffer(53 * recruitCount);
-    WorldPacket data(SMSG_LF_GUILD_RECRUIT_LIST_UPDATED, 7 + 26 * recruitCount + 53 * recruitCount);
-    data.writeBits(recruitCount, 20);
+    std::vector<SmsgLfGuildRecruitEntry> recruitEntries;
+    recruitEntries.reserve(recruitsList.size());
 
     for (std::vector<MembershipRequest>::const_iterator itr = recruitsList.begin(); itr != recruitsList.end(); ++itr)
     {
@@ -1574,55 +1478,24 @@ void WorldSession::handleGuildFinderGetRecruits([[maybe_unused]] WorldPacket& re
         WoWGuid playerGuid(request.getPlayerGUID(), 0, HIGHGUID_TYPE_PLAYER);
 
         const auto* info = sObjectMgr.getCachedCharacterInfo(request.getPlayerGUID());
-        std::string name = info->name;
 
-        data.writeBits(request.getComment().size(), 11);
+        SmsgLfGuildRecruitEntry entry;
+        entry.playerGuid = playerGuid;
+        entry.name = info->name;
+        entry.comment = request.getComment();
+        entry.level = static_cast<int32_t>(info->lastLevel);
+        entry.availability = request.getAvailability();
+        entry.classRoles = request.getClassRoles();
+        entry.interests = request.getInterests();
+        entry.playerClass = info->cl;
+        entry.submitTime = request.getSubmitTime();
+        entry.expiryTime = request.getExpiryTime();
 
-        data.writeBit(playerGuid[2]);
-        data.writeBit(playerGuid[4]);
-        data.writeBit(playerGuid[3]);
-        data.writeBit(playerGuid[7]);
-        data.writeBit(playerGuid[0]);
-
-        data.writeBits(name.size(), 7);
-
-        data.writeBit(playerGuid[5]);
-        data.writeBit(playerGuid[1]);
-        data.writeBit(playerGuid[6]);
-
-        dataBuffer.writeByteSeq(playerGuid[4]);
-
-        dataBuffer << int32_t(time(nullptr) <= request.getExpiryTime());
-
-        dataBuffer.writeByteSeq(playerGuid[3]);
-        dataBuffer.writeByteSeq(playerGuid[0]);
-        dataBuffer.writeByteSeq(playerGuid[1]);
-
-        dataBuffer << int32_t(info->lastLevel);
-
-        dataBuffer.writeByteSeq(playerGuid[6]);
-        dataBuffer.writeByteSeq(playerGuid[7]);
-        dataBuffer.writeByteSeq(playerGuid[2]);
-
-        dataBuffer << int32_t(time(nullptr) - request.getSubmitTime());
-        dataBuffer << int32_t(request.getAvailability());
-        dataBuffer << int32_t(request.getClassRoles());
-        dataBuffer << int32_t(request.getInterests());
-        dataBuffer << int32_t(request.getExpiryTime() - time(nullptr));
-
-        dataBuffer.writeString(name);
-        dataBuffer.writeString(request.getComment());
-
-        dataBuffer << int32_t(info->cl);
-
-        dataBuffer.writeByteSeq(playerGuid[5]);
+        recruitEntries.push_back(entry);
     }
 
-    data.flushBits();
-    data.append(dataBuffer);
-    data << uint32_t(time(nullptr));
-
-    player->sendPacket(&data);
+    SmsgLfGuildRecruitListUpdated managedPacket(recruitEntries);
+    player->getSession()->sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -1642,31 +1515,9 @@ void WorldSession::handleGuildFinderPostRequest(WorldPacket& /*recvPacket*/)
 
     LFGuildSettings settings = sGuildFinderMgr.getGuildSettings(player->getGuildId());
 
-    WorldPacket data(SMSG_LF_GUILD_POST_UPDATED, 35);
-    data.writeBit(isGuildMaster);
-
-    if (isGuildMaster)
-    {
-        data.writeBits(settings.getComment().size(), 11);
-
-        data.writeBit(settings.isListed());
-
-        data << uint32_t(settings.getLevel());
-
-        data.writeString(settings.getComment());
-
-        data << uint32_t(0);
-
-        data << uint32_t(settings.getAvailability());
-        data << uint32_t(settings.getClassRoles());
-        data << uint32_t(settings.getInterests());
-    }
-    else
-    {
-        data.flushBits();
-    }
-
-    player->getSession()->SendPacket(&data);
+    SmsgLfGuildPostUpdated managedPacket(isGuildMaster, settings.isListed(), settings.getLevel(), settings.getComment(),
+        settings.getAvailability(), settings.getClassRoles(), settings.getInterests());
+    player->getSession()->sendManagedPacket(managedPacket);
 #endif
 }
 
