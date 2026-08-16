@@ -8,7 +8,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Map/Maps/InstanceMgr.hpp"
 #include "Utilities/Util.hpp"
+#include "Server/Packets/SmsgCalendarSendNumPending.h"
+#include "Server/Packets/SmsgCalendarRaidLockoutRemoved.h"
+#include "Server/Packets/SmsgCalendarRaidLockoutUpdated.h"
 
+using namespace AscEmu::Packets;
 
 // \todo CalendarHandler
 void WorldSession::handleCalendarGetCalendar(WorldPacket& /*recvPacket*/)
@@ -34,11 +38,8 @@ void WorldSession::handleCalendarGetNumPending(WorldPacket& /*recvPacket*/)
 #if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarGetNumPending Not handled");
 
-    WorldPacket data(SMSG_CALENDAR_SEND_NUM_PENDING, 4);
-#if VERSION_STRING >= Cata
-    data << uint32_t(0);  // num pending
-#endif
-    SendPacket(&data);
+    SmsgCalendarSendNumPending managedPacket(0);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -160,18 +161,8 @@ void WorldSession::sendCalendarRaidLockout([[maybe_unused]] InstanceSaved const*
     const auto now = Util::getTimeNow();
     time_t currTime = now;
 
-    WorldPacket data(SMSG_CALENDAR_RAID_LOCKOUT_REMOVED, (4) + 4 + 4 + 4 + 8);
-    if (add)
-    {
-        data.setOpcode(SMSG_CALENDAR_RAID_LOCKOUT_ADDED);
-        data.appendPackedTime(currTime);
-    }
-
-    data << uint32_t(save->getMapId());
-    data << uint32_t(save->getDifficulty());
-    data << uint32_t(save->getResetTime() - currTime);
-    data << uint64_t(save->getInstanceId());
-    SendPacket(&data);
+    SmsgCalendarRaidLockoutRemoved managedPacket(add, currTime, uint32_t(save->getMapId()), uint32_t(save->getDifficulty()), uint32_t(save->getResetTime() - currTime), uint64_t(save->getInstanceId()));
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -186,13 +177,8 @@ void WorldSession::sendCalendarRaidLockoutUpdated([[maybe_unused]] InstanceSaved
     const auto now = Util::getTimeNow();
     time_t currTime = now;
 
-    WorldPacket data(SMSG_CALENDAR_RAID_LOCKOUT_UPDATED, 4 + 4 + 4 + 4 + 8);
-    data.appendPackedTime(currTime);
-    data << uint32_t(save->getMapId());
-    data << uint32_t(save->getDifficulty());
-    data << uint32_t(0); // Amount of seconds that has changed to the reset time
-    data << uint32_t(save->getResetTime() - currTime);
-    SendPacket(&data);
+    SmsgCalendarRaidLockoutUpdated managedPacket(currTime, uint32_t(save->getMapId()), uint32_t(save->getDifficulty()), uint32_t(save->getResetTime() - currTime));
+    sendManagedPacket(managedPacket);
 #endif
 }
 
