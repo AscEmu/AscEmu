@@ -381,16 +381,10 @@ bool ChatCommandHandler::HandleGMTicketAssignToCommand(const char* args, WorldSe
     ss << ":" << plr->GetName();
     chn->say(cplr, ss.str().c_str(), nullptr, true);
     //Send Response Packet to update Ticket
-    //WorldPacket data(SMSG_GMTICKET_GETTICKET, 400);
-    //data << uint32_t(6); // Packet Status
-    //data << uint8_t(0x7);//static Category
-    //data << ticket->message.c_str();//ticketDescription
-    //data << float(0.0);//ticketAge - days //update time =  last time ticket was modified?
-    //data << float(0.0);//oldestTicketTime - days
-    //data << float(0.0);//updateTime - days | How recent is the data for oldest ticket time, measured in days.  If this number 1 hour, we have bad data.
-    //data << unit64(2);//assignedToGM |0 - ticket is not currently assigned to a gm | 1 - ticket is assigned to a normal gm |    2 - ticket is in the escalation queue
-    //data << uint64_t(1);//openedByGM | 0 - ticket has never been opened by a gm | 1 - ticket has been opened by a gm
-    //mplr->getSession()->sendPacket(&data);
+    //Packet Status=6, static Category=0x7, ticketDescription=ticket->message, ticketAge/oldestTicketTime/updateTime=0.0 days,
+    //assignedToGM=2 (escalation queue), openedByGM=1 -- kept disabled as in the original, just expressed via the managed packet:
+    //SmsgGmTicketGetTicket managedPacket{ uint32_t(6), ticket->message, uint8_t(0), ticket->guid, uint32_t(0), std::string() };
+    //mplr->getSession()->sendManagedPacket(managedPacket);
     systemMessage(mplr->getSession(), "SYSTEM: Your ticket has been escalated. A Senior Game Master will be with you shortly!");
     return true;
 }

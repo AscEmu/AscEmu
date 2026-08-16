@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGmTicketSystemstatus.h"
 #include "Server/Packets/CmsgGmReportLag.h"
 #include "Server/Packets/CmsgGmSurveySubmit.h"
+#include "Server/Packets/SmsgGmResponseReceived.h"
 
 #if VERSION_STRING > WotLK
 #include <zlib.h>
@@ -231,29 +232,8 @@ void WorldSession::handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/)
 #if VERSION_STRING > WotLK
         else
         {
-            WorldPacket data(SMSG_GMRESPONSE_RECEIVED);
-            data << uint32_t(1);        // unk
-            data << uint32_t(ticket->guid);
-            data << ticket->message.c_str();
-
-            size_t commentLength = ticket->comment.size();
-            char const* commentChars = ticket->comment.c_str();
-
-            for (int i = 0; i < 4; ++i)
-            {
-                if (commentLength)
-                {
-                    size_t writeLen = std::min<size_t>(commentLength, 3999);
-                    data.append(commentChars, writeLen);
-
-                    commentLength -= writeLen;
-                    commentChars += writeLen;
-                }
-
-                data << uint8_t(0);
-            }
-
-            SendPacket(&data);
+            SmsgGmResponseReceived managedPacket(uint32_t(ticket->guid), ticket->message, ticket->comment);
+            sendManagedPacket(managedPacket);
         }
 #endif
     }

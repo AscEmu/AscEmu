@@ -1623,12 +1623,15 @@ public:
     void deleteVoidStorageItem(uint8_t slot);
     bool swapVoidStorageItem(uint8_t oldSlot, uint8_t newSlot);
 
-    VoidStorageItem* getVoidStorageItem(uint8_t slot) const;
+    
     VoidStorageItem* getVoidStorageItem(uint64_t id, uint8_t& slot) const;
 
 private:
     std::array<std::unique_ptr<VoidStorageItem>, VOID_STORAGE_MAX_SLOT> _voidStorageItems;
 #endif
+
+public:
+    VoidStorageItem* getVoidStorageItem(uint8_t slot) const;
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Taxi
