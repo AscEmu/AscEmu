@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Server/Packets/SmsgControlVehicle.h"
+#include "Server/Packets/SmsgOnCancelExpectedRideVehicleAura.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Movement/MovementManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
@@ -18,6 +19,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Server/WorldSession.h"
+
+using namespace AscEmu::Packets;
 
 #ifdef FT_VEHICLES
 
@@ -570,8 +573,8 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
     Player* player = passenger->ToPlayer();
     if (player)
     {
-        WorldPacket data(SMSG_ON_CANCEL_EXPECTED_RIDE_VEHICLE_AURA, 0);
-        player->sendPacket(&data);
+        SmsgOnCancelExpectedRideVehicleAura cancelRideManagedPacket;
+        player->getSession()->sendManagedPacket(cancelRideManagedPacket);
 
         if (!veSeat->hasFlag(WDB::Structures::VehicleSeatFlagsB::VEHICLE_SEAT_FLAG_B_KEEP_PET))
         {
