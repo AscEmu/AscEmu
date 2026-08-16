@@ -133,7 +133,6 @@ public:
         bool isRepeatableQuestFinished(Player* plr, QuestProperties const* qst);
 
         void SendQuestUpdateAddKill(Player* plr, uint32_t questid, uint32_t entry, uint32_t count, uint32_t tcount, uint64_t guid);
-        void BuildQuestPOIResponse(WorldPacket & data, uint32_t questid);
         void SendPushToPartyResponse(Player* plr, Player* pTarget, uint8_t response);
 
         bool OnGameObjectActivate(Player* plr, GameObject* go);
@@ -215,6 +214,7 @@ public:
         //////////////////////////////////////////////////////////////////////////////////////////
         void FillQuestMenu(Creature*, Player*, GossipMenu &);
 
+        QuestPOIVector* getQuestPOIMap(uint32_t questId);
     private:
         std::unordered_map<uint32_t, std::unique_ptr<QuestRelationList> > m_npc_quests;
         std::unordered_map<uint32_t, std::unique_ptr<QuestRelationList> > m_obj_quests;

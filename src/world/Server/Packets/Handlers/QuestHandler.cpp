@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgQuestgiverCompleteQuest.h"
 #include "Server/Packets/CmsgQuestgiverChooseReward.h"
 #include "Server/Packets/CmsgPushquesttoparty.h"
+#include "Server/Packets/SmsgQuestPoiQueryResponse.h"
 #include "Server/WorldSession.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -396,12 +397,8 @@ void WorldSession::handleQuestPOIQueryOpcode([[maybe_unused]] WorldPacket& recvP
         srlPacket.questCount = MAX_QUEST_LOG_SIZE;
     }
 
-    WorldPacket data(SMSG_QUEST_POI_QUERY_RESPONSE, 4 + (4 + 4) * srlPacket.questCount);
-    data << srlPacket.questCount;
-    for (auto questId : srlPacket.questIds)
-        sQuestMgr.BuildQuestPOIResponse(data, questId);
-
-    SendPacket(&data);
+    SmsgQuestPoiQueryResponse managedPacket(srlPacket.questCount, srlPacket.questIds);
+    sendManagedPacket(managedPacket);
 #endif
 }
 

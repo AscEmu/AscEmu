@@ -2733,53 +2733,13 @@ void QuestMgr::OnPlayerEmote(Player* plr, uint32_t emoteid, uint64_t & victimgui
     }
 }
 
-void QuestMgr::BuildQuestPOIResponse(WorldPacket& data, uint32_t questid)
+QuestPOIVector* QuestMgr::getQuestPOIMap(uint32_t questId)
 {
-    QuestProperties const* q = sMySQLStore.getQuestProperties(questid);
-    if (q != nullptr)
-    {
-        QuestPOIVector const* POI = nullptr;
+    QuestPOIMap::iterator itr = m_QuestPOIMap.find(questId);
+    if (itr != m_QuestPOIMap.end())
+        return &(itr->second);
 
-        QuestPOIMap::iterator itr = m_QuestPOIMap.find(questid);
-        if (itr != m_QuestPOIMap.end())
-            POI = &(itr->second);
-
-        if (POI != NULL)
-        {
-            data << uint32_t(questid);
-            data << uint32_t(POI->size());
-
-            for (QuestPOIVector::const_iterator iterator = POI->begin(); iterator != POI->end(); ++iterator)
-            {
-                data << uint32_t(iterator->PoiId);
-                data << int32_t(iterator->ObjectiveIndex);
-                data << uint32_t(iterator->MapId);
-                data << uint32_t(iterator->MapAreaId);
-                data << uint32_t(iterator->FloorId);
-                data << uint32_t(iterator->Unk3);
-                data << uint32_t(iterator->Unk4);
-                data << uint32_t(iterator->points.size());
-
-                for (std::vector< QuestPOIPoint >::const_iterator itr2 = iterator->points.begin(); itr2 != iterator->points.end(); ++itr2)
-                {
-                    data << int32_t(itr2->x);
-                    data << int32_t(itr2->y);
-                }
-            }
-
-        }
-        else
-        {
-            data << uint32_t(questid);
-            data << uint32_t(0);
-        }
-
-    }
-    else
-    {
-        data << uint32_t(questid);
-        data << uint32_t(0);
-    }
+    return nullptr;
 }
 
 void QuestMgr::FillQuestMenu(Creature* giver, Player* plr, GossipMenu & menu)
