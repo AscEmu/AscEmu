@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 class SocketHandler;
 class WorldSession;
 
-class WorldSocket : public Socket
+class SERVER_DECL WorldSocket : public Socket
 {
 public:
     WorldSocket(SOCKET fd);

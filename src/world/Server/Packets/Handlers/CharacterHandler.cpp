@@ -29,6 +29,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetPlayerDeclinedNames.h"
 #include "Server/Packets/SmsgSetPlayerDeclinedNamesResult.h"
 #include "Server/Packets/SmsgEnumCharactersResult.h"
+#include "Server/Packets/SmsgSetTimeZoneInformation.h"
+#include "Server/Packets/SmsgSetupCurrency.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Server/CharacterErrors.h"
 #include "AuthCodes.hpp"
@@ -729,17 +731,16 @@ void WorldSession::fullLogin(Player* player)
 
     sendServerStats();
 
+    // new since Mop
+    {
+        std::string timeZone = "Etc/UTC";
+
+        SmsgSetTimeZoneInformation timeZonePacket(timeZone);
+        sendManagedPacket(timeZonePacket);
+    }
+
 #if VERSION_STRING == Mop
-    std::string timeZone = "Etc/UTC";
-
-    WorldPacket data(SMSG_SET_TIME_ZONE_INFORMATION, 2 + timeZone.length() * 2);
-    data.writeBits(timeZone.length(), 7);
-    data.writeBits(timeZone.length(), 7);
-    data.flushBits();
-    data.writeString(timeZone);
-    data.writeString(timeZone);
-    SendPacket(&data);
-
+    WorldPacket data;
     data.initialize(SMSG_HOTFIX_NOTIFY_BLOB);
     data.writeBits(0, 20);
     //data.flushBits();
@@ -776,10 +777,8 @@ void WorldSession::fullLogin(Player* player)
 
 #if VERSION_STRING == Mop
     {
-        WorldPacket packet(SMSG_SETUP_CURRENCY, 4);
-        packet.writeBits(0, 21);
-        packet.flushBits();
-        player->sendPacket(&packet);
+        SmsgSetupCurrency managedPacket;
+        sendManagedPacket(managedPacket);
     }
 #endif
 
