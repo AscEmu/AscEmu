@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "Management/QuestMgr.h"
+#include "Storage/MySQLDataStore.hpp"
 
 #include <cstdint>
 #include <vector>

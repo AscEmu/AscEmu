@@ -60,15 +60,12 @@
 #include "Utilities/Benchmark.hpp"
 #include "Utilities/Util.hpp"
 #include "Threading/ThreadPool.hpp"
-
 #include "Data/WoWDynamicObject.hpp"
-#if VERSION_STRING == Mop
 #include "Data/WoWGameObject.hpp"
 #include "Data/WoWItem.hpp"
 #include "Data/WoWObject.hpp"
 #include "Data/WoWPlayer.hpp"
 #include "Data/WoWUnit.hpp"
-#endif
 
 #include <atomic>
 #include <chrono>
