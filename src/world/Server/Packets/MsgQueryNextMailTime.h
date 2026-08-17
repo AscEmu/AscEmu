@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/MailMgr.h"
 #include "Utilities/CommonTime.hpp"
 #include "WoWGuid.hpp"
+#include "Logging/Log.hpp"
 
 namespace AscEmu::Packets
 {
@@ -28,6 +29,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            const uint32_t now = static_cast<uint32_t>(UNIXTIME);
             if (m_protocol.isMop())
             {
                 bool hasUnreadMail = false;
@@ -42,8 +44,7 @@ namespace AscEmu::Packets
 
                 if (hasUnreadMail)
                 {
-                    const auto now = static_cast<uint32_t>(UNIXTIME);
-                    const bool hasVirtualRealmAddress = false;    // cross-realm mail addressing is not implemented
+                    const bool hasVirtualRealmAddress = false; // cross-realm mail addressing is not implemented
                     const bool hasNativeRealmAddress = false;
 
                     uint8_t count = 0;
@@ -82,16 +83,16 @@ namespace AscEmu::Packets
                         dataBuffer.writeByteSeq(senderGuid[0]);
                         dataBuffer << float(message.second.delivery_time - now);
                         if (hasNativeRealmAddress)
-                            dataBuffer << uint32_t(0);     // realm id
+                            dataBuffer << uint32_t(0); // realm id
                         dataBuffer << uint32_t(message.second.stationery);
                         dataBuffer.writeByteSeq(senderGuid[3]);
                         dataBuffer.writeByteSeq(senderGuid[2]);
                         if (hasVirtualRealmAddress)
-                            dataBuffer << uint32_t(0);     // realm id
+                            dataBuffer << uint32_t(0); // realm id
                         dataBuffer.writeByteSeq(senderGuid[7]);
 
                         ++count;
-                        if (count == 3)     // real client never displays more than 3 mails here
+                        if (count == 3) // real client never displays more than 3 mails here
                             break;
                     }
 
@@ -119,14 +120,14 @@ namespace AscEmu::Packets
                     if (message.second.checked_flag & MAIL_CHECK_MASK_READ)
                         continue;
 
-                    if (message.second.deleted_flag == 0 && static_cast<uint32_t>(UNIXTIME) >= message.second.delivery_time)
+                    if (message.second.deleted_flag == 0 && now >= message.second.delivery_time)
                     {
                         ++unreadMessageCount;
                         packet << uint64_t(message.second.sender_guid);
                         packet << uint32_t(message.second.message_type != MAIL_TYPE_NORMAL ? message.second.sender_guid : 0);
                         packet << uint32_t(message.second.message_type);
                         packet << uint32_t(message.second.stationery);
-                        packet << float(message.second.delivery_time - static_cast<uint32_t>(UNIXTIME));
+                        packet << float(message.second.delivery_time - now);
                     }
                 }
 

@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WDBLoader.hpp"
 #include "WDBStructures.hpp"
 #include "WDBTraits.hpp"
+#include "Logging/Logger.hpp"
 
 #include <cstring>
 #include <filesystem>
@@ -204,7 +205,7 @@ namespace WDB
         auto const expansionId = static_cast<uint32_t>(currentExpansion);
         auto const expansionName = WoW::getExpansionName(currentExpansion);
 
-        auto loadRows = [&]<typename T0>(T0 identity) {
+        auto loadRows = [&]<typename T0>(T0/*identity*/) {
             using RawT = T0::type;
             if constexpr (!std::is_same_v<RawT, WDB::UnsupportedVersion>) {
                 WDB::WDBContainer<RawT> rawStore;

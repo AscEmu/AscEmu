@@ -8,7 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "Management/Group.h"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Objects/Units/Players/Player.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "Spell/SpellAura.hpp"
 
 #include <cstdint>

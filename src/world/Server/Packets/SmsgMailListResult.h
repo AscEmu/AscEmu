@@ -7,7 +7,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "Management/MailMgr.h"
-#include <map>
+#include "Objects/Item.hpp"
+#include "Management/ObjectMgr.hpp"
+#include "Storage/MySQLDataStore.hpp"
+#include "Utilities/CommonTime.hpp"
+#include "Logging/Log.hpp"
 
 namespace AscEmu::Packets
 {
@@ -23,9 +27,10 @@ namespace AscEmu::Packets
         }
 
     protected:
-
         bool internalSerialise(WorldPacket& packet) override
         {
+            const uint32_t now = static_cast<uint32_t>(UNIXTIME);
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 uint32_t realCount = 0;
@@ -38,10 +43,10 @@ namespace AscEmu::Packets
 
                 for (auto& message : messageMap)
                 {
-                    if (message.second.expire_time && static_cast<uint32_t>(UNIXTIME) > message.second.expire_time)
+                    if (message.second.expire_time && now > message.second.expire_time)
                         continue;
 
-                    if (static_cast<uint32_t>(UNIXTIME) < message.second.delivery_time)
+                    if (now < message.second.delivery_time)
                         continue;
 
                     if (count >= 50)
@@ -91,6 +96,8 @@ namespace AscEmu::Packets
                         case MAIL_TYPE_CREATURE:
                             packet << uint32_t(static_cast<uint32_t>(message.second.sender_guid));
                             break;
+                        default:
+                            break;
                     }
 
                     if (m_protocol.expansion <= WoW::Expansion::_WotLK)
@@ -122,7 +129,7 @@ namespace AscEmu::Packets
                         packet << uint64_t(message.second.money);
 
                     packet << uint32_t(message.second.checked_flag);
-                    packet << float(float((message.second.expire_time - uint32_t(UNIXTIME)) / DAY));
+                    packet << float(float(message.second.expire_time - now) / static_cast<float>(TimeVars::Day));
                     packet << uint32_t(0);
 
                     packet << message.second.subject;
@@ -189,10 +196,10 @@ namespace AscEmu::Packets
 
                 for (auto& message : messageMap)
                 {
-                    if (message.second.expire_time && static_cast<uint32_t>(UNIXTIME) > message.second.expire_time)
+                    if (message.second.expire_time && now > message.second.expire_time)
                         continue;
 
-                    if (static_cast<uint32_t>(UNIXTIME) < message.second.delivery_time)
+                    if (now < message.second.delivery_time)
                         continue;
 
                     if (count >= 50)
@@ -240,13 +247,14 @@ namespace AscEmu::Packets
                     for (auto itemEntry : message.second.items)
                     {
                         const auto item = sObjectMgr.loadItem(itemEntry);
-                            if (item == nullptr)
-                                continue;
+
+                        if (item == nullptr)
+                            continue;
 
                         packet.writeBit(0);
 
                         buffer << uint32_t(item->getGuidLow());
-                        buffer << uint32_t(4);                          // unk
+                        buffer << uint32_t(4); // unk
                         buffer << uint32_t(item->getChargesLeft());
                         buffer << uint32_t(item->getDurability());
                         buffer << uint32_t(item->m_isLocked ? 1 : 0);
@@ -264,7 +272,6 @@ namespace AscEmu::Packets
                         buffer << uint32_t(item->getStackCount());
                         buffer << uint8_t(i++);
                         buffer << uint32_t(item->getEntry());
-
                     }
 
                     buffer.writeString(message.second.body);
@@ -277,11 +284,11 @@ namespace AscEmu::Packets
                     buffer.writeByteSeq(guid[7]);
                     buffer.writeByteSeq(guid[2]);
                     buffer.writeByteSeq(guid[6]);
-                    buffer << uint32_t(0);                      //template
+                    buffer << uint32_t(0); // template
                     buffer << uint64_t(message.second.cod);
                     buffer.writeString(message.second.subject);
                     buffer << uint32_t(message.second.stationery);
-                    buffer << float(float((message.second.expire_time - uint32_t(UNIXTIME)) / DAY));
+                    buffer << float(float(message.second.expire_time - now) / static_cast<float>(TimeVars::Day));
                     buffer << uint64_t(message.second.money);
                     buffer << uint32_t(message.second.checked_flag);
 
@@ -304,7 +311,7 @@ namespace AscEmu::Packets
                     }
 
                     buffer << uint8_t(message.second.message_type);
-                    buffer << uint32_t(0);                          // unknown
+                    buffer << uint32_t(0); // unknown
 
                     realCount++;
                     count++;
