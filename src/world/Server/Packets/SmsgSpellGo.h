@@ -102,16 +102,10 @@ namespace AscEmu::Packets
                 targets.write(packet);
 
                 if (m_protocol.expansion >= WoW::Expansion::_WotLK)
-                    packet << uint32_t(powerType);
-
-                if (m_protocol.expansion >= WoW::Expansion::_WotLK)
                 {
-                    packet << uint32_t(projectile.displayInfo);
-                    packet << uint32_t(projectile.inventoryType);
-                }
+                    if (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE)
+                        packet << uint32_t(powerValue);
 
-                if (m_protocol.expansion >= WoW::Expansion::_WotLK)
-                {
                     if (castFlags & SPELL_PACKET_FLAGS_RUNE_UPDATE) // SPELL_PACKET_FLAGS_RUNE_UPDATE
                     {
                         packet << uint8_t(runeAvailableBefore);
@@ -128,6 +122,12 @@ namespace AscEmu::Packets
                     {
                         packet << float(missilePitch);
                         packet << uint32_t(missileTravelTime);
+                    }
+
+                    if (castFlags & SPELL_PACKET_FLAGS_RANGED)
+                    {
+                        packet << uint32_t(projectile.displayInfo);
+                        packet << uint32_t(projectile.inventoryType);
                     }
 
                     if (targets.hasDestination())

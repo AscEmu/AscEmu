@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "Spell/SpellCastTargets.hpp"
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
+#include "Spell/Definitions/SpellPacketFlags.hpp"
 #include "Spell/Spell.hpp"
 #include <cstdint>
 
@@ -78,12 +79,15 @@ namespace AscEmu::Packets
                 targets.write(packet);
 
                 if (m_protocol.expansion >= WoW::Expansion::_WotLK)
-                    packet << uint32_t(powerType);
-
-                if (m_protocol.expansion >= WoW::Expansion::_WotLK)
                 {
-                    packet << uint32_t(projectile.displayInfo);
-                    packet << uint32_t(projectile.inventoryType);
+                    if (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE)
+                        packet << uint32_t(powerValue);
+
+                    if (castFlags & SPELL_PACKET_FLAGS_RANGED)
+                    {
+                        packet << uint32_t(projectile.displayInfo);
+                        packet << uint32_t(projectile.inventoryType);
+                    }
                 }
             }
             else // Mop
