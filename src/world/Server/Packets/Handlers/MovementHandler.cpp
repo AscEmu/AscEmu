@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMountspecialAnim.h"
 #include "Server/Packets/MsgMoveTeleportAck.h"
 #include "Server/Packets/SmsgNewWorld.h"
+#include "Server/Packets/SmsgPlayerMove.h"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/OpcodeTable.hpp"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
@@ -421,9 +422,8 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
 #if VERSION_STRING >= Cata
 
-    WorldPacket data(SMSG_PLAYER_MOVE, recvData.size());
-    data << sessionMovementInfo;
-    mover->sendMessageToSet(&data, false);
+    SmsgPlayerMove managedPacket(sessionMovementInfo);
+    PacketBroadcast::sendToSet(*mover, managedPacket, false);
 
 #elif VERSION_STRING == WotLK
 
