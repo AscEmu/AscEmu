@@ -14,6 +14,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/QuestMgr.h"
 #include "Server/Packets/CmsgItemrefundinfo.h"
 #include "Server/Packets/CmsgItemrefundrequest.h"
+#include "Server/Packets/SmsgItemrefundinfo.h"
+#include "Server/Packets/SmsgItemrefundrequest.h"
+#include "Server/Packets/SmsgReforgeResult.h"
+#include "Server/Packets/SmsgItemQuerySingleResponse.h"
 #include "Server/Packets/CmsgSplitItem.h"
 #include "Server/Packets/SmsgInventoryChangeFailure.h"
 #include "Server/Packets/CmsgAutoequipItem.h"
@@ -431,29 +435,22 @@ void WorldSession::sendRefundInfo([[maybe_unused]] uint64_t GUID)
         ItemProperties const* proto = item->getItemProperties();
 
         item->setFlags(ITEM_FLAG_REFUNDABLE);
-        
-        WorldPacket packet(SMSG_ITEMREFUNDINFO, 68);
-        packet << uint64_t(GUID);
-        packet << uint32_t(proto->BuyPrice);
-        packet << uint32_t(item_extended_cost->honor_points);
-        packet << uint32_t(item_extended_cost->arena_points);
-
-        for (uint8_t i = 0; i < 5; ++i)
-        {
-            packet << uint32_t(item_extended_cost->item[i]);
-            packet << uint32_t(item_extended_cost->count[i]);
-        }
-
-        packet << uint32_t(0);
 
         uint32_t* played = _player->getPlayedTime();
 
-        if (played[1] > RefundEntry.first + 60 * 60 * 2)
-            packet << uint32_t(0);
-        else
-            packet << uint32_t(RefundEntry.first);
+        uint32_t extendedCostItem[5];
+        uint32_t extendedCostCount[5];
+        for (uint8_t i = 0; i < 5; ++i)
+        {
+            extendedCostItem[i] = uint32_t(item_extended_cost->item[i]);
+            extendedCostCount[i] = uint32_t(item_extended_cost->count[i]);
+        }
 
-        this->SendPacket(&packet);
+        const uint32_t refundTime = (played[1] > RefundEntry.first + 60 * 60 * 2) ? uint32_t(0) : uint32_t(RefundEntry.first);
+
+        SmsgItemrefundinfo managedPacket(GUID, uint32_t(proto->BuyPrice), uint32_t(item_extended_cost->honor_points),
+            uint32_t(item_extended_cost->arena_points), extendedCostItem, extendedCostCount, refundTime);
+        sendManagedPacket(managedPacket);
     }
 #elif VERSION_STRING >= Cata
 
@@ -478,49 +475,25 @@ void WorldSession::sendRefundInfo([[maybe_unused]] uint64_t GUID)
         ItemProperties const* item_properties = item->getItemProperties();
         item->addFlags(ITEM_FLAG_REFUNDABLE);
 
-        WoWGuid objectGuid = item->getGuid();
-        WorldPacket data(SMSG_ITEMREFUNDINFO, 68);
-        data.writeBit(objectGuid[3]);
-        data.writeBit(objectGuid[5]);
-        data.writeBit(objectGuid[7]);
-        data.writeBit(objectGuid[6]);
-        data.writeBit(objectGuid[2]);
-        data.writeBit(objectGuid[4]);
-        data.writeBit(objectGuid[0]);
-        data.writeBit(objectGuid[1]);
-        data.flushBits();
-        data.writeByteSeq(objectGuid[7]);
-
         uint32_t* played = _player->getPlayedTime();
 
-        if (played[1] > (refundEntryPair.first + 60 * 60 * 2))
-            data << uint32_t(0);
-        else
-            data << uint32_t(refundEntryPair.first);
+        const uint32_t refundTime = (played[1] > (refundEntryPair.first + 60 * 60 * 2)) ? uint32_t(0) : uint32_t(refundEntryPair.first);
 
+        uint32_t extendedCostItem[5];
+        uint32_t extendedCostCount[5];
+        uint32_t extendedCostReqCurrCount[5];
+        uint32_t extendedCostReqCur[5];
         for (uint8_t i = 0; i < 5; ++i)
         {
-            data << uint32_t(itemExtendedCostEntry->item[i]);
-            data << uint32_t(itemExtendedCostEntry->count[i]);
+            extendedCostItem[i] = uint32_t(itemExtendedCostEntry->item[i]);
+            extendedCostCount[i] = uint32_t(itemExtendedCostEntry->count[i]);
+            extendedCostReqCurrCount[i] = uint32_t(itemExtendedCostEntry->reqcurrcount[i]);
+            extendedCostReqCur[i] = uint32_t(itemExtendedCostEntry->reqcur[i]);
         }
 
-        data.writeByteSeq(objectGuid[6]);
-        data.writeByteSeq(objectGuid[4]);
-        data.writeByteSeq(objectGuid[3]);
-        data.writeByteSeq(objectGuid[2]);
-        for (uint8_t i = 0; i < 5; ++i)
-        {
-            data << uint32_t(itemExtendedCostEntry->reqcurrcount[i]);
-            data << uint32_t(itemExtendedCostEntry->reqcur[i]);
-        }
-
-        data.writeByteSeq(objectGuid[1]);
-        data.writeByteSeq(objectGuid[5]);
-        data << uint32_t(0);
-        data.writeByteSeq(objectGuid[0]);
-        data << uint32_t(item_properties->BuyPrice);
-
-        SendPacket(&data);
+        SmsgItemrefundinfo managedPacket(item->getGuid(), uint32_t(item_properties->BuyPrice), extendedCostItem, extendedCostCount,
+            extendedCostReqCurrCount, extendedCostReqCur, refundTime);
+        sendManagedPacket(managedPacket);
     }
 #endif
 }
@@ -777,10 +750,8 @@ void WorldSession::handleReforgeItemOpcode([[maybe_unused]] WorldPacket& recvDat
 void WorldSession::sendReforgeResult([[maybe_unused]] bool success)
 {
 #if VERSION_STRING == Cata
-    WorldPacket data(SMSG_REFORGE_RESULT, 1);
-    data.writeBit(success);
-    data.flushBits();
-    SendPacket(&data);
+    SmsgReforgeResult managedPacket(success);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -846,24 +817,36 @@ void WorldSession::handleItemRefundRequestOpcode([[maybe_unused]] WorldPacket& r
         }
     }
 
-    WorldPacket packet(SMSG_ITEMREFUNDREQUEST, 60);
-    packet << uint64_t(srlPacket.itemGuid);
-    packet << uint32_t(error);
-
     if (error == 0)
     {
-        packet << uint32_t(itemProperties->BuyPrice);
-        packet << uint32_t(itemExtendedCostEntry->honor_points);
-        packet << uint32_t(itemExtendedCostEntry->arena_points);
-
+        uint32_t extendedCostItem[5];
+        uint32_t extendedCostCount[5];
         for (uint8_t i = 0; i < 5; ++i)
         {
-            packet << uint32_t(itemExtendedCostEntry->item[i]);
-            packet << uint32_t(itemExtendedCostEntry->count[i]);
+            extendedCostItem[i] = uint32_t(itemExtendedCostEntry->item[i]);
+            extendedCostCount[i] = uint32_t(itemExtendedCostEntry->count[i]);
         }
-    }
 
-    SendPacket(&packet);
+        uint32_t extendedCostReqCurrCount[5] = {};
+        uint32_t extendedCostReqCur[5] = {};
+#if VERSION_STRING >= Cata
+        for (uint8_t i = 0; i < 5; ++i)
+        {
+            extendedCostReqCurrCount[i] = uint32_t(itemExtendedCostEntry->reqcurrcount[i]);
+            extendedCostReqCur[i] = uint32_t(itemExtendedCostEntry->reqcur[i]);
+        }
+#endif
+
+        SmsgItemrefundrequest managedPacket(srlPacket.itemGuid, error, uint32_t(itemProperties->BuyPrice),
+            uint32_t(itemExtendedCostEntry->honor_points), uint32_t(itemExtendedCostEntry->arena_points),
+            extendedCostItem, extendedCostCount, extendedCostReqCurrCount, extendedCostReqCur);
+        sendManagedPacket(managedPacket);
+    }
+    else
+    {
+        SmsgItemrefundrequest managedPacket(srlPacket.itemGuid, error);
+        sendManagedPacket(managedPacket);
+    }
 
     sLogger.debug("Sent SMSG_ITEMREFUNDREQUEST.");
 #endif
@@ -1525,128 +1508,8 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
         Description = itemProto->Description;
     }
 
-    WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 800);
-    data << itemProto->ItemId;
-    data << itemProto->Class;
-    data << uint32_t(itemProto->SubClass);
-    data << itemProto->unknown_bc;  // soundOverride
-    data << Name;
-    data << uint8_t(0);           // name 2?
-    data << uint8_t(0);           // name 3?
-    data << uint8_t(0);           // name 4?
-    data << itemProto->DisplayInfoID;
-    data << itemProto->Quality;
-    data << itemProto->Flags;
-    //data << itemProto->Flags2;
-    data << itemProto->BuyPrice;
-    data << itemProto->SellPrice;
-    data << itemProto->InventoryType;
-    data << itemProto->AllowableClass;
-    data << itemProto->AllowableRace;
-    data << itemProto->ItemLevel;
-    data << itemProto->RequiredLevel;
-    data << uint32_t(itemProto->RequiredSkill);
-    data << itemProto->RequiredSkillRank;
-    data << itemProto->RequiredSpell;
-    data << itemProto->RequiredPlayerRank1;
-    data << itemProto->RequiredPlayerRank2;
-    data << itemProto->RequiredFaction;
-    data << itemProto->RequiredFactionStanding;
-    data << itemProto->Unique;
-    data << itemProto->MaxCount;
-    data << itemProto->ContainerSlots;
-
-    // we have 10 * 8 bytes of stat data
-    auto it = itemProto->generalStatsMap.begin();
-    for (uint8_t i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
-    {
-        if (it != itemProto->generalStatsMap.end())
-        {
-            data << it->first;
-            data << it->second;
-            ++it;
-        }
-        else
-        {
-            data << uint32_t(0);
-            data << int32_t(0);
-        }
-    }
-
-    for (uint8_t i = 0; i < 2; i++)
-    {
-        data << itemProto->Damage[i].Min;
-        data << itemProto->Damage[i].Max;
-        data << itemProto->Damage[i].Type;
-    }
-
-    for (uint8_t i = 0; i < 3; i++)
-    {
-        data << float(0.0f);
-        data << float(0.0f);
-        data << uint32_t(0);
-    }
-
-    data << itemProto->Armor;
-
-    data << uint32_t(itemProto->getStat(ITEM_MOD_HOLY_RESISTANCE));
-    data << uint32_t(itemProto->getStat(ITEM_MOD_FIRE_RESISTANCE));
-    data << uint32_t(itemProto->getStat(ITEM_MOD_NATURE_RESISTANCE));
-    data << uint32_t(itemProto->getStat(ITEM_MOD_FROST_RESISTANCE));
-    data << uint32_t(itemProto->getStat(ITEM_MOD_SHADOW_RESISTANCE));
-    data << uint32_t(itemProto->getStat(ITEM_MOD_ARCANE_RESISTANCE));
-
-    data << itemProto->Delay;
-    data << itemProto->AmmoType;
-    data << itemProto->Range;
-    for (uint8_t i = 0; i < 5; i++)
-    {
-        data << itemProto->Spells[i].Id;
-        data << itemProto->Spells[i].Trigger;
-        data << itemProto->Spells[i].Charges;
-        data << itemProto->Spells[i].Cooldown;
-        data << itemProto->Spells[i].Category;
-        data << itemProto->Spells[i].CategoryCooldown;
-    }
-    data << itemProto->Bonding;
-
-    data << Description;
-
-    data << itemProto->PageId;
-    data << itemProto->PageLanguage;
-    data << itemProto->PageMaterial;
-    data << itemProto->QuestId;
-    data << itemProto->LockId;
-    data << itemProto->LockMaterial;
-    data << itemProto->SheathID;
-    data << itemProto->RandomPropId;
-    data << itemProto->RandomSuffixId;
-    data << itemProto->Block;
-
-    const auto setBonus = sMySQLStore.getItemSetLinkedBonus(itemProto->ItemSet);
-    if (setBonus == 0)
-        data << itemProto->ItemSet;
-    else
-        data << setBonus;
-
-    data << itemProto->MaxDurability;
-    data << itemProto->ZoneNameID;
-    data << itemProto->MapID;
-    data << itemProto->BagFamily;
-    data << itemProto->TotemCategory;
-    data << itemProto->Sockets[0].SocketColor;
-    data << itemProto->Sockets[0].Unk;
-    data << itemProto->Sockets[1].SocketColor;
-    data << itemProto->Sockets[1].Unk;
-    data << itemProto->Sockets[2].SocketColor;
-    data << itemProto->Sockets[2].Unk;
-    data << itemProto->SocketBonus;
-    data << itemProto->GemProperties;
-    data << itemProto->DisenchantReqSkill;
-    data << itemProto->ArmorDamageModifier;
-    data << itemProto->ExistingDuration;                    // 2.4.2 Item duration in seconds
-
-    SendPacket(&data);
+    SmsgItemQuerySingleResponse managedPacket(itemProto, Name, Description);
+    sendManagedPacket(managedPacket);
 
 #else
 
@@ -1677,115 +1540,8 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
         Description = itemProperties->Description;
     }
 
-    WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 800);
-    data << itemProperties->ItemId;
-    data << itemProperties->Class;
-    data << uint32_t(itemProperties->SubClass);
-    data << itemProperties->unknown_bc;  // soundOverride
-    data << Name;
-    data << uint8_t(0);           // name 2?
-    data << uint8_t(0);           // name 3?
-    data << uint8_t(0);           // name 4?
-    data << itemProperties->DisplayInfoID;
-    data << itemProperties->Quality;
-    data << itemProperties->Flags;
-    data << itemProperties->Flags2;
-    data << itemProperties->BuyPrice;
-    data << itemProperties->SellPrice;
-    data << itemProperties->InventoryType;
-    data << itemProperties->AllowableClass;
-    data << itemProperties->AllowableRace;
-    data << itemProperties->ItemLevel;
-    data << itemProperties->RequiredLevel;
-    data << uint32_t(itemProperties->RequiredSkill);
-    data << itemProperties->RequiredSkillRank;
-    data << itemProperties->RequiredSpell;
-    data << itemProperties->RequiredPlayerRank1;
-    data << itemProperties->RequiredPlayerRank2;
-    data << itemProperties->RequiredFaction;
-    data << itemProperties->RequiredFactionStanding;
-    data << itemProperties->Unique;
-    data << itemProperties->MaxCount;
-    data << itemProperties->ContainerSlots;
-
-    data << uint32_t(itemProperties->generalStatsMap.size());
-    for (auto const& stat : itemProperties->generalStatsMap)
-    {
-        data << stat.first;
-        data << stat.second;
-    }
-
-    data << itemProperties->ScalingStatsEntry;
-    data << itemProperties->ScalingStatsFlag;
-
-    // originally this went up to 5, now only to 2
-    for (uint8_t i = 0; i < 2; i++)
-    {
-        data << itemProperties->Damage[i].Min;
-        data << itemProperties->Damage[i].Max;
-        data << itemProperties->Damage[i].Type;
-    }
-    data << itemProperties->Armor;
-
-    data << uint32_t(itemProperties->getStat(ITEM_MOD_HOLY_RESISTANCE));
-    data << uint32_t(itemProperties->getStat(ITEM_MOD_FIRE_RESISTANCE));
-    data << uint32_t(itemProperties->getStat(ITEM_MOD_NATURE_RESISTANCE));
-    data << uint32_t(itemProperties->getStat(ITEM_MOD_FROST_RESISTANCE));
-    data << uint32_t(itemProperties->getStat(ITEM_MOD_SHADOW_RESISTANCE));
-    data << uint32_t(itemProperties->getStat(ITEM_MOD_ARCANE_RESISTANCE));
-
-    data << itemProperties->Delay;
-    data << itemProperties->AmmoType;
-    data << itemProperties->Range;
-    for (uint8_t i = 0; i < 5; i++)
-    {
-        data << itemProperties->Spells[i].Id;
-        data << itemProperties->Spells[i].Trigger;
-        data << itemProperties->Spells[i].Charges;
-        data << itemProperties->Spells[i].Cooldown;
-        data << itemProperties->Spells[i].Category;
-        data << itemProperties->Spells[i].CategoryCooldown;
-    }
-    data << itemProperties->Bonding;
-
-    data << Description;
-
-    data << itemProperties->PageId;
-    data << itemProperties->PageLanguage;
-    data << itemProperties->PageMaterial;
-    data << itemProperties->QuestId;
-    data << itemProperties->LockId;
-    data << itemProperties->LockMaterial;
-    data << itemProperties->SheathID;
-    data << itemProperties->RandomPropId;
-    data << itemProperties->RandomSuffixId;
-    data << itemProperties->Block;
-
-    const auto setBonus = sMySQLStore.getItemSetLinkedBonus(itemProperties->ItemSet);
-    if (setBonus == 0)
-        data << itemProperties->ItemSet;
-    else
-        data << setBonus;
-
-    data << itemProperties->MaxDurability;
-    data << itemProperties->ZoneNameID;
-    data << itemProperties->MapID;
-    data << itemProperties->BagFamily;
-    data << itemProperties->TotemCategory;
-    data << itemProperties->Sockets[0].SocketColor;
-    data << itemProperties->Sockets[0].Unk;
-    data << itemProperties->Sockets[1].SocketColor;
-    data << itemProperties->Sockets[1].Unk;
-    data << itemProperties->Sockets[2].SocketColor;
-    data << itemProperties->Sockets[2].Unk;
-    data << itemProperties->SocketBonus;
-    data << itemProperties->GemProperties;
-    data << itemProperties->DisenchantReqSkill;
-    data << itemProperties->ArmorDamageModifier;
-    data << itemProperties->ExistingDuration;                    // 2.4.2 Item duration in seconds
-    data << itemProperties->ItemLimitCategory;
-    data << itemProperties->HolidayId;                           // HolidayNames.dbc
-    SendPacket(&data);
+    SmsgItemQuerySingleResponse managedPacket(itemProperties, Name, Description);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -1855,21 +1611,13 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
         }
 
 #if VERSION_STRING < Cata
-        WorldPacket data(16);
-        data.initialize(SMSG_BUY_ITEM);
-        data << uint64_t(srlPacket.itemGuid);
-        data << Util::getMSTime(); //VLack: seen is Aspire code
-        data << uint32_t(itemid);
-        data << uint32_t(amount);
+        SmsgBuyItem managedPacket(SmsgBuyItem::Variant::BuyBack, srlPacket.itemGuid, Util::getMSTime() /*VLack: seen is Aspire code*/,
+            itemid, amount, 0, 0, 0);
 #else
-        WorldPacket data(SMSG_BUY_ITEM, 8 + 4 + 4 + 4);
-        data << uint64_t(srlPacket.itemGuid);
-        data << uint32_t(srlPacket.buybackSlot + 1);// numbered from 1 at client
-        data << int32_t(amount);
-        data << uint32_t(amount);
-        data << uint32_t(amount);
+        SmsgBuyItem managedPacket(SmsgBuyItem::Variant::BuyBack, srlPacket.itemGuid, 0, 0, amount,
+            srlPacket.buybackSlot + 1 /*numbered from 1 at client*/, int32_t(amount), amount);
 #endif
-        SendPacket(&data);
+        sendManagedPacket(managedPacket);
     }
 }
 
@@ -2122,18 +1870,14 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
         amount * ci.amount, pItem->getEntry(), pItem->getPropertySeed(),
         pItem->getRandomPropertiesId(), pItem->getStackCount());
 
-    WorldPacket data(SMSG_BUY_ITEM, 22);
-    data << uint64_t(srlPacket.srcGuid.getRawGuid());
 #if VERSION_STRING < Cata
-    data << Util::getMSTime();
-    data << uint32_t(srlPacket.itemId);
+    SmsgBuyItem managedPacket(SmsgBuyItem::Variant::BuyItemInSlot, srlPacket.srcGuid.getRawGuid(), Util::getMSTime(),
+        srlPacket.itemId, uint32_t(amount), 0, 0, 0);
 #else
-    data << uint32_t(slot + 1);       // numbered from 1 at client
-    data << int32_t(amount);
+    SmsgBuyItem managedPacket(SmsgBuyItem::Variant::BuyItemInSlot, srlPacket.srcGuid.getRawGuid(), 0, 0, uint32_t(amount),
+        slot + 1 /*numbered from 1 at client*/, int32_t(amount), 0);
 #endif
-    data << uint32_t(amount);
-
-    SendPacket(&data);
+    sendManagedPacket(managedPacket);
 
     sLogger.debug("Sent SMSG_BUY_ITEM");
 
