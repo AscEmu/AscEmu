@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStructures.hpp"
 #include <algorithm>
 
+#if VERSION_STRING >= WotLK
 namespace AscEmu::Packets
 {
     class SmsgRespondInspectAchievements : public ManagedPacket
@@ -30,12 +31,8 @@ namespace AscEmu::Packets
     protected:
         static bool isVisibleAchievement(CompletedAchievementMap::value_type const& completedAchievementPair)
         {
-#if VERSION_STRING >= WotLK
             auto achievement = sAchievementStore.lookupEntry(completedAchievementPair.first);
             return achievement && !(achievement->flags & ACHIEVEMENT_FLAG_HIDDEN);
-#else
-            return false;
-#endif
         }
 
         size_t expectedSize() const override
@@ -48,7 +45,6 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING >= WotLK
             if (m_protocol.isCata())
             {
                 const size_t numCriteria = criteriaProgress->size();
@@ -247,10 +243,11 @@ namespace AscEmu::Packets
 
                 return true;
             }
-#endif
+
             return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }
+#endif
