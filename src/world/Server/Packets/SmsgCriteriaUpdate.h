@@ -17,14 +17,15 @@ namespace AscEmu::Packets
         uint32_t counter;
         WoWGuid guid;
         uint32_t secsBitField;
+        time_t progressDate;
 
-        SmsgCriteriaUpdate() : SmsgCriteriaUpdate(0, 0, WoWGuid(), 0)
+        SmsgCriteriaUpdate() : SmsgCriteriaUpdate(0, 0, WoWGuid(), 0, 0)
         {
         }
 
-        SmsgCriteriaUpdate(uint32_t criteriaId, uint32_t counter, WoWGuid guid, uint32_t secsBitField) :
+        SmsgCriteriaUpdate(uint32_t criteriaId, uint32_t counter, WoWGuid guid, uint32_t secsBitField, time_t progressDate) :
             ManagedPacket(SMSG_CRITERIA_UPDATE, 0),
-            criteriaId(criteriaId), counter(counter), guid(guid), secsBitField(secsBitField)
+            criteriaId(criteriaId), counter(counter), guid(guid), secsBitField(secsBitField), progressDate(progressDate)
         {
         }
 
@@ -36,20 +37,57 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion <= WoW::Expansion::_TBC)
-                return false;
+            if (m_protocol.isMop())
+            {
+                packet.writeBit(guid[4]);
+                packet.writeBit(guid[6]);
+                packet.writeBit(guid[2]);
+                packet.writeBit(guid[3]);
+                packet.writeBit(guid[7]);
+                packet.writeBit(guid[1]);
+                packet.writeBit(guid[5]);
+                packet.writeBit(guid[0]);
+                packet.flushBits();
 
-            packet << criteriaId;
+                packet.writeByteSeq(guid[3]);
+                packet.writeByteSeq(guid[6]);
+                packet.writeByteSeq(guid[2]);
 
-            packet.appendPackGuid(counter);
+                packet << criteriaId;
+                packet << uint32_t(0); // criteria is not time-limited (time-limited criteria are not tracked)
 
-            packet << guid;
-            packet << uint32_t(0);
-            packet << secsBitField;
-            packet << uint32_t(0);
-            packet << uint32_t(0);
+                packet.writeByteSeq(guid[5]);
+                packet.writeByteSeq(guid[1]);
 
-            return true;
+                packet.appendPackedTime(progressDate);
+                packet.writeByteSeq(guid[4]);
+
+                packet << uint32_t(0); // elapsed time since criteria was started (not tracked)
+                packet << uint32_t(0);
+
+                packet.writeByteSeq(guid[7]);
+                packet.writeByteSeq(guid[0]);
+
+                packet << uint64_t(counter);
+
+                return true;
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            {
+                packet << criteriaId;
+
+                packet.appendPackGuid(counter);
+
+                packet << guid;
+                packet << uint32_t(0);
+                packet << secsBitField;
+                packet << uint32_t(0);
+                packet << uint32_t(0);
+
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
