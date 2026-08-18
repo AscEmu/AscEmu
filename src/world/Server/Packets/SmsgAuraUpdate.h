@@ -110,90 +110,93 @@ namespace AscEmu::Packets
                 packet.writeBit(targetGuid[4]);
                 packet.writeBit(targetGuid[2]);
                 packet.writeBit(targetGuid[5]);
-                packet.writeBit(1);
+                packet.writeBit(!remove);
 
-                if (aura_updates.flags & AFLAG_SEND_EFFECT_AMOUNT)
+                uint8_t effCount = 0;
+                if (!remove)
                 {
-                    uint8_t effCount = 0;
-                    if (aura_updates.flags & AFLAG_EFFECT_1)
-                        effCount++;
+                    if (aura_updates.flags & AFLAG_SEND_EFFECT_AMOUNT)
+                    {
+                        // Client indexes effects by slot: count must be (highest active effect index + 1),
+                        // zero-padding gaps, not the number of active effect flags.
+                        if (aura_updates.flags & AFLAG_EFFECT_1)
+                            effCount = 1;
 
-                    if (aura_updates.flags & AFLAG_EFFECT_2)
-                        effCount++;
+                        if (aura_updates.flags & AFLAG_EFFECT_2)
+                            effCount = 2;
 
-                    if (aura_updates.flags & AFLAG_EFFECT_3)
-                        effCount++;
+                        if (aura_updates.flags & AFLAG_EFFECT_3)
+                            effCount = 3;
 
-                    packet.writeBits(effCount, 22);
-                }
-                else
-                {
+                        packet.writeBits(effCount, 22);
+                    }
+                    else
+                    {
+                        packet.writeBits(0, 22);
+                    }
+
+                    packet.writeBit(!(aura_updates.flags & AFLAG_IS_CASTER));
+
+                    if (!(aura_updates.flags & AFLAG_IS_CASTER))
+                    {
+                        WoWGuid casterGuid = aura_updates.casterGuid.getRawGuid();
+                        packet.writeBit(casterGuid[3]);
+                        packet.writeBit(casterGuid[4]);
+                        packet.writeBit(casterGuid[6]);
+                        packet.writeBit(casterGuid[1]);
+                        packet.writeBit(casterGuid[5]);
+                        packet.writeBit(casterGuid[2]);
+                        packet.writeBit(casterGuid[0]);
+                        packet.writeBit(casterGuid[7]);
+                    }
+
                     packet.writeBits(0, 22);
+                    packet.writeBit(aura_updates.flags & AFLAG_DURATION);
+                    packet.writeBit(aura_updates.flags & AFLAG_DURATION);
                 }
-
-                packet.writeBit(!(aura_updates.flags & AFLAG_IS_CASTER));
-
-                if (!(aura_updates.flags & AFLAG_IS_CASTER))
-                {
-                    WoWGuid casterGuid = aura_updates.casterGuid.getRawGuid();
-                    packet.writeBit(casterGuid[3]);
-                    packet.writeBit(casterGuid[4]);
-                    packet.writeBit(casterGuid[6]);
-                    packet.writeBit(casterGuid[1]);
-                    packet.writeBit(casterGuid[5]);
-                    packet.writeBit(casterGuid[2]);
-                    packet.writeBit(casterGuid[0]);
-                    packet.writeBit(casterGuid[7]);
-                }
-
-                packet.writeBits(0, 22);
-                packet.writeBit(aura_updates.flags & AFLAG_DURATION);
-                packet.writeBit(aura_updates.flags & AFLAG_DURATION);
 
                 packet.flushBits();
 
-                if (!(aura_updates.flags & AFLAG_IS_CASTER))
+                if (!remove)
                 {
-                    WoWGuid casterGuid = aura_updates.casterGuid.getRawGuid();
-                    packet.writeByteSeq(casterGuid[3]);
-                    packet.writeByteSeq(casterGuid[2]);
-                    packet.writeByteSeq(casterGuid[1]);
-                    packet.writeByteSeq(casterGuid[6]);
-                    packet.writeByteSeq(casterGuid[4]);
-                    packet.writeByteSeq(casterGuid[0]);
-                    packet.writeByteSeq(casterGuid[5]);
-                    packet.writeByteSeq(casterGuid[7]);
-                }
+                    if (!(aura_updates.flags & AFLAG_IS_CASTER))
+                    {
+                        WoWGuid casterGuid = aura_updates.casterGuid.getRawGuid();
+                        packet.writeByteSeq(casterGuid[3]);
+                        packet.writeByteSeq(casterGuid[2]);
+                        packet.writeByteSeq(casterGuid[1]);
+                        packet.writeByteSeq(casterGuid[6]);
+                        packet.writeByteSeq(casterGuid[4]);
+                        packet.writeByteSeq(casterGuid[0]);
+                        packet.writeByteSeq(casterGuid[5]);
+                        packet.writeByteSeq(casterGuid[7]);
+                    }
 
-                packet << uint8_t(aura_updates.flags);
-                packet << uint16_t(aura_updates.level);
-                packet << uint32_t(aura_updates.spellId);
+                    packet << uint8_t(aura_updates.flags);
+                    packet << uint16_t(aura_updates.level);
+                    packet << uint32_t(aura_updates.spellId);
 
-                if (aura_updates.flags & AFLAG_DURATION)
-                {
-                    packet << uint32_t(aura_updates.duration);
-                    packet << uint32_t(aura_updates.duration);
-                }
+                    if (aura_updates.flags & AFLAG_DURATION)
+                    {
+                        packet << uint32_t(aura_updates.duration);
+                        packet << uint32_t(aura_updates.timeLeft);
+                    }
 
-                packet << uint8_t(aura_updates.stackCount);
-                packet << uint32_t(0);
+                    packet << uint8_t(aura_updates.stackCount);
+                    packet << uint32_t(aura_updates.flags & (AFLAG_EFFECT_1 | AFLAG_EFFECT_2 | AFLAG_EFFECT_3));
 
-                if (aura_updates.flags & AFLAG_SEND_EFFECT_AMOUNT)
-                {
-                    if (aura_updates.flags & AFLAG_EFFECT_1)
-                        packet << float(aura_updates.effAmount[0]);
-                    else
-                        packet << float(0.f);
+                    if (aura_updates.flags & AFLAG_SEND_EFFECT_AMOUNT)
+                    {
+                        // Must write exactly effCount floats to match the bit-header count written above
+                        if (effCount >= 1)
+                            packet << (aura_updates.flags & AFLAG_EFFECT_1 ? float(aura_updates.effAmount[0]) : float(0.f));
 
-                    if (aura_updates.flags & AFLAG_EFFECT_2)
-                        packet << float(aura_updates.effAmount[1]);
-                    else
-                        packet << float(0.f);
+                        if (effCount >= 2)
+                            packet << (aura_updates.flags & AFLAG_EFFECT_2 ? float(aura_updates.effAmount[1]) : float(0.f));
 
-                    if (aura_updates.flags & AFLAG_EFFECT_3)
-                        packet << float(aura_updates.effAmount[2]);
-                    else
-                        packet << float(0.f);
+                        if (effCount >= 3)
+                            packet << (aura_updates.flags & AFLAG_EFFECT_3 ? float(aura_updates.effAmount[2]) : float(0.f));
+                    }
                 }
 
                 packet << uint8_t(aura_updates.visualSlot);

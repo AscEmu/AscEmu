@@ -222,10 +222,10 @@ namespace AscEmu::Packets
                             break;
                         case CHAT_MSG_WHISPER:
                         {
-                            receiverLength = packet.readBits(9);
                             textLength = packet.readBits(8);
-                            destination = packet.readString(receiverLength);
+                            receiverLength = packet.readBits(9);
                             message = packet.readString(textLength);
+                            destination = packet.readString(receiverLength);
 
                         } break;
                         case CHAT_MSG_CHANNEL:

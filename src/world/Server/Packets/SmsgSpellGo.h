@@ -140,7 +140,7 @@ namespace AscEmu::Packets
                 WoWGuid itemTargetGuid = targets.getItemTargetGuid();
                 WoWGuid unkGuid = 0;
                 bool hasDestLocation = (targets.getTargetMask() & TARGET_FLAG_DEST_LOCATION) && targets.getDestination().isSet();
-                bool hasSourceLocation = (targets.getTargetMask() & TARGET_FLAG_SOURCE_LOCATION) && targets.getDestination().isSet();
+                bool hasSourceLocation = (targets.getTargetMask() & TARGET_FLAG_SOURCE_LOCATION) && targets.getSource().isSet();
                 bool hasDestUnkByte = targets.getTargetMask() & TARGET_FLAG_DEST_LOCATION;
                 bool hasTargetString = targets.getTargetMask() & TARGET_FLAG_STRING;
                 [[maybe_unused]] bool hasPredictedHeal = false;
@@ -155,7 +155,7 @@ namespace AscEmu::Packets
                 [[maybe_unused]] bool hasAmmoDisplayId = false;
                 bool hasRunesStateBefore = false;
                 bool hasRunesStateAfter = false;
-                uint8_t predictedPowerCount = false;
+                uint8_t predictedPowerCount = (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE) ? 1 : 0;
                 uint8_t runeCooldownPassedCount = false;
 
                 packet.writeBit(casterUnitGuid[2]);
@@ -163,6 +163,18 @@ namespace AscEmu::Packets
                 packet.writeBit(hasSourceLocation);
                 packet.writeBit(casterGuid[2]);
 
+                if (hasSourceLocation)
+                {
+                    WoWGuid srcTransportGuid = targets.getTransportSourceGuid();
+                    packet.writeBit(srcTransportGuid[3]);
+                    packet.writeBit(srcTransportGuid[7]);
+                    packet.writeBit(srcTransportGuid[4]);
+                    packet.writeBit(srcTransportGuid[2]);
+                    packet.writeBit(srcTransportGuid[0]);
+                    packet.writeBit(srcTransportGuid[6]);
+                    packet.writeBit(srcTransportGuid[1]);
+                    packet.writeBit(srcTransportGuid[5]);
+                }
 
                 packet.writeBit(casterGuid[6]);
                 packet.writeBit(!hasDestUnkByte);
@@ -222,6 +234,9 @@ namespace AscEmu::Packets
                 packet.writeBit(!hasTargetMask);
                 packet.writeBit(casterUnitGuid[3]);
 
+                if (hasTargetString)
+                    packet.writeBits(uint32_t(targets.getStringTarget().length()), 7);
+
                 packet.writeBit(1); // Missing Predict heal
                 packet.writeBit(0); // hasPowerData
                 packet.writeBit(1); // has castImmunitiy
@@ -261,6 +276,19 @@ namespace AscEmu::Packets
                 packet.writeBit(casterGuid[5]);
 
                 packet.writeBits(hittedTargets.size(), 24);
+
+                if (hasDestLocation)
+                {
+                    WoWGuid destTransportGuid = targets.getTransportDestinationGuid();
+                    packet.writeBit(destTransportGuid[0]);
+                    packet.writeBit(destTransportGuid[3]);
+                    packet.writeBit(destTransportGuid[2]);
+                    packet.writeBit(destTransportGuid[1]);
+                    packet.writeBit(destTransportGuid[4]);
+                    packet.writeBit(destTransportGuid[5]);
+                    packet.writeBit(destTransportGuid[6]);
+                    packet.writeBit(destTransportGuid[7]);
+                }
 
                 packet.writeBit(casterUnitGuid[4]);
 
@@ -340,6 +368,23 @@ namespace AscEmu::Packets
                     packet.writeByteSeq(missGuid[3]);
                 }
 
+                if (hasDestLocation)
+                {
+                    const LocationVector destPos = targets.getDestination();
+                    WoWGuid destTransportGuid = targets.getTransportDestinationGuid();
+                    packet << float(destPos.z);
+                    packet << float(destPos.y);
+                    packet.writeByteSeq(destTransportGuid[4]);
+                    packet.writeByteSeq(destTransportGuid[5]);
+                    packet.writeByteSeq(destTransportGuid[7]);
+                    packet.writeByteSeq(destTransportGuid[6]);
+                    packet.writeByteSeq(destTransportGuid[1]);
+                    packet.writeByteSeq(destTransportGuid[2]);
+                    packet << float(destPos.x);
+                    packet.writeByteSeq(destTransportGuid[0]);
+                    packet.writeByteSeq(destTransportGuid[3]);
+                }
+
                 packet.writeByteSeq(casterGuid[6]);
                 packet.writeByteSeq(casterUnitGuid[7]);
                 packet.writeByteSeq(casterGuid[1]);
@@ -352,6 +397,23 @@ namespace AscEmu::Packets
 
                 packet << uint32_t(castFlags);
 
+                if (hasSourceLocation)
+                {
+                    const LocationVector srcPos = targets.getSource();
+                    WoWGuid srcTransportGuid = targets.getTransportSourceGuid();
+                    packet.writeByteSeq(srcTransportGuid[2]);
+                    packet << float(srcPos.y);
+                    packet << float(srcPos.x);
+                    packet.writeByteSeq(srcTransportGuid[6]);
+                    packet.writeByteSeq(srcTransportGuid[5]);
+                    packet.writeByteSeq(srcTransportGuid[1]);
+                    packet.writeByteSeq(srcTransportGuid[7]);
+                    packet << float(srcPos.z);
+                    packet.writeByteSeq(srcTransportGuid[3]);
+                    packet.writeByteSeq(srcTransportGuid[0]);
+                    packet.writeByteSeq(srcTransportGuid[4]);
+                }
+
                 packet.writeByteSeq(casterUnitGuid[6]);
 
                 if (hasPredictedType)
@@ -360,7 +422,7 @@ namespace AscEmu::Packets
                 packet.writeByteSeq(casterGuid[4]);
                 packet.writeByteSeq(casterUnitGuid[1]);
 
-                if (powerValue)
+                if (predictedPowerCount > 0)
                 {
                     packet << uint8_t(powerType);
                     packet << uint32_t(powerValue);

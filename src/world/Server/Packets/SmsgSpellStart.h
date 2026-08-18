@@ -92,7 +92,7 @@ namespace AscEmu::Packets
                 WoWGuid itemTargetGuid = targets.getItemTargetGuid();
                 WoWGuid unkGuid = 0;
                 bool hasDestLocation = (targets.getTargetMask() & TARGET_FLAG_DEST_LOCATION) && targets.getDestination().isSet();
-                bool hasSourceLocation = (targets.getTargetMask() & TARGET_FLAG_SOURCE_LOCATION) && targets.getDestination().isSet();
+                bool hasSourceLocation = (targets.getTargetMask() & TARGET_FLAG_SOURCE_LOCATION) && targets.getSource().isSet();
                 bool hasTargetString = targets.getTargetMask() & TARGET_FLAG_STRING;
                 bool hasPredictedHeal = false;
                 bool hasPredictedType = false;
@@ -141,7 +141,33 @@ namespace AscEmu::Packets
                 packet.writeBit(1); // Unk Read32
                 packet.writeBit(casterGuid[3]);
 
+                if (hasDestLocation)
+                {
+                    WoWGuid destTransportGuid = targets.getTransportDestinationGuid();
+                    packet.writeBit(destTransportGuid[1]);
+                    packet.writeBit(destTransportGuid[6]);
+                    packet.writeBit(destTransportGuid[2]);
+                    packet.writeBit(destTransportGuid[7]);
+                    packet.writeBit(destTransportGuid[0]);
+                    packet.writeBit(destTransportGuid[3]);
+                    packet.writeBit(destTransportGuid[5]);
+                    packet.writeBit(destTransportGuid[4]);
+                }
+
                 packet.writeBit(!hasAmmoDisplayId);
+
+                if (hasSourceLocation)
+                {
+                    WoWGuid srcTransportGuid = targets.getTransportSourceGuid();
+                    packet.writeBit(srcTransportGuid[4]);
+                    packet.writeBit(srcTransportGuid[3]);
+                    packet.writeBit(srcTransportGuid[5]);
+                    packet.writeBit(srcTransportGuid[1]);
+                    packet.writeBit(srcTransportGuid[7]);
+                    packet.writeBit(srcTransportGuid[0]);
+                    packet.writeBit(srcTransportGuid[6]);
+                    packet.writeBit(srcTransportGuid[2]);
+                }
 
                 packet.writeBit(0); // Fake Bit
                 packet.writeBit(casterGuid[6]);
@@ -181,6 +207,9 @@ namespace AscEmu::Packets
                 packet.writeBit(casterUnitGuid[3]);
                 packet.writeBit(1); // Unk uint8_t
 
+                if (hasTargetString)
+                    packet.writeBits(uint32_t(targets.getStringTarget().length()), 7);
+
                 packet.writeBit(!hasCastImmunities);
                 packet.writeBit(casterUnitGuid[1]);
                 packet.writeBit(hasVisualChain);
@@ -219,6 +248,40 @@ namespace AscEmu::Packets
                 packet.writeByteSeq(unkGuid[7]);
                 packet.writeByteSeq(unkGuid[0]);
 
+                if (hasDestLocation)
+                {
+                    const LocationVector destPos = targets.getDestination();
+                    WoWGuid destTransportGuid = targets.getTransportDestinationGuid();
+                    packet.writeByteSeq(destTransportGuid[4]);
+                    packet.writeByteSeq(destTransportGuid[0]);
+                    packet.writeByteSeq(destTransportGuid[5]);
+                    packet.writeByteSeq(destTransportGuid[7]);
+                    packet.writeByteSeq(destTransportGuid[1]);
+                    packet.writeByteSeq(destTransportGuid[2]);
+                    packet.writeByteSeq(destTransportGuid[3]);
+                    packet << float(destPos.y);
+                    packet << float(destPos.z);
+                    packet.writeByteSeq(destTransportGuid[6]);
+                    packet << float(destPos.x);
+                }
+
+                if (hasSourceLocation)
+                {
+                    const LocationVector srcPos = targets.getSource();
+                    WoWGuid srcTransportGuid = targets.getTransportSourceGuid();
+                    packet.writeByteSeq(srcTransportGuid[0]);
+                    packet.writeByteSeq(srcTransportGuid[5]);
+                    packet.writeByteSeq(srcTransportGuid[4]);
+                    packet.writeByteSeq(srcTransportGuid[7]);
+                    packet.writeByteSeq(srcTransportGuid[3]);
+                    packet.writeByteSeq(srcTransportGuid[6]);
+                    packet << float(srcPos.x);
+                    packet.writeByteSeq(srcTransportGuid[2]);
+                    packet << float(srcPos.z);
+                    packet.writeByteSeq(srcTransportGuid[1]);
+                    packet << float(srcPos.y);
+                }
+
                 packet.writeByteSeq(casterGuid[4]);
 
                 if (hasCastSchoolImmunities)
@@ -237,8 +300,10 @@ namespace AscEmu::Packets
 
                 if (predictedPowerCount > 0)
                 {
-                    packet << uint8_t(powerType);
+                    // Mop wire format has the opposite field order of SMSG_SPELL_GO
+                    // (power value, then power type) for this same "predicted power" block.
                     packet << int32_t(powerValue);
+                    packet << uint8_t(powerType);
                 }
 
                 packet << uint32_t(castFlags);

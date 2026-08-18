@@ -64,6 +64,7 @@ namespace AscEmu::Packets
                 packet.writeBits(spellMap.size(), 21);
                 packet.writeBit(guid[2]);
                 packet.writeBit(guid[4]);
+                packet.flushBits();
 
                 for (auto const& cooldowns : spellMap)
                     packet << cooldowns.spellId << cooldowns.duration;

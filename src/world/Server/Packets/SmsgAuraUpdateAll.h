@@ -115,17 +115,19 @@ namespace AscEmu::Packets
                 {
                     packet.writeBit(1); // Not remove
 
+                    // Client indexes effects by slot: count must be (highest active effect index + 1),
+                    // zero-padding gaps, not the number of active effect flags.
                     if (auras.flags & AFLAG_SEND_EFFECT_AMOUNT)
                     {
                         uint8_t effCount = 0;
                         if (auras.flags & AFLAG_EFFECT_1)
-                            effCount++;
+                            effCount = 1;
 
                         if (auras.flags & AFLAG_EFFECT_2)
-                            effCount++;
+                            effCount = 2;
 
                         if (auras.flags & AFLAG_EFFECT_3)
-                            effCount++;
+                            effCount = 3;
 
                         packet.writeBits(effCount, 22); // Effect Count
                     }
@@ -176,28 +178,33 @@ namespace AscEmu::Packets
                     if (auras.flags & AFLAG_DURATION)
                     {
                         packet << uint32_t(auras.duration); // maxduration
-                        packet << uint32_t(auras.duration);
+                        packet << uint32_t(auras.timeLeft);
                     }
 
                     packet << uint8_t(auras.stackCount);
-                    packet << uint32_t(0); // effect mask
+                    packet << uint32_t(auras.flags & (AFLAG_EFFECT_1 | AFLAG_EFFECT_2 | AFLAG_EFFECT_3)); // effect mask
 
                     if (auras.flags & AFLAG_SEND_EFFECT_AMOUNT)
                     {
+                        // Must write exactly effCount floats to match the bit-header count written above
+                        uint8_t effCount = 0;
                         if (auras.flags & AFLAG_EFFECT_1)
-                            packet << float(auras.effAmount[0]);
-                        else
-                            packet << float(0.f);
+                            effCount = 1;
 
                         if (auras.flags & AFLAG_EFFECT_2)
-                            packet << float(auras.effAmount[1]);
-                        else
-                            packet << float(0.f);
+                            effCount = 2;
 
                         if (auras.flags & AFLAG_EFFECT_3)
-                            packet << float(auras.effAmount[2]);
-                        else
-                            packet << float(0.f);
+                            effCount = 3;
+
+                        if (effCount >= 1)
+                            packet << (auras.flags & AFLAG_EFFECT_1 ? float(auras.effAmount[0]) : float(0.f));
+
+                        if (effCount >= 2)
+                            packet << (auras.flags & AFLAG_EFFECT_2 ? float(auras.effAmount[1]) : float(0.f));
+
+                        if (effCount >= 3)
+                            packet << (auras.flags & AFLAG_EFFECT_3 ? float(auras.effAmount[2]) : float(0.f));
                     }
 
                     packet << uint8_t(auras.visualSlot);
