@@ -884,7 +884,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(MSG_TABARDVENDOR_ACTIVATE, &WorldSession::handleTabardVendorActivateOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_BANKER_ACTIVATE, &WorldSession::handleBankerActivateOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_BUY_BANK_SLOT, &WorldSession::handleBuyBankSlotOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_TRAINER_LIST, &WorldSession::handleTrainerListOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_TRAINER_LIST, &WorldSession::handleTrainerListOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_TRAINER_BUY_SPELL, &WorldSession::handleTrainerBuySpellOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_PETITION_SHOWLIST, &WorldSession::handleCharterShowListOpcode, true, true, true, true, false);
     registry.registerOpcode(MSG_AUCTION_HELLO, &WorldSession::handleAuctionHelloOpcode, true, true, true, true, false);

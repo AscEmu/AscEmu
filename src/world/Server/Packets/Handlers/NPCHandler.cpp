@@ -30,6 +30,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObject.h"
 #include "Server/Packets/SmsgBinderConfirm.h"
+#include "Server/Packets/SmsgPlayerbinderror.h"
+#include "Server/Packets/SmsgTrainerList.h"
 #include "Server/Packets/CmsgTrainerList.h"
 #include "Server/Packets/CmsgBinderActivate.h"
 #include "Objects/Units/Creatures/Pet.h"
@@ -336,9 +338,8 @@ void WorldSession::sendInnkeeperBind(Creature* creature)
         sendManagedPacket(managedPacket);
 
         // Send "already bound here" packet
-        WorldPacket data(SMSG_PLAYERBINDERROR, 1);
-        data << uint32_t(1);
-        SendPacket(&data);
+        SmsgPlayerbinderror errorPacket(1);
+        sendManagedPacket(errorPacket);
         return;
     }
 
@@ -434,109 +435,8 @@ void WorldSession::sendTrainerList(Creature* creature)
     else
         uiMessage = trainer->UIMessage;
 
-    const size_t size = 8 + 4 + 4 + 4 + uiMessage.size()
-        + (sObjectMgr.getTrainerSpellSetById(trainer->spellset_id)->size() * (4 + 1 + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4));
-    WorldPacket data(SMSG_TRAINER_LIST, size);
-
-    data << creature->getGuid();
-    data << static_cast<uint32_t>(trainer->TrainerType);
-
-#if VERSION_STRING >= Cata
-    data << static_cast<uint32_t>(1); // Unk
-#endif
-
-    size_t count_p = data.wpos();
-    data << static_cast<uint32_t>(sObjectMgr.getTrainerSpellSetById(trainer->spellset_id)->size());
-
-    uint32_t count = 0;
-
-    for (auto& spellItr : *sObjectMgr.getTrainerSpellSetById(trainer->spellset_id))
-    {
-        auto trainerSpell = spellItr;
-
-        const auto spellInfo = trainerSpell.castRealSpell != nullptr ? trainerSpell.castSpell : trainerSpell.learnSpell;
-        if (spellInfo == nullptr)
-            continue;
-
-        if (!_player->isSpellFitByClassAndRace(spellInfo->getId()))
-            continue;
-
-        if (spellItr.isStatic == 0)
-        {
-            // trainer has max level to train, skip all spells higher.
-            if (trainer->can_train_max_level)
-                if (spellItr.requiredLevel > trainer->can_train_max_level)
-                    continue;
-
-            // trainer has min_skill_value, skip all spells lower
-            if (trainer->can_train_min_skill_value)
-                if (spellItr.requiredSkillLineValue < trainer->can_train_min_skill_value)
-                    continue;
-
-            // trainer has max_skill_value, skip all spells higher
-            if (trainer->can_train_max_skill_value)
-                if (spellItr.requiredSkillLineValue > trainer->can_train_max_skill_value)
-                    continue;
-        }
-
-        data << static_cast<uint32_t>(spellInfo->getId());
-        data << static_cast<uint8_t>(trainerGetSpellStatus(&trainerSpell));
-        data << static_cast<uint32_t>(trainerSpell.cost);
-#if VERSION_STRING < Cata
-        data << uint32_t(0); // Unk
-        data << uint32_t(trainerSpell.isPrimaryProfession);
-#endif
-        data << static_cast<uint8_t>(trainerSpell.requiredLevel);
-        data << static_cast<uint32_t>(trainerSpell.requiredSkillLine);
-        data << static_cast<uint32_t>(trainerSpell.requiredSkillLineValue);
-
-        // Get the required spells to learn this spell
-        uint8_t requiredSpellCount = 0;
-        const auto maxRequiredCount = TrainerSpell::getMaxRequiredSpellCount();
-        for (const auto requiredSpell : trainerSpell.requiredSpell)
-        {
-            if (requiredSpell == 0)
-                continue;
-
-            data << static_cast<uint32_t>(requiredSpell);
-            ++requiredSpellCount;
-
-            if (requiredSpellCount >= maxRequiredCount)
-                break;
-
-            const auto requiredSpells = sSpellMgr.getSpellsRequiredRangeForSpell(requiredSpell);
-            for (const auto& itr : requiredSpells)
-            {
-                data << static_cast<uint32_t>(itr.second);
-                ++requiredSpellCount;
-
-                if (requiredSpellCount > maxRequiredCount)
-                    break;
-            }
-
-            if (requiredSpellCount >= maxRequiredCount)
-                break;
-        }
-
-        while (requiredSpellCount < maxRequiredCount)
-        {
-            data << static_cast<uint32_t>(0);
-            ++requiredSpellCount;
-        }
-
-#if VERSION_STRING >= Cata
-        data << static_cast<uint32_t>(trainerSpell.isPrimaryProfession && _player->getFreePrimaryProfessionPoints() != 0);
-        data << static_cast<uint32_t>(trainerSpell.isPrimaryProfession);
-#endif
-        ++count;
-    }
-
-    data.put<uint32_t>(count_p, count);
-    data << uiMessage;
-
-    sLogger.info("SendTrainerList : {} TrainerSpells in list", count);
-
-    SendPacket(&data);
+    SmsgTrainerList managedPacket(creature, _player, uiMessage);
+    sendManagedPacket(managedPacket);
 }
 
 TrainerSpellState WorldSession::trainerGetSpellStatus(TrainerSpell const* trainerSpell) const
