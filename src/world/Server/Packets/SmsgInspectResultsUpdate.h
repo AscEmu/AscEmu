@@ -45,6 +45,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+#if VERSION_STRING == Mop
             if (inspectedPlayer == nullptr)
                 return false;
 
@@ -234,7 +235,7 @@ namespace AscEmu::Packets
 
                 return true;
             }
-
+#endif
             return false;
         }
 
