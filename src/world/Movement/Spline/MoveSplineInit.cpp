@@ -14,6 +14,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Network/WorldPacket.hpp"
 #include "Movement/PathGenerator.h"
 #include "Server/Opcodes.hpp"
+#include "Server/PacketBroadcast.hpp"
+#include "Server/Packets/SmsgMonsterMoveSpline.h"
+
+using namespace AscEmu::Packets;
 
 namespace MovementMgr {
 
@@ -142,19 +146,8 @@ int32_t MoveSplineInit::Launch()
     unit->obj_movement_info.flags = moveFlags;
     move_spline.Initialize(args);
 
-    WorldPacket data(SMSG_MONSTER_MOVE, 64);
-    data << WoWGuid(unit->getGuid());
-    if (transport)
-    {
-        data.setOpcode(SMSG_MONSTER_MOVE_TRANSPORT);
-        data << WoWGuid(unit->getTransGuid());
-#if VERSION_STRING >= WotLK
-        data << int8_t(unit->GetTransSeat());
-#endif
-    }
-
-    PacketBuilder::WriteMonsterMove(move_spline, data);
-    unit->sendMessageToSet(&data, true);
+    SmsgMonsterMoveSpline managedPacket(unit, transport, &move_spline);
+    PacketBroadcast::sendToSet(*unit, managedPacket, true);
 
     return move_spline.Duration();
 }
@@ -197,19 +190,8 @@ void MoveSplineInit::Stop()
     move_spline.onTransport = transport;
     move_spline.Initialize(args);
 
-    WorldPacket data(SMSG_MONSTER_MOVE, 64);
-    data << WoWGuid(unit->getGuid());
-    if (transport)
-    {
-        data.setOpcode(SMSG_MONSTER_MOVE_TRANSPORT);
-        data << WoWGuid(unit->getTransGuid());
-#if VERSION_STRING >= WotLK
-        data << int8_t(unit->GetTransSeat());
-#endif
-    }
-
-    PacketBuilder::WriteStopMovement(loc, args.splineId, data);
-    unit->sendMessageToSet(&data, true);
+    SmsgMonsterMoveSpline managedPacket(unit, transport, loc, args.splineId);
+    PacketBroadcast::sendToSet(*unit, managedPacket, true);
 }
 
 #if VERSION_STRING <= TBC
