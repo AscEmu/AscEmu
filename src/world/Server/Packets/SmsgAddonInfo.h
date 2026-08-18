@@ -53,6 +53,7 @@ namespace AscEmu::Packets
 
             if (m_protocol.expansion <= WoW::Expansion::_TBC)
             {
+#if VERSION_STRING <= TBC
                 for (auto& itr : *addonList)
                 {
                     if (itr.crc != STANDARD_ADDON_CRC)
@@ -65,9 +66,11 @@ namespace AscEmu::Packets
                     packet << uint32_t(0);
 
                 return true;
+#endif
             }
             else if (m_protocol.isWotlk())
             {
+#if VERSION_STRING == WotLK
                 for (auto& itr : *addonList)
                 {
                     uint8_t unk;
@@ -103,9 +106,11 @@ namespace AscEmu::Packets
                 }
 
                 return true;
+#endif
             }
             else if (m_protocol.isCata())
             {
+#if VERSION_STRING == Cata
                 for (auto& itr : *addonList)
                 {
                     packet << uint8_t(itr.state);
@@ -144,9 +149,11 @@ namespace AscEmu::Packets
                 }
 
                 return true;
+#endif
             }
             else if (m_protocol.isMop())
             {
+#if VERSION_STRING == Mop
                 packet.writeBits(bannedAddons ? static_cast<uint32_t>(bannedAddons->size()) : 0, 18);
                 packet.writeBits(static_cast<uint32_t>(addonList->size()), 23);
 
@@ -195,6 +202,7 @@ namespace AscEmu::Packets
                 }
 
                 return true;
+#endif
             }
 
             return false;
