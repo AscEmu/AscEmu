@@ -53,6 +53,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAttackStop.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
+#include "Server/Packets/SmsgMonsterMove.h"
+#include "Server/Packets/SmsgPlayerMove.h"
+#include "Server/Packets/SmsgSplineMoveRoot.h"
+#include "Server/Packets/SmsgSplineMoveUnroot.h"
+#include "Server/Packets/SmsgFlightSplineSync.h"
+#include "Server/Packets/SmsgSpellnonmeleedamagelog.h"
+#include "Server/Packets/SmsgAttackerstateupdate.h"
+#include "Server/Packets/SmsgSetExtraAuraInfoNeedUpdate.h"
+#include "Server/Packets/SmsgMoveSetCollisionHgt.h"
+#include "Server/Packets/SmsgDismount.h"
+#include "Server/PacketBroadcast.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Creatures/CreatureGroups.h"
 #include "Management/AchievementMgr.h"
@@ -2060,9 +2071,8 @@ void Unit::sendMoveInfoForPacket(uint16_t opcode, bool withGuid /* = true*/)
             plr->getSession()->SendPacket(&packet);
         }
 
-        WorldPacket broadcastPacket(SMSG_PLAYER_MOVE, 0);
-        obj_movement_info.write(broadcastPacket, withGuid);
-        sendMessageToSet(&broadcastPacket, false);
+        SmsgPlayerMove managedBroadcastPacket(obj_movement_info, withGuid);
+        PacketBroadcast::sendToSet(*this, managedBroadcastPacket, false);
 
 #endif
     }
@@ -2263,53 +2273,20 @@ void Unit::setFacing(float newo)
 {
     SetOrientation(newo);
 
-    WorldPacket data(SMSG_MONSTER_MOVE, 60);
-    data << GetNewGUID();
-    data << GetPositionX();
-    data << GetPositionY();
-    data << GetPositionZ();
-    data << Util::getMSTime();
-    if (newo != 0.0f)
-    {
-        data << uint8_t(4);
-        data << newo;
-    }
-    else
-    {
-        data << uint8_t(0);
-    }
-
-    data << uint32_t(0x1000);   // move flags: run
-    data << uint32_t(0);        // movetime
-    data << uint32_t(1);        // 1 point
-    data << GetPositionX();
-    data << GetPositionY();
-    data << GetPositionZ();
-
-    sendMessageToSet(&data, true);
+    SmsgMonsterMove managedPacket(GetNewGUID(), GetPositionX(), GetPositionY(), GetPositionZ(),
+        Util::getMSTime(), uint32_t(0x1000), uint32_t(0), GetPositionX(), GetPositionY(), GetPositionZ(),
+        newo != 0.0f, newo);
+    PacketBroadcast::sendToSet(*this, managedPacket, true);
 }
 #else
 void Unit::setFacing(float newo)
 {
     SetOrientation(newo);
 
-    WorldPacket data(SMSG_MONSTER_MOVE, 100);
-    data << GetNewGUID();
-    data << uint8_t(0);         // vehicle seat index
-    data << GetPositionX();
-    data << GetPositionY();
-    data << GetPositionZ();
-    data << Util::getMSTime();
-    data << uint8_t(4);         // set orientation
-    data << newo;
-    data << uint32_t(0x1000);   // move flags: run
-    data << uint32_t(0);        // movetime
-    data << uint32_t(1);        // 1 point
-    data << GetPositionX();
-    data << GetPositionY();
-    data << GetPositionZ();
-
-    sendMessageToSet(&data, true);
+    SmsgMonsterMove managedPacket(GetNewGUID(), GetPositionX(), GetPositionY(), GetPositionZ(),
+        Util::getMSTime(), uint32_t(0x1000), uint32_t(0), GetPositionX(), GetPositionY(), GetPositionZ(),
+        true, newo);
+    PacketBroadcast::sendToSet(*this, managedPacket, true);
 }
 #endif
 
@@ -2666,9 +2643,8 @@ void Unit::setStunned(bool apply)
         }
         else
         {
-            WorldPacket data(SMSG_SPLINE_MOVE_ROOT, 8);
-            data << 0;
-            sendMessageToSet(&data, true);
+            SmsgSplineMoveRoot managedPacket(GetNewGUID());
+            PacketBroadcast::sendToSet(*this, managedPacket, true);
         }
     }
     else
@@ -2689,9 +2665,8 @@ void Unit::setStunned(bool apply)
             }
             else
             {
-                WorldPacket data(SMSG_SPLINE_MOVE_UNROOT, 8);
-                data << GetNewGUID();
-                sendMessageToSet(&data, true);
+                SmsgSplineMoveUnroot managedPacket(GetNewGUID());
+                PacketBroadcast::sendToSet(*this, managedPacket, true);
             }
 
             removeUnitMovementFlag(MOVEFLAG_ROOTED);
@@ -2714,13 +2689,8 @@ void Unit::updateSplineMovement(uint32_t t_diff)
         {
             m_splineSyncTimer = 5000; // Retail value, do not change
 
-            ByteBuffer packedGuid;
-            packedGuid.appendPackGuid(getGuid());
-
-            WorldPacket data(SMSG_FLIGHT_SPLINE_SYNC, 4 + packedGuid.size());
-            MovementMgr::PacketBuilder::WriteSplineSync(*movespline, data);
-            data.append(packedGuid);
-            sendMessageToSet(&data, true);
+            SmsgFlightSplineSync managedPacket(movespline.get(), getGuid());
+            PacketBroadcast::sendToSet(*this, managedPacket, true);
         }
     }
 
@@ -2810,14 +2780,9 @@ void Unit::jumpTo(float speedXY, float speedZ, bool forward, Optional<LocationVe
         const float vcos = std::cos(angle + GetOrientation());
         const float vsin = std::sin(angle + GetOrientation());
 
-        WorldPacket data(SMSG_MOVE_KNOCK_BACK, (8 + 4 + 4 + 4 + 4 + 4));
-        data << GetNewGUID();
-        data << uint32_t(0);                                    // Sequence
-        data << vcos << vsin;
-        data << float(speedXY);                                 // Horizontal speed
-        data << float(-speedZ);                                 // Z Movement speed (vertical)
-
-        ToPlayer()->sendPacket(&data);
+        SmsgMoveKnockBack managedPacket(GetNewGUID(), uint32_t(0), vcos, vsin, float(speedXY), float(-speedZ));
+        if (const auto session = ToPlayer()->getSession())
+            session->sendManagedPacket(managedPacket);
     }
 }
 
@@ -3701,31 +3666,9 @@ void Unit::sendSpellNonMeleeDamageLog(Object* caster, Object* target, SpellInfo 
     school = spellInfo->getSchoolMask();
 #endif
 
-    WorldPacket data(SMSG_SPELLNONMELEEDAMAGELOG, 48);
-
-    data << target->GetNewGUID();
-    data << caster->GetNewGUID();
-    data << uint32_t(spellInfo->getId());
-    data << uint32_t(damage);
-#if VERSION_STRING >= WotLK
-    data << uint32_t(overKill);
-#endif
-    data << uint8_t(school);
-    data << uint32_t(absorbedDamage);
-    data << uint32_t(resistedDamage);
-    data << uint8_t(isPeriodicDamage);
-    data << uint8_t(0); // unk
-    data << uint32_t(blockedDamage);
-
-    // Some sort of hit info, other values need more research
-    if (isCriticalHit)
-        data << uint32_t(0x2);
-    else
-        data << uint32_t(0);
-
-    data << uint8_t(0); // debug mode boolean
-
-    target->sendMessageToSet(&data, true);
+    SmsgSpellnonmeleedamagelog managedPacket(target->GetNewGUID(), caster->GetNewGUID(), uint32_t(spellInfo->getId()), uint32_t(damage),
+        uint32_t(overKill), uint8_t(school), uint32_t(absorbedDamage), uint32_t(resistedDamage), isPeriodicDamage, uint32_t(blockedDamage), isCriticalHit);
+    PacketBroadcast::sendToSet(*target, managedPacket, true);
 }
 
 void Unit::sendSpellHealLog(Object* caster, Object* target, uint32_t spellId, uint32_t healAmount, bool isCritical, uint32_t overHeal, uint32_t absorbedHeal)
@@ -3746,126 +3689,18 @@ void Unit::sendSpellOrDamageImmune(uint64_t casterGuid, Unit* target, uint32_t s
 #if VERSION_STRING > TBC
 void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& victimGuid, HitStatus hitStatus, uint32_t damage, [[maybe_unused]]uint32_t overKill, DamageInfo damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, [[maybe_unused]]uint32_t rageGain)
 {
-#if VERSION_STRING < WotLK
-    const size_t size = 106;
-#else
-    const size_t size = 114;
-#endif
-    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, size);
-
-    // School type in classic, school mask in tbc+
-    uint32_t school = 0;
-#if VERSION_STRING == Classic
-    school = damageInfo.getSchoolTypeFromMask();
-#else
-    school = damageInfo.schoolMask;
-#endif
-
-    data << uint32_t(hitStatus);
-    data << attackerGuid;
-    data << victimGuid;
-
-    data << uint32_t(damage);                                   // real damage
-#if VERSION_STRING >= WotLK
-    data << uint32_t(overKill);
-#endif
-    data << uint8_t(1);                                         // damage counter
-
-    data << uint32_t(school);                                   // damage school
-    data << float(1.0f);                                        // some sort of damage coefficient
-    data << uint32_t(damage);                                   // full damage in int
-
-    if (hitStatus & HITSTATUS_ABSORBED)
-        data << uint32_t(absorbedDamage);
-
-    if (hitStatus & HITSTATUS_RESIST)
-        data << uint32_t(damageInfo.resistedDamage);
-
-    data << uint8_t(visualState);
-    data << uint32_t(0);                                        // unk, can be 0, 1000 or -1
-    data << uint32_t(0);                                        // unk, probably GetMeleeSpell
-
-    if (hitStatus & HITSTATUS_BLOCK)
-        data << uint32_t(blockedDamage);
-
-#if VERSION_STRING >= WotLK
-    if (hitStatus & HITSTATUS_RAGE_GAIN)
-        data << uint32_t(rageGain);
-#endif
-
-    if (hitStatus & HITSTATUS_UNK_00)                           // debug information
-    {
-        data << uint32_t(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-
-        data << float(0);                                       // Found in loop
-        data << float(0);                                       // Found in loop
-        data << uint32_t(0);
-    }
-
-    sendMessageToSet(&data, true);
+    SmsgAttackerstateupdate managedPacket(attackerGuid, victimGuid, hitStatus, damage, overKill,
+        damageInfo, absorbedDamage, visualState, blockedDamage, rageGain);
+    PacketBroadcast::sendToSet(*this, managedPacket, true);
 }
 #else // Classic
 void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& victimGuid, HitStatus hitStatus, uint32_t damage, [[maybe_unused]] uint32_t overKill, DamageInfo damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, [[maybe_unused]] uint32_t rageGain)
 {
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Status {}, damage {}", uint32_t(hitStatus), damage);
 
-    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, (4 + 8 + 8 + 4) + 1 + (1 * (4 + 4 + 4 + 4 + 4)) + (4 + 4 + 4 + 4));
-
-    // School type in classic, school mask in tbc+
-    uint32_t school;
-#if VERSION_STRING == Classic
-    school = damageInfo.getSchoolTypeFromMask();
-#else
-    school = damageInfo.schoolMask;
-#endif
-
-    data << uint32_t(hitStatus);
-    data << attackerGuid;
-    data << victimGuid;
-    data << uint32_t(damage);                                   // real damage
-
-    data << uint8_t(1);                                         // damage counter
-
-    data << uint32_t(school);       // damage school
-    data << float(damageInfo.fullDamage);
-    data << uint32_t(damageInfo.fullDamage);
-    data << uint32_t(absorbedDamage);
-    data << int32_t(damageInfo.resistedDamage);
-
-    data << uint32_t(visualState);
-    data << uint32_t(0);
-    data << uint32_t(0);
-
-    data << uint32_t(blockedDamage);
-
-    if (hitStatus & HITSTATUS_UNK_00)
-    {
-        data << uint32_t(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        for (uint8_t i = 0; i < 5; ++i)
-        {
-            data << float(0);
-            data << float(0);
-        }
-        data << uint32_t(0);
-    }
-
-    sendMessageToSet(&data, true);
+    SmsgAttackerstateupdate managedPacket(attackerGuid, victimGuid, hitStatus, damage, overKill,
+        damageInfo, absorbedDamage, visualState, blockedDamage, rageGain);
+    PacketBroadcast::sendToSet(*this, managedPacket, true);
 }
 #endif
 
@@ -4995,13 +4830,9 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
         const auto caster = aur->GetUnitCaster();
         if (caster != nullptr && caster->isPlayer() && caster->getGuid() != getGuid())
         {
-            WorldPacket data(SMSG_SET_EXTRA_AURA_INFO_NEED_UPDATE, 21);
-            data << GetNewGUID();
-            data << uint8_t(aur->m_visualSlot);
-            data << uint32_t(aur->getSpellId());
-            data << uint32_t(aur->getMaxDuration());
-            data << uint32_t(aur->getTimeLeft());
-            caster->sendMessageToSet(&data, true);
+            SmsgSetExtraAuraInfoNeedUpdate managedPacket(GetNewGUID(), uint8_t(aur->m_visualSlot), uint32_t(aur->getSpellId()),
+                uint32_t(aur->getMaxDuration()), uint32_t(aur->getTimeLeft()));
+            PacketBroadcast::sendToSet(*caster, managedPacket, true);
         }
 #endif
     }
@@ -6961,7 +6792,7 @@ uint32_t Unit::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly
 
 void Unit::smsg_AttackStop(Unit* pVictim)
 {
-    SmsgAttackStop sendPacket(GetNewGUID(), pVictim ? pVictim->GetNewGUID() : WoWGuid());
+    SmsgAttackStop sendPacket(GetNewGUID(), pVictim ? pVictim->GetNewGUID() : WoWGuid(), pVictim != nullptr && pVictim->isDead());
     PacketBroadcast::sendToSet(*this, sendPacket, true);
 }
 
@@ -7871,9 +7702,8 @@ void Unit::exitVehicle(LocationVector const* exitPosition)
     // Unroot the Passenger when the Above code fails
     if (hasUnitMovementFlag(MOVEFLAG_ROOTED))
     {
-        WorldPacket data(SMSG_SPLINE_MOVE_UNROOT, 8);
-        data << GetNewGUID();
-        sendMessageToSet(&data, false);
+        SmsgSplineMoveUnroot managedPacket(GetNewGUID());
+        PacketBroadcast::sendToSet(*this, managedPacket, false);
     }
 
     LocationVector pos;
@@ -8016,14 +7846,9 @@ void Unit::mount([[maybe_unused]] uint32_t mount, [[maybe_unused]] uint32_t Vehi
             if (charm->isCreature())
                 charm->addUnitFlags(UNIT_FLAG_STUNNED);
 
-        ByteBuffer guidData;
-        guidData << GetNewGUID();
-
-        WorldPacket data(SMSG_MOVE_SET_COLLISION_HGT, guidData.size() + 4 + 4);
-        data.append(guidData);
-        data << uint32_t(Util::getTimeNow());   // Packet counter
-        data << getCollisionHeight();
-        sendPacket(&data);
+        SmsgMoveSetCollisionHgt managedPacket(GetNewGUID(), uint32_t(Util::getTimeNow()), getCollisionHeight());
+        if (const auto session = player->getSession())
+            session->sendManagedPacket(managedPacket);
     }
 
     removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
@@ -8043,13 +7868,9 @@ void Unit::dismount([[maybe_unused]] bool resummonPet/* = true*/)
 
     if (Player* player = ToPlayer())
     {
-        ByteBuffer guidData;
-        guidData << GetNewGUID();
-        WorldPacket data(SMSG_MOVE_SET_COLLISION_HGT, guidData.size() + 4 + 4);
-        data.append(guidData);
-        data << uint32_t(Util::getTimeNow());   // Packet counter
-        data << getCollisionHeight();
-        sendPacket(&data);
+        SmsgMoveSetCollisionHgt managedPacket(GetNewGUID(), uint32_t(Util::getTimeNow()), getCollisionHeight());
+        if (const auto session = player->getSession())
+            session->sendManagedPacket(managedPacket);
 
         if (player->getMountSpellId() != 0)
         {
@@ -8062,9 +7883,8 @@ void Unit::dismount([[maybe_unused]] bool resummonPet/* = true*/)
             player->summonTemporarilyUnsummonedPet();
     }
 
-    WorldPacket data(SMSG_DISMOUNT, 8);
-    data << GetNewGUID();
-    sendMessageToSet(&data, true);
+    SmsgDismount managedDismountPacket(GetNewGUID());
+    PacketBroadcast::sendToSet(*this, managedDismountPacket, true);
 
 #if VERSION_STRING >= WotLK
     // dismount as a vehicle

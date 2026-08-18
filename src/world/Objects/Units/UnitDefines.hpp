@@ -188,6 +188,9 @@ enum HitStatus : uint32_t
     HITSTATUS_CRUSHINGBLOW      = 0x00008000,
     HITSTATUS_NOACTION          = 0x00010000,
     HITSTATUS_SWINGNOHITSOUND   = 0x00080000,
+
+    //for compatibility not existant on <= TBC
+    HITSTATUS_RAGE_GAIN,
 };
 #endif
 

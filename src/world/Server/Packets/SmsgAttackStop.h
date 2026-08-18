@@ -15,15 +15,17 @@ namespace AscEmu::Packets
     public:
         WoWGuid attackerGuid;
         WoWGuid victimGuid;
+        bool victimIsDead;
 
-        SmsgAttackStop() : SmsgAttackStop(WoWGuid(), WoWGuid())
+        SmsgAttackStop() : SmsgAttackStop(WoWGuid(), WoWGuid(), false)
         {
         }
 
-        SmsgAttackStop(WoWGuid attackerGuid, WoWGuid victimGuid) :
+        SmsgAttackStop(WoWGuid attackerGuid, WoWGuid victimGuid, bool victimIsDead) :
             ManagedPacket(SMSG_ATTACK_STOP, 0),
             attackerGuid(attackerGuid),
-            victimGuid(victimGuid)
+            victimGuid(victimGuid),
+            victimIsDead(victimIsDead)
         {
         }
 
@@ -41,8 +43,10 @@ namespace AscEmu::Packets
                     packet << victimGuid;
 
                 packet << uint32_t(0);
+
+                return true;
             }
-            else // Mop
+            else if (m_protocol.isMop())
             {
                 packet.writeBit(victimGuid[5]);
                 packet.writeBit(victimGuid[6]);
@@ -53,7 +57,7 @@ namespace AscEmu::Packets
                 packet.writeBit(attackerGuid[5]);
                 packet.writeBit(victimGuid[4]);
 
-                packet.writeBit(1);
+                packet.writeBit((victimGuid.getRawGuid() != 0) && victimIsDead);
 
                 packet.writeBit(victimGuid[3]);
                 packet.writeBit(victimGuid[0]);
@@ -82,9 +86,11 @@ namespace AscEmu::Packets
                 packet.writeByteSeq(attackerGuid[2]);
                 packet.writeByteSeq(victimGuid[1]);
                 packet.writeByteSeq(victimGuid[7]);
+
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
