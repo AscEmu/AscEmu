@@ -71,10 +71,15 @@ namespace AscEmu::Packets
                     packet << uint16_t(castFlags);
                 }
 
-                packet << uint32_t(timer);
-
                 if (m_protocol.expansion == WoW::Expansion::_Cata)
+                {
+                    packet << uint32_t(0); // CastFlagsEx - always 0
                     packet << uint32_t(castTime);
+                }
+                else
+                {
+                    packet << uint32_t(timer);
+                }
 
                 targets.write(packet);
 

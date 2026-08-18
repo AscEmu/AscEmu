@@ -77,7 +77,7 @@ namespace AscEmu::Packets
                 }
 
                 if (m_protocol.expansion == WoW::Expansion::_Cata)
-                    packet << uint32_t(timer);
+                    packet << uint32_t(0); // CastFlagsEx always 0
 
                 if (m_protocol.expansion > WoW::Expansion::_Classic)
                     packet << uint32_t(castTime);
