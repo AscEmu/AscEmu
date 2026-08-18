@@ -65,6 +65,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMotd.h"
 #include "Server/Packets/SmsgRequestCemeteryListResponse.h"
 #include "Server/Packets/CmsgObjectUpdateFailed.h"
+#include "Server/Packets/SmsgUiTime.h"
+#include "Server/Packets/SmsgWhois.h"
+#include "Server/Packets/SmsgInspectTalent.h"
+#include "Server/Packets/SmsgInspectResultsUpdate.h"
+#include "Server/Packets/SmsgAddonInfo.h"
+#include "Server/Packets/SmsgReportResult.h"
+#include "Server/Packets/SmsgMirrorimageData.h"
+#include "Server/Packets/SmsgClientcacheVersion.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Objects/Transporter.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
@@ -1327,9 +1335,8 @@ void WorldSession::handleLoadScreenOpcode([[maybe_unused]] WorldPacket& recvPack
 void WorldSession::handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING >= Cata
-    WorldPacket data(SMSG_UI_TIME, 4);
-    data << uint32_t(time(nullptr));
-    SendPacket(&data);
+    SmsgUiTime managedPacket(uint32_t(time(nullptr)));
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -1609,16 +1616,8 @@ void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
     std::string msg = srlPacket.characterName + "'s " + "account information: acctID: " + acctID + ", Name: "
     + acctName + ", Permissions: " + acctPerms + ", E-Mail: " + acctEmail + ", lastIP: " + acctIP + ", Muted: " + acctMuted;
 
-    WorldPacket data(SMSG_WHOIS, msg.size() + 1);
-#if VERSION_STRING < Mop
-    data << msg;
-#else
-    data.writeBits(msg.size(), 11);
-    data.flushBits();
-    if (msg.size())
-        data.writeString(msg);
-#endif
-    SendPacket(&data);
+    SmsgWhois managedPacket(msg);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
@@ -1777,297 +1776,12 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
         _player->updateComboPoints();
 
 #if VERSION_STRING < Mop
-    ByteBuffer packedGuid;
-    WorldPacket data(SMSG_INSPECT_TALENT, 1000);
-    packedGuid.appendPackGuid(inspectedPlayer->getGuid());
-    data.append(packedGuid);
-
-    data << uint32_t(inspectedPlayer->getActiveSpec().getTalentPoints());
-    data << uint8_t(inspectedPlayer->m_talentSpecsCount);
-    data << uint8_t(inspectedPlayer->m_talentActiveSpec);
-    for (uint8_t s = 0; s < inspectedPlayer->m_talentSpecsCount; ++s)
-    {
-        const PlayerSpec playerSpec = inspectedPlayer->m_specs[s];
-
-        uint8_t talentCount = 0;
-        const auto talentCountPos = data.wpos();
-        data << uint8_t(talentCount);
-
-        const auto talentTabIds = getTalentTabPages(inspectedPlayer->getClass());
-        for (uint8_t i = 0; i < 3; ++i)
-        {
-            const uint32_t talentTabId = talentTabIds[i];
-            for (uint32_t j = 0; j < sTalentStore.getNumRows(); ++j)
-            {
-                const auto talentInfo = sTalentStore.lookupEntry(j);
-                if (talentInfo == nullptr)
-                    continue;
-
-                if (talentInfo->TalentTree != talentTabId)
-                    continue;
-
-                int32_t talentMaxRank = -1;
-                for (int32_t k = 4; k > -1; --k)
-                {
-                    if (talentInfo->RankID[k] != 0 && inspectedPlayer->hasSpell(talentInfo->RankID[k]))
-                    {
-                        talentMaxRank = k;
-                        break;
-                    }
-                }
-
-                if (talentMaxRank < 0)
-                    continue;
-
-                data << uint32_t(talentInfo->TalentID);
-                data << uint8_t(talentMaxRank);
-
-                ++talentCount;
-            }
-        }
-        data.put<uint8_t>(talentCountPos, talentCount);
-
-#ifdef FT_GLYPHS
-        data << uint8_t(GLYPHS_COUNT);
-
-        for (const auto& glyph : playerSpec.getGlyphs())
-            data << uint16_t(glyph);
-#endif
-    }
-
-    uint32_t slotMask = 0;
-    const auto slotMaskPos = data.wpos();
-    data << uint32_t(slotMask);
-
-    auto itemInterface = inspectedPlayer->getItemInterface();
-    for (uint32_t i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
-    {
-        const auto inventoryItem = itemInterface->GetInventoryItem(static_cast<uint16_t>(i));
-        if (!inventoryItem)
-            continue;
-
-        slotMask |= (1 << i);
-
-        data << uint32_t(inventoryItem->getEntry());
-
-        uint16_t enchantMask = 0;
-        const auto enchantMaskPos = data.wpos();
-
-        data << uint16_t(enchantMask);
-
-        for (uint8_t slot = 0; slot < MAX_ENCHANTMENT_SLOT; ++slot)
-        {
-            const uint32_t enchantId = inventoryItem->getEnchantmentId(slot);
-            if (!enchantId)
-                continue;
-
-            enchantMask |= (1 << slot);
-            data << uint16_t(enchantId);
-        }
-        data.put<uint16_t>(enchantMaskPos, enchantMask);
-
-        data << uint16_t(0);
-        FastGUIDPack(data, inventoryItem->getCreatorGuid());
-        data << uint32_t(0);
-    }
-    data.put<uint32_t>(slotMaskPos, slotMask);
-
-#if VERSION_STRING >= Cata
-    if (Guild* guild = sGuildMgr.getGuildById(inspectedPlayer->getGuildId()))
-    {
-        data << guild->getGUID();
-        data << uint32_t(guild->getLevel());
-        data << uint64_t(guild->getExperience());
-        data << uint32_t(guild->getMembersCount());
-    }
-#endif
+    SmsgInspectTalent managedPacket(inspectedPlayer);
+    sendManagedPacket(managedPacket);
 #else // Mop
-    [[maybe_unused]] uint32_t talentPoints = 41;
-    uint32_t slotCount = 0;
-    uint32_t glyphCount = 0;
-    uint32_t talentCount = 0;
-
-    WoWGuid guid = inspectedPlayer->getGuid();
-    Guild* guild = sGuildMgr.getGuildById(inspectedPlayer->getGuildId());
-    WoWGuid guildGuid = guild ? guild->getGUID() : 0;
-
-    WorldPacket data(SMSG_INSPECT_RESULTS_UPDATE, 1000);
-    ByteBuffer enchantData;
-
-    data.writeBit(guild ? 1 :0);
-    data.writeBit(guid[2]);
-
-    if (guild)
-    {
-        data.writeBit(guildGuid[7]);
-        data.writeBit(guildGuid[0]);
-        data.writeBit(guildGuid[5]);
-        data.writeBit(guildGuid[3]);
-        data.writeBit(guildGuid[2]);
-        data.writeBit(guildGuid[4]);
-        data.writeBit(guildGuid[6]);
-        data.writeBit(guildGuid[1]);
-    }
-
-    data.writeBit(guid[4]);
-    data.writeBit(guid[3]);
-    data.writeBit(guid[5]);
-    data.writeBit(guid[7]);
-
-    size_t slotCountBitPos = data.bitwpos();
-    data.writeBits(0, 20);
-
-    data.writeBit(guid[0]);
-
-    auto itemInterface = inspectedPlayer->getItemInterface();
-    for (uint32_t itemSlot = EQUIPMENT_SLOT_START; itemSlot < EQUIPMENT_SLOT_END; ++itemSlot)
-    {
-        const auto inventoryItem = itemInterface->GetInventoryItem(static_cast<uint16_t>(itemSlot));
-        if (!inventoryItem)
-            continue;
-
-        ++slotCount;
-
-        WoWGuid creatorGuid = inventoryItem->getCreatorGuid();
-        uint32_t enchantCount = 0;
-
-        data.writeBit(creatorGuid[1]);
-        data.writeBit(0); // unk1
-        data.writeBit(0);
-        data.writeBit(creatorGuid[3]);
-
-        size_t enchCountBitPos = data.bitwpos();
-        data.writeBits(0, 21);
-
-        data.writeBit(creatorGuid[2]);
-        data.writeBit(creatorGuid[6]);
-        data.writeBit(creatorGuid[4]);
-
-        data.writeBit(0); // unk2
-
-        data.writeBit(creatorGuid[0]);
-        data.writeBit(creatorGuid[5]);
-        data.writeBit(creatorGuid[7]);
-
-        enchantData.writeByteSeq(creatorGuid[3]);
-        enchantData << uint32_t(0);
-
-        for (uint8_t enchantSlot = 0; enchantSlot < MAX_ENCHANTMENT_SLOT; ++enchantSlot)
-        {
-            uint32_t enchantId = inventoryItem->getEnchantmentId(enchantSlot);
-
-            if (!enchantId)
-                continue;
-
-            ++enchantCount;
-            enchantData << enchantId;
-            enchantData << uint8_t(enchantSlot);
-        }
-
-        data.putBits(enchCountBitPos, enchantCount, 21);
-
-        enchantData << inventoryItem->getEntry();
-
-        enchantData.writeByteSeq(creatorGuid[6]);
-        enchantData.writeByteSeq(creatorGuid[4]);
-        enchantData.writeByteSeq(creatorGuid[7]);
-        enchantData.writeByteSeq(creatorGuid[2]);
-
-        enchantData.writeByteSeq(creatorGuid[5]);
-
-        enchantData << uint8_t(itemSlot);
-
-        enchantData.writeByteSeq(creatorGuid[0]);
-        enchantData.writeByteSeq(creatorGuid[1]);
-    }
-
-    data.putBits(slotCountBitPos, slotCount, 20);
-
-    size_t glyphCountBitPos = data.bitwpos();
-    data.writeBits(0, 23);
-
-    size_t talentCountBitPos = data.bitwpos();
-    data.writeBits(0, 23);
-
-    data.writeBit(guid[6]);
-    data.writeBit(guid[1]);
-    data.flushBits();
-
-    data.writeByteSeq(guid[1]);
-    data.writeByteSeq(guid[4]);
-    data.writeByteSeq(guid[2]);
-
-    data.append(enchantData);
-
-    if (guild)
-    {
-        data.writeByteSeq(guildGuid[6]);
-        data.writeByteSeq(guildGuid[2]);
-        data.writeByteSeq(guildGuid[5]);
-        data.writeByteSeq(guildGuid[0]);
-
-        data << uint32_t(guild->getMembersCount());
-
-        data.writeByteSeq(guildGuid[4]);
-        data.writeByteSeq(guildGuid[7]);
-
-        data << uint64_t(guild->getExperience());
-
-        data.writeByteSeq(guildGuid[1]);
-
-        data << uint32_t(guild->getLevel());
-
-        data.writeByteSeq(guildGuid[3]);
-    }
-
-    data.writeByteSeq(guid[5]);
-
-    const PlayerSpec playerSpec = inspectedPlayer->m_specs[inspectedPlayer->m_talentActiveSpec];
-
-    for (const auto& glyph : playerSpec.getGlyphs())
-    {
-        if (glyph)
-        {
-            ++glyphCount;
-            data << glyph;
-        }
-    }
-
-    data.putBits(glyphCountBitPos, glyphCount, 23);
-
-    data.writeByteSeq(guid[0]);
-
-    data << uint32_t(inspectedPlayer->getActiveSpec().getTalentPoints());
-
-    const auto talentTabIds = getTalentTabPages(inspectedPlayer->getClass());
-    for (uint8_t i = 0; i < 3; ++i)
-    {
-        [[maybe_unused]] const uint32_t talentTabId = talentTabIds[i];
-        for (uint32_t j = 0; j < sTalentStore.getNumRows(); ++j)
-        {
-            const auto talentInfo = sTalentStore.lookupEntry(j);
-            if (talentInfo == nullptr)
-                continue;
-
-            if (talentInfo->playerClass != inspectedPlayer->getClass())
-                continue;
-
-            if (!inspectedPlayer->hasSpell(talentInfo->SpellId))
-                continue;
-
-            data << uint16_t(talentInfo->TalentID);
-            ++talentCount;
-        }
-    }
-
-    data.putBits(talentCountBitPos, talentCount, 23);
-
-    data.writeByteSeq(guid[7]);
-    data.writeByteSeq(guid[3]);
-    data.writeByteSeq(guid[6]);
+    SmsgInspectResultsUpdate managedPacket(inspectedPlayer);
+    sendManagedPacket(managedPacket);
 #endif
-
-    SendPacket(&data);
 }
 
 
@@ -2151,144 +1865,11 @@ void WorldSession::readAddonInfoPacket([[maybe_unused]] ByteBuffer &recvPacket)
 
 void WorldSession::sendAddonInfo()
 {
-#if VERSION_STRING <= TBC
-    WorldPacket data(SMSG_ADDON_INFO, 4);
-    for (auto itr : m_addonList)
-    {
-        if (itr.crc != STANDARD_ADDON_CRC)
-            data.append(PublicKey, 264);
-        else
-            data << uint8_t(2) << uint8_t(1) << uint8_t(0) << uint32_t(0) << uint8_t(0);
-    }
-#if VERSION_STRING == TBC
-    data << uint32_t(0);
-#endif
+    SmsgAddonInfo managedPacket(&m_addonList, sAddonMgr.getBannedAddonsList(), GetAccountId());
+    sendManagedPacket(managedPacket);
 
-    SendPacket(&data);
-#elif VERSION_STRING == WotLK
-    WorldPacket data(SMSG_ADDON_INFO, 4);
-    for (auto itr : m_addonList)
-    {
-        uint8_t unk;
-        uint8_t unk1;
-        uint8_t unk2;
-
-        unk = (itr.state ? 2 : 1);
-        data << unk;
-
-        unk1 = (itr.state ? 1 : 0);
-        data << unk1;
-
-        if (unk1)
-        {
-            if (itr.crc != STANDARD_ADDON_CRC)
-            {
-                data << uint8_t(1);
-                data.append(PublicKey, 264);
-            }
-            else
-            {
-                data << uint8_t(0);
-            }
-
-            data << uint32_t(0);
-        }
-
-        unk2 = (itr.state ? 0 : 1);
-        data << unk2;
-
-        if (unk2)
-            data << uint8_t(0);
-    }
-    SendPacket(&data);
-#elif VERSION_STRING == Cata
-    WorldPacket data(SMSG_ADDON_INFO, 4);
-    for (auto itr : m_addonList)
-    {
-        data << uint8_t(itr.state);
-
-        uint8_t crcpub = itr.usePublicKeyOrCRC;
-        data << uint8_t(crcpub);
-        if (crcpub)
-        {
-            uint8_t usepk = (itr.crc != STANDARD_ADDON_CRC);    // standard addon CRC
-            data << uint8_t(usepk);
-            if (usepk)                                          // add public key if crc is wrong
-            {
-                sLogger.debug("AddOn: {}: CRC checksum mismatch: got 0x{:x} - expected 0x{:x} - sending pubkey to accountID {}",
-                    itr.name, itr.crc, STANDARD_ADDON_CRC, GetAccountId());
-
-                data.append(PublicKey, sizeof(PublicKey));
-            }
-
-            data << uint32_t(0);
-        }
-
-        data << uint8_t(0);
-    }
-
+#if VERSION_STRING >= Cata
     m_addonList.clear();
-
-    std::list<BannedAddon> const* bannedAddons = sAddonMgr.getBannedAddonsList();
-    data << uint32_t(bannedAddons->size());
-    for (auto itr = bannedAddons->begin(); itr != bannedAddons->end(); ++itr)
-    {
-        data << uint32_t(itr->id);
-        data.append(itr->nameMD5, sizeof(itr->nameMD5));
-        data.append(itr->versionMD5, sizeof(itr->versionMD5));
-        data << uint32_t(itr->timestamp);
-        data << uint32_t(1); // banned?
-    }
-
-    SendPacket(&data);
-#else // Mop and later
-    WorldPacket data(SMSG_ADDON_INFO, 1000);
-
-    std::list<BannedAddon> const* bannedAddons = sAddonMgr.getBannedAddonsList();
-
-    data.writeBits(static_cast<uint32_t>(bannedAddons->size()), 18);
-    data.writeBits(static_cast<uint32_t>(m_addonList.size()), 23);
-
-    for (auto itr : m_addonList)
-    {
-        data.writeBit(0); // Has URL
-        data.writeBit(itr.enabled);
-        data.writeBit(!itr.usePublicKeyOrCRC);
-    }
-
-    data.flushBits();
-
-    for (auto itr : m_addonList)
-    {
-        if (!itr.usePublicKeyOrCRC)
-        {
-            for (int i = 0; i < 256; i++)
-                data << PublicKey[publicKeyOrder[i]];
-        }
-
-        if (itr.enabled)
-        {
-            data << itr.enabled;
-            data << static_cast<uint32_t>(0);
-        }
-
-        data << itr.state;
-    }
-
-    m_addonList.clear();
-
-    for (auto itr = bannedAddons->begin(); itr != bannedAddons->end(); ++itr)
-    {
-        data << uint32_t(itr->id);
-        data << uint32_t(1); // banned?
-
-        for (int32_t i = 0; i < 8; i++)
-            data << uint32_t(0);
-
-        data << uint32_t(itr->timestamp);
-    }
-
-    SendPacket(&data);
 #endif
 }
 
@@ -2389,11 +1970,8 @@ void WorldSession::handleReportOpcode([[maybe_unused]] WorldPacket& recvPacket)
     }
 
     // Complaint Received message
-    WorldPacket data(SMSG_REPORT_RESULT, 1);
-    data << uint8_t(0);                                     // 1 reset reported player 0 ignore
-    data << uint8_t(0);
-
-    SendPacket(&data);
+    SmsgReportResult managedPacket;
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -2475,84 +2053,16 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     if (Caster == nullptr)
         return; // apperantly this mirror image mirrors nothing, poor lonely soul :(Maybe it's the Caster's ghost called Casper
 
-    WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
-
-    data << uint64_t(GUID);
-    data << uint32_t(Caster->getDisplayId());
-    data << uint8_t(Caster->getRace());
-
-    if (Caster->isPlayer())
-    {
-        if (const auto pcaster = dynamic_cast<Player*>(Caster))
-        {
-            data << uint8_t(pcaster->getGender());
-            data << uint8_t(pcaster->getClass());
-
-            // facial features
-            data << uint8_t(pcaster->getSkinColor());
-            data << uint8_t(pcaster->getFace());
-            data << uint8_t(pcaster->getHairStyle());
-            data << uint8_t(pcaster->getHairColor());
-            data << uint8_t(pcaster->getFacialFeatures());
-
-            if (pcaster->isInGuild())
-                data << uint32_t(pcaster->getGuildId());
-            else
-                data << uint32_t(0);
-
-            static const uint32_t imageitemslots[] =
-            {
-                EQUIPMENT_SLOT_HEAD,
-                EQUIPMENT_SLOT_SHOULDERS,
-                EQUIPMENT_SLOT_BODY,
-                EQUIPMENT_SLOT_CHEST,
-                EQUIPMENT_SLOT_WAIST,
-                EQUIPMENT_SLOT_LEGS,
-                EQUIPMENT_SLOT_FEET,
-                EQUIPMENT_SLOT_WRISTS,
-                EQUIPMENT_SLOT_HANDS,
-                EQUIPMENT_SLOT_BACK,
-                EQUIPMENT_SLOT_TABARD
-            };
-
-            for (uint8_t i = 0; i < 11; ++i)
-            {
-                Item* item = pcaster->getItemInterface()->GetInventoryItem(static_cast <int16_t> (imageitemslots[i]));
-                if (item != nullptr)
-                    data << uint32_t(item->getItemProperties()->DisplayInfoID);
-                else
-                    data << uint32_t(0);
-            }
-        }
-    }
-    else // do not send player data for creatures
-    {
-        data << uint8_t(0);
-        data << uint32_t(0);
-        data << uint32_t(0);
-        data << uint32_t(0);
-        data << uint32_t(0);
-        data << uint32_t(0);
-        data << uint32_t(0);
-        data << uint32_t(0);
-        data << uint32_t(0);
-        data << uint32_t(0);
-        data << uint32_t(0);
-        data << uint32_t(0);
-        data << uint32_t(0);
-        data << uint32_t(0);
-    }
-
-    SendPacket(&data);
+    SmsgMirrorimageData managedPacket(GUID, Caster);
+    sendManagedPacket(managedPacket);
 
     sLogger.debug("Sent SMSG_MIRRORIMAGE_DATA");
 }
 
 void WorldSession::sendClientCacheVersion([[maybe_unused]] uint32_t version)
 {
-    WorldPacket data(SMSG_CLIENTCACHE_VERSION, 4);
-    data << uint32_t(version);
-    SendPacket(&data);
+    SmsgClientcacheVersion managedPacket(version);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::sendAccountDataTimes(uint32_t mask)
