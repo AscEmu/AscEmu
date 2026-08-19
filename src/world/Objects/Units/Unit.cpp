@@ -62,6 +62,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAttackerstateupdate.h"
 #include "Server/Packets/SmsgSetExtraAuraInfoNeedUpdate.h"
 #include "Server/Packets/SmsgMoveSetCollisionHgt.h"
+#include "Server/Packets/SmsgMoveUpdateCollisionHeight.h"
 #include "Server/Packets/SmsgDismount.h"
 #include "Server/PacketBroadcast.hpp"
 #include "Server/Script/ScriptMgr.hpp"
@@ -7846,9 +7847,14 @@ void Unit::mount([[maybe_unused]] uint32_t mount, [[maybe_unused]] uint32_t Vehi
             if (charm->isCreature())
                 charm->addUnitFlags(UNIT_FLAG_STUNNED);
 
-        SmsgMoveSetCollisionHgt managedPacket(GetNewGUID(), uint32_t(Util::getTimeNow()), getCollisionHeight());
+        SmsgMoveSetCollisionHgt managedPacket(GetNewGUID(), uint32_t(Util::getTimeNow()), getCollisionHeight(), getMountDisplayId());
         if (const auto session = player->getSession())
             session->sendManagedPacket(managedPacket);
+
+        // Cata/Mop also broadcast the new collision height to nearby observers (no-op on WotLK and earlier,
+        // where SMSG_MOVE_UPDATE_COLLISION_HEIGHT does not exist)
+        SmsgMoveUpdateCollisionHeight updateBroadcastPacket(obj_movement_info, getCollisionHeight());
+        PacketBroadcast::sendToSet(*this, updateBroadcastPacket, false);
     }
 
     removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
@@ -7868,9 +7874,14 @@ void Unit::dismount([[maybe_unused]] bool resummonPet/* = true*/)
 
     if (Player* player = ToPlayer())
     {
-        SmsgMoveSetCollisionHgt managedPacket(GetNewGUID(), uint32_t(Util::getTimeNow()), getCollisionHeight());
+        SmsgMoveSetCollisionHgt managedPacket(GetNewGUID(), uint32_t(Util::getTimeNow()), getCollisionHeight(), getMountDisplayId());
         if (const auto session = player->getSession())
             session->sendManagedPacket(managedPacket);
+
+        // Cata/Mop also broadcast the new collision height to nearby observers (no-op on WotLK and earlier,
+        // where SMSG_MOVE_UPDATE_COLLISION_HEIGHT does not exist)
+        SmsgMoveUpdateCollisionHeight updateBroadcastPacket(obj_movement_info, getCollisionHeight());
+        PacketBroadcast::sendToSet(*this, updateBroadcastPacket, false);
 
         if (player->getMountSpellId() != 0)
         {

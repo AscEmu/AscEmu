@@ -56,6 +56,9 @@ struct MovementInfo
     uint32_t counter = 0;
     uint32_t forcesCount = 0;
 
+    //note: only used by SMSG_MOVE_UPDATE_COLLISION_HEIGHT (Cata/Mop)
+    float collisionHeight = 0.f;
+
     struct StatusInfo
     {
         bool hasFallData = false;

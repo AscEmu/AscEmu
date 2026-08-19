@@ -234,6 +234,8 @@ private:
             case MovementOp::JumpCos:      buffer >> movementInfo.jump_info.cosAngle; break;
             case MovementOp::JumpXYSpeed:  buffer >> movementInfo.jump_info.xyspeed; break;
 
+            case MovementOp::CollisionHeight: buffer >> movementInfo.collisionHeight; break;
+
             case MovementOp::TGuid: buffer >> movementInfo.transport_guid; break;
             case MovementOp::TGuidBit0: movementInfo.transport_guid[0] = buffer.readBit(); break;
             case MovementOp::TGuidBit1: movementInfo.transport_guid[1] = buffer.readBit(); break;
@@ -392,6 +394,8 @@ private:
             case MovementOp::JumpCos:      data << movementInfo.jump_info.cosAngle; break;
             case MovementOp::JumpXYSpeed:  data << movementInfo.jump_info.xyspeed; break;
 
+            case MovementOp::CollisionHeight: data << movementInfo.collisionHeight; break;
+
             case MovementOp::TGuid: data << movementInfo.transport_guid; break;
             case MovementOp::TGuidBit0: data.writeBit(movementInfo.transport_guid[0]); break;
             case MovementOp::TGuidBit1: data.writeBit(movementInfo.transport_guid[1]); break;
@@ -449,6 +453,7 @@ private:
             case MovementOp::WriteBit1: data.writeBit(1); break;
             case MovementOp::WriteUInt32_0: data << static_cast<uint32_t>(0); break;
             case MovementOp::WriteUInt8_1: data << static_cast<uint8_t>(1); break;
+            case MovementOp::WriteFloat1: data << static_cast<float>(1.0f); break;
             case MovementOp::FlushBits: data.flushBits(); break;
             default:
                 break;

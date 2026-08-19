@@ -81,6 +81,9 @@ enum class MovementOp : uint16_t
     Count,
     NewSpeed,
 
+    // collision height/scale change (SMSG_MOVE_UPDATE_COLLISION_HEIGHT, Cata/Mop only)
+    CollisionHeight,
+
     SkipBit,
     SkipUInt32,
     SkipForcesCountUInt32,
@@ -89,6 +92,7 @@ enum class MovementOp : uint16_t
     WriteBit1,
     WriteUInt32_0,
     WriteUInt8_1,
+    WriteFloat1,
 
     FlushBits
 };

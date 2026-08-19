@@ -10004,6 +10004,168 @@ namespace
         MovementStep{ MovementOp::GuidByte7 },
         MovementStep{ MovementOp::End }
     };
+
+    // SMSG_MOVE_UPDATE_COLLISION_HEIGHT (Cata only - does not exist in WotLK; broadcast to nearby
+    // observers when a unit's collision height changes, carries a single extra float (new height)
+    // spliced into an otherwise-standard MovementInfo snapshot)
+    static constexpr std::array CataSMSG_MOVE_UPDATE_COLLISION_HEIGHTDescriptor
+    {
+        MovementStep{ MovementOp::PosZ },
+        MovementStep{ MovementOp::CollisionHeight },
+        MovementStep{ MovementOp::PosX },
+        MovementStep{ MovementOp::PosY },
+        MovementStep{ MovementOp::GuidBit6 },
+        MovementStep{ MovementOp::GuidBit7 },
+        MovementStep{ MovementOp::HasSplineElevation },
+        MovementStep{ MovementOp::HasTransport },
+        MovementStep{ MovementOp::TGuidBit6, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidBit4, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidBit3, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidBit7, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidBit5, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime3, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidBit1, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidBit0, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidBit2, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime2, Cond::HasTransport },
+        MovementStep{ MovementOp::GuidBit3 },
+        MovementStep{ MovementOp::HasOrientation },
+        MovementStep{ MovementOp::GuidBit4 },
+        MovementStep{ MovementOp::GuidBit5 },
+        MovementStep{ MovementOp::HasTimestamp },
+        MovementStep{ MovementOp::HasFallData },
+        MovementStep{ MovementOp::GuidBit0 },
+        MovementStep{ MovementOp::HasPitch },
+        MovementStep{ MovementOp::WriteBit0 }, // MSEHasHeightChangeFailed - not tracked by AscEmu, always "not failed"
+        MovementStep{ MovementOp::GuidBit2 },
+        MovementStep{ MovementOp::HasMovementFlags },
+        MovementStep{ MovementOp::HasFallDirection, Cond::HasFallData },
+        MovementStep{ MovementOp::GuidBit1 },
+        MovementStep{ MovementOp::HasMovementFlags2 },
+        MovementStep{ MovementOp::HasSpline },
+        MovementStep{ MovementOp::Flags2, Cond::HasMovementFlags2 },
+        MovementStep{ MovementOp::Flags, Cond::HasMovementFlags },
+        MovementStep{ MovementOp::FlushBits },
+        MovementStep{ MovementOp::GuidByte3 },
+        MovementStep{ MovementOp::TGuidByte7, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidByte4, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime3, Cond::HasTransportTime3 },
+        MovementStep{ MovementOp::TTime2, Cond::HasTransportTime2 },
+        MovementStep{ MovementOp::TGuidByte5, Cond::HasTransport },
+        MovementStep{ MovementOp::TOrientation, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosX, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidByte6, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidByte0, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosY, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidByte2, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosZ, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidByte3, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidByte1, Cond::HasTransport },
+        MovementStep{ MovementOp::TSeat, Cond::HasTransport },
+        MovementStep{ MovementOp::Pitch, Cond::HasPitch },
+        MovementStep{ MovementOp::GuidByte6 },
+        MovementStep{ MovementOp::JumpCos, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpSin, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpXYSpeed, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpVelocity, Cond::HasFallData },
+        MovementStep{ MovementOp::FallTime, Cond::HasFallData },
+        MovementStep{ MovementOp::GuidByte7 },
+        MovementStep{ MovementOp::Orientation, Cond::HasOrientation },
+        MovementStep{ MovementOp::GuidByte0 },
+        MovementStep{ MovementOp::GuidByte5 },
+        MovementStep{ MovementOp::GuidByte4 },
+        MovementStep{ MovementOp::SplineElevation, Cond::HasSplineElevation },
+        MovementStep{ MovementOp::Timestamp, Cond::HasTimestamp },
+        MovementStep{ MovementOp::GuidByte2 },
+        MovementStep{ MovementOp::GuidByte1 },
+        MovementStep{ MovementOp::End }
+    };
+
+    // SMSG_MOVE_UPDATE_COLLISION_HEIGHT (Mop) - broadcast to nearby observers when a unit's collision
+    // height changes. Carries two extra floats spliced into an otherwise-standard MovementInfo snapshot:
+    // first Scale (always 1.0f, AscEmu does not track a live scale value for this), then the new height.
+    // Reference sequence has no explicit flush token; an explicit FlushBits is inserted here right after
+    // the last consecutive bit-write, matching this codebase's convention (see MovementCodec.hpp notes).
+    // MSEForces (a stubbed no-op in the reference that writes zero bytes) is intentionally omitted.
+    static constexpr std::array MopSMSG_MOVE_UPDATE_COLLISION_HEIGHTDescriptor
+    {
+        MovementStep{ MovementOp::GuidBit7 },
+        MovementStep{ MovementOp::GuidBit3 },
+        MovementStep{ MovementOp::HasMovementFlags2 },
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::GuidBit4 },
+        MovementStep{ MovementOp::GuidBit2 },
+        MovementStep{ MovementOp::HasOrientation },
+        MovementStep{ MovementOp::GuidBit5 },
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::HasSplineElevation },
+        MovementStep{ MovementOp::HasMovementFlags },
+        MovementStep{ MovementOp::HasTimestamp },
+        MovementStep{ MovementOp::HasPitch },
+        MovementStep{ MovementOp::GuidBit6 },
+        MovementStep{ MovementOp::GuidBit1 },
+        MovementStep{ MovementOp::HasCount },
+        MovementStep{ MovementOp::Flags, Cond::HasMovementFlags },
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::ForcesCount },
+        MovementStep{ MovementOp::HasFallData },
+        MovementStep{ MovementOp::HasFallDirection, Cond::HasFallData },
+        MovementStep{ MovementOp::HasTransport },
+        MovementStep{ MovementOp::TGuidBit5, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidBit2, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidBit7, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidBit3, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime2, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidBit6, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidBit4, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime3, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidBit1, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidBit0, Cond::HasTransport },
+        MovementStep{ MovementOp::GuidBit0 },
+        MovementStep{ MovementOp::Flags2, Cond::HasMovementFlags2 },
+        MovementStep{ MovementOp::FlushBits },
+        MovementStep{ MovementOp::TOrientation, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidByte7, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosZ, Cond::HasTransport },
+        MovementStep{ MovementOp::TSeat, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidByte3, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime3, Cond::HasTransportTime3 },
+        MovementStep{ MovementOp::TGuidByte6, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidByte1, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidByte2, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosY, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidByte0, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime2, Cond::HasTransportTime2 },
+        MovementStep{ MovementOp::TGuidByte4, Cond::HasTransport },
+        MovementStep{ MovementOp::TGuidByte5, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosX, Cond::HasTransport },
+        MovementStep{ MovementOp::SplineElevation, Cond::HasSplineElevation },
+        MovementStep{ MovementOp::PosZ },
+        MovementStep{ MovementOp::Pitch, Cond::HasPitch },
+        MovementStep{ MovementOp::WriteFloat1 }, // Scale (always 1.0f)
+        MovementStep{ MovementOp::GuidByte5 },
+        MovementStep{ MovementOp::GuidByte7 },
+        MovementStep{ MovementOp::GuidByte4 },
+        MovementStep{ MovementOp::GuidByte3 },
+        MovementStep{ MovementOp::Count, Cond::HasCount },
+        MovementStep{ MovementOp::PosX },
+        MovementStep{ MovementOp::JumpCos, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpXYSpeed, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpSin, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpVelocity, Cond::HasFallData },
+        MovementStep{ MovementOp::FallTime, Cond::HasFallData },
+        MovementStep{ MovementOp::Orientation, Cond::HasOrientation },
+        MovementStep{ MovementOp::GuidByte1 },
+        MovementStep{ MovementOp::PosY },
+        MovementStep{ MovementOp::GuidByte0 },
+        MovementStep{ MovementOp::CollisionHeight }, // Height
+        MovementStep{ MovementOp::GuidByte6 },
+        MovementStep{ MovementOp::Timestamp, Cond::HasTimestamp },
+        MovementStep{ MovementOp::GuidByte2 },
+        MovementStep{ MovementOp::End }
+    };
 }
 
 std::span<MovementStep const> const UnknownDescriptor = kUnknownDescriptorStorage;
@@ -10475,6 +10637,8 @@ std::span<MovementStep const> getCataMovementDescriptor(uint16_t opcode, bool re
             return CataSMSG_MOVE_UPDATE_KNOCK_BACKDescriptor;
         case SMSG_PLAYER_MOVE:
             return CataSMSG_PLAYER_MOVEDescriptor;
+        case SMSG_MOVE_UPDATE_COLLISION_HEIGHT:
+            return CataSMSG_MOVE_UPDATE_COLLISION_HEIGHTDescriptor;
         default:
             return UnknownDescriptor;
     }
@@ -10684,6 +10848,8 @@ std::span<MovementStep const> getMopMovementDescriptor(uint16_t opcode, bool rea
             return MopCMSG_MOVE_SET_CAN_FLYDescriptor;
         case SMSG_PLAYER_MOVE:
             return MopSMSG_PLAYER_MOVEDescriptor;
+        case SMSG_MOVE_UPDATE_COLLISION_HEIGHT:
+            return MopSMSG_MOVE_UPDATE_COLLISION_HEIGHTDescriptor;
         default:
             return UnknownDescriptor;
     }
