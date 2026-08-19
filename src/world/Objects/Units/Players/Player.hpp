@@ -1931,6 +1931,7 @@ public:
 
     void resetTimeSync();
     void sendTimeSync();
+    void handleTimeSyncResponse(uint32_t counter, uint32_t clientTicks);
 
 private:
     uint16_t m_spellAreaUpdateTimer = 1000;

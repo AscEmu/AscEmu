@@ -1340,14 +1340,18 @@ void WorldSession::handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/)
 #endif
 }
 
-void WorldSession::handleTimeSyncRespOpcode([[maybe_unused]] WorldPacket& recvPacket)
+void WorldSession::handleTimeSyncRespOpcode(WorldPacket& recvPacket)
 {
-#if VERSION_STRING >= Cata
+    // Wire format (counter, clientTicks) is unchanged across every version.
+    // This is the client's reply to the SMSG_TIME_SYNC_REQUEST that Player::sendTimeSync()
+    // already sends periodically (every 10s) for every version.
     uint32_t counter;
     uint32_t clientTicks;
     recvPacket >> counter;
     recvPacket >> clientTicks;
-#endif
+
+    if (_player != nullptr)
+        _player->handleTimeSyncResponse(counter, clientTicks);
 }
 
 void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)

@@ -1183,7 +1183,7 @@ void WorldSession::registerOpcodeHandler()
     // new since cata
     registry.registerOpcode<STATUS_AUTHED>(CMSG_OBJECT_UPDATE_FAILED, &WorldSession::handleObjectUpdateFailedOpcode, false, false, false, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_LOADING_SCREEN_NOTIFY, &WorldSession::handleLoadScreenOpcode, false, false, false, true, true);
-    registry.registerOpcode<STATUS_AUTHED>(CMSG_TIME_SYNC_RESPONSE, &WorldSession::handleTimeSyncRespOpcode, false, false, false, true, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_TIME_SYNC_RESPONSE, &WorldSession::handleTimeSyncRespOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_MOVE_SET_CAN_FLY, &WorldSession::handleMovementOpcodes, false, false, false, true, false);
     registry.registerOpcode(CMSG_FORCE_PITCH_RATE_CHANGE_ACK, &WorldSession::handleAcknowledgementOpcodes, false, false, false, true, false);
     registry.registerOpcode(CMSG_MESSAGECHAT_SAY, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);

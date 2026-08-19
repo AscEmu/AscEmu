@@ -10042,6 +10042,18 @@ void Player::sendTimeSync()
     m_timeSyncServer = Util::getMSTime();
 }
 
+void Player::handleTimeSyncResponse(uint32_t counter, uint32_t clientTicks)
+{
+    // Only the most recently sent request is tracked (sendTimeSync() post-increments
+    // m_timeSyncCounter, so the counter it last sent is m_timeSyncCounter - 1) - a response
+    // to a stale/mismatched counter (e.g. arriving late after a reset) is ignored rather than
+    // silently overwriting m_timeSyncClient with data that doesn't correspond to m_timeSyncServer.
+    if (m_timeSyncCounter == 0 || counter != m_timeSyncCounter - 1)
+        return;
+
+    m_timeSyncClient = clientTicks;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // Void Storage
 #if VERSION_STRING > WotLK
