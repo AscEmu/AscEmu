@@ -171,7 +171,21 @@ namespace AscEmu::Packets
                         packet.writeByteSeq(casterGuid[7]);
                     }
 
-                    packet << uint8_t(auras.flags);
+                    // Mop completely renumbered AURA_FLAGS on the wire (dropped the WotLK/Cata
+                    // per-effect-index bits, added a dedicated "positive" bit)
+                    uint8_t mopFlags = 0;
+                    if (auras.flags & AFLAG_IS_CASTER)
+                        mopFlags |= 0x01; // AFLAG_CASTER
+                    if (!(auras.flags & AFLAG_NEGATIVE))
+                        mopFlags |= 0x02; // AFLAG_POSITIVE
+                    if (auras.flags & AFLAG_DURATION)
+                        mopFlags |= 0x04; // AFLAG_DURATION
+                    if (auras.flags & AFLAG_SEND_EFFECT_AMOUNT)
+                        mopFlags |= 0x08; // AFLAG_ANY_EFFECT_AMOUNT_SENT
+                    if (auras.flags & AFLAG_NEGATIVE)
+                        mopFlags |= 0x10; // AFLAG_NEGATIVE
+
+                    packet << uint8_t(mopFlags);
                     packet << uint16_t(auras.level);
                     packet << uint32_t(auras.spellId);
 
