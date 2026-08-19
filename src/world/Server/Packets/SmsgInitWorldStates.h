@@ -30,7 +30,7 @@ namespace AscEmu::Packets
         }
 
         SmsgInitWorldStates(uint32_t mapId, uint32_t zone, uint32_t area) :
-            ManagedPacket(SMSG_INIT_WORLD_STATES, 4 + 4 + 4 + 4 + 4 + 4 + 4 + (zoneWorldStates.size() * (4 + 4))),
+            ManagedPacket(SMSG_INIT_WORLD_STATES, 4 + 4 + 4 + 4 + 4 + 4 + 4),
             mapId(mapId),
             zone(zone),
             area(area)
@@ -38,7 +38,7 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override { return 4; }
+        size_t expectedSize() const override { return 4 + 4 + 4 + 4 + 4 + 4 + 4 + (zoneWorldStates.size() * (4 + 4)); }
 
         bool internalSerialise(WorldPacket& packet) override
         {
