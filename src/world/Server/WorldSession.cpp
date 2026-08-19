@@ -767,15 +767,15 @@ void WorldSession::registerOpcodeHandler()
 
     // Action Buttons
     registry.registerOpcode(CMSG_SET_ACTION_BUTTON, &WorldSession::handleSetActionButtonOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_REPOP_REQUEST, &WorldSession::handleRepopRequestOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_REPOP_REQUEST, &WorldSession::handleRepopRequestOpcode, true, true, true, true, true);
 
     // Loot
-    registry.registerOpcode(CMSG_AUTOSTORE_LOOT_ITEM, &WorldSession::handleAutostoreLootItemOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_LOOT_MONEY, &WorldSession::handleLootMoneyOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_LOOT, &WorldSession::handleLootOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_LOOT_RELEASE, &WorldSession::handleLootReleaseOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_LOOT_ROLL, &WorldSession::handleLootRollOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_LOOT_MASTER_GIVE, &WorldSession::handleLootMasterGiveOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_AUTOSTORE_LOOT_ITEM, &WorldSession::handleAutostoreLootItemOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LOOT_MONEY, &WorldSession::handleLootMoneyOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LOOT, &WorldSession::handleLootOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LOOT_RELEASE, &WorldSession::handleLootReleaseOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LOOT_ROLL, &WorldSession::handleLootRollOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LOOT_MASTER_GIVE, &WorldSession::handleLootMasterGiveOpcode, true, true, true, true, true);
 
     // Player Interaction
     registry.registerOpcode(CMSG_WHO, &WorldSession::handleWhoOpcode, true, true, true, true, true);
@@ -969,7 +969,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_QUESTGIVER_QUERY_QUEST, &WorldSession::handleQuestGiverQueryQuestOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_QUESTGIVER_COMPLETE_QUEST, &WorldSession::handleQuestgiverCompleteQuestOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_QUESTLOG_REMOVE_QUEST, &WorldSession::handleQuestlogRemoveQuestOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_RECLAIM_CORPSE, &WorldSession::handleCorpseReclaimOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_RECLAIM_CORPSE, &WorldSession::handleCorpseReclaimOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_RESURRECT_RESPONSE, &WorldSession::handleResurrectResponse, true, true, true, false, false);
     registry.registerOpcode(CMSG_PUSHQUESTTOPARTY, &WorldSession::handlePushQuestToPartyOpcode, true, true, true, true, false);
     registry.registerOpcode(MSG_QUEST_PUSH_RESULT, &WorldSession::handleQuestPushResultOpcode, true, true, true, false, false);
@@ -1073,8 +1073,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_BATTLEMASTER_JOIN_ARENA, &WorldSession::handleArenaJoinOpcode, true, true, true, false, false);
     registry.registerOpcode(CMSG_BATTLEMASTER_JOIN, &WorldSession::handleBattleMasterJoinOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_LEAVE_BATTLEFIELD, &WorldSession::handleLeaveBattlefieldOpcode, true, true, true, false, false);
-    registry.registerOpcode(CMSG_AREA_SPIRIT_HEALER_QUERY, &WorldSession::handleAreaSpiritHealerQueryOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_AREA_SPIRIT_HEALER_QUEUE, &WorldSession::handleAreaSpiritHealerQueueOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_AREA_SPIRIT_HEALER_QUERY, &WorldSession::handleAreaSpiritHealerQueryOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_AREA_SPIRIT_HEALER_QUEUE, &WorldSession::handleAreaSpiritHealerQueueOpcode, true, true, true, true, true);
     registry.registerOpcode(MSG_BATTLEGROUND_PLAYER_POSITIONS, &WorldSession::handleBattlegroundPlayerPositionsOpcode, true, true, true, false, false);
     registry.registerOpcode(MSG_PVP_LOG_DATA, &WorldSession::handlePVPLogDataOpcode, true, true, true, false, false);
     registry.registerOpcode(MSG_INSPECT_HONOR_STATS, &WorldSession::handleInspectHonorStatsOpcode, true, true, true, true, false);

@@ -27,11 +27,24 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override { return 4; }
+        size_t expectedSize() const override { return 5; }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << money << playersNear;
+            if (m_protocol.isMop())
+            {
+                // playersNear here means "at most one nearby player" (matches the ctor default of 1
+                // for a solo loot) - real Mop protocol just carries this as a single flag bit that
+                // toggles between "Your share is..." and "You loot..." chat text, no separate byte.
+                packet.writeBit(playersNear != 0);
+                packet.flushBits();
+                packet << money;
+            }
+            else
+            {
+                packet << money << playersNear;
+            }
+
             return true;
         }
 

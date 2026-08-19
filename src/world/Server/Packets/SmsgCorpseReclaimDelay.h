@@ -33,7 +33,19 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << reclaimTime;
+            if (m_protocol.isMop())
+            {
+                packet.writeBit(reclaimTime == 0);
+                packet.flushBits();
+
+                if (reclaimTime != 0)
+                    packet << reclaimTime;
+            }
+            else
+            {
+                packet << reclaimTime;
+            }
+
             return true;
         }
 

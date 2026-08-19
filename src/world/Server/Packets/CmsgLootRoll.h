@@ -32,13 +32,45 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            uint64_t unpackedCreatureGuid;
+            if (m_protocol.isMop())
+            {
+                uint8_t itemSlot = 0;
+                packet >> itemSlot;
+                slot = itemSlot;
+                packet >> choice;
 
-            packet >> unpackedCreatureGuid >> slot >> choice;
+                objectGuid[7] = packet.readBit();
+                objectGuid[1] = packet.readBit();
+                objectGuid[2] = packet.readBit();
+                objectGuid[0] = packet.readBit();
+                objectGuid[6] = packet.readBit();
+                objectGuid[3] = packet.readBit();
+                objectGuid[4] = packet.readBit();
+                objectGuid[5] = packet.readBit();
 
-            objectGuid = WoWGuid(unpackedCreatureGuid);
+                packet.readByteSeq(objectGuid[0]);
+                packet.readByteSeq(objectGuid[2]);
+                packet.readByteSeq(objectGuid[7]);
+                packet.readByteSeq(objectGuid[3]);
+                packet.readByteSeq(objectGuid[1]);
+                packet.readByteSeq(objectGuid[5]);
+                packet.readByteSeq(objectGuid[4]);
+                packet.readByteSeq(objectGuid[6]);
 
-            return true;
+                return true;
+            }
+            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                uint64_t unpackedCreatureGuid;
+
+                packet >> unpackedCreatureGuid >> slot >> choice;
+
+                objectGuid = WoWGuid(unpackedCreatureGuid);
+
+                return true;
+            }
+
+            return false;
         }
     };
 }
