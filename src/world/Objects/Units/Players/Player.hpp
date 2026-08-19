@@ -905,7 +905,7 @@ public:
     // Do NOT add cooldownTime if you don't know what you're doing (it's required for spells with dynamic cooldown)
     void addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster, Spell* castingSpell = nullptr, int32_t cooldownTime = 0);
     void addGlobalCooldown(SpellInfo const* spellInfo, Spell* castingSpell, const bool sendPacket = false);
-    void sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t duration, const bool isGcd);
+    void sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t duration, const bool isGcd, uint32_t sharedCategory = 0);
     void clearCooldownForSpell(uint32_t spellId);
     void clearGlobalCooldown();
     void resetAllCooldowns();

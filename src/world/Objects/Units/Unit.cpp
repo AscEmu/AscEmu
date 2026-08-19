@@ -8336,10 +8336,17 @@ float Unit::getChanceToDaze(Unit* target)
     float attack_skill = getLevel() * 5.0f;
     float defense_skill;
 
+#if VERSION_STRING >= Cata
+    // Defense skill was removed from the client in patch 4.0.1 - see Unit::strike() for the full
+    // explanation. Use the same flat level*5 value real Cata/Mop uses instead of a skill line that
+    // no longer gets populated for player characters.
+    defense_skill = target->getLevel() * 5.0f;
+#else
     if (target->isPlayer())
         defense_skill = static_cast<float>(dynamic_cast<Player*>(target)->getSkillLineCurrent(SKILL_DEFENSE, false));
     else
         defense_skill = target->getLevel() * 5.0f;
+#endif
 
     if (!defense_skill)
         defense_skill = 1;
@@ -9462,7 +9469,13 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
     //Victim Skill Base Calculation
     if (pVictim->isPlayer())
     {
+#if VERSION_STRING >= Cata
+        // See Unit::strike() for the full explanation: weapon/defense skill no longer exist as
+        // trainable stats from patch 4.0.1 onward, real Cata/Mop uses a flat level*5 value instead.
+        vskill = pVictim->getLevel() * 5;
+#else
         vskill = static_cast<Player*>(pVictim)->getSkillLineCurrent(SKILL_DEFENSE);
+#endif
         if (weapon_damage_type != RANGED && !backAttack)                // block chance
         {
             block = static_cast<Player*>(pVictim)->getBlockPercentage(); //shield check already done in Update chances
@@ -9480,7 +9493,11 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
                 }
             }
         }
+#if VERSION_STRING >= Cata
+        victim_skill = static_cast<int32_t>(vskill);
+#else
         victim_skill = Util::float2int32(vskill + static_cast<Player*>(pVictim)->calcRating(CR_DEFENSE_SKILL));
+#endif
     }
     else                                                                // mob defensive chances
     {
@@ -9510,17 +9527,29 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
             case MELEE: // melee main hand weapon
                 it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 hitmodifier += pr->calcRating(CR_HIT_MELEE);
+#if VERSION_STRING >= Cata
+                self_skill = static_cast<int32_t>(pr->getLevel()) * 5;
+#else
                 self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_MAINHAND));
+#endif
                 break;
             case OFFHAND: // melee offhand weapon (dualwield)
                 it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                 hitmodifier += pr->calcRating(CR_HIT_MELEE);
+#if VERSION_STRING >= Cata
+                self_skill = static_cast<int32_t>(pr->getLevel()) * 5;
+#else
                 self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_OFFHAND));
+#endif
                 break;
             case RANGED: // ranged weapon
                 it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 hitmodifier += pr->calcRating(CR_HIT_RANGED);
+#if VERSION_STRING >= Cata
+                self_skill = static_cast<int32_t>(pr->getLevel()) * 5;
+#else
                 self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_RANGED));
+#endif
                 break;
         }
 
@@ -9545,7 +9574,11 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
                     {
                         it = pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                         hitmodifier += pr->calcRating(CR_HIT_MELEE);
+#if VERSION_STRING >= Cata
+                        self_skill = static_cast<int32_t>(pr->getLevel()) * 5;
+#else
                         self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_MAINHAND));
+#endif
                     } break;
                 default:
                     break;
@@ -9566,14 +9599,18 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
             uint8_t form = this->getShapeShiftForm();
             if (form == FORM_CAT || form == FORM_BEAR || form == FORM_DIREBEAR)
             {
-#if VERSION_STRING <= Cata
+#if VERSION_STRING < Cata
                 SubClassSkill = SKILL_FERAL_COMBAT;
-#endif
                 self_skill += pr->getLevel() * 5; // Adjust skill for Level * 5 for Feral Combat
+#endif
             }
         }
 
+#if VERSION_STRING < Cata
+        // For Cata+, self_skill is already the complete level*5 value (see above) - see the matching
+        // comment in Unit::strike().
         self_skill += pr->getSkillLineCurrent(SubClassSkill);
+#endif
     }
     else
     {
@@ -9724,7 +9761,13 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     if (pVictim->isPlayer())
     {
         Player* plr = static_cast<Player*>(pVictim);
+#if VERSION_STRING >= Cata
+        // Weapon skill and defense skill were removed from the client entirely in patch 4.0.1;
+        // real Cata/Mop combat uses a flat level*5 "max skill value" for every unit regardless of type
+        vskill = pVictim->getLevel() * 5;
+#else
         vskill = plr->getSkillLineCurrent(SKILL_DEFENSE);
+#endif
 
         if (!backAttack)
         {
@@ -9758,7 +9801,11 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 block = plr->getBlockChance();
             }
         }
+#if VERSION_STRING >= Cata
+        victim_skill = static_cast<int32_t>(vskill);
+#else
         victim_skill = Util::float2int32(vskill + floorf(plr->calcRating(CR_DEFENSE_SKILL)));
+#endif
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -9811,7 +9858,13 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         {
             case MELEE: // melee main hand weapon
                 it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+#if VERSION_STRING >= Cata
+                // See the matching comment on the victim-skill side above: weapon skill was removed
+                // from the client in 4.0.1, real Cata/Mop uses a flat level*5 value instead.
+                self_skill = static_cast<int32_t>(pr->getLevel()) * 5;
+#else
                 self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_MAINHAND));
+#endif
                 if (it)
                 {
                     dmg.schoolMask = static_cast<SchoolMask>(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
@@ -9821,7 +9874,11 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 break;
             case OFFHAND: // melee offhand weapon (dualwield)
                 it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+#if VERSION_STRING >= Cata
+                self_skill = static_cast<int32_t>(pr->getLevel()) * 5;
+#else
                 self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_OFFHAND));
+#endif
                 hit_status |= HITSTATUS_DUALWIELD;//animation
                 if (it)
                 {
@@ -9832,7 +9889,11 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 break;
             case RANGED: // ranged weapon
                 it = m_isDisarmed ? NULL : pr->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+#if VERSION_STRING >= Cata
+                self_skill = static_cast<int32_t>(pr->getLevel()) * 5;
+#else
                 self_skill = Util::float2int32(pr->calcRating(CR_WEAPON_SKILL_RANGED));
+#endif
                 if (it)
                     dmg.schoolMask = static_cast<SchoolMask>(g_spellSchoolConversionTable[it->getItemProperties()->Damage[0].Type]);
                 break;
@@ -9855,14 +9916,20 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             uint8_t form = pr->getShapeShiftForm();
             if (form == FORM_CAT || form == FORM_BEAR || form == FORM_DIREBEAR)
             {
-#if VERSION_STRING <= Cata
+#if VERSION_STRING < Cata
                 SubClassSkill = SKILL_FERAL_COMBAT;
-#endif
                 self_skill += pr->getLevel() * 5;
+#endif
             }
         }
 
+#if VERSION_STRING < Cata
+        // For Cata+, self_skill is already the complete level*5 value set in the switch above -
+        // weapon skill lines no longer exist as an additive stat (see the comments where self_skill
+        // is assigned in the MELEE/OFFHAND/RANGED cases), so adding SubClassSkill here would
+        // silently double the value.
         self_skill += pr->getSkillLineCurrent(SubClassSkill);
+#endif
         crit = static_cast<Player*>(this)->getMeleeCritPercentage();
     }
     else
@@ -9886,7 +9953,11 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     //http://www.wowwiki.com/Crushing_blow
     if (pVictim->isPlayer() && !this->isPlayer() && !ability && dmg.schoolMask == SCHOOL_MASK_NORMAL)
     {
+#if VERSION_STRING >= Cata
+        int32_t baseDefense = static_cast<int32_t>(pVictim->getLevel()) * 5;
+#else
         int32_t baseDefense = static_cast<Player*>(pVictim)->getSkillLineCurrent(SKILL_DEFENSE, false);
+#endif
         int32_t skillDiff = self_skill - baseDefense;
         if (skillDiff >= 15)
             crush = -15.0f + 2.0f * skillDiff;

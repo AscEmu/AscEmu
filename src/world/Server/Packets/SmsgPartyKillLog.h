@@ -35,8 +35,57 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << playerGuid << killedGuid;
-            return true;
+            if (m_protocol.isMop())
+            {
+                WoWGuid victimGuid = killedGuid;
+                WoWGuid killerGuid = playerGuid;
+
+                packet.writeBit(victimGuid[7]);
+                packet.writeBit(victimGuid[2]);
+                packet.writeBit(killerGuid[1]);
+                packet.writeBit(victimGuid[4]);
+                packet.writeBit(killerGuid[2]);
+                packet.writeBit(killerGuid[5]);
+                packet.writeBit(victimGuid[3]);
+                packet.writeBit(victimGuid[1]);
+                packet.writeBit(victimGuid[0]);
+                packet.writeBit(killerGuid[3]);
+                packet.writeBit(killerGuid[0]);
+                packet.writeBit(killerGuid[4]);
+                packet.writeBit(victimGuid[6]);
+                packet.writeBit(killerGuid[7]);
+                packet.writeBit(victimGuid[5]);
+                packet.writeBit(killerGuid[6]);
+
+                packet.flushBits();
+
+                packet.writeByteSeq(victimGuid[0]);
+                packet.writeByteSeq(victimGuid[5]);
+                packet.writeByteSeq(killerGuid[0]);
+                packet.writeByteSeq(killerGuid[2]);
+                packet.writeByteSeq(victimGuid[7]);
+                packet.writeByteSeq(victimGuid[6]);
+                packet.writeByteSeq(victimGuid[1]);
+                packet.writeByteSeq(victimGuid[4]);
+                packet.writeByteSeq(killerGuid[4]);
+                packet.writeByteSeq(killerGuid[1]);
+                packet.writeByteSeq(victimGuid[2]);
+                packet.writeByteSeq(killerGuid[6]);
+                packet.writeByteSeq(killerGuid[3]);
+                packet.writeByteSeq(killerGuid[5]);
+                packet.writeByteSeq(killerGuid[7]);
+                packet.writeByteSeq(victimGuid[3]);
+
+                return true;
+            }
+            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet << playerGuid << killedGuid;
+
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

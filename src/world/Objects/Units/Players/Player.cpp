@@ -4165,8 +4165,10 @@ void Player::addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster
         _addCooldown(COOLDOWN_TYPE_SPELL, spellId, spellCooldown + curTime, spellId, itemCaster != nullptr ? itemCaster->getEntry() : 0);
     }
 
-    // Send cooldown packet
-    sendSpellCooldownPacket(spellInfo, spellCooldown > spellCategoryCooldown ? spellCooldown : spellCategoryCooldown, false);
+    // Send cooldown packet - pass the category through so sibling spells sharing it (e.g. potions,
+    // "Elemental Shock"-style spell groups) are also reported as on cooldown to the client.
+    sendSpellCooldownPacket(spellInfo, spellCooldown > spellCategoryCooldown ? spellCooldown : spellCategoryCooldown, false,
+        spellCategoryCooldown > 0 ? spellInfo->getCategory() : 0);
 }
 
 void Player::addGlobalCooldown(SpellInfo const* spellInfo, Spell* castingSpell, const bool sendPacket/* = false*/)
@@ -4200,7 +4202,7 @@ void Player::addGlobalCooldown(SpellInfo const* spellInfo, Spell* castingSpell, 
         sendSpellCooldownPacket(spellInfo, 0, true);
 }
 
-void Player::sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t duration, const bool isGcd)
+void Player::sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t duration, const bool isGcd, uint32_t sharedCategory/* = 0*/)
 {
     std::vector<SmsgSpellCooldownMap> spellMap;
 
@@ -4209,6 +4211,28 @@ void Player::sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t 
     mapMembers.duration = duration;
 
     spellMap.push_back(mapMembers);
+
+    // Every other known spell sharing this category needs to be reported on cooldown too, otherwise
+    // the client never greys out their action-bar icons - Player::hasSpellOnCooldown() already
+    // rejects casting them server-side (it checks by category), but the client was never told, so
+    // this was purely a missing-notification bug, not a missing-enforcement one.
+    if (sharedCategory > 0)
+    {
+        for (const auto& knownSpellId : m_spellSet)
+        {
+            if (knownSpellId == spellInfo->getId())
+                continue;
+
+            SpellInfo const* siblingInfo = sSpellMgr.getSpellInfo(knownSpellId);
+            if (siblingInfo == nullptr || siblingInfo->getCategory() != sharedCategory)
+                continue;
+
+            SmsgSpellCooldownMap siblingEntry;
+            siblingEntry.spellId = knownSpellId;
+            siblingEntry.duration = duration;
+            spellMap.push_back(siblingEntry);
+        }
+    }
 
     SmsgSpellCooldown managedPacket(GetNewGUID(), isGcd, spellMap);
     PacketBroadcast::sendToSet(*this, managedPacket, true);
@@ -14892,13 +14916,25 @@ void Player::_loadQuestLogEntry(QueryResult* result)
 }
 
 #if VERSION_STRING >= TBC
-float Player::getDefenseChance(uint32_t opLevel)
+float Player::getDefenseChance([[maybe_unused]] uint32_t opLevel)
 {
+#if VERSION_STRING >= Cata
+    // Defense skill was removed from the client entirely in patch 4.0.1; there is no separate
+    // "defense contribution" layered on top of dodge/parry/block anymore in real Cata/Mop - those
+    // are purely rating- and agility-based (see Player::getDodgeChance/getBlockChance/getParryChance
+    // above). Before this fix, getSkillLineCurrent(SKILL_DEFENSE) collapsed to 0 for every Cata/Mop
+    // character (the skill line no longer exists), which made this function return a large negative
+    // percentage that then got added into every cached dodge/block/parry percentage in
+    // updateChances() below - part of the same "removed in 4.0.1 stat" bug documented in full in
+    // Unit::strike().
+    return 0.0f;
+#else
     float chance = getSkillLineCurrent(SKILL_DEFENSE, true) - (opLevel * 5.0f);
     chance += calcRating(CR_DEFENSE_SKILL);
     chance = floorf(chance) * 0.04f;   // defense skill is treated as an integer on retail
 
     return chance;
+#endif
 }
 
 float Player::getDodgeChance()
