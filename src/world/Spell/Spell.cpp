@@ -309,7 +309,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
 
     // Initialize spell cast time
     m_castTime = 0;
-    if (!(m_triggeredByAura != nullptr || (m_triggeredSpell && getSpellInfo()->getManaCost() > 0) || getSpellInfo()->getManaCostPercentage() > 0))
+    if (!(m_triggeredByAura != nullptr || (m_triggeredSpell && (getSpellInfo()->getManaCost() > 0 || getSpellInfo()->getManaCostPercentage() > 0))))
     {
         m_castTime = static_cast<int32_t>(GetCastTime(sSpellCastTimesStore.lookupEntry(getSpellInfo()->getCastingTimeIndex())));
         if (m_castTime > 0 && u_caster != nullptr)
@@ -341,6 +341,10 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     // Check for cast time cheat
     if (m_castTime < 0 || (p_caster != nullptr && p_caster->m_cheats.hasCastTimeCheat))
         m_castTime = 0;
+
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::prepare : spell id {} castingTimeIndex {} manaCost {} manaCostPercentage {} triggeredSpell {} triggeredByAura {} -> m_castTime {}",
+        getSpellInfo()->getId(), getSpellInfo()->getCastingTimeIndex(), getSpellInfo()->getManaCost(), getSpellInfo()->getManaCostPercentage(),
+        m_triggeredSpell, m_triggeredByAura != nullptr, m_castTime);
 
     // Initialize power cost
     // Spells casted from items should not use any power
@@ -1652,6 +1656,9 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // Check if caster is alive
         if (!u_caster->isAlive() && !(getSpellInfo()->getAttributes() & ATTRIBUTES_DEAD_CASTABLE || (m_triggeredSpell && !m_triggeredByAura)))
         {
+            sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::canCast : caster isAlive false - health {} maxHealth {} attributes {} triggeredSpell {} triggeredByAura {}",
+                u_caster->getHealth(), u_caster->getMaxHealth(), getSpellInfo()->getAttributes(), m_triggeredSpell, m_triggeredByAura != nullptr);
+
             // but allow casting while in Spirit of Redemption form
             if (!u_caster->hasAuraWithAuraEffect(SPELL_AURA_SPIRIT_OF_REDEMPTION))
                 return SPELL_FAILED_CASTER_DEAD;
@@ -4394,9 +4401,13 @@ SpellCastResult Spell::checkRange(const bool secondCheck)
     minRange *= minRange;
     maxRange *= maxRange;
 
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::checkRange : spell id {} rangeIndex {} minRange {} maxRange {} hasTargetUnit {} hasDestination {}",
+        getSpellInfo()->getId(), getSpellInfo()->getRangeIndex(), minRange, maxRange, targetUnit != nullptr, m_targets.hasDestination());
+
     if (targetUnit != nullptr && targetUnit != m_caster)
     {
         const float_t distance = m_caster->getDistanceSq(targetUnit);
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::checkRange : distance to target unit {}", distance);
         if (minRange > 0.0f && distance < minRange)
             return SPELL_FAILED_TOO_CLOSE;
         if (distance > maxRange)
@@ -4407,6 +4418,7 @@ SpellCastResult Spell::checkRange(const bool secondCheck)
     if (m_targets.hasDestination())
     {
         const float_t distance = m_caster->getDistanceSq(m_targets.getDestination());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::checkRange : distance to destination {}", distance);
         if (minRange > 0.0f && distance < minRange)
             return SPELL_FAILED_TOO_CLOSE;
         if (distance > maxRange)
@@ -4626,7 +4638,16 @@ void Spell::sendSpellStart()
         return;
 
     // Set cast flags
-    uint32_t castFlags = SPELL_PACKET_FLAGS_DEFAULT;
+    uint32_t castFlags = SPELL_PACKET_FLAGS_NONE;
+#if VERSION_STRING == Mop
+    // Only mark trajectory when the cast actually has one - unconditionally setting this flag
+    // makes the Mop client wait on a missile that never arrives, leaving the cast bar/action
+    // button stuck and suppressing the GCD/cooldown display even though the spell resolves fine.
+    if (getSpellInfo()->getSpeed() > 0.0f)
+        castFlags |= SPELL_PACKET_FLAGS_DEFAULT;
+#else
+    castFlags |= SPELL_PACKET_FLAGS_DEFAULT;
+#endif
     if (GetType() == SPELL_DMG_TYPE_RANGED)
         castFlags |= SPELL_PACKET_FLAGS_RANGED;
 
@@ -4656,16 +4677,31 @@ void Spell::sendSpellStart()
 
 void Spell::sendSpellGo()
 {
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : entered for spell id {} GetType {} isChanneled {} speed {} visual0 {} visual1 {} triggeredSpell {} triggeredByAura {}",
+        getSpellInfo()->getId(), GetType(), getSpellInfo()->isChanneled(), getSpellInfo()->getSpeed(), getSpellInfo()->getSpellVisual(0), getSpellInfo()->getSpellVisual(1),
+        m_triggeredSpell, m_triggeredByAura != nullptr);
+
     if (!m_caster || !m_caster->IsInWorld())
+    {
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : caster missing or not in world, returning");
         return;
+    }
 
     // If spell has no visuals, it's not channeled and it's triggered, no need to send packet
     if (!(getSpellInfo()->isChanneled() || getSpellInfo()->getSpeed() > 0.0f || getSpellInfo()->getSpellVisual(0) != 0 ||
         getSpellInfo()->getSpellVisual(1) != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
+    {
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : no-visual/triggered early-return hit, not sending packet");
         return;
+    }
 
     // Set cast flags
     uint32_t castFlags = 0;
+#if VERSION_STRING == Mop
+    // Real Mop protocol always sets this bit on SMSG_SPELL_GO regardless of whether the spell
+    // was cast from an item - without it the client never plays the missile/impact visual.
+    castFlags |= SPELL_PACKET_FLAGS_ITEM_CASTER;
+#endif
     if (GetType() == SPELL_DMG_TYPE_RANGED)
         castFlags |= SPELL_PACKET_FLAGS_RANGED;
 
@@ -4720,7 +4756,12 @@ void Spell::sendSpellGo()
     managedPacket.missilePitch = m_missilePitch;
     managedPacket.missileTravelTime = m_missileTravelTime;
 
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : about to broadcast, castFlags {} hittedTargets {} missedTargets {}",
+        castFlags, managedPacket.hittedTargets.size(), managedPacket.missedTargets.size());
+
     PacketBroadcast::sendToSet(*m_caster, managedPacket, true);
+
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : broadcast complete");
 }
 
 void Spell::sendChannelStart(const uint32_t duration)

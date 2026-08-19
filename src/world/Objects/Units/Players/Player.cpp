@@ -15861,6 +15861,9 @@ void Player::completeLoading()
         }
     }
 
+    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Player::loadFromDB : login death-state check - health {} hasDeathWorldFlag {} hasCorpseRow {}",
+        getHealth(), hasPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE), sObjectMgr.getCorpseByOwner(getGuidLow()) != nullptr);
+
     if (getHealth() <= 0 && !hasPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE))
     {
         setDeathState(CORPSE);

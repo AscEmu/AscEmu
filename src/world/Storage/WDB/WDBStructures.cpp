@@ -98,7 +98,7 @@ WDB::Structures::SpellTotemsEntry const* WDB::Structures::SpellEntry::GetSpellTo
 #if VERSION_STRING == Mop
 WDB::Structures::SpellMiscEntry const* WDB::Structures::SpellEntry::GetSpellMisc() const
 {
-    return SpellTotemsId ? sSpellMiscStore.lookupEntry(SpellMiscId) : nullptr;
+    return SpellMiscId ? sSpellMiscStore.lookupEntry(SpellMiscId) : nullptr;
 }
 #endif
 

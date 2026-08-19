@@ -183,6 +183,21 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
         spell->m_missilePitch = srlPacket.projectilePitch;
         spell->m_missileTravelTime = travelTime;
     }
+    else if (spellInfo->getSpeed() > 0.0f)
+    {
+        // Client didn't send explicit ground-target coordinates (plain "cast on selected unit").
+        // Real Mop protocol still computes the missile travel time server-side from caster-to-target
+        // distance in this case - without it the client never animates the missile flying to the target.
+        const auto unitTarget = _player->getWorldMapUnit(srlPacket.targets.getUnitTargetGuid());
+        if (unitTarget != nullptr && unitTarget != _player)
+        {
+            float dist = sqrtf(_player->getDistanceSq(unitTarget));
+            if (dist < 5.0f)
+                dist = 5.0f;
+
+            spell->m_missileTravelTime = static_cast<uint32_t>((dist / spellInfo->getSpeed()) * 1000);
+        }
+    }
 #else   // < Mop
     if (srlPacket.hasAdditionalData)
     {
