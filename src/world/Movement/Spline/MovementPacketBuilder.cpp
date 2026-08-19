@@ -432,8 +432,9 @@ void WriteUncompressedCyclicPathMop(Spline<int32_t> const& spline, ByteBuffer& d
         data << spline.getPoint(i).y << spline.getPoint(i).x << spline.getPoint(i).z;
 }
 
-void PacketBuilder::WriteStopMovement(G3D::Vector3 const& pos, uint32_t splineId, ByteBuffer& data, Unit* unit)
+void PacketBuilder::WriteStopMovement([[maybe_unused]] G3D::Vector3 const& pos, [[maybe_unused]] uint32_t splineId, [[maybe_unused]] ByteBuffer& data, [[maybe_unused]] Unit* unit)
 {
+#if VERSION_STRING == Mop
     bool const hasVehicle = unit->getVehicle() != nullptr;
     WoWGuid guid = unit->getGuid();
     WoWGuid transport = unit->getTransGuid();
@@ -499,10 +500,12 @@ void PacketBuilder::WriteStopMovement(G3D::Vector3 const& pos, uint32_t splineId
     data.writeByteSeq(guid[7]);
     data.writeByteSeq(guid[2]);
     data.writeByteSeq(guid[4]);
+#endif
 }
 
-void PacketBuilder::WriteMonsterMove(MoveSpline const& moveSpline, ByteBuffer& data, Unit* unit)
+void PacketBuilder::WriteMonsterMove([[maybe_unused]] MoveSpline const& moveSpline, [[maybe_unused]] ByteBuffer& data, [[maybe_unused]] Unit* unit)
 {
+#if VERSION_STRING == Mop
     bool const hasVehicle = unit->getVehicle() != nullptr;
     WoWGuid guid = unit->getGuid();
     WoWGuid transport = unit->getTransGuid();
@@ -661,6 +664,7 @@ void PacketBuilder::WriteMonsterMove(MoveSpline const& moveSpline, ByteBuffer& d
 
     if (moveSpline.Duration())
         data << uint32_t(moveSpline.Duration());
+#endif
 }
 
 void PacketBuilder::WriteSplineSync(MoveSpline const& move_spline, ByteBuffer& data)

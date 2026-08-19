@@ -63,7 +63,7 @@ namespace AscEmu::Packets
             // PacketBuilder::WriteMonsterMove/WriteStopMovement below - it is not
             // written up front as a flat/packed guid the way pre-Mop clients expect. So none of this
             // applies on Mop; leave it byte-for-byte for Classic/TBC/WotLK/Cata.
-            if (!m_protocol.isMop())
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << WoWGuid(unit->getGuid());
 
@@ -71,9 +71,10 @@ namespace AscEmu::Packets
                 {
                     packet.setOpcode(SMSG_MONSTER_MOVE_TRANSPORT);
                     packet << WoWGuid(unit->getTransGuid());
-
+#if VERSION_STRING >= WotLK
                     if (m_protocol.expansion >= WoW::Expansion::_WotLK)
                         packet << int8_t(unit->GetTransSeat());
+#endif
                 }
             }
 

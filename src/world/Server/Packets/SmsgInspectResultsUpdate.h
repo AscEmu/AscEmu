@@ -43,7 +43,7 @@ namespace AscEmu::Packets
                 + 4 + 512;                                                        // talent points + talent block
         }
 
-        bool internalSerialise(WorldPacket& packet) override
+        bool internalSerialise([[maybe_unused]] WorldPacket& packet) override
         {
 #if VERSION_STRING == Mop
             if (inspectedPlayer == nullptr)
