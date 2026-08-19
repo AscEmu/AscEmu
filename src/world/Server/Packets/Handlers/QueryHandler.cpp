@@ -8,7 +8,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include <AEVersion.hpp>
 #include "Server/Packets/CmsgNameQuery.h"
 #include "Server/Packets/CmsgGameobjectQuery.h"
+#include "Server/Packets/CmsgRealmNameQuery.h"
 #include "Server/Packets/SmsgQueryPlayernameResponse.h"
+#include "Server/Packets/SmsgRealmNameQueryResponse.h"
+#include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/Packets/SmsgGameobjectQueryResponse.h"
 #include "Server/Packets/SmsgQueryTimeResponse.h"
 #include "Utilities/LocationVector.hpp"
@@ -60,13 +63,37 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
         response.class_ = info->cl;
         response.level = static_cast<uint8_t>(info->lastLevel);
 
-        response.realmId = srlPacket.virtualRealmId;
-        response.accountId = srlPacket.nativeRealmId;
+        response.realmId = sLogonCommHandler.getRealmId();
+        response.accountId = GetAccountId();
     }
     else
     {
         sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "CMSG_NAME_QUERY for unknown GUID: {}", srlPacket.guid.getGuidLow());
         response.hasData = false;
+    }
+
+    sendManagedPacket(response);
+}
+
+void WorldSession::handleRealmNameQueryOpcode(WorldPacket& recvData)
+{
+    CmsgRealmNameQuery srlPacket;
+    if (!parsePacket(recvData, srlPacket))
+    {
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Failed to deserialize CMSG_REALM_NAME_QUERY.");
+        Disconnect();
+        return;
+    }
+
+    SmsgRealmNameQueryResponse response;
+    response.realmId = srlPacket.realmId;
+
+    const auto realmName = sLogonCommHandler.getRealmName(srlPacket.realmId);
+    if (!realmName.empty())
+    {
+        response.found = true;
+        response.realmName = realmName;
+        response.isLocalRealm = srlPacket.realmId == sLogonCommHandler.getRealmId();
     }
 
     sendManagedPacket(response);

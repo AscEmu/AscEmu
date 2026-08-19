@@ -705,6 +705,7 @@ void WorldSession::registerOpcodeHandler()
     // Queries
     registry.registerOpcode(MSG_CORPSE_QUERY, &WorldSession::handleCorpseQueryOpcode, false, true, true, true, false);
     registry.registerOpcode(CMSG_NAME_QUERY, &WorldSession::handleNameQueryOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_REALM_NAME_QUERY, &WorldSession::handleRealmNameQueryOpcode, false, false, false, false, true);
     registry.registerOpcode(CMSG_QUERY_TIME, &WorldSession::handleQueryTimeOpcode, false, true, true, true, true);
     registry.registerOpcode(CMSG_CREATURE_QUERY, &WorldSession::handleCreatureQueryOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_GAMEOBJECT_QUERY, &WorldSession::handleGameObjectQueryOpcode, false, true, true, true, true);
@@ -992,7 +993,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_MAIL_MARK_AS_READ, &WorldSession::handleMarkAsReadOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_MAIL_RETURN_TO_SENDER, &WorldSession::handleReturnToSenderOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_MAIL_DELETE, &WorldSession::handleMailDeleteOpcode, true, true, true, true, false);
-    registry.registerOpcode(MSG_QUERY_NEXT_MAIL_TIME, &WorldSession::handleMailTimeOpcode, true, true, true, true, false);
+    registry.registerOpcode(MSG_QUERY_NEXT_MAIL_TIME, &WorldSession::handleMailTimeOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_MAIL_CREATE_TEXT_ITEM, &WorldSession::handleMailCreateTextItemOpcode, true, true, true, true, false);
 
     // Guild Query (called when not logged in sometimes)
@@ -1084,8 +1085,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_GMTICKET_CREATE, &WorldSession::handleGMTicketCreateOpcode, false, true, true, true, false);
     registry.registerOpcode(CMSG_GMTICKET_UPDATETEXT, &WorldSession::handleGMTicketUpdateOpcode, false, true, true, true, false);
     registry.registerOpcode(CMSG_GMTICKET_DELETETICKET, &WorldSession::handleGMTicketDeleteOpcode, false, true, true, true, false);
-    registry.registerOpcode(CMSG_GMTICKET_GETTICKET, &WorldSession::handleGMTicketGetTicketOpcode, false, true, true, true, false);
-    registry.registerOpcode(CMSG_GMTICKET_SYSTEMSTATUS, &WorldSession::handleGMTicketSystemStatusOpcode, false, true, true, true, false);
+    registry.registerOpcode(CMSG_GMTICKET_GETTICKET, &WorldSession::handleGMTicketGetTicketOpcode, false, true, true, true, true);
+    registry.registerOpcode(CMSG_GMTICKET_SYSTEMSTATUS, &WorldSession::handleGMTicketSystemStatusOpcode, false, true, true, true, true);
     registry.registerOpcode(CMSG_GMTICKETSYSTEM_TOGGLE, &WorldSession::handleGMTicketToggleSystemStatusOpcode, false, true, true, false, false);
 
     // Lag report

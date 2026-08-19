@@ -115,6 +115,9 @@ public:
     void setRealmType(uint32_t type);
     uint32_t getRealmType();
 
+    uint32_t getRealmId();
+    std::string getRealmName(uint32_t id);
+
     float getRealmPopulation();
 
     void updateAccountCount(uint32_t account_id, uint8_t add);

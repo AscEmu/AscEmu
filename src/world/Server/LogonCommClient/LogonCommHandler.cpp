@@ -313,6 +313,25 @@ void LogonCommHandler::setRealmType(uint32_t type)
     _realmType = type;
 }
 
+uint32_t LogonCommHandler::getRealmId()
+{
+    if (realms.empty())
+        return 0;
+
+    return (*realms.begin())->id;
+}
+
+std::string LogonCommHandler::getRealmName(uint32_t id)
+{
+    for (auto& realm : realms)
+    {
+        if (realm->id == id)
+            return realm->name;
+    }
+
+    return "";
+}
+
 float LogonCommHandler::getRealmPopulation()
 {
     return server_population;

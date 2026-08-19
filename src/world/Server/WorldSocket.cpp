@@ -534,6 +534,10 @@ bool WorldSocket::processHeader()
         m_remaining = m_size = header.getMopPayloadSize();
         m_opcode = sOpcodeTables.getInternalIdForHex(header.getMopOpcode());
 
+        if (m_opcode == 0)
+            sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSocket::processHeader(): Unmapped MoP opcode 0x{:04X} (payload size {}) - falling back to MSG_NULL_ACTION.",
+                header.getMopOpcode(), header.getMopPayloadSize());
+
         return true;
     }
 

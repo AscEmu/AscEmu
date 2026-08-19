@@ -814,6 +814,7 @@ protected:
         void handleQueryTimeOpcode(WorldPacket& recvPacket);
         void handleCreatureQueryOpcode(WorldPacket& recvPacket);
         void handleNameQueryOpcode(WorldPacket& recvPacket);
+        void handleRealmNameQueryOpcode(WorldPacket& recvPacket);
         void handleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/);
         void handleCorpseQueryOpcode(WorldPacket& /*recvPacket*/);
         void handleItemNameQueryOpcode(WorldPacket& recvPacket);
