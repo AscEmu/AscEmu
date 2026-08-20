@@ -231,6 +231,9 @@ public:
         template <typename TPacket>
         bool parsePacket(WorldPacket& packet, TPacket& managedPacket)
         {
+            if (_socket == nullptr)
+                return false;
+
             managedPacket.setClientProtocol(_socket->getClientProtocol());
             return managedPacket.deserialise(packet);
         }
@@ -238,6 +241,9 @@ public:
         template <typename TPacket>
         std::unique_ptr<WorldPacket> buildPacket(TPacket& managedPacket)
         {
+            if (_socket == nullptr)
+                return nullptr;
+
             managedPacket.setClientProtocol(_socket->getClientProtocol());
             return managedPacket.serialise();
         }
