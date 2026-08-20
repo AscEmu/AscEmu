@@ -538,11 +538,11 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
 
                 if (result_id == Result_Account_Exists)
                 {
-                    pSession->systemMessage("Account name: '%s' already in use!", created_string);
+                    pSession->systemMessage("Account name: '{}' already in use!", created_string);
                 }
                 else if (result_id == Result_Account_Finished)
                 {
-                    pSession->systemMessage("Account: '%s' created", created_string);
+                    pSession->systemMessage("Account: '{}' created", created_string);
                 }
                 else
                 {
@@ -583,12 +583,12 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
         case 1: // Account not available
         {
             if (request_name.compare("none") != 0)
-                session_name->systemMessage("Account: %s not found in database!", account_string);
+                session_name->systemMessage("Account: {} not found in database!", account_string);
         } break;
         case 2: // No additional data set
         {
             if (request_name.compare("none") != 0)
-                session_name->systemMessage("No gmlevel set for account: %s !", account_string);
+                session_name->systemMessage("No gmlevel set for account: {} !", account_string);
         } break;
         case 3: // Everything is okay
         {
@@ -603,7 +603,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
                 // Update account_permissions
                 CharacterDatabase.execute("REPLACE INTO account_permissions (`id`, `permissions`, `name`) VALUES (%u, '%s', '%s')", accountId, gmlevel.c_str(), account_string);
                 if (request_name.compare("none") != 0)
-                    session_name->systemMessage("Account permissions has been updated to '%s' for account '%s' (%u). The change will be effective immediately.", gmlevel.c_str(), account_string, accountId);
+                    session_name->systemMessage("Account permissions have been updated to '{}' for account '{}' ({}). The change will be effective immediately.", gmlevel, account_string, accountId);
 
                 // Update forcedpermission map
                 sLogonCommHandler.setAccountPermission(accountId, gmlevel);
@@ -624,7 +624,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
                 // Update account_permissions
                 CharacterDatabase.execute("DELETE FROM account_permissions WHERE id = %u", accountId);
                 if (request_name.compare("none") != 0)
-                    session_name->systemMessage("Account permissions removed for account '%s' (%u). The change will be effective immediately.", account_string, accountId);
+                    session_name->systemMessage("Account permissions removed for account '{}' ({}). The change will be effective immediately.", account_string, accountId);
 
                 // Update forcedpermission map
                 sLogonCommHandler.removeAccountPermission(accountId);
@@ -648,7 +648,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
             recvData >> account_id;
 
             if (request_name.compare("none") != 0)
-                session_name->systemMessage("Account '%s' has account ID %u.", account_string, account_id);
+                session_name->systemMessage("Account '{}' has account ID {}.", account_string, account_id);
         }
     }
 }

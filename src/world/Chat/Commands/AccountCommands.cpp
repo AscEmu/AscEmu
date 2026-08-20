@@ -77,7 +77,7 @@ bool ChatCommandHandler::handleAccountMuteCommand(const char* args, WorldSession
     if (pSession != nullptr)
     {
         pSession->m_muted = banned;
-        pSession->systemMessage("Your account has been muted until %s by a GM. Until then, you will not be able to use chat.", tsstr.c_str());
+        pSession->systemMessage("Your account has been muted by a GM until {}. You will not be able to use chat until then.", tsstr);
     }
 
     return true;
