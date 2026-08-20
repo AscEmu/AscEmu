@@ -148,6 +148,7 @@ namespace WDB::Structures
 
 #ifdef AE_MOP
     struct SpellMiscEntry;
+    struct ChrSpecializationEntry;
 #endif
 }
 
@@ -301,6 +302,7 @@ extern SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
 
 #ifdef AE_MOP
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
+    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
 #endif
 
 
@@ -319,6 +321,10 @@ WDB::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t r
 std::string generateName(uint32_t type = 0);
 
 uint32_t const* getTalentTabPages(uint8_t playerClass);
+
+#ifdef AE_MOP
+uint32_t const* getClassSpecializations(uint8_t playerClass);
+#endif
 
 uint32_t getLiquidFlags(uint32_t liquidId);
 

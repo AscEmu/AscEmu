@@ -166,6 +166,16 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
         }
     },
     {
+        "ChrSpecialization.dbc",
+        {
+            ""/*Classic*/,
+            ""/*BC*/,
+            ""/*WotLK*/,
+            ""/*Cata*/,
+            "nxiixiixxxxxxx"/*Mop*/
+        }
+    },
+    {
         "CreatureDisplayInfo.dbc",
         {
             "nixifxxxxxxx"/*Classic*/,

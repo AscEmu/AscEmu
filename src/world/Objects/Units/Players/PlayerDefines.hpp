@@ -1360,6 +1360,10 @@ public:
     ActionButton& getActionButton(uint8_t slot) { return mActions[slot]; }
     ActionButton const& getActionButton(uint8_t slot) const { return mActions[slot]; }
 
+    // Since Mop - chosen specialization (ChrSpecialization.dbc id), 0 = none chosen yet
+    uint32_t getSpecializationId() const { return mSpecializationId; }
+    void setSpecializationId(uint32_t specializationId) { mSpecializationId = specializationId; }
+
 private:
     uint32_t mTalentPoints = 0;
     std::map<uint32_t, uint8_t> mTalents;
@@ -1367,6 +1371,8 @@ private:
     std::array<uint16_t, GLYPHS_COUNT> mGlyphs = { 0 };
 
     std::array<ActionButton, PLAYER_ACTION_BUTTON_COUNT> mActions = { ActionButton() };
+
+    uint32_t mSpecializationId = 0;
 };
 
 typedef std::unordered_set<uint32_t>                            SpellSet;

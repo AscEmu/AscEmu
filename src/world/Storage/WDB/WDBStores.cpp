@@ -115,6 +115,9 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellShapeshiftFormEntry> sSpellS
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentEntry> sTalentStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentTabEntry> sTalentTabStore;
 static uint32_t InspectTalentTabPages[12][3];
+#ifdef AE_MOP
+static uint32_t ClassSpecializationTabs[12][4];
+#endif
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TaxiNodesEntry> sTaxiNodesStore;
 TaxiPathSetBySource sTaxiPathSetBySource;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TaxiPathEntry> sTaxiPathStore;
@@ -239,6 +242,7 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemReforgeEntry> sItemReforgeSto
 
 #ifdef AE_MOP
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
+SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
 #endif
 
 bool loadDBCs()
@@ -768,6 +772,21 @@ bool loadDBCs()
 
 #ifdef AE_MOP
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellMiscStore, dbc_path, "SpellMisc.dbc");
+
+    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChrSpecializationStore, dbc_path, "ChrSpecialization.dbc");
+    {
+        for (uint32_t i = 0; i < sChrSpecializationStore.getNumRows(); ++i)
+        {
+            auto const specialization_info = sChrSpecializationStore.lookupEntry(i);
+            if (specialization_info == nullptr)
+                continue;
+
+            if (specialization_info->classId >= 12 || specialization_info->tabPage >= 4)
+                continue;
+
+            ClassSpecializationTabs[specialization_info->classId][specialization_info->tabPage] = specialization_info->Id;
+        }
+    }
 #endif
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -1091,6 +1110,13 @@ uint32_t const* getTalentTabPages(uint8_t playerClass)
 {
     return InspectTalentTabPages[playerClass];
 }
+
+#ifdef AE_MOP
+uint32_t const* getClassSpecializations(uint8_t playerClass)
+{
+    return ClassSpecializationTabs[playerClass];
+}
+#endif
 
 uint32_t getLiquidFlags(uint32_t liquidType)
 {

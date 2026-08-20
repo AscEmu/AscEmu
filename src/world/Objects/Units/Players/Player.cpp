@@ -5846,6 +5846,33 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
 #endif
 }
 
+#if VERSION_STRING == Mop
+uint32_t Player::getCurrentSpecId() const { return playerData()->current_spec_id; }
+void Player::setCurrentSpecId(uint32_t specializationId) { write(playerData()->current_spec_id, specializationId); }
+
+void Player::setPrimaryTalentSpecialization(uint32_t specializationTabId)
+{
+    if (specializationTabId >= 4)
+        return;
+
+    // Player already chose a specialization for the currently active spec slot - this opcode only
+    // covers the initial choice, switching specs later happens through activateTalentSpec()
+    if (getActiveSpec().getSpecializationId() != 0)
+        return;
+
+    const auto specializationTabs = getClassSpecializations(static_cast<uint8_t>(getClass()));
+    const uint32_t specializationId = specializationTabs[specializationTabId];
+    if (specializationId == 0)
+        return;
+
+    getActiveSpec().setSpecializationId(specializationId);
+    setCurrentSpecId(specializationId);
+
+    sendTalentsInfo();
+    saveToDB(false);
+}
+#endif
+
 void Player::resetTalents()
 {
 #if VERSION_STRING < Mop
@@ -14088,7 +14115,12 @@ void Player::saveToDB(bool newCharacter /* =false */)
 
     ss << ", ";
 
-    ss << uint32_t(this->hasWonRbgToday()) << ", " << uint32_t(m_dungeonDifficulty) << ", " << uint32_t(m_raidDifficulty);
+    ss << uint32_t(this->hasWonRbgToday()) << ", " << uint32_t(m_dungeonDifficulty) << ", " << uint32_t(m_raidDifficulty) << ", ";
+
+    ss << "'";
+    ss << uint32_t(m_specs[SPEC_PRIMARY].getSpecializationId()) << " " << uint32_t(MAX_SPEC_COUNT > 1 ? m_specs[SPEC_SECONDARY].getSpecializationId() : 0);
+    ss << "'";
+
     ss << ")";
 
     if (newCharacter)
@@ -14233,7 +14265,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
         return;
     }
 
-    const uint32_t fieldcount = 95;
+    const uint32_t fieldcount = 96;
     if (result->getFieldCount() != fieldcount)
     {
         sLogger.failure("Expected {} fields from the database, but received {}!  You may need to update your character database.", fieldcount, uint32_t(result->getFieldCount()));
@@ -14729,6 +14761,25 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     m_dungeonDifficulty = field[93].asUint8();
     m_raidDifficulty = field[94].asUint8();
+
+    if (auto talentSpecialization = field[95].asCString())
+    {
+        uint32_t specs[2] = { 0, 0 };
+
+        auto talentSpecializationVector = AscEmu::Util::Strings::split(talentSpecialization, " ");
+        if (talentSpecializationVector.size() >= 2)
+        {
+            for (uint8_t i = 0; i < 2; ++i)
+                specs[i] = std::stoul(talentSpecializationVector[i]);
+
+#ifndef FT_DUAL_SPEC
+            getActiveSpec().setSpecializationId(specs[0]);
+#else
+            m_specs[SPEC_PRIMARY].setSpecializationId(specs[0]);
+            m_specs[SPEC_SECONDARY].setSpecializationId(specs[1]);
+#endif
+        }
+    }
 
     HonorHandler::RecalculateHonorFields(this);
 

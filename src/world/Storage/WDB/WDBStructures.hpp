@@ -2080,6 +2080,17 @@ namespace WDB::Structures
 #endif
     };
 
+#if VERSION_STRING == Mop
+    struct ChrSpecializationEntry
+    {
+        uint32_t Id;                                                // 0
+        uint32_t classId;                                           // 2
+        uint32_t masterySpellId;                                    // 3
+        uint32_t tabPage;                                           // 5
+        uint32_t petTabPage;                                        // 6
+    };
+#endif
+
 #if VERSION_STRING >= Cata
     struct TalentTreePrimarySpells
     {

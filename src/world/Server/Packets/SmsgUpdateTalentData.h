@@ -190,9 +190,7 @@ namespace AscEmu::Packets
                     }
                     packet.putBits(wpos[specId], talentCount, 23);
 
-                    // We do not track Mop talent specializations anywhere yet,
-                    // so send 0 ("no specialization chosen")
-                    packet << uint32_t(0);
+                    packet << uint32_t(spec.getSpecializationId());
                 }
                 return true;
             }

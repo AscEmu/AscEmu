@@ -854,6 +854,7 @@ protected:
         void handleUnlearnTalents(WorldPacket& recvPacket);
         void handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket); //< Cata
         void handleLearnPreviewTalentsOpcode(WorldPacket& recvPacket);  //>=Cata
+        void handleSetPrimaryTalentTreeOpcode(WorldPacket& recvPacket); //>=Mop
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // SocialHandler.cpp
