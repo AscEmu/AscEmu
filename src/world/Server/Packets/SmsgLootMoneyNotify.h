@@ -39,13 +39,17 @@ namespace AscEmu::Packets
                 packet.writeBit(playersNear != 0);
                 packet.flushBits();
                 packet << money;
+
+                return true;
             }
-            else
+            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << money << playersNear;
+
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

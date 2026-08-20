@@ -51,19 +51,16 @@ namespace AscEmu::Packets
 
                 guid = targetGuid.getRawGuid();
 
-                return true;
+                return guid != 0;
             }
             else if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet >> guid;
 
-                return true;
+                return guid != 0;
             }
 
-            if (guid == 0)
-                return false;
-
-            return true;
+            return false;
         }
     };
 }

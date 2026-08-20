@@ -75,13 +75,17 @@ namespace AscEmu::Packets
                 packet.writeByteSeq(objGuid[4]);
                 packet.writeByteSeq(lootGuid[4]);
                 packet.writeByteSeq(objGuid[7]);
+
+                return true;
             }
-            else
+            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << guid << response;
+
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

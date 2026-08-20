@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgUnlearnSkill.h"
 #include "Server/Packets/CmsgLearnTalent.h"
 #include "Server/Packets/CmsgLearnTalentMultiple.h"
+#include "Server/Packets/CmsgSetPrimaryTalentTree.h"
 #include "Objects/Units/Players/Player.hpp"
 
 using namespace AscEmu::Packets;
@@ -29,7 +30,16 @@ void WorldSession::handleLearnTalentOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    _player->learnTalent(srlPacket.talentId, srlPacket.requestedRank);
+    if (!srlPacket.talentIds.empty())
+    {
+        for (const auto talentId : srlPacket.talentIds)
+            _player->learnTalent(talentId, 0);
+    }
+    else
+    {
+        _player->learnTalent(srlPacket.talentId, srlPacket.requestedRank);
+    }
+
     _player->sendTalentsInfo();
 }
 
@@ -83,5 +93,16 @@ void WorldSession::handleLearnPreviewTalentsOpcode([[maybe_unused]] WorldPacket&
     }
 
     _player->sendTalentsInfo();
+#endif
+}
+
+void WorldSession::handleSetPrimaryTalentTreeOpcode([[maybe_unused]] WorldPacket& recvPacket)
+{
+#if VERSION_STRING == Mop
+    CmsgSetPrimaryTalentTree srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    _player->setPrimaryTalentSpecialization(srlPacket.specializationTabId);
 #endif
 }

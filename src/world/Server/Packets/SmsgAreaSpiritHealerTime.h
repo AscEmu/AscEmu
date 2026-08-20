@@ -57,13 +57,17 @@ namespace AscEmu::Packets
                 packet.writeByteSeq(healerGuid[7]);
                 packet.writeByteSeq(healerGuid[0]);
                 packet.writeByteSeq(healerGuid[1]);
+
+                return true;
             }
-            else
+            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << guid << restTime;
+
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
