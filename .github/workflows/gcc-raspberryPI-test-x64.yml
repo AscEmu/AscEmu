@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Setup Environment
         run: |
@@ -70,7 +70,7 @@ jobs:
           "ascemu_pi_${{ matrix.version }}_arm64"
 
       - name: Upload Raspberry Pi artifact ${{ matrix.version }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ascemu-${{ matrix.version }}-linux-arm64-pi
           path: ascemu-${{ matrix.version }}-linux-arm64-pi.tar.gz
