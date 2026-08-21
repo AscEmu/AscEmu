@@ -223,7 +223,7 @@ public:
     inline uint32_t GetID() { return m_Id; }
     uint64_t GetGUID() const;
 
-    void UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute);
+    void UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, Player* singleTarget = nullptr);
     void UpdateAllOutOfRangePlayersFor(Player* pPlayer);
     bool isRaid() const;
 

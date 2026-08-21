@@ -44,6 +44,7 @@
 #include "Server/Packets/SmsgGroupDestroyed.h"
 #include "Server/Packets/SmsgGroupList.h"
 #include "Server/Packets/SmsgLootList.h"
+#include "Server/Packets/SmsgLootStartRoll.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgInstanceReset.h"
 #include "Server/Packets/SmsgPartyMemberStats.h"
@@ -866,7 +867,7 @@ void Group::SaveToDB()
     CharacterDatabase.execute(ss.str().c_str());
 }
 
-void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute)
+void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, Player* singleTarget)
 {
     if (pPlayer == nullptr)
         return;
@@ -888,6 +889,12 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute)
 
     SmsgPartyMemberStats statsPacket(pPlayer->GetNewGUID(), mask);
     statsPacket.playerMember = pPlayer;
+
+    if (!Distribute && singleTarget != nullptr)
+    {
+        singleTarget->getSession()->sendManagedPacket(statsPacket);
+        return;
+    }
 
     if (Distribute && pPlayer->IsInWorld())
     {
@@ -934,20 +941,20 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
 
         for (const auto itr : m_SubGroups[i]->getGroupMembers())
         {
-            WorldPacket data(150);
             Player* plr = sObjectMgr.getPlayer(itr->guid);
             if (!plr || plr == pPlayer)
                 continue;
 
             if (!plr->isVisibleObject(pPlayer->getGuid()))
             {
-                UpdateOutOfRangePlayer(plr, false);
-                pPlayer->getSession()->SendPacket(&data);
+                UpdateOutOfRangePlayer(plr, false, pPlayer);
             }
             else
             {
                 if (pPlayer->getSubGroupSlot() == plr->getSubGroupSlot())
                 {
+                    WorldPacket data(150);
+
                     // distribute quest fields to other players
                     hisMask.Clear();
                     myMask.Clear();
@@ -1349,24 +1356,8 @@ void Group::sendGroupLoot(Loot* loot, Object* object, Player* /*plr*/, uint32_t 
             item->roll = std::make_unique<LootRoll>(60000, MemberCount(), object->getGuid(), itemSlot, item->itemproto->ItemId, factor, uint32_t(ipid), object->getWorldMap());
 
             // Send Roll
-            WorldPacket data(32);
-            data.initialize(SMSG_LOOT_START_ROLL);
-            data << object->getGuid();
-            data << uint32_t(mapId);
-            data << uint32_t(itemSlot);
-            data << uint32_t(item->itemproto->ItemId);
-            data << uint32_t(factor);
-
-            if (item->iRandomProperty)
-                data << uint32_t(item->iRandomProperty->ID);
-            else if (item->iRandomSuffix)
-                data << uint32_t(ipid);
-            else
-                data << uint32_t(0);
-
-            data << uint32_t(item->count);
-            data << uint32_t(60000); // countdown
-            data << uint8_t(7);      // some sort of flags that require research
+            SmsgLootStartRoll lootStartRollPacket(object->getGuid(), mapId, itemSlot, item->itemproto->ItemId,
+                factor, uint32_t(ipid), item->count, 60000, 7 /* some sort of flags that require research */, item->itemproto->DisplayInfoID);
 
             Lock();
             for (uint32_t i = 0; i < GetSubGroupCount(); ++i)
@@ -1380,7 +1371,7 @@ void Group::sendGroupLoot(Loot* loot, Object* object, Player* /*plr*/, uint32_t 
                             if (loggedInPlayer->m_passOnLoot)
                                 item->playerRolled(loggedInPlayer, ROLL_PASS);
                             else
-                                loggedInPlayer->sendPacket(&data);
+                                loggedInPlayer->getSession()->sendManagedPacket(lootStartRollPacket);
                         }
                     }
                 }

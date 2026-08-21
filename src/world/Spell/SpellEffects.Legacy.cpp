@@ -2373,7 +2373,6 @@ void Spell::SpellEffectBind(uint8_t effectIndex)
     if (!m_playerTarget || !m_playerTarget->isAlive() || !m_caster)
         return;
 
-    WorldPacket data(45);
     uint32_t areaid = m_playerTarget->getZoneId();
     uint32_t mapid = m_playerTarget->GetMapId();
     if (getSpellInfo()->getEffectMiscValue(effectIndex))
