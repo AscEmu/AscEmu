@@ -30,19 +30,12 @@ Worldsocket       | ✔️         | ✔️         | ✔️         | ✔️   
 Char Enum         | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
 Log into world    | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
 
-Learn more on the page, see [Contributing](CONTRIBUTING.md).
+## Contributing & Issues
 
-## Opening new issues
 > [!IMPORTANT]
-> **Before opening a new issue, please review the guidelines in [Contributing](CONTRIBUTING.md).**
+> Before opening a new issue or submitting a contribution, please read [CONTRIBUTING.md](CONTRIBUTING.md).
 
-To help us process your request efficiently.
-
-## Contributing
-> [!IMPORTANT]
-> **For full contribution guidelines and issue reporting instructions, see [Contributing](CONTRIBUTING.md).**
-
-Please make sure your changes are useful, tested, and aligned with the project goals.
+Following the guidelines helps us process requests and review changes more efficiently.
 
 ## Install
 HowTo install - detailed guides on our wiki.
@@ -52,9 +45,9 @@ HowTo install - detailed guides on our wiki.
 
 ## Useful links
 * [Web](http://www.ascemu.org)
-* [Forums](https://github.com/AscEmu/AscEmu/discussions)
 * [Wiki](https://ascemu.github.io/Wiki/)
 * [World DB](https://github.com/AscEmu/OneDB)
+* [Forums](https://github.com/AscEmu/AscEmu/discussions)
 
 ## Copyright and other stuff
 * [License](LICENSE.md)
