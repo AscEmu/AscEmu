@@ -143,7 +143,7 @@ void WorldSession::sendSpiritHealerRequest(Creature* creature)
 void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 {
     CmsgTrainerBuySpell srlPacket;
-    if (!srlPacket.deserialise((recvPacket)))
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
     sLogger.debugOpcode("Received CMSG_TRAINER_BUY_SPELL: {} (guidLowPart).", srlPacket.guid.getGuidLowPart());
@@ -206,8 +206,13 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
             _player->removeSpell(trainerSpell->deleteSpell, true);
     }
 
-    SmsgTrainerBuySucceeded managedPacket(srlPacket.guid.getRawGuid(), srlPacket.spellId);
-    sendManagedPacket(managedPacket);
+    // Mop has no SMSG_TRAINER_BUY_SUCCEEDED equivalent - the client infers
+    // success from the resulting spell-learn/gold updates alone.
+    if (!srlPacket.getClientProtocol().isMop())
+    {
+        SmsgTrainerBuySucceeded managedPacket(srlPacket.guid.getRawGuid(), srlPacket.spellId);
+        sendManagedPacket(managedPacket);
+    }
 }
 
 void WorldSession::handleCharterShowListOpcode(WorldPacket& recvPacket)

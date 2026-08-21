@@ -31,17 +31,49 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            uint64_t unpackedGuid;
-            packet >> unpackedGuid;
-
-            if (m_protocol.expansion > WoW::Expansion::_WotLK)
+            if (m_protocol.isMop())
             {
+                packet >> spellId;
                 packet >> trainerId;
+
+                WoWGuid unpackedGuid;
+                unpackedGuid[1] = packet.readBit();
+                unpackedGuid[4] = packet.readBit();
+                unpackedGuid[0] = packet.readBit();
+                unpackedGuid[6] = packet.readBit();
+                unpackedGuid[3] = packet.readBit();
+                unpackedGuid[2] = packet.readBit();
+                unpackedGuid[5] = packet.readBit();
+                unpackedGuid[7] = packet.readBit();
+
+                packet.readByteSeq(unpackedGuid[3]);
+                packet.readByteSeq(unpackedGuid[1]);
+                packet.readByteSeq(unpackedGuid[4]);
+                packet.readByteSeq(unpackedGuid[7]);
+                packet.readByteSeq(unpackedGuid[0]);
+                packet.readByteSeq(unpackedGuid[5]);
+                packet.readByteSeq(unpackedGuid[6]);
+                packet.readByteSeq(unpackedGuid[2]);
+
+                guid = unpackedGuid;
+                return true;
+            }
+            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                uint64_t unpackedGuid;
+                packet >> unpackedGuid;
+
+                if (m_protocol.expansion > WoW::Expansion::_WotLK)
+                {
+                    packet >> trainerId;
+                }
+
+                packet >> spellId;
+                guid.init(unpackedGuid);
+                return true;
             }
 
-            packet >> spellId;
-            guid.init(unpackedGuid);
-            return true;
+            return false;
         }
     };
 }

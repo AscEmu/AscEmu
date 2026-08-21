@@ -1704,7 +1704,6 @@ std::vector<TrainerSpell> const* ObjectMgr::getTrainerSpellSetById(uint32_t _id)
 
 void ObjectMgr::loadTrainers()
 {
-#if VERSION_STRING <= Cata
     std::string normalTalkMessage = "DMSG";
 
     if (auto trainerResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties WHERE build <= %u;", VERSION_STRING))
@@ -1713,7 +1712,16 @@ void ObjectMgr::loadTrainers()
         {
             auto* const fields = trainerResult->fetch();
             const auto entry = fields[0].asUint32();
-            const auto spellCount = static_cast<uint32_t>(getTrainerSpellSetById(fields[12].asUint32())->size());
+            const auto spellSetId = fields[12].asUint32();
+
+            const auto* trainerSpellSet = getTrainerSpellSetById(spellSetId);
+            if (trainerSpellSet == nullptr)
+            {
+                sLogger.debug("ObjectMgr::loadTrainers : trainer {} references spellset {} which doesn't exist for this build, skipping.", entry, spellSetId);
+                continue;
+            }
+
+            const auto spellCount = static_cast<uint32_t>(trainerSpellSet->size());
 
             if (spellCount == 0)
                 continue;
@@ -1754,7 +1762,6 @@ void ObjectMgr::loadTrainers()
 
         sLogger.info("ObjectMgr : {} trainers loaded.", static_cast<uint32_t>(m_trainers.size()));
     }
-#endif
 }
 
 Trainer const* ObjectMgr::getTrainer(uint32_t _entry) const
