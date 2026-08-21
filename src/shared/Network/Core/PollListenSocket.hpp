@@ -23,7 +23,7 @@ public:
             return;
 
         AscEmu::Network::SocketPlatformOps::setReuseAddress(m_socket);
-        AscEmu::Network::SocketPlatformOps::setBlocking(m_socket);
+        AscEmu::Network::SocketPlatformOps::setNonBlocking(m_socket);
         AscEmu::Network::SocketPlatformOps::setTimeout(m_socket, 60);
 
         if (!AscEmu::Network::resolveListenAddress(listenAddress, static_cast<uint16_t>(port), m_address))
