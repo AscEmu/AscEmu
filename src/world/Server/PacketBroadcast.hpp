@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Chat/Channel.hpp"
 #include "Server/WorldSession.h"
+#include "Management/Battleground/Battleground.hpp"
 
 #include <shared_mutex>
 #include <type_traits>
@@ -93,6 +94,33 @@ namespace AscEmu::Packets
 
                     sendToPlayer(targetPlayer, packet);
                 }
+            }
+        }
+
+        template <typename TPacket>
+        static void sendFromBattleground(Battleground const& source, TPacket& packet, Player* skipPlayer = nullptr)
+        {
+            for (const auto& teamMembers : source.m_players)
+            {
+                for (Player* targetPlayer : teamMembers)
+                {
+                    if (targetPlayer == skipPlayer)
+                        continue;
+
+                    sendToPlayer(targetPlayer, packet);
+                }
+            }
+        }
+
+        template <typename TPacket>
+        static void sendFromBattlegroundTeam(Battleground const& source, uint32_t team, TPacket& packet, Player* skipPlayer = nullptr)
+        {
+            for (Player* targetPlayer : source.m_players[team])
+            {
+                if (targetPlayer == skipPlayer)
+                    continue;
+
+                sendToPlayer(targetPlayer, packet);
             }
         }
 

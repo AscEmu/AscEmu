@@ -149,6 +149,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgEquipmentSetSaved.h"
 #include "Server/Packets/SmsgEquipmentSetList.h"
 #include "Server/Packets/SmsgLoadCufProfiles.h"
+#include "Server/Packets/SmsgBattlePetJournal.h"
+#include "Server/Packets/SmsgBattlePetJournalLockAcquired.h"
 #include "Server/Packets/SmsgWorldServerInfo.h"
 #include "Server/Packets/SmsgUpdateActionButtons.h"
 #include "Server/Packets/SmsgLootList.h"
@@ -730,16 +732,11 @@ void Player::OnPushToWorld()
     SmsgLoadCufProfiles cufProfilesPacket;
     getSession()->sendManagedPacket(cufProfilesPacket);
 
-    WorldPacket data(SMSG_BATTLE_PET_JOURNAL, WorldPacket::defaultReserve);
-    data.writeBits(0, 19);
-    data.writeBit(0);
-    data.writeBits(0, 25);
-    data.flushBits();
-    data << uint16_t(0);
-    sendPacket(&data);
+    SmsgBattlePetJournal battlePetJournalPacket;
+    getSession()->sendManagedPacket(battlePetJournalPacket);
 
-    data.initialize(SMSG_BATTLE_PET_JOURNAL_LOCK_ACQUIRED);
-    sendPacket(&data);
+    SmsgBattlePetJournalLockAcquired battlePetJournalLockPacket;
+    getSession()->sendManagedPacket(battlePetJournalLockPacket);
 
 #endif
 
