@@ -1768,6 +1768,8 @@ CMSG_BATTLE_PET_REQUEST_JOURNAL,
 CMSG_GM_TICKET_CASE_STATUS,
 CMSG_REALM_NAME_QUERY,
 SMSG_GM_TICKET_CASE_STATUS,
+SMSG_MIRRORIMAGE_COMPONENTED_DATA,
+SMSG_MIRRORIMAGE_CREATURE_DATA,
 NUM_OPCODES
 };
 
@@ -2202,9 +2204,9 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {CMSG_TAXIENABLEALLNODES, {0x1F, "CMSG_TAXIENABLEALLNODES", OpcodeDevelopmentState::Unchecked, {0x1A7,/*Classic*/ 0x1A7,/*BC*/ 0x1A7,/*WotLK*/ 0x0000,/*Cata*/ 0x0000/*Mop*/}}},
 {CMSG_TAXISHOWNODES, {0x1F, "CMSG_TAXISHOWNODES", OpcodeDevelopmentState::Unchecked, {0x1A8,/*Classic*/ 0x1A8,/*BC*/ 0x1A8,/*WotLK*/ 0x0000,/*Cata*/ 0x0000/*Mop*/}}},
 {SMSG_SHOWTAXINODES, {0x1F, "SMSG_SHOWTAXINODES", OpcodeDevelopmentState::Unchecked, {0x1A9,/*Classic*/ 0x1A9,/*BC*/ 0x1A9,/*WotLK*/ 0x2A36,/*Cata*/ 0x1E1A/*Mop*/}}},
-{CMSG_TAXINODE_STATUS_QUERY, {0x1F, "CMSG_TAXINODE_STATUS_QUERY", OpcodeDevelopmentState::Unchecked, {0x1AA,/*Classic*/ 0x1AA,/*BC*/ 0x1AA,/*WotLK*/ 0x2F25,/*Cata*/ 0x0000/*Mop*/}}},
-{SMSG_TAXINODE_STATUS, {0x1F, "SMSG_TAXINODE_STATUS", OpcodeDevelopmentState::Unchecked, {0x1AB,/*Classic*/ 0x1AB,/*BC*/ 0x1AB,/*WotLK*/ 0x2936,/*Cata*/ 0x0000/*Mop*/}}},
-{CMSG_TAXIQUERYAVAILABLENODES, {0x1F, "CMSG_TAXIQUERYAVAILABLENODES", OpcodeDevelopmentState::Unchecked, {0x1AC,/*Classic*/ 0x1AC,/*BC*/ 0x1AC,/*WotLK*/ 0x6C06,/*Cata*/ 0x0000/*Mop*/}}},
+{CMSG_TAXINODE_STATUS_QUERY, {0x1F, "CMSG_TAXINODE_STATUS_QUERY", OpcodeDevelopmentState::Unchecked, {0x1AA,/*Classic*/ 0x1AA,/*BC*/ 0x1AA,/*WotLK*/ 0x2F25,/*Cata*/ 0x02E1/*Mop*/}}},
+{SMSG_TAXINODE_STATUS, {0x1F, "SMSG_TAXINODE_STATUS", OpcodeDevelopmentState::Unchecked, {0x1AB,/*Classic*/ 0x1AB,/*BC*/ 0x1AB,/*WotLK*/ 0x2936,/*Cata*/ 0x169E/*Mop*/}}},
+{CMSG_TAXIQUERYAVAILABLENODES, {0x1F, "CMSG_TAXIQUERYAVAILABLENODES", OpcodeDevelopmentState::Unchecked, {0x1AC,/*Classic*/ 0x1AC,/*BC*/ 0x1AC,/*WotLK*/ 0x6C06,/*Cata*/ 0x02E3/*Mop*/}}},
 {CMSG_ACTIVATE_TAXI, {0x1F, "CMSG_ACTIVATE_TAXI", OpcodeDevelopmentState::Unchecked, {0x1AD,/*Classic*/ 0x1AD,/*BC*/ 0x1AD,/*WotLK*/ 0x6E06,/*Cata*/ 0x03C9/*Mop*/}}},
 {SMSG_ACTIVATE_TAXI_REPLY, {0x1F, "SMSG_ACTIVATE_TAXI_REPLY", OpcodeDevelopmentState::Unchecked, {0x1AE,/*Classic*/ 0x1AE,/*BC*/ 0x1AE,/*WotLK*/ 0x6A37,/*Cata*/ 0x02A7/*Mop*/}}},
 {SMSG_NEW_TAXI_PATH, {0x1F, "SMSG_NEW_TAXI_PATH", OpcodeDevelopmentState::Unchecked, {0x1AF,/*Classic*/ 0x1AF,/*BC*/ 0x1AF,/*WotLK*/ 0x4B35,/*Cata*/ 0x141B/*Mop*/}}},
@@ -2828,7 +2830,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {SMSG_GOGOGO_OBSOLETE, {0x1F, "SMSG_GOGOGO_OBSOLETE", OpcodeDevelopmentState::Unchecked, {0x3F4,/*Classic*/ 0x3F4,/*BC*/ 0x3F5,/*WotLK*/ 0x3F5,/*Cata*/ 0x0000/*Mop*/}}},
 {SMSG_ECHO_PARTY_SQUELCH, {0x1F, "SMSG_ECHO_PARTY_SQUELCH", OpcodeDevelopmentState::Unchecked, {0x3F5,/*Classic*/ 0x3F5,/*BC*/ 0x3F6,/*WotLK*/ 0x0814,/*Cata*/ 0x0000/*Mop*/}}},
 {CMSG_SET_TITLE_SUFFIX, {0x1F, "CMSG_SET_TITLE_SUFFIX", OpcodeDevelopmentState::Unchecked, {0x3F6,/*Classic*/ 0x3F6,/*BC*/ 0x3F7,/*WotLK*/ 0x3F7,/*Cata*/ 0x0000/*Mop*/}}},
-{CMSG_SPELL_CLICK, {0x1F, "CMSG_SPELL_CLICK", OpcodeDevelopmentState::Unchecked, {0x3F7,/*Classic*/ 0x3F7,/*BC*/ 0x3F8,/*WotLK*/ 0x0805,/*Cata*/ 0x0000/*Mop*/}}},
+{CMSG_SPELL_CLICK, {0x1F, "CMSG_SPELL_CLICK", OpcodeDevelopmentState::Unchecked, {0x3F7,/*Classic*/ 0x3F7,/*BC*/ 0x3F8,/*WotLK*/ 0x0805,/*Cata*/ 0x067A/*Mop*/}}},
 {SMSG_LOOT_LIST, {0x1F, "SMSG_LOOT_LIST", OpcodeDevelopmentState::Unchecked, {0x3F8,/*Classic*/ 0x3F8,/*BC*/ 0x3F9,/*WotLK*/ 0x6807,/*Cata*/ 0x1C3F/*Mop*/}}},
 {CMSG_GM_CHARACTER_RESTORE, {0x1F, "CMSG_GM_CHARACTER_RESTORE", OpcodeDevelopmentState::Unchecked, {0x3F9,/*Classic*/ 0x3F9,/*BC*/ 0x3FA,/*WotLK*/ 0x3FA,/*Cata*/ 0x0000/*Mop*/}}},
 {CMSG_GM_CHARACTER_SAVE, {0x1F, "CMSG_GM_CHARACTER_SAVE", OpcodeDevelopmentState::Unchecked, {0x3FA,/*Classic*/ 0x3FA,/*BC*/ 0x3FB,/*WotLK*/ 0x3FB,/*Cata*/ 0x0000/*Mop*/}}},
@@ -2841,7 +2843,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {CMSG_GUILD_EVENT_LOG_QUERY, {0x18, "CMSG_GUILD_EVENT_LOG_QUERY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x1220,/*Cata*/ 0x15D9/*Mop*/}}},
 {SMSG_GUILD_EVENT_LOG_QUERY_RESULT, {0x18, "SMSG_GUILD_EVENT_LOG_QUERY_RESULT", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x10B2,/*Cata*/ 0x1AF1/*Mop*/}}},
 {CMSG_MAELSTROM_RENAME_GUILD, {0x1F, "CMSG_MAELSTROM_RENAME_GUILD", OpcodeDevelopmentState::Unchecked, {0x3FF,/*Classic*/ 0x3FF,/*BC*/ 0x400,/*WotLK*/ 0x400,/*Cata*/ 0x0000/*Mop*/}}},
-{CMSG_GET_MIRRORIMAGE_DATA, {0x1F, "CMSG_GET_MIRRORIMAGE_DATA", OpcodeDevelopmentState::Unchecked, {0x400,/*Classic*/ 0x400,/*BC*/ 0x401,/*WotLK*/ 0x0C25,/*Cata*/ 0x0000/*Mop*/}}},
+{CMSG_GET_MIRRORIMAGE_DATA, {0x1F, "CMSG_GET_MIRRORIMAGE_DATA", OpcodeDevelopmentState::Unchecked, {0x400,/*Classic*/ 0x400,/*BC*/ 0x401,/*WotLK*/ 0x0C25,/*Cata*/ 0x02A3/*Mop*/}}},
 {SMSG_MIRRORIMAGE_DATA, {0x1F, "SMSG_MIRRORIMAGE_DATA", OpcodeDevelopmentState::Unchecked, {0x401,/*Classic*/ 0x401,/*BC*/ 0x402,/*WotLK*/ 0x2634,/*Cata*/ 0x0000/*Mop*/}}},
 {SMSG_FORCE_DISPLAY_UPDATE, {0x1F, "SMSG_FORCE_DISPLAY_UPDATE", OpcodeDevelopmentState::Unchecked, {0x402,/*Classic*/ 0x402,/*BC*/ 0x403,/*WotLK*/ 0x403,/*Cata*/ 0x0000/*Mop*/}}},
 {SMSG_SPELL_CHANCE_RESIST_PUSHBACK, {0x1F, "SMSG_SPELL_CHANCE_RESIST_PUSHBACK", OpcodeDevelopmentState::Unchecked, {0x403,/*Classic*/ 0x403,/*BC*/ 0x404,/*WotLK*/ 0x1405,/*Cata*/ 0x0000/*Mop*/}}},
@@ -3507,5 +3509,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {CMSG_BATTLE_PET_REQUEST_JOURNAL, {0x10, "CMSG_BATTLE_PET_REQUEST_JOURNAL", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x0A23/*Mop*/}}},
 {CMSG_GM_TICKET_CASE_STATUS, {0x10, "CMSG_GM_TICKET_CASE_STATUS", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x15A8/*Mop*/}}},
 {CMSG_REALM_NAME_QUERY, {0x10, "CMSG_REALM_NAME_QUERY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x1A16/*Mop*/}}},
-{SMSG_GM_TICKET_CASE_STATUS, {0x10, "SMSG_GM_TICKET_CASE_STATUS", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x148E/*Mop*/}}}
+{SMSG_GM_TICKET_CASE_STATUS, {0x10, "SMSG_GM_TICKET_CASE_STATUS", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x148E/*Mop*/}}},
+{SMSG_MIRRORIMAGE_COMPONENTED_DATA, {0x10, "SMSG_MIRRORIMAGE_COMPONENTED_DATA", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x04D9/*Mop*/}}},
+{SMSG_MIRRORIMAGE_CREATURE_DATA, {0x10, "SMSG_MIRRORIMAGE_CREATURE_DATA", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x04D0/*Mop*/}}}
 };

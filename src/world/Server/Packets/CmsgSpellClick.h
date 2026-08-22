@@ -6,22 +6,23 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
-#include <cstdint>
 
 namespace AscEmu::Packets
 {
-    class CmsgTaxinodeStatusQuery : public ManagedPacket
+    class CmsgSpellClick : public ManagedPacket
     {
     public:
         WoWGuid guid;
+        bool tryAutoDismount;
 
-        CmsgTaxinodeStatusQuery() : CmsgTaxinodeStatusQuery(0)
+        CmsgSpellClick() : CmsgSpellClick(0)
         {
         }
 
-        CmsgTaxinodeStatusQuery(uint64_t guid) :
-            ManagedPacket(CMSG_TAXINODE_STATUS_QUERY, 8),
-            guid(guid)
+        CmsgSpellClick(uint64_t guid, bool tryAutoDismount = false) :
+            ManagedPacket(CMSG_SPELL_CLICK, 8),
+            guid(guid),
+            tryAutoDismount(tryAutoDismount)
         {
         }
 
@@ -30,23 +31,24 @@ namespace AscEmu::Packets
         {
             if (m_protocol.isMop())
             {
-                guid[0] = packet.readBit();
-                guid[1] = packet.readBit();
-                guid[6] = packet.readBit();
-                guid[4] = packet.readBit();
-                guid[5] = packet.readBit();
-                guid[2] = packet.readBit();
-                guid[3] = packet.readBit();
                 guid[7] = packet.readBit();
+                guid[4] = packet.readBit();
+                guid[0] = packet.readBit();
+                guid[3] = packet.readBit();
+                guid[6] = packet.readBit();
+                guid[5] = packet.readBit();
+                tryAutoDismount = packet.readBit();
+                guid[1] = packet.readBit();
+                guid[2] = packet.readBit();
 
-                packet.readByteSeq(guid[4]);
+                packet.readByteSeq(guid[6]);
                 packet.readByteSeq(guid[1]);
                 packet.readByteSeq(guid[5]);
-                packet.readByteSeq(guid[0]);
-                packet.readByteSeq(guid[2]);
+                packet.readByteSeq(guid[4]);
                 packet.readByteSeq(guid[7]);
-                packet.readByteSeq(guid[6]);
+                packet.readByteSeq(guid[2]);
                 packet.readByteSeq(guid[3]);
+                packet.readByteSeq(guid[0]);
 
                 return true;
             }

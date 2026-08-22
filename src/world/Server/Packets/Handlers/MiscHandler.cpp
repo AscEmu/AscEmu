@@ -72,6 +72,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAddonInfo.h"
 #include "Server/Packets/SmsgReportResult.h"
 #include "Server/Packets/SmsgMirrorimageData.h"
+#include "Server/Packets/SmsgMirrorimageComponentedData.h"
+#include "Server/Packets/SmsgMirrorimageCreatureData.h"
+#include "Server/Packets/CmsgGetMirrorimageData.h"
 #include "Server/Packets/SmsgClientcacheVersion.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Objects/Transporter.hpp"
@@ -2040,9 +2043,11 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 
     sLogger.debug("Received CMG_GET_MIRRORIMAGE_DATA");
 
-    uint64_t GUID;
+    CmsgGetMirrorimageData srlPacket;
+    if (!parsePacket(recv_data, srlPacket))
+        return;
 
-    recv_data >> GUID;
+    const uint64_t GUID = srlPacket.guid.getRawGuid();
 
     Unit* Image = _player->getWorldMap()->getUnit(GUID);
     if (Image == nullptr)
@@ -2057,8 +2062,24 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     if (Caster == nullptr)
         return; // apperantly this mirror image mirrors nothing, poor lonely soul :(Maybe it's the Caster's ghost called Casper
 
-    SmsgMirrorimageData managedPacket(GUID, Caster);
-    sendManagedPacket(managedPacket);
+    if (_socket->getClientProtocol().isMop())
+    {
+        if (Caster->isPlayer())
+        {
+            SmsgMirrorimageComponentedData managedPacket(GUID, dynamic_cast<Player*>(Caster));
+            sendManagedPacket(managedPacket);
+        }
+        else
+        {
+            SmsgMirrorimageCreatureData managedPacket(GUID, Caster);
+            sendManagedPacket(managedPacket);
+        }
+    }
+    else
+    {
+        SmsgMirrorimageData managedPacket(GUID, Caster);
+        sendManagedPacket(managedPacket);
+    }
 
     sLogger.debug("Sent SMSG_MIRRORIMAGE_DATA");
 }

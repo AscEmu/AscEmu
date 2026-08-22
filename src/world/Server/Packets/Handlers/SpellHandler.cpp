@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/PacketBroadcast.hpp"
 #include "Server/Packets/CmsgCastSpell.h"
 #include "Server/Packets/CmsgPetCastSpell.h"
+#include "Server/Packets/CmsgSpellClick.h"
 #include "Server/Packets/SmsgSetProjectilePosition.h"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
@@ -32,16 +33,19 @@ void WorldSession::handleSpellClick(WorldPacket& recvPacket)
     if (!_player->isAlive())
         return;
 
-    // The guid of the unit we clicked
-    uint64_t unitGuid;
-    recvPacket >> unitGuid;
+    CmsgSpellClick srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
-    Unit* unitTarget = _player->getWorldMap()->getUnit(unitGuid);
+    Unit* unitTarget = _player->getWorldMap()->getUnit(srlPacket.guid.getRawGuid());
     if (!unitTarget || !unitTarget->IsInWorld() || !unitTarget->isCreature())
         return;
 
     if (!_player->isInRange(unitTarget, MAX_INTERACTION_RANGE))
         return;
+
+    if (srlPacket.tryAutoDismount && _player->isMounted())
+        _player->dismount();
 
     unitTarget->handleSpellClick(_player);
 

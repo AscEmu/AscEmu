@@ -14,7 +14,7 @@ namespace AscEmu::Packets
     class SmsgTaxinodeStatus : public ManagedPacket
     {
     public:
-        uint64_t guid;
+        WoWGuid guid;
         bool isNodeKnown;
 
         SmsgTaxinodeStatus() : SmsgTaxinodeStatus(0, 0)
@@ -34,16 +34,45 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << guid;
-            if (m_protocol.expansion < WoW::Expansion::_Cata)
+            if (m_protocol.isMop())
             {
-                packet << static_cast<uint8_t>(isNodeKnown ? 1 : 0);
+                packet.writeBit(guid[6]);
+                packet.writeBit(guid[2]);
+                packet.writeBit(guid[7]);
+                packet.writeBit(guid[5]);
+                packet.writeBit(guid[4]);
+                packet.writeBit(guid[1]);
+                packet.writeBits(isNodeKnown ? 1 : 3, 2);
+                packet.writeBit(guid[3]);
+                packet.writeBit(guid[0]);
+                packet.flushBits();
+
+                packet.writeByteSeq(guid[0]);
+                packet.writeByteSeq(guid[5]);
+                packet.writeByteSeq(guid[2]);
+                packet.writeByteSeq(guid[1]);
+                packet.writeByteSeq(guid[4]);
+                packet.writeByteSeq(guid[6]);
+                packet.writeByteSeq(guid[7]);
+                packet.writeByteSeq(guid[3]);
+
+                return true;
             }
-            else
+            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
-                packet << static_cast<uint8_t>(isNodeKnown ? 1 : 2);
+                packet << guid.getRawGuid();
+                if (m_protocol.expansion < WoW::Expansion::_Cata)
+                {
+                    packet << static_cast<uint8_t>(isNodeKnown ? 1 : 0);
+                }
+                else
+                {
+                    packet << static_cast<uint8_t>(isNodeKnown ? 1 : 2);
+                }
+                return true;
             }
-            return true;
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

@@ -847,8 +847,8 @@ void WorldSession::registerOpcodeHandler()
 
     // Taxi / NPC Interaction
     registry.registerOpcode(CMSG_ENABLETAXI, &WorldSession::handleEnabletaxiOpcode, false, true, true, true, false);
-    registry.registerOpcode(CMSG_TAXINODE_STATUS_QUERY, &WorldSession::handleTaxiNodeStatusQueryOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_TAXIQUERYAVAILABLENODES, &WorldSession::handleTaxiQueryAvaibleNodesOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_TAXINODE_STATUS_QUERY, &WorldSession::handleTaxiNodeStatusQueryOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_TAXIQUERYAVAILABLENODES, &WorldSession::handleTaxiQueryAvaibleNodesOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_ACTIVATE_TAXI, &WorldSession::handleActivateTaxiOpcode, true, true, true, true, false);
     registry.registerOpcode(MSG_TABARDVENDOR_ACTIVATE, &WorldSession::handleTabardVendorActivateOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_BANKER_ACTIVATE, &WorldSession::handleBankerActivateOpcode, true, true, true, true, false);
@@ -896,7 +896,7 @@ void WorldSession::registerOpcodeHandler()
     // Spell System / Talent System
     registry.registerOpcode(CMSG_USE_ITEM, &WorldSession::handleUseItemOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_CAST_SPELL, &WorldSession::handleCastSpellOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_SPELL_CLICK, &WorldSession::handleSpellClick, true, false, true, true, false);
+    registry.registerOpcode(CMSG_SPELL_CLICK, &WorldSession::handleSpellClick, true, false, true, true, true);
     registry.registerOpcode(CMSG_CANCEL_CAST, &WorldSession::handleCancelCastOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_CANCEL_AURA, &WorldSession::handleCancelAuraOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_CANCEL_CHANNELLING, &WorldSession::handleCancelChannellingOpcode, true, false, true, true, false);
@@ -1125,7 +1125,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_OPT_OUT_OF_LOOT, &WorldSession::handleSetAutoLootPassOpcode, true, true, true, false, false);
     registry.registerOpcode(CMSG_REMOVE_GLYPH, &WorldSession::handleRemoveGlyph, false, false, true, false, false);
     registry.registerOpcode(CMSG_ALTER_APPEARANCE, &WorldSession::handleBarberShopResult, false, false, true, true, false);
-    registry.registerOpcode(CMSG_GET_MIRRORIMAGE_DATA, &WorldSession::HandleMirrorImageOpcode, true, false, true, false, false);
+    registry.registerOpcode(CMSG_GET_MIRRORIMAGE_DATA, &WorldSession::HandleMirrorImageOpcode, true, false, true, false, true);
 
     // Calendar - Unhandled
     registry.registerOpcode(CMSG_CALENDAR_GET_CALENDAR, &WorldSession::handleCalendarGetCalendar, false, false, true, true, false);
