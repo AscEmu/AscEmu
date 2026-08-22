@@ -125,7 +125,7 @@ namespace AscEmu::Packets
                 packet.writeBit(objectGuid[0]);
                 packet.writeBit(objectGuid[7]);
                 packet.writeBit(objectGuid[2]);
-                packet.writeBit(objectGuid[3]);
+                packet.writeBit(objectGuid[6]);
                 packet.writeBit(objectGuid[4]);
                 packet.flushBits();
 

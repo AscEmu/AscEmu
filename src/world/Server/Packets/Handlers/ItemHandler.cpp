@@ -1410,7 +1410,7 @@ void WorldSession::handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket)
     bool hasDualWield2H = false;
 
     sLogger.debug("CMSG_AUTOEQUIP_ITEM_SLOT ItemGUID: {}, SrcSlot: {}, DestSlot: {}, SlotType: {}",
-        srlPacket.itemGuid, srcSlot, srlPacket.destSlot, slotType);
+        srlPacket.itemGuid.getGuidLow(), srcSlot, srlPacket.destSlot, slotType);
 
     if (srcSlot == srlPacket.destSlot)
         return;

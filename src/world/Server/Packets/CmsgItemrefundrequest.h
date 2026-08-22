@@ -13,7 +13,7 @@ namespace AscEmu::Packets
     class CmsgItemrefundrequest : public ManagedPacket
     {
     public:
-        uint64_t itemGuid;
+        WoWGuid itemGuid;
 
         CmsgItemrefundrequest() : CmsgItemrefundrequest(0)
         {
@@ -28,9 +28,34 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            if (m_protocol.isMop())
             {
-                packet >> itemGuid;
+                itemGuid[2] = packet.readBit();
+                itemGuid[4] = packet.readBit();
+                itemGuid[1] = packet.readBit();
+                itemGuid[6] = packet.readBit();
+                itemGuid[3] = packet.readBit();
+                itemGuid[0] = packet.readBit();
+                itemGuid[5] = packet.readBit();
+                itemGuid[7] = packet.readBit();
+
+                packet.readByteSeq(itemGuid[3]);
+                packet.readByteSeq(itemGuid[5]);
+                packet.readByteSeq(itemGuid[6]);
+                packet.readByteSeq(itemGuid[2]);
+                packet.readByteSeq(itemGuid[7]);
+                packet.readByteSeq(itemGuid[0]);
+                packet.readByteSeq(itemGuid[1]);
+                packet.readByteSeq(itemGuid[4]);
+
+                return true;
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            {
+                uint64_t unpackedGuid;
+                packet >> unpackedGuid;
+                itemGuid.init(unpackedGuid);
+
                 return true;
             }
 

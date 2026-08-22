@@ -869,7 +869,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_SWAP_ITEM, &WorldSession::handleSwapItemOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_DESTROY_ITEM, &WorldSession::handleDestroyItemOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_AUTOEQUIP_ITEM, &WorldSession::handleAutoEquipItemOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_AUTOEQUIP_ITEM_SLOT, &WorldSession::handleAutoEquipItemSlotOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_AUTOEQUIP_ITEM_SLOT, &WorldSession::handleAutoEquipItemSlotOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_ITEM_QUERY_SINGLE, &WorldSession::handleItemQuerySingleOpcode, true, true, true, false, false);
     registry.registerOpcode(CMSG_SELL_ITEM, &WorldSession::handleSellItemOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_BUY_ITEM_IN_SLOT, &WorldSession::handleBuyItemInSlotOpcode, true, true, true, true, false);
@@ -886,8 +886,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_CANCEL_TEMP_ENCHANTMENT, &WorldSession::handleCancelTemporaryEnchantmentOpcode, true, true, true, false, false);
     registry.registerOpcode(CMSG_SOCKET_GEMS, &WorldSession::handleInsertGemOpcode, false, true, true, true, false);
     registry.registerOpcode(CMSG_WRAP_ITEM, &WorldSession::handleWrapItemOpcode, true, true, true, false, false);
-    registry.registerOpcode(CMSG_ITEMREFUNDINFO, &WorldSession::handleItemRefundInfoOpcode, false, false, true, true, false);
-    registry.registerOpcode(CMSG_ITEMREFUNDREQUEST, &WorldSession::handleItemRefundRequestOpcode, false, false, true, false, false);
+    registry.registerOpcode(CMSG_ITEMREFUNDINFO, &WorldSession::handleItemRefundInfoOpcode, false, false, true, true, true);
+    registry.registerOpcode(CMSG_ITEMREFUNDREQUEST, &WorldSession::handleItemRefundRequestOpcode, false, false, true, false, true);
 
     registry.registerOpcode(CMSG_EQUIPMENT_SET_SAVE, &WorldSession::handleEquipmentSetSave, false, false, true, false, false);
     registry.registerOpcode(CMSG_EQUIPMENT_SET_USE, &WorldSession::handleEquipmentSetUse, false, false, true, false, false);
@@ -1122,7 +1122,7 @@ void WorldSession::registerOpcodeHandler()
     // Unsorted
     registry.registerOpcode<STATUS_AUTHED>(CMSG_READY_FOR_ACCOUNT_DATA_TIMES, &WorldSession::handleReadyForAccountDataTimes, false, false, true, true, true);
 
-    registry.registerOpcode(CMSG_OPT_OUT_OF_LOOT, &WorldSession::handleSetAutoLootPassOpcode, true, true, true, false, false);
+    registry.registerOpcode(CMSG_OPT_OUT_OF_LOOT, &WorldSession::handleSetAutoLootPassOpcode, true, true, true, false, true);
     registry.registerOpcode(CMSG_REMOVE_GLYPH, &WorldSession::handleRemoveGlyph, false, false, true, false, false);
     registry.registerOpcode(CMSG_ALTER_APPEARANCE, &WorldSession::handleBarberShopResult, false, false, true, true, false);
     registry.registerOpcode(CMSG_GET_MIRRORIMAGE_DATA, &WorldSession::HandleMirrorImageOpcode, true, false, true, false, true);

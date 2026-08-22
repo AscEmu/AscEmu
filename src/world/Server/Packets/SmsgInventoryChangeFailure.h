@@ -14,8 +14,8 @@ namespace AscEmu::Packets
     {
     public:
         uint8_t error;
-        uint64_t srcGuid;
-        uint64_t destGuid;
+        WoWGuid srcGuid;
+        WoWGuid destGuid;
         uint32_t extraData;
 
         bool sendExtraData;
@@ -40,11 +40,63 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << error << srcGuid << destGuid << uint8_t(0);
-            if (sendExtraData)
-                packet << extraData;
+            if (m_protocol.isMop())
+            {
+                if (error == 0)
+                    return true;
 
-            return true;
+                packet.writeBit(destGuid[4]);
+                packet.writeBit(srcGuid[3]);
+                packet.writeBit(destGuid[6]);
+                packet.writeBit(destGuid[2]);
+                packet.writeBit(srcGuid[4]);
+                packet.writeBit(destGuid[5]);
+                packet.writeBit(srcGuid[1]);
+                packet.writeBit(srcGuid[6]);
+                packet.writeBit(destGuid[0]);
+                packet.writeBit(destGuid[3]);
+                packet.writeBit(destGuid[1]);
+                packet.writeBit(srcGuid[2]);
+                packet.writeBit(srcGuid[0]);
+                packet.writeBit(srcGuid[5]);
+                packet.writeBit(srcGuid[7]);
+                packet.writeBit(destGuid[7]);
+                packet.flushBits();
+
+                packet.writeByteSeq(destGuid[0]);
+                packet << uint8_t(0);    // bag type subclass
+                packet.writeByteSeq(destGuid[6]);
+                packet.writeByteSeq(srcGuid[4]);
+                packet.writeByteSeq(srcGuid[0]);
+                packet.writeByteSeq(srcGuid[7]);
+                packet.writeByteSeq(srcGuid[3]);
+                packet.writeByteSeq(destGuid[1]);
+                packet.writeByteSeq(destGuid[5]);
+                packet.writeByteSeq(srcGuid[5]);
+                packet.writeByteSeq(destGuid[7]);
+                packet.writeByteSeq(destGuid[2]);
+                packet.writeByteSeq(srcGuid[1]);
+                packet.writeByteSeq(srcGuid[6]);
+                packet.writeByteSeq(srcGuid[2]);
+                packet.writeByteSeq(destGuid[3]);
+                packet.writeByteSeq(destGuid[4]);
+                packet << error;
+
+                if (sendExtraData)
+                    packet << extraData;
+
+                return true;
+            }
+            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet << error << srcGuid.getRawGuid() << destGuid.getRawGuid() << uint8_t(0);
+                if (sendExtraData)
+                    packet << extraData;
+
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

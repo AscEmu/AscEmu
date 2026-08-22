@@ -28,8 +28,18 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> turnedOn;
-            return true;
+            if (m_protocol.isMop())
+            {
+                turnedOn = packet.readBit() ? 1 : 0;
+                return true;
+            }
+            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet >> turnedOn;
+                return true;
+            }
+
+            return false;
         }
     };
 }
