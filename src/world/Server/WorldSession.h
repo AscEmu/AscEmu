@@ -414,6 +414,14 @@ protected:
         // DuelHandler.cpp
         void handleDuelAccepted(WorldPacket& /*recvPacket*/);
         void handleDuelCancelled(WorldPacket& /*recvPacket*/);
+        void handleDuelProposed(WorldPacket& recvPacket);       //>= Mop
+        void handleDuelResponse(WorldPacket& recvPacket);       //>= Mop
+
+    private:
+        void performDuelAccept();
+        void performDuelCancel();
+
+    protected:
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // GMTicketHandler.cpp

@@ -30,8 +30,19 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << isCompleted;
-            return true;
+            if (m_protocol.isMop())
+            {
+                packet.writeBit(isCompleted);
+                packet.flushBits();
+                return true;
+            }
+            else if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet << isCompleted;
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

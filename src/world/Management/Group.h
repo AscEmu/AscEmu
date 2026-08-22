@@ -79,7 +79,7 @@ enum PartyUpdateFlags
 #define GROUP_UPDATE_FLAGS_COUNT 20
 static const uint8_t GroupUpdateLength[GROUP_UPDATE_FLAGS_COUNT] = { 0, 2, 2, 2, 1, 2, 2, 2, 2, 4, 8, 8, 1, 2, 2, 2, 1, 2, 2, 8 };
 
-enum GroupMemberOnlineStatus
+enum GroupMemberOnlineStatus : uint8_t
 {
     MEMBER_STATUS_OFFLINE   = 0x0000,
     MEMBER_STATUS_ONLINE    = 0x0001,       // Lua_UnitIsConnected

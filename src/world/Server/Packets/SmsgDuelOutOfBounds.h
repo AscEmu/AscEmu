@@ -30,9 +30,19 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << timer;
+            if (m_protocol.isMop())
+            {
+                // Mop's client tracks the out-of-bounds countdown itself; the server sends
+                // no payload at all for this opcode.
+                return true;
+            }
+            else if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet << timer;
+                return true;
+            }
 
-            return true;
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

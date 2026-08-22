@@ -5,13 +5,18 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/Packets/SmsgDuelCountdown.h"
 #include "Server/Packets/SmsgDuelComplete.h"
+#include "Server/Packets/CmsgDuelAccepted.h"
+#include "Server/Packets/CmsgDuelCancelled.h"
+#include "Server/Packets/CmsgDuelProposed.h"
+#include "Server/Packets/CmsgDuelResponse.h"
 #include "Server/WorldSession.h"
+#include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/EventMgr.h"
 
 using namespace AscEmu::Packets;
 
-void WorldSession::handleDuelAccepted(WorldPacket& /*recvPacket*/)
+void WorldSession::performDuelAccept()
 {
     const auto duelPlayer = _player->m_duelPlayer;
     if (duelPlayer == nullptr)
@@ -40,7 +45,7 @@ void WorldSession::handleDuelAccepted(WorldPacket& /*recvPacket*/)
     sEventMgr.AddEvent(_player, &Player::handleDuelCountdown, EVENT_PLAYER_DUEL_COUNTDOWN, 1000, 3, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
-void WorldSession::handleDuelCancelled(WorldPacket& /*recvPacket*/)
+void WorldSession::performDuelCancel()
 {
     const auto duelPlayer = _player->m_duelPlayer;
     if (duelPlayer == nullptr)
@@ -57,4 +62,51 @@ void WorldSession::handleDuelCancelled(WorldPacket& /*recvPacket*/)
     duelPlayer->getSession()->sendManagedPacket(completePacket);
 
     _player->cancelDuel();
+}
+
+void WorldSession::handleDuelAccepted(WorldPacket& recvPacket)
+{
+    CmsgDuelAccepted srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    performDuelAccept();
+}
+
+void WorldSession::handleDuelCancelled(WorldPacket& recvPacket)
+{
+    CmsgDuelCancelled srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    performDuelCancel();
+}
+
+void WorldSession::handleDuelProposed(WorldPacket& recvPacket)
+{
+    CmsgDuelProposed srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    // Mop's client sends a dedicated opcode instead of casting the Duel spell (7266/62875)
+    // itself; casting it here on the client's behalf routes through the existing
+    // Spell::SpellEffectDuel -> Player::requestDuel validation and request flow unchanged.
+    const auto target = sObjectMgr.getPlayer(srlPacket.targetGuid.getGuidLow());
+    if (target == nullptr)
+        return;
+
+    const uint32_t duelSpellId = _player->isMounted() ? 62875 : 7266;
+    _player->castSpell(target, duelSpellId, false);
+}
+
+void WorldSession::handleDuelResponse(WorldPacket& recvPacket)
+{
+    CmsgDuelResponse srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    if (srlPacket.accepted)
+        performDuelAccept();
+    else
+        performDuelCancel();
 }

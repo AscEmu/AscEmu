@@ -38,8 +38,9 @@ namespace AscEmu::Packets
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << winnerCondition << ourName.c_str() << enemyName.c_str();
+                return true;
             }
-            else // Mop
+            else if (m_protocol.isMop())
             {
                 packet.writeBit(winnerCondition);
                 packet.writeBits(enemyName.length(), 6);
@@ -52,8 +53,11 @@ namespace AscEmu::Packets
 
                 packet << uint32_t(0);            // enemy realmId
                 packet.writeString(ourName);
+
+                return true;
             }
-            return true;
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

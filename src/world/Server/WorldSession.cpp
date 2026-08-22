@@ -919,6 +919,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_ATTACK_STOP, &WorldSession::handleAttackStopOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_DUEL_ACCEPTED, &WorldSession::handleDuelAccepted, true, true, true, true, false);
     registry.registerOpcode(CMSG_DUEL_CANCELLED, &WorldSession::handleDuelCancelled, true, true, true, true, false);
+    registry.registerOpcode(CMSG_DUEL_PROPOSED, &WorldSession::handleDuelProposed, false, false, false, false, true);
+    registry.registerOpcode(CMSG_DUEL_RESPONSE, &WorldSession::handleDuelResponse, false, false, false, false, true);
 
     // Trade
     registry.registerOpcode(CMSG_INITIATE_TRADE, &WorldSession::handleInitiateTradeOpcode, true, true, true, true, false);
