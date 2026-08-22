@@ -36,7 +36,23 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isCata())
+            if (m_protocol.isMop())
+            {
+                packet.writeBit(0);       // !has message
+                packet.writeBit(0);       // !has response
+                packet.writeBits(static_cast<uint32_t>(message.size()), 11);
+                packet.writeBits(static_cast<uint32_t>(comment.size()), 14);
+                packet.flushBits();
+
+                packet.writeString(message);
+                packet.writeString(comment);
+
+                packet << ticketGuid;
+                packet << uint32_t(1);    // response id
+
+                return true;
+            }
+            else if (m_protocol.isCata())
             {
                 packet << uint32_t(1);        // unk
                 packet << ticketGuid;

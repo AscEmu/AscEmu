@@ -45,27 +45,71 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> map >> location.x >> location.y >> location.z >> message;
-
-            if (m_protocol.expansion < WoW::Expansion::_Cata)
+            if (m_protocol.isMop())
             {
-                packet >> message2;
-            }
-            else
-            {
-                packet >> responseNeeded >> moreHelpNeeded >> ticketCount;
+                packet >> map;
+                packet >> location.z;
+                packet >> location.y;
+                packet.readSkip<uint8_t>();    // flags, unused
+                packet >> location.x;
+                packet >> ticketCount;
 
-                for (uint32_t i = 0; i < ticketCount; ++i)
+                if (ticketCount > 0)
                 {
-                    uint32_t time;
-                    packet >> time;
-                    timesList.push_back(time);
+                    uint8_t textCount = 0;
+                    packet >> textCount;
+
+                    for (uint8_t i = 0; i < textCount; ++i)
+                    {
+                        uint32_t time;
+                        packet >> time;
+                        timesList.push_back(time);
+                    }
+
+                    packet >> decompressedSize;
+
+                    // A compressed log follows here. Its compressed length isn't encoded
+                    // anywhere in the packet, so we can't reliably skip past it to reach the
+                    // bit-packed message below - matches the handler, which already discards
+                    // this log after decompressing it.
+                    return true;
                 }
 
-                packet >> decompressedSize;
+                packet.flushBits();
+                responseNeeded = packet.readBit() ? 1 : 0;
+                moreHelpNeeded = packet.readBit();
+
+                const uint32_t messageLen = packet.readBits(11);
+                message = packet.readString(messageLen);
+
+                return true;
+            }
+            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet >> map >> location.x >> location.y >> location.z >> message;
+
+                if (m_protocol.expansion < WoW::Expansion::_Cata)
+                {
+                    packet >> message2;
+                }
+                else
+                {
+                    packet >> responseNeeded >> moreHelpNeeded >> ticketCount;
+
+                    for (uint32_t i = 0; i < ticketCount; ++i)
+                    {
+                        uint32_t time;
+                        packet >> time;
+                        timesList.push_back(time);
+                    }
+
+                    packet >> decompressedSize;
+                }
+
+                return true;
             }
 
-            return true;
+            return false;
         }
     };
 }

@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGmTicketGetTicket.h"
 #include "Server/Packets/SmsgGmTicketSystemstatus.h"
 #include "Server/Packets/SmsgGmTicketCaseStatus.h"
+#include "Server/Packets/SmsgGmTicketStatusUpdate.h"
 #include "Server/Packets/CmsgGmReportLag.h"
 #include "Server/Packets/CmsgGmSurveySubmit.h"
 #include "Server/Packets/SmsgGmResponseReceived.h"
@@ -37,6 +38,8 @@ enum GMTicketResults
 {
     GMTNoTicketFound = 1,
     GMTNoErrors = 2,
+    GMTUpdateSuccess = 4,
+    GMTUpdateError = 5,
     GMTCurrentTicketFound = 6,
     GMTTicketRemoved = 9,
     GMTNoCurrentTicket = 10
@@ -126,8 +129,16 @@ void WorldSession::handleGMTicketUpdateOpcode(WorldPacket& recvPacket)
         ticketError = GMTNoErrors;
     }
 
-    SmsgGmTicketUpdateText managedPacket(ticketError);
-    sendManagedPacket(managedPacket);
+    if (_socket->getClientProtocol().isMop())
+    {
+        SmsgGmTicketStatusUpdate managedPacket(ticket ? GMTUpdateSuccess : GMTUpdateError);
+        sendManagedPacket(managedPacket);
+    }
+    else
+    {
+        SmsgGmTicketUpdateText managedPacket(ticketError);
+        sendManagedPacket(managedPacket);
+    }
 
 #ifndef GM_TICKET_MY_MASTER_COMPATIBLE
     auto channel = sChannelMgr.getChannel(sWorld.getGmClientChannel(), _player);
@@ -149,8 +160,16 @@ void WorldSession::handleGMTicketDeleteOpcode(WorldPacket& /*recvPacket*/)
 
     sTicketMgr.removeGMTicketByPlayer(_player->getGuid());
 
-    SmsgGmTicketDeleteTicket managedPacket(GMTTicketRemoved);
-    sendManagedPacket(managedPacket);
+    if (_socket->getClientProtocol().isMop())
+    {
+        SmsgGmTicketStatusUpdate managedPacket(GMTTicketRemoved);
+        sendManagedPacket(managedPacket);
+    }
+    else
+    {
+        SmsgGmTicketDeleteTicket managedPacket(GMTTicketRemoved);
+        sendManagedPacket(managedPacket);
+    }
 
     auto channel = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), _player);
     if (channel != nullptr && ticket != nullptr)
@@ -206,8 +225,16 @@ void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
 
     auto* ticket = sTicketMgr.createGMTicket(_player, srlPacket);
 
-    SmsgGmTicketCreate managedPacket(GMTNoErrors);
-    sendManagedPacket(managedPacket);
+    if (_socket->getClientProtocol().isMop())
+    {
+        SmsgGmTicketStatusUpdate managedPacket(GMTNoErrors);
+        sendManagedPacket(managedPacket);
+    }
+    else
+    {
+        SmsgGmTicketCreate managedPacket(GMTNoErrors);
+        sendManagedPacket(managedPacket);
+    }
 
     // send message indicating new ticket
     auto channel = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), _player);
@@ -235,7 +262,10 @@ void WorldSession::handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/)
     {
         if (!ticket->deleted)
         {
-            SmsgGmTicketGetTicket managedPacket(GMTCurrentTicketFound, ticket->message, 0, ticket->guid, ticket->timestamp, ticket->comment);
+            const uint32_t oldestTimestamp = sTicketMgr.getOldestOpenTicketTimestamp();
+            const uint32_t oldestAge = oldestTimestamp ? static_cast<uint32_t>(UNIXTIME) - oldestTimestamp : 0;
+
+            SmsgGmTicketGetTicket managedPacket(GMTCurrentTicketFound, ticket->message, 0, ticket->guid, ticket->timestamp, ticket->comment, oldestAge);
             sendManagedPacket(managedPacket);
         }
 #if VERSION_STRING > WotLK

@@ -1051,9 +1051,9 @@ void WorldSession::registerOpcodeHandler()
     //registry.registerOpcode(CMSG_BATTLEFIELD_MGR_ENTRY_INVITE_RESPONSE, &WorldSession::HandleBgInviteResponse, false, false, true, false, false);
 
     // GM Ticket System
-    registry.registerOpcode(CMSG_GMTICKET_CREATE, &WorldSession::handleGMTicketCreateOpcode, false, true, true, true, false);
-    registry.registerOpcode(CMSG_GMTICKET_UPDATETEXT, &WorldSession::handleGMTicketUpdateOpcode, false, true, true, true, false);
-    registry.registerOpcode(CMSG_GMTICKET_DELETETICKET, &WorldSession::handleGMTicketDeleteOpcode, false, true, true, true, false);
+    registry.registerOpcode(CMSG_GMTICKET_CREATE, &WorldSession::handleGMTicketCreateOpcode, false, true, true, true, true);
+    registry.registerOpcode(CMSG_GMTICKET_UPDATETEXT, &WorldSession::handleGMTicketUpdateOpcode, false, true, true, true, true);
+    registry.registerOpcode(CMSG_GMTICKET_DELETETICKET, &WorldSession::handleGMTicketDeleteOpcode, false, true, true, true, true);
     registry.registerOpcode(CMSG_GMTICKET_GETTICKET, &WorldSession::handleGMTicketGetTicketOpcode, false, true, true, true, true);
     registry.registerOpcode(CMSG_GMTICKET_SYSTEMSTATUS, &WorldSession::handleGMTicketSystemStatusOpcode, false, true, true, true, true);
     registry.registerOpcode(CMSG_GMTICKETSYSTEM_TOGGLE, &WorldSession::handleGMTicketToggleSystemStatusOpcode, false, true, true, false, false);
@@ -1061,7 +1061,7 @@ void WorldSession::registerOpcodeHandler()
 
     // Lag report
     registry.registerOpcode(CMSG_GM_REPORT_LAG, &WorldSession::handleReportLag, false, false, true, false, false);
-    registry.registerOpcode(CMSG_GMSURVEY_SUBMIT, &WorldSession::handleGMSurveySubmitOpcode, false, false, true, false, false);
+    registry.registerOpcode(CMSG_GMSURVEY_SUBMIT, &WorldSession::handleGMSurveySubmitOpcode, false, false, true, false, true);
 
     // Meeting Stone / Instances
     registry.registerOpcode(CMSG_SUMMON_RESPONSE, &WorldSession::handleSummonResponseOpcode, true, true, true, false, false);

@@ -233,6 +233,20 @@ GM_Ticket* TicketMgr::getGMTicketByPlayer(uint64_t playerGuid)
     return nullptr;
 }
 
+uint32_t TicketMgr::getOldestOpenTicketTimestamp()
+{
+    uint32_t oldest = 0;
+    for (const auto& ticket : m_ticketList)
+    {
+        if (ticket->deleted)
+            continue;
+
+        if (oldest == 0 || ticket->timestamp < oldest)
+            oldest = ticket->timestamp;
+    }
+    return oldest;
+}
+
 GM_Ticket* TicketMgr::getGMTicket(uint64_t ticketGuid)
 {
     for (GmTicketList::iterator i = m_ticketList.begin(); i != m_ticketList.end(); ++i)

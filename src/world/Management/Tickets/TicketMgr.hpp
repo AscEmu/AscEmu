@@ -87,6 +87,7 @@ public:
     void deleteAllRemovedGMTickets();
     GM_Ticket* getGMTicket(uint64_t ticketGuid);
     GM_Ticket* getGMTicketByPlayer(uint64_t playerGuid);
+    uint32_t getOldestOpenTicketTimestamp();
 
     GmTicketList m_ticketList;
 
