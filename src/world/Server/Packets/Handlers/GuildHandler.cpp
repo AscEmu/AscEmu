@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Charter.hpp"
 #include "Management/ItemInterface.h"
 #include "Server/Packets/CmsgGuildQuery.h"
+#include "Server/Packets/CmsgQueryGuildXp.h"
 #include "Server/Packets/SmsgGuildCommandResult.h"
 #include "Server/Packets/CmsgGuildInvite.h"
 #include "Management/Guild/GuildMgr.hpp"
@@ -73,6 +74,21 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLfGuildMembershipListUpdated.h"
 #include "Server/Packets/SmsgLfGuildRecruitListUpdated.h"
 #include "Server/Packets/SmsgLfGuildPostUpdated.h"
+#include "Server/Packets/CmsgGuildAssignMemberRank.h"
+#include "Server/Packets/CmsgGuildQueryRanks.h"
+#include "Server/Packets/CmsgGuildRequestPartyState.h"
+#include "Server/Packets/CmsgGuildRequestMaxDailyXp.h"
+#include "Server/Packets/CmsgQueryGuildRewards.h"
+#include "Server/Packets/CmsgGuildQueryNews.h"
+#include "Server/Packets/CmsgGuildNewsUpdateSticky.h"
+#include "Server/Packets/CmsgReplaceGuildMaster.h"
+#include "Server/Packets/CmsgAutoDeclineGuildInvites.h"
+#include "Server/Packets/CmsgLfGuildAddRecruit.h"
+#include "Server/Packets/CmsgLfGuildBrowse.h"
+#include "Server/Packets/CmsgLfGuildDeclineRecruit.h"
+#include "Server/Packets/CmsgLfGuildGetRecruits.h"
+#include "Server/Packets/CmsgLfGuildRemoveRecruit.h"
+#include "Server/Packets/CmsgLfGuildSetGuildPost.h"
 #endif
 
 using namespace AscEmu::Packets;
@@ -977,94 +993,28 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 void WorldSession::handleGuildAssignRankOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    WoWGuid targetGuid;
-    WoWGuid setterGuid;
-
-    uint32_t rankId;
-    recvPacket >> rankId;
-
-    targetGuid[1] = recvPacket.readBit();
-    targetGuid[7] = recvPacket.readBit();
-
-    setterGuid[4] = recvPacket.readBit();
-    setterGuid[2] = recvPacket.readBit();
-
-    targetGuid[4] = recvPacket.readBit();
-    targetGuid[5] = recvPacket.readBit();
-    targetGuid[6] = recvPacket.readBit();
-
-    setterGuid[1] = recvPacket.readBit();
-    setterGuid[7] = recvPacket.readBit();
-
-    targetGuid[2] = recvPacket.readBit();
-    targetGuid[3] = recvPacket.readBit();
-    targetGuid[0] = recvPacket.readBit();
-
-    setterGuid[6] = recvPacket.readBit();
-    setterGuid[3] = recvPacket.readBit();
-    setterGuid[0] = recvPacket.readBit();
-    setterGuid[5] = recvPacket.readBit();
-
-    recvPacket.readByteSeq(targetGuid[0]);
-
-    recvPacket.readByteSeq(setterGuid[1]);
-    recvPacket.readByteSeq(setterGuid[3]);
-    recvPacket.readByteSeq(setterGuid[5]);
-
-    recvPacket.readByteSeq(targetGuid[7]);
-    recvPacket.readByteSeq(targetGuid[3]);
-
-    recvPacket.readByteSeq(setterGuid[0]);
-
-    recvPacket.readByteSeq(targetGuid[1]);
-
-    recvPacket.readByteSeq(setterGuid[6]);
-
-    recvPacket.readByteSeq(targetGuid[2]);
-    recvPacket.readByteSeq(targetGuid[5]);
-    recvPacket.readByteSeq(targetGuid[4]);
-
-    recvPacket.readByteSeq(setterGuid[2]);
-    recvPacket.readByteSeq(setterGuid[4]);
-
-    recvPacket.readByteSeq(targetGuid[6]);
-
-    recvPacket.readByteSeq(setterGuid[7]);
+    CmsgGuildAssignMemberRank srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
     sLogger.debug("CMSG_GUILD_ASSIGN_MEMBER_RANK {}: Target: {} Rank: {}, Issuer: {}",
-        _player->getName(), WoWGuid::getGuidLowPartFromUInt64(targetGuid), rankId, WoWGuid::getGuidLowPartFromUInt64(setterGuid));
+        _player->getName(), WoWGuid::getGuidLowPartFromUInt64(srlPacket.targetGuid), srlPacket.rankId, WoWGuid::getGuidLowPartFromUInt64(srlPacket.setterGuid));
 
     if (Guild* guild = _player->getGuild())
-        guild->handleSetMemberRank(this, targetGuid, setterGuid, rankId);
+        guild->handleSetMemberRank(this, srlPacket.targetGuid, srlPacket.setterGuid, srlPacket.rankId);
 #endif
 }
 
 void WorldSession::handleGuildQueryRanksOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    WoWGuid guildGuid;
+    CmsgGuildQueryRanks srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
-    guildGuid[2] = recvPacket.readBit();
-    guildGuid[3] = recvPacket.readBit();
-    guildGuid[0] = recvPacket.readBit();
-    guildGuid[6] = recvPacket.readBit();
-    guildGuid[4] = recvPacket.readBit();
-    guildGuid[7] = recvPacket.readBit();
-    guildGuid[5] = recvPacket.readBit();
-    guildGuid[1] = recvPacket.readBit();
+    sLogger.debug("CMSG_GUILD_QUERY_RANKS {}: Guild: {}", _player->getName(), WoWGuid::getGuidLowPartFromUInt64(srlPacket.guildGuid));
 
-    recvPacket.readByteSeq(guildGuid[3]);
-    recvPacket.readByteSeq(guildGuid[4]);
-    recvPacket.readByteSeq(guildGuid[5]);
-    recvPacket.readByteSeq(guildGuid[7]);
-    recvPacket.readByteSeq(guildGuid[1]);
-    recvPacket.readByteSeq(guildGuid[0]);
-    recvPacket.readByteSeq(guildGuid[6]);
-    recvPacket.readByteSeq(guildGuid[2]);
-
-    sLogger.debug("CMSG_GUILD_QUERY_RANKS {}: Guild: {}", _player->getName(), WoWGuid::getGuidLowPartFromUInt64(guildGuid));
-
-    if (Guild* guild = sGuildMgr.getGuildById(WoWGuid::getGuidLowPartFromUInt64(guildGuid)))
+    if (Guild* guild = sGuildMgr.getGuildById(WoWGuid::getGuidLowPartFromUInt64(srlPacket.guildGuid)))
     {
         if (guild->isMember(_player->getGuid()))
             guild->sendGuildRankInfo(this);
@@ -1083,27 +1033,11 @@ void WorldSession::handleGuildRequestChallengeUpdate(WorldPacket& /*recvPacket*/
 void WorldSession::handleGuildQueryXPOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    WoWGuid guildGuid;
+    CmsgQueryGuildXp srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
-    guildGuid[2] = recvPacket.readBit();
-    guildGuid[1] = recvPacket.readBit();
-    guildGuid[0] = recvPacket.readBit();
-    guildGuid[5] = recvPacket.readBit();
-    guildGuid[4] = recvPacket.readBit();
-    guildGuid[7] = recvPacket.readBit();
-    guildGuid[6] = recvPacket.readBit();
-    guildGuid[3] = recvPacket.readBit();
-
-    recvPacket.readByteSeq(guildGuid[7]);
-    recvPacket.readByteSeq(guildGuid[2]);
-    recvPacket.readByteSeq(guildGuid[3]);
-    recvPacket.readByteSeq(guildGuid[6]);
-    recvPacket.readByteSeq(guildGuid[1]);
-    recvPacket.readByteSeq(guildGuid[5]);
-    recvPacket.readByteSeq(guildGuid[0]);
-    recvPacket.readByteSeq(guildGuid[4]);
-
-    uint32_t guildId = WoWGuid::getGuidLowPartFromUInt64(guildGuid);
+    uint32_t guildId = srlPacket.guildGuid.getGuidLowPart();
 
     sLogger.debug("CMSG_QUERY_GUILD_XP {}: guildId: {}", _player->getName(), guildId);
 
@@ -1118,27 +1052,11 @@ void WorldSession::handleGuildQueryXPOpcode([[maybe_unused]] WorldPacket& recvPa
 void WorldSession::handleGuildRequestPartyState([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    WoWGuid guildGuid;
+    CmsgGuildRequestPartyState srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
-    guildGuid[0] = recvPacket.readBit();
-    guildGuid[6] = recvPacket.readBit();
-    guildGuid[7] = recvPacket.readBit();
-    guildGuid[3] = recvPacket.readBit();
-    guildGuid[5] = recvPacket.readBit();
-    guildGuid[1] = recvPacket.readBit();
-    guildGuid[2] = recvPacket.readBit();
-    guildGuid[4] = recvPacket.readBit();
-
-    recvPacket.readByteSeq(guildGuid[6]);
-    recvPacket.readByteSeq(guildGuid[3]);
-    recvPacket.readByteSeq(guildGuid[2]);
-    recvPacket.readByteSeq(guildGuid[1]);
-    recvPacket.readByteSeq(guildGuid[5]);
-    recvPacket.readByteSeq(guildGuid[0]);
-    recvPacket.readByteSeq(guildGuid[7]);
-    recvPacket.readByteSeq(guildGuid[4]);
-
-    uint32_t guildId = WoWGuid::getGuidLowPartFromUInt64(guildGuid);
+    const uint32_t guildId = WoWGuid::getGuidLowPartFromUInt64(srlPacket.guildGuid);
 
     if (Guild* guild = sGuildMgr.getGuildById(guildId))
         guild->handleGuildPartyRequest(this);
@@ -1148,27 +1066,11 @@ void WorldSession::handleGuildRequestPartyState([[maybe_unused]] WorldPacket& re
 void WorldSession::handleGuildRequestMaxDailyXP([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    WoWGuid guid;
+    CmsgGuildRequestMaxDailyXp srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
-    guid[0] = recvPacket.readBit();
-    guid[3] = recvPacket.readBit();
-    guid[5] = recvPacket.readBit();
-    guid[1] = recvPacket.readBit();
-    guid[4] = recvPacket.readBit();
-    guid[6] = recvPacket.readBit();
-    guid[7] = recvPacket.readBit();
-    guid[2] = recvPacket.readBit();
-
-    recvPacket.readByteSeq(guid[7]);
-    recvPacket.readByteSeq(guid[4]);
-    recvPacket.readByteSeq(guid[3]);
-    recvPacket.readByteSeq(guid[5]);
-    recvPacket.readByteSeq(guid[1]);
-    recvPacket.readByteSeq(guid[2]);
-    recvPacket.readByteSeq(guid[6]);
-    recvPacket.readByteSeq(guid[0]);
-
-    uint32_t guildId = WoWGuid::getGuidLowPartFromUInt64(guid);
+    const uint32_t guildId = WoWGuid::getGuidLowPartFromUInt64(srlPacket.guildGuid);
 
     if (Guild* guild = sGuildMgr.getGuildById(guildId))
     {
@@ -1184,12 +1086,11 @@ void WorldSession::handleGuildRequestMaxDailyXP([[maybe_unused]] WorldPacket& re
 void WorldSession::handleAutoDeclineGuildInvites([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    uint8_t enable;
-    recvPacket >> enable;
+    CmsgAutoDeclineGuildInvites srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
-    bool enabled = enable > 0 ? true : false;
-
-    if (enabled)
+    if (srlPacket.enable)
         _player->addPlayerFlags(PLAYER_FLAG_DECLINE_GUILD_INVITES);
     else
         _player->removePlayerFlags(PLAYER_FLAG_DECLINE_GUILD_INVITES);
@@ -1199,7 +1100,9 @@ void WorldSession::handleAutoDeclineGuildInvites([[maybe_unused]] WorldPacket& r
 void WorldSession::handleGuildRewardsQueryOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    recvPacket.readSkip<uint32_t>();
+    CmsgQueryGuildRewards srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
     if (sGuildMgr.getGuildById(_player->getGuildId()))
     {
@@ -1214,7 +1117,9 @@ void WorldSession::handleGuildRewardsQueryOpcode([[maybe_unused]] WorldPacket& r
 void WorldSession::handleGuildQueryNewsOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    recvPacket.readSkip<uint32_t>();
+    CmsgGuildQueryNews srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
     if (Guild* guild = _player->getGuild())
         guild->sendNewsUpdate(this);
@@ -1224,47 +1129,24 @@ void WorldSession::handleGuildQueryNewsOpcode([[maybe_unused]] WorldPacket& recv
 void WorldSession::handleGuildNewsUpdateStickyOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    uint32_t newsId;
-    recvPacket >> newsId;
-
-    WoWGuid guid;
-    guid[2] = recvPacket.readBit();
-    guid[4] = recvPacket.readBit();
-    guid[3] = recvPacket.readBit();
-    guid[0] = recvPacket.readBit();
-
-    bool isSticky = recvPacket.readBit();
-
-    guid[6] = recvPacket.readBit();
-    guid[7] = recvPacket.readBit();
-    guid[1] = recvPacket.readBit();
-    guid[5] = recvPacket.readBit();
-
-    recvPacket.readByteSeq(guid[6]);
-    recvPacket.readByteSeq(guid[2]);
-    recvPacket.readByteSeq(guid[1]);
-    recvPacket.readByteSeq(guid[0]);
-    recvPacket.readByteSeq(guid[5]);
-    recvPacket.readByteSeq(guid[3]);
-    recvPacket.readByteSeq(guid[7]);
-    recvPacket.readByteSeq(guid[4]);
+    CmsgGuildNewsUpdateSticky srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
     if (Guild* guild = _player->getGuild())
-        guild->handleNewsSetSticky(this, newsId, isSticky);
+        guild->handleNewsSetSticky(this, srlPacket.newsId, srlPacket.isSticky);
 #endif
 }
 
 void WorldSession::handleGuildSetGuildMaster([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    const auto nameLength = static_cast<uint8_t>(recvPacket.readBits(7));
-
-    recvPacket.readBit();
-
-    const auto playerName = recvPacket.readString(nameLength);
+    CmsgReplaceGuildMaster srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
     if (Guild* guild = _player->getGuild())
-        guild->handleSetNewGuildMaster(this, playerName);
+        guild->handleReplaceGuildMaster(this);
 #endif
 }
 
@@ -1276,56 +1158,22 @@ void WorldSession::handleGuildFinderAddRecruit([[maybe_unused]] WorldPacket& rec
     if (sGuildFinderMgr.getAllMembershipRequestsForPlayer(_player->getGuidLow()).size() == 10)
         return;
 
-    uint32_t classRoles = 0;
-    uint32_t availability = 0;
-    uint32_t guildInterests = 0;
-
-    recvPacket >> classRoles;
-    recvPacket >> guildInterests;
-    recvPacket >> availability;
-
-    WoWGuid guid;
-
-    guid[3] = recvPacket.readBit();
-    guid[0] = recvPacket.readBit();
-    guid[6] = recvPacket.readBit();
-    guid[1] = recvPacket.readBit();
-
-    uint16_t commentLength = static_cast<uint16_t>(recvPacket.readBits(11));
-
-    guid[5] = recvPacket.readBit();
-    guid[4] = recvPacket.readBit();
-    guid[7] = recvPacket.readBit();
-
-    uint8_t nameLength = static_cast<uint8_t>(recvPacket.readBits(7));
-
-    guid[2] = recvPacket.readBit();
-
-    recvPacket.readByteSeq(guid[4]);
-    recvPacket.readByteSeq(guid[5]);
-
-    std::string comment = recvPacket.readString(commentLength);
-    std::string playerName = recvPacket.readString(nameLength);
-
-    recvPacket.readByteSeq(guid[7]);
-    recvPacket.readByteSeq(guid[2]);
-    recvPacket.readByteSeq(guid[0]);
-    recvPacket.readByteSeq(guid[6]);
-    recvPacket.readByteSeq(guid[1]);
-    recvPacket.readByteSeq(guid[3]);
-
-    uint32_t guildLowGuid = WoWGuid::getGuidLowPartFromUInt64(uint64_t(guid));
-
-    if (!(classRoles & GUILDFINDER_ALL_ROLES) || classRoles > GUILDFINDER_ALL_ROLES)
+    CmsgLfGuildAddRecruit srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    if (!(availability & AVAILABILITY_ALWAYS) || availability > AVAILABILITY_ALWAYS)
+    const uint32_t guildLowGuid = WoWGuid::getGuidLowPartFromUInt64(uint64_t(srlPacket.guid));
+
+    if (!(srlPacket.classRoles & GUILDFINDER_ALL_ROLES) || srlPacket.classRoles > GUILDFINDER_ALL_ROLES)
         return;
 
-    if (!(guildInterests & ALL_INTERESTS) || guildInterests > ALL_INTERESTS)
+    if (!(srlPacket.availability & AVAILABILITY_ALWAYS) || srlPacket.availability > AVAILABILITY_ALWAYS)
         return;
 
-    MembershipRequest request = MembershipRequest(_player->getGuidLow(), guildLowGuid, availability, classRoles, guildInterests, comment, time(nullptr));
+    if (!(srlPacket.guildInterests & ALL_INTERESTS) || srlPacket.guildInterests > ALL_INTERESTS)
+        return;
+
+    MembershipRequest request = MembershipRequest(_player->getGuidLow(), guildLowGuid, srlPacket.availability, srlPacket.classRoles, srlPacket.guildInterests, srlPacket.comment, time(nullptr));
     sGuildFinderMgr.addMembershipRequest(guildLowGuid, request);
 #endif
 }
@@ -1333,15 +1181,14 @@ void WorldSession::handleGuildFinderAddRecruit([[maybe_unused]] WorldPacket& rec
 void WorldSession::handleGuildFinderBrowse([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    uint32_t classRoles = 0;
-    uint32_t availability = 0;
-    uint32_t guildInterests = 0;
-    uint32_t playerLevel = 0;
+    CmsgLfGuildBrowse srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
-    recvPacket >> classRoles;
-    recvPacket >> availability;
-    recvPacket >> guildInterests;
-    recvPacket >> playerLevel;
+    const uint32_t classRoles = srlPacket.classRoles;
+    const uint32_t availability = srlPacket.availability;
+    const uint32_t guildInterests = srlPacket.guildInterests;
+    const uint32_t playerLevel = srlPacket.playerLevel;
 
     if (!(classRoles & GUILDFINDER_ALL_ROLES) || classRoles > GUILDFINDER_ALL_ROLES)
         return;
@@ -1395,28 +1242,12 @@ void WorldSession::handleGuildFinderBrowse([[maybe_unused]] WorldPacket& recvPac
 void WorldSession::handleGuildFinderDeclineRecruit([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    WoWGuid playerGuid;
-
-    playerGuid[1] = recvPacket.readBit();
-    playerGuid[4] = recvPacket.readBit();
-    playerGuid[5] = recvPacket.readBit();
-    playerGuid[2] = recvPacket.readBit();
-    playerGuid[6] = recvPacket.readBit();
-    playerGuid[7] = recvPacket.readBit();
-    playerGuid[0] = recvPacket.readBit();
-    playerGuid[3] = recvPacket.readBit();
-
-    recvPacket.readByteSeq(playerGuid[5]);
-    recvPacket.readByteSeq(playerGuid[7]);
-    recvPacket.readByteSeq(playerGuid[2]);
-    recvPacket.readByteSeq(playerGuid[3]);
-    recvPacket.readByteSeq(playerGuid[4]);
-    recvPacket.readByteSeq(playerGuid[1]);
-    recvPacket.readByteSeq(playerGuid[0]);
-    recvPacket.readByteSeq(playerGuid[6]);
+    CmsgLfGuildDeclineRecruit srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
     WoWGuid wowGuid;
-    wowGuid.init(playerGuid);
+    wowGuid.init(srlPacket.playerGuid);
 
     if (!wowGuid.isPlayer())
         return;
@@ -1460,8 +1291,9 @@ void WorldSession::handleGuildFinderGetApplications(WorldPacket& /*recvPacket*/)
 void WorldSession::handleGuildFinderGetRecruits([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    uint32_t unkTime = 0;
-    recvPacket >> unkTime;
+    CmsgLfGuildGetRecruits srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
     Player* player = _player;
     if (!player->getGuildId())
@@ -1524,49 +1356,30 @@ void WorldSession::handleGuildFinderPostRequest(WorldPacket& /*recvPacket*/)
 void WorldSession::handleGuildFinderRemoveRecruit([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    WoWGuid guildGuid;
+    CmsgLfGuildRemoveRecruit srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
-    guildGuid[0] = recvPacket.readBit();
-    guildGuid[4] = recvPacket.readBit();
-    guildGuid[3] = recvPacket.readBit();
-    guildGuid[5] = recvPacket.readBit();
-    guildGuid[7] = recvPacket.readBit();
-    guildGuid[6] = recvPacket.readBit();
-    guildGuid[2] = recvPacket.readBit();
-    guildGuid[1] = recvPacket.readBit();
-
-    recvPacket.readByteSeq(guildGuid[4]);
-    recvPacket.readByteSeq(guildGuid[0]);
-    recvPacket.readByteSeq(guildGuid[3]);
-    recvPacket.readByteSeq(guildGuid[6]);
-    recvPacket.readByteSeq(guildGuid[5]);
-    recvPacket.readByteSeq(guildGuid[1]);
-    recvPacket.readByteSeq(guildGuid[2]);
-    recvPacket.readByteSeq(guildGuid[7]);
-
-    sGuildFinderMgr.removeMembershipRequest(WoWGuid::getGuidLowPartFromUInt64(_player->getGuid()), WoWGuid::getGuidLowPartFromUInt64(guildGuid));
+    sGuildFinderMgr.removeMembershipRequest(WoWGuid::getGuidLowPartFromUInt64(_player->getGuid()), WoWGuid::getGuidLowPartFromUInt64(srlPacket.guildGuid));
 #endif
 }
 
 void WorldSession::handleGuildFinderSetGuildPost([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    uint32_t classRoles = 0;
-    uint32_t availability = 0;
-    uint32_t guildInterests = 0;
-    uint32_t level = 0;
+    CmsgLfGuildSetGuildPost srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
-    recvPacket >> level;
-    recvPacket >> availability;
-    recvPacket >> guildInterests;
-    recvPacket >> classRoles;
+    uint32_t classRoles = srlPacket.classRoles;
+    uint32_t availability = srlPacket.availability;
+    uint32_t guildInterests = srlPacket.guildInterests;
+    uint32_t level = srlPacket.level;
+    bool listed = srlPacket.listed;
+    std::string& comment = srlPacket.comment;
 
     if (level == 0)
         level = ANY_FINDER_LEVEL;
-
-    uint32_t length = recvPacket.readBits(11);
-    bool listed = recvPacket.readBit();
-    std::string comment = recvPacket.readString(length);
 
     if (!(classRoles & GUILDFINDER_ALL_ROLES) || classRoles > GUILDFINDER_ALL_ROLES)
         return;

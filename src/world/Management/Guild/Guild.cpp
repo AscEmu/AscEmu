@@ -467,6 +467,42 @@ void Guild::handleSetNewGuildMaster(WorldSession* session, std::string const& na
     }
 }
 
+#if VERSION_STRING >= Cata
+void Guild::handleReplaceGuildMaster(WorldSession* session)
+{
+    Player* player = session->GetPlayer();
+
+    GuildMember* newGuildMaster = getMember(player->getGuid());
+    if (newGuildMaster == nullptr)
+        return;
+
+    if (newGuildMaster->getRankId() > GR_MEMBER)
+    {
+        SmsgGuildCommandResult managedPacket(GC_TYPE_CHANGE_LEADER, "", GC_ERROR_PERMISSIONS);
+        session->sendManagedPacket(managedPacket);
+        return;
+    }
+
+    GuildMember* oldGuildMaster = getMember(m_leaderGuid);
+    if (oldGuildMaster == nullptr)
+        return;
+
+    if (oldGuildMaster->getLogoutTime() > static_cast<uint64_t>(time(nullptr) - (DAY * 90)))
+    {
+        SmsgGuildCommandResult managedPacket(GC_TYPE_CHANGE_LEADER, "", GC_ERROR_PERMISSIONS);
+        session->sendManagedPacket(managedPacket);
+        return;
+    }
+
+    const std::string oldGuildMasterName = oldGuildMaster->getName();
+    const std::string newGuildMasterName = newGuildMaster->getName();
+
+    setLeaderGuid(newGuildMaster);
+    oldGuildMaster->changeRank(_getLowestRankId());
+    broadcastEvent(GE_LEADER_CHANGED, 0, { oldGuildMasterName, newGuildMasterName });
+}
+#endif
+
 void Guild::handleSetBankTabInfo(WorldSession* session, uint8_t tabId, std::string const& name, std::string const& icon)
 {
     GuildBankTab* tab = getBankTab(tabId);

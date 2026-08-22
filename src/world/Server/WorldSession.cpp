@@ -980,9 +980,9 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_GUILD_LEAVE, &WorldSession::handleGuildLeave, true, true, true, true, false);
     registry.registerOpcode(CMSG_GUILD_REMOVE, &WorldSession::handleGuildRemove, true, true, true, true, false);
     registry.registerOpcode(CMSG_GUILD_DISBAND, &WorldSession::handleGuildDisband, true, true, true, true, false);
-    registry.registerOpcode(CMSG_GUILD_LEADER, &WorldSession::handleGuildLeader, true, true, true, true, false);
+    registry.registerOpcode(CMSG_GUILD_LEADER, &WorldSession::handleGuildLeader, true, true, true, true, true);
     registry.registerOpcode(CMSG_GUILD_MOTD, &WorldSession::handleGuildMotd, true, true, true, true, false);
-    registry.registerOpcode(CMSG_GUILD_SET_RANK, &WorldSession::handleGuildSetRank, true, false, true, true, false);
+    registry.registerOpcode(CMSG_GUILD_SET_RANK, &WorldSession::handleGuildSetRank, true, false, true, true, true);
     registry.registerOpcode(CMSG_GUILD_ADD_RANK, &WorldSession::handleGuildAddRank, true, true, true, true, false);
     registry.registerOpcode(CMSG_GUILD_DEL_RANK, &WorldSession::handleGuildDelRank, true, true, true, true, false);
     registry.registerOpcode(CMSG_GUILD_SET_PUBLIC_NOTE, &WorldSession::handleGuildSetPublicNote, true, true, true, false, false);
@@ -998,7 +998,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(MSG_SAVE_GUILD_EMBLEM, &WorldSession::handleSaveGuildEmblem, true, true, true, true, false);
     registry.registerOpcode(CMSG_GUILD_INFO_TEXT, &WorldSession::handleSetGuildInfo, true, true, true, true, false);
     registry.registerOpcode(MSG_QUERY_GUILD_BANK_TEXT, &WorldSession::handleGuildBankQueryText, true, true, true, false, false);
-    registry.registerOpcode(CMSG_SET_GUILD_BANK_TEXT, &WorldSession::handleSetGuildBankText, true, true, true, true, false);
+    registry.registerOpcode(CMSG_SET_GUILD_BANK_TEXT, &WorldSession::handleSetGuildBankText, true, true, true, true, true);
     registry.registerOpcode(MSG_GUILD_EVENT_LOG_QUERY, &WorldSession::handleGuildLog, true, true, true, false, false);
     registry.registerOpcode(CMSG_GUILD_BANKER_ACTIVATE, &WorldSession::handleGuildBankerActivate, true, true, true, true, true);
     registry.registerOpcode(CMSG_GUILD_BANK_BUY_TAB, &WorldSession::handleGuildBankBuyTab, true, true, true, true, false);
@@ -1186,8 +1186,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_LEARN_PREVIEW_TALENTS, &WorldSession::handleLearnPreviewTalentsOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_GUILD_BANK_MONEY_WITHDRAWN_QUERY, &WorldSession::handleGuildBankMoneyWithdrawn, false, false, false, true, false);
     registry.registerOpcode(CMSG_GUILD_BANK_QUERY_TEXT, &WorldSession::handleQueryGuildBankTabText, false, false, false, true, false);
-    registry.registerOpcode(CMSG_QUERY_GUILD_XP, &WorldSession::handleGuildQueryXPOpcode, false, false, false, true, false);
-    registry.registerOpcode(CMSG_GUILD_SET_NOTE, &WorldSession::handleGuildSetNoteOpcode, false, false, false, true, false);
+    registry.registerOpcode(CMSG_QUERY_GUILD_XP, &WorldSession::handleGuildQueryXPOpcode, false, false, false, true, true);
+    registry.registerOpcode(CMSG_GUILD_SET_NOTE, &WorldSession::handleGuildSetNoteOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_QUERY_GUILD_REWARDS, &WorldSession::handleGuildRewardsQueryOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_GUILD_QUERY_RANKS, &WorldSession::handleGuildQueryRanksOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_GUILD_ASSIGN_MEMBER_RANK, &WorldSession::handleGuildAssignRankOpcode, false, false, false, true, false);
@@ -1196,6 +1196,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_GUILD_REQUEST_MAX_DAILY_XP, &WorldSession::handleGuildRequestMaxDailyXP, false, false, false, true, false);
     registry.registerOpcode(CMSG_GUILD_QUERY_NEWS, &WorldSession::handleGuildQueryNewsOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_GUILD_NEWS_UPDATE_STICKY, &WorldSession::handleGuildNewsUpdateStickyOpcode, false, false, false, true, false);
+    registry.registerOpcode(CMSG_AUTO_DECLINE_GUILD_INVITES, &WorldSession::handleAutoDeclineGuildInvites, false, false, false, true, true);
+    registry.registerOpcode(CMSG_REPLACE_GUILD_MASTER, &WorldSession::handleGuildSetGuildMaster, false, false, false, true, true);
     registry.registerOpcode(CMSG_GUILD_PERMISSIONS, &WorldSession::handleGuildPermissions, false, false, false, true, false);
     registry.registerOpcode(CMSG_LF_GUILD_GET_RECRUITS, &WorldSession::handleGuildFinderGetRecruits, false, false, false, true, false);
     registry.registerOpcode(CMSG_LF_GUILD_ADD_RECRUIT, &WorldSession::handleGuildFinderAddRecruit, false, false, false, true, false);

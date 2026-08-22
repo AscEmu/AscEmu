@@ -41,32 +41,58 @@ namespace AscEmu::Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+            {
                 packet >> newRankId >> newRights >> rankName >> moneyPerDay;
-            else
+
+                readBankRightsAndSlots(packet);
+
+                return true;
+            }
+            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
                 packet >> oldRankId >> oldRights >> newRights;
 
-            GuildBankRightsAndSlotsVec rightsAndSlots(MAX_GUILD_BANK_TABS);
-            for (uint8_t tabId = 0; tabId < MAX_GUILD_BANK_TABS; ++tabId)
-            {
-                uint8_t bankRights;
-                uint32_t slots;
+                readBankRightsAndSlots(packet);
 
-                packet >> bankRights;
-                packet >> slots;
-                rightsAndSlots[tabId] = GuildBankRightsAndSlots(tabId, bankRights, slots);
-
-                _rightsAndSlots.push_back(rightsAndSlots[tabId]);
-            }
-
-            if (m_protocol.expansion >= WoW::Expansion::_Cata)
-            {
                 packet >> moneyPerDay >> newRankId;
 
                 const uint32_t nameLength = packet.readBits(7);
                 rankName = packet.readString(nameLength);
+
+                return true;
+            }
+            else if (m_protocol.isMop())
+            {
+                packet >> oldRankId;
+
+                readBankRightsAndSlots(packet);
+
+                packet >> moneyPerDay >> oldRights >> newRights >> newRankId;
+
+                const uint32_t nameLength = packet.readBits(7);
+                rankName = packet.readString(nameLength);
+
+                return true;
             }
 
-            return true;
+            return false;
+        }
+
+    private:
+        void readBankRightsAndSlots(WorldPacket& packet)
+        {
+            GuildBankRightsAndSlotsVec rightsAndSlots(MAX_GUILD_BANK_TABS);
+            for (uint8_t tabId = 0; tabId < MAX_GUILD_BANK_TABS; ++tabId)
+            {
+                uint32_t bankRights;
+                uint32_t slots;
+
+                packet >> bankRights;
+                packet >> slots;
+                rightsAndSlots[tabId] = GuildBankRightsAndSlots(tabId, static_cast<uint8_t>(bankRights), slots);
+
+                _rightsAndSlots.push_back(rightsAndSlots[tabId]);
+            }
         }
     };
 }

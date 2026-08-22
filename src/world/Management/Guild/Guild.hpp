@@ -204,6 +204,7 @@ public:
 #if VERSION_STRING >= Cata
     void handleNewsSetSticky(WorldSession* session, uint32_t newsId, bool sticky);
     void handleGuildRequestChallengeUpdate(WorldSession* session);
+    void handleReplaceGuildMaster(WorldSession* session);
 #endif
 
     void updateMemberData(Player* player, uint8_t dataid, uint32_t value);

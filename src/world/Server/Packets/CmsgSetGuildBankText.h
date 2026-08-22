@@ -35,22 +35,22 @@ namespace AscEmu::Packets
                 uint8_t tabId8;
                 packet >> tabId8;
                 tabId = tabId8;
+
+                packet >> text;
+
+                return true;
             }
-            else
+            else if (m_protocol.expansion <= WoW::Expansion::_Mop)
             {
                 packet >> tabId;
-            }
 
-            if (m_protocol.expansion < WoW::Expansion::_Cata)
-            {
-                packet >> text;
-            }
-            else
-            {
                 const uint32_t textLen = packet.readBits(14);
                 text = packet.readString(textLen);
+
+                return true;
             }
-            return true;
+
+            return false;
         }
     };
 }
