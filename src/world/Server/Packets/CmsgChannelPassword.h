@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 
+#include <cstdint>
+
 namespace AscEmu::Packets
 {
     class CmsgChannelPassword : public ManagedPacket
@@ -29,8 +31,23 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> name >> password;
-            return true;
+            if (m_protocol.isMop())
+            {
+                const uint32_t nameLen = packet.readBits(8);
+                const uint32_t passLen = packet.readBits(7);
+
+                name = packet.readString(nameLen);
+                password = packet.readString(passLen);
+
+                return true;
+            }
+            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet >> name >> password;
+                return true;
+            }
+
+            return false;
         }
     };
 }

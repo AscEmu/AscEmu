@@ -40,12 +40,14 @@ namespace AscEmu::Packets
         WoWGuid receiverGuid;
         std::string receiverName;
         uint32_t achievementId = 0;
+        WoWGuid groupGuid;
+        WoWGuid guildGuid;
 
         SmsgMessageChat() : SmsgMessageChat(0, 0, 0, "", 0, "", 0, "", 0)
         {
         }
 
-        SmsgMessageChat(uint8_t type, uint32_t language, uint8_t flag, std::string message, uint64_t senderGuid = 0, std::string senderName = "", uint64_t receiverGuid = 0, std::string receiverName = "", uint32_t achievementId = 0) :
+        SmsgMessageChat(uint8_t type, uint32_t language, uint8_t flag, std::string message, uint64_t senderGuid = 0, std::string senderName = "", uint64_t receiverGuid = 0, std::string receiverName = "", uint32_t achievementId = 0, uint64_t groupGuid = 0, uint64_t guildGuid = 0) :
             ManagedPacket(SMSG_MESSAGECHAT, 1 + 4 + 8 + 4 + 8 + (message.length() + 1) + 1),
             type(type),
             language(language),
@@ -55,7 +57,9 @@ namespace AscEmu::Packets
             senderName(senderName),
             receiverGuid(receiverGuid),
             receiverName(receiverName),
-            achievementId(achievementId)
+            achievementId(achievementId),
+            groupGuid(groupGuid),
+            guildGuid(guildGuid)
         {
         }
 
@@ -135,9 +139,8 @@ namespace AscEmu::Packets
                 bool hasLanguage = language > 0;
                 bool hasAchievement = (type == CHAT_MSG_ACHIEVEMENT || type == CHAT_MSG_GUILD_ACHIEVEMENT) && achievementId;
                 bool isAddon = false;
-
-                WoWGuid unkGuid = 0;
-                WoWGuid unkGuid2 = 0;
+                bool hasGroupGuid = false;
+                bool hasGuildGuid = false;
 
                 switch (type)
                 {
@@ -165,9 +168,24 @@ namespace AscEmu::Packets
                         hasChannelName = true;
                         hasSenderName = true;
                     } break;
+                    case CHAT_MSG_PARTY:
+                    case CHAT_MSG_PARTY_LEADER:
+                    case CHAT_MSG_RAID:
+                    case CHAT_MSG_RAID_LEADER:
+                    case CHAT_MSG_RAID_WARNING:
+                        hasGroupGuid = true;
+                        break;
+                    case CHAT_MSG_GUILD:
+                    case CHAT_MSG_OFFICER:
+                    case CHAT_MSG_GUILD_ACHIEVEMENT:
+                        hasGuildGuid = true;
+                        break;
                     default:
                         break;
                 }
+
+                const WoWGuid effectiveGroupGuid = hasGroupGuid ? groupGuid : WoWGuid(uint64_t(0));
+                const WoWGuid effectiveGuildGuid = hasGuildGuid ? guildGuid : WoWGuid(uint64_t(0));
 
                 packet.writeBit(!hasSenderName);
                 packet.writeBit(0);     // hide chatlog
@@ -182,14 +200,14 @@ namespace AscEmu::Packets
                 packet.writeBit(!flag);
                 packet.writeBit(1);
 
-                packet.writeBit(unkGuid[0]);
-                packet.writeBit(unkGuid[1]);
-                packet.writeBit(unkGuid[5]);
-                packet.writeBit(unkGuid[4]);
-                packet.writeBit(unkGuid[3]);
-                packet.writeBit(unkGuid[2]);
-                packet.writeBit(unkGuid[6]);
-                packet.writeBit(unkGuid[7]);
+                packet.writeBit(effectiveGroupGuid[0]);
+                packet.writeBit(effectiveGroupGuid[1]);
+                packet.writeBit(effectiveGroupGuid[5]);
+                packet.writeBit(effectiveGroupGuid[4]);
+                packet.writeBit(effectiveGroupGuid[3]);
+                packet.writeBit(effectiveGroupGuid[2]);
+                packet.writeBit(effectiveGroupGuid[6]);
+                packet.writeBit(effectiveGroupGuid[7]);
 
                 if (flag)
                     packet.writeBits(flag, 9);
@@ -238,25 +256,25 @@ namespace AscEmu::Packets
 
                 packet.writeBit(0);
 
-                packet.writeBit(unkGuid2[2]);
-                packet.writeBit(unkGuid2[5]);
-                packet.writeBit(unkGuid2[7]);
-                packet.writeBit(unkGuid2[4]);
-                packet.writeBit(unkGuid2[0]);
-                packet.writeBit(unkGuid2[1]);
-                packet.writeBit(unkGuid2[3]);
-                packet.writeBit(unkGuid2[6]);
+                packet.writeBit(effectiveGuildGuid[2]);
+                packet.writeBit(effectiveGuildGuid[5]);
+                packet.writeBit(effectiveGuildGuid[7]);
+                packet.writeBit(effectiveGuildGuid[4]);
+                packet.writeBit(effectiveGuildGuid[0]);
+                packet.writeBit(effectiveGuildGuid[1]);
+                packet.writeBit(effectiveGuildGuid[3]);
+                packet.writeBit(effectiveGuildGuid[6]);
 
                 packet.flushBits();
 
-                packet.writeByteSeq(unkGuid2[4]);
-                packet.writeByteSeq(unkGuid2[5]);
-                packet.writeByteSeq(unkGuid2[7]);
-                packet.writeByteSeq(unkGuid2[3]);
-                packet.writeByteSeq(unkGuid2[2]);
-                packet.writeByteSeq(unkGuid2[6]);
-                packet.writeByteSeq(unkGuid2[0]);
-                packet.writeByteSeq(unkGuid2[1]);
+                packet.writeByteSeq(effectiveGuildGuid[4]);
+                packet.writeByteSeq(effectiveGuildGuid[5]);
+                packet.writeByteSeq(effectiveGuildGuid[7]);
+                packet.writeByteSeq(effectiveGuildGuid[3]);
+                packet.writeByteSeq(effectiveGuildGuid[2]);
+                packet.writeByteSeq(effectiveGuildGuid[6]);
+                packet.writeByteSeq(effectiveGuildGuid[0]);
+                packet.writeByteSeq(effectiveGuildGuid[1]);
 
                 if (hasChannelName)
                     packet.writeString(receiverName);
@@ -277,14 +295,14 @@ namespace AscEmu::Packets
                 if (hasAchievement)
                     packet << achievementId;
 
-                packet.writeByteSeq(unkGuid[1]);
-                packet.writeByteSeq(unkGuid[3]);
-                packet.writeByteSeq(unkGuid[4]);
-                packet.writeByteSeq(unkGuid[6]);
-                packet.writeByteSeq(unkGuid[0]);
-                packet.writeByteSeq(unkGuid[2]);
-                packet.writeByteSeq(unkGuid[5]);
-                packet.writeByteSeq(unkGuid[7]);
+                packet.writeByteSeq(effectiveGroupGuid[1]);
+                packet.writeByteSeq(effectiveGroupGuid[3]);
+                packet.writeByteSeq(effectiveGroupGuid[4]);
+                packet.writeByteSeq(effectiveGroupGuid[6]);
+                packet.writeByteSeq(effectiveGroupGuid[0]);
+                packet.writeByteSeq(effectiveGroupGuid[2]);
+                packet.writeByteSeq(effectiveGroupGuid[5]);
+                packet.writeByteSeq(effectiveGroupGuid[7]);
 
                 packet.writeByteSeq(receiverGuid[2]);
                 packet.writeByteSeq(receiverGuid[5]);

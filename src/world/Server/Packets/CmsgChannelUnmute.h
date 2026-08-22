@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 
+#include <cstdint>
+
 namespace AscEmu::Packets
 {
     class CmsgChannelUnmute : public ManagedPacket
@@ -29,8 +31,23 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> name >> unmuteName;
-            return true;
+            if (m_protocol.isMop())
+            {
+                const uint32_t targetLen = packet.readBits(8);
+                const uint32_t channelLen = packet.readBits(7);
+
+                unmuteName = packet.readString(targetLen);
+                name = packet.readString(channelLen);
+
+                return true;
+            }
+            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet >> name >> unmuteName;
+                return true;
+            }
+
+            return false;
         }
     };
 }

@@ -251,7 +251,8 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             }
 #endif
 
-            SmsgMessageChat send_packet(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid());
+            const uint64_t groupGuidForChat = _player->getGroup() ? WoWGuid(_player->getGroup()->GetID(), 0, HIGHGUID_TYPE_GROUP).getRawGuid() : 0;
+            SmsgMessageChat send_packet(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid(), "", 0, "", 0, groupGuidForChat);
 
             if (auto const group = _player->getGroup())
             {
