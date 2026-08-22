@@ -31,11 +31,20 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion <= WoW::Expansion::_TBC)
-                return false;
+            if (m_protocol.isMop())
+            {
+                packet.writeBits(error, 4);
+                packet.flushBits();
 
-            packet << error;
-            return true;
+                return true;
+            }
+            else if (m_protocol.expansion > WoW::Expansion::_TBC)
+            {
+                packet << error;
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

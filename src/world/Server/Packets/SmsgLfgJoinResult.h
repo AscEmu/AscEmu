@@ -113,7 +113,75 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else if (m_protocol.expansion > WoW::Expansion::_TBC)
+            else if (m_protocol.isCata())
+            {
+                packet << uint32_t(3);                            // Type
+
+                packet << uint8_t(result);                        // Check Result
+                packet << uint32_t(0);                            // Queue Id - not tracked
+                packet << uint8_t(state);                         // Check Value
+                packet << uint32_t(time(nullptr));                // Join date
+
+                packet.writeBit(guid[2]);
+                packet.writeBit(guid[7]);
+                packet.writeBit(guid[3]);
+                packet.writeBit(guid[0]);
+                packet.writeBits(lockmap.size(), 24);
+
+                for (const auto& lock : lockmap)
+                {
+                    WoWGuid playerGuid = lock.first;
+                    packet.writeBit(playerGuid[7]);
+                    packet.writeBit(playerGuid[5]);
+                    packet.writeBit(playerGuid[3]);
+                    packet.writeBit(playerGuid[6]);
+                    packet.writeBit(playerGuid[0]);
+                    packet.writeBit(playerGuid[2]);
+                    packet.writeBit(playerGuid[4]);
+                    packet.writeBit(playerGuid[1]);
+                    packet.writeBits(lock.second.size(), 22);
+                }
+
+                packet.writeBit(guid[4]);
+                packet.writeBit(guid[5]);
+                packet.writeBit(guid[1]);
+                packet.writeBit(guid[6]);
+                packet.flushBits();
+
+                for (const auto& lock : lockmap)
+                {
+                    WoWGuid playerGuid = lock.first;
+
+                    for (const auto& playerLock : lock.second)
+                    {
+                        packet << uint32_t(playerLock.second);   // Lock status
+                        packet << uint32_t(0);                   // Current itemLevel - not tracked
+                        packet << uint32_t(0);                   // Required itemLevel - not tracked
+                        packet << uint32_t(playerLock.first);    // Dungeon entry
+                    }
+
+                    packet.writeByteSeq(playerGuid[2]);
+                    packet.writeByteSeq(playerGuid[5]);
+                    packet.writeByteSeq(playerGuid[1]);
+                    packet.writeByteSeq(playerGuid[0]);
+                    packet.writeByteSeq(playerGuid[4]);
+                    packet.writeByteSeq(playerGuid[3]);
+                    packet.writeByteSeq(playerGuid[6]);
+                    packet.writeByteSeq(playerGuid[7]);
+                }
+
+                packet.writeByteSeq(guid[1]);
+                packet.writeByteSeq(guid[4]);
+                packet.writeByteSeq(guid[3]);
+                packet.writeByteSeq(guid[5]);
+                packet.writeByteSeq(guid[0]);
+                packet.writeByteSeq(guid[7]);
+                packet.writeByteSeq(guid[2]);
+                packet.writeByteSeq(guid[6]);
+
+                return true;
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_WotLK)
             {
                 packet << uint32_t(result);      // Check Result
                 packet << uint32_t(state);        // Check Value

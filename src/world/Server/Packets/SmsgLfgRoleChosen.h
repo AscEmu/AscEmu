@@ -34,11 +34,40 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion <= WoW::Expansion::_TBC)
-                return false;
+            if (m_protocol.isMop())
+            {
+                const WoWGuid wowGuid(guid);
 
-            packet << guid << isReady << roles;
-            return true;
+                packet.writeBit(wowGuid[6]);
+                packet.writeBit(wowGuid[2]);
+                packet.writeBit(wowGuid[1]);
+                packet.writeBit(wowGuid[7]);
+                packet.writeBit(wowGuid[0]);
+                packet.writeBit(roles > 0);
+                packet.writeBit(wowGuid[3]);
+                packet.writeBit(wowGuid[5]);
+                packet.writeBit(wowGuid[4]);
+                packet.flushBits();
+
+                packet.writeByteSeq(wowGuid[0]);
+                packet.writeByteSeq(wowGuid[3]);
+                packet.writeByteSeq(wowGuid[6]);
+                packet << roles;
+                packet.writeByteSeq(wowGuid[5]);
+                packet.writeByteSeq(wowGuid[1]);
+                packet.writeByteSeq(wowGuid[4]);
+                packet.writeByteSeq(wowGuid[2]);
+                packet.writeByteSeq(wowGuid[7]);
+
+                return true;
+            }
+            else if (m_protocol.expansion > WoW::Expansion::_TBC)
+            {
+                packet << guid << isReady << roles;
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

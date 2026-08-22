@@ -6,24 +6,15 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
-#include <cstdint>
 
 namespace AscEmu::Packets
 {
-    class CmsgLfgSetRoles : public ManagedPacket
+    class CmsgLfgLockInfoRequest : public ManagedPacket
     {
     public:
-        using RolesType = uint32_t;
-        static constexpr uint16_t packetSize = 0;
-        RolesType roles;
+        bool requestFromPlayer = false;
 
-        CmsgLfgSetRoles() : CmsgLfgSetRoles(0)
-        {
-        }
-
-        CmsgLfgSetRoles(RolesType roles) :
-            ManagedPacket(CMSG_LFG_SET_ROLES, packetSize),
-            roles(roles)
+        CmsgLfgLockInfoRequest() : ManagedPacket(CMSG_LFG_LOCK_INFO_REQUEST, 0)
         {
         }
 
@@ -32,16 +23,14 @@ namespace AscEmu::Packets
         {
             if (m_protocol.isMop())
             {
-                packet >> roles;
                 packet.readSkip<uint8_t>();
+                requestFromPlayer = packet.readBit();
 
                 return true;
             }
-            else if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            else if (m_protocol.isCata())
             {
-                uint8_t rolesByte = 0;
-                packet >> rolesByte;
-                roles = rolesByte;
+                requestFromPlayer = packet.readBit();
 
                 return true;
             }

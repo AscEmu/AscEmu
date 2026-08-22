@@ -153,7 +153,78 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else if (m_protocol.expansion < WoW::Expansion::_Mop)
+            else if (m_protocol.isCata())
+            {
+                // Valor Points weekly-cap tracking and the Call to Arms role-bonus system aren't
+                // implemented in AscEmu, so those fields are sent as their "not eligible"/zero
+                // shape - the wire structure matches the client's expectations, the values don't.
+                packet << uint8_t(randomDungeons.size());                  // Random Dungeon count
+
+                for (auto randomDungeon : randomDungeons)
+                {
+                    packet << uint32_t(randomDungeon);                     // Dungeon Entry (id + type)
+
+                    LfgReward const* reward = sLfgMgr.GetRandomDungeonReward(randomDungeon, level);
+                    QuestProperties const* qRew = nullptr;
+                    uint8_t done = 0;
+                    if (reward)
+                    {
+                        qRew = sMySQLStore.getQuestProperties(reward->reward[0].questId);
+                        if (qRew)
+                        {
+                            done = player->hasQuestFinished(qRew->id);
+                            if (done)
+                                qRew = sMySQLStore.getQuestProperties(reward->reward[1].questId);
+                        }
+                    }
+
+                    packet << uint8_t(done);                                // First completion of the day
+
+                    // Currency/Valor block - not tracked, sent as the reference's "no reward" shape
+                    for (uint8_t i = 0; i < 11; ++i)
+                        packet << uint32_t(0);
+
+                    packet << uint32_t(0);                                  // Completed encounters - not tracked
+
+                    packet << uint8_t(0);                                   // Call to Arms eligible - not implemented
+                    for (uint8_t i = 0; i < 3; ++i)
+                        packet << uint32_t(0);                              // Call to Arms role bonus - not implemented
+
+                    if (qRew)
+                    {
+                        packet << uint32_t(qRew->reward_money);
+                        packet << uint32_t(qRew->reward_xp);
+                        packet << uint8_t(qRew->GetRewardItemCount());
+                        for (uint8_t i = 0; i < 4; ++i)
+                        {
+                            if (!qRew->reward_item[i])
+                                continue;
+
+                            ItemProperties const* item = sMySQLStore.getItemProperties(qRew->reward_item[i]);
+                            packet << uint32_t(qRew->reward_item[i]);
+                            packet << uint32_t(item ? item->DisplayInfoID : 0);
+                            packet << uint32_t(qRew->reward_itemcount[i]);
+                        }
+                    }
+                    else
+                    {
+                        packet << uint32_t(0);                              // Money
+                        packet << uint32_t(0);                              // XP
+                        packet << uint8_t(0);                               // Reward count
+                    }
+                }
+
+                // BuildPlayerLockDungeonBlock
+                packet << uint32_t(lock.size());
+                for (const auto& lockEntry : lock)
+                {
+                    packet << uint32_t(lockEntry.first);
+                    packet << uint32_t(lockEntry.second);
+                }
+
+                return true;
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_WotLK)
             {
                 packet << uint8_t(randomDungeons.size());                  // Random Dungeon count
                 for (auto randomDungeon : randomDungeons)

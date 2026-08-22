@@ -27,6 +27,9 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion > WoW::Expansion::_Cata)
+                return false;
+
             packet >> comment;
             return true;
         }

@@ -840,16 +840,16 @@ void WorldSession::registerOpcodeHandler()
 
     // LFG System
     registry.registerOpcode(CMSG_SET_LFG_COMMENT, &WorldSession::handleLfgSetCommentOpcode, true, true, true, false, false);
-    registry.registerOpcode(CMSG_LFG_JOIN, &WorldSession::handleLfgJoinOpcode, false, false, true, false, false);
-    registry.registerOpcode(CMSG_LFG_LEAVE, &WorldSession::handleLfgLeaveOpcode, false, false, true, false, false);
-    registry.registerOpcode(CMSG_SEARCH_LFG_JOIN, &WorldSession::handleLfgSearchOpcode, false, false, true, false, false);
-    registry.registerOpcode(CMSG_SEARCH_LFG_LEAVE, &WorldSession::handleLfgSearchLeaveOpcode, false, false, true, false, false);
-    registry.registerOpcode(CMSG_LFG_PROPOSAL_RESULT, &WorldSession::handleLfgProposalResultOpcode, false, false, true, false, false);
-    registry.registerOpcode(CMSG_LFG_SET_ROLES, &WorldSession::handleLfgSetRolesOpcode, false, false, true, false, true);
-    registry.registerOpcode(CMSG_LFG_SET_BOOT_VOTE, &WorldSession::handleLfgSetBootVoteOpcode, false, false, true, false, false);
-    registry.registerOpcode(CMSG_LFD_PLAYER_LOCK_INFO_REQUEST, &WorldSession::handleLfgPlayerLockInfoRequestOpcode, false, false, true, false, false);
-    registry.registerOpcode(CMSG_LFG_TELEPORT, &WorldSession::handleLfgTeleportOpcode, false, false, true, false, false);
-    registry.registerOpcode(CMSG_LFD_PARTY_LOCK_INFO_REQUEST, &WorldSession::handleLfgPartyLockInfoRequestOpcode, false, false, true, false, false);
+    registry.registerOpcode(CMSG_LFG_JOIN, &WorldSession::handleLfgJoinOpcode, false, false, true, true, true);
+    registry.registerOpcode(CMSG_LFG_LEAVE, &WorldSession::handleLfgLeaveOpcode, false, false, true, true, true);
+    registry.registerOpcode(CMSG_SEARCH_LFG_JOIN, &WorldSession::handleLfgSearchOpcode, false, false, true, true, false);
+    registry.registerOpcode(CMSG_SEARCH_LFG_LEAVE, &WorldSession::handleLfgSearchLeaveOpcode, false, false, true, true, false);
+    registry.registerOpcode(CMSG_LFG_PROPOSAL_RESULT, &WorldSession::handleLfgProposalResultOpcode, false, false, true, true, true);
+    registry.registerOpcode(CMSG_LFG_SET_ROLES, &WorldSession::handleLfgSetRolesOpcode, false, false, true, true, true);
+    registry.registerOpcode(CMSG_LFG_SET_BOOT_VOTE, &WorldSession::handleLfgSetBootVoteOpcode, false, false, true, true, true);
+    registry.registerOpcode(CMSG_LFD_PLAYER_LOCK_INFO_REQUEST, &WorldSession::handleLfgPlayerLockInfoRequestOpcode, false, false, true, true, false);
+    registry.registerOpcode(CMSG_LFG_TELEPORT, &WorldSession::handleLfgTeleportOpcode, false, false, true, true, true);
+    registry.registerOpcode(CMSG_LFD_PARTY_LOCK_INFO_REQUEST, &WorldSession::handleLfgPartyLockInfoRequestOpcode, false, false, true, true, false);
 
     // Taxi / NPC Interaction
     registry.registerOpcode(CMSG_ENABLETAXI, &WorldSession::handleEnabletaxiOpcode, false, true, true, true, false);
@@ -1182,7 +1182,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_ROLE_CHECK_BEGIN, &WorldSession::handleGroupRoleCheckBeginOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_MAKE_EVERYONE_ASSISTANT, &WorldSession::nothingToHandle, false, false, false, true, false);
     registry.registerOpcode(MSG_RAID_READY_CHECK_FINISHED, &WorldSession::nothingToHandle, false, false, false, true, false);
-    registry.registerOpcode(CMSG_LFG_LOCK_INFO_REQUEST, &WorldSession::handleLfgLockInfoOpcode, false, false, false, true, false);
+    registry.registerOpcode(CMSG_LFG_LOCK_INFO_REQUEST, &WorldSession::handleLfgLockInfoOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_TRANSMOGRIFY_ITEMS, &WorldSession::handleTransmogrifyItems, false, false, false, true, false);
     registry.registerOpcode(CMSG_REFORGE_ITEM, &WorldSession::handleReforgeItemOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_VOID_STORAGE_QUERY, &WorldSession::handleVoidStorageQuery, false, false, false, true, false);

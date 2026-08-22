@@ -32,13 +32,14 @@ namespace AscEmu::Packets
         uint8_t isSameDungeon;
         std::vector<SmsgLfgProposalUpdatePlayer> players;
         uint64_t queueGuid;
+        uint64_t playerGuid;
 
-        SmsgLfgProposalUpdate() : SmsgLfgProposalUpdate(0, 0, 0, 0, 0, {}, 0)
+        SmsgLfgProposalUpdate() : SmsgLfgProposalUpdate(0, 0, 0, 0, 0, {}, 0, 0)
         {
         }
 
         SmsgLfgProposalUpdate(uint32_t dungeonId, uint8_t state, uint32_t proposalId, uint32_t completedEncounters, uint8_t isSameDungeon,
-            std::vector<SmsgLfgProposalUpdatePlayer> players, uint64_t queueGuid = 0) :
+            std::vector<SmsgLfgProposalUpdatePlayer> players, uint64_t queueGuid = 0, uint64_t playerGuid = 0) :
             ManagedPacket(SMSG_LFG_PROPOSAL_UPDATE, 0),
             dungeonId(dungeonId),
             state(state),
@@ -46,7 +47,8 @@ namespace AscEmu::Packets
             completedEncounters(completedEncounters),
             isSameDungeon(isSameDungeon),
             players(std::move(players)),
-            queueGuid(queueGuid)
+            queueGuid(queueGuid),
+            playerGuid(playerGuid)
         {
         }
 
@@ -125,7 +127,73 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else if (m_protocol.expansion > WoW::Expansion::_TBC)
+            else if (m_protocol.isCata())
+            {
+                WoWGuid guid1 = playerGuid;
+                WoWGuid guid2 = queueGuid;
+
+                packet << uint32_t(0);                                                // Join time - not tracked
+                packet << uint32_t(completedEncounters);                              // Encounters done
+                packet << uint32_t(0);                                                // Queue Id - not tracked
+                packet << uint32_t(3);                                                // Type
+                packet << uint32_t(dungeonId);                                        // Dungeon
+                packet << uint32_t(proposalId);                                       // Proposal Id
+                packet << uint8_t(state);                                             // State
+
+                packet.writeBit(guid2[4]);
+                packet.writeBit(guid1[3]);
+                packet.writeBit(guid1[7]);
+                packet.writeBit(guid1[0]);
+                packet.writeBit(guid2[1]);
+                packet.writeBit(isSameDungeon != 0);                                  // Silent
+                packet.writeBit(guid1[4]);
+                packet.writeBit(guid1[5]);
+                packet.writeBit(guid2[3]);
+                packet.writeBits(players.size(), 23);
+                packet.writeBit(guid2[7]);
+
+                for (const auto& proposalPlayer : players)
+                {
+                    packet.writeBit(proposalPlayer.inDungeon);
+                    packet.writeBit(proposalPlayer.sameGroup);
+                    packet.writeBit(proposalPlayer.accepted);
+                    packet.writeBit(proposalPlayer.answered);
+                    packet.writeBit(proposalPlayer.isSelfPlayer);
+                }
+
+                packet.writeBit(guid2[5]);
+                packet.writeBit(guid1[6]);
+                packet.writeBit(guid2[2]);
+                packet.writeBit(guid2[6]);
+                packet.writeBit(guid1[2]);
+                packet.writeBit(guid1[1]);
+                packet.writeBit(guid2[0]);
+                packet.flushBits();
+
+                packet.writeByteSeq(guid1[5]);
+                packet.writeByteSeq(guid2[3]);
+                packet.writeByteSeq(guid2[6]);
+                packet.writeByteSeq(guid1[6]);
+                packet.writeByteSeq(guid1[0]);
+                packet.writeByteSeq(guid2[5]);
+                packet.writeByteSeq(guid1[1]);
+
+                for (const auto& proposalPlayer : players)
+                    packet << uint32_t(proposalPlayer.role);
+
+                packet.writeByteSeq(guid2[7]);
+                packet.writeByteSeq(guid1[4]);
+                packet.writeByteSeq(guid2[0]);
+                packet.writeByteSeq(guid2[1]);
+                packet.writeByteSeq(guid1[2]);
+                packet.writeByteSeq(guid1[7]);
+                packet.writeByteSeq(guid2[2]);
+                packet.writeByteSeq(guid1[3]);
+                packet.writeByteSeq(guid2[4]);
+
+                return true;
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_WotLK)
             {
                 packet << uint32_t(dungeonId);                                        // Dungeon
                 packet << uint8_t(state);                                             // Result state

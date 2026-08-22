@@ -775,7 +775,6 @@ void WorldSession::handleReadyCheckOpcode(WorldPacket& recvPacket)
     }
 }
 
-#if VERSION_STRING >= Mop
 void WorldSession::handleRaidReadyCheckOpcode(WorldPacket& /*recvPacket*/)
 {
     const auto group = _player->getGroup();
@@ -893,4 +892,3 @@ void WorldSession::handleGroupInitiateRolePollOpcode(WorldPacket& recvPacket)
     SmsgGroupRolePollInform managedPacket(_player->getGuid(), srlPacket.partyIndex);
     PacketBroadcast::sendFromGroup(*group, managedPacket);
 }
-#endif

@@ -49,11 +49,12 @@ namespace AscEmu::Packets
             if (!qReward)
                 return false;
 
-            if (m_protocol.isMop())
+            if (m_protocol.expansion >= WoW::Expansion::_Cata)
             {
                 // BuildQuestReward: currency rewards are combined with item rewards into a single
                 // count/list, but AscEmu's QuestProperties doesn't track quest currency rewards, so
                 // only the item half is ever emitted here (documented gap, not a format error).
+                // Cata and Mop share this exact flat layout - no bit-packing here.
                 const uint8_t rewCount = uint8_t(qReward->GetRewardItemCount());
 
                 packet << uint32_t(randomDungeonEntry);                           // Random Dungeon Finished
@@ -79,7 +80,7 @@ namespace AscEmu::Packets
                 }
                 return true;
             }
-            else if (m_protocol.expansion > WoW::Expansion::_TBC)
+            else if (m_protocol.expansion >= WoW::Expansion::_WotLK)
             {
                 const uint8_t itemNum = uint8_t(qReward->GetRewardItemCount());
 

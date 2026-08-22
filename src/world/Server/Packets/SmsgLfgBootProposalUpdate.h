@@ -89,9 +89,10 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else if (m_protocol.expansion > WoW::Expansion::_TBC)
+            else if (m_protocol.expansion >= WoW::Expansion::_WotLK)
             {
                 packet << uint8_t(inProgress);                                 // Vote in progress
+                packet << uint8_t(agreeNum >= votedNeeded);                    // Did succeed
                 packet << uint8_t(didVote);                                    // Did Vote
                 packet << uint8_t(agree);                                      // Agree
                 packet << uint64_t(victim);                                    // Victim GUID

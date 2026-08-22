@@ -91,7 +91,45 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else if (m_protocol.expansion > WoW::Expansion::_TBC)
+            else if (m_protocol.isCata())
+            {
+                WoWGuid playerGuid = guid;
+
+                packet.writeBit(playerGuid[3]);
+                packet.writeBit(playerGuid[0]);
+                packet.writeBit(playerGuid[2]);
+                packet.writeBit(playerGuid[6]);
+                packet.writeBit(playerGuid[5]);
+                packet.writeBit(playerGuid[7]);
+                packet.writeBit(playerGuid[1]);
+                packet.writeBit(playerGuid[4]);
+                packet.flushBits();
+
+                packet.writeByteSeq(playerGuid[0]);
+                packet << uint8_t(tanks);                                         // Tanks needed
+                packet << int32_t(waitTimeTanks);                                 // Wait Tanks
+                packet << uint8_t(healers);                                       // Healers needed
+                packet << int32_t(waitTimeHealer);                                // Wait Healers
+                packet << uint8_t(dps);                                           // Dps needed
+                packet << int32_t(waitTimeDps);                                   // Wait Dps
+                packet.writeByteSeq(playerGuid[4]);
+                packet.writeByteSeq(playerGuid[6]);
+                packet << int32_t(waitTime);                                      // Wait Time
+                packet << uint32_t(0);                                            // Join time (not tracked)
+                packet << uint32_t(dungeon);                                      // Dungeon
+                packet << uint32_t(queuedTime);                                   // Player wait time in queue
+                packet.writeByteSeq(playerGuid[5]);
+                packet.writeByteSeq(playerGuid[7]);
+                packet.writeByteSeq(playerGuid[3]);
+                packet << uint32_t(0);                                            // Queue Id (not tracked)
+                packet.writeByteSeq(playerGuid[1]);
+                packet.writeByteSeq(playerGuid[2]);
+                packet << int32_t(avgWaitTime);                                   // Average Wait time
+                packet << uint32_t(3);                                            // Type
+
+                return true;
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_WotLK)
             {
                 packet << uint32_t(dungeon);                                          // Dungeon
                 packet << int32_t(avgWaitTime);                                       // Average Wait time

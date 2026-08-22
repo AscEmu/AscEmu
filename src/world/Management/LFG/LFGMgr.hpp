@@ -300,11 +300,11 @@ public:
     uint8_t GetVotesNeeded(uint64_t gguid);
     bool IsTeleported(uint64_t pguid);
     void SetRoles(uint64_t guid, uint8_t roles);
+    uint8_t GetRoles(uint64_t guid);
     void SetSelectedDungeons(uint64_t guid, const LfgDungeonSet& dungeons);
     uint32_t GetLFGDungeon(uint32_t id);
 
 private:
-    uint8_t GetRoles(uint64_t guid);
     const std::string& GetComment(uint64_t gguid);
     void RestoreState(uint64_t guid);
     void SetLockedDungeons(uint64_t guid, const LfgLockMap& lock);

@@ -164,15 +164,12 @@ namespace AscEmu::Packets
                 packet << uint8_t(state == LFG_ROLECHECK_INITIALITING);
                 packet << uint8_t(dungeons.size());                                 // Number of dungeons
 
-                if (m_protocol.expansion < WoW::Expansion::_Cata)
+                if (!dungeons.empty())
                 {
-                    if (!dungeons.empty())
+                    for (auto dungeonEntry : dungeons)
                     {
-                        for (auto dungeonEntry : dungeons)
-                        {
-                            auto dungeon = sLFGDungeonStore.lookupEntry(dungeonEntry);
-                            packet << uint32_t(dungeon ? dungeon->Entry() : 0);
-                        }
+                        auto dungeon = sLFGDungeonStore.lookupEntry(dungeonEntry);
+                        packet << uint32_t(dungeon ? dungeon->Entry() : 0);
                     }
                 }
 

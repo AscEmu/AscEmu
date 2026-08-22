@@ -27,6 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLfgJoinResult.h"
 #include "Server/Packets/SmsgLfgUpdatePlayer.h"
 #include "Server/Packets/SmsgLfgUpdateParty.h"
+#include "Server/Packets/SmsgLfgUpdateStatus.h"
 #include "Server/Packets/SmsgLfgRoleCheckUpdate.h"
 #include "Server/Packets/SmsgLfgQueueStatus.h"
 #include "Server/Packets/SmsgLfgPlayerReward.h"
@@ -34,6 +35,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLfgProposalUpdate.h"
 #include "Server/Packets/SmsgLfgPlayerInfo.h"
 #include "Server/Packets/SmsgLfgPartyInfo.h"
+#include "Server/Packets/CmsgLfgJoin.h"
+#include "Server/Packets/CmsgLfgLeave.h"
+#include "Server/Packets/CmsgLfgLockInfoRequest.h"
 #include "Server/Script/InstanceScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
@@ -107,6 +111,23 @@ void WorldSession::sendLfgUpdatePlayer([[maybe_unused]] const LfgUpdateData& upd
 
     sLogger.debugOpcode("SMSG_LFG_UPDATE_PLAYER {} updatetype: {}", _player->getGuid(), updateData.updateType);
 
+#if VERSION_STRING >= Cata
+    if (_socket->getClientProtocol().expansion >= WoW::Expansion::_Cata)
+    {
+        SmsgLfgUpdateStatus managedPacket;
+        managedPacket.guid = _player->getGuid();
+        managedPacket.updateType = uint8_t(updateData.updateType);
+        managedPacket.isParty = false;
+        managedPacket.joined = extrainfo;
+        managedPacket.queued = queued;
+        managedPacket.roles = sLfgMgr.GetRoles(_player->getGuid());
+        managedPacket.dungeons = updateData.dungeons;
+        managedPacket.comment = updateData.comment;
+        sendManagedPacket(managedPacket);
+        return;
+    }
+#endif
+
     SmsgLfgUpdatePlayer managedPacket(uint8_t(updateData.updateType), uint8_t(extrainfo), uint8_t(queued), updateData.dungeons, updateData.comment);
     sendManagedPacket(managedPacket);
 #endif
@@ -142,6 +163,25 @@ void WorldSession::sendLfgUpdateParty([[maybe_unused]] const LfgUpdateData& upda
     }
 
     sLogger.debugOpcode("SMSG_LFG_UPDATE_PARTY {} updatetype: {}", _player->getGuid(), updateData.updateType);
+
+#if VERSION_STRING >= Cata
+    if (_socket->getClientProtocol().expansion >= WoW::Expansion::_Cata)
+    {
+        const auto group = _player->getGroup();
+
+        SmsgLfgUpdateStatus managedPacket;
+        managedPacket.guid = group != nullptr ? group->GetGUID() : _player->getGuid();
+        managedPacket.updateType = uint8_t(updateData.updateType);
+        managedPacket.isParty = true;
+        managedPacket.joined = isJoining;
+        managedPacket.queued = isQueued;
+        managedPacket.roles = sLfgMgr.GetRoles(_player->getGuid());
+        managedPacket.dungeons = updateData.dungeons;
+        managedPacket.comment = updateData.comment;
+        sendManagedPacket(managedPacket);
+        return;
+    }
+#endif
 
     SmsgLfgUpdateParty managedPacket(uint8_t(updateData.updateType), uint8_t(hasExtraInfo), uint8_t(isJoining), uint8_t(isQueued), updateData.dungeons, updateData.comment);
     sendManagedPacket(managedPacket);
@@ -322,7 +362,7 @@ void WorldSession::sendLfgUpdateProposal([[maybe_unused]] uint32_t proposalId, [
         players.push_back(playerEntry);
     }
 
-    SmsgLfgProposalUpdate managedPacket(dungeonId, uint8_t(pProp->state), proposalId, completedEncounters, uint8_t(isSameDungeon), players, queueGuid);
+    SmsgLfgProposalUpdate managedPacket(dungeonId, uint8_t(pProp->state), proposalId, completedEncounters, uint8_t(isSameDungeon), players, queueGuid, guid);
     sendManagedPacket(managedPacket);
 #endif
 }
@@ -341,9 +381,11 @@ void WorldSession::handleLfgSetCommentOpcode(WorldPacket& recvPacket)
 void WorldSession::handleLfgLockInfoOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    const bool requestFromPlayer = recvPacket.readBit();
+    CmsgLfgLockInfoRequest srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
-    sLogger.debugOpcode("Received CMSG_LFG_LOCK_INFO_REQUEST from {}.", requestFromPlayer ? "player" : "group");
+    sLogger.debugOpcode("Received CMSG_LFG_LOCK_INFO_REQUEST from {}.", srlPacket.requestFromPlayer ? "player" : "group");
 
     //\todo handle player lock info and group lock info here
 #endif
@@ -354,7 +396,7 @@ void WorldSession::handleLfgJoinOpcode([[maybe_unused]] WorldPacket& recvPacket)
 #if VERSION_STRING > TBC
     sLogger.debug("CMSG_LFG_JOIN");
 
-    if (_player->getGroup() && _player->getGroup()->GetLeader()->guid != _player->getGuid() 
+    if (_player->getGroup() && _player->getGroup()->GetLeader()->guid != _player->getGuid()
         && (_player->getGroup()->MemberCount() == 5 || !_player->getGroup()->isLFGGroup()))
     {
         sLogger.debug("handleLfgJoinOpcode : Unable to JoinQueue");
@@ -363,40 +405,28 @@ void WorldSession::handleLfgJoinOpcode([[maybe_unused]] WorldPacket& recvPacket)
         return;
     }
 
-    uint8_t numDungeons;
-    uint32_t dungeon;
-    uint32_t roles;
+    CmsgLfgJoin srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
-    recvPacket >> roles;
-    recvPacket.read<uint16_t>();                            // uint8_t (always 0) - uint8_t (always 0)
-    recvPacket >> numDungeons;
-
-    if (!numDungeons)
+    if (srlPacket.dungeons.empty())
     {
         sLogger.debug("CMSG_LFG_JOIN no dungeons selected. Player {}", _player->getName());
-        recvPacket.clear();
         return;
     }
 
-    LfgDungeonSet newDungeons;
-    for (int8_t i = 0; i < numDungeons; ++i)
-    {
-        recvPacket >> dungeon;
-        newDungeons.insert(dungeon & 0x00FFFFFF);           // remove the type from the dungeon entry
-    }
-
-    recvPacket.read<uint32_t>();                            // for 0..uint8_t (always 3) { uint8_t (always 0) }
-
-    std::string comment;
-    recvPacket >> comment;
-    sLogger.debug("CMSG_LFG_JOIN: {}, roles: {}, Dungeons: {}, Comment: {}", _player->getName(), roles, uint8_t(newDungeons.size()), comment);
-    sLfgMgr.Join(_player, uint8_t(roles), newDungeons, comment);
+    sLogger.debug("CMSG_LFG_JOIN: {}, roles: {}, Dungeons: {}, Comment: {}", _player->getName(), srlPacket.roles, uint8_t(srlPacket.dungeons.size()), srlPacket.comment);
+    sLfgMgr.Join(_player, uint8_t(srlPacket.roles), srlPacket.dungeons, srlPacket.comment);
 #endif
 }
 
-void WorldSession::handleLfgLeaveOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::handleLfgLeaveOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
+    CmsgLfgLeave srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
     const auto group = _player->getGroup();
 
     sLogger.debugOpcode("Received CMSG_LFG_LEAVE {} in group: {}.", _player->getGuid(), group ? 1 : 0);
