@@ -23,7 +23,9 @@ namespace AscEmu::Packets
         {
             if (m_protocol.expansion >= WoW::Expansion::_Cata)
             {
-                toRaid = packet.readBit();
+                uint8_t toRaidByte = 0;
+                packet >> toRaidByte;
+                toRaid = toRaidByte != 0;
 
                 return true;
             }

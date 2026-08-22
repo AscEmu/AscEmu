@@ -66,7 +66,7 @@ namespace AscEmu::Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             packet >> icon;
-            if (icon == 0xFF)
+            if (icon != 0xFF)
                 packet >> guid;
             return true;
         }
