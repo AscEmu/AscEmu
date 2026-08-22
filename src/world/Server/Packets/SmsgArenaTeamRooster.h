@@ -42,20 +42,25 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << teamId;
-            if (m_protocol.expansion > WoW::Expansion::_TBC)
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
-                packet << unknown;
-            }
-            packet << memberCount << playersPerTeam;
+                packet << teamId;
+                if (m_protocol.expansion > WoW::Expansion::_TBC)
+                {
+                    packet << unknown;
+                }
+                packet << memberCount << playersPerTeam;
 
-            for (const auto& teamListMember : arenaTeamList)
-            {
-                packet << teamListMember.guid << teamListMember.isLoggedIn << teamListMember.name << teamListMember.isLeader << teamListMember.lastLevel << teamListMember.cl
-                    << teamListMember.playedWeek << teamListMember.wonWeek << teamListMember.playedSeason << teamListMember.wonSeason << teamListMember.rating;
+                for (const auto& teamListMember : arenaTeamList)
+                {
+                    packet << teamListMember.guid << teamListMember.isLoggedIn << teamListMember.name << teamListMember.isLeader << teamListMember.lastLevel << teamListMember.cl
+                        << teamListMember.playedWeek << teamListMember.wonWeek << teamListMember.playedSeason << teamListMember.wonSeason << teamListMember.rating;
+                }
+
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

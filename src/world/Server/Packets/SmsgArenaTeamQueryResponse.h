@@ -43,11 +43,11 @@ namespace AscEmu::Packets
                 packet << id;
                 packet << name;
                 packet << playerCount;
-                packet << emblem.emblemColour;
-                packet << emblem.emblemStyle;
-                packet << emblem.borderColour;
-                packet << emblem.borderStyle;
                 packet << emblem.backgroundColour;
+                packet << emblem.emblemStyle;
+                packet << emblem.emblemColour;
+                packet << emblem.borderStyle;
+                packet << emblem.borderColour;
 
                 return true;
             }

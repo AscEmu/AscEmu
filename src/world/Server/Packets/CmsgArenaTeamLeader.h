@@ -30,8 +30,13 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> teamId >> playerName;
-            return true;
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet >> teamId >> playerName;
+                return true;
+            }
+
+            return false;
         }
     };
 }

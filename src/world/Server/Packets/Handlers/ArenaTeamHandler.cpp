@@ -363,13 +363,16 @@ void WorldSession::handleInspectArenaStatsOpcode([[maybe_unused]] WorldPacket& r
             const auto arenaTeam = sObjectMgr.getArenaTeamById(teamId);
             if (arenaTeam != nullptr)
             {
+                const auto member = arenaTeam->getMemberByGuid(player->getGuidLow());
+
                 tempList.playerGuid = player->getGuid();
-                tempList.teamType = arenaTeam->m_type;
+                tempList.slot = offset;
                 tempList.teamId = arenaTeam->m_id;
                 tempList.teamRating = arenaTeam->m_stats.rating;
-                tempList.playedWeek = arenaTeam->m_stats.played_week;
-                tempList.wonWeek = arenaTeam->m_stats.won_week;
-                tempList.playedSeason = arenaTeam->m_stats.played_season;
+                tempList.seasonGames = arenaTeam->m_stats.played_season;
+                tempList.seasonWins = arenaTeam->m_stats.won_season;
+                tempList.memberSeasonGames = member != nullptr ? member->Played_ThisSeason : 0;
+                tempList.memberPersonalRating = member != nullptr ? member->PersonalRating : 0;
 
                 arenaTeamList.push_back(tempList);
             }

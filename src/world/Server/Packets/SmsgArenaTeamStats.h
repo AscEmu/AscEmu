@@ -34,15 +34,20 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << id;
-            packet << stats.rating;
-            packet << stats.played_week;
-            packet << stats.won_week;
-            packet << stats.played_season;
-            packet << stats.won_season;
-            packet << stats.ranking;
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet << id;
+                packet << stats.rating;
+                packet << stats.played_week;
+                packet << stats.won_week;
+                packet << stats.played_season;
+                packet << stats.won_season;
+                packet << stats.ranking;
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
