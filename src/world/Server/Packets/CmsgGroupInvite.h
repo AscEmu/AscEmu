@@ -27,7 +27,47 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            if (m_protocol.isMop())
+            {
+                WoWGuid unk_guid;
+
+                packet.readSkip<uint32_t>();
+                packet.readSkip<uint8_t>();
+                packet.readSkip<uint32_t>();
+
+                unk_guid[7] = packet.readBit();
+
+                uint8_t realm_name_length = static_cast<uint8_t>(packet.readBits(9));
+
+                unk_guid[3] = packet.readBit();
+
+                uint8_t member_name_length = static_cast<uint8_t>(packet.readBits(9));
+
+                unk_guid[2] = packet.readBit();
+                unk_guid[5] = packet.readBit();
+                unk_guid[4] = packet.readBit();
+                unk_guid[0] = packet.readBit();
+                unk_guid[1] = packet.readBit();
+                unk_guid[6] = packet.readBit();
+
+                packet.readByteSeq(unk_guid[7]);
+                packet.readByteSeq(unk_guid[6]);
+                packet.readByteSeq(unk_guid[0]);
+                packet.readByteSeq(unk_guid[4]);
+
+                std::string realm_name = packet.readString(realm_name_length);
+
+                packet.readByteSeq(unk_guid[1]);
+                packet.readByteSeq(unk_guid[2]);
+                packet.readByteSeq(unk_guid[3]);
+
+                name = packet.readString(member_name_length);
+
+                packet.readByteSeq(unk_guid[5]);
+
+                return true;
+            }
+            else if (m_protocol.isCata())
             {
                 WoWGuid unk_guid;
 
@@ -61,12 +101,17 @@ namespace AscEmu::Packets
                 packet.readByteSeq(unk_guid[5]);
                 packet.readByteSeq(unk_guid[3]);
                 packet.readByteSeq(unk_guid[2]);
+
+                return true;
             }
-            else
+            else if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
                 packet >> name;
+
+                return true;
             }
-            return true;
+
+            return false;
         }
     };
 }

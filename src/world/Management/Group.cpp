@@ -1045,6 +1045,37 @@ void Group::SetAssistantLeader(CachedCharacterInfo* pMember)
     Update();
 }
 
+void Group::readyCheckStart()
+{
+    m_readyCheckInProgress = true;
+    m_readyCheckResponded.clear();
+}
+
+void Group::readyCheckStop()
+{
+    m_readyCheckInProgress = false;
+    m_readyCheckResponded.clear();
+}
+
+void Group::readyCheckMemberResponded(uint32_t guidLow)
+{
+    m_readyCheckResponded.insert(guidLow);
+}
+
+bool Group::readyCheckAllResponded() const
+{
+    for (uint8_t i = 0; i < m_SubGroupCount; ++i)
+    {
+        for (auto* member : m_SubGroups[i]->getGroupMembers())
+        {
+            if (m_readyCheckResponded.find(member->guid) == m_readyCheckResponded.end())
+                return false;
+        }
+    }
+
+    return true;
+}
+
 void Group::resetInstances(uint8_t method, bool isRaid, Player* SendMsgTo)
 {
     if (isBGGroup() /* || isBFGroup()*/)

@@ -813,24 +813,30 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_CHANNEL_DISPLAY_LIST, &WorldSession::handleChannelRosterQuery, true, true, true, true, false);
 
     // Groups / Raids
-    registry.registerOpcode(CMSG_GROUP_INVITE, &WorldSession::handleGroupInviteOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_GROUP_INVITE, &WorldSession::handleGroupInviteOpcode, true, true, true, true, true);
     //registry.registerOpcode(CMSG_GROUP_CANCEL, &WorldSession::HandleGroupCancelOpcode, false, false, true, false, false);
     registry.registerOpcode(CMSG_GROUP_ACCEPT, &WorldSession::handleGroupAcceptOpcode, true, true, true, false, false);
     registry.registerOpcode(CMSG_GROUP_DECLINE, &WorldSession::handleGroupDeclineOpcode, true, true, true, false, false);
     registry.registerOpcode(CMSG_GROUP_UNINVITE, &WorldSession::handleGroupUninviteOpcode, true, true, true, false, false);
-    registry.registerOpcode(CMSG_GROUP_UNINVITE_GUID, &WorldSession::handleGroupUninviteGuidOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_GROUP_SET_LEADER, &WorldSession::handleGroupSetLeaderOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_GROUP_DISBAND, &WorldSession::handleGroupDisbandOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_LOOT_METHOD, &WorldSession::handleLootMethodOpcode, true, true, true, true, false);
-    registry.registerOpcode(MSG_MINIMAP_PING, &WorldSession::handleMinimapPingOpcode, true, true, true, false, false);
-    registry.registerOpcode(CMSG_GROUP_RAID_CONVERT, &WorldSession::handleConvertGroupToRaidOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_GROUP_CHANGE_SUB_GROUP, &WorldSession::handleGroupChangeSubGroup, true, true, true, false, false);
-    registry.registerOpcode(CMSG_GROUP_ASSISTANT_LEADER, &WorldSession::handleGroupAssistantLeader, true, true, true, false, false);
-    registry.registerOpcode(CMSG_REQUEST_RAID_INFO, &WorldSession::handleRequestRaidInfoOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_GROUP_UNINVITE_GUID, &WorldSession::handleGroupUninviteGuidOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_GROUP_SET_LEADER, &WorldSession::handleGroupSetLeaderOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_GROUP_DISBAND, &WorldSession::handleGroupDisbandOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LOOT_METHOD, &WorldSession::handleLootMethodOpcode, true, true, true, true, true);
+    registry.registerOpcode(MSG_MINIMAP_PING, &WorldSession::handleMinimapPingOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_GROUP_RAID_CONVERT, &WorldSession::handleConvertGroupToRaidOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_GROUP_CHANGE_SUB_GROUP, &WorldSession::handleGroupChangeSubGroup, true, true, true, true, true);
+    registry.registerOpcode(CMSG_GROUP_ASSISTANT_LEADER, &WorldSession::handleGroupAssistantLeader, true, true, true, true, true);
+    registry.registerOpcode(CMSG_REQUEST_RAID_INFO, &WorldSession::handleRequestRaidInfoOpcode, true, true, true, true, true);
     registry.registerOpcode(MSG_RAID_READY_CHECK, &WorldSession::handleReadyCheckOpcode, true, false, true, true, false);
-    registry.registerOpcode(MSG_RAID_TARGET_UPDATE, &WorldSession::handleSetPlayerIconOpcode, true, true, true, false, false);
+    registry.registerOpcode(MSG_RAID_TARGET_UPDATE, &WorldSession::handleSetPlayerIconOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_REQUEST_PARTY_MEMBER_STATS, &WorldSession::handlePartyMemberStatsOpcode, true, true, true, false, true);
-    registry.registerOpcode(MSG_PARTY_ASSIGNMENT, &WorldSession::handleGroupPromote, true, true, true, false, false);
+    registry.registerOpcode(MSG_PARTY_ASSIGNMENT, &WorldSession::handleGroupPromote, true, true, true, true, false);
+    registry.registerOpcode(CMSG_MINIMAP_PING, &WorldSession::handleMinimapPingOpcode, false, false, false, false, true);
+    registry.registerOpcode(CMSG_RAID_TARGET_UPDATE, &WorldSession::handleSetPlayerIconOpcode, false, false, false, false, true);
+    registry.registerOpcode(CMSG_RAID_READY_CHECK, &WorldSession::handleRaidReadyCheckOpcode, false, false, false, false, true);
+    registry.registerOpcode(CMSG_RAID_READY_CHECK_CONFIRM, &WorldSession::handleRaidReadyCheckConfirmOpcode, false, false, false, false, true);
+    registry.registerOpcode(CMSG_SET_PARTY_ASSIGNMENT, &WorldSession::handleSetPartyAssignmentOpcode, false, false, false, false, true);
+    registry.registerOpcode(CMSG_GROUP_INITIATE_ROLE_POLL, &WorldSession::handleGroupInitiateRolePollOpcode, false, false, false, false, true);
 
     // LFG System
     registry.registerOpcode(CMSG_SET_LFG_COMMENT, &WorldSession::handleLfgSetCommentOpcode, true, true, true, false, false);

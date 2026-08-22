@@ -26,16 +26,31 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGroupAssistantLeader.h"
 #include "Server/Packets/MsgPartyAssign.h"
 #include "Server/Packets/MsgRaidReadyCheck.h"
+#include "Server/Packets/MsgRaidReadyCheckConfirm.h"
 #include "Server/Packets/CmsgGroupInviteResponse.h"
 #include "Server/Packets/CmsgGroupSetRoles.h"
 #include "Server/Packets/SmsgGroupSetRoles.h"
 #include "Server/Packets/SmsgRealGroupUpdate.h"
 #include "Server/Packets/SmsgRoleCheckBegin.h"
+#include "Server/Packets/CmsgGroupRaidConvert.h"
 #include "Server/PacketBroadcast.hpp"
 
 #if VERSION_STRING >= Cata
 #include "Server/Packets/SmsgGroupList.h"
 #endif
+
+#include "Server/Packets/CmsgMinimapPing.h"
+#include "Server/Packets/SmsgMinimapPing.h"
+#include "Server/Packets/CmsgRaidTargetUpdate.h"
+#include "Server/Packets/SmsgRaidTargetUpdateAll.h"
+#include "Server/Packets/SmsgRaidTargetUpdateSingle.h"
+#include "Server/Packets/SmsgRaidReadyCheck.h"
+#include "Server/Packets/CmsgRaidReadyCheckConfirm.h"
+#include "Server/Packets/SmsgRaidReadyCheckConfirm.h"
+#include "Server/Packets/SmsgRaidReadyCheckCompleted.h"
+#include "Server/Packets/CmsgSetPartyAssignment.h"
+#include "Server/Packets/CmsgGroupInitiateRolePoll.h"
+#include "Server/Packets/SmsgGroupRolePollInform.h"
 
 using namespace AscEmu::Packets;
 
@@ -187,7 +202,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         SmsgPartyCommandResult managedPacket(invitedPlayer->getGroup()->getGroupType(), srlPacket.name, ERR_PARTY_ALREADY_IN_GROUP);
         sendManagedPacket(managedPacket);
 
-        SmsgGroupInvite managedInvitePacket(0, _player->getName(), _player->getGuid());
+        SmsgGroupInvite managedInvitePacket(0, _player->getName(), _player->getGuid(), invitedPlayer->getGuid(), "", _player->getGroup() != nullptr);
         invitedPlayer->getSession()->sendManagedPacket(managedInvitePacket);
         return;
     }
@@ -220,7 +235,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    SmsgGroupInvite managedInvitePacket(1, _player->getName(), _player->getGuid());
+    SmsgGroupInvite managedInvitePacket(1, _player->getName(), _player->getGuid(), invitedPlayer->getGuid(), "", _player->getGroup() != nullptr);
     invitedPlayer->getSession()->sendManagedPacket(managedInvitePacket);
 
     SmsgPartyCommandResult managedPacket(0, srlPacket.name, ERR_PARTY_NO_ERROR);
@@ -366,6 +381,26 @@ void WorldSession::handleGroupDisbandOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleMinimapPingOpcode(WorldPacket& recvPacket)
 {
+    if (_socket->getClientProtocol().isMop())
+    {
+        CmsgMinimapPing srlPacket;
+        if (!parsePacket(recvPacket, srlPacket))
+            return;
+
+        sLogger.debugOpcode("Received CMSG_MINIMAP_PING: {} (x), {} (y).", srlPacket.posX, srlPacket.posY);
+
+        if (!_player->isInGroup())
+            return;
+
+        const auto group = _player->getGroup();
+        if (group == nullptr)
+            return;
+
+        SmsgMinimapPing managedPacket(_player->getGuid(), srlPacket.posX, srlPacket.posY);
+        PacketBroadcast::sendFromGroup(*group, managedPacket, _player);
+        return;
+    }
+
     MsgMinimapPing srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;
@@ -447,6 +482,47 @@ void WorldSession::handleLootMethodOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleSetPlayerIconOpcode(WorldPacket& recvPacket)
 {
+    if (_socket->getClientProtocol().isMop())
+    {
+        CmsgRaidTargetUpdate srlPacket;
+        if (!parsePacket(recvPacket, srlPacket))
+            return;
+
+        sLogger.debugOpcode("Received CMSG_RAID_TARGET_UPDATE: {} (icon).", srlPacket.symbol);
+
+        const auto group = _player->getGroup();
+        if (group == nullptr)
+            return;
+
+        if (srlPacket.symbol == 0xFF)
+        {
+            SmsgRaidTargetUpdateAll managedPacket(group);
+            sendManagedPacket(managedPacket);
+        }
+        else if (_player->isGroupLeader())
+        {
+            if (srlPacket.symbol >= 8)
+                return;
+
+            for (uint8_t i = 0; i < 8; ++i)
+            {
+                if (group->m_targetIcons[i] == srlPacket.targetGuid)
+                {
+                    group->m_targetIcons[i] = 0;
+                    SmsgRaidTargetUpdateSingle managedPacket(_player->getGuid(), 0, i, 0);
+                    PacketBroadcast::sendFromGroup(*group, managedPacket);
+                }
+            }
+
+            SmsgRaidTargetUpdateSingle managedPacket(_player->getGuid(), srlPacket.targetGuid, srlPacket.symbol, srlPacket.index);
+            PacketBroadcast::sendFromGroup(*group, managedPacket);
+
+            group->m_targetIcons[srlPacket.symbol] = srlPacket.targetGuid;
+        }
+
+        return;
+    }
+
     MsgRaidTargetUpdate srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;
@@ -515,12 +591,20 @@ void WorldSession::handlePartyMemberStatsOpcode(WorldPacket& recvPacket)
     if (_player->isVisibleObject(requestedPlayer->getGuid()))
         return;
 
+    // SMSG_PARTY_MEMBER_STATS_FULL was replaced by SMSG_PARTY_MEMBER_STATE in Mop, which is not implemented yet
+    if (_socket->getClientProtocol().isMop())
+        return;
+
     SmsgPartyMemberStatsFull managedPacket(requestedPlayer->getGuid(), requestedPlayer);
     sendManagedPacket(managedPacket);
 }
 
-void WorldSession::handleConvertGroupToRaidOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::handleConvertGroupToRaidOpcode(WorldPacket& recvPacket)
 {
+    CmsgGroupRaidConvert srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
     auto const group = _player->getGroup();
     if (group == nullptr)
         return;
@@ -532,7 +616,9 @@ void WorldSession::handleConvertGroupToRaidOpcode(WorldPacket& /*recvPacket*/)
         return;
     }
 
-    group->ExpandToRaid();
+    if (srlPacket.toRaid)
+        group->ExpandToRaid();
+
     SmsgPartyCommandResult managedPacket(0, "", ERR_PARTY_NO_ERROR);
     sendManagedPacket(managedPacket);
 }
@@ -548,7 +634,9 @@ void WorldSession::handleGroupChangeSubGroup(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    const auto playerInfo = sObjectMgr.getCachedCharacterInfoByName(srlPacket.name);
+    const auto playerInfo = _socket->getClientProtocol().isMop()
+        ? sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow())
+        : sObjectMgr.getCachedCharacterInfoByName(srlPacket.name);
     if (playerInfo == nullptr || playerInfo->m_Group == nullptr)
         return;
 
@@ -630,6 +718,33 @@ void WorldSession::handleReadyCheckOpcode(WorldPacket& recvPacket)
         {
             MsgRaidReadyCheck managedPacket(_player->getGuid(), 0, true);
             PacketBroadcast::sendFromGroup(*group, managedPacket);
+
+            // offline members can't answer - report them as "not ready" to the leader/assistant
+            for (uint32_t i = 0; i < group->GetSubGroupCount(); ++i)
+            {
+                for (auto* memberInfo : group->GetSubGroup(i)->getGroupMembers())
+                {
+                    const auto memberPlayer = sObjectMgr.getPlayer(memberInfo->guid);
+                    if (memberPlayer != nullptr && memberPlayer->getSession() != nullptr)
+                        continue;
+
+                    MsgRaidReadyCheckConfirm offlineConfirm(memberInfo->guid, 0);
+
+                    if (group->GetLeader())
+                    {
+                        if (Player* leader = sObjectMgr.getPlayer(group->GetLeader()->guid))
+                            if (leader->getSession())
+                                leader->getSession()->sendManagedPacket(offlineConfirm);
+                    }
+
+                    if (group->GetAssistantLeader())
+                    {
+                        if (Player* assistant = sObjectMgr.getPlayer(group->GetAssistantLeader()->guid))
+                            if (assistant->getSession())
+                                assistant->getSession()->sendManagedPacket(offlineConfirm);
+                    }
+                }
+            }
         }
         else
         {
@@ -642,7 +757,7 @@ void WorldSession::handleReadyCheckOpcode(WorldPacket& recvPacket)
         if (!parsePacket(recvPacket, srlPacket))
             return;
 
-        MsgRaidReadyCheck managedPacket(_player->getGuid(), srlPacket.isReady, false);
+        MsgRaidReadyCheckConfirm managedPacket(_player->getGuid(), srlPacket.isReady);
 
         if (group->GetLeader())
         {
@@ -659,3 +774,123 @@ void WorldSession::handleReadyCheckOpcode(WorldPacket& recvPacket)
         }
     }
 }
+
+#if VERSION_STRING >= Mop
+void WorldSession::handleRaidReadyCheckOpcode(WorldPacket& /*recvPacket*/)
+{
+    const auto group = _player->getGroup();
+    if (group == nullptr)
+        return;
+
+    if (group->GetLeader() != _player->getPlayerInfo() && group->GetAssistantLeader() != _player->getPlayerInfo())
+    {
+        sendNotification("You do not have permission to perform that function.");
+        return;
+    }
+
+    if (group->readyCheckInProgress())
+        return;
+
+    const WoWGuid groupGuid(group->GetID(), 0, HIGHGUID_TYPE_GROUP);
+
+    group->readyCheckStart();
+    group->readyCheckMemberResponded(_player->getGuidLow());
+
+    SmsgRaidReadyCheck managedPacket(groupGuid, _player->getGuid(), 35000);
+    PacketBroadcast::sendFromGroup(*group, managedPacket);
+
+    // offline members can't answer - count them as "not ready" immediately
+    for (uint32_t i = 0; i < group->GetSubGroupCount(); ++i)
+    {
+        for (auto* memberInfo : group->GetSubGroup(i)->getGroupMembers())
+        {
+            const auto memberPlayer = sObjectMgr.getPlayer(memberInfo->guid);
+            if (memberPlayer != nullptr && memberPlayer->getSession() != nullptr)
+                continue;
+
+            group->readyCheckMemberResponded(memberInfo->guid);
+
+            const WoWGuid offlinePlayerGuid(memberInfo->guid, 0, HIGHGUID_TYPE_PLAYER);
+            SmsgRaidReadyCheckConfirm offlineConfirm(groupGuid, offlinePlayerGuid, false);
+            PacketBroadcast::sendFromGroup(*group, offlineConfirm);
+        }
+    }
+
+    if (group->readyCheckAllResponded())
+    {
+        group->readyCheckStop();
+
+        SmsgRaidReadyCheckCompleted completedPacket(groupGuid);
+        PacketBroadcast::sendFromGroup(*group, completedPacket);
+    }
+}
+
+void WorldSession::handleRaidReadyCheckConfirmOpcode(WorldPacket& recvPacket)
+{
+    const auto group = _player->getGroup();
+    if (group == nullptr)
+        return;
+
+    if (!group->readyCheckInProgress())
+        return;
+
+    CmsgRaidReadyCheckConfirm srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    const WoWGuid groupGuid(group->GetID(), 0, HIGHGUID_TYPE_GROUP);
+
+    SmsgRaidReadyCheckConfirm managedPacket(groupGuid, _player->getGuid(), srlPacket.status);
+    PacketBroadcast::sendFromGroup(*group, managedPacket);
+
+    group->readyCheckMemberResponded(_player->getGuidLow());
+
+    if (group->readyCheckAllResponded())
+    {
+        group->readyCheckStop();
+
+        SmsgRaidReadyCheckCompleted completedPacket(groupGuid);
+        PacketBroadcast::sendFromGroup(*group, completedPacket);
+    }
+}
+
+void WorldSession::handleSetPartyAssignmentOpcode(WorldPacket& recvPacket)
+{
+    const auto group = _player->getGroup();
+    if (group == nullptr)
+        return;
+
+    if (group->GetLeader() != _player->getPlayerInfo() && group->GetAssistantLeader() != _player->getPlayerInfo())
+        return;
+
+    CmsgSetPartyAssignment srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    CachedCharacterInfo* playerInfo = nullptr;
+    if (srlPacket.apply)
+        playerInfo = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow());
+
+    if (srlPacket.assignment == 1)
+        group->SetMainAssist(playerInfo);
+    else if (srlPacket.assignment == 0)
+        group->SetMainTank(playerInfo);
+}
+
+void WorldSession::handleGroupInitiateRolePollOpcode(WorldPacket& recvPacket)
+{
+    const auto group = _player->getGroup();
+    if (group == nullptr)
+        return;
+
+    if (group->GetLeader() != _player->getPlayerInfo() && group->GetAssistantLeader() != _player->getPlayerInfo())
+        return;
+
+    CmsgGroupInitiateRolePoll srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    SmsgGroupRolePollInform managedPacket(_player->getGuid(), srlPacket.partyIndex);
+    PacketBroadcast::sendFromGroup(*group, managedPacket);
+}
+#endif

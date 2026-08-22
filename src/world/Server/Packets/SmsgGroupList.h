@@ -71,6 +71,12 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            // Mop uses a bit-packed layout for this opcode that differs substantially from
+            // the Cata/WotLK/TBC/Classic format below; not implemented yet, so refuse to send
+            // a mis-formatted packet rather than desyncing the client's byte stream.
+            if (m_protocol.isMop())
+                return false;
+
             if (sendEmptyList)
             {
                 if (m_protocol.expansion <= WoW::Expansion::_TBC)

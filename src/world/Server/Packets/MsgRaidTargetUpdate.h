@@ -52,7 +52,12 @@ namespace AscEmu::Packets
                 if (group)
                 {
                     for (uint8_t i = 0; i < iconCount; ++i)
+                    {
+                        if (group->m_targetIcons[i] == 0)
+                            continue;
+
                         packet << i << group->m_targetIcons[i];
+                    }
                 }
             }
             return true;

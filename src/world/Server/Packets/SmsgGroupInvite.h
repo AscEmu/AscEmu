@@ -21,23 +21,68 @@ namespace AscEmu::Packets
         uint8_t failed;
         utf8_string name;
         WoWGuid inviterGuid;
+        WoWGuid invitedGuid;
+        std::string realmName;
+        bool inGroup = false;
 
         SmsgGroupInvite() : SmsgGroupInvite(0, "", 0)
         {
         }
 
-        SmsgGroupInvite(uint8_t failed, std::string name, uint64_t inviterGuid) :
+        SmsgGroupInvite(uint8_t failed, std::string name, uint64_t inviterGuid, uint64_t invitedGuid = 0, std::string realmName = "", bool inGroup = false) :
             ManagedPacket(SMSG_GROUP_INVITE, PACKET_SIZE),
             failed(failed),
             name(name),
-            inviterGuid(inviterGuid)
+            inviterGuid(inviterGuid),
+            invitedGuid(invitedGuid),
+            realmName(realmName),
+            inGroup(inGroup)
         {
         }
 
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            if (m_protocol.isMop())
+            {
+                packet.writeBits(static_cast<uint32_t>(realmName.size()), 8);
+                packet.writeBits(0, 8);
+                packet.writeBit(invitedGuid[2]);
+                packet.writeBit(0);
+                packet.writeBits(static_cast<uint32_t>(name.size()), 6);
+                packet.writeBit(invitedGuid[7]);
+                packet.writeBit(invitedGuid[5]);
+                packet.writeBit(!inGroup);
+                packet.writeBit(0);
+                packet.writeBit(invitedGuid[1]);
+                packet.writeBit(1);
+                packet.writeBit(1);
+                packet.writeBits(0, 22);
+                packet.writeBit(invitedGuid[3]);
+                packet.writeBit(invitedGuid[0]);
+                packet.writeBit(invitedGuid[4]);
+                packet.writeBit(invitedGuid[6]);
+                packet.flushBits();
+
+                packet.writeByteSeq(invitedGuid[6]);
+                packet.writeString(realmName);
+                packet.writeByteSeq(invitedGuid[7]);
+                packet.writeByteSeq(invitedGuid[2]);
+                packet.writeByteSeq(invitedGuid[0]);
+                packet << uint64_t(0);
+                packet << uint32_t(0);
+                packet << uint32_t(0);
+                packet.writeByteSeq(invitedGuid[1]);
+                packet.writeByteSeq(invitedGuid[5]);
+                packet.writeByteSeq(invitedGuid[4]);
+                packet << int32_t(0);
+                packet.writeString(name);
+                packet.writeByteSeq(invitedGuid[3]);
+                packet << uint32_t(0);
+
+                return true;
+            }
+            else if (m_protocol.isCata())
             {
                 packet.writeBit(0);
 

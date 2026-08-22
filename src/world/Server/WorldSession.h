@@ -455,6 +455,10 @@ protected:
         void handleGroupAssistantLeader(WorldPacket& recvPacket);
         void handleGroupPromote(WorldPacket& recvPacket);
         void handleReadyCheckOpcode(WorldPacket& recvPacket);
+        void handleRaidReadyCheckOpcode(WorldPacket& recvPacket);
+        void handleRaidReadyCheckConfirmOpcode(WorldPacket& recvPacket);
+        void handleSetPartyAssignmentOpcode(WorldPacket& recvPacket);
+        void handleGroupInitiateRolePollOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // GuildHandler.cpp

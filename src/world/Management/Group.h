@@ -242,6 +242,13 @@ public:
     inline CachedCharacterInfo* GetMainTank() { return m_mainTank; }
     inline CachedCharacterInfo* GetMainAssist() { return m_mainAssist; }
 
+    // Mop feature
+    inline bool readyCheckInProgress() const { return m_readyCheckInProgress; }
+    void readyCheckStart();
+    void readyCheckStop();
+    void readyCheckMemberResponded(uint32_t guidLow);
+    bool readyCheckAllResponded() const;
+
     InstanceGroupBind* bindToInstance(InstanceSaved* save, bool permanent, bool load = false);
     void unbindInstance(uint32_t mapid, uint8_t difficulty, bool unload = false);
     InstanceGroupBind* getBoundInstance(Player* player);
@@ -303,6 +310,10 @@ protected:
     CachedCharacterInfo* m_assistantLeader;
     CachedCharacterInfo* m_mainTank;
     CachedCharacterInfo* m_mainAssist;
+
+    // Mop feature
+    bool m_readyCheckInProgress = false;
+    std::set<uint32_t> m_readyCheckResponded;
 
     BoundInstancesMap   m_boundInstances[InstanceDifficulty::MAX_DIFFICULTY];
 

@@ -17,16 +17,18 @@ namespace AscEmu::Packets
         uint32_t unknown;
         std::string memberName;
         uint32_t error;
+        uint32_t val;
 
-        SmsgPartyCommandResult() : SmsgPartyCommandResult(0, "", 0)
+        SmsgPartyCommandResult() : SmsgPartyCommandResult(0, "", 0, 0)
         {
         }
 
-        SmsgPartyCommandResult(uint32_t unknown, std::string memberName, uint32_t error) :
+        SmsgPartyCommandResult(uint32_t unknown, std::string memberName, uint32_t error, uint32_t val = 0) :
             ManagedPacket(SMSG_PARTY_COMMAND_RESULT, 12),
             unknown(unknown),
             memberName(memberName),
-            error(error)
+            error(error),
+            val(val)
         {
         }
 
@@ -42,6 +44,11 @@ namespace AscEmu::Packets
                 packet << memberName.c_str();
 
             packet << error;
+
+            if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            {
+                packet << val;
+            }
 
             if (m_protocol.expansion >= WoW::Expansion::_Cata)
             {
