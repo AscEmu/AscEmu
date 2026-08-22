@@ -3,6 +3,7 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include <ctime>
 #include <sstream>
 
 #include "Management/ObjectMgr.hpp"
@@ -21,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGmTicketDeleteTicket.h"
 #include "Server/Packets/SmsgGmTicketGetTicket.h"
 #include "Server/Packets/SmsgGmTicketSystemstatus.h"
+#include "Server/Packets/SmsgGmTicketCaseStatus.h"
 #include "Server/Packets/CmsgGmReportLag.h"
 #include "Server/Packets/CmsgGmSurveySubmit.h"
 #include "Server/Packets/SmsgGmResponseReceived.h"
@@ -56,6 +58,13 @@ void WorldSession::handleGMTicketToggleSystemStatusOpcode(WorldPacket& /*recvPac
 {
     if (HasGMPermissions())
         sWorld.toggleGmTicketStatus();
+}
+
+void WorldSession::handleGMTicketCaseStatusOpcode(WorldPacket& /*recvPacket*/)
+{
+    // Note: case count is always sent as empty (see SmsgGmTicketCaseStatus) - client only reads the timestamps
+    SmsgGmTicketCaseStatus managedPacket(0, ::time(nullptr));
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleGMSurveySubmitOpcode(WorldPacket& recvPacket)

@@ -1767,6 +1767,7 @@ CMSG_REQUEST_CONQUEST_FORMULA_CONSTANTS,
 CMSG_BATTLE_PET_REQUEST_JOURNAL,
 CMSG_GM_TICKET_CASE_STATUS,
 CMSG_REALM_NAME_QUERY,
+SMSG_GM_TICKET_CASE_STATUS,
 NUM_OPCODES
 };
 
@@ -2616,7 +2617,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {SMSG_PET_DISMISS_SOUND, {0x1F, "SMSG_PET_DISMISS_SOUND", OpcodeDevelopmentState::Unchecked, {0x325,/*Classic*/ 0x325,/*BC*/ 0x325,/*WotLK*/ 0x2B05,/*Cata*/ 0x0000/*Mop*/}}},
 {SMSG_GHOSTEE_GONE, {0x1F, "SMSG_GHOSTEE_GONE", OpcodeDevelopmentState::Unchecked, {0x326,/*Classic*/ 0x326,/*BC*/ 0x326,/*WotLK*/ 0x326,/*Cata*/ 0x0000/*Mop*/}}},
 {CMSG_GM_UPDATE_TICKET_STATUS, {0x1F, "CMSG_GM_UPDATE_TICKET_STATUS", OpcodeDevelopmentState::Unchecked, {0x327,/*Classic*/ 0x327,/*BC*/ 0x327,/*WotLK*/ 0x327,/*Cata*/ 0x0000/*Mop*/}}},
-{SMSG_GM_TICKET_STATUS_UPDATE, {0x1F, "SMSG_GM_TICKET_STATUS_UPDATE", OpcodeDevelopmentState::Unchecked, {0x328,/*Classic*/ 0x328,/*BC*/ 0x328,/*WotLK*/ 0x2C25,/*Cata*/ 0x0000/*Mop*/}}},
+{SMSG_GM_TICKET_STATUS_UPDATE, {0x1F, "SMSG_GM_TICKET_STATUS_UPDATE", OpcodeDevelopmentState::Unchecked, {0x328,/*Classic*/ 0x328,/*BC*/ 0x328,/*WotLK*/ 0x2C25,/*Cata*/ 0x02A6/*Mop*/}}},
 {MSG_SET_DUNGEON_DIFFICULTY, {0x1F, "MSG_SET_DUNGEON_DIFFICULTY", OpcodeDevelopmentState::Unchecked, {0x329,/*Classic*/ 0x329,/*BC*/ 0x329,/*WotLK*/ 0x4925,/*Cata*/ 0x0000/*Mop*/}}},
 {CMSG_SET_DUNGEON_DIFFICULTY, {0x1F, "CMSG_SET_DUNGEON_DIFFICULTY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x1A36/*Mop*/}}},
 {SMSG_SET_DUNGEON_DIFFICULTY, {0x1F, "SMSG_SET_DUNGEON_DIFFICULTY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x1283/*Mop*/}}},
@@ -3505,5 +3506,6 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {CMSG_REQUEST_CONQUEST_FORMULA_CONSTANTS, {0x10, "CMSG_REQUEST_CONQUEST_FORMULA_CONSTANTS", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x0365/*Mop*/}}},
 {CMSG_BATTLE_PET_REQUEST_JOURNAL, {0x10, "CMSG_BATTLE_PET_REQUEST_JOURNAL", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x0A23/*Mop*/}}},
 {CMSG_GM_TICKET_CASE_STATUS, {0x10, "CMSG_GM_TICKET_CASE_STATUS", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x15A8/*Mop*/}}},
-{CMSG_REALM_NAME_QUERY, {0x10, "CMSG_REALM_NAME_QUERY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x1A16/*Mop*/}}}
+{CMSG_REALM_NAME_QUERY, {0x10, "CMSG_REALM_NAME_QUERY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x1A16/*Mop*/}}},
+{SMSG_GM_TICKET_CASE_STATUS, {0x10, "SMSG_GM_TICKET_CASE_STATUS", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x148E/*Mop*/}}}
 };

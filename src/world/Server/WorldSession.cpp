@@ -927,7 +927,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_SET_TRADE_GOLD, &WorldSession::handleSetTradeGold, true, true, true, true, false);
 
     // Quest System
-    registry.registerOpcode(CMSG_QUEST_GIVER_STATUS_MULTIPLE_QUERY, &WorldSession::handleInrangeQuestgiverQuery, false, true, true, true, false);
+    registry.registerOpcode(CMSG_QUEST_GIVER_STATUS_MULTIPLE_QUERY, &WorldSession::handleInrangeQuestgiverQuery, false, true, true, true, true);
     registry.registerOpcode(CMSG_QUESTGIVER_STATUS_QUERY, &WorldSession::handleQuestgiverStatusQueryOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_QUESTGIVER_HELLO, &WorldSession::handleQuestgiverHelloOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_QUESTGIVER_ACCEPT_QUEST, &WorldSession::handleQuestgiverAcceptQuestOpcode, true, true, true, true, false);
@@ -1057,6 +1057,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_GMTICKET_GETTICKET, &WorldSession::handleGMTicketGetTicketOpcode, false, true, true, true, true);
     registry.registerOpcode(CMSG_GMTICKET_SYSTEMSTATUS, &WorldSession::handleGMTicketSystemStatusOpcode, false, true, true, true, true);
     registry.registerOpcode(CMSG_GMTICKETSYSTEM_TOGGLE, &WorldSession::handleGMTicketToggleSystemStatusOpcode, false, true, true, false, false);
+    registry.registerOpcode(CMSG_GM_TICKET_CASE_STATUS, &WorldSession::handleGMTicketCaseStatusOpcode, false, false, false, false, true);
 
     // Lag report
     registry.registerOpcode(CMSG_GM_REPORT_LAG, &WorldSession::handleReportLag, false, false, true, false, false);

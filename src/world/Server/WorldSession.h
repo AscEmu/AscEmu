@@ -425,6 +425,7 @@ protected:
         void handleGMTicketGetTicketOpcode(WorldPacket& /*recvPacket*/);
         void handleGMTicketSystemStatusOpcode(WorldPacket& /*recvPacket*/);
         void handleGMTicketToggleSystemStatusOpcode(WorldPacket& /*recvPacket*/);
+        void handleGMTicketCaseStatusOpcode(WorldPacket& /*recvPacket*/);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // GroupHandler.cpp
