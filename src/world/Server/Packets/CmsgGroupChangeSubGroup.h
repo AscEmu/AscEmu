@@ -56,12 +56,14 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else
+            else if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet >> name >> subGroup;
 
                 return true;
             }
+
+            return false;
         }
     };
 }

@@ -31,13 +31,16 @@ namespace AscEmu::Packets
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet >> name;
+                return true;
             }
-            else
+            else if (m_protocol.expansion >= WoW::Expansion::_Cata)
             {
                 const uint32_t length = packet.readBits(7);
                 name = packet.readString(length);
+                return true;
             }
-            return true;
+
+            return false;
         }
     };
 }

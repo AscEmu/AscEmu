@@ -22,7 +22,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& /*packet*/) override
         {
-            return true;
+            return m_protocol.expansion >= WoW::Expansion::_WotLK;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

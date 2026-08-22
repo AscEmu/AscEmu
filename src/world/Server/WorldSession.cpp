@@ -1153,7 +1153,7 @@ void WorldSession::registerOpcodeHandler()
 
     //Misc - Unhandled
     registry.registerOpcode(CMSG_FAR_SIGHT, &WorldSession::Unhandled, false, false, true, true, false);
-    registry.registerOpcode(CMSG_LFG_GET_STATUS, &WorldSession::Unhandled, false, false, true, true, false);
+    registry.registerOpcode(CMSG_LFG_GET_STATUS, &WorldSession::handleLfgGetStatusOpcode, false, false, true, true, true);
     registry.registerOpcode(CMSG_VOICE_SESSION_ENABLE, &WorldSession::Unhandled, true, false, true, true, false);
     registry.registerOpcode(CMSG_SET_ACTIVE_VOICE_CHANNEL, &WorldSession::Unhandled, true, false, true, false, false);
 

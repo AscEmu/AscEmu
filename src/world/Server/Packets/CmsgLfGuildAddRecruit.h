@@ -27,7 +27,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            if (m_protocol.isCata())
             {
                 packet >> classRoles;
                 packet >> guildInterests;
@@ -59,6 +59,39 @@ namespace AscEmu::Packets
                 packet.readByteSeq(guid[0]);
                 packet.readByteSeq(guid[6]);
                 packet.readByteSeq(guid[1]);
+                packet.readByteSeq(guid[3]);
+
+                return true;
+            }
+            else if (m_protocol.isMop())
+            {
+                // Mop dropped the player-name field from the wire entirely.
+                packet >> classRoles;
+                packet >> availability;
+                packet >> guildInterests;
+
+                guid[7] = packet.readBit();
+                guid[5] = packet.readBit();
+                guid[2] = packet.readBit();
+                guid[6] = packet.readBit();
+                guid[1] = packet.readBit();
+                guid[0] = packet.readBit();
+
+                const uint16_t commentLength = static_cast<uint16_t>(packet.readBits(10));
+
+                guid[3] = packet.readBit();
+                guid[4] = packet.readBit();
+
+                packet.readByteSeq(guid[4]);
+                packet.readByteSeq(guid[0]);
+                packet.readByteSeq(guid[2]);
+
+                comment = packet.readString(commentLength);
+
+                packet.readByteSeq(guid[6]);
+                packet.readByteSeq(guid[1]);
+                packet.readByteSeq(guid[5]);
+                packet.readByteSeq(guid[7]);
                 packet.readByteSeq(guid[3]);
 
                 return true;

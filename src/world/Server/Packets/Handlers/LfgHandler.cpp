@@ -391,6 +391,32 @@ void WorldSession::handleLfgLockInfoOpcode([[maybe_unused]] WorldPacket& recvPac
 #endif
 }
 
+void WorldSession::handleLfgGetStatusOpcode([[maybe_unused]] WorldPacket& recvPacket)
+{
+#if VERSION_STRING >= WotLK
+    sLogger.debugOpcode("Received CMSG_LFG_GET_STATUS from {}.", _player->getGuid());
+
+    const uint64_t guid = _player->getGuid();
+    if (sLfgMgr.GetState(guid) == LFG_STATE_NONE)
+        return;
+
+    LfgUpdateData updateData(LFG_UPDATETYPE_DEFAULT, sLfgMgr.GetSelectedDungeons(guid), sLfgMgr.GetComment(guid));
+
+    if (_player->getGroup())
+    {
+        sendLfgUpdateParty(updateData);
+        updateData.dungeons.clear();
+        sendLfgUpdatePlayer(updateData);
+    }
+    else
+    {
+        sendLfgUpdatePlayer(updateData);
+        updateData.dungeons.clear();
+        sendLfgUpdateParty(updateData);
+    }
+#endif
+}
+
 void WorldSession::handleLfgJoinOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC

@@ -37,10 +37,15 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            uint64_t unpackedGuid;
-            packet >> promoteType >> isActivated >> unpackedGuid;
-            guid.init(unpackedGuid);
-            return true;
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                uint64_t unpackedGuid;
+                packet >> promoteType >> isActivated >> unpackedGuid;
+                guid.init(unpackedGuid);
+                return true;
+            }
+
+            return false;
         }
     };
 }

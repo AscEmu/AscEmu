@@ -630,6 +630,7 @@ protected:
         void handleLfgPlayerLockInfoRequestOpcode(WorldPacket& recvPacket); //> TBC
         void handleLfgTeleportOpcode(WorldPacket& recvPacket);      //> TBC
         void handleLfgPartyLockInfoRequestOpcode(WorldPacket& recvPacket); //> TBC
+        void handleLfgGetStatusOpcode(WorldPacket& recvPacket);      //>= WotLK
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // LootHandler.cpp

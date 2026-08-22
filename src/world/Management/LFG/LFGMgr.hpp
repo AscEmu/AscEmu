@@ -303,9 +303,9 @@ public:
     uint8_t GetRoles(uint64_t guid);
     void SetSelectedDungeons(uint64_t guid, const LfgDungeonSet& dungeons);
     uint32_t GetLFGDungeon(uint32_t id);
+    const std::string& GetComment(uint64_t gguid);
 
 private:
-    const std::string& GetComment(uint64_t gguid);
     void RestoreState(uint64_t guid);
     void SetLockedDungeons(uint64_t guid, const LfgLockMap& lock);
     void DecreaseKicksLeft(uint64_t guid);

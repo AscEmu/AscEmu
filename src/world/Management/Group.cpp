@@ -229,15 +229,20 @@ void Group::Update()
     {
         if (SubGroup* sg1 = m_SubGroups[i].get())
         {
+            uint32_t subGroupPosition = 0;
             for (const auto characterInfo : sg1->getGroupMembers())
             {
                 // skip offline players
                 if (!sObjectMgr.getPlayer(characterInfo->guid))
+                {
+                    ++subGroupPosition;
                     continue;
+                }
 
                 SmsgGroupList managedPacket(false);
                 managedPacket.groupType = uint8_t(m_GroupType);
                 managedPacket.requesterSubGroup = uint8_t(characterInfo->subGroup);
+                managedPacket.groupPosition = subGroupPosition++;
 
                 uint8_t flags = 0;
                 if (characterInfo == m_assistantLeader)

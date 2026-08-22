@@ -30,9 +30,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << errorOrBgType;    // < 0 = error; >= 0 bg type
+            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            {
+                packet << errorOrBgType;    // < 0 = error; >= 0 bg type
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

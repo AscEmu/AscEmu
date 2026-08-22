@@ -30,8 +30,13 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << uint64_t(maxDailyXp);
-            return true;
+            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            {
+                packet << uint64_t(maxDailyXp);
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

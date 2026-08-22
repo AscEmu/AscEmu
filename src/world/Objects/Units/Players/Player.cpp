@@ -13265,7 +13265,7 @@ void Player::resendCreateAndActiveMoverForMoP()
     getUpdateMgr().pushCreationData(&pbuf, count);
     processPendingUpdates();
 
-    // MoP: client may be waiting for CUF profiles after create to finish loading (Trinity SendInitialPacketsAfterAddToMap).
+    // MoP: client may be waiting for CUF profiles after create to finish loading.
     SmsgLoadCufProfiles cufProfilesPacket;
     getSession()->sendManagedPacket(cufProfilesPacket);
 

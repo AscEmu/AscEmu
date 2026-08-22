@@ -35,14 +35,17 @@ namespace AscEmu::Packets
             if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
                 packet >> guildId;
+                return true;
             }
-            else
+            else if (m_protocol.expansion > WoW::Expansion::_WotLK)
             {
                 packet >> guildId64;
                 guildId = static_cast<uint32_t>(guildId64);
                 packet >> playerGuid;
+                return true;
             }
-            return true;
+
+            return false;
         }
     };
 }

@@ -35,16 +35,18 @@ namespace AscEmu::Packets
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << name;
+                return true;
             }
-            else
+            else if (m_protocol.isMop())
             {
                 packet << uint8_t(0);
                 packet.writeBits(uint8_t(name.size()), 6);
                 packet.flushBits();
                 packet.writeString(name);
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

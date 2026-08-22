@@ -19,7 +19,7 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override { return 0; }
 
-        bool internalSerialise(WorldPacket& /*packet*/) override { return true; }
+        bool internalSerialise(WorldPacket& /*packet*/) override { return m_protocol.expansion >= WoW::Expansion::_Cata; }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };

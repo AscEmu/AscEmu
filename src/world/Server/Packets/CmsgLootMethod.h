@@ -62,7 +62,7 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else
+            else if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 uint64_t unpackedGuid;
                 packet >> method >> unpackedGuid >> threshold;
@@ -70,6 +70,8 @@ namespace AscEmu::Packets
 
                 return true;
             }
+
+            return false;
         }
     };
 }

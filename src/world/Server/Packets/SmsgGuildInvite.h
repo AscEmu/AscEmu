@@ -54,8 +54,9 @@ namespace AscEmu::Packets
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet << inviterName << guildName;
+                return true;
             }
-            else
+            else if (m_protocol.isCata())
             {
                 packet << uint32_t(guildLevel);
                 packet << uint32_t(mEmblemInfo.getBorderStyle());
@@ -125,8 +126,76 @@ namespace AscEmu::Packets
                 packet.writeByteSeq(newGuildGuid[3]);
 
                 packet.writeByteSeq(oldGuildGuid[4]);
+
+                return true;
             }
-            return true;
+            else if (m_protocol.isMop())
+            {
+                // Mop adds the invitee's current guild name and 3 realm-id fields to the wire.
+                // AscEmu's invite flow (Guild::sendGuildInvitePacket) already rejects the invite
+                // before this packet is built if the invitee is already in a guild, so the
+                // "invitee's old guild" data is always empty here. AscEmu has no cross-realm
+                // support, so the realm-id fields are sent as 0 rather than a real value.
+                WoWGuid oldGuildGuid(guildId, 0, guildId ? uint32_t(HIGHGUID_TYPE_GUILD) : 0);
+                WoWGuid newGuildGuid = guildGuid;
+                const std::string inviteeGuildName;
+                constexpr uint32_t realmID = 0;
+
+                packet.writeBit(newGuildGuid[4]);
+                packet.writeBits(guildName.length(), 7);
+                packet.writeBit(oldGuildGuid[4]);
+                packet.writeBit(newGuildGuid[6]);
+                packet.writeBit(oldGuildGuid[2]);
+                packet.writeBit(oldGuildGuid[1]);
+                packet.writeBit(oldGuildGuid[5]);
+                packet.writeBit(oldGuildGuid[7]);
+                packet.writeBit(newGuildGuid[0]);
+                packet.writeBit(oldGuildGuid[3]);
+                packet.writeBit(newGuildGuid[5]);
+                packet.writeBit(oldGuildGuid[6]);
+                packet.writeBits(inviterName.length(), 6);
+                packet.writeBit(newGuildGuid[1]);
+                packet.writeBit(newGuildGuid[3]);
+                packet.writeBit(oldGuildGuid[0]);
+                packet.writeBit(newGuildGuid[7]);
+                packet.writeBits(inviteeGuildName.length(), 7);
+                packet.writeBit(newGuildGuid[2]);
+
+                packet.flushBits();
+
+                packet.writeByteSeq(newGuildGuid[1]);
+                packet << uint32_t(mEmblemInfo.getBackgroundColor());
+                packet.writeByteSeq(newGuildGuid[4]);
+                packet.writeString(inviterName);
+                packet << uint32_t(mEmblemInfo.getBorderStyle());
+                packet.writeByteSeq(oldGuildGuid[7]);
+                packet.writeByteSeq(newGuildGuid[0]);
+                packet.writeByteSeq(newGuildGuid[2]);
+                packet << uint32_t(mEmblemInfo.getColor());
+                packet.writeByteSeq(oldGuildGuid[2]);
+                packet.writeByteSeq(oldGuildGuid[5]);
+                packet << uint32_t(guildLevel);
+                packet << uint32_t(guildId ? realmID : 0);
+                packet.writeByteSeq(newGuildGuid[7]);
+                packet.writeByteSeq(newGuildGuid[3]);
+                packet.writeByteSeq(oldGuildGuid[4]);
+                packet << uint32_t(mEmblemInfo.getBorderColor());
+                packet.writeString(guildName);
+                packet << uint32_t(realmID);
+                packet << uint32_t(mEmblemInfo.getStyle());
+                packet.writeByteSeq(oldGuildGuid[0]);
+                packet.writeString(inviteeGuildName);
+                packet.writeByteSeq(newGuildGuid[5]);
+                packet << uint32_t(realmID);
+                packet.writeByteSeq(oldGuildGuid[1]);
+                packet.writeByteSeq(newGuildGuid[6]);
+                packet.writeByteSeq(oldGuildGuid[3]);
+                packet.writeByteSeq(oldGuildGuid[6]);
+
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

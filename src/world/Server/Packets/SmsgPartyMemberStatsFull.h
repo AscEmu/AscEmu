@@ -36,6 +36,9 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_Mop)
+                return false;
+
             packet << uint8_t(0);
 
             if (player == nullptr)

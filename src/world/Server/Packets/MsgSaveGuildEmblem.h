@@ -36,18 +36,28 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << error;
-            return true;
+            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            {
+                packet << error;
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            uint64_t unpackedGuid;
-            packet >> unpackedGuid;
-            guid.init(unpackedGuid);
+            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            {
+                uint64_t unpackedGuid;
+                packet >> unpackedGuid;
+                guid.init(unpackedGuid);
 
-            emblemInfo.readEmblemInfoFromPacket(packet);
-            return true;
+                emblemInfo.readEmblemInfoFromPacket(packet);
+                return true;
+            }
+
+            return false;
         }
     };
 }

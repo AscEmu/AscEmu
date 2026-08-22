@@ -32,15 +32,20 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            uint64_t unpackedCreatureGuid;
-            uint64_t unpackedPlayerGuid;
+            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            {
+                uint64_t unpackedCreatureGuid;
+                uint64_t unpackedPlayerGuid;
 
-            packet >> unpackedCreatureGuid >> slot >> unpackedPlayerGuid;
+                packet >> unpackedCreatureGuid >> slot >> unpackedPlayerGuid;
 
-            creatureGuid = WoWGuid(unpackedCreatureGuid);
-            playerGuid = WoWGuid(unpackedPlayerGuid);
+                creatureGuid = WoWGuid(unpackedCreatureGuid);
+                playerGuid = WoWGuid(unpackedPlayerGuid);
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
     };
 }

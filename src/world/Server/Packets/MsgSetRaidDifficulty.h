@@ -46,12 +46,15 @@ namespace AscEmu::Packets
             {
                 packet.initialize(SMSG_SET_RAID_DIFFICULTY, 4);
                 packet << uint32_t(difficulty);
+                return true;
             }
-            else
+            else if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << uint32_t(difficulty) << unknown << uint32_t(isInGroup);
+                return true;
             }
-            return true;
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& packet) override

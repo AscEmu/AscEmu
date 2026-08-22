@@ -31,13 +31,16 @@ namespace AscEmu::Packets
             if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
                 packet >> message;
+                return true;
             }
-            else
+            else if (m_protocol.expansion > WoW::Expansion::_WotLK)
             {
                 const uint32_t motdLength = packet.readBits(11);
                 message = packet.readString(motdLength);
+                return true;
             }
-            return true;
+
+            return false;
         }
     };
 }

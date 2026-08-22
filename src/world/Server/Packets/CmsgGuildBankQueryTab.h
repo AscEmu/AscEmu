@@ -32,8 +32,13 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guid >> tabId >> full;
-            return true;
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet >> guid >> tabId >> full;
+                return true;
+            }
+
+            return false;
         }
     };
 }

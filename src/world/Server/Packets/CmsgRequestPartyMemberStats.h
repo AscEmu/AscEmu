@@ -49,14 +49,17 @@ namespace AscEmu::Packets
                 packet.readByteSeq(guid[4]);
                 packet.readByteSeq(guid[0]);
                 packet.readByteSeq(guid[7]);
+                return true;
             }
-            else
+            else if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 uint64_t unpacked_guid;
                 packet >> unpacked_guid;
                 guid.init(unpacked_guid);
+                return true;
             }
-            return true;
+
+            return false;
         }
     };
 }

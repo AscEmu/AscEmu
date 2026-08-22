@@ -19,10 +19,15 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            if (m_protocol.isCata())
             {
                 packet.readSkip<uint32_t>();
 
+                return true;
+            }
+            else if (m_protocol.isMop())
+            {
+                // Mop's client sends no payload for this opcode; nothing to read.
                 return true;
             }
 

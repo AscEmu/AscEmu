@@ -33,11 +33,16 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << static_cast<uint8_t>(onlineGroupMembers.size());
-            for (auto memberGuid : onlineGroupMembers)
-                packet << memberGuid;
+            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            {
+                packet << static_cast<uint8_t>(onlineGroupMembers.size());
+                for (auto memberGuid : onlineGroupMembers)
+                    packet << memberGuid;
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override

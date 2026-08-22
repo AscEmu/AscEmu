@@ -34,14 +34,24 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << guid << posX << posY;
-            return true;
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet << guid << posX << posY;
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> posX >> posY;
-            return true;
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet >> posX >> posY;
+                return true;
+            }
+
+            return false;
         }
     };
 }

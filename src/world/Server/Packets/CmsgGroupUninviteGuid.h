@@ -65,7 +65,7 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else
+            else if (m_protocol.expansion < WoW::Expansion::_WotLK)
             {
                 uint64_t unpackedGuid;
                 packet >> unpackedGuid;
@@ -73,6 +73,8 @@ namespace AscEmu::Packets
 
                 return true;
             }
+
+            return false;
         }
     };
 }

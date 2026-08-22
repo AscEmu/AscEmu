@@ -126,12 +126,17 @@ namespace AscEmu::Packets
                 packet.writeString(name);
 
                 packet << int32_t(0);
+
+                return true;
             }
-            else
+            else if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet << failed << name;
+
+                return true;
             }
-            return true;
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return true; }

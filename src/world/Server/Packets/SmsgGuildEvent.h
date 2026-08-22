@@ -41,15 +41,20 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << guildEvent << textCount;
+            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            {
+                packet << guildEvent << textCount;
 
-            for (const auto& stringVars : text)
-                packet << stringVars.c_str();
+                for (const auto& stringVars : text)
+                    packet << stringVars.c_str();
 
-            if (guid)
-                packet << guid;
+                if (guid)
+                    packet << guid;
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

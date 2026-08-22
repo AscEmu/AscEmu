@@ -24,12 +24,21 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            if (m_protocol.isCata())
             {
                 packet >> classRoles;
                 packet >> availability;
                 packet >> guildInterests;
                 packet >> playerLevel;
+
+                return true;
+            }
+            else if (m_protocol.isMop())
+            {
+                packet >> playerLevel;
+                packet >> availability;
+                packet >> classRoles;
+                packet >> guildInterests;
 
                 return true;
             }

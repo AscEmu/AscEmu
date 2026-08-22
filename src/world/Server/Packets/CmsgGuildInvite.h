@@ -31,13 +31,22 @@ namespace AscEmu::Packets
             if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
                 packet >> name;
+                return true;
             }
-            else
+            else if (m_protocol.isMop())
+            {
+                uint32_t nameLength = packet.readBits(9);
+                name = packet.readString(nameLength);
+                return true;
+            }
+            else if (m_protocol.isCata())
             {
                 uint32_t nameLength = packet.readBits(7);
                 name = packet.readString(nameLength);
+                return true;
             }
-            return true;
+
+            return false;
         }
     };
 }

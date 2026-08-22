@@ -73,11 +73,15 @@ namespace AscEmu::Packets
 
                 if (isGuildMaster)
                 {
-                    packet.writeBits(comment.size(), 11);
+                    // Order matches the reference exactly: the comment string is written
+                    // while the isListed bit and the length bits are still unflushed -
+                    // AscEmu's writeString() (like the reference's WriteString()) does not
+                    // flush pending bits, so the call order determines the wire byte layout.
+                    packet.writeString(comment);
 
                     packet.writeBit(isListed);
 
-                    packet.writeString(comment);
+                    packet.writeBits(comment.size(), 11);
 
                     packet << uint32_t(level);
 

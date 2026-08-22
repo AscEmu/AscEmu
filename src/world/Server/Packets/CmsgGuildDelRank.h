@@ -28,8 +28,13 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> rankId;
-            return true;
+            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            {
+                packet >> rankId;
+                return true;
+            }
+
+            return false;
         }
     };
 }

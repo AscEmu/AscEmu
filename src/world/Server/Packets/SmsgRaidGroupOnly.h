@@ -33,9 +33,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << timeInMs << type;
+            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            {
+                packet << timeInMs << type;
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override

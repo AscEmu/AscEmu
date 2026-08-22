@@ -27,7 +27,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            if (m_protocol.isCata())
             {
                 packet >> level;
                 packet >> availability;
@@ -35,6 +35,19 @@ namespace AscEmu::Packets
                 packet >> classRoles;
 
                 const uint32_t length = packet.readBits(11);
+                listed = packet.readBit();
+                comment = packet.readString(length);
+
+                return true;
+            }
+            else if (m_protocol.isMop())
+            {
+                packet >> level;
+                packet >> availability;
+                packet >> classRoles;
+                packet >> guildInterests;
+
+                const uint32_t length = packet.readBits(10);
                 listed = packet.readBit();
                 comment = packet.readString(length);
 

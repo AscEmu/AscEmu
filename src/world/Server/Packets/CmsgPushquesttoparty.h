@@ -27,8 +27,13 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> questId;
-            return true;
+            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            {
+                packet >> questId;
+                return true;
+            }
+
+            return false;
         }
     };
 }

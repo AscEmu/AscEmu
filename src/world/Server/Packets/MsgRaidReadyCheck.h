@@ -34,21 +34,31 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (isRequest)
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
-                packet << guid;
+                if (isRequest)
+                {
+                    packet << guid;
+                }
+                else
+                {
+                    packet << guid << isReady;
+                }
+                return true;
             }
-            else
-            {
-                packet << guid << isReady;
-            }
-            return true;
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> isReady;
-            return true;
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet >> isReady;
+                return true;
+            }
+
+            return false;
         }
     };
 }

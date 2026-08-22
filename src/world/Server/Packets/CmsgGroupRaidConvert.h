@@ -21,7 +21,13 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            if (m_protocol.isMop())
+            {
+                toRaid = packet.readBit();
+
+                return true;
+            }
+            else if (m_protocol.isCata())
             {
                 uint8_t toRaidByte = 0;
                 packet >> toRaidByte;
@@ -29,12 +35,14 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else
+            else if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 toRaid = true;
 
                 return true;
             }
+
+            return false;
         }
     };
 }

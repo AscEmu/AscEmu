@@ -36,9 +36,14 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << guid << groupCount << itemId << randomSuffix << randomPropertyId;
+            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            {
+                packet << guid << groupCount << itemId << randomSuffix << randomPropertyId;
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

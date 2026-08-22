@@ -32,8 +32,30 @@ namespace AscEmu::Packets
             if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
                 packet >> name;
+                return true;
             }
-            else
+            else if (m_protocol.isMop())
+            {
+                guid[7] = packet.readBit();
+                guid[3] = packet.readBit();
+                guid[4] = packet.readBit();
+                guid[2] = packet.readBit();
+                guid[5] = packet.readBit();
+                guid[6] = packet.readBit();
+                guid[1] = packet.readBit();
+                guid[0] = packet.readBit();
+
+                packet.readByteSeq(guid[0]);
+                packet.readByteSeq(guid[2]);
+                packet.readByteSeq(guid[5]);
+                packet.readByteSeq(guid[6]);
+                packet.readByteSeq(guid[7]);
+                packet.readByteSeq(guid[1]);
+                packet.readByteSeq(guid[4]);
+                packet.readByteSeq(guid[3]);
+                return true;
+            }
+            else if (m_protocol.isCata())
             {
                 guid[6] = packet.readBit();
                 guid[5] = packet.readBit();
@@ -52,8 +74,10 @@ namespace AscEmu::Packets
                 packet.readByteSeq(guid[4]);
                 packet.readByteSeq(guid[3]);
                 packet.readByteSeq(guid[0]);
+                return true;
             }
-            return true;
+
+            return false;
         }
     };
 }

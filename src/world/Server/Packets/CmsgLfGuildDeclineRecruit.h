@@ -21,7 +21,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            if (m_protocol.isCata())
             {
                 playerGuid[1] = packet.readBit();
                 playerGuid[4] = packet.readBit();
@@ -40,6 +40,28 @@ namespace AscEmu::Packets
                 packet.readByteSeq(playerGuid[1]);
                 packet.readByteSeq(playerGuid[0]);
                 packet.readByteSeq(playerGuid[6]);
+
+                return true;
+            }
+            else if (m_protocol.isMop())
+            {
+                playerGuid[6] = packet.readBit();
+                playerGuid[7] = packet.readBit();
+                playerGuid[3] = packet.readBit();
+                playerGuid[1] = packet.readBit();
+                playerGuid[2] = packet.readBit();
+                playerGuid[0] = packet.readBit();
+                playerGuid[4] = packet.readBit();
+                playerGuid[5] = packet.readBit();
+
+                packet.readByteSeq(playerGuid[0]);
+                packet.readByteSeq(playerGuid[7]);
+                packet.readByteSeq(playerGuid[1]);
+                packet.readByteSeq(playerGuid[6]);
+                packet.readByteSeq(playerGuid[4]);
+                packet.readByteSeq(playerGuid[3]);
+                packet.readByteSeq(playerGuid[5]);
+                packet.readByteSeq(playerGuid[2]);
 
                 return true;
             }

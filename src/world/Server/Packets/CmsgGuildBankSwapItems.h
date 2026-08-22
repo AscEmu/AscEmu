@@ -51,34 +51,39 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> bankGuid >> bankToBank;
-            if (bankToBank)
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
-                packet >> destTabId >> destSlotId;
-                packet.readSkip<uint32_t>();
-
-                packet >> tabId >> slotId >> itemEntry;
-                packet.readSkip<uint8_t>();
-
-                packet >> splitedAmount;
-            }
-            else
-            {
-                packet >> tabId >> slotId >> itemEntry >> autoStore;
-                if (autoStore)
+                packet >> bankGuid >> bankToBank;
+                if (bankToBank)
                 {
+                    packet >> destTabId >> destSlotId;
                     packet.readSkip<uint32_t>();
+
+                    packet >> tabId >> slotId >> itemEntry;
                     packet.readSkip<uint8_t>();
-                    packet.readSkip<uint32_t>();
+
+                    packet >> splitedAmount;
                 }
                 else
                 {
-                    packet >> playerBag >> playerSlotId >> toCharNum >> splitedAmount;
-                }
+                    packet >> tabId >> slotId >> itemEntry >> autoStore;
+                    if (autoStore)
+                    {
+                        packet.readSkip<uint32_t>();
+                        packet.readSkip<uint8_t>();
+                        packet.readSkip<uint32_t>();
+                    }
+                    else
+                    {
+                        packet >> playerBag >> playerSlotId >> toCharNum >> splitedAmount;
+                    }
 
-                toChar = toCharNum > 0;
+                    toChar = toCharNum > 0;
+                }
+                return true;
             }
-            return true;
+
+            return false;
         }
     };
 }

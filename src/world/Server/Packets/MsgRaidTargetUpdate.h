@@ -42,33 +42,43 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << option;
-            if (option == 0)
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
-                packet << playerGuid << icon << guid;
-            }
-            else
-            {
-                if (group)
+                packet << option;
+                if (option == 0)
                 {
-                    for (uint8_t i = 0; i < iconCount; ++i)
+                    packet << playerGuid << icon << guid;
+                }
+                else
+                {
+                    if (group)
                     {
-                        if (group->m_targetIcons[i] == 0)
-                            continue;
+                        for (uint8_t i = 0; i < iconCount; ++i)
+                        {
+                            if (group->m_targetIcons[i] == 0)
+                                continue;
 
-                        packet << i << group->m_targetIcons[i];
+                            packet << i << group->m_targetIcons[i];
+                        }
                     }
                 }
+                return true;
             }
-            return true;
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> icon;
-            if (icon != 0xFF)
-                packet >> guid;
-            return true;
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet >> icon;
+                if (icon != 0xFF)
+                    packet >> guid;
+                return true;
+            }
+
+            return false;
         }
     };
 }

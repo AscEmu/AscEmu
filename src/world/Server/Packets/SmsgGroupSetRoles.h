@@ -70,7 +70,7 @@ namespace AscEmu::Packets
 
                 packet << uint32_t(newRole);
 
-                packet.writeByteSeq(targetGuid[6]);
+                packet.writeByteSeq(targetGuid[5]);
                 packet.writeByteSeq(targetGuid[2]);
 
                 packet.writeByteSeq(guid[0]);
@@ -82,12 +82,12 @@ namespace AscEmu::Packets
                 packet.writeByteSeq(guid[5]);
                 packet.writeByteSeq(guid[2]);
 
-                packet.writeByteSeq(targetGuid[5]);
+                packet.writeByteSeq(targetGuid[6]);
                 packet.writeByteSeq(targetGuid[7]);
 
                 packet.writeByteSeq(guid[1]);
 
-                packet << uint32_t(0);              // unk
+                packet << uint32_t(0);              // OldRole (not tracked per-member in AscEmu's Group)
 
                 return true;
             }

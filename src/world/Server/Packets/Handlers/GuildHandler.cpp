@@ -997,11 +997,14 @@ void WorldSession::handleGuildAssignRankOpcode([[maybe_unused]] WorldPacket& rec
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
+    // Mop no longer sends the setter guid on the wire - the client always means "me".
+    const WoWGuid setterGuid = _socket->getClientProtocol().isMop() ? _player->GetNewGUID() : srlPacket.setterGuid;
+
     sLogger.debug("CMSG_GUILD_ASSIGN_MEMBER_RANK {}: Target: {} Rank: {}, Issuer: {}",
-        _player->getName(), WoWGuid::getGuidLowPartFromUInt64(srlPacket.targetGuid), srlPacket.rankId, WoWGuid::getGuidLowPartFromUInt64(srlPacket.setterGuid));
+        _player->getName(), WoWGuid::getGuidLowPartFromUInt64(srlPacket.targetGuid), srlPacket.rankId, WoWGuid::getGuidLowPartFromUInt64(setterGuid));
 
     if (Guild* guild = _player->getGuild())
-        guild->handleSetMemberRank(this, srlPacket.targetGuid, srlPacket.setterGuid, srlPacket.rankId);
+        guild->handleSetMemberRank(this, srlPacket.targetGuid, setterGuid, srlPacket.rankId);
 #endif
 }
 
