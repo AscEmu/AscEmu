@@ -36,6 +36,7 @@
 #include "Server/EventMgr.h"
 #include "Server/WorldSession.h"
 #include "Spell/Definitions/PowerType.hpp"
+#include "Server/Packets/MsgPvpLogData.h"
 #include "Server/Packets/SmsgPlaySound.h"
 #include "Server/Packets/SmsgBattlegroundPlayerLeft.h"
 #include "Server/Packets/SmsgBattlegroundPlayerJoined.h"
@@ -101,9 +102,8 @@ void Battleground::updatePvPData()
     {
         std::lock_guard lock(m_mutex);
 
-        WorldPacket data(10 * (m_players[0].size() + m_players[1].size()) + 50);
-        buildPvPUpdateDataPacket(&data);
-        distributePacketToAll(&data);
+        MsgPvpLogData logDataPacket(buildPvPLogDataInput());
+        PacketBroadcast::sendFromBattleground(*this, logDataPacket);
 
         m_nextPvPUpdateTime = UNIXTIME + 2;
     }
@@ -119,132 +119,52 @@ uint32_t Battleground::getType()
     return m_type;
 }
 
-void Battleground::buildPvPUpdateDataPacket(WorldPacket* data)
+PvpLogDataInput Battleground::buildPvPLogDataInput()
 {
-    data->initialize(MSG_PVP_LOG_DATA);
-    data->reserve(10 * (m_players[0].size() + m_players[1].size()) + 50);
+    PvpLogDataInput input;
 
-    BGScore* bs;
-    if (isTypeArena(m_type))
+    input.isArena = isTypeArena(m_type);
+    input.hasEnded = m_hasEnded;
+    input.rated = Rated() != 0;
+    input.winningTeam = m_winningTeam;
+    input.fieldCount = getFieldCount(getType());
+    input.deltaRating[0] = m_deltaRating[0];
+    input.deltaRating[1] = m_deltaRating[1];
+
+    for (auto& teamPlayers : m_players)
     {
-        if (!m_hasEnded)
-            return;
-
-        *data << uint8_t(1);
-
-        if (!Rated())
+        for (const auto itr : teamPlayers)
         {
-            *data << uint32_t(0); //uint32_t(negative rating)
-            *data << uint32_t(0); //uint32_t(positive rating)
-            *data << uint32_t(0); //uint32_t(0)[<-this is the new field in 3.1]
-            *data << uint8_t(0);  //name if available / which is a null-terminated string, and we send an uint8_t(0), so we provide a zero length name string
-            *data << uint32_t(0);
-            *data << uint32_t(0);
-            *data << uint32_t(0);
-            *data << uint8_t(0);
-        }
-        else
-        {
-            /* Grab some arena teams */
-            auto** teams = dynamic_cast< Arena* >(this)->GetTeams();
+            if (itr == nullptr || itr->m_isGmInvisible)
+                continue;
 
-            if (teams[0])
-            {
-                *data << uint32_t(0);
-                *data << uint32_t(3000 + m_deltaRating[0]);
-                *data << uint32_t(0);
-                *data << uint8_t(0);
-            }
-            else
-            {
-                *data << uint32_t(0);
-                *data << uint32_t(0);
-                *data << uint32_t(0);
-                *data << uint8_t(0);
-            }
+            PvpPlayerScoreEntry entry;
+            entry.guid = itr->getGuid();
+            entry.bgTeam = itr->getBgTeam();
 
-            if (teams[1])
-            {
-                *data << uint32_t(0);
-                *data << uint32_t(3000 + m_deltaRating[1]);
-                *data << uint32_t(0);
-                *data << uint8_t(0);
-            }
-            else
-            {
-                *data << uint32_t(0);
-                *data << uint32_t(0);
-                *data << uint32_t(0);
-                *data << uint8_t(0);
-            }
-        }
+            const BGScore& bs = itr->m_bgScore;
+            entry.killingBlows = bs.KillingBlows;
+            entry.honorableKills = bs.HonorableKills;
+            entry.deaths = bs.Deaths;
+            entry.bonusHonor = bs.BonusHonor;
+            entry.damageDone = bs.DamageDone;
+            entry.healingDone = bs.HealingDone;
+            for (uint32_t x = 0; x < input.fieldCount && x < 5; ++x)
+                entry.miscData[x] = bs.MiscData[x];
 
-        *data << uint8_t(1);
-        *data << uint8_t(m_winningTeam);
-
-        *data << uint32_t((m_players[0].size() + m_players[1].size()) - m_invisGMs);
-
-        for (auto& m_player : m_players)
-        {
-            for (const auto itr : m_player)
-            {
-                if (itr->m_isGmInvisible)
-                    continue;
-
-                *data << itr->getGuid();
-                bs = &itr->m_bgScore;
-                *data << bs->KillingBlows;
-
-                *data << uint8_t(itr->getBgTeam());
-
-                *data << bs->DamageDone;
-                *data << bs->HealingDone;
-                *data << uint32_t(0);
-            }
+            input.players.push_back(entry);
         }
     }
-    else
+
+    if (input.isArena && input.hasEnded && input.rated)
     {
-        *data << uint8_t(0);
-        if (m_hasEnded)
-        {
-            *data << uint8_t(1);
-            *data << uint8_t(m_winningTeam ? 0 : 1);
-        }
-        else
-        {
-            *data << uint8_t(0);      // If the game has ended - this will be 1
-        }
-
-        *data << uint32_t((m_players[0].size() + m_players[1].size()) - m_invisGMs);
-
-        const uint32_t FieldCount = getFieldCount(getType());
-        for (auto& m_player : m_players)
-        {
-            for (const auto itr : m_player)
-            {
-                if (itr != nullptr)
-                {
-                    if (itr->m_isGmInvisible)
-                        continue;
-
-                    *data << itr->getGuid();
-                    bs = &itr->m_bgScore;
-
-                    *data << bs->KillingBlows;
-                    *data << bs->HonorableKills;
-                    *data << bs->Deaths;
-                    *data << bs->BonusHonor;
-                    *data << bs->DamageDone;
-                    *data << bs->HealingDone;
-
-                    *data << FieldCount;
-                    for (uint32_t x = 0; x < FieldCount; ++x)
-                        *data << bs->MiscData[x];
-                }
-            }
-        }
+        /* Grab some arena teams */
+        auto** teams = dynamic_cast<Arena*>(this)->GetTeams();
+        input.arenaTeamExists[0] = teams[0] != nullptr;
+        input.arenaTeamExists[1] = teams[1] != nullptr;
     }
+
+    return input;
 }
 
 uint8_t Battleground::Rated()
@@ -316,7 +236,10 @@ void Battleground::portPlayer(Player* plr, bool skip_teleport)
 
     // Do not let everyone know an invisible gm has joined.
     if (plr->m_isGmInvisible == false)
-        distributePacketToTeam(AscEmu::Packets::SmsgBattlegroundPlayerJoined(plr->getGuid()).serialise().get(), plr->getBgTeam());
+    {
+        AscEmu::Packets::SmsgBattlegroundPlayerJoined joinedPacket(plr->getGuid());
+        PacketBroadcast::sendFromBattlegroundTeam(*this, plr->getBgTeam(), joinedPacket);
+    }
     else
         ++m_invisGMs;
 
@@ -604,7 +527,10 @@ void Battleground::removePlayer(Player* plr, bool logout)
 
     // Don't show invisible gm's leaving the game.
     if (plr->m_isGmInvisible == false)
-        distributePacketToAll(AscEmu::Packets::SmsgBattlegroundPlayerLeft(plr->getGuid()).serialise().get());
+    {
+        AscEmu::Packets::SmsgBattlegroundPlayerLeft leftPacket(plr->getGuid());
+        PacketBroadcast::sendFromBattleground(*this, leftPacket);
+    }
     else
         --m_invisGMs;
 
@@ -669,9 +595,8 @@ void Battleground::sendPVPData(Player* plr)
 {
     std::lock_guard lock(m_mutex);
 
-    WorldPacket data(10 * (m_players[0].size() + m_players[1].size()) + 50);
-    buildPvPUpdateDataPacket(&data);
-    plr->getSession()->SendPacket(&data);
+    MsgPvpLogData logDataPacket(buildPvPLogDataInput());
+    plr->getSession()->sendManagedPacket(logDataPacket);
 }
 
 void Battleground::eventCreate()

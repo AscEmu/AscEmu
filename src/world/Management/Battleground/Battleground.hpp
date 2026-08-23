@@ -20,6 +20,8 @@ class GameObject;
 class Creature;
 class WorldMap;
 
+namespace AscEmu::Packets { struct PvpLogDataInput; }
+
 class SERVER_DECL Battleground : public EventableObject
 {
 public:
@@ -143,7 +145,7 @@ public:
     void removePlayerFromResurrect(Player* plr, Creature* spirit_healer);
     void eventResurrectPlayers();
 
-    void buildPvPUpdateDataPacket(WorldPacket* data);
+    AscEmu::Packets::PvpLogDataInput buildPvPLogDataInput();
     void onPlayerPushed(Player* plr);
 
     void queueAtNearestSpiritGuide(Player* plr, Creature* old);
