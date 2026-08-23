@@ -1820,7 +1820,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
 
     _player->sendItemPushResultPacket(false, true, false, bagslot, pItem != oldItem ? slot : 0,
         amount * ci.amount, pItem->getEntry(), pItem->getPropertySeed(),
-        pItem->getRandomPropertiesId(), pItem->getStackCount());
+        pItem->getRandomPropertiesId(), pItem->getStackCount(), pItem->getGuid());
 
 #if VERSION_STRING < Cata
     SmsgBuyItem managedPacket(SmsgBuyItem::Variant::BuyItemInSlot, srlPacket.srcGuid.getRawGuid(), Util::getMSTime(),
@@ -1946,7 +1946,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
                 }
                 _player->sendItemPushResultPacket(false, true, false, static_cast<uint8_t>(INVENTORY_SLOT_NOT_SET),
                     slotResult.Result, srlPacket.amount * creature_item.amount, item->getEntry(), item->getPropertySeed(),
-                    item->getRandomPropertiesId(), item->getStackCount());
+                    item->getRandomPropertiesId(), item->getStackCount(), item->getGuid());
             }
         }
         else
@@ -1964,7 +1964,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
                     }
                     _player->sendItemPushResultPacket(false, true, false, slotResult.ContainerSlot,
                         slotResult.Result, 1, item->getEntry(), item->getPropertySeed(),
-                        item->getRandomPropertiesId(), item->getStackCount());
+                        item->getRandomPropertiesId(), item->getStackCount(), item->getGuid());
                 }
             }
         }
@@ -1973,10 +1973,10 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
     {
         addItem->modStackCount(srlPacket.amount * creature_item.amount);
         addItem->m_isDirty = true;
-        _player->sendItemPushResultPacket(false, true, false, 
+        _player->sendItemPushResultPacket(false, true, false,
             static_cast<uint8_t>(_player->getItemInterface()->GetBagSlotByGuid(addItem->getGuid())), 0,
             srlPacket.amount * creature_item.amount, addItem->getEntry(), addItem->getPropertySeed(),
-            addItem->getRandomPropertiesId(), addItem->getStackCount());
+            addItem->getRandomPropertiesId(), addItem->getStackCount(), addItem->getGuid());
     }
 
     _player->getItemInterface()->BuyItem(it, srlPacket.amount, creature);

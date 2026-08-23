@@ -8526,7 +8526,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
                 {
                     sendItemPushResultPacket(false, true, false,
                         getItemInterface()->LastSearchItemBagSlot(), getItemInterface()->LastSearchItemSlot(),
-                        1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
+                        1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount(), item->getGuid());
                 }
             }
         }
@@ -9500,9 +9500,9 @@ void Player::sendLevelupInfoPacket(uint32_t level, uint32_t hp, uint32_t mana, u
     m_session->sendManagedPacket(managedPacket);
 }
 
-void Player::sendItemPushResultPacket(bool created, bool recieved, bool sendtoset, uint8_t destbagslot, uint32_t destslot, uint32_t count, uint32_t entry, uint32_t suffix, uint32_t randomprop, uint32_t stack)
+void Player::sendItemPushResultPacket(bool created, bool recieved, bool sendtoset, uint8_t destbagslot, uint32_t destslot, uint32_t count, uint32_t entry, uint32_t suffix, uint32_t randomprop, uint32_t stack, WoWGuid itemGuid)
 {
-    SmsgItemPushResult managedPacket(getGuid(), recieved, created, destbagslot, destslot, entry, suffix, randomprop, count, stack);
+    SmsgItemPushResult managedPacket(getGuid(), itemGuid, recieved, created, destbagslot, destslot, entry, suffix, randomprop, count, stack);
 
     if (sendtoset && isInGroup())
         PacketBroadcast::sendFromGroup(*getGroup(), managedPacket);
@@ -11044,7 +11044,7 @@ Item* Player::storeItem(LootItem const* lootItem)
         const auto [addResult, _] = getItemInterface()->SafeAddItem(std::move(newItemHolder), slotResult.ContainerSlot, slotResult.Slot);
         if (addResult)
         {
-            sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, newItem->getEntry(), newItem->getPropertySeed(), newItem->getRandomPropertiesId(), newItem->getStackCount());
+            sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, newItem->getEntry(), newItem->getPropertySeed(), newItem->getRandomPropertiesId(), newItem->getStackCount(), newItem->getGuid());
             sQuestMgr.OnPlayerItemPickup(this, newItem);
 #if VERSION_STRING > TBC
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, newItem->getEntry(), lootItem->count, 0);
@@ -11077,7 +11077,7 @@ Item* Player::storeItem(LootItem const* lootItem)
         add->m_isDirty = true;
         add->setOwnerGuid(getGuid());
 
-        sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, add->getEntry(), add->getPropertySeed(), add->getRandomPropertiesId(), add->getStackCount());
+        sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, add->getEntry(), add->getPropertySeed(), add->getRandomPropertiesId(), add->getStackCount(), add->getGuid());
         sQuestMgr.OnPlayerItemPickup(this, add);
 #if VERSION_STRING > TBC
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->getEntry(), 1, 0);

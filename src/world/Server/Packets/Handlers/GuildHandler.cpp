@@ -904,7 +904,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             charter->saveToDB();
 
             _player->sendItemPushResultPacket(false, true, false, _player->getItemInterface()->LastSearchItemBagSlot(),
-                _player->getItemInterface()->LastSearchItemSlot(), 1, itemRawPtr->getEntry(), itemRawPtr->getPropertySeed(), itemRawPtr->getRandomPropertiesId(), itemRawPtr->getStackCount());
+                _player->getItemInterface()->LastSearchItemSlot(), 1, itemRawPtr->getEntry(), itemRawPtr->getPropertySeed(), itemRawPtr->getRandomPropertiesId(), itemRawPtr->getStackCount(), itemRawPtr->getGuid());
 
             _player->modCoinage(-static_cast<int32_t>(costs[arena_type]));
             _player->m_charters[srlPacket.arenaIndex] = charter;
@@ -979,7 +979,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             guildCharter->saveToDB();
 
             _player->sendItemPushResultPacket(false, true, false, _player->getItemInterface()->LastSearchItemBagSlot(),
-                _player->getItemInterface()->LastSearchItemSlot(), 1, itemRawPtr->getEntry(), itemRawPtr->getPropertySeed(), itemRawPtr->getRandomPropertiesId(), itemRawPtr->getStackCount());
+                _player->getItemInterface()->LastSearchItemSlot(), 1, itemRawPtr->getEntry(), itemRawPtr->getPropertySeed(), itemRawPtr->getRandomPropertiesId(), itemRawPtr->getStackCount(), itemRawPtr->getGuid());
 
             _player->m_charters[CHARTER_TYPE_GUILD] = guildCharter;
             _player->modCoinage(-1000);
