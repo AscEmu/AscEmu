@@ -1020,9 +1020,9 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(MSG_GUILD_PERMISSIONS, &WorldSession::handleGuildPermissions, true, true, true, false, false);
 
     // Tutorials
-    registry.registerOpcode(CMSG_TUTORIAL_FLAG, &WorldSession::handleTutorialFlag, true, true, true, true, false);
-    registry.registerOpcode(CMSG_TUTORIAL_CLEAR, &WorldSession::handleTutorialClear, true, true, true, true, false);
-    registry.registerOpcode(CMSG_TUTORIAL_RESET, &WorldSession::handleTutorialReset, true, true, true, true, false);
+    registry.registerOpcode(CMSG_TUTORIAL_FLAG, &WorldSession::handleTutorialFlag, true, true, true, true, true);
+    registry.registerOpcode(CMSG_TUTORIAL_CLEAR, &WorldSession::handleTutorialClear, true, true, true, true, true);
+    registry.registerOpcode(CMSG_TUTORIAL_RESET, &WorldSession::handleTutorialReset, true, true, true, true, true);
 
     // Pets
     registry.registerOpcode(MSG_LIST_STABLED_PETS, &WorldSession::handleStabledPetList, true, true, true, false, false);

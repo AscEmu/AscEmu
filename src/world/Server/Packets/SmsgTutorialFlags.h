@@ -33,7 +33,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            // All versions share same implementation
+            // All versions share the same implementation.
             for (uint32_t tutorial_id : tutorials)
                 packet << tutorial_id;
             return true;

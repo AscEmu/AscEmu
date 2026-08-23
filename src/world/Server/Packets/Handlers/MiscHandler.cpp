@@ -351,7 +351,7 @@ void WorldSession::handleTutorialFlag(WorldPacket& recvPacket)
     const uint32_t packet_index = (srlPacket.flag / 32);
     const uint32_t tutorial_status = (srlPacket.flag % 32);
 
-    if (packet_index >= 7)
+    if (packet_index >= 8)
     {
         Disconnect();
         return;
