@@ -51,7 +51,17 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            else if (m_protocol.isCata())
+            {
+                uint64_t unpackedGuid;
+                packet >> unpackedGuid;
+                packet.readSkip<uint32_t>();    // display id, unused
+
+                guid.init(unpackedGuid);
+
+                return true;
+            }
+            else if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
                 uint64_t unpackedGuid;
                 packet >> unpackedGuid;

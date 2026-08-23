@@ -33,7 +33,7 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override { return sizeof(guid) + 4 + 1 + 1 + 1 + 5 + 4 + (11 * 4); }
+        size_t expectedSize() const override { return sizeof(guid) + 4 + 1 + 1 + 1 + 5 + 8 + (11 * 4); }
 
         bool internalSerialise(WorldPacket& packet) override
         {
@@ -45,14 +45,13 @@ namespace AscEmu::Packets
                 packet << uint64_t(guid);
                 packet << uint32_t(caster->getDisplayId());
                 packet << uint8_t(caster->getRace());
+                packet << uint8_t(caster->getGender());
+                packet << uint8_t(caster->getClass());
 
                 if (caster->isPlayer())
                 {
                     if (const auto pcaster = dynamic_cast<Player*>(caster))
                     {
-                        packet << uint8_t(pcaster->getGender());
-                        packet << uint8_t(pcaster->getClass());
-
                         // facial features
                         packet << uint8_t(pcaster->getSkinColor());
                         packet << uint8_t(pcaster->getFace());
@@ -61,9 +60,9 @@ namespace AscEmu::Packets
                         packet << uint8_t(pcaster->getFacialFeatures());
 
                         if (pcaster->isInGuild())
-                            packet << uint32_t(pcaster->getGuildId());
+                            packet << uint64_t(pcaster->getGuild()->getGUID());
                         else
-                            packet << uint32_t(0);
+                            packet << uint64_t(0);
 
                         static const uint32_t imageitemslots[] =
                         {
