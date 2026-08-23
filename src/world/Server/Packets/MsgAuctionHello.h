@@ -40,10 +40,17 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            uint64_t unpackedGuid;
-            packet >> unpackedGuid;
-            guid.init(unpackedGuid);
-            return true;
+            // Mop replaces this shared opcode with separate CMSG_AUCTION_HELLO / SMSG_AUCTION_HELLO opcodes,
+            // see CmsgAuctionHello.h / SmsgAuctionHello.h
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                uint64_t unpackedGuid;
+                packet >> unpackedGuid;
+                guid.init(unpackedGuid);
+                return true;
+            }
+
+            return false;
         }
     };
 }

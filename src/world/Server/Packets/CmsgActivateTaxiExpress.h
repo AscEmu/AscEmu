@@ -13,7 +13,7 @@ namespace AscEmu::Packets
     class CmsgActivateTaxiExpress : public ManagedPacket
     {
     public:
-        uint64_t guid;
+        WoWGuid guid;
         uint32_t nodeCount;
         std::vector<uint32_t> pathParts = {};
 
@@ -31,17 +31,57 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guid >> nodeCount;
-            if (nodeCount < 2)
-                return false;
+            if (m_protocol.isMop())
+            {
+                guid[6] = packet.readBit();
+                guid[7] = packet.readBit();
 
-            if (nodeCount > 10)
-                return false;
+                nodeCount = packet.readBits(22);
 
-            for (uint32_t i = 0; i < nodeCount; ++i)
-                pathParts.push_back(packet.read<uint32_t>());
+                guid[2] = packet.readBit();
+                guid[0] = packet.readBit();
+                guid[4] = packet.readBit();
+                guid[3] = packet.readBit();
+                guid[1] = packet.readBit();
+                guid[5] = packet.readBit();
 
-            return true;
+                packet.readByteSeq(guid[2]);
+                packet.readByteSeq(guid[7]);
+                packet.readByteSeq(guid[1]);
+
+                if (nodeCount < 2 || nodeCount > 10)
+                    return false;
+
+                for (uint32_t i = 0; i < nodeCount; ++i)
+                    pathParts.push_back(packet.read<uint32_t>());
+
+                packet.readByteSeq(guid[0]);
+                packet.readByteSeq(guid[5]);
+                packet.readByteSeq(guid[3]);
+                packet.readByteSeq(guid[6]);
+                packet.readByteSeq(guid[4]);
+
+                return true;
+            }
+            else if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                uint64_t unpackedGuid;
+                packet >> unpackedGuid >> nodeCount;
+                guid = WoWGuid(unpackedGuid);
+
+                if (nodeCount < 2)
+                    return false;
+
+                if (nodeCount > 10)
+                    return false;
+
+                for (uint32_t i = 0; i < nodeCount; ++i)
+                    pathParts.push_back(packet.read<uint32_t>());
+
+                return true;
+            }
+
+            return false;
         }
     };
 }

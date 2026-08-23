@@ -52,6 +52,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/Packets/CmsgGuildBankQueryText.h"
+#include "Server/Packets/MsgQueryGuildBankText.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Storage/WorldStrings.h"
 
@@ -59,7 +60,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGuildInfo.h"
 #include "Server/Packets/CmsgGuildSetPublicNote.h"
 #include "Server/Packets/CmsgGuildSetOfficerNote.h"
-#include "Server/Packets/MsgQueryGuildBankText.h"
 #else
 #include "Server/Packets/CmsgGuildBankQueryText.h"
 #include "Server/Packets/CmsgGuildDelRank.h"
@@ -461,16 +461,14 @@ void WorldSession::handleGuildBankSwapItems(WorldPacket& recvPacket)
 }
 
 
-void WorldSession::handleGuildBankQueryText([[maybe_unused]] WorldPacket& recvPacket)
+void WorldSession::handleGuildBankQueryText(WorldPacket& recvPacket)
 {
-#if VERSION_STRING < Cata
     MsgQueryGuildBankText srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
         guild->sendBankTabText(this, srlPacket.tabId);
-#endif
 }
 
 void WorldSession::handleQueryGuildBankTabText([[maybe_unused]] WorldPacket& recvPacket)

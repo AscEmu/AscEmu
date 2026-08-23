@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/AchievementMgr.h"
 #include "Management/Charter.hpp"
 #include "Server/Packets/CmsgSwapItem.h"
+#include "Server/Packets/CmsgTransmogrifyItems.h"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Management/ItemInterface.h"
@@ -498,75 +499,24 @@ void WorldSession::sendRefundInfo([[maybe_unused]] uint64_t GUID)
 #endif
 }
 
-// todo : Check for MOP
 void WorldSession::handleTransmogrifyItems([[maybe_unused]] WorldPacket& recvData)
 {
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
+    if (_socket->getClientProtocol().expansion < WoW::Expansion::_Cata)
+        return;
+
+    CmsgTransmogrifyItems srlPacket;
+    if (!parsePacket(recvData, srlPacket))
+        return;
+
     sLogger.debug("Received CMSG_TRANSMOGRIFY_ITEMS");
     Player* player = GetPlayer();
 
-    // Read data
-    uint32_t count = recvData.readBits(22);
-
-    if (count >= EQUIPMENT_SLOT_END)
-    {
-        sLogger.debug("handleTransmogrifyItems - Player (GUID: {}, name: {}) sent a wrong count ({}) when transmogrifying items.", player->getGuidLow(), player->getName(), count);
-        recvData.rfinish();
-        return;
-    }
-
-    std::vector<WoWGuid> itemGuids(count, 0);
-    std::vector<uint32_t> newEntries(count, 0);
-    std::vector<uint32_t> slots(count, 0);
-
-    for (uint8_t i = 0; i < count; ++i)
-    {
-        itemGuids[i][0] = recvData.readBit();
-        itemGuids[i][5] = recvData.readBit();
-        itemGuids[i][6] = recvData.readBit();
-        itemGuids[i][2] = recvData.readBit();
-        itemGuids[i][3] = recvData.readBit();
-        itemGuids[i][7] = recvData.readBit();
-        itemGuids[i][4] = recvData.readBit();
-        itemGuids[i][1] = recvData.readBit();
-    }
-
-    WoWGuid npcGuid;
-    npcGuid[7] = recvData.readBit();
-    npcGuid[3] = recvData.readBit();
-    npcGuid[5] = recvData.readBit();
-    npcGuid[6] = recvData.readBit();
-    npcGuid[1] = recvData.readBit();
-    npcGuid[4] = recvData.readBit();
-    npcGuid[0] = recvData.readBit();
-    npcGuid[2] = recvData.readBit();
-
-    recvData.flushBits();
-
-    for (uint32_t i = 0; i < count; ++i)
-    {
-        recvData >> newEntries[i];
-
-        recvData.readByteSeq(itemGuids[i][1]);
-        recvData.readByteSeq(itemGuids[i][5]);
-        recvData.readByteSeq(itemGuids[i][0]);
-        recvData.readByteSeq(itemGuids[i][4]);
-        recvData.readByteSeq(itemGuids[i][6]);
-        recvData.readByteSeq(itemGuids[i][7]);
-        recvData.readByteSeq(itemGuids[i][3]);
-        recvData.readByteSeq(itemGuids[i][2]);
-
-        recvData >> slots[i];
-    }
-
-    recvData.readByteSeq(npcGuid[7]);
-    recvData.readByteSeq(npcGuid[2]);
-    recvData.readByteSeq(npcGuid[5]);
-    recvData.readByteSeq(npcGuid[4]);
-    recvData.readByteSeq(npcGuid[3]);
-    recvData.readByteSeq(npcGuid[1]);
-    recvData.readByteSeq(npcGuid[6]);
-    recvData.readByteSeq(npcGuid[0]);
+    const uint32_t count = static_cast<uint32_t>(srlPacket.slots.size());
+    const WoWGuid& npcGuid = srlPacket.npcGuid;
+    const std::vector<WoWGuid>& itemGuids = srlPacket.itemGuids;
+    const std::vector<uint32_t>& newEntries = srlPacket.newEntries;
+    const std::vector<uint32_t>& slots = srlPacket.slots;
 
     Creature* creature = player->getWorldMapCreature(npcGuid);
     if (!creature)
@@ -1610,11 +1560,13 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
             it->deleteFromDB();
         }
 
+        // Mop no longer sends the item guid with the request, so use the buyback item's own guid instead
+        // (works identically to srlPacket.itemGuid for pre-Mop, since it's the same item)
 #if VERSION_STRING < Cata
-        SmsgBuyItem managedPacket(SmsgBuyItem::Variant::BuyBack, srlPacket.itemGuid, Util::getMSTime() /*VLack: seen is Aspire code*/,
+        SmsgBuyItem managedPacket(SmsgBuyItem::Variant::BuyBack, it->getGuid(), Util::getMSTime() /*VLack: seen is Aspire code*/,
             itemid, amount, 0, 0, 0);
 #else
-        SmsgBuyItem managedPacket(SmsgBuyItem::Variant::BuyBack, srlPacket.itemGuid, 0, 0, amount,
+        SmsgBuyItem managedPacket(SmsgBuyItem::Variant::BuyBack, it->getGuid(), 0, 0, amount,
             srlPacket.buybackSlot + 1 /*numbered from 1 at client*/, int32_t(amount), amount);
 #endif
         sendManagedPacket(managedPacket);
@@ -2473,7 +2425,7 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
             }
         }
     }
-    sLogger.debugOpcode("Received CMSG_REPAIR_ITEM {}.", srlPacket.itemGuid);
+    sLogger.debugOpcode("Received CMSG_REPAIR_ITEM {}.", srlPacket.itemGuid.getGuidLowPart());
 }
 
 void WorldSession::handleAutoBankItemOpcode(WorldPacket& recvPacket)

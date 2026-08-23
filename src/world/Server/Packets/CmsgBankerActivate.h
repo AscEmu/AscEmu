@@ -38,8 +38,9 @@ namespace AscEmu::Packets
                 uint64_t unpackedGuid;
                 packet >> unpackedGuid;
                 guid.init(unpackedGuid);
+                return true;
             }
-            else
+            else if (m_protocol.isMop())
             {
                 guid[4] = packet.readBit();
                 guid[5] = packet.readBit();
@@ -58,9 +59,10 @@ namespace AscEmu::Packets
                 packet.readByteSeq(guid[3]);
                 packet.readByteSeq(guid[0]);
                 packet.readByteSeq(guid[4]);
+                return true;
             }
 
-            return true;
+            return false;
         }
     };
 }

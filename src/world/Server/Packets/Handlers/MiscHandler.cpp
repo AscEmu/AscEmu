@@ -19,7 +19,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
 #include "Map/Maps/InstanceDefines.hpp"
+#include "Map/Maps/WorldMap.hpp"
 #include "Map/Management/MapMgr.hpp"
+#include "Objects/DynamicObject.hpp"
+#include "Server/Packets/CmsgFarSight.h"
+#include "Server/Packets/CmsgRequestAccountData.h"
 #include "Spell/SpellMgr.hpp"
 #include "Server/Packets/SmsgLogoutResponse.h"
 #include "Server/Packets/CmsgStandStateChange.h"
@@ -1031,8 +1035,11 @@ void WorldSession::handleRequestAccountData(WorldPacket& recvPacket)
     if (!worldConfig.server.useAccountData)
         return;
 
-    uint32_t accountDataId;
-    recvPacket >> accountDataId;
+    CmsgRequestAccountData srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    const uint32_t accountDataId = srlPacket.accountDataId;
 
     sLogger.debugOpcode("Received CMSG_REQUEST_ACCOUNT_DATA id {}.", accountDataId);
 
@@ -1897,6 +1904,33 @@ void WorldSession::handleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket
     sLogger.debugOpcode("Received CMSG_UNREGISTER_ALL_ADDON_PREFIXES.");
 
     mRegisteredAddonPrefixesVector.clear();
+}
+
+void WorldSession::handleFarSightOpcode(WorldPacket& recvPacket)
+{
+    CmsgFarSight srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    sLogger.debugOpcode("Received CMSG_FAR_SIGHT: {} (apply).", srlPacket.apply);
+
+    if (srlPacket.apply)
+    {
+        const auto farsightGuid = WoWGuid(_player->getFarsightGuid());
+        const auto dynObj = _player->getWorldMap()->getDynamicObject(farsightGuid.getGuidLowPart());
+        if (dynObj == nullptr)
+        {
+            sLogger.debugOpcode("Player {} requested non-existing farsight object {}.", _player->getGuidLow(), farsightGuid.getGuidLowPart());
+            return;
+        }
+
+        _player->getWorldMap()->changeFarsightLocation(_player, dynObj);
+    }
+    else
+    {
+        _player->getWorldMap()->changeFarsightLocation(_player, nullptr);
+        _player->setFarsightGuid(0);
+    }
 }
 
 void WorldSession::handleClearTargetOpcode(WorldPacket& /*recvPacket*/)

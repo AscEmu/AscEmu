@@ -57,11 +57,20 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_Cata)
-                return false;
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+            {
+                packet >> tabId;
+                return true;
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            {
+                uint32_t tabIdValue = 0;
+                packet >> tabIdValue;
+                tabId = static_cast<uint8_t>(tabIdValue);
+                return true;
+            }
 
-            packet >> tabId;
-            return true;
+            return false;
         }
     };
 }

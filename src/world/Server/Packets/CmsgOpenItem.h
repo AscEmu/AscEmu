@@ -30,8 +30,13 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> containerSlot >> slot;
-            return true;
+            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            {
+                packet >> containerSlot >> slot;
+                return true;
+            }
+
+            return false;
         }
     };
 }

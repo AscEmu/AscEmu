@@ -18,6 +18,11 @@ namespace AscEmu::Packets
         uint8_t asGroup;
         uint8_t ratedMatch;
 
+        // Cata+: the client no longer sends guid/asGroup/ratedMatch at all - joining via
+        // this opcode is always a group, always-rated queue. Only the arena slot (0/1/2 =
+        // 2v2/3v3/5v5) is sent; the team/rating/group requirement is derived server-side.
+        uint8_t arenaSlot = 0;
+
         CmsgBattlemasterJoinArena() : CmsgBattlemasterJoinArena(0, 0, 0, 0)
         {
         }
@@ -34,10 +39,22 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            uint64_t unpacked_guid;
-            packet >> unpacked_guid >> category >> asGroup >> ratedMatch;
-            guid.init(unpacked_guid);
-            return true;
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+            {
+                uint64_t unpacked_guid;
+                packet >> unpacked_guid >> category >> asGroup >> ratedMatch;
+                guid.init(unpacked_guid);
+
+                return true;
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            {
+                packet >> arenaSlot;
+
+                return true;
+            }
+
+            return false;
         }
     };
 }

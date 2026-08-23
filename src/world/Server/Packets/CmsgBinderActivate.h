@@ -38,8 +38,9 @@ namespace AscEmu::Packets
                 uint64_t unpackedGuid;
                 packet >> unpackedGuid;
                 guid.init(unpackedGuid);
+                return true;
             }
-            else
+            else if (m_protocol.isMop())
             {
                 WoWGuid npcGuid;
                 npcGuid[0] = packet.readBit();
@@ -61,8 +62,10 @@ namespace AscEmu::Packets
                 packet.readByteSeq(npcGuid[6]);
 
                 guid.init(npcGuid);
+                return true;
             }
-            return true;
+
+            return false;
         }
     };
 }

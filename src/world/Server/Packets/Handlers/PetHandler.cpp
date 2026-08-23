@@ -475,7 +475,11 @@ void WorldSession::handlePetRename(WorldPacket& recvPacket)
         return;
 
     const auto pet = _player->getPet();
-    if (pet == nullptr || pet->getGuid() != srlPacket.guid.getRawGuid())
+    if (pet == nullptr)
+        return;
+
+    // Mop identifies the pet by petNumber instead of sending its guid
+    if (!_socket->getClientProtocol().isMop() && pet->getGuid() != srlPacket.guid.getRawGuid())
         return;
 
     const std::string newName = CharacterDatabase.escapeString(srlPacket.name);

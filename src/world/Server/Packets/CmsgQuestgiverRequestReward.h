@@ -30,10 +30,38 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            uint64_t unpackedGuid;
-            packet >> unpackedGuid >> questId;
-            questgiverGuid.init(unpackedGuid);
-            return true;
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                uint64_t unpackedGuid;
+                packet >> unpackedGuid >> questId;
+                questgiverGuid.init(unpackedGuid);
+                return true;
+            }
+            else if (m_protocol.isMop())
+            {
+                packet >> questId;
+
+                questgiverGuid[6] = packet.readBit();
+                questgiverGuid[3] = packet.readBit();
+                questgiverGuid[1] = packet.readBit();
+                questgiverGuid[2] = packet.readBit();
+                questgiverGuid[4] = packet.readBit();
+                questgiverGuid[0] = packet.readBit();
+                questgiverGuid[5] = packet.readBit();
+                questgiverGuid[7] = packet.readBit();
+
+                packet.readByteSeq(questgiverGuid[3]);
+                packet.readByteSeq(questgiverGuid[0]);
+                packet.readByteSeq(questgiverGuid[7]);
+                packet.readByteSeq(questgiverGuid[6]);
+                packet.readByteSeq(questgiverGuid[2]);
+                packet.readByteSeq(questgiverGuid[1]);
+                packet.readByteSeq(questgiverGuid[5]);
+                packet.readByteSeq(questgiverGuid[4]);
+                return true;
+            }
+
+            return false;
         }
     };
 }

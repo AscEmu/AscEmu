@@ -95,8 +95,20 @@ void WorldSession::handleArenaJoinOpcode(WorldPacket& recvPacket)
         return;
 
     uint32_t battlegroundType;
+    uint8_t slot;
 
-    switch (srlPacket.category)
+    if (_socket->getClientProtocol().expansion >= WoW::Expansion::_Cata)
+    {
+        // Cata+: the opcode is always a group, always-rated join - the client no longer
+        // sends asGroup/ratedMatch at all.
+        slot = srlPacket.arenaSlot;
+    }
+    else
+    {
+        slot = srlPacket.category;
+    }
+
+    switch (slot)
     {
         case 0:
             battlegroundType = BattlegroundDef::TYPE_ARENA_2V2;
@@ -108,12 +120,17 @@ void WorldSession::handleArenaJoinOpcode(WorldPacket& recvPacket)
             battlegroundType = BattlegroundDef::TYPE_ARENA_5V5;
             break;
         default:
-            sLogger.debugOpcode("Received CMSG_BATTLEMASTER_JOIN_ARENA: with invalid category ({}).", srlPacket.category);
+            sLogger.debugOpcode("Received CMSG_BATTLEMASTER_JOIN_ARENA: with invalid slot ({}).", slot);
             battlegroundType = 0;
             break;
     }
 
-    if (battlegroundType != 0)
+    if (battlegroundType == 0)
+        return;
+
+    if (_socket->getClientProtocol().expansion >= WoW::Expansion::_Cata)
+        sBattlegroundManager.handleArenaJoin(this, battlegroundType, 1, 1);
+    else
         sBattlegroundManager.handleArenaJoin(this, battlegroundType, srlPacket.asGroup, srlPacket.ratedMatch);
 }
 

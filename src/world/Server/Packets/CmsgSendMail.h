@@ -69,7 +69,7 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else
+            else if (m_protocol.isCata())
             {
                 packet.readSkip<uint32_t>();
                 packet.readSkip<uint32_t>();
@@ -142,6 +142,87 @@ namespace AscEmu::Packets
 
                 return true;
             }
+            else if (m_protocol.isMop())
+            {
+                packet.readSkip<uint32_t>();   // unk1
+                packet.readSkip<uint32_t>();   // unk2
+
+                packet >> cod;
+                packet >> money;
+
+                gobjGuid[0] = packet.readBit();
+                gobjGuid[6] = packet.readBit();
+                gobjGuid[4] = packet.readBit();
+                gobjGuid[1] = packet.readBit();
+
+                uint32_t bodyLength = packet.readBits(11);
+
+                gobjGuid[3] = packet.readBit();
+
+                uint32_t receiverLength = packet.readBits(9);
+
+                gobjGuid[7] = packet.readBit();
+                gobjGuid[5] = packet.readBit();
+
+                itemCount = static_cast<uint8_t>(packet.readBits(5));
+
+                if (itemCount > 12)
+                    return false;
+
+                WoWGuid itemGUIDs[12];
+
+                for (uint8_t i = 0; i < itemCount; ++i)
+                {
+                    itemGUIDs[i][1] = packet.readBit();
+                    itemGUIDs[i][7] = packet.readBit();
+                    itemGUIDs[i][2] = packet.readBit();
+                    itemGUIDs[i][5] = packet.readBit();
+                    itemGUIDs[i][0] = packet.readBit();
+                    itemGUIDs[i][6] = packet.readBit();
+                    itemGUIDs[i][3] = packet.readBit();
+                    itemGUIDs[i][4] = packet.readBit();
+                }
+
+                uint32_t subjectLength = packet.readBits(9);
+                gobjGuid[2] = packet.readBit();
+
+                for (uint8_t i = 0; i < itemCount; ++i)
+                {
+                    packet.readSkip<uint8_t>();   // item slot in mail, not used
+                    packet.readByteSeq(itemGUIDs[i][3]);
+                    packet.readByteSeq(itemGUIDs[i][0]);
+                    packet.readByteSeq(itemGUIDs[i][2]);
+                    packet.readByteSeq(itemGUIDs[i][1]);
+                    packet.readByteSeq(itemGUIDs[i][6]);
+                    packet.readByteSeq(itemGUIDs[i][5]);
+                    packet.readByteSeq(itemGUIDs[i][7]);
+                    packet.readByteSeq(itemGUIDs[i][4]);
+                }
+
+                packet.readByteSeq(gobjGuid[1]);
+
+                body = packet.readString(bodyLength);
+
+                packet.readByteSeq(gobjGuid[0]);
+
+                subject = packet.readString(subjectLength);
+
+                packet.readByteSeq(gobjGuid[2]);
+                packet.readByteSeq(gobjGuid[6]);
+                packet.readByteSeq(gobjGuid[5]);
+                packet.readByteSeq(gobjGuid[7]);
+                packet.readByteSeq(gobjGuid[3]);
+                packet.readByteSeq(gobjGuid[4]);
+
+                receiverName = packet.readString(receiverLength);
+
+                for (uint8_t i = 0; i < itemCount; ++i)
+                    itemGuid[i] = uint64_t(itemGUIDs[i]);
+
+                return true;
+            }
+
+            return false;
         }
     };
 }

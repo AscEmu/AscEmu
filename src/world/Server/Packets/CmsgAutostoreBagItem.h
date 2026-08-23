@@ -32,8 +32,18 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> srcContainerSlot >> srcSlot >> dstContainerSlot;
-            return true;
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet >> srcContainerSlot >> srcSlot >> dstContainerSlot;
+                return true;
+            }
+            else if (m_protocol.isMop())
+            {
+                packet >> srcSlot >> srcContainerSlot >> dstContainerSlot;
+                return true;
+            }
+
+            return false;
         }
     };
 }

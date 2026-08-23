@@ -13,6 +13,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgBankerActivate.h"
 #include "Server/Packets/SmsgShowBank.h"
 #include "Server/Packets/MsgAuctionHello.h"
+#include "Server/Packets/CmsgAuctionHello.h"
+#include "Server/Packets/SmsgAuctionHello.h"
 #include "Server/Packets/SmsgSpiritHealerConfirm.h"
 #include "Server/Packets/CmsgTrainerBuySpell.h"
 #include "Server/Packets/SmsgTrainerBuySucceeded.h"
@@ -110,6 +112,21 @@ void WorldSession::handleAuctionHelloOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
+    sLogger.debugOpcode("Received MSG_AUCTION_HELLO: {} (guidLowPart).", srlPacket.guid.getGuidLowPart());
+
+    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
+    if (creature == nullptr)
+        return;
+
+    sendAuctionList(creature);
+}
+
+void WorldSession::handleAuctionHelloRequestOpcode(WorldPacket& recvPacket)
+{
+    CmsgAuctionHello srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
     sLogger.debugOpcode("Received CMSG_AUCTION_HELLO: {} (guidLowPart).", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
@@ -129,8 +146,16 @@ void WorldSession::sendAuctionList(Creature* creature)
     if (auctionHouse == nullptr)
         return;
 
-    MsgAuctionHello sendPacket(creature->getGuid(), auctionHouse->getId(), auctionHouse->isEnabled ? 1U : 0U);
-    sendManagedPacket(sendPacket);
+    if (_socket->getClientProtocol().isMop())
+    {
+        SmsgAuctionHello sendPacket(creature->getGuid(), auctionHouse->getId(), auctionHouse->isEnabled ? 1U : 0U);
+        sendManagedPacket(sendPacket);
+    }
+    else
+    {
+        MsgAuctionHello sendPacket(creature->getGuid(), auctionHouse->getId(), auctionHouse->isEnabled ? 1U : 0U);
+        sendManagedPacket(sendPacket);
+    }
 }
 
 // helper

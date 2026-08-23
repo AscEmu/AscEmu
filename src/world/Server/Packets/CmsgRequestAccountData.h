@@ -10,33 +10,32 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    class CmsgItemTextQuery : public ManagedPacket
+    class CmsgRequestAccountData : public ManagedPacket
     {
     public:
-        uint64_t itemGuid = 0;  // since WotLK
-        uint32_t itemTextId = 0; // before WotLK
+        uint32_t accountDataId = 0;
 
-        CmsgItemTextQuery() : CmsgItemTextQuery(0)
+        CmsgRequestAccountData() : CmsgRequestAccountData(0)
         {
         }
 
-        CmsgItemTextQuery(uint32_t itemTextId) :
-            ManagedPacket(CMSG_ITEM_TEXT_QUERY, 4),
-            itemTextId(itemTextId)
+        CmsgRequestAccountData(uint32_t accountDataId) :
+            ManagedPacket(CMSG_REQUEST_ACCOUNT_DATA, 4),
+            accountDataId(accountDataId)
         {
         }
 
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
-                packet >> itemGuid;
+                packet >> accountDataId;
                 return true;
             }
-            else if (m_protocol.expansion < WoW::Expansion::_WotLK)
+            else if (m_protocol.isMop())
             {
-                packet >> itemTextId;
+                accountDataId = static_cast<uint32_t>(packet.readBits(3));
                 return true;
             }
 

@@ -30,8 +30,23 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> gobjGuid >> messageId;
-            return true;
+            if (m_protocol.isMop())
+            {
+                // Mop dropped the mailbox guid from this opcode entirely.
+                packet >> messageId;
+                packet.readSkip<uint32_t>();   // mailTemplateId
+
+                return true;
+            }
+            else if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                packet >> gobjGuid >> messageId;
+                packet.readSkip<uint32_t>();   // mailTemplateId
+
+                return true;
+            }
+
+            return false;
         }
     };
 }

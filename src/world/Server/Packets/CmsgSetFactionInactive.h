@@ -30,8 +30,13 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> id >> state;
-            return true;
+            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            {
+                packet >> id >> state;
+                return true;
+            }
+
+            return false;
         }
     };
 }

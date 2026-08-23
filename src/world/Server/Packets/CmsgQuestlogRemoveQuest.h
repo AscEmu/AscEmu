@@ -28,8 +28,13 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> questLogSlot;
-            return true;
+            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            {
+                packet >> questLogSlot;
+                return true;
+            }
+
+            return false;
         }
     };
 }

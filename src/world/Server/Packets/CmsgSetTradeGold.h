@@ -31,15 +31,18 @@ namespace AscEmu::Packets
             if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
                 packet >> tradeGoldAmount;
+                return true;
             }
-            else // > WotLK
+            else if (m_protocol.expansion > WoW::Expansion::_WotLK)
             {
                 uint64_t tradeAmount = 0;
                 packet >> tradeAmount;
 
                 tradeGoldAmount = static_cast<uint32_t>(tradeAmount);
+                return true;
             }
-            return true;
+
+            return false;
         }
     };
 }

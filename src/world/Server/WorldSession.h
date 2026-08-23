@@ -289,6 +289,7 @@ public:
         //////////////////////////////////////////////////////////////////////////////////////////
         // AuctionHandler.cpp
         void handleAuctionHelloOpcode(WorldPacket& recvPacket);
+        void handleAuctionHelloRequestOpcode(WorldPacket& recvPacket);      //Mop
         void handleAuctionListItems(WorldPacket& recvPacket);
         void handleAuctionListBidderItems(WorldPacket& recvPacket);
         void handleAuctionSellItem(WorldPacket& recvPacket);
@@ -518,7 +519,7 @@ protected:
 
         //\brief this was an MSG opcode on versions < Cata.
         //       now it is split into CMSG and SMSG packets since cata.
-        void handleGuildBankQueryText(WorldPacket& recvPacket); //<Cata
+        void handleGuildBankQueryText(WorldPacket& recvPacket);
         void handleQueryGuildBankTabText(WorldPacket& recvPacket);  //>=Cata
 
         void handleCharterShowSignatures(WorldPacket& recvPacket);
@@ -762,6 +763,7 @@ protected:
     protected:
         void handleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket*/);  //>= Cata
         void handleClearTargetOpcode(WorldPacket& /*recvPacket*/);   //>= Mop
+        void handleFarSightOpcode(WorldPacket& recvPacket);
         void handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket);  //>= Cata
         void handleReportOpcode(WorldPacket& recvPacket);                   //>= Cata
         void handleReportPlayerOpcode(WorldPacket& recvPacket);             //>= Cata

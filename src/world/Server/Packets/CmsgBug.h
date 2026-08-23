@@ -36,8 +36,13 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> suggestion >> contentLenght >> content >> typeLenght >> type;
-            return true;
+            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            {
+                packet >> suggestion >> contentLenght >> content >> typeLenght >> type;
+                return true;
+            }
+
+            return false;
         }
     };
 }

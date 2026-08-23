@@ -25,6 +25,7 @@ namespace AscEmu::Packets
         uint32_t quality;
         uint8_t usable;
         uint8_t getAll;
+        uint8_t exactMatch = 0;      //Mop
 
         CmsgAuctionListItems() : CmsgAuctionListItems(0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0)
         {
@@ -50,25 +51,24 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            uint64_t unpacked_guid;
-            packet >> unpacked_guid;
-            guid.init(unpacked_guid);
-
-            packet >> listFrom;
-            packet >> searchedName;
-            packet >> levelMin;
-            packet >> levelMax;
-            packet >> auctionSlotId;
-            packet >> auctionMainCategory;
-            packet >> auctionSubCategory;
-            packet >> quality;
-            packet >> usable;
-
-            packet >> getAll;
-
-            // sorting is not implemented yet
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
+                uint64_t unpacked_guid;
+                packet >> unpacked_guid;
+                guid.init(unpacked_guid);
+
+                packet >> listFrom;
+                packet >> searchedName;
+                packet >> levelMin;
+                packet >> levelMax;
+                packet >> auctionSlotId;
+                packet >> auctionMainCategory;
+                packet >> auctionSubCategory;
+                packet >> quality;
+                packet >> usable;
+                packet >> getAll;
+
+                // sorting is not implemented yet
                 uint8_t sortCount;
                 packet >> sortCount;
                 for (uint8_t i = 0; i < sortCount; ++i)
@@ -76,16 +76,90 @@ namespace AscEmu::Packets
                     packet.readSkip<uint8_t>();
                     packet.readSkip<uint8_t>();
                 }
+
+                return true;
             }
-            else
+            else if (m_protocol.isCata())
             {
-                packet.readSkip<uint8_t>();    //sortCount
+                uint64_t unpacked_guid;
+                packet >> unpacked_guid;
+                guid.init(unpacked_guid);
 
-                for (uint8_t i = 0; i < 15; ++i)
+                packet >> listFrom;
+                packet >> searchedName;
+                packet >> levelMin;
+                packet >> levelMax;
+                packet >> auctionSlotId;
+                packet >> auctionMainCategory;
+                packet >> auctionSubCategory;
+                packet >> quality;
+                packet >> usable;
+                packet >> getAll;
+
+                // sorting is not implemented yet
+                packet.readSkip<uint8_t>();    // unk
+
+                uint8_t sortCount;
+                packet >> sortCount;
+                for (uint8_t i = 0; i < sortCount; ++i)
+                {
                     packet.readSkip<uint8_t>();
+                    packet.readSkip<uint8_t>();
+                }
+
+                return true;
+            }
+            else if (m_protocol.isMop())
+            {
+                packet >> auctionSlotId;
+                packet >> listFrom;
+                packet >> auctionMainCategory;
+                packet.readSkip<uint8_t>();    // unk
+
+                packet >> levelMax;
+                packet >> levelMin;
+
+                packet >> quality;
+                packet >> auctionSubCategory;
+
+                // sorting is not implemented yet
+                uint8_t sortCount;
+                packet >> sortCount;
+                for (uint8_t i = 0; i < sortCount; ++i)
+                    packet.readSkip<uint8_t>();
+
+                guid[3] = packet.readBit();
+                guid[4] = packet.readBit();
+                guid[5] = packet.readBit();
+                guid[2] = packet.readBit();
+
+                exactMatch = packet.readBit();
+                usable = packet.readBit();
+
+                guid[7] = packet.readBit();
+                guid[0] = packet.readBit();
+
+                const uint32_t searchStringLen = packet.readBits(8);
+
+                guid[1] = packet.readBit();
+                guid[6] = packet.readBit();
+
+                packet.readByteSeq(guid[6]);
+                packet.readByteSeq(guid[3]);
+                packet.readByteSeq(guid[4]);
+                packet.readByteSeq(guid[0]);
+                packet.readByteSeq(guid[7]);
+                packet.readByteSeq(guid[2]);
+
+                searchedName = packet.readString(searchStringLen);
+
+                packet.readByteSeq(guid[1]);
+                packet.readByteSeq(guid[5]);
+
+                return true;
             }
 
-            return true;
+            return false;
         }
     };
 }

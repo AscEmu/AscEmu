@@ -77,10 +77,35 @@ namespace AscEmu::Packets
                 packet >> pushResult;
                 return true;
             }
-            else
+            else if (m_protocol.isMop())
             {
-                return false;
+                packet >> questId;
+                packet >> pushResult;
+
+                WoWGuid guid;
+                guid[5] = packet.readBit();
+                guid[3] = packet.readBit();
+                guid[0] = packet.readBit();
+                guid[6] = packet.readBit();
+                guid[1] = packet.readBit();
+                guid[2] = packet.readBit();
+                guid[7] = packet.readBit();
+                guid[4] = packet.readBit();
+
+                packet.readByteSeq(guid[1]);
+                packet.readByteSeq(guid[2]);
+                packet.readByteSeq(guid[0]);
+                packet.readByteSeq(guid[5]);
+                packet.readByteSeq(guid[6]);
+                packet.readByteSeq(guid[4]);
+                packet.readByteSeq(guid[7]);
+                packet.readByteSeq(guid[3]);
+
+                giverGuid = uint64_t(guid);
+                return true;
             }
+
+            return false;
         }
     };
 }

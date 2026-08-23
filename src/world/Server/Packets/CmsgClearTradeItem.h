@@ -28,8 +28,13 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> tradeSlot;
-            return true;
+            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            {
+                packet >> tradeSlot;
+                return true;
+            }
+
+            return false;
         }
     };
 }

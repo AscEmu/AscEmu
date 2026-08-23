@@ -13,7 +13,7 @@ namespace AscEmu::Packets
     class CmsgActivateTaxi : public ManagedPacket
     {
     public:
-        uint64_t guid;
+        WoWGuid guid;
         std::vector<uint32_t> nodes;
 
         CmsgActivateTaxi() : CmsgActivateTaxi(0, {0, 0})
@@ -31,8 +31,44 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guid >> nodes[0] >> nodes[1];
-            return true;
+            if (m_protocol.isMop())
+            {
+                nodes.resize(2);
+
+                packet >> nodes[1] >> nodes[0];
+
+                guid[4] = packet.readBit();
+                guid[0] = packet.readBit();
+                guid[1] = packet.readBit();
+                guid[2] = packet.readBit();
+                guid[5] = packet.readBit();
+                guid[6] = packet.readBit();
+                guid[7] = packet.readBit();
+                guid[3] = packet.readBit();
+
+                packet.readByteSeq(guid[1]);
+                packet.readByteSeq(guid[0]);
+                packet.readByteSeq(guid[6]);
+                packet.readByteSeq(guid[5]);
+                packet.readByteSeq(guid[2]);
+                packet.readByteSeq(guid[4]);
+                packet.readByteSeq(guid[3]);
+                packet.readByteSeq(guid[7]);
+
+                return true;
+            }
+            else if (m_protocol.expansion < WoW::Expansion::_Mop)
+            {
+                nodes.resize(2);
+
+                uint64_t unpackedGuid;
+                packet >> unpackedGuid >> nodes[0] >> nodes[1];
+                guid = WoWGuid(unpackedGuid);
+
+                return true;
+            }
+
+            return false;
         }
     };
 }

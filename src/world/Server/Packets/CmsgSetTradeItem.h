@@ -35,12 +35,20 @@ namespace AscEmu::Packets
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet >> tradeSlot >> sourceBag >> sourceSlot;
+                return true;
             }
-            else
+            else if (m_protocol.isCata())
             {
                 packet >> sourceSlot >> tradeSlot >> sourceBag;
+                return true;
             }
-            return true;
+            else if (m_protocol.isMop())
+            {
+                packet >> tradeSlot >> sourceSlot >> sourceBag;
+                return true;
+            }
+
+            return false;
         }
     };
 }
