@@ -49,6 +49,9 @@ namespace AscEmu::Packets
                 for (auto enchantments : itemList.itemEnchantment)
                     packet << enchantments.Id << enchantments.duration << enchantments.charges;
 
+                if (m_protocol.isMop())
+                    packet << int32_t(0);
+
                 packet << itemList.propertiesId << itemList. propertySeed << itemList.stackCount << itemList.chargesLeft;
                 packet << itemList.unknown << itemList.ownerGuid << itemList.startPrice << itemList.outBid << itemList.buyoutPrice;
                 packet << itemList.expireTime << itemList.highestBidderGuid << itemList.highestBid;
