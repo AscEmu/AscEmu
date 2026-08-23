@@ -146,8 +146,8 @@ namespace AscEmu::Packets
                 packet.writeByteSeq(vendorGuid[0]);
                 packet.writeByteSeq(vendorGuid[6]);
 
-                // Unlike Mop, the Cata client's "Reason" byte here is never set to anything but 0 by
-                // the reference implementation (Cataclysm Preservation Project), even for an empty list.
+                // Unlike Mop, the Cata client's "Reason" byte here is never set to anything but 0,
+                // even for an empty list.
                 packet << uint8_t(0);
 
                 packet.writeByteSeq(vendorGuid[2]);

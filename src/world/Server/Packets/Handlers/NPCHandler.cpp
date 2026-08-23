@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/Packets/MsgTabardvendorActivate.h"
 #include "Server/Packets/CmsgBankerActivate.h"
+#include "Server/Packets/SmsgNpcTextUpdate.h"
 #include "Server/Packets/SmsgShowBank.h"
 #include "Server/Packets/MsgAuctionHello.h"
 #include "Server/Packets/CmsgAuctionHello.h"
@@ -555,128 +556,46 @@ void WorldSession::handleNpcTextQueryOpcode(WorldPacket& recvPacket)
 
     _player->setTargetGuid(srlPacket.guid);
 
-    WorldPacket data;
-    data.initialize(SMSG_NPC_TEXT_UPDATE);
-    data << srlPacket.text_id;
+    NpcTextUpdateInput input;
+    input.textId = srlPacket.text_id;
 
     const auto localesNpcText = (language > 0) ? sMySQLStore.getLocalizedNpcGossipText(srlPacket.text_id, language) : nullptr;
-#if VERSION_STRING <= Cata
 
     if (const auto pGossip = sMySQLStore.getNpcGossipText(srlPacket.text_id))
     {
+        input.found = true;
+        input.pages.resize(8);
+
         for (uint8_t i = 0; i < 8; ++i)
         {
-            data << float(pGossip->textHolder[i].probability);
+            NpcTextGossipEntry& page = input.pages[i];
+            page.probability = pGossip->textHolder[i].probability;
 
             if (localesNpcText)
             {
-                if (strlen(localesNpcText->texts[i][0]) == 0)
-                    data << localesNpcText->texts[i][1];
-                else
-                    data << localesNpcText->texts[i][0];
-
-                if (strlen(localesNpcText->texts[i][1]) == 0)
-                    data << localesNpcText->texts[i][0];
-                else
-                    data << localesNpcText->texts[i][1];
+                page.text0 = (strlen(localesNpcText->texts[i][0]) == 0) ? localesNpcText->texts[i][1] : localesNpcText->texts[i][0];
+                page.text1 = (strlen(localesNpcText->texts[i][1]) == 0) ? localesNpcText->texts[i][0] : localesNpcText->texts[i][1];
             }
             else
             {
-                if (pGossip->textHolder[i].texts[0].empty())
-                    data << pGossip->textHolder[i].texts[1];
-                else
-                    data << pGossip->textHolder[i].texts[0];
-
-                if (pGossip->textHolder[i].texts[1].empty())
-                    data << pGossip->textHolder[i].texts[0];
-                else
-                    data << pGossip->textHolder[i].texts[1];
+                page.text0 = pGossip->textHolder[i].texts[0].empty() ? pGossip->textHolder[i].texts[1] : pGossip->textHolder[i].texts[0];
+                page.text1 = pGossip->textHolder[i].texts[1].empty() ? pGossip->textHolder[i].texts[0] : pGossip->textHolder[i].texts[1];
             }
 
-            data << pGossip->textHolder[i].language;
+            page.language = pGossip->textHolder[i].language;
 
             for (uint8_t e = 0; e < GOSSIP_EMOTE_COUNT; ++e)
-            {
-                data << uint32_t(pGossip->textHolder[i].gossipEmotes[e].delay);
-                data << uint32_t(pGossip->textHolder[i].gossipEmotes[e].emote);
-            }
+                page.emotes.push_back({ uint32_t(pGossip->textHolder[i].gossipEmotes[e].delay), uint32_t(pGossip->textHolder[i].gossipEmotes[e].emote) });
         }
     }
     else
     {
-        for (uint8_t i = 0; i < 8; ++i)
-        {
-            data << float(1.0f);              // Prob
-            data << _player->getSession()->localizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
-            data << _player->getSession()->localizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
-            data << uint32_t(0x00);           // Language
-
-            for (uint8_t e = 0; e < GOSSIP_EMOTE_COUNT; e++)
-            {
-                data << uint32_t(0x00);       // Emote delay
-                data << uint32_t(0x00);       // Emote
-            }
-        }
-    }
-#else // Mop
-    ByteBuffer buffer;
-    if (const auto pGossip = sMySQLStore.getNpcGossipText(srlPacket.text_id))
-    {
-        if (localesNpcText)
-        {
-            for (uint8_t i = 0; i < 8; ++i)
-                buffer << float(pGossip->textHolder[i].probability); // probability
-
-            for (uint8_t i = 0; i < 8; ++i)
-                buffer << uint32_t(srlPacket.text_id); // broadcast text id
-
-            for (uint8_t i = 0; i < 8; ++i)
-            {
-                if (strlen(localesNpcText->texts[i][0]) == 0)
-                    buffer << localesNpcText->texts[i][1];
-                else
-                    buffer << localesNpcText->texts[i][0];
-            }
-        }
-        else
-        {
-            for (uint8_t i = 0; i < 8; ++i)
-                buffer << float(pGossip->textHolder[i].probability); // probability
-
-            for (uint8_t i = 0; i < 8; ++i)
-                buffer << uint32_t(srlPacket.text_id); // broadcast text id
-
-            for (uint8_t i = 0; i < 8; ++i)
-            {
-                if (pGossip->textHolder[i].texts[0].empty())
-                    buffer << pGossip->textHolder[i].texts[1];
-                else
-                    buffer << pGossip->textHolder[i].texts[0];
-            }
-        }
-    }
-    else
-    {
-        buffer << uint32_t(1); // unk 
-
-        for (uint8_t i = 0; i < 7; ++i)
-            buffer << uint32_t(0); // probability
-
-        buffer << uint32_t(1);  //unk
-
-        for (uint8_t i = 0; i < 7; ++i)
-            buffer << uint32_t(0); // broadcast text id
-
-        buffer << std::string(_player->getSession()->localizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU));
+        input.found = false;
+        input.fallbackGreeting = _player->getSession()->localizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
     }
 
-    data << uint32_t(buffer.size());
-    data.append(buffer);
-    data.writeBit(1); // write cache?
-    data.flushBits();
-#endif
-
-    SendPacket(&data);
+    SmsgNpcTextUpdate textUpdatePacket(std::move(input));
+    sendManagedPacket(textUpdatePacket);
 }
 
 namespace BankslotError
