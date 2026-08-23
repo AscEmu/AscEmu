@@ -40,6 +40,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/DynamicObject.hpp"
 #include "Server/Opcodes.hpp"
 #include "Server/Packets/SmsgTaxinodeStatus.h"
+#include "Server/Packets/SmsgUpdateInstanceOwnership.h"
+#include "Server/Packets/SmsgUpdateLastInstance.h"
 #include "Server/Packets/MsgTalentWipeConfirm.h"
 #include "Server/Packets/SmsgPetUnlearnConfirm.h"
 #include "Server/Packets/MsgSetDungeonDifficulty.h"
@@ -12632,7 +12634,6 @@ void Player::sendRaidInfo()
 void Player::sendSavedInstances()
 {
     bool hasBeenSaved = false;
-    WorldPacket data;
 
     for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
     {
@@ -12647,9 +12648,8 @@ void Player::sendSavedInstances()
     }
 
     // true or false means, whether you have current raid/heroic instances
-    data.initialize(SMSG_UPDATE_INSTANCE_OWNERSHIP);
-    data << uint32_t(hasBeenSaved);
-    sendPacket(&data);
+    SmsgUpdateInstanceOwnership ownershipPacket(hasBeenSaved);
+    getSession()->sendManagedPacket(ownershipPacket);
 
     if (!hasBeenSaved)
         return;
@@ -12660,9 +12660,8 @@ void Player::sendSavedInstances()
         {
             if (itr->second.perm)
             {
-                data.initialize(SMSG_UPDATE_LAST_INSTANCE);
-                data << uint32_t(itr->second.save->getMapId());
-                sendPacket(&data);
+                SmsgUpdateLastInstance lastInstancePacket(itr->second.save->getMapId());
+                getSession()->sendManagedPacket(lastInstancePacket);
             }
         }
     }

@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Packets/CmsgCharDelete.h"
 #include "Server/Packets/SmsgCharDelete.h"
+#include "Server/Packets/SmsgHotfixNotifyBlob.h"
 #include "Server/Packets/CmsgCharFactionChange.h"
 #include "Server/Packets/SmsgCharFactionChange.h"
 #include "Server/Packets/SmsgCharacterLoginFailed.h"
@@ -740,11 +741,8 @@ void WorldSession::fullLogin(Player* player)
     }
 
 #if VERSION_STRING == Mop
-    WorldPacket data;
-    data.initialize(SMSG_HOTFIX_NOTIFY_BLOB);
-    data.writeBits(0, 20);
-    //data.flushBits();
-    SendPacket(&data);
+    SmsgHotfixNotifyBlob hotfixPacket;
+    sendManagedPacket(hotfixPacket);
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
