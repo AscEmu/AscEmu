@@ -46,9 +46,7 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << status;
-
-            if (guid != 0)
-                packet << guid;
+            packet << guid;
 
             if (status == FRIEND_ADDED_OFFLINE || status == FRIEND_ADDED_ONLINE)
                 packet << note;
