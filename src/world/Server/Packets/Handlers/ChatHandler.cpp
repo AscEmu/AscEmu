@@ -390,7 +390,8 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                         srlPacket.type = CHAT_MSG_BATTLEGROUND_LEADER;
 #endif
 
-                _player->m_bg->distributePacketToTeam(SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), _player->getTeam());
+                SmsgMessageChat bgChatPacket(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid());
+                PacketBroadcast::sendFromBattlegroundTeam(*_player->m_bg, _player->getTeam(), bgChatPacket);
             } break;
         default:
             break;

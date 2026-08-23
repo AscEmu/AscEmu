@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Master.h"
 #include "Server/World.h"
 #include "Server/Packets/SmsgMessageChat.h"
+#include "Server/PacketBroadcast.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
 #include "Objects/GameObject.h"
@@ -1374,7 +1375,8 @@ void AlteracValley::Herald(const char* format, ...)
     vsnprintf(msgbuf, 100, format, ap);
     va_end(ap);
 
-    distributePacketToAll(AscEmu::Packets::SmsgMessageChat(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, 0, msgbuf, 0, "Herald").serialise().get());
+    AscEmu::Packets::SmsgMessageChat heraldPacket(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, 0, msgbuf, 0, "Herald");
+    AscEmu::Packets::PacketBroadcast::sendFromBattleground(*this, heraldPacket);
 }
 
 void AlteracValley::HookOnFlagDrop(Player* /*plr*/)
