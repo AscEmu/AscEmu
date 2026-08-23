@@ -181,8 +181,36 @@ void WorldSocket::onConnect()
 
     if (m_protocolSetByLogonComm)
     {
-        sLogger.debug("WorldSocket::onConnect(): sending build request for ip {}", getRemoteIp());
-        sLogonCommHandler.sendBuildRequest(getRemoteIp(), this);
+        // If the client reached us over loopback, it's on the same host as this world server.
+        // If the logon server is also local, that's exactly what it would have recorded at auth
+        // time too, so loopback is still the correct lookup key - leave it alone. But if the logon
+        // server lives on a different host, it only ever sees the client's real network address, so
+        // asking it about "127.0.0.1"/"::1" would never match. In that case substitute our own
+        // configured realm address instead - that's the same address the client used to reach the
+        // logon server to get to us in the first place.
+        std::string requestIp = getRemoteIp();
+        if (requestIp == "127.0.0.1" || requestIp == "::1")
+        {
+            const std::string& logonAddress = worldConfig.logonServer.address;
+            const bool logonIsLocal = logonAddress.empty() || logonAddress == "127.0.0.1" || logonAddress == "::1" || logonAddress == "localhost";
+
+            if (!logonIsLocal)
+            {
+                std::string realmAddress = sLogonCommHandler.getRealmAddress();
+                const auto portSeparator = realmAddress.find(':');
+                if (portSeparator != std::string::npos)
+                    realmAddress.resize(portSeparator);
+
+                if (!realmAddress.empty() && realmAddress != "127.0.0.1" && realmAddress != "::1")
+                {
+                    sLogger.debug("WorldSocket::onConnect(): client connected via loopback and LogonServer ({}) is remote, using configured realm address {} instead for the build request.", logonAddress, realmAddress);
+                    requestIp = realmAddress;
+                }
+            }
+        }
+
+        sLogger.debug("WorldSocket::onConnect(): sending build request for ip {}", requestIp);
+        sLogonCommHandler.sendBuildRequest(requestIp, this);
     }
     else
     {

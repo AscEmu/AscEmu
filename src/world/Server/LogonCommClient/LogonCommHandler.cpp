@@ -332,6 +332,14 @@ std::string LogonCommHandler::getRealmName(uint32_t id)
     return "";
 }
 
+std::string LogonCommHandler::getRealmAddress()
+{
+    if (realms.empty())
+        return "";
+
+    return (*realms.begin())->address;
+}
+
 float LogonCommHandler::getRealmPopulation()
 {
     return server_population;

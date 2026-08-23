@@ -117,6 +117,7 @@ public:
 
     uint32_t getRealmId();
     std::string getRealmName(uint32_t id);
+    std::string getRealmAddress();
 
     float getRealmPopulation();
 
