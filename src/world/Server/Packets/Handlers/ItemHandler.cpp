@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgEquipmentSetSave.h"
 #include "Server/Packets/CmsgEquipmentSetDelete.h"
 #include "Server/Packets/SmsgListInventory.h"
+#include "Server/Packets/SmsgQuestgiverQuestDetails.h"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Management/ItemInterface.h"
@@ -228,9 +229,8 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
             return;
 
         // Create packet
-        WorldPacket data;
-        sQuestMgr.BuildQuestDetails(&data, quest, tmpItem, 0, language, _player);
-        SendPacket(&data);
+        SmsgQuestgiverQuestDetails detailsPacket(sQuestMgr.buildQuestDetailsInput(quest, tmpItem, _player, language));
+        sendManagedPacket(detailsPacket);
     }
 
     // Anticheat to prevent WDB editing

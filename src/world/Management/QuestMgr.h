@@ -38,6 +38,14 @@ struct QuestProperties;
 class WorldPacket;
 class GossipMenu;
 
+namespace AscEmu::Packets
+{
+    struct QuestgiverOfferRewardInput;
+    struct QuestgiverQuestDetailsInput;
+    struct QuestgiverRequestItemsInput;
+    struct QuestgiverQuestListInput;
+}
+
 struct QuestRelation
 {
     QuestProperties const* qst;
@@ -124,12 +132,13 @@ public:
         uint32_t ActiveQuestsCount(Object* quest_giver, Player* plr);
 
         //Packet Forging...
-        void BuildOfferReward(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32_t menutype, uint32_t language, Player* plr);
-        void BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32_t menutype, uint32_t language, Player* plr);
-        void BuildRequestItems(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32_t status, uint32_t language);
         void BuildQuestComplete(Player*, QuestProperties const* qst);
-        void BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32_t language);
         bool OnActivateQuestGiver(Object* qst_giver, Player* plr);
+
+        AscEmu::Packets::QuestgiverOfferRewardInput buildOfferRewardInput(QuestProperties const* qst, Object* qst_giver, Player* plr, uint32_t language);
+        AscEmu::Packets::QuestgiverQuestDetailsInput buildQuestDetailsInput(QuestProperties const* qst, Object* qst_giver, Player* plr, uint32_t language);
+        AscEmu::Packets::QuestgiverRequestItemsInput buildRequestItemsInput(QuestProperties const* qst, Object* qst_giver, uint32_t status, uint32_t language);
+        AscEmu::Packets::QuestgiverQuestListInput buildQuestListInput(Object* qst_giver, Player* plr, uint32_t language);
         bool isRepeatableQuestFinished(Player* plr, QuestProperties const* qst);
 
         void SendQuestUpdateAddKill(Player* plr, uint32_t questid, uint32_t entry, uint32_t count, uint32_t tcount, uint64_t guid);

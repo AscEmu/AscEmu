@@ -19,6 +19,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgQuestgiverChooseReward.h"
 #include "Server/Packets/CmsgPushquesttoparty.h"
 #include "Server/Packets/SmsgQuestPoiQueryResponse.h"
+#include "Server/Packets/SmsgQuestgiverOfferReward.h"
+#include "Server/Packets/SmsgQuestgiverQuestDetails.h"
+#include "Server/Packets/SmsgQuestgiverRequestItems.h"
 #include "Server/WorldSession.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -573,12 +576,10 @@ void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    WorldPacket data;
-
     if ((status == QuestStatus::Available) || (status == QuestStatus::Repeatable) || (status == QuestStatus::AvailableChat))
     {
-        sQuestMgr.BuildQuestDetails(&data, qst, qst_giver, 1, language, _player);
-        SendPacket(&data);
+        SmsgQuestgiverQuestDetails detailsPacket(sQuestMgr.buildQuestDetailsInput(qst, qst_giver, _player, language));
+        sendManagedPacket(detailsPacket);
         sLogger.debug("Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
 
         if (qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
@@ -586,8 +587,8 @@ void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)
     }
     else if (status == QuestStatus::NotFinished || status == QuestStatus::Finished)
     {
-        sQuestMgr.BuildRequestItems(&data, qst, qst_giver, status, language);
-        SendPacket(&data);
+        SmsgQuestgiverRequestItems requestItemsPacket(sQuestMgr.buildRequestItemsInput(qst, qst_giver, status, language));
+        sendManagedPacket(requestItemsPacket);
         sLogger.debug("Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     }
 }
@@ -714,9 +715,8 @@ void WorldSession::handleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket)
 
     if (status == QuestStatus::Finished)
     {
-        WorldPacket data;
-        sQuestMgr.BuildOfferReward(&data, qst, qst_giver, 1, language, _player);
-        SendPacket(&data);
+        SmsgQuestgiverOfferReward rewardPacket(sQuestMgr.buildOfferRewardInput(qst, qst_giver, _player, language));
+        sendManagedPacket(rewardPacket);
         sLogger.debug("Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     }
 }
@@ -788,17 +788,15 @@ void WorldSession::handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
 
     if (status == QuestStatus::NotFinished || status == QuestStatus::Repeatable)
     {
-        WorldPacket data;
-        sQuestMgr.BuildRequestItems(&data, qst, qst_giver, status, language);
-        SendPacket(&data);
+        SmsgQuestgiverRequestItems requestItemsPacket(sQuestMgr.buildRequestItemsInput(qst, qst_giver, status, language));
+        sendManagedPacket(requestItemsPacket);
         sLogger.debug("Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     }
 
     if (status == QuestStatus::Finished)
     {
-        WorldPacket data;
-        sQuestMgr.BuildOfferReward(&data, qst, qst_giver, 1, language, _player);
-        SendPacket(&data);
+        SmsgQuestgiverOfferReward rewardPacket(sQuestMgr.buildOfferRewardInput(qst, qst_giver, _player, language));
+        sendManagedPacket(rewardPacket);
         sLogger.debug("Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     }
 
@@ -947,10 +945,9 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
                             continue;
                         }
 
-                        WorldPacket data;
-                        sQuestMgr.BuildQuestDetails(&data, pQuest, _player, 1, pPlayer->getSession()->language, pPlayer);
+                        SmsgQuestgiverQuestDetails detailsPacket(sQuestMgr.buildQuestDetailsInput(pQuest, _player, pPlayer, pPlayer->getSession()->language));
                         pPlayer->setQuestSharerDbId(pguid);
-                        pPlayer->getSession()->SendPacket(&data);
+                        pPlayer->getSession()->sendManagedPacket(detailsPacket);
                     }
                 }
                 group->Unlock();

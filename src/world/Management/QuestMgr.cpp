@@ -43,7 +43,11 @@
 #include "Spell/SpellAura.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Server/Packets/MsgQuestPushResult.h"
+#include "Server/Packets/SmsgQuestgiverOfferReward.h"
 #include "Server/Packets/SmsgQuestgiverQuestComplete.h"
+#include "Server/Packets/SmsgQuestgiverQuestDetails.h"
+#include "Server/Packets/SmsgQuestgiverQuestList.h"
+#include "Server/Packets/SmsgQuestgiverRequestItems.h"
 #include "Server/Packets/SmsgQuestLogFull.h"
 #include "Server/Packets/SmsgQuestgiverQuestInvalid.h"
 #include "Server/Packets/SmsgQuestupdateFailedTimer.h"
@@ -379,636 +383,6 @@ uint32_t QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
     return questCount;
 }
 
-void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32_t /*menutype*/, uint32_t language, Player* plr)
-{
-#if VERSION_STRING < Cata
-    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
-    ItemProperties const* it;
-
-    data->setOpcode(SMSG_QUESTGIVER_OFFER_REWARD);
-    *data << uint64_t(qst_giver->getGuid());
-    *data << uint32_t(qst->id);
-
-    if (lq != nullptr)
-    {
-        *data << lq->title;
-        *data << lq->completionText;
-    }
-    else
-    {
-        *data << qst->title;
-        *data << qst->completiontext;
-    }
-
-    //uint32_t a = 0, b = 0, c = 1, d = 0, e = 1;
-
-    *data << (qst->next_quest_id ? uint8_t(1) : uint8_t(0));  // next quest shit
-    *data << qst->quest_flags;
-    *data << qst->suggestedplayers;
-
-    *data << qst->completionemotecount;
-    for (uint8_t i = 0; i < qst->completionemotecount; i++)
-    {
-        *data << qst->completionemote[i];
-        *data << qst->completionemotedelay[i];
-    }
-
-    *data << uint32_t(qst->count_reward_choiceitem);
-    if (qst->count_reward_choiceitem)
-    {
-        for (uint8_t i = 0; i < 6; ++i)
-        {
-            if (qst->reward_choiceitem[i])
-            {
-                *data << qst->reward_choiceitem[i];
-                *data << qst->reward_choiceitemcount[i];
-                it = sMySQLStore.getItemProperties(qst->reward_choiceitem[i]);
-                *data << (it ? it->DisplayInfoID : uint32_t(0));
-            }
-        }
-    }
-
-    *data << uint32_t(qst->count_reward_item);
-    if (qst->count_reward_item)
-    {
-        for (uint8_t i = 0; i < 4; ++i)
-        {
-            if (qst->reward_item[i])
-            {
-                *data << qst->reward_item[i];
-                *data << qst->reward_itemcount[i];
-                it = sMySQLStore.getItemProperties(qst->reward_item[i]);
-                *data << (it ? it->DisplayInfoID : uint32_t(0));
-            }
-        }
-    }
-
-    *data << uint32_t(0);
-    uint32_t xp = 0;
-    if (plr->getLevel() < plr->getMaxLevel())
-    {
-        xp = Util::float2int32(GenerateQuestXP(plr, qst) * worldConfig.getFloatRate(RATE_QUESTXP));
-    }
-    *data << uint32_t(xp); //VLack: The quest will give you this amount of XP
-
-    *data << (qst->bonushonor * 10);
-    *data << float(0);
-    *data << uint32_t(0);
-    *data << qst->reward_spell;
-    *data << qst->effect_on_player;
-    *data << qst->rewardtitleid;
-    *data << qst->rewardtalents;
-    *data << qst->bonusarenapoints;
-    *data << uint32_t(0);
-
-    for (uint8_t i = 0; i < 5; ++i)              // reward factions ids
-    {
-        *data << uint32_t(0);
-    }
-
-    for (uint8_t i = 0; i < 5; ++i)              // columnid in QuestFactionReward.dbc (zero based)?
-    {
-        *data << uint32_t(0);
-    }
-
-    for (uint8_t i = 0; i < 5; ++i)              // reward reputation override?
-    {
-        *data << uint32_t(0);
-    }
-
-#else
-    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
-
-    std::string questGiverTextWindow = "";
-    std::string questGiverTargetName = "";
-    std::string questTurnTextWindow = "";
-    std::string questTurnTargetName = "";
-
-    data->setOpcode(SMSG_QUESTGIVER_OFFER_REWARD);
-    *data << uint64_t(qst_giver->getGuid());
-    *data << uint32_t(qst->id);
-
-    *data << (lq ? lq->title : qst->title);
-    *data << (lq ? lq->completionText : qst->completiontext);
-
-    *data << questGiverTextWindow;
-    *data << questGiverTargetName;
-    *data << questTurnTextWindow;
-    *data << questTurnTargetName;
-
-    *data << uint32_t(0);                                                   // giver portrait
-    *data << uint32_t(0);                                                   // turn in portrait
-
-    *data << uint8_t(qst->next_quest_id ? 1 : 0);
-    *data << uint32_t(qst->quest_flags);
-    *data << uint32_t(qst->suggestedplayers);
-
-    *data << qst->completionemotecount;
-    for (uint8_t i = 0; i < qst->completionemotecount; i++)
-    {
-        *data << uint32_t(qst->completionemote[i]);
-        *data << uint32_t(qst->completionemotedelay[i]);
-    }
-
-    *data << uint32_t(qst->count_reward_choiceitem);
-    for (uint8_t i = 0; i < 6; ++i)
-    {
-        *data << uint32_t(qst->reward_choiceitem[i]);
-    }
-
-    for (uint8_t i = 0; i < 6; ++i)
-    {
-        *data << uint32_t(qst->reward_choiceitemcount[i]);
-    }
-
-    for (uint8_t i = 0; i < 6; ++i)
-    {
-        if (ItemProperties const* ip = sMySQLStore.getItemProperties(qst->reward_choiceitem[i]))
-        {
-            *data << uint32_t(ip->DisplayInfoID);
-        }
-        else
-        {
-            *data << uint32_t(0);
-        }
-    }
-
-    *data << uint32_t(qst->count_required_item);
-    for (uint8_t i = 0; i < 4; ++i)
-    {
-        *data << uint32_t(qst->reward_item[i]);
-    }
-
-    for (uint8_t i = 0; i < 4; ++i)
-    {
-        *data << uint32_t(qst->reward_itemcount[i]);
-    }
-
-    for (uint8_t i = 0; i < 4; ++i)
-    {
-        if (ItemProperties const* ip = sMySQLStore.getItemProperties(qst->reward_item[i]))
-        {
-            *data << uint32_t(ip->DisplayInfoID);
-        }
-        else
-        {
-            *data << uint32_t(0);
-        }
-    }
-
-    *data << uint32_t(GenerateRewardMoney(plr, qst));                       // Money reward
-    *data << uint32_t(GenerateQuestXP(plr, qst));
-
-    *data << uint32_t(qst->rewardtitleid);
-    *data << uint32_t(0);                                                   // Honor reward
-    *data << float(0.0f);                                                   // New 3.3
-    *data << uint32_t(0);                                                   // reward talent
-    *data << uint32_t(0);                                                   // unk
-    *data << uint32_t(0);                                                   // reputationmask
-
-    for (uint8_t i = 0; i < 5; ++i)
-    {
-        *data << uint32_t(0);
-    }
-
-    for (uint8_t i = 0; i < 5; ++i)
-    {
-        *data << int32_t(0);
-    }
-
-    for (uint8_t i = 0; i < 5; ++i)
-    {
-        *data << uint32_t(0);
-    }
-
-    *data << uint32_t(0);                                                   // reward spell
-    *data << uint32_t(0);                                                   // reward spell cast
-
-    for (uint8_t i = 0; i < 4; ++i)
-    {
-        *data << uint32_t(0);
-    }
-
-    for (uint8_t i = 0; i < 4; ++i)
-    {
-        *data << uint32_t(0);
-    }
-
-    *data << uint32_t(0);                                                   // rewskill
-    *data << uint32_t(0);                                                   // rewskillpoint
-
-    *data << uint32_t(4);                                                   // emote count
-    for (uint8_t i = 0; i < 4; ++i)
-    {
-        *data << uint32_t(qst->detailemote[i]);
-        *data << uint32_t(qst->detailemotedelay[i]);
-    }
-#endif
-}
-
-void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32_t /*menutype*/, uint32_t language, Player* plr)
-{
-#if VERSION_STRING < Cata
-    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
-    //std::map<uint32_t, uint8_t>::const_iterator itr;
-
-    data->setOpcode(SMSG_QUESTGIVER_QUEST_DETAILS);
-
-    *data << qst_giver->getGuid(); // npc guid
-#if VERSION_STRING > TBC
-    *data << uint64_t(qst_giver->isPlayer() ? qst_giver->getGuid() : 0); // (questsharer?) guid
-#endif
-    *data << qst->id; // quest id
-
-    if (lq != nullptr)
-    {
-        *data << lq->title;
-        *data << lq->details;
-        *data << lq->objectives;
-    }
-    else
-    {
-        *data << qst->title;
-        *data << qst->details;
-        *data << qst->objectives;
-    }
-
-#if VERSION_STRING > TBC
-    *data << uint8_t(1);                    // Activate accept
-    *data << qst->quest_flags;
-    *data << qst->suggestedplayers;         // "Suggested players"
-    *data << uint8_t(0);                    // MANGOS: IsFinished? value is sent back to server in quest accept packet
-#else
-    *data << uint32_t(1);                   // active quest
-    *data << qst->suggestedplayers;
-#endif
-
-    ItemProperties const* ip;
-
-    *data << uint32_t(qst->count_reward_choiceitem);
-
-    for (uint8_t i = 0; i < 6; ++i)
-    {
-        if (!qst->reward_choiceitem[i])
-            continue;
-
-        *data << qst->reward_choiceitem[i];
-        *data << qst->reward_choiceitemcount[i];
-
-        ip = sMySQLStore.getItemProperties(qst->reward_choiceitem[i]);
-        *data << (ip ? ip->DisplayInfoID : uint32_t(0));
-
-    }
-
-    *data << uint32_t(qst->count_reward_item);
-
-    for (uint8_t i = 0; i < 4; ++i)
-    {
-        if (!qst->reward_item[i])
-            continue;
-
-        *data << qst->reward_item[i];
-        *data << qst->reward_itemcount[i];
-
-        ip = sMySQLStore.getItemProperties(qst->reward_item[i]);
-        *data << (ip ? ip->DisplayInfoID : uint32_t(0));
-    }
-
-    *data << GenerateRewardMoney(plr, qst);     // Money reward
-
-#if VERSION_STRING > TBC
-    *data << uint32_t(0);                       // New 3.3 - this is the XP you'll see on the quest reward panel too, but I think it is fine not to show it, because it can change if the player levels up before completing the quest.
-    *data << (qst->bonushonor * 10);            // Honor reward
-    *data << float(0);                          // New 3.3
-#endif
-
-    *data << qst->reward_spell;                 // this is the spell (id) the quest finisher teaches you, or the icon of the spell if effect_on_player is not 0
-
-#if VERSION_STRING > TBC
-    *data << qst->effect_on_player;             // this is the spell (id) the quest finisher casts on you as a reward
-    *data << qst->rewardtitleid;                // Title reward (ID)
-    *data << qst->rewardtalents;                // Talent reward
-    *data << qst->bonusarenapoints;             // Arena Points reward
-    *data << GenerateQuestXP(plr, qst);         // new 3.3.0
-
-    for (uint8_t i = 0; i < 5; ++i)
-        *data << uint32_t(0);
-
-    for (uint8_t i = 0; i < 5; ++i)
-        *data << uint32_t(0);
-
-    for (uint8_t i = 0; i < 5; ++i)
-        *data << uint32_t(0);
-
-    *data << qst->detailemotecount;             // Amount of emotes (4?)
-
-    for (uint8_t i = 0; i < qst->detailemotecount; i++)
-    {
-        *data << qst->detailemote[i];           // Emote ID
-        *data << qst->detailemotedelay[i];      // Emote Delay
-    }
-#else
-    *data << uint32_t(0);                       //unk
-    *data << uint32_t(0);                       //unk
-    *data << uint32_t(0);                       //reward pvp title
-    *data << uint32_t(1);                       //emotecount
-    *data << uint32_t(EMOTE_ONESHOT_TALK);
-    *data << uint32_t(0);                       // emote delay
-#endif
-
-#else
-    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
-
-    std::string questEndText = "";
-    std::string questGiverTextWindow = "";
-    std::string questGiverTargetName = "";
-    std::string questTurnTextWindow = "";
-    std::string questTurnTargetName = "";
-
-    data->setOpcode(SMSG_QUESTGIVER_QUEST_DETAILS);
-    *data << uint64_t(qst_giver->getGuid());                                // npc guid
-    *data << uint64_t(0);                                                   // (questsharer?) guid
-    *data << uint32_t(qst->id);
-
-    *data << (lq ? lq->title : qst->title);
-    *data << (lq ? lq->details : qst->details);
-    *data << (lq ? lq->objectives : qst->objectives);
-
-    *data << questGiverTextWindow;                                          // 4.x
-    *data << questGiverTargetName;                                          // 4.x
-    *data << questTurnTextWindow;                                           // 4.x
-    *data << questTurnTargetName;                                           // 4.x
-
-    *data << uint32_t(0);                                                   // 4.x - qgportait
-    *data << uint32_t(0);                                                   // 4.x - qgturninportrait
-
-    *data << uint8_t(1);                                                    // Activate accept
-
-    *data << uint32_t(qst->quest_flags);
-    *data << uint32_t(qst->suggestedplayers);
-
-    *data << uint8_t(0);                                                    // finished? value is sent back to server in quest accept packet
-    *data << uint8_t(0);                                                    // 4.x Starts at AreaTrigger
-    *data << uint32_t(0);                                                   // required spell
-
-    *data << uint32_t(qst->count_reward_choiceitem);
-    for (uint8_t i = 0; i < 6; ++i)
-    {
-        *data << uint32_t(qst->reward_choiceitem[i]);
-    }
-
-    for (uint8_t i = 0; i < 6; ++i)
-    {
-        *data << uint32_t(qst->reward_choiceitemcount[i]);
-    }
-
-    for (uint8_t i = 0; i < 6; ++i)
-    {
-        if (ItemProperties const* ip = sMySQLStore.getItemProperties(qst->reward_choiceitem[i]))
-        {
-            *data << uint32_t(ip->DisplayInfoID);
-        }
-        else
-        {
-            *data << uint32_t(0);
-        }
-    }
-
-    *data << uint32_t(qst->count_required_item);
-
-    for (uint8_t i = 0; i < 4; ++i)
-    {
-        *data << uint32_t(qst->reward_item[i]);
-    }
-
-    for (uint8_t i = 0; i < 4; ++i)
-    {
-        *data << uint32_t(qst->reward_itemcount[i]);
-    }
-
-    for (uint8_t i = 0; i < 4; ++i)
-    {
-        if (ItemProperties const* ip = sMySQLStore.getItemProperties(qst->reward_item[i]))
-        {
-            *data << uint32_t(ip->DisplayInfoID);
-        }
-        else
-        {
-            *data << uint32_t(0);
-        }
-    }
-
-    *data << uint32_t(GenerateRewardMoney(plr, qst));                       // Money reward
-    *data << uint32_t(GenerateQuestXP(plr, qst));
-
-    *data << uint32_t(qst->rewardtitleid);
-    *data << uint32_t(0);                                                   // Honor reward
-    *data << float(0.0f);                                                   // New 3.3
-    *data << uint32_t(0);                                                   // reward talent
-    *data << uint32_t(0);                                                   // unk
-    *data << uint32_t(0);                                                   // reputationmask
-
-    for (uint8_t i = 0; i < 5; ++i)
-    {
-        *data << uint32_t(0);
-    }
-
-    for (uint8_t i = 0; i < 5; ++i)
-    {
-        *data << int32_t(0);
-    }
-
-    for (uint8_t i = 0; i < 5; ++i)
-    {
-        *data << uint32_t(0);
-    }
-
-    *data << uint32_t(0);                                                   // reward spell
-    *data << uint32_t(0);                                                   // reward spell cast
-
-    for (uint8_t i = 0; i < 4; ++i)
-    {
-        *data << uint32_t(0);
-    }
-
-    for (uint8_t i = 0; i < 4; ++i)
-    {
-        *data << uint32_t(0);
-    }
-
-    *data << uint32_t(0);                                                   // rewskill
-    *data << uint32_t(0);                                                   // rewskillpoint
-
-    *data << uint32_t(4);                                                   // emote count
-
-    for (uint8_t i = 0; i < 4; ++i)
-    {
-        *data << uint32_t(qst->detailemote[i]);
-        *data << uint32_t(qst->detailemotedelay[i]);
-    }
-#endif
-}
-
-void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32_t status, uint32_t language)
-{
-#if VERSION_STRING < Cata
-    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
-
-    ItemProperties const* it;
-    data->setOpcode(SMSG_QUESTGIVER_REQUEST_ITEMS);
-
-    *data << qst_giver->getGuid();
-    *data << qst->id;
-
-    if (lq != nullptr)
-    {
-        *data << lq->title;
-        *data << ((lq->incompleteText[0]) ? lq->incompleteText : lq->details);
-    }
-    else
-    {
-        *data << qst->title;
-        *data << (qst->incompletetext[0] ? qst->incompletetext : qst->details);
-    }
-
-#if VERSION_STRING < WotLK
-
-    if (status == QuestStatus::NotFinished)
-    {
-        *data << qst->incompleteemote;
-    }
-    else
-    {
-        *data << qst->completeemote;
-    }
-
-    *data << uint32_t(1);
-
-    *data << qst->quest_flags;
-    *data << qst->suggestedplayers;
-    *data << uint32_t(qst->reward_money < 0 ? -qst->reward_money : 0);
-
-#else
-    *data << uint32_t(0);
-
-    if (status == QuestStatus::NotFinished)
-    {
-        *data << qst->incompleteemote;
-    }
-    else
-    {
-        *data << qst->completeemote;
-    }
-
-    *data << uint32_t(0);
-    *data << qst->quest_flags;
-    *data << qst->suggestedplayers;
-    *data << uint32_t(qst->reward_money < 0 ? -qst->reward_money : 0); // Required Money
-#endif
-    // item count
-    *data << uint32_t(qst->count_required_item);
-
-    // (loop for each item)
-    for (uint8_t i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
-    {
-        if (qst->required_item[i] != 0)
-        {
-            *data << qst->required_item[i];
-            *data << qst->required_itemcount[i];
-            it = sMySQLStore.getItemProperties(qst->required_item[i]);
-            *data << (it ? it->DisplayInfoID : uint32_t(0));
-        }
-        else
-        {
-            *data << uint32_t(0);
-            *data << uint32_t(0);
-            *data << uint32_t(0);
-        }
-    }
-
-    // wtf is this?
-    if (status == QuestStatus::NotFinished)
-    {
-        *data << uint32_t(0); //incomplete button
-    }
-    else
-    {
-        *data << uint32_t(3);
-    }
-
-#if VERSION_STRING > TBC
-    *data << uint32_t(4);
-#endif
-    *data << uint32_t(8);
-    *data << uint32_t(10);
-
-#else
-    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
-
-    data->setOpcode(SMSG_QUESTGIVER_REQUEST_ITEMS);
-    *data << uint64_t(qst_giver->getGuid());
-    *data << uint32_t(qst->id);
-
-    *data << (lq ? lq->title : qst->title);
-    *data << (lq ? lq->incompleteText : qst->incompletetext);
-
-    *data << uint32_t(0);
-
-    if (status == QuestStatus::NotFinished)
-    {
-        *data << qst->incompleteemote;
-    }
-    else
-    {
-        *data << qst->completeemote;
-    }
-
-    *data << uint32_t(1);                                                   // close on cancel
-    *data << uint32_t(qst->quest_flags);
-    *data << uint32_t(qst->suggestedplayers);
-
-    *data << uint32_t(qst->reward_money < 0 ? -qst->reward_money : 0);      // Required Money
-
-    *data << uint32_t(qst->count_required_item);                            // item count
-
-    // (loop for each item)
-    for (uint8_t i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
-    {
-        if (!qst->required_item[i])
-        {
-            continue;
-        }
-
-        *data << uint32_t(qst->required_item[i]);
-        *data << uint32_t(qst->required_itemcount[i]);
-        if (ItemProperties const* it = sMySQLStore.getItemProperties(qst->required_item[i]))
-        {
-            *data << uint32_t(it->DisplayInfoID);
-        }
-        else
-        {
-            *data << uint32_t(0);
-        }
-    }
-
-    *data << uint32_t(0);                                                   // required currency count
-
-
-    if (status == QuestStatus::NotFinished)
-    {
-        *data << uint32_t(0);                                               // incomplete button
-    }
-    else
-    {
-        *data << uint32_t(2);
-    }
-
-    *data << uint32_t(4);
-    *data << uint32_t(8);
-    *data << uint32_t(16);
-    *data << uint32_t(64);
-#endif
-}
 
 void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
 {
@@ -1052,113 +426,6 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
 
     SmsgQuestgiverQuestComplete managedPacket(qst->id, xp, GenerateRewardMoney(plr, qst), qst->bonushonor * 10, rewardtalents, qst->bonusarenapoints);
     plr->getSession()->sendManagedPacket(managedPacket);
-}
-
-void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32_t language)
-{
-    if (!plr || !plr->getSession()) return;
-    uint32_t status;
-    QuestRelationList::iterator it;
-    QuestRelationList::iterator st;
-    QuestRelationList::iterator ed;
-    std::map<uint32_t, uint8_t> tmp_map;
-
-    data->initialize(SMSG_QUESTGIVER_QUEST_LIST);
-
-    *data << qst_giver->getGuid();
-
-    // Do not send hello line for gameobjects
-    //\ todo: some gameobjects may have gossip line, I'm not 100% sure, but majority definitely shouldn't have one -Appled
-    if (qst_giver->isGameObject())
-        *data << std::string("");
-    else
-        *data << plr->getSession()->localizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU); // "Hey there, $N. How can I help you?" // Hello line
-    *data << uint32_t(1); // Emote Delay
-    *data << uint32_t(1); // Emote
-
-    bool bValid = false;
-    if (qst_giver->isGameObject())
-    {
-        GameObject* go = static_cast<GameObject*>(qst_giver);
-        GameObject_QuestGiver* go_quest_giver = nullptr;
-        if (go->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
-        {
-            go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
-            if (go_quest_giver->HasQuests())
-                bValid = true;
-        }
-        if (bValid)
-        {
-            st = go_quest_giver->QuestsBegin();
-            ed = go_quest_giver->QuestsEnd();
-        }
-    }
-    else if (qst_giver->isCreature())
-    {
-        bValid = static_cast< Creature* >(qst_giver)->HasQuests();
-        if (bValid)
-        {
-            st = static_cast< Creature* >(qst_giver)->QuestsBegin();
-            ed = static_cast< Creature* >(qst_giver)->QuestsEnd();
-        }
-    }
-
-    if (!bValid)
-    {
-        *data << uint8_t(0);
-        return;
-    }
-
-    *data << uint8_t(ActiveQuestsCount(qst_giver, plr));
-
-    for (it = st; it != ed; ++it)
-    {
-        status = CalcQuestStatus(qst_giver, plr, it->get());
-        if (status >= QuestStatus::AvailableChat)
-        {
-            if (tmp_map.find((*it)->qst->id) == tmp_map.end())
-            {
-                tmp_map.insert(std::map<uint32_t, uint8_t>::value_type((*it)->qst->id, static_cast<uint8_t>(1)));
-                MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest((*it)->qst->id, language) : nullptr;
-
-                *data << (*it)->qst->id;
-                /**data << CalcQuestStatus(qst_giver, plr, *it);
-                *data << uint32_t(0);*/
-
-                const auto questProp = (*it)->qst;
-                switch (status)
-                {
-                    case QuestStatus::NotFinished:
-                    case QuestStatus::Finished:
-                        *data << uint32_t(4);
-                        break;
-                    default:
-                        if (questProp->HasFlag(QUEST_FLAGS_AUTOCOMPLETE) && (questProp->HasFlag(QUEST_FLAGS_DAILY) || questProp->HasFlag(QUEST_FLAGS_WEEKLY)))
-                            *data << uint32_t(0);
-                        else if (questProp->HasFlag(QUEST_FLAGS_AUTOCOMPLETE))
-                            *data << uint32_t(4);
-                        else
-                            *data << uint32_t(2);
-                        break;
-                }
-                *data << int32_t((*it)->qst->questlevel);
-#if VERSION_STRING >= WotLK
-                *data << uint32_t((*it)->qst->quest_flags);
-                const auto isRepeatable = questProp->is_repeatable > 0 && !questProp->HasFlag(QUEST_FLAGS_DAILY) && !questProp->HasFlag(QUEST_FLAGS_WEEKLY);
-                *data << uint8_t(isRepeatable);   // According to MANGOS: "changes icon: blue question or yellow exclamation"
-#endif
-
-                if (lq != nullptr)
-                {
-                    *data << lq->title;
-                }
-                else
-                {
-                    *data << (*it)->qst->title;
-                }
-            }
-        }
-    }
 }
 
 void QuestMgr::SendQuestUpdateAddKill(Player* plr, uint32_t questid, uint32_t entry, uint32_t count, uint32_t tcount, uint64_t guid)
@@ -2201,6 +1468,237 @@ void QuestMgr::SetGameObjectLootQuest(uint32_t GO_Entry, uint32_t Item_Entry)
         sLogger.debug("QuestMgr : No corresponding quest was found for loot_gameobjects entryid {} quest item {}", GO_Entry, Item_Entry);*/
 }
 
+QuestgiverOfferRewardInput QuestMgr::buildOfferRewardInput(QuestProperties const* qst, Object* qst_giver, Player* plr, uint32_t language)
+{
+    QuestgiverOfferRewardInput input;
+
+    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
+
+    input.questGiverGuid = qst_giver->getGuid();
+    input.questId = qst->id;
+    input.title = lq ? lq->title : qst->title;
+    input.completionText = lq ? lq->completionText : qst->completiontext;
+    input.hasNextQuest = qst->next_quest_id != 0;
+    input.questFlags = qst->quest_flags;
+    input.suggestedPlayers = qst->suggestedplayers;
+
+    for (uint8_t i = 0; i < qst->completionemotecount; i++)
+        input.completionEmotes.push_back({ qst->completionemote[i], qst->completionemotedelay[i] });
+
+    input.countRewardChoiceItem = qst->count_reward_choiceitem;
+    for (uint8_t i = 0; i < 6; ++i)
+    {
+        input.rewardChoiceItems[i].itemId = qst->reward_choiceitem[i];
+        input.rewardChoiceItems[i].count = qst->reward_choiceitemcount[i];
+        if (ItemProperties const* ip = sMySQLStore.getItemProperties(qst->reward_choiceitem[i]))
+            input.rewardChoiceItems[i].displayId = ip->DisplayInfoID;
+    }
+
+    input.countRewardItem = qst->count_reward_item;
+    input.countRequiredItem = qst->count_required_item;
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        input.rewardItems[i].itemId = qst->reward_item[i];
+        input.rewardItems[i].count = qst->reward_itemcount[i];
+        if (ItemProperties const* ip = sMySQLStore.getItemProperties(qst->reward_item[i]))
+            input.rewardItems[i].displayId = ip->DisplayInfoID;
+    }
+
+    if (plr->getLevel() < plr->getMaxLevel())
+        input.xp = Util::float2int32(GenerateQuestXP(plr, qst) * worldConfig.getFloatRate(RATE_QUESTXP));
+
+    input.bonusHonor = qst->bonushonor;
+    input.rewardSpell = qst->reward_spell;
+    input.effectOnPlayer = qst->effect_on_player;
+    input.rewardTitleId = qst->rewardtitleid;
+    input.rewardTalents = qst->rewardtalents;
+    input.bonusArenaPoints = qst->bonusarenapoints;
+
+    input.rewardMoney = GenerateRewardMoney(plr, qst);
+
+    for (uint8_t i = 0; i < 4; ++i)
+        input.detailEmotes[i] = { qst->detailemote[i], qst->detailemotedelay[i] };
+
+    return input;
+}
+
+QuestgiverQuestDetailsInput QuestMgr::buildQuestDetailsInput(QuestProperties const* qst, Object* qst_giver, Player* plr, uint32_t language)
+{
+    QuestgiverQuestDetailsInput input;
+
+    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
+
+    input.questGiverGuid = qst_giver->getGuid();
+    input.questSharerGuid = qst_giver->isPlayer() ? qst_giver->getGuid() : 0;
+    input.questId = qst->id;
+    input.title = lq ? lq->title : qst->title;
+    input.details = lq ? lq->details : qst->details;
+    input.objectives = lq ? lq->objectives : qst->objectives;
+    input.questFlags = qst->quest_flags;
+    input.suggestedPlayers = qst->suggestedplayers;
+
+    input.countRewardChoiceItem = qst->count_reward_choiceitem;
+    for (uint8_t i = 0; i < 6; ++i)
+    {
+        input.rewardChoiceItems[i].itemId = qst->reward_choiceitem[i];
+        input.rewardChoiceItems[i].count = qst->reward_choiceitemcount[i];
+        if (ItemProperties const* ip = sMySQLStore.getItemProperties(qst->reward_choiceitem[i]))
+            input.rewardChoiceItems[i].displayId = ip->DisplayInfoID;
+    }
+
+    input.countRewardItem = qst->count_reward_item;
+    input.countRequiredItem = qst->count_required_item;
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        input.rewardItems[i].itemId = qst->reward_item[i];
+        input.rewardItems[i].count = qst->reward_itemcount[i];
+        if (ItemProperties const* ip = sMySQLStore.getItemProperties(qst->reward_item[i]))
+            input.rewardItems[i].displayId = ip->DisplayInfoID;
+    }
+
+    input.rewardMoney = GenerateRewardMoney(plr, qst);
+    input.xp = GenerateQuestXP(plr, qst); // Cata only, see struct comment
+    input.bonusHonor = qst->bonushonor;
+    input.rewardSpell = qst->reward_spell;
+    input.effectOnPlayer = qst->effect_on_player;
+    input.rewardTitleId = qst->rewardtitleid;
+    input.rewardTalents = qst->rewardtalents;
+    input.bonusArenaPoints = qst->bonusarenapoints;
+    input.detailEmoteCount = qst->detailemotecount;
+    for (uint8_t i = 0; i < 4; ++i)
+        input.detailEmotes[i] = { qst->detailemote[i], qst->detailemotedelay[i] };
+
+    return input;
+}
+
+QuestgiverRequestItemsInput QuestMgr::buildRequestItemsInput(QuestProperties const* qst, Object* qst_giver, uint32_t status, uint32_t language)
+{
+    QuestgiverRequestItemsInput input;
+
+    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
+
+    input.questGiverGuid = qst_giver->getGuid();
+    input.questId = qst->id;
+
+    if (lq != nullptr)
+    {
+        input.title = lq->title;
+        input.requestItemsText = (lq->incompleteText[0]) ? lq->incompleteText : lq->details;
+    }
+    else
+    {
+        input.title = qst->title;
+        input.requestItemsText = qst->incompletetext[0] ? qst->incompletetext : qst->details;
+    }
+
+    input.isNotFinished = (status == QuestStatus::NotFinished);
+    input.statusEmote = input.isNotFinished ? qst->incompleteemote : qst->completeemote;
+    input.questFlags = qst->quest_flags;
+    input.suggestedPlayers = qst->suggestedplayers;
+    input.requiredMoney = static_cast<uint32_t>(qst->reward_money < 0 ? -qst->reward_money : 0);
+    input.countRequiredItem = qst->count_required_item;
+
+    for (uint8_t i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
+    {
+        input.requiredItems[i].itemId = qst->required_item[i];
+        input.requiredItems[i].count = qst->required_itemcount[i];
+        if (qst->required_item[i])
+        {
+            if (ItemProperties const* it = sMySQLStore.getItemProperties(qst->required_item[i]))
+                input.requiredItems[i].displayId = it->DisplayInfoID;
+        }
+    }
+
+    return input;
+}
+
+QuestgiverQuestListInput QuestMgr::buildQuestListInput(Object* qst_giver, Player* plr, uint32_t language)
+{
+    QuestgiverQuestListInput input;
+
+    input.questGiverGuid = qst_giver->getGuid();
+    input.greeting = qst_giver->isGameObject() ? "" : plr->getSession()->localizedWorldSrv(ServerString::SS_HEY_HOW_CAN_I_HELP_YOU);
+
+    QuestRelationList::iterator st{};
+    QuestRelationList::iterator ed{};
+    bool bValid = false;
+
+    if (qst_giver->isGameObject())
+    {
+        GameObject* go = static_cast<GameObject*>(qst_giver);
+        GameObject_QuestGiver* go_quest_giver = nullptr;
+        if (go->getGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
+        {
+            go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
+            if (go_quest_giver->HasQuests())
+                bValid = true;
+        }
+        if (bValid)
+        {
+            st = go_quest_giver->QuestsBegin();
+            ed = go_quest_giver->QuestsEnd();
+        }
+    }
+    else if (qst_giver->isCreature())
+    {
+        bValid = static_cast<Creature*>(qst_giver)->HasQuests();
+        if (bValid)
+        {
+            st = static_cast<Creature*>(qst_giver)->QuestsBegin();
+            ed = static_cast<Creature*>(qst_giver)->QuestsEnd();
+        }
+    }
+
+    input.isValid = bValid;
+    if (!bValid)
+        return input;
+
+    input.activeQuestsCount = static_cast<uint8_t>(ActiveQuestsCount(qst_giver, plr));
+
+    std::map<uint32_t, uint8_t> tmp_map;
+
+    for (auto it = st; it != ed; ++it)
+    {
+        const uint32_t status = CalcQuestStatus(qst_giver, plr, it->get());
+        if (status < QuestStatus::AvailableChat)
+            continue;
+
+        if (tmp_map.find((*it)->qst->id) != tmp_map.end())
+            continue;
+
+        tmp_map.insert(std::map<uint32_t, uint8_t>::value_type((*it)->qst->id, static_cast<uint8_t>(1)));
+        MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest((*it)->qst->id, language) : nullptr;
+
+        QuestListEntry entry;
+        entry.questId = (*it)->qst->id;
+
+        const auto questProp = (*it)->qst;
+        switch (status)
+        {
+            case QuestStatus::NotFinished:
+            case QuestStatus::Finished:
+                entry.statusIcon = 4;
+                break;
+            default:
+                if (questProp->HasFlag(QUEST_FLAGS_AUTOCOMPLETE) && (questProp->HasFlag(QUEST_FLAGS_DAILY) || questProp->HasFlag(QUEST_FLAGS_WEEKLY)))
+                    entry.statusIcon = 0;
+                else if (questProp->HasFlag(QUEST_FLAGS_AUTOCOMPLETE))
+                    entry.statusIcon = 4;
+                else
+                    entry.statusIcon = 2;
+                break;
+        }
+        entry.questLevel = (*it)->qst->questlevel;
+        entry.questFlags = (*it)->qst->quest_flags;
+        entry.isRepeatable = questProp->is_repeatable > 0 && !questProp->HasFlag(QUEST_FLAGS_DAILY) && !questProp->HasFlag(QUEST_FLAGS_WEEKLY);
+        entry.title = lq ? lq->title : (*it)->qst->title;
+
+        input.quests.push_back(entry);
+    }
+
+    return input;
+}
+
 bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 {
     if (qst_giver->isGameObject())
@@ -2221,8 +1719,6 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
         sLogger.debug("WORLD: Invalid NPC for CMSG_QUESTGIVER_HELLO.");
         return false;
     }
-
-    WorldPacket data(1004);
 
     if (questCount == 1)
     {
@@ -2277,8 +1773,8 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
         if ((status == QuestStatus::Available) || (status == QuestStatus::Repeatable) || (status == QuestStatus::AvailableChat))
         {
-            BuildQuestDetails(&data, (*itr)->qst, qst_giver, 1, plr->getSession()->language, plr); // 1 because we have 1 quest, and we want goodbye to function
-            plr->getSession()->SendPacket(&data);
+            SmsgQuestgiverQuestDetails detailsPacket(buildQuestDetailsInput((*itr)->qst, qst_giver, plr, plr->getSession()->language)); // 1 because we have 1 quest, and we want goodbye to function
+            plr->getSession()->sendManagedPacket(detailsPacket);
             sLogger.debug("WORLD: Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
 
             if ((*itr)->qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
@@ -2286,22 +1782,21 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
         }
         else if (status == QuestStatus::Finished)
         {
-            BuildOfferReward(&data, (*itr)->qst, qst_giver, 1, plr->getSession()->language, plr);
-            plr->getSession()->SendPacket(&data);
-            //ss
+            SmsgQuestgiverOfferReward rewardPacket(buildOfferRewardInput((*itr)->qst, qst_giver, plr, plr->getSession()->language));
+            plr->getSession()->sendManagedPacket(rewardPacket);
             sLogger.debug("WORLD: Sent SMSG_QUESTGIVER_OFFER_REWARD.");
         }
         else if (status == QuestStatus::NotFinished)
         {
-            BuildRequestItems(&data, (*itr)->qst, qst_giver, status, plr->getSession()->language);
-            plr->getSession()->SendPacket(&data);
+            SmsgQuestgiverRequestItems requestItemsPacket(buildRequestItemsInput((*itr)->qst, qst_giver, status, plr->getSession()->language));
+            plr->getSession()->sendManagedPacket(requestItemsPacket);
             sLogger.debug("WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
         }
     }
     else
     {
-        BuildQuestList(&data, qst_giver, plr, plr->getSession()->language);
-        plr->getSession()->SendPacket(&data);
+        SmsgQuestgiverQuestList listPacket(buildQuestListInput(qst_giver, plr, plr->getSession()->language));
+        plr->getSession()->sendManagedPacket(listPacket);
         sLogger.debug("WORLD: Sent SMSG_QUESTGIVER_QUEST_LIST.");
     }
     return true;
