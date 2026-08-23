@@ -28,6 +28,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLogoutResponse.h"
 #include "Server/Packets/CmsgStandStateChange.h"
 #include "Server/Packets/CmsgWho.h"
+#include "Server/Packets/SmsgWho.h"
+#include "Server/Packets/SmsgUpdateAccountData.h"
 #include "Server/Packets/CmsgSetSelection.h"
 #include "Server/Packets/CmsgTutorialFlag.h"
 #include "Server/Packets/CmsgSetSheathed.h"
@@ -125,17 +127,8 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
 
     PlayerTeam const team = _player->getTeam();
 
-    [[maybe_unused]] uint32_t sent_count = 0;
     [[maybe_unused]] uint32_t total_count = 0;
-
-    WorldPacket data;
-    data.setOpcode(SMSG_WHO);
-
-#if VERSION_STRING < Mop
-    data << uint64_t(0);
-#else
-    std::vector<Player*> result;
-#endif
+    std::vector<WhoPlayerEntry> result;
 
     sObjectMgr.m_playerLock.lock();
 
@@ -224,109 +217,28 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
             }
         }
 
-#if VERSION_STRING < Mop
         // if we're here, it means we've passed all tests
-        data << player->getName().c_str();
-
-        if (player->m_playerInfo->m_guild > 0)
-        {
-            data << sGuildMgr.getGuildById(player->m_playerInfo->m_guild)->getName().c_str();
-        }
-        else
-        {
-            data << uint8_t(0);
-        }
-
-        data << player->getLevel();
-        data << uint32_t(player->getClass());
-        data << uint32_t(player->getRace());
-        data << player->getGender();
-        data << uint32_t(player->getZoneId());
-
-        ++sent_count;
-        if (sent_count >= 49)
-        {
-            break;
-        }
-#else
-        result.push_back(player);
+        WhoPlayerEntry entry;
+        entry.guid = player->getGuid();
+        entry.name = player->getName();
+        entry.guildName = player->getGuild() ? player->getGuild()->getName() : "";
+        entry.level = player->getLevel();
+        entry.classId = uint32_t(player->getClass());
+        entry.raceId = uint32_t(player->getRace());
+        entry.gender = player->getGender();
+        entry.zoneId = player->getZoneId();
+        result.push_back(entry);
 
         if (result.size() >= 49)
         {
             break;
         }
-#endif
     }
 
     sObjectMgr.m_playerLock.unlock();
 
-#if VERSION_STRING < Mop
-    data.wpos(0);
-    data << sent_count;
-    data << sent_count;
-#else
-    uint32_t count = static_cast<uint32_t>(result.size());
-
-    data << uint32_t(count);
-    data << uint32_t(count);
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Bit part
-    for (auto* player : result)
-    {
-        WoWGuid guid = player->getGuid();
-
-        std::string const& name = player->getName();
-        std::string guildName = player->getGuild() ? player->getGuild()->getName() : "";
-
-        data.writeBits(name.length(), 6);
-        data.writeBits(guildName.length(), 6);
-
-        data.writeBit(guid[3]);
-        data.writeBit(guid[7]);
-        data.writeBit(guid[2]);
-        data.writeBit(guid[0]);
-        data.writeBit(guid[1]);
-        data.writeBit(guid[5]);
-        data.writeBit(guid[6]);
-        data.writeBit(guid[4]);
-    }
-    data.flushBits();
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Data part
-    for (auto* player : result)
-    {
-        WoWGuid guid = player->getGuid();
-
-        data.writeByteSeq(guid[1]);
-        data.writeByteSeq(guid[7]);
-        data.writeByteSeq(guid[2]);
-        data.writeByteSeq(guid[4]);
-        data.writeByteSeq(guid[5]);
-        data.writeByteSeq(guid[0]);
-        data.writeByteSeq(guid[3]);
-        data.writeByteSeq(guid[6]);
-
-        data << uint32_t(0);
-
-        std::string const& name = player->getName();
-        data.append(name.c_str(), name.length());
-
-        if (player->getGuild())
-        {
-            std::string guildName = player->getGuild()->getName();
-            data.append(guildName.c_str(), guildName.length());
-        }
-
-        data << player->getLevel();
-        data << uint32_t(player->getClass());
-        data << uint32_t(player->getRace());
-        data << player->getGender();
-        data << uint32_t(player->getZoneId());
-    }
-#endif
-    SendPacket(&data);
+    SmsgWho whoPacket(std::move(result));
+    sendManagedPacket(whoPacket);
 }
 
 void WorldSession::handleSetSelectionOpcode(WorldPacket& recvPacket)
@@ -1050,38 +962,14 @@ void WorldSession::handleRequestAccountData(WorldPacket& recvPacket)
     }
 
     AccountDataEntry* accountDataEntry = GetAccountData(accountDataId);
-    WorldPacket data;
-    data.setOpcode(SMSG_UPDATE_ACCOUNT_DATA);
-    data << accountDataId;
 
-    if (!accountDataEntry || !accountDataEntry->data)
-    {
-        data << uint32_t(0);
-    }
-    else
-    {
-        data << accountDataEntry->sz;
+    const uint8_t* rawData = (accountDataEntry && accountDataEntry->data)
+        ? reinterpret_cast<const uint8_t*>(accountDataEntry->data.get())
+        : nullptr;
+    const uint32_t rawSize = rawData ? accountDataEntry->sz : 0;
 
-        if (accountDataEntry->sz > 200)
-        {
-            data.resize(accountDataEntry->sz + 800);
-
-            uLongf destSize;
-            if (compress(data.contents() + (sizeof(uint32_t) * 2), &destSize, reinterpret_cast<const uint8_t*>(accountDataEntry->data.get()), accountDataEntry->sz) != Z_OK)
-            {
-                sLogger.debug("CMSG_REQUEST_ACCOUNT_DATA: Error while compressing data");
-                return;
-            }
-
-            data.resize(destSize + 8);
-        }
-        else
-        {
-            data.append(accountDataEntry->data.get(), accountDataEntry->sz);
-        }
-    }
-
-    SendPacket(&data);
+    SmsgUpdateAccountData updatePacket(accountDataId, rawData, rawSize);
+    sendManagedPacket(updatePacket);
 }
 
 #if VERSION_STRING < Cata
