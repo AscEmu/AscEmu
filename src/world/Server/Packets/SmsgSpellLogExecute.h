@@ -24,7 +24,7 @@ namespace AscEmu::Packets
 
         SmsgSpellLogExecute(uint32_t spellId, WoWGuid casterGuid, uint32_t unk1, uint32_t spellVisual,
             uint32_t unk2, bool hasTarget, uint64_t targetGuid, uint32_t spellDamage) :
-            ManagedPacket(SMSG_SPELLLOGMISS, 4 + 8 + 1 + 4 + 8 + 1),
+            ManagedPacket(SMSG_SPELLLOGEXECUTE, 4 + 8 + 1 + 4 + 8 + 1),
             spellId(spellId),
             casterGuid(casterGuid),
             unk1(unk1),
