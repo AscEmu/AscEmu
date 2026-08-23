@@ -156,6 +156,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgWorldServerInfo.h"
 #include "Server/Packets/SmsgUpdateActionButtons.h"
 #include "Server/Packets/SmsgLootList.h"
+#include "Server/Packets/SmsgLootResponse.h"
 #include "Server/Packets/SmsgInitializeFactions.h"
 #include "Server/Packets/SmsgInstanceSaveCreated.h"
 #include "Server/Packets/SmsgRaidInstanceInfo.h"
@@ -10720,18 +10721,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
 
     m_lootGuid = guid;
 
-    WorldPacket data;
-    data.setOpcode(SMSG_LOOT_RESPONSE);
-    data << uint64_t(guid);
-    data << uint8_t(loot_type);     //loot_type;
-
-
-    data << uint32_t(pLoot->gold);  // gold
-    data << uint8_t(0);             //loot size reserve
-#if VERSION_STRING >= Cata
-    data << uint8_t(0);             // currency count reserve
-#endif
-
+    std::vector<LootSlotEntry> lootSlots;
     uint32_t maxItemsCount = 0;
 
     // Non Personal Items
@@ -10786,28 +10776,24 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
             }
         }
 
-        data << uint8_t(nonpersonalItemsCount);
-        data << uint32_t(item->itemproto->ItemId);
-        data << uint32_t(item->count);  //nr of items of this type
-        data << uint32_t(item->itemproto->DisplayInfoID);
+        LootSlotEntry entry;
+        entry.slotIndex = static_cast<uint8_t>(nonpersonalItemsCount);
+        entry.itemId = item->itemproto->ItemId;
+        entry.count = item->count;  //nr of items of this type
+        entry.displayId = item->itemproto->DisplayInfoID;
 
         if (item->iRandomSuffix)
         {
-            data << uint32_t(Item::generateRandomSuffixFactor(item->itemproto));
-            data << uint32_t(-int32_t(item->iRandomSuffix->id));
+            entry.randomField1 = Item::generateRandomSuffixFactor(item->itemproto);
+            entry.randomField2 = uint32_t(-int32_t(item->iRandomSuffix->id));
         }
         else if (item->iRandomProperty)
         {
-            data << uint32_t(0);
-            data << uint32_t(item->iRandomProperty->ID);
-        }
-        else
-        {
-            data << uint32_t(0);
-            data << uint32_t(0);
+            entry.randomField2 = item->iRandomProperty->ID;
         }
 
-        data << slottype;   // "still being rolled for" flag
+        entry.slotType = slottype;   // "still being rolled for" flag
+        lootSlots.push_back(entry);
 
         maxItemsCount++;
     }
@@ -10827,28 +10813,24 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
             LootItem& questItem = pLoot->quest_items[qi->index];
             if (!qi->is_looted && !questItem.is_looted && questItem.isAllowedForPlayer(this))
             {
-                data << uint8_t(pLoot->items.size() + (qi - q_list->cbegin()));
-                data << uint32_t(questItem.itemproto->ItemId);
-                data << uint32_t(questItem.count);  //nr of items of this type
-                data << uint32_t(questItem.itemproto->DisplayInfoID);
+                LootSlotEntry entry;
+                entry.slotIndex = static_cast<uint8_t>(pLoot->items.size() + (qi - q_list->cbegin()));
+                entry.itemId = questItem.itemproto->ItemId;
+                entry.count = questItem.count;  //nr of items of this type
+                entry.displayId = questItem.itemproto->DisplayInfoID;
 
                 if (questItem.iRandomSuffix)
                 {
-                    data << uint32_t(Item::generateRandomSuffixFactor(questItem.itemproto));
-                    data << uint32_t(-int32_t(questItem.iRandomSuffix->id));
+                    entry.randomField1 = Item::generateRandomSuffixFactor(questItem.itemproto);
+                    entry.randomField2 = uint32_t(-int32_t(questItem.iRandomSuffix->id));
                 }
                 else if (questItem.iRandomProperty)
                 {
-                    data << uint32_t(0);
-                    data << uint32_t(questItem.iRandomProperty->ID);
-                }
-                else
-                {
-                    data << uint32_t(0);
-                    data << uint32_t(0);
+                    entry.randomField2 = questItem.iRandomProperty->ID;
                 }
 
-                data << slottype;   // "still being rolled for" flag
+                entry.slotType = slottype;   // "still being rolled for" flag
+                lootSlots.push_back(entry);
             }
             maxItemsCount++;
         }
@@ -10869,37 +10851,31 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
             LootItem& ffaItem = pLoot->items[fi->index];
             if (!fi->is_looted && !ffaItem.is_looted && ffaItem.isAllowedForPlayer(this))
             {
-                data << uint8_t(fi->index);
-                data << uint32_t(ffaItem.itemproto->ItemId);
-                data << uint32_t(ffaItem.count);  //nr of items of this type
-                data << uint32_t(ffaItem.itemproto->DisplayInfoID);
+                LootSlotEntry entry;
+                entry.slotIndex = static_cast<uint8_t>(fi->index);
+                entry.itemId = ffaItem.itemproto->ItemId;
+                entry.count = ffaItem.count;  //nr of items of this type
+                entry.displayId = ffaItem.itemproto->DisplayInfoID;
 
                 if (ffaItem.iRandomSuffix)
                 {
-                    data << uint32_t(Item::generateRandomSuffixFactor(ffaItem.itemproto));
-                    data << uint32_t(-int32_t(ffaItem.iRandomSuffix->id));
+                    entry.randomField1 = Item::generateRandomSuffixFactor(ffaItem.itemproto);
+                    entry.randomField2 = uint32_t(-int32_t(ffaItem.iRandomSuffix->id));
                 }
                 else if (ffaItem.iRandomProperty)
                 {
-                    data << uint32_t(0);
-                    data << uint32_t(ffaItem.iRandomProperty->ID);
-                }
-                else
-                {
-                    data << uint32_t(0);
-                    data << uint32_t(0);
+                    entry.randomField2 = ffaItem.iRandomProperty->ID;
                 }
 
-                data << slottype;   // "still being rolled for" flag
+                entry.slotType = slottype;   // "still being rolled for" flag
+                lootSlots.push_back(entry);
             }
             maxItemsCount++;
         }
     }
 
-    data.wpos(13);
-    data << uint8_t(maxItemsCount);
-
-    m_session->SendPacket(&data);
+    SmsgLootResponse lootResponsePacket(guid, loot_type, pLoot->gold, std::move(lootSlots), maxItemsCount);
+    m_session->sendManagedPacket(lootResponsePacket);
 
     addUnitFlags(UNIT_FLAG_LOOTING);
 }
