@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgEquipmentSetUse.h"
 #include "Server/Packets/CmsgEquipmentSetSave.h"
 #include "Server/Packets/CmsgEquipmentSetDelete.h"
+#include "Server/Packets/SmsgListInventory.h"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Management/ItemInterface.h"
@@ -2040,189 +2041,62 @@ void WorldSession::sendInventoryList(Creature* unit)
         return;
     }
 
-#if VERSION_STRING < Cata
-    WorldPacket data((unit->GetSellItemCount() * 28 + 9));       // allocate
-    data.setOpcode(SMSG_LIST_INVENTORY);
-    data << unit->getGuid();
-    data << uint8_t(0);   // placeholder for item count
-#else
-    WorldPacket data(((unit->GetSellItemCount()) + 12));       // allocate
-    ByteBuffer itemsData(32 * unit->GetSellItemCount());
-    std::vector<bool> enablers;
-    enablers.reserve(2 * unit->GetSellItemCount());
-
-#endif
+    std::vector<VendorListItem> items;
+    items.reserve(unit->GetSellItemCount());
 
     uint32_t counter = 0;
     for (auto sellItem : *unit->getSellItems())
     {
-        if (sellItem.itemid)
+        if (!sellItem.itemid)
+            continue;
+
+        const auto curItem = sMySQLStore.getItemProperties(sellItem.itemid);
+        if (curItem == nullptr)
+            continue;
+
+        // looking up everything for active gms
+        if (!_player->isGMFlagSet() && !worldConfig.player.showAllVendorItems)
         {
-            if (const auto curItem = sMySQLStore.getItemProperties(sellItem.itemid))
-            {
-                // looking up everything for active gms
-                if (!_player->isGMFlagSet() && !worldConfig.player.showAllVendorItems)
-                {
-                    if (curItem->AllowableClass && !(_player->getClassMask() & curItem->AllowableClass))
-                        continue;
+            if (curItem->AllowableClass && !(_player->getClassMask() & curItem->AllowableClass))
+                continue;
 
-                    if (curItem->AllowableRace && !(_player->getRaceMask() & curItem->AllowableRace))
-                        continue;
+            if (curItem->AllowableRace && !(_player->getRaceMask() & curItem->AllowableRace))
+                continue;
 
-                    if (curItem->HasFlag2(ITEM_FLAG2_HORDE_ONLY) && !_player->isTeamHorde())
-                        continue;
+            if (curItem->HasFlag2(ITEM_FLAG2_HORDE_ONLY) && !_player->isTeamHorde())
+                continue;
 
-                    if (curItem->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && !_player->isTeamAlliance())
-                        continue;
-                }
-
-                uint32_t av_am = sellItem.max_amount > 0 ? sellItem.available_amount : 0xFFFFFFFF;
-                uint32_t price = 0;
-                if (sellItem.extended_cost == nullptr || curItem->HasFlag2(ITEM_FLAG2_EXT_COST_REQUIRES_GOLD))
-                {
-                    auto factionStanding = _player->getFactionStandingRank(unit->getServersideFaction());
-                    price = curItem->getBuyPriceForItem(1, static_cast<uint8_t>(factionStanding));
-                }
-
-#if VERSION_STRING < Cata
-                data << uint32_t(counter + 1);    // we start from 0 but client starts from 1
-                data << uint32_t(curItem->ItemId);
-                data << uint32_t(curItem->DisplayInfoID);
-                data << uint32_t(av_am);
-                data << uint32_t(price);
-                data << uint32_t(curItem->MaxDurability);
-                data << uint32_t(sellItem.amount);
-
-
-                if (sellItem.extended_cost != nullptr)
-                    data << uint32_t(sellItem.extended_cost->costid);
-                else
-                    data << uint32_t(0);
-#elif VERSION_STRING == Cata
-                itemsData << uint32_t(counter + 1); // client expects counting to start at 1
-                itemsData << uint32_t(curItem->MaxDurability);
-                if (sellItem.extended_cost != nullptr)
-                {
-                    enablers.push_back(0);
-                    itemsData << uint32_t(sellItem.extended_cost->costid);
-                }
-                else
-                {
-                    enablers.push_back(1);
-                }
-
-                enablers.push_back(1);                 // unk bit
-
-                itemsData << uint32_t(curItem->ItemId);
-                itemsData << uint32_t(1);     // 1 is items, 2 is currency
-                itemsData << uint32_t(price);
-                itemsData << uint32_t(curItem->DisplayInfoID);
-                itemsData << int32_t(av_am);
-                itemsData << uint32_t(sellItem.amount);
-#else // Mop
-                itemsData << int32_t(av_am);
-                itemsData << uint32_t(price);
-                itemsData << uint32_t(1);     // 1 is items, 2 is currency
-                itemsData << uint32_t(-1);
-                itemsData << uint32_t(curItem->DisplayInfoID);
-                itemsData << uint32_t(sellItem.amount);
-                itemsData << uint32_t(curItem->ItemId);
-
-                if (sellItem.extended_cost != nullptr)
-                {
-                    enablers.push_back(0);
-                    itemsData << uint32_t(sellItem.extended_cost->costid);
-                }
-                else
-                {
-                    enablers.push_back(1);
-                }
-
-                itemsData << uint32_t(0);
-                itemsData << uint32_t(counter + 1);        // client expects counting to start at 1
-#endif
-
-                ++counter;
-                if (counter >= creatureMaxInventoryItems)
-                    break;
-            }
+            if (curItem->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && !_player->isTeamAlliance())
+                continue;
         }
+
+        const uint32_t av_am = sellItem.max_amount > 0 ? sellItem.available_amount : 0xFFFFFFFF;
+        uint32_t price = 0;
+        if (sellItem.extended_cost == nullptr || curItem->HasFlag2(ITEM_FLAG2_EXT_COST_REQUIRES_GOLD))
+        {
+            const auto factionStanding = _player->getFactionStandingRank(unit->getServersideFaction());
+            price = curItem->getBuyPriceForItem(1, static_cast<uint8_t>(factionStanding));
+        }
+
+        VendorListItem item;
+        item.itemId = curItem->ItemId;
+        item.displayId = curItem->DisplayInfoID;
+        item.availableAmount = av_am;
+        item.price = price;
+        item.maxDurability = curItem->MaxDurability;
+        item.buyCount = sellItem.amount;
+        item.extendedCostId = sellItem.extended_cost != nullptr ? sellItem.extended_cost->costid : 0;
+        item.slot = counter + 1; // we start from 0 but client starts from 1
+
+        items.push_back(item);
+
+        ++counter;
+        if (counter >= creatureMaxInventoryItems)
+            break;
     }
 
-#if VERSION_STRING < Cata
-    data.contents()[8] = static_cast<uint8_t>(counter);
-#elif VERSION_STRING == Cata
-    WoWGuid guid = unit->getGuid();
-
-    data.setOpcode(SMSG_LIST_INVENTORY);
-    data.writeBit(guid[1]);
-    data.writeBit(guid[0]);
-
-    data.writeBits(counter, 21); // item count
-
-    data.writeBit(guid[3]);
-    data.writeBit(guid[6]);
-    data.writeBit(guid[5]);
-    data.writeBit(guid[2]);
-    data.writeBit(guid[7]);
-
-    for (std::vector<bool>::const_iterator itr = enablers.begin(); itr != enablers.end(); ++itr)
-        data.writeBit(*itr);
-
-    data.writeBit(guid[4]);
-
-    data.flushBits();
-    data.append(itemsData);
-
-    data.writeByteSeq(guid[5]);
-    data.writeByteSeq(guid[4]);
-    data.writeByteSeq(guid[1]);
-    data.writeByteSeq(guid[0]);
-    data.writeByteSeq(guid[6]);
-
-    data << uint8_t(counter == 0); // unk byte, item count 0: 1, item count != 0: 0 or some "random" value below 300
-
-    data.writeByteSeq(guid[2]);
-    data.writeByteSeq(guid[3]);
-    data.writeByteSeq(guid[7]);
-#else // Mop
-    WoWGuid guid = unit->getGuid();
-
-    data.setOpcode(SMSG_LIST_INVENTORY);
-    data.writeBit(guid[5]);
-    data.writeBit(guid[7]);
-    data.writeBit(guid[1]);
-    data.writeBit(guid[3]);
-    data.writeBit(guid[6]);
-
-    data.writeBits(counter, 18); // item count
-
-    for (std::vector<bool>::const_iterator itr = enablers.begin(); itr != enablers.end(); ++itr)
-    {
-        data.writeBit(0);
-        data.writeBit(*itr);
-        data.writeBit(1);
-    }
-
-    data.writeBit(guid[4]);
-    data.writeBit(guid[0]);
-    data.writeBit(guid[2]);
-
-    data << uint8_t(counter == 0); // unk byte, item count 0: 1, item count != 0: 0 or some "random" value below 300
-
-    data.append(itemsData);
-
-    data.writeByteSeq(guid[3]);
-    data.writeByteSeq(guid[7]);
-    data.writeByteSeq(guid[0]);
-    data.writeByteSeq(guid[6]);
-    data.writeByteSeq(guid[2]);
-    data.writeByteSeq(guid[1]);
-    data.writeByteSeq(guid[4]);
-    data.writeByteSeq(guid[5]);
-#endif
-
-    SendPacket(&data);
+    SmsgListInventory managedPacket(unit->getGuid(), static_cast<uint32_t>(unit->GetSellItemCount()), unit->isArmorer(), std::move(items));
+    sendManagedPacket(managedPacket);
 
     sLogger.debug("Sent SMSG_LIST_INVENTORY");
 }
