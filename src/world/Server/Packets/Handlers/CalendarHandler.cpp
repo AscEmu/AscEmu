@@ -8,21 +8,29 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Map/Maps/InstanceMgr.hpp"
 #include "Utilities/Util.hpp"
+#include "Management/CalendarMgr.hpp"
 #include "Server/Packets/SmsgCalendarSendNumPending.h"
 #include "Server/Packets/SmsgCalendarRaidLockoutRemoved.h"
 #include "Server/Packets/SmsgCalendarRaidLockoutUpdated.h"
+#include "Server/Packets/SmsgCalendarSendCalendar.h"
+#include "Server/Packets/SmsgCalendarSendEvent.h"
+#include "Server/Packets/SmsgCalendarCommandResult.h"
+#include "Server/Packets/CmsgCalendarGetEvent.h"
+#include "Server/Packets/CmsgCalendarAddEvent.h"
+#include "Server/Packets/CmsgCalendarUpdateEvent.h"
+#include "Server/Packets/CmsgCalendarRemoveEvent.h"
 
 using namespace AscEmu::Packets;
 
-// \todo CalendarHandler
 void WorldSession::handleCalendarGetCalendar(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarGetCalendar Not handled.");
+    sLogger.debugOpcode("Received CMSG_CALENDAR_GET_CALENDAR.");
 
-    /* Get all events for the player */
-    uint32_t guid = static_cast<uint32_t>(_player->getGuid());
-    sLogger.debugOpcode("HandleCalendarGetCalendar CMSG_CALENDAR_GET_CALENDAR for guid {}.", guid);
+    const uint32_t lowGuid = _player->getGuidLow();
+
+    SmsgCalendarSendCalendar managedPacket(sCalendarMgr.getPlayerInvites(lowGuid), sCalendarMgr.getPlayerEvents(lowGuid), _player->getGuildId());
+    sendManagedPacket(managedPacket);
 #endif
 }
 
@@ -36,9 +44,9 @@ void WorldSession::handleCalendarComplain(WorldPacket& /*recvPacket*/)
 void WorldSession::handleCalendarGetNumPending(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarGetNumPending Not handled.");
+    sLogger.debugOpcode("Received CMSG_CALENDAR_GET_NUM_PENDING.");
 
-    SmsgCalendarSendNumPending managedPacket(0);
+    SmsgCalendarSendNumPending managedPacket(sCalendarMgr.getPlayerNumPending(_player->getGuidLow()));
     sendManagedPacket(managedPacket);
 #endif
 }
@@ -46,41 +54,53 @@ void WorldSession::handleCalendarGetNumPending(WorldPacket& /*recvPacket*/)
 void WorldSession::handleCalendarAddEvent([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
-    // Create an Event and save it to char db 
-    sLogger.debugOpcode("HandleCalendarAddEvent Not handled.");
+    sLogger.debugOpcode("Received CMSG_CALENDAR_ADD_EVENT.");
 
-    uint32_t guid = static_cast<uint32_t>(_player->getGuid());
+    CmsgCalendarAddEvent srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
 
-    std::string title;
-    std::string description;
-    uint8_t type;
-    uint8_t repeatable;
-    uint32_t maxInvites;
-    int32_t dungeonId;
-    uint32_t eventPackedTime;
-    uint32_t unkPackedTime;
-    uint32_t flags;
+    const uint32_t lowGuid = _player->getGuidLow();
 
-    recvPacket >> title;
-    recvPacket >> description;
-    recvPacket >> type;
-    recvPacket >> repeatable;
-    recvPacket >> maxInvites;
-    recvPacket >> dungeonId;
-    recvPacket.readPackedTime(eventPackedTime);
-    recvPacket.readPackedTime(unkPackedTime);
-    recvPacket >> flags;
+    auto newEvent = std::make_unique<CalendarEvent>(sCalendarMgr.generateEventId(), lowGuid, srlPacket.title, srlPacket.description,
+        static_cast<CalendarEventType>(srlPacket.type), static_cast<uint32_t>(srlPacket.dungeonId), time_t(srlPacket.eventPackedTime), srlPacket.flags);
 
-    // \todo save it to db
-    sLogger.debugOpcode("HandleCalendarAddEvent Playerguid: {} sends Calendarevent: Title: {}, Description: {}, Type: {}, Repeatable: {}, maxInvites: {}, dungeonId: {}, PackedTime: {}, unkPackedTime: {}, Flags: {}.",
-        guid, title, description, type, repeatable, maxInvites, dungeonId, eventPackedTime, unkPackedTime, flags);
+    if (newEvent->isGuildEvent())
+        newEvent->m_guildId = _player->getGuildId();
+
+    CalendarEvent* calendarEvent = sCalendarMgr.addEvent(std::move(newEvent));
+
+    for (const auto& invitee : srlPacket.invitees)
+    {
+        auto invite = std::make_unique<CalendarInvite>(sCalendarMgr.generateInviteId(), calendarEvent->m_entry, invitee.guid.getGuidLowPart(),
+            lowGuid, static_cast<CalendarInviteStatus>(invitee.status), time_t(946684800), invitee.rank, "");
+        sCalendarMgr.addInvite(calendarEvent->m_entry, std::move(invite));
+    }
+
+    SmsgCalendarSendEvent managedPacket(CALENDAR_SENDTYPE_ADD, calendarEvent, sCalendarMgr.getEventInvites(calendarEvent->m_entry));
+    sendManagedPacket(managedPacket);
 #endif
 }
 
-void WorldSession::handleCalendarGetEvent(WorldPacket& /*recvPacket*/)
+void WorldSession::handleCalendarGetEvent([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarGetEvent Not handled.");
+    sLogger.debugOpcode("Received CMSG_CALENDAR_GET_EVENT.");
+
+    CmsgCalendarGetEvent srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    if (CalendarEvent* calendarEvent = sCalendarMgr.getEvent(srlPacket.eventId))
+    {
+        SmsgCalendarSendEvent managedPacket(CALENDAR_SENDTYPE_GET, calendarEvent, sCalendarMgr.getEventInvites(srlPacket.eventId));
+        sendManagedPacket(managedPacket);
+    }
+    else
+    {
+        SmsgCalendarCommandResult managedPacket(CALENDAR_ERROR_EVENT_INVALID);
+        sendManagedPacket(managedPacket);
+    }
 #endif
 }
 
@@ -98,17 +118,72 @@ void WorldSession::handleCalendarArenaTeam(WorldPacket& /*recvPacket*/)
 #endif
 }
 
-void WorldSession::handleCalendarUpdateEvent(WorldPacket& /*recvPacket*/)
+void WorldSession::handleCalendarUpdateEvent([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarUpdateEvent Not handled.");
+    sLogger.debugOpcode("Received CMSG_CALENDAR_UPDATE_EVENT.");
+
+    CmsgCalendarUpdateEvent srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    CalendarEvent* calendarEvent = sCalendarMgr.getEvent(srlPacket.eventId);
+    if (calendarEvent == nullptr)
+    {
+        SmsgCalendarCommandResult managedPacket(CALENDAR_ERROR_EVENT_INVALID);
+        sendManagedPacket(managedPacket);
+        return;
+    }
+
+    if (calendarEvent->m_creator != _player->getGuidLow())
+    {
+        SmsgCalendarCommandResult managedPacket(CALENDAR_ERROR_PERMISSIONS);
+        sendManagedPacket(managedPacket);
+        return;
+    }
+
+    calendarEvent->m_type = static_cast<CalendarEventType>(srlPacket.type);
+    calendarEvent->m_flags = srlPacket.flags;
+    calendarEvent->m_date = time_t(srlPacket.eventPackedTime);
+    calendarEvent->m_dungeon = srlPacket.dungeonId;
+    calendarEvent->m_title = srlPacket.title;
+    calendarEvent->m_description = srlPacket.description;
+
+    sCalendarMgr.updateEvent(calendarEvent);
+
+    SmsgCalendarCommandResult managedPacket(CALENDAR_OK);
+    sendManagedPacket(managedPacket);
 #endif
 }
 
-void WorldSession::handleCalendarRemoveEvent(WorldPacket& /*recvPacket*/)
+void WorldSession::handleCalendarRemoveEvent([[maybe_unused]] WorldPacket& recvPacket)
 {
 #if VERSION_STRING > TBC
-    sLogger.debugOpcode("HandleCalendarRemoveEvent Not handled.");
+    sLogger.debugOpcode("Received CMSG_CALENDAR_REMOVE_EVENT.");
+
+    CmsgCalendarRemoveEvent srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    CalendarEvent* calendarEvent = sCalendarMgr.getEvent(srlPacket.eventId);
+    if (calendarEvent == nullptr)
+    {
+        SmsgCalendarCommandResult managedPacket(CALENDAR_ERROR_EVENT_INVALID);
+        sendManagedPacket(managedPacket);
+        return;
+    }
+
+    if (calendarEvent->m_creator != _player->getGuidLow())
+    {
+        SmsgCalendarCommandResult managedPacket(CALENDAR_ERROR_DELETE_CREATOR_FAILED);
+        sendManagedPacket(managedPacket);
+        return;
+    }
+
+    sCalendarMgr.removeEvent(srlPacket.eventId);
+
+    SmsgCalendarCommandResult managedPacket(CALENDAR_OK);
+    sendManagedPacket(managedPacket);
 #endif
 }
 

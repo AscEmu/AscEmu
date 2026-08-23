@@ -40,6 +40,15 @@ enum CalendarSendEventType
     CALENDAR_SENDTYPE_COPY = 2
 };
 
+enum CalendarError
+{
+    CALENDAR_OK                              = 0,
+    CALENDAR_ERROR_EVENT_INVALID             = 6,
+    CALENDAR_ERROR_INTERNAL                  = 8,
+    CALENDAR_ERROR_PERMISSIONS               = 5,
+    CALENDAR_ERROR_DELETE_CREATOR_FAILED     = 22
+};
+
 enum CalendarInviteStatus
 {
     CALENDAR_STATUS_INVITED = 0,
@@ -55,9 +64,9 @@ enum CalendarInviteStatus
 };
 
 struct CalendarEvent
-{ 
-    CalendarEvent(uint32_t p_entry = 0, uint32_t p_creator = 0, std::string p_title = "", std::string p_description = "", CalendarEventType p_type = CALENDAR_TYPE_RAID, uint32_t p_dungeon = 0, time_t p_date = 0, uint32_t p_flags = 0) :
-        m_entry(p_entry), m_creator(p_creator), m_title(std::move(p_title)), m_description(std::move(p_description)), m_type(p_type), m_dungeon(p_dungeon), m_date(p_date), m_flags(p_flags)
+{
+    CalendarEvent(uint32_t p_entry = 0, uint32_t p_creator = 0, std::string p_title = "", std::string p_description = "", CalendarEventType p_type = CALENDAR_TYPE_RAID, uint32_t p_dungeon = 0, time_t p_date = 0, uint32_t p_flags = 0, uint32_t p_guildId = 0) :
+        m_entry(p_entry), m_creator(p_creator), m_title(std::move(p_title)), m_description(std::move(p_description)), m_type(p_type), m_dungeon(p_dungeon), m_date(p_date), m_flags(p_flags), m_guildId(p_guildId)
     {
     }
 
@@ -71,6 +80,9 @@ struct CalendarEvent
     uint32_t m_dungeon;             // the dungeon id
     time_t m_date;                  // the date
     uint32_t m_flags;               // the flag
+    uint32_t m_guildId;             // guild id, only meaningful when CALENDAR_FLAG_GUILD_EVENT is set
+
+    bool isGuildEvent() const { return (m_flags & CALENDAR_FLAG_GUILD_EVENT) != 0; }
 };
 
 struct CalendarInvite
@@ -114,6 +126,29 @@ public:
     CalendarEventInviteStore m_invites;
 
     void loadFromDB();
+
+    CalendarEvent* getEvent(uint32_t eventId);
+    std::vector<CalendarEvent*> getPlayerEvents(uint32_t playerLowGuid);
+
+    CalendarInvite* getInvite(uint32_t eventId, uint32_t inviteId);
+    std::vector<CalendarInvite*> getEventInvites(uint32_t eventId);
+    std::vector<CalendarInvite*> getPlayerInvites(uint32_t playerLowGuid);
+    uint32_t getPlayerNumPending(uint32_t playerLowGuid);
+
+    CalendarEvent* addEvent(std::unique_ptr<CalendarEvent> calendarEvent);
+    void updateEvent(CalendarEvent* calendarEvent);
+    void removeEvent(uint32_t eventId);
+
+    CalendarInvite* addInvite(uint32_t eventId, std::unique_ptr<CalendarInvite> invite);
+    void updateInvite(CalendarInvite* invite);
+    void removeInvite(uint32_t eventId, uint32_t inviteId);
+
+    uint32_t generateEventId();
+    uint32_t generateInviteId();
+
+private:
+    uint32_t m_nextEventId = 1;
+    uint32_t m_nextInviteId = 1;
 };
 
 #define sCalendarMgr CalendarMgr::getInstance()

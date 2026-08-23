@@ -8,6 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Charter.hpp"
 #include "Server/Packets/CmsgSwapItem.h"
 #include "Server/Packets/CmsgTransmogrifyItems.h"
+#include "Server/Packets/CmsgEquipmentSetUse.h"
+#include "Server/Packets/CmsgEquipmentSetSave.h"
+#include "Server/Packets/CmsgEquipmentSetDelete.h"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Management/ItemInterface.h"
@@ -2827,20 +2830,18 @@ void WorldSession::handleEquipmentSetUse([[maybe_unused]] WorldPacket& data)
 #if VERSION_STRING > TBC
     sLogger.debugOpcode("Received CMSG_EQUIPMENT_SET_USE.");
 
-    WoWGuid guid;
-    int8_t SrcBagID;
-    uint8_t SrcSlotID;
+    CmsgEquipmentSetUse srlPacket;
+    if (!parsePacket(data, srlPacket))
+        return;
+
     uint8_t result = 0;
 
     for (int8_t i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
     {
-        guid.clear();
+        const int8_t SrcBagID = srlPacket.srcBag[i];
+        const uint8_t SrcSlotID = srlPacket.srcSlot[i];
 
-        data >> guid;
-        data >> SrcBagID;
-        data >> SrcSlotID;
-
-        const uint64_t ItemGUID = guid.getRawGuid();
+        const uint64_t ItemGUID = srlPacket.itemGuid[i].getRawGuid();
 
         const auto item = _player->getItemInterface()->GetItemByGUID(ItemGUID);
         if (item == nullptr)
@@ -2900,11 +2901,11 @@ void WorldSession::handleEquipmentSetSave([[maybe_unused]] WorldPacket& data)
 #if VERSION_STRING > TBC
     sLogger.debugOpcode("Received CMSG_EQUIPMENT_SET_SAVE.");
 
-    WoWGuid guid;
+    CmsgEquipmentSetSave srlPacket;
+    if (!parsePacket(data, srlPacket))
+        return;
 
-    data >> guid;
-
-    uint32_t setGUID = guid.getGuidLowPart();
+    uint32_t setGUID = srlPacket.setGuid.getGuidLowPart();
 
     if (setGUID == 0)
         setGUID = sObjectMgr.generateEquipmentSetId();
@@ -2913,16 +2914,12 @@ void WorldSession::handleEquipmentSetSave([[maybe_unused]] WorldPacket& data)
 
     equipmentSet->setGuid = setGUID;
 
-    data >> equipmentSet->setId;
-    data >> equipmentSet->setName;
-    data >> equipmentSet->iconName;
+    equipmentSet->setId = srlPacket.index;
+    equipmentSet->setName = srlPacket.setName;
+    equipmentSet->iconName = srlPacket.iconName;
 
     for (uint32_t i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
-    {
-        guid.clear();
-        data >> guid;
-        equipmentSet->itemGuid[i] = guid.getGuidLowPart();
-    }
+        equipmentSet->itemGuid[i] = srlPacket.itemGuid[i].getGuidLowPart();
 
     const auto setId = equipmentSet->setId;
     if (_player->getItemInterface()->m_EquipmentSets.addEquipmentSet(setId, std::move(equipmentSet)))
@@ -2942,14 +2939,14 @@ void WorldSession::handleEquipmentSetDelete([[maybe_unused]] WorldPacket& data)
 #if VERSION_STRING > TBC
     sLogger.debugOpcode("Received CMSG_EQUIPMENT_SET_DELETE.");
 
-    WoWGuid guid;
+    CmsgEquipmentSetDelete srlPacket;
+    if (!parsePacket(data, srlPacket))
+        return;
 
-    data >> guid;
-
-    if (_player->getItemInterface()->m_EquipmentSets.deleteEquipmentSet(guid.getGuidLowPart()))
-        sLogger.debug("Equipmentset with GUID {} was successfully deleted.", guid.getGuidLowPart());
+    if (_player->getItemInterface()->m_EquipmentSets.deleteEquipmentSet(srlPacket.guid.getGuidLowPart()))
+        sLogger.debug("Equipmentset with GUID {} was successfully deleted.", srlPacket.guid.getGuidLowPart());
     else
-        sLogger.debug("Equipmentset with GUID {} couldn't be deleted.", guid.getGuidLowPart());
+        sLogger.debug("Equipmentset with GUID {} couldn't be deleted.", srlPacket.guid.getGuidLowPart());
 #endif
 }
 

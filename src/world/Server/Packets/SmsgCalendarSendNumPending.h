@@ -30,8 +30,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_Cata)
-                packet << numPending;    // num pending
+            packet << numPending;    // num pending
 
             return true;
         }

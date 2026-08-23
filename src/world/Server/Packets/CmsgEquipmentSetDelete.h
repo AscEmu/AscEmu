@@ -10,62 +10,51 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    class CmsgCharRename : public ManagedPacket
+    class CmsgEquipmentSetDelete : public ManagedPacket
     {
     public:
         WoWGuid guid;
-        std::string name;
 
-        size_t size = 0;
-
-        CmsgCharRename() : CmsgCharRename(0, "")
+        CmsgEquipmentSetDelete() : CmsgEquipmentSetDelete(0)
         {
         }
 
-        CmsgCharRename(uint64_t guid, std::string name) :
-            ManagedPacket(CMSG_CHAR_RENAME, 0),
-            guid(guid),
-            name(name)
+        CmsgEquipmentSetDelete(uint64_t guid) :
+            ManagedPacket(CMSG_EQUIPMENT_SET_DELETE, 8),
+            guid(guid)
         {
         }
 
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            size = packet.size();
-
             if (m_protocol.isMop())
             {
-                guid[6] = packet.readBit();
-                guid[3] = packet.readBit();
-                guid[0] = packet.readBit();
-                const uint32_t nameLen = static_cast<uint32_t>(packet.readBits(6));
-                guid[1] = packet.readBit();
-                guid[5] = packet.readBit();
-                guid[7] = packet.readBit();
-                guid[2] = packet.readBit();
                 guid[4] = packet.readBit();
-
-                packet.readByteSeq(guid[1]);
-                packet.readByteSeq(guid[6]);
-                packet.readByteSeq(guid[5]);
-
-                name = packet.readString(nameLen);
+                guid[2] = packet.readBit();
+                guid[6] = packet.readBit();
+                guid[0] = packet.readBit();
+                guid[5] = packet.readBit();
+                guid[1] = packet.readBit();
+                guid[7] = packet.readBit();
+                guid[3] = packet.readBit();
 
                 packet.readByteSeq(guid[2]);
-                packet.readByteSeq(guid[4]);
-                packet.readByteSeq(guid[3]);
-                packet.readByteSeq(guid[7]);
                 packet.readByteSeq(guid[0]);
+                packet.readByteSeq(guid[1]);
+                packet.readByteSeq(guid[6]);
+                packet.readByteSeq(guid[3]);
+                packet.readByteSeq(guid[4]);
+                packet.readByteSeq(guid[5]);
+                packet.readByteSeq(guid[7]);
 
                 return true;
             }
             else if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
-                uint64_t unpackedGuid;
-                packet >> unpackedGuid >> name;
-
-                guid.init(unpackedGuid);
+                uint64_t unpacked_guid;
+                packet >> unpacked_guid;
+                guid.init(unpacked_guid);
                 return true;
             }
 

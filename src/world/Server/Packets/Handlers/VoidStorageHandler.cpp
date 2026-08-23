@@ -17,6 +17,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgVoidStorageContents.h"
 #include "Server/Packets/SmsgVoidStorageTransferChanges.h"
 #include "Server/Packets/SmsgVoidItemSwapResponse.h"
+#include "Server/Packets/CmsgVoidStorageUnlock.h"
+#include "Server/Packets/CmsgVoidStorageQuery.h"
+#include "Server/Packets/CmsgVoidStorageTransfer.h"
+#include "Server/Packets/CmsgVoidSwapItem.h"
 
 using namespace AscEmu::Packets;
 
@@ -35,24 +39,11 @@ void WorldSession::handleVoidStorageUnlock([[maybe_unused]] WorldPacket& recvDat
 
     Player* player = GetPlayer();
 
-    WoWGuid npcGuid;
-    npcGuid[4] = recvData.readBit();
-    npcGuid[5] = recvData.readBit();
-    npcGuid[3] = recvData.readBit();
-    npcGuid[0] = recvData.readBit();
-    npcGuid[2] = recvData.readBit();
-    npcGuid[1] = recvData.readBit();
-    npcGuid[7] = recvData.readBit();
-    npcGuid[6] = recvData.readBit();
+    CmsgVoidStorageUnlock srlPacket;
+    if (!parsePacket(recvData, srlPacket))
+        return;
 
-    recvData.readByteSeq(npcGuid[7]);
-    recvData.readByteSeq(npcGuid[1]);
-    recvData.readByteSeq(npcGuid[2]);
-    recvData.readByteSeq(npcGuid[3]);
-    recvData.readByteSeq(npcGuid[5]);
-    recvData.readByteSeq(npcGuid[0]);
-    recvData.readByteSeq(npcGuid[6]);
-    recvData.readByteSeq(npcGuid[4]);
+    WoWGuid npcGuid = srlPacket.npcGuid;
 
     Creature* creature = player->getWorldMapCreature(npcGuid);
     if (!creature)
@@ -85,24 +76,11 @@ void WorldSession::handleVoidStorageQuery([[maybe_unused]] WorldPacket& recvData
     sLogger.debugOpcode("Received CMSG_VOID_STORAGE_QUERY.");
     Player* player = GetPlayer();
 
-    WoWGuid npcGuid;
-    npcGuid[4] = recvData.readBit();
-    npcGuid[0] = recvData.readBit();
-    npcGuid[5] = recvData.readBit();
-    npcGuid[7] = recvData.readBit();
-    npcGuid[6] = recvData.readBit();
-    npcGuid[3] = recvData.readBit();
-    npcGuid[1] = recvData.readBit();
-    npcGuid[2] = recvData.readBit();
+    CmsgVoidStorageQuery srlPacket;
+    if (!parsePacket(recvData, srlPacket))
+        return;
 
-    recvData.readByteSeq(npcGuid[5]);
-    recvData.readByteSeq(npcGuid[6]);
-    recvData.readByteSeq(npcGuid[3]);
-    recvData.readByteSeq(npcGuid[7]);
-    recvData.readByteSeq(npcGuid[1]);
-    recvData.readByteSeq(npcGuid[0]);
-    recvData.readByteSeq(npcGuid[4]);
-    recvData.readByteSeq(npcGuid[2]);
+    WoWGuid npcGuid = srlPacket.npcGuid;
 
     Creature* creature = player->getWorldMapCreature(npcGuid);
     if (!creature)
@@ -135,97 +113,13 @@ void WorldSession::handleVoidStorageTransfer([[maybe_unused]] WorldPacket& recvD
     sLogger.debugOpcode("Received CMSG_VOID_STORAGE_TRANSFER.");
     Player* player = GetPlayer();
 
-    // Read everything
-
-    WoWGuid npcGuid;
-    npcGuid[1] = recvData.readBit();
-
-    uint32_t countDeposit = recvData.readBits(26);
-
-    if (countDeposit > 9)
-    {
-        sLogger.debug("handleVoidStorageTransfer - Player (GUID: {}, name: {}) wants to deposit more than 9 items ({}).", player->getGuidLow(), player->getName(), countDeposit);
+    CmsgVoidStorageTransfer srlPacket;
+    if (!parsePacket(recvData, srlPacket))
         return;
-    }
 
-    std::vector<WoWGuid> itemGuids(countDeposit);
-    for (uint32_t i = 0; i < countDeposit; ++i)
-    {
-        itemGuids[i][4] = recvData.readBit();
-        itemGuids[i][6] = recvData.readBit();
-        itemGuids[i][7] = recvData.readBit();
-        itemGuids[i][0] = recvData.readBit();
-        itemGuids[i][1] = recvData.readBit();
-        itemGuids[i][5] = recvData.readBit();
-        itemGuids[i][3] = recvData.readBit();
-        itemGuids[i][2] = recvData.readBit();
-    }
-
-    npcGuid[2] = recvData.readBit();
-    npcGuid[0] = recvData.readBit();
-    npcGuid[3] = recvData.readBit();
-    npcGuid[5] = recvData.readBit();
-    npcGuid[6] = recvData.readBit();
-    npcGuid[4] = recvData.readBit();
-
-    uint32_t countWithdraw = recvData.readBits(26);
-
-    if (countWithdraw > 9)
-    {
-        sLogger.debug("handleVoidStorageTransfer - Player (GUID: {}, name: {}) wants to withdraw more than 9 items ({}).", player->getGuidLow(), player->getName(), countWithdraw);
-        return;
-    }
-
-    std::vector<WoWGuid> itemIds(countWithdraw);
-    for (uint32_t i = 0; i < countWithdraw; ++i)
-    {
-        itemIds[i][4] = recvData.readBit();
-        itemIds[i][7] = recvData.readBit();
-        itemIds[i][1] = recvData.readBit();
-        itemIds[i][0] = recvData.readBit();
-        itemIds[i][2] = recvData.readBit();
-        itemIds[i][3] = recvData.readBit();
-        itemIds[i][5] = recvData.readBit();
-        itemIds[i][6] = recvData.readBit();
-    }
-
-    npcGuid[7] = recvData.readBit();
-
-    recvData.flushBits();
-
-    for (uint32_t i = 0; i < countDeposit; ++i)
-    {
-        recvData.readByteSeq(itemGuids[i][6]);
-        recvData.readByteSeq(itemGuids[i][1]);
-        recvData.readByteSeq(itemGuids[i][0]);
-        recvData.readByteSeq(itemGuids[i][2]);
-        recvData.readByteSeq(itemGuids[i][4]);
-        recvData.readByteSeq(itemGuids[i][5]);
-        recvData.readByteSeq(itemGuids[i][3]);
-        recvData.readByteSeq(itemGuids[i][7]);
-    }
-
-    recvData.readByteSeq(npcGuid[5]);
-    recvData.readByteSeq(npcGuid[6]);
-
-    for (uint32_t i = 0; i < countWithdraw; ++i)
-    {
-        recvData.readByteSeq(itemIds[i][3]);
-        recvData.readByteSeq(itemIds[i][1]);
-        recvData.readByteSeq(itemIds[i][0]);
-        recvData.readByteSeq(itemIds[i][6]);
-        recvData.readByteSeq(itemIds[i][2]);
-        recvData.readByteSeq(itemIds[i][7]);
-        recvData.readByteSeq(itemIds[i][5]);
-        recvData.readByteSeq(itemIds[i][4]);
-    }
-
-    recvData.readByteSeq(npcGuid[1]);
-    recvData.readByteSeq(npcGuid[4]);
-    recvData.readByteSeq(npcGuid[7]);
-    recvData.readByteSeq(npcGuid[3]);
-    recvData.readByteSeq(npcGuid[2]);
-    recvData.readByteSeq(npcGuid[0]);
+    WoWGuid npcGuid = srlPacket.npcGuid;
+    std::vector<WoWGuid>& itemGuids = srlPacket.depositItemGuids;
+    std::vector<WoWGuid>& itemIds = srlPacket.withdrawItemGuids;
 
     Creature* creature = player->getWorldMapCreature(npcGuid);
     if (!creature)
@@ -342,45 +236,14 @@ void WorldSession::handleVoidSwapItem([[maybe_unused]] WorldPacket& recvData)
     sLogger.debugOpcode("Received CMSG_VOID_SWAP_ITEM.");
 
     Player* player = GetPlayer();
-    uint32_t newSlot;
-    WoWGuid npcGuid;
-    WoWGuid itemId;
 
-    recvData >> newSlot;
+    CmsgVoidSwapItem srlPacket;
+    if (!parsePacket(recvData, srlPacket))
+        return;
 
-    npcGuid[2] = recvData.readBit();
-    npcGuid[4] = recvData.readBit();
-    npcGuid[0] = recvData.readBit();
-    itemId[2] = recvData.readBit();
-    itemId[6] = recvData.readBit();
-    itemId[5] = recvData.readBit();
-    npcGuid[1] = recvData.readBit();
-    npcGuid[7] = recvData.readBit();
-    itemId[3] = recvData.readBit();
-    itemId[7] = recvData.readBit();
-    itemId[0] = recvData.readBit();
-    npcGuid[6] = recvData.readBit();
-    npcGuid[5] = recvData.readBit();
-    npcGuid[3] = recvData.readBit();
-    itemId[1] = recvData.readBit();
-    itemId[4] = recvData.readBit();
-
-    recvData.readByteSeq(npcGuid[1]);
-    recvData.readByteSeq(itemId[3]);
-    recvData.readByteSeq(itemId[2]);
-    recvData.readByteSeq(itemId[4]);
-    recvData.readByteSeq(npcGuid[3]);
-    recvData.readByteSeq(npcGuid[0]);
-    recvData.readByteSeq(itemId[6]);
-    recvData.readByteSeq(itemId[1]);
-    recvData.readByteSeq(npcGuid[5]);
-    recvData.readByteSeq(itemId[5]);
-    recvData.readByteSeq(npcGuid[6]);
-    recvData.readByteSeq(itemId[0]);
-    recvData.readByteSeq(npcGuid[2]);
-    recvData.readByteSeq(npcGuid[7]);
-    recvData.readByteSeq(npcGuid[4]);
-    recvData.readByteSeq(itemId[7]);
+    const uint32_t newSlot = srlPacket.newSlot;
+    WoWGuid npcGuid = srlPacket.npcGuid;
+    WoWGuid itemId = srlPacket.itemId;
 
     Creature* creature = player->getWorldMapCreature(npcGuid);
     if (!creature)
