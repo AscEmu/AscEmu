@@ -2714,8 +2714,25 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
         }
     }
 
+#if VERSION_STRING == Mop
+    // Broadcast "combat stopped" for the dying creature itself. Pass nullptr, not
+    // "this" - reporting the creature as its own attack victim (attacker == victim)
+    // is not a valid combat state and can make the Mop client's object/index lookups
+    // for the victim guid misbehave (confirmed via a client crash dump).
+    smsg_AttackStop(nullptr);
+#else
     smsg_AttackStop(this);
+#endif
     setHealth(0);
+
+#if VERSION_STRING == Mop
+    // Mark the dynamic-flags field dirty so the client actually receives the
+    // dead/lootable/tapped state. Without this, buildValuesUpdate()'s per-target
+    // dynamic flag recompute never runs for a normal combat death (nothing else
+    // touches this field on the kill path), so the Mop client never learns the corpse
+    // is lootable and can end up leaving the model in a stale, non-corpse state.
+    setDynamicFlags(U_DYN_FLAG_DEAD);
+#endif
 
     removeAllNonPersistentAuras();
 
@@ -2806,11 +2823,8 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
         // Generate Gold
         loot.generateGold(sMySQLStore.getCreatureProperties(getEntry()), getAIInterface()->getDifficultyType());
 
-        if (loot.items.empty())
-            return;
-
         // Master Looting Ninja Checker
-        if (worldConfig.player.deactivateMasterLootNinja)
+        if (!loot.items.empty() && worldConfig.player.deactivateMasterLootNinja)
         {
             looter = sObjectMgr.getPlayer(static_cast<uint32_t>(this->getTaggerGuid()));
             if (looter && looter->getGroup() && looter->getGroup()->GetMethod() == PARTY_LOOT_MASTER_LOOTER)

@@ -861,6 +861,13 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
 
     {
         std::scoped_lock<std::mutex> lock(m_updateMutex);
+        // If this object still has an un-flushed field update pending (e.g. a creature's
+        // health being set to 0 right before an immediate despawn), send it now instead of
+        // silently discarding it - otherwise nearby clients keep the stale pre-death values
+        // for an object that is about to disappear from their world.
+        if (_updates.find(obj) != _updates.end())
+            flushPendingObjectUpdate(obj);
+
         _updates.erase(obj);
         obj->ClearUpdateMask();
     }
@@ -2391,6 +2398,79 @@ void WorldMap::addCorpseDespawn(uint64_t guid, time_t time)
     _corpseDespawnTimes.emplace(now + time, guid);
 }
 
+void WorldMap::flushPendingObjectUpdate(Object* pObj)
+{
+    if (pObj == nullptr)
+        return;
+
+    ByteBuffer update(2500);
+    uint32_t count = 0;
+
+    if (pObj->isItem() || pObj->isContainer())
+    {
+        // our update is only sent to the owner here.
+        Player* pOwner = static_cast<Item*>(pObj)->getOwner();
+        if (pOwner != nullptr)
+        {
+            count = pObj->BuildValuesUpdateBlockForPlayer(&update, pOwner);
+            // send update to owner
+            if (count)
+            {
+                pOwner->getUpdateMgr().pushUpdateData(&update, count);
+                update.clear();
+            }
+        }
+    }
+    else
+    {
+        if (pObj->IsInWorld())
+        {
+            // players have to receive their own updates ;)
+            if (pObj->isPlayer())
+            {
+                // need to be different! ;)
+                count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(pObj));
+                if (count)
+                {
+                    static_cast<Player*>(pObj)->getUpdateMgr().pushUpdateData(&update, count);
+                    update.clear();
+                }
+            }
+            else if (pObj->isCreatureOrPlayer() && static_cast<Unit*>(pObj)->m_playerControler != nullptr)
+            {
+                count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Unit*>(pObj)->m_playerControler);
+                if (count)
+                {
+                    static_cast<Unit*>(pObj)->m_playerControler->getUpdateMgr().pushUpdateData(&update, count);
+                    update.clear();
+                }
+            }
+
+            // build the update
+            count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(nullptr));
+            update.clear();
+
+            if (count)
+            {
+                for (const auto& itr : pObj->getInRangePlayersSet())
+                {
+                    Player* lplr = static_cast<Player*>(itr);
+
+                    // Make sure that the target player can see us.
+                    if (lplr && lplr->isVisibleObject(pObj->getGuid()))
+                    {
+                        // Build correct update to each player
+                        // Data may differ from player to player
+                        pObj->BuildValuesUpdateBlockForPlayer(&update, lplr);
+                        lplr->getUpdateMgr().pushUpdateData(&update, count);
+                        update.clear();
+                    }
+                }
+            }
+        }
+    }
+}
+
 void WorldMap::updateObjects()
 {
     {
@@ -2399,78 +2479,11 @@ void WorldMap::updateObjects()
         if (!_updates.size() && !_processQueue.size())
             return;
 
-        ByteBuffer update(2500);
-        uint32_t count = 0;
-
         for (auto pObj : _updates)
         {
-            if (pObj == nullptr)
-                continue;
-
-            if (pObj->isItem() || pObj->isContainer())
-            {
-                // our update is only sent to the owner here.
-                Player* pOwner = static_cast<Item*>(pObj)->getOwner();
-                if (pOwner != nullptr)
-                {
-                    count = pObj->BuildValuesUpdateBlockForPlayer(&update, pOwner);
-                    // send update to owner
-                    if (count)
-                    {
-                        pOwner->getUpdateMgr().pushUpdateData(&update, count);
-                        update.clear();
-                    }
-                }
-            }
-            else
-            {
-                if (pObj->IsInWorld())
-                {
-                    // players have to receive their own updates ;)
-                    if (pObj->isPlayer())
-                    {
-                        // need to be different! ;)
-                        count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(pObj));
-                        if (count)
-                        {
-                            static_cast<Player*>(pObj)->getUpdateMgr().pushUpdateData(&update, count);
-                            update.clear();
-                        }
-                    }
-                    else if (pObj->isCreatureOrPlayer() && static_cast<Unit*>(pObj)->m_playerControler != nullptr)
-                    {
-                        count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Unit*>(pObj)->m_playerControler);
-                        if (count)
-                        {
-                            static_cast<Unit*>(pObj)->m_playerControler->getUpdateMgr().pushUpdateData(&update, count);
-                            update.clear();
-                        }
-                    }
-
-                    // build the update
-                    count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(nullptr));
-                    update.clear();
-
-                    if (count)
-                    {
-                        for (const auto& itr : pObj->getInRangePlayersSet())
-                        {
-                            Player* lplr = static_cast<Player*>(itr);
-
-                            // Make sure that the target player can see us.
-                            if (lplr && lplr->isVisibleObject(pObj->getGuid()))
-                            {
-                                // Build correct update to each player
-                                // Data may differ from player to player
-                                pObj->BuildValuesUpdateBlockForPlayer(&update, lplr);
-                                lplr->getUpdateMgr().pushUpdateData(&update, count);
-                                update.clear();
-                            }
-                        }
-                    }
-                }
-            }
-            pObj->ClearUpdateMask();
+            flushPendingObjectUpdate(pObj);
+            if (pObj != nullptr)
+                pObj->ClearUpdateMask();
         }
         _updates.clear();
 

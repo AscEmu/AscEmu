@@ -20,7 +20,7 @@ namespace AscEmu::Packets
         }
 
         CmsgAttackSwing(uint64_t guid) :
-            ManagedPacket(CMSG_ATTACKSWING, 8),
+            ManagedPacket(CMSG_ATTACKSWING, 0),
             guid(guid)
         {
         }

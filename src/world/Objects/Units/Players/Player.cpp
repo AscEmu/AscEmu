@@ -14974,7 +14974,7 @@ float Player::getDodgeChance()
         1.0f,      // Shaman
         1.0f,      // Mage
         1.0f,      // Warlock
-        0.0f,      // empty
+        1.0f,      // Monk
         1.7f       // Druid
     };
 
@@ -14985,12 +14985,41 @@ float Player::getDodgeChance()
     if (level > worldConfig.player.playerGeneratedInformationByLevelCap)
         level = worldConfig.player.playerGeneratedInformationByLevelCap;
 
-    // Base dodge + dodge from agility
-    auto baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(playerClass - 1);
-    auto critPerAgi = sGtChanceToMeleeCritStore.lookupEntry(level - 1 + (playerClass - 1) * 100);
     uint32_t agi = getStat(STAT_AGILITY);
 
-    float tmp = 100.0f * (baseCrit->val + agi * critPerAgi->val);
+#if VERSION_STRING == Mop
+    // Mop only: gtChanceToMeleeCritBase.dbc gained per-level rows (same layout as
+    // gtChanceToMeleeCrit.dbc), and the agility scaling value became a divisor
+    // ("agility points needed per 1%"), not a multiplier. Cata's DBC still has
+    // only 11 rows (class-indexed) and tiny multiplier-style values (~0.0004-0.0005),
+    // confirmed against the real Cata gtChanceToMeleeCrit.dbc, so Cata keeps the old formula below.
+    auto baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(level - 1 + (playerClass - 1) * 100);
+    if (baseCrit == nullptr)
+        baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+
+    auto critPerAgi = sGtChanceToMeleeCritStore.lookupEntry(level - 1 + (playerClass - 1) * 100);
+    if (critPerAgi == nullptr)
+        critPerAgi = sGtChanceToMeleeCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+
+    const float baseCritVal = baseCrit ? baseCrit->val : 0.0f;
+    const float critPerAgiVal = critPerAgi ? critPerAgi->val : 0.0f;
+
+    float tmp = 100.0f * baseCritVal;
+    if (critPerAgiVal != 0.0f)
+        tmp += agi / critPerAgiVal;
+#else
+    // Base dodge + dodge from agility
+    auto baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(playerClass - 1);
+
+    auto critPerAgi = sGtChanceToMeleeCritStore.lookupEntry(level - 1 + (playerClass - 1) * 100);
+    if (critPerAgi == nullptr)
+        critPerAgi = sGtChanceToMeleeCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+
+    const float baseCritVal = baseCrit ? baseCrit->val : 0.0f;
+    const float critPerAgiVal = critPerAgi ? critPerAgi->val : 0.0f;
+
+    float tmp = 100.0f * (baseCritVal + agi * critPerAgiVal);
+#endif
     tmp *= crit_to_dodge[playerClass];
     chance += tmp;
 
@@ -15066,13 +15095,27 @@ void Player::updateChances()
     setParryPercentage(tmp);
 
     // Critical
+#if VERSION_STRING == Mop
+    auto baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
+    if (baseCrit == nullptr)
+        baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+
+    auto CritPerAgi = sGtChanceToMeleeCritStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
+    if (CritPerAgi == nullptr)
+        CritPerAgi = sGtChanceToMeleeCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+
+    tmp = 100 * (baseCrit ? baseCrit->val : 0.0f);
+    if (CritPerAgi != nullptr && CritPerAgi->val != 0.0f)
+        tmp += getStat(STAT_AGILITY) / CritPerAgi->val;
+#else
     auto baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(playerClass - 1);
 
     auto CritPerAgi = sGtChanceToMeleeCritStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
     if (CritPerAgi == nullptr)
         CritPerAgi = sGtChanceToMeleeCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
 
-    tmp = 100 * (baseCrit->val + getStat(STAT_AGILITY) * CritPerAgi->val);
+    tmp = 100 * ((baseCrit ? baseCrit->val : 0.0f) + getStat(STAT_AGILITY) * (CritPerAgi ? CritPerAgi->val : 0.0f));
+#endif
 
     float melee_bonus = 0;
     float ranged_bonus = 0;
@@ -15099,13 +15142,29 @@ void Player::updateChances()
     float rcr = tmp + calcRating(CR_CRIT_RANGED) + ranged_bonus;
     setRangedCritPercentage(std::min(rcr, 95.0f));
 
+#if VERSION_STRING == Mop
+    auto SpellCritBase = sGtChanceToSpellCritBaseStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
+    if (SpellCritBase == nullptr)
+        SpellCritBase = sGtChanceToSpellCritBaseStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+
+    auto SpellCritPerInt = sGtChanceToSpellCritStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
+    if (SpellCritPerInt == nullptr)
+        SpellCritPerInt = sGtChanceToSpellCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+
+    float spellCritFromStats = 100 * (SpellCritBase ? SpellCritBase->val : 0.0f);
+    if (SpellCritPerInt != nullptr && SpellCritPerInt->val != 0.0f)
+        spellCritFromStats += getStat(STAT_INTELLECT) / SpellCritPerInt->val;
+#else
     auto SpellCritBase = sGtChanceToSpellCritBaseStore.lookupEntry(playerClass - 1);
 
     auto SpellCritPerInt = sGtChanceToSpellCritStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
     if (SpellCritPerInt == nullptr)
         SpellCritPerInt = sGtChanceToSpellCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
 
-    m_spellCritPercentage = 100 * (SpellCritBase->val + getStat(STAT_INTELLECT) * SpellCritPerInt->val) +
+    float spellCritFromStats = 100 * ((SpellCritBase ? SpellCritBase->val : 0.0f) + getStat(STAT_INTELLECT) * (SpellCritPerInt ? SpellCritPerInt->val : 0.0f));
+#endif
+
+    m_spellCritPercentage = spellCritFromStats +
         this->getSpellCritFromSpell() +
         this->calcRating(CR_CRIT_SPELL);
 
@@ -15809,7 +15868,7 @@ float Player::calcRating(PlayerCombatRating index)
     uint32_t rating = getCombatRating(index);
 
     WDB::Structures::GtCombatRatingsEntry const* combatRatingsEntry = sGtCombatRatingsStore.lookupEntry(index * 100 + level - 1);
-    if (combatRatingsEntry == nullptr)
+    if (combatRatingsEntry == nullptr || combatRatingsEntry->val == 0.0f)
         return float(rating);
 
     return (rating / combatRatingsEntry->val);

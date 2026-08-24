@@ -412,6 +412,7 @@ public:
     UpdateQueue _updates;
     PUpdateQueue _processQueue;
     void updateObjects();
+    void flushPendingObjectUpdate(Object* obj);
     void pushToProcessed(Player* plr);
     // Mark object as updated
     void objectUpdated(Object* obj);
