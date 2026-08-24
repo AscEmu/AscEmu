@@ -28,6 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAchievementDeleted.h"
 #include "Server/Packets/SmsgAchievementEarned.h"
 #include "Server/Packets/SmsgAllAchievementData.h"
+#include "Server/Packets/SmsgAllAchievementDataLegacy.h"
 #include "Server/Packets/SmsgCriteriaDeleted.h"
 #include "Server/Packets/SmsgCriteriaUpdate.h"
 #include "Server/Packets/SmsgMessageChat.h"
@@ -1154,110 +1155,47 @@ void AchievementMgr::gmResetCriteria(uint32_t _criteriaId, bool _finishAll/* = f
 #if VERSION_STRING <= WotLK
 void AchievementMgr::sendAllAchievementData(Player* _player)
 {
-    // maximum size for the SMSG_ALL_ACHIEVEMENT_DATA packet without causing client problems seems to be 0x7fff
-    uint32_t packetSize = 18 + (static_cast<uint32_t>(m_completedAchievements.size()) * 8) + (getCriteriaProgressCount() * 36);
-    bool doneCompleted = false;
-    bool doneProgress = false;
-    WDB::Structures::AchievementCriteriaEntry const* acEntry;
-    WDB::Structures::AchievementEntry const* achievement;
+    const bool isSelf = (_player == m_player);
 
-    WorldPacket data;
-    if (packetSize < 0x8000)
-        data.resize(packetSize);
-    else
-        data.resize(0x7fff);
+    AchievementDataChunkInput input;
+    input.isSelf = isSelf;
+    input.achievingPlayerGuid = m_player->getGuid();
 
-    CompletedAchievementMap::iterator completeIter = m_completedAchievements.begin();
-    CriteriaProgressMap::iterator progressIter = m_criteriaProgress.begin();
-    bool packetFull;
-
-    while (!doneCompleted || !doneProgress)
+    for (const auto& completeIter : m_completedAchievements)
     {
-        data.clear();
-        if (_player == m_player)
-        {
-            data.setOpcode(SMSG_ALL_ACHIEVEMENT_DATA);
-        }
-        else
-        {
-            data.setOpcode(SMSG_RESPOND_INSPECT_ACHIEVEMENTS);
-            FastGUIDPack(data, m_player->getGuid());
-        }
-        packetFull = false;
-
-        // add the completed achievements
-        if (!doneCompleted)
-        {
-            for (; completeIter != m_completedAchievements.end() && !packetFull; ++completeIter)
-            {
-                if (showCompletedAchievement(completeIter->first, m_player))
-                {
-                    data << uint32_t(completeIter->first);
-                    data << uint32_t(secsToTimeBitFields(completeIter->second));
-                }
-                packetFull = data.size() > 0x7f00;
-            }
-            if (completeIter == m_completedAchievements.end())
-            {
-                doneCompleted = true;
-            }
-        }
-
-        // 0xffffffff separates between completed achievements and ones in progress
-        data << int32_t(-1);
-        for (; progressIter != m_criteriaProgress.end() && !packetFull; ++progressIter)
-        {
-            acEntry = sAchievementCriteriaStore.lookupEntry(progressIter->first);
-            if (!acEntry)
-            {
-                continue;
-            }
-            achievement = sAchievementStore.lookupEntry(acEntry->referredAchievement);
-            if (!achievement)
-            {
-                continue;
-            }
-            // achievement progress to send to self
-            if (_player == m_player)
-            {
-                if (canSendAchievementProgress(progressIter->second.get()))
-                {
-                    data << uint32_t(progressIter->first);
-                    data.appendPackGuid(progressIter->second->counter);
-                    data << getPlayer()->GetNewGUID();
-                    data << uint32_t(0);
-                    data << uint32_t(secsToTimeBitFields(progressIter->second->date));
-                    data << uint32_t(0);
-                    data << uint32_t(0);
-                }
-            }
-            // achievement progress to send to other players (inspect)
-            else
-            {
-                // only send statistics, no other unfinished achievement progress, since client only displays them as completed or not completed
-                if ((progressIter->second->counter > 0) && (achievement->flags & ACHIEVEMENT_FLAG_COUNTER))
-                {
-                    data << uint32_t(progressIter->first);
-                    data.appendPackGuid(progressIter->second->counter);
-                    data << getPlayer()->GetNewGUID();
-                    data << uint32_t(0);
-                    data << uint32_t(secsToTimeBitFields(progressIter->second->date));
-                    data << uint32_t(0);
-                    data << uint32_t(0);
-                }
-            }
-            packetFull = data.size() > 0x7f00;
-        }
-        if (progressIter == m_criteriaProgress.end())
-        {
-            doneProgress = true;
-        }
-
-        // another 0xffffffff denotes end of the packet
-        data << int32_t(-1);
-        _player->getSession()->SendPacket(&data);
+        if (showCompletedAchievement(completeIter.first, m_player))
+            input.completed.push_back({ completeIter.first, secsToTimeBitFields(completeIter.second) });
     }
-    if (isCharacterLoading && _player == m_player)
+
+    for (const auto& progressIter : m_criteriaProgress)
+    {
+        WDB::Structures::AchievementCriteriaEntry const* acEntry = sAchievementCriteriaStore.lookupEntry(progressIter.first);
+        if (!acEntry)
+            continue;
+
+        WDB::Structures::AchievementEntry const* achievement = sAchievementStore.lookupEntry(acEntry->referredAchievement);
+        if (!achievement)
+            continue;
+
+        // achievement progress to send to self
+        if (isSelf)
+        {
+            if (canSendAchievementProgress(progressIter.second.get()))
+                input.progress.push_back({ progressIter.first, progressIter.second->counter, secsToTimeBitFields(progressIter.second->date) });
+        }
+        // achievement progress to send to other players (inspect): only send statistics, no other
+        // unfinished achievement progress, since client only displays them as completed or not completed
+        else if ((progressIter.second->counter > 0) && (achievement->flags & ACHIEVEMENT_FLAG_COUNTER))
+        {
+            input.progress.push_back({ progressIter.first, progressIter.second->counter, secsToTimeBitFields(progressIter.second->date) });
+        }
+    }
+
+    SmsgAllAchievementDataLegacy packetBuilder(std::move(input));
+    for (auto& chunk : packetBuilder.buildChunks())
+        _player->getSession()->SendPacket(chunk.get());
+
+    if (isCharacterLoading && isSelf)
     {
         // a SMSG_ALL_ACHIEVEMENT_DATA packet has been sent to the player, so the achievement manager can send SMSG_CRITERIA_UPDATE and SMSG_ACHIEVEMENT_EARNED when it gets them
         isCharacterLoading = false;
