@@ -761,9 +761,14 @@ bool World::setInitialWorldSettings()
     sObjectMgr.loadAchievementCriteriaList();
 #endif
 
-#if VERSION_STRING <= Cata // support MOP
+#if VERSION_STRING <= Mop // support MOP
     sLogger.info("World : Starting Transport System...");
     sTransportHandler.loadTransportTemplates();
+    // Loads TransportAnimation.dbc/TransportRotation.dbc into the per-entry animation
+    // cache used by legacy (GAMEOBJECT_TYPE_TRANSPORT) transports such as elevators -
+    // without this, GameObject::getTransportPeriod() always sees a null AnimationInfo
+    // and legacy transports never advance their path progress.
+    sTransportHandler.loadTransportAnimationAndRotation();
     sTransportHandler.spawnContinentTransports();
 
     sLogger.info("World : Starting Mail System...");

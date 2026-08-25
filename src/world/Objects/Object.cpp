@@ -3603,8 +3603,16 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
     if (updateFlags & UPDATEFLAG_TRANSPORT)
     {
-        if (Transporter* trans = static_cast<Transporter*>(this))
-            *data << uint32_t(trans->getAnimationProgress());   //pathProgress
+        // static_cast<Transporter*> unconditionally "succeeds" (it never checks the
+        // runtime type), so this used to read garbage through a mismatched vtable for
+        // any transport-flagged object that isn't actually a GAMEOBJECT_TYPE_MO_TRANSPORT
+        // instance (e.g. a GAMEOBJECT_TYPE_TRANSPORT elevator). It also called
+        // getAnimationProgress(), an unrelated 0-255 byte field, not the millisecond-scale
+        // PathProgress the client needs to track the transport's actual path timing -
+        // this desync is what let a transport move without properly carrying its riders.
+        GameObject const* go = static_cast<GameObject*>(this);
+        if (go && go->ToTransport())
+            *data << uint32_t(go->getGOValue()->PathProgress);
         else
             *data << uint32_t(Util::getMSTime());
     }
@@ -3742,7 +3750,14 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
                         dynamicField = bitValue;
                         field_parts.dynamicFlags &= ~(GO_DYN_FLAG_INTERACTABLE | GO_DYN_FLAG_SPARKLE);
 
-                        if (!isTransporter())
+                        // isTransporter() is only true for the full Transporter class
+                        // (GAMEOBJECT_TYPE_MO_TRANSPORT, e.g. zeppelins/boats) - it does not
+                        // recognize legacy GAMEOBJECT_TYPE_TRANSPORT elevators
+                        // (GameObject_Transport), so this used to silently zero out the path
+                        // progress this class of object was relying on to sync movement to
+                        // clients. Checking the object type directly covers both.
+                        const bool isMovingTransport = gameobject->getGoType() == GAMEOBJECT_TYPE_TRANSPORT || gameobject->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT;
+                        if (!isMovingTransport)
                             field_parts.pathProgress = 0;
 
                         const auto gobProperties = gameobject->GetGameObjectProperties();

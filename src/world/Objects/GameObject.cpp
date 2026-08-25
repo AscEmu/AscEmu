@@ -740,7 +740,16 @@ uint32_t GameObject::getTransportPeriod() const
     if (getGOValue()->AnimationInfo)
         return getGOValue()->AnimationInfo->TotalTime;
 
+#if VERSION_STRING >= Cata
+    // Not every legacy transport has a TransportAnimation.dbc entry - plain elevators
+    // without one fall back to the "pause" value from gameobject_template (stored in the
+    // level field at spawn, see setLevel(gameobject_properties->transport.pause) in
+    // GameObject::_internalInit()), matching the real (Cata+) client's GetTransportPeriod().
+    // - so this stays Cata+ only.
+    return getLevel();
+#else
     return 0;
+#endif
 }
 
 class GameObjectModelOwnerImpl final : public GameObjectModelOwnerBase
@@ -2002,6 +2011,32 @@ void GameObject_Transport::_internalUpdateOnState(unsigned long timeDiff)
     switch (m_lootState)
     {
         case GO_NOT_READY:
+#if VERSION_STRING == Mop
+        {
+            (void)timeDiff;
+            // Minimal fix: continuously wrap elapsed time into the animation's period so
+            // the transport actually advances along its path. The previous getState() ==
+            // GO_STATE_CLOSED gate checked the wrong state values entirely - the real Mop
+            // client drives legacy transports off dedicated GO_STATE_TRANSPORT_ACTIVE(24)/
+            // GO_STATE_TRANSPORT_STOPPED(25) states that don't exist,
+            // so PathProgress effectively never advanced before this.
+            // This does not yet replicate the real client's pause-time/waypoint-hold
+            // interpolation - transports with scripted stops will just loop continuously
+            // instead of pausing at them.
+            const uint32_t period = getTransportPeriod();
+            if (period == 0)
+                break;
+
+            m_goValue.PathProgress = Util::getMSTime() % period;
+
+            // m_goValue.PathProgress is a plain struct member - changing it alone does not
+            // mark anything dirty, so nearby clients never receive the update after the
+            // initial spawn. Sync it out through the dynamic path-progress field (the real
+            // client's ongoing sync mechanism, per reference so periodic broadcasts
+            // actually go out as this advances.
+            setDynamicPathProgress(static_cast<int16_t>((static_cast<uint64_t>(m_goValue.PathProgress) * 32767) / period));
+        }
+#else
             if (!m_goValue.AnimationInfo)
                 break;
 
@@ -2009,6 +2044,7 @@ void GameObject_Transport::_internalUpdateOnState(unsigned long timeDiff)
             {
                 m_goValue.PathProgress += timeDiff;
             }
+#endif
             break;
         default:
             break;

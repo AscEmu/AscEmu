@@ -128,6 +128,10 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
     if (_player->m_position.distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y }) > 3025.0f &&
         _player->getSpeedRate(TYPE_RUN, true) < 50.0f && !_player->obj_movement_info.transport_guid)
     {
+        sLogger.debug("isHackDetectedInMovementData() TELEPORT CHECK TRIGGERED distance={:.2f} speed={} storedTransportGuid={} incomingTransportGuid={}",
+            std::sqrt(_player->m_position.distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y })),
+            _player->getSpeedRate(TYPE_RUN, true), _player->obj_movement_info.transport_guid.getRawGuid(), sessionMovementInfo.transport_guid.getRawGuid());
+
         sCheatLog.writefromsession(this, "Teleport exploit detected. Speed: {}. Distance traveled: {:.2f}.", _player->getSpeedRate(TYPE_RUN, true),
                                           std::sqrt(_player->m_position.distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y })));
 
@@ -346,6 +350,10 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         // if we boarded a transport, add us to it
         if (movementInfo.transport_guid)
         {
+            sLogger.debug("MovementHandler transport_guid={} currentTransport={} lookedUpTransport={}",
+                movementInfo.transport_guid.getRawGuid(), mover->GetTransport() ? mover->GetTransport()->getGuid() : 0,
+                sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(movementInfo.transport_guid)) ? "found" : "NOT FOUND");
+
             if (!mover->GetTransport())
             {
                 if (Transporter* transport = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(movementInfo.transport_guid)))
