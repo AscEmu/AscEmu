@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChannelMgr.hpp"
 #include "Macros/CorpseMacros.hpp"
 #include "Management/ArenaTeam.hpp"
+#include "Management/CUFProfileMgr.h"
 #include "Management/AuctionHouse.h"
 #include "Management/Charter.hpp"
 #include "Management/Group.h"
@@ -237,7 +238,8 @@ Player::Player(uint32_t guid) :
     m_groupUpdateFlags(GROUP_UPDATE_FLAG_NONE),
     m_speedCheatDetector(std::make_unique<SpeedCheatDetector>()),
     m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
-    m_mailBox(std::make_unique<Mailbox>(guid))
+    m_mailBox(std::make_unique<Mailbox>(guid)),
+    m_cufProfiles(std::make_unique<CUFProfileMgr>(guid))
 {
     //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_PLAYER;
@@ -732,15 +734,17 @@ void Player::OnPushToWorld()
 #if VERSION_STRING == Mop
     updateVisibility();
 
-    SmsgLoadCufProfiles cufProfilesPacket;
-    getSession()->sendManagedPacket(cufProfilesPacket);
-
     SmsgBattlePetJournal battlePetJournalPacket;
     getSession()->sendManagedPacket(battlePetJournalPacket);
 
     SmsgBattlePetJournalLockAcquired battlePetJournalLockPacket;
     getSession()->sendManagedPacket(battlePetJournalLockPacket);
 
+#endif
+
+#if VERSION_STRING >= Cata
+    SmsgLoadCufProfiles cufProfilesPacket(m_cufProfiles.get());
+    getSession()->sendManagedPacket(cufProfilesPacket);
 #endif
 
 #if VERSION_STRING < Mop
@@ -14107,6 +14111,10 @@ void Player::saveToDB(bool newCharacter /* =false */)
 
     getItemInterface()->m_EquipmentSets.saveToDB(buf);
 
+#if VERSION_STRING >= Cata
+    m_cufProfiles->saveToDB(buf);
+#endif
+
     // save quest progress
     _saveQuestLogEntry(buf);
 
@@ -14180,7 +14188,8 @@ namespace PlayerQuery
         DeletedSpells = 14,
         Skills = 15,
         Achievements = 16,
-        AchievementProgress = 17
+        AchievementProgress = 17,
+        CufProfiles = 18
     };
 }
 
@@ -14212,6 +14221,10 @@ bool Player::loadFromDB(uint32_t guid)
     //Achievements
     q->addQuery("SELECT achievement, date FROM character_achievement WHERE guid = '%u'", guid); // 16
     q->addQuery("SELECT criteria, counter, date FROM character_achievement_progress WHERE guid = '%u'", guid); // 17
+
+#if VERSION_STRING >= Cata
+    q->addQuery("SELECT id, name, frameHeight, frameWidth, sortBy, healthText, boolOptions, topPoint, bottomPoint, leftPoint, topOffset, bottomOffset, leftOffset FROM character_cuf_profiles WHERE ownerguid = %u", guid); // 18
+#endif
 
     // queue it!
     setGuidLow(guid);
@@ -14785,6 +14798,10 @@ void Player::loadFromDBProc(QueryResultVector& results)
     _loadQuestLogEntry(results[PlayerQuery::Questlog].result.get());
     getItemInterface()->mLoadItemsFromDatabase(results[PlayerQuery::Items].result.get());
     getItemInterface()->m_EquipmentSets.loadFromDB(results[PlayerQuery::EquipmentSets].result.get());
+
+#if VERSION_STRING >= Cata
+    m_cufProfiles->loadFromDB(results[PlayerQuery::CufProfiles].result.get());
+#endif
 
 #if VERSION_STRING > WotLK
     loadVoidStorage();

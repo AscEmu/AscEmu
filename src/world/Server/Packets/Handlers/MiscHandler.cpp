@@ -82,6 +82,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMirrorimageCreatureData.h"
 #include "Server/Packets/CmsgGetMirrorimageData.h"
 #include "Server/Packets/SmsgClientcacheVersion.h"
+#include "Server/Packets/SmsgSetForceReactions.h"
+#include "Server/Packets/SmsgBattlePetJournal.h"
+#include "Server/Packets/SmsgBattlePetJournalLockAcquired.h"
+#include "Server/Packets/SmsgConquestFormulaConstants.h"
+#include "Server/Packets/CmsgSaveCufProfiles.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Objects/Transporter.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
@@ -442,6 +447,37 @@ void WorldSession::handleSetActionButtonOpcode(WorldPacket& recvPacket)
             _player->setActionButton(srlPacket.button, srlPacket.action, static_cast<uint8_t>(srlPacket.type), static_cast<uint8_t>(srlPacket.misc));
         }
     }
+}
+
+void WorldSession::handleRequestForcedReactions(WorldPacket& /*recvPacket*/)
+{
+    SmsgSetForceReactions forceReactionsPacket(_player->m_forcedReactions);
+    sendManagedPacket(forceReactionsPacket);
+}
+
+void WorldSession::handleRequestConquestFormulaConstants(WorldPacket& /*recvPacket*/)
+{
+    SmsgConquestFormulaConstants conquestFormulaConstantsPacket;
+    sendManagedPacket(conquestFormulaConstantsPacket);
+}
+
+void WorldSession::handleBattlePetRequestJournal(WorldPacket& /*recvPacket*/)
+{
+    SmsgBattlePetJournal battlePetJournalPacket;
+    sendManagedPacket(battlePetJournalPacket);
+
+    SmsgBattlePetJournalLockAcquired battlePetJournalLockPacket;
+    sendManagedPacket(battlePetJournalLockPacket);
+}
+
+void WorldSession::handleSaveCufProfiles(WorldPacket& recvPacket)
+{
+    CmsgSaveCufProfiles srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    for (uint8_t i = 0; i < MAX_CUF_PROFILES; ++i)
+        _player->m_cufProfiles->setCUFProfile(i, i < srlPacket.profileCount ? std::move(srlPacket.profiles[i]) : nullptr);
 }
 
 void WorldSession::handleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket)

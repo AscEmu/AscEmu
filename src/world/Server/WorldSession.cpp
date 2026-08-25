@@ -779,6 +779,8 @@ void WorldSession::registerOpcodeHandler()
     // Faction / Reputation
     registry.registerOpcode(CMSG_SET_FACTION_ATWAR, &WorldSession::handleSetFactionAtWarOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_SET_WATCHED_FACTION, &WorldSession::handleSetWatchedFactionIndexOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_REQUEST_FORCED_REACTIONS, &WorldSession::handleRequestForcedReactions, false, false, false, false, true);
+    registry.registerOpcode(CMSG_REQUEST_CONQUEST_FORMULA_CONSTANTS, &WorldSession::handleRequestConquestFormulaConstants, false, false, false, false, true);
     registry.registerOpcode(CMSG_SET_FACTION_INACTIVE, &WorldSession::handleSetFactionInactiveOpcode, true, true, true, true, true);
 
     // Player Interaction
@@ -1195,7 +1197,9 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_VOID_STORAGE_UNLOCK, &WorldSession::handleVoidStorageUnlock, false, false, false, true, true);
     registry.registerOpcode(CMSG_VOID_SWAP_ITEM, &WorldSession::handleVoidSwapItem, false, false, false, true, true);
     registry.registerOpcode(CMSG_LEARN_PREVIEW_TALENTS, &WorldSession::handleLearnPreviewTalentsOpcode, false, false, false, true, false);
-    registry.registerOpcode(CMSG_GUILD_BANK_MONEY_WITHDRAWN_QUERY, &WorldSession::handleGuildBankMoneyWithdrawn, false, false, false, true, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_MONEY_WITHDRAWN_QUERY, &WorldSession::handleGuildBankMoneyWithdrawn, false, false, false, true, true);
+    registry.registerOpcode(CMSG_BATTLE_PET_REQUEST_JOURNAL, &WorldSession::handleBattlePetRequestJournal, false, false, false, false, true);
+    registry.registerOpcode(CMSG_SAVE_CUF_PROFILES, &WorldSession::handleSaveCufProfiles, false, false, false, true, true);
     registry.registerOpcode(CMSG_GUILD_BANK_QUERY_TEXT, &WorldSession::handleQueryGuildBankTabText, false, false, false, true, false);
     registry.registerOpcode(CMSG_QUERY_GUILD_XP, &WorldSession::handleGuildQueryXPOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_GUILD_SET_NOTE, &WorldSession::handleGuildSetNoteOpcode, false, false, false, true, true);

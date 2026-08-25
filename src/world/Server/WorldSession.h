@@ -505,6 +505,8 @@ protected:
         //\brief this was an MSG opcode on versions < Cata.
         //       now it is split into CMSG and SMSG packets since cata.
         void handleGuildBankMoneyWithdrawn(WorldPacket& /*recvPacket*/);
+        void handleBattlePetRequestJournal(WorldPacket& /*recvPacket*/);  //Mop
+        void handleSaveCufProfiles(WorldPacket& recvPacket);   //Mop
 
         //\brief this was two seperated opcodes on versions < Cata.
         //       now it is one since cata.
@@ -689,6 +691,8 @@ protected:
         void handlePlayedTimeOpcode(WorldPacket& recvPacket);
         void handleSetActionButtonOpcode(WorldPacket& recvPacket);
         void handleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket);
+        void handleRequestForcedReactions(WorldPacket& recvPacket);   //Mop
+        void handleRequestConquestFormulaConstants(WorldPacket& recvPacket);  //Mop
         void handleRandomRollOpcode(WorldPacket& recvPacket);
         void handleRealmSplitOpcode(WorldPacket& recvPacket);
         void handleSetTaxiBenchmarkOpcode(WorldPacket& recvPacket);

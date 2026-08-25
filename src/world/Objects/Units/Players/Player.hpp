@@ -42,6 +42,7 @@ namespace WDB::Structures
 struct ItemSet;
 class AchievementMgr;
 class Mailbox;
+class CUFProfileMgr;
 
 namespace MySQLStructure
 {
@@ -2214,6 +2215,7 @@ public:
     SpellInfo const* m_lastHealSpell = nullptr;
 
     std::unique_ptr<Mailbox> m_mailBox;
+    std::unique_ptr<CUFProfileMgr> m_cufProfiles;
     bool m_finishingMovesDodge = false;
 
     bool isAttacking() { return m_attacking; }
