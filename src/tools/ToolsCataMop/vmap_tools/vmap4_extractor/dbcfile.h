@@ -21,12 +21,13 @@
 #define DBCFILE_H
 #include <cassert>
 #include <string>
-#include "StormLib.h"
+#include <vector>
+#include "mpqlib/MpqPatchChain.hpp"
 
 class DBCFile
 {
 public:
-    DBCFile(HANDLE mpq, const char* filename);
+    DBCFile(mpqlib::MpqPatchChain& mpq, const char* filename);
     ~DBCFile();
 
     // Open database. It must be openened before it can be used.
@@ -158,9 +159,8 @@ public:
     size_t getMaxId();
 
 private:
-    HANDLE _mpq;
+    mpqlib::MpqPatchChain& _mpq;
     const char* _filename;
-    HANDLE _file;
     size_t _recordSize;
     size_t _recordCount;
     size_t _fieldCount;

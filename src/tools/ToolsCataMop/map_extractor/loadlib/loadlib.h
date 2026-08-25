@@ -20,7 +20,7 @@
 #ifndef LOAD_LIB_H
 #define LOAD_LIB_H
 
-#include "StormLib.h"
+#include "mpqlib/MpqPatchChain.hpp"
 #include <cstdint>
 #include <map>
 #include <string>
@@ -83,7 +83,7 @@ public:
     ChunkedFile();
     virtual ~ChunkedFile();
     bool prepareLoadedData();
-    bool loadFile(HANDLE mpq, std::string const& fileName, bool log = true);
+    bool loadFile(mpqlib::MpqPatchChain& mpq, std::string const& fileName, bool log = true);
     void free();
 
     void parseChunks();

@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <memory>
 
 #ifdef WIN32
 #define snprintf _snprintf
@@ -78,9 +79,9 @@ char* GetExtension(char* FileName)
     return NULL;
 }
 
-extern HANDLE WorldMpq;
+extern std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
 
-ADTFile::ADTFile(char* filename) : ADT(WorldMpq, filename, false)
+ADTFile::ADTFile(char* filename) : ADT(*WorldMpq, filename, false)
 {
     Adtfilename.append(filename);
 }

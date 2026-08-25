@@ -15,7 +15,6 @@ if (UNIX AND NOT IS_64BIT)
 endif ()
 
 include_directories(
-    ${CMAKE_SOURCE_DIR}/dep/StormLib/src
     ${CMAKE_SOURCE_DIR}/src/shared
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${BZIP2_INCLUDE_DIRS}
@@ -25,7 +24,7 @@ include_directories(
 # include library dependencies.
 target_link_libraries(${EXECUTABLE_NAME}
   PUBLIC
-    storm
+    mpqlib
     ${BZIP2_LIBRARIES}
     ${ZLIB_LIBRARIES}
 )

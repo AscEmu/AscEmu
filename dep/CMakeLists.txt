@@ -26,7 +26,7 @@ endif ()
 
 if (BUILD_TOOLS)
     if ("${ASCEMU_VERSION}" STREQUAL "Cata" OR "${ASCEMU_VERSION}" STREQUAL "Mop")
-        add_subdirectory(StormLib)
+        add_subdirectory(mpqlib)
     else ()
         add_subdirectory(libmpq)
         add_subdirectory(dbcfile)

@@ -24,9 +24,14 @@
 #include <vector>
 #include <list>
 #include <errno.h>
+#include <memory>
+#include <algorithm>
+#include <string_view>
+#include <cctype>
 
 #ifdef WIN32
     #include <Windows.h>
+    #include <tchar.h>
     #include <sys/stat.h>
     #include <direct.h>
     #define mkdir _mkdir
@@ -59,8 +64,8 @@
 
 //-----------------------------------------------------------------------------
 
-HANDLE WorldMpq = NULL;
-HANDLE LocaleMpq = NULL;
+std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
+std::unique_ptr<mpqlib::MpqPatchChain> LocaleMpq;
 
 #if VERSION_STRING == Cata
 uint32_t CONF_TargetBuild = 15595;              // 4.3.4.15595
@@ -94,7 +99,7 @@ char const* CONF_mpq_list[] =
     "expansion4.MPQ", // added in 5.x.x
 };
 
-uint32_t const Builds[] = { 16016, 16048, 16057, 16309, 16357, 16516, 16650, 16844, 16965, 17116, 17266, 17325, 17345, 17538, 17645, 17688, 17898, 18273, 0 };
+uint32_t const Builds[] = { 16016, 16048, 16057, 16309, 16357, 16516, 16650, 16844, 16965, 17116, 17266, 17325, 17331, 17345, 17538, 17645, 17688, 17898, 18273, 0 };
 #define LAST_DBC_IN_DATA_BUILD 15595    // after this build mpqs with dbc are back to locale folder
 #define NEW_BASE_SET_BUILD 16016 // 15211
 #endif
@@ -144,23 +149,26 @@ bool preciseVectorData = false;
 const char* szWorkDirWmo = "./Buildings";
 const char* szRawVMAPMagic = "VMAP041";
 
+// Note: StormLib's SFileOpenPatchArchive() took a "path prefix" that remaps
+// files stored under a locale subfolder inside a shared patch archive so they
+// become addressable by their bare name. mpqlib has no equivalent - only
+// relevant for archives at/below LAST_DBC_IN_DATA_BUILD, a build from years
+// before Cata/Mop ever shipped, so in practice every archive this tool
+// actually opens today never needs it.
 bool LoadLocaleMPQFile(int locale)
 {
-    TCHAR buff[512];
-    memset(buff, 0, sizeof(buff));
-    _stprintf(buff, _T("%s%s/locale-%s.MPQ"), input_path, LocalesT[locale], LocalesT[locale]);
-    if (!SFileOpenArchive(buff, 0, MPQ_OPEN_READ_ONLY, &LocaleMpq))
+    char buff[512];
+
+#if VERSION_STRING < Mop
+    snprintf(buff, sizeof(buff), "%s%s/locale-%s.MPQ", input_path, LocalesT[locale], LocalesT[locale]);
+    LocaleMpq = std::make_unique<mpqlib::MpqPatchChain>(buff);
+    if (!LocaleMpq->isOpen())
     {
-        if (GetLastError() != ERROR_PATH_NOT_FOUND)
-        {
-            _tprintf(_T("Loading %s locale MPQs\n"), LocalesT[locale]);
-            _tprintf(_T("Cannot open archive %s\n"), buff);
-        }
+        LocaleMpq.reset();
         return false;
     }
 
-    _tprintf(_T("Loading %s locale MPQs\n"), LocalesT[locale]);
-    char const* prefix = NULL;
+    printf("Loading %s locale MPQs\n", LocalesT[locale]);
     for (int i = 0; Builds[i] && Builds[i] <= CONF_TargetBuild; ++i)
     {
         // Do not attempt to read older MPQ patch archives past this build, they were merged with base
@@ -168,39 +176,90 @@ bool LoadLocaleMPQFile(int locale)
         if (CONF_TargetBuild >= NEW_BASE_SET_BUILD && Builds[i] < NEW_BASE_SET_BUILD)
             continue;
 
-        memset(buff, 0, sizeof(buff));
         if (Builds[i] > LAST_DBC_IN_DATA_BUILD)
-        {
-            prefix = "";
-            _stprintf(buff, _T("%s%s/wow-update-%s-%u.MPQ"), input_path, LocalesT[locale], LocalesT[locale], Builds[i]);
-        }
+            snprintf(buff, sizeof(buff), "%s%s/wow-update-%s-%u.MPQ", input_path, LocalesT[locale], LocalesT[locale], Builds[i]);
         else
-        {
-            prefix = Locales[locale];
-            _stprintf(buff, _T("%swow-update-%u.MPQ"), input_path, Builds[i]);
-        }
+            snprintf(buff, sizeof(buff), "%swow-update-%u.MPQ", input_path, Builds[i]);
 
-        if (!SFileOpenPatchArchive(LocaleMpq, buff, prefix, 0))
-        {
-            if (GetLastError() != ERROR_FILE_NOT_FOUND)
-                _tprintf(_T("Cannot open patch archive %s\n"), buff);
-            continue;
-        }
+        LocaleMpq->addPatch(buff);
     }
 
     printf("\n");
     return true;
+#else
+    // Mirrors map_extractor's Mop-branch LoadLocaleMPQFile (System.cpp): misc.MPQ
+    // as base, locale-XX.MPQ as the first patch, then wow-update-base-*, then the
+    // locale wow-update-XX-*, then Data\Cache\patch-base-* and finally
+    // Data\Cache\<locale>\patch-<locale>-*. Without the two Cache loops, DBC
+    // reads through LocaleMpq (Map.dbc, GameObjectDisplayInfo.dbc, ...) silently
+    // resolve to an older, incomplete archive - late-Mop map/gameobject records
+    // added only via a Cache hotfix patch never show up.
+    snprintf(buff, sizeof(buff), "%smisc.MPQ", input_path);
+    LocaleMpq = std::make_unique<mpqlib::MpqPatchChain>(buff);
+    if (!LocaleMpq->isOpen())
+    {
+        LocaleMpq.reset();
+        return false;
+    }
+
+    snprintf(buff, sizeof(buff), "%s%s/locale-%s.MPQ", input_path, LocalesT[locale], LocalesT[locale]);
+    if (!LocaleMpq->addPatch(buff))
+    {
+        LocaleMpq.reset();
+        return false;
+    }
+
+    printf("Loading %s locale MPQs\n", LocalesT[locale]);
+
+    for (int i = 0; Builds[i] && Builds[i] <= CONF_TargetBuild; ++i)
+    {
+        snprintf(buff, sizeof(buff), "%swow-update-base-%u.MPQ", input_path, Builds[i]);
+
+        if (!LocaleMpq->addPatch(buff))
+            printf("Not found %s\n", buff);
+        else
+            printf("Loaded %s\n", buff);
+    }
+
+    for (int i = 0; Builds[i] && Builds[i] <= CONF_TargetBuild; ++i)
+    {
+        snprintf(buff, sizeof(buff), "%s%s/wow-update-%s-%u.MPQ", input_path, LocalesT[locale], LocalesT[locale], Builds[i]);
+
+        if (LocaleMpq->addPatch(buff))
+            printf("Loaded %s\n", buff);
+    }
+
+    for (int i = 0; Builds[i] && Builds[i] <= CONF_TargetBuild; ++i)
+    {
+        snprintf(buff, sizeof(buff), "%sCache\\patch-base-%u.MPQ", input_path, Builds[i]);
+
+        if (LocaleMpq->addPatch(buff))
+            printf("Loaded %s\n", buff);
+    }
+
+    for (int i = 0; Builds[i] && Builds[i] <= CONF_TargetBuild; ++i)
+    {
+        snprintf(buff, sizeof(buff), "%sCache\\%s\\patch-%s-%u.MPQ", input_path, LocalesT[locale], LocalesT[locale], Builds[i]);
+
+        if (LocaleMpq->addPatch(buff))
+            printf("Loaded %s\n", buff);
+    }
+
+    printf("\n");
+    return true;
+#endif
 }
 
 void LoadCommonMPQFiles(uint32_t build)
 {
-    TCHAR filename[512];
-    _stprintf(filename, _T("%sworld.MPQ"), input_path);
-    _tprintf(_T("Loading common MPQ files\n"));
-    if (!SFileOpenArchive(filename, 0, MPQ_OPEN_READ_ONLY, &WorldMpq))
+    char filename[512];
+    snprintf(filename, sizeof(filename), "%sworld.MPQ", input_path);
+    printf("Loading common MPQ files\n");
+    WorldMpq = std::make_unique<mpqlib::MpqPatchChain>(filename);
+    if (!WorldMpq->isOpen())
     {
-        if (GetLastError() != ERROR_PATH_NOT_FOUND)
-            _tprintf(_T("Cannot open archive %s\n"), filename);
+        printf("Cannot open archive %s\n", filename);
+        WorldMpq.reset();
         return;
     }
 
@@ -210,19 +269,13 @@ void LoadCommonMPQFiles(uint32_t build)
         if (build < 15211 && !strcmp("world2.MPQ", CONF_mpq_list[i]))   // 4.3.2 and higher MPQ
             continue;
 
-        _stprintf(filename, _T("%s%s"), input_path, CONF_mpq_list[i]);
-        if (!SFileOpenPatchArchive(WorldMpq, filename, "", 0))
-        {
-            if (GetLastError() != ERROR_PATH_NOT_FOUND)
-                _tprintf(_T("Cannot open archive %s\n"), filename);
-            else
-                _tprintf(_T("Not found %s\n"), filename);
-        }
+        snprintf(filename, sizeof(filename), "%s%s", input_path, CONF_mpq_list[i]);
+        if (!WorldMpq->addPatch(filename))
+            printf("Not found %s\n", filename);
         else
-            _tprintf(_T("Loaded %s\n"), filename);
+            printf("Loaded %s\n", filename);
     }
 
-    char const* prefix = NULL;
     for (int i = 0; Builds[i] && Builds[i] <= CONF_TargetBuild; ++i)
     {
         // Do not attempt to read older MPQ patch archives past this build, they were merged with base
@@ -230,28 +283,36 @@ void LoadCommonMPQFiles(uint32_t build)
         if (CONF_TargetBuild >= NEW_BASE_SET_BUILD && Builds[i] < NEW_BASE_SET_BUILD)
             continue;
 
-        memset(filename, 0, sizeof(filename));
         if (Builds[i] > LAST_DBC_IN_DATA_BUILD)
-        {
-            prefix = "";
-            _stprintf(filename, _T("%swow-update-base-%u.MPQ"), input_path, Builds[i]);
-        }
+            snprintf(filename, sizeof(filename), "%swow-update-base-%u.MPQ", input_path, Builds[i]);
         else
-        {
-            prefix = "base";
-            _stprintf(filename, _T("%swow-update-%u.MPQ"), input_path, Builds[i]);
-        }
+            snprintf(filename, sizeof(filename), "%swow-update-%u.MPQ", input_path, Builds[i]);
 
-        if (!SFileOpenPatchArchive(WorldMpq, filename, prefix, 0))
+        if (!WorldMpq->addPatch(filename))
         {
-            if (GetLastError() != ERROR_PATH_NOT_FOUND)
-                _tprintf(_T("Cannot open patch archive %s\n"), filename);
-            else
-                _tprintf(_T("Not found %s\n"), filename);
+            printf("Not found %s\n", filename);
             continue;
         }
-        else
-            _tprintf(_T("Loaded %s\n"), filename);
+
+        printf("Loaded %s\n", filename);
+    }
+
+    // Hotfix cache archives can update/add WDT, ADT, WMO and model data just
+    // like they update DBC data (LoadLocaleMPQFile already loads these for
+    // LocaleMpq) - without them, content delivered purely via a cache patch
+    // (e.g. late-Mop zones such as HawaiiMainLand/Isle of Thunder) has no WDT
+    // to convert at all.
+    for (int i = 0; Builds[i] && Builds[i] <= CONF_TargetBuild; ++i)
+    {
+        snprintf(filename, sizeof(filename), "%sCache\\patch-base-%u.MPQ", input_path, Builds[i]);
+
+        if (!WorldMpq->addPatch(filename))
+        {
+            printf("Not found %s\n", filename);
+            continue;
+        }
+
+        printf("Loaded %s\n", filename);
     }
 
     printf("\n");
@@ -286,7 +347,7 @@ void ReadLiquidTypeTableDBC()
 #if VERSION_STRING == Cata
     printf("Read LiquidType.dbc file...");
 
-    DBCFile dbc(LocaleMpq, "DBFilesClient\\LiquidType.dbc");
+    DBCFile dbc(*LocaleMpq, "DBFilesClient\\LiquidType.dbc");
     if(!dbc.open())
     {
         printf("Fatal error: Invalid LiquidType.dbc file format!\n");
@@ -303,33 +364,16 @@ void ReadLiquidTypeTableDBC()
 
     printf("Done! (%u LiqTypes loaded)\n", (unsigned int)LiqType_count);
 #else
-    HANDLE localeFile;
     char localMPQ[1024];
-
     snprintf(localMPQ, sizeof(localMPQ), "%smisc.MPQ", input_path);
-    if (FileExists(localMPQ) == false)
-    {   // Use misc.mpq
-        printf(localMPQ, "%s/Data/%s/locale-%s.MPQ", input_path);
-    }
 
-    if (!SFileOpenArchive(localMPQ, 0, MPQ_OPEN_READ_ONLY, &localeFile))
-    {
+    mpqlib::MpqPatchChain localeChain(localMPQ);
+    if (!localeChain.isOpen())
         exit(1);
-    }
 
     printf("Read LiquidType.dbc file...");
 
-    HANDLE dbcFile;
-    if (!SFileOpenFileEx(localeFile, "DBFilesClient\\LiquidType.dbc", SFILE_OPEN_FROM_MPQ, &dbcFile))
-    {
-        if (!SFileOpenFileEx(localeFile, "DBFilesClient\\LiquidType.dbc", SFILE_OPEN_FROM_MPQ, &dbcFile))
-        {
-            printf("Fatal error: Cannot find LiquidType.dbc in archive!\n");
-            exit(1);
-        }
-    }
-
-    DBCFile dbc(localeFile, "DBFilesClient\\LiquidType.dbc");
+    DBCFile dbc(localeChain, "DBFilesClient\\LiquidType.dbc");
     if (!dbc.open())
     {
         printf("Fatal error: Invalid LiquidType.dbc file format!\n");
@@ -348,25 +392,48 @@ void ReadLiquidTypeTableDBC()
 #endif
 }
 
+// Minimal single-'*' suffix matcher, replacing StormLib's SFileFindFirstFile/
+// SFileFindNextFile - this tool only ever searches for a plain "*.wmo" suffix.
+static bool CaseInsensitiveEquals(std::string_view a, std::string_view b)
+{
+    if (a.size() != b.size())
+        return false;
+
+    return std::equal(a.begin(), a.end(), b.begin(), [](char x, char y)
+    {
+        return std::tolower(static_cast<unsigned char>(x)) == std::tolower(static_cast<unsigned char>(y));
+    });
+}
+
+static bool MatchesSimplePattern(std::string_view name, std::string_view pattern)
+{
+    const size_t star = pattern.find('*');
+    if (star == std::string_view::npos)
+        return CaseInsensitiveEquals(name, pattern);
+
+    const std::string_view prefix = pattern.substr(0, star);
+    const std::string_view suffix = pattern.substr(star + 1);
+
+    if (name.size() < prefix.size() + suffix.size())
+        return false;
+
+    return CaseInsensitiveEquals(name.substr(0, prefix.size()), prefix) &&
+        CaseInsensitiveEquals(name.substr(name.size() - suffix.size()), suffix);
+}
+
 bool ExtractWmo()
 {
     bool success = false;
 
-    //const char* ParsArchiveNames[] = {"patch-2.MPQ", "patch.MPQ", "common.MPQ", "expansion.MPQ"};
-
-    SFILE_FIND_DATA data;
-    HANDLE find = SFileFindFirstFile(WorldMpq, "*.wmo", &data, NULL);
-    if (find != NULL)
+    for (std::string const& name : WorldMpq->listFiles())
     {
-        do
-        {
-            std::string str = data.cFileName;
-            //printf("Extracting wmo %s\n", str.c_str());
-            success |= ExtractSingleWmo(str);
-        }
-        while (SFileFindNextFile(find, &data));
+        if (!MatchesSimplePattern(name, "*.wmo"))
+            continue;
+
+        std::string str = name;
+        //printf("Extracting wmo %s\n", str.c_str());
+        success |= ExtractSingleWmo(str);
     }
-    SFileFindClose(find);
 
     if (success)
         printf("\nExtract wmo complete (No (fatal) errors)\n");
@@ -610,11 +677,7 @@ int main(int argc, char ** argv)
     {
         //Open MPQs
         if (!LoadLocaleMPQFile(i))
-        {
-            if (GetLastError() != ERROR_PATH_NOT_FOUND)
-                printf("Unable to load %s locale archives!\n", Locales[i]);
             continue;
-        }
 
         printf("Detected and using locale: %s\n", Locales[i]);
         break;
@@ -630,7 +693,7 @@ int main(int argc, char ** argv)
     //map.dbc
     if (success)
     {
-        DBCFile * dbc = new DBCFile(LocaleMpq, "DBFilesClient\\Map.dbc");
+        DBCFile * dbc = new DBCFile(*LocaleMpq, "DBFilesClient\\Map.dbc");
         if (!dbc->open())
         {
             delete dbc;
@@ -655,8 +718,8 @@ int main(int argc, char ** argv)
         ExtractGameobjectModels();
     }
 
-    SFileCloseArchive(LocaleMpq);
-    SFileCloseArchive(WorldMpq);
+    LocaleMpq.reset();
+    WorldMpq.reset();
 
     printf("\n");
     if (!success)

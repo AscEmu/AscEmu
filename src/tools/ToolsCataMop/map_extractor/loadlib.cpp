@@ -21,6 +21,8 @@
 
 #include "loadlib.h"
 #include <cstdio>
+#include <cstring>
+#include <vector>
 
 u_map_fcc MverMagic = { {'R','E','V','M'} };
 
@@ -35,30 +37,27 @@ ChunkedFile::~ChunkedFile()
     free();
 }
 
-bool ChunkedFile::loadFile(HANDLE mpq, std::string const& fileName, bool log)
+bool ChunkedFile::loadFile(mpqlib::MpqPatchChain& mpq, std::string const& fileName, bool log)
 {
     free();
-    HANDLE file;
-    if (!SFileOpenFileEx(mpq, fileName.c_str(), SFILE_OPEN_FROM_MPQ, &file))
+
+    std::vector<uint8_t> fileData;
+    if (!mpq.readFile(fileName, fileData))
     {
         if (log)
             printf("No such file %s\n", fileName.c_str());
         return false;
     }
 
-    data_size = SFileGetFileSize(file, nullptr);
+    data_size = static_cast<uint32_t>(fileData.size());
     data = new uint8_t[data_size];
-    SFileReadFile(file, data, data_size, nullptr/*bytesRead*/, nullptr);
+    std::memcpy(data, fileData.data(), data_size);
 
     parseChunks();
     if (prepareLoadedData())
-    {
-        SFileCloseFile(file);
         return true;
-    }
 
     printf("Error loading %s\n", fileName.c_str());
-    SFileCloseFile(file);
     free();
 
     return false;

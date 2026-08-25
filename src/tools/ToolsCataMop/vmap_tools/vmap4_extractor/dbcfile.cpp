@@ -20,47 +20,30 @@
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include "dbcfile.h"
+#include <cstring>
 
-DBCFile::DBCFile(HANDLE mpq, const char* filename) :
-    _mpq(mpq), _filename(filename), _file(NULL), _data(NULL), _stringTable(NULL)
+DBCFile::DBCFile(mpqlib::MpqPatchChain& mpq, const char* filename) :
+    _mpq(mpq), _filename(filename), _data(NULL), _stringTable(NULL)
 {
 }
 
 bool DBCFile::open()
 {
-    if (!SFileOpenFileEx(_mpq, _filename, SFILE_OPEN_FROM_MPQ, &_file))
+    std::vector<uint8_t> raw;
+    if (!_mpq.readFile(_filename, raw))
         return false;
 
-    char header[4];
+    if (raw.size() < 20)
+        return false;
+
+    if (raw[0] != 'W' || raw[1] != 'D' || raw[2] != 'B' || raw[3] != 'C')
+        return false;
+
     unsigned int na, nb, es, ss;
-
-    DWORD readBytes = 0;
-    SFileReadFile(_file, header, 4, &readBytes, NULL);
-    if (readBytes != 4)                                         // Number of records
-        return false;
-
-    if (header[0] != 'W' || header[1] != 'D' || header[2] != 'B' || header[3] != 'C')
-        return false;
-
-    readBytes = 0;
-    SFileReadFile(_file, &na, 4, &readBytes, NULL);
-    if (readBytes != 4)                                         // Number of records
-        return false;
-
-    readBytes = 0;
-    SFileReadFile(_file, &nb, 4, &readBytes, NULL);
-    if (readBytes != 4)                                         // Number of fields
-        return false;
-
-    readBytes = 0;
-    SFileReadFile(_file, &es, 4, &readBytes, NULL);
-    if (readBytes != 4)                                         // Size of a record
-        return false;
-
-    readBytes = 0;
-    SFileReadFile(_file, &ss, 4, &readBytes, NULL);
-    if (readBytes != 4)                                         // String size
-        return false;
+    std::memcpy(&na, raw.data() + 4, 4);  // Number of records
+    std::memcpy(&nb, raw.data() + 8, 4);  // Number of fields
+    std::memcpy(&es, raw.data() + 12, 4); // Size of a record
+    std::memcpy(&ss, raw.data() + 16, 4); // String size
 
     _recordSize = es;
     _recordCount = na;
@@ -69,14 +52,13 @@ bool DBCFile::open()
     if (_fieldCount * 4 != _recordSize)
         return false;
 
-    _data = new unsigned char[_recordSize * _recordCount + _stringSize];
-    _stringTable = _data + _recordSize*_recordCount;
-
-    uint32_t data_size = static_cast<uint32_t>(_recordSize * _recordCount + _stringSize);
-    readBytes = 0;
-    SFileReadFile(_file, _data, data_size, &readBytes, NULL);
-    if (readBytes != data_size)
+    const uint32_t data_size = static_cast<uint32_t>(_recordSize * _recordCount + _stringSize);
+    if (raw.size() < 20 + data_size)
         return false;
+
+    _data = new unsigned char[data_size];
+    _stringTable = _data + _recordSize * _recordCount;
+    std::memcpy(_data, raw.data() + 20, data_size);
 
     return true;
 }
@@ -84,8 +66,6 @@ bool DBCFile::open()
 DBCFile::~DBCFile()
 {
     delete[] _data;
-    if (_file != NULL)
-        SFileCloseFile(_file);
 }
 
 DBCFile::Record DBCFile::getRecord(size_t id)

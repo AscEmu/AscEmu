@@ -25,6 +25,7 @@
 #include <cassert>
 #include <map>
 #include <fstream>
+#include <memory>
 #undef min
 #undef max
 #include "mpqfile.h"
@@ -40,11 +41,11 @@ WMORoot::WMORoot(std::string &filename)
     memset(bbcorn2, 0, sizeof(bbcorn2));
 }
 
-extern HANDLE WorldMpq;
+extern std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
 
 bool WMORoot::open()
 {
-    MPQFile f(WorldMpq, filename.c_str());
+    MPQFile f(*WorldMpq, filename.c_str());
     if (f.isEof())
     {
         printf("No such file.\n");
@@ -152,7 +153,7 @@ WMOGroup::WMOGroup(const std::string &filename) :
 
 bool WMOGroup::open()
 {
-    MPQFile f(WorldMpq, filename.c_str());
+    MPQFile f(*WorldMpq, filename.c_str());
     if (f.isEof())
     {
         printf("No such file.\n");

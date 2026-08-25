@@ -31,7 +31,7 @@
 #include <vector>
 #include <iostream>
 #include <deque>
-#include "StormLib.h"
+#include "mpqlib/MpqPatchChain.hpp"
 
 using namespace std;
 
@@ -47,7 +47,7 @@ class MPQFile
     void operator=(const MPQFile &f);
 
 public:
-    MPQFile(HANDLE mpq, const char* filename, bool warnNoExist = true);    // filenames are not case sensitive
+    MPQFile(mpqlib::MpqPatchChain& mpq, const char* filename, bool warnNoExist = true);    // filenames are not case sensitive
     ~MPQFile() {
         close();
     }

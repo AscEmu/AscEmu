@@ -24,8 +24,9 @@
 #include <cassert>
 #include <algorithm>
 #include <cstdio>
+#include <memory>
 
-extern HANDLE WorldMpq;
+extern std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
 
 Model::Model(std::string &filename) : filename(filename), vertices(0), indices(0)
 {
@@ -34,7 +35,7 @@ Model::Model(std::string &filename) : filename(filename), vertices(0), indices(0
 
 bool Model::open()
 {
-    MPQFile f(WorldMpq, filename.c_str());
+    MPQFile f(*WorldMpq, filename.c_str());
 
     if (f.isEof())
     {

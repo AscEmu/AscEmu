@@ -23,6 +23,7 @@
 #include "vmapexport.h"
 
 #include <algorithm>
+#include <memory>
 #include <stdio.h>
 
 bool ExtractSingleModel(std::string& fname)
@@ -53,12 +54,12 @@ bool ExtractSingleModel(std::string& fname)
     return mdl.ConvertToVMAPModel(output.c_str());
 }
 
-extern HANDLE LocaleMpq;
+extern std::unique_ptr<mpqlib::MpqPatchChain> LocaleMpq;
 
 void ExtractGameobjectModels()
 {
     printf("Extracting GameObject models...");
-    DBCFile dbc(LocaleMpq, "DBFilesClient\\GameObjectDisplayInfo.dbc");
+    DBCFile dbc(*LocaleMpq, "DBFilesClient\\GameObjectDisplayInfo.dbc");
     if (!dbc.open())
     {
         printf("Fatal error: Invalid GameObjectDisplayInfo.dbc file format!\n");

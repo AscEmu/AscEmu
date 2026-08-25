@@ -20,53 +20,32 @@
 #include "mpqfile.h"
 #include <deque>
 #include <cstdio>
-#include "StormLib.h"
 
-MPQFile::MPQFile(HANDLE mpq, const char* filename, bool warnNoExist /*= true*/) :
+MPQFile::MPQFile(mpqlib::MpqPatchChain& mpq, const char* filename, bool warnNoExist /*= true*/) :
     eof(false),
     buffer(0),
     pointer(0),
     size(0)
 {
-    HANDLE file;
-    if (!SFileOpenFileEx(mpq, filename, SFILE_OPEN_FROM_MPQ, &file))
+    std::vector<uint8_t> data;
+    if (!mpq.readFile(filename, data))
     {
-        if (warnNoExist || GetLastError() != ERROR_FILE_NOT_FOUND)
-            fprintf(stderr, "Can't open %s, err=%u!\n", filename, GetLastError());
+        if (warnNoExist)
+            fprintf(stderr, "Can't open %s!\n", filename);
         eof = true;
         return;
     }
 
-    DWORD hi = 0;
-    size = SFileGetFileSize(file, &hi);
-
-    if (hi)
+    if (data.size() <= 1)
     {
-        fprintf(stderr, "Can't open %s, size[hi] = %u!\n", filename, uint32_t(hi));
-        SFileCloseFile(file);
+        fprintf(stderr, "Can't open %s, size = %u!\n", filename, uint32_t(data.size()));
         eof = true;
         return;
     }
 
-    if (size <= 1)
-    {
-        fprintf(stderr, "Can't open %s, size = %u!\n", filename, uint32_t(size));
-        SFileCloseFile(file);
-        eof = true;
-        return;
-    }
-
-    DWORD read = 0;
+    size = data.size();
     buffer = new char[size];
-    if (!SFileReadFile(file, buffer, static_cast<DWORD>(size), &read, nullptr) || size != read)
-    {
-        fprintf(stderr, "Can't read %s, size=%u read=%u!\n", filename, uint32_t(size), uint32_t(read));
-        SFileCloseFile(file);
-        eof = true;
-        return;
-    }
-
-    SFileCloseFile(file);
+    memcpy(buffer, data.data(), size);
 }
 
 size_t MPQFile::read(void* dest, size_t bytes)

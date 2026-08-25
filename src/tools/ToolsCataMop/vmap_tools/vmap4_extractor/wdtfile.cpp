@@ -21,6 +21,7 @@
 #include "wdtfile.h"
 #include "adtfile.h"
 #include <cstdio>
+#include <memory>
 
 char * wdtGetPlainName(char * FileName)
 {
@@ -31,9 +32,9 @@ char * wdtGetPlainName(char * FileName)
     return FileName;
 }
 
-extern HANDLE WorldMpq;
+extern std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
 
-WDTFile::WDTFile(char* file_name, char* file_name1) :WDT(WorldMpq, file_name)
+WDTFile::WDTFile(char* file_name, char* file_name1) :WDT(*WorldMpq, file_name)
 {
     filename.append(file_name1, strlen(file_name1));
 }
