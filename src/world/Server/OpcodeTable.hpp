@@ -146,6 +146,15 @@ public:
         return 0;
     }
 
+    OpcodeDevelopmentState getStateForInternalId(uint32_t internalId)
+    {
+        const auto it = multiversionOpcodeStore.find(internalId);
+        if (it != multiversionOpcodeStore.end())
+            return it->second.state;
+
+        return OpcodeDevelopmentState::Unchecked;
+    }
+
     struct HexToId
     {
         HexToId(uint16_t hex, uint32_t intId) :

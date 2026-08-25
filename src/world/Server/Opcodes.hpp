@@ -1777,6 +1777,8 @@ CMSG_REALM_NAME_QUERY,
 SMSG_GM_TICKET_CASE_STATUS,
 SMSG_MIRRORIMAGE_COMPONENTED_DATA,
 SMSG_MIRRORIMAGE_CREATURE_DATA,
+CMSG_UNHANDLED_044E,
+CMSG_UNHANDLED_0CF0,
 NUM_OPCODES
 };
 
@@ -2334,7 +2336,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {CMSG_UNLEARN_TALENTS, {0x1F, "CMSG_UNLEARN_TALENTS", OpcodeDevelopmentState::Unchecked, {0x213,/*Classic*/ 0x213,/*BC*/ 0x213,/*WotLK*/ 0x213,/*Cata*/ 0x0000/*Mop*/}}},
 {SMSG_UPDATE_INSTANCE_ENCOUNTER_UNIT, {0x1F, "SMSG_UPDATE_INSTANCE_ENCOUNTER_UNIT", OpcodeDevelopmentState::Unchecked, {0x214,/*Classic*/ 0x214,/*BC*/ 0x214,/*WotLK*/ 0x4007,/*Cata*/ 0x0000/*Mop*/}}},
 {SMSG_GAMEOBJECT_DESPAWN_ANIM, {0x1F, "SMSG_GAMEOBJECT_DESPAWN_ANIM", OpcodeDevelopmentState::Unchecked, {0x215,/*Classic*/ 0x215,/*BC*/ 0x215,/*WotLK*/ 0x6735,/*Cata*/ 0x108B/*Mop*/}}},
-{MSG_CORPSE_QUERY, {0x1F, "MSG_CORPSE_QUERY", OpcodeDevelopmentState::Unchecked, {0x216,/*Classic*/ 0x216,/*BC*/ 0x216,/*WotLK*/ 0x4336,/*Cata*/ 0x0000/*Mop*/}}},                               
+{MSG_CORPSE_QUERY, {0x1F, "MSG_CORPSE_QUERY", OpcodeDevelopmentState::Unchecked, {0x216,/*Classic*/ 0x216,/*BC*/ 0x216,/*WotLK*/ 0x4336,/*Cata*/ 0x0000/*Mop*/}}},
 {SMSG_CORPSE_QUERY, {0x1F, "SMSG_CORPSE_QUERY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x0E0B/*Mop*/}}},
 {CMSG_CORPSE_QUERY, {0x1F, "CMSG_CORPSE_QUERY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x1FBE/*Mop*/}}},
 {CMSG_GMTICKET_DELETETICKET, {0x1F, "CMSG_GMTICKET_DELETETICKET", OpcodeDevelopmentState::Unchecked, {0x217,/*Classic*/ 0x217,/*BC*/ 0x217,/*WotLK*/ 0x6B14,/*Cata*/ 0x1A23/*Mop*/}}},
@@ -2434,7 +2436,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {SMSG_STABLE_RESULT, {0x1F, "SMSG_STABLE_RESULT", OpcodeDevelopmentState::Unchecked, {0x273,/*Classic*/ 0x273,/*BC*/ 0x273,/*WotLK*/ 0x2204,/*Cata*/ 0x14BE/*Mop*/}}},
 {CMSG_STABLE_REVIVE_PET, {0x1F, "CMSG_STABLE_REVIVE_PET", OpcodeDevelopmentState::Unchecked, {0x274,/*Classic*/ 0x274,/*BC*/ 0x274,/*WotLK*/ 0x274,/*Cata*/ 0x0000/*Mop*/}}},
 {CMSG_STABLE_SWAP_PET, {0x1F, "CMSG_STABLE_SWAP_PET", OpcodeDevelopmentState::Unchecked, {0x275,/*Classic*/ 0x275,/*BC*/ 0x275,/*WotLK*/ 0x275,/*Cata*/ 0x0000/*Mop*/}}},
-{MSG_QUEST_PUSH_RESULT, {0x1F, "MSG_QUEST_PUSH_RESULT", OpcodeDevelopmentState::Unchecked, {0x276,/*Classic*/ 0x276,/*BC*/ 0x276,/*WotLK*/ 0x4515,/*Cata*/ 0x074D/*Mop*/}}},              
+{MSG_QUEST_PUSH_RESULT, {0x1F, "MSG_QUEST_PUSH_RESULT", OpcodeDevelopmentState::Unchecked, {0x276,/*Classic*/ 0x276,/*BC*/ 0x276,/*WotLK*/ 0x4515,/*Cata*/ 0x074D/*Mop*/}}},
 {SMSG_PLAY_MUSIC, {0x1F, "SMSG_PLAY_MUSIC", OpcodeDevelopmentState::Unchecked, {0x277,/*Classic*/ 0x277,/*BC*/ 0x277,/*WotLK*/ 0x4B06,/*Cata*/ 0x0023/*Mop*/}}},
 {SMSG_PLAY_OBJECT_SOUND, {0x1F, "SMSG_PLAY_OBJECT_SOUND", OpcodeDevelopmentState::Unchecked, {0x278,/*Classic*/ 0x278,/*BC*/ 0x278,/*WotLK*/ 0x2635,/*Cata*/ 0x1443/*Mop*/}}},
 {CMSG_REQUEST_PET_INFO, {0x1F, "CMSG_REQUEST_PET_INFO", OpcodeDevelopmentState::Unchecked, {0x279,/*Classic*/ 0x279,/*BC*/ 0x279,/*WotLK*/ 0x4924,/*Cata*/ 0x135B/*Mop*/}}},
@@ -3525,5 +3527,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {CMSG_REALM_NAME_QUERY, {0x10, "CMSG_REALM_NAME_QUERY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x1A16/*Mop*/}}},
 {SMSG_GM_TICKET_CASE_STATUS, {0x10, "SMSG_GM_TICKET_CASE_STATUS", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x148E/*Mop*/}}},
 {SMSG_MIRRORIMAGE_COMPONENTED_DATA, {0x10, "SMSG_MIRRORIMAGE_COMPONENTED_DATA", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x04D9/*Mop*/}}},
-{SMSG_MIRRORIMAGE_CREATURE_DATA, {0x10, "SMSG_MIRRORIMAGE_CREATURE_DATA", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x04D0/*Mop*/}}}
+{SMSG_MIRRORIMAGE_CREATURE_DATA, {0x10, "SMSG_MIRRORIMAGE_CREATURE_DATA", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x04D0/*Mop*/}}},
+{CMSG_UNHANDLED_044E, {0x10, "CMSG_UNHANDLED_044E", OpcodeDevelopmentState::NotUsed, {0/*Classic*/, 0/*BC*/, 0/*WotLK*/, 0/*Cata*/, 0x044E/*MoP*/}}},
+{CMSG_UNHANDLED_0CF0, {0x10, "CMSG_UNHANDLED_0CF0", OpcodeDevelopmentState::NotUsed, {0/*Classic*/, 0/*BC*/, 0/*WotLK*/, 0/*Cata*/, 0x0CF0/*MoP*/}}},
 };
