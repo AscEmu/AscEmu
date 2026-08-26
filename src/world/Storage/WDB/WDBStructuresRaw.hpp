@@ -98,6 +98,25 @@ namespace WDB::Structures::Raw
         float elevation;
     };
 
+    struct AreaTriggerEntryClassic
+    {
+        uint32_t id;
+        uint32_t mapId;
+        float x;
+        float y;
+        float z;
+        float boxRadius;
+        float boxX;
+        float boxY;
+        float boxZ;
+        float boxOrientation;
+    };
+
+    using AreaTriggerEntryTbc = AreaTriggerEntryClassic;
+    using AreaTriggerEntryWotlk = AreaTriggerEntryClassic;
+    using AreaTriggerEntryCata = AreaTriggerEntryClassic;
+    using AreaTriggerEntryMop = AreaTriggerEntryClassic;
+
     struct BarberShopStyleEntryWotlkCataMop
     {
         uint32_t id;

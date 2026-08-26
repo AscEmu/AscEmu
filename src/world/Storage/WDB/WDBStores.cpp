@@ -61,7 +61,7 @@ struct NameGenData
 std::vector<NameGenData> _namegenData[3];
 
 SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTableEntry> sAreaStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::AreaTriggerEntry> sAreaTriggerStore;
+SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTriggerEntry> sAreaTriggerStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::AuctionHouseEntry> sAuctionHouseStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::BankBagSlotPrices> sBankBagSlotPricesStore;
@@ -346,7 +346,22 @@ bool loadDBCs()
 
     MapManagement::AreaManagement::AreaStorage::Initialise(&sAreaStore);
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sAreaTriggerStore, dbc_path, "AreaTrigger.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::AreaTriggerEntry>(
+        bad_dbc_files, sAreaTriggerStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::AreaTriggerEntry& entry)
+        {
+            entry.id = raw.id;
+            entry.mapId = raw.mapId;
+            entry.x = raw.x;
+            entry.y = raw.y;
+            entry.z = raw.z;
+            entry.boxRadius = raw.boxRadius;
+            entry.boxX = raw.boxX;
+            entry.boxY = raw.boxY;
+            entry.boxZ = raw.boxZ;
+            entry.boxOrientation = raw.boxOrientation;
+        });
+
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sAuctionHouseStore, dbc_path, "AuctionHouse.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sBankBagSlotPricesStore, dbc_path, "BankBagSlotPrices.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChatChannelsStore, dbc_path, "ChatChannels.dbc");

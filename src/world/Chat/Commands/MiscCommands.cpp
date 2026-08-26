@@ -508,8 +508,8 @@ bool ChatCommandHandler::HandleGoTriggerCommand(const char* args, WorldSession* 
         return true;
     }
 
-    m_session->GetPlayer()->safeTeleport(area_trigger_entry->mapid, instance_id, LocationVector(area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z, area_trigger_entry->box_radius));
-    blueSystemMessage(m_session, "Teleported to trigger {} on [{}][{}][{}][{}]", area_trigger_entry->id, area_trigger_entry->mapid, area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z);
+    m_session->GetPlayer()->safeTeleport(area_trigger_entry->mapId, instance_id, LocationVector(area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z, area_trigger_entry->boxRadius));
+    blueSystemMessage(m_session, "Teleported to trigger {} on [{}][{}][{}][{}]", area_trigger_entry->id, area_trigger_entry->mapId, area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z);
     return true;
 }
 

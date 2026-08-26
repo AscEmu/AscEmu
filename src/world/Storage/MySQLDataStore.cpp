@@ -3444,7 +3444,7 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t 
         if ((!useParentDbValue && itr->second.mapId == entrance_map) || (useParentDbValue && itr->second.mapId == parentId))
         {
             WDB::Structures::AreaTriggerEntry const* atEntry = sAreaTriggerStore.lookupEntry(itr->first);
-            if (atEntry && atEntry->mapid == mapId)
+            if (atEntry && atEntry->mapId == mapId)
                 return &itr->second;
         }
     }
@@ -3476,7 +3476,7 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t 
         if ((!useParentDbValue && itr->second.mapId == entrance_map) || (useParentDbValue && itr->second.mapId == parentId))
         {
             WDB::Structures::AreaTriggerEntry const* atEntry = sAreaTriggerStore.lookupEntry(itr->first);
-            if (atEntry && atEntry->mapid == mapId)
+            if (atEntry && atEntry->mapId == mapId)
                 return &itr->second;
         }
     }

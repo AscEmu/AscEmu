@@ -47,6 +47,17 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::AreaTriggerEntry> : DbcVersionLayouts<
+        Structures::Raw::AreaTriggerEntryClassic,
+        Structures::Raw::AreaTriggerEntryTbc,
+        Structures::Raw::AreaTriggerEntryWotlk,
+        Structures::Raw::AreaTriggerEntryCata,
+        Structures::Raw::AreaTriggerEntryMop>
+    {
+        static constexpr char const* filename = "AreaTrigger.dbc";
+    };
+
+    template <>
     struct DbcTraits<Structures::BarberShopStyleEntry> : DbcVersionLayouts<
             UnsupportedVersion, // Classic
             UnsupportedVersion, // TBC

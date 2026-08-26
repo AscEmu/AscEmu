@@ -188,6 +188,20 @@ namespace WDB::Structures
         float elevation{0.0f};
     };
 
+    struct AreaTriggerEntry
+    {
+        uint32_t id{0};
+        uint32_t mapId{0};
+        float x{0.0f};
+        float y{0.0f};
+        float z{0.0f};
+        float boxRadius{0.0f};
+        float boxX{0.0f};
+        float boxY{0.0f};
+        float boxZ{0.0f};
+        float boxOrientation{0.0f};
+    };
+
     struct BarberShopStyleEntry
     {
         uint32_t id{0};
@@ -920,20 +934,6 @@ namespace WDB::Structures
 #endif
     };
 #endif
-
-    struct AreaTriggerEntry
-    {
-        uint32_t id;                                                // 0
-        uint32_t mapid;                                             // 1
-        float x;                                                    // 2
-        float y;                                                    // 3
-        float z;                                                    // 4
-        float box_radius;                                           // 5 radius
-        float box_x;                                                // 6 extent x edge
-        float box_y;                                                // 7 extent y edge
-        float box_z;                                                // 8 extent z edge
-        float box_o;                                                // 9 extent rotation by about z axis
-    };
 
     struct AuctionHouseEntry
     {
