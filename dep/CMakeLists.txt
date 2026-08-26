@@ -25,9 +25,11 @@ if (BUILD_ASCEMUSCRIPTS AND BUILD_LUAENGINE)
 endif ()
 
 if (BUILD_TOOLS)
-    if ("${ASCEMU_VERSION}" STREQUAL "Cata" OR "${ASCEMU_VERSION}" STREQUAL "Mop")
-        add_subdirectory(mpqlib)
-    else ()
+    # mpqlib is the shared MPQ-reading layer for every version's tools now;
+    # libmpq/dbcfile/loadlib (Classic/TBC/WotLK) build on top of it too.
+    add_subdirectory(mpqlib)
+
+    if (NOT ("${ASCEMU_VERSION}" STREQUAL "Cata" OR "${ASCEMU_VERSION}" STREQUAL "Mop"))
         add_subdirectory(libmpq)
         add_subdirectory(dbcfile)
         add_subdirectory(loadlib)

@@ -18,45 +18,66 @@
  */
 
 #include "mpq_libmpq04.h"
-#include <deque>
+#include "mpqlib/MpqPatchChain.hpp"
+
 #include <cstdio>
+#include <cstring>
+#include <memory>
 
-ArchiveSet gOpenArchives;
-
-MPQArchive::MPQArchive(const char* filename)
+namespace
 {
-    int result = libmpq__archive_open(&mpq_a, filename, -1);
-    printf("Opening %s\n", filename);
-    if(result) {
-        switch(result) {
-            case LIBMPQ_ERROR_OPEN :
-                printf("Error opening archive '%s': Does file really exist?\n", filename);
-                break;
-            case LIBMPQ_ERROR_FORMAT :            /* bad file format */
-                printf("Error opening archive '%s': Bad file format\n", filename);
-                break;
-            case LIBMPQ_ERROR_SEEK :         /* seeking in file failed */
-                printf("Error opening archive '%s': Seeking in file failed\n", filename);
-                break;
-            case LIBMPQ_ERROR_READ :              /* Read error in archive */
-                printf("Error opening archive '%s': Read error in archive\n", filename);
-                break;
-            case LIBMPQ_ERROR_MALLOC :               /* maybe not enough memory? :) */
-                printf("Error opening archive '%s': Maybe not enough memory\n", filename);
-                break;
-            default:
-                printf("Error opening archive '%s': Unknown error\n", filename);
-                break;
-        }
-        return;
-    }
-    gOpenArchives.push_front(this);
+    // The old code kept a flat, priority-ordered ArchiveSet where every
+    // archive was an independent peer. mpqlib::MpqPatchChain instead has an
+    // explicit base + patches - the first archive opened becomes the base,
+    // every one after it is added as a patch, which reproduces the exact same
+    // most-recently-opened-wins priority order the ArchiveSet gave via
+    // push_front()+forward iteration.
+    std::unique_ptr<mpqlib::MpqPatchChain> gMpqChain;
 }
 
-void MPQArchive::close()
+MPQArchive::MPQArchive(const char* filename) :
+    m_opened(false)
 {
-    //gOpenArchives.erase(erase(&mpq_a);
-    libmpq__archive_close(mpq_a);
+    printf("Opening %s\n", filename);
+
+    if (!gMpqChain)
+    {
+        gMpqChain = std::make_unique<mpqlib::MpqPatchChain>(filename);
+        m_opened = gMpqChain->isOpen();
+        if (!m_opened)
+        {
+            printf("Error opening archive '%s': Does file really exist?\n", filename);
+            gMpqChain.reset();
+        }
+    }
+    else
+    {
+        m_opened = gMpqChain->addPatch(filename);
+        if (!m_opened)
+            printf("Error opening archive '%s': Does file really exist?\n", filename);
+    }
+}
+
+void MPQArchive::GetFileListTo(std::vector<std::string>& filelist)
+{
+    filelist = GetMpqFileList();
+}
+
+std::vector<std::string> GetMpqFileList()
+{
+    if (gMpqChain)
+        return gMpqChain->listFiles();
+    return {};
+}
+
+bool HasOpenMpqArchive()
+{
+    return gMpqChain != nullptr;
+}
+
+void CloseMpqArchives()
+{
+    gMpqChain.reset();
 }
 
 MPQFile::MPQFile(const char* filename):
@@ -65,32 +86,18 @@ MPQFile::MPQFile(const char* filename):
     pointer(0),
     size(0)
 {
-    for(ArchiveSet::iterator i=gOpenArchives.begin(); i!=gOpenArchives.end();++i)
+    std::vector<uint8_t> data;
+    if (!gMpqChain || !gMpqChain->readFile(filename, data) || data.size() <= 1)
     {
-        mpq_archive *mpq_a = (*i)->mpq_a;
-
-        uint32_t filenum;
-        if(libmpq__file_number(mpq_a, filename, &filenum)) continue;
-        libmpq__off_t transferred;
-        libmpq__file_size_unpacked(mpq_a, filenum, &size);
-
         // HACK: in patch.mpq some files don't want to open and give 1 for filesize
-        if (size<=1) {
-            // printf("info: file %s has size %d; considered dummy file.\n", filename, size);
-            eof = true;
-            buffer = 0;
-            return;
-        }
-        buffer = new char[size];
-
-        //libmpq_file_getdata
-        libmpq__file_read(mpq_a, filenum, (unsigned char*)buffer, size, &transferred);
-        /*libmpq_file_getdata(&mpq_a, hash, fileno, (unsigned char*)buffer);*/
+        eof = true;
+        buffer = 0;
         return;
-
     }
-    eof = true;
-    buffer = 0;
+
+    size = data.size();
+    buffer = new char[size];
+    memcpy(buffer, data.data(), size);
 }
 
 size_t MPQFile::read(void* dest, size_t bytes)
@@ -98,7 +105,7 @@ size_t MPQFile::read(void* dest, size_t bytes)
     if (eof) return 0;
 
     size_t rpos = pointer + bytes;
-    if (rpos > size_t(size)) {
+    if (rpos > size) {
         bytes = size - pointer;
         eof = true;
     }

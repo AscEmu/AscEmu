@@ -46,8 +46,6 @@
 
 #define MPQ_BLOCK_SIZE 0x1000
 
-extern ArchiveSet gOpenArchives;
-
 typedef struct
 {
     char name[64];
@@ -79,7 +77,7 @@ void strToLower(char* str)
 {
     while(*str)
     {
-        *str=tolower(*str);
+        *str=static_cast<char>(tolower(*str));
         ++str;
     }
 }
@@ -101,7 +99,7 @@ void ReadLiquidTypeTableDBC()
     memset(LiqType, 0xff, (LiqType_maxid + 1) * sizeof(uint16_t));
 
     for(uint32_t x = 0; x < LiqType_count; ++x)
-        LiqType[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
+        LiqType[dbc.getRecord(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRecord(x).getUInt(3));
 
     printf("Done! (%u LiqTypes loaded)\n", (unsigned int)LiqType_count);
 }
@@ -112,16 +110,11 @@ bool ExtractWmo()
 
     //const char* ParsArchiveNames[] = {"patch-2.MPQ", "patch.MPQ", "common.MPQ", "expansion.MPQ"};
 
-    for (ArchiveSet::const_iterator ar_itr = gOpenArchives.begin(); ar_itr != gOpenArchives.end() && success; ++ar_itr)
+    std::vector<std::string> filelist = GetMpqFileList();
+    for (std::vector<std::string>::iterator fname = filelist.begin(); fname != filelist.end() && success; ++fname)
     {
-        std::vector<std::string> filelist;
-
-        (*ar_itr)->GetFileListTo(filelist);
-        for (std::vector<std::string>::iterator fname = filelist.begin(); fname != filelist.end() && success; ++fname)
-        {
-            if (fname->find(".wmo") != std::string::npos)
-                success = ExtractSingleWmo(*fname);
-        }
+        if (fname->find(".wmo") != std::string::npos)
+            success = ExtractSingleWmo(*fname);
     }
 
     if (success)
@@ -506,13 +499,9 @@ int main(int argc, char ** argv)
     std::vector<std::string> archiveNames;
     fillArchiveNameVector(archiveNames);
     for (size_t i=0; i < archiveNames.size(); ++i)
-    {
-        MPQArchive *archive = new MPQArchive(archiveNames[i].c_str());
-        if (gOpenArchives.empty() || gOpenArchives.front() != archive)
-            delete archive;
-    }
+        MPQArchive(archiveNames[i].c_str());
 
-    if (gOpenArchives.empty())
+    if (!HasOpenMpqArchive())
     {
         printf("FATAL ERROR: None MPQ archive found by path '%s'. Use -d option with proper path.\n",input_path);
         return 1;

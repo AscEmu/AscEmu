@@ -59,8 +59,6 @@
 #else
     #define OPEN_FLAGS (O_RDONLY | O_BINARY)
 #endif
-extern ArchiveSet gOpenArchives;
-
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -427,7 +425,7 @@ void ReadAreaTableDBC()
     memset(areas, 0xff, (maxid + 1) * sizeof(uint16_t));
 
     for (uint32_t x = 0; x < area_count; ++x)
-        areas[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
+        areas[dbc.getRecord(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRecord(x).getUInt(3));
 
     maxAreaId = static_cast<uint32_t>(dbc.getMaxId());
 
@@ -450,7 +448,7 @@ void ReadLiquidTypeTableDBC()
     memset(LiqType, 0xff, (liqTypeMaxId + 1) * sizeof(uint16_t));
 
     for (uint32_t x = 0; x < liqTypeCount; ++x)
-        LiqType[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
+        LiqType[dbc.getRecord(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRecord(x).getUInt(3));
 
     printf("Done! (%u LiqTypes loaded)\n", (uint32_t)liqTypeCount);
 }
@@ -988,10 +986,10 @@ bool ConvertADT(char* filename, char* filename2, int /*cell_y*/, int /*cell_x*/,
         liquidHeader.fourcc = *reinterpret_cast<uint32_t const*>(MAP_LIQUID_MAGIC);
         liquidHeader.flags = 0;
         liquidHeader.liquidType = 0;
-        liquidHeader.offsetX = minX;
-        liquidHeader.offsetY = minY;
-        liquidHeader.width = maxX - minX + 1 + 1;
-        liquidHeader.height = maxY - minY + 1 + 1;
+        liquidHeader.offsetX = static_cast<uint8_t>(minX);
+        liquidHeader.offsetY = static_cast<uint8_t>(minY);
+        liquidHeader.width = static_cast<uint8_t>(maxX - minX + 1 + 1);
+        liquidHeader.height = static_cast<uint8_t>(maxY - minY + 1 + 1);
         liquidHeader.liquidLevel = minHeight;
 
         if (maxHeight == minHeight)
@@ -1031,7 +1029,7 @@ bool ConvertADT(char* filename, char* filename2, int /*cell_y*/, int /*cell_x*/,
             adt_MCNK* cell = cells->getMCNK(i, j);
             if (!cell)
                 continue;
-            holes[i][j] = cell->holes;
+            holes[i][j] = static_cast<uint16_t>(cell->holes);
             if (!hasHoles && cell->holes != 0)
                 hasHoles = true;
         }
@@ -1174,18 +1172,14 @@ void ExtractDBCFiles(int locale, bool basicLocale)
 
     // get DBC file list
     // this can be solved better with std::filesystem
-    for (ArchiveSet::iterator i = gOpenArchives.begin(); i != gOpenArchives.end(); ++i)
+    std::vector<std::string> files = GetMpqFileList();
+    for (std::vector<std::string>::iterator iter = files.begin(); iter != files.end(); ++iter)
     {
-        std::vector<std::string> files;
-        (*i)->GetFileListTo(files);
-        for (std::vector<std::string>::iterator iter = files.begin(); iter != files.end(); ++iter)
-        {
-            if (iter->rfind(".dbc") == iter->length() - strlen(".dbc"))
-                dbcfiles.insert(*iter);
+        if (iter->rfind(".dbc") == iter->length() - strlen(".dbc"))
+            dbcfiles.insert(*iter);
 
-            if (iter->rfind(".db2") == iter->length() - strlen(".db2"))
-                dbcfiles.insert(*iter);
-        }
+        if (iter->rfind(".db2") == iter->length() - strlen(".db2"))
+            dbcfiles.insert(*iter);
     }
 
     std::string path = output_path;
@@ -1254,9 +1248,7 @@ void LoadCommonMPQFiles()
 
 inline void CloseMPQFiles()
 {
-    for (ArchiveSet::iterator j = gOpenArchives.begin(); j != gOpenArchives.end(); ++j)
-        (*j)->close();
-    gOpenArchives.clear();
+    CloseMpqArchives();
 }
 
 int getFindLanguageIndex()

@@ -17,63 +17,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Historically a thin wrapper around libmpq's C API plus a global list of open
+// archives (ArchiveSet/gOpenArchives). Internally reimplemented on top of
+// mpqlib::MpqPatchChain (the same MPQ layer AscEmu's Cata/Mop tools use) - the
+// public API below is unchanged so every existing call site (System.cpp,
+// vmapexport.cpp, dbcfile.cpp, loadlib.cpp, CreatureDataExtractor.cpp) keeps
+// working without modification to their MPQArchive/MPQFile usage.
+
 #ifndef MPQ_H
 #define MPQ_H
 
 #include "loadlib.h"
-#include "mpq.h"
-#include <string.h>
 #include <string>
 #include <vector>
-#include <deque>
 
 class MPQArchive
 {
-
 public:
-    mpq_archive_s *mpq_a;
+    explicit MPQArchive(const char* filename);
+    ~MPQArchive() = default;
 
-    MPQArchive(const char* filename);
-    ~MPQArchive() { close(); }
+    bool isOpen() const { return m_opened; }
+    void GetFileListTo(std::vector<std::string>& filelist);
+    void close() {}
 
-    void GetFileListTo(std::vector<std::string>& filelist) {
-        uint32_t filenum;
-        if(libmpq__file_number(mpq_a, "(listfile)", &filenum)) return;
-        libmpq__off_t size, transferred;
-        libmpq__file_size_unpacked(mpq_a, filenum, &size);
-
-        char *buffer = new char[size + 1];
-        buffer[size] = '\0';
-
-        libmpq__file_read(mpq_a, filenum, (unsigned char*)buffer, size, &transferred);
-
-        char seps[] = "\n";
-        char *token;
-
-        token = strtok( buffer, seps );
-        uint32_t counter = 0;
-        while ((token != NULL) && (counter < size)) {
-            //cout << token << endl;
-            token[strlen(token) - 1] = 0;
-            std::string s = token;
-            filelist.push_back(s);
-            counter += static_cast<uint32_t>(strlen(token) + 2);
-            token = strtok(NULL, seps);
-        }
-
-        delete[] buffer;
-    }
-
-    void close();
+private:
+    bool m_opened;
 };
-typedef std::deque<MPQArchive*> ArchiveSet;
 
 class MPQFile
 {
     //MPQHANDLE handle;
     bool eof;
     char *buffer;
-    libmpq__off_t pointer,size;
+    size_t pointer, size;
 
     // disable copying
     MPQFile(const MPQFile& /*f*/) = delete;
@@ -92,6 +69,17 @@ public:
     void seekRelative(int offset);
     void close();
 };
+
+// Union listfile across every archive opened so far (base + patches),
+// de-duplicated - replaces manually iterating the old ArchiveSet/gOpenArchives.
+std::vector<std::string> GetMpqFileList();
+
+// True once at least one archive has been successfully opened.
+bool HasOpenMpqArchive();
+
+// Discards the current archive chain so a fresh one can be opened from
+// scratch - replaces the old per-archive CloseMPQFiles()/gOpenArchives.clear().
+void CloseMpqArchives();
 
 inline void flipcc(char *fcc)
 {
