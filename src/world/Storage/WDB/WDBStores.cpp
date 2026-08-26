@@ -67,7 +67,7 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::AuctionHouseEntry> sAuctionHouseS
 SERVER_DECL WDB::WDBContainer<WDB::Structures::BankBagSlotPrices> sBankBagSlotPricesStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ChatChannelsEntry> sChatChannelsStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::CharStartOutfitEntry> sCharStartOutfitStore;
+SERVER_DECL WDB::WDBStore<WDB::Structures::CharStartOutfitEntry> sCharStartOutfitStore;
 std::map<uint32_t, WDB::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
 
 SERVER_DECL WDB::WDBStore<WDB::Structures::ChrClassesEntry> sChrClassesStore;
@@ -351,10 +351,31 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sBankBagSlotPricesStore, dbc_path, "BankBagSlotPrices.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChatChannelsStore, dbc_path, "ChatChannels.dbc");
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sCharStartOutfitStore, dbc_path, "CharStartOutfit.dbc");
-    for (uint32_t i = 0; i < sCharStartOutfitStore.getNumRows(); ++i)
-        if (WDB::Structures::CharStartOutfitEntry const* outfit = sCharStartOutfitStore.lookupEntry(i))
-            sCharStartOutfitMap[outfit->Race | outfit->Class << 8 | outfit->Gender << 16] = outfit;
+    WDB::loadUnifiedWDBStore<WDB::Structures::CharStartOutfitEntry>(
+        bad_dbc_files, sCharStartOutfitStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::CharStartOutfitEntry& entry)
+        {
+            entry.race = raw.race;
+            entry.classId = raw.classId;
+            entry.gender = raw.gender;
+
+            constexpr size_t rawItemCount = sizeof(raw.itemId) / sizeof(raw.itemId[0]);
+            for (size_t i = 0; i < rawItemCount; ++i)
+            {
+                entry.itemId[i] = raw.itemId[i];
+            }
+
+            if constexpr (requires { raw.petDisplayId; })
+            {
+                entry.petDisplayId = raw.petDisplayId;
+                entry.petFamilyEntry = raw.petFamilyEntry;
+            }
+        });
+
+    for (auto const& [id, outfit] : sCharStartOutfitStore)
+    {
+        sCharStartOutfitMap[outfit.makeKey()] = &outfit;
+    }
 
     WDB::loadUnifiedWDBStore<WDB::Structures::ChrRacesEntry>(
         bad_dbc_files, sChrRacesStore, dbc_path,

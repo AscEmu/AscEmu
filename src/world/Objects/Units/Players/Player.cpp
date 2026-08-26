@@ -2362,12 +2362,12 @@ bool Player::create(CharCreate& charCreateContent)
     // add dbc items
     if (const auto charStartOutfitEntry = getStartOutfitByRaceClass(charCreateContent._race, charCreateContent._class, charCreateContent.gender))
     {
-        for (uint8_t j = 0; j < OUTFIT_ITEMS; ++j)
+        for (int32_t const rawItemId : charStartOutfitEntry->itemId)
         {
-            if (charStartOutfitEntry->ItemId[j] <= 0)
+            if (rawItemId <= 0)
                 continue;
 
-            const uint32_t itemId = charStartOutfitEntry->ItemId[j];
+            auto const itemId = static_cast<uint32_t>(rawItemId);
 
             const auto itemProperties = sMySQLStore.getItemProperties(itemId);
             if (!itemProperties)

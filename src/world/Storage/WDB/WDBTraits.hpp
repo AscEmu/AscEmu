@@ -58,6 +58,17 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::CharStartOutfitEntry> : DbcVersionLayouts<
+            Structures::Raw::CharStartOutfitEntryClassic,
+            Structures::Raw::CharStartOutfitEntryTbc,
+            Structures::Raw::CharStartOutfitEntryWotlk,
+            Structures::Raw::CharStartOutfitEntryCata,
+            Structures::Raw::CharStartOutfitEntryMop>
+    {
+        static constexpr char const* filename = "CharStartOutfit.dbc";
+    };
+
+    template <>
     struct DbcTraits<Structures::CharTitlesEntry> : DbcVersionLayouts<
             UnsupportedVersion, // Classic
             Structures::Raw::CharTitlesEntryTbcWotlk, // TBC

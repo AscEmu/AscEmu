@@ -197,6 +197,30 @@ namespace WDB::Structures
         uint32_t hairId{0};
     };
 
+    constexpr size_t MAX_OUTFIT_ITEMS = 24;
+
+    struct CharStartOutfitEntry
+    {
+        uint8_t race{0};
+        uint8_t classId{0};
+        uint8_t gender{0};
+        int32_t itemId[MAX_OUTFIT_ITEMS]{};
+        uint32_t petDisplayId{0};
+        uint32_t petFamilyEntry{0};
+
+        [[nodiscard]] constexpr uint32_t makeKey() const noexcept
+        {
+            return generateKey(race, classId, gender);
+        }
+
+        [[nodiscard]] static constexpr uint32_t generateKey(uint8_t race, uint8_t classId, uint8_t gender) noexcept
+        {
+            return static_cast<uint32_t>(race)
+                | (static_cast<uint32_t>(classId) << 8)
+                | (static_cast<uint32_t>(gender) << 16);
+        }
+    };
+
     struct CharTitlesEntry
     {
         uint32_t id{0};
@@ -937,28 +961,6 @@ namespace WDB::Structures
         //uint32_t state;                                           // 10
     };
 #endif
-
-#if VERSION_STRING <= TBC
-#define OUTFIT_ITEMS 12
-#else
-#define OUTFIT_ITEMS 24
-#endif
-
-    struct CharStartOutfitEntry
-    {
-        //uint32_t Id;                                              // 0
-        uint8_t Race;                                               // 1
-        uint8_t Class;                                              // 2
-        uint8_t Gender;                                             // 3
-        //uint8_t Unused;                                           // 4
-        int32_t ItemId[OUTFIT_ITEMS];                               // 5-16
-        //int32_t ItemDisplayId[OUTFIT_ITEMS];                      // 17-28
-        //int32_t ItemInventorySlot[OUTFIT_ITEMS];                  // 29-40
-#if VERSION_STRING >= Cata
-        uint32_t PetDisplayId;                                      // 77
-        uint32_t PetFamilyEntry;                                    // 78
-#endif
-    };
 
     struct ChatChannelsEntry
     {

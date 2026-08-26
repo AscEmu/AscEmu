@@ -107,6 +107,36 @@ namespace WDB::Structures::Raw
         uint32_t hairId;
     };
 
+    struct CharStartOutfitEntryClassic
+    {
+        uint8_t race;
+        uint8_t classId;
+        uint8_t gender;
+        int32_t itemId[12];
+    };
+
+    using CharStartOutfitEntryTbc = CharStartOutfitEntryClassic;
+
+    struct CharStartOutfitEntryWotlk
+    {
+        uint8_t race;
+        uint8_t classId;
+        uint8_t gender;
+        int32_t itemId[24];
+    };
+
+    struct CharStartOutfitEntryCata
+    {
+        uint8_t race;
+        uint8_t classId;
+        uint8_t gender;
+        int32_t itemId[24];
+        uint32_t petDisplayId;
+        uint32_t petFamilyEntry;
+    };
+
+    using CharStartOutfitEntryMop = CharStartOutfitEntryCata;
+
     struct CharTitlesEntryTbcWotlk
     {
         uint32_t id;
