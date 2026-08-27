@@ -1510,11 +1510,11 @@ int32_t Spell::calculateEffect(uint8_t effIndex)
             switch (getSpellInfo()->getEffect(effIndex))
             {
                 case SPELL_EFFECT_SCHOOL_DAMAGE:
-                    value = static_cast<int32_t>(std::round(getUnitCaster()->applySpellDamageBonus(u_caster, getSpellInfo(), effIndex, value, 1.0f, false, this)));
+                    value = Util::float2int32(getUnitCaster()->applySpellDamageBonus(m_originalCaster, getSpellInfo(), effIndex, value, false, this));
                     break;
                 case SPELL_EFFECT_HEAL:
                 case SPELL_EFFECT_HEAL_MECHANICAL:
-                    value = static_cast<int32_t>(std::round(getUnitCaster()->applySpellHealingBonus(u_caster, getSpellInfo(), effIndex, value, 1.0f, false, this)));
+                    value = Util::float2int32(getUnitCaster()->applySpellHealingBonus(m_originalCaster, getSpellInfo(), effIndex, value, false, this));
                     break;
                 default:
                     break;
@@ -5128,6 +5128,16 @@ void Spell::setItemCaster(Item* itemCaster)
     i_caster = itemCaster;
 }
 
+Unit* Spell::getOriginalCaster() const
+{
+    return m_originalCaster;
+}
+
+void Spell::setOriginalCasterGuid(uint64_t guid)
+{
+    m_originalCasterGuid = guid;
+}
+
 bool Spell::wasCastedinDuel() const
 {
     return duelSpell;
@@ -5654,6 +5664,11 @@ void Spell::_updateCasterPointers(Object* caster)
 void Spell::_updateTargetPointers(const uint64_t targetGuid)
 {
     unsetAllTargets();
+
+    // Original caster must also be updated
+    m_originalCaster = nullptr;
+    if (m_originalCasterGuid != 0)
+        m_originalCaster = m_caster->getWorldMapUnit(m_originalCasterGuid);
 
     if (targetGuid == 0)
     {

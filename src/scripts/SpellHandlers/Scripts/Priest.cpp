@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellProc.hpp"
 #include "Spell/SpellScript.hpp"
+#include "Spell/SpellTarget.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Spell/Definitions/SpellEffectTarget.hpp"
 
@@ -389,8 +390,8 @@ public:
             return false;
 
         // Only on single target spells
-        //\ todo: not sure on this
-        if (!(castingSpell->hasTargetType(EFF_TARGET_SINGLE_ENEMY) || castingSpell->hasTargetType(EFF_TARGET_SELECTED_ENEMY_CHANNELED)))
+        const auto targetMask = castingSpell->getRequiredTargetMask(true);
+        if (targetMask & SPELL_TARGET_AREA_MASK)
             return false;
 
         // Check spell's effects
@@ -446,17 +447,6 @@ public:
         partyHeal = 0;
         return SpellScriptExecuteState::EXECUTE_OK;
     }
-
-#if VERSION_STRING >= WotLK && VERSION_STRING < Mop
-    void filterEffectTargets(Spell* spell, uint8_t effIndex, std::vector<uint64_t>* effTargets) override
-    {
-        if (effIndex != EFF_INDEX_0)
-            return;
-
-        // Remove caster from party effect
-        effTargets->erase(std::remove(effTargets->begin(), effTargets->end(), spell->getCaster()->getGuid()), effTargets->end());
-    }
-#endif
 
 private:
     uint32_t selfHeal = 0;

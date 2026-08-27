@@ -1277,7 +1277,7 @@ uint32_t AbsorbAura::calcAbsorbAmount(AuraEffectModifier* aurEff)
     if (unitCaster != nullptr && !aurEff->isEffectDamageStatic())
     {
         // Apply spell power coefficient
-        val = static_cast<int32_t>(std::round(unitCaster->applySpellDamageBonus(unitCaster, getSpellInfo(), aurEff->getEffectIndex(), val, aurEff->getEffectPercentModifier(), false, nullptr, aurEff->getAura())));
+        val = Util::float2int32(unitCaster->applySpellDamageBonus(unitCaster, getSpellInfo(), aurEff->getEffectIndex(), val, false, nullptr, aurEff));
     }
 
     return static_cast<uint32_t>(val);

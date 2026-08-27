@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellScript.hpp"
 #include "Spell/SpellTarget.h"
 #include "Spell/Definitions/SpellDamageType.hpp"
+#include "Utilities/Narrow.hpp"
 
 enum PaladinSpells
 {
@@ -305,7 +306,7 @@ public:
             SPELL_JUDGEMENT_OF_THE_MARTYR_BACKFIRE :
             SPELL_JUDGEMENT_OF_BLOOD_BACKFIRE;
         SpellForcedBasePoints forcedBasePoints;
-        forcedBasePoints.set(EFF_INDEX_0, static_cast<int32_t>(std::round(damageInfo.realDamage * 0.33f)));
+        forcedBasePoints.set(EFF_INDEX_0, Util::float2int32(damageInfo.realDamage * 0.33f));
         spell->getUnitCaster()->castSpell(spell->getUnitCaster(), backFireSpell, forcedBasePoints, true);
     }
 };
@@ -392,12 +393,11 @@ class JudgementOfLightHeal : public SpellScript
 public:
     void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
     {
-#if VERSION_STRING < WotLK
         // Casted by attacker
         spellProc->setCastedByProcInitiator(true);
-#else // Wotlk
-        // Casted by paladin
-        spellProc->setCastedByProcCreator(true);
+#if VERSION_STRING == WotLK
+        // But in wotlk heal effect is done by paladin
+        spellProc->setOriginalCasterGuidForProcSpell(spellProc->getCasterGuid());
 #endif
     }
 
@@ -448,7 +448,7 @@ public:
         return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 #else // Wotlk and cata
         // Calculate bonuses here to increase damage properly
-        *damage = static_cast<int32_t>(std::round(spell->getUnitCaster()->applySpellDamageBonus(spell->getUnitCaster(), spell->getSpellInfo(), effIndex, *damage, 1.0f, false, spell)));
+        *damage = Util::float2int32(spell->getUnitCaster()->applySpellDamageBonus(spell->getUnitCaster(), spell->getSpellInfo(), effIndex, *damage, false, spell));
 #if VERSION_STRING == WotLK
         // One stack increases damage by 10%
         *damage = *damage * (100 + (10 * auraCount)) / 100;
@@ -500,12 +500,11 @@ class JudgementOfWisdomMana : public SpellScript
 public:
     void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
     {
-#if VERSION_STRING < WotLK
         // Casted by attacker
         spellProc->setCastedByProcInitiator(true);
-#else // Wotlk
-        // Casted by paladin
-        spellProc->setCastedByProcCreator(true);
+#if VERSION_STRING == WotLK
+        // But in wotlk mana effect is done by paladin
+        spellProc->setOriginalCasterGuidForProcSpell(spellProc->getCasterGuid());
 #endif
     }
 
@@ -604,7 +603,7 @@ public:
 
     SpellScriptExecuteState onDoProcEffect(SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo damageInfo) override
     {
-        const auto backfireDmg = static_cast<int32_t>(std::round(damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_1) / 100));
+        const int32_t backfireDmg = damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_1) / 100;
         spellProc->setOverrideEffectDamage(EFF_INDEX_0, std::max(backfireDmg, 1));
         return SpellScriptExecuteState::EXECUTE_OK;
     }
@@ -684,7 +683,7 @@ public:
     // Stun effect was replaced by damage effect in Cata
     SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* damage) override
     {
-        const auto* const unitCaster = spell->getUnitCaster();
+        auto* const unitCaster = spell->getUnitCaster();
         if (unitCaster == nullptr)
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
@@ -695,9 +694,7 @@ public:
                 speed = mainhandWeapon->getItemProperties()->Delay / 1000.0f;
         }
         // Weapon speed * (0.005 * AP + 0.01 * SPH)
-        const auto spCoeff = spell->getSpellInfo()->getEffectSpellPowerCoefficient(effIndex);
-        const auto apCoeff = spell->getSpellInfo()->getAttackPowerCoefficient();
-        *damage = static_cast<int32_t>(std::round(speed * (apCoeff * unitCaster->getCalculatedAttackPower() + spCoeff * unitCaster->GetDamageDoneMod(SCHOOL_HOLY))));
+        *damage = Util::float2int32(unitCaster->applySpellDamageBonus(spell->getOriginalCaster(), spell->getSpellInfo(), effIndex, speed, true, spell));
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 #endif
@@ -762,7 +759,7 @@ class SealOfRighteousnessDamage : public SpellScript
 public:
     SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* damage) override
     {
-        const auto* const unitCaster = spell->getUnitCaster();
+        auto* const unitCaster = spell->getUnitCaster();
         if (unitCaster == nullptr)
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
@@ -771,9 +768,11 @@ public:
         if (mainHandWeapon != nullptr)
             speed = mainHandWeapon->getItemProperties()->Delay / 1000.f;
 
-        auto spellCoeff = spell->getSpellInfo()->getEffectSpellPowerCoefficient(effIndex);
 #if VERSION_STRING < WotLK
+        // Due to somewhat complex damage calculation need to apply spell damage manually
+        // This is essentially applySpellDamageBonus dumbed down
         float_t baseDamage = 0.0f;
+        auto spellCoeff = spell->getSpellInfo()->getEffectSpellPowerCoefficient(effIndex);
         if (mainHandWeapon != nullptr && mainHandWeapon->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)
         {
             // Two handed weapon
@@ -786,12 +785,29 @@ public:
             spellCoeff *= 0.852f;
         }
 
-        *damage = static_cast<int32_t>(std::round(baseDamage + (spellCoeff * unitCaster->GetDamageDoneMod(SCHOOL_HOLY))));
+        auto bonusDmg = static_cast<float_t>(unitCaster->GetDamageDoneMod(SCHOOL_HOLY));
+        if (bonusDmg > 0.0f)
+        {
+            bonusDmg *= spellCoeff;
+
+#if VERSION_STRING == TBC
+            // Apply general downranking penalty
+            if (bonusDmg > 0.0f && unitCaster->isPlayer())
+                bonusDmg *= unitCaster->getSpellDownrankingPenalty(spell->getSpellInfo()->getMaxLevel());
+#endif
+        }
+
+        unitCaster->applySpellModifiers(SPELLMOD_PENALTY, &bonusDmg, spell->getSpellInfo(), spell);
+
+        float_t fullDmg = baseDamage + std::max(0.0f, bonusDmg);
+        unitCaster->applySpellModifiers(SPELLMOD_DAMAGE_DONE, &fullDmg, spell->getSpellInfo(), spell);
+        fullDmg *= unitCaster->GetDamageDonePctMod(SCHOOL_HOLY);
+
+        *damage = Util::float2int32(fullDmg);
 #else
         // Wotlk: Weapon speed * (0.022 * AP + 0.044 * SPH)
         // Cata: Weapon speed * (0.011 * AP + 0.022 * SPH)
-        const auto apCoeff = spell->getSpellInfo()->getAttackPowerCoefficient();
-        *damage = static_cast<int32_t>(std::round(speed * (apCoeff * unitCaster->getCalculatedAttackPower() + spellCoeff * unitCaster->GetDamageDoneMod(SCHOOL_HOLY))));
+        *damage = Util::float2int32(unitCaster->applySpellDamageBonus(spell->getOriginalCaster(), spell->getSpellInfo(), effIndex, speed, true, spell));
 #endif
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
@@ -885,7 +901,7 @@ public:
         if (const auto* const dotAur = spell->getUnitTarget()->getAuraWithId(auraId))
             dmgPercent *= dotAur->getStackCount();
 
-        *damage = static_cast<int32_t>(std::round(dmgPercent));
+        *damage = Util::float2int32(dmgPercent);
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 #endif

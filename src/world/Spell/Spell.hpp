@@ -154,6 +154,9 @@ public:
 
     void setItemCaster(Item* itemCaster);
 
+    Unit* getOriginalCaster() const;
+    void setOriginalCasterGuid(uint64_t guid);
+
     bool wasCastedinDuel() const;
 
 protected:
@@ -169,6 +172,10 @@ protected:
     Player* p_caster = nullptr;
     GameObject* g_caster = nullptr;
     Item* i_caster = nullptr;
+
+    // Some spells are casted via another caster
+    Unit* m_originalCaster = nullptr;
+    uint64_t m_originalCasterGuid = 0;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
