@@ -53,6 +53,8 @@ public:
     void setEffectActive(bool set);
     bool isActive() const;
 
+    bool isPeriodicEffect() const;
+
     void applyEffect(bool apply, bool skipScriptCheck = false);
 
     void setAura(Aura* aur);

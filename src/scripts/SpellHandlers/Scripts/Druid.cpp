@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellScript.hpp"
+#include "Utilities/Narrow.hpp"
 
 enum DruidSpells
 {
@@ -153,7 +154,7 @@ public:
     SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t /*effIndex*/, int32_t* damage) override
     {
         if (spell->getUnitTarget() != nullptr)
-            *damage = static_cast<int32_t>(std::round(spell->getUnitTarget()->getMaxHealth() * static_cast<float_t>(*damage / 100.0f)));
+            *damage = Util::float2int32(spell->getUnitTarget()->getMaxHealth() * static_cast<float_t>(*damage / 100.0f));
 
         // no healing bonuses
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;

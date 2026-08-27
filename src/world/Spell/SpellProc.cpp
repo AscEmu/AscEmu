@@ -109,16 +109,9 @@ void SpellProc::castSpell(Unit* victim, SpellInfo const* castingSpell)
 
     Unit* caster = getProcOwner();
     if (isCastedByProcCreator())
-    {
-        if (getCasterGuid() == getProcOwner()->getGuid())
-            caster = getProcOwner();
-        else
-            caster = getProcOwner()->getWorldMapUnit(getCasterGuid());
-    }
+        caster = getCasterUnit();
     else if (isCastedByProcInitiator())
-    {
         caster = victim;
-    }
 
     if (caster == nullptr)
         return;
@@ -131,6 +124,8 @@ void SpellProc::castSpell(Unit* victim, SpellInfo const* castingSpell)
     spell->ProcedOnSpell = castingSpell;
     if (mOrigSpell != nullptr)
         spell->pSpellId = mOrigSpell->getId();
+
+    spell->setOriginalCasterGuid(m_originalCasterGuidForProcSpell);
 
     // Final script hook before casting the spell
     const auto scriptResult = sScriptMgr.callScriptedSpellProcCastSpell(this, caster, victim, spell);
@@ -151,6 +146,14 @@ SpellInfo const* SpellProc::getOriginalSpell() const { return mOrigSpell; }
 Unit* SpellProc::getProcOwner() const { return mOwner; }
 
 uint64_t SpellProc::getCasterGuid() const { return mCaster; }
+
+Unit* SpellProc::getCasterUnit() const
+{
+    if (mCaster == mOwner->getGuid())
+        return mOwner;
+
+    return mOwner->getWorldMapUnit(mCaster);
+}
 
 uint32_t SpellProc::getProcChance() const { return mProcChance; }
 
@@ -192,6 +195,9 @@ void SpellProc::setCastedByProcInitiator(bool enable) { m_castedByProcInitiator 
 
 bool SpellProc::isCastedOnProcOwner() const { return m_castOnProcOwner; }
 void SpellProc::setCastedOnProcOwner(bool enable) { m_castOnProcOwner = enable; }
+
+uint64_t SpellProc::getOriginalCasterGuidForProcSpell() const { return m_originalCasterGuidForProcSpell; }
+void SpellProc::setOriginalCasterGuidForProcSpell(uint64_t guid) { m_originalCasterGuidForProcSpell = guid; }
 
 int32_t SpellProc::getOverrideEffectDamage(uint8_t effIndex) const
 {

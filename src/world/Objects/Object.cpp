@@ -53,6 +53,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Creatures/Corpse.hpp"
 #include "Units/Creatures/Vehicle.hpp"
 #include "Units/Players/Player.hpp"
+#include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
 #include "Utilities/MathConstants.hpp"
 #include "Server/PacketBroadcast.hpp"
@@ -929,13 +930,13 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
         else
         {
             // In case this is the last tick, just round the value
-            dmgInfo.fullDamage = static_cast<int32_t>(std::round(damage));
+            dmgInfo.fullDamage = Util::float2int32(damage);
         }
     }
     else
     {
         // If this is a direct damage spell just round the value
-        dmgInfo.fullDamage = static_cast<int32_t>(std::round(damage));
+        dmgInfo.fullDamage = Util::float2int32(damage);
     }
 
     dmgInfo.realDamage = dmgInfo.fullDamage;
@@ -1350,13 +1351,13 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
         else
         {
             // In case this is the last tick, just round the value
-            dmgInfo.fullDamage = static_cast<int32_t>(std::round(heal));
+            dmgInfo.fullDamage = Util::float2int32(heal);
         }
     }
     else
     {
         // If this is a direct heal spell just round the value
-        dmgInfo.fullDamage = static_cast<int32_t>(std::round(heal));
+        dmgInfo.fullDamage = Util::float2int32(heal);
     }
 
     dmgInfo.realDamage = dmgInfo.fullDamage;

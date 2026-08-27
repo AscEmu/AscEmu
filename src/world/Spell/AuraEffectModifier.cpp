@@ -55,6 +55,32 @@ uint8_t AuraEffectModifier::getEffectIndex() const { return effIndex; }
 void AuraEffectModifier::setEffectActive(bool set) { mActive = set; }
 bool AuraEffectModifier::isActive() const { return mActive; }
 
+bool AuraEffectModifier::isPeriodicEffect() const
+{
+    switch (mAuraEffect)
+    {
+        case SPELL_AURA_PERIODIC_DAMAGE:
+        case SPELL_AURA_PERIODIC_HEAL:
+        case SPELL_AURA_PERIODIC_HEAL_PCT:
+        case SPELL_AURA_PERIODIC_POWER_PCT:
+        case SPELL_AURA_PERIODIC_TRIGGER_SPELL:
+        case SPELL_AURA_PERIODIC_ENERGIZE:
+        case SPELL_AURA_PERIODIC_LEECH:
+        case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
+        case SPELL_AURA_PERIODIC_MANA_FUNNEL:
+        case SPELL_AURA_PERIODIC_MANA_LEECH:
+        case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
+        case SPELL_AURA_PERIODIC_POWER_BURN:
+#if VERSION_STRING >= TBC
+        case SPELL_AURA_PERIODIC_TRIGGER_DUMMY:
+        case SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE:
+#endif
+            return true;
+        default:
+            return false;
+    }
+}
+
 void AuraEffectModifier::applyEffect(bool apply, bool skipScriptCheck/* = false*/)
 {
     // Do not apply or remove effect multiple times

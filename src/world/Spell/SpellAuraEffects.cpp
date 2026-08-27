@@ -1015,7 +1015,7 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
 
         // Get bonus damage from spell power and attack power
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
-            damage = casterUnit->applySpellDamageBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, nullptr, this);
+            damage = casterUnit->applySpellDamageBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff);
 
         if (damage <= 0.0f)
             return;
@@ -1073,7 +1073,7 @@ void Aura::spellAuraEffectPeriodicHeal(AuraEffectModifier* aurEff, bool apply)
         {
             // Get bonus healing from spell power and attack power
             if (!aurEff->isEffectDamageStatic())
-                heal = casterUnit->applySpellHealingBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, nullptr, this);
+                heal = casterUnit->applySpellHealingBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff);
         }
 
         if (heal <= 0)
@@ -1114,7 +1114,7 @@ void Aura::spellAuraEffectPeriodicHealPct(AuraEffectModifier* aurEff, bool apply
         // Get bonus healing from spell power and attack power
         const auto casterUnit = GetUnitCaster();
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
-            aurEff->setEffectDamage(casterUnit->applySpellHealingBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, nullptr, this));
+            aurEff->setEffectDamage(casterUnit->applySpellHealingBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff));
 
         // Set periodic timer only if timer was resetted
         if (m_periodicTimer[aurEff->getEffectIndex()] == 0)
@@ -1575,7 +1575,7 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
 
         // Get bonus damage from spell power and attack power
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
-            damage = casterUnit->applySpellDamageBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, nullptr, this);
+            damage = casterUnit->applySpellDamageBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff);
 
         if (casterUnit != nullptr)
         {
@@ -1725,7 +1725,7 @@ void Aura::spellAuraEffectPeriodicHealthFunnel(AuraEffectModifier* aurEff, bool 
         // Get bonus damage from spell power and attack power
         const auto casterUnit = GetUnitCaster();
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
-            aurEff->setEffectDamage(casterUnit->applySpellDamageBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, nullptr, this));
+            aurEff->setEffectDamage(casterUnit->applySpellDamageBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff));
 
         // Set periodic timer only if timer was resetted
         if (m_periodicTimer[aurEff->getEffectIndex()] == 0)
@@ -1803,12 +1803,12 @@ void Aura::spellAuraEffectPeriodicDamagePercent(AuraEffectModifier* aurEff, bool
 {
     if (apply)
     {
-        aurEff->setEffectDamage(static_cast<int32_t>(std::ceil(aurEff->getEffectBaseDamage() / 100.0f * getOwner()->getMaxHealth())) * getStackCount());
+        aurEff->setEffectDamage((aurEff->getEffectBaseDamage() / 100.0f * getOwner()->getMaxHealth()) * getStackCount());
 
         // Get bonus damage from spell power and attack power
         const auto casterUnit = GetUnitCaster();
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
-            aurEff->setEffectDamage(casterUnit->applySpellDamageBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectDamage(), aurEff->getEffectPercentModifier(), true, nullptr, this));
+            aurEff->setEffectDamage(casterUnit->applySpellDamageBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff));
 
         // Set periodic timer only if timer was resetted
         if (m_periodicTimer[aurEff->getEffectIndex()] == 0)

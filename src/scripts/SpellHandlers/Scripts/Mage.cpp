@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellScript.hpp"
+#include "Utilities/Narrow.hpp"
 
 enum MageSpells
 {
@@ -299,7 +300,7 @@ public:
         if (manaReturn <= 0)
             return SpellScriptExecuteState::EXECUTE_PREVENT;
 
-        manaReturn = static_cast<int32_t>(std::round(manaReturn * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100.0f));
+        manaReturn = Util::float2int32(manaReturn * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100.0f);
         return SpellScriptExecuteState::EXECUTE_OK;
     }
 

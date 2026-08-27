@@ -1301,7 +1301,7 @@ int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = n
     if (comboDamage > 0.0f && unitCaster != nullptr && unitCaster->isPlayer())
     {
         const auto plrCaster = static_cast<Player*>(unitCaster);
-        basePoints += static_cast<int32_t>(std::round(comboDamage * plrCaster->getComboPoints()));
+        basePoints += Util::float2int32(comboDamage * plrCaster->getComboPoints());
     }
 
     return basePoints;

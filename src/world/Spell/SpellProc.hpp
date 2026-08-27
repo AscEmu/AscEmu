@@ -76,6 +76,7 @@ public:
     Unit* getProcOwner() const;
 
     uint64_t getCasterGuid() const;
+    Unit* getCasterUnit() const;
     uint32_t getProcChance() const;
     float_t getProcsPerMinute() const;
     SpellProcFlags getProcFlags() const;
@@ -107,6 +108,9 @@ public:
 
     bool isCastedOnProcOwner() const;
     void setCastedOnProcOwner(bool);
+
+    uint64_t getOriginalCasterGuidForProcSpell() const;
+    void setOriginalCasterGuidForProcSpell(uint64_t);
 
     // Returns 0 if effect index has not been overridden
     int32_t getOverrideEffectDamage(uint8_t effIndex) const;
@@ -160,6 +164,9 @@ private:
     // If set true, the proc spell is casted on the proc owner, not on victim
     // By default, the spell is casted on victim
     bool m_castOnProcOwner = false;
+
+    // In rare cases spell is actually casted via another caster
+    uint64_t m_originalCasterGuidForProcSpell = 0;
 
     // Mask used to compare with casting spell's family mask
     uint32_t mProcClassMask[3] = { 0, 0, 0 };
