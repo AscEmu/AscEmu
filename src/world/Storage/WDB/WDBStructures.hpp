@@ -202,6 +202,14 @@ namespace WDB::Structures
         float boxOrientation{0.0f};
     };
 
+    struct AuctionHouseEntry
+    {
+        uint32_t id{0};
+        uint32_t faction{0};
+        uint32_t fee{0};
+        uint32_t tax{0};
+    };
+
     struct BarberShopStyleEntry
     {
         uint32_t id{0};
@@ -934,16 +942,6 @@ namespace WDB::Structures
 #endif
     };
 #endif
-
-    struct AuctionHouseEntry
-    {
-        uint32_t id;                                                // 0
-        uint32_t faction;                                           // 1
-        uint32_t fee;                                               // 2
-        uint32_t tax;                                               // 3
-        //char* name[16];                                           // 4-19
-        //uint32_t name_flags;                                      // 20
-    };
 
     struct BankBagSlotPrices
     {

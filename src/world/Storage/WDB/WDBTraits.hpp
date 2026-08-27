@@ -48,13 +48,25 @@ namespace WDB
 
     template <>
     struct DbcTraits<Structures::AreaTriggerEntry> : DbcVersionLayouts<
-        Structures::Raw::AreaTriggerEntryClassic,
-        Structures::Raw::AreaTriggerEntryTbc,
-        Structures::Raw::AreaTriggerEntryWotlk,
-        Structures::Raw::AreaTriggerEntryCata,
-        Structures::Raw::AreaTriggerEntryMop>
+            Structures::Raw::AreaTriggerEntryClassic,
+            Structures::Raw::AreaTriggerEntryTbc,
+            Structures::Raw::AreaTriggerEntryWotlk,
+            Structures::Raw::AreaTriggerEntryCata,
+            Structures::Raw::AreaTriggerEntryMop>
     {
         static constexpr char const* filename = "AreaTrigger.dbc";
+    };
+
+    template <>
+    struct DbcTraits<Structures::AuctionHouseEntry>
+        : DbcVersionLayouts<
+            Structures::Raw::AuctionHouseEntryClassic,
+            Structures::Raw::AuctionHouseEntryTbc,
+            Structures::Raw::AuctionHouseEntryWotlk,
+            Structures::Raw::AuctionHouseEntryCata,
+            Structures::Raw::AuctionHouseEntryMop>
+    {
+        static constexpr char const* filename = "AuctionHouse.dbc";
     };
 
     template <>

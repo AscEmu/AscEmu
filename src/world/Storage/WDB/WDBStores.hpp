@@ -5,10 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Management/TaxiMgr.hpp"
-#include "WDBGlobals.hpp"
-#include "Map/Maps/InstanceDefines.hpp"
 #include "AEVersion.hpp"
+#include "Management/TaxiMgr.hpp"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "WDBGlobals.hpp"
+#include "WDBStructures.hpp"
 
 namespace WDB::Structures
 {
@@ -162,7 +163,7 @@ extern uint32_t SERVER_DECL GetDuration(WDB::Structures::SpellDurationEntry cons
 
 extern SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTableEntry> sAreaStore;
 extern SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTriggerEntry> sAreaTriggerStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AuctionHouseEntry> sAuctionHouseStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::AuctionHouseEntry> sAuctionHouseStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BankBagSlotPrices> sBankBagSlotPricesStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChatChannelsEntry> sChatChannelsStore;
 extern SERVER_DECL WDB::WDBStore<WDB::Structures::CharStartOutfitEntry> sCharStartOutfitStore;

@@ -117,6 +117,19 @@ namespace WDB::Structures::Raw
     using AreaTriggerEntryCata = AreaTriggerEntryClassic;
     using AreaTriggerEntryMop = AreaTriggerEntryClassic;
 
+    struct AuctionHouseEntryClassic
+    {
+        uint32_t id;
+        uint32_t faction;
+        uint32_t fee;
+        uint32_t tax;
+    };
+
+    using AuctionHouseEntryTbc = AuctionHouseEntryClassic;
+    using AuctionHouseEntryWotlk = AuctionHouseEntryClassic;
+    using AuctionHouseEntryCata = AuctionHouseEntryClassic;
+    using AuctionHouseEntryMop = AuctionHouseEntryClassic;
+
     struct BarberShopStyleEntryWotlkCataMop
     {
         uint32_t id;
