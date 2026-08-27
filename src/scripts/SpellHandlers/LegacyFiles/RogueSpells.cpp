@@ -128,38 +128,6 @@ bool CloakOfShadows(uint8_t /*effectIndex*/, Spell* s)
     return true;
 }
 
-bool CheatDeath(uint8_t /*effectIndex*/, Aura* a, bool apply)
-{
-    Unit* u_target = a->getOwner();
-    Player* p_target = NULL;
-
-    if (u_target->isPlayer())
-        p_target = static_cast<Player*>(u_target);
-
-    if (p_target != NULL)
-    {
-        int32_t m = (int32_t)(8.0f * p_target->calcRating(CR_HIT_TAKEN_MELEE));
-        if (m > 90)
-            m = 90;
-
-        float val;
-
-        if (apply)
-        {
-            val = -m / 100.0f;
-        }
-        else
-        {
-            val = m / 100.0f;
-        }
-
-        for (uint32_t x = 0; x < 7; x++)
-            p_target->m_damageTakenPctMod[x] += val;
-    }
-
-    return true;
-}
-
 bool MasterOfSubtlety(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* u_target = a->getOwner();
@@ -276,9 +244,6 @@ void SetupLegacyRogueSpells(ScriptMgr* mgr)
     mgr->register_dummy_spell(30918, &ImprovedSprint);
 
     mgr->register_dummy_spell(35729, &CloakOfShadows);
-
-    mgr->register_dummy_aura(45182, &CheatDeath);
-
 
     uint32_t masterofsubtletyids[] =
     {

@@ -69,7 +69,6 @@ void Aura::addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValu
     m_auraEffects[effIndex].setEffectPercentModifier(effectPctModifier);
     m_auraEffects[effIndex].setEffectDamageStatic(isStaticDamage);
     m_auraEffects[effIndex].setEffectIndex(effIndex);
-    m_auraEffects[effIndex].setAura(this);
     ++m_auraEffectCount;
 
     // Add aura effect to unit only if aura has a slot
@@ -92,38 +91,25 @@ void Aura::addAuraEffect(AuraEffectModifier const* auraEffect, bool reapplying/*
         auraEffect->getEffectPercentModifier(), auraEffect->isEffectDamageStatic(), auraEffect->getEffectIndex(), reapplying);
 }
 
-void Aura::removeAuraEffect(uint8_t effIndex, bool reapplying/* = false*/)
+void Aura::removeAuraEffect(uint8_t effIndex)
 {
     if (effIndex >= MAX_SPELL_EFFECTS)
+        return;
+
+    if (m_auraEffects[effIndex].getAuraEffectType() == SPELL_AURA_NONE)
         return;
 
     // Remove aura effect from unit
     getOwner()->_removeAuraEffect(&m_auraEffects[effIndex]);
 
-    if (!reapplying)
-    {
-        // Unapply the modifier
-        m_auraEffects[effIndex].applyEffect(false);
-    }
+    // Unapply the modifier
+    m_auraEffects[effIndex].applyEffect(false);
 
-    m_auraEffects[effIndex].setAuraEffectType(SPELL_AURA_NONE);
-    m_auraEffects[effIndex].setEffectDamage(0.0f);
-    m_auraEffects[effIndex].setEffectBaseDamage(0);
-    m_auraEffects[effIndex].setEffectFixedDamage(0);
-    m_auraEffects[effIndex].setEffectMiscValue(0);
-    m_auraEffects[effIndex].setEffectAmplitude(0);
-    m_auraEffects[effIndex].setEffectDamageFraction(0.0f);
-    m_auraEffects[effIndex].setEffectPercentModifier(1.0f);
-    m_auraEffects[effIndex].setEffectDamageStatic(false);
-    m_auraEffects[effIndex].setEffectIndex(0);
-    m_auraEffects[effIndex].setAura(nullptr);
+    m_auraEffects[effIndex].resetEffect();
     --m_auraEffectCount;
 
-    if (!reapplying)
-    {
-        // Check aura effects on next update
-        m_checkAuraEffects = true;
-    }
+    // Check aura effects on next update
+    m_checkAuraEffects = true;
 }
 
 void Aura::removeAllAuraEffects()
@@ -612,6 +598,142 @@ uint32_t Aura::getAttackPowerBonus() const
     return m_attackPowerBonus;
 }
 
+uint32_t Aura::absorbDamage(uint8_t effIndex, uint32_t* dmg, bool initialCheck)
+{
+    if (effIndex >= MAX_SPELL_EFFECTS)
+        return 0;
+
+    auto& aurEff = m_auraEffects[effIndex];
+    if (aurEff.getAuraEffectType() != SPELL_AURA_SCHOOL_ABSORB && aurEff.getAuraEffectType() != SPELL_AURA_MANA_SHIELD)
+        return 0;
+
+    const auto batchedAbsorb = aurEff.getEffectExtraField();
+    uint32_t absorbedDamage = initialCheck ?
+        0 :
+        static_cast<uint32_t>(batchedAbsorb);
+
+    const auto scriptResult = sScriptMgr.callScriptedAuraOnAbsorb(this, &aurEff, &absorbedDamage, dmg, initialCheck);
+    if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
+        return absorbedDamage;
+
+    auto remainingAbsorb = aurEff.getEffectDamage();
+
+#if VERSION_STRING >= WotLK
+    // Handle aura effect 267
+    AuraEffectModifier* aurEff267 = nullptr;
+    for (auto& tmpAurEff : m_auraEffects)
+    {
+        if (tmpAurEff.getAuraEffectType() == SPELL_AURA_IMMUNE_NEGATIVE_AURA_SCHOOL_AND_CANCEL_AURA_WHEN_ABSORBED)
+        {
+            remainingAbsorb = tmpAurEff.getEffectExtraField();
+            aurEff267 = &tmpAurEff;
+            break;
+        }
+    }
+#endif
+
+    // Absorb damage is checked before packets are sent but the real absorption happens on health update
+    if (initialCheck)
+    {
+        uint32_t absorbValue = remainingAbsorb <= 0 || batchedAbsorb > remainingAbsorb ?
+            0 :
+            remainingAbsorb - batchedAbsorb;
+
+        // Unit must have enough mana to absorb damage with mana shields
+        if (absorbValue > 0 && aurEff.getAuraEffectType() == SPELL_AURA_MANA_SHIELD)
+        {
+            const auto manaConvertRate = std::abs(aurEff.getEffectExtra2Field());
+            const uint32_t batchedManaCost = batchedAbsorb * manaConvertRate / 10;
+            const auto curPower = m_target->getPower(POWER_TYPE_MANA);
+            // Check first if absorb in batch already eats all mana
+            if (batchedManaCost >= curPower)
+            {
+                absorbValue = 0;
+            }
+            else
+            {
+                // Unit has enough mana to absorb damage fully or partially
+                absorbValue = std::min(absorbValue, curPower * 10 / manaConvertRate);
+            }
+
+            // If mana shield fails due to low mana lets mark the aura for removal
+            // Sometimes unit might recover enough mana before health update and aura will not get removed
+            if (*dmg >= absorbValue)
+                aurEff.setEffectExtra2Field(-manaConvertRate);
+        }
+
+        // Check if absorption was already calculated in script
+        if (absorbedDamage != 0)
+        {
+            if (absorbedDamage >= absorbValue)
+            {
+                // If absorption calculated in scripts is higher than aura value,
+                // add remainder back to dmg
+                *dmg += absorbedDamage - absorbValue;
+                absorbedDamage = absorbValue;
+            }
+        }
+        else
+        {
+            if (*dmg >= absorbValue)
+            {
+                absorbedDamage = absorbValue;
+                *dmg -= absorbValue;
+            }
+            else
+            {
+                absorbedDamage = *dmg;
+                *dmg = 0;
+            }
+        }
+
+        aurEff.setEffectExtraField(batchedAbsorb + absorbedDamage);
+        return absorbedDamage;
+    }
+    else
+    {
+        if (remainingAbsorb > batchedAbsorb)
+            remainingAbsorb -= batchedAbsorb;
+        else
+            remainingAbsorb = 0;
+
+        if (aurEff.getAuraEffectType() == SPELL_AURA_MANA_SHIELD)
+        {
+            const auto manaConvertRate = aurEff.getEffectExtra2Field();
+            const auto manaCost = batchedAbsorb * std::abs(manaConvertRate) / 10;
+            if (manaCost > 0)
+            {
+                m_target->modPower(POWER_TYPE_MANA, -manaCost);
+
+                // Mana shield was set to destroy due to absorb amount used or low mana, remove it
+                if (manaConvertRate < 0)
+                {
+                    removeAura(AURA_REMOVE_ON_ABSORBED);
+                    return 0;
+                }
+            }
+        }
+
+        aurEff.setEffectExtraField(0);
+        if (remainingAbsorb <= 0)
+        {
+            removeAura(AURA_REMOVE_ON_ABSORBED);
+            return 0;
+        }
+
+#if VERSION_STRING >= WotLK
+        if (aurEff267 != nullptr)
+            aurEff267->setEffectExtraField(remainingAbsorb);
+        else
+            aurEff.setEffectDamage(remainingAbsorb);
+#else
+        aurEff.setEffectDamage(remainingAbsorb);
+#endif
+    }
+
+    return 0;
+}
+
 void Aura::addUsedSpellModifier(AuraEffectModifier const* aurEff)
 {
     m_usedModifiers.insert(std::make_pair(aurEff, false));
@@ -732,11 +854,6 @@ void Aura::update(unsigned long diff, bool skipDurationCheck/* = false*/)
             removeAura(AURA_REMOVE_ON_EXPIRE);
         }
     }
-}
-
-bool Aura::isAbsorbAura() const
-{
-    return false;
 }
 
 SpellInfo const* Aura::getSpellInfo() const
@@ -1176,113 +1293,3 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             break;
     }
 }
-
-// Absorb aura
-
-AbsorbAura::AbsorbAura(SpellInfo* spellInfo, int32_t duration, Object* caster, Unit* target, bool temporary/* = false*/, Item* i_caster/* = nullptr*/) :
-    Aura(spellInfo, duration, caster, target, temporary, i_caster) {}
-
-Aura* AbsorbAura::Create(SpellInfo* spellInfo, int32_t duration, Object* caster, Unit* target, bool temporary/* = false*/, Item* i_caster/* = nullptr*/)
-{
-    return new AbsorbAura(spellInfo, duration, caster, target, temporary, i_caster);
-}
-
-uint32_t AbsorbAura::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly)
-{
-    // Check if aura can absorb this school
-    if (!(m_absorbSchoolMask & schoolMask))
-        return 0;
-
-    // Absorb damage is checked before packets are sent but real absorption happens on health update
-    if (checkOnly)
-    {
-        uint32_t absorbedDamage = 0;
-        uint32_t damageToAbsorb = *dmg;
-
-        // Check if aura absorbs only percantage of the damage
-        if (m_pctAbsorbValue < 100)
-            damageToAbsorb = damageToAbsorb * m_pctAbsorbValue / 100;
-
-        auto absorbValue = getRemainingAbsorbAmount();
-        if (damageToAbsorb >= absorbValue)
-        {
-            *dmg -= absorbValue;
-            absorbedDamage = absorbValue;
-
-            m_absorbDamageBatch = m_absorbValue;
-        }
-        else
-        {
-            *dmg -= damageToAbsorb;
-            absorbedDamage = damageToAbsorb;
-
-            m_absorbDamageBatch += damageToAbsorb;
-        }
-
-        return absorbedDamage;
-    }
-    else
-    {
-        if (m_absorbValue > m_absorbDamageBatch)
-            m_absorbValue -= m_absorbDamageBatch;
-        else
-            m_absorbValue = 0;
-
-        m_absorbDamageBatch = 0;
-
-        if (m_absorbValue <= 0)
-            removeAura();
-    }
-
-    return 0;
-}
-
-uint32_t AbsorbAura::getRemainingAbsorbAmount() const
-{
-    if (m_absorbValue == 0 || m_absorbDamageBatch > m_absorbValue)
-        return 0;
-    else
-        return m_absorbValue - m_absorbDamageBatch;
-}
-
-uint32_t AbsorbAura::getTotalAbsorbAmount() const
-{
-    return m_totalAbsorbValue;
-}
-
-void AbsorbAura::spellAuraEffectSchoolAbsorb(AuraEffectModifier* aurEff, bool apply)
-{
-    if (!apply)
-        return;
-
-    auto absorbValue = calcAbsorbAmount(aurEff);
-
-    m_totalAbsorbValue = absorbValue;
-    m_absorbValue = absorbValue;
-    m_pctAbsorbValue = CalcPctDamage();
-    m_absorbSchoolMask = SchoolMask(aurEff->getEffectMiscValue());
-}
-
-bool AbsorbAura::isAbsorbAura() const
-{
-    return true;
-}
-
-uint32_t AbsorbAura::calcAbsorbAmount(AuraEffectModifier* aurEff)
-{
-    // Call for legacy script hook
-    auto val = CalcAbsorbAmount(aurEff);
-
-    const auto unitCaster = GetUnitCaster();
-    if (unitCaster != nullptr && !aurEff->isEffectDamageStatic())
-    {
-        // Apply spell power coefficient
-        val = Util::float2int32(unitCaster->applySpellDamageBonus(unitCaster, getSpellInfo(), aurEff->getEffectIndex(), val, false, nullptr, aurEff));
-    }
-
-    return static_cast<uint32_t>(val);
-}
-
-int32_t AbsorbAura::CalcAbsorbAmount(AuraEffectModifier* aurEff) { return aurEff->getEffectDamage(); }
-uint8_t AbsorbAura::CalcPctDamage() { return 100; }
-

@@ -822,6 +822,9 @@ public:
     // For clientside slot use getAuraWithVisualSlot
     Aura* getAuraWithAuraSlot(uint16_t auraSlot) const;
 
+    // Returns any rank of given aura if found by effect
+    AuraEffectModifier const* getAuraEffectWithAnyRankOfAndByEffect(AuraEffect effect, uint32_t auraId) const;
+
     int32_t getTotalIntDamageForAuraEffect(AuraEffect aura_effect) const;
     int32_t getTotalIntDamageForAuraEffectByMiscValue(AuraEffect aura_effect, int32_t miscValue) const;
     float_t getTotalFloatDamageForAuraEffect(AuraEffect aura_effect) const;
@@ -1063,12 +1066,15 @@ public:
     void addHealthBatchEvent(std::unique_ptr<HealthBatchEvent> batch);
     uint32_t calculateEstimatedOverKillForCombatLog(uint32_t damage) const;
     uint32_t calculateEstimatedOverHealForCombatLog(uint32_t heal) const;
+    // Returns current health precisely, including everything from health batch
+    // This can be negative
+    int32_t getExactCurrentHealth() const;
     void clearHealthBatch();
     // For preventing memory corruption
     void clearCasterFromHealthBatch(Unit const* caster);
 
     // Modifies dmg and returns absorbed amount
-    uint32_t absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly = true);
+    uint32_t absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool initialCheck = true);
 
     void smsg_AttackStart(Unit* pVictim);
     void smsg_AttackStop(Unit* pVictim);
@@ -1309,8 +1315,6 @@ public:
 
     bool auraActionIf(AuraAction* auraAction, AuraCondition* auraCondition);
 
-    uint32_t getManaShieldAbsorbedDamage(uint32_t damage);
-
     AuraCheckResponse auraCheck(SpellInfo const* spellInfo, Object* caster = nullptr);
     AuraCheckResponse auraCheck(SpellInfo const* spellInfo, Aura* aura, Object* caster = nullptr);
 
@@ -1535,10 +1539,6 @@ protected:
     float m_blockFromSpell = 0.0f;
     float m_dodgeFromSpell = 0.0f;
     float m_parryFromSpell = 0.0f;
-
-    // Used in Aura::SpellAuraManaShield
-    int32_t m_manashieldAmount = 0;
-    uint32_t m_manaShieldId = 0;
 
     // Some auras can only be cast on one target at a time
     // This will map aura spell id to target guid

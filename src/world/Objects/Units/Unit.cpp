@@ -355,11 +355,6 @@ void Unit::RemoveFromWorld(bool free_guid)
     {
         if (aura != nullptr)
         {
-            if (aura->m_deleted)
-            {
-                aura->removeAura();
-                continue;
-            }
             aura->RelocateEvents();
         }
     }
@@ -3784,9 +3779,9 @@ template <typename T> void Unit::applySpellModifiers(SpellModifierType modType, 
     if (totalPct != 100 || totalFlat != 0)
         *value = static_cast<T>((*value + totalFlat) * std::max(0, totalPct) / 100);
 }
-template void Unit::applySpellModifiers<int32_t>(SpellModifierType modType, int32_t* value, SpellInfo const* spellInfo, Spell* castingSpell, Aura* castingAura);
-template void Unit::applySpellModifiers<uint32_t>(SpellModifierType modType, uint32_t* value, SpellInfo const* spellInfo, Spell* castingSpell, Aura* castingAura);
-template void Unit::applySpellModifiers<float_t>(SpellModifierType modType, float_t* value, SpellInfo const* spellInfo, Spell* castingSpell, Aura* castingAura);
+template SERVER_DECL void Unit::applySpellModifiers<int32_t>(SpellModifierType modType, int32_t* value, SpellInfo const* spellInfo, Spell* castingSpell, Aura* castingAura);
+template SERVER_DECL void Unit::applySpellModifiers<uint32_t>(SpellModifierType modType, uint32_t* value, SpellInfo const* spellInfo, Spell* castingSpell, Aura* castingAura);
+template SERVER_DECL void Unit::applySpellModifiers<float_t>(SpellModifierType modType, float_t* value, SpellInfo const* spellInfo, Spell* castingSpell, Aura* castingAura);
 
 template <typename T> void Unit::getTotalSpellModifiers(SpellModifierType modType, T baseValue, int32_t* flatMod, int32_t* pctMod, SpellInfo const* spellInfo, Spell* castingSpell/* = nullptr*/, Aura* castingAura/* = nullptr*/, bool checkOnly/* = false*/)
 {
@@ -3862,6 +3857,23 @@ void Unit::addAura(std::unique_ptr<Aura> auraHolder)
         return;
     }
 
+    auto* const caster = auraHolder->GetUnitCaster();
+
+#if VERSION_STRING >= WotLK
+    // Check aura apply immunity (aur eff 267)
+    if (auraHolder->isNegative() && caster != nullptr && caster->isHostileTo(this))
+    {
+        for (const auto& aurEff : m_auraEffectList[SPELL_AURA_IMMUNE_NEGATIVE_AURA_SCHOOL_AND_CANCEL_AURA_WHEN_ABSORBED])
+        {
+            if (aurEff->getEffectMiscValue() & auraHolder->getSpellInfo()->getSchoolMask())
+            {
+                caster->sendSpellOrDamageImmune(auraHolder->getCasterGuid(), this, auraHolder->getSpellId());
+                return;
+            }
+        }
+    }
+#endif
+
     // Check if aura has effects
     if (auraHolder->getAppliedEffectCount() == 0)
     {
@@ -3886,7 +3898,6 @@ void Unit::addAura(std::unique_ptr<Aura> auraHolder)
     {
         uint64_t previousTargetGuid = 0;
 
-        const auto caster = auraHolder->GetUnitCaster();
         if (caster != nullptr)
         {
             previousTargetGuid = caster->getSingleTargetGuidForAura(auraHolder->getSpellId());
@@ -3940,7 +3951,7 @@ void Unit::addAura(std::unique_ptr<Aura> auraHolder)
                 // but old aura can have less effects if certain effects have been removed by i.e. pvp trinket
                 for (uint8_t x = 0; x < MAX_SPELL_EFFECTS; ++x)
                 {
-                    _aura->removeAuraEffect(x, true);
+                    _aura->removeAuraEffect(x);
 
                     // Do not add empty effects
                     if (auraHolder->getAuraEffect(x)->getAuraEffectType() == SPELL_AURA_NONE)
@@ -4099,7 +4110,6 @@ void Unit::addAura(std::unique_ptr<Aura> auraHolder)
     // Store target's guid for single target auras
     if (aur->getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SINGLE_TARGET_AURA)
     {
-        const auto caster = aur->GetUnitCaster();
         if (caster != nullptr)
             caster->setSingleTargetGuidForAura(aur->getSpellId(), getGuid());
     }
@@ -4235,6 +4245,29 @@ Aura* Unit::getAuraWithAuraSlot(uint16_t auraSlot) const
         return nullptr;
 
     return m_auraList[auraSlot].get();
+}
+
+AuraEffectModifier const* Unit::getAuraEffectWithAnyRankOfAndByEffect(AuraEffect effect, uint32_t auraId) const
+{
+    if (m_auraEffectList[effect].empty())
+        return nullptr;
+
+    const auto* const aurInfo = sSpellMgr.getSpellInfo(auraId);
+    for (const auto& aurEff : m_auraEffectList[effect])
+    {
+        const auto* const aurEffInfo = aurEff->getAura()->getSpellInfo();
+        if (aurEffInfo->hasSpellRanks())
+        {
+            if (aurEffInfo->getRankInfo()->isSpellPartOfThisSpellRankChain(aurInfo))
+                return aurEff;
+        }
+        else if (aurEffInfo->getId() == auraId)
+        {
+            return aurEff;
+        }
+    }
+
+    return nullptr;
 }
 
 int32_t Unit::getTotalIntDamageForAuraEffect(AuraEffect aura_effect) const
@@ -4514,7 +4547,10 @@ void Unit::removeAllAurasById(uint32_t const* auraId, uint64_t casterGuid/* = 0*
         for (int x = 0; auraId[x] != 0; ++x)
         {
             if (aur->getSpellId() == auraId[x])
+            {
                 aur->removeAura(mode);
+                break;
+            }
         }
     }
 }
@@ -4607,6 +4643,7 @@ void Unit::removeAllAurasBySpellMechanic(SpellMechanic const* mechanic, bool neg
             if (aur->getSpellInfo()->getMechanicsType() == mechanic[x])
             {
                 aur->removeAura();
+                break;
             }
             else
             {
@@ -6270,7 +6307,7 @@ void Unit::restoreDisplayId()
             if (forcedTransform->getAuraEffect(i)->getAuraEffectType() != SPELL_AURA_TRANSFORM)
                 continue;
 
-            const auto displayId = forcedTransform->getAuraEffect(i)->getEffectFixedDamage();
+            const auto displayId = forcedTransform->getAuraEffect(i)->getEffectExtraField();
             if (displayId != 0)
             {
                 setDisplayId(displayId);
@@ -6291,7 +6328,7 @@ void Unit::restoreDisplayId()
             if (shapeshift->getAuraEffect(i)->getAuraEffectType() != SPELL_AURA_MOD_SHAPESHIFT)
                 continue;
 
-            const auto displayId = shapeshift->getAuraEffect(i)->getEffectFixedDamage();
+            const auto displayId = shapeshift->getAuraEffect(i)->getEffectExtraField();
             if (displayId != 0)
             {
                 setDisplayId(displayId);
@@ -6309,7 +6346,7 @@ void Unit::restoreDisplayId()
             if (transform->getAuraEffect(i)->getAuraEffectType() != SPELL_AURA_TRANSFORM)
                 continue;
 
-            const auto displayId = transform->getAuraEffect(i)->getEffectFixedDamage();
+            const auto displayId = transform->getAuraEffect(i)->getEffectExtraField();
             if (displayId != 0)
             {
                 setDisplayId(displayId);
@@ -6707,18 +6744,7 @@ uint32_t Unit::calculateEstimatedOverKillForCombatLog(uint32_t damage) const
     if (damage == 0 || !isAlive())
         return 0;
 
-    const auto curHealth = getHealth();
-    int32_t totalDamage = 0;
-
-    for (const auto& batch : m_healthBatch)
-    {
-        if (batch->isHeal)
-            totalDamage += batch->damageInfo.realDamage;
-        else
-            totalDamage -= batch->damageInfo.realDamage;
-    }
-
-    const int32_t healthValue = curHealth + totalDamage;
+    const auto healthValue = getExactCurrentHealth();
     if (healthValue <= 0)
         return damage;
     
@@ -6733,19 +6759,8 @@ uint32_t Unit::calculateEstimatedOverHealForCombatLog(uint32_t heal) const
     if (heal == 0 || !isAlive())
         return 0;
 
-    const auto curHealth = getHealth();
     const auto maxHealth = getMaxHealth();
-    int32_t totalHeal = 0;
-
-    for (const auto& batch : m_healthBatch)
-    {
-        if (batch->isHeal)
-            totalHeal += batch->damageInfo.realDamage;
-        else
-            totalHeal -= batch->damageInfo.realDamage;
-    }
-
-    const int32_t healthValue = curHealth + totalHeal;
+    const auto healthValue = getExactCurrentHealth();
     if (healthValue < 0)
         return 0;
 
@@ -6758,6 +6773,20 @@ uint32_t Unit::calculateEstimatedOverHealForCombatLog(uint32_t heal) const
         return heal - healthDiff;
 
     return 0;
+}
+
+int32_t Unit::getExactCurrentHealth() const
+{
+    int32_t totalHpUpdate = 0;
+    for (const auto& batch : m_healthBatch)
+    {
+        if (batch->isHeal)
+            totalHpUpdate += batch->damageInfo.realDamage;
+        else
+            totalHpUpdate -= batch->damageInfo.realDamage;
+    }
+
+    return getHealth() + totalHpUpdate;
 }
 
 void Unit::clearHealthBatch()
@@ -6781,25 +6810,87 @@ void Unit::clearCasterFromHealthBatch(Unit const* caster)
     }
 }
 
-uint32_t Unit::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly/* = true*/)
+uint32_t Unit::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool initialCheck/* = true*/)
 {
-    if (dmg == nullptr)
+    if (dmg == nullptr || *dmg == 0)
         return 0;
 
     uint32_t totalAbsorbedDamage = 0;
-    for (auto& aur : m_auraList)
+    // In initial check absorb auras are checked and absorbed values are pre calculated for packets
+    // In final check real absorption happens at health update and aura effects are modified
+    // Absorptions are synced with health batching
+    if (initialCheck)
     {
-        if (aur == nullptr || !aur->isAbsorbAura())
-            continue;
+        if (const auto& absorbAuras = m_auraEffectList[SPELL_AURA_SCHOOL_ABSORB]; !absorbAuras.empty())
+        {
+            // Do in 2 iterations; first by auras that absorb specific school
+            // and next all normal absorb auras
+            for (uint8_t itr = 0; itr < 2; ++itr)
+            {
+                for (const auto& aurEff : absorbAuras)
+                {
+                    if (itr == 0)
+                    {
+                        // Must absorb this school but not all schools
+                        if (aurEff->getEffectMiscValue() == SCHOOL_MASK_NONE || aurEff->getEffectMiscValue() == SCHOOL_MASK_ALL)
+                            continue;
+                        if (!(aurEff->getEffectMiscValue() & schoolMask))
+                            continue;
+                    }
+                    else
+                    {
+                        // Must absorb all schools
+                        if (aurEff->getEffectMiscValue() != SCHOOL_MASK_NONE && aurEff->getEffectMiscValue() != SCHOOL_MASK_ALL)
+                            continue;
+                    }
 
-        AbsorbAura* abs = dynamic_cast<AbsorbAura*>(aur.get());
-        totalAbsorbedDamage += abs->absorbDamage(schoolMask, dmg, checkOnly);
+                    totalAbsorbedDamage += aurEff->getAura()->absorbDamage(aurEff->getEffectIndex(), dmg, initialCheck);
+                    if (*dmg == 0)
+                        return totalAbsorbedDamage;
+                }
+            }
+        }
+
+        // Mana shield
+        for (const auto& aurEff : m_auraEffectList[SPELL_AURA_MANA_SHIELD])
+        {
+            if (!(aurEff->getEffectMiscValue() & schoolMask))
+                continue;
+
+            totalAbsorbedDamage += aurEff->getAura()->absorbDamage(aurEff->getEffectIndex(), dmg, initialCheck);
+            if (*dmg == 0)
+                return totalAbsorbedDamage;
+        }
+
+        if (isPlayer() && dynamic_cast<Player*>(this)->m_cheats.hasGodModeCheat)
+        {
+            totalAbsorbedDamage += *dmg;
+            *dmg = 0;
+        }
     }
-
-    if (isPlayer() && dynamic_cast<Player*>(this)->m_cheats.hasGodModeCheat)
+    else
     {
-        totalAbsorbedDamage += *dmg;
-        *dmg = 0;
+        // In health update just modify all absorb aura effects that have absorbed damage
+        // If effect damage reaches zero, aura will be removed
+        if (const auto& absorbAuras = m_auraEffectList[SPELL_AURA_SCHOOL_ABSORB]; !absorbAuras.empty())
+        {
+            for (auto itr = absorbAuras.cbegin(); itr != absorbAuras.cend();)
+            {
+                const auto* const aurEff = (*itr++);
+                if (aurEff->getEffectExtraField() != 0)
+                    totalAbsorbedDamage += aurEff->getAura()->absorbDamage(aurEff->getEffectIndex(), dmg, initialCheck);
+            }
+        }
+
+        if (const auto& manaShields = m_auraEffectList[SPELL_AURA_MANA_SHIELD]; !manaShields.empty())
+        {
+            for (auto itr = manaShields.cbegin(); itr != manaShields.cend();)
+            {
+                const auto* const aurEff = (*itr++);
+                if (aurEff->getEffectExtraField() != 0)
+                    totalAbsorbedDamage += aurEff->getAura()->absorbDamage(aurEff->getEffectIndex(), dmg, initialCheck);
+            }
+        }
     }
 
     return totalAbsorbedDamage;
@@ -8932,31 +9023,6 @@ bool Unit::auraActionIf(AuraAction* auraAction, AuraCondition* auraCondition)
     return done;
 }
 
-uint32_t Unit::getManaShieldAbsorbedDamage(uint32_t damage)
-{
-    if (!m_manashieldAmount)
-        return 0;
-
-    uint32_t mana = getPower(POWER_TYPE_MANA);
-
-    int32_t potential = (mana * 50) / 100;
-    if (potential > m_manashieldAmount)
-        potential = m_manashieldAmount;
-
-    if (static_cast<int32_t>(damage) < potential)
-        potential = damage;
-
-    uint32_t cost = (potential * 100) / 50;
-
-    setPower(POWER_TYPE_MANA, mana - cost);
-
-    m_manashieldAmount -= potential;
-    if (!m_manashieldAmount)
-        removeAllAurasById(m_manaShieldId);
-
-    return potential;
-}
-
 AuraCheckResponse Unit::auraCheck(SpellInfo const* spellInfo, Object* /*caster*/)
 {
     AuraCheckResponse auraCheckResponse;
@@ -10539,18 +10605,9 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
 
             if (dmg.fullDamage > static_cast<int32_t>(dmg.blockedDamage))
             {
-                uint32_t sh = pVictim->getManaShieldAbsorbedDamage(dmg.fullDamage);
                 //////////////////////////////////////////////////////////////////////////////////////////
                 //armor reducing
-                if (sh)
-                {
-                    dmg.fullDamage -= sh;
-                    if (dmg.fullDamage && !disable_dR)
-                        calculateResistanceReduction(pVictim, &dmg, ability, ArmorPctReduce);
-                    dmg.fullDamage += sh;
-                    dmg.absorbedDamage += sh;
-                }
-                else if (!disable_dR)
+                if (!disable_dR)
                     calculateResistanceReduction(pVictim, &dmg, ability, ArmorPctReduce);
             }
 
@@ -10794,7 +10851,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     // invincible people don't take damage
     if (pVictim->m_isInvincible == false)
     {
-        if (dmg.realDamage)
+        if (dmg.realDamage > 0 || dmg.absorbedDamage > 0)
         {
             auto batch = std::make_unique<HealthBatchEvent>();
             batch->caster = this;

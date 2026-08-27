@@ -4775,13 +4775,13 @@ void Spell::SpellEffectDuel(uint8_t /*effectIndex*/) // Duel
     if (!m_playerTarget || m_playerTarget == p_caster)
         return;
 
-    if (p_caster->GetArea() && p_caster->GetArea()->flags & MapManagement::AreaManagement::AREA_FLAG_ALLOW_DUELS)
+    if (p_caster->GetArea() && !(p_caster->GetArea()->flags & MapManagement::AreaManagement::AREA_FLAG_ALLOW_DUELS))
     {
         sendCastResult(SPELL_FAILED_NO_DUELING);
         return;
     }
 
-    if (m_playerTarget->GetArea() && m_playerTarget->GetArea()->flags & MapManagement::AreaManagement::AREA_FLAG_ALLOW_DUELS)
+    if (m_playerTarget->GetArea() && !(m_playerTarget->GetArea()->flags & MapManagement::AreaManagement::AREA_FLAG_ALLOW_DUELS))
     {
         sendCastResult(SPELL_FAILED_NO_DUELING);
         return;

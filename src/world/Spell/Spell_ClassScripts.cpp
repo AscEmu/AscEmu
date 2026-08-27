@@ -116,72 +116,6 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Rogue Scripts
-class CheatDeathAura : public AbsorbAura
-{
-public:
-    CheatDeathAura(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
-        : AbsorbAura(proto, duration, caster, target, temporary, i_caster)
-    {
-        dSpell = sSpellMgr.getSpellInfo(31231);
-    }
-
-    static std::unique_ptr<Aura> Create(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
-    {
-        return std::make_unique<CheatDeathAura>(proto, duration, caster, target, temporary, i_caster);
-    }
-
-    uint32_t absorbDamage(SchoolMask /*School*/, uint32_t* dmg, bool checkOnly) override
-    {
-        // Checking for 1 min cooldown
-        if (dSpell == NULL || getPlayerOwner()->hasSpellOnCooldown(dSpell))
-            return 0;
-
-        // Check for proc chance
-        if (Util::getRandomFloat(100.0f) > getSpellInfo()->calculateEffectValue(0))
-            return 0;
-
-        // Check if damage will kill player.
-        uint32_t cur_hlth = getPlayerOwner()->getHealth();
-        if ((*dmg) < cur_hlth)
-            return 0;
-
-        if (checkOnly)
-            return 0;
-
-        uint32_t max_hlth = getPlayerOwner()->getMaxHealth();
-        uint32_t min_hlth = max_hlth / 10;
-
-        /*
-        looks like the following lines are not so good, we check and cast on spell id 31231_
-        and adding the cooldown to it, but it looks like this spell is useless(all it's doing is_
-        casting 45182, so we can do all this stuff on 45182 at first place), BUT_
-        as long as proceeding cheat death is not so height (how many rogue at the same time_
-        gonna get to this point?) so it's better to use it because we wont lose anything!!
-        */
-        getPlayerOwner()->castSpell(getPlayerOwner()->getGuid(), dSpell, true);
-
-        // set dummy effect,
-        // this spell is used to procced the post effect of cheat death later.
-        // Move next line to SPELL::SpellEffectDummy ?!! well it's better in case of dbc changing!!
-        getPlayerOwner()->castSpell(getPlayerOwner()->getGuid(), 45182, true);
-
-        // Better to add custom cooldown procedure then fucking with entry, or not!!
-        getPlayerOwner()->addSpellCooldown(dSpell, nullptr, nullptr, 60000);
-
-        // Calc abs and applying it
-        uint32_t real_dmg = (cur_hlth > min_hlth ? cur_hlth - min_hlth : 0);
-        uint32_t absorbed_dmg = *dmg - real_dmg;
-
-        *dmg = real_dmg;
-        return absorbed_dmg;
-    }
-
-private:
-    SpellInfo const* dSpell;
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////
 // Priest Scripts
 class DispersionSpell : public Spell
 {
@@ -378,65 +312,6 @@ public:
     }
 };
 
-class AntiMagicShellAura : public AbsorbAura
-{
-public:
-    AntiMagicShellAura(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
-        : AbsorbAura(proto, duration, caster, target, temporary, i_caster) {}
-
-    static std::unique_ptr<Aura> Create(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
-    {
-        return std::make_unique<AntiMagicShellAura>(proto, duration, caster, target, temporary, i_caster);
-    }
-
-    int32_t CalcAbsorbAmount(AuraEffectModifier* aurEff)
-    {
-        Player* caster = GetPlayerCaster();
-        if (caster != NULL)
-            return caster->getMaxHealth() * (getSpellInfo()->calculateEffectValue(1)) / 100;
-        else
-            return aurEff->getEffectDamage();
-    }
-
-    uint8_t CalcPctDamage()
-    {
-        return static_cast<uint8_t>(getSpellInfo()->calculateEffectValue(0));
-    }
-};
-
-class SpellDeflectionAura : public AbsorbAura
-{
-#if VERSION_STRING >= TBC // support classic
-public:
-    SpellDeflectionAura(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
-        : AbsorbAura(proto, duration, caster, target, temporary, i_caster) {}
-
-    static std::unique_ptr<Aura> Create(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
-    {
-        return std::make_unique<SpellDeflectionAura>(proto, duration, caster, target, temporary, i_caster);
-    }
-
-    uint32_t absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool /*checkOnly*/) override
-    {
-        // Check if aura can absorb this school
-        if (!(m_absorbSchoolMask & schoolMask))
-            return 0;
-
-        Player* caster = GetPlayerCaster();
-        if (caster == NULL)
-            return 0;
-
-        if (!Util::checkChance(caster->getParryChance()))
-            return 0;
-
-        uint32_t dmg_absorbed = *dmg * getEffectDamage(0) / 100;
-        *dmg -= dmg_absorbed;
-
-        return dmg_absorbed;
-    }
-#endif
-};
-
 class BloodwormSpell : public Spell
 {
 public:
@@ -447,41 +322,6 @@ public:
     int32_t DoCalculateEffect(uint32_t /*i*/, Unit* /*target*/, int32_t /*value*/)
     {
         return 2 + Util::getRandomUInt(2);
-    }
-};
-
-class WillOfTheNecropolisAura : public AbsorbAura
-{
-public:
-    WillOfTheNecropolisAura(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
-        : AbsorbAura(proto, duration, caster, target, temporary, i_caster) {}
-
-    static std::unique_ptr<Aura> Create(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
-    {
-        return std::make_unique<WillOfTheNecropolisAura>(proto, duration, caster, target, temporary, i_caster);
-    }
-
-    uint32_t absorbDamage(SchoolMask /*School*/, uint32_t* dmg, bool /*checkOnly*/) override
-    {
-        Unit* caster = GetUnitCaster();
-        if (caster == NULL)
-            return 0;
-
-        int health_pct = caster->getHealthPct();
-        uint32_t cur_health = caster->getHealth();
-        uint32_t max_health = caster->getMaxHealth();
-        uint32_t new_health_pct = (cur_health - *dmg) * 100 / max_health;
-
-        // "Damage that would take you below $s1% health or taken while you are at $s1% health is reduced by $52284s1%."
-        if ((health_pct > 35 && new_health_pct < 35) || health_pct == 35)
-        {
-            uint32_t dmg_absorbed = *dmg * (getSpellInfo()->calculateEffectValue(0)) / 100;
-            *dmg -= dmg_absorbed;
-
-            return dmg_absorbed;
-        }
-        else
-            return 0;
     }
 };
 
@@ -597,12 +437,6 @@ void SpellMgr::setupSpellClassScripts()
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Rogue
-    addAuraById(31228, &CheatDeathAura::Create);   // Rank 1
-    addAuraById(31229, &CheatDeathAura::Create);   // Rank 2
-    addAuraById(31230, &CheatDeathAura::Create);   // Rank 3
-
-    //////////////////////////////////////////////////////////////////////////////////////////
     // Priest
     addSpellById(47585, &DispersionSpell::Create);
 
@@ -639,21 +473,8 @@ void SpellMgr::setupSpellClassScripts()
 #endif
     addSpellById(56815, &RuneStrileSpell::Create);
 
-    addAuraById(48707, &AntiMagicShellAura::Create);
-
-#if VERSION_STRING == WotLK
-    addAuraById(49145, &SpellDeflectionAura::Create);       // Rank 1
-    addAuraById(49495, &SpellDeflectionAura::Create);       // Rank 2
-    addAuraById(49497, &SpellDeflectionAura::Create);       // Rank 3
-#endif
-
     addSpellById(50452, &BloodwormSpell::Create);
 
-    addAuraById(52284, &WillOfTheNecropolisAura::Create);   // Rank 1
-#if VERSION_STRING == WotLK
-    addAuraById(52285, &WillOfTheNecropolisAura::Create);   // Rank 1
-    addAuraById(52286, &WillOfTheNecropolisAura::Create);   // Rank 1
-#endif
     addSpellById(55233, &VampiricBloodSpell::Create);
 
     addSpellById(55050, &HeartStrikeSpell::Create);         // Rank 1

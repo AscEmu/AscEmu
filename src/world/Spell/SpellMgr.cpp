@@ -186,20 +186,12 @@ std::unique_ptr<Aura> SpellMgr::newAura(SpellInfo const* spellInfo, int32_t dura
         return nullptr;
     }
 
-    using RawAuraScriptLinker = Aura * (*)(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary, Item* i_caster);
-
-    // Auras with a script
+    // Auras with legacy script
     if (spellInfo->auraScriptLink != nullptr)
     {
+        using RawAuraScriptLinker = Aura * (*)(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary, Item* i_caster);
         auto scriptFunc = reinterpret_cast<RawAuraScriptLinker>(spellInfo->auraScriptLink);
         Aura* aura = scriptFunc(getMutableSpellInfo(spellInfo->getId()), duration, caster, target, temporary, i_caster);
-        return std::unique_ptr<Aura>(aura);
-    }
-
-    // Auras with absorb effect
-    if (spellInfo->hasEffectApplyAuraName(SPELL_AURA_SCHOOL_ABSORB))
-    {
-        Aura* aura = AbsorbAura::Create(getMutableSpellInfo(spellInfo->getId()), duration, caster, target, temporary, i_caster);
         return std::unique_ptr<Aura>(aura);
     }
 

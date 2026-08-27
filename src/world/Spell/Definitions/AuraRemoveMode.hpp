@@ -12,5 +12,6 @@ enum AuraRemoveMode : uint8_t
     AURA_REMOVE_BY_SERVER   = 0, // Internal stuff
     AURA_REMOVE_ON_EXPIRE   = 1,
     AURA_REMOVE_ON_DISPEL   = 2,
-    AURA_REMOVE_ON_STEAL    = 3  // Spell steal
+    AURA_REMOVE_ON_STEAL    = 3, // Spell steal
+    AURA_REMOVE_ON_ABSORBED = 4  // Aura destroyed when cannot absorb anymore
 };

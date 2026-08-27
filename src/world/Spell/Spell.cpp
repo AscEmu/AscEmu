@@ -309,7 +309,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
 
     // Initialize spell cast time
     m_castTime = 0;
-    if (!(m_triggeredByAura != nullptr || (m_triggeredSpell && (getSpellInfo()->getManaCost() > 0 || getSpellInfo()->getManaCostPercentage() > 0))))
+    if (m_triggeredByAura == nullptr && !m_triggeredSpell)
     {
         m_castTime = static_cast<int32_t>(GetCastTime(sSpellCastTimesStore.lookupEntry(getSpellInfo()->getCastingTimeIndex())));
         if (m_castTime > 0 && u_caster != nullptr)

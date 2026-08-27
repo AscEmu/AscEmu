@@ -70,6 +70,8 @@ public:
     virtual SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply);
     // Called when periodic tick happens
     virtual SpellScriptExecuteState onAuraPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float_t* damage);
+    // Called when aura absorbs damage
+    virtual SpellScriptExecuteState onAuraAbsorb(Aura* aur, AuraEffectModifier* aurEff, uint32_t* absorbed, uint32_t* dmg, bool initialCheck);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spell proc

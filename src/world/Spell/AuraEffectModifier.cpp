@@ -12,6 +12,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 extern pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS];
 
+AuraEffectModifier::AuraEffectModifier(Aura& parent) : mAura(parent)
+{ }
+
 void AuraEffectModifier::setAuraEffectType(AuraEffect type) { mAuraEffect = type; }
 AuraEffect AuraEffectModifier::getAuraEffectType() const { return mAuraEffect; }
 
@@ -31,8 +34,11 @@ float_t AuraEffectModifier::getEffectFloatDamage() const { return mRealDamage; }
 void AuraEffectModifier::setEffectBaseDamage(int32_t baseValue) { mBaseDamage = baseValue; }
 int32_t AuraEffectModifier::getEffectBaseDamage() const { return mBaseDamage; }
 
-void AuraEffectModifier::setEffectFixedDamage(int32_t fixedValue) { mFixedDamage = fixedValue; }
-int32_t AuraEffectModifier::getEffectFixedDamage() const { return mFixedDamage; }
+void AuraEffectModifier::setEffectExtraField(int32_t extraValue) { mExtraField = extraValue; }
+int32_t AuraEffectModifier::getEffectExtraField() const { return mExtraField; }
+
+void AuraEffectModifier::setEffectExtra2Field(int32_t extraValue) { mExtraField2 = extraValue; }
+int32_t AuraEffectModifier::getEffectExtra2Field() const { return mExtraField2; }
 
 void AuraEffectModifier::setEffectMiscValue(int32_t _miscValue) { miscValue = _miscValue; }
 int32_t AuraEffectModifier::getEffectMiscValue() const { return miscValue; }
@@ -89,22 +95,33 @@ void AuraEffectModifier::applyEffect(bool apply, bool skipScriptCheck/* = false*
 
     mActive = apply;
 
-    if (getAura())
+    if (skipScriptCheck)
     {
-        if (skipScriptCheck)
-        {
-            (*getAura().*SpellAuraHandler[getAuraEffectType()])(this, apply);
-        }
-        else
-        {
-            const auto scriptResult = sScriptMgr.callScriptedAuraBeforeAuraEffect(getAura(), this, apply);
-            if (scriptResult != SpellScriptExecuteState::EXECUTE_PREVENT)
-                (*getAura().*SpellAuraHandler[getAuraEffectType()])(this, apply);
-        }
+        (mAura.*SpellAuraHandler[getAuraEffectType()])(this, apply);
     }
     else
-        sLogger.failure("AuraEffectModifier::applyEffect fatal Error invalid Aura!");
+    {
+        const auto scriptResult = sScriptMgr.callScriptedAuraBeforeAuraEffect(&mAura, this, apply);
+        if (scriptResult != SpellScriptExecuteState::EXECUTE_PREVENT)
+            (mAura.*SpellAuraHandler[getAuraEffectType()])(this, apply);
+    }
 }
 
-void AuraEffectModifier::setAura(Aura* aur) { mAura = aur; }
-Aura* AuraEffectModifier::getAura() const { return mAura; }
+void AuraEffectModifier::resetEffect()
+{
+    mAuraEffect = SPELL_AURA_NONE;
+    mDamage = 0;
+    mRealDamage = 0.0f;
+    mBaseDamage = 0;
+    mExtraField = 0;
+    mExtraField2 = 0;
+    miscValue = 0;
+    mAmplitude = 0;
+    mDamageFraction = 0.0f;
+    mEffectPctModifier = 1.0f;
+    mEffectDamageStatic = false;
+    mActive = false;
+    effIndex = 0;
+}
+
+Aura* AuraEffectModifier::getAura() const { return &mAura; }

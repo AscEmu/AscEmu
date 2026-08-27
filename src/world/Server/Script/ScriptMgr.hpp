@@ -48,33 +48,34 @@ public:
 
     // Spell script hooks
     SpellCastResult callScriptedSpellCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) const;
-    void callScriptedSpellAtStartCasting(Spell* spell);
-    void callScriptedSpellFilterTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets);
-    void callScriptedSpellBeforeHit(Spell* spell, uint8_t effectIndex);
-    void callScriptedSpellAfterMiss(Spell* spell, Unit* unitTarget);
+    void callScriptedSpellAtStartCasting(Spell* spell) const;
+    void callScriptedSpellFilterTargets(Spell* spell, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) const;
+    void callScriptedSpellBeforeHit(Spell* spell, uint8_t effectIndex) const;
+    void callScriptedSpellAfterMiss(Spell* spell, Unit* unitTarget) const;
     SpellScriptEffectDamage callScriptedSpellDoCalculateEffect(Spell* spell, uint8_t effectIndex, int32_t* damage) const;
     SpellScriptExecuteState callScriptedSpellBeforeSpellEffect(Spell* spell, uint8_t effectIndex) const;
     SpellScriptCheckDummy callScriptedSpellOnDummyOrScriptedEffect(Spell* spell, uint8_t effectIndex) const;
-    void callScriptedSpellAfterSpellEffect(Spell* spell, uint8_t effectIndex, DamageInfo const& damageInfo);
+    void callScriptedSpellAfterSpellEffect(Spell* spell, uint8_t effectIndex, DamageInfo const& damageInfo) const;
 
     // Aura script hooks
-    void callScriptedAuraOnCreate(Aura* aur);
-    void callScriptedAuraOnApply(Aura* aur);
-    void callScriptedAuraOnRemove(Aura* aur, AuraRemoveMode mode);
-    void callScriptedAuraOnRefreshOrGainNewStack(Aura* aur, uint32_t newStackCount, uint32_t oldStackCount);
+    void callScriptedAuraOnCreate(Aura* aur) const;
+    void callScriptedAuraOnApply(Aura* aur) const;
+    void callScriptedAuraOnRemove(Aura* aur, AuraRemoveMode mode) const;
+    void callScriptedAuraOnRefreshOrGainNewStack(Aura* aur, uint32_t newStackCount, uint32_t oldStackCount) const;
     SpellScriptExecuteState callScriptedAuraBeforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) const;
     SpellScriptCheckDummy callScriptedAuraOnDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) const;
     SpellScriptExecuteState callScriptedAuraOnPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float* damage) const;
+    SpellScriptExecuteState callScriptedAuraOnAbsorb(Aura* aur, AuraEffectModifier* aurEff, uint32_t* absorbed, uint32_t* dmg, bool initialCheck) const;
 
     // Spell proc script hooks
-    void callScriptedSpellProcCreate(SpellProc* spellProc, Object* obj);
+    void callScriptedSpellProcCreate(SpellProc* spellProc, Object* obj) const;
     bool callScriptedSpellCanProc(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) const;
     bool callScriptedSpellCheckProcFlags(SpellProc* spellProc, SpellProcFlags procFlags) const;
     bool callScriptedSpellProcCanDelete(SpellProc* spellProc, uint32_t spellId, uint64_t casterGuid, uint64_t misc) const;
     SpellScriptExecuteState callScriptedSpellProcDoEffect(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) const;
     uint32_t callScriptedSpellCalcProcChance(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell) const;
     bool callScriptedSpellCanProcOnTriggered(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, Aura* triggeredFromAura) const;
-    SpellScriptExecuteState callScriptedSpellProcCastSpell(SpellProc* spellProc, Unit* caster, Unit* victim, Spell* spellToProc);
+    SpellScriptExecuteState callScriptedSpellProcCastSpell(SpellProc* spellProc, Unit* caster, Unit* victim, Spell* spellToProc) const;
 
 #ifdef FT_ACHIEVEMENTS
     AchievementCriteriaScript* getAchievementCriteriaScript(uint32_t criteriaId) const;

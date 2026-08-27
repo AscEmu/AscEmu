@@ -298,37 +298,6 @@ bool Hysteria(uint8_t effectIndex, Aura* pAura, bool apply)
     return true;
 }
 
-bool WillOfTheNecropolis(uint8_t effectIndex, Spell* spell)
-{
-    if (effectIndex != 0)
-        return true;
-
-    Player* plr = spell->getPlayerCaster();
-
-    if (plr == NULL)
-        return true;
-
-    switch (spell->getSpellInfo()->getId())
-    {
-        case 49189:
-            plr->removeSpell(52285, false);
-            plr->removeSpell(52286, false);
-            break;
-
-        case 50149:
-            plr->removeSpell(52284, false);
-            plr->removeSpell(52286, false);
-            break;
-
-        case 50150:
-            plr->removeSpell(52284, false);
-            plr->removeSpell(52285, false);
-            break;
-    }
-
-    return true;
-}
-
 void SetupLegacyDeathKnightSpells(ScriptMgr* mgr)
 {
     mgr->register_dummy_spell(50842, &Pestilence);
@@ -371,8 +340,4 @@ void SetupLegacyDeathKnightSpells(ScriptMgr* mgr)
     mgr->register_dummy_spell(bladedarmorids, &BladedArmor);
 
     mgr->register_dummy_aura(49016, &Hysteria);
-
-    mgr->register_dummy_spell(49189, &WillOfTheNecropolis);   // Rank 1
-    mgr->register_dummy_spell(50149, &WillOfTheNecropolis);   // Rank 2
-    mgr->register_dummy_spell(50150, &WillOfTheNecropolis);   // Rank 3
 }
