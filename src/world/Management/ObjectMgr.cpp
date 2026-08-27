@@ -1782,10 +1782,10 @@ void ObjectMgr::loadCreatureDisplayInfo()
             continue;
 
         CreatureDisplayInfoData data;
-        data.id = displayInfoEntry->ID;
-        data.modelId = displayInfoEntry->ModelID;
-        data.extendedDisplayInfoId = displayInfoEntry->ExtendedDisplayInfoID;
-        data.creatureModelScale = displayInfoEntry->CreatureModelScale;
+        data.id = displayInfoEntry->id;
+        data.modelId = displayInfoEntry->modelId;
+        data.extendedDisplayInfoId = displayInfoEntry->extendedDisplayInfoId;
+        data.creatureModelScale = displayInfoEntry->creatureModelScale;
         data.modelInfo = sCreatureModelDataStore.lookupEntry(data.modelId);
         if (data.modelInfo != nullptr)
         {
@@ -1793,7 +1793,7 @@ void ObjectMgr::loadCreatureDisplayInfo()
                 data.isModelInvisibleStalker = true;
         }
 
-        m_creatureDisplayInfoData.insert(std::make_pair(displayInfoEntry->ID, data));
+        m_creatureDisplayInfoData.insert(std::make_pair(displayInfoEntry->id, data));
     }
 }
 

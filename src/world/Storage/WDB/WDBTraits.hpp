@@ -149,6 +149,18 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::CreatureDisplayInfoEntry>
+        : DbcVersionLayouts<
+            Structures::Raw::CreatureDisplayInfoEntryClassic,
+            Structures::Raw::CreatureDisplayInfoEntryTbc,
+            Structures::Raw::CreatureDisplayInfoEntryWotlk,
+            Structures::Raw::CreatureDisplayInfoEntryCata,
+            Structures::Raw::CreatureDisplayInfoEntryMop>
+    {
+        static constexpr char const* filename = "CreatureDisplayInfo.dbc";
+    };
+
+    template <>
     struct DbcTraits<Structures::FactionEntry> : DbcVersionLayouts<
             Structures::Raw::FactionEntryClassic,
             Structures::Raw::FactionEntryTbc,

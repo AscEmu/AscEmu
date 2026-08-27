@@ -292,6 +292,14 @@ namespace WDB::Structures
         uint32_t expansion = 0;
     };
 
+    struct CreatureDisplayInfoEntry
+    {
+        uint32_t id{0};
+        uint32_t modelId{0};
+        uint32_t extendedDisplayInfoId{0};
+        float creatureModelScale{0.0f};
+    };
+
     struct FactionEntry
     {
         uint32_t id{0};
@@ -966,16 +974,6 @@ namespace WDB::Structures
         //uint32_t state;                                           // 10
     };
 #endif
-
-    struct CreatureDisplayInfoEntry
-    {
-        uint32_t ID;                                                // 0
-        uint32_t ModelID;                                           // 1
-        //uint32_t SoundID                                          // 2
-        uint32_t ExtendedDisplayInfoID;                             // 3
-        float CreatureModelScale;                                   // 4
-        // 5 - 15 unk
-    };
 
     struct ChrPowerTypesEntry
     {

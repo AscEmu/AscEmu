@@ -2030,7 +2030,7 @@ void SpellMgr::loadSpellRanks()
 #if VERSION_STRING < WotLK
 void SpellMgr::setSpellCoefficient(SpellInfo* sp)
 {
-    const auto baseDuration = static_cast<float>(GetDuration(sSpellDurationStore.lookupEntry(sp->getDurationIndex())));
+    const auto baseDuration = static_cast<float>(getDuration(sSpellDurationStore.lookupEntry(sp->getDurationIndex())));
 
     const auto [begin, end] = m_calculatedCoefficients.equal_range(sp->getId());
     const auto coefficientRange = std::ranges::subrange(begin, end);
@@ -2118,7 +2118,7 @@ void SpellMgr::setSpellCoefficient(SpellInfo* sp)
     };
 
     // Calculate base spell effect coefficient
-    auto spellCastTime = static_cast<float>(GetCastTime(sSpellCastTimesStore.lookupEntry(sp->getCastingTimeIndex())));
+    auto spellCastTime = static_cast<float>(getCastTime(sSpellCastTimesStore.lookupEntry(sp->getCastingTimeIndex())));
     if (spellCastTime < 1500)
         spellCastTime = 1500;
 #if VERSION_STRING == Classic

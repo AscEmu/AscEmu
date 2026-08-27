@@ -162,8 +162,8 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChatChannelsEntry> sChatChanne
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::CharStartOutfitEntry> sCharStartOutfitStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrClassesEntry> sChrClassesStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrRacesEntry> sChrRacesStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::CreatureDisplayInfoEntry> sCreatureDisplayInfoStore;
 
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoEntry> sCreatureDisplayInfoStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureModelDataEntry> sCreatureModelDataStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureSpellDataEntry> sCreatureSpellDataStore;

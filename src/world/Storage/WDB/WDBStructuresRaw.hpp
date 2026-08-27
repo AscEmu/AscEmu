@@ -325,6 +325,19 @@ namespace WDB::Structures::Raw
         uint32_t expansion;
     };
 
+    struct CreatureDisplayInfoEntryClassic
+    {
+        uint32_t id;
+        uint32_t modelId;
+        uint32_t extendedDisplayInfoId;
+        float creatureModelScale;
+    };
+
+    using CreatureDisplayInfoEntryTbc = CreatureDisplayInfoEntryClassic;
+    using CreatureDisplayInfoEntryWotlk = CreatureDisplayInfoEntryClassic;
+    using CreatureDisplayInfoEntryCata = CreatureDisplayInfoEntryClassic;
+    using CreatureDisplayInfoEntryMop = CreatureDisplayInfoEntryClassic;
+
     struct FactionEntryClassic
     {
         uint32_t id;

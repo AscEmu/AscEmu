@@ -3939,11 +3939,11 @@ bool Player::isInDisallowedMountForm() const
     if (!display)
         return true;
 
-    WDB::Structures::CreatureDisplayInfoExtraEntry const* displayExtra = sCreatureDisplayInfoExtraStore.lookupEntry(display->ExtendedDisplayInfoID);
+    WDB::Structures::CreatureDisplayInfoExtraEntry const* displayExtra = sCreatureDisplayInfoExtraStore.lookupEntry(display->extendedDisplayInfoId);
     if (!displayExtra)
         return true;
 
-    WDB::Structures::CreatureModelDataEntry const* model = sCreatureModelDataStore.lookupEntry(display->ModelID);
+    WDB::Structures::CreatureModelDataEntry const* model = sCreatureModelDataStore.lookupEntry(display->modelId);
     WDB::Structures::ChrRacesEntry const* race = sChrRacesStore.lookupEntry(displayExtra->Race);
 
     if (model && !(model->Flags & 0x80))
