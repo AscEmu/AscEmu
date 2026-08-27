@@ -248,7 +248,7 @@ int main(int argc, char** argv)
 {
     unsigned int threads = std::thread::hardware_concurrency();
     int mapnum = -1;
-    float maxAngle = 55.0f;
+    float maxAngle = -1.0f; // resolved from the detected client version below unless --maxAngle overrides it
     int tileX = -1, tileY = -1;
     bool skipLiquid = false,
          skipContinents = false,
@@ -283,8 +283,17 @@ int main(int argc, char** argv)
     if (!checkDirectories(debugOutput))
         return silent ? -3 : finish("Press ENTER to close...", -3);
 
+    auto const detectedVersion = MMAP::detectClientVersion();
+    MMAP::MmapTuning const tuning = MMAP::getDefaultMmapTuning(
+        detectedVersion.value_or(mpqlib::ClientVersion::WrathOfTheLichKing));
+    if (!detectedVersion && !silent)
+        printf("Warning: couldn't detect client version from maps/*.map, defaulting to WotLK tuning (maxAngle=%.1f)\n", tuning.maxWalkableAngle);
+    if (maxAngle < 0.f)
+        maxAngle = tuning.maxWalkableAngle;
+
     MapBuilder builder(maxAngle, skipLiquid, skipContinents, skipJunkMaps,
-                       skipBattlegrounds, debugOutput, bigBaseUnit, offMeshInputPath);
+                       skipBattlegrounds, debugOutput, bigBaseUnit, offMeshInputPath,
+                       tuning.smallWalkableHeight);
 
     auto startTime = Util::TimeNow();
     if (file)

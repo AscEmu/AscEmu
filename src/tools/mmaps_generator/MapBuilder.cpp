@@ -25,6 +25,7 @@
 #include "DetourNavMesh.h"
 #include "IntermediateValues.h"
 
+#include <cstdio>
 #include <limits.h>
 
 
@@ -43,11 +44,69 @@ struct MmapTileHeader
         mmapVersion(MMAP_VERSION), size(0), usesLiquids(true) {}
 };
 
+// Mirrors map_extractor's map_fileheader layout (System.cpp) closely enough
+// to read just the leading buildMagic field - the full struct isn't needed
+// here since only these first three uint32_t fields matter for detection.
+struct MapFileHeaderPrefix
+{
+    uint32_t mapMagic;
+    uint32_t versionMagic;
+    uint32_t buildMagic;
+};
+
 namespace MMAP
 {
+    std::optional<mpqlib::ClientVersion> detectClientVersion(const std::string& mapsDir)
+    {
+        std::vector<std::string> files;
+        if (getDirContents(files, mapsDir, "*.map") != LISTFILE_OK || files.empty())
+        {
+            printf("detectClientVersion: no *.map files found in '%s'\n", mapsDir.c_str());
+            return std::nullopt;
+        }
+
+        std::string const path = mapsDir + "/" + files.front();
+        FILE* file = fopen(path.c_str(), "rb");
+        if (!file)
+        {
+            printf("detectClientVersion: couldn't open '%s'\n", path.c_str());
+            return std::nullopt;
+        }
+
+        MapFileHeaderPrefix header{};
+        bool const readOk = fread(&header, sizeof(header), 1, file) == 1;
+        fclose(file);
+
+        if (!readOk)
+        {
+            printf("detectClientVersion: couldn't read header from '%s'\n", path.c_str());
+            return std::nullopt;
+        }
+
+        auto const version = mpqlib::clientVersionFromBuild(header.buildMagic);
+        if (!version)
+            printf("detectClientVersion: '%s' has mapMagic=0x%08X versionMagic=0x%08X buildMagic=%u (unrecognized build)\n",
+                path.c_str(), header.mapMagic, header.versionMagic, header.buildMagic);
+
+        return version;
+    }
+
+    MmapTuning getDefaultMmapTuning(mpqlib::ClientVersion version)
+    {
+        switch (version)
+        {
+            case mpqlib::ClientVersion::Cataclysm:
+            case mpqlib::ClientVersion::MistsOfPandaria:
+                return { 70.0f, 3 };
+            default:
+                return { 55.0f, 2 };
+        }
+    }
+
     MapBuilder::MapBuilder(float maxWalkableAngle, bool skipLiquid,
         bool skipContinents, bool skipJunkMaps, bool skipBattlegrounds,
-        bool debugOutput, bool bigBaseUnit, const char* offMeshFilePath) :
+        bool debugOutput, bool bigBaseUnit, const char* offMeshFilePath,
+        int smallWalkableHeight) :
         m_terrainBuilder     (NULL),
         m_debugOutput        (debugOutput),
         m_offMeshFilePath    (offMeshFilePath),
@@ -56,6 +115,7 @@ namespace MMAP
         m_skipBattlegrounds  (skipBattlegrounds),
         m_maxWalkableAngle   (maxWalkableAngle),
         m_bigBaseUnit        (bigBaseUnit),
+        m_smallWalkableHeight(smallWalkableHeight),
         m_rcContext          (NULL),
         _cancelationToken    (false)
     {
@@ -575,7 +635,7 @@ namespace MMAP
         config.walkableRadius = m_bigBaseUnit ? 1 : 2;
         config.borderSize = config.walkableRadius + 3;
         config.maxEdgeLen = VERTEX_PER_TILE + 1;        // anything bigger than tileSize
-        config.walkableHeight = m_bigBaseUnit ? 2 : 6;
+        config.walkableHeight = m_bigBaseUnit ? m_smallWalkableHeight : 6;
         // a value >= 3|6 allows npcs to walk over some fences
         // a value >= 4|8 allows npcs to walk over all fences
         config.walkableClimb = m_bigBaseUnit ? 4 : 8;

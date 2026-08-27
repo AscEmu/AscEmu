@@ -30,6 +30,7 @@ target_link_libraries(${EXECUTABLE_NAME}
     collision
     Detour
     Recast
+    mpqlib
 )
 
 install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})

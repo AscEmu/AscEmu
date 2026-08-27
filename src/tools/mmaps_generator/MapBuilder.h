@@ -25,6 +25,8 @@
 #include "Recast.h"
 #include "DetourNavMesh.h"
 
+#include "mpqlib/ClientVersion.hpp"
+
 #include <vector>
 #include <set>
 #include <list>
@@ -34,6 +36,8 @@
 #include <mutex>
 #include <queue>
 #include <type_traits>
+#include <optional>
+#include <string>
 
 template <typename T>
 class ProducerConsumerQueue
@@ -142,6 +146,25 @@ namespace MMAP
 
     typedef std::list<MapTiles> TileList;
 
+    // Peeks at the buildMagic field of one already-extracted maps/*.map file
+    // (map_extractor stamps every .map file's header with the client build
+    // that produced it) to determine which client version this extraction
+    // batch came from. Call only after checkDirectories() has confirmed
+    // "maps" is non-empty. Returns std::nullopt if no .map file is found or
+    // its buildMagic isn't a recognized build.
+    std::optional<mpqlib::ClientVersion> detectClientVersion(const std::string& mapsDir = "maps");
+
+    struct MmapTuning
+    {
+        float maxWalkableAngle;
+        int smallWalkableHeight;
+    };
+
+    // Cata/MoP's client uses a slightly different pathing tolerance than
+    // Classic/TBC/WotLK's; everything else about mmap generation is
+    // identical across versions.
+    MmapTuning getDefaultMmapTuning(mpqlib::ClientVersion version);
+
     struct Tile
     {
         Tile() : chf(NULL), solid(NULL), cset(NULL), pmesh(NULL), dmesh(NULL) {}
@@ -170,7 +193,8 @@ namespace MMAP
                 bool skipBattlegrounds   = false,
                 bool debugOutput         = false,
                 bool bigBaseUnit         = false,
-                const char* offMeshFilePath = NULL);
+                const char* offMeshFilePath = NULL,
+                int smallWalkableHeight = 2);
 
             ~MapBuilder();
 
@@ -225,6 +249,7 @@ namespace MMAP
 
             float m_maxWalkableAngle;
             bool m_bigBaseUnit;
+            int m_smallWalkableHeight;
 
             // build performance - not really used for now
             rcContext* m_rcContext;
