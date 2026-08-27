@@ -33,23 +33,19 @@ char* getPlainName(char* fileName)
     return fileName;
 }
 
-// Searches backward from the end for the extension's '.' rather than
-// assuming a fixed 3-character extension - Cata/Mop's own algorithm,
-// distinct from the older map_extractor-family fixNameCase.
 void fixNameCase(char* name, size_t len)
 {
-    char* ptr = name + len - 1;
-
-    for (; *ptr != '.'; --ptr)
-        *ptr |= 0x20;
-
-    for (; ptr >= name; --ptr)
+    for (size_t i = 0; i < len - 3; i++)
     {
-        if (ptr > name && *ptr >= 'A' && *ptr <= 'Z' && isalpha(*(ptr - 1)))
-            *ptr |= 0x20;
-        else if ((ptr == name || !isalpha(*(ptr - 1))) && *ptr >= 'a' && *ptr <= 'z')
-            *ptr &= ~0x20;
+        if (i > 0 && name[i] >= 'A' && name[i] <= 'Z' && isalpha(name[i - 1]))
+            name[i] |= 0x20;
+        else if ((i == 0 || !isalpha(name[i - 1])) && name[i] >= 'a' && name[i] <= 'z')
+            name[i] &= ~0x20;
     }
+
+    // extension in lowercase
+    for (size_t i = len - 3; i < len; i++)
+        name[i] |= 0x20;
 }
 
 void fixNameSpaces(char* name, size_t len)
@@ -70,12 +66,14 @@ char* getExtension(char* fileName)
 
 ADTFile::ADTFile(std::string const& filename) :
     m_wmoCount(0), m_modelCount(0), m_wmoInstanceNames(nullptr), m_modelInstanceNames(nullptr),
-    m_adt(*WorldMpq, filename.c_str(), false), m_adtFilename(filename)
+    m_adt(*WorldMpq, filename.c_str()), m_adtFilename(filename)
 {
 }
 
 namespace
 {
+    // MMDX/MWMO carry a run of back-to-back, null-terminated names; copy the
+    // chunk payload out once so fixNameCase/fixNameSpaces can mutate it in place.
     std::vector<char> copyPayload(std::span<const std::byte> payload)
     {
         std::vector<char> buf(payload.size());
@@ -118,17 +116,16 @@ bool ADTFile::init(uint32_t mapNum, uint32_t tileX, uint32_t tileY)
             m_modelInstanceNames = new std::string[buf.size()];
             while (p < buf.data() + buf.size())
             {
-                std::string path(p);
-
+                fixNameCase(p, strlen(p));
                 char* s = getPlainName(p);
-                fixNameCase(s, strlen(s));
                 fixNameSpaces(s, strlen(s));
 
                 m_modelInstanceNames[t++] = s;
 
+                std::string path(p);
                 ExtractSingleModel(path);
 
-                p += strlen(p) + 1;
+                p = p + strlen(p) + 1;
             }
         }
         else if (chunk.tag == "MWMO")
@@ -145,10 +142,8 @@ bool ADTFile::init(uint32_t mapNum, uint32_t tileX, uint32_t tileY)
                 char* s = getPlainName(p);
                 fixNameCase(s, strlen(s));
                 fixNameSpaces(s, strlen(s));
-
-                m_wmoInstanceNames[q++] = s;
-
                 p += strlen(p) + 1;
+                m_wmoInstanceNames[q++] = s;
             }
         }
         else if (chunk.tag == "MDDF")

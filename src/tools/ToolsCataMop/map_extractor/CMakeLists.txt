@@ -13,7 +13,6 @@ add_executable(${EXECUTABLE_NAME} ${SRC_MAPS_EXTRACTOR})
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/src/shared
-    ${CMAKE_CURRENT_SOURCE_DIR}/loadlib
     ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
 )
 

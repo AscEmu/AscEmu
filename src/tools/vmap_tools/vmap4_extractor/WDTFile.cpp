@@ -81,8 +81,8 @@ bool WDTFile::init(std::string const& /*mapId*/, unsigned int mapID)
                 m_wdt.read(&id, 4);
                 WMOInstance inst(m_wdt, m_wmoInstanceNames[id].c_str(), mapID, 65, 65, dirFile);
             }
-
             delete[] m_wmoInstanceNames;
+            m_wmoInstanceNames = nullptr;
         }
     }
 
@@ -102,6 +102,6 @@ ADTFile* WDTFile::getMap(int x, int z)
         return nullptr;
 
     std::string const name = "World\\Maps\\" + m_filename + "\\" + m_filename + "_" +
-        std::to_string(x) + "_" + std::to_string(z) + "_obj0.adt";
+        std::to_string(x) + "_" + std::to_string(z) + ".adt";
     return new ADTFile(name);
 }

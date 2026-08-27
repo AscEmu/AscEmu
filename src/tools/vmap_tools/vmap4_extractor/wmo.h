@@ -26,7 +26,7 @@
 #include <string>
 #include <set>
 #include "vec3d.h"
-#include "loadlib.h"
+#include "mpqlib/FileLoader.hpp"
 
 // MOPY flags
 #define WMO_MATERIAL_NOCAMCOLLIDE    0x01
@@ -42,22 +42,22 @@ class WMOManager;
 class MPQFile;
 
 // for whatever reason a certain company just can't stick to one coordinate system
-static inline Vec3D fixCoords(const Vec3D &v){ return Vec3D(v.z, v.x, v.y); }
+static inline Vec3D fixCoords(const Vec3D& v) { return Vec3D(v.z, v.x, v.y); }
 
 class WMORoot
 {
 private:
-    std::string filename;
+    std::string m_filename;
 public:
-    unsigned int col;
-    uint32_t nTextures, nGroups, nP, nLights, nModels, nDoodads, nDoodadSets, RootWMOID, liquidType;
-    float bbcorn1[3];
-    float bbcorn2[3];
+    unsigned int m_col;
+    uint32_t m_numTextures, m_numGroups, m_numPortals, m_numLights, m_numModels, m_numDoodads, m_numDoodadSets, m_rootWmoId, m_liquidType;
+    float m_boundingBoxMin[3];
+    float m_boundingBoxMax[3];
 
     WMORoot(std::string& filename);
 
     bool open();
-    bool ConvertToVMAPRootWmo(FILE* output);
+    bool convertToVMapRootWmo(FILE* output);
 };
 
 struct WMOLiquidHeader
@@ -83,56 +83,56 @@ struct WMOLiquidVert
 class WMOGroup
 {
 private:
-    std::string filename;
+    std::string m_filename;
 public:
     // MOGP
 
-    char* MOPY;
-    uint16_t* MOVI;
-    uint16_t* MoviEx;
-    float* MOVT;
-    uint16_t* MOBA;
-    int* MobaEx;
-    WMOLiquidHeader* hlq;
-    WMOLiquidVert* LiquEx;
-    char* LiquBytes;
-    int groupName, descGroupName;
-    int mogpFlags;
-    float bbcorn1[3];
-    float bbcorn2[3];
-    uint16_t moprIdx;
-    uint16_t moprNItems;
-    uint16_t nBatchA;
-    uint16_t nBatchB;
-    uint32_t nBatchC, fogIdx, liquidType, groupWMOID;
+    char* m_mopy;
+    uint16_t* m_movi;
+    uint16_t* m_moviEx;
+    float* m_movt;
+    uint16_t* m_moba;
+    int* m_mobaEx;
+    WMOLiquidHeader* m_liquidHeader;
+    WMOLiquidVert* m_liquidVerts;
+    char* m_liquidBytes;
+    int m_groupNameOffset, m_descGroupNameOffset;
+    int m_mogpFlags;
+    float m_boundingBoxMin[3];
+    float m_boundingBoxMax[3];
+    uint16_t m_portalRefIdx;
+    uint16_t m_portalRefCount;
+    uint16_t m_batchCountA;
+    uint16_t m_batchCountB;
+    uint32_t m_batchCountC, m_fogIndex, m_liquidType, m_groupWmoId;
 
-    int mopy_size, moba_size;
-    int LiquEx_size;
-    unsigned int nVertices; // number when loaded
-    int nTriangles;         // number when loaded
-    uint32_t liquflags;
+    int m_mopySize, m_mobaSize;
+    int m_liquidVertsSize;
+    unsigned int m_vertexCount; // number when loaded
+    int m_triangleCount;        // number when loaded
+    uint32_t m_liquidFlags;
 
     WMOGroup(std::string const& filename);
     ~WMOGroup();
 
     bool open();
-    int ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool preciseVectorData);
+    int convertToVMapGroupWmo(FILE* output, WMORoot* rootWMO, bool preciseVectorData);
 };
 
 class WMOInstance
 {
-    static std::set<int> ids;
+    static std::set<int> m_ids;
 public:
-    std::string MapName;
-    int currx;
-    int curry;
-    WMOGroup* wmo;
-    int doodadset;
-    Vec3D pos;
-    Vec3D pos2, pos3, rot;
-    uint32_t indx, id, d2, d3;
+    std::string m_mapName;
+    int m_currX;
+    int m_currY;
+    WMOGroup* m_wmoGroup;
+    int m_doodadSet;
+    Vec3D m_pos;
+    Vec3D m_pos2, m_pos3, m_rot;
+    uint32_t m_index, m_id, m_d2, m_d3;
 
-    WMOInstance(MPQFile&f, char const* WmoInstName, uint32_t mapID, uint32_t tileX, uint32_t tileY, FILE* pDirfile);
+    WMOInstance(MPQFile& f, char const* wmoInstName, uint32_t mapID, uint32_t tileX, uint32_t tileY, FILE* pDirfile);
 
     static void reset();
 };

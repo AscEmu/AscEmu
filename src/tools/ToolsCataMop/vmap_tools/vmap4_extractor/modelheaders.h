@@ -20,7 +20,7 @@
 #ifndef MODELHEADERS_H
 #define MODELHEADERS_H
 
-#include "mpqfile.h"    // integer typedefs
+#include "mpqlib/MPQFile.hpp"    // integer typedefs
 
 #pragma pack(push,1)
 

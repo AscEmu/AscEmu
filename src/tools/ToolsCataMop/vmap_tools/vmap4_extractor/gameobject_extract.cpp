@@ -18,8 +18,8 @@
  */
 
 #include "model.h"
-#include "dbcfile.h"
-#include "adtfile.h"
+#include "mpqlib/DBCFile.hpp"
+#include "ADTFile.hpp"
 #include "vmapexport.h"
 
 #include <algorithm>
@@ -36,9 +36,9 @@ bool ExtractSingleModel(std::string& fname)
 
     std::string originalName = fname;
 
-    char* name = GetPlainName((char*)fname.c_str());
-    FixNameCase(name, strlen(name));
-    FixNameSpaces(name, strlen(name));
+    char* name = getPlainName((char*)fname.c_str());
+    fixNameCase(name, strlen(name));
+    fixNameSpaces(name, strlen(name));
 
     std::string output(szWorkDirWmo);
     output += "/";
@@ -78,18 +78,18 @@ void ExtractGameobjectModels()
         return;
     }
 
-    for (DBCFile::Iterator it = dbc.begin(); it != dbc.end(); ++it)
+    for (DBCFile::Cursor it = dbc.begin(); it != dbc.end(); ++it)
     {
         path = it->getString(1);
 
         if (path.length() < 4)
             continue;
 
-        FixNameCase((char*)path.c_str(), path.size());
-        char * name = GetPlainName((char*)path.c_str());
-        FixNameSpaces(name, strlen(name));
+        fixNameCase((char*)path.c_str(), path.size());
+        char * name = getPlainName((char*)path.c_str());
+        fixNameSpaces(name, strlen(name));
 
-        char * ch_ext = GetExtension(name);
+        char * ch_ext = getExtension(name);
         if (!ch_ext)
             continue;
 

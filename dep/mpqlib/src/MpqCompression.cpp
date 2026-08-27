@@ -8,20 +8,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <vector>
 
-#include "LzmaDec.h"
+#include <bzlib.h>
+#include <zlib.h>
 
-extern "C"
-{
-    // Implemented in dep/libmpq/libmpq/extract.c (vendored, unmodified codec dispatch).
-    int32_t libmpq__decompress_zlib(uint8_t* in_buf, uint32_t in_size, uint8_t* out_buf, uint32_t out_size);
-    int32_t libmpq__decompress_pkzip(uint8_t* in_buf, uint32_t in_size, uint8_t* out_buf, uint32_t out_size);
-    int32_t libmpq__decompress_bzip2(uint8_t* in_buf, uint32_t in_size, uint8_t* out_buf, uint32_t out_size);
-    int32_t libmpq__decompress_huffman(uint8_t* in_buf, uint32_t in_size, uint8_t* out_buf, uint32_t out_size);
-    int32_t libmpq__decompress_wave_mono(uint8_t* in_buf, uint32_t in_size, uint8_t* out_buf, uint32_t out_size);
-    int32_t libmpq__decompress_wave_stereo(uint8_t* in_buf, uint32_t in_size, uint8_t* out_buf, uint32_t out_size);
-}
+#include "LzmaDec.h"
+#include "mpqlib/codecs/AdpcmWave.hpp"
+#include "mpqlib/codecs/HuffmanCodec.hpp"
+#include "mpqlib/codecs/PkwareExplode.hpp"
 
 namespace mpqlib
 {
@@ -41,6 +37,79 @@ namespace mpqlib
         constexpr uint8_t kSparse = 0x20;
         constexpr uint8_t kAdpcmMono = 0x40;
         constexpr uint8_t kAdpcmStereo = 0x80;
+
+        std::span<const std::byte> asBytes(const uint8_t* p, uint32_t size)
+        {
+            return { reinterpret_cast<const std::byte*>(p), size };
+        }
+
+        std::span<std::byte> asBytes(uint8_t* p, uint32_t size)
+        {
+            return { reinterpret_cast<std::byte*>(p), size };
+        }
+
+        int32_t decompressZlib(const uint8_t* in, uint32_t inSize, uint8_t* out, uint32_t outSize)
+        {
+            z_stream z{};
+            z.next_in = const_cast<Bytef*>(in);
+            z.avail_in = inSize;
+            z.next_out = out;
+            z.avail_out = outSize;
+
+            if (inflateInit(&z) != Z_OK)
+                return -1;
+
+            const int result = inflate(&z, Z_FINISH);
+            const auto written = static_cast<int32_t>(z.total_out);
+            inflateEnd(&z);
+
+            return result == Z_STREAM_END ? written : -1;
+        }
+
+        int32_t decompressBzip2(const uint8_t* in, uint32_t inSize, uint8_t* out, uint32_t outSize)
+        {
+            bz_stream strm{};
+            strm.next_in = const_cast<char*>(reinterpret_cast<const char*>(in));
+            strm.avail_in = inSize;
+            strm.next_out = reinterpret_cast<char*>(out);
+            strm.avail_out = outSize;
+
+            if (BZ2_bzDecompressInit(&strm, 0, 0) != BZ_OK)
+                return -1;
+
+            int result;
+            do
+            {
+                result = BZ2_bzDecompress(&strm);
+            } while (result == BZ_OK && strm.avail_in > 0 && strm.avail_out > 0);
+
+            const auto written = static_cast<int32_t>(strm.total_out_lo32);
+            BZ2_bzDecompressEnd(&strm);
+
+            return result == BZ_STREAM_END ? written : -1;
+        }
+
+        int32_t decompressPkware(const uint8_t* in, uint32_t inSize, uint8_t* out, uint32_t outSize)
+        {
+            auto result = codecs::pkwareExplode(asBytes(in, inSize), asBytes(out, outSize));
+            return result ? static_cast<int32_t>(*result) : -1;
+        }
+
+        int32_t decompressHuffmanThenAdpcm(const uint8_t* in, uint32_t inSize, uint8_t* out, uint32_t outSize, int channels)
+        {
+            std::vector<uint8_t> huffmanOut(outSize);
+            codecs::HuffmanInputStream stream(asBytes(in, inSize));
+            codecs::HuffmanTree tree;
+            const std::size_t huffmanBytes = tree.decompress(stream, asBytes(huffmanOut.data(), outSize));
+
+            if (huffmanBytes == 0)
+                return -1;
+
+            const std::size_t written = codecs::adpcmWaveDecompress(
+                asBytes(huffmanOut.data(), static_cast<uint32_t>(huffmanBytes)), asBytes(out, outSize), channels);
+
+            return static_cast<int32_t>(written);
+        }
 
         void* lzmaAlloc(void*, size_t size) { return std::malloc(size); }
         void lzmaFree(void*, void* address) { if (address) std::free(address); }
@@ -133,13 +202,13 @@ namespace mpqlib
             switch (method)
             {
                 case kZlib:
-                    return libmpq__decompress_zlib(const_cast<uint8_t*>(payload), payloadSize, out, outSize);
+                    return decompressZlib(payload, payloadSize, out, outSize);
 
                 case kPkware:
-                    return libmpq__decompress_pkzip(const_cast<uint8_t*>(payload), payloadSize, out, outSize);
+                    return decompressPkware(payload, payloadSize, out, outSize);
 
                 case kBzip2:
-                    return libmpq__decompress_bzip2(const_cast<uint8_t*>(payload), payloadSize, out, outSize);
+                    return decompressBzip2(payload, payloadSize, out, outSize);
 
                 case kLzma:
                     return decompressLzma(payload, payloadSize, out, outSize);
@@ -150,7 +219,7 @@ namespace mpqlib
                 case kSparse | kZlib:
                 {
                     std::vector<uint8_t> temp(outSize);
-                    int32_t tb = libmpq__decompress_zlib(const_cast<uint8_t*>(payload), payloadSize, temp.data(), outSize);
+                    int32_t tb = decompressZlib(payload, payloadSize, temp.data(), outSize);
                     if (tb < 0)
                         return -1;
                     return decompressSparse(temp.data(), static_cast<uint32_t>(tb), out, outSize);
@@ -159,29 +228,17 @@ namespace mpqlib
                 case kSparse | kBzip2:
                 {
                     std::vector<uint8_t> temp(outSize);
-                    int32_t tb = libmpq__decompress_bzip2(const_cast<uint8_t*>(payload), payloadSize, temp.data(), outSize);
+                    int32_t tb = decompressBzip2(payload, payloadSize, temp.data(), outSize);
                     if (tb < 0)
                         return -1;
                     return decompressSparse(temp.data(), static_cast<uint32_t>(tb), out, outSize);
                 }
 
                 case kAdpcmMono | kHuffman:
-                {
-                    std::vector<uint8_t> temp(outSize);
-                    int32_t tb = libmpq__decompress_huffman(const_cast<uint8_t*>(payload), payloadSize, temp.data(), outSize);
-                    if (tb < 0)
-                        return -1;
-                    return libmpq__decompress_wave_mono(temp.data(), static_cast<uint32_t>(tb), out, outSize);
-                }
+                    return decompressHuffmanThenAdpcm(payload, payloadSize, out, outSize, 1);
 
                 case kAdpcmStereo | kHuffman:
-                {
-                    std::vector<uint8_t> temp(outSize);
-                    int32_t tb = libmpq__decompress_huffman(const_cast<uint8_t*>(payload), payloadSize, temp.data(), outSize);
-                    if (tb < 0)
-                        return -1;
-                    return libmpq__decompress_wave_stereo(temp.data(), static_cast<uint32_t>(tb), out, outSize);
-                }
+                    return decompressHuffmanThenAdpcm(payload, payloadSize, out, outSize, 2);
 
                 default:
                     return -1;
@@ -203,7 +260,7 @@ namespace mpqlib
                 return decompressMulti(in, inSize, out, outSize);
 
             case SectorCompression::Imploded:
-                return libmpq__decompress_pkzip(const_cast<uint8_t*>(in), inSize, out, outSize);
+                return decompressPkware(in, inSize, out, outSize);
         }
 
         return -1;

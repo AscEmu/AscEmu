@@ -20,7 +20,7 @@
 #include "vmapexport.h"
 #include "model.h"
 #include "wmo.h"
-#include "mpqfile.h"
+#include "mpqlib/MPQFile.hpp"
 #include <cassert>
 #include <algorithm>
 #include <cstdio>

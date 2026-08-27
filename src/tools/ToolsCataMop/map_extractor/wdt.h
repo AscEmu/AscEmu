@@ -19,7 +19,7 @@
 
 #ifndef WDT_H
 #define WDT_H
-#include "loadlib.h"
+#include <cstdint>
 
  //**************************************************************************************
  // WDT file class and structures

@@ -14,17 +14,10 @@ if (NOT WIN32 AND NOT IS_64BIT)
     add_compile_options(-D_FILE_OFFSET_BITS=64)
 endif ()
 
-include_directories(
-    ${DEPENDENCY_ROOT}/libmpq/libmpq
-    ${DEPENDENCY_ROOT}/libmpq/win
-    ${DEPENDENCY_ROOT}/dbcfile
-    ${LOADLIB_PATH}
-)
-
 # include library dependencies.
 target_link_libraries(${EXECUTABLE_NAME}
   PUBLIC
-    dbcfile
+    mpqlib
     ${ZLIB_LIBRARIES}
 )
 

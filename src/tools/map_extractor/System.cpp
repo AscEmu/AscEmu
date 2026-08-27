@@ -34,14 +34,15 @@
 #include <unistd.h>
 #endif
 
-#include "dbcfile.h"
-#include "mpq_libmpq04.h"
+#include "mpqlib/DBCFile.hpp"
+#include "mpqlib/MpqPatchChain.hpp"
 
 #include "adt.h"
 #include "wdt.h"
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <sstream>
 
 #if defined( __GNUC__ )
@@ -251,6 +252,11 @@ std::vector<MpqList> mpqList{
 static const char* const langs[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU", "ptBR", "ptPT", "itIT" };
 #define LANG_COUNT 15
 
+// Single implicit archive chain covering everything this tool reads (DBC and
+// map data alike) - mirrors the old global ArchiveSet's flat priority list:
+// the first archive opened becomes the base, everything after is a patch.
+std::unique_ptr<mpqlib::MpqPatchChain> gMpqChain;
+
 void CreateDir(const std::string& Path)
 {
     if (fs::exists(Path))
@@ -343,15 +349,14 @@ uint32_t ReadBuild(int locale)
     std::string filename = std::string("component.wow-") + langs[locale] + ".txt";
     printf("Read %s file... ", filename.c_str());
 
-    MPQFile m(filename.c_str());
-    if (m.isEof())
+    std::vector<uint8_t> data;
+    if (!gMpqChain->readFile(filename, data))
     {
         printf("Fatal error: Not found %s file!\n", filename.c_str());
         exit(1);
     }
 
-    std::string text = std::string(m.getPointer(), m.getSize());
-    m.close();
+    std::string text(reinterpret_cast<char const*>(data.data()), data.size());
 
     size_t pos = text.find("version=\"");
     size_t pos1 = pos + strlen("version=\"");
@@ -379,7 +384,7 @@ uint32_t ReadBuild(int locale)
 uint32_t ReadMapDBC()
 {
     printf("Read Map.dbc file... ");
-    DBCFile dbc("DBFilesClient\\Map.dbc");
+    DBCFile dbc(*gMpqChain, "DBFilesClient\\Map.dbc");
 
     if (!dbc.open())
     {
@@ -387,13 +392,13 @@ uint32_t ReadMapDBC()
         exit(1);
     }
 
-    size_t map_count = dbc.getRecordCount();
+    size_t map_count = dbc.getRowCount();
     map_ids = new map_id[map_count];
     for (uint32_t x = 0; x < map_count; ++x)
     {
-        map_ids[x].id = dbc.getRecord(x).getUInt(0);
+        map_ids[x].id = dbc.getRow(x).getUInt(0);
 
-        const char* map_name = dbc.getRecord(x).getString(1);
+        const char* map_name = dbc.getRow(x).getString(1);
         size_t max_map_name_length = sizeof(map_ids[x].name);
         if (strlen(map_name) >= max_map_name_length)
         {
@@ -411,7 +416,7 @@ uint32_t ReadMapDBC()
 void ReadAreaTableDBC()
 {
     printf("Read AreaTable.dbc file...");
-    DBCFile dbc("DBFilesClient\\AreaTable.dbc");
+    DBCFile dbc(*gMpqChain, "DBFilesClient\\AreaTable.dbc");
 
     if (!dbc.open())
     {
@@ -419,13 +424,13 @@ void ReadAreaTableDBC()
         exit(1);
     }
 
-    size_t area_count = dbc.getRecordCount();
+    size_t area_count = dbc.getRowCount();
     size_t maxid = dbc.getMaxId();
     areas = new uint16_t[maxid + 1];
     memset(areas, 0xff, (maxid + 1) * sizeof(uint16_t));
 
     for (uint32_t x = 0; x < area_count; ++x)
-        areas[dbc.getRecord(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRecord(x).getUInt(3));
+        areas[dbc.getRow(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRow(x).getUInt(3));
 
     maxAreaId = static_cast<uint32_t>(dbc.getMaxId());
 
@@ -435,20 +440,20 @@ void ReadAreaTableDBC()
 void ReadLiquidTypeTableDBC()
 {
     printf("Read LiquidType.dbc file...");
-    DBCFile dbc("DBFilesClient\\LiquidType.dbc");
+    DBCFile dbc(*gMpqChain, "DBFilesClient\\LiquidType.dbc");
     if (!dbc.open())
     {
         printf("Fatal error: Invalid LiquidType.dbc file format!\n");
         exit(1);
     }
 
-    size_t liqTypeCount = dbc.getRecordCount();
+    size_t liqTypeCount = dbc.getRowCount();
     size_t liqTypeMaxId = dbc.getMaxId();
     LiqType = new uint16_t[liqTypeMaxId + 1];
     memset(LiqType, 0xff, (liqTypeMaxId + 1) * sizeof(uint16_t));
 
     for (uint32_t x = 0; x < liqTypeCount; ++x)
-        LiqType[dbc.getRecord(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRecord(x).getUInt(3));
+        LiqType[dbc.getRow(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRow(x).getUInt(3));
 
     printf("Done! (%u LiqTypes loaded)\n", (uint32_t)liqTypeCount);
 }
@@ -553,7 +558,7 @@ bool ConvertADT(char* filename, char* filename2, int /*cell_y*/, int /*cell_x*/,
 {
     ADT_file adt;
 
-    if (!adt.loadFile(filename))
+    if (!adt.loadFile(*gMpqChain, filename))
         return false;
 
     adt_MCIN* cells = adt.a_grid->getMCIN();
@@ -948,7 +953,7 @@ bool ConvertADT(char* filename, char* filename2, int /*cell_y*/, int /*cell_x*/,
         }
     }
 
-    map_liquidHeader liquidHeader;
+    map_liquidHeader liquidHeader{};
 
     // no water data (if all grid have 0 liquid type)
     if (type == 0 && !fullType)
@@ -1123,7 +1128,7 @@ void ExtractMapsFromMpq(uint32_t build)
         // Loadup map grid data
         sprintf(mpq_map_name, "World\\Maps\\%s\\%s.wdt", map_ids[z].name, map_ids[z].name);
         WDT_file wdt;
-        if (!wdt.loadFile(mpq_map_name, false))
+        if (!wdt.loadFile(*gMpqChain, mpq_map_name, false))
         {
             //            printf("Error loading %s map wdt data\n", map_ids[z].name);
             continue;
@@ -1156,9 +1161,10 @@ bool ExtractFile(char const* mpq_name, std::string const& filename)
         printf("Can't create the output file '%s'\n", filename.c_str());
         return false;
     }
-    MPQFile m(mpq_name);
-    if (!m.isEof())
-        fwrite(m.getPointer(), 1, m.getSize(), output);
+
+    std::vector<uint8_t> data;
+    if (gMpqChain->readFile(mpq_name, data))
+        fwrite(data.data(), 1, data.size(), output);
 
     fclose(output);
     return true;
@@ -1172,7 +1178,7 @@ void ExtractDBCFiles(int locale, bool basicLocale)
 
     // get DBC file list
     // this can be solved better with std::filesystem
-    std::vector<std::string> files = GetMpqFileList();
+    std::vector<std::string> files = gMpqChain->listFiles();
     for (std::vector<std::string>::iterator iter = files.begin(); iter != files.end(); ++iter)
     {
         if (iter->rfind(".dbc") == iter->length() - strlen(".dbc"))
@@ -1214,12 +1220,33 @@ void ExtractDBCFiles(int locale, bool basicLocale)
     printf("Extracted %u DBC files\n\n", count);
 }
 
+// The old code opened every candidate archive as an independent peer in a
+// flat, priority-ordered list. mpqlib::MpqPatchChain instead has an explicit
+// base + patches, so the first archive opened here becomes the base and
+// every one after it is added as a patch - if the base fails to open, the
+// chain is torn down so the next candidate can retry as a fresh base,
+// reproducing the same "just skip archives that don't exist" behavior.
+bool OpenMpqArchive(char const* filename)
+{
+    if (!gMpqChain)
+    {
+        gMpqChain = std::make_unique<mpqlib::MpqPatchChain>(filename);
+        if (gMpqChain->isOpen())
+            return true;
+
+        gMpqChain.reset();
+        return false;
+    }
+
+    return gMpqChain->addPatch(filename);
+}
+
 void LoadLocaleMPQFiles(int const locale)
 {
     char filename[512];
 
     sprintf(filename, "%s/Data/%s/locale-%s.MPQ", input_path, langs[locale], langs[locale]);
-    new MPQArchive(filename);
+    OpenMpqArchive(filename);
 
     for (int i = 1; i < 5; ++i)
     {
@@ -1229,7 +1256,7 @@ void LoadLocaleMPQFiles(int const locale)
 
         sprintf(filename, "%s/Data/%s/patch-%s%s.MPQ", input_path, langs[locale], langs[locale], ext);
         if (FileExists(filename))
-            new MPQArchive(filename);
+            OpenMpqArchive(filename);
     }
 }
 
@@ -1241,14 +1268,14 @@ void LoadCommonMPQFiles()
         {
             std::string fileName (std::string(input_path) + "/Data/" + mpq.fileName);
             if (FileExists(fileName))
-                new MPQArchive(fileName.c_str());
+                OpenMpqArchive(fileName.c_str());
         }
     }
 }
 
 inline void CloseMPQFiles()
 {
-    CloseMpqArchives();
+    gMpqChain.reset();
 }
 
 int getFindLanguageIndex()

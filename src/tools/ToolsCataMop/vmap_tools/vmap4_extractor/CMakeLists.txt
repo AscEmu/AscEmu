@@ -3,7 +3,7 @@
 # set up our project name.
 set(EXECUTABLE_NAME vmap4_extractor)
 
-file(GLOB SRC_VMAPS_EXTRACTOR *.cpp *.h)
+file(GLOB SRC_VMAPS_EXTRACTOR *.cpp *.h *.hpp)
 
 # source group.
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})

@@ -19,8 +19,10 @@
 
 #define _CRT_SECURE_NO_DEPRECATE
 
+#include <array>
 #include <bitset>
 #include <cstdio>
+#include <optional>
 #include <deque>
 #include <fstream>
 #include <set>
@@ -44,7 +46,8 @@
 #endif
 
 #include "mpqlib/MpqPatchChain.hpp"
-#include "dbcfile.h"
+#include "mpqlib/DBCFile.hpp"
+#include "mpqlib/ChunkTree.hpp"
 
 #include "adt.h"
 #include "wdt.h"
@@ -72,6 +75,61 @@
 
 std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
 std::unique_ptr<mpqlib::MpqPatchChain> LocaleMpq;
+
+namespace
+{
+    // ADT/WDT chunk tags this tool ever looks at - anything else is skipped
+    // over while scanning. MCNK nests MCVT/MCLQ inside its own payload.
+    constexpr std::array<std::string_view, 8> kRecognizedChunkTags =
+        { "MVER", "MAIN", "MH2O", "MCNK", "MCVT", "MWMO", "MCLQ", "MFBO" };
+
+    constexpr uint32_t kAdtWdtFormatVersion = 18;
+
+    struct VersionChunk
+    {
+        union
+        {
+            uint32_t fcc;
+            char fcc_txt[4];
+        };
+        uint32_t size;
+        uint32_t ver;
+    };
+
+    bool isValidVersionChunk(mpqlib::ChunkNode const* mver)
+    {
+        if (!mver)
+            return false;
+
+        auto const& version = mver->as<VersionChunk>();
+        // fcc_txt holds the raw on-disk (reversed) tag, i.e. "REVM" for "MVER".
+        return version.fcc_txt[0] == 'R' && version.fcc_txt[1] == 'E' && version.fcc_txt[2] == 'V' && version.fcc_txt[3] == 'M'
+            && version.ver == kAdtWdtFormatVersion;
+    }
+
+    // Loads and validates an ADT/WDT chunk tree the same way the old
+    // ChunkedFile::loadFile() did: silently on a missing file when log is
+    // false, but always noisily on a present-but-invalid (wrong/missing
+    // MVER) one.
+    std::optional<mpqlib::ChunkTree> loadChunkTree(std::string_view filename, bool log = true)
+    {
+        auto tree = mpqlib::ChunkTree::load(*WorldMpq, filename, kRecognizedChunkTags);
+        if (!tree)
+        {
+            if (log)
+                printf("No such file %.*s\n", static_cast<int>(filename.size()), filename.data());
+            return std::nullopt;
+        }
+
+        if (!isValidVersionChunk(tree->find("MVER")))
+        {
+            printf("Error loading %.*s\n", static_cast<int>(filename.size()), filename.data());
+            return std::nullopt;
+        }
+
+        return tree;
+    }
+}
 
 typedef struct
 {
@@ -374,12 +432,12 @@ uint32_t ReadMapDBC()
         exit(1);
     }
 
-    size_t map_count = dbc.getRecordCount();
+    size_t map_count = dbc.getRowCount();
     map_ids.resize(map_count);
     for (uint32_t x = 0; x < map_count; ++x)
     {
-        map_ids[x].id = dbc.getRecord(x).getUInt(0);
-        strcpy(map_ids[x].name, dbc.getRecord(x).getString(1));
+        map_ids[x].id = dbc.getRow(x).getUInt(0);
+        strcpy(map_ids[x].name, dbc.getRow(x).getString(1));
     }
 
     printf("Done! (%u maps loaded)\n", uint32_t(map_count));
@@ -399,10 +457,10 @@ void ReadLiquidMaterialTable()
         exit(1);
     }
 
-    for (uint32_t x = 0; x < dbc.getRecordCount(); ++x)
+    for (uint32_t x = 0; x < dbc.getRowCount(); ++x)
     {
-        LiquidMaterialEntry& liquidType = LiquidMaterials[dbc.getRecord(x).getUInt(0)];
-        liquidType.LVF = static_cast<int8_t>(dbc.getRecord(x).getUInt(1));
+        LiquidMaterialEntry& liquidType = LiquidMaterials[dbc.getRow(x).getUInt(0)];
+        liquidType.LVF = static_cast<int8_t>(dbc.getRow(x).getUInt(1));
     }
 
     printf("Done! (" SZFMTD " LiquidMaterials loaded)\n", LiquidMaterials.size());
@@ -419,10 +477,10 @@ void ReadLiquidObjectTable()
         exit(1);
     }
 
-    for (uint32_t x = 0; x < dbc.getRecordCount(); ++x)
+    for (uint32_t x = 0; x < dbc.getRowCount(); ++x)
     {
-        LiquidObjectEntry& liquidType = LiquidObjects[dbc.getRecord(x).getUInt(0)];
-        liquidType.LiquidTypeID = static_cast<uint16_t>(dbc.getRecord(x).getUInt(3));
+        LiquidObjectEntry& liquidType = LiquidObjects[dbc.getRow(x).getUInt(0)];
+        liquidType.LiquidTypeID = static_cast<uint16_t>(dbc.getRow(x).getUInt(3));
     }
 
     printf("Done! (" SZFMTD " LiquidObjects loaded)\n", LiquidObjects.size());
@@ -438,11 +496,11 @@ void ReadLiquidTypeTable()
         exit(1);
     }
 
-    for (uint32_t x = 0; x < dbc.getRecordCount(); ++x)
+    for (uint32_t x = 0; x < dbc.getRowCount(); ++x)
     {
-        LiquidTypeEntry& liquidType = LiquidTypes[dbc.getRecord(x).getUInt(0)];
-        liquidType.SoundBank = static_cast<uint8_t>(dbc.getRecord(x).getUInt(3));
-        liquidType.MaterialID = static_cast<uint8_t>(dbc.getRecord(x).getUInt(14));
+        LiquidTypeEntry& liquidType = LiquidTypes[dbc.getRow(x).getUInt(0)];
+        liquidType.SoundBank = static_cast<uint8_t>(dbc.getRow(x).getUInt(3));
+        liquidType.MaterialID = static_cast<uint8_t>(dbc.getRow(x).getUInt(14));
     }
 
     printf("Done! (" SZFMTD " LiquidTypes loaded)\n", LiquidTypes.size());
@@ -570,9 +628,8 @@ LiquidVertexFormatType adt_MH2O::GetLiquidVertexFormat(adt_liquid_instance const
 
 bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int /*cell_y*/, int /*cell_x*/, uint32_t build, bool ignoreDeepWater)
 {
-    ChunkedFile adt;
-
-    if (!adt.loadFile(*WorldMpq, inputPath))
+    auto adt = loadChunkTree(inputPath);
+    if (!adt)
         return false;
 
     // Prepare map header
@@ -595,9 +652,9 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
     bool hasHoles = false;
     bool hasFlightBox = false;
 
-    for (std::multimap<std::string, FileChunk*>::const_iterator itr = adt.chunks.lower_bound("MCNK"); itr != adt.chunks.upper_bound("MCNK"); ++itr)
+    for (mpqlib::ChunkNode const* mcnkNode : adt->findAll("MCNK"))
     {
-        adt_MCNK* mcnk = itr->second->As<adt_MCNK>();
+        adt_MCNK const* mcnk = &mcnkNode->as<adt_MCNK>();
 
         if (mcnk->iy > ADT_CELLS_PER_GRID - 1 || mcnk->ix > ADT_CELLS_PER_GRID - 1)
         {
@@ -647,9 +704,9 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
         }
 
         // Get custom height
-        if (FileChunk* chunk = itr->second->GetSubChunk("MCVT"))
+        if (mpqlib::ChunkNode const* chunk = mcnkNode->find("MCVT"))
         {
-            adt_MCVT* mcvt = chunk->As<adt_MCVT>();
+            adt_MCVT const* mcvt = &chunk->as<adt_MCVT>();
             // get V9 height map
             for (int y = 0; y <= ADT_CELL_SIZE; y++)
             {
@@ -675,9 +732,9 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
         // Liquid data
         if (mcnk->sizeMCLQ > 8)
         {
-            if (FileChunk* chunk = itr->second->GetSubChunk("MCLQ"))
+            if (mpqlib::ChunkNode const* chunk = mcnkNode->find("MCLQ"))
             {
-                adt_MCLQ* liquid = chunk->As<adt_MCLQ>();
+                adt_MCLQ const* liquid = &chunk->as<adt_MCLQ>();
                 int count = 0;
                 for (int y = 0; y < ADT_CELL_SIZE; ++y)
                 {
@@ -734,9 +791,9 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
     }
 
     // Get liquid map for grid (in WOTLK used MH2O chunk)
-    if (FileChunk* chunk = adt.GetChunk("MH2O"))
+    if (mpqlib::ChunkNode const* chunk = adt->find("MH2O"))
     {
-        adt_MH2O* h2o = chunk->As<adt_MH2O>();
+        adt_MH2O const* h2o = &chunk->as<adt_MH2O>();
         for (int32_t i = 0; i < ADT_CELLS_PER_GRID; i++)
         {
             for (int32_t j = 0; j < ADT_CELLS_PER_GRID; j++)
@@ -794,9 +851,9 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
         }
     }
 
-    if (FileChunk* chunk = adt.GetChunk("MFBO"))
+    if (mpqlib::ChunkNode const* chunk = adt->find("MFBO"))
     {
-        adt_MFBO* mfbo = chunk->As<adt_MFBO>();
+        adt_MFBO const* mfbo = &chunk->as<adt_MFBO>();
         memcpy(flight_box_max, &mfbo->max, sizeof(flight_box_max));
         memcpy(flight_box_min, &mfbo->min, sizeof(flight_box_min));
         hasFlightBox = true;
@@ -964,7 +1021,7 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
         }
     }
 
-    map_liquidHeader liquidHeader;
+    map_liquidHeader liquidHeader{};
 
     // no water data (if all grid have 0 liquid type)
     if (firstLiquidFlag == 0 && !fullType)
@@ -1166,17 +1223,15 @@ void ExtractMapsFromMpq(uint32_t build)
         printf("Extract %s (%d/%u)                  \n", map_ids[z].name, z + 1, map_count);
         // Loadup map grid data
         sprintf(mpq_map_name, "World\\Maps\\%s\\%s.wdt", map_ids[z].name, map_ids[z].name);
-        ChunkedFile wdt;
-
         std::bitset<(WDT_MAP_SIZE)* (WDT_MAP_SIZE)> existingTiles;
-        if (wdt.loadFile(*WorldMpq, mpq_map_name, false))
+        if (auto wdt = loadChunkTree(mpq_map_name, false))
         {
-            FileChunk* main = wdt.GetChunk("MAIN");
+            mpqlib::ChunkNode const* main = wdt->find("MAIN");
             for (uint32_t y = 0; y < WDT_MAP_SIZE; ++y)
             {
                 for (uint32_t x = 0; x < WDT_MAP_SIZE; ++x)
                 {
-                    if (!(main->As<wdt_MAIN>()->adt_list[y][x].flag & 0x1))
+                    if (!(main->as<wdt_MAIN>().adt_list[y][x].flag & 0x1))
                         continue;
 
                     sprintf(mpq_filename, "World\\Maps\\%s\\%s_%u_%u.adt", map_ids[z].name, map_ids[z].name, x, y);
@@ -1328,11 +1383,11 @@ void ExtractCameraFiles()
 
     // get camera file list from DBC
     std::vector<std::string> camerafiles;
-    size_t cam_count = camdbc.getRecordCount();
+    size_t cam_count = camdbc.getRowCount();
 
     for (size_t i = 0; i < cam_count; ++i)
     {
-        std::string camFile(camdbc.getRecord(i).getString(1));
+        std::string camFile(camdbc.getRow(i).getString(1));
         size_t loc = camFile.find(".mdx");
         if (loc != std::string::npos)
             camFile.replace(loc, 4, ".m2");

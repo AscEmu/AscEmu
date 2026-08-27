@@ -25,13 +25,11 @@ if (BUILD_ASCEMUSCRIPTS AND BUILD_LUAENGINE)
 endif ()
 
 if (BUILD_TOOLS)
-    # mpqlib is the shared MPQ-reading layer for every version's tools now;
-    # libmpq/dbcfile/loadlib (Classic/TBC/WotLK) build on top of it too.
+    # mpqlib is the shared MPQ-reading layer for every version's tools now,
+    # and also carries DBCFile/FileLoader (Classic/TBC/WotLK) plus the
+    # BinaryReader/ChunkReader helpers they and vmap4_extractor build on -
+    # libmpq itself (the old archive-format parser and its later thin
+    # MPQArchive/MPQFile wrapper) and the separate dbcfile/loadlib libraries
+    # are retired.
     add_subdirectory(mpqlib)
-
-    if (NOT ("${ASCEMU_VERSION}" STREQUAL "Cata" OR "${ASCEMU_VERSION}" STREQUAL "Mop"))
-        add_subdirectory(libmpq)
-        add_subdirectory(dbcfile)
-        add_subdirectory(loadlib)
-    endif ()
 endif ()

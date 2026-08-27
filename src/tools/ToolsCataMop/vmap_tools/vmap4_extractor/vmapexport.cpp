@@ -49,11 +49,11 @@
 #include <map>
 
 //From Extractor
-#include "adtfile.h"
-#include "wdtfile.h"
-#include "dbcfile.h"
+#include "ADTFile.hpp"
+#include "WDTFile.hpp"
+#include "mpqlib/DBCFile.hpp"
 #include "wmo.h"
-#include "mpqfile.h"
+#include "mpqlib/MPQFile.hpp"
 
 #include "vmapexport.h"
 
@@ -354,13 +354,13 @@ void ReadLiquidTypeTableDBC()
         exit(1);
     }
 
-    size_t LiqType_count = dbc.getRecordCount();
-    size_t LiqType_maxid = dbc.getRecord(LiqType_count - 1).getUInt(0);
+    size_t LiqType_count = dbc.getRowCount();
+    size_t LiqType_maxid = dbc.getRow(LiqType_count - 1).getUInt(0);
     LiqType = new uint16_t[LiqType_maxid + 1];
     memset(LiqType, 0xff, (LiqType_maxid + 1) * sizeof(uint16_t));
 
     for(uint32_t x = 0; x < LiqType_count; ++x)
-        LiqType[dbc.getRecord(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRecord(x).getUInt(3));
+        LiqType[dbc.getRow(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRow(x).getUInt(3));
 
     printf("Done! (%u LiqTypes loaded)\n", (unsigned int)LiqType_count);
 #else
@@ -380,13 +380,13 @@ void ReadLiquidTypeTableDBC()
         exit(1);
     }
 
-    size_t LiqType_count = dbc.getRecordCount();
+    size_t LiqType_count = dbc.getRowCount();
     size_t LiqType_maxid = dbc.getMaxId();
     LiqType = new uint16_t[LiqType_maxid + 1];
     memset(LiqType, 0xff, (LiqType_maxid + 1) * sizeof(uint16_t));
 
     for (size_t x = 0; x < LiqType_count; ++x)
-        LiqType[dbc.getRecord(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRecord(x).getUInt(3));
+        LiqType[dbc.getRow(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRow(x).getUInt(3));
 
     printf("Done! (%zu LiqTypes loaded)\n", LiqType_count);
 #endif
@@ -446,9 +446,9 @@ bool ExtractSingleWmo(std::string& fname)
     // Copy files from archive
 
     char szLocalFile[1024];
-    const char * plain_name = GetPlainName(fname.c_str());
+    const char * plain_name = getPlainName(fname.c_str());
     sprintf(szLocalFile, "%s/%s", szWorkDirWmo, plain_name);
-    FixNameCase(szLocalFile,strlen(szLocalFile));
+    fixNameCase(szLocalFile,strlen(szLocalFile));
 
     if (FileExists(szLocalFile))
         return true;
@@ -539,7 +539,7 @@ void ParsMapFiles()
             {
                 for (int y=0; y<64; ++y)
                 {
-                    if (ADTFile *ADT = WDT.GetMap(x,y))
+                    if (ADTFile *ADT = WDT.getMap(x,y))
                     {
                         //sprintf(id_filename,"%02u %02u %03u",x,y,map_ids[i].id);//!!!!!!!!!
                         ADT->init(map_ids[i].id, x, y);
@@ -700,12 +700,12 @@ int main(int argc, char ** argv)
             printf("FATAL ERROR: Map.dbc not found in data file.\n");
             return 1;
         }
-        map_count=static_cast<uint32_t>(dbc->getRecordCount());
+        map_count=static_cast<uint32_t>(dbc->getRowCount());
         map_ids=new map_id[map_count];
         for (unsigned int x=0;x<map_count;++x)
         {
-            map_ids[x].id=dbc->getRecord (x).getUInt(0);
-            strcpy(map_ids[x].name,dbc->getRecord(x).getString(1));
+            map_ids[x].id=dbc->getRow(x).getUInt(0);
+            strcpy(map_ids[x].name,dbc->getRow(x).getString(1));
             printf("Map - %s\n",map_ids[x].name);
         }
 

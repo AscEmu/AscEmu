@@ -21,11 +21,11 @@
 
 #include "AEVersion.hpp"
 
-#include "adtfile.h"
-#include "wdtfile.h"
-#include "dbcfile.h"
+#include "ADTFile.hpp"
+#include "WDTFile.hpp"
+#include "mpqlib/DBCFile.hpp"
 #include "wmo.h"
-#include "mpq_libmpq04.h"
+#include "mpqlib/MPQFile.hpp"
 #include "vmapexport.h"
 
 #ifdef WIN32
@@ -41,10 +41,17 @@
 
 #include <cstdio>
 #include <iostream>
+#include <memory>
 #include <vector>
 #include <errno.h>
 
 #define MPQ_BLOCK_SIZE 0x1000
+
+// Single implicit archive chain covering everything this tool reads (DBC and
+// WDT/ADT/WMO/model data alike) - mirrors the old global ArchiveSet's flat
+// priority list: the first archive opened becomes the base, everything
+// after is a patch.
+std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
 
 typedef struct
 {
@@ -86,20 +93,20 @@ void strToLower(char* str)
 void ReadLiquidTypeTableDBC()
 {
     printf("Read LiquidType.dbc file...");
-    DBCFile dbc("DBFilesClient\\LiquidType.dbc");
+    DBCFile dbc(*WorldMpq, "DBFilesClient\\LiquidType.dbc");
     if(!dbc.open())
     {
         printf("Fatal error: Invalid LiquidType.dbc file format!\n");
         exit(1);
     }
 
-    size_t LiqType_count = dbc.getRecordCount();
-    size_t LiqType_maxid = dbc.getRecord(LiqType_count - 1).getUInt(0);
+    size_t LiqType_count = dbc.getRowCount();
+    size_t LiqType_maxid = dbc.getRow(LiqType_count - 1).getUInt(0);
     LiqType = new uint16_t[LiqType_maxid + 1];
     memset(LiqType, 0xff, (LiqType_maxid + 1) * sizeof(uint16_t));
 
     for(uint32_t x = 0; x < LiqType_count; ++x)
-        LiqType[dbc.getRecord(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRecord(x).getUInt(3));
+        LiqType[dbc.getRow(x).getUInt(0)] = static_cast<uint16_t>(dbc.getRow(x).getUInt(3));
 
     printf("Done! (%u LiqTypes loaded)\n", (unsigned int)LiqType_count);
 }
@@ -110,7 +117,7 @@ bool ExtractWmo()
 
     //const char* ParsArchiveNames[] = {"patch-2.MPQ", "patch.MPQ", "common.MPQ", "expansion.MPQ"};
 
-    std::vector<std::string> filelist = GetMpqFileList();
+    std::vector<std::string> filelist = WorldMpq->listFiles();
     for (std::vector<std::string>::iterator fname = filelist.begin(); fname != filelist.end() && success; ++fname)
     {
         if (fname->find(".wmo") != std::string::npos)
@@ -128,9 +135,9 @@ bool ExtractSingleWmo(std::string& fname)
     // Copy files from archive
 
     char szLocalFile[1024];
-    const char * plain_name = GetPlainName(fname.c_str());
+    const char * plain_name = getPlainName(fname.c_str());
     sprintf(szLocalFile, "%s/%s", szWorkDirWmo, plain_name);
-    fixnamen(szLocalFile,strlen(szLocalFile));
+    fixNameCase(szLocalFile,strlen(szLocalFile));
 
     if (FileExists(szLocalFile))
         return true;
@@ -167,12 +174,12 @@ bool ExtractSingleWmo(std::string& fname)
         printf("couldn't open %s for writing!\n", szLocalFile);
         return false;
     }
-    froot.ConvertToVMAPRootWmo(output);
+    froot.convertToVMapRootWmo(output);
     int Wmo_nVertices = 0;
-    //printf("root has %d groups\n", froot->nGroups);
-    if (froot.nGroups !=0)
+    //printf("root has %d groups\n", froot->m_numGroups);
+    if (froot.m_numGroups !=0)
     {
-        for (uint32_t i = 0; i < froot.nGroups; ++i)
+        for (uint32_t i = 0; i < froot.m_numGroups; ++i)
         {
             char temp[1024];
             strncpy(temp, fname.c_str(), 1024);
@@ -190,7 +197,7 @@ bool ExtractSingleWmo(std::string& fname)
                 break;
             }
 
-            Wmo_nVertices += fgroup.ConvertToVMAPGroupWmo(output, &froot, preciseVectorData);
+            Wmo_nVertices += fgroup.convertToVMapGroupWmo(output, &froot, preciseVectorData);
         }
     }
 
@@ -221,7 +228,7 @@ void ParsMapFiles()
             {
                 for (int y=0; y<64; ++y)
                 {
-                    if (ADTFile *ADT = WDT.GetMap(x,y))
+                    if (ADTFile *ADT = WDT.getMap(x,y))
                     {
                         //sprintf(id_filename,"%02u %02u %03u",x,y,map_ids[i].id);//!!!!!!!!!
                         ADT->init(map_ids[i].id, x, y);
@@ -495,13 +502,28 @@ int main(int argc, char ** argv)
                     ))
             success = (errno == EEXIST);
 
-    // prepare archive name list
+    // prepare archive name list. The first archive that successfully opens
+    // becomes the chain's base, every one after it is added as a patch -
+    // mirrors the old flat ArchiveSet's "just skip archives that don't
+    // exist" behavior, since a failed base open tears the chain back down
+    // so the next candidate can retry as a fresh base.
     std::vector<std::string> archiveNames;
     fillArchiveNameVector(archiveNames);
     for (size_t i=0; i < archiveNames.size(); ++i)
-        MPQArchive(archiveNames[i].c_str());
+    {
+        if (!WorldMpq)
+        {
+            WorldMpq = std::make_unique<mpqlib::MpqPatchChain>(archiveNames[i]);
+            if (!WorldMpq->isOpen())
+                WorldMpq.reset();
+        }
+        else
+        {
+            WorldMpq->addPatch(archiveNames[i]);
+        }
+    }
 
-    if (!HasOpenMpqArchive())
+    if (!WorldMpq)
     {
         printf("FATAL ERROR: None MPQ archive found by path '%s'. Use -d option with proper path.\n",input_path);
         return 1;
@@ -516,20 +538,20 @@ int main(int argc, char ** argv)
     //map.dbc
     if (success)
     {
-        DBCFile * dbc = new DBCFile("DBFilesClient\\Map.dbc");
+        DBCFile * dbc = new DBCFile(*WorldMpq, "DBFilesClient\\Map.dbc");
         if (!dbc->open())
         {
             delete dbc;
             printf("FATAL ERROR: Map.dbc not found in data file.\n");
             return 1;
         }
-        map_count=static_cast<uint32_t>(dbc->getRecordCount());
+        map_count=static_cast<uint32_t>(dbc->getRowCount());
         map_ids=new map_id[map_count];
         for (unsigned int x=0;x<map_count;++x)
         {
-            map_ids[x].id = dbc->getRecord(x).getUInt(0);
+            map_ids[x].id = dbc->getRow(x).getUInt(0);
 
-            const char* map_name = dbc->getRecord(x).getString(1);
+            const char* map_name = dbc->getRow(x).getString(1);
             size_t max_map_name_length = sizeof(map_ids[x].name);
             if (strlen(map_name) >= max_map_name_length)
             {

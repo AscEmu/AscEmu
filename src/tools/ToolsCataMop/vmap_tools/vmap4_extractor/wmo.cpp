@@ -28,7 +28,7 @@
 #include <memory>
 #undef min
 #undef max
-#include "mpqfile.h"
+#include "mpqlib/MPQFile.hpp"
 
 using namespace std;
 extern uint16_t *LiqType;
@@ -60,7 +60,7 @@ bool WMORoot::open()
         f.read(fourcc, 4);
         f.read(&size, 4);
 
-        flipcc(fourcc);
+        flipFourCC(fourcc);
         fourcc[4] = 0;
 
         size_t nextpos = f.getPos() + size;
@@ -165,7 +165,7 @@ bool WMOGroup::open()
     {
         f.read(fourcc, 4);
         f.read(&size, 4);
-        flipcc(fourcc);
+        flipFourCC(fourcc);
         if (!strcmp(fourcc, "MOGP"))//Fix sizeoff = Data size.
         {
             size = 68;

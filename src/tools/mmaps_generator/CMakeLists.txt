@@ -19,7 +19,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/collision/Management
     ${CMAKE_SOURCE_DIR}/src/collision/Maps
     ${CMAKE_SOURCE_DIR}/src/collision/Models
-    ${CMAKE_SOURCE_DIR}/dep/loadlib
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 

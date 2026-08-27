@@ -3,12 +3,12 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-// Sector decompression. The actual codec implementations (PKWARE DCL implode,
-// Huffman, ADPCM wave) are AscEmu's own vendored dep/libmpq codec sources
-// (explode.c/huffman.c/wave.c/extract.c) - reused unmodified here since they
-// are self-contained, already-correct algorithms with no ties to StormLib.
-// zlib/bzip2 go through the zlib/bzip2 deps AscEmu already links elsewhere.
-// LZMA (vendored, public-domain LZMA SDK decoder - see vendor/lzma) and Sparse
+// Sector decompression. PKWARE DCL implode (codecs/PkwareExplode), Huffman
+// (codecs/HuffmanCodec), and ADPCM wave (codecs/AdpcmWave) are from-scratch
+// C++23 ports of AscEmu's original libmpq vendoring - see those headers for
+// how faithfully each preserves the original bit-level algorithm. zlib/bzip2
+// go through the zlib/bzip2 deps AscEmu already links elsewhere. LZMA
+// (vendored, public-domain LZMA SDK decoder - see vendor/lzma) and Sparse
 // (ported from StormLib's sparse.cpp) round out the codec set: both are used
 // by real Cata/Mop archives, notably the Data/Cache/patch-*.MPQ hotfix
 // archives, and were the missing piece causing silent per-file extraction

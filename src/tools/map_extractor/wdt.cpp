@@ -72,7 +72,7 @@ bool WDT_file::prepareLoadedData()
     if (!FileLoader::prepareLoadedData())
         return false;
 
-    mphd = (wdt_MPHD *)((uint8_t*)version+version->size+8);
+    mphd = (wdt_MPHD *)((uint8_t*)m_version+m_version->size+8);
     if (!mphd->prepareLoadedData())
         return false;
     main = (wdt_MAIN *)((uint8_t*)mphd + mphd->size+8);

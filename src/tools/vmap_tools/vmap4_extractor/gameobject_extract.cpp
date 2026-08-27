@@ -18,17 +18,20 @@
  */
 
 #include "model.h"
-#include "dbcfile.h"
-#include "adtfile.h"
+#include "mpqlib/DBCFile.hpp"
+#include "ADTFile.hpp"
 #include "vmapexport.h"
 
 #include <algorithm>
+#include <memory>
 #include <stdio.h>
+
+extern std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
 
 bool ExtractSingleModel(std::string& fname)
 {
-    char* name = GetPlainName((char*)fname.c_str());
-    char* ext = GetExtension(name);
+    char* name = getPlainName((char*)fname.c_str());
+    char* ext = getExtension(name);
 
     // < 3.1.0 ADT MMDX section store filename.mdx filenames for corresponded .m2 file
     if (!strcmp(ext, ".mdx"))
@@ -51,13 +54,13 @@ bool ExtractSingleModel(std::string& fname)
     if (!mdl.open())
         return false;
 
-    return mdl.ConvertToVMAPModel(output.c_str());
+    return mdl.convertToVMapModel(output.c_str());
 }
 
 void ExtractGameobjectModels()
 {
     printf("Extracting GameObject models...");
-    DBCFile dbc("DBFilesClient\\GameObjectDisplayInfo.dbc");
+    DBCFile dbc(*WorldMpq, "DBFilesClient\\GameObjectDisplayInfo.dbc");
     if(!dbc.open())
     {
         printf("Fatal error: Invalid GameObjectDisplayInfo.dbc file format!\n");
@@ -66,7 +69,6 @@ void ExtractGameobjectModels()
 
     std::string basepath = szWorkDirWmo;
     basepath += "/";
-    std::string path;
 
     std::string modelListPath = basepath + "temp_gameobject_models";
     FILE* model_list = fopen(modelListPath.c_str(), "wb");
@@ -76,18 +78,18 @@ void ExtractGameobjectModels()
         return;
     }
 
-    for (DBCFile::Iterator it = dbc.begin(); it != dbc.end(); ++it)
+    for (auto const& record : dbc)
     {
-        path = it->getString(1);
+        std::string path = record.getString(1);
 
         if (path.length() < 4)
             continue;
 
-        fixnamen((char*)path.c_str(), path.size());
-        char* name = GetPlainName((char*)path.c_str());
-        fixname2(name, strlen(name));
+        fixNameCase((char*)path.c_str(), path.size());
+        char* name = getPlainName((char*)path.c_str());
+        fixNameSpaces(name, strlen(name));
 
-        char* ch_ext = GetExtension(name);
+        char* ch_ext = getExtension(name);
         if (!ch_ext)
             continue;
 
@@ -112,7 +114,7 @@ void ExtractGameobjectModels()
 
         if (result)
         {
-            uint32_t displayId = it->getUInt(0);
+            uint32_t displayId = record.getUInt(0);
             uint32_t path_length = static_cast<uint32_t>(strlen(name));
             fwrite(&displayId, sizeof(uint32_t), 1, model_list);
             fwrite(&isWmo, sizeof(uint8_t), 1, model_list);

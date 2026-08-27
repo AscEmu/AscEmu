@@ -20,7 +20,7 @@
 #ifndef WDT_H
 #define WDT_H
 
-#include "loadlib.h"
+#include "mpqlib/FileLoader.hpp"
 
 //**************************************************************************************
 // WDT file class and structures
