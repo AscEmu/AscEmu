@@ -403,7 +403,7 @@ public:
 
         // Get total ticks
         auto amplitude = castingSpell->getEffectAmplitude(0) == 0 ? 1 : castingSpell->getEffectAmplitude(0);
-        int ticks = GetDuration(sSpellDurationStore.lookupEntry(castingSpell->getDurationIndex())) / amplitude;
+        int ticks = getDuration(sSpellDurationStore.lookupEntry(castingSpell->getDurationIndex())) / amplitude;
 
         setOverrideEffectDamage(0, dmg * ticks * (getOriginalSpell()->calculateEffectValue(0)) / 100);
 
@@ -422,7 +422,7 @@ public:
         const uint32_t dmg = castingSpell->calculateEffectValue(0);
 
         // Get total ticks
-        int ticks = GetDuration(sSpellDurationStore.lookupEntry(castingSpell->getDurationIndex())) / castingSpell->getEffectAmplitude(0);
+        int ticks = getDuration(sSpellDurationStore.lookupEntry(castingSpell->getDurationIndex())) / castingSpell->getEffectAmplitude(0);
 
         // Total periodic effect is a single tick amount multiplied by number of ticks
         setOverrideEffectDamage(0, dmg * ticks * (getOriginalSpell()->calculateEffectValue(0)) / 100);

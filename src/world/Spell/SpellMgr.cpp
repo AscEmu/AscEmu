@@ -1217,7 +1217,7 @@ void SpellMgr::loadTalentRanks()
 
 static float_t modifyCoefficientForChanneledSpell(float_t coeff, SpellInfo const* spellInfo, uint8_t effIndex)
 {
-    const auto baseDuration = static_cast<float>(GetDuration(sSpellDurationStore.lookupEntry(spellInfo->getDurationIndex())));
+    const auto baseDuration = static_cast<float>(getDuration(sSpellDurationStore.lookupEntry(spellInfo->getDurationIndex())));
     if (spellInfo->getEffectApplyAuraName(effIndex) == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
 #if VERSION_STRING >= TBC
         spellInfo->getEffectApplyAuraName(effIndex) == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE ||

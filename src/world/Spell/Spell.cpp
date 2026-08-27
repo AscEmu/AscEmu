@@ -311,7 +311,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     m_castTime = 0;
     if (m_triggeredByAura == nullptr && !m_triggeredSpell)
     {
-        m_castTime = static_cast<int32_t>(GetCastTime(sSpellCastTimesStore.lookupEntry(getSpellInfo()->getCastingTimeIndex())));
+        m_castTime = static_cast<int32_t>(getCastTime(sSpellCastTimesStore.lookupEntry(getSpellInfo()->getCastingTimeIndex())));
         if (m_castTime > 0 && u_caster != nullptr)
         {
             // Apply cast time modifiers
@@ -5478,7 +5478,7 @@ float_t Spell::getEffectRadius(uint8_t effectIndex)
         return m_effectRadius[effectIndex];
 
     m_isEffectRadiusSet[effectIndex] = true;
-    m_effectRadius[effectIndex] = ::GetRadius(sSpellRadiusStore.lookupEntry(getSpellInfo()->getEffectRadiusIndex(effectIndex)));
+    m_effectRadius[effectIndex] = ::getRadius(sSpellRadiusStore.lookupEntry(getSpellInfo()->getEffectRadiusIndex(effectIndex)));
 
     // If spell has no effect radius set, use spell range instead
     // but skip for effect target 87. Otherwise some teleport spells like ICC teleports will target

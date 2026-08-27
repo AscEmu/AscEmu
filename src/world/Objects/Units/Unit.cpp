@@ -11809,7 +11809,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
                     continue;
                 const auto spellInfo = sSpellMgr.getSpellInfo(spellId);   //we already modified this spell on server loading so it must exist
                 auto spell_duration = sSpellDurationStore.lookupEntry(spellInfo->getDurationIndex());
-                uint32_t tickcount = GetDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
+                uint32_t tickcount = getDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
 
                 if (ospinfo)
                     spell_proc->setOverrideEffectDamage(0, ospinfo->getEffectBasePoints(0) * damageInfo.realDamage / (100 * tickcount));
@@ -14477,7 +14477,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
 
                 const auto spellInfo = sSpellMgr.getSpellInfo(54203);
                 auto spell_duration = sSpellDurationStore.lookupEntry(spellInfo->getDurationIndex());
-                uint32_t tickcount = GetDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
+                uint32_t tickcount = getDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
                 if (ospinfo)
                     spell_proc->setOverrideEffectDamage(0, ospinfo->getEffectBasePoints(0) * damageInfo.realDamage / (100 * tickcount));
             }

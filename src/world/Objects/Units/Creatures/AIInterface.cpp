@@ -2013,7 +2013,7 @@ void AIInterface::handleAgentSpell(uint32_t spellId)
                 sLogger.failure("AI Agents: Targettype of AI agent spell {} for creature {} not set", spellInfo->getId(), static_cast<Creature*>(getUnit())->GetCreatureProperties()->Id);
         }
     }
-    uint32_t casttime = (GetCastTime(sSpellCastTimesStore.lookupEntry(AIspell->spell->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.lookupEntry(AIspell->spell->getCastingTimeIndex())) : 500);
+    uint32_t casttime = (getCastTime(sSpellCastTimesStore.lookupEntry(AIspell->spell->getCastingTimeIndex())) ? getCastTime(sSpellCastTimesStore.lookupEntry(AIspell->spell->getCastingTimeIndex())) : 500);
     const auto cooldown = static_cast<int32_t>(AIspell->cooldown ? AIspell->cooldown : 500);
     // Delay all Spells by our casttime
     spellEvents.delayAllEvents(casttime, AGENT_SPELL);
@@ -3886,7 +3886,7 @@ void AIInterface::UpdateAISpells()
             usedSpell->sendAnnouncement(getUnit());
 
             // reset cast wait timer
-            const auto spellCastTime = GetCastTime(sSpellCastTimesStore.lookupEntry(usedSpell->mSpellInfo->getCastingTimeIndex()));
+            const auto spellCastTime = getCastTime(sSpellCastTimesStore.lookupEntry(usedSpell->mSpellInfo->getCastingTimeIndex()));
             mSpellWaitTimer->resetInterval(std::max(AISPELL_GLOBAL_COOLDOWN, spellCastTime));
 
             // reset spell timers to cleanup exceeded spells

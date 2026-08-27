@@ -67,7 +67,7 @@ void TwinsAI::OnCombatStart(Unit*)
     if (CreatureAIScript* pSister = getLinkedCreatureAIScript())
     {
         SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(MyEmphatySpellId);
-        auto pAura = sSpellMgr.newAura(spellInfo, (int32_t)GetDuration(sSpellDurationStore.lookupEntry(spellInfo->getDurationIndex())), getCreature(), pSister->getCreature());
+        auto pAura = sSpellMgr.newAura(spellInfo, (int32_t)getDuration(sSpellDurationStore.lookupEntry(spellInfo->getDurationIndex())), getCreature(), pSister->getCreature());
         getCreature()->addAura(std::move(pAura));
         setZoneWideCombat(pSister->getCreature());
     }

@@ -48,8 +48,6 @@ namespace WDB::Structures
     struct ItemRandomPropertiesEntry;
     struct ItemSetEntry;
     struct GameObjectDisplayInfoEntry;
-    struct FactionTemplateEntry;
-    struct FactionEntry;
     struct EmotesTextEntry;
     struct DurabilityQualityEntry;
     struct DurabilityCostsEntry;
@@ -72,7 +70,6 @@ namespace WDB::Structures
     struct TaxiPathNodeEntry;
     struct MapDifficulty;
 
-    struct StableSlotPricesEntry;
 
 #if VERSION_STRING < Cata
     struct GtOCTRegenHPEntry;
@@ -82,15 +79,6 @@ namespace WDB::Structures
 #ifdef AE_TBC
     struct ItemDisplayInfo;
 #endif
-
-    struct CharTitlesEntry;
-    struct GemPropertiesEntry;
-    struct TotemCategoryEntry;
-    struct WorldMapAreaEntry;
-    struct AreaGroupEntry;
-    struct BarberShopStyleEntry;
-
-    struct MapDifficultyEntry;
 
 #if VERSION_STRING >= WotLK
     struct AchievementEntry;
@@ -153,22 +141,33 @@ namespace WDB::Structures
 #endif
 }
 
-typedef std::map<uint32_t, WDB::Structures::MapDifficulty> MapDifficultyMap;
-typedef std::vector<WDB::Structures::TaxiPathNodeEntry const*> TaxiPathNodeList;
-typedef std::vector<TaxiPathNodeList> TaxiPathNodesByPath;
+using MapDifficultyMap = std::map<uint32_t, WDB::Structures::MapDifficulty>;
+using TaxiPathNodeList = std::vector<WDB::Structures::TaxiPathNodeEntry const*>;
+using TaxiPathNodesByPath = std::vector<TaxiPathNodeList>;
 
-extern float SERVER_DECL GetRadius(WDB::Structures::SpellRadiusEntry const* radius);
-extern uint32_t SERVER_DECL GetCastTime(WDB::Structures::SpellCastTimesEntry const* time);
-extern uint32_t SERVER_DECL GetDuration(WDB::Structures::SpellDurationEntry const* dur);
+[[nodiscard]] constexpr float getRadius(WDB::Structures::SpellRadiusEntry const* radius) noexcept
+{
+    return radius ? radius->radius_min : 0.0f;
+}
 
-extern SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTableEntry> sAreaStore;
-extern SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTriggerEntry> sAreaTriggerStore;
+[[nodiscard]] constexpr uint32_t getCastTime(WDB::Structures::SpellCastTimesEntry const* time) noexcept
+{
+    return time ? time->CastTime : 0;
+}
+
+[[nodiscard]] constexpr uint32_t getDuration(WDB::Structures::SpellDurationEntry const* dur) noexcept
+{
+    return dur ? dur->Duration1 : 0;
+}
+
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTableEntry> sAreaStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTriggerEntry> sAreaTriggerStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::AuctionHouseEntry> sAuctionHouseStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BankBagSlotPrices> sBankBagSlotPricesStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChatChannelsEntry> sChatChannelsStore;
-extern SERVER_DECL WDB::WDBStore<WDB::Structures::CharStartOutfitEntry> sCharStartOutfitStore;
-extern SERVER_DECL WDB::WDBStore<WDB::Structures::ChrClassesEntry> sChrClassesStore;
-extern SERVER_DECL WDB::WDBStore<WDB::Structures::ChrRacesEntry> sChrRacesStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::CharStartOutfitEntry> sCharStartOutfitStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrClassesEntry> sChrClassesStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrRacesEntry> sChrRacesStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoEntry> sCreatureDisplayInfoStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureModelDataEntry> sCreatureModelDataStore;
@@ -177,8 +176,8 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureFamilyEntry> sCrea
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityCostsEntry> sDurabilityCostsStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityQualityEntry> sDurabilityQualityStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::EmotesTextEntry> sEmotesTextStore;
-extern SERVER_DECL WDB::WDBStore<WDB::Structures::FactionEntry> sFactionStore;
-extern SERVER_DECL WDB::WDBStore<WDB::Structures::FactionTemplateEntry> sFactionTemplateStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::FactionEntry> sFactionStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::FactionTemplateEntry> sFactionTemplateStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GameObjectDisplayInfoEntry> sGameObjectDisplayInfoStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemSetEntry> sItemSetStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemRandomPropertiesEntry> sItemRandomPropertiesStore;
@@ -186,8 +185,8 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::LFGDungeonEntry> sLFGDunge
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::LiquidTypeEntry> sLiquidTypeStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::LockEntry> sLockStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::MailTemplateEntry> sMailTemplateStore;
-extern SERVER_DECL WDB::WDBStore<WDB::Structures::MapEntry> sMapStore;
-extern MapDifficultyMap sMapDifficultyMap;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::MapEntry> sMapStore;
+inline MapDifficultyMap sMapDifficultyMap;
 
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::NameGenEntry> sNameGenStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SkillLineAbilityEntry> sSkillLineAbilityStore;
@@ -231,20 +230,19 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTRegenHPEntry> sGtOCTR
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore; // todo: available for versions > Classic
 #endif
 
-extern SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStableSlotPricesStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStableSlotPricesStore;
 
 #ifdef AE_TBC
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemDisplayInfo> sItemDisplayInfoStore;
 #endif
 
-    extern SERVER_DECL WDB::WDBStore<WDB::Structures::CharTitlesEntry> sCharTitlesStore;
-    extern SERVER_DECL WDB::WDBStore<WDB::Structures::GemPropertiesEntry> sGemPropertiesStore;
-    extern SERVER_DECL WDB::WDBStore<WDB::Structures::TotemCategoryEntry> sTotemCategoryStore;
-    extern SERVER_DECL WDB::WDBStore<WDB::Structures::WorldMapAreaEntry> sWorldMapAreaStore;
-    extern SERVER_DECL WDB::WDBStore<WDB::Structures::AreaGroupEntry> sAreaGroupStore;
-    extern SERVER_DECL WDB::WDBStore<WDB::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
-
-    extern SERVER_DECL WDB::WDBStore<WDB::Structures::MapDifficultyEntry> sMapDifficultyStore;
+    inline SERVER_DECL WDB::WDBStore<WDB::Structures::CharTitlesEntry> sCharTitlesStore;
+    inline SERVER_DECL WDB::WDBStore<WDB::Structures::GemPropertiesEntry> sGemPropertiesStore;
+    inline SERVER_DECL WDB::WDBStore<WDB::Structures::TotemCategoryEntry> sTotemCategoryStore;
+    inline SERVER_DECL WDB::WDBStore<WDB::Structures::WorldMapAreaEntry> sWorldMapAreaStore;
+    inline SERVER_DECL WDB::WDBStore<WDB::Structures::AreaGroupEntry> sAreaGroupStore;
+    inline SERVER_DECL WDB::WDBStore<WDB::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
+    inline SERVER_DECL WDB::WDBStore<WDB::Structures::MapDifficultyEntry> sMapDifficultyStore;
 
 #if VERSION_STRING >= WotLK
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AchievementEntry> sAchievementStore;

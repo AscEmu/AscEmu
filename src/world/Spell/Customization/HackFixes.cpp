@@ -650,8 +650,8 @@ void SpellMgr::applyHackFixes()
         if (sp == nullptr)
             continue;
 
-        float radius = std::max(::GetRadius(sSpellRadiusStore.lookupEntry(sp->getEffectRadiusIndex(0))), ::GetRadius(sSpellRadiusStore.lookupEntry(sp->getEffectRadiusIndex(1))));
-        radius = std::max(::GetRadius(sSpellRadiusStore.lookupEntry(sp->getEffectRadiusIndex(2))), radius);
+        float radius = std::max(getRadius(sSpellRadiusStore.lookupEntry(sp->getEffectRadiusIndex(0))), getRadius(sSpellRadiusStore.lookupEntry(sp->getEffectRadiusIndex(1))));
+        radius = std::max(getRadius(sSpellRadiusStore.lookupEntry(sp->getEffectRadiusIndex(2))), radius);
         radius = std::max(sp->getMaxRange(), radius);
         sp->custom_base_range_or_radius_sqr = radius * radius;
 

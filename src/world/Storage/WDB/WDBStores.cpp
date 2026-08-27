@@ -24,31 +24,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include <concepts>
 #include <cstdint>
 #include <iterator>
+#include <map>
 #include <string>
 #include <type_traits>
-
-float SERVER_DECL GetRadius(WDB::Structures::SpellRadiusEntry const* radius)
-{
-    if (radius == nullptr)
-        return 0;
-
-    return radius->radius_min;
-}
-
-uint32_t SERVER_DECL GetCastTime(WDB::Structures::SpellCastTimesEntry const* time)
-{
-    if (time == nullptr)
-        return 0;
-
-    return time->CastTime;
-}
-
-uint32_t SERVER_DECL GetDuration(WDB::Structures::SpellDurationEntry const* dur)
-{
-    if (dur == nullptr)
-        return 0;
-    return dur->Duration1;
-}
+#include <utility>
+#include <vector>
 
 typedef std::map<WMOAreaTableTripple, WDB::Structures::WMOAreaTableEntry const*> WMOAreaInfoByTripple;
 
@@ -60,17 +40,10 @@ struct NameGenData
 
 std::vector<NameGenData> _namegenData[3];
 
-SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTableEntry> sAreaStore;
-SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTriggerEntry> sAreaTriggerStore;
-
 SERVER_DECL WDB::WDBContainer<WDB::Structures::BankBagSlotPrices> sBankBagSlotPricesStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ChatChannelsEntry> sChatChannelsStore;
-SERVER_DECL WDB::WDBStore<WDB::Structures::CharStartOutfitEntry> sCharStartOutfitStore;
 std::map<uint32_t, WDB::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
-
-SERVER_DECL WDB::WDBStore<WDB::Structures::ChrClassesEntry> sChrClassesStore;
-SERVER_DECL WDB::WDBStore<WDB::Structures::ChrRacesEntry> sChrRacesStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoEntry> sCreatureDisplayInfoStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore;
@@ -83,9 +56,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityQualityEntry> sDurabili
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::EmotesTextEntry> sEmotesTextStore;
 
-SERVER_DECL WDB::WDBStore<WDB::Structures::FactionEntry> sFactionStore;
-SERVER_DECL WDB::WDBStore<WDB::Structures::FactionTemplateEntry> sFactionTemplateStore;
-
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GameObjectDisplayInfoEntry> sGameObjectDisplayInfoStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemSetEntry> sItemSetStore;
@@ -95,8 +65,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::LFGDungeonEntry> sLFGDungeonStore
 SERVER_DECL WDB::WDBContainer<WDB::Structures::LiquidTypeEntry> sLiquidTypeStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::LockEntry> sLockStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::MailTemplateEntry> sMailTemplateStore;
-SERVER_DECL WDB::WDBStore<WDB::Structures::MapEntry> sMapStore;
-MapDifficultyMap sMapDifficultyMap;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::NameGenEntry> sNameGenStore;
 
@@ -148,20 +116,9 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPS
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore; // todo: available for versions > Classic
 #endif
 
-SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStableSlotPricesStore;
-
 #ifdef AE_TBC
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemDisplayInfo> sItemDisplayInfoStore;
 #endif
-
-SERVER_DECL WDB::WDBStore<WDB::Structures::CharTitlesEntry> sCharTitlesStore;
-SERVER_DECL WDB::WDBStore<WDB::Structures::GemPropertiesEntry> sGemPropertiesStore;
-SERVER_DECL WDB::WDBStore<WDB::Structures::TotemCategoryEntry> sTotemCategoryStore;
-SERVER_DECL WDB::WDBStore<WDB::Structures::WorldMapAreaEntry> sWorldMapAreaStore;
-SERVER_DECL WDB::WDBStore<WDB::Structures::AreaGroupEntry> sAreaGroupStore;
-SERVER_DECL WDB::WDBStore<WDB::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
-
-SERVER_DECL WDB::WDBStore<WDB::Structures::MapDifficultyEntry> sMapDifficultyStore;
 
 #if VERSION_STRING >= WotLK
 SERVER_DECL WDB::WDBContainer<WDB::Structures::AchievementEntry> sAchievementStore;

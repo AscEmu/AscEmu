@@ -20,7 +20,7 @@ CreatureAIFunction::CreatureAIFunction(CreatureAIScript* owner, Function pFuncti
     // Set CastTime and SpellDefault CD when its a Spell
     if (const auto spellInfo = sSpellMgr.getSpellInfo(functionArgs.getSpellId()))
     {
-        uint32_t castTime = GetCastTime(sSpellCastTimesStore.lookupEntry(spellInfo->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.lookupEntry(spellInfo->getCastingTimeIndex())) : 500;
+        uint32_t castTime = getCastTime(sSpellCastTimesStore.lookupEntry(spellInfo->getCastingTimeIndex())) ? getCastTime(sSpellCastTimesStore.lookupEntry(spellInfo->getCastingTimeIndex())) : 500;
         setCastTimer(Milliseconds(castTime));
 
         // Set RecoveryTimer
