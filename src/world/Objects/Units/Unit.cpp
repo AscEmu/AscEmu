@@ -4868,15 +4868,19 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
     {
 #if VERSION_STRING == Classic
         if (isPlayer() && !aur->IsPassive())
-            static_cast<Player*>(this)->sendMessageToSet(SmsgUpdateAuraDuration(aur->m_visualSlot, aur->getTimeLeft()).serialise().get(), true);
+        {
+            SmsgUpdateAuraDuration updateAuraDuration(aur->m_visualSlot, aur->getTimeLeft());
+            PacketBroadcast::sendToSet(*this, updateAuraDuration, true);
+        }
 #else
-
         if (isPlayer() && !aur->IsPassive() && !(aur->getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_DURATION))
         {
-            static_cast<Player*>(this)->sendMessageToSet(SmsgUpdateAuraDuration(aur->m_visualSlot, aur->getTimeLeft()).serialise().get(), true);
+            SmsgUpdateAuraDuration updateAuraDuration(aur->m_visualSlot, aur->getTimeLeft());
+            PacketBroadcast::sendToSet(*this, updateAuraDuration, true);
 
             auto guid = GetNewGUID();
-            static_cast<Player*>(this)->sendMessageToSet(SmsgSetExtraAuraInfo(guid, aur->m_visualSlot, aur->getSpellId(), aur->getMaxDuration(), aur->getTimeLeft()).serialise().get(), true);
+            SmsgSetExtraAuraInfo setExtraAuraInfo(guid, aur->m_visualSlot, aur->getSpellId(), aur->getMaxDuration(), aur->getTimeLeft());
+            PacketBroadcast::sendToSet(*this, setExtraAuraInfo, true);
         }
 
         const auto caster = aur->GetUnitCaster();
@@ -4893,7 +4897,10 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
     {
         const auto caster = aur->GetUnitCaster();
         if (caster != nullptr && caster->isPlayer())
-            static_cast<Player*>(caster)->sendMessageToSet(SmsgClearExtraAuraInfo(getGuid(), aur->getSpellId()).serialise().get(), true);
+        {
+            SmsgClearExtraAuraInfo managedPacket(getGuid(), aur->getSpellId());
+            PacketBroadcast::sendToSet(*caster, managedPacket, true);
+        }
     }
 #endif
 #else
