@@ -13994,6 +13994,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
     saveReputations(newCharacter, buf);
 
     // Add player action bars
+#ifdef FT_DUAL_SPEC
     for (uint8_t s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         ss << "'";
@@ -14009,6 +14010,16 @@ void Player::saveToDB(bool newCharacter /* =false */)
         }
         ss << "'" << ", ";
     }
+#else
+    ss << "'";
+    for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+    {
+        ss << uint32_t(m_specs[SPEC_PRIMARY].getActionButton(i).Action) << ","
+            << uint32_t(m_specs[SPEC_PRIMARY].getActionButton(i).Type) << ","
+            << uint32_t(m_specs[SPEC_PRIMARY].getActionButton(i).Misc) << ",";
+    }
+    ss << "'" << ", " << "''" << ", ";
+#endif
 
     if (!newCharacter)
     {
@@ -14037,6 +14048,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
     ss << uint32_t(getDrunkValue()) << ", ";
 
     // TODO Remove
+#ifdef FT_DUAL_SPEC
     for (uint8_t s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         ss << "'";
@@ -14049,6 +14061,23 @@ void Player::saveToDB(bool newCharacter /* =false */)
 
         ss << "'" << ", ";
     }
+#else
+    ss << "'";
+    for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
+        ss << uint32_t(m_specs[SPEC_PRIMARY].getGlyph(i)) << ",";
+
+    ss << "', '";
+    for (const auto& [talentId, rank] : m_specs[SPEC_PRIMARY].getTalents())
+        ss << uint32_t(talentId) << "," << uint32_t(rank) << ",";
+
+    ss << "'" << ", ";
+
+    ss << "'";
+    for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
+        ss << uint32_t(0) << ",";
+
+    ss << "', '', ";
+#endif
 
     ss << uint32_t(m_talentSpecsCount) << ", " << uint32_t(m_talentActiveSpec) << ", ";
 
