@@ -225,6 +225,13 @@ namespace WDB::Structures
         uint32_t hairId{0};
     };
 
+    struct ChatChannelsEntry
+    {
+        uint32_t id{0};
+        uint32_t flags{0};
+        std::string namePattern;
+    };
+
     constexpr size_t MAX_OUTFIT_ITEMS = 24;
 
     struct CharStartOutfitEntry
@@ -959,16 +966,6 @@ namespace WDB::Structures
         //uint32_t state;                                           // 10
     };
 #endif
-
-    struct ChatChannelsEntry
-    {
-        uint32_t id;                                                // 0
-        uint32_t flags;                                             // 1
-        char* name_pattern[NAME_PATTERN];                           // 3-18
-        //uint32_t name_pattern_flags;                              // 19
-        //char* channel_name[16];                                   // 20-35
-        //uint32_t channel_name_flags;                              // 36
-    };
 
     struct CreatureDisplayInfoEntry
     {

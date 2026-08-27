@@ -58,10 +58,6 @@ namespace WDB::Structures
     struct CreatureModelDataEntry;
     struct CreatureDisplayInfoExtraEntry;
     struct ChrClassesEntry;
-    struct CharStartOutfitEntry;
-    struct ChatChannelsEntry;
-    struct AuctionHouseEntry;
-    struct AreaTriggerEntry;
     struct AreaTableEntry;
     struct SpellDurationEntry;
     struct SpellCastTimesEntry;
@@ -162,10 +158,11 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTableEntry> sAreaStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTriggerEntry> sAreaTriggerStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::AuctionHouseEntry> sAuctionHouseStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::BankBagSlotPricesEntry> sBankBagSlotPricesStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChatChannelsEntry> sChatChannelsStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChatChannelsEntry> sChatChannelsStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::CharStartOutfitEntry> sCharStartOutfitStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrClassesEntry> sChrClassesStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrRacesEntry> sChrRacesStore;
+
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoEntry> sCreatureDisplayInfoStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureModelDataEntry> sCreatureModelDataStore;
@@ -174,8 +171,10 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureFamilyEntry> sCrea
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityCostsEntry> sDurabilityCostsStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityQualityEntry> sDurabilityQualityStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::EmotesTextEntry> sEmotesTextStore;
+
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::FactionEntry> sFactionStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::FactionTemplateEntry> sFactionTemplateStore;
+
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GameObjectDisplayInfoEntry> sGameObjectDisplayInfoStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemSetEntry> sItemSetStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemRandomPropertiesEntry> sItemRandomPropertiesStore;
@@ -183,6 +182,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::LFGDungeonEntry> sLFGDunge
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::LiquidTypeEntry> sLiquidTypeStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::LockEntry> sLockStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::MailTemplateEntry> sMailTemplateStore;
+
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::MapEntry> sMapStore;
 inline MapDifficultyMap sMapDifficultyMap;
 

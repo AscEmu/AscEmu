@@ -168,39 +168,30 @@ bool ChannelMgr::canPlayerJoinDefaultChannel(Player const* player, [[maybe_unuse
 
 std::string ChannelMgr::generateChannelName(WDB::Structures::ChatChannelsEntry const* channelDbc, WDB::Structures::AreaTableEntry const* areaEntry) const
 {
-#if VERSION_STRING < Cata
-    char* channelNameDbc = channelDbc->name_pattern[sWorld.getDbcLocaleLanguageId()];
-#else
-    char* channelNameDbc = channelDbc->name_pattern[0];
-#endif
+    if (!channelDbc)
+        return "";
 
     if (channelDbc->flags & CHANNEL_DBC_GLOBAL || !(channelDbc->flags & CHANNEL_DBC_HAS_ZONENAME))
-        return std::string(channelNameDbc);
+        return channelDbc->namePattern;
 
-    char channelName[95];
-    char const* defaultAreaName = "City";
-
+    char const* areaName = "City";
     if (const auto defaultArea = MapManagement::AreaManagement::AreaStorage::GetAreaById(3459))
     {
-        defaultAreaName = defaultArea->area_name.c_str();
+        areaName = defaultArea->area_name.c_str();
     }
 
     // City specific channels
-    if (channelDbc->flags & (CHANNEL_DBC_CITY_ONLY_1 | CHANNEL_DBC_CITY_ONLY_2))
+    bool const isCityOnly = (channelDbc->flags & (CHANNEL_DBC_CITY_ONLY_1 | CHANNEL_DBC_CITY_ONLY_2)) != 0;
+    if (!isCityOnly && areaEntry != nullptr)
     {
-        std::snprintf(channelName, 95, channelNameDbc, defaultAreaName);
-    }
-    else
-    {
-        if (areaEntry != nullptr)
-        {
-            std::snprintf(channelName, 95, channelNameDbc, areaEntry->area_name.c_str());
-        }
-        else
-        {
-            std::snprintf(channelName, 95, channelNameDbc, defaultAreaName);
-        }
+        areaName = areaEntry->area_name.c_str();
     }
 
-    return std::string(channelName);
+    std::string chanelName = channelDbc->namePattern;
+    if (auto const pos = chanelName.find("%s"); pos != std::string::npos)
+    {
+        chanelName.replace(pos, 2, areaName);
+    }
+
+    return chanelName;
 }

@@ -150,6 +150,31 @@ namespace WDB::Structures::Raw
         uint32_t hairId;
     };
 
+    struct ChatChannelsEntryClassic
+    {
+        uint32_t id;
+        uint32_t flags;
+        char const* namePattern[namePatternClassic];
+    };
+
+    struct ChatChannelsEntryTbc
+    {
+        uint32_t id;
+        uint32_t flags;
+        char const* namePattern[namePatternTbcWotlk];
+    };
+
+    using ChatChannelsEntryWotlk = ChatChannelsEntryTbc;
+
+    struct ChatChannelsEntryCata
+    {
+        uint32_t id;
+        uint32_t flags;
+        char const* namePattern;
+    };
+
+    using ChatChannelsEntryMop = ChatChannelsEntryCata;
+
     struct CharStartOutfitEntryClassic
     {
         uint8_t race;

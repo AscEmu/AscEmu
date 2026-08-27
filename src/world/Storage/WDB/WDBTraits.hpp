@@ -93,6 +93,18 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::ChatChannelsEntry>
+        : DbcVersionLayouts<
+            Structures::Raw::ChatChannelsEntryClassic,
+            Structures::Raw::ChatChannelsEntryTbc,
+            Structures::Raw::ChatChannelsEntryWotlk,
+            Structures::Raw::ChatChannelsEntryCata,
+            Structures::Raw::ChatChannelsEntryMop>
+    {
+        static constexpr char const* filename = "ChatChannels.dbc";
+    };
+
+    template <>
     struct DbcTraits<Structures::CharStartOutfitEntry> : DbcVersionLayouts<
             Structures::Raw::CharStartOutfitEntryClassic,
             Structures::Raw::CharStartOutfitEntryTbc,

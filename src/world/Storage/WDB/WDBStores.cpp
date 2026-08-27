@@ -40,7 +40,6 @@ struct NameGenData
 
 std::vector<NameGenData> _namegenData[3];
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::ChatChannelsEntry> sChatChannelsStore;
 std::map<uint32_t, WDB::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoEntry> sCreatureDisplayInfoStore;
@@ -334,7 +333,27 @@ bool loadDBCs()
             entry.price = raw.price;
         });
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChatChannelsStore, dbc_path, "ChatChannels.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::ChatChannelsEntry>(
+        bad_dbc_files, sChatChannelsStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::ChatChannelsEntry& entry)
+        {
+            entry.id = raw.id;
+            entry.flags = raw.flags;
+
+            if constexpr (std::is_array_v<decltype(raw.namePattern)>)
+            {
+                uint8_t const localeId = sWorld.getDbcLocaleLanguageId();
+                constexpr size_t arraySize = sizeof(raw.namePattern) / sizeof(raw.namePattern[0]);
+
+                // Fallback auf Locale 0, falls localeId auﬂerhalb des Arrays liegt
+                uint8_t const validIndex = (localeId < arraySize) ? localeId : 0;
+                entry.namePattern = raw.namePattern[validIndex] ? raw.namePattern[validIndex] : "";
+            }
+            else
+            {
+                entry.namePattern = raw.namePattern ? raw.namePattern : "";
+            }
+        });
 
     WDB::loadUnifiedWDBStore<WDB::Structures::CharStartOutfitEntry>(
         bad_dbc_files, sCharStartOutfitStore, dbc_path,
