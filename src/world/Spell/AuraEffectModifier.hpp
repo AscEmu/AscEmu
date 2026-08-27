@@ -5,19 +5,19 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Definitions/AuraEffects.hpp"
 #include "Platform/SymbolVisibility.hpp"
 
 #include <cmath>
 #include <cstdint>
 
-#include "Definitions/AuraEffects.hpp"
-
-enum AuraEffect : uint32_t;
 class Aura;
 
 struct SERVER_DECL AuraEffectModifier
 {
 public:
+    explicit AuraEffectModifier(Aura& parent);
+
     void setAuraEffectType(AuraEffect type);
     AuraEffect getAuraEffectType() const;
 
@@ -29,8 +29,11 @@ public:
     void setEffectBaseDamage(int32_t baseValue);
     int32_t getEffectBaseDamage() const;
 
-    void setEffectFixedDamage(int32_t fixedValue);
-    int32_t getEffectFixedDamage() const;
+    void setEffectExtraField(int32_t extraValue);
+    int32_t getEffectExtraField() const;
+
+    void setEffectExtra2Field(int32_t extraValue);
+    int32_t getEffectExtra2Field() const;
 
     void setEffectMiscValue(int32_t miscValue);
     int32_t getEffectMiscValue() const;
@@ -56,8 +59,9 @@ public:
     bool isPeriodicEffect() const;
 
     void applyEffect(bool apply, bool skipScriptCheck = false);
+    void resetEffect();
 
-    void setAura(Aura* aur);
+    // Never nullptr
     Aura* getAura() const;
 
 private:
@@ -65,7 +69,8 @@ private:
     int32_t mDamage = 0;                        // Effect calculated amount
     float_t mRealDamage = 0.0f;                 // Effect exact calculated damage
     int32_t mBaseDamage = 0;                    // Effect base amount
-    int32_t mFixedDamage = 0;                   // For example used with auras that increase your spell power by % of some stat
+    int32_t mExtraField = 0;                    // Extra field, e.g. used with auras that increase your spell power by % of some stat
+    int32_t mExtraField2 = 0;                   // Second extra field
     int32_t miscValue = 0;                      // Misc Value
     int32_t mAmplitude = 0;                     // Effect amplitude
     float_t mDamageFraction = 0.0f;             // Leftover damage from previous tick which will be added to next tick
@@ -74,5 +79,5 @@ private:
     bool mActive = false;                       // Is effect active
     uint8_t effIndex = 0;
 
-    Aura* mAura = nullptr;
+    Aura& mAura;
 };

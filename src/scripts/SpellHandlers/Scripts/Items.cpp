@@ -243,7 +243,7 @@ public:
                 return SpellScriptExecuteState::EXECUTE_PREVENT;
         }
 
-        aurEff->setEffectFixedDamage(displayId);
+        aurEff->setEffectExtraField(displayId);
 
         // Let restoreDisplayId check if form can be applied
         aur->getOwner()->restoreDisplayId();

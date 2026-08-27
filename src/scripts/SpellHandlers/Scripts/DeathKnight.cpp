@@ -5,15 +5,19 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Objects/Units/Unit.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellScript.hpp"
+#include "Utilities/Random.hpp"
 
 #if VERSION_STRING >= WotLK
 enum DeathknightSpells
 {
+    SPELL_ANTIMAGIC_SHELL                   = 48707,
+    SPELL_ANTIMAGIC_SHELL_RUNIC_POWER       = 49088,
 #if VERSION_STRING == WotLK
     SPELL_BLOOD_PRESENCE                    = 48266,
 #else
@@ -48,10 +52,20 @@ enum DeathknightSpells
     SPELL_IMPROVED_UNHOLY_PRESENCE_DUMMY    = 63622,
     SPELL_IMPROVED_UNHOLY_PRESENCE_R1       = 50391,
     SPELL_IMPROVED_UNHOLY_PRESENCE_R2       = 50392,
+    SPELL_MAGIC_SUPPRESSION_R1              = 49224,
     SPELL_MARK_OF_BLOOD_DUMMY               = 49005,
     SPELL_MARK_OF_BLOOD_HEAL                = 61607,
+    SPELL_RUNE_TAP                          = 48982,
+    SPELL_SPELL_DEFLECTION_R1               = 49145,
     SPELL_UNHOLY_PRESENCE                   = 48265,
     SPELL_UNHOLY_PRESENCE_MOVE_SPEED        = 49772,
+#if VERSION_STRING == WotLK
+    SPELL_WILL_OF_THE_NECROPOLIS_DUMMY_R1   = 49189,
+    SPELL_WILL_OF_THE_NECROPOLIS_ABSORB_R1  = 52284,
+#else
+    SPELL_WILL_OF_THE_NECROPOLIS_PROC       = 81162,
+    SPELL_WILL_OF_THE_NECROPOLIS_RUNETAP    = 96171,
+#endif
 };
 
 #if VERSION_STRING < Mop
@@ -155,6 +169,52 @@ public:
     }
 };
 #endif
+
+class AntiMagicShell : public SpellScript
+{
+public:
+    SpellScriptExecuteState beforeAuraEffect([[maybe_unused]]Aura* aur, AuraEffectModifier* aurEff, bool apply) override
+    {
+        if (!apply || aurEff->getEffectIndex() != EFF_INDEX_0)
+            return SpellScriptExecuteState::EXECUTE_OK;
+
+        // Add the refund pct into effect
+#if VERSION_STRING == WotLK
+        // 2% of absorbed damage is turned into Runic Power
+        aurEff->setEffectExtra2Field(20);
+#elif VERSION_STRING == Cata
+        // Find Magic Suppression talent which enables Runic Power return
+        if (const auto* const magicSuppressionAur = aur->getOwner()->getAuraEffectWithAnyRankOfAndByEffect(SPELL_AURA_ADD_FLAT_MODIFIER, SPELL_MAGIC_SUPPRESSION_R1))
+        {
+            // "Patch 4.0.6: The ratio of runic power return from Magic Suppression has been reduced by roughly one third"
+            // Assume 1.3% -Appled
+            aurEff->setEffectExtra2Field(13);
+        }
+#elif VERSION_STRING == Mop
+        // Assume same as cata
+        aurEff->setEffectExtra2Field(13);
+#endif
+
+        return SpellScriptExecuteState::EXECUTE_OK;
+    }
+
+    SpellScriptExecuteState onAuraAbsorb(Aura* aur, AuraEffectModifier* aurEff, uint32_t* absorbed, uint32_t* dmg, bool initialCheck) override
+    {
+        if (initialCheck)
+        {
+            *absorbed = *dmg * aurEff->getEffectDamage() / 100;
+            *dmg -= *absorbed;
+        }
+        else if (const auto refundPct = aurEff->getEffectExtra2Field(); refundPct > 0)
+        {
+            SpellForcedBasePoints forcedBasePoints;
+            forcedBasePoints.set(EFF_INDEX_0, *absorbed * refundPct / 100);
+            aur->getOwner()->castSpell(aur->getOwner(), SPELL_ANTIMAGIC_SHELL_RUNIC_POWER, forcedBasePoints, true);
+        }
+
+        return SpellScriptExecuteState::EXECUTE_OK;
+    }
+};
 
 #if VERSION_STRING < Mop
 class BloodPresence : public Presences
@@ -315,6 +375,30 @@ public:
 };
 #endif
 
+#if VERSION_STRING == WotLK
+class SpellDeflection : public SpellScript
+{
+public:
+    SpellScriptExecuteState onAuraAbsorb(Aura* aur, AuraEffectModifier* aurEff, uint32_t* absorbed, uint32_t* dmg, bool initialCheck) override
+    {
+        if (!initialCheck)
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+
+        auto* const plrOwner = aur->getPlayerOwner();
+        if (plrOwner == nullptr)
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+
+        // "You have a chance equal to your Parry chance of taking X % less damage"
+        if (!Util::checkChance(plrOwner->getParryChance()))
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+
+        *absorbed = *dmg * aurEff->getEffectDamage() / 100;
+        *dmg -= *absorbed;
+        return SpellScriptExecuteState::EXECUTE_PREVENT;
+    }
+};
+#endif
+
 #if VERSION_STRING < Mop
 class UnholyPresence : public Presences
 {
@@ -334,10 +418,96 @@ public:
 };
 #endif
 
+#if VERSION_STRING == WotLK
+class WillOfTheNecropolisAbsorb : public SpellScript
+{
+public:
+    SpellScriptExecuteState beforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
+    {
+        if (!apply || aurEff->getEffectIndex() != EFF_INDEX_0)
+            return SpellScriptExecuteState::EXECUTE_OK;
+
+        // Get health threshold only once instead of on every absorb event
+        const auto* const dummyInfo = sSpellMgr.getEquivalentSpellRankFor(aur->getSpellInfo(), sSpellMgr.getSpellInfo(SPELL_WILL_OF_THE_NECROPOLIS_DUMMY_R1));
+        if (dummyInfo == nullptr)
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+
+        aurEff->setEffectExtraField(dummyInfo->calculateEffectValue(EFF_INDEX_0, aur->getOwner()));
+        return SpellScriptExecuteState::EXECUTE_OK;
+    }
+
+    SpellScriptExecuteState onAuraAbsorb(Aura* aur, AuraEffectModifier* aurEff, uint32_t* absorbed, uint32_t* dmg, bool initialCheck) override
+    {
+        if (!initialCheck)
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+
+        const auto* const owner = aur->getOwner();
+        // Get new health pct after damage taken and use exact health
+        const int32_t tmpHpPct = (owner->getExactCurrentHealth() - *dmg) * 100;
+        const int32_t newHealthPct = std::max(0, tmpHpPct) / owner->getMaxHealth();
+
+        // "Damage that would take you below 35% health or taken while you are at 35% health is reduced"
+        // However all damage taken under 35% should also be absorbed
+        if (newHealthPct > aurEff->getEffectExtraField())
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+
+        *absorbed = *dmg * aurEff->getEffectDamage() / 100;
+        *dmg -= *absorbed;
+        return SpellScriptExecuteState::EXECUTE_PREVENT;
+    }
+};
+
+class WillOfTheNecropolisDummy : public SpellScript
+{
+public:
+    SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* /*spell*/, uint8_t /*effIndex*/) override
+    {
+        // Contains only the health pct value
+        return SpellScriptCheckDummy::DUMMY_OK;
+    }
+};
+#else // Cata+
+class WillOfTheNecropolisProc : public SpellScript
+{
+public:
+    void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
+    {
+        // 45sec cooldown
+        spellProc->setProcInterval(45000);
+    }
+
+    bool canProc(SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo damageInfo) override
+    {
+        if (damageInfo.realDamage == 0)
+            return false;
+
+        // Get new health pct after damage taken and use exact health
+        const int32_t newHealthPct = (spellProc->getProcOwner()->getExactCurrentHealth() - damageInfo.realDamage) * 100 / spellProc->getProcOwner()->getMaxHealth();
+        return newHealthPct <= 30;
+    }
+
+    void afterSpellEffect(Spell* spell, uint8_t effIndex, DamageInfo const& /*damageInfo*/) override
+    {
+        if (effIndex != EFF_INDEX_0)
+            return;
+
+        auto* const caster = spell->getPlayerCaster();
+        if (caster == nullptr)
+            return;
+
+        // Clear cooldown for Rune Tap and cast second proc spell
+        caster->clearCooldownForSpell(SPELL_RUNE_TAP);
+        caster->castSpell(caster, SPELL_WILL_OF_THE_NECROPOLIS_RUNETAP, true);
+    }
+};
+#endif
+
 void setupDeathKnightSpells(ScriptMgr* mgr)
 {
     // Call legacy script setup
     SetupLegacyDeathKnightSpells(mgr);
+
+    mgr->register_spell_script(SPELL_ANTIMAGIC_SHELL, new AntiMagicShell);
 
 #if VERSION_STRING < Mop
     mgr->register_spell_script(SPELL_BLOOD_PRESENCE, new BloodPresence);
@@ -368,8 +538,19 @@ void setupDeathKnightSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_MARK_OF_BLOOD_DUMMY, new MarkOfBlood);
 #endif
 
+#if VERSION_STRING == WotLK
+    mgr->register_spell_script(SPELL_SPELL_DEFLECTION_R1, new SpellDeflection);
+#endif
+
 #if VERSION_STRING < Mop
     mgr->register_spell_script(SPELL_UNHOLY_PRESENCE, new UnholyPresence);
+#endif
+
+#if VERSION_STRING == WotLK
+    mgr->register_spell_script(SPELL_WILL_OF_THE_NECROPOLIS_ABSORB_R1, new WillOfTheNecropolisAbsorb);
+    mgr->register_spell_script(SPELL_WILL_OF_THE_NECROPOLIS_DUMMY_R1, new WillOfTheNecropolisDummy);
+#else
+    mgr->register_spell_script(SPELL_WILL_OF_THE_NECROPOLIS_PROC, new WillOfTheNecropolisProc);
 #endif
 }
 #endif

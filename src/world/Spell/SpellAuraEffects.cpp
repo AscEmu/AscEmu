@@ -123,7 +123,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraInterruptRegen,                                         //  94 SPELL_AURA_INTERRUPT_REGEN
     &Aura::SpellAuraGhost,                                                  //  95 SPELL_AURA_GHOST
     &Aura::SpellAuraMagnet,                                                 //  96 SPELL_AURA_MAGNET
-    &Aura::SpellAuraManaShield,                                             //  97 SPELL_AURA_MANA_SHIELD
+    &Aura::spellAuraEffectManaShield,                                       //  97 SPELL_AURA_MANA_SHIELD
     &Aura::SpellAuraSkillTalent,                                            //  98 SPELL_AURA_SKILL_TALENT
     &Aura::SpellAuraModAttackPower,                                         //  99 SPELL_AURA_MOD_ATTACK_POWER
     &Aura::SpellAuraVisible,                                                // 100 SPELL_AURA_VISIBLE
@@ -258,7 +258,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::spellAuraEffectNotImplemented,                                   // 228 SPELL_AURA_228
     &Aura::SpellAuraReduceAOEDamageTaken,                                   // 229 SPELL_AURA_REDUCE_AOE_DAMAGE_TAKEN
     &Aura::SpellAuraIncreaseMaxHealth,                                      // 230 SPELL_AURA_INCREASE_MAX_HEALTH
-    &Aura::SpellAuraProcTriggerSpell,                                       // 231 SPELL_AURA_PROC_TRIGGER_SPELL
+    &Aura::SpellAuraProcTriggerSpell,                                       // 231 SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE
     &Aura::SpellAuraReduceEffectDuration,                                   // 232 SPELL_AURA_REDUCE_EFFECT_DURATION
     &Aura::spellAuraEffectNotImplemented,                                   // 233 SPELL_AURA_233
     &Aura::SpellAuraReduceEffectDuration,                                   // 234 SPELL_AURA_REDUCE_EFFECT_DURATION
@@ -296,7 +296,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::spellAuraEffectNotImplemented,                                   // 264 SPELL_AURA_264
     &Aura::spellAuraEffectNotImplemented,                                   // 265 SPELL_AURA_265
     &Aura::spellAuraEffectNotImplemented,                                   // 266 SPELL_AURA_266
-    &Aura::spellAuraEffectNotImplemented,                                   // 267 SPELL_AURA_267
+    &Aura::spellAuraEffectImmuneNegativeAuraSchoolAndCancelAuraWhenAbsorbed,// 267 SPELL_AURA_IMMUNE_NEGATIVE_AURA_SCHOOL_AND_CANCEL_AURA_WHEN_ABSORBED
     &Aura::SpellAuraIncreaseAPbyStatPct,                                    // 268 SPELL_AURA_INCREASE_AP_BY_STAT_PCT
     &Aura::spellAuraEffectNotImplemented,                                   // 269 SPELL_AURA_269
     &Aura::spellAuraEffectNotImplemented,                                   // 270 SPELL_AURA_270
@@ -746,7 +746,7 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "SPELL_AURA_264",                                                       // 264
     "SPELL_AURA_265",                                                       // 265
     "SPELL_AURA_266",                                                       // 266
-    "SPELL_AURA_267",                                                       // 267 Prevent the application of harmful magical effects. used only by Dk's Anti Magic Shell
+    "SPELL_AURA_IMMUNE_NEGATIVE_AURA_SCHOOL_AND_CANCEL_AURA_WHEN_ABSORBED", // 267 Two Effects: Prevents Application Of Harmful Auras By School And Cancels Aura If Absorbed % Of Caster's Health
     "SPELL_AURA_INCREASE_AP_BY_STAT_PCT",                                   // 268 Mental Dexterity (increases ap by x% of intellect)
     "SPELL_AURA_269",                                                       // 269 Damage reduction effects ignored. (?) - http://thottbot.com/s57318
     "SPELL_AURA_270",                                                       // 270 Ignore target resist
@@ -1472,7 +1472,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
             }
 
             // Save model id for later use
-            aurEff->setEffectFixedDamage(modelId);
+            aurEff->setEffectExtraField(modelId);
         }
 
         getOwner()->setShapeShiftForm(newForm);
@@ -1707,7 +1707,7 @@ void Aura::spellAuraEffectTransform(AuraEffectModifier* aurEff, bool apply)
         }
 
         // Save model id for later use
-        aurEff->setEffectFixedDamage(displayId);
+        aurEff->setEffectExtraField(displayId);
     }
     else
     {
@@ -1757,9 +1757,15 @@ void Aura::spellAuraEffectPeriodicManaLeech(AuraEffectModifier* aurEff, bool app
     }
 }
 
-void Aura::spellAuraEffectSchoolAbsorb(AuraEffectModifier* /*aurEff*/, bool /*apply*/)
+void Aura::spellAuraEffectSchoolAbsorb(AuraEffectModifier* aurEff, bool apply)
 {
-    // See AbsorbAura::spellAuraEffectSchoolAbsorb
+    if (!apply)
+        return;
+
+    // Apply spell power coefficient
+    auto* const unitCaster = GetUnitCaster();
+    if (unitCaster != nullptr && !aurEff->isEffectDamageStatic())
+        aurEff->setEffectDamage(Util::float2int32(unitCaster->applySpellDamageBonus(unitCaster, m_spellInfo, aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff)));
 }
 
 void Aura::spellAuraEffectModPowerRegen(AuraEffectModifier* aurEff, bool /*apply*/)
@@ -1821,6 +1827,26 @@ void Aura::spellAuraEffectPeriodicDamagePercent(AuraEffectModifier* aurEff, bool
         m_periodicTimer[aurEff->getEffectIndex()] = 0;
 #endif
     }
+}
+
+void Aura::spellAuraEffectManaShield(AuraEffectModifier* aurEff, bool apply)
+{
+    if (!apply)
+        return;
+
+    auto* const unitCaster = GetUnitCaster();
+
+    // Apply spell power coefficient
+    if (unitCaster != nullptr && !aurEff->isEffectDamageStatic())
+        aurEff->setEffectDamage(Util::float2int32(unitCaster->applySpellDamageBonus(unitCaster, m_spellInfo, aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff)));
+
+    // Set mana drain amount to effect
+    auto manaDrain = m_spellInfo->getEffectMultipleValue(aurEff->getEffectIndex());
+
+    if (unitCaster != nullptr)
+        unitCaster->applySpellModifiers(SPELLMOD_EFFECT_BONUS, &manaDrain, m_spellInfo, nullptr, this);
+
+    aurEff->setEffectExtra2Field(Util::float2int32(manaDrain * 10));
 }
 
 void Aura::spellAuraEffectAddModifier(AuraEffectModifier* aurEff, bool apply)
@@ -2012,4 +2038,18 @@ void Aura::spellAuraEffectPeriodicTriggerSpellWithValue(AuraEffectModifier* aurE
         m_periodicTimer[aurEff->getEffectIndex()] = 0;
 #endif
     }
+}
+
+void Aura::spellAuraEffectImmuneNegativeAuraSchoolAndCancelAuraWhenAbsorbed(AuraEffectModifier* aurEff, bool apply)
+{
+    if (!apply)
+        return;
+
+    const auto* const unitCaster = GetUnitCaster();
+    if (unitCaster == nullptr)
+        return;
+
+    // Aura immunity handled in Unit::addAura for now (will be changed)
+    // Damage taken and aura removal handled in Aura::absorbDamage
+    aurEff->setEffectExtraField(unitCaster->getMaxHealth() * aurEff->getEffectDamage() / 100);
 }

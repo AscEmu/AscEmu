@@ -953,55 +953,6 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
 
     // Check for absorb effects
     dmgInfo.absorbedDamage = victim->absorbDamage(SchoolMask(spellInfo->getSchoolMask()), &dmgInfo.realDamage);
-    const auto manaShieldAbsorb = victim->getManaShieldAbsorbedDamage(dmgInfo.realDamage);
-    if (manaShieldAbsorb > 0)
-    {
-        if (manaShieldAbsorb > dmgInfo.realDamage)
-            dmgInfo.realDamage = 0;
-        else
-            dmgInfo.realDamage -= manaShieldAbsorb;
-
-        dmgInfo.absorbedDamage += manaShieldAbsorb;
-    }
-
-    // Hackfix from legacy method
-    // Incanter's Absorption
-    if (victim->isPlayer())
-    {
-        uint32_t incanterSAbsorption[] =
-        {
-            //SPELL_HASH_INCANTER_S_ABSORPTION
-            44394,
-            44395,
-            44396,
-            44413,
-            0
-        };
-
-        if (victim->hasAurasWithId(incanterSAbsorption))
-        {
-            float_t pctmod = 0.0f;
-            const auto pl = static_cast<Player*>(victim);
-            if (pl->hasAurasWithId(44394))
-                pctmod = 0.05f;
-            else if (pl->hasAurasWithId(44395))
-                pctmod = 0.10f;
-            else if (pl->hasAurasWithId(44396))
-                pctmod = 0.15f;
-
-            const auto hp = static_cast<int32_t>(0.05f * pl->getMaxHealth());
-            auto spellpower = static_cast<int32_t>(pctmod * pl->getModDamageDonePositive(SCHOOL_NORMAL));
-
-            if (spellpower > hp)
-                spellpower = hp;
-
-            SpellInfo const* entry = sSpellMgr.getSpellInfo(44413);
-            SpellForcedBasePoints forcedBasePoints;
-            forcedBasePoints.set(0, spellpower);
-            if (entry != nullptr)
-                pl->castSpell(pl->getGuid(), entry, forcedBasePoints, true);
-        }
-    }
 
     // Check for damage split target
     if (victim->m_damageSplitTarget != nullptr)

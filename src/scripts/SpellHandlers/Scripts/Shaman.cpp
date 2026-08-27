@@ -101,16 +101,6 @@ public:
 class LightningShieldDummy : public SpellScript
 {
 public:
-    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg) override
-    {
-        if (effIndex != EFF_INDEX_0 || spell->getUnitCaster() == nullptr)
-            return SpellScriptEffectDamage::DAMAGE_DEFAULT;
-
-        // Calculate damage done here so correct percent modifiers are applied
-        *dmg = Util::float2int32(spell->getUnitCaster()->applySpellDamageBonus(spell->getUnitCaster(), spell->getSpellInfo(), effIndex, *dmg, false, spell));
-        return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
-    }
-
     SpellScriptExecuteState beforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
         if (!apply)
@@ -147,12 +137,6 @@ public:
             return false;
 
         return true;
-    }
-
-    SpellScriptEffectDamage doCalculateEffect(Spell* /*spell*/, uint8_t /*effIndex*/, int32_t* /*dmg*/) override
-    {
-        // Fully calculated in main aura
-        return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
     }
 };
 

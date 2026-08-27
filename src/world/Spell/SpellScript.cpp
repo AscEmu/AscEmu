@@ -66,6 +66,11 @@ SpellScriptExecuteState SpellScript::onAuraPeriodicTick(Aura* /*aur*/, AuraEffec
     return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 }
 
+SpellScriptExecuteState SpellScript::onAuraAbsorb(Aura* /*aur*/, AuraEffectModifier* /*aurEff*/, uint32_t* /*absorbed*/, uint32_t* /*dmg*/, bool /*initialCheck*/)
+{
+    return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
+}
+
 // Spell proc
 
 void SpellScript::onCreateSpellProc(SpellProc* /*spellProc*/, Object* /*obj*/) {}

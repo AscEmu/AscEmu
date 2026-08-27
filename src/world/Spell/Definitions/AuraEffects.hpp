@@ -264,7 +264,7 @@ enum AuraEffect : uint32_t
     SPELL_AURA_264 = 264,
     SPELL_AURA_265 = 265,
     SPELL_AURA_266 = 266,
-    SPELL_AURA_267 = 267,
+    SPELL_AURA_IMMUNE_NEGATIVE_AURA_SCHOOL_AND_CANCEL_AURA_WHEN_ABSORBED = 267, // Two Effects: Prevents Application Of Harmful Aura By School And Cancels Aura If Absorbed % Of Caster's Health
     SPELL_AURA_MOD_ATTACK_POWER_BY_STAT_PCT = 268,
     SPELL_AURA_269 = 269,
     SPELL_AURA_270 = 270,

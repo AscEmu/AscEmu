@@ -14,27 +14,38 @@ This file is released under the MIT license. See README-MIT for more information
 
 enum MageSpells
 {
-    SPELL_ARCANE_MISSILES_PROC  = 79683,
-    SPELL_DEEP_FREEZE_DAMAGE    = 71757,
-    SPELL_GLYPH_OF_THE_PENGUIN  = 52648,
-    SPELL_HOT_STREAK_BUFF       = 48108,
-    SPELL_HOT_STREAK_R1         = 44445,
-    SPELL_IMPACT_DUMMY          = 64343,
-    SPELL_IMPACT_STUN           = 12355,
-    SPELL_INVISIBILITY          = 66,
-    SPELL_INVISIBILITY_REAL     = 32612,
-    SPELL_MASTER_OF_ELEMENTS_R1 = 29074,
-    SPELL_MASTER_OF_ELEMENTS    = 29077,
-    SPELL_POLYMORPH_R1          = 118,
-    SPELL_POLYMORPH_TURTLE      = 28271,
-    SPELL_POLYMORPH_PIG         = 28272,
-    SPELL_POLYMORPH_SERPENT     = 61025,
-    SPELL_POLYMORPH_BLACK_CAT   = 61305,
-    SPELL_POLYMORPH_RABBIT      = 61721,
-    SPELL_POLYMORPH_TURKEY      = 61780,
+    SPELL_ARCANE_MISSILES_PROC          = 79683,
+    SPELL_DEEP_FREEZE_DAMAGE            = 71757,
+#if VERSION_STRING < Cata
+    SPELL_FIRE_WARD_R1                  = 543,
+#elif VERSION_STRING == Cata
+    SPELL_MAGE_WARD                     = 543,
+#endif
+    SPELL_FROST_WARD_R1                 = 6143,
+    SPELL_GLYPH_OF_THE_PENGUIN          = 52648,
+    SPELL_HOT_STREAK_BUFF               = 48108,
+    SPELL_HOT_STREAK_R1                 = 44445,
+    SPELL_ICE_BARRIER_R1                = 11426,
+    SPELL_IMPACT_DUMMY                  = 64343,
+    SPELL_IMPACT_STUN                   = 12355,
+    SPELL_INCASTERS_ABSORPTION_DUMMY_R1 = 44394,
+    SPELL_INCASTERS_ABSORPTION          = 44413,
+    SPELL_INCASTERS_ABSORPTION_KNOCBACK = 86261,
+    SPELL_INVISIBILITY                  = 66,
+    SPELL_INVISIBILITY_REAL             = 32612,
+    SPELL_MANA_SHIELD_R1                = 1463,
+    SPELL_MASTER_OF_ELEMENTS_R1         = 29074,
+    SPELL_MASTER_OF_ELEMENTS            = 29077,
+    SPELL_POLYMORPH_R1                  = 118,
+    SPELL_POLYMORPH_TURTLE              = 28271,
+    SPELL_POLYMORPH_PIG                 = 28272,
+    SPELL_POLYMORPH_SERPENT             = 61025,
+    SPELL_POLYMORPH_BLACK_CAT           = 61305,
+    SPELL_POLYMORPH_RABBIT              = 61721,
+    SPELL_POLYMORPH_TURKEY              = 61780,
 
-    ICON_POLYMORPH_SHEEP        = 82,
-    CREATURE_CHILLY             = 29726, // Penguin NPC for Glyph of the Penguin
+    ICON_POLYMORPH_SHEEP                = 82,
+    CREATURE_CHILLY                     = 29726, // Penguin NPC for Glyph of the Penguin
 };
 
 #if VERSION_STRING >= Cata
@@ -149,6 +160,32 @@ public:
 };
 #endif
 
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
+class IncastersAbsorption : public SpellScript
+{
+public:
+    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* damage) override
+    {
+        auto* const unitTarget = spell->getUnitTarget();
+        if (unitTarget == nullptr || effIndex != EFF_INDEX_0)
+            return SpellScriptEffectDamage::DAMAGE_DEFAULT;
+
+        // If target has existing Incanter's Absorption, they will stack
+        const auto* const incasterEff = unitTarget->getAuraEffectWithAnyRankOfAndByEffect(SPELL_AURA_MOD_DAMAGE_DONE, SPELL_INCASTERS_ABSORPTION);
+        if (incasterEff == nullptr)
+            return SpellScriptEffectDamage::DAMAGE_DEFAULT;
+
+        // But when stacking it gets the effective amount from old aura
+        // and adds it to new aura
+        // Formula: New SP + (Old SP * (Remaining Aura Duration / 10))
+        // Also round duration to nearest integer
+        const auto remainingDur = (incasterEff->getAura()->getTimeLeft() + 500) / 1000;
+        *damage += incasterEff->getEffectDamage() * remainingDur / 10;
+        return SpellScriptEffectDamage::DAMAGE_DEFAULT;
+    }
+};
+#endif
+
 class Impact : public SpellScript
 {
 public:
@@ -226,6 +263,51 @@ public:
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
+
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
+// Wotlk: Called on batched absorb for Mana Shield, Frost Ward, Fire Ward and Ice Barrier
+// Cata: Called on batched absorb for Mana Shield and Mage Ward
+// Handles Incaster's Absorption
+class MageAbsorbShields : public SpellScript
+{
+public:
+    SpellScriptExecuteState onAuraAbsorb(Aura* aur, AuraEffectModifier* /*aurEff*/, uint32_t* absorbed, uint32_t* /*dmg*/, bool initialCheck) override
+    {
+        if (initialCheck)
+            return SpellScriptExecuteState::EXECUTE_OK;
+
+        // Check if owner has Incanter's Absorption talent
+        const auto* const incasterDummyEff = aur->getOwner()->getAuraEffectWithAnyRankOfAndByEffect(SPELL_AURA_DUMMY, SPELL_INCASTERS_ABSORPTION_DUMMY_R1);
+        if (incasterDummyEff == nullptr)
+            return SpellScriptExecuteState::EXECUTE_OK;
+
+        SpellForcedBasePoints forcedBasePoints;
+        forcedBasePoints.set(EFF_INDEX_0, *absorbed * incasterDummyEff->getEffectDamage() / 100);
+        aur->getOwner()->castSpell(aur->getOwner(), SPELL_INCASTERS_ABSORPTION, forcedBasePoints, true);
+        return SpellScriptExecuteState::EXECUTE_OK;
+    }
+};
+#endif
+
+#if VERSION_STRING == Cata
+// Handles knockback effect for Incaster's Absorption
+class ManaShield : public MageAbsorbShields
+{
+public:
+    void onAuraRemove(Aura* aur, AuraRemoveMode mode)
+    {
+        if (mode != AURA_REMOVE_ON_ABSORBED)
+            return;
+
+        // Check if owner has Incanter's Absorption talent
+        const auto* const incasterDummyEff = aur->getOwner()->getAuraEffectWithAnyRankOfAndByEffect(SPELL_AURA_DUMMY, SPELL_INCASTERS_ABSORPTION_DUMMY_R1);
+        if (incasterDummyEff == nullptr)
+            return;
+
+        aur->getOwner()->castSpell(aur->getOwner(), SPELL_INCASTERS_ABSORPTION_KNOCBACK, true);
+    }
+};
+#endif
 
 class MasterOfElements : public SpellScript
 {
@@ -371,6 +453,10 @@ void setupMageSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_HOT_STREAK_BUFF, new HotStreak);
 #endif
 
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
+    mgr->register_spell_script(SPELL_INCASTERS_ABSORPTION, new IncastersAbsorption);
+#endif
+
 #if VERSION_STRING < Mop
 #if VERSION_STRING >= WotLK
     mgr->register_spell_script(SPELL_IMPACT_DUMMY, new ImpactDummy);
@@ -379,6 +465,21 @@ void setupMageSpells(ScriptMgr* mgr)
 #endif
 
     mgr->register_spell_script(SPELL_INVISIBILITY, new Invisibility);
+
+#if VERSION_STRING == WotLK
+    uint32_t mageAbsorbShieldIds[] =
+    {
+        SPELL_MANA_SHIELD_R1,
+        SPELL_FROST_WARD_R1,
+        SPELL_FIRE_WARD_R1,
+        SPELL_ICE_BARRIER_R1,
+        0
+    };
+    mgr->register_spell_script(mageAbsorbShieldIds, new MageAbsorbShields);
+#elif VERSION_STRING == Cata
+    mgr->register_spell_script(SPELL_MAGE_WARD, new MageAbsorbShields);
+    mgr->register_spell_script(SPELL_MANA_SHIELD_R1, new ManaShield);
+#endif
 
 #if VERSION_STRING < Mop
     mgr->register_spell_script(SPELL_MASTER_OF_ELEMENTS_R1, new MasterOfElementsDummy);
