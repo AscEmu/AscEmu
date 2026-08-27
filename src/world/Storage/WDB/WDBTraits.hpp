@@ -70,6 +70,18 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::BankBagSlotPricesEntry>
+        : DbcVersionLayouts<
+            Structures::Raw::BankBagSlotPricesEntryClassic,
+            Structures::Raw::BankBagSlotPricesEntryTbc,
+            Structures::Raw::BankBagSlotPricesEntryWotlk,
+            Structures::Raw::BankBagSlotPricesEntryCata,
+            Structures::Raw::BankBagSlotPricesEntryMop>
+    {
+        static constexpr char const* filename = "BankBagSlotPrices.dbc";
+    };
+
+    template <>
     struct DbcTraits<Structures::BarberShopStyleEntry> : DbcVersionLayouts<
             UnsupportedVersion, // Classic
             UnsupportedVersion, // TBC

@@ -210,6 +210,12 @@ namespace WDB::Structures
         uint32_t tax{0};
     };
 
+    struct BankBagSlotPricesEntry
+    {
+        uint32_t id{0};
+        uint32_t price{0};
+    };
+
     struct BarberShopStyleEntry
     {
         uint32_t id{0};
@@ -942,12 +948,6 @@ namespace WDB::Structures
 #endif
     };
 #endif
-
-    struct BankBagSlotPrices
-    {
-        uint32_t Id;                                                // 0
-        uint32_t Price;                                             // 1
-    };
 
 #if VERSION_STRING >= Cata
     struct BannedAddOnsEntry

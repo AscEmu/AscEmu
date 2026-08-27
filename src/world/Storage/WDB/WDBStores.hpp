@@ -60,7 +60,6 @@ namespace WDB::Structures
     struct ChrClassesEntry;
     struct CharStartOutfitEntry;
     struct ChatChannelsEntry;
-    struct BankBagSlotPrices;
     struct AuctionHouseEntry;
     struct AreaTriggerEntry;
     struct AreaTableEntry;
@@ -69,7 +68,6 @@ namespace WDB::Structures
     struct SpellRadiusEntry;
     struct TaxiPathNodeEntry;
     struct MapDifficulty;
-
 
 #if VERSION_STRING < Cata
     struct GtOCTRegenHPEntry;
@@ -163,7 +161,7 @@ using TaxiPathNodesByPath = std::vector<TaxiPathNodeList>;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTableEntry> sAreaStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTriggerEntry> sAreaTriggerStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::AuctionHouseEntry> sAuctionHouseStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BankBagSlotPrices> sBankBagSlotPricesStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::BankBagSlotPricesEntry> sBankBagSlotPricesStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChatChannelsEntry> sChatChannelsStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::CharStartOutfitEntry> sCharStartOutfitStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrClassesEntry> sChrClassesStore;

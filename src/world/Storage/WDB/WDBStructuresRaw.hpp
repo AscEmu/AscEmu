@@ -130,6 +130,17 @@ namespace WDB::Structures::Raw
     using AuctionHouseEntryCata = AuctionHouseEntryClassic;
     using AuctionHouseEntryMop = AuctionHouseEntryClassic;
 
+    struct BankBagSlotPricesEntryClassic
+    {
+        uint32_t id;
+        uint32_t price;
+    };
+
+    using BankBagSlotPricesEntryTbc = BankBagSlotPricesEntryClassic;
+    using BankBagSlotPricesEntryWotlk = BankBagSlotPricesEntryClassic;
+    using BankBagSlotPricesEntryCata = BankBagSlotPricesEntryClassic;
+    using BankBagSlotPricesEntryMop = BankBagSlotPricesEntryClassic;
+
     struct BarberShopStyleEntryWotlkCataMop
     {
         uint32_t id;

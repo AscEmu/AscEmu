@@ -633,7 +633,7 @@ void WorldSession::handleBuyBankSlotOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const auto price = bank_bag_slot_prices->Price;
+    const auto price = bank_bag_slot_prices->price;
     if (!_player->hasEnoughCoinage(price))
     {
         SmsgBuyBankSlotResult managedPacket(BankslotError::InsufficientFunds);

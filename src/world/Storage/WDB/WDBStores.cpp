@@ -40,8 +40,6 @@ struct NameGenData
 
 std::vector<NameGenData> _namegenData[3];
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::BankBagSlotPrices> sBankBagSlotPricesStore;
-
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ChatChannelsEntry> sChatChannelsStore;
 std::map<uint32_t, WDB::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
 
@@ -328,7 +326,14 @@ bool loadDBCs()
             entry.tax = raw.tax;
         });
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sBankBagSlotPricesStore, dbc_path, "BankBagSlotPrices.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::BankBagSlotPricesEntry>(
+        bad_dbc_files, sBankBagSlotPricesStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::BankBagSlotPricesEntry& entry)
+        {
+            entry.id = raw.id;
+            entry.price = raw.price;
+        });
+
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChatChannelsStore, dbc_path, "ChatChannels.dbc");
 
     WDB::loadUnifiedWDBStore<WDB::Structures::CharStartOutfitEntry>(
