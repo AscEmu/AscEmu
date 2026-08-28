@@ -54,10 +54,8 @@ namespace WDB::Structures
     struct DurabilityCostsEntry;
     struct CreatureFamilyEntry;
     struct CreatureSpellDataEntry;
-    struct CreatureDisplayInfoEntry;
     struct ChrRacesEntry;
     struct CreatureModelDataEntry;
-    struct CreatureDisplayInfoExtraEntry;
     struct ChrClassesEntry;
     struct AreaTableEntry;
     struct SpellDurationEntry;
@@ -162,8 +160,8 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::CharStartOutfitEntry> sCharSta
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrClassesEntry> sChrClassesStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrRacesEntry> sChrRacesStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::CreatureDisplayInfoEntry> sCreatureDisplayInfoStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore;
 
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureModelDataEntry> sCreatureModelDataStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureSpellDataEntry> sCreatureSpellDataStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureFamilyEntry> sCreatureFamilyStore;

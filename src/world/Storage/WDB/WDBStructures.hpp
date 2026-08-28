@@ -312,6 +312,13 @@ namespace WDB::Structures
         float creatureModelScale{0.0f};
     };
 
+    struct CreatureDisplayInfoExtraEntry
+    {
+        uint32_t displayExtraId{0};
+        uint32_t race{0};
+        uint32_t displaySexId{0};
+    };
+
     struct FactionEntry
     {
         uint32_t id{0};
@@ -975,20 +982,6 @@ namespace WDB::Structures
 #endif
     };
 #endif
-
-    struct CreatureDisplayInfoExtraEntry
-    {
-        uint32_t      DisplayExtraId;                               // 0        m_ID CreatureDisplayInfoEntry::m_extendedDisplayInfoID
-        uint32_t      Race;                                         // 1        m_DisplayRaceID
-        uint32_t      DisplaySexID;                                 // 2        m_DisplaySexID
-        // uint32_t    SkinColor;                                   // 3        m_SkinID
-        // uint32_t    FaceType;                                    // 4        m_FaceID
-        // uint32_t    HairType;                                    // 5        m_HairStyleID
-        // uint32_t    HairStyle;                                   // 6        m_HairColorID
-        // uint32_t    BeardStyle;                                  // 7        m_FacialHairID
-        // uint32_t    Equipment[10];                               // 8-17     m_NPCItemDisplay equipped static items EQUIPMENT_SLOT_HEAD...EQUIPMENT_SLOT_HANDS, client show its by self
-        // char*                                                    // 18       m_BakeName CreatureDisplayExtra-*.blp
-    };
 
     enum CreatureModelDataFlags
     {

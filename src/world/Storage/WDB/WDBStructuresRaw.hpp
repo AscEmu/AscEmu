@@ -354,6 +354,18 @@ namespace WDB::Structures::Raw
     using CreatureDisplayInfoEntryCata = CreatureDisplayInfoEntryClassic;
     using CreatureDisplayInfoEntryMop = CreatureDisplayInfoEntryClassic;
 
+    struct CreatureDisplayInfoExtraEntryClassic
+    {
+        uint32_t displayExtraId;
+        uint32_t race;
+        uint32_t displaySexId;
+    };
+
+    using CreatureDisplayInfoExtraEntryTbc = CreatureDisplayInfoExtraEntryClassic;
+    using CreatureDisplayInfoExtraEntryWotlk = CreatureDisplayInfoExtraEntryClassic;
+    using CreatureDisplayInfoExtraEntryCata = CreatureDisplayInfoExtraEntryClassic;
+    using CreatureDisplayInfoExtraEntryMop = CreatureDisplayInfoExtraEntryClassic;
+
     struct FactionEntryClassic
     {
         uint32_t id;

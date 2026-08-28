@@ -42,7 +42,6 @@ std::vector<NameGenData> _namegenData[3];
 
 std::map<uint32_t, WDB::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureModelDataEntry> sCreatureModelDataStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureSpellDataEntry> sCreatureSpellDataStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureFamilyEntry> sCreatureFamilyStore;
@@ -523,7 +522,15 @@ bool loadDBCs()
             entry.creatureModelScale = raw.creatureModelScale;
         });
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sCreatureDisplayInfoExtraStore, dbc_path, "CreatureDisplayInfoExtra.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::CreatureDisplayInfoExtraEntry>(
+        bad_dbc_files, sCreatureDisplayInfoExtraStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::CreatureDisplayInfoExtraEntry& entry)
+        {
+            entry.displayExtraId = raw.displayExtraId;
+            entry.race = raw.race;
+            entry.displaySexId = raw.displaySexId;
+        });
+
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sCreatureModelDataStore, dbc_path, "CreatureModelData.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sCreatureSpellDataStore, dbc_path, "CreatureSpellData.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sCreatureFamilyStore, dbc_path, "CreatureFamily.dbc");
