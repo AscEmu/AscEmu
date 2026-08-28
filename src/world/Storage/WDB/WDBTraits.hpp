@@ -154,7 +154,7 @@ namespace WDB
             Structures::Raw::ChrPowerTypesEntryCata,
             Structures::Raw::ChrPowerTypesEntryMop>
     {
-        static constexpr char const* filename = "ChrPowerTypes.dbc";
+        static constexpr char const* filename = "ChrClassesXPowerTypes.dbc";
     };
 
     template <>
@@ -188,6 +188,17 @@ namespace WDB
             Structures::Raw::CreatureDisplayInfoExtraEntryMop>
     {
         static constexpr char const* filename = "CreatureDisplayInfoExtra.dbc";
+    };
+
+    template <>
+    struct DbcTraits<Structures::CreatureModelDataEntry> : DbcVersionLayouts<
+            Structures::Raw::CreatureModelDataEntryClassic,
+            Structures::Raw::CreatureModelDataEntryTbc,
+            Structures::Raw::CreatureModelDataEntryWotlk,
+            Structures::Raw::CreatureModelDataEntryCata,
+            Structures::Raw::CreatureModelDataEntryMop>
+    {
+        static constexpr char const* filename = "CreatureModelData.dbc";
     };
 
     template <>

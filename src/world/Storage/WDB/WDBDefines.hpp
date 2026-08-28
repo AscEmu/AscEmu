@@ -38,4 +38,9 @@ namespace WDB::Structures
         FACTION_MASK_MONSTER = 8 // aggressive creature from monster team
         // if none flags set then non-aggressive creature
     };
+
+    enum CreatureModelDataFlags : uint32_t
+    {
+        CREATURE_MODEL_DATA_FLAGS_CAN_MOUNT = 0x00000080
+    };
 }

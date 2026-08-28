@@ -3946,7 +3946,7 @@ bool Player::isInDisallowedMountForm() const
     WDB::Structures::CreatureModelDataEntry const* model = sCreatureModelDataStore.lookupEntry(display->modelId);
     WDB::Structures::ChrRacesEntry const* race = sChrRacesStore.lookupEntry(displayExtra->race);
 
-    if (model && !(model->Flags & 0x80))
+    if (model && !(model->flags & 0x80))
         if (race && !(race->flags & 0x4))
             return true;
 

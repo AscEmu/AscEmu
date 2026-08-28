@@ -1789,7 +1789,7 @@ void ObjectMgr::loadCreatureDisplayInfo()
         data.modelInfo = sCreatureModelDataStore.lookupEntry(data.modelId);
         if (data.modelInfo != nullptr)
         {
-            if (strstr(data.modelInfo->ModelName, "InvisibleStalker"))
+            if (data.modelInfo->modelName.find("InvisibleStalker") != std::string::npos)
                 data.isModelInvisibleStalker = true;
         }
 

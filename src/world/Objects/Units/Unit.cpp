@@ -8052,7 +8052,7 @@ float Unit::getCollisionHeight() const
                     return DEFAULT_COLLISION_HEIGHT;
 
 #if VERSION_STRING > Classic
-                float const collisionHeight = scaleMod * (mountModelData->MountHeight + modelData->CollisionHeight * displayInfo->creatureModelScale * 0.5f);
+                float const collisionHeight = scaleMod * (mountModelData->mountHeight + modelData->collisionHeight * displayInfo->creatureModelScale * 0.5f);
 #else
                 // Do the Collision Calc without Mount height since there are not that many Different Mounts
                 float const collisionHeight = scaleMod * (modelData->CollisionHeight * displayInfo->creatureModelScale * 0.5f);
@@ -8071,7 +8071,7 @@ float Unit::getCollisionHeight() const
     if (!modelData)
         return DEFAULT_COLLISION_HEIGHT;
 
-    float const collisionHeight = scaleMod * modelData->CollisionHeight * displayInfo->creatureModelScale;
+    float const collisionHeight = scaleMod * modelData->collisionHeight * displayInfo->creatureModelScale;
     return collisionHeight == 0.0f ? DEFAULT_COLLISION_HEIGHT : collisionHeight;
 }
 

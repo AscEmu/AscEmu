@@ -366,6 +366,38 @@ namespace WDB::Structures::Raw
     using CreatureDisplayInfoExtraEntryCata = CreatureDisplayInfoExtraEntryClassic;
     using CreatureDisplayInfoExtraEntryMop = CreatureDisplayInfoExtraEntryClassic;
 
+    struct CreatureModelDataEntryClassic
+    {
+        uint32_t id;
+        uint32_t flags;
+        char const* modelName;
+        float modelScale;
+        float collisionHeight;
+    };
+
+    struct CreatureModelDataEntryTbc
+    {
+        uint32_t id;
+        uint32_t flags;
+        char const* modelName;
+        float modelScale;
+        float collisionHeight;
+        float mountHeight;
+    };
+
+    using CreatureModelDataEntryWotlk = CreatureModelDataEntryTbc;
+
+    struct CreatureModelDataEntryCata
+    {
+        uint32_t id;
+        uint32_t flags;
+        char const* modelName;
+        float collisionHeight;
+        float mountHeight;
+    };
+
+    using CreatureModelDataEntryMop = CreatureModelDataEntryCata;
+
     struct FactionEntryClassic
     {
         uint32_t id;

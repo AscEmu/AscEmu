@@ -319,6 +319,21 @@ namespace WDB::Structures
         uint32_t displaySexId{0};
     };
 
+    struct CreatureModelDataEntry
+    {
+        uint32_t id{ 0 };
+        uint32_t flags{ 0 };
+        std::string modelName;
+        float modelScale{ 1.0f };
+        float collisionHeight{ 0.0f };
+        float mountHeight{ 0.0f };
+
+        [[nodiscard]] constexpr bool hasFlag(CreatureModelDataFlags flag) const noexcept
+        {
+            return (flags & flag) != 0;
+        }
+    };
+
     struct FactionEntry
     {
         uint32_t id{0};
@@ -982,38 +997,6 @@ namespace WDB::Structures
 #endif
     };
 #endif
-
-    enum CreatureModelDataFlags
-    {
-        CREATURE_MODEL_DATA_FLAGS_CAN_MOUNT = 0x00000080
-    };
-
-    struct CreatureModelDataEntry
-    {
-        uint32_t ID;                                                // 0
-        uint32_t Flags;                                             // 1
-        char const* ModelName;                                      // 2
-        //uint32_t SizeClass;                                       // 3
-#if VERSION_STRING <= WotLK
-        float ModelScale;                                           // 4 Used in calculation of unit collision data
-#endif
-        //int32_t BloodID;                                          // 5
-        //int32_t FootprintTextureID;                               // 6
-        //uint32_t FootprintTextureLength;                          // 7
-        //uint32_t FootprintTextureWidth;                           // 8
-        //float FootprintParticleScale;                             // 9
-        //uint32_t FoleyMaterialID;                                 // 10
-        //float FootstepShakeSize;                                  // 11
-        //uint32_t DeathThudShakeSize;                              // 12
-        //uint32_t SoundID;                                         // 13
-        //float CollisionWidth;                                     // 14
-        float CollisionHeight;                                      // 15
-#if VERSION_STRING > Classic
-        float MountHeight;                                          // 16 Used in calculation of unit collision data when mounted
-#endif
-
-        inline bool hasFlag(CreatureModelDataFlags flag) const { return (Flags & flag) != 0; }
-    };
 
     struct CreatureFamilyEntry
     {
