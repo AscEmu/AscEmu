@@ -2412,7 +2412,7 @@ void Creature::SetLimboState(bool set)
 
 uint32_t Creature::GetLineByFamily(WDB::Structures::CreatureFamilyEntry const* family)
 {
-    return family->skilline ? family->skilline : 0;
+    return family->skillLine ? family->skillLine : 0;
 }
 
 void Creature::RemoveLimboState(Unit* /*healer*/)

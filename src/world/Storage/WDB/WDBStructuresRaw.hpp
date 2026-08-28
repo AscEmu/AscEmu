@@ -366,6 +366,62 @@ namespace WDB::Structures::Raw
     using CreatureDisplayInfoExtraEntryCata = CreatureDisplayInfoExtraEntryClassic;
     using CreatureDisplayInfoExtraEntryMop = CreatureDisplayInfoExtraEntryClassic;
 
+    struct CreatureFamilyEntryClassic
+    {
+        uint32_t id;
+        float minSize;
+        uint32_t minLevel;
+        float maxSize;
+        uint32_t maxLevel;
+        uint32_t skillLine;
+        uint32_t tameable;
+        uint32_t petDietFlags;
+        char const* name[namePatternClassic];
+    };
+
+    struct CreatureFamilyEntryTbc
+    {
+        uint32_t id;
+        float minSize;
+        uint32_t minLevel;
+        float maxSize;
+        uint32_t maxLevel;
+        uint32_t skillLine;
+        uint32_t tameable;
+        uint32_t petDietFlags;
+        char const* name[namePatternTbcWotlk];
+    };
+
+    struct CreatureFamilyEntryWotlk
+    {
+        uint32_t id;
+        float minSize;
+        uint32_t minLevel;
+        float maxSize;
+        uint32_t maxLevel;
+        uint32_t skillLine;
+        uint32_t tameable;
+        uint32_t petDietFlags;
+        int32_t talentTree;
+        char const* name[namePatternTbcWotlk];
+    };
+
+    struct CreatureFamilyEntryCata
+    {
+        uint32_t id;
+        float minSize;
+        uint32_t minLevel;
+        float maxSize;
+        uint32_t maxLevel;
+        uint32_t skillLine;
+        uint32_t tameable;
+        uint32_t petDietFlags;
+        int32_t talentTree;
+        char const* name;
+    };
+
+    using CreatureFamilyEntryMop = CreatureFamilyEntryCata;
+
     struct CreatureModelDataEntryClassic
     {
         uint32_t id;

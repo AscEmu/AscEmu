@@ -43,7 +43,6 @@ std::vector<NameGenData> _namegenData[3];
 std::map<uint32_t, WDB::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureSpellDataEntry> sCreatureSpellDataStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureFamilyEntry> sCreatureFamilyStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityCostsEntry> sDurabilityCostsStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityQualityEntry> sDurabilityQualityStore;
@@ -551,7 +550,37 @@ bool loadDBCs()
         });
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sCreatureSpellDataStore, dbc_path, "CreatureSpellData.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sCreatureFamilyStore, dbc_path, "CreatureFamily.dbc");
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::CreatureFamilyEntry>(
+        bad_dbc_files, sCreatureFamilyStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::CreatureFamilyEntry& entry)
+        {
+            entry.id = raw.id;
+            entry.minSize = raw.minSize;
+            entry.minLevel = raw.minLevel;
+            entry.maxSize = raw.maxSize;
+            entry.maxLevel = raw.maxLevel;
+            entry.skillLine = raw.skillLine;
+            entry.tameable = raw.tameable;
+            entry.petDietFlags = raw.petDietFlags;
+
+            if constexpr (requires { raw.talentTree; })
+            {
+                entry.talentTree = raw.talentTree;
+            }
+
+            if constexpr (std::is_array_v<decltype(raw.name)>)
+            {
+                uint8_t const localeId = sWorld.getDbcLocaleLanguageId();
+                constexpr size_t arraySize = sizeof(raw.name) / sizeof(raw.name[0]);
+                uint8_t const validIndex = (localeId < arraySize) ? localeId : 0;
+                entry.name = raw.name[validIndex] ? raw.name[validIndex] : "";
+            }
+            else
+            {
+                entry.name = raw.name ? raw.name : "";
+            }
+        });
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sDurabilityCostsStore, dbc_path, "DurabilityCosts.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sDurabilityQualityStore, dbc_path, "DurabilityQuality.dbc");

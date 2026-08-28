@@ -175,7 +175,7 @@ void Pet::sendSpellsToController(Unit* controller, uint32_t duration)
 
     // TODO: find out values for this
     const uint16_t petFlags = 0;
-    const auto familyId = static_cast<uint16_t>(myFamily != nullptr ? myFamily->ID : 0);
+    const auto familyId = static_cast<uint16_t>(myFamily != nullptr ? myFamily->id : 0);
 
     // Action bar
     AscEmu::Packets::SmsgPetActionsArray petActions{};
@@ -266,11 +266,7 @@ bool Pet::createAsSummon(CreatureProperties const* creatureProperties, Creature*
         m_petName = "Pet";
         if (myFamily != nullptr)
         {
-#if VERSION_STRING < Cata
-            m_petName.assign(myFamily->name[sWorld.getDbcLocaleLanguageId()]);
-#else
-            m_petName.assign(myFamily->name[0]);
-#endif
+            m_petName.assign(myFamily->name);
         }
     }
     else
@@ -564,23 +560,23 @@ void Pet::applyStatsForLevel()
 
     // Apply scale for this hunter pet family
     // Size scaling is affected by level of the pet
-    if (m_petType == PET_TYPE_HUNTER && m_unitOwner->isPlayer() && myFamily != nullptr && myFamily->minsize > 0.0f)
+    if (m_petType == PET_TYPE_HUNTER && m_unitOwner->isPlayer() && myFamily != nullptr && myFamily->minSize > 0.0f)
     {
         float_t scaleValue = 0.0f;
         const auto petLevel = getLevel();
-        if (petLevel >= myFamily->maxlevel)
+        if (petLevel >= myFamily->maxLevel)
         {
-            scaleValue = myFamily->maxsize;
+            scaleValue = myFamily->maxSize;
         }
-        else if (petLevel < myFamily->minlevel)
+        else if (petLevel < myFamily->minLevel)
         {
-            scaleValue = myFamily->minsize;
+            scaleValue = myFamily->minSize;
         }
         else
         {
-            const float_t levelDiff = static_cast<float_t>(petLevel - myFamily->minlevel) / myFamily->maxlevel;
-            const auto scaleDiff = static_cast<float_t>(myFamily->maxsize - myFamily->minsize);
-            scaleValue = scaleDiff * levelDiff + myFamily->minsize;
+            const float_t levelDiff = static_cast<float_t>(petLevel - myFamily->minLevel) / myFamily->maxLevel;
+            const auto scaleDiff = static_cast<float_t>(myFamily->maxSize - myFamily->minSize);
+            scaleValue = scaleDiff * levelDiff + myFamily->minSize;
         }
 
         setScale(scaleValue);
@@ -991,7 +987,7 @@ void Pet::_setNameForEntry(uint32_t entry, SpellInfo const* createdBySpell)
 
 void Pet::_setPetDiet()
 {
-    m_petDiet = myFamily != nullptr ? static_cast<uint8_t>(myFamily->petdietflags) : 0;
+    m_petDiet = myFamily != nullptr ? static_cast<uint8_t>(myFamily->petDietFlags) : 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1087,7 +1083,7 @@ void Pet::updateSpellList(bool onSummon/* = false*/)
     // Get creature family spells
     if (myFamily != nullptr)
     {
-        learnNewSkillSpells(myFamily->skilline);
+        learnNewSkillSpells(myFamily->skillLine);
         learnNewSkillSpells(myFamily->tameable);
     }
 }
@@ -1972,9 +1968,9 @@ void Pet::ApplyPetLevelAbilities()
     };
 
     if (pet_family < 47)
-        removeAllAurasById(family_aura[pet_family]);  //If the pet gained a level, we need to remove the auras to re-calculate everything.
+        removeAllAurasById(family_aura[pet_family]); // If the pet gained a level, we need to remove the auras to re-calculate everything.
 
-    LoadPetAuras(-1);//These too
+    LoadPetAuras(-1); // These too
 
     MySQLStructure::PetLevelAbilities const* pet_abilities = sMySQLStore.getPetLevelAbilities(level);
     if (pet_abilities == nullptr)
@@ -1995,7 +1991,7 @@ void Pet::ApplyPetLevelAbilities()
 
     // Family Aura
     if (pet_family > 46)
-        sLogger.failure("PetStat : Creature family {} [{}] has missing data.", pet_family, fmt::ptr(myFamily->name));
+        sLogger.failure("PetStat : Creature family {} [{}] has missing data.", pet_family, myFamily->name);
     else if (family_aura[pet_family] != 0)
         this->castSpell(this, family_aura[pet_family], true);
 

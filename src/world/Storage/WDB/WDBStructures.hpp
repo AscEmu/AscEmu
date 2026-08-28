@@ -319,6 +319,20 @@ namespace WDB::Structures
         uint32_t displaySexId{0};
     };
 
+    struct CreatureFamilyEntry
+    {
+        uint32_t id{0};
+        float minSize{0.0f};
+        uint32_t minLevel{0};
+        float maxSize{0.0f};
+        uint32_t maxLevel{0};
+        uint32_t skillLine{0};
+        uint32_t tameable{0};
+        uint32_t petDietFlags{0};
+        int32_t talentTree{-1};
+        std::string name;
+    };
+
     struct CreatureModelDataEntry
     {
         uint32_t id{ 0 };
@@ -997,24 +1011,6 @@ namespace WDB::Structures
 #endif
     };
 #endif
-
-    struct CreatureFamilyEntry
-    {
-        uint32_t ID;                                                // 0
-        float minsize;                                              // 1
-        uint32_t minlevel;                                          // 2
-        float maxsize;                                              // 3
-        uint32_t maxlevel;                                          // 4
-        uint32_t skilline;                                          // 5
-        uint32_t tameable;                                          // 6 second skill line - 270 Generic
-        uint32_t petdietflags;                                      // 7
-#if VERSION_STRING >= WotLK
-        uint32_t talenttree;                                        // 8 (-1 = none, 0 = ferocity(410), 1 = tenacity(409), 2 = cunning(411))
-#endif
-        char* name[NAME_PATTERN];                                   // 8-23
-        //uint32_t nameflags;                                       // 24
-        //uint32_t iconFile;                                        // 25
-    };
 
     struct CreatureSpellDataEntry
     {
