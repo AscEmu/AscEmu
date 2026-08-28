@@ -355,6 +355,18 @@ namespace WDB::Structures
         std::array<uint32_t, 4> cooldowns{0, 0, 0, 0};
     };
 
+    struct DurabilityCostsEntry
+    {
+        uint32_t itemLevel{0};
+        std::array<uint32_t, 29> modifier{0};
+    };
+
+    struct DurabilityQualityEntry
+    {
+        uint32_t id{0};
+        float qualityModifier{0.0f};
+    };
+
     struct FactionEntry
     {
         uint32_t id{0};
@@ -1055,18 +1067,6 @@ namespace WDB::Structures
         //uint32_t unk1;                                            // 22
     };
 #endif
-
-    struct DurabilityCostsEntry
-    {
-        uint32_t itemlevel;                                         // 0
-        uint32_t modifier[29];                                      // 1-29
-    };
-
-    struct DurabilityQualityEntry
-    {
-        uint32_t id;                                                // 0
-        float quality_modifier;                                     // 1
-    };
 
 #if VERSION_STRING >= Cata
     struct EmotesEntry

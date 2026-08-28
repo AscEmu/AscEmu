@@ -939,7 +939,7 @@ uint32_t Item::repairItemCost()
     }
 
     uint32_t dmodifier = durability_costs->modifier[m_itemProperties->Class == ITEM_CLASS_WEAPON ? m_itemProperties->SubClass : m_itemProperties->SubClass + 21];
-    uint32_t cost = Util::long2int32((getMaxDurability() - getDurability()) * dmodifier * double(durability_quality->quality_modifier));
+    uint32_t cost = Util::long2int32((getMaxDurability() - getDurability()) * dmodifier * static_cast<double>(durability_quality->qualityModifier));
     return cost;
 }
 

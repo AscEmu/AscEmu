@@ -50,8 +50,6 @@ namespace WDB::Structures
     struct ItemSetEntry;
     struct GameObjectDisplayInfoEntry;
     struct EmotesTextEntry;
-    struct DurabilityQualityEntry;
-    struct DurabilityCostsEntry;
     struct AreaTableEntry;
     struct SpellDurationEntry;
     struct SpellCastTimesEntry;
@@ -159,9 +157,9 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::CreatureDisplayInfoExtraEntry>
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::CreatureModelDataEntry> sCreatureModelDataStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::CreatureSpellDataEntry> sCreatureSpellDataStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::CreatureFamilyEntry> sCreatureFamilyStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::DurabilityCostsEntry> sDurabilityCostsStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::DurabilityQualityEntry> sDurabilityQualityStore;
 
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityCostsEntry> sDurabilityCostsStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityQualityEntry> sDurabilityQualityStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::EmotesTextEntry> sEmotesTextStore;
 
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::FactionEntry> sFactionStore;

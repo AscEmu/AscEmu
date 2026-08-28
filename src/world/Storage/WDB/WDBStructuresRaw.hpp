@@ -466,6 +466,28 @@ namespace WDB::Structures::Raw
     using CreatureSpellDataEntryCata = CreatureSpellDataEntryClassic;
     using CreatureSpellDataEntryMop = CreatureSpellDataEntryClassic;
 
+    struct DurabilityCostsEntryClassic
+    {
+        uint32_t itemLevel;
+        uint32_t modifier[29];
+    };
+
+    using DurabilityCostsEntryTbc = DurabilityCostsEntryClassic;
+    using DurabilityCostsEntryWotlk = DurabilityCostsEntryClassic;
+    using DurabilityCostsEntryCata = DurabilityCostsEntryClassic;
+    using DurabilityCostsEntryMop = DurabilityCostsEntryClassic;
+
+    struct DurabilityQualityEntryClassic
+    {
+        uint32_t id;
+        float qualityModifier;
+    };
+
+    using DurabilityQualityEntryTbc = DurabilityQualityEntryClassic;
+    using DurabilityQualityEntryWotlk = DurabilityQualityEntryClassic;
+    using DurabilityQualityEntryCata = DurabilityQualityEntryClassic;
+    using DurabilityQualityEntryMop = DurabilityQualityEntryClassic;
+
     struct FactionEntryClassic
     {
         uint32_t id;

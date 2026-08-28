@@ -235,6 +235,28 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::DurabilityCostsEntry> : DbcVersionLayouts<
+            Structures::Raw::DurabilityCostsEntryClassic,
+            Structures::Raw::DurabilityCostsEntryTbc,
+            Structures::Raw::DurabilityCostsEntryWotlk,
+            Structures::Raw::DurabilityCostsEntryCata,
+            Structures::Raw::DurabilityCostsEntryMop>
+    {
+        static constexpr char const* filename = "DurabilityCosts.dbc";
+    };
+
+    template <>
+    struct DbcTraits<Structures::DurabilityQualityEntry> : DbcVersionLayouts<
+            Structures::Raw::DurabilityQualityEntryClassic,
+            Structures::Raw::DurabilityQualityEntryTbc,
+            Structures::Raw::DurabilityQualityEntryWotlk,
+            Structures::Raw::DurabilityQualityEntryCata,
+            Structures::Raw::DurabilityQualityEntryMop>
+    {
+        static constexpr char const* filename = "DurabilityQuality.dbc";
+    };
+
+    template <>
     struct DbcTraits<Structures::FactionTemplateEntry> : DbcVersionLayouts<
             Structures::Raw::FactionTemplateEntryAll,
             Structures::Raw::FactionTemplateEntryAll,

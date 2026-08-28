@@ -42,9 +42,6 @@ std::vector<NameGenData> _namegenData[3];
 
 std::map<uint32_t, WDB::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityCostsEntry> sDurabilityCostsStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityQualityEntry> sDurabilityQualityStore;
-
 SERVER_DECL WDB::WDBContainer<WDB::Structures::EmotesTextEntry> sEmotesTextStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GameObjectDisplayInfoEntry> sGameObjectDisplayInfoStore;
@@ -590,8 +587,24 @@ bool loadDBCs()
             }
         });
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sDurabilityCostsStore, dbc_path, "DurabilityCosts.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sDurabilityQualityStore, dbc_path, "DurabilityQuality.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::DurabilityCostsEntry>(
+        bad_dbc_files, sDurabilityCostsStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::DurabilityCostsEntry& entry)
+        {
+            entry.itemLevel = raw.itemLevel;
+            for (size_t i = 0; i < entry.modifier.size(); ++i)
+            {
+                entry.modifier[i] = raw.modifier[i];
+            }
+        });
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::DurabilityQualityEntry>(
+        bad_dbc_files, sDurabilityQualityStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::DurabilityQualityEntry& entry)
+        {
+            entry.id = raw.id;
+            entry.qualityModifier = raw.qualityModifier;
+        });
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sEmotesTextStore, dbc_path, "EmotesText.dbc");
 
