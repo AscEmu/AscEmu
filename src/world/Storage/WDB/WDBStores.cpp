@@ -144,9 +144,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRuneCostEntry> sSpellRuneCos
 #endif
 
 #if VERSION_STRING >= Cata
-SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrPowerTypesEntry> sChrPowerTypesEntry;
-uint8_t powerIndexByClass[MAX_PLAYER_CLASSES][TOTAL_PLAYER_POWER_TYPES];
-
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseHPByClassEntry> sGtOCTBaseHPByClassStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseMPByClassEntry> sGtOCTBaseMPByClassStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTClassCombatRatingScalarEntry> sGtOCTClassCombatRatingScalarStore;
@@ -194,6 +191,95 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemReforgeEntry> sItemReforgeSto
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
 #endif
+
+namespace {
+    void buildAreaMapCollection()
+    {
+        auto* areaMapCollection = MapManagement::AreaManagement::AreaStorage::GetMapCollection();
+        if (!areaMapCollection)
+            return;
+
+        for (uint32_t i = 0; i < sMapStore.getNumRows(); ++i)
+        {
+            if (auto const* mapObject = sMapStore.lookupEntry(i))
+            {
+                areaMapCollection->insert({ mapObject->id, mapObject->linkedZone });
+            }
+        }
+    }
+
+    void buildMapDifficultyMap()
+    {
+        sMapDifficultyMap.clear();
+
+        // Fill the map difficulty map with data from MapDifficultyStore if available Cata / MoP
+        for (uint32_t i = 0; i < sMapDifficultyStore.getNumRows(); ++i)
+        {
+            if (auto const* entry = sMapDifficultyStore.lookupEntry(i))
+            {
+                uint32_t const key = Util::MAKE_PAIR32(static_cast<uint16_t>(entry->mapId), static_cast<uint16_t>(entry->difficulty));
+                sMapDifficultyMap[key] = WDB::Structures::MapDifficulty(
+                    entry->raidDuration,
+                    entry->maxPlayers,
+                    !entry->message.empty()
+                );
+            }
+        }
+
+        // Fallback classic, tbc and wotlk, where MapDifficultyStore is not available
+        if (sMapDifficultyStore.getNumRows() == 0)
+        {
+            for (uint32_t i = 0; i < sMapStore.getNumRows(); ++i)
+            {
+                if (auto const* entry = sMapStore.lookupEntry(i))
+                {
+                    uint32_t const maxPlayers = (entry->getAddon() < 1)
+                                                    ? (entry->isRaid() ? 40 : 5)
+                                                    : (entry->isRaid() ? 25 : 5);
+
+                    if (!entry->getResetTimeHeroic())
+                    {
+                        sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry->id), InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] =
+                            WDB::Structures::MapDifficulty(entry->getResetTimeNormal(), maxPlayers, false);
+                    }
+                    else
+                    {
+                        sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry->id), InstanceDifficulty::Difficulties::DUNGEON_HEROIC)] =
+                            WDB::Structures::MapDifficulty(entry->getResetTimeHeroic(), maxPlayers, false);
+                    }
+                }
+            }
+        }
+    }
+
+    void buildPowerIndexByClass()
+    {
+        for (auto& classPowers : powerIndexByClass)
+        {
+            classPowers.fill(TOTAL_PLAYER_POWER_TYPES);
+        }
+
+        for (uint32_t i = 0; i < sChrPowerTypesStore.getNumRows(); ++i)
+        {
+            auto const* powerEntry = sChrPowerTypesStore.lookupEntry(i);
+            if (!powerEntry)
+                continue;
+
+            // Boundary Checks against Out-of-Bounds access
+            if (powerEntry->classId >= MAX_PLAYER_CLASSES || powerEntry->power >= TOTAL_PLAYER_POWER_TYPES)
+                continue;
+
+            uint8_t index = 1;
+            for (uint8_t power = POWER_TYPE_MANA; power < TOTAL_PLAYER_POWER_TYPES; ++power)
+            {
+                if (powerIndexByClass[powerEntry->classId][power] != TOTAL_PLAYER_POWER_TYPES)
+                    ++index;
+            }
+
+            powerIndexByClass[powerEntry->classId][powerEntry->power] = index;
+        }
+    }
+}
 
 bool loadDBCs()
 {
@@ -462,7 +548,7 @@ bool loadDBCs()
                 entry.reputationFlags[i] = raw.reputationFlags[i];
             }
 
-            // Spillover (ab WotLK/TBC)
+            // Spillover (since WotLK/TBC)
             if constexpr (requires { raw.spilloverRateIn; })
             {
                 entry.spilloverRateIn = raw.spilloverRateIn;
@@ -470,13 +556,13 @@ bool loadDBCs()
                 entry.spilloverMaxIn = raw.spilloverMaxIn;
             }
 
-            // Expansion (ab Cata/MoP)
+            // Expansion (since Cata/MoP)
             if constexpr (requires { raw.expansion; })
             {
                 entry.expansion = raw.expansion;
             }
 
-            // Namens-Lokalisierung
+            // name localization
             if constexpr (requires { { raw.name[0] } -> std::convertible_to<const char*>; })
             {
                 uint8_t localeId = sWorld.getDbcLocaleLanguageId();
@@ -597,42 +683,6 @@ bool loadDBCs()
                 entry->maxPlayers,
                 !entry->message.empty()
             );
-        }
-    }
-
-    // note: generate map related data
-    if (sMapDifficultyStore.getNumRows() == 0)
-    {
-        for (uint32_t i = 0; i < sMapStore.getNumRows(); ++i)
-        {
-            if (auto entry = sMapStore.lookupEntry(i))
-            {
-                uint32_t maxPlayers;
-                if (entry->getAddon() < 1)
-                    maxPlayers = entry->isRaid() ? 40 : 5;
-                else
-                    maxPlayers = entry->isRaid() ? 25 : 5;
-
-                if (!entry->getResetTimeHeroic())
-                {
-                    sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry->id), InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] =
-                        WDB::Structures::MapDifficulty(entry->getResetTimeNormal(), maxPlayers, false);
-                }
-                else
-                {
-                    sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry->id), InstanceDifficulty::Difficulties::DUNGEON_HEROIC)] =
-                        WDB::Structures::MapDifficulty(entry->getResetTimeHeroic(), maxPlayers, false);
-                }
-            }
-        }
-    }
-
-    const auto area_map_collection = MapManagement::AreaManagement::AreaStorage::GetMapCollection();
-    for (uint32_t i = 0; i < sMapStore.getNumRows(); ++i)
-    {
-        if (const auto map_object = sMapStore.lookupEntry(i))
-        {
-            area_map_collection->insert(std::pair(map_object->id, map_object->linkedZone));
         }
     }
 
@@ -977,33 +1027,14 @@ bool loadDBCs()
         });
 
 #if VERSION_STRING >= Cata
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChrPowerTypesEntry, dbc_path, "ChrClassesXPowerTypes.dbc");
-    // note: generate powerIndex into new array
-    {
-        // Initialize power index array
-        for (uint8_t i = 0; i < MAX_PLAYER_CLASSES; ++i)
+    WDB::loadUnifiedWDBStore<WDB::Structures::ChrPowerTypesEntry>(
+        bad_dbc_files, sChrPowerTypesStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::ChrPowerTypesEntry& entry)
         {
-            for (uint8_t power = POWER_TYPE_MANA; power < TOTAL_PLAYER_POWER_TYPES; ++power)
-                powerIndexByClass[i][power] = TOTAL_PLAYER_POWER_TYPES;
-        }
-
-        // Insert data into the array
-        for (uint32_t i = 0; i < sChrPowerTypesEntry.getNumRows(); ++i)
-        {
-            const auto powerEntry = sChrPowerTypesEntry.lookupEntry(i);
-            if (powerEntry != nullptr)
-            {
-                uint8_t index = 1;
-                for (uint8_t power = POWER_TYPE_MANA; power < TOTAL_PLAYER_POWER_TYPES; ++power)
-                {
-                    if (powerIndexByClass[powerEntry->classId][power] != TOTAL_PLAYER_POWER_TYPES)
-                        ++index;
-                }
-
-                powerIndexByClass[powerEntry->classId][powerEntry->power] = index;
-            }
-        }
-    }
+            entry.entry = raw.entry;
+            entry.classId = raw.classId;
+            entry.power = raw.power;
+        });
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtOCTBaseHPByClassStore, dbc_path, "gtOCTBaseHPByClass.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtOCTBaseMPByClassStore, dbc_path, "gtOCTBaseMPByClass.dbc");
@@ -1067,6 +1098,10 @@ bool loadDBCs()
         WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellReagentsStore, dbc_path, "SpellReagents.db2");
     #endif
 #endif
+
+    buildMapDifficultyMap();
+    buildAreaMapCollection();
+    buildPowerIndexByClass();
 
     return true;
 }

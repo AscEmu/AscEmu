@@ -283,6 +283,13 @@ namespace WDB::Structures
         uint32_t rapPerAgi{0};
     };
 
+    struct ChrPowerTypesEntry
+    {
+        uint32_t entry{0};
+        uint32_t classId{0};
+        uint32_t power{0};
+    };
+
     struct ChrRacesEntry
     {
         uint32_t raceId = 0;
@@ -968,13 +975,6 @@ namespace WDB::Structures
 #endif
     };
 #endif
-
-    struct ChrPowerTypesEntry
-    {
-        uint32_t entry;                                             // 0
-        uint32_t classId;                                           // 1 class
-        uint32_t power;                                             // 2 power type
-    };
 
     struct CreatureDisplayInfoExtraEntry
     {

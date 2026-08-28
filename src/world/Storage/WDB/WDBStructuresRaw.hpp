@@ -278,6 +278,15 @@ namespace WDB::Structures::Raw
         uint32_t rapPerAgi;
     };
 
+    struct ChrPowerTypesEntryCata
+    {
+        uint32_t entry;
+        uint32_t classId;
+        uint32_t power;
+    };
+
+    using ChrPowerTypesEntryMop = ChrPowerTypesEntryCata;
+
     struct ChrRacesEntryClassic
     {
         uint32_t id;

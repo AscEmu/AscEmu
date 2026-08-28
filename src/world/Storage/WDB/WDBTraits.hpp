@@ -147,6 +147,17 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::ChrPowerTypesEntry> : DbcVersionLayouts<
+            UnsupportedVersion,
+            UnsupportedVersion,
+            UnsupportedVersion,
+            Structures::Raw::ChrPowerTypesEntryCata,
+            Structures::Raw::ChrPowerTypesEntryMop>
+    {
+        static constexpr char const* filename = "ChrPowerTypes.dbc";
+    };
+
+    template <>
     struct DbcTraits<Structures::ChrRacesEntry> : DbcVersionLayouts<
             Structures::Raw::ChrRacesEntryClassic,
             Structures::Raw::ChrRacesEntryTbc,

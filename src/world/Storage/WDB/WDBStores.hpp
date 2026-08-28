@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/InstanceDefines.hpp"
 #include "WDBGlobals.hpp"
 #include "WDBStructures.hpp"
+#include "Spell/Definitions/PowerType.hpp"
 
 namespace WDB::Structures
 {
@@ -93,8 +94,6 @@ namespace WDB::Structures
 #endif
 
 #if VERSION_STRING >= Cata
-    struct BannedAddOnsEntry;
-    struct ChrPowerTypesEntry;
     struct GtOCTBaseHPByClassEntry;
     struct GtOCTBaseMPByClassEntry;
     struct GtOCTClassCombatRatingScalarEntry;
@@ -261,9 +260,10 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
 #endif
 
     inline SERVER_DECL WDB::WDBStore<WDB::Structures::BannedAddOnsEntry> sBannedAddOnsStore;
+    inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrPowerTypesEntry> sChrPowerTypesStore;
+    inline std::array<std::array<uint8_t, TOTAL_PLAYER_POWER_TYPES>, MAX_PLAYER_CLASSES> powerIndexByClass;
 
 #if VERSION_STRING >= Cata
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrPowerTypesEntry> sChrPowerTypesEntry;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseHPByClassEntry> sGtOCTBaseHPByClassStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseMPByClassEntry> sGtOCTBaseMPByClassStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTClassCombatRatingScalarEntry> sGtOCTClassCombatRatingScalarStore;
