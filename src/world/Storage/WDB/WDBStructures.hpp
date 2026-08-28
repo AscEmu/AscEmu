@@ -348,6 +348,13 @@ namespace WDB::Structures
         }
     };
 
+    struct CreatureSpellDataEntry
+    {
+        uint32_t id{0};
+        std::array<uint32_t, 4> spells{0, 0, 0, 0};
+        std::array<uint32_t, 4> cooldowns{0, 0, 0, 0};
+    };
+
     struct FactionEntry
     {
         uint32_t id{0};
@@ -1011,15 +1018,6 @@ namespace WDB::Structures
 #endif
     };
 #endif
-
-    struct CreatureSpellDataEntry
-    {
-        uint32_t id;                                                // 0
-        uint32_t Spells[3];                                         // 1-3
-        uint32_t PHSpell;                                           // 4
-        uint32_t Cooldowns[3];                                      // 5-7
-        uint32_t PH;                                                // 8
-    };
 
 #if VERSION_STRING >= WotLK
     struct CurrencyTypesEntry

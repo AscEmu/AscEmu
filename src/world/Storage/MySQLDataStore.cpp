@@ -998,10 +998,10 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                 if (creature_spell_data == nullptr)
                     continue;
 
-                if (creature_spell_data->Spells[i] == 0)
+                if (creature_spell_data->spells[i] == 0)
                     continue;
 
-                SpellInfo const* sp = sSpellMgr.getSpellInfo(creature_spell_data->Spells[i]);
+                SpellInfo const* sp = sSpellMgr.getSpellInfo(creature_spell_data->spells[i]);
                 if (sp == nullptr)
                     continue;
 

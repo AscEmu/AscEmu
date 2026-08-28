@@ -42,8 +42,6 @@ std::vector<NameGenData> _namegenData[3];
 
 std::map<uint32_t, WDB::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::CreatureSpellDataEntry> sCreatureSpellDataStore;
-
 SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityCostsEntry> sDurabilityCostsStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::DurabilityQualityEntry> sDurabilityQualityStore;
 
@@ -549,7 +547,17 @@ bool loadDBCs()
             }
         });
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sCreatureSpellDataStore, dbc_path, "CreatureSpellData.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::CreatureSpellDataEntry>(
+        bad_dbc_files, sCreatureSpellDataStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::CreatureSpellDataEntry& entry)
+        {
+            entry.id = raw.id;
+            for (size_t i = 0; i < entry.spells.size(); ++i)
+            {
+                entry.spells[i] = raw.spells[i];
+                entry.cooldowns[i] = raw.cooldowns[i];
+            }
+        });
 
     WDB::loadUnifiedWDBStore<WDB::Structures::CreatureFamilyEntry>(
         bad_dbc_files, sCreatureFamilyStore, dbc_path,

@@ -368,7 +368,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
                 {
                     for (uint8_t i = 0; i < 3; ++i)
                     {
-                        if (creatureSpellData->Spells[i] == srlPacket.spellId)
+                        if (creatureSpellData->spells[i] == srlPacket.spellId)
                         {
                             found = true;
                             break;

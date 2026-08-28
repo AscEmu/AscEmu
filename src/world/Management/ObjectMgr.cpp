@@ -2391,8 +2391,8 @@ void ObjectMgr::loadPetSpellCooldowns()
             if (cretureSpellData == nullptr)
                 continue;
 
-            uint32_t spellId = cretureSpellData->Spells[j];
-            uint32_t cooldown = cretureSpellData->Cooldowns[j] * 10;
+            uint32_t spellId = cretureSpellData->spells[j];
+            uint32_t cooldown = cretureSpellData->cooldowns[j] * 10;
 
             if (spellId != 0)
             {

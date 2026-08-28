@@ -1029,7 +1029,7 @@ void Pet::updateSpellList(bool onSummon/* = false*/)
     {
         if (const auto spellData = sCreatureSpellDataStore.lookupEntry(creature_properties->spelldataid))
         {
-            for (const auto& spellId : spellData->Spells)
+            for (const auto& spellId : spellData->spells)
             {
                 if (spellId == 0)
                     continue;

@@ -454,6 +454,18 @@ namespace WDB::Structures::Raw
 
     using CreatureModelDataEntryMop = CreatureModelDataEntryCata;
 
+    struct CreatureSpellDataEntryClassic
+    {
+        uint32_t id;
+        uint32_t spells[4];
+        uint32_t cooldowns[4];
+    };
+
+    using CreatureSpellDataEntryTbc = CreatureSpellDataEntryClassic;
+    using CreatureSpellDataEntryWotlk = CreatureSpellDataEntryClassic;
+    using CreatureSpellDataEntryCata = CreatureSpellDataEntryClassic;
+    using CreatureSpellDataEntryMop = CreatureSpellDataEntryClassic;
+
     struct FactionEntryClassic
     {
         uint32_t id;
