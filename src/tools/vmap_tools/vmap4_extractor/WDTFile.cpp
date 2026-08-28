@@ -101,7 +101,11 @@ ADTFile* WDTFile::getMap(int x, int z)
     if (!(x >= 0 && z >= 0 && x < 64 && z < 64))
         return nullptr;
 
+    // Cata split each ADT tile's data across up to three files
+    // (root/_obj0/_tex0); model/WMO names and placements - everything this
+    // tool reads - live in _obj0. Legacy clients have just the one file.
+    std::string const suffix = IsLegacyVmapArchiveLayout() ? ".adt" : "_obj0.adt";
     std::string const name = "World\\Maps\\" + m_filename + "\\" + m_filename + "_" +
-        std::to_string(x) + "_" + std::to_string(z) + ".adt";
+        std::to_string(x) + "_" + std::to_string(z) + suffix;
     return new ADTFile(name);
 }

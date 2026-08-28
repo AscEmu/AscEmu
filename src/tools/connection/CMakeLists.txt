@@ -1,19 +1,17 @@
 # Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-set(EXECUTABLE_NAME map_extractor)
+set(EXECUTABLE_NAME connection_patcher)
 
-file(GLOB SRC_MAPS_EXTRACTOR *.cpp *.h)
+file(GLOB SRC_CONNECTION *.cpp *.hpp)
 
 # source group.
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(${EXECUTABLE_NAME} ${SRC_MAPS_EXTRACTOR})
+add_executable(${EXECUTABLE_NAME} ${SRC_CONNECTION})
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/src/shared
-    ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
 )
 
 # include library dependencies.

@@ -20,10 +20,8 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include "mpqlib/FileLoader.hpp"
 #include "vec3d.h"
-#include "modelheaders.h"
-#include <vector>
+#include <string>
 
 class MPQFile;
 
@@ -41,7 +39,14 @@ private:
     }
     std::string m_filename;
 public:
-    ModelHeader m_header;
+    // The only four ModelHeader fields this tool ever needs - read out of
+    // whichever of ModelHeaderLegacy/ModelHeaderModern actually matches the
+    // client's M2 format (see Model::open()), since everything before them
+    // shifts byte offset between the two layouts.
+    uint32_t m_nBoundingTriangles;
+    uint32_t m_ofsBoundingTriangles;
+    uint32_t m_nBoundingVertices;
+    uint32_t m_ofsBoundingVertices;
     Vec3D* m_vertices;
     uint16_t* m_indices;
 

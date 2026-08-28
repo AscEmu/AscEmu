@@ -19,6 +19,7 @@
 
 #include "vmapexport.h"
 #include "model.h"
+#include "modelheaders.h"
 #include "wmo.h"
 #include "mpqlib/MPQFile.hpp"
 
@@ -30,9 +31,10 @@
 
 extern std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
 
-Model::Model(std::string& filename) : m_filename(filename), m_vertices(nullptr), m_indices(nullptr)
+Model::Model(std::string& filename) :
+    m_filename(filename), m_nBoundingTriangles(0), m_ofsBoundingTriangles(0),
+    m_nBoundingVertices(0), m_ofsBoundingVertices(0), m_vertices(nullptr), m_indices(nullptr)
 {
-    memset(&m_header, 0, sizeof(m_header));
 }
 
 bool Model::open()
@@ -48,19 +50,37 @@ bool Model::open()
 
     unload();
 
-    memcpy(&m_header, f.getBuffer(), sizeof(ModelHeader));
-    if (m_header.nBoundingTriangles > 0)
+    if (IsPreWotLKModelFormat())
+    {
+        ModelHeaderLegacy header;
+        memcpy(&header, f.getBuffer(), sizeof(header));
+        m_nBoundingTriangles = header.nBoundingTriangles;
+        m_ofsBoundingTriangles = header.ofsBoundingTriangles;
+        m_nBoundingVertices = header.nBoundingVertices;
+        m_ofsBoundingVertices = header.ofsBoundingVertices;
+    }
+    else
+    {
+        ModelHeaderModern header;
+        memcpy(&header, f.getBuffer(), sizeof(header));
+        m_nBoundingTriangles = header.nBoundingTriangles;
+        m_ofsBoundingTriangles = header.ofsBoundingTriangles;
+        m_nBoundingVertices = header.nBoundingVertices;
+        m_ofsBoundingVertices = header.ofsBoundingVertices;
+    }
+
+    if (m_nBoundingTriangles > 0)
     {
         f.seek(0);
-        f.seekRelative(m_header.ofsBoundingVertices);
-        m_vertices = new Vec3D[m_header.nBoundingVertices];
-        f.read(m_vertices, m_header.nBoundingVertices * 12);
-        for (auto& vertex : std::span(m_vertices, m_header.nBoundingVertices))
+        f.seekRelative(m_ofsBoundingVertices);
+        m_vertices = new Vec3D[m_nBoundingVertices];
+        f.read(m_vertices, m_nBoundingVertices * 12);
+        for (auto& vertex : std::span(m_vertices, m_nBoundingVertices))
             vertex = fixCoordSystem(vertex);
         f.seek(0);
-        f.seekRelative(m_header.ofsBoundingTriangles);
-        m_indices = new uint16_t[m_header.nBoundingTriangles];
-        f.read(m_indices, m_header.nBoundingTriangles * 2);
+        f.seekRelative(m_ofsBoundingTriangles);
+        m_indices = new uint16_t[m_nBoundingTriangles];
+        f.read(m_indices, m_nBoundingTriangles * 2);
         f.close();
     }
     else
@@ -81,7 +101,7 @@ bool Model::convertToVMapModel(const char* outFileName)
         return false;
     }
     fwrite(szRawVMAPMagic, 8, 1, output);
-    uint32_t vertexCount = m_header.nBoundingVertices;
+    uint32_t vertexCount = m_nBoundingVertices;
     fwrite(&vertexCount, sizeof(int), 1, output);
     uint32_t groupCount = 1;
     fwrite(&groupCount, sizeof(uint32_t), 1, output);
@@ -94,7 +114,7 @@ bool Model::convertToVMapModel(const char* outFileName)
     wsize = sizeof(branches) + sizeof(uint32_t) * branches;
     fwrite(&wsize, sizeof(int), 1, output);
     fwrite(&branches, sizeof(branches), 1, output);
-    uint32_t indexCount = m_header.nBoundingTriangles;
+    uint32_t indexCount = m_nBoundingTriangles;
     fwrite(&indexCount, sizeof(uint32_t), 1, output);
     fwrite("INDX", 4, 1, output);
     wsize = sizeof(uint32_t) + sizeof(unsigned short) * indexCount;

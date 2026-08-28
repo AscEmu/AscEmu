@@ -33,19 +33,58 @@ char* getPlainName(char* fileName)
     return fileName;
 }
 
-void fixNameCase(char* name, size_t len)
+namespace
 {
-    for (size_t i = 0; i < len - 3; i++)
+    // Classic/TBC/WotLK: assumes a fixed 3-character extension.
+    void fixNameCaseLegacy(char* name, size_t len)
     {
-        if (i > 0 && name[i] >= 'A' && name[i] <= 'Z' && isalpha(name[i - 1]))
+        for (size_t i = 0; i < len - 3; i++)
+        {
+            if (i > 0 && name[i] >= 'A' && name[i] <= 'Z' && isalpha(name[i - 1]))
+                name[i] |= 0x20;
+            else if ((i == 0 || !isalpha(name[i - 1])) && name[i] >= 'a' && name[i] <= 'z')
+                name[i] &= ~0x20;
+        }
+
+        // extension in lowercase
+        for (size_t i = len - 3; i < len; i++)
             name[i] |= 0x20;
-        else if ((i == 0 || !isalpha(name[i - 1])) && name[i] >= 'a' && name[i] <= 'z')
-            name[i] &= ~0x20;
     }
 
-    // extension in lowercase
-    for (size_t i = len - 3; i < len; i++)
-        name[i] |= 0x20;
+    // Cata/Mop: scans backward from the end for the extension's '.' instead
+    // of assuming a fixed length. Falls back to the legacy algorithm if the
+    // name has no '.' at all, rather than walking off the front of the
+    // buffer (a latent bug in the original Cata/Mop version).
+    void fixNameCaseModern(char* name, size_t len)
+    {
+        char* ptr = name + len - 1;
+        char* const begin = name;
+
+        for (; ptr >= begin && *ptr != '.'; --ptr)
+            *ptr |= 0x20;
+
+        if (ptr < begin)
+        {
+            fixNameCaseLegacy(name, len);
+            return;
+        }
+
+        for (; ptr >= begin; --ptr)
+        {
+            if (ptr > begin && *ptr >= 'A' && *ptr <= 'Z' && isalpha(*(ptr - 1)))
+                *ptr |= 0x20;
+            else if ((ptr == begin || !isalpha(*(ptr - 1))) && *ptr >= 'a' && *ptr <= 'z')
+                *ptr &= ~0x20;
+        }
+    }
+}
+
+void fixNameCase(char* name, size_t len)
+{
+    if (IsLegacyVmapArchiveLayout())
+        fixNameCaseLegacy(name, len);
+    else
+        fixNameCaseModern(name, len);
 }
 
 void fixNameSpaces(char* name, size_t len)
@@ -66,7 +105,7 @@ char* getExtension(char* fileName)
 
 ADTFile::ADTFile(std::string const& filename) :
     m_wmoCount(0), m_modelCount(0), m_wmoInstanceNames(nullptr), m_modelInstanceNames(nullptr),
-    m_adt(*WorldMpq, filename.c_str()), m_adtFilename(filename)
+    m_adt(*WorldMpq, filename.c_str(), IsLegacyVmapArchiveLayout()), m_adtFilename(filename)
 {
 }
 
@@ -116,14 +155,36 @@ bool ADTFile::init(uint32_t mapNum, uint32_t tileX, uint32_t tileY)
             m_modelInstanceNames = new std::string[buf.size()];
             while (p < buf.data() + buf.size())
             {
-                fixNameCase(p, strlen(p));
-                char* s = getPlainName(p);
-                fixNameSpaces(s, strlen(s));
+                // Legacy fixes case on the whole path (dir included) before
+                // capturing it, so ExtractSingleModel opens the normalized
+                // path. Modern captures the raw MMDX string first and only
+                // case-fixes the plain-name portion, so ExtractSingleModel
+                // opens the byte-for-byte original path (MPQ lookups are
+                // case-insensitive either way, so this is believed benign,
+                // but it's a real difference worth preserving exactly).
+                if (IsLegacyVmapArchiveLayout())
+                {
+                    fixNameCase(p, strlen(p));
+                    char* s = getPlainName(p);
+                    fixNameSpaces(s, strlen(s));
 
-                m_modelInstanceNames[t++] = s;
+                    m_modelInstanceNames[t++] = s;
 
-                std::string path(p);
-                ExtractSingleModel(path);
+                    std::string path(p);
+                    ExtractSingleModel(path);
+                }
+                else
+                {
+                    std::string path(p);
+
+                    char* s = getPlainName(p);
+                    fixNameCase(s, strlen(s));
+                    fixNameSpaces(s, strlen(s));
+
+                    m_modelInstanceNames[t++] = s;
+
+                    ExtractSingleModel(path);
+                }
 
                 p = p + strlen(p) + 1;
             }

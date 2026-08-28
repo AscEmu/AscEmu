@@ -20,6 +20,8 @@
 #ifndef VMAPEXPORT_H
 #define VMAPEXPORT_H
 
+#include "mpqlib/ClientVersion.hpp"
+
 #include <string>
 
 enum ModelFlags
@@ -31,6 +33,15 @@ enum ModelFlags
 
 extern const char * szWorkDirWmo;
 extern const char * szRawVMAPMagic;             // vmap magic string for extracted raw vmap data
+
+// Detected once at startup (see main()). Classic/TBC/WotLK vs Cata/Mop steer
+// which MPQ-discovery strategy runs and a few per-family output quirks;
+// Classic/TBC vs everything else additionally steers the M2 header layout
+// (see modelheaders.h) - two different boundaries, not one, so two
+// predicates rather than a single "legacy" flag.
+extern mpqlib::ClientVersion gClientVersion;
+bool IsLegacyVmapArchiveLayout();
+bool IsPreWotLKModelFormat();
 
 bool FileExists(const char * file);
 void strToLower(char* str);

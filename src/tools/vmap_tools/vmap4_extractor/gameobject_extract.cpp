@@ -27,21 +27,28 @@
 #include <stdio.h>
 
 extern std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
+extern std::unique_ptr<mpqlib::MpqPatchChain> LocaleMpq;
 
 bool ExtractSingleModel(std::string& fname)
 {
-    char* name = getPlainName((char*)fname.c_str());
-    char* ext = getExtension(name);
-
-    // < 3.1.0 ADT MMDX section store filename.mdx filenames for corresponded .m2 file
-    if (!strcmp(ext, ".mdx"))
+    // < 3.1.0 ADT MMDX section stores filename.mdx for the corresponding .m2 file.
+    if (fname.length() >= 4 && fname.substr(fname.length() - 4, 4) == ".mdx")
     {
-        // replace .mdx -> .m2
         fname.erase(fname.length()-2,2);
         fname.append("2");
     }
-    // >= 3.1.0 ADT MMDX section store filename.m2 filenames for corresponded .m2 file
-    // nothing do
+    // >= 3.1.0 ADT MMDX section stores filename.m2 directly - nothing to do.
+
+    // The modern (Cata+) ADT MMDX path intentionally passes the raw,
+    // un-normalized MMDX string here (see ADTFile::init()) - case/space-fix
+    // the plain-name portion for the on-disk output filename while still
+    // opening the model from the MPQ under its original path. A no-op
+    // re-application for callers (legacy ADT MMDX, ExtractGameobjectModels)
+    // that already normalized their path before calling.
+    std::string originalName = fname;
+    char* name = getPlainName(const_cast<char*>(fname.c_str()));
+    fixNameCase(name, strlen(name));
+    fixNameSpaces(name, strlen(name));
 
     std::string output(szWorkDirWmo);
     output += "/";
@@ -50,7 +57,7 @@ bool ExtractSingleModel(std::string& fname)
     if (FileExists(output.c_str()))
         return true;
 
-    Model mdl(fname);
+    Model mdl(originalName);
     if (!mdl.open())
         return false;
 
@@ -60,7 +67,7 @@ bool ExtractSingleModel(std::string& fname)
 void ExtractGameobjectModels()
 {
     printf("Extracting GameObject models...");
-    DBCFile dbc(*WorldMpq, "DBFilesClient\\GameObjectDisplayInfo.dbc");
+    DBCFile dbc(IsLegacyVmapArchiveLayout() ? *WorldMpq : *LocaleMpq, "DBFilesClient\\GameObjectDisplayInfo.dbc");
     if(!dbc.open())
     {
         printf("Fatal error: Invalid GameObjectDisplayInfo.dbc file format!\n");

@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <cstdint>
+#include <filesystem>
 #include <optional>
 
 namespace mpqlib
@@ -43,4 +44,12 @@ namespace mpqlib
     // over-release with no overlap between expansions) rather than requiring
     // an exact match. Returns std::nullopt for build == 0 (never detected).
     std::optional<ClientVersion> clientVersionFromBuild(uint32_t build);
+
+    // Scans the Wow.exe found directly inside clientRoot for one of a fixed
+    // set of known build-number byte patterns (the same approach map_extractor
+    // has always used to tell client versions apart before opening any MPQ -
+    // needed because which MPQs/patch chain layout to even look for already
+    // depends on the version). Returns std::nullopt if no Wow.exe is found in
+    // clientRoot, or its build doesn't match any known pattern.
+    std::optional<ClientVersion> detectClientVersion(std::filesystem::path const& clientRoot);
 }

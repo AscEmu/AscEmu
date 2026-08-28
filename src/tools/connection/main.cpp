@@ -9,6 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "PatternsMac.hpp"
 #include "Patches.hpp"
 
+#include "mpqlib/ClientVersion.hpp"
+
 #include <iostream>
 #include <filesystem>
 
@@ -29,9 +31,25 @@ int main(int argc, char** argv)
     if (argc != 2)
         return 0;
 
+    // The patch patterns below only match Mist of Pandaria's client binary -
+    // older clients (Classic through Cata) don't need this patch at all and
+    // would just silently produce an unmodified "patched" copy if we let the
+    // no-match-found patch() calls fall through, so detect the version up
+    // front and refuse cleanly instead.
+    const std::filesystem::path targetBinary{ argv[1] };
+    auto clientRoot = targetBinary.parent_path();
+    if (clientRoot.empty())
+        clientRoot = ".";
+    auto detected = mpqlib::detectClientVersion(clientRoot);
+    if (!detected || *detected < mpqlib::ClientVersion::MistsOfPandaria)
+    {
+        std::cout << "Nothing to patch\n";
+        return 0;
+    }
+
     try
     {
-        auto patcher = cp::Patcher{ std::filesystem::path{ argv[1] } };
+        auto patcher = cp::Patcher{ targetBinary };
 
         std::cout << "AE Connection Patcher\n";
         std::cout << "Press Enter to patch...\n";

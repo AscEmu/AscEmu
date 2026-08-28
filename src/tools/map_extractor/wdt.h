@@ -20,7 +20,7 @@
 #ifndef WDT_H
 #define WDT_H
 
-#include "mpqlib/FileLoader.hpp"
+#include <cstdint>
 
 //**************************************************************************************
 // WDT file class and structures
@@ -29,64 +29,23 @@
 
 #pragma pack(push, 1)
 
-class wdt_MWMO{
-    union{
-        uint32_t fcc;
-        char   fcc_txt[4];
-    };
-public:
-    uint32_t size;
-    bool prepareLoadedData();
-};
-
-class wdt_MPHD{
-    union{
+class wdt_MAIN
+{
+    union
+    {
         uint32_t fcc;
         char   fcc_txt[4];
     };
 public:
     uint32_t size;
 
-    uint32_t data1;
-    uint32_t data2;
-    uint32_t data3;
-    uint32_t data4;
-    uint32_t data5;
-    uint32_t data6;
-    uint32_t data7;
-    uint32_t data8;
-    bool   prepareLoadedData();
-};
-
-class wdt_MAIN{
-    union{
-        uint32_t fcc;
-        char   fcc_txt[4];
-    };
-public:
-    uint32_t size;
-
-    struct adtData{
-        uint32_t exist;
+    struct adtData
+    {
+        uint32_t flag;
         uint32_t data1;
     } adt_list[64][64];
-
-    bool   prepareLoadedData();
-};
-
-class WDT_file : public FileLoader{
-public:
-    bool   prepareLoadedData();
-
-    WDT_file();
-    ~WDT_file();
-    void free();
-
-    wdt_MPHD *mphd;
-    wdt_MAIN *main;
-    wdt_MWMO *wmo;
 };
 
 #pragma pack(pop)
 
-#endif
+#endif  //WDT_H
