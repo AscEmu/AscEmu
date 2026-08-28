@@ -65,7 +65,7 @@ namespace AscEmu::Packets
                 packet << uint8_t(0);                             // Amount of known talents (will be filled later)
 
                 WDB::Structures::CreatureFamilyEntry const* cfe = sCreatureFamilyStore.lookupEntry(pet->GetCreatureProperties()->Family);
-                if (!cfe || static_cast<int32_t>(cfe->talenttree) < 0)
+                if (!cfe || static_cast<int32_t>(cfe->talentTree) < 0)
                     return false;
 
                 // go through talent trees
@@ -76,7 +76,7 @@ namespace AscEmu::Packets
                         continue;
 
                     // check if we match talent tab
-                    if (!(talent_tab->PetTalentMask & (1 << cfe->talenttree)))
+                    if (!(talent_tab->PetTalentMask & (1 << cfe->talentTree)))
                         continue;
 
                     for (uint32_t t_id = 1; t_id < sTalentStore.getNumRows(); t_id++)
