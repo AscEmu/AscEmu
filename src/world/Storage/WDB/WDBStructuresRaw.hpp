@@ -141,6 +141,13 @@ namespace WDB::Structures::Raw
     using BankBagSlotPricesEntryCata = BankBagSlotPricesEntryClassic;
     using BankBagSlotPricesEntryMop = BankBagSlotPricesEntryClassic;
 
+    struct BannedAddOnsEntryCata
+    {
+        uint32_t id;
+    };
+
+    using BannedAddOnsEntryMop = BannedAddOnsEntryCata;
+
     struct BarberShopStyleEntryWotlkCataMop
     {
         uint32_t id;

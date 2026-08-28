@@ -260,8 +260,9 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRuneCostEntry> sSpellRuneCostStore;
 #endif
 
+    inline SERVER_DECL WDB::WDBStore<WDB::Structures::BannedAddOnsEntry> sBannedAddOnsStore;
+
 #if VERSION_STRING >= Cata
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BannedAddOnsEntry> sBannedAddOnsStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrPowerTypesEntry> sChrPowerTypesEntry;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseHPByClassEntry> sGtOCTBaseHPByClassStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseMPByClassEntry> sGtOCTBaseMPByClassStore;

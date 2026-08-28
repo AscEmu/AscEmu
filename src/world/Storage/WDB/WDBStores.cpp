@@ -144,8 +144,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRuneCostEntry> sSpellRuneCos
 #endif
 
 #if VERSION_STRING >= Cata
-SERVER_DECL WDB::WDBContainer<WDB::Structures::BannedAddOnsEntry> sBannedAddOnsStore;
-
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrPowerTypesEntry> sChrPowerTypesEntry;
 uint8_t powerIndexByClass[MAX_PLAYER_CLASSES][TOTAL_PLAYER_POWER_TYPES];
 
@@ -970,8 +968,15 @@ bool loadDBCs()
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Load multi version specific dbcs available since WotLK
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::BannedAddOnsEntry>(
+        bad_dbc_files, sBannedAddOnsStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::BannedAddOnsEntry& entry)
+        {
+            entry.id = raw.id;
+        });
+
 #if VERSION_STRING >= Cata
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sBannedAddOnsStore, dbc_path, "BannedAddOns.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChrPowerTypesEntry, dbc_path, "ChrClassesXPowerTypes.dbc");
     // note: generate powerIndex into new array
     {

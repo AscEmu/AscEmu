@@ -58,8 +58,7 @@ namespace WDB
     };
 
     template <>
-    struct DbcTraits<Structures::AuctionHouseEntry>
-        : DbcVersionLayouts<
+    struct DbcTraits<Structures::AuctionHouseEntry> : DbcVersionLayouts<
             Structures::Raw::AuctionHouseEntryClassic,
             Structures::Raw::AuctionHouseEntryTbc,
             Structures::Raw::AuctionHouseEntryWotlk,
@@ -70,8 +69,7 @@ namespace WDB
     };
 
     template <>
-    struct DbcTraits<Structures::BankBagSlotPricesEntry>
-        : DbcVersionLayouts<
+    struct DbcTraits<Structures::BankBagSlotPricesEntry> : DbcVersionLayouts<
             Structures::Raw::BankBagSlotPricesEntryClassic,
             Structures::Raw::BankBagSlotPricesEntryTbc,
             Structures::Raw::BankBagSlotPricesEntryWotlk,
@@ -79,6 +77,17 @@ namespace WDB
             Structures::Raw::BankBagSlotPricesEntryMop>
     {
         static constexpr char const* filename = "BankBagSlotPrices.dbc";
+    };
+
+    template <>
+    struct DbcTraits<Structures::BannedAddOnsEntry> : DbcVersionLayouts<
+            UnsupportedVersion, // Classic
+            UnsupportedVersion, // TBC
+            UnsupportedVersion, // WotLK
+            Structures::Raw::BannedAddOnsEntryCata,
+            Structures::Raw::BannedAddOnsEntryMop>
+    {
+        static constexpr char const* filename = "BannedAddOns.dbc";
     };
 
     template <>
@@ -149,8 +158,7 @@ namespace WDB
     };
 
     template <>
-    struct DbcTraits<Structures::CreatureDisplayInfoEntry>
-        : DbcVersionLayouts<
+    struct DbcTraits<Structures::CreatureDisplayInfoEntry> : DbcVersionLayouts<
             Structures::Raw::CreatureDisplayInfoEntryClassic,
             Structures::Raw::CreatureDisplayInfoEntryTbc,
             Structures::Raw::CreatureDisplayInfoEntryWotlk,

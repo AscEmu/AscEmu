@@ -216,6 +216,11 @@ namespace WDB::Structures
         uint32_t price{0};
     };
 
+    struct BannedAddOnsEntry
+    {
+        uint32_t id{0};
+    };
+
     struct BarberShopStyleEntry
     {
         uint32_t id{0};
@@ -961,17 +966,6 @@ namespace WDB::Structures
 #if VERSION_STRING >= Mop
         uint32_t criteriaTreeID;
 #endif
-    };
-#endif
-
-#if VERSION_STRING >= Cata
-    struct BannedAddOnsEntry
-    {
-        uint32_t Id;                                                // 0
-        //uint32_t nameMD5[4];                                      // 1-4
-        //uint32_t versionMD5[4];                                   // 5-8
-        //uint32_t timestamp;                                       // 9
-        //uint32_t state;                                           // 10
     };
 #endif
 

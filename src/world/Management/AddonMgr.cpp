@@ -4,21 +4,17 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "AddonMgr.h"
-
-#include <zlib.h>
-#include <fstream>
-#include <filesystem>
-#include <fmt/format.h>
-
-#include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Cryptography/MD5.hpp"
 #include "Database/Field.hpp"
 #include "Database/Database.hpp"
 #include "Logging/Logger.hpp"
 #include "Server/DatabaseDefinition.hpp"
-#include "Server/Opcodes.hpp"
-#include "Server/WorldSession.h"
 #include "Storage/WDB/WDBStores.hpp"
+
+#include <cstdint>
+#include <filesystem>
+#include <list>
+#include <string>
 
 AddonMgr& AddonMgr::getInstance()
 {
@@ -45,7 +41,8 @@ void AddonMgr::LoadFromDB()
     {
         uint32_t knownAddonsCount = 0;
         uint32_t bannedAddonsCount = 0;
-        uint32_t dbcMaxBannedAddon = 0;
+
+        auto const dbcMaxBannedAddon = static_cast<uint32_t>(sBannedAddOnsStore.getNumRows());
 
         do
         {
@@ -53,26 +50,16 @@ void AddonMgr::LoadFromDB()
             bool banned = fields[3].asUint32() > 0;
 
             // All Known addons
-            {
-                std::string name = fields[1].asCString();
-                uint32_t crc = fields[2].asUint32();
-
-                mKnownAddons.emplace_back(SavedAddon(name, crc));
-
-                ++knownAddonsCount;
-            }
+            std::string name = fields[1].asCString();
+            uint32_t crc = fields[2].asUint32();
 
             // Banned addons
             if (banned)
             {
-#if VERSION_STRING >= Cata
-                dbcMaxBannedAddon = sBannedAddOnsStore.getNumRows();
-#endif
                 BannedAddon addon;
                 addon.id = fields[0].asUint32() + dbcMaxBannedAddon;
-                addon.timestamp = uint32_t(fields[5].asUint64());
+                addon.timestamp = static_cast<uint32_t>(fields[4].asUint64());
 
-                std::string name = fields[1].asCString();
                 std::string version = fields[6].asCString();
 
                 MD5(reinterpret_cast<uint8_t const*>(name.c_str()), name.length(), addon.nameMD5);
@@ -82,10 +69,12 @@ void AddonMgr::LoadFromDB()
 
                 ++bannedAddonsCount;
             }
-        } while(addonsResult->nextRow());
+
+            mKnownAddons.emplace_back(std::move(name), crc);
+            ++knownAddonsCount;
+        } while (addonsResult->nextRow());
 
         sLogger.debug("Loaded {} addons ({} banned) from table `clientaddons` in {} ms", knownAddonsCount, bannedAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-
     }
     else
     {
@@ -97,7 +86,7 @@ void AddonMgr::SaveAddon(AddonEntry const& addon)
 {
     CharacterDatabase.execute("REPLACE INTO clientaddons(name, crc) VALUES('%s', %u )", addon.name.c_str(), addon.crc);
 
-    mKnownAddons.emplace_back(SavedAddon(addon.name, addon.crc));
+    mKnownAddons.emplace_back(std::move(addon.name), addon.crc);
 }
 
 SavedAddon const* AddonMgr::getAddonInfoForAddonName(const std::string& name)
