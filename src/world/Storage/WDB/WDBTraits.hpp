@@ -257,6 +257,17 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::EmotesTextEntry> : DbcVersionLayouts<
+            Structures::Raw::EmotesTextEntryClassic,
+            Structures::Raw::EmotesTextEntryTbc,
+            Structures::Raw::EmotesTextEntryWotlk,
+            Structures::Raw::EmotesTextEntryCata,
+            Structures::Raw::EmotesTextEntryMop>
+    {
+        static constexpr char const* filename = "EmotesText.dbc";
+    };
+
+    template <>
     struct DbcTraits<Structures::FactionTemplateEntry> : DbcVersionLayouts<
             Structures::Raw::FactionTemplateEntryAll,
             Structures::Raw::FactionTemplateEntryAll,

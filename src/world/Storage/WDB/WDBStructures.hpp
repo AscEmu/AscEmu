@@ -367,6 +367,12 @@ namespace WDB::Structures
         float qualityModifier{0.0f};
     };
 
+    struct EmotesTextEntry
+    {
+        uint32_t id{0};
+        std::array<uint32_t, 6> textId{0, 0, 0, 0, 0, 0};
+    };
+
     struct FactionEntry
     {
         uint32_t id{0};
@@ -1081,29 +1087,6 @@ namespace WDB::Structures
         //uint32_t unk;                                             // 7
     };
 #endif
-
-    struct EmotesTextEntry
-    {
-        uint32_t Id;                                                // 0
-        //uint32_t name;                                            // 1
-        uint32_t textid;                                            // 2
-        uint32_t textid2;                                           // 3
-        uint32_t textid3;                                           // 4
-        uint32_t textid4;                                           // 5
-        //uint32_t unk1;                                            // 6
-        uint32_t textid5;                                           // 7
-        //uint32_t unk2;                                            // 8
-        uint32_t textid6;                                           // 9
-        //uint32_t unk3;                                            // 10
-        //uint32_t unk4;                                            // 11
-        //uint32_t unk5;                                            // 12
-        //uint32_t unk6;                                            // 13
-        //uint32_t unk7;                                            // 14
-        //uint32_t unk8;                                            // 15
-        //uint32_t unk9;                                            // 16
-        //uint32_t unk10;                                           // 17
-        //uint32_t unk11;                                           // 18
-    };
 
     struct GameObjectDisplayInfoEntry
     {

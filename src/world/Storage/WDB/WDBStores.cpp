@@ -42,8 +42,6 @@ std::vector<NameGenData> _namegenData[3];
 
 std::map<uint32_t, WDB::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::EmotesTextEntry> sEmotesTextStore;
-
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GameObjectDisplayInfoEntry> sGameObjectDisplayInfoStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemSetEntry> sItemSetStore;
@@ -606,7 +604,16 @@ bool loadDBCs()
             entry.qualityModifier = raw.qualityModifier;
         });
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sEmotesTextStore, dbc_path, "EmotesText.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::EmotesTextEntry>(
+        bad_dbc_files, sEmotesTextStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::EmotesTextEntry& entry)
+        {
+            entry.id = raw.id;
+            for (size_t i = 0; i < entry.textId.size(); ++i)
+            {
+                entry.textId[i] = raw.textId[i];
+            }
+        });
 
     WDB::loadUnifiedWDBStore<WDB::Structures::FactionEntry>(
         bad_dbc_files, sFactionStore, dbc_path,

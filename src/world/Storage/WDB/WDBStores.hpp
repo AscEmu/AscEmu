@@ -159,9 +159,7 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::CreatureSpellDataEntry> sCreat
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::CreatureFamilyEntry> sCreatureFamilyStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::DurabilityCostsEntry> sDurabilityCostsStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::DurabilityQualityEntry> sDurabilityQualityStore;
-
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::EmotesTextEntry> sEmotesTextStore;
-
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::EmotesTextEntry> sEmotesTextStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::FactionEntry> sFactionStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::FactionTemplateEntry> sFactionTemplateStore;
 

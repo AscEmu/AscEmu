@@ -441,48 +441,49 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
 
     if (const auto emoteTextEntry = sEmotesTextStore.lookupEntry(srlPacket.text_emote))
     {
-        sHookInterface.OnEmote(_player, emoteTextEntry->textid, unit);
+        uint32_t const primaryTextId = emoteTextEntry->textId[0];
+        sHookInterface.OnEmote(_player, primaryTextId, unit);
         if (unit)
         {
             if (unit->IsInWorld() && unit->isCreature() && dynamic_cast<Creature*>(unit)->GetScript())
-                dynamic_cast<Creature*>(unit)->GetScript()->OnEmote(_player, static_cast<EmoteType>(emoteTextEntry->textid));
+                dynamic_cast<Creature*>(unit)->GetScript()->OnEmote(_player, static_cast<EmoteType>(primaryTextId));
         }
 
     #if VERSION_STRING < Cata
-        switch (emoteTextEntry->textid)
+        switch (primaryTextId)
         {
             case EMOTE_STATE_SLEEP:
             case EMOTE_STATE_SIT:
             case EMOTE_STATE_KNEEL:
             case EMOTE_STATE_DANCE:
-            {
-                _player->setEmoteState(emoteTextEntry->textid);
-            } break;
+                {
+                    _player->setEmoteState(primaryTextId);
+                } break;
             default:
                 break;
         }
     #else // >=Cata
-        switch (emoteTextEntry->textid)
+        switch (primaryTextId)
         {
             case EMOTE_STATE_READ:
             case EMOTE_STATE_DANCE:
-            {
-                _player->setEmoteState(emoteTextEntry->textid);
-            } break;
+                {
+                    _player->setEmoteState(primaryTextId);
+                } break;
             case EMOTE_STATE_SLEEP:
             case EMOTE_STATE_SIT:
             case EMOTE_STATE_KNEEL:
             case EMOTE_ONESHOT_NONE:
                 break;
             default:
-            {
-                _player->emote(static_cast<EmoteType>(emoteTextEntry->textid));
-            } break;
+                {
+                    _player->emote(static_cast<EmoteType>(primaryTextId));
+                } break;
         }
     #endif
 
     #if VERSION_STRING < Cata
-        SmsgEmote sendEmote(emoteTextEntry->textid, _player->getGuid());
+        SmsgEmote sendEmote(primaryTextId, _player->getGuid());
         PacketBroadcast::sendToSet(*_player, sendEmote, true);
     #endif
         SmsgTextEmote sendTextEmote(nameLength, unitName, srlPacket.text_emote, _player->getGuid(), srlPacket.numEmote, targetGuid);

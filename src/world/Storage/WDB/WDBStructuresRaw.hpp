@@ -488,6 +488,17 @@ namespace WDB::Structures::Raw
     using DurabilityQualityEntryCata = DurabilityQualityEntryClassic;
     using DurabilityQualityEntryMop = DurabilityQualityEntryClassic;
 
+    struct EmotesTextEntryClassic
+    {
+        uint32_t id;
+        uint32_t textId[6];
+    };
+
+    using EmotesTextEntryTbc = EmotesTextEntryClassic;
+    using EmotesTextEntryWotlk = EmotesTextEntryClassic;
+    using EmotesTextEntryCata = EmotesTextEntryClassic;
+    using EmotesTextEntryMop = EmotesTextEntryClassic;
+
     struct FactionEntryClassic
     {
         uint32_t id;
