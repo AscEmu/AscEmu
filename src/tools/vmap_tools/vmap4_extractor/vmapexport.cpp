@@ -44,6 +44,7 @@
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
+#include <execution>
 #include <filesystem>
 #include <iostream>
 #include <memory>
@@ -100,6 +101,7 @@ bool preciseVectorData = false;
 
 const char* szWorkDirWmo = "./Buildings";
 const char* szRawVMAPMagic = "VMAP041";
+std::mutex g_dirFileMutex;
 
 // Only meaningful for Cata+: which incremental wow-update patch build to
 // extract up to, and the corresponding base-MPQ/patch-build list. Kept
@@ -324,6 +326,21 @@ bool ExtractSingleWmo(std::string& fname)
     return true;
 }
 
+namespace
+{
+    // A single discovered ADT tile, ready for the heavy ADTFile::init() work
+    // (MPQ decompression, model/wmo extraction, dir_bin writes) to run on
+    // any worker thread - discovery itself (WDT.getMap()) stays sequential
+    // since it isn't the expensive part and there's no need to make it safe
+    // for concurrent use.
+    struct AdtTileWorkItem
+    {
+        int x = 0;
+        int y = 0;
+        ADTFile* adt = nullptr;
+    };
+}
+
 void ParsMapFiles()
 {
     char fn[512];
@@ -335,21 +352,20 @@ void ParsMapFiles()
         WDTFile WDT(fn, map_ids[i].name);
         if (WDT.init(id, map_ids[i].id))
         {
-            printf("Processing Map %u\n[", map_ids[i].id);
+            std::vector<AdtTileWorkItem> tiles;
             for (int x = 0; x < 64; ++x)
-            {
                 for (int y = 0; y < 64; ++y)
-                {
                     if (ADTFile* ADT = WDT.getMap(x, y))
-                    {
-                        ADT->init(map_ids[i].id, x, y);
-                        delete ADT;
-                    }
-                }
-                printf("#");
-                fflush(stdout);
-            }
-            printf("]\n");
+                        tiles.push_back({ x, y, ADT });
+
+            printf("Processing Map %u (%zu tiles)\n", map_ids[i].id, tiles.size());
+
+            uint32_t const mapId = map_ids[i].id;
+            std::for_each(std::execution::par, tiles.begin(), tiles.end(), [mapId](AdtTileWorkItem const& item)
+            {
+                item.adt->init(mapId, item.x, item.y);
+                delete item.adt;
+            });
         }
     }
 }

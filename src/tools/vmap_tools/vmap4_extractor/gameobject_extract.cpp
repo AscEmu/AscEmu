@@ -24,10 +24,39 @@
 
 #include <algorithm>
 #include <memory>
+#include <mutex>
 #include <stdio.h>
+#include <unordered_map>
 
 extern std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
 extern std::unique_ptr<mpqlib::MpqPatchChain> LocaleMpq;
+
+namespace
+{
+    // ExtractSingleModel's FileExists()-then-create check is only race-free
+    // when calls are sequential. With ADT tiles processed in parallel, many
+    // tiles commonly reference the very same model (a shared tree/rock
+    // doodad) - sometimes via genuinely different source paths (case
+    // variants, or a distinct MPQ entry) that normalize to the same output
+    // filename, where one variant can fail to open while another succeeds.
+    // A per-output-path mutex (rather than std::call_once) preserves the
+    // original sequential fallback behavior under concurrency: only one
+    // thread attempts extraction for a given filename at a time, but a
+    // later caller still retries with its own input if the file is still
+    // missing, instead of being permanently skipped because some earlier,
+    // differently-sourced attempt already ran and failed.
+    std::mutex g_modelExtractionRegistryMutex;
+    std::unordered_map<std::string, std::unique_ptr<std::mutex>> g_modelExtractionLocks;
+
+    std::mutex& LockForModelOutput(std::string const& outputPath)
+    {
+        std::lock_guard<std::mutex> lock(g_modelExtractionRegistryMutex);
+        auto& slot = g_modelExtractionLocks[outputPath];
+        if (!slot)
+            slot = std::make_unique<std::mutex>();
+        return *slot;
+    }
+}
 
 bool ExtractSingleModel(std::string& fname)
 {
@@ -54,6 +83,13 @@ bool ExtractSingleModel(std::string& fname)
     output += "/";
     output += name;
 
+    if (FileExists(output.c_str()))
+        return true;
+
+    std::lock_guard<std::mutex> lock(LockForModelOutput(output));
+
+    // Re-check: another thread may have finished extracting this exact
+    // output while we were waiting for the lock.
     if (FileExists(output.c_str()))
         return true;
 

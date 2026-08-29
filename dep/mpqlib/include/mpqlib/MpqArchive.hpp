@@ -23,6 +23,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 #include <fstream>
+#include <memory>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -102,6 +104,15 @@ namespace mpqlib
         std::string m_path;
         mutable std::ifstream m_file;
         bool m_isOpen = false;
+
+        // Guards m_file's seek+read sequence in readFile()/readSectorOffsetTable() -
+        // multiple threads calling readFile() concurrently on the same archive
+        // instance (e.g. several worker threads each converting a different ADT
+        // tile out of the same world.MPQ) would otherwise race on the shared
+        // stream's position. A unique_ptr rather than a plain std::mutex member
+        // because std::mutex isn't movable and MpqPatchChain stores archives in a
+        // std::vector that needs to move elements on growth.
+        mutable std::unique_ptr<std::mutex> m_fileMutex;
 
         uint32_t m_hashTableCount = 0;
         uint32_t m_blockTableCount = 0;

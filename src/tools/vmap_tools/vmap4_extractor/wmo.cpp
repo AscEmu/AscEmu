@@ -476,19 +476,26 @@ WMOInstance::WMOInstance(MPQFile& f, char const* wmoInstName, uint32_t mapID, ui
     uint32_t flags = MOD_HAS_BOUND;
     if (tileX == 65 && tileY == 65)
         flags |= MOD_WORLDSPAWN;
-    //write mapID, tileX, tileY, Flags, ID, Pos, Rot, Scale, Bound_lo, Bound_hi, name
-    fwrite(&mapID, sizeof(uint32_t), 1, pDirfile);
-    fwrite(&tileX, sizeof(uint32_t), 1, pDirfile);
-    fwrite(&tileY, sizeof(uint32_t), 1, pDirfile);
-    fwrite(&flags, sizeof(uint32_t), 1, pDirfile);
-    fwrite(&adtId, sizeof(uint16_t), 1, pDirfile);
-    fwrite(&m_id, sizeof(uint32_t), 1, pDirfile);
-    fwrite(&m_pos, sizeof(float), 3, pDirfile);
-    fwrite(&m_rot, sizeof(float), 3, pDirfile);
-    fwrite(&scale, sizeof(float), 1, pDirfile);
-    fwrite(&m_pos2, sizeof(float), 3, pDirfile);
-    fwrite(&m_pos3, sizeof(float), 3, pDirfile);
     uint32_t nameLength = static_cast<uint32_t>(strlen(wmoInstName));
-    fwrite(&nameLength, sizeof(uint32_t), 1, pDirfile);
-    fwrite(wmoInstName, sizeof(char), nameLength, pDirfile);
+
+    //write mapID, tileX, tileY, Flags, ID, Pos, Rot, Scale, Bound_lo, Bound_hi, name
+    {
+        // See ModelInstance's constructor for why this needs to be locked:
+        // every ADT tile writes to the same dir_bin through its own FILE*.
+        std::lock_guard<std::mutex> lock(g_dirFileMutex);
+        fwrite(&mapID, sizeof(uint32_t), 1, pDirfile);
+        fwrite(&tileX, sizeof(uint32_t), 1, pDirfile);
+        fwrite(&tileY, sizeof(uint32_t), 1, pDirfile);
+        fwrite(&flags, sizeof(uint32_t), 1, pDirfile);
+        fwrite(&adtId, sizeof(uint16_t), 1, pDirfile);
+        fwrite(&m_id, sizeof(uint32_t), 1, pDirfile);
+        fwrite(&m_pos, sizeof(float), 3, pDirfile);
+        fwrite(&m_rot, sizeof(float), 3, pDirfile);
+        fwrite(&scale, sizeof(float), 1, pDirfile);
+        fwrite(&m_pos2, sizeof(float), 3, pDirfile);
+        fwrite(&m_pos3, sizeof(float), 3, pDirfile);
+        fwrite(&nameLength, sizeof(uint32_t), 1, pDirfile);
+        fwrite(wmoInstName, sizeof(char), nameLength, pDirfile);
+        fflush(pDirfile);
+    }
 }

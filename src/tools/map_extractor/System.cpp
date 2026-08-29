@@ -35,6 +35,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <execution>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -608,24 +609,28 @@ struct ModernLiquidHeader
 float selectUInt8StepStore(float maxDiff) { return 255 / maxDiff; }
 float selectUInt16StepStore(float maxDiff) { return 65535 / maxDiff; }
 
-// Temporary grid data store
-uint16_t area_ids[ADT_CELLS_PER_GRID][ADT_CELLS_PER_GRID];
+// Temporary grid data store. thread_local: ConvertADT() fully resets and
+// reuses these on every call (never reads stale state from a previous
+// call), so giving each worker thread its own copy is all that's needed to
+// make concurrent ConvertADT() calls (one per ADT tile) safe - no locking,
+// since nothing here is ever shared or read by another thread.
+thread_local uint16_t area_ids[ADT_CELLS_PER_GRID][ADT_CELLS_PER_GRID];
 
-float V8[ADT_GRID_SIZE][ADT_GRID_SIZE];
-float V9[ADT_GRID_SIZE + 1][ADT_GRID_SIZE + 1];
-uint16_t uint16_V8[ADT_GRID_SIZE][ADT_GRID_SIZE];
-uint16_t uint16_V9[ADT_GRID_SIZE + 1][ADT_GRID_SIZE + 1];
-uint8_t  uint8_V8[ADT_GRID_SIZE][ADT_GRID_SIZE];
-uint8_t  uint8_V9[ADT_GRID_SIZE + 1][ADT_GRID_SIZE + 1];
+thread_local float V8[ADT_GRID_SIZE][ADT_GRID_SIZE];
+thread_local float V9[ADT_GRID_SIZE + 1][ADT_GRID_SIZE + 1];
+thread_local uint16_t uint16_V8[ADT_GRID_SIZE][ADT_GRID_SIZE];
+thread_local uint16_t uint16_V9[ADT_GRID_SIZE + 1][ADT_GRID_SIZE + 1];
+thread_local uint8_t  uint8_V8[ADT_GRID_SIZE][ADT_GRID_SIZE];
+thread_local uint8_t  uint8_V9[ADT_GRID_SIZE + 1][ADT_GRID_SIZE + 1];
 
-uint16_t liquid_entry[ADT_CELLS_PER_GRID][ADT_CELLS_PER_GRID];
-uint8_t liquid_flags[ADT_CELLS_PER_GRID][ADT_CELLS_PER_GRID];
-bool  liquid_show[ADT_GRID_SIZE][ADT_GRID_SIZE];
-float liquid_height[ADT_GRID_SIZE + 1][ADT_GRID_SIZE + 1];
-uint16_t holes[ADT_CELLS_PER_GRID][ADT_CELLS_PER_GRID];
+thread_local uint16_t liquid_entry[ADT_CELLS_PER_GRID][ADT_CELLS_PER_GRID];
+thread_local uint8_t liquid_flags[ADT_CELLS_PER_GRID][ADT_CELLS_PER_GRID];
+thread_local bool  liquid_show[ADT_GRID_SIZE][ADT_GRID_SIZE];
+thread_local float liquid_height[ADT_GRID_SIZE + 1][ADT_GRID_SIZE + 1];
+thread_local uint16_t holes[ADT_CELLS_PER_GRID][ADT_CELLS_PER_GRID];
 
-int16_t flight_box_max[3][3];
-int16_t flight_box_min[3][3];
+thread_local int16_t flight_box_max[3][3];
+thread_local int16_t flight_box_min[3][3];
 
 LiquidVertexFormatType adt_MH2O::GetLiquidVertexFormat(adt_liquid_instance const* liquidInstance) const
 {
@@ -685,6 +690,14 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
     memset(liquid_flags, 0, sizeof(liquid_flags));
     memset(liquid_entry, 0, sizeof(liquid_entry));
     memset(holes, 0, sizeof(holes));
+    // liquid_height's outer border row/column (index ADT_GRID_SIZE) is never
+    // written by chunk parsing nor by the later per-cell reset loop (which
+    // only covers [0, ADT_GRID_SIZE)), so it must be pre-filled here - the
+    // old single-threaded code got away without this only because it always
+    // inherited the same fixed-order previous tile's leftover value; with
+    // thread_local storage shared across an unpredictable sequence of tiles
+    // per worker thread, that leftover value is no longer deterministic.
+    std::fill_n(&liquid_height[0][0], sizeof(liquid_height) / sizeof(float), CONF_use_minHeight);
 
     bool hasHoles = false;
     bool hasFlightBox = false;
@@ -1304,11 +1317,23 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
     return true;
 }
 
+namespace
+{
+    struct MapTileWorkItem
+    {
+        std::string mpqFilename;
+        std::string outputFilename;
+        uint32_t y;
+        uint32_t x;
+        bool ignoreDeepWater;
+    };
+}
+
 void ExtractMapsFromMpq(uint32_t build)
 {
+    char mpq_map_name[1024];
     char mpq_filename[1024];
     char output_filename[1024];
-    char mpq_map_name[1024];
 
     printf("Extracting maps...\n");
 
@@ -1330,10 +1355,19 @@ void ExtractMapsFromMpq(uint32_t build)
     path += "/maps/";
     CreateDir(path);
 
-    printf("Convert map files\n");
+    // Discovering which tiles exist (one small WDT read per map) is cheap
+    // and stays sequential; converting each tile's ADT into a .map file is
+    // the expensive, fully independent-per-tile part, so that's the part
+    // that runs across all available cores below. mpqlib::MpqArchive's
+    // internal per-archive mutex is what makes concurrent ADT reads safe;
+    // the area/height/liquid scratch buffers ConvertADT() uses are
+    // thread_local for the same reason.
+    std::vector<MapTileWorkItem> workItems;
+
+    printf("Discovering tiles\n");
     for (uint32_t z = 0; z < map_count; ++z)
     {
-        printf("Extract %s (%u/%u)                  \n", map_ids[z].name, z + 1, map_count);
+        printf("Discover %s (%u/%u)                  \r", map_ids[z].name, z + 1, map_count);
         sprintf(mpq_map_name, "World\\Maps\\%s\\%s.wdt", map_ids[z].name, map_ids[z].name);
 
         auto wdt = loadWdtChunkTree(mpq_map_name, false);
@@ -1355,11 +1389,16 @@ void ExtractMapsFromMpq(uint32_t build)
                 sprintf(mpq_filename, "World\\Maps\\%s\\%s_%u_%u.adt", map_ids[z].name, map_ids[z].name, x, y);
                 sprintf(output_filename, "%s/maps/%04u_%02u_%02u.map", output_path, map_ids[z].id, y, x);
                 bool ignoreDeepWater = !IsLegacyMapFormat() && IsDeepWaterIgnored(map_ids[z].id, y, x);
-                ConvertADT(mpq_filename, output_filename, y, x, build, ignoreDeepWater);
+                workItems.push_back(MapTileWorkItem{ mpq_filename, output_filename, y, x, ignoreDeepWater });
             }
-            printf("Processing........................%d%%\r", (100 * (y + 1)) / WDT_MAP_SIZE);
         }
     }
+    printf("\nConverting %zu map tiles...\n", workItems.size());
+
+    std::for_each(std::execution::par, workItems.begin(), workItems.end(), [build](MapTileWorkItem const& item)
+    {
+        ConvertADT(item.mpqFilename, item.outputFilename, item.y, item.x, build, item.ignoreDeepWater);
+    });
     printf("\n");
 }
 

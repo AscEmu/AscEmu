@@ -26,7 +26,9 @@
 #include "IntermediateValues.h"
 
 #include <cstdio>
+#include <execution>
 #include <limits.h>
+#include <numeric>
 
 
 #define MMAP_MAGIC 0x4d4d4150   // 'MMAP'
@@ -103,6 +105,24 @@ namespace MMAP
         }
     }
 
+    namespace
+    {
+        // RAII acquire/release for MapBuilder::_computeSlots - std::counting_semaphore
+        // has no built-in lock_guard-style wrapper, and buildMoveMapTile()'s
+        // per-sub-tile lambda (see below) has several early-return failure
+        // paths that all need the permit released exactly once.
+        class SemaphoreGuard
+        {
+        public:
+            explicit SemaphoreGuard(std::counting_semaphore<>& sem) : m_sem(sem) { m_sem.acquire(); }
+            ~SemaphoreGuard() { m_sem.release(); }
+            SemaphoreGuard(SemaphoreGuard const&) = delete;
+            SemaphoreGuard& operator=(SemaphoreGuard const&) = delete;
+        private:
+            std::counting_semaphore<>& m_sem;
+        };
+    }
+
     MapBuilder::MapBuilder(float maxWalkableAngle, bool skipLiquid,
         bool skipContinents, bool skipJunkMaps, bool skipBattlegrounds,
         bool debugOutput, bool bigBaseUnit, const char* offMeshFilePath,
@@ -122,6 +142,12 @@ namespace MMAP
         m_terrainBuilder = new TerrainBuilder(skipLiquid);
 
         m_rcContext = new rcContext(false);
+
+        // Default sizing for the debug-only buildMap()/buildSingleTile()
+        // paths, which never call buildAllMaps() (and so never re-size this
+        // to a --threads value) but still want full inner parallelism.
+        unsigned int hwThreads = std::thread::hardware_concurrency();
+        _computeSlots.emplace(hwThreads > 0 ? hwThreads : 1);
 
         discoverTiles();
     }
@@ -225,14 +251,14 @@ namespace MMAP
     {
         while (1)
         {
-            uint32_t mapId = 0;
+            TileWorkItem item;
 
-            _queue.WaitAndPop(mapId);
+            _queue.WaitAndPop(item);
 
             if (_cancelationToken)
                 return;
 
-            buildMap(mapId);
+            buildTile(item.mapId, item.tileX, item.tileY, _navMeshes.at(item.mapId));
         }
     }
 
@@ -240,41 +266,75 @@ namespace MMAP
     {
         printf("Using %u theads for mmaps", threads);
 
-        for (unsigned int i = 0; i < threads; ++i)
-        {
-            _workerThreads.push_back(std::thread(&MapBuilder::WorkerThread, this));
-        }
+        // Match the inner per-sub-tile semaphore to this run's own thread
+        // cap (an explicit --threads 0 means "don't parallelize at all",
+        // which should hold for the inner loop too, not just the outer
+        // queue).
+        _computeSlots.emplace(threads > 0 ? threads : 1);
 
         m_tiles.sort([](MapTiles a, MapTiles b)
         {
             return a.m_tiles->size() > b.m_tiles->size();
         });
 
+        // Set up every map's navmesh and queue its tiles individually
+        // (rather than queuing one whole map per work item) before any
+        // worker thread starts, so a handful of large continents don't end
+        // up monopolizing one thread each while other threads run dry.
         for (TileList::iterator it = m_tiles.begin(); it != m_tiles.end(); ++it)
         {
             uint32_t mapId = it->m_mapId;
-            if (!shouldSkipMap(mapId))
+            if (shouldSkipMap(mapId))
+                continue;
+
+            std::set<uint32_t>* tiles = nullptr;
+            dtNavMesh* navMesh = prepareMapForBuild(mapId, tiles);
+            if (!navMesh)
+                continue;
+
+            _navMeshes[mapId] = navMesh;
+
+            printf("[Map %04i] We have %u tiles.\n", mapId, (unsigned int)tiles->size());
+            for (uint32_t tileId : *tiles)
             {
+                uint32_t tileX, tileY;
+                StaticMapTree::unpackTileID(tileId, tileX, tileY);
+
+                if (shouldSkipTile(mapId, tileX, tileY))
+                    continue;
+
                 if (threads > 0)
-                    _queue.Push(mapId);
+                    _queue.Push(TileWorkItem{ mapId, tileX, tileY });
                 else
-                    buildMap(mapId);
+                    buildTile(mapId, tileX, tileY, navMesh);
             }
         }
 
-        while (!_queue.Empty())
+        if (threads > 0)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            for (unsigned int i = 0; i < threads; ++i)
+            {
+                _workerThreads.push_back(std::thread(&MapBuilder::WorkerThread, this));
+            }
+
+            while (!_queue.Empty())
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            }
+
+            _cancelationToken = true;
+
+            _queue.Cancel();
+
+            for (auto& thread : _workerThreads)
+            {
+                thread.join();
+            }
         }
 
-        _cancelationToken = true;
-
-        _queue.Cancel();
-
-        for (auto& thread : _workerThreads)
-        {
-            thread.join();
-        }
+        for (auto& [mapId, navMesh] : _navMeshes)
+            dtFreeNavMesh(navMesh);
+        _navMeshes.clear();
     }
 
     /**************************************************************************/
@@ -421,12 +481,8 @@ namespace MMAP
     }
 
     /**************************************************************************/
-    void MapBuilder::buildMap(uint32_t mapID)
+    dtNavMesh* MapBuilder::prepareMapForBuild(uint32_t mapID, std::set<uint32_t>*& tilesOut)
     {
-#ifndef __APPLE__
-        //printf("[Thread %u] Building map %04u:\n", uint32_t(ACE_Thread::self()), mapID);
-#endif
-
         std::set<uint32_t>* tiles = getTileList(mapID);
 
         // make sure we process maps which don't have tiles
@@ -442,17 +498,38 @@ namespace MMAP
                     tiles->insert(StaticMapTree::packTileID(i, j));
         }
 
-        if (!tiles->empty())
-        {
-            // build navMesh
-            dtNavMesh* navMesh = NULL;
-            buildNavMesh(mapID, navMesh);
-            if (!navMesh)
-            {
-                printf("[Map %04i] Failed creating navmesh!\n", mapID);
-                return;
-            }
+        tilesOut = tiles;
 
+        if (tiles->empty())
+            return nullptr;
+
+        dtNavMesh* navMesh = NULL;
+        buildNavMesh(mapID, navMesh);
+        if (!navMesh)
+            printf("[Map %04i] Failed creating navmesh!\n", mapID);
+
+        return navMesh;
+    }
+
+    void MapBuilder::buildMap(uint32_t mapID)
+    {
+#ifndef __APPLE__
+        //printf("[Thread %u] Building map %04u:\n", uint32_t(ACE_Thread::self()), mapID);
+#endif
+
+        std::set<uint32_t>* tiles = nullptr;
+        dtNavMesh* navMesh = prepareMapForBuild(mapID, tiles);
+
+        if (!navMesh)
+        {
+            // prepareMapForBuild() already printed the failure reason when
+            // there were tiles to build but navmesh creation itself failed;
+            // an empty tile list is not an error, just nothing to do.
+            if (!tiles->empty())
+                return;
+        }
+        else
+        {
             // now start building mmtiles for each tile
             printf("[Map %04i] We have %u tiles.\n", mapID, (unsigned int)tiles->size());
             for (std::set<uint32_t>::iterator it = tiles->begin(); it != tiles->end(); ++it)
@@ -651,110 +728,140 @@ namespace MMAP
         // allocate subregions : tiles
         Tile* tiles = new Tile[TILES_PER_MAP * TILES_PER_MAP];
 
-        // Initialize per tile config.
-        rcConfig tileCfg = config;
-        tileCfg.width = config.tileSize + config.borderSize*2;
-        tileCfg.height = config.tileSize + config.borderSize*2;
+        // Each sub-tile below writes into its own fixed slot (indexed by
+        // its own x+y*TILES_PER_MAP, matching tiles[]) rather than
+        // compacting into pmmerge/dmmerge as it goes - the compaction pass
+        // further down runs afterward, sequentially, in the same y-major
+        // scan order the original single-threaded loop used, so
+        // rcMergePolyMeshes()/rcMergePolyMeshDetails() see identical input
+        // ordering no matter which sub-tile task happens to finish first.
+        std::vector<rcPolyMesh*> pmeshSlots(TILES_PER_MAP * TILES_PER_MAP, nullptr);
+        std::vector<rcPolyMeshDetail*> dmeshSlots(TILES_PER_MAP * TILES_PER_MAP, nullptr);
 
-        // merge per tile poly and detail meshes
+        std::vector<int> subTileIndices(TILES_PER_MAP * TILES_PER_MAP);
+        std::iota(subTileIndices.begin(), subTileIndices.end(), 0);
+
+        // build all sub-tiles - see _computeSlots's declaration in
+        // MapBuilder.h for why this can safely run alongside
+        // buildAllMaps()'s outer worker-thread pool without oversubscribing.
+        std::for_each(std::execution::par, subTileIndices.begin(), subTileIndices.end(), [&](int idx)
+        {
+            int x = idx % TILES_PER_MAP;
+            int y = idx / TILES_PER_MAP;
+
+            SemaphoreGuard computeSlot(*_computeSlots);
+
+            Tile& tile = tiles[idx];
+
+            // Per-sub-tile config, computed fresh from the shared, never-
+            // mutated `config` above - the original single-threaded loop
+            // reused one shared tileCfg instance across iterations, which
+            // would be a data race if run concurrently.
+            rcConfig tileCfg = config;
+            tileCfg.width = config.tileSize + config.borderSize*2;
+            tileCfg.height = config.tileSize + config.borderSize*2;
+
+            // Calculate the per tile bounding box.
+            tileCfg.bmin[0] = config.bmin[0] + float(x*config.tileSize - config.borderSize)*config.cs;
+            tileCfg.bmin[2] = config.bmin[2] + float(y*config.tileSize - config.borderSize)*config.cs;
+            tileCfg.bmax[0] = config.bmin[0] + float((x+1)*config.tileSize + config.borderSize)*config.cs;
+            tileCfg.bmax[2] = config.bmin[2] + float((y+1)*config.tileSize + config.borderSize)*config.cs;
+
+            // build heightfield
+            tile.solid = rcAllocHeightfield();
+            if (!tile.solid || !rcCreateHeightfield(m_rcContext, *tile.solid, tileCfg.width, tileCfg.height, tileCfg.bmin, tileCfg.bmax, tileCfg.cs, tileCfg.ch))
+            {
+                printf("%s Failed building heightfield!\n", tileString);
+                return;
+            }
+
+            // mark all walkable tiles, both liquids and solids
+            unsigned char* triFlags = new unsigned char[tTriCount];
+            memset(triFlags, NAV_GROUND, tTriCount*sizeof(unsigned char));
+            rcClearUnwalkableTriangles(m_rcContext, tileCfg.walkableSlopeAngle, tVerts, tVertCount, tTris, tTriCount, triFlags);
+            rcRasterizeTriangles(m_rcContext, tVerts, tVertCount, tTris, triFlags, tTriCount, *tile.solid, config.walkableClimb);
+            delete[] triFlags;
+
+            rcFilterLowHangingWalkableObstacles(m_rcContext, config.walkableClimb, *tile.solid);
+            rcFilterLedgeSpans(m_rcContext, tileCfg.walkableHeight, tileCfg.walkableClimb, *tile.solid);
+            rcFilterWalkableLowHeightSpans(m_rcContext, tileCfg.walkableHeight, *tile.solid);
+
+            rcRasterizeTriangles(m_rcContext, lVerts, lVertCount, lTris, lTriFlags, lTriCount, *tile.solid, config.walkableClimb);
+
+            // compact heightfield spans
+            tile.chf = rcAllocCompactHeightfield();
+            if (!tile.chf || !rcBuildCompactHeightfield(m_rcContext, tileCfg.walkableHeight, tileCfg.walkableClimb, *tile.solid, *tile.chf))
+            {
+                printf("%s Failed compacting heightfield!\n", tileString);
+                return;
+            }
+
+            // build polymesh intermediates
+            if (!rcErodeWalkableArea(m_rcContext, config.walkableRadius, *tile.chf))
+            {
+                printf("%s Failed eroding area!\n", tileString);
+                return;
+            }
+
+            if (!rcBuildDistanceField(m_rcContext, *tile.chf))
+            {
+                printf("%s Failed building distance field!\n", tileString);
+                return;
+            }
+
+            if (!rcBuildRegions(m_rcContext, *tile.chf, tileCfg.borderSize, tileCfg.minRegionArea, tileCfg.mergeRegionArea))
+            {
+                printf("%s Failed building regions!\n", tileString);
+                return;
+            }
+
+            tile.cset = rcAllocContourSet();
+            if (!tile.cset || !rcBuildContours(m_rcContext, *tile.chf, tileCfg.maxSimplificationError, tileCfg.maxEdgeLen, *tile.cset))
+            {
+                printf("%s Failed building contours!\n", tileString);
+                return;
+            }
+
+            // build polymesh
+            tile.pmesh = rcAllocPolyMesh();
+            if (!tile.pmesh || !rcBuildPolyMesh(m_rcContext, *tile.cset, tileCfg.maxVertsPerPoly, *tile.pmesh))
+            {
+                printf("%s Failed building polymesh!\n", tileString);
+                return;
+            }
+
+            tile.dmesh = rcAllocPolyMeshDetail();
+            if (!tile.dmesh || !rcBuildPolyMeshDetail(m_rcContext, *tile.pmesh, *tile.chf, tileCfg.detailSampleDist, tileCfg.detailSampleMaxError, *tile.dmesh))
+            {
+                printf("%s Failed building polymesh detail!\n", tileString);
+                return;
+            }
+
+            // free those up
+            // we may want to keep them in the future for debug
+            // but right now, we don't have the code to merge them
+            rcFreeHeightField(tile.solid);
+            tile.solid = NULL;
+            rcFreeCompactHeightfield(tile.chf);
+            tile.chf = NULL;
+            rcFreeContourSet(tile.cset);
+            tile.cset = NULL;
+
+            pmeshSlots[idx] = tile.pmesh;
+            dmeshSlots[idx] = tile.dmesh;
+        });
+
+        // merge per tile poly and detail meshes - compacted here in the
+        // same order the sub-tiles were originally built in sequentially.
         rcPolyMesh** pmmerge = new rcPolyMesh*[TILES_PER_MAP * TILES_PER_MAP];
         rcPolyMeshDetail** dmmerge = new rcPolyMeshDetail*[TILES_PER_MAP * TILES_PER_MAP];
         int nmerge = 0;
-        // build all tiles
-        for (int y = 0; y < TILES_PER_MAP; ++y)
+        for (int idx = 0; idx < TILES_PER_MAP * TILES_PER_MAP; ++idx)
         {
-            for (int x = 0; x < TILES_PER_MAP; ++x)
+            if (pmeshSlots[idx])
             {
-                Tile& tile = tiles[x + y * TILES_PER_MAP];
-
-                // Calculate the per tile bounding box.
-                tileCfg.bmin[0] = config.bmin[0] + float(x*config.tileSize - config.borderSize)*config.cs;
-                tileCfg.bmin[2] = config.bmin[2] + float(y*config.tileSize - config.borderSize)*config.cs;
-                tileCfg.bmax[0] = config.bmin[0] + float((x+1)*config.tileSize + config.borderSize)*config.cs;
-                tileCfg.bmax[2] = config.bmin[2] + float((y+1)*config.tileSize + config.borderSize)*config.cs;
-
-                // build heightfield
-                tile.solid = rcAllocHeightfield();
-                if (!tile.solid || !rcCreateHeightfield(m_rcContext, *tile.solid, tileCfg.width, tileCfg.height, tileCfg.bmin, tileCfg.bmax, tileCfg.cs, tileCfg.ch))
-                {
-                    printf("%s Failed building heightfield!\n", tileString);
-                    continue;
-                }
-
-                // mark all walkable tiles, both liquids and solids
-                unsigned char* triFlags = new unsigned char[tTriCount];
-                memset(triFlags, NAV_GROUND, tTriCount*sizeof(unsigned char));
-                rcClearUnwalkableTriangles(m_rcContext, tileCfg.walkableSlopeAngle, tVerts, tVertCount, tTris, tTriCount, triFlags);
-                rcRasterizeTriangles(m_rcContext, tVerts, tVertCount, tTris, triFlags, tTriCount, *tile.solid, config.walkableClimb);
-                delete[] triFlags;
-
-                rcFilterLowHangingWalkableObstacles(m_rcContext, config.walkableClimb, *tile.solid);
-                rcFilterLedgeSpans(m_rcContext, tileCfg.walkableHeight, tileCfg.walkableClimb, *tile.solid);
-                rcFilterWalkableLowHeightSpans(m_rcContext, tileCfg.walkableHeight, *tile.solid);
-
-                rcRasterizeTriangles(m_rcContext, lVerts, lVertCount, lTris, lTriFlags, lTriCount, *tile.solid, config.walkableClimb);
-
-                // compact heightfield spans
-                tile.chf = rcAllocCompactHeightfield();
-                if (!tile.chf || !rcBuildCompactHeightfield(m_rcContext, tileCfg.walkableHeight, tileCfg.walkableClimb, *tile.solid, *tile.chf))
-                {
-                    printf("%s Failed compacting heightfield!\n", tileString);
-                    continue;
-                }
-
-                // build polymesh intermediates
-                if (!rcErodeWalkableArea(m_rcContext, config.walkableRadius, *tile.chf))
-                {
-                    printf("%s Failed eroding area!\n", tileString);
-                    continue;
-                }
-
-                if (!rcBuildDistanceField(m_rcContext, *tile.chf))
-                {
-                    printf("%s Failed building distance field!\n", tileString);
-                    continue;
-                }
-
-                if (!rcBuildRegions(m_rcContext, *tile.chf, tileCfg.borderSize, tileCfg.minRegionArea, tileCfg.mergeRegionArea))
-                {
-                    printf("%s Failed building regions!\n", tileString);
-                    continue;
-                }
-
-                tile.cset = rcAllocContourSet();
-                if (!tile.cset || !rcBuildContours(m_rcContext, *tile.chf, tileCfg.maxSimplificationError, tileCfg.maxEdgeLen, *tile.cset))
-                {
-                    printf("%s Failed building contours!\n", tileString);
-                    continue;
-                }
-
-                // build polymesh
-                tile.pmesh = rcAllocPolyMesh();
-                if (!tile.pmesh || !rcBuildPolyMesh(m_rcContext, *tile.cset, tileCfg.maxVertsPerPoly, *tile.pmesh))
-                {
-                    printf("%s Failed building polymesh!\n", tileString);
-                    continue;
-                }
-
-                tile.dmesh = rcAllocPolyMeshDetail();
-                if (!tile.dmesh || !rcBuildPolyMeshDetail(m_rcContext, *tile.pmesh, *tile.chf, tileCfg.detailSampleDist, tileCfg.detailSampleMaxError, *tile.dmesh))
-                {
-                    printf("%s Failed building polymesh detail!\n", tileString);
-                    continue;
-                }
-
-                // free those up
-                // we may want to keep them in the future for debug
-                // but right now, we don't have the code to merge them
-                rcFreeHeightField(tile.solid);
-                tile.solid = NULL;
-                rcFreeCompactHeightfield(tile.chf);
-                tile.chf = NULL;
-                rcFreeContourSet(tile.cset);
-                tile.cset = NULL;
-
-                pmmerge[nmerge] = tile.pmesh;
-                dmmerge[nmerge] = tile.dmesh;
+                pmmerge[nmerge] = pmeshSlots[idx];
+                dmmerge[nmerge] = dmeshSlots[idx];
                 nmerge++;
             }
         }
@@ -875,6 +982,15 @@ namespace MMAP
                 printf("%s Failed building navmesh tile!\n", tileString);
                 break;
             }
+
+            // buildAllMaps() runs many worker threads against tiles that
+            // belong to the same map (and therefore share one dtNavMesh*) -
+            // addTile()/removeTile() mutate that navmesh's internal tile
+            // pool and aren't safe to call concurrently on the same
+            // instance, so serialize just this registration+write+removal
+            // sequence. The expensive rasterization/contour work above
+            // already finished by this point and stays fully parallel.
+            std::lock_guard<std::mutex> tileRegistrationLock(_tileRegistrationMutex);
 
             dtTileRef tileRef = 0;
             //printf("%s Adding tile to navmesh...\n", tileString);

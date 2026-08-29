@@ -34,7 +34,7 @@ namespace mpqlib
     }
 
     MpqArchive::MpqArchive(std::string path) :
-        m_path(std::move(path))
+        m_path(std::move(path)), m_fileMutex(std::make_unique<std::mutex>())
     {
         m_isOpen = open();
     }
@@ -299,6 +299,13 @@ namespace mpqlib
     {
         if (!m_isOpen)
             return false;
+
+        // m_file's seek position is shared, mutable state - readSectorOffsetTable()
+        // and the per-sector read loop below both depend on seeking to the right
+        // place immediately before reading, so the whole read (not just each
+        // individual seek+read) has to be one atomic critical section from another
+        // thread's point of view.
+        std::lock_guard<std::mutex> lock(*m_fileMutex);
 
         out.assign(info.unpackedSize, 0);
 

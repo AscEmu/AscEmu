@@ -22,6 +22,7 @@
 
 #include "mpqlib/ClientVersion.hpp"
 
+#include <mutex>
 #include <string>
 
 enum ModelFlags
@@ -33,6 +34,15 @@ enum ModelFlags
 
 extern const char * szWorkDirWmo;
 extern const char * szRawVMAPMagic;             // vmap magic string for extracted raw vmap data
+
+// Guards the append-mode "dir_bin" instance-directory file, which every
+// ADT tile's ModelInstance/WMOInstance writes to via its own independently
+// fopen()'d FILE* - parallel ADT tiles would otherwise risk interleaving or
+// splitting each other's multi-fwrite instance records. Held only around
+// each instance's own fwrite burst (plus a flush before unlocking), not
+// around the surrounding geometry/MPQ work, so it doesn't serialize the
+// expensive part of tile processing.
+extern std::mutex g_dirFileMutex;
 
 // Detected once at startup (see main()). Classic/TBC/WotLK vs Cata/Mop steer
 // which MPQ-discovery strategy runs and a few per-family output quirks;

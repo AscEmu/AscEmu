@@ -195,17 +195,25 @@ ModelInstance::ModelInstance(MPQFile& f, char const* modelInstName, uint32_t map
     if (tileX == 65 && tileY == 65)
         modFlags |= MOD_WORLDSPAWN;
 
-    //write mapID, tileX, tileY, Flags, ID, Pos, Rot, Scale, name
-    fwrite(&mapID, sizeof(uint32_t), 1, pDirfile);
-    fwrite(&tileX, sizeof(uint32_t), 1, pDirfile);
-    fwrite(&tileY, sizeof(uint32_t), 1, pDirfile);
-    fwrite(&modFlags, sizeof(uint32_t), 1, pDirfile);
-    fwrite(&adtId, sizeof(uint16_t), 1, pDirfile);
-    fwrite(&m_id, sizeof(uint32_t), 1, pDirfile);
-    fwrite(&m_pos, sizeof(float), 3, pDirfile);
-    fwrite(&m_rot, sizeof(float), 3, pDirfile);
-    fwrite(&m_sc, sizeof(float), 1, pDirfile);
     uint32_t nameLength = static_cast<uint32_t>(strlen(modelInstName));
-    fwrite(&nameLength, sizeof(uint32_t), 1, pDirfile);
-    fwrite(modelInstName, sizeof(char), nameLength, pDirfile);
+
+    //write mapID, tileX, tileY, Flags, ID, Pos, Rot, Scale, name
+    {
+        // Parallel ADT tiles each hold their own FILE* onto the same shared
+        // dir_bin, so this whole record must go out (and be flushed to the
+        // OS) as one unit before another tile's writer can touch the file.
+        std::lock_guard<std::mutex> lock(g_dirFileMutex);
+        fwrite(&mapID, sizeof(uint32_t), 1, pDirfile);
+        fwrite(&tileX, sizeof(uint32_t), 1, pDirfile);
+        fwrite(&tileY, sizeof(uint32_t), 1, pDirfile);
+        fwrite(&modFlags, sizeof(uint32_t), 1, pDirfile);
+        fwrite(&adtId, sizeof(uint16_t), 1, pDirfile);
+        fwrite(&m_id, sizeof(uint32_t), 1, pDirfile);
+        fwrite(&m_pos, sizeof(float), 3, pDirfile);
+        fwrite(&m_rot, sizeof(float), 3, pDirfile);
+        fwrite(&m_sc, sizeof(float), 1, pDirfile);
+        fwrite(&nameLength, sizeof(uint32_t), 1, pDirfile);
+        fwrite(modelInstName, sizeof(char), nameLength, pDirfile);
+        fflush(pDirfile);
+    }
 }
