@@ -35,6 +35,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <exception>
 #include <execution>
 #include <filesystem>
 #include <fstream>
@@ -790,10 +791,15 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
             }
         }
 
-        // Liquid data from the old, per-MCNK MCLQ chunk.
-        if (mcnk->sizeMCLQ > 8)
+        // Liquid data from the old, per-MCNK MCLQ chunk. Gated on the
+        // actually-scanned chunk's own size (not mcnk->sizeMCLQ) - some real
+        // WotLK transition-era zones (ZulAman/Zul'gurub/Valgarde70, leftover
+        // from TBC's MCLQ-only liquid format) have a stale sizeMCLQ in the
+        // MCNK header that disagrees with the real, empty (header-only)
+        // MCLQ chunk actually present on disk.
+        if (mpqlib::ChunkNode const* chunk = mcnkNode->find("MCLQ"))
         {
-            if (mpqlib::ChunkNode const* chunk = mcnkNode->find("MCLQ"))
+            if (chunk->size() > 8) // more than just the [tag][size] header
             {
                 adt_MCLQ const* liquid = &chunk->as<adt_MCLQ>();
                 int count = 0;
@@ -1367,7 +1373,7 @@ void ExtractMapsFromMpq(uint32_t build)
     printf("Discovering tiles\n");
     for (uint32_t z = 0; z < map_count; ++z)
     {
-        printf("Discover %s (%u/%u)                  \r", map_ids[z].name, z + 1, map_count);
+        printf("Discover %s (%u/%u)\n", map_ids[z].name, z + 1, map_count);
         sprintf(mpq_map_name, "World\\Maps\\%s\\%s.wdt", map_ids[z].name, map_ids[z].name);
 
         auto wdt = loadWdtChunkTree(mpq_map_name, false);
@@ -1378,7 +1384,17 @@ void ExtractMapsFromMpq(uint32_t build)
         if (!main)
             continue;
 
-        wdt_MAIN const& mainData = main->as<wdt_MAIN>();
+        wdt_MAIN const* mainDataPtr;
+        try
+        {
+            mainDataPtr = &main->as<wdt_MAIN>();
+        }
+        catch (std::exception const& e)
+        {
+            printf("Error reading %s: %s\n", mpq_map_name, e.what());
+            continue;
+        }
+        wdt_MAIN const& mainData = *mainDataPtr;
         for (uint32_t y = 0; y < WDT_MAP_SIZE; ++y)
         {
             for (uint32_t x = 0; x < WDT_MAP_SIZE; ++x)
@@ -1393,11 +1409,24 @@ void ExtractMapsFromMpq(uint32_t build)
             }
         }
     }
-    printf("\nConverting %zu map tiles...\n", workItems.size());
+    printf("Converting %zu map tiles...\n", workItems.size());
 
     std::for_each(std::execution::par, workItems.begin(), workItems.end(), [build](MapTileWorkItem const& item)
     {
-        ConvertADT(item.mpqFilename, item.outputFilename, item.y, item.x, build, item.ignoreDeepWater);
+        // ChunkNode::as<T>() throws instead of asserting when a chunk's
+        // byte-scan match turns out too small for the struct requested -
+        // catch it here so one malformed/false-positive-matched tile is
+        // skipped (like any other "couldn't load this ADT" case) instead of
+        // throwing an uncaught exception out of a std::execution::par
+        // worker, which would terminate the whole run.
+        try
+        {
+            ConvertADT(item.mpqFilename, item.outputFilename, item.y, item.x, build, item.ignoreDeepWater);
+        }
+        catch (std::exception const& e)
+        {
+            printf("Error converting %s: %s\n", item.mpqFilename.c_str(), e.what());
+        }
     });
     printf("\n");
 }

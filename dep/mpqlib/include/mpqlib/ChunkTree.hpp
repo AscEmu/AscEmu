@@ -13,13 +13,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
 #include <span>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -39,16 +39,35 @@ namespace mpqlib
     class ChunkNode
     {
     public:
+        // Throws std::runtime_error (rather than assert()) when the node's
+        // matched byte span is too small for T: ChunkTree's byte-scan is a
+        // heuristic that tolerates non-chunk bytes, so an opportunistic
+        // false-positive tag match (a recognized 4-byte tag value occurring
+        // by coincidence inside unrelated payload data, e.g. raw height-map
+        // floats) is expected, real-world input, not a programmer error -
+        // assert() would either silently read out of bounds in a Release
+        // build (NDEBUG strips it) or abort the whole process in Debug.
+        // Callers are expected to catch this per chunk/tile and skip it.
         template<typename T>
         const T& as() const
         {
             static_assert(std::is_trivially_copyable_v<T>);
-            assert(sizeof(T) <= m_bytes.size());
+            if (sizeof(T) > m_bytes.size())
+                throw std::runtime_error("ChunkNode::as<T>(): chunk too small for requested type (need "
+                    + std::to_string(sizeof(T)) + " bytes, have " + std::to_string(m_bytes.size()) + ")");
             return *reinterpret_cast<const T*>(m_bytes.data());
         }
 
         // Exactly one child with this tag, else nullptr (absent or ambiguous).
         const ChunkNode* find(std::string_view tag) const;
+
+        // Total bytes matched for this node (its own [tag][size] header plus
+        // payload) - lets a caller sanity-check a chunk's real, scanned size
+        // against what it's about to read via as<T>() before doing so,
+        // rather than trusting a size field from elsewhere in the file
+        // (e.g. a parent chunk's own header) that isn't guaranteed to agree
+        // with what's actually on disk at this chunk's own location.
+        size_t size() const { return m_bytes.size(); }
 
     private:
         explicit ChunkNode(std::span<const std::byte> bytes) noexcept : m_bytes(bytes) {}
