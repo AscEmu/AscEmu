@@ -19,7 +19,7 @@ set(EXTRA_LIBS
 if (MSVC)
     include(${CMAKE_SOURCE_DIR}/cmake/Compilers/msvc.cmake)
 else ()
-    message(FATAL_ERROR "Compiler is not supported")
+    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} is not supported")
 endif ()
 
 # check for db update files
