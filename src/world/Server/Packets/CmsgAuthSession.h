@@ -167,6 +167,17 @@ namespace AscEmu::Packets
 
                 packet.read(authDigest, 20);
 
+                // Unlike Cata/Mop there is no separate addon-size field before this point in the
+                // packet - the remaining bytes are [uint32_t compressed size][zlib blob], and that
+                // leading size is parsed later by readAddonInfoPacket(), so we just hand over
+                // everything that's left here.
+                addonSize = static_cast<uint32_t>(packet.size() - packet.rpos());
+                if (addonSize)
+                {
+                    addonInfoBuffer.resize(addonSize);
+                    packet.read(static_cast<uint8_t*>(addonInfoBuffer.contents()), addonSize);
+                }
+
                 return true;
             }
 
@@ -178,6 +189,15 @@ namespace AscEmu::Packets
                 packet >> clientSeed;
 
                 packet.read(authDigest, 20);
+
+                // Same reasoning as WotLK above - no separate addon-size field, the remaining
+                // bytes are [uint32_t compressed size][zlib blob] handed to readAddonInfoPacket().
+                addonSize = static_cast<uint32_t>(packet.size() - packet.rpos());
+                if (addonSize)
+                {
+                    addonInfoBuffer.resize(addonSize);
+                    packet.read(static_cast<uint8_t*>(addonInfoBuffer.contents()), addonSize);
+                }
 
                 return true;
             }

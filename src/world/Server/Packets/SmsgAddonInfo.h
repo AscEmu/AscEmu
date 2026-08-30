@@ -62,9 +62,6 @@ namespace AscEmu::Packets
                         packet << uint8_t(2) << uint8_t(1) << uint8_t(0) << uint32_t(0) << uint8_t(0);
                 }
 
-                if (m_protocol.isTbc())
-                    packet << uint32_t(0);
-
                 return true;
 #endif
             }
