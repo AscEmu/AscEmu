@@ -64,7 +64,6 @@ public:
     inline uint32_t GetAccountID() { return m_account ? m_account->AccountId : 0; }
 
 protected:
-
     sAuthLogonChallenge_C m_challenge;
     Account* m_account;
     bool m_authenticated;
@@ -83,7 +82,6 @@ protected:
     time_t last_recv;
 
 public:
-
     // Patching stuff
     Patch* m_patch;
     PatchJob* m_patchJob;

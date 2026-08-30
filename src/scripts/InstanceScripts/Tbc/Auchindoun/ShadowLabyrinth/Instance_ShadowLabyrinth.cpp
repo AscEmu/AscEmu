@@ -223,7 +223,6 @@ public:
     }
 };
 
-
 // Boss AIs
 
 class AmbassadorHellmawAI : public CreatureAIScript

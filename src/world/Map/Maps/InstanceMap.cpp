@@ -177,8 +177,8 @@ bool InstanceMap::addPlayerToMap(Player* player)
                         // cannot jump to a different instance without resetting it
                         if (groupBind->save != mapSave)
                         {
-                            sLogger.debug("player {} {} is being put into instance {}, {}, {} but he is in group {} which is bound to instance {}, {}, {}! \n", player->getName(), player->getGuid(), mapSave->getMapId(), mapSave->getInstanceId(), mapSave->getDifficulty(), group->GetLeader()->guid, groupBind->save->getMapId(), groupBind->save->getInstanceId(), groupBind->save->getDifficulty());
-                            sLogger.debug("MapSave players: {}, group count: {} \n", mapSave->getPlayerCount(), mapSave->getGroupCount());
+                            sLogger.debug("player {} {} is being put into instance {}, {}, {} but he is in group {} which is bound to instance {}, {}, {}!", player->getName(), player->getGuid(), mapSave->getMapId(), mapSave->getInstanceId(), mapSave->getDifficulty(), group->GetLeader()->guid, groupBind->save->getMapId(), groupBind->save->getInstanceId(), groupBind->save->getDifficulty());
+                            sLogger.debug("MapSave players: {}, group count: {}.", mapSave->getPlayerCount(), mapSave->getGroupCount());
                             if (groupBind->save)
                                 sLogger.debug("GroupBind save players: {}, group count: {}", groupBind->save->getPlayerCount(), groupBind->save->getGroupCount());
                             else
@@ -211,7 +211,7 @@ bool InstanceMap::addPlayerToMap(Player* player)
         // first player enters (no players yet)
         setResetSchedule(false);
 
-        sLogger.info("Player '{}' entered instance '{}' of map '{}' \n", player->getName(), getInstanceId(), getBaseMap()->getMapName());
+        sLogger.info("Player '{}' entered instance '{}' of map '{}'.", player->getName(), getInstanceId(), getBaseMap()->getMapName());
     }
 
     return true;

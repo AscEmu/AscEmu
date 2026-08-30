@@ -147,7 +147,6 @@ void LogonConsoleThread::run(AscEmu::Threading::AEThread& thread)
     sLogonConsole._thread = nullptr;
 }
 
-
 void LogonConsole::ProcessCmd(char* cmd)
 {
     using PTranslater = void (LogonConsole::*)(char*);
@@ -158,7 +157,7 @@ void LogonConsole::ProcessCmd(char* cmd)
         PTranslater tr;
     };
 
-    static const SCmd cmds[] =
+    static constexpr SCmd cmds[] =
     {
         { "?", &LogonConsole::TranslateHelp },
         { "z", &LogonConsole::threadDemoCmd },
@@ -179,7 +178,7 @@ void LogonConsole::ProcessCmd(char* cmd)
         return;
 
     std::string input(cmd);
-    std::transform(input.begin(), input.end(), input.begin(), [](unsigned char c) { return std::tolower(c); });
+    std::transform(input.begin(), input.end(), input.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
     for (const auto& c : cmds)
     {
@@ -190,9 +189,8 @@ void LogonConsole::ProcessCmd(char* cmd)
             return;
         }
     }
-    
-    if (strncmp(cmd, "c", 1) == 0) // sch: This is very old code. And it was considered perfectly normal.
-        fmt::println("Console: Unknown console command (use \"help\" for help).\n");
+
+    fmt::println("[!]Error, Command '{}' doesn't exist. Type '?' or 'help' to get a command overview.", cmd);
 }
 
 void LogonConsole::ReloadAccts(char* /*str*/)

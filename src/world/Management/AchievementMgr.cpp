@@ -1082,7 +1082,7 @@ bool AchievementMgr::gmCompleteCriteria(WorldSession* _gmSession, uint32_t _crit
     const auto criteria = sAchievementCriteriaStore.lookupEntry(_criteriaId);
     if (!criteria)
     {
-        _gmSession->systemMessage("Achievement criteria %d not found.", _criteriaId);
+        _gmSession->systemMessage("Achievement criteria {} not found.", _criteriaId);
         return false;
     }
 
@@ -1257,7 +1257,7 @@ bool AchievementMgr::gmCompleteAchievement(WorldSession* _gmSession, uint32_t _a
             auto achievementEntry = sAchievementStore.lookupEntry(i);
             if (achievementEntry == nullptr)
             {
-                //m_player->getSession()->SystemMessage("Achievement %u entry not found.", i);
+                //m_player->getSession()->SystemMessage("Achievement {} entry not found.", i);
             }
             else
             {
@@ -1285,14 +1285,15 @@ bool AchievementMgr::gmCompleteAchievement(WorldSession* _gmSession, uint32_t _a
     const auto achievement = sAchievementStore.lookupEntry(_achievementId);
     if (!achievement)
     {
-        //_gmSession->SystemMessage("Achievement %d entry not found.", _achievementId);
+        _gmSession->systemMessage("Achievement {} entry not found.", _achievementId);
         return false;
     }
 
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
     {
-        //_gmSession->SystemMessage("Achievement (%u) |Hachievement:%u:%s:0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
-            //achievement->ID, achievement->ID, std::to_string(_gmSession->GetPlayer()->getGuid()).c_str(), achievement->name);
+        _gmSession->systemMessage("Achievement {} cannot be completed because it is a counter.", achievement->ID );
+       /*_gmSession->systemMessage("Achievement ({}) |Hachievement:{}:{}:0:0:0:-1:0:0:0:0|h[{}]|h is a counter and cannot be completed.",
+            achievement->ID, achievement->ID, _gmSession->GetPlayer()->getGuid(), achievement->name);*/
         return false;
     }
     completedAchievement(achievement);

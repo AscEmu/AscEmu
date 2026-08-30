@@ -1400,7 +1400,7 @@ bool ChatCommandHandler::HandleQuestRewardCommand(const char* args, WorldSession
             if (!itemProto)
             {
                 recout << "Unknown item id %lu" << itemid;
-                sLogger.failure("WORLD: Unknown item id 0x%08x", itemid);
+                sLogger.failure("WORLD: Unknown item id 0x{:08X}", itemid);
             }
             else
             {
@@ -1418,7 +1418,7 @@ bool ChatCommandHandler::HandleQuestRewardCommand(const char* args, WorldSession
             if (!itemProto)
             {
                 recout << "Unknown item id %lu" << itemid;
-                sLogger.failure("WORLD: Unknown item id 0x%08x", itemid);
+                sLogger.failure("WORLD: Unknown item id 0x{:08X}", itemid);
             }
             else
             {

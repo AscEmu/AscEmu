@@ -38,7 +38,7 @@ enum checkType
 
 class LogonConsoleThread
 {
-    public:
+public:
     std::atomic<bool> kill;
     LogonConsoleThread();
     ~LogonConsoleThread();
@@ -61,7 +61,6 @@ class LogonConsole
         ~LogonConsole() = default;
 
     public:
-
         static LogonConsole& getInstance();
 
         LogonConsole(LogonConsole&&) = delete;

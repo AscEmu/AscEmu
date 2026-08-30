@@ -149,7 +149,7 @@ void WorldSession::handleArenaTeamRemoveMemberOpcode(WorldPacket& recvPacket)
         std::string message = fmt::format("{} was removed from the arena team '{}'", playerInfo->name, arenaTeam->m_name);
         arenaTeam->sendMessagePacket(message);
 
-        systemMessage("Removed %s from the arena team '%s'.", playerInfo->name.c_str(), arenaTeam->m_name.c_str());
+        systemMessage("Removed {} from the arena team '{}'.", playerInfo->name, arenaTeam->m_name);
     }
 }
 
@@ -206,7 +206,7 @@ void WorldSession::handleArenaTeamInviteDenyOpcode(WorldPacket& /*recvPacket*/)
         return;
 
     if (const auto player = sObjectMgr.getPlayer(team->m_leader))
-        player->getSession()->systemMessage("{} denied your arena team invitation for %s.", _player->getName().c_str(), team->m_name.c_str());
+        player->getSession()->systemMessage("{} denied your arena team invitation for {}.", _player->getName(), team->m_name);
 }
 
 void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
@@ -245,7 +245,7 @@ void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
         std::string message = fmt::format("{} left the arena team, '{}'", _player->getName(), arenaTeam->m_name);
         arenaTeam->sendMessagePacket(message);
 
-        systemMessage("You have left the arena team, '%s'.", arenaTeam->m_name.c_str());
+        systemMessage("You have left the arena team, '{}'.", arenaTeam->m_name);
     }
 }
 

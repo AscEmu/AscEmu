@@ -34,7 +34,6 @@ private:
     ~IpBanMgr() = default;
 
 public:
-
     static IpBanMgr& getInstance();
     void initialize();
 
