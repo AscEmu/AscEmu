@@ -20,10 +20,8 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include "loadlib.h"
 #include "vec3d.h"
-#include "modelheaders.h"
-#include <vector>
+#include <string>
 
 class MPQFile;
 
@@ -32,36 +30,43 @@ Vec3D fixCoordSystem(Vec3D v);
 class Model
 {
 private:
-    void _unload()
+    void unload()
     {
-        delete[] vertices;
-        delete[] indices;
-        vertices = NULL;
-        indices = NULL;
+        delete[] m_vertices;
+        delete[] m_indices;
+        m_vertices = NULL;
+        m_indices = NULL;
     }
-    std::string filename;
+    std::string m_filename;
 public:
-    ModelHeader header;
-    Vec3D* vertices;
-    uint16_t* indices;
+    // The only four ModelHeader fields this tool ever needs - read out of
+    // whichever of ModelHeaderLegacy/ModelHeaderModern actually matches the
+    // client's M2 format (see Model::open()), since everything before them
+    // shifts byte offset between the two layouts.
+    uint32_t m_nBoundingTriangles;
+    uint32_t m_ofsBoundingTriangles;
+    uint32_t m_nBoundingVertices;
+    uint32_t m_ofsBoundingVertices;
+    Vec3D* m_vertices;
+    uint16_t* m_indices;
 
     bool open();
-    bool ConvertToVMAPModel(char const* outfilename);
+    bool convertToVMapModel(char const* outFileName);
 
     Model(std::string& filename);
-    ~Model() { _unload(); }
+    ~Model() { unload(); }
 };
 
 class ModelInstance
 {
 public:
-    uint32_t id;
-    Vec3D pos, rot;
-    uint16_t scale, flags;
-    float sc;
+    uint32_t m_id;
+    Vec3D m_pos, m_rot;
+    uint16_t m_scale, m_flags;
+    float m_sc;
 
-    ModelInstance() : id(0), scale(0), flags(0), sc(0.0f) {}
-    ModelInstance(MPQFile& f, char const* ModelInstName, uint32_t mapID, uint32_t tileX, uint32_t tileY, FILE* pDirfile);
+    ModelInstance() : m_id(0), m_scale(0), m_flags(0), m_sc(0.0f) {}
+    ModelInstance(MPQFile& f, char const* modelInstName, uint32_t mapID, uint32_t tileX, uint32_t tileY, FILE* pDirfile);
 
 };
 

@@ -208,7 +208,7 @@ bool ChatCommandHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession
         return true;
 
     auto player = m_session->GetPlayer();
-    creature_target->getMovementManager()->movePoint(0, player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), false, player->GetOrientation());
+    creature_target->getMovementManager()->movePoint(0, player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), true, player->GetOrientation());
     sGMLog.writefromsession(m_session, "Moved creature {} (entry: {}, spawn ID: {}) to your location.", creature_target->GetCreatureProperties()->Name, creature_target->getEntry(), creature_target->spawnid);
 
     return true;

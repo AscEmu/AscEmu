@@ -11,9 +11,6 @@ ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(${EXECUTABLE_NAME} ${SRC_MAPS_EXTRACTOR})
 
 include_directories(
-    ${CMAKE_SOURCE_DIR}/dep/libmpq/libmpq
-    ${CMAKE_SOURCE_DIR}/dep/dbcfile 
-    ${CMAKE_SOURCE_DIR}/dep/loadlib
     ${CMAKE_SOURCE_DIR}/src/shared
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
@@ -21,8 +18,7 @@ include_directories(
 # include library dependencies.
 target_link_libraries(${EXECUTABLE_NAME}
   PUBLIC
-    dbcfile
-    libmpq
+    mpqlib
 )
 
 install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})

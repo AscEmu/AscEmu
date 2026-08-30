@@ -2,16 +2,15 @@
 
 # check which tools are set
 if (BUILD_TOOLS)
-    if ("${ASCEMU_VERSION}" STREQUAL "WotLK" OR "${ASCEMU_VERSION}" STREQUAL "TBC" OR "${ASCEMU_VERSION}" STREQUAL "Classic")
-        add_subdirectory(map_extractor)
-        add_subdirectory(vmap_tools)
-        add_subdirectory(mmaps_generator)
-    else ()
-        add_subdirectory(ToolsCataMop/connection)
-        add_subdirectory(ToolsCataMop/map_extractor)
-        add_subdirectory(ToolsCataMop/vmap_tools)
-        add_subdirectory(ToolsCataMop/mmaps_generator)
-    endif ()
+    # Built once, unconditionally: no per-client-version code path
+    # (vmap4_assembler), only runtime-detected tuning (mmaps_generator), or
+    # fully runtime client-version detection and branching (map_extractor,
+    # vmap_tools/vmap4_extractor, connection) - see dep/mpqlib/ClientVersion.hpp.
+    add_subdirectory(vmap_tools/vmap4_assembler)
+    add_subdirectory(vmap_tools)
+    add_subdirectory(mmaps_generator)
+    add_subdirectory(map_extractor)
+    add_subdirectory(connection)
 endif ()
 
 if (WIN32)

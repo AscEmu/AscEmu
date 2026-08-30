@@ -1,13 +1,35 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cassert>
+#include <cstring>
+#include <memory>
 #include <vector>
 #include <map>
 
-#include "dbcfile.h"
-#include "mpq_libmpq04.h"
+#include "mpqlib/DBCFile.hpp"
+#include "mpqlib/MpqPatchChain.hpp"
 
 #include "CreatureDataStructures.h"
+
+// Single implicit archive chain covering everything this tool reads -
+// mirrors the old global ArchiveSet's flat priority list: the first archive
+// opened becomes the base, everything after is a patch.
+std::unique_ptr<mpqlib::MpqPatchChain> gMpqChain;
+
+bool OpenMpqArchive(char const* filename)
+{
+    if (!gMpqChain)
+    {
+        gMpqChain = std::make_unique<mpqlib::MpqPatchChain>(filename);
+        if (gMpqChain->isOpen())
+            return true;
+
+        gMpqChain.reset();
+        return false;
+    }
+
+    return gMpqChain->addPatch(filename);
+}
 
 void InitMPQs()
 {
@@ -24,7 +46,7 @@ void InitMPQs()
         return;
     }
     fclose(tf);
-    new MPQArchive("Data/common-2.MPQ");
+    OpenMpqArchive("Data/common-2.MPQ");
 
     for (size_t i = 0; localeNames[i] != 0; i++)
     {
@@ -34,18 +56,18 @@ void InitMPQs()
             continue;
         fclose(tf);
         locale = i;
-        new MPQArchive(tmp);
+        OpenMpqArchive(tmp);
     }
 
     tf = fopen("Data/expansion.MPQ", "r");
     if (tf)
     {
         fclose(tf);
-        new MPQArchive("Data/expansion.MPQ");
+        OpenMpqArchive("Data/expansion.MPQ");
         if (-1 != locale)
         {
             sprintf(tmp, "Data/%s/expansion-locale-%s.MPQ", localeNames[locale], localeNames[locale]);
-            new MPQArchive(tmp);
+            OpenMpqArchive(tmp);
         }
     }
 
@@ -53,11 +75,11 @@ void InitMPQs()
     if (tf)
     {
         fclose(tf);
-        new MPQArchive("Data/lichking.MPQ");
+        OpenMpqArchive("Data/lichking.MPQ");
         if (-1 != locale)
         {
             sprintf(tmp, "Data/%s/lichking-locale-%s.MPQ", localeNames[locale], localeNames[locale]);
-            new MPQArchive(tmp);
+            OpenMpqArchive(tmp);
         }
     }
 
@@ -65,7 +87,7 @@ void InitMPQs()
     if (tf)
     {
         fclose(tf);
-        new MPQArchive("Data/patch.MPQ");
+        OpenMpqArchive("Data/patch.MPQ");
         for (int i = 2; i <= maxPatches; i++)
         {
             sprintf(tmp, "Data/patch-%d.MPQ", i);
@@ -73,7 +95,7 @@ void InitMPQs()
             if (!tf)
                 continue;
             fclose(tf);
-            new MPQArchive(tmp);
+            OpenMpqArchive(tmp);
         }
         if (-1 != locale)
         {
@@ -82,7 +104,7 @@ void InitMPQs()
             if (tf)
             {
                 fclose(tf);
-                new MPQArchive(tmp);
+                OpenMpqArchive(tmp);
                 for (int i = 2; i <= maxPatches; i++)
                 {
                     sprintf(tmp, "Data/%s/patch-%s-%d.MPQ", localeNames[locale], localeNames[locale], i);
@@ -90,7 +112,7 @@ void InitMPQs()
                     if (!tf)
                         continue;
                     fclose(tf);
-                    new MPQArchive(tmp);
+                    OpenMpqArchive(tmp);
                 }
             }
         }
@@ -125,27 +147,27 @@ int main()
 {
     InitMPQs();
     FILE* fo = fopen("display_bounding_boxes.sql", "w");
-    DBCFile displayInfo("DBFilesClient\\CreatureDisplayInfo.dbc");
-    DBCFile modelInfo("DBFilesClient\\CreatureModelData.dbc");
+    DBCFile displayInfo(*gMpqChain, "DBFilesClient\\CreatureDisplayInfo.dbc");
+    DBCFile modelInfo(*gMpqChain, "DBFilesClient\\CreatureModelData.dbc");
     displayInfo.open();
     modelInfo.open();
 
-    std::map<uint32_t, DBCFile::Record> modelInfoEntries;
+    std::map<uint32_t, DBCFile::Row> modelInfoEntries;
     std::map<std::string, ModelCache> modelCache;
 
-    for (DBCFile::Iterator itr = modelInfo.begin(); itr != modelInfo.end(); ++itr)
+    for (DBCFile::Cursor itr = modelInfo.begin(); itr != modelInfo.end(); ++itr)
     {
         unsigned int entry = itr->getInt(0);
         modelInfoEntries.insert(std::make_pair(entry, *itr));
     }
 
-    for (DBCFile::Iterator itr = displayInfo.begin(); itr != displayInfo.end(); ++itr)
+    for (DBCFile::Cursor itr = displayInfo.begin(); itr != displayInfo.end(); ++itr)
     {
         unsigned int displayid = itr->getInt(0);
         unsigned int modelentry = itr->getInt(1);
         float modelscale = itr->getFloat(4);
 
-        std::map<uint32_t, DBCFile::Record>::iterator  modelitr = modelInfoEntries.find(modelentry);
+        std::map<uint32_t, DBCFile::Row>::iterator  modelitr = modelInfoEntries.find(modelentry);
 
         if (modelitr == modelInfoEntries.end())
         {
@@ -153,7 +175,7 @@ int main()
             continue;
         }
 
-        DBCFile::Record modelrec = modelitr->second;
+        DBCFile::Row modelrec = modelitr->second;
 
         const char* modelname = modelrec.getString(2);
 
@@ -172,9 +194,8 @@ int main()
         if (cacheitr == modelCache.end())
         {
 
-            MPQFile modelf(strmodelname.c_str());
-
-            if (modelf.isEof())
+            std::vector<uint8_t> modelData;
+            if (!gMpqChain->readFile(strmodelname, modelData) || modelData.size() < sizeof(M2Header))
             {
                 printf("Error: cannot open %s\n", strmodelname.c_str());
                 continue;
@@ -183,21 +204,18 @@ int main()
             printf("Processing %u", displayid);
 
             header = (M2Header*)malloc(sizeof(M2Header));
-            modelf.read(header, sizeof(M2Header));
+            memcpy(header, modelData.data(), sizeof(M2Header));
 
             printf(" %u attachments %u bone lookups %u bones\n", header->nAttachments, header->nBoneLookupTable, header->nBones);
 
             attachments = (M2Attachment*)malloc(header->nAttachments * sizeof(M2Attachment));
-            modelf.seek(header->ofsAttachments);
-            modelf.read(attachments, header->nAttachments * sizeof(M2Attachment));
+            memcpy(attachments, modelData.data() + header->ofsAttachments, header->nAttachments * sizeof(M2Attachment));
 
             bonelookups = (uint16_t*)malloc(header->nBoneLookupTable * sizeof(uint16_t));
-            modelf.seek(header->ofsBoneLookupTable);
-            modelf.read(bonelookups, header->nBoneLookupTable * sizeof(uint16_t));
+            memcpy(bonelookups, modelData.data() + header->ofsBoneLookupTable, header->nBoneLookupTable * sizeof(uint16_t));
 
             bones = (M2Bone*)malloc(header->nBones * sizeof(M2Bone));
-            modelf.seek(header->ofsBones);
-            modelf.read(bones, header->nBones * sizeof(M2Bone));
+            memcpy(bones, modelData.data() + header->ofsBones, header->nBones * sizeof(M2Bone));
 
             ModelCache cacheentry;
             cacheentry.attachments = attachments;

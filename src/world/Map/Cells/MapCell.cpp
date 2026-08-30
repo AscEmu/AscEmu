@@ -113,6 +113,7 @@ void MapCell::setActivity(bool state)
             {
                 mgr->loadMap(vmapPath.c_str(), mapId, tileX, tileY);
                 mmgr->loadMap(mmapPath, mapId, tileX, tileY);
+                mmgr->loadRuntimeOffMeshConnections(mapId, tileX, tileY);
             }
             ++m_celltilesLoaded[mapId][tileX][tileY];
         }

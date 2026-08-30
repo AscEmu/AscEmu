@@ -25,6 +25,8 @@
 #include "Recast.h"
 #include "DetourNavMesh.h"
 
+#include "mpqlib/ClientVersion.hpp"
+
 #include <vector>
 #include <set>
 #include <list>
@@ -33,7 +35,11 @@
 #include <condition_variable>
 #include <mutex>
 #include <queue>
+#include <semaphore>
 #include <type_traits>
+#include <optional>
+#include <string>
+#include <unordered_map>
 
 template <typename T>
 class ProducerConsumerQueue
@@ -142,6 +148,37 @@ namespace MMAP
 
     typedef std::list<MapTiles> TileList;
 
+    // A single (map, tile) unit of work for buildAllMaps()'s worker pool -
+    // queuing at this granularity (rather than one whole map per queue
+    // entry) is what lets a handful of large continents' tiles spread
+    // across every worker thread instead of monopolizing just one each
+    // while threads working on small instance maps sit idle.
+    struct TileWorkItem
+    {
+        uint32_t mapId = 0;
+        uint32_t tileX = 0;
+        uint32_t tileY = 0;
+    };
+
+    // Peeks at the buildMagic field of one already-extracted maps/*.map file
+    // (map_extractor stamps every .map file's header with the client build
+    // that produced it) to determine which client version this extraction
+    // batch came from. Call only after checkDirectories() has confirmed
+    // "maps" is non-empty. Returns std::nullopt if no .map file is found or
+    // its buildMagic isn't a recognized build.
+    std::optional<mpqlib::ClientVersion> detectClientVersion(const std::string& mapsDir = "maps");
+
+    struct MmapTuning
+    {
+        float maxWalkableAngle;
+        int smallWalkableHeight;
+    };
+
+    // Cata/MoP's client uses a slightly different pathing tolerance than
+    // Classic/TBC/WotLK's; everything else about mmap generation is
+    // identical across versions.
+    MmapTuning getDefaultMmapTuning(mpqlib::ClientVersion version);
+
     struct Tile
     {
         Tile() : chf(NULL), solid(NULL), cset(NULL), pmesh(NULL), dmesh(NULL) {}
@@ -170,7 +207,8 @@ namespace MMAP
                 bool skipBattlegrounds   = false,
                 bool debugOutput         = false,
                 bool bigBaseUnit         = false,
-                const char* offMeshFilePath = NULL);
+                const char* offMeshFilePath = NULL,
+                int smallWalkableHeight = 2);
 
             ~MapBuilder();
 
@@ -192,6 +230,12 @@ namespace MMAP
             std::set<uint32_t>* getTileList(uint32_t mapID);
 
             void buildNavMesh(uint32_t mapID, dtNavMesh* &navMesh);
+
+            // Shared setup step for both buildMap() (single-map debug path,
+            // sequential) and buildAllMaps() (batch path, queues tiles
+            // individually instead): resolves/discovers the map's tile
+            // list and creates its navmesh. Returns nullptr on failure.
+            dtNavMesh* prepareMapForBuild(uint32_t mapID, std::set<uint32_t>*& tilesOut);
 
             void buildTile(uint32_t mapID, uint32_t tileX, uint32_t tileY, dtNavMesh* navMesh);
 
@@ -225,13 +269,46 @@ namespace MMAP
 
             float m_maxWalkableAngle;
             bool m_bigBaseUnit;
+            int m_smallWalkableHeight;
 
             // build performance - not really used for now
             rcContext* m_rcContext;
 
             std::vector<std::thread> _workerThreads;
-            ProducerConsumerQueue<uint32_t> _queue;
+            ProducerConsumerQueue<TileWorkItem> _queue;
             std::atomic<bool> _cancelationToken;
+
+            // Populated once, up front, by buildAllMaps() before any worker
+            // thread starts - one navmesh per map being built, looked up
+            // (read-only, via .at()) by worker threads processing that
+            // map's tiles. Freed once the queue has fully drained.
+            std::unordered_map<uint32_t, dtNavMesh*> _navMeshes;
+
+            // dtNavMesh::addTile()/removeTile() mutate the navmesh's
+            // internal tile pool and are not safe to call concurrently on
+            // the same instance - guards just that short registration+write
+            // sequence in buildMoveMapTile(), not the expensive Recast
+            // rasterization/contour work that happens before it, so it
+            // doesn't become a bottleneck.
+            std::mutex _tileRegistrationMutex;
+
+            // Bounds the *total* number of concurrently-running Recast
+            // compute tasks across both levels of parallelism this class
+            // has: buildAllMaps()'s outer worker threads (one whole tile
+            // each) and buildMoveMapTile()'s inner per-sub-tile loop (one
+            // map-tile is subdivided into up to TILES_PER_MAP^2 independent
+            // sub-tiles, each its own Recast pipeline run). Both levels
+            // acquire a permit only around the actual rc*() work, so the
+            // inner loop only picks up extra parallelism when there's slack
+            // (e.g. near the end of a batch run, when fewer outer tiles
+            // remain than there are threads) rather than oversubscribing
+            // the machine on top of the outer pool. Sized to hardware
+            // concurrency by default (so the debug-only buildMap()/
+            // buildSingleTile() paths, which have no outer pool at all,
+            // still get full inner parallelism); buildAllMaps() re-sizes it
+            // to match its own --threads value so an explicit user-chosen
+            // thread cap is honored for inner parallelism too.
+            std::optional<std::counting_semaphore<>> _computeSlots;
     };
 }
 

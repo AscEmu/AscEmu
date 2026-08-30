@@ -248,7 +248,7 @@ int main(int argc, char** argv)
 {
     unsigned int threads = std::thread::hardware_concurrency();
     int mapnum = -1;
-    float maxAngle = 55.0f;
+    float maxAngle = -1.0f; // resolved from the detected client version below unless --maxAngle overrides it
     int tileX = -1, tileY = -1;
     bool skipLiquid = false,
          skipContinents = false,
@@ -283,8 +283,38 @@ int main(int argc, char** argv)
     if (!checkDirectories(debugOutput))
         return silent ? -3 : finish("Press ENTER to close...", -3);
 
+    // Same file (and format) the live server's ".debug offmesh" command
+    // appends GM-captured connections to (see MMapManager::
+    // addRuntimeOffMeshConnection) - if it's sitting next to maps/vmaps,
+    // bake it into this build automatically so those connections become a
+    // permanent part of the real tiles instead of only existing as the
+    // server's own temporary runtime-injected layer. Only defaults to this
+    // when the file actually exists, so builds that never used the feature
+    // see no behavior change and no extra noise. --offMeshInput still wins
+    // if explicitly given.
+    if (!offMeshInputPath)
+    {
+        static char const* const kDefaultOffMeshPath = "mmaps/offmesh_runtime.txt";
+        if (FILE* f = fopen(kDefaultOffMeshPath, "r"))
+        {
+            fclose(f);
+            offMeshInputPath = const_cast<char*>(kDefaultOffMeshPath);
+            if (!silent)
+                printf("Found %s - baking its off-mesh connections into every tile built (pass --offMeshInput to use a different file instead).\n", kDefaultOffMeshPath);
+        }
+    }
+
+    auto const detectedVersion = MMAP::detectClientVersion();
+    MMAP::MmapTuning const tuning = MMAP::getDefaultMmapTuning(
+        detectedVersion.value_or(mpqlib::ClientVersion::WrathOfTheLichKing));
+    if (!detectedVersion && !silent)
+        printf("Warning: couldn't detect client version from maps/*.map, defaulting to WotLK tuning (maxAngle=%.1f)\n", tuning.maxWalkableAngle);
+    if (maxAngle < 0.f)
+        maxAngle = tuning.maxWalkableAngle;
+
     MapBuilder builder(maxAngle, skipLiquid, skipContinents, skipJunkMaps,
-                       skipBattlegrounds, debugOutput, bigBaseUnit, offMeshInputPath);
+                       skipBattlegrounds, debugOutput, bigBaseUnit, offMeshInputPath,
+                       tuning.smallWalkableHeight);
 
     auto startTime = Util::TimeNow();
     if (file)

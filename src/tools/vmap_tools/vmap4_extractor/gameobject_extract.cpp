@@ -18,27 +18,66 @@
  */
 
 #include "model.h"
-#include "dbcfile.h"
-#include "adtfile.h"
+#include "mpqlib/DBCFile.hpp"
+#include "ADTFile.hpp"
 #include "vmapexport.h"
 
 #include <algorithm>
+#include <memory>
+#include <mutex>
 #include <stdio.h>
+#include <unordered_map>
+
+extern std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
+extern std::unique_ptr<mpqlib::MpqPatchChain> LocaleMpq;
+
+namespace
+{
+    // ExtractSingleModel's FileExists()-then-create check is only race-free
+    // when calls are sequential. With ADT tiles processed in parallel, many
+    // tiles commonly reference the very same model (a shared tree/rock
+    // doodad) - sometimes via genuinely different source paths (case
+    // variants, or a distinct MPQ entry) that normalize to the same output
+    // filename, where one variant can fail to open while another succeeds.
+    // A per-output-path mutex (rather than std::call_once) preserves the
+    // original sequential fallback behavior under concurrency: only one
+    // thread attempts extraction for a given filename at a time, but a
+    // later caller still retries with its own input if the file is still
+    // missing, instead of being permanently skipped because some earlier,
+    // differently-sourced attempt already ran and failed.
+    std::mutex g_modelExtractionRegistryMutex;
+    std::unordered_map<std::string, std::unique_ptr<std::mutex>> g_modelExtractionLocks;
+
+    std::mutex& LockForModelOutput(std::string const& outputPath)
+    {
+        std::lock_guard<std::mutex> lock(g_modelExtractionRegistryMutex);
+        auto& slot = g_modelExtractionLocks[outputPath];
+        if (!slot)
+            slot = std::make_unique<std::mutex>();
+        return *slot;
+    }
+}
 
 bool ExtractSingleModel(std::string& fname)
 {
-    char* name = GetPlainName((char*)fname.c_str());
-    char* ext = GetExtension(name);
-
-    // < 3.1.0 ADT MMDX section store filename.mdx filenames for corresponded .m2 file
-    if (!strcmp(ext, ".mdx"))
+    // < 3.1.0 ADT MMDX section stores filename.mdx for the corresponding .m2 file.
+    if (fname.length() >= 4 && fname.substr(fname.length() - 4, 4) == ".mdx")
     {
-        // replace .mdx -> .m2
         fname.erase(fname.length()-2,2);
         fname.append("2");
     }
-    // >= 3.1.0 ADT MMDX section store filename.m2 filenames for corresponded .m2 file
-    // nothing do
+    // >= 3.1.0 ADT MMDX section stores filename.m2 directly - nothing to do.
+
+    // The modern (Cata+) ADT MMDX path intentionally passes the raw,
+    // un-normalized MMDX string here (see ADTFile::init()) - case/space-fix
+    // the plain-name portion for the on-disk output filename while still
+    // opening the model from the MPQ under its original path. A no-op
+    // re-application for callers (legacy ADT MMDX, ExtractGameobjectModels)
+    // that already normalized their path before calling.
+    std::string originalName = fname;
+    char* name = getPlainName(const_cast<char*>(fname.c_str()));
+    fixNameCase(name, strlen(name));
+    fixNameSpaces(name, strlen(name));
 
     std::string output(szWorkDirWmo);
     output += "/";
@@ -47,17 +86,24 @@ bool ExtractSingleModel(std::string& fname)
     if (FileExists(output.c_str()))
         return true;
 
-    Model mdl(fname);
+    std::lock_guard<std::mutex> lock(LockForModelOutput(output));
+
+    // Re-check: another thread may have finished extracting this exact
+    // output while we were waiting for the lock.
+    if (FileExists(output.c_str()))
+        return true;
+
+    Model mdl(originalName);
     if (!mdl.open())
         return false;
 
-    return mdl.ConvertToVMAPModel(output.c_str());
+    return mdl.convertToVMapModel(output.c_str());
 }
 
 void ExtractGameobjectModels()
 {
     printf("Extracting GameObject models...");
-    DBCFile dbc("DBFilesClient\\GameObjectDisplayInfo.dbc");
+    DBCFile dbc(IsLegacyVmapArchiveLayout() ? *WorldMpq : *LocaleMpq, "DBFilesClient\\GameObjectDisplayInfo.dbc");
     if(!dbc.open())
     {
         printf("Fatal error: Invalid GameObjectDisplayInfo.dbc file format!\n");
@@ -66,7 +112,6 @@ void ExtractGameobjectModels()
 
     std::string basepath = szWorkDirWmo;
     basepath += "/";
-    std::string path;
 
     std::string modelListPath = basepath + "temp_gameobject_models";
     FILE* model_list = fopen(modelListPath.c_str(), "wb");
@@ -76,18 +121,18 @@ void ExtractGameobjectModels()
         return;
     }
 
-    for (DBCFile::Iterator it = dbc.begin(); it != dbc.end(); ++it)
+    for (auto const& record : dbc)
     {
-        path = it->getString(1);
+        std::string path = record.getString(1);
 
         if (path.length() < 4)
             continue;
 
-        fixnamen((char*)path.c_str(), path.size());
-        char* name = GetPlainName((char*)path.c_str());
-        fixname2(name, strlen(name));
+        fixNameCase((char*)path.c_str(), path.size());
+        char* name = getPlainName((char*)path.c_str());
+        fixNameSpaces(name, strlen(name));
 
-        char* ch_ext = GetExtension(name);
+        char* ch_ext = getExtension(name);
         if (!ch_ext)
             continue;
 
@@ -112,7 +157,7 @@ void ExtractGameobjectModels()
 
         if (result)
         {
-            uint32_t displayId = it->getUInt(0);
+            uint32_t displayId = record.getUInt(0);
             uint32_t path_length = static_cast<uint32_t>(strlen(name));
             fwrite(&displayId, sizeof(uint32_t), 1, model_list);
             fwrite(&isWmo, sizeof(uint8_t), 1, model_list);

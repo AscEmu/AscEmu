@@ -19,9 +19,14 @@
 
 #include "MMapManager.h"
 #include "MapDefines.h"
+#include "DetourCommon.h"
+#include "DetourNavMeshBuilder.h"
 #include "Debugging/Errors.hpp"
 #include "Logging/Logger.hpp"
 #include "Server/World.h"
+
+#include <cfloat>
+#include <cstdio>
 
 namespace MMAP
 {
@@ -230,6 +235,20 @@ namespace MMAP
         {
             mmap->mmapLoadedTiles.erase(packedGridPos);
             --loadedTiles;
+
+            // the real ground tile it linked into is gone - drop our
+            // off-mesh-only layer at the same position too, freeing the
+            // reserved slot back up rather than leaving it orphaned
+            {
+                std::lock_guard<std::mutex> lock(m_offMeshMutex);
+                auto offMeshIt = mmap->runtimeOffMeshTiles.find(packedGridPos);
+                if (offMeshIt != mmap->runtimeOffMeshTiles.end())
+                {
+                    mmap->navMesh->removeTile(offMeshIt->second, nullptr, nullptr);
+                    mmap->runtimeOffMeshTiles.erase(offMeshIt);
+                }
+            }
+
             sLogger.debug("MMAP:unloadMap: Unloaded mmtile {:04}[{:02}, {:02}] from {:04}", mapId, x, y, mapId);
             return true;
         }
@@ -328,5 +347,256 @@ namespace MMAP
         }
 
         return mmap->navMeshQueries[instanceId];
+    }
+
+    // ######################## Runtime off-mesh connections ########################
+    // See MMapManager.h for the design rationale. Coordinates entering this
+    // section are in game (x, y, z) order and get swapped to Detour's
+    // (y, z, x) convention wherever a raw Detour call needs it - mirroring
+    // mmaps_generator's TerrainBuilder::loadOffMeshConnections(), which
+    // does the exact same reorder for the on-disk --offMeshInput format
+    // this feature reuses.
+
+    uint64_t MMapManager::packMapTileID(uint32_t mapId, int32_t x, int32_t y)
+    {
+        return (uint64_t(mapId) << 32) | uint64_t(uint32_t(x) << 16 | uint32_t(y));
+    }
+
+    static std::string GetRuntimeOffMeshFilePath()
+    {
+        return worldConfig.server.dataDir + "mmaps/offmesh_runtime.txt";
+    }
+
+    void MMapManager::ensureRuntimeOffMeshFileCacheLoaded()
+    {
+        if (m_offMeshFileCacheLoaded)
+            return;
+
+        m_offMeshFileCacheLoaded = true;
+
+        FILE* file = fopen(GetRuntimeOffMeshFilePath().c_str(), "r");
+        if (!file)
+            return; // nothing captured yet, in this session or a previous one - not an error
+
+        char line[512];
+        while (fgets(line, sizeof(line), file))
+        {
+            uint32_t mid, tx, ty;
+            RuntimeOffMeshConnection conn;
+            if (sscanf(line, "%u %u,%u (%f %f %f) (%f %f %f) %f", &mid, &tx, &ty,
+                &conn.p0[0], &conn.p0[1], &conn.p0[2], &conn.p1[0], &conn.p1[1], &conn.p1[2], &conn.radius) != 10)
+                continue;
+
+            m_offMeshFileCache[packMapTileID(mid, int32_t(tx), int32_t(ty))].push_back(conn);
+        }
+
+        fclose(file);
+    }
+
+    void MMapManager::appendRuntimeOffMeshConnectionToFile(uint32_t mapId, int32_t x, int32_t y, const RuntimeOffMeshConnection& conn)
+    {
+        FILE* file = fopen(GetRuntimeOffMeshFilePath().c_str(), "a");
+        if (!file)
+        {
+            sLogger.failure("MMAP:appendRuntimeOffMeshConnectionToFile: could not open '{}' for appending", GetRuntimeOffMeshFilePath());
+            return;
+        }
+
+        fprintf(file, "%u %u,%u (%f %f %f) (%f %f %f) %f\n", mapId, uint32_t(x), uint32_t(y),
+            conn.p0[0], conn.p0[1], conn.p0[2], conn.p1[0], conn.p1[1], conn.p1[2], conn.radius);
+        fclose(file);
+    }
+
+    bool MMapManager::rebuildRuntimeOffMeshTile(MMapData* mmap, uint32_t mapId, int32_t x, int32_t y)
+    {
+        uint32_t packedGridPos = packTileID(x, y);
+
+        // drop the previous version of this tile's off-mesh layer, if any -
+        // dtCreateNavMeshData bakes a fixed connection list, so adding one
+        // more connection means rebuilding the whole thing, not patching it
+        auto oldTileIt = mmap->runtimeOffMeshTiles.find(packedGridPos);
+        if (oldTileIt != mmap->runtimeOffMeshTiles.end())
+        {
+            mmap->navMesh->removeTile(oldTileIt->second, nullptr, nullptr);
+            mmap->runtimeOffMeshTiles.erase(oldTileIt);
+        }
+
+        auto connIt = mmap->runtimeOffMeshConnections.find(packedGridPos);
+        if (connIt == mmap->runtimeOffMeshConnections.end() || connIt->second.empty())
+            return true; // nothing to (re)build - fine, not an error
+
+        std::vector<RuntimeOffMeshConnection> const& connections = connIt->second;
+        size_t count = connections.size();
+
+        // Off-mesh connection arrays, in Detour (y, z, x) order.
+        std::vector<float> offMeshVerts(count * 6);
+        std::vector<float> offMeshRad(count);
+        std::vector<unsigned char> offMeshDir(count);
+        std::vector<unsigned char> offMeshAreas(count);
+        std::vector<unsigned short> offMeshFlags(count);
+
+        float bmin[3] = { FLT_MAX, FLT_MAX, FLT_MAX };
+        float bmax[3] = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+        for (size_t i = 0; i < count; ++i)
+        {
+            RuntimeOffMeshConnection const& c = connections[i];
+            float dp0[3] = { c.p0[1], c.p0[2], c.p0[0] };
+            float dp1[3] = { c.p1[1], c.p1[2], c.p1[0] };
+
+            for (int axis = 0; axis < 3; ++axis)
+            {
+                offMeshVerts[i * 6 + axis] = dp0[axis];
+                offMeshVerts[i * 6 + 3 + axis] = dp1[axis];
+
+                bmin[axis] = dtMin(bmin[axis], dtMin(dp0[axis], dp1[axis]));
+                bmax[axis] = dtMax(bmax[axis], dtMax(dp0[axis], dp1[axis]));
+            }
+
+            offMeshRad[i] = c.radius;
+            offMeshDir[i] = 1;      // bidirectional, same as mmaps_generator's file-based connections
+            offMeshAreas[i] = 0xFF; // "can be used same way as polygon flags" - mirrors loadOffMeshConnections()
+            offMeshFlags[i] = 0xFF; // all movement masks can make this path
+        }
+
+        // Pad the bounds generously, then place one tiny, harmless "ground"
+        // triangle near the (now-known) minimum corner - dtCreateNavMeshData
+        // hard-requires at least one real polygon (see its early
+        // `if (!params->polyCount || !params->polys) return false;`), but
+        // this poly's own flags are 0, which never matches any real
+        // dtQueryFilter's include flags (see PathGenerator::createFilter),
+        // so it's never selected by any actual pathfinding/LoS query - it
+        // exists purely to satisfy that requirement.
+        for (int axis = 0; axis < 3; ++axis)
+        {
+            bmin[axis] -= 5.0f;
+            bmax[axis] += 5.0f;
+        }
+
+        constexpr float kCellSize = 0.5f;
+        constexpr float kCellHeight = 0.2f;
+
+        unsigned short dummyVerts[9] = {
+            2, 2, 2,
+            6, 2, 2,
+            2, 2, 6
+        };
+        constexpr unsigned short kMeshNullIdx = 0xffff; // matches DetourNavMeshBuilder.cpp's private MESH_NULL_IDX
+        unsigned short dummyPoly[6] = { 0, 1, 2, kMeshNullIdx, kMeshNullIdx, kMeshNullIdx };
+        unsigned short dummyFlags[1] = { 0 };
+        unsigned char dummyAreas[1] = { 0 };
+
+        dtNavMeshCreateParams params;
+        memset(&params, 0, sizeof(params));
+        params.verts = dummyVerts;
+        params.vertCount = 3;
+        params.polys = dummyPoly;
+        params.polyFlags = dummyFlags;
+        params.polyAreas = dummyAreas;
+        params.polyCount = 1;
+        params.nvp = 3;
+
+        params.offMeshConVerts = offMeshVerts.data();
+        params.offMeshConRad = offMeshRad.data();
+        params.offMeshConDir = offMeshDir.data();
+        params.offMeshConAreas = offMeshAreas.data();
+        params.offMeshConFlags = offMeshFlags.data();
+        params.offMeshConCount = int(count);
+
+        params.walkableHeight = 2.0f;
+        params.walkableRadius = 0.6f;
+        params.walkableClimb = 1.0f;
+        params.tileX = x;
+        params.tileY = y;
+        params.tileLayer = 1; // extra layer, alongside the real terrain tile at layer 0
+        dtVcopy(params.bmin, bmin);
+        dtVcopy(params.bmax, bmax);
+        params.cs = kCellSize;
+        params.ch = kCellHeight;
+        params.buildBvTree = true;
+
+        unsigned char* data = nullptr;
+        int dataSize = 0;
+        if (!dtCreateNavMeshData(&params, &data, &dataSize))
+        {
+            sLogger.failure("MMAP:rebuildRuntimeOffMeshTile: dtCreateNavMeshData failed for {:04}[{:02},{:02}]", mapId, x, y);
+            return false;
+        }
+
+        dtTileRef tileRef = 0;
+        if (dtStatusFailed(mmap->navMesh->addTile(data, dataSize, DT_TILE_FREE_DATA, 0, &tileRef)))
+        {
+            sLogger.failure("MMAP:rebuildRuntimeOffMeshTile: addTile failed for {:04}[{:02},{:02}] "
+                "(is mmaps_generator's reserved tile headroom present in this map's .mmap file?)", mapId, x, y);
+            dtFree(data);
+            return false;
+        }
+
+        mmap->runtimeOffMeshTiles[packedGridPos] = tileRef;
+        return true;
+    }
+
+    bool MMapManager::addRuntimeOffMeshConnection(uint32_t mapId, const float* p0, const float* p1, float radius, std::string& outError)
+    {
+        std::lock_guard<std::mutex> lock(m_offMeshMutex);
+
+        MMapDataSet::const_iterator itr = GetMMapData(mapId);
+        if (itr == loadedMMaps.end())
+        {
+            outError = "No navmesh loaded for this map (pathfinding disabled, or map has no mmaps).";
+            return false;
+        }
+
+        MMapData* mmap = itr->second.get();
+
+        float detourP0[3] = { p0[1], p0[2], p0[0] };
+        int32_t x = -1, y = -1;
+        mmap->navMesh->calcTileLoc(detourP0, &x, &y);
+        if (x < 0 || y < 0 || mmap->navMesh->getTileAt(x, y, 0) == nullptr)
+        {
+            outError = "Your current tile isn't loaded - stand somewhere with pathfinding active.";
+            return false;
+        }
+
+        ensureRuntimeOffMeshFileCacheLoaded();
+
+        RuntimeOffMeshConnection conn;
+        memcpy(conn.p0, p0, sizeof(conn.p0));
+        memcpy(conn.p1, p1, sizeof(conn.p1));
+        conn.radius = radius;
+
+        mmap->runtimeOffMeshConnections[packTileID(x, y)].push_back(conn);
+        m_offMeshFileCache[packMapTileID(mapId, x, y)].push_back(conn);
+        appendRuntimeOffMeshConnectionToFile(mapId, x, y, conn);
+
+        if (!rebuildRuntimeOffMeshTile(mmap, mapId, x, y))
+        {
+            outError = "Captured and saved, but injecting it into the live navmesh failed - see server log.";
+            return false;
+        }
+
+        return true;
+    }
+
+    void MMapManager::loadRuntimeOffMeshConnections(uint32_t mapId, int32_t x, int32_t y)
+    {
+        std::lock_guard<std::mutex> lock(m_offMeshMutex);
+
+        MMapDataSet::const_iterator itr = GetMMapData(mapId);
+        if (itr == loadedMMaps.end())
+            return;
+
+        MMapData* mmap = itr->second.get();
+
+        ensureRuntimeOffMeshFileCacheLoaded();
+
+        auto cacheIt = m_offMeshFileCache.find(packMapTileID(mapId, x, y));
+        if (cacheIt == m_offMeshFileCache.end() || cacheIt->second.empty())
+            return;
+
+        auto& liveList = mmap->runtimeOffMeshConnections[packTileID(x, y)];
+        liveList.insert(liveList.end(), cacheIt->second.begin(), cacheIt->second.end());
+
+        rebuildRuntimeOffMeshTile(mmap, mapId, x, y);
     }
 }
