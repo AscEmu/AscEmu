@@ -603,7 +603,16 @@ namespace MMAP
 
         int polyBits = DT_POLY_BITS;
 
-        int maxTiles = static_cast<int>(tiles->size());
+        // A handful of spare tile slots beyond what this map's real terrain
+        // needs, reserved so the live server can inject small, extra
+        // "off-mesh connection only" tiles (see MMapManager's runtime
+        // off-mesh support) as additional layers at an already-used (x,y)
+        // grid position, without needing to rebuild this .mmap file first.
+        // DT_TILE_BITS (21) gives ~2M addressable tile slots regardless of
+        // maxTiles, so this reserve never risks exhausting that budget even
+        // for the smallest instance maps.
+        constexpr int kRuntimeOffMeshTileReserve = 64;
+        int maxTiles = static_cast<int>(tiles->size()) + kRuntimeOffMeshTileReserve;
         int maxPolysPerTile = 1 << polyBits;
 
         /***          calculate bounds of map         ***/

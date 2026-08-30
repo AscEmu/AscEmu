@@ -26,4 +26,11 @@ public:
 private:
     MPQFile m_wdt;
     std::string m_filename;
+
+    // MAIN chunk's per-tile existence bitmap, read once in init() (before
+    // m_wdt gets closed) - getMap() consults this so it can correctly
+    // report "this tile isn't in the WDT" instead of unconditionally
+    // returning an ADTFile for all 4096 grid positions regardless of
+    // whether the map actually has that many tiles.
+    bool m_tileExists[64][64] = {};
 };

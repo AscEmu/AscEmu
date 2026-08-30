@@ -45,7 +45,26 @@ bool WDTFile::init(std::string const& /*mapId*/, unsigned int mapID)
     mpqlib::Chunk chunk;
     while (chunks.next(chunk))
     {
-        if (chunk.tag == "MWMO")
+        if (chunk.tag == "MAIN")
+        {
+            // Per-tile existence bitmap: 64x64 entries of {uint32_t flag;
+            // uint32_t data1;}, row-major [y][x], bit 0 of flag set means
+            // this (x,y) ADT tile actually exists - same format
+            // map_extractor's own WDT MAIN-chunk read already relies on.
+            // Without this, getMap() had no way to tell a real tile from
+            // one of the other, usually-thousands-of, grid positions a map
+            // simply doesn't use, and unconditionally returned an ADTFile
+            // for all 4096 of them regardless.
+            size_t const expectedSize = 64 * 64 * 8;
+            if (chunk.payload.size() >= expectedSize)
+            {
+                auto const* entries = reinterpret_cast<uint32_t const*>(chunk.payload.data());
+                for (int y = 0; y < 64; ++y)
+                    for (int x = 0; x < 64; ++x)
+                        m_tileExists[y][x] = (entries[(y * 64 + x) * 2] & 0x1) != 0;
+            }
+        }
+        else if (chunk.tag == "MWMO")
         {
             // global map objects
             if (chunk.payload.empty())
@@ -99,6 +118,9 @@ WDTFile::~WDTFile()
 ADTFile* WDTFile::getMap(int x, int z)
 {
     if (!(x >= 0 && z >= 0 && x < 64 && z < 64))
+        return nullptr;
+
+    if (!m_tileExists[z][x])
         return nullptr;
 
     // Cata split each ADT tile's data across up to three files

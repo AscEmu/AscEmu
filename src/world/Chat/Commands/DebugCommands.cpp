@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "VMapFactory.h"
+#include "MMapFactory.h"
+#include "MMapManager.h"
 #include "Chat/ChatCommandHandler.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/ObjectMgr.hpp"
@@ -34,6 +36,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgSpellStart.h"
 #include "Server/Packets/SmsgSpellGo.h"
 #include "Server/Packets/SmsgInitWorldStates.h"
+
+#include <cstring>
+#include <unordered_map>
 
 using namespace AscEmu::Packets;
 
@@ -761,6 +766,85 @@ bool ChatCommandHandler::HandleDebugInFrontCommand(const char* /*args*/, WorldSe
     }
 
     systemMessage(m_session, "In front result: {}", m_session->GetPlayer()->isInFront(obj));
+
+    return true;
+}
+
+namespace
+{
+    // First point of an in-progress ".debug offmesh" capture, per GM (by
+    // GUID) - the command captures point A on its first call, then point B
+    // (creating the connection between them) on the next.
+    struct PendingOffMeshPoint
+    {
+        uint32_t mapId;
+        float pos[3]; // game (x, y, z)
+    };
+    std::unordered_map<uint64_t, PendingOffMeshPoint> s_pendingOffMeshPoints;
+}
+
+//.debug offmesh
+bool ChatCommandHandler::HandleDebugOffMeshCommand(const char* args, WorldSession* m_session)
+{
+    Player* player = m_session->GetPlayer();
+    uint64_t guid = player->getGuid();
+
+    if (args && !strcmp(args, "cancel"))
+    {
+        if (s_pendingOffMeshPoints.erase(guid))
+            systemMessage(m_session, "Off-mesh capture cancelled.");
+        else
+            systemMessage(m_session, "No pending off-mesh point to cancel.");
+        return true;
+    }
+
+    auto pendingIt = s_pendingOffMeshPoints.find(guid);
+    if (pendingIt == s_pendingOffMeshPoints.end())
+    {
+        PendingOffMeshPoint pending;
+        pending.mapId = player->GetMapId();
+        pending.pos[0] = player->GetPositionX();
+        pending.pos[1] = player->GetPositionY();
+        pending.pos[2] = player->GetPositionZ();
+        s_pendingOffMeshPoints[guid] = pending;
+
+        systemMessage(m_session, "Off-mesh start point captured at [{:.2f}, {:.2f}, {:.2f}]. Move to the other end and run "
+            ".debug offmesh again (optionally with a radius, e.g. \".debug offmesh 2.0\") to finish, or "
+            ".debug offmesh cancel to discard.", pending.pos[0], pending.pos[1], pending.pos[2]);
+        return true;
+    }
+
+    PendingOffMeshPoint pending = pendingIt->second;
+    s_pendingOffMeshPoints.erase(pendingIt);
+
+    if (pending.mapId != player->GetMapId())
+    {
+        systemMessage(m_session, "You changed maps since the start point was captured - cancelled.");
+        return true;
+    }
+
+    float radius = 1.5f;
+    if (args && *args)
+    {
+        float parsed = 0.0f;
+        if (sscanf(args, "%f", &parsed) == 1 && parsed > 0.0f)
+            radius = parsed;
+    }
+
+    float endPos[3] = { player->GetPositionX(), player->GetPositionY(), player->GetPositionZ() };
+
+    MMAP::MMapManager* mmgr = MMAP::MMapFactory::createOrGetMMapManager();
+    std::string error;
+    if (!mmgr->addRuntimeOffMeshConnection(pending.mapId, pending.pos, endPos, radius, error))
+    {
+        systemMessage(m_session, "Failed to create off-mesh connection: {}", error);
+        return true;
+    }
+
+    systemMessage(m_session, "Off-mesh connection created (radius {:.1f}) and is live now - select a creature and try "
+        ".npc come to test it.", radius);
+    sGMLog.writefromsession(m_session, "Created off-mesh connection on map {} from [{:.2f},{:.2f},{:.2f}] to [{:.2f},{:.2f},{:.2f}], radius {:.1f}",
+        pending.mapId, pending.pos[0], pending.pos[1], pending.pos[2], endPos[0], endPos[1], endPos[2], radius);
 
     return true;
 }

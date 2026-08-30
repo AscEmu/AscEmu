@@ -29,6 +29,7 @@
 
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <bitset>
 #include <cctype>
 #include <cinttypes>
@@ -41,6 +42,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <set>
 #include <span>
@@ -1411,7 +1413,20 @@ void ExtractMapsFromMpq(uint32_t build)
     }
     printf("Converting %zu map tiles...\n", workItems.size());
 
-    std::for_each(std::execution::par, workItems.begin(), workItems.end(), [build](MapTileWorkItem const& item)
+    // Purely cosmetic: ConvertADT() itself has no progress hooks, and with
+    // tiles now converting in parallel this phase can run for minutes with
+    // zero console output otherwise. Reports roughly every 1% (at least
+    // every tile, for small work sets) - fetch_add's return value ensures
+    // exactly one thread's increment lands on each reporting boundary, so
+    // concurrent tiles finishing near-simultaneously don't double-print or
+    // get skipped. The print itself is mutex-guarded purely to keep one
+    // line's worth of output from interleaving with another's.
+    std::atomic<size_t> tilesCompleted{ 0 };
+    std::mutex progressMutex;
+    size_t const total = workItems.size();
+    size_t const reportInterval = std::max<size_t>(1, total / 100);
+
+    std::for_each(std::execution::par, workItems.begin(), workItems.end(), [build, &tilesCompleted, &progressMutex, total, reportInterval](MapTileWorkItem const& item)
     {
         // ChunkNode::as<T>() throws instead of asserting when a chunk's
         // byte-scan match turns out too small for the struct requested -
@@ -1426,6 +1441,15 @@ void ExtractMapsFromMpq(uint32_t build)
         catch (std::exception const& e)
         {
             printf("Error converting %s: %s\n", item.mpqFilename.c_str(), e.what());
+        }
+
+        size_t const completed = tilesCompleted.fetch_add(1, std::memory_order_relaxed) + 1;
+        if (completed % reportInterval == 0 || completed == total)
+        {
+            std::lock_guard<std::mutex> lock(progressMutex);
+            printf("\rConverting tiles: %zu/%zu (%u%%)          ", completed, total,
+                static_cast<unsigned>(completed * 100 / total));
+            fflush(stdout);
         }
     });
     printf("\n");

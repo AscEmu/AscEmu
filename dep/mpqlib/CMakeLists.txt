@@ -47,10 +47,5 @@ target_link_libraries(${LIBRARY_NAME}
 
 target_compile_features(${LIBRARY_NAME} PUBLIC cxx_std_23)
 
-# Minimal manual smoke-test executable: mpqlib_test <base.MPQ> [patch.MPQ ...] -- <fileInArchive>
-add_executable(mpqlib_test test/mpqlib_test.cpp)
-target_link_libraries(mpqlib_test PRIVATE ${LIBRARY_NAME})
-install(TARGETS mpqlib_test RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})
-
 unset(MPQLIB_SRCS)
 unset(MPQLIB_VENDOR_SRCS)
