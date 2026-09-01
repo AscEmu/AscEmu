@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MMapFactory.h"
 #include "MMapManager.h"
 #include "Chat/ChatCommandHandler.hpp"
+#include "Movement/PathGenerator.h"
 #include "Logging/Logger.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Management/WeatherMgr.hpp"
@@ -845,6 +846,114 @@ bool ChatCommandHandler::HandleDebugOffMeshCommand(const char* args, WorldSessio
         ".npc come to test it.", radius);
     sGMLog.writefromsession(m_session, "Created off-mesh connection on map {} from [{:.2f},{:.2f},{:.2f}] to [{:.2f},{:.2f},{:.2f}], radius {:.1f}",
         pending.mapId, pending.pos[0], pending.pos[1], pending.pos[2], endPos[0], endPos[1], endPos[2], radius);
+
+    return true;
+}
+
+namespace
+{
+    std::string describePathType(PathType type)
+    {
+        std::string result;
+        auto append = [&result](char const* flag)
+        {
+            if (!result.empty())
+                result += "|";
+            result += flag;
+        };
+
+        if (type == PATHFIND_BLANK)
+            return "BLANK";
+        if (type & PATHFIND_NORMAL) append("NORMAL");
+        if (type & PATHFIND_SHORTCUT) append("SHORTCUT");
+        if (type & PATHFIND_INCOMPLETE) append("INCOMPLETE");
+        if (type & PATHFIND_NOPATH) append("NOPATH");
+        if (type & PATHFIND_NOT_USING_PATH) append("NOT_USING_PATH");
+        if (type & PATHFIND_SHORT) append("SHORT(point limit hit)");
+        if (type & PATHFIND_FARFROMPOLY_START) append("FARFROMPOLY_START");
+        if (type & PATHFIND_FARFROMPOLY_END) append("FARFROMPOLY_END");
+        return result;
+    }
+}
+
+//.debug showpath
+bool ChatCommandHandler::HandleDebugShowPathCommand(const char* args, WorldSession* m_session)
+{
+    Player* player = m_session->GetPlayer();
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    float scale = 0.25f;
+    if (args && *args)
+    {
+        float parsed = 0.0f;
+        if (sscanf(args, "%f", &parsed) == 1 && parsed > 0.0f)
+            scale = parsed;
+    }
+
+    PathGenerator path(creature_target);
+    path.calculatePath(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), false);
+
+    auto const& points = path.getPath();
+    auto const& rawPoints = path.getRawPath();
+    systemMessage(m_session, "Path type: {} - {} point(s)", describePathType(path.getPathType()), points.size());
+
+    // Dump raw (pre-normalizePath) navmesh Z next to the post-correction Z
+    // and the independently-queried ADT/VMap ground height at the same XY,
+    // so a broken navmesh height - or a bad correction on top of a good one -
+    // shows up directly in the chat log without a screenshot or a new
+    // client-data extraction to diagnose.
+    for (size_t i = 0; i < points.size(); ++i)
+    {
+        auto const& point = points[i];
+        float rawZ = i < rawPoints.size() ? rawPoints[i].z : point.z;
+        float groundZ = creature_target->getWorldMap()->getHeight(creature_target->GetPhase(),
+            LocationVector(point.x, point.y, point.z + 2.0f));
+        systemMessage(m_session, "[{}] x={:.2f} y={:.2f} rawZ={:.2f} z={:.2f} (ground={:.2f}, diff={:.2f})",
+            i, point.x, point.y, rawZ, point.z, groundZ, point.z - groundZ);
+    }
+
+    // Spawning one object per point in the same tick can overload nearby
+    // clients' update-packet handling once a path has more than a couple
+    // dozen points (MAX_POINT_PATH_LENGTH allows up to 256) - seen as
+    // CMSG_OBJECT_UPDATE_FAILED spam and the just-spawned markers vanishing
+    // again. Cap the marker count and, for longer paths, sample evenly
+    // across all points instead of only showing the first N - the whole
+    // shape of the path still needs to stay visible, not just its start.
+    constexpr size_t kMaxMarkers = 20;
+    uint32_t entry = creature_target->getEntry();
+    uint32_t spawned = 0;
+
+    if (points.size() <= kMaxMarkers)
+    {
+        for (auto const& point : points)
+        {
+            LocationVector pos(point.x, point.y, point.z, 0.0f);
+            if (Creature* marker = creature_target->summonCreature(entry, pos, TIMED_DESPAWN, 30000))
+            {
+                marker->setScale(scale);
+                ++spawned;
+            }
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < kMaxMarkers; ++i)
+        {
+            size_t index = (i * (points.size() - 1)) / (kMaxMarkers - 1);
+            auto const& point = points[index];
+            LocationVector pos(point.x, point.y, point.z, 0.0f);
+            if (Creature* marker = creature_target->summonCreature(entry, pos, TIMED_DESPAWN, 30000))
+            {
+                marker->setScale(scale);
+                ++spawned;
+            }
+        }
+    }
+
+    systemMessage(m_session, "Spawned {} path marker(s) at scale {:.2f}, despawning in 30s.{}", spawned, scale,
+        points.size() > kMaxMarkers ? " (sampled - path had more points than shown)" : "");
 
     return true;
 }

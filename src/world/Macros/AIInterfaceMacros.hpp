@@ -57,7 +57,18 @@ const float MIN_WALK_DISTANCE = 2.0f;
 
 /// -
 #define MAX_PATH_LENGTH 512 // 1024
-#define MAX_POINT_PATH_LENGTH   74
+// Was 74 (74 * SMOOTH_PATH_STEP_SIZE = ~296 world units of path length
+// before PathGenerator::buildPointPath() discards the whole, otherwise
+// valid, path and falls back to a straight-line shortcut instead - see
+// PATHFIND_SHORT in PathGenerator.cpp). That ceiling is easily reached by
+// an ordinary chase distance, especially once a slope needs several extra
+// steering points to follow properly, so a creature that pathed correctly
+// at close range would revert to cutting straight through terrain once the
+// target moved far enough away. 256 matches AIInterface's own more
+// generous MAX_PATH_LENGTH-based budget used elsewhere; the extra stack
+// usage (a few KB at most, in a handful of fixed-size arrays sized off
+// this constant) is negligible.
+#define MAX_POINT_PATH_LENGTH   256
 /// -
 #define SMOOTH_PATH_STEP_SIZE 4.0f
 

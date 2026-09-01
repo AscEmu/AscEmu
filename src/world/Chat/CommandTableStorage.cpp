@@ -156,6 +156,7 @@ CommandTableStorage::CommandTableStorage()
         {"debug dumpmovement",            "d", 0, wrap(&ChatCommandHandler::HandleDebugDumpMovementCommand),        "Dumps the player's movement information to chat" },
         {"debug infront",                 "d", 0, wrap(&ChatCommandHandler::HandleDebugInFrontCommand),             "" },
         {"debug offmesh",                 "d", 0, wrap(&ChatCommandHandler::HandleDebugOffMeshCommand),            "Captures your position as one end of a pathfinding off-mesh connection; run again at the other end to create and live-inject it. Optional radius arg on the closing call, .debug offmesh cancel to discard a pending start point." },
+        {"debug showpath",                "d", 0, wrap(&ChatCommandHandler::HandleDebugShowPathCommand),           "Calculates the path from your selected creature to you and spawns small (scale 0.25 by default, optional arg to override) temporary copies of it at every computed path point, so you can see exactly which mesh points would be used." },
         {"debug showreact",               "d", 0, wrap(&ChatCommandHandler::HandleShowReactionCommand),             "" },
         {"debug aimove",                  "d", 0, wrap(&ChatCommandHandler::HandleAIMoveCommand),                   "" },
         {"debug dist",                    "d", 0, wrap(&ChatCommandHandler::HandleDistanceCommand),                 "" },

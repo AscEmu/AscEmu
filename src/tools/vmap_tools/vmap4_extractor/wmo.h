@@ -29,14 +29,21 @@
 #include <set>
 #include "vec3d.h"
 
-// MOPY flags
-#define WMO_MATERIAL_NOCAMCOLLIDE    0x01
-#define WMO_MATERIAL_DETAIL          0x02
-#define WMO_MATERIAL_NO_COLLISION    0x04
-#define WMO_MATERIAL_HINT            0x08
-#define WMO_MATERIAL_RENDER          0x10
-#define WMO_MATERIAL_COLLIDE_HIT     0x20
+// MOPY flags (per-triangle, MOPY chunk - one of these bytes per triangle,
+// see the material flag byte documented at https://wowdev.wiki/WMO). These
+// were previously all off by one bit (missing the 0x01 placeholder entry),
+// which meant every check below was silently testing the wrong flag - e.g.
+// what used to be checked here as "HINT" was actually testing the real
+// COLLISION bit, and what was checked as "NO_COLLISION" was actually
+// testing DETAIL.
+#define WMO_MATERIAL_UNK_0x01        0x01
+#define WMO_MATERIAL_NOCAMCOLLIDE    0x02
+#define WMO_MATERIAL_DETAIL          0x04
+#define WMO_MATERIAL_COLLISION       0x08
+#define WMO_MATERIAL_HINT            0x10
+#define WMO_MATERIAL_RENDER          0x20
 #define WMO_MATERIAL_WALL_SURFACE    0x40
+#define WMO_MATERIAL_COLLIDE_HIT     0x80
 
 class WMOInstance;
 class WMOManager;

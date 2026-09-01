@@ -261,6 +261,7 @@ public:
     bool HandleDebugDumpMovementCommand(const char* args, WorldSession* session);
     bool HandleDebugInFrontCommand(const char* args, WorldSession* m_session);
     bool HandleDebugOffMeshCommand(const char* args, WorldSession* m_session);
+    bool HandleDebugShowPathCommand(const char* args, WorldSession* m_session);
     bool HandleShowReactionCommand(const char* args, WorldSession* m_session);
     bool HandleDistanceCommand(const char* args, WorldSession* m_session);
     bool HandleAIMoveCommand(const char* args, WorldSession* m_session);

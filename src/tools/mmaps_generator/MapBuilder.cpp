@@ -99,9 +99,9 @@ namespace MMAP
         {
             case mpqlib::ClientVersion::Cataclysm:
             case mpqlib::ClientVersion::MistsOfPandaria:
-                return { 70.0f, 3 };
+                return { 70.0f, 4 };
             default:
-                return { 55.0f, 2 };
+                return { 70.0f, 2 };
         }
     }
 
@@ -720,16 +720,44 @@ namespace MMAP
         config.tileSize = VERTEX_PER_TILE;
         config.walkableRadius = m_bigBaseUnit ? 1 : 2;
         config.borderSize = config.walkableRadius + 3;
-        config.maxEdgeLen = VERTEX_PER_TILE + 1;        // anything bigger than tileSize
-        config.walkableHeight = m_bigBaseUnit ? m_smallWalkableHeight : 6;
-        // a value >= 3|6 allows npcs to walk over some fences
-        // a value >= 4|8 allows npcs to walk over all fences
-        config.walkableClimb = m_bigBaseUnit ? 4 : 8;
+        // ~6 world units regardless of base unit size (was VERTEX_PER_TILE+1,
+        // i.e. deliberately larger than any real edge so this never fired at
+        // all) - Recast only inserts extra vertices along a contour edge
+        // longer than this, so a long/steep ramp edge previously got none,
+        // leaving getSteerTarget()'s path-smoothing funnel nothing to steer
+        // through except the edge's two endpoints - it "sees" the far end
+        // directly and cuts a straight line across the slope instead of
+        // following it. A denser vertex chain along long edges gives it
+        // intermediate points to follow the actual terrain shape instead.
+        config.maxEdgeLen = static_cast<int>(6.0f / config.cs);
+        // walkableHeight/walkableClimb used to be 3|6 and 4|8 (world units
+        // ~1.6 and ~2.13) - climb bigger than height. That climb value was a
+        // deliberate workaround to let npcs walk over fences (see the WMO
+        // MOPY material-flag fix in vmap4_extractor/wmo.cpp/.h), but Recast
+        // requires walkableClimb < walkableHeight for its region/connectivity
+        // logic to treat vertically stacked walkable surfaces as separate -
+        // violating it let the open floor beneath an elevated surface (e.g. a
+        // ramp) get merged into the same region as the surface above it,
+        // producing navmesh points stuck at the lower floor's height the
+        // entire way up a ramp. Now that the MOPY fix gives fences real
+        // collision geometry, the fence-hopping climb value isn't needed
+        // anymore, so both constants move to realistic values (walkableHeight
+        // ~2.13 world units, close to the actual player capsule height) with
+        // climb strictly below height.
+        config.walkableHeight = m_bigBaseUnit ? m_smallWalkableHeight : 8;
+        config.walkableClimb = m_bigBaseUnit ? 3 : 6;
         config.minRegionArea = rcSqr(60);
         config.mergeRegionArea = rcSqr(50);
-        config.maxSimplificationError = 1.8f;           // eliminates most jagged edges (tiny polygons)
-        config.detailSampleDist = config.cs * 64;
-        config.detailSampleMaxError = config.ch * 2;
+        config.maxSimplificationError = 1.8f;
+        // Was cs*64 (~17 world units between height samples) / ch*2 - finer
+        // detail-mesh sampling (inaccurate Z from Detour on slopes).
+        // Unlike maxEdgeLen above, this only affects the height-detail mesh
+        // used by getPolyHeight()/getClosestPointOnPoly(), not the polygon
+        // graph itself - more accurate height without adding any A* nodes
+        // or changing navmesh connectivity, just extra generation time and
+        // .mmtile size for the extra detail vertices.
+        config.detailSampleDist = config.cs * 16;
+        config.detailSampleMaxError = config.ch * 1;
 
         // this sets the dimensions of the heightfield - should maybe happen before border padding
         rcCalcGridSize(config.bmin, config.bmax, config.cs, &config.width, &config.height);

@@ -299,9 +299,15 @@ int WMOGroup::convertToVMapGroupWmo(FILE* output, WMORoot* rootWMO, bool precise
         memset(indexRenumber.get(), 0xFF, m_vertexCount * sizeof(int));
         for (int i = 0; i < m_triangleCount; ++i)
         {
-            // Skip no collision triangles
-            if (m_mopy[2 * i] & WMO_MATERIAL_NO_COLLISION ||
-                !(m_mopy[2 * i] & (WMO_MATERIAL_HINT | WMO_MATERIAL_COLLIDE_HIT)))
+            // Skip triangles with no collision. A plain render face (RENDER
+            // set, DETAIL not set) is treated as collidable by default.
+            // F_COLLISION's own real meaning is unusual/uncertain even in
+            // wowdev.wiki's own documentation ("turns off water ripple rendering...
+            // should be used for ghost material triangles"), so it's an additional
+            // way for a triangle to opt in, not the primary signal.
+            bool isRenderFace = (m_mopy[2 * i] & WMO_MATERIAL_RENDER) && !(m_mopy[2 * i] & WMO_MATERIAL_DETAIL);
+            bool isCollision = (m_mopy[2 * i] & WMO_MATERIAL_COLLISION) || isRenderFace;
+            if (!isCollision)
                 continue;
             // Use this triangle
             for (int j = 0; j < 3; ++j)

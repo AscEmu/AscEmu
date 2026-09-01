@@ -555,7 +555,23 @@ void PathGenerator::buildPointPath(const float *startPoint, const float *endPoin
     for (uint32_t i = 0; i < pointCount; ++i)
         _pathPoints[i] = G3D::Vector3(pathPoints[i*VERTEX_SIZE+2], pathPoints[i*VERTEX_SIZE], pathPoints[i*VERTEX_SIZE+1]);
 
-    normalizePath();
+    _rawPathPoints = _pathPoints;
+
+    // Deliberately NOT calling normalizePath() here. It was reinstated for a
+    // while under the theory that the raw navmesh points were themselves
+    // wrong on the ramp reproduction case - but that test predated the
+    // walkableClimb/walkableHeight fix in mmaps_generator (climb was bigger
+    // than height, letting the open floor beneath an elevated surface get
+    // merged into the same region as the surface above it). .debug showpath's
+    // rawZ column, captured above before this call, confirmed that with the
+    // fixed mesh the raw points climb the ramp correctly on their own.
+    // normalizePath() -> updateAllowedPositionZ() -> WorldMap::getHeight()
+    // re-derives height by picking whichever of ADT ground height or VMap
+    // height is numerically closer to the point's *own* Z, and that pick is
+    // unstable near this ramp (matched the correct surface at one point,
+    // dragged the very next one several units down to the floor beneath).
+    // Running that heuristic over already-correct navmesh output only risks
+    // reintroducing the exact bug it was meant to fix.
 
     // first point is always our current location - we need the next one
     setActualEndPosition(_pathPoints[pointCount-1]);
@@ -839,6 +855,16 @@ dtStatus PathGenerator::findSmoothPath(float const* startPos, float const* endPo
             return DT_FAILURE;
         npolys = fixupCorridor(polys, npolys, MAX_POINT_PATH_LENGTH, visited, nvisited);
 
+        // moveAlongSurface()'s own result height isn't reliable across a
+        // step that crosses a slope - it reflects roughly where the step
+        // started, not the detail-mesh height at the new (x,z). Re-derive it
+        // against the corrected polys[0] (post-fixupCorridor), same as the
+        // off-mesh-connection branch below already does and as PathGenerator
+        // does unconditionally after every step. Without this,
+        // a ramp/slope crossed within one SMOOTH_PATH_STEP_SIZE step produces
+        // a path point stuck near the step's starting height instead of the
+        // actual surface height at the new position.
+        _navMeshQuery->getPolyHeight(polys[0], result, &result[1]);
         result[1] += 0.5f;
         dtVcopy(iterPos, result);
 

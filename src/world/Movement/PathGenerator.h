@@ -52,6 +52,13 @@ public:
 
     MovementMgr::PointsArray const& getPath() const { return _pathPoints; }
 
+    // Debug-only: the path points exactly as findSmoothPath()/findStraightPath()
+    // produced them, captured before normalizePath() overwrites their Z via
+    // Object::updateAllowedPositionZ(). Lets .debug showpath compare the raw
+    // navmesh height against the post-correction one without needing a
+    // separate build/config to disable normalizePath() at the source.
+    MovementMgr::PointsArray const& getRawPath() const { return _rawPathPoints; }
+
     PathType getPathType() const { return _type; }
 
     // shortens the path until the destination is the specified distance from the target point
@@ -62,6 +69,7 @@ private:
     uint32_t _polyLength;                       // number of polygons in the path
 
     MovementMgr::PointsArray _pathPoints;       // our actual (x,y,z) path to the target
+    MovementMgr::PointsArray _rawPathPoints;    // debug-only: _pathPoints before normalizePath()
     PathType _type;                             // tells what kind of path this is
 
     bool _useStraightPath;                      // type of path will be generated
