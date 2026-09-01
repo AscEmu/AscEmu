@@ -12,27 +12,27 @@ namespace WDB
     WDBRecord::WDBRecord(unsigned char* offset) : m_offset(offset)
     { }
 
-    float WDBRecord::getFloat(size_t field, uint32_t field_count, const uint32_t field_offset) const
+    float WDBRecord::getFloat([[maybe_unused]] size_t field, [[maybe_unused]] uint32_t field_count, const uint32_t field_offset) const
     {
         assert(field < field_count);
         float val = *reinterpret_cast<float*>(m_offset + field_offset);
         return val;
     }
 
-    uint32_t WDBRecord::getUInt32(size_t field, uint32_t field_count, const uint32_t field_offset) const
+    uint32_t WDBRecord::getUInt32([[maybe_unused]] size_t field, [[maybe_unused]] uint32_t field_count, const uint32_t field_offset) const
     {
         assert(field < field_count);
         uint32_t val = *reinterpret_cast<uint32_t*>(m_offset + field_offset);
         return val;
     }
 
-    uint8_t WDBRecord::getUInt8(size_t field, uint32_t field_count, const uint32_t field_offset) const
+    uint8_t WDBRecord::getUInt8([[maybe_unused]] size_t field, [[maybe_unused]] uint32_t field_count, const uint32_t field_offset) const
     {
         assert(field < field_count);
         return *(m_offset + field_offset);
     }
 
-    char* WDBRecord::getString(size_t field, uint32_t field_count, const uint32_t field_offset, uint32_t string_size, unsigned char* string_table) const
+    char* WDBRecord::getString(size_t field, uint32_t field_count, const uint32_t field_offset, [[maybe_unused]] uint32_t string_size, unsigned char* string_table) const
     {
         assert(field < field_count);
         const size_t string_offset = getUInt32(field, field_count, field_offset);

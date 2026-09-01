@@ -255,7 +255,7 @@ namespace AscEmu
         // Old CircularBuffer compatibility
         void IncrementWritten(size_t bytes) noexcept
         {
-            const bool committed = Commit(bytes);
+            [[maybe_unused]] const bool committed = Commit(bytes);
             assert(committed && "BipBuffer::IncrementWritten exceeds contiguous writable space");
         }
 
