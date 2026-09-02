@@ -20,6 +20,7 @@
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include "mpqlib/ChunkTree.hpp"
+#include "mpqlib/ClientArchiveData.hpp"
 #include "mpqlib/ClientVersion.hpp"
 #include "mpqlib/DBCFile.hpp"
 #include "mpqlib/MpqPatchChain.hpp"
@@ -215,23 +216,18 @@ float CONF_flat_liquid_delta_limit = 0.001f;
 // range-based loops below don't need one.
 uint32_t CONF_TargetBuild = 0;
 
-std::vector<std::string> const CataMpqList = { "world.MPQ", "art.MPQ", "world2.MPQ", "expansion1.MPQ", "expansion2.MPQ", "expansion3.MPQ" };
-std::vector<std::string> const MopMpqList = { "world.MPQ", "misc.MPQ", "expansion1.MPQ", "expansion2.MPQ", "expansion3.MPQ", "expansion4.MPQ" };
-std::vector<uint32_t> const CataBuilds = { 13164, 13205, 13287, 13329, 13596, 13623, 13914, 14007, 14333, 14480, 14545, 15005, 15050, 15211, 15354, 15595 };
-std::vector<uint32_t> const MopBuilds = { 16016, 16048, 16057, 16309, 16357, 16516, 16650, 16844, 16965, 17116, 17266, 17325, 17331, 17345, 17538, 17645, 17688, 17898, 18273 };
-
-#define LAST_DBC_IN_DATA_BUILD 13623    // after this build mpqs with dbc are back to locale folder
-#define NEW_BASE_SET_BUILD  15211
-
-std::vector<std::string> const& GetTargetMpqList() { return gClientVersion == ClientVersion::MistsOfPandaria ? MopMpqList : CataMpqList; }
-std::vector<uint32_t> const& GetTargetBuildList() { return gClientVersion == ClientVersion::MistsOfPandaria ? MopBuilds : CataBuilds; }
-
-#define LOCALES_COUNT 15
-
-char const* const Locales[LOCALES_COUNT] =
-{
-    "enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU", "ptBR", "ptPT", "itIT"
-};
+// The Cata/Mop base MPQ set, locale code list, incremental patch build
+// lists, and the DBC-folder/base-set cutoff builds all now live in
+// mpqlib::ClientArchiveData - they're properties of the client itself
+// (or, for the archive set, of what a *kind* of tool needs from it), not
+// specific to this tool, and are shared with vmap4_extractor and
+// creature_data. This tool gets mpqlib::dbcAndMapArchiveList() - it only
+// needs DBC/map/terrain data, not model/WMO geometry. NOTE: this file used
+// a single (Cata-only) cutoff pair for both Cata and Mop until this
+// consolidation - Mop's real cutoffs (mpqlib::lastDbcInDataBuild/
+// newBaseSetBuild) are meaningfully higher build numbers, so the Mop
+// wow-update-* patch walk below now goes further than it used to.
+std::vector<std::string> const& GetTargetMpqList() { return mpqlib::dbcAndMapArchiveList(gClientVersion); }
 
 enum LocaleConstant : uint8_t
 {
@@ -240,8 +236,7 @@ enum LocaleConstant : uint8_t
     TOTAL_LOCALES
 };
 
-uint8_t const MpqToWowLocale[LOCALES_COUNT] =
-{
+std::vector<uint8_t> const MpqToWowLocale = {
     LOCALE_enUS, LOCALE_enUS, LOCALE_deDE, LOCALE_esES, LOCALE_frFR, LOCALE_koKR, LOCALE_zhCN, LOCALE_zhTW,
     LOCALE_zhCN, LOCALE_zhTW, LOCALE_esMX, LOCALE_ruRU, LOCALE_ptBR, LOCALE_ptBR, LOCALE_itIT
 };
@@ -353,7 +348,7 @@ void CreateDir(std::string const& path)
 
 uint32_t ReadBuild(int locale)
 {
-    std::string filename = std::string("component.wow-") + Locales[locale] + ".txt";
+    std::string filename = std::string("component.wow-") + mpqlib::kLocales[locale] + ".txt";
 
     std::vector<uint8_t> data;
     mpqlib::MpqPatchChain& chain = IsLegacyMapFormat() ? *WorldMpq : *LocaleMpq;
@@ -1496,14 +1491,14 @@ void ExtractLegacyDBCFiles(int locale, bool basicLocale)
     CreateDir(path);
     if (!basicLocale)
     {
-        path += Locales[locale];
+        path += mpqlib::kLocales[locale];
         path += "/";
         CreateDir(path);
     }
 
     if (gClientVersion != ClientVersion::Vanilla)
     {
-        std::string mpq_name = std::string("component.wow-") + Locales[locale] + ".txt";
+        std::string mpq_name = std::string("component.wow-") + mpqlib::kLocales[locale] + ".txt";
         ExtractFile(*WorldMpq, mpq_name.c_str(), (path + mpq_name).c_str());
     }
 
@@ -1709,7 +1704,7 @@ void LoadLegacyLocaleMPQFiles(int locale)
 {
     char filename[512];
 
-    sprintf(filename, "%s/Data/%s/locale-%s.MPQ", input_path, Locales[locale], Locales[locale]);
+    sprintf(filename, "%s/Data/%s/locale-%s.MPQ", input_path, mpqlib::kLocales[locale], mpqlib::kLocales[locale]);
     OpenLegacyMpqArchive(filename);
 
     for (int i = 1; i < 5; ++i)
@@ -1718,7 +1713,7 @@ void LoadLegacyLocaleMPQFiles(int locale)
         if (i > 1)
             sprintf(ext, "-%i", i);
 
-        sprintf(filename, "%s/Data/%s/patch-%s%s.MPQ", input_path, Locales[locale], Locales[locale], ext);
+        sprintf(filename, "%s/Data/%s/patch-%s%s.MPQ", input_path, mpqlib::kLocales[locale], mpqlib::kLocales[locale], ext);
         if (FileExists(filename))
             OpenLegacyMpqArchive(filename);
     }
@@ -1743,7 +1738,7 @@ int getFindLanguageIndex()
     bool foundLanguage = false;
 
     std::string const path(std::string(input_path) + "/Data/");
-    for (auto const* lang : Locales)
+    for (auto const* lang : mpqlib::kLocales)
     {
         langIndex++;
         if (FileExists(path + lang + "/locale-" + lang + ".MPQ"))
@@ -1755,7 +1750,7 @@ int getFindLanguageIndex()
 
     if (foundLanguage)
     {
-        printf("Detected locale: %s\n", Locales[langIndex]);
+        printf("Detected locale: %s\n", mpqlib::kLocales[langIndex]);
         return langIndex;
     }
 
@@ -1768,7 +1763,7 @@ int getFindLanguageIndex()
 // Note: StormLib's SFileOpenPatchArchive() took a "path prefix" that remaps
 // files stored under a locale subfolder inside a shared patch archive so they
 // become addressable by their bare name. mpqlib has no equivalent - only
-// relevant for archives at/below LAST_DBC_IN_DATA_BUILD (13623), a build from
+// relevant for archives at/below mpqlib::lastDbcInDataBuild(), a build from
 // years before Cata/Mop ever shipped, so in practice every archive this tool
 // actually opens today never needs it.
 bool LoadModernLocaleMPQFile(int locale)
@@ -1777,7 +1772,7 @@ bool LoadModernLocaleMPQFile(int locale)
 
     if (gClientVersion != ClientVersion::MistsOfPandaria)
     {
-        snprintf(buff, sizeof(buff), "%s/Data/%s/locale-%s.MPQ", input_path, Locales[locale], Locales[locale]);
+        snprintf(buff, sizeof(buff), "%s/Data/%s/locale-%s.MPQ", input_path, mpqlib::kLocales[locale], mpqlib::kLocales[locale]);
         LocaleMpq = std::make_unique<mpqlib::MpqPatchChain>(buff);
         if (!LocaleMpq->isOpen())
         {
@@ -1785,16 +1780,16 @@ bool LoadModernLocaleMPQFile(int locale)
             return false;
         }
 
-        printf("\nLoading %s locale MPQs\n", Locales[locale]);
-        for (uint32_t patchBuild : GetTargetBuildList())
+        printf("\nLoading %s locale MPQs\n", mpqlib::kLocales[locale]);
+        for (uint32_t patchBuild : mpqlib::incrementalPatchBuilds(gClientVersion))
         {
             if (patchBuild > CONF_TargetBuild)
                 break;
-            if (CONF_TargetBuild >= NEW_BASE_SET_BUILD && patchBuild < NEW_BASE_SET_BUILD)
+            if (CONF_TargetBuild >= mpqlib::newBaseSetBuild(gClientVersion) && patchBuild < mpqlib::newBaseSetBuild(gClientVersion))
                 continue;
 
-            if (patchBuild > LAST_DBC_IN_DATA_BUILD)
-                snprintf(buff, sizeof(buff), "%s/Data/%s/wow-update-%s-%u.MPQ", input_path, Locales[locale], Locales[locale], patchBuild);
+            if (patchBuild > mpqlib::lastDbcInDataBuild(gClientVersion))
+                snprintf(buff, sizeof(buff), "%s/Data/%s/wow-update-%s-%u.MPQ", input_path, mpqlib::kLocales[locale], mpqlib::kLocales[locale], patchBuild);
             else
                 snprintf(buff, sizeof(buff), "%s/Data/wow-update-%u.MPQ", input_path, patchBuild);
 
@@ -1816,16 +1811,16 @@ bool LoadModernLocaleMPQFile(int locale)
         return false;
     }
 
-    snprintf(buff, sizeof(buff), "%s/Data/%s/locale-%s.MPQ", input_path, Locales[locale], Locales[locale]);
+    snprintf(buff, sizeof(buff), "%s/Data/%s/locale-%s.MPQ", input_path, mpqlib::kLocales[locale], mpqlib::kLocales[locale]);
     if (!LocaleMpq->addPatch(buff))
     {
         LocaleMpq.reset();
         return false;
     }
 
-    printf("\nLoading %s locale MPQs\n", Locales[locale]);
+    printf("\nLoading %s locale MPQs\n", mpqlib::kLocales[locale]);
 
-    for (uint32_t patchBuild : GetTargetBuildList())
+    for (uint32_t patchBuild : mpqlib::incrementalPatchBuilds(gClientVersion))
     {
         if (patchBuild > CONF_TargetBuild)
             break;
@@ -1838,17 +1833,17 @@ bool LoadModernLocaleMPQFile(int locale)
         printf("Loaded %s\n", buff);
     }
 
-    for (uint32_t patchBuild : GetTargetBuildList())
+    for (uint32_t patchBuild : mpqlib::incrementalPatchBuilds(gClientVersion))
     {
         if (patchBuild > CONF_TargetBuild)
             break;
-        snprintf(buff, sizeof(buff), "%s/Data/%s/wow-update-%s-%u.MPQ", input_path, Locales[locale], Locales[locale], patchBuild);
+        snprintf(buff, sizeof(buff), "%s/Data/%s/wow-update-%s-%u.MPQ", input_path, mpqlib::kLocales[locale], mpqlib::kLocales[locale], patchBuild);
         if (!LocaleMpq->addPatch(buff))
             continue;
         printf("Loaded %s\n", buff);
     }
 
-    for (uint32_t patchBuild : GetTargetBuildList())
+    for (uint32_t patchBuild : mpqlib::incrementalPatchBuilds(gClientVersion))
     {
         if (patchBuild > CONF_TargetBuild)
             break;
@@ -1858,11 +1853,11 @@ bool LoadModernLocaleMPQFile(int locale)
         printf("Loaded %s\n", buff);
     }
 
-    for (uint32_t patchBuild : GetTargetBuildList())
+    for (uint32_t patchBuild : mpqlib::incrementalPatchBuilds(gClientVersion))
     {
         if (patchBuild > CONF_TargetBuild)
             break;
-        snprintf(buff, sizeof(buff), "%s/Data/Cache/%s/patch-%s-%u.MPQ", input_path, Locales[locale], Locales[locale], patchBuild);
+        snprintf(buff, sizeof(buff), "%s/Data/Cache/%s/patch-%s-%u.MPQ", input_path, mpqlib::kLocales[locale], mpqlib::kLocales[locale], patchBuild);
         if (!LocaleMpq->addPatch(buff))
             continue;
         printf("Loaded %s\n", buff);
@@ -1888,7 +1883,7 @@ void LoadModernCommonMPQFiles(uint32_t build)
     std::vector<std::string> const& mpqList = GetTargetMpqList();
     for (size_t i = 1; i < mpqList.size(); ++i)
     {
-        if (build < NEW_BASE_SET_BUILD && mpqList[i] == "world2.MPQ")   // 4.3.2 and higher MPQ
+        if (build < mpqlib::newBaseSetBuild(gClientVersion) && mpqList[i] == "world2.MPQ")   // 4.3.2 and higher MPQ
             continue;
 
         snprintf(filename, sizeof(filename), "%s/Data/%s", input_path, mpqList[i].c_str());
@@ -1898,14 +1893,14 @@ void LoadModernCommonMPQFiles(uint32_t build)
             printf("Loaded %s\n", filename);
     }
 
-    for (uint32_t patchBuild : GetTargetBuildList())
+    for (uint32_t patchBuild : mpqlib::incrementalPatchBuilds(gClientVersion))
     {
         if (patchBuild > CONF_TargetBuild)
             break;
-        if (CONF_TargetBuild >= NEW_BASE_SET_BUILD && patchBuild < NEW_BASE_SET_BUILD)
+        if (CONF_TargetBuild >= mpqlib::newBaseSetBuild(gClientVersion) && patchBuild < mpqlib::newBaseSetBuild(gClientVersion))
             continue;
 
-        if (patchBuild > LAST_DBC_IN_DATA_BUILD)
+        if (patchBuild > mpqlib::lastDbcInDataBuild(gClientVersion))
             snprintf(filename, sizeof(filename), "%s/Data/wow-update-base-%u.MPQ", input_path, patchBuild);
         else
             snprintf(filename, sizeof(filename), "%s/Data/wow-update-%u.MPQ", input_path, patchBuild);
@@ -1971,19 +1966,19 @@ void RunModernExtraction()
     int FirstLocale = -1;
     uint32_t build = 0;
 
-    for (int i = 0; i < LOCALES_COUNT; ++i)
+    for (int i = 0; i < static_cast<int>(mpqlib::kLocales.size()); ++i)
     {
         if (!LoadModernLocaleMPQFile(i))
             continue;
 
-        printf("Detected locale: %s\n", Locales[i]);
+        printf("Detected locale: %s\n", mpqlib::kLocales[i]);
         if ((CONF_extract & EXTRACT_DBC) == 0)
         {
             FirstLocale = i;
             build = ReadBuild(i);
             if (build > CONF_TargetBuild)
             {
-                printf("Base locale-%s.MPQ has build higher than target build (%u > %u), nothing extracted!\n", Locales[i], build, CONF_TargetBuild);
+                printf("Base locale-%s.MPQ has build higher than target build (%u > %u), nothing extracted!\n", mpqlib::kLocales[i], build, CONF_TargetBuild);
                 return;
             }
 
@@ -1992,11 +1987,11 @@ void RunModernExtraction()
         }
 
         uint32_t tempBuild = ReadBuild(i);
-        printf("Detected client build %u for locale %s\n", tempBuild, Locales[i]);
+        printf("Detected client build %u for locale %s\n", tempBuild, mpqlib::kLocales[i]);
         if (tempBuild > CONF_TargetBuild)
         {
             LocaleMpq.reset();
-            printf("Base locale-%s.MPQ has build higher than target build (%u > %u), nothing extracted!\n", Locales[i], tempBuild, CONF_TargetBuild);
+            printf("Base locale-%s.MPQ has build higher than target build (%u > %u), nothing extracted!\n", mpqlib::kLocales[i], tempBuild, CONF_TargetBuild);
             continue;
         }
 
@@ -2021,7 +2016,7 @@ void RunModernExtraction()
 
     if (CONF_extract & EXTRACT_CAMERA)
     {
-        printf("Using locale: %s\n", Locales[FirstLocale]);
+        printf("Using locale: %s\n", mpqlib::kLocales[FirstLocale]);
         LoadModernLocaleMPQFile(FirstLocale);
         LoadModernCommonMPQFiles(build);
         ExtractCameraFiles();
@@ -2030,7 +2025,7 @@ void RunModernExtraction()
 
     if (CONF_extract & EXTRACT_MAP)
     {
-        printf("Using locale: %s\n", Locales[FirstLocale]);
+        printf("Using locale: %s\n", mpqlib::kLocales[FirstLocale]);
         LoadModernLocaleMPQFile(FirstLocale);
         LoadModernCommonMPQFiles(build);
         ExtractMapsFromMpq(build);

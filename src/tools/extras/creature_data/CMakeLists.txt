@@ -3,7 +3,7 @@
 # set up our project name.
 set(EXECUTABLE_NAME creature_data)
 
-file(GLOB SRC_CREATURE_DATA *.cpp *.h)
+file(GLOB SRC_CREATURE_DATA *.cpp *.hpp)
 
 # source group.
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
