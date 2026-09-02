@@ -1,189 +1,184 @@
-#include <cstring>
-#include <cstdio>
-#include <cstdlib>
+/*
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+// Reverse-engineers the server's SpellCastResult/PetTameFailure enums (the
+// numeric codes the client expects for "why did my spell/tame fail")
+// directly from a client wow.exe: WoW clients embed these enumerator names
+// as plain ASCII debug strings, packed back-to-back in the binary in the
+// same order the real client enum declares them. Walking that string table
+// and recording each name against a running index reconstructs the whole
+// enum without any official documentation - see
+// src/world/Spell/Definitions/SpellFailure.hpp for where the output of a
+// run of this tool against each client version ends up.
+
+#include <cstdint>
+#include <format>
+#include <fstream>
 #include <iostream>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
 
-const char* AE = "/*\n\
-Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>\n\
-This file is released under the MIT license. See README-MIT for more information.\n\
-*/";
-
-const char* Executable = "wow.exe";
-const char* OutputFile = "SpellFailure.h";
-
-#define SEARCH_TEXT "SPELL_FAILED_SUCCESS"
-#define SEARCH_TEXT2 "PETTAME_INVALIDCREATURE"
-#define FIRST_FAILURE 0
-#define INDEX_CANTDO 173
-
-bool reverse_pointer_back_to_string(char ** ptr, char * str)
+namespace
 {
-    size_t slen = strlen(str);
-    size_t i;
-    for (;;)
+    constexpr std::string_view kLicenseHeader =
+        "/*\n"
+        "Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>\n"
+        "This file is released under the MIT license. See README-MIT for more information.\n"
+        "*/";
+
+    constexpr char const* kDefaultExecutable = "wow.exe";
+    constexpr char const* kOutputFile = "SpellFailure.hpp";
+
+    // At this exact index, WotLK's string table doesn't have the next
+    // expected "SPELL_FAILED_*" name adjacent to the previous one - the real
+    // client enum has SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW here, but its
+    // debug string isn't laid out where the rest of the sequence predicts,
+    // so the backward search below naturally skips past it to the next
+    // available name instead. This patch re-inserts it at the index it
+    // belongs at without disturbing that already-correct skip.
+    //
+    // Confirmed (by comparing src/world/Spell/Definitions/SpellFailure.hpp's
+    // hand-verified per-version enums) the same entry exists in Cata at
+    // index 176 and Mop at index 185 - different indices, since the enum
+    // grew between versions - so this patch is WotLK-specific and won't
+    // fire there. If a Cata/Mop run hits an analogous gap, the gap warning
+    // in extractSequence() below will flag it instead of silently
+    // mis-numbering everything after it.
+    constexpr int kCantDoIndex = 173;
+    constexpr char const* kCantDoName = "SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW";
+
+    std::vector<char> readFile(std::string const& path)
     {
-        while ((*ptr)[0] != str[0])
+        std::ifstream file(path, std::ios::binary | std::ios::ate);
+        if (!file)
+            return {};
+
+        std::streamsize const size = file.tellg();
+        file.seekg(0, std::ios::beg);
+
+        std::vector<char> buffer(static_cast<size_t>(size));
+        if (size > 0 && !file.read(buffer.data(), size))
+            return {};
+
+        return buffer;
+    }
+
+    using Entries = std::vector<std::pair<std::string, int>>;
+
+    // Walks backward from startAnchor (already known to exist in `data`),
+    // collecting one name per step, until it reaches or passes endAnchor.
+    // `specialCase`, when set, re-inserts a known name at a known index
+    // without consuming a search step (see kCantDoIndex's doc comment).
+    // Prints a warning whenever a step has to travel unusually far to find
+    // the next name - a sign a name is missing at that point.
+    bool extractSequence(std::string_view data, std::string_view startAnchor, std::string_view endAnchor,
+        std::string_view prefix, int firstIndex, Entries& outEntries,
+        std::optional<std::pair<int, std::string_view>> specialCase = std::nullopt)
+    {
+        size_t const startPos = data.find(startAnchor);
+        size_t const endPos = data.find(endAnchor);
+        if (startPos == std::string_view::npos || endPos == std::string_view::npos)
         {
-            (*ptr)--;
+            std::cout << std::format("Error: couldn't find anchor strings ('{}'/'{}') in the given file.\n", startAnchor, endAnchor);
+            return false;
         }
 
-        for (i = 0; i < slen; ++i)
-            if ((*ptr)[i] != str[i])
+        size_t pos = startPos;
+        int index = firstIndex;
+        double runningMeanGap = 0.0;
+        size_t gapSamples = 0;
+
+        while (true)
+        {
+            if (specialCase && index == specialCase->first)
+            {
+                outEntries.emplace_back(std::string(specialCase->second), index);
+                ++index;
+                continue;
+            }
+
+            size_t const nameEnd = data.find('\0', pos);
+            if (nameEnd == std::string_view::npos)
+            {
+                std::cout << std::format("Error: unterminated string at offset {} while collecting index {}.\n", pos, index);
+                return false;
+            }
+            outEntries.emplace_back(std::string(data.substr(pos, nameEnd - pos)), index);
+
+            if (pos == 0 || pos - 1 < endPos)
                 break;
 
-        if (i == slen)
-            return true;
-        else
-            (*ptr)--;
-    }
-    return false;
-}
-int find_string_in_buffer(char * str, size_t str_len, char * buf, size_t buf_len)
-{
-    char * p = buf;
-    char * p_end = buf + buf_len;
-    size_t remaining = buf_len;
-    size_t i;
-
-    for (;;)
-    {
-        while (*p != str[0] && p != p_end)
-        {
-            --remaining;
-            ++p;
-        }
-
-        if (p == p_end)
-            break;
-
-        if (remaining < str_len)
-            break;
-
-        for (i = 0; i < str_len; ++i)
-        {
-            if(p[i] != str[i])
+            size_t const decremented = pos - 1;
+            size_t const nextPos = data.rfind(prefix, decremented);
+            if (nextPos == std::string_view::npos)
                 break;
+
+            size_t const gap = pos - nextPos;
+            if (gapSamples > 0 && gap > runningMeanGap * 3.0)
+            {
+                std::cout << std::format(
+                    "Warning: gap of {} bytes found before index {} (typical gap so far ~{} bytes) - "
+                    "a name may be missing here; inspect the output around that index.\n",
+                    gap, index + 1, static_cast<size_t>(runningMeanGap));
+            }
+            runningMeanGap = (runningMeanGap * static_cast<double>(gapSamples) + static_cast<double>(gap)) / static_cast<double>(gapSamples + 1);
+            ++gapSamples;
+
+            pos = nextPos;
+            ++index;
         }
 
-        if (i == str_len)
-            return (int)(p - buf);
-
-        *p++;
+        return true;
     }
-    return -1;
+
+    void writeEnum(std::ostream& out, std::string_view enumName, Entries const& entries)
+    {
+        out << std::format("enum {} : uint8_t\n{{\n", enumName);
+        for (auto const& [name, value] : entries)
+            out << std::format("\t{:<60} = {},\n", name, value);
+        out << "};\n";
+    }
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char** argv)
 {
-    FILE* in = std::fopen( Executable, "rb");
-    FILE* out = std::fopen( OutputFile, "w");
+    std::string const executablePath = argc > 1 ? argv[1] : kDefaultExecutable;
 
-    if (in == nullptr)
+    std::vector<char> const buffer = readFile(executablePath);
+    if (buffer.empty())
     {
-        std::cout << "ERROR: Couldn't open %s for reading!\n";
-        std::cout << "Exiting.\n";
-        std::fclose(in);
-        std::fclose(out);
-        return -1;
+        std::cout << std::format("Error: couldn't open '{}' for reading.\n", executablePath);
+        return 1;
     }
 
-    if (out == nullptr)
-    {
-        std::cout << "ERROR: Couldn't open %s for writing!\n";
-        std::cout << "Exiting.\n";
-        std::fclose(in);
-        std::fclose(out);
-        return -1;
-    }
+    std::string_view const data(buffer.data(), buffer.size());
 
-    fseek(in, 0, SEEK_END);
-    int len = ftell(in);
-    fseek(in, 0, SEEK_SET);
-
-    char * buffer = (char*)malloc(len);
-    if(!buffer)
-    {
-        std::fclose(in);
-        std::fclose(out);
-        free(buffer);
+    Entries spellFailedEntries;
+    if (!extractSequence(data, "SPELL_FAILED_SUCCESS", "SPELL_FAILED_UNKNOWN", "SPELL_FAILED", 0,
+        spellFailedEntries, std::make_pair(kCantDoIndex, std::string_view(kCantDoName))))
         return 2;
-    }
 
-    if (fread(buffer, 1, len, in) != len)
-    {
-        std::fclose(in);
-        std::fclose(out);
-        free(buffer);
+    Entries petTameEntries;
+    if (!extractSequence(data, "PETTAME_INVALIDCREATURE", "PETTAME_UNKNOWNERROR", "PETTAME", 1, petTameEntries))
         return 3;
+
+    std::ofstream out(kOutputFile);
+    if (!out)
+    {
+        std::cout << std::format("Error: couldn't open '{}' for writing.\n", kOutputFile);
+        return 4;
     }
 
-    size_t offset = find_string_in_buffer(SEARCH_TEXT, strlen(SEARCH_TEXT), buffer, len);
-    printf("Searching for `%s`...", SEARCH_TEXT);
-    printf(" at %zi.\n", offset);
+    out << kLicenseHeader << "\n\n#pragma once\n\n";
+    writeEnum(out, "SpellCastResult", spellFailedEntries);
+    out << "\n";
+    writeEnum(out, "PetTameFailure", petTameEntries);
 
-    if (offset < 0)
-    {
-        std::fclose(in);
-        std::fclose(out);
-        free(buffer);
-        return 3;
-    }
-    /* dump header */
-    fprintf(out, "%s", AE);
-    fprintf(out, "\n\n");
-    fprintf(out, "#pragma once\n\n");
-    fprintf(out, "enum SpellCastResult : uint8_t\n{\n");
-    std::cout << "Ripping...\n";
-    char * p = (buffer + offset);
-    char * name = p;
-    int index = FIRST_FAILURE;
-    size_t endoffset = find_string_in_buffer("SPELL_FAILED_UNKNOWN", strlen("SPELL_FAILED_UNKNOWN"), buffer, len);
-    char *endp = (buffer + endoffset);
-    do
-    {
-        // This is a terrible hack, it will most likely be incorrect later
-        if (index == INDEX_CANTDO)
-        {
-            fprintf(out, "\t%-60s = %d,\n", "SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW",index);
-            index++;
-            continue;
-        }
-
-        name = p;
-        fprintf(out, "\t%-60s = %d,\n", name,index);
-        --p;
-        if (p < endp)
-            break;
-        ++index;
-        reverse_pointer_back_to_string(&p, "SPELL_FAILED");
-    } while(true);
-
-    // fprintf(out, "\t%-60s = %d,\n", "SPELL_CANCAST_OK",255);
-    fprintf(out, "};\n");
-    fprintf(out, "// #define SPELL_CANCAST_OK SPELL_FAILED_SUCCESS\n");
-    fprintf(out, "\n");
-
-    fprintf(out, "enum PetTameFailure : uint8_t\n{\n");
-    offset = find_string_in_buffer(SEARCH_TEXT2, strlen(SEARCH_TEXT2), buffer, len);
-    endoffset = find_string_in_buffer("PETTAME_UNKNOWNERROR", strlen("PETTAME_UNKNOWNERROR"), buffer, len);
-    endp = (buffer + endoffset);
-    p = (buffer + offset);
-    name = p;
-    index = 1;
-    do
-    {
-        name = p;
-        fprintf(out, "\t%-60s = %d,\n", name,index);
-        --p;
-        if (p < endp)
-            break;
-        ++index;
-        reverse_pointer_back_to_string(&p, "PETTAME");
-    } while(true);
-    fprintf(out, "};\n");
-    std::fclose(out);
-    fclose(in);
-    free(buffer);
-    printf("\nDone.\n");
+    std::cout << std::format("Done. Wrote {} ({} spell failure codes, {} pet tame failure codes).\n",
+        kOutputFile, spellFailedEntries.size(), petTameEntries.size());
     return 0;
 }
