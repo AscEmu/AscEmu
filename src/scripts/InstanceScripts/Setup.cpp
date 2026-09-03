@@ -111,6 +111,19 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupZulGurubCata(mgr);
 #endif
 
+    //Mists of Pandaria
+#if VERSION_STRING >= Mop
+    SetupTempleOfTheJadeSerpent(mgr);
+    SetupStormstoutBrewery(mgr);
+    SetupShadoPanMonastery(mgr);
+    SetupSiegeOfNiuzaoTemple(mgr);
+    SetupMogushanPalace(mgr);
+    SetupGateOfTheSettingSun(mgr);
+    SetupScarletHalls(mgr);
+    SetupScarletMonasteryMop(mgr);
+    SetupScholomanceMop(mgr);
+#endif
+
     //Classic
     SetupBlackwingLair(mgr);
     SetupOnyxiasLair(mgr);
@@ -123,12 +136,17 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupBlackTemple(mgr);
     SetupKarazhan(mgr);
     SetupBattleOfMountHyjal(mgr);
-    SetupZulAman(mgr);
     SetupSunwellPlateau(mgr);
     SetupSerpentshrineCavern(mgr);
     SetupMagtheridonsLair(mgr);
     SetupTheEye(mgr);
     SetupGruulsLair(mgr);
+#endif
+
+#if VERSION_STRING == TBC
+    // Zul'Aman as a 10-man raid only existed pre-Cataclysm - its 4.1 heroic revamp
+    // (SetupZulAmanCata) reuses the same map id and takes over from Cata onward.
+    SetupZulAman(mgr);
 #endif
 
     //Wotlk
@@ -149,6 +167,15 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupBlackwingDescent(mgr);
     SetupDragonSoul(mgr);
     SetupFirelands(mgr);
+#endif
+
+    //Mists of Pandaria
+#if VERSION_STRING >= Mop
+    SetupMogushanVaults(mgr);
+    SetupHeartOfFear(mgr);
+    SetupTerraceOfEndlessSpring(mgr);
+    SetupThroneOfThunder(mgr);
+    SetupSiegeOfOrgrimmar(mgr);
 #endif
 }
 

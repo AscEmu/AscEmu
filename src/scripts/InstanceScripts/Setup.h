@@ -88,6 +88,19 @@ void SetupZulAmanCata(ScriptMgr* mgr);
 void SetupZulGurubCata(ScriptMgr* mgr);
 #endif
 
+//Mists of Pandaria
+#if VERSION_STRING >= Mop
+void SetupTempleOfTheJadeSerpent(ScriptMgr* mgr);
+void SetupStormstoutBrewery(ScriptMgr* mgr);
+void SetupShadoPanMonastery(ScriptMgr* mgr);
+void SetupSiegeOfNiuzaoTemple(ScriptMgr* mgr);
+void SetupMogushanPalace(ScriptMgr* mgr);
+void SetupGateOfTheSettingSun(ScriptMgr* mgr);
+void SetupScarletHalls(ScriptMgr* mgr);
+void SetupScarletMonasteryMop(ScriptMgr* mgr);
+void SetupScholomanceMop(ScriptMgr* mgr);
+#endif
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Raids
@@ -128,6 +141,15 @@ void SetupBastionOfTwilight(ScriptMgr* mgr);
 void SetupBlackwingDescent(ScriptMgr* mgr);
 void SetupDragonSoul(ScriptMgr* mgr);
 void SetupFirelands(ScriptMgr* mgr);
+#endif
+
+//Mists of Pandaria
+#if VERSION_STRING >= Mop
+void SetupMogushanVaults(ScriptMgr* mgr);
+void SetupHeartOfFear(ScriptMgr* mgr);
+void SetupTerraceOfEndlessSpring(ScriptMgr* mgr);
+void SetupThroneOfThunder(ScriptMgr* mgr);
+void SetupSiegeOfOrgrimmar(ScriptMgr* mgr);
 #endif
 
 
@@ -216,24 +238,45 @@ enum InstanceMaps
     MAP_HALLSOFREFLECTION       = 668,  // Halls of Reflection
 
     //Cataclysm Map Ids
-    MAP_LOST_CITY_OF_TOLVIR     = 747, // Lost city of Tol'vir
-    MAP_BLACKROCK_CAVERNS       = 753, // Blackrock Caverns
-    MAP_GRIM_BATOL              = 757, // Grim Batol
-    MAP_HALLS_OF_ORIGINATION    = 759, // Halls of Origination
-    MAP_THRONE_OF_THE_TIDES     = 767, // Throne of Tides
-    MAP_THE_STONECORE           = 768, // The Stonecore
-    MAP_THE_VORTEX_PINNACLE     = 769, // Vortex Pinnacle
-    MAP_ZUL_AMAN_CATACLYSM      = 781, // Zul'Aman (Cataclysm)
-    MAP_ZUL_GURUB_CATACLYSM     = 793, // ZUl'Gurub (Cataclysm)
-    MAP_WELL_OF_ETERNITY        = 816, // Well of Eternity
-    MAP_HOUR_OF_TWILIGHT        = 819, // Hour of Twilight
-    MAP_END_TIME                = 820, // End Time
-    MAP_BARADIN_HOLD            = 752, // Baradin Hold
-    MAP_BLACKWING_DESCENT       = 754, // Blackwing Descent
-    MAP_BASTION_OF_TWILIGHT     = 758, // Bastion of Twilight
-    MAP_THRONE_OF_FOUR_WINDS    = 773, // Throne of the Four Winds
-    MAP_FIRELANDS               = 800, // Firelands
-    MAP_DRAGON_SOUL             = 824, // Dragon Soul
+    // Verified against real map/instance ids (cross-checked via existing creature_spawns
+    // occupancy, and independently against two emulator reference databases) - every value
+    // here was previously wrong, some by enough to collide with an unrelated instance.
+    MAP_LOST_CITY_OF_TOLVIR     = 755, // Lost city of Tol'vir
+    MAP_BLACKROCK_CAVERNS       = 645, // Blackrock Caverns
+    MAP_GRIM_BATOL              = 670, // Grim Batol
+    MAP_HALLS_OF_ORIGINATION    = 644, // Halls of Origination
+    MAP_THRONE_OF_THE_TIDES     = 643, // Throne of Tides
+    MAP_THE_STONECORE           = 725, // The Stonecore
+    MAP_THE_VORTEX_PINNACLE     = 657, // Vortex Pinnacle
+    // Zul'Aman was never given a separate map for its Cataclysm 4.1 heroic revamp - it's the
+    // same physical instance as the Tbc raid (MAP_ZUL_AMAN, 568), just re-scripted in place.
+    MAP_ZUL_AMAN_CATACLYSM      = MAP_ZUL_AMAN,
+    MAP_ZUL_GURUB_CATACLYSM     = 859, // Zul'Gurub (Cataclysm 4.1, a genuinely separate map from Classic's)
+    MAP_WELL_OF_ETERNITY        = 939, // Well of Eternity
+    MAP_HOUR_OF_TWILIGHT        = 940, // Hour of Twilight
+    MAP_END_TIME                = 938, // End Time
+    MAP_BARADIN_HOLD            = 757, // Baradin Hold
+    MAP_BLACKWING_DESCENT       = 669, // Blackwing Descent
+    MAP_BASTION_OF_TWILIGHT     = 671, // Bastion of Twilight
+    MAP_THRONE_OF_FOUR_WINDS    = 754, // Throne of the Four Winds
+    MAP_FIRELANDS               = 720, // Firelands
+    MAP_DRAGON_SOUL             = 967, // Dragon Soul
+
+    //Mists of Pandaria Map Ids
+    MAP_SHADO_PAN_MONASTERY         = 959,  // Shado-Pan Monastery
+    MAP_TEMPLE_OF_THE_JADE_SERPENT  = 960,  // Temple of the Jade Serpent
+    MAP_STORMSTOUT_BREWERY          = 961,  // Stormstout Brewery
+    MAP_GATE_OF_THE_SETTING_SUN     = 962,  // Gate of the Setting Sun
+    MAP_MOGUSHAN_PALACE             = 994,  // Mogu'shan Palace
+    MAP_TERRACE_OF_ENDLESS_SPRING   = 996,  // Terrace of Endless Spring
+    MAP_SCARLET_HALLS               = 1001, // Scarlet Halls
+    MAP_SCARLET_MONASTERY_MOP       = 1004, // Scarlet Monastery (Mists revamp)
+    MAP_SCHOLOMANCE_MOP             = 1007, // Scholomance (Mists revamp)
+    MAP_MOGUSHAN_VAULTS             = 1008, // Mogu'shan Vaults
+    MAP_HEART_OF_FEAR               = 1009, // Heart of Fear
+    MAP_SIEGE_OF_NIUZAO_TEMPLE      = 1011, // Siege of Niuzao Temple
+    MAP_THRONE_OF_THUNDER           = 1098, // Throne of Thunder
+    MAP_SIEGE_OF_ORGRIMMAR          = 1136, // Siege of Orgrimmar
 
 
     /*

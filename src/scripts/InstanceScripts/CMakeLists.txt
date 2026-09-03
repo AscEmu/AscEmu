@@ -96,6 +96,10 @@ if ("${ASCEMU_NUMBER}" GREATER_EQUAL 3) # Cata
 file(GLOB SRC_CATA_SCRIPTS_FILES Cata/*.cpp Cata/*.h Cata/*.hpp)
 endif ()
 
+if ("${ASCEMU_NUMBER}" GREATER_EQUAL 4) # Mop
+file(GLOB SRC_MOP_SCRIPTS_FILES Mop/*.cpp Mop/*.hpp)
+endif ()
+
 # required for linker.
 set(SRC_INSTANCESCRIPTS
     ../../world/Server/ServerState.cpp
@@ -184,6 +188,8 @@ set(INSTANCESCRIPTS_SRCS
     ${SRC_WOTLK_VIOLETHOLD_SCRIPTS_FILES}
 
     ${SRC_CATA_SCRIPTS_FILES}
+
+    ${SRC_MOP_SCRIPTS_FILES}
 )
 
 # source group.
