@@ -131,7 +131,8 @@ VALUES
 (18414, 18414, 69156, 1098, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0), -- NO real coordinate anywhere for map 1098 (NPC_ZANDALARI_SKYSCREAMER) - placeholder, needs manual placement
 (18414, 18414, 69427, 1098, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0), -- NO real coordinate anywhere for map 1098 (BOSS_DARK_ANIMUS) - placeholder, needs manual placement
 (18414, 18414, 69465, 1098, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0), -- NO real coordinate anywhere for map 1098 (BOSS_JINROKH) - placeholder, needs manual placement
-(18414, 18414, 69712, 1098, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0); -- NO real coordinate anywhere for map 1098 (BOSS_JIKUN) - placeholder, needs manual placement
+(18414, 18414, 69712, 1098, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+-- NO real coordinate anywhere for map 1098 (BOSS_JIKUN) - placeholder, needs manual placement
 
 -- gameobject_spawns: new door spawns
 INSERT INTO `gameobject_spawns`
@@ -165,7 +166,8 @@ INSERT INTO `gameobject_spawns`
  `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `state`, `event_entry`)
 VALUES
 (18414, 18414, 211703, 1008, 1, 0, 0, 0, 0, 0, 0, 0, 1, 120, 0, 0), -- map fixed to Mogu'shan Vaults; no real position available anywhere, placeholder
-(18414, 18414, 215459, 1009, 1, 0, 0, 0, 0, 0, 0, 0, 1, 120, 1, 0); -- map fixed to Heart of Fear; no real position available anywhere, placeholder
+(18414, 18414, 215459, 1009, 1, 0, 0, 0, 0, 0, 0, 0, 1, 120, 1, 0);
+-- map fixed to Heart of Fear; no real position available anywhere, placeholder
 
 UPDATE `creature_spawns` cs
 JOIN `creature_properties` cp
