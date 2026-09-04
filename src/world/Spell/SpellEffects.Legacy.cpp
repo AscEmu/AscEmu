@@ -2397,7 +2397,7 @@ void Spell::SpellEffectBind(uint8_t effectIndex)
     if (getSpellInfo()->getEffectMiscValue(effectIndex))
     {
         areaid = getSpellInfo()->getEffectMiscValue(effectIndex);
-        auto at = MapManagement::AreaManagement::AreaStorage::GetAreaById(areaid);
+        auto at = MapManagement::AreaManagement::AreaStorage::getAreaById(areaid);
         if (!at)
             return;
         mapid = at->map_id;

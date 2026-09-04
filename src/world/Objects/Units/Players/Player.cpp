@@ -1411,7 +1411,7 @@ void Player::handleAuraInterruptForMovementFlags(MovementInfo const& movementInf
 //    {
 //        ::WDB::Structures::AreaTableEntry const* zt = nullptr;
 //        if (at->zone)
-//            zt = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
+//            zt = MapManagement::AreaManagement::AreaStorage::getAreaById(at->zone);
 //
 //        bool areaIsCity = at->flags & MapManagement::AreaManagement::AREA_CITY_AREA || at->flags & MapManagement::AreaManagement::AREA_CITY;
 //        bool zoneIsCity = zt && (zt->flags & MapManagement::AreaManagement::AREA_CITY_AREA || zt->flags & MapManagement::AreaManagement::AREA_CITY);
@@ -1989,16 +1989,16 @@ bool Player::hasOverlayUncovered(uint32_t overlayId)
 {
     if (auto overlay = sWorldMapOverlayStore.lookupEntry(overlayId))
     {
-        if (overlay->areaID && hasAreaExplored(AreaStorage::GetAreaById(overlay->areaID)))
+        if (overlay->areaID && hasAreaExplored(AreaStorage::getAreaById(overlay->areaID)))
             return true;
 
-        if (overlay->areaID_2 && hasAreaExplored(AreaStorage::GetAreaById(overlay->areaID_2)))
+        if (overlay->areaID_2 && hasAreaExplored(AreaStorage::getAreaById(overlay->areaID_2)))
             return true;
 
-        if (overlay->areaID_3 && hasAreaExplored(AreaStorage::GetAreaById(overlay->areaID_3)))
+        if (overlay->areaID_3 && hasAreaExplored(AreaStorage::getAreaById(overlay->areaID_3)))
             return true;
 
-        if (overlay->areaID_4 && hasAreaExplored(AreaStorage::GetAreaById(overlay->areaID_4)))
+        if (overlay->areaID_4 && hasAreaExplored(AreaStorage::getAreaById(overlay->areaID_4)))
             return true;
     }
 
@@ -2060,7 +2060,7 @@ void Player::eventExploration()
             //second AT check for subzones.
             if (areaTableEntry->zone)
             {
-                auto at2 = AreaStorage::GetAreaById(areaTableEntry->zone);
+                auto at2 = AreaStorage::getAreaById(areaTableEntry->zone);
                 if (at2 && (at2->flags & MapManagement::AreaManagement::AREA_FLAG_CAPITAL))
                 {
                     if ((at2->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (at2->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
@@ -4013,7 +4013,7 @@ bool Player::canUseFlyingMountHere()
     auto areaEntry = GetArea();
     if (areaEntry == nullptr)
         // If area is null, try finding any area from the zone with zone id
-        areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(getZoneId());
+        areaEntry = MapManagement::AreaManagement::AreaStorage::getAreaById(getZoneId());
     if (areaEntry == nullptr)
         return false;
 
@@ -7733,16 +7733,16 @@ void Player::leftChannel(Channel* channel)
 
 void Player::updateChannels()
 {
-    auto areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(getZoneId());
+    auto areaEntry = MapManagement::AreaManagement::AreaStorage::getAreaById(getZoneId());
 
 #if VERSION_STRING < WotLK
     // TODO: verify if this is needed anymore in < wotlk
     // Correct zone for Hall of Legends
     if (GetMapId() == 450)
-        areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(2917);
+        areaEntry = MapManagement::AreaManagement::AreaStorage::getAreaById(2917);
     // Correct zone for Champions' Hall
     else if (GetMapId() == 449)
-        areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(2918);
+        areaEntry = MapManagement::AreaManagement::AreaStorage::getAreaById(2918);
 #endif
 
     // Update only default channels
@@ -8024,7 +8024,7 @@ void Player::updatePvPArea()
 
         if (areaTableEntry->zone)
         {
-            if (auto at2 = AreaStorage::GetAreaById(areaTableEntry->zone))
+            if (auto at2 = AreaStorage::getAreaById(areaTableEntry->zone))
             {
                 if ((at2->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (at2->team == AREAC_HORDE_TERRITORY && isTeamHorde()))
                 {
@@ -8202,7 +8202,7 @@ void Player::togglePvP()
         {
             if (at->zone)
             {
-                auto at2 = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
+                auto at2 = MapManagement::AreaManagement::AreaStorage::getAreaById(at->zone);
                 if (at2 && ((at2->team == AREAC_ALLIANCE_TERRITORY && isTeamAlliance()) || (at2->team == AREAC_HORDE_TERRITORY && isTeamHorde())))
                 {
                     if (m_pvpTimer > 0)

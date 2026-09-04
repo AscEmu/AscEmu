@@ -498,7 +498,7 @@ ZLiquidStatus TileMap::getLiquidStatus(LocationVector pos, uint8_t ReqLiquidType
                 uint32_t overrideLiquid = area->liquid_type_override[liquidEntry->Type];
                 if (!overrideLiquid && area->zone)
                 {
-                    area = MapManagement::AreaManagement::AreaStorage::GetAreaById(area->zone);
+                    area = MapManagement::AreaManagement::AreaStorage::getAreaById(area->zone);
                     if (area)
                         overrideLiquid = area->liquid_type_override[liquidEntry->Type];
                 }

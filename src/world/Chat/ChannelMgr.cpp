@@ -175,7 +175,7 @@ std::string ChannelMgr::generateChannelName(WDB::Structures::ChatChannelsEntry c
         return channelDbc->namePattern;
 
     char const* areaName = "City";
-    if (const auto defaultArea = MapManagement::AreaManagement::AreaStorage::GetAreaById(3459))
+    if (const auto defaultArea = MapManagement::AreaManagement::AreaStorage::getAreaById(3459))
     {
         areaName = defaultArea->area_name.c_str();
     }

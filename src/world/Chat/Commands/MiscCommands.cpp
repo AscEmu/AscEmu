@@ -824,7 +824,10 @@ bool ChatCommandHandler::HandleGPSCommand(const char* args, WorldSession* m_sess
     auto out_area_name = at->area_name;
 
     systemMessage(m_session, "Current Position: Map:{} Zone:{} Area:{} Phase:{} X:{} Y:{} Z:{} Orientation:{} Area Name: {}",
-        out_map_id, out_zone_id, out_area_id, out_phase, out_x, out_y, out_z, out_o, out_area_name);
+                  out_map_id, out_zone_id, out_area_id, out_phase, out_x, out_y, out_z, out_o, out_area_name);
+
+    systemMessage(m_session, "[DBC Debug] AreaID: {} | ZoneID: {} | ExploreFlag: {} | Flags: {:#x}",
+                  at->id, at->zone, at->explore_flag, at->flags);
 
 #if VERSION_STRING < Cata
     if (obj->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))

@@ -2135,7 +2135,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         {
             auto areaEntry = p_caster->GetArea();
             if (areaEntry == nullptr)
-                areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(p_caster->getZoneId());
+                areaEntry = MapManagement::AreaManagement::AreaStorage::getAreaById(p_caster->getZoneId());
             if (areaEntry == nullptr)
                 return SPELL_FAILED_NOT_HERE;
 

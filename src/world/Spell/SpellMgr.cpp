@@ -1620,7 +1620,7 @@ void SpellMgr::loadSpellAreas()
         // Check if the area id is a valid area id or zone id
         if (spellArea.areaId > 0)
         {
-            const auto areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(spellArea.areaId);
+            const auto areaEntry = MapManagement::AreaManagement::AreaStorage::getAreaById(spellArea.areaId);
             if (areaEntry == nullptr)
             {
                 sLogger.debugSpell("Table `spell_area` has invalid area id {} for spell entry {}, skipped.", spellArea.areaId, spellId);

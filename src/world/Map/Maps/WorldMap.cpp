@@ -1104,7 +1104,7 @@ void WorldMap::updateAllCells(bool apply, uint32_t areamask)
                 if (!cellHasAreaID(x, y, AreaID))
                     continue;
 
-                auto at = MapManagement::AreaManagement::AreaStorage::GetAreaById(AreaID);
+                auto at = MapManagement::AreaManagement::AreaStorage::getAreaById(AreaID);
                 if (at == nullptr)
                     continue;
                 if (at->zone != areamask)
@@ -2791,7 +2791,7 @@ ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, LocationVector pos, 
 
                         if (!overrideLiquid && area->zone)
                         {
-                            area = MapManagement::AreaManagement::AreaStorage::GetAreaById(area->zone);
+                            area = MapManagement::AreaManagement::AreaStorage::getAreaById(area->zone);
                             if (area)
                             {
                                 overrideLiquid = area->liquid_type_override[index];
