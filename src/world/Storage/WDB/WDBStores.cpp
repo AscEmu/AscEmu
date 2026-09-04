@@ -185,7 +185,7 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpeci
 namespace {
     void buildAreaMapCollection()
     {
-        auto* areaMapCollection = MapManagement::AreaManagement::AreaStorage::GetMapCollection();
+        auto* areaMapCollection = MapManagement::AreaManagement::AreaStorage::getMapCollection();
         if (!areaMapCollection)
             return;
 
@@ -193,7 +193,7 @@ namespace {
         {
             if (auto const* mapObject = sMapStore.lookupEntry(i))
             {
-                areaMapCollection->insert({ mapObject->id, mapObject->linkedZone });
+                areaMapCollection->insert({mapObject->id, mapObject->linkedZone});
             }
         }
     }
@@ -370,7 +370,7 @@ bool loadDBCs()
         }
     );
 
-    MapManagement::AreaManagement::AreaStorage::Initialise(&sAreaStore);
+    MapManagement::AreaManagement::AreaStorage::initialise(&sAreaStore);
 
     WDB::loadUnifiedWDBStore<WDB::Structures::AreaTriggerEntry>(
         bad_dbc_files, sAreaTriggerStore, dbc_path,
@@ -418,7 +418,6 @@ bool loadDBCs()
                 uint8_t const localeId = sWorld.getDbcLocaleLanguageId();
                 constexpr size_t arraySize = sizeof(raw.namePattern) / sizeof(raw.namePattern[0]);
 
-                // Fallback auf Locale 0, falls localeId auﬂerhalb des Arrays liegt
                 uint8_t const validIndex = (localeId < arraySize) ? localeId : 0;
                 entry.namePattern = raw.namePattern[validIndex] ? raw.namePattern[validIndex] : "";
             }
@@ -790,7 +789,7 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellCastTimesStore, dbc_path, "SpellCastTimes.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellDurationStore, dbc_path, "SpellDuration.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellItemEnchantmentStore, dbc_path, "SpellItemEnchantment.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellRadiusStore, dbc_path, "SpellRadius.dbc");     // todo handle max and level radius
+    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellRadiusStore, dbc_path, "SpellRadius.dbc"); // todo handle max and level radius
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellRangeStore, dbc_path, "SpellRange.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellShapeshiftFormStore, dbc_path, "SpellShapeshiftForm.dbc");
 
@@ -887,7 +886,7 @@ bool loadDBCs()
 
         // Calculate path nodes count
         std::vector<uint32_t> pathLength;
-        pathLength.resize(pathCount);                           // 0 and some other indexes not used
+        pathLength.resize(pathCount); // 0 and some other indexes not used
         for (uint32_t i = 0; i < sTaxiPathNodeStore.getNumRows(); ++i)
         {
             if (WDB::Structures::TaxiPathNodeEntry const* entry = sTaxiPathNodeStore.lookupEntry(i))
@@ -898,7 +897,7 @@ bool loadDBCs()
         }
 
         // Set path length
-        sTaxiPathNodesByPath.resize(pathCount);                 // 0 and some other indexes not used
+        sTaxiPathNodesByPath.resize(pathCount); // 0 and some other indexes not used
         for (uint32_t i = 1; i < sTaxiPathNodesByPath.size(); ++i)
             sTaxiPathNodesByPath[i].resize(pathLength[i]);
 
@@ -1029,7 +1028,7 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtChanceToSpellCritStore, dbc_path, "gtChanceToSpellCrit.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtChanceToSpellCritBaseStore, dbc_path, "gtChanceToSpellCritBase.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtCombatRatingsStore, dbc_path, "gtCombatRatings.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtRegenMPPerSptStore, dbc_path, "gtRegenMPPerSpt.dbc");     //loaded but not used
+    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtRegenMPPerSptStore, dbc_path, "gtRegenMPPerSpt.dbc"); // loaded but not used
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemRandomSuffixStore, dbc_path, "ItemRandomSuffix.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSummonPropertiesStore, dbc_path, "SummonProperties.dbc");
 
@@ -1083,7 +1082,7 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGlyphPropertiesStore, dbc_path, "GlyphProperties.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGlyphSlotStore, dbc_path, "GlyphSlot.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sBarberShopCostBaseStore, dbc_path, "gtBarberShopCostBase.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sHolidaysStore, dbc_path, "Holidays.dbc");       //loaded but not used
+    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sHolidaysStore, dbc_path, "Holidays.dbc"); // loaded but not used
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemLimitCategoryStore, dbc_path, "ItemLimitCategory.dbc");
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sQuestXPStore, dbc_path, "QuestXP.dbc");
