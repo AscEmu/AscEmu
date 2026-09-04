@@ -141,6 +141,7 @@ void SetupBastionOfTwilight(ScriptMgr* mgr);
 void SetupBlackwingDescent(ScriptMgr* mgr);
 void SetupDragonSoul(ScriptMgr* mgr);
 void SetupFirelands(ScriptMgr* mgr);
+void SetupThroneOfTheFourWinds(ScriptMgr* mgr);
 #endif
 
 //Mists of Pandaria

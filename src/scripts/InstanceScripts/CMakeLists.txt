@@ -93,7 +93,7 @@ file(GLOB SRC_WOTLK_VIOLETHOLD_SCRIPTS_FILES Wotlk/VioletHold/*.cpp Wotlk/Violet
 endif ()
 
 if ("${ASCEMU_NUMBER}" GREATER_EQUAL 3) # Cata
-file(GLOB SRC_CATA_SCRIPTS_FILES Cata/*.cpp Cata/*.h Cata/*.hpp)
+file(GLOB SRC_CATA_SCRIPTS_FILES Cata/*.cpp Cata/*.hpp)
 endif ()
 
 if ("${ASCEMU_NUMBER}" GREATER_EQUAL 4) # Mop

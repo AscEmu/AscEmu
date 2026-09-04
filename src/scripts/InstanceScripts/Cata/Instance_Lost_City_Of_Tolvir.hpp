@@ -1,0 +1,123 @@
+/*
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
+
+// Lost City of the Tolvir - four encounters, no gating doors. Identities and mechanics
+// verified against wowhead.
+
+uint32_t const LostCityOfTolvirEncounterCount = 4;
+
+enum LostCityOfTolvirData
+{
+    DATA_GENERAL_HUSAM      = 0,
+    DATA_LOCKMAW_AND_AUGH   = 1,
+    DATA_HIGH_PROPHET_BARIM = 2,
+    DATA_SIAMAT             = 3
+};
+
+enum LostCityOfTolvirCreatures
+{
+    BOSS_GENERAL_HUSAM           = 44577,
+    BOSS_LOCKMAW                 = 43614,
+    BOSS_AUGH                    = 49045,
+    BOSS_HIGH_PROPHET_BARIM      = 43612,
+    BOSS_SIAMAT                  = 44819,
+
+    // NPC_PYGMY_BRUTE (44896) is a pure spawn-chain trigger with no offensive AI scripting data
+    // data in the reference - not scripted.
+    NPC_PYGMY_SCOUT              = 44897,
+    NPC_PYGMY_FIREBREATHER       = 44898,
+    NPC_OATHSWORN_AXEMASTER      = 44922,
+    NPC_OATHSWORN_MYRMIDON       = 44924,
+    NPC_OATHSWORN_WANDERER       = 44926,
+    NPC_OATHSWORN_PATHFINDER     = 44932,
+    NPC_NEFERSET_PLAGUEBRINGER   = 44976,
+    NPC_NEFERSET_TORTURER        = 44977,
+    NPC_NEFERSET_THEURGIST       = 44980,
+    NPC_OATHSWORN_SKINNER        = 44981,
+    NPC_NEFERSET_DARKCASTER      = 44982,
+    NPC_OATHSWORN_SCORPID_KEEPER = 45062,
+    NPC_TOLVIR_MERCHANT          = 45065,
+    NPC_OATHSWORN_CAPTAIN        = 45122
+};
+
+enum LostCityOfTolvirTrashSpells
+{
+    SPELL_PYGMY_SCOUT_PULSE            = 83780,
+
+    SPELL_PYGMY_FIREBREATHER_BREATH    = 83776,
+    SPELL_PYGMY_FIREBREATHER_FLAME_JET = 83778,
+
+    SPELL_AXEMASTER_CLEAVE             = 84256,
+    SPELL_AXEMASTER_REND               = 82763,
+
+    SPELL_MYRMIDON_SHIELD_BASH         = 82673,
+
+    SPELL_OATHSWORN_BLEED_PULSE        = 83877,
+    SPELL_WANDERER_PIERCING_STAB       = 82794,
+    SPELL_PATHFINDER_AIMED_SHOT        = 82764,
+
+    SPELL_PLAGUEBRINGER_DISEASE_CLOUD  = 73976,
+    SPELL_PLAGUEBRINGER_INFECTED_BITE  = 82768,
+
+    SPELL_TORTURER_WHIP                = 82750,
+    SPELL_TORTURER_MUTILATE            = 82744,
+
+    SPELL_THEURGIST_LIGHTNING_BOLT     = 82753,
+    SPELL_THEURGIST_CHAIN_LIGHTNING    = 82757,
+    SPELL_THEURGIST_STATIC_CHARGE      = 82759,
+
+    SPELL_SKINNER_SKIN                 = 82789,
+    SPELL_SKINNER_GUT_HOOK             = 84031,
+
+    SPELL_DARKCASTER_SHADOW_BOLT_PULSE = 82765,
+    SPELL_DARKCASTER_CURSE             = 84032,
+    SPELL_DARKCASTER_DRAIN_LIFE        = 82760,
+
+    SPELL_SCORPID_KEEPER_SUMMON        = 84126,
+    SPELL_SCORPID_KEEPER_MEND_PET      = 84123,
+    SPELL_SCORPID_KEEPER_ENVENOM       = 84122,
+
+    SPELL_TOLVIR_MERCHANT_GUARD        = 84144,
+
+    SPELL_CAPTAIN_BATTLE_SHOUT         = 84248,
+    SPELL_CAPTAIN_MORTAL_STRIKE        = 82670
+};
+
+enum HusamSpells
+{
+    SPELL_HUSAM_HAMMER_FIST      = 83654,
+    SPELL_HUSAM_MYSTIC_TRAP      = 83644,
+    SPELL_HUSAM_BAD_INTENTIONS   = 83113,
+    SPELL_HUSAM_SHOCKWAVE_VISUAL = 83130
+};
+
+enum LockmawSpells
+{
+    SPELL_LOCKMAW_VISCOUS_POISON    = 81630,
+    SPELL_LOCKMAW_SCENT_OF_BLOOD_10 = 81690,
+    SPELL_LOCKMAW_SCENT_OF_BLOOD_25 = 89998,
+    SPELL_LOCKMAW_DUST_FLAIL        = 81642,
+
+    SPELL_AUGH_PARALYTIC_BLOW_DART  = 84799,
+    SPELL_AUGH_WHIRLWIND            = 84784,
+    SPELL_AUGH_DRAGONS_BREATH       = 83776
+};
+
+enum BarimSpells
+{
+    SPELL_BARIM_FIFTY_LASHINGS = 82506,
+    SPELL_BARIM_PLAGUE_OF_AGES = 82622,
+    SPELL_BARIM_HEAVENS_FURY   = 81939
+};
+
+enum SiamatSpells
+{
+    SPELL_SIAMAT_STORM_BOLT       = 73564,
+    SPELL_SIAMAT_DEFLECTING_WINDS = 84589,
+    SPELL_SIAMAT_CLOUD_BURST      = 83790,
+    SPELL_SIAMAT_CALL_OF_SKY      = 84956
+};
