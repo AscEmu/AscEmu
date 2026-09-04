@@ -16,12 +16,12 @@ find_package(Threads REQUIRED)
 find_package(MySQL REQUIRED)
 find_package(BZip2 REQUIRED)
 
-if (CMAKE_C_COMPILER MATCHES "gcc" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     include(${CMAKE_SOURCE_DIR}/cmake/Compilers/gcc.cmake)
-elseif (CMAKE_C_COMPILER MATCHES "clang" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     include(${CMAKE_SOURCE_DIR}/cmake/Compilers/clang.cmake)
 else ()
-    message(FATAL_ERROR "Compiler is not supported")
+    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} is not supported")
 endif ()
 
 # check for database update files

@@ -24,11 +24,11 @@ jobs:
           sudo apt-get install -y \
             zlib1g-dev \
             libssl-dev \
-            libpcre3-dev \
+            libpcre2-dev \
             libbz2-dev \
             default-libmysqlclient-dev \
             libmysql++-dev \
-            lld \
+            mold \
             ninja-build
 
       - name: AscEmu Build ${{ matrix.version }}
