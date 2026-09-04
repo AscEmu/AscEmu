@@ -53,6 +53,6 @@ namespace MapManagement::AreaManagement
         static bool IsOutdoor(uint32_t mapId, float x, float y, float z);
         static bool IsOutdoorWMO(uint32_t mogpFlags, int32_t /*adtId*/, int32_t /*rootId*/, int32_t /*groupId*/, WDB::Structures::WMOAreaTableEntry const* wmoEntry, WDB::Structures::AreaTableEntry const* atEntry);
 
-        static WDB::Structures::AreaTableEntry const* AreaStorage::getAreaByPosition(uint32_t adtAreaId, float tileMapHeight, bool haveAreaInfo, uint32_t mogpFlags, int32_t adtId, int32_t rootId, int32_t groupId, uint32_t mapId, float x, float y, float z);
+        static WDB::Structures::AreaTableEntry const* getAreaByPosition(uint32_t adtAreaId, float tileMapHeight, bool haveAreaInfo, uint32_t mogpFlags, int32_t adtId, int32_t rootId, int32_t groupId, uint32_t mapId, float x, float y, float z);
     };
 } // </ MapManagement::AreaManagement>
