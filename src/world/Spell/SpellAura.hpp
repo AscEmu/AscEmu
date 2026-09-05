@@ -113,6 +113,7 @@ public:
     //void spellAuraEffectModPossess(AuraEffectModifier* aurEff, bool apply);
     void spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply);
     void spellAuraEffectDummy(AuraEffectModifier* aurEff, bool apply);
+    void spellAuraEffectModSpellCategoryCooldown(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectModConfuse(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectModCharm(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectModFear(AuraEffectModifier* aurEff, bool apply);

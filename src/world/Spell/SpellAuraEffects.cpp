@@ -372,7 +372,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::spellAuraEffectNotImplemented,                                   // 338 SPELL_AURA_338
     &Aura::spellAuraEffectNotImplemented,                                   // 339 SPELL_AURA_339
     &Aura::spellAuraEffectNotImplemented,                                   // 340 SPELL_AURA_340
-    &Aura::spellAuraEffectNotImplemented,                                   // 341 SPELL_AURA_341
+    &Aura::spellAuraEffectModSpellCategoryCooldown,                         // 341 SPELL_AURA_MOD_CATEGORY_COOLDOWN
     &Aura::spellAuraEffectNotImplemented,                                   // 342 SPELL_AURA_342
     &Aura::spellAuraEffectNotImplemented,                                   // 343 SPELL_AURA_343
     &Aura::spellAuraEffectNotImplemented,                                   // 344 SPELL_AURA_344
@@ -822,7 +822,7 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "SPELL_AURA_338",                                                       // 338
     "SPELL_AURA_339",                                                       // 339
     "SPELL_AURA_340",                                                       // 340
-    "SPELL_AURA_341",                                                       // 341
+    "SPELL_AURA_MOD_CATEGORY_COOLDOWN",                                     // 341
     "SPELL_AURA_342",                                                       // 342
     "SPELL_AURA_343",                                                       // 343
     "SPELL_AURA_344",                                                       // 344
@@ -932,6 +932,14 @@ void Aura::spellAuraEffectNotImplemented(AuraEffectModifier* aurEff, bool /*appl
 void Aura::spellAuraEffectNotUsed(AuraEffectModifier* /*aurEff*/, bool /*apply*/)
 {
     // Handled elsewhere or not used, so do nothing
+}
+
+void Aura::spellAuraEffectModSpellCategoryCooldown(AuraEffectModifier* /*aurEff*/, bool /*apply*/)
+{
+    // Actual cooldown reduction is applied in Player::addSpellCooldown; this only refreshes the
+    // client's category-cooldown display the moment the aura is gained or lost.
+    if (auto* const playerOwner = getPlayerOwner())
+        playerOwner->sendSpellCategoryCooldowns();
 }
 
 void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)

@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgCastSpell.h"
 #include "Server/Packets/CmsgPetCastSpell.h"
 #include "Server/Packets/CmsgSpellClick.h"
+#include "Server/Packets/CmsgRequestCategoryCooldowns.h"
 #include "Server/Packets/SmsgSetProjectilePosition.h"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
@@ -475,4 +476,13 @@ void WorldSession::handleUpdateProjectilePosition(WorldPacket& recvPacket)
     SmsgSetProjectilePosition managedPacket(casterGuid, castCount, x, y, z);
     PacketBroadcast::sendToSet(*caster, managedPacket, true);
 #endif
+}
+
+void WorldSession::handleRequestCategoryCooldownsOpcode(WorldPacket& recvPacket)
+{
+    CmsgRequestCategoryCooldowns srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    _player->sendSpellCategoryCooldowns();
 }

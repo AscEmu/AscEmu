@@ -134,6 +134,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgTriggerMovie.h"
 #include "Server/Packets/SmsgTriggerCinematic.h"
 #include "Server/Packets/SmsgSpellCooldown.h"
+#include "Server/Packets/SmsgSpellCategoryCooldown.h"
 #include "Server/Packets/SmsgStartMirrorTimer.h"
 #include "Server/Packets/SmsgSummonRequest.h"
 #include "Server/Packets/SmsgSupercededSpell.h"
@@ -4183,6 +4184,20 @@ void Player::addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster
     const auto curTime = Util::getMSTime();
     const auto spellId = spellInfo->getId();
 
+    // SPELL_AURA_MOD_SPELL_CATEGORY_COOLDOWN: sum of all active auras reducing this spell's category.
+    // Applies to both the category cooldown and the plain cooldown of any spell that has a category.
+    int32_t categoryCooldownMod = 0;
+#if VERSION_STRING >= Cata
+    if (spellInfo->getCategory() > 0)
+    {
+        for (auto const* aurEff : getAuraEffectList(SPELL_AURA_MOD_CATEGORY_COOLDOWN))
+        {
+            if (static_cast<uint32_t>(aurEff->getEffectMiscValue()) == spellInfo->getCategory())
+                categoryCooldownMod += aurEff->getEffectDamage();
+        }
+    }
+#endif
+
     // Set category cooldown
     int32_t spellCategoryCooldown = static_cast<int32_t>(spellInfo->getCategoryRecoveryTime());
     if (spellCategoryCooldown > 0 && spellInfo->getCategory() > 0)
@@ -4190,6 +4205,8 @@ void Player::addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster
         // Add cooldown modifiers
         if (castingSpell != nullptr)
             applySpellModifiers(SPELLMOD_COOLDOWN_DECREASE, &spellCategoryCooldown, spellInfo, castingSpell);
+
+        spellCategoryCooldown = std::max(spellCategoryCooldown + categoryCooldownMod, 0);
 
         _addCategoryCooldown(spellInfo->getCategory(), spellCategoryCooldown + curTime, spellId, itemCaster != nullptr ? itemCaster->getEntry() : 0);
     }
@@ -4201,6 +4218,9 @@ void Player::addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster
         // Add cooldown modifers
         if (castingSpell != nullptr)
             applySpellModifiers(SPELLMOD_COOLDOWN_DECREASE, &spellCooldown, spellInfo, castingSpell);
+
+        if (spellInfo->getCategory() > 0)
+            spellCooldown = std::max(spellCooldown + categoryCooldownMod, 0);
 
         _addCooldown(COOLDOWN_TYPE_SPELL, spellId, spellCooldown + curTime, spellId, itemCaster != nullptr ? itemCaster->getEntry() : 0);
     }
@@ -4276,6 +4296,34 @@ void Player::sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t 
 
     SmsgSpellCooldown managedPacket(GetNewGUID(), isGcd, spellMap);
     PacketBroadcast::sendToSet(*this, managedPacket, true);
+}
+
+void Player::sendSpellCategoryCooldowns() const
+{
+    std::vector<SpellCategoryCooldownEntry> entries;
+
+#if VERSION_STRING >= Cata
+    for (auto const* aurEff : getAuraEffectList(SPELL_AURA_MOD_CATEGORY_COOLDOWN))
+    {
+        const uint32_t category = static_cast<uint32_t>(aurEff->getEffectMiscValue());
+
+        const auto itr = std::find_if(entries.begin(), entries.end(), [category](SpellCategoryCooldownEntry const& entry)
+        {
+            return entry.category == category;
+        });
+
+        if (itr == entries.end())
+            entries.push_back({ category, -aurEff->getEffectDamage() });
+        else
+            itr->modCooldown -= aurEff->getEffectDamage();
+    }
+#endif
+
+    if (m_session == nullptr)
+        return;
+
+    SmsgSpellCategoryCooldown managedPacket(std::move(entries));
+    m_session->sendManagedPacket(managedPacket);
 }
 
 void Player::clearCooldownForSpell(uint32_t spellId)

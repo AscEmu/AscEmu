@@ -899,6 +899,7 @@ protected:
         void handlePetCastSpell(WorldPacket& recvPacket);
         void handleCancelTotem(WorldPacket& recvPacket);
         void handleUpdateProjectilePosition(WorldPacket& recvPacket);
+        void handleRequestCategoryCooldownsOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // TaxiHandler.cpp

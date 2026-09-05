@@ -915,6 +915,7 @@ public:
     void addSpellCooldown(SpellInfo const* spellInfo, Item const* itemCaster, Spell* castingSpell = nullptr, int32_t cooldownTime = 0);
     void addGlobalCooldown(SpellInfo const* spellInfo, Spell* castingSpell, const bool sendPacket = false);
     void sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t duration, const bool isGcd, uint32_t sharedCategory = 0);
+    void sendSpellCategoryCooldowns() const;
     void clearCooldownForSpell(uint32_t spellId);
     void clearGlobalCooldown();
     void resetAllCooldowns();
