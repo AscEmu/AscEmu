@@ -28,7 +28,13 @@ enum SilvershardMinesObjects
 enum SilvershardMinesSpells
 {
     // (npc 60283).
-    SILVERSHARD_SPELL_TRACK_SWITCH_CLICK = 124491
+    SILVERSHARD_SPELL_TRACK_SWITCH_CLICK = 124491,
+
+    // Faction-crest visual shown floating above a mine cart while a team controls it - cast on
+    // the cart itself, one aura at a time (remove the other two before casting the new one).
+    SILVERSHARD_SPELL_CONTROL_ALLIANCE = 116086,
+    SILVERSHARD_SPELL_CONTROL_HORDE = 116085,
+    SILVERSHARD_SPELL_CONTROL_NEUTRAL = 118001
 };
 
 enum SilvershardMineIndex

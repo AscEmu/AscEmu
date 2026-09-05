@@ -117,6 +117,8 @@ void SilvershardMines::OnCreate()
     {
         m_carts[i] = spawnCreature(SILVERSHARD_MINE_CART_ENTRY,
             SilvershardCartSpawn[i][0], SilvershardCartSpawn[i][1], SilvershardCartSpawn[i][2], SilvershardCartSpawn[i][3]);
+        if (m_carts[i])
+            m_carts[i]->castSpell(m_carts[i], SILVERSHARD_SPELL_CONTROL_NEUTRAL, true);
     }
 
     m_trackSwitchEast = spawnCreature(SILVERSHARD_TRACK_SWITCH_ENTRY,
@@ -295,6 +297,14 @@ void SilvershardMines::ResetCart(uint32_t mineIndex)
         LocationVector const spawn(SilvershardCartSpawn[mineIndex][0], SilvershardCartSpawn[mineIndex][1],
             SilvershardCartSpawn[mineIndex][2], SilvershardCartSpawn[mineIndex][3]);
         cart->SetPosition(spawn);
+
+        // EventUpdateCart only re-casts the control visual when newController differs from
+        // m_cartControlledBy - since that was just reset to -1 above, a capture (which leaves the
+        // cart still showing the previous team's banner) would never clear it without this.
+        cart->removeAllAurasById(SILVERSHARD_SPELL_CONTROL_NEUTRAL);
+        cart->removeAllAurasById(SILVERSHARD_SPELL_CONTROL_ALLIANCE);
+        cart->removeAllAurasById(SILVERSHARD_SPELL_CONTROL_HORDE);
+        cart->castSpell(cart, SILVERSHARD_SPELL_CONTROL_NEUTRAL, true);
     }
 }
 
@@ -329,6 +339,12 @@ void SilvershardMines::EventUpdateCart(uint32_t mineIndex)
         setWorldState(SilvershardAllianceControlStates[mineIndex], newController == TEAM_ALLIANCE ? 1 : 0);
         setWorldState(SilvershardHordeControlStates[mineIndex], newController == TEAM_HORDE ? 1 : 0);
         playSoundToAll(newController == TEAM_ALLIANCE ? BattlegroundDef::ALLIANCE_CAPTURE : newController == TEAM_HORDE ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::FLAG_RETURNED);
+
+        cart->removeAllAurasById(SILVERSHARD_SPELL_CONTROL_NEUTRAL);
+        cart->removeAllAurasById(SILVERSHARD_SPELL_CONTROL_ALLIANCE);
+        cart->removeAllAurasById(SILVERSHARD_SPELL_CONTROL_HORDE);
+        cart->castSpell(cart, newController == TEAM_ALLIANCE ? SILVERSHARD_SPELL_CONTROL_ALLIANCE
+            : newController == TEAM_HORDE ? SILVERSHARD_SPELL_CONTROL_HORDE : SILVERSHARD_SPELL_CONTROL_NEUTRAL, true);
     }
 
     if (newController == -1)
