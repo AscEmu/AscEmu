@@ -27,7 +27,16 @@ class TwinPeaks : public Battleground
     uint32_t m_lgroup;
     uint8_t m_time_left;
 
+    // 0 = none, 1 = Focused Assault active, 2 = Brutal Assault active - see WarsongGulch.cpp,
+    // this mirrors the same real WotLK/Cata mechanic - identical spell IDs and timing to WG own).
+    uint8_t m_assaultTier = 0;
+
     void TimeLeft();
+    void EventFocusedAssault();
+    void EventBrutalAssault();
+    void StartAssaultTimersIfBothFlagsAway(PlayerTeam pickingTeam);
+    void CancelAssaultTimersAndAuras();
+    void ApplyCurrentAssaultTier(Player* plr);
 
 public:
     TwinPeaks(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t);

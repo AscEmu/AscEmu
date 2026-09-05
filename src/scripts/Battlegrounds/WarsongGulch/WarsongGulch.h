@@ -21,7 +21,17 @@ class WarsongGulch : public Battleground
     uint32_t m_lgroup;
     uint8_t m_time_left;
 
+    // 0 = none, 1 = Focused Assault active, 2 = Brutal Assault active - tracked explicitly so a
+    // player who picks up an already-running flag mid-assault immediately gets the current tier,
+    // matching the real "debuff persists across drops/pickups" behaviour.
+    uint8_t m_assaultTier = 0;
+
     void TimeLeft();
+    void EventFocusedAssault();
+    void EventBrutalAssault();
+    void StartAssaultTimersIfBothFlagsAway(PlayerTeam pickingTeam);
+    void CancelAssaultTimersAndAuras();
+    void ApplyCurrentAssaultTier(Player* plr);
 
 public:
     WarsongGulch(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t);

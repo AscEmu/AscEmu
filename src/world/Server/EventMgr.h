@@ -64,6 +64,10 @@ enum EventTypes : uint16_t
     EVENT_PLAYER_FORCED_RESURRECT,              /// Zack 2007 06 08: After player not pushing release spirit for 6 minutes while dead
     EVENT_PLAYER_SOFT_DISCONNECT,               /// Zack 2007 06 12: Kick AFK players to not eat resources
     EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG,
+    EVENT_BATTLEGROUND_WSG_FOCUSED_ASSAULT,
+    EVENT_BATTLEGROUND_WSG_BRUTAL_ASSAULT,
+    EVENT_BATTLEGROUND_TP_FOCUSED_ASSAULT,
+    EVENT_BATTLEGROUND_TP_BRUTAL_ASSAULT,
     EVENT_CORPSE_SPAWN_BONES,
     EVENT_DODGE_BLOCK_FLAG_EXPIRE,              /// yeah, there are more then 1 flags
     EVENT_REJUVENATION_FLAG_EXPIRE,

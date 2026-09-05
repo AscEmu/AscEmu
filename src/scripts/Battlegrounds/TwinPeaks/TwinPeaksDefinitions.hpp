@@ -15,6 +15,13 @@ enum
     // position is set dynamically on drop) - real spawn-confirmed entries, not a guess.
     ALLIANCE_FLAG_DROP = 179785,
     HORDE_FLAG_DROP = 179786,
+
+    // Mechanic - same spells and timing as Warsong Gulch's own, see WarsongGulchDefinitions.hpp.
+    TP_TIME_FOCUSED_ASSAULT_MS = 10 * 60 * 1000,
+    TP_TIME_BRUTAL_ASSAULT_MS = 15 * 60 * 1000,
+
+    TP_SPELL_FOCUSED_ASSAULT = 46392,
+    TP_SPELL_BRUTAL_ASSAULT = 46393,
 };
 
 // Real, spawn-confirmed AreaTrigger.dbc entries for map 726 - matched to their real gameobject

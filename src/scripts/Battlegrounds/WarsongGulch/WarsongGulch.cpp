@@ -30,6 +30,7 @@
 #include "Server/WorldSessionLog.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Management/ObjectMgr.hpp"
 #include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/EventMgr.h"
@@ -323,6 +324,9 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
                 sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Alliance flag was returned to its base by %s!", plr->getName().c_str());
 
             setWorldState(plr->isTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 1);
+
+            // Own flag is back home - ends any ongoing "both flags away" assault period.
+            CancelAssaultTimersAndAuras();
         }
         return;
     }
@@ -343,6 +347,13 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
 
     m_flagHolders[plr->getTeam()] = plr->getGuidLow();
     plr->setHasBgFlag(true);
+
+    // The flag was already away from its base while sitting on the ground, so the "both flags
+    // away" assault period (if it wasn't already running) may need to start now, and this new
+    // carrier inherits whatever tier is currently active - WotLK behaviour is that the
+    // debuff persists across drops/pickups, not reset per carrier.
+    StartAssaultTimersIfBothFlagsAway(plr->getTeam());
+    ApplyCurrentAssaultTier(plr);
 
     /* This is *really* strange. Even though the A9 create sent to the client is exactly the same as the first one, if
      * you spawn and despawn it, then spawn it again it will not show. So we'll assign it a new guid, hopefully that
@@ -378,6 +389,83 @@ void WarsongGulch::ReturnFlag(PlayerTeam team)
         sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Alliance flag was returned to its base!");
     else
         sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Horde flag was returned to its base!");
+
+    // A flag making it back to base - whether walked back or auto-returned - always ends any
+    // ongoing "both flags away" assault period, real WotLK rule.
+    CancelAssaultTimersAndAuras();
+}
+
+void WarsongGulch::StartAssaultTimersIfBothFlagsAway(PlayerTeam pickingTeam)
+{
+    const uint32_t otherTeam = pickingTeam ? TEAM_ALLIANCE : TEAM_HORDE;
+
+    // The other team's flag must currently be away from its base too (held or on the ground) -
+    // the assault debuffs only start once BOTH flags are out at the same time.
+    if (m_flagHolders[otherTeam] == 0 && !m_dropFlags[otherTeam]->IsInWorld())
+        return;
+
+    // Already running from the other flag's earlier pickup - don't reschedule.
+    if (event_HasEvent(EVENT_BATTLEGROUND_WSG_FOCUSED_ASSAULT) || event_HasEvent(EVENT_BATTLEGROUND_WSG_BRUTAL_ASSAULT))
+        return;
+
+    sEventMgr.AddEvent(this, &WarsongGulch::EventFocusedAssault, EVENT_BATTLEGROUND_WSG_FOCUSED_ASSAULT, TIME_FOCUSED_ASSAULT_MS, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(this, &WarsongGulch::EventBrutalAssault, EVENT_BATTLEGROUND_WSG_BRUTAL_ASSAULT, TIME_BRUTAL_ASSAULT_MS, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+}
+
+void WarsongGulch::EventFocusedAssault()
+{
+    m_assaultTier = 1;
+    for (uint8_t team = 0; team < 2; ++team)
+    {
+        if (m_flagHolders[team] == 0)
+            continue;
+
+        if (Player* carrier = sObjectMgr.getPlayer(m_flagHolders[team]))
+            carrier->castSpell(carrier, SPELL_FOCUSED_ASSAULT, true);
+    }
+}
+
+void WarsongGulch::EventBrutalAssault()
+{
+    m_assaultTier = 2;
+    for (uint8_t team = 0; team < 2; ++team)
+    {
+        if (m_flagHolders[team] == 0)
+            continue;
+
+        if (Player* carrier = sObjectMgr.getPlayer(m_flagHolders[team]))
+        {
+            carrier->removeAllAurasById(SPELL_FOCUSED_ASSAULT);
+            carrier->castSpell(carrier, SPELL_BRUTAL_ASSAULT, true);
+        }
+    }
+}
+
+void WarsongGulch::CancelAssaultTimersAndAuras()
+{
+    sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_WSG_FOCUSED_ASSAULT);
+    sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_WSG_BRUTAL_ASSAULT);
+    m_assaultTier = 0;
+
+    for (uint8_t team = 0; team < 2; ++team)
+    {
+        if (m_flagHolders[team] == 0)
+            continue;
+
+        if (Player* carrier = sObjectMgr.getPlayer(m_flagHolders[team]))
+        {
+            carrier->removeAllAurasById(SPELL_FOCUSED_ASSAULT);
+            carrier->removeAllAurasById(SPELL_BRUTAL_ASSAULT);
+        }
+    }
+}
+
+void WarsongGulch::ApplyCurrentAssaultTier(Player* plr)
+{
+    if (m_assaultTier == 1)
+        plr->castSpell(plr, SPELL_FOCUSED_ASSAULT, true);
+    else if (m_assaultTier == 2)
+        plr->castSpell(plr, SPELL_BRUTAL_ASSAULT, true);
 }
 
 void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
@@ -415,6 +503,9 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
     m_flagHolders[plr->getTeam()] = plr->getGuidLow();
     if (m_homeFlags[plr->getTeam()]->IsInWorld())
         m_homeFlags[plr->getTeam()]->RemoveFromWorld(false);
+
+    // Starts the 10/15-minute assault timers if the other team's flag was already away too.
+    StartAssaultTimersIfBothFlagsAway(plr->getTeam());
 
     playSoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
     setWorldState(plr->isTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 2);

@@ -8,8 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 enum
 {
     TIME_LEFT = 25,
-    //TIME_FOCUSED_ASSAULT = 10,
-    //TIME_BRUTAL_ASSAULT = 15,
 
     BUFF_RESPAWN_TIME = 90000,
 
@@ -17,8 +15,16 @@ enum
 
     WARSONG_FLAG = 179786,
 
-    //SPELL_FOCUSED_ASSAULT = 46392,
-    //SPELL_BRUTAL_ASSAULT = 46393,
+    // WotLK mechanic: once BOTH flags are away from their
+    // bases at the same time, both carriers get Focused Assault after 10 minutes (+50% damage
+    // taken, movement speed capped at 100%), which is replaced by Brutal Assault after 15 minutes
+    // total (+100% damage taken, same speed cap). The debuff persists across drops/pickups until
+    // the flag actually makes it back to base.
+    TIME_FOCUSED_ASSAULT_MS = 10 * 60 * 1000,
+    TIME_BRUTAL_ASSAULT_MS = 15 * 60 * 1000,
+
+    SPELL_FOCUSED_ASSAULT = 46392,
+    SPELL_BRUTAL_ASSAULT = 46393,
 };
 
 enum WarsongGulchAreaTriggers
