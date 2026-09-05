@@ -74,7 +74,7 @@ enum SpellAttributesEx : uint32_t
     ATTRIBUTESEX_CHANNEL_FACE_TARGET                = 0x00004000,   // 15 Channeling makes you face target
     ATTRIBUTESEX_DISPEL_AURAS_ON_IMMUNITY           = 0x00008000,   // 16 Removes and grants immunity to a mechanic (Blink (stun), Divine Shield, Ice Block etc)
     ATTRIBUTESEX_UNAFFECTED_BY_SCHOOL_IMMUNE        = 0x00010000,   // 17 unaffected by school immunity - something like "grant immunity" too
-    ATTRIBUTESEX_REMAIN_OOC                         = 0x00020000,   // 18
+    ATTRIBUTESEX_REMAIN_OOC                         = 0x00020000,   // 18 Pet AI related @Appled usage looks wrong (cooldown stuff). Implement for PET_SPELL_STATE_DEFAULT
     ATTRIBUTESEX_UNK20                              = 0x00040000,   // 19
     ATTRIBUTESEX_CANT_TARGET_SELF                   = 0x00080000,   // 20
     ATTRIBUTESEX_REQ_COMBO_POINTS1                  = 0x00100000,   // 21 related to "Finishing move" and "Instantly overpowers"

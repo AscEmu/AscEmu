@@ -28,7 +28,6 @@
 
 // MIT START
 
-struct AI_Spell;
 class CreatureAISpells;
 struct PetCache;
 enum SpellCastResult : uint8_t;
@@ -210,15 +209,7 @@ public:
     void SendTalentsToOwner(); // Send talentpoints and talent spells to owner
 #endif
 
-    void HandleAutoCastEvent(AutoCastEvents Type);
-    AI_Spell* HandleAutoCastEvent();
-
     void die(Unit* pAttacker, uint32_t damage, uint32_t spellid) override;
-
-protected:
-    uint32_t GetAutoCastTypeForSpell(SpellInfo const* ent);
-
-    std::list<AI_Spell*> m_autoCastSpells[AUTOCAST_EVENT_COUNT];
 };
 
 #endif // _PET_H

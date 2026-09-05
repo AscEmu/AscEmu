@@ -239,9 +239,6 @@ void SummonHandler::notifyOnOwnerAttacked(Unit* attacker)
         if (summon->getAIInterface()->getReactState() != REACT_PASSIVE)
         {
             summon->getAIInterface()->onHostileAction(attacker);
-            // todo: handle this in pet system
-            if (auto* const pet = summon->isPet() ? dynamic_cast<Pet*>(summon) : nullptr)
-                pet->HandleAutoCastEvent(AUTOCAST_EVENT_OWNER_ATTACKED);
         }
     }
 }

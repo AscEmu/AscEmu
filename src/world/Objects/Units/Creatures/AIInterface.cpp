@@ -931,9 +931,6 @@ void AIInterface::enterEvadeMode()
     // Player pets should not evade but instead stop attacking and return to owner
     if (m_Unit->isPet() && m_Unit->getPlayerOwner() != nullptr)
     {
-        // TODO: not handled! -Appled
-        //static_cast<Pet*>(m_Unit)->HandleAutoCastEvent(AUTOCAST_EVENT_LEAVE_COMBAT);
-
         attackStop();
         // TODO: not correct, if pet is at stay, it should return to stay location
         dynamic_cast<Pet*>(m_Unit)->setPetAction(PET_ACTION_FOLLOW);
