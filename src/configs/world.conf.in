@@ -1094,6 +1094,14 @@
 #        Standard number of players required for each team.
 #        Default: 8 (BFG_MIN) to 15 (BFG_MAX).
 #
+#    Silvershard Mines
+#        Standard number of players required for each team.
+#        Default: 5 (SM_MIN) to 10 (SM_MAX).
+#
+#    Temple Of Kotmogu
+#        Standard number of players required for each team.
+#        Default: 5 (TOK_MIN) to 10 (TOK_MAX).
+#
 #
 # Random Battleground system.
 #
@@ -1142,6 +1150,10 @@
               TP_MAX               = "10"
               BFG_MIN              = "8"
               BFG_MAX              = "15"
+              SM_MIN               = "5"
+              SM_MAX               = "10"
+              TOK_MIN              = "5"
+              TOK_MAX              = "10"
 
               RBG_FIRST_WIN_HONOR  = "30"
               RBG_FIRST_WIN_ARENA  = "25"

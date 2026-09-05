@@ -28,7 +28,7 @@ namespace AscEmu::Packets
         }
 
         CmsgBattlemasterJoin(uint64_t guid, uint32_t bgType, uint32_t instanceId, uint8_t asGroup) :
-            ManagedPacket(CMSG_BATTLEMASTER_JOIN, 8),
+            ManagedPacket(CMSG_BATTLEMASTER_JOIN, 0),
             guid(guid),
             bgType(bgType),
             instanceId(instanceId),

@@ -31,7 +31,9 @@
 #include "RingOfValor/RingOfValor.h"
 #include "RuinsOfLordaeron/RuinsOfLordaeron.h"
 #include "Server/ServerState.h"
+#include "SilvershardMines/SilvershardMines.hpp"
 #include "StrandOfTheAncient/StrandOfTheAncient.h"
+#include "TempleOfKotmogu/TempleOfKotmogu.hpp"
 #include "TwinPeaks/TwinPeaks.hpp"
 #include "WarsongGulch/WarsongGulch.h"
 #include "Server/Script/ScriptMgr.hpp"
@@ -47,7 +49,9 @@ extern "C" SCRIPT_DECL uint32_t _exp_get_script_type()
     return SCRIPT_TYPE_MISC;
 }
 
-extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* /*mgr*/)
+extern void SetupSilvershardMines(ScriptMgr* mgr);
+
+extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 {
     // Mapping Battleground type to map Id
     sBattlegroundManager.registerMapForBgType(BattlegroundDef::TYPE_ALTERAC_VALLEY, 30);
@@ -58,6 +62,8 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* /*mgr*/)
     sBattlegroundManager.registerMapForBgType(BattlegroundDef::TYPE_ISLE_OF_CONQUEST, 628);
     sBattlegroundManager.registerMapForBgType(BattlegroundDef::TYPE_TWIN_PEAKS, 726);
     sBattlegroundManager.registerMapForBgType(BattlegroundDef::TYPE_BATTLE_FOR_GILNEAS_CITY, 761);
+    sBattlegroundManager.registerMapForBgType(BattlegroundDef::TYPE_TEMPLE_OF_KOTMOGU, 998);
+    sBattlegroundManager.registerMapForBgType(BattlegroundDef::TYPE_SILVERSHARD_MINES, 727);
 
     // Registering factory methods
     sBattlegroundManager.registerBgFactory(30, &AlteracValley::Create);
@@ -68,12 +74,16 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* /*mgr*/)
     sBattlegroundManager.registerBgFactory(628, &IsleOfConquest::Create);
     sBattlegroundManager.registerBgFactory(726, &TwinPeaks::Create);
     sBattlegroundManager.registerBgFactory(761, &BattleForGilneas::Create);
+    sBattlegroundManager.registerBgFactory(998, &TempleOfKotmogu::Create);
+    sBattlegroundManager.registerBgFactory(727, &SilvershardMines::Create);
 
     sBattlegroundManager.registerArenaFactory(559, &RingOfTrials::Create);
     sBattlegroundManager.registerArenaFactory(562, &CircleOfBlood::Create);
     sBattlegroundManager.registerArenaFactory(572, &RuinsOfLordaeron::Create);
     sBattlegroundManager.registerArenaFactory(617, &DalaranSewers::Create);
     sBattlegroundManager.registerArenaFactory(618, &RingOfValor::Create);
+
+    SetupSilvershardMines(mgr);
 }
 
 #ifdef WIN32

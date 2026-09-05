@@ -60,8 +60,7 @@ public:
 
     static Battleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new BattleForGilneas(m, i, l, t); }
 
-    // TODO: 120 is a placeholder, not a sourced worldstring_tables id - no "Battle for Gilneas"
-    // row exists in worldstring_tables yet, needs a real one added via SQL.
+    // 120 - worldstring_tables row added via SQL.
     uint32_t GetNameID() override { return 120; }
     void OnStart() override;
 

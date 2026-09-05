@@ -348,6 +348,10 @@ public:
         uint32_t maxPlayerCountTwinPeaks;
         uint32_t minPlayerCountBattleForGilneas;
         uint32_t maxPlayerCountBattleForGilneas;
+        uint32_t minPlayerCountSilvershardMines;
+        uint32_t maxPlayerCountSilvershardMines;
+        uint32_t minPlayerCountTempleOfKotmogu;
+        uint32_t maxPlayerCountTempleOfKotmogu;
         uint32_t firstRbgHonorValueToday;
         uint32_t firstRbgArenaHonorValueToday;
         uint32_t honorableKillsRbg;

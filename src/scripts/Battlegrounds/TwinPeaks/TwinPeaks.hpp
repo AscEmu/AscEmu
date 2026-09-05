@@ -57,8 +57,7 @@ public:
 
     static Battleground* Create(BattlegroundMap* m, uint32_t i, uint32_t l, uint32_t t) { return new TwinPeaks(m, i, l, t); }
 
-    // TODO: 108 is a placeholder, not a sourced worldstring_tables id (unlike WSG's real id=39)
-    // - no "Twin Peaks" row exists in worldstring_tables yet, needs a real one added via SQL.
+    // 108 - worldstring_tables row added via SQL.
     uint32_t GetNameID() override { return 108; }
     uint64_t GetFlagHolderGUID(uint32_t faction) const override { return m_flagHolders[faction]; }
     void OnStart() override;

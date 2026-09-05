@@ -138,7 +138,7 @@ void BattlegroundManager::handleBattlegroundJoin(WorldSession* session, WorldPac
     const uint32_t lgroup = plr->getLevelGrouping();
 
     CmsgBattlemasterJoin srlPacket;
-    if (!srlPacket.deserialise(packet))
+    if (!session->parsePacket(packet, srlPacket))
         return;
 
     if (srlPacket.bgType == BattlegroundDef::TYPE_RANDOM)
@@ -901,6 +901,10 @@ uint32_t BattlegroundManager::getMinimumPlayers(uint32_t dbcIndex)
             return worldConfig.bg.minPlayerCountTwinPeaks;
         case BattlegroundDef::TYPE_BATTLE_FOR_GILNEAS_CITY:
             return worldConfig.bg.minPlayerCountBattleForGilneas;
+        case BattlegroundDef::TYPE_SILVERSHARD_MINES:
+            return worldConfig.bg.minPlayerCountSilvershardMines;
+        case BattlegroundDef::TYPE_TEMPLE_OF_KOTMOGU:
+            return worldConfig.bg.minPlayerCountTempleOfKotmogu;
         default:
             return 1;
     }
@@ -933,6 +937,10 @@ uint32_t BattlegroundManager::getMaximumPlayers(uint32_t dbcIndex)
             return worldConfig.bg.maxPlayerCountTwinPeaks;
         case BattlegroundDef::TYPE_BATTLE_FOR_GILNEAS_CITY:
             return worldConfig.bg.maxPlayerCountBattleForGilneas;
+        case BattlegroundDef::TYPE_SILVERSHARD_MINES:
+            return worldConfig.bg.maxPlayerCountSilvershardMines;
+        case BattlegroundDef::TYPE_TEMPLE_OF_KOTMOGU:
+            return worldConfig.bg.maxPlayerCountTempleOfKotmogu;
         default:
             return 1;
     }
@@ -991,7 +999,8 @@ Battleground* BattlegroundManager::createInstance(uint32_t type, uint32_t levelG
         mgr->setBattleground(bg);
         sLogger.info("BattlegroundManager : Created arena battleground type {} for level group {} on map {}.", type, levelGroup, mapid);
         sEventMgr.AddEvent(bg, &Battleground::eventCreate, EVENT_BATTLEGROUND_QUEUE_UPDATE, 1, 1, 0);
-        std::lock_guard instanceLock(m_instanceLock);
+        // m_instanceLock is already held by the caller (eventQueueUpdate) - std::mutex is not
+        // recursive, so locking it again here deadlocks (crashes the WorldMap thread).
         m_instances[type].insert(std::make_pair(iid, bg));
         
         return bg;
@@ -1056,7 +1065,8 @@ Battleground* BattlegroundManager::createInstance(uint32_t type, uint32_t levelG
     sEventMgr.AddEvent(bg, &Battleground::eventCreate, EVENT_BATTLEGROUND_QUEUE_UPDATE, 1, 1, 0);
     sLogger.info("BattlegroundManager : Created battleground type {} for level group {}.", type, levelGroup);
 
-    std::lock_guard instanceLock(m_instanceLock);
+    // m_instanceLock is already held by the caller (eventQueueUpdate) - std::mutex is not
+    // recursive, so locking it again here deadlocks (crashes the WorldMap thread).
     m_instances[type].insert(std::make_pair(iid, bg));
 
     return bg;

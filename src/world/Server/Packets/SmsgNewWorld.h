@@ -35,12 +35,20 @@ namespace AscEmu::Packets
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet << mapId << location.x << location.y << location.z << location.o;
+                return true;
             }
-            else
+            else if (m_protocol.isMop())
+            {
+                packet << location.x << mapId << location.y << location.z << location.o;
+                return true;
+            }
+            else if (m_protocol.isCata())
             {
                 packet << location.x << location.o << location.z << mapId << location.y;
+                return true;
             }
-            return true;
+
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

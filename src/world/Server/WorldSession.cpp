@@ -535,7 +535,10 @@ std::string WorldSession::localizedGossipOption(uint32_t id) const
 {
     const auto* gossip = sMySQLStore.getGossipMenuOption(id);
     if (!gossip)
+    {
         sLogger.failure("ID:{} is a bad GossipMenuOption TEXT!", id);
+        return "";
+    }
 
     if (language > 0)
     {
@@ -550,7 +553,10 @@ std::string WorldSession::localizedWorldSrv(uint32_t id) const
 {
     const auto* worldString = sMySQLStore.getWorldString(id);
     if (!worldString)
+    {
         sLogger.failure("ID:{} is a bad WorldString TEXT!", id);
+        return "";
+    }
 
     if (language > 0)
     {
@@ -565,7 +571,10 @@ std::string WorldSession::localizedMapName(uint32_t id) const
 {
     const auto* map = sMySQLStore.getWorldMapInfo(id);
     if (!map)
+    {
         sLogger.failure("ID:{} still has no map title yet!", id);
+        return "";
+    }
 
     if (language > 0)
     {
@@ -580,7 +589,10 @@ std::string WorldSession::localizedBroadCast(uint32_t id) const
 {
     const auto* broadcast = sMySQLStore.getWorldBroadcastById(id);
     if (!broadcast)
+    {
         sLogger.failure("ID:{} is an invalid WorldBroadCast message!", id);
+        return "";
+    }
 
     if (language > 0)
     {
@@ -1050,15 +1062,15 @@ void WorldSession::registerOpcodeHandler()
     // Battlegrounds
     registry.registerOpcode(CMSG_BATTLEFIELD_PORT, &WorldSession::handleBattlefieldPortOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_BATTLEFIELD_STATUS, &WorldSession::handleBattlefieldStatusOpcode, true, true, true, true, true);
-    registry.registerOpcode<STATUS_LOGGEDIN>(CMSG_BATTLEFIELD_LIST, &WorldSession::handleBattlefieldListOpcode, true, true, true, true, false);
+    registry.registerOpcode<STATUS_LOGGEDIN>(CMSG_BATTLEFIELD_LIST, &WorldSession::handleBattlefieldListOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_BATTLEMASTER_HELLO, &WorldSession::handleBattleMasterHelloOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_BATTLEMASTER_JOIN_ARENA, &WorldSession::handleArenaJoinOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_BATTLEMASTER_JOIN, &WorldSession::handleBattleMasterJoinOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_LEAVE_BATTLEFIELD, &WorldSession::handleLeaveBattlefieldOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_AREA_SPIRIT_HEALER_QUERY, &WorldSession::handleAreaSpiritHealerQueryOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_AREA_SPIRIT_HEALER_QUEUE, &WorldSession::handleAreaSpiritHealerQueueOpcode, true, true, true, true, true);
-    registry.registerOpcode(MSG_BATTLEGROUND_PLAYER_POSITIONS, &WorldSession::handleBattlegroundPlayerPositionsOpcode, true, true, true, true, false);
-    registry.registerOpcode(MSG_PVP_LOG_DATA, &WorldSession::handlePVPLogDataOpcode, true, true, true, true, false);
+    registry.registerOpcode(MSG_BATTLEGROUND_PLAYER_POSITIONS, &WorldSession::handleBattlegroundPlayerPositionsOpcode, true, true, true, true, true);
+    registry.registerOpcode(MSG_PVP_LOG_DATA, &WorldSession::handlePVPLogDataOpcode, true, true, true, true, true);
     registry.registerOpcode(MSG_INSPECT_HONOR_STATS, &WorldSession::handleInspectHonorStatsOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_SET_ACTIONBAR_TOGGLES, &WorldSession::handleSetActionBarTogglesOpcode, true, true, true, true, true);
     //registry.registerOpcode(CMSG_BATTLEFIELD_MGR_ENTRY_INVITE_RESPONSE, &WorldSession::HandleBgInviteResponse, false, false, true, false, false);
@@ -1222,10 +1234,10 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_LF_GUILD_POST_REQUEST, &WorldSession::handleGuildFinderPostRequest, false, false, false, true, false);
     registry.registerOpcode(CMSG_LF_GUILD_REMOVE_RECRUIT, &WorldSession::handleGuildFinderRemoveRecruit, false, false, false, true, false);
     registry.registerOpcode(CMSG_LF_GUILD_SET_GUILD_POST, &WorldSession::handleGuildFinderSetGuildPost, false, false, false, true, false);
-    registry.registerOpcode(CMSG_REQUEST_RATED_BG_INFO, &WorldSession::handleRequestRatedBgInfoOpcode, false, false, false, true, false);
-    registry.registerOpcode(CMSG_REQUEST_RATED_BG_STATS, &WorldSession::handleRequestRatedBgStatsOpcode, false, false, false, true, false);
-    registry.registerOpcode(CMSG_REQUEST_PVP_REWARDS, &WorldSession::handleRequestPvPRewardsOpcode, false, false, false, true, false);
-    registry.registerOpcode(CMSG_REQUEST_PVP_OPTIONS_ENABLED, &WorldSession::handleRequestPvpOptionsOpcode, false, false, false, true, false);
+    registry.registerOpcode(CMSG_REQUEST_RATED_BG_INFO, &WorldSession::handleRequestRatedBgInfoOpcode, false, false, false, true, true);
+    registry.registerOpcode(CMSG_REQUEST_RATED_BG_STATS, &WorldSession::handleRequestRatedBgStatsOpcode, false, false, false, true, true);
+    registry.registerOpcode(CMSG_REQUEST_PVP_REWARDS, &WorldSession::handleRequestPvPRewardsOpcode, false, false, false, true, true);
+    registry.registerOpcode(CMSG_REQUEST_PVP_OPTIONS_ENABLED, &WorldSession::handleRequestPvpOptionsOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_REPORT, &WorldSession::handleReportOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_REPORT_PLAYER, &WorldSession::handleReportPlayerOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_REQUEST_CEMETERY_LIST, &WorldSession::handleRequestCemeteryListOpcode, false, false, false, true, true);
