@@ -471,6 +471,9 @@ void CompanionSummon::load(CreatureProperties const* properties_, Unit* companio
     m_aiInterface->setPetOwner(companionOwner);
     m_aiInterface->setMeleeDisabled(true);
 
+    // Pet::loadFromDB does the same three calls (Init/setPetOwner/handleEvent(EVENT_FOLLOWOWNER))
+    m_aiInterface->handleEvent(EVENT_FOLLOWOWNER, this, 0);
+
     m_isInvincible = true;
 
     removePvpFlag();
