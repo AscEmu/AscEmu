@@ -611,6 +611,12 @@ public:
     void setFacing(float newo);     //only working if creature is idle
 
     void sendMoveInfoForPacket(uint16_t opcode, bool withGuid = true);
+    // sendMoveInfoForPacket only reaches whoever is already in range at the moment a flag actually
+    // flips - a player who enters range later only ever sees the flag baked into the static
+    // creation snapshot, which the client does not accept as enough to start the flying/hover/
+    // no-gravity animation. Call this once for each newly-visible player so they get the same
+    // dedicated movement packet(s) too, for whichever of these flags are currently active.
+    void sendMovementFlagsToPlayer(Player* target);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // used for handling fall

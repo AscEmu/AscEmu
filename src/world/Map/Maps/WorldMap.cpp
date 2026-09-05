@@ -1343,6 +1343,13 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, std::
                         plObj2->getUpdateMgr().pushCreationData(buf.get(), count);
                         plObj2->addVisibleObject(obj->getGuid());
                         buf->clear();
+
+                        // The static creation snapshot alone isn't enough for the client to start
+                        // the flying/hover/no-gravity animation - it needs the dedicated movement
+                        // packet(s) too, which a broadcast-at-transition-time send never reaches a
+                        // player who enters range only later.
+                        if (obj->isCreatureOrPlayer())
+                            static_cast<Unit*>(obj)->sendMovementFlagsToPlayer(plObj2);
                     }
                 }
                 else if (curObj->isCreatureOrPlayer() && static_cast<Unit*>(curObj)->m_playerControler != nullptr)
@@ -1358,6 +1365,9 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, std::
                         plObj2->getUpdateMgr().pushCreationData(buf.get(), count);
                         plObj2->addVisibleObject(obj->getGuid());
                         buf->clear();
+
+                        if (obj->isCreatureOrPlayer())
+                            static_cast<Unit*>(obj)->sendMovementFlagsToPlayer(plObj2);
                     }
                 }
 
@@ -1372,6 +1382,9 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, std::
                         plObj->getUpdateMgr().pushCreationData(buf.get(), count);
                         plObj->addVisibleObject(curObj->getGuid());
                         buf->clear();
+
+                        if (curObj->isCreatureOrPlayer())
+                            static_cast<Unit*>(curObj)->sendMovementFlagsToPlayer(plObj);
                     }
                 }
             }
@@ -1397,6 +1410,9 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, std::
                         plObj2->getUpdateMgr().pushCreationData(buf.get(), count);
                         plObj2->addVisibleObject(obj->getGuid());
                         buf->clear();
+
+                        if (obj->isCreatureOrPlayer())
+                            static_cast<Unit*>(obj)->sendMovementFlagsToPlayer(plObj2);
                     }
                 }
                 else if (curObj->isCreatureOrPlayer() && static_cast<Unit*>(curObj)->m_playerControler != nullptr)
@@ -1418,6 +1434,9 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, std::
                         plObj2->getUpdateMgr().pushCreationData(buf.get(), count);
                         plObj2->addVisibleObject(obj->getGuid());
                         buf->clear();
+
+                        if (obj->isCreatureOrPlayer())
+                            static_cast<Unit*>(obj)->sendMovementFlagsToPlayer(plObj2);
                     }
                 }
 
@@ -1439,6 +1458,9 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, std::
                         plObj->getUpdateMgr().pushCreationData(buf.get(), count);
                         plObj->addVisibleObject(curObj->getGuid());
                         buf->clear();
+
+                        if (curObj->isCreatureOrPlayer())
+                            static_cast<Unit*>(curObj)->sendMovementFlagsToPlayer(plObj);
                     }
                 }
             }

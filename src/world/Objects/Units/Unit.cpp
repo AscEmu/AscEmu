@@ -2077,6 +2077,31 @@ void Unit::sendMoveInfoForPacket(uint16_t opcode, bool withGuid /* = true*/)
         sendMessageToSet(&packet, false);
 }
 
+void Unit::sendMovementFlagsToPlayer(Player* target)
+{
+    if (target == nullptr || target->getSession() == nullptr)
+        return;
+
+    static constexpr std::pair<uint32_t, uint16_t> activeFlagOpcodes[] =
+    {
+        { MOVEFLAG_CAN_FLY, SMSG_MOVE_SET_CAN_FLY },
+        { MOVEFLAG_DISABLEGRAVITY, SMSG_MOVE_GRAVITY_DISABLE },
+        { MOVEFLAG_HOVER, SMSG_MOVE_SET_HOVER },
+    };
+
+    for (const auto& [flag, opcode] : activeFlagOpcodes)
+    {
+        if (!hasUnitMovementFlag(flag))
+            continue;
+
+        const auto resolvedOpcode = resolveMovementOpcodeForReceiver(opcode, isPlayer());
+
+        WorldPacket packet(resolvedOpcode, 0);
+        obj_movement_info.write(packet, true);
+        target->getSession()->SendPacket(&packet);
+    }
+}
+
 void Unit::setMoveWaterWalk()
 {
     if (hasUnitMovementFlag(MOVEFLAG_WATER_WALK))

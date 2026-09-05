@@ -729,6 +729,18 @@ void Creature::updateMovementFlags()
     if (getUnitOwner())
         return;
 
+    // Bail out if not yet in the world (e.g. called from setDeathState(JUST_RESPAWNED), which
+    // runs before PushToWorld) - setMoveCanFly()/setMoveDisableGravity()/setMoveHover() below only
+    // send their SMSG_MOVE_SET_* packet on an actual flag transition, and with nobody around yet to
+    // receive it that transition is wasted: the flag silently ends up true from the very start, so
+    // every later observer only ever sees it baked into the creature's static creation snapshot -
+    // which the client does not accept as enough to start the flying/hover animation, it needs the
+    // dedicated movement packet. Skipping here lets the periodic 1000ms retry (see
+    // m_movementFlagUpdateTimer) make the first real attempt only once the creature is actually in
+    // the world and has a chance of real observers.
+    if (!IsInWorld())
+        return;
+
     // Set the movement flags if the creature is in that mode. (Only fly if actually in air, only swim if in water, etc)
     const float ground = getFloorZ();
 
