@@ -1886,19 +1886,24 @@ void MySQLDataStore::loadNpcTextTable()
         npcText.entry = entry;
         for (uint8_t i = 0; i < 8; ++i)
         {
-            npcText.textHolder[i].probability = fields[1].asFloat();
+            // Each of the 8 pages is its own 10-column group (prob{i}, text{i}_0, text{i}_1,
+            // lang{i}, then 3x EmoteDelay/Emote pairs) starting right after `entry` - this offset
+            // was missing, so every page silently re-read page 0's columns instead of its own.
+            const uint32_t base = 1 + i * 10;
+
+            npcText.textHolder[i].probability = fields[base].asFloat();
 
             for (uint8_t j = 0; j < 2; ++j)
             {
-                npcText.textHolder[i].texts[j] = fields[2 + j].asCString();
+                npcText.textHolder[i].texts[j] = fields[base + 1 + j].asCString();
             }
 
-            npcText.textHolder[i].language = fields[4].asUint32();
+            npcText.textHolder[i].language = fields[base + 3].asUint32();
 
             for (uint8_t k = 0; k < GOSSIP_EMOTE_COUNT; ++k)
             {
-                npcText.textHolder[i].gossipEmotes[k].delay = fields[5 + k * 2].asUint32();
-                npcText.textHolder[i].gossipEmotes[k].emote = fields[6 + k * 2].asUint32();
+                npcText.textHolder[i].gossipEmotes[k].delay = fields[base + 4 + k * 2].asUint32();
+                npcText.textHolder[i].gossipEmotes[k].emote = fields[base + 5 + k * 2].asUint32();
             }
         }
 
