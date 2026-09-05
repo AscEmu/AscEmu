@@ -8622,7 +8622,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
                 {
                     sendItemPushResultPacket(false, true, false,
                         getItemInterface()->LastSearchItemBagSlot(), getItemInterface()->LastSearchItemSlot(),
-                        1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount(), item->getGuid());
+                        1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), getItemInterface()->GetItemCount(item->getEntry()), item->getGuid());
                 }
             }
         }
@@ -11132,7 +11132,7 @@ Item* Player::storeItem(LootItem const* lootItem)
         const auto [addResult, _] = getItemInterface()->SafeAddItem(std::move(newItemHolder), slotResult.ContainerSlot, slotResult.Slot);
         if (addResult)
         {
-            sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, newItem->getEntry(), newItem->getPropertySeed(), newItem->getRandomPropertiesId(), newItem->getStackCount(), newItem->getGuid());
+            sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, newItem->getEntry(), newItem->getPropertySeed(), newItem->getRandomPropertiesId(), getItemInterface()->GetItemCount(newItem->getEntry()), newItem->getGuid());
             sQuestMgr.OnPlayerItemPickup(this, newItem);
 #if VERSION_STRING > TBC
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, newItem->getEntry(), lootItem->count, 0);
@@ -11165,7 +11165,7 @@ Item* Player::storeItem(LootItem const* lootItem)
         add->m_isDirty = true;
         add->setOwnerGuid(getGuid());
 
-        sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, add->getEntry(), add->getPropertySeed(), add->getRandomPropertiesId(), add->getStackCount(), add->getGuid());
+        sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, add->getEntry(), add->getPropertySeed(), add->getRandomPropertiesId(), getItemInterface()->GetItemCount(add->getEntry()), add->getGuid());
         sQuestMgr.OnPlayerItemPickup(this, add);
 #if VERSION_STRING > TBC
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->getEntry(), 1, 0);
