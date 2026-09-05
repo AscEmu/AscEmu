@@ -384,9 +384,13 @@ void GameObject::saveToDB(bool newSpawn)
         return;
     }
     std::stringstream ss;
+    const QuaternionData& localRotation = getLocalRotation();
 
     if (newSpawn)
     {
+        // rotation0-3 is the spawn's own local rotation, not getParentRotation() - that reads
+        // gameobject_spawns_extra's parent_rotation instead, which defaults to the identity
+        // quaternion (0,0,0,1) for the vast majority of gameobjects that have no _extra row.
         ss << "INSERT INTO " << m_spawn->origine << " VALUES("
            << m_spawn->id << ","
            << VERSION_STRING << ","
@@ -398,10 +402,10 @@ void GameObject::saveToDB(bool newSpawn)
            << GetPositionY() << ","
            << GetPositionZ() << ","
            << GetOrientation() << ","
-           << getParentRotation(0) << ","
-           << getParentRotation(1) << ","
-           << getParentRotation(2) << ","
-           << getParentRotation(3) << ","
+           << localRotation.x << ","
+           << localRotation.y << ","
+           << localRotation.z << ","
+           << localRotation.w << ","
            << int32_t(m_respawnDelayTime) << ","
            << int32_t(getState()) << ","
            << "0)";           // event
@@ -420,13 +424,13 @@ void GameObject::saveToDB(bool newSpawn)
             << "orientation = "
             << GetOrientation() << ","
             << "rotation0 = "
-            << getParentRotation(0) << ","
+            << localRotation.x << ","
             << "rotation1 = "
-            << getParentRotation(1) << ","
+            << localRotation.y << ","
             << "rotation2 = "
-            << getParentRotation(2) << ","
+            << localRotation.z << ","
             << "rotation3 = "
-            << getParentRotation(3) << ","
+            << localRotation.w << ","
             << "spawntimesecs = "
             << int32_t(m_respawnDelayTime) << ","
             << "state = "
@@ -442,6 +446,51 @@ void GameObject::saveToDB(bool newSpawn)
     }
 
     WorldDatabase.execute(ss.str().c_str());
+
+    // gameobject_spawns_extra/gameobject_spawns_overrides are sparse tables - a row only exists
+    // when this spawn actually deviates from the "no override" defaults (getGameObjectExtra/
+    // getGameObjectOverride return nullptr otherwise). Keep them in sync with the live object:
+    // write a row when a deviation is present, and remove any stale row when it no longer is
+    // (e.g. a GM command reset the scale/faction/flags back to default since the last save).
+    const std::string tableExtra = m_spawn->origine + "_extra";
+    const bool hasParentRotation = getParentRotation(0) != 0.0f || getParentRotation(1) != 0.0f ||
+        getParentRotation(2) != 0.0f || getParentRotation(3) != 1.0f;
+    if (hasParentRotation)
+    {
+        std::stringstream extraSs;
+        extraSs << "REPLACE INTO " << tableExtra << " VALUES("
+            << m_spawn->id << ","
+            << VERSION_STRING << ","
+            << VERSION_STRING << ","
+            << getParentRotation(0) << ","
+            << getParentRotation(1) << ","
+            << getParentRotation(2) << ","
+            << getParentRotation(3) << ")";
+        WorldDatabase.execute(extraSs.str().c_str());
+    }
+    else
+    {
+        WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u", tableExtra.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
+    }
+
+    const std::string tableOverrides = m_spawn->origine + "_overrides";
+    const bool hasOverride = getScale() != GetGameObjectProperties()->size || getFactionTemplate() != 0 || getFlags() != 0;
+    if (hasOverride)
+    {
+        std::stringstream overrideSs;
+        overrideSs << "REPLACE INTO " << tableOverrides << " VALUES("
+            << m_spawn->id << ","
+            << VERSION_STRING << ","
+            << VERSION_STRING << ","
+            << getScale() << ","
+            << getFactionTemplate() << ","
+            << getFlags() << ")";
+        WorldDatabase.execute(overrideSs.str().c_str());
+    }
+    else
+    {
+        WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u", tableOverrides.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
+    }
 }
 
 bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationVector const& position, QuaternionData const& rotation, GameObject_State state, uint32_t spawnId)
