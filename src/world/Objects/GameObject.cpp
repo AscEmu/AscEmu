@@ -1269,36 +1269,53 @@ void GameObject::SaveToFile(std::stringstream & name)
 
     std::stringstream ss;
 
-    ss << "INSERT INTO gameobject_spawns VALUES("
-        << ((m_spawn == NULL) ? 0 : m_spawn->id) << ","
+    const uint32_t spawnId = (m_spawn == NULL) ? 0 : m_spawn->id;
+    const QuaternionData& localRotation = getLocalRotation();
+
+    ss << "INSERT INTO gameobject_spawns (id, min_build, max_build, entry, map, phase, position_x, position_y, position_z, orientation, rotation0, rotation1, rotation2, rotation3, spawntimesecs, state, event_entry) VALUES("
+        << spawnId << ","
         << VERSION_STRING << ","
         << VERSION_STRING << ","
         << getEntry() << ","
         << GetMapId() << ","
+        << GetPhase() << ","
         << GetPositionX() << ","
         << GetPositionY() << ","
         << GetPositionZ() << ","
         << GetOrientation() << ","
+        << localRotation.x << ","
+        << localRotation.y << ","
+        << localRotation.z << ","
+        << localRotation.w << ","
+        << int32_t(m_respawnDelayTime) << ","
+        << uint32_t(getState()) << ","
+        << "0);\n";            // event_entry
+
+    ss << "INSERT INTO gameobject_spawns_extra (id, min_build, max_build, parent_rotation0, parent_rotation1, parent_rotation2, parent_rotation3) VALUES("
+        << spawnId << ","
+        << VERSION_STRING << ","
+        << VERSION_STRING << ","
         << getParentRotation(0) << ","
         << getParentRotation(1) << ","
         << getParentRotation(2) << ","
-        << getParentRotation(3) << ","
-        << uint32_t(getState()) << ","
-        << getFlags() << ","
-        << getFactionTemplate() << ","
+        << getParentRotation(3) << ");\n";
+
+    ss << "INSERT INTO gameobject_spawns_overrides (id, min_build, max_build, scale, faction, flags) VALUES("
+        << spawnId << ","
+        << VERSION_STRING << ","
+        << VERSION_STRING << ","
         << getScale() << ","
-        << "0,"             // respawnNpcLink
-        << m_phase << ","
-        << m_overrides << ","
-        << "0)";            // event
+        << getFactionTemplate() << ","
+        << getFlags() << ");\n";
 
     FILE* OutFile;
 
     OutFile = fopen(name.str().c_str(), "wb");
-    if (!OutFile) return;
+    if (!OutFile)
+        return;
+
     fwrite(ss.str().c_str(), 1, ss.str().size(), OutFile);
     fclose(OutFile);
-
 }
 
 void GameObject::InitAI()
