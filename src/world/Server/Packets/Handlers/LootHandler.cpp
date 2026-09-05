@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgLootRelease.h"
 #include "Server/Packets/SmsgLootReleaseResponse.h"
 #include "Server/Packets/CmsgAutostoreLootItem.h"
+#include "Server/Packets/CmsgLootCurrency.h"
 #include "Server/Packets/CmsgLootMasterGive.h"
 #include "Server/WorldSession.h"
 #include "Objects/GameObject.h"
@@ -153,6 +154,22 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
 
     if (loot->isLooted() && wowGuid.isItem())
         _player->getSession()->doLootRelease(wowGuid);
+}
+
+void WorldSession::handleLootCurrencyOpcode(WorldPacket& recvPacket)
+{
+    CmsgLootCurrency srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    WoWGuid wowGuid;
+    wowGuid.init(_player->getLootGuid());
+
+    auto loot = getItemLootFromHighGuidType(wowGuid);
+    if (loot == nullptr)
+        return;
+
+    loot->lootCurrencyInSlot(srlPacket.slot, _player);
 }
 
 Loot* WorldSession::getMoneyLootFromHighGuidType(WoWGuid wowGuid)

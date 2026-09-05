@@ -188,6 +188,9 @@ public:
     bool HandleCharAddHonorKillCommand(const char* args, WorldSession* m_session);
     bool HandleCharAddItemCommand(const char* args, WorldSession* m_session);
     bool HandleCharAddItemSetCommand(const char* args, WorldSession* m_session);
+#if VERSION_STRING >= Cata
+    bool HandleCharAddCurrencyCommand(const char* args, WorldSession* m_session);
+#endif
 
     // Character set commands
     bool HandleCharSetAllExploredCommand(const char* /*args*/, WorldSession* m_session);

@@ -21,6 +21,11 @@ LootStoreItem::LootStoreItem(ItemProperties const* _itemproto, std::vector<float
     needs_quest = itemproto->Class == ITEM_CLASS_QUEST;
 }
 
+LootStoreItem::LootStoreItem(uint32_t _currencyId, std::vector<float> _chance, uint32_t _mincount, uint32_t _maxcount) :
+    itemId(_currencyId), chance(_chance), mincount(_mincount), maxcount(_maxcount), isCurrency(true)
+{
+}
+
 bool LootStoreItem::roll(uint8_t difficulty) const
 {
     if (chance[difficulty] >= 100.0f)

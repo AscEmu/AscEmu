@@ -651,6 +651,7 @@ protected:
 
     protected:
         void handleAutostoreLootItemOpcode(WorldPacket& recvPacket);
+        void handleLootCurrencyOpcode(WorldPacket& recvPacket);
         void handleLootMoneyOpcode(WorldPacket& /*recvPacket*/);
         void handleLootOpcode(WorldPacket& recvPacket);
         void handleLootReleaseOpcode(WorldPacket& recvPacket);

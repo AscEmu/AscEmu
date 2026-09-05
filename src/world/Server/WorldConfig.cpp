@@ -92,6 +92,8 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     player.deactivateMasterLootNinja = false;
     player.enablePvPToken = false;
     player.pvpTokenId = 0;
+    player.maxHonorPointsCurrency = 4000;
+    player.maxJusticePointsCurrency = 4000;
 
     // world.conf - Guild Settings
     guild.charterCost = 1000;
@@ -387,6 +389,8 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     Config.MainConfig.tryGetInt("Player", "PvPTokenID", &player.pvpTokenId);
     if (!player.enablePvPToken || player.pvpTokenId == 0)
         player.enablePvPToken = player.pvpTokenId = 0;
+    Config.MainConfig.tryGetInt("Player", "MaxHonorPointsCurrency", &player.maxHonorPointsCurrency);
+    Config.MainConfig.tryGetInt("Player", "MaxJusticePointsCurrency", &player.maxJusticePointsCurrency);
 
     // world.conf - Guild Settings
     Config.MainConfig.tryGetInt("Guild", "CharterCost", &guild.charterCost);

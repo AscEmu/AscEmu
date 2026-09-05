@@ -1336,10 +1336,49 @@ MySQLStructure::GameObjectSpawnOverrides const* MySQLDataStore::getGameObjectOve
 }
 
 //quests
+#if VERSION_STRING >= Cata
+void MySQLDataStore::loadQuestPropertiesCurrenciesTable()
+{
+    _questPropertiesCurrenciesStore.clear();
+
+    auto result = getWorldDBQuery("SELECT entry, RewardCurrencyId1, RewardCurrencyId2, RewardCurrencyId3, RewardCurrencyId4, "
+        "RewardCurrencyCount1, RewardCurrencyCount2, RewardCurrencyCount3, RewardCurrencyCount4 FROM quest_properties_currencies base "
+        "WHERE build=(SELECT MAX(build) FROM quest_properties_currencies buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", VERSION_STRING);
+
+    if (result == nullptr)
+        return;
+
+    uint32_t row_count = 0;
+
+    do
+    {
+        Field* fields = result->fetch();
+
+        const uint32_t entry = fields[0].asUint32();
+
+        MySQLStructure::QuestPropertiesCurrencyReward reward;
+        for (uint8_t i = 0; i < 4; ++i)
+        {
+            reward.reward_currency_id[i] = fields[1 + i].asUint32();
+            reward.reward_currency_count[i] = fields[5 + i].asUint32();
+        }
+
+        _questPropertiesCurrenciesStore[entry] = reward;
+        ++row_count;
+    } while (result->nextRow());
+
+    sLogger.info("MySQLDataLoads : Loaded {} quest_properties_currencies data.", row_count);
+}
+#endif
+
 void MySQLDataStore::loadQuestPropertiesTable()
 {
     auto startTime = Util::TimeNow();
     uint32_t quest_count = 0;
+
+#if VERSION_STRING >= Cata
+    loadQuestPropertiesCurrenciesTable();
+#endif
 
 
               //                                  0       1     2      3       4          5        6          7              8                 9
@@ -1559,6 +1598,18 @@ void MySQLDataStore::loadQuestPropertiesTable()
         questInfo.incompleteemote = fields[145].asUint32();
         questInfo.iscompletedbyspelleffect = fields[146].asUint32();
         questInfo.RewXPId = fields[147].asUint32();
+
+#if VERSION_STRING >= Cata
+        const auto currencyRewardItr = _questPropertiesCurrenciesStore.find(entry);
+        if (currencyRewardItr != _questPropertiesCurrenciesStore.end())
+        {
+            for (uint8_t i = 0; i < 4; ++i)
+            {
+                questInfo.reward_currency_id[i] = currencyRewardItr->second.reward_currency_id[i];
+                questInfo.reward_currency_count[i] = currencyRewardItr->second.reward_currency_count[i];
+            }
+        }
+#endif
 
         ++quest_count;
     } while (quest_result->nextRow());

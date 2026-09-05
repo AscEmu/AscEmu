@@ -24,8 +24,10 @@ class Player;
 struct LootStoreItem
 {
     explicit LootStoreItem(ItemProperties const* _itemproto, std::vector<float> _chance, uint32_t _mincount, uint32_t _maxcount);
+    // currency variant: _currencyId reuses the itemId field, itemproto stays null
+    explicit LootStoreItem(uint32_t _currencyId, std::vector<float> _chance, uint32_t _mincount, uint32_t _maxcount);
 
-    // the item that drops
+    // the item that drops (or the CurrencyTypes.dbc id, when isCurrency is set)
     uint32_t itemId = 0;
     // Item properties
     ItemProperties const* itemproto = nullptr;
@@ -43,6 +45,17 @@ struct LootStoreItem
     bool needs_quest = false;
     // determines if an item starts a quest
     bool starts_quest = false;
+    // true when itemId is really a CurrencyTypes.dbc id, not an item entry
+    bool isCurrency = false;
+};
+
+// Currency loot drop, tracked separately from LootItem/items - own slot space, addressed via
+// CMSG_LOOT_CURRENCY.
+struct LootCurrency
+{
+    uint32_t currencyId = 0;
+    uint32_t count = 0;
+    bool is_looted = false;
 };
 
 struct LootItem

@@ -1,6 +1,6 @@
 ################################################################################
 # AscEmu World Configuration File
-# Last edited: 08/11/2026
+# Last edited: 09/05/2026
 ################################################################################
 
 ################################################################################
@@ -496,6 +496,14 @@
 #        The PvPToken for PvP Token System. This is the item id.
 #        Default: 0
 #
+#    MaxHonorPointsCurrency
+#        Cata+ Honor Points currency cap. 0 uses the CurrencyTypes.dbc default.
+#        Default: 4000
+#
+#    MaxJusticePointsCurrency
+#        Cata+ Justice Points currency cap. 0 uses the CurrencyTypes.dbc default.
+#        Default: 4000
+#
 
 <Player StartingLevel       = "1"
         LevelCap            = "@ASC_VERSION_MAX_LEVEL@"
@@ -523,7 +531,9 @@
         MaximumGold         = "214748"
         AntiMasterLootNinja = "0"
         EnablePvPToken      = "0"
-        PvPTokenID          = "0">
+        PvPTokenID          = "0"
+        MaxHonorPointsCurrency   = "4000"
+        MaxJusticePointsCurrency = "4000">
 
 ################################################################################
 # Guild Settings

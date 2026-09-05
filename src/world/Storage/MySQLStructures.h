@@ -239,6 +239,13 @@ namespace MySQLStructure
         uint32_t flags;
     };
 
+    //quest_properties_currencies (Cata+, CurrencyTypes.dbc-driven quest currency rewards)
+    struct QuestPropertiesCurrencyReward
+    {
+        uint32_t reward_currency_id[4] = { 0, 0, 0, 0 };
+        uint32_t reward_currency_count[4] = { 0, 0, 0, 0 };
+    };
+
     //gameobject_teleports
 
     //gossip_menu

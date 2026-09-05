@@ -76,6 +76,7 @@ public:
 
     typedef std::unordered_map<uint32_t, GameObjectProperties> GameObjectPropertiesContainer;
     typedef std::unordered_map<uint32_t, QuestProperties> QuestPropertiesContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::QuestPropertiesCurrencyReward> QuestPropertiesCurrenciesContainer;
 
     typedef std::unordered_map<uint32_t, MySQLStructure::GameObjectSpawnExtra> GameObjectSpawnExtraContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::GameObjectSpawnOverrides> GameObjectSpawnOverrideContainer;
@@ -314,6 +315,9 @@ public:
     void loadGameObjectSpawnsOverrideTable();
 
     void loadQuestPropertiesTable();
+#if VERSION_STRING >= Cata
+    void loadQuestPropertiesCurrenciesTable();
+#endif
     void loadGameObjectQuestItemBindingTable();
     void loadGameObjectQuestPickupBindingTable();
 
@@ -406,6 +410,9 @@ public:
     CreaturePropertiesMovementContainer _creaturePropertiesMovementStore;
     GameObjectPropertiesContainer _gameobjectPropertiesStore;
     QuestPropertiesContainer _questPropertiesStore;
+#if VERSION_STRING >= Cata
+    QuestPropertiesCurrenciesContainer _questPropertiesCurrenciesStore;
+#endif
 
     GameObjectSpawnExtraContainer _gameObjectSpawnExtraStore;
     GameObjectSpawnOverrideContainer _gameObjectSpawnOverrideStore;

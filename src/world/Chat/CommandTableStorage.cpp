@@ -80,7 +80,10 @@ CommandTableStorage::CommandTableStorage()
         {"character add honorkills",      "m", 1, wrap(&ChatCommandHandler::HandleCharAddHonorKillCommand),     "Adds x amount of honor kills" },
         {"character add item",            "m", 1, wrap(&ChatCommandHandler::HandleCharAddItemCommand),          "Adds item x count y" },
         {"character add itemset",         "m", 1, wrap(&ChatCommandHandler::HandleCharAddItemSetCommand),       "Adds item set to inv." },
-        
+#if VERSION_STRING >= Cata
+        {"character add currency",        "m", 2, wrap(&ChatCommandHandler::HandleCharAddCurrencyCommand),      "Adds x amount of currency (by CurrencyTypes.dbc id) to character." },
+#endif
+
         {"character set",                 "m", 0 },
         {"character set allexplored",     "m", 0, wrap(&ChatCommandHandler::HandleCharSetAllExploredCommand),   "Reveals the unexplored parts of the map." },
         {"character set gender",          "m", 1, wrap(&ChatCommandHandler::HandleCharSetGenderCommand),        "Changes gender of target. 0=male, 1=female." },

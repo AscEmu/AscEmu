@@ -36,6 +36,12 @@ void LootTemplate::generateLoot(Loot& loot, uint8_t lootDifficulty) const
         if (!lootStoreItem.roll(lootDifficulty))
             continue;
 
+        if (lootStoreItem.isCurrency)
+        {
+            loot.addLootCurrency(lootStoreItem);
+            continue;
+        }
+
         if (lootStoreItem.itemproto != nullptr)
         {
             uint8_t item_counterEquipable = 0;
@@ -67,7 +73,7 @@ bool LootTemplate::hasQuestDrop(LootTemplateMap const& /*store*/, Player const* 
     {
         if (forPlayer != nullptr)
         {
-            if (forPlayer->hasQuestForItem(lootEntry.itemId))
+            if (!lootEntry.isCurrency && forPlayer->hasQuestForItem(lootEntry.itemId))
                 return true; // active quest drop found
         }
         else

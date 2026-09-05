@@ -108,6 +108,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgBindPointUpdate.h"
 #include "Server/Packets/SmsgLoadEquipmentSet.h"
 #include "Server/Packets/SmsgSetupCurrency.h"
+#include "Server/Packets/SmsgUpdateCurrency.h"
+#include "Server/Packets/SmsgWeeklyResetCurrency.h"
 #include "Server/Packets/SmsgCancelCombat.h"
 #include "Server/Packets/SmsgCharacterLoginFailed.h"
 #include "Server/Packets/SmsgCorpseReclaimDelay.h"
@@ -2906,10 +2908,11 @@ void Player::sendInitialLogonPackets()
     SmsgUpdateWorldState worldStatePacket(0xC77, worldConfig.arena.arenaProgress, 0xF3D, worldConfig.arena.arenaSeason);
     m_session->sendManagedPacket(worldStatePacket);
 
-#if VERSION_STRING == Mop
-    SmsgSetupCurrency setupCurrencyPacket;
-    getSession()->sendManagedPacket(setupCurrencyPacket);
+#if VERSION_STRING >= Cata
+    sendSmsgSetupCurrency();
+#endif
 
+#if VERSION_STRING == Mop
     SmsgSetActiveMover moverPacket(getGuid());
     getSession()->sendManagedPacket(moverPacket);
 #endif
@@ -3715,6 +3718,39 @@ bool Player::loadReputations(QueryResult* result)
 
     return true;
 }
+
+#if VERSION_STRING >= Cata
+bool Player::loadCurrencies(QueryResult* result)
+{
+    if (result == nullptr)
+        return true;
+
+    do
+    {
+        const auto field = result->fetch();
+
+        const auto id = field[0].asUint32();
+        const auto quantity = field[1].asUint32();
+        const auto weeklyQuantity = field[2].asUint32();
+        const auto trackedQuantity = field[3].asUint32();
+        const auto flags = field[4].asUint8();
+
+        if (sCurrencyTypesStore.lookupEntry(id) == nullptr)
+            continue;
+
+        PlayerCurrency currency;
+        currency.state = PlayerCurrency::State::Unchanged;
+        currency.quantity = quantity;
+        currency.weeklyQuantity = weeklyQuantity;
+        currency.trackedQuantity = trackedQuantity;
+        currency.flags = flags;
+
+        m_currencies.insert_or_assign(id, currency);
+    } while (result->nextRow());
+
+    return true;
+}
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells and skills
@@ -8370,6 +8406,11 @@ void Player::applyRandomBattlegroundReward(bool wonBattleground)
     this->addHonor(honorPoints, false);
     this->addArenaPoints(arenaPoints, false);
     this->updatePvPCurrencies();
+
+#if VERSION_STRING >= Cata
+    this->modifyCurrency(CURRENCY_TYPE_HONOR_POINTS, static_cast<int32_t>(honorPoints));
+    this->modifyCurrency(CURRENCY_TYPE_CONQUEST_POINTS, static_cast<int32_t>(arenaPoints));
+#endif
 }
 
 uint32_t Player::getLevelGrouping()
@@ -10878,7 +10919,24 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
         }
     }
 
-    SmsgLootResponse lootResponsePacket(guid, loot_type, pLoot->gold, std::move(lootSlots), maxItemsCount);
+    std::vector<LootCurrencyEntry> lootCurrencies;
+#if VERSION_STRING >= Cata
+    lootCurrencies.reserve(pLoot->currencies.size());
+    for (uint8_t currencySlot = 0; currencySlot < pLoot->currencies.size(); ++currencySlot)
+    {
+        const auto& currency = pLoot->currencies[currencySlot];
+        if (currency.is_looted)
+            continue;
+
+        LootCurrencyEntry entry;
+        entry.slotIndex = currencySlot;
+        entry.currencyId = currency.currencyId;
+        entry.count = currency.count;
+        lootCurrencies.push_back(entry);
+    }
+#endif
+
+    SmsgLootResponse lootResponsePacket(guid, loot_type, pLoot->gold, std::move(lootSlots), std::move(lootCurrencies), maxItemsCount);
     m_session->sendManagedPacket(lootResponsePacket);
 
     addUnitFlags(UNIT_FLAG_LOOTING);
@@ -13015,6 +13073,216 @@ bool Player::saveReputations(bool newCharacter, QueryBuffer* buf)
     return true;
 }
 
+#if VERSION_STRING >= Cata
+bool Player::saveCurrencies(bool newCharacter, QueryBuffer* buf)
+{
+    if (!newCharacter && (buf == nullptr))
+        return false;
+
+    std::stringstream ds;
+    uint32_t guid = getGuidLow();
+
+    ds << "DELETE FROM character_currency WHERE guid = '";
+    ds << guid;
+    ds << "';";
+
+    if (!newCharacter)
+        buf->addQueryStr(ds.str());
+    else
+        CharacterDatabase.executeNA(ds.str().c_str());
+
+    for (CurrencyMap::iterator itr = m_currencies.begin(); itr != m_currencies.end(); ++itr)
+    {
+        std::stringstream ss;
+
+        ss << "REPLACE INTO character_currency VALUES('";
+        ss << guid << "','";
+        ss << itr->first << "','";
+        ss << itr->second.quantity << "','";
+        ss << itr->second.weeklyQuantity << "','";
+        ss << itr->second.trackedQuantity << "','";
+        ss << uint32_t(itr->second.flags) << "');";
+
+        if (!newCharacter)
+            buf->addQueryStr(ss.str());
+        else
+            CharacterDatabase.executeNA(ss.str().c_str());
+    }
+
+    return true;
+}
+
+uint32_t Player::getCurrency(uint32_t id, bool usePrecision/* = true*/) const
+{
+    const auto itr = m_currencies.find(id);
+    if (itr == m_currencies.end())
+        return 0;
+
+    const auto* const currency = sCurrencyTypesStore.lookupEntry(id);
+    const uint32_t precision = (usePrecision && currency != nullptr && (currency->Flags & CURRENCY_FLAG_USES_PRECISION)) ? CURRENCY_PRECISION : 1;
+
+    return itr->second.quantity / precision;
+}
+
+bool Player::hasCurrency(uint32_t id, uint32_t count) const
+{
+    const auto itr = m_currencies.find(id);
+    return itr != m_currencies.end() && itr->second.quantity >= count;
+}
+
+void Player::setCurrency(uint32_t id, uint32_t count)
+{
+    // No-op if the currency already has an entry - init-only seeding.
+    if (m_currencies.find(id) != m_currencies.end())
+        return;
+
+    PlayerCurrency currency;
+    currency.state = PlayerCurrency::State::New;
+    currency.quantity = count;
+
+    m_currencies.insert_or_assign(id, currency);
+}
+
+void Player::modifyCurrency(uint32_t id, int32_t count, bool printLog/* = true*/, bool ignoreMultipliers/* = false*/)
+{
+    if (count == 0)
+        return;
+
+    const auto* const currency = sCurrencyTypesStore.lookupEntry(id);
+    if (currency == nullptr)
+    {
+        sLogger.debug("Player::modifyCurrency: {} attempted to modify unknown currency id {}.", getName(), id);
+        return;
+    }
+
+    [[maybe_unused]] const bool isNewEntry = m_currencies.find(id) == m_currencies.end();
+    auto& playerCurrency = m_currencies[id];
+
+    const uint32_t weekCap = currency->WeekCap;
+    if (!ignoreMultipliers && weekCap > 0 && count > 0 && (playerCurrency.weeklyQuantity + static_cast<uint32_t>(count)) > weekCap)
+        count = static_cast<int32_t>(weekCap - playerCurrency.weeklyQuantity);
+
+    uint32_t totalCap = currency->TotalCap;
+    if (id == CURRENCY_TYPE_HONOR_POINTS && worldConfig.player.maxHonorPointsCurrency > 0)
+        totalCap = worldConfig.player.maxHonorPointsCurrency * CURRENCY_PRECISION;
+    else if (id == CURRENCY_TYPE_JUSTICE_POINTS && worldConfig.player.maxJusticePointsCurrency > 0)
+        totalCap = worldConfig.player.maxJusticePointsCurrency * CURRENCY_PRECISION;
+
+    if (totalCap > 0 && count > 0 && (playerCurrency.quantity + static_cast<uint32_t>(count)) > totalCap)
+    {
+        if (id == CURRENCY_TYPE_JUSTICE_POINTS)
+        {
+            const int32_t surplus = count - static_cast<int32_t>(totalCap - playerCurrency.quantity);
+            if (surplus > 0)
+                modCoinage(static_cast<int64_t>(surplus) * JUSTICE_POINTS_CONVERSION_MONEY / CURRENCY_PRECISION);
+        }
+
+        count = static_cast<int32_t>(totalCap - playerCurrency.quantity);
+    }
+
+    if (count < 0 && static_cast<uint32_t>(-count) > playerCurrency.quantity)
+        count = -static_cast<int32_t>(playerCurrency.quantity);
+
+    if (count == 0)
+        return;
+
+    if (playerCurrency.state != PlayerCurrency::State::New)
+        playerCurrency.state = PlayerCurrency::State::Changed;
+
+    playerCurrency.quantity += count;
+
+    if (!ignoreMultipliers)
+    {
+        if (weekCap > 0)
+            playerCurrency.weeklyQuantity += count;
+
+        if (currency->Flags & CURRENCY_FLAG_TRACK_QUANTITY)
+            playerCurrency.trackedQuantity += count;
+    }
+
+    if (m_session == nullptr)
+        return;
+
+    const uint32_t precision = (currency->Flags & CURRENCY_FLAG_USES_PRECISION) ? CURRENCY_PRECISION : 1;
+
+    // Mop sends SETUP for a new currency, plus UPDATE if printLog. Cata always just sends UPDATE.
+#if VERSION_STRING == Mop
+    if (isNewEntry)
+    {
+        AscEmu::Packets::CurrencyRecord record;
+        record.id = id;
+        record.quantity = playerCurrency.quantity / precision;
+        record.weeklyQuantity = playerCurrency.weeklyQuantity / precision;
+        record.weekCap = weekCap / precision;
+        record.trackedQuantity = playerCurrency.trackedQuantity / precision;
+        record.flags = playerCurrency.flags;
+
+        AscEmu::Packets::SmsgSetupCurrency setupPacket({ record });
+        m_session->sendManagedPacket(setupPacket);
+
+        if (!printLog)
+            return;
+    }
+#endif
+
+    AscEmu::Packets::SmsgUpdateCurrency updatePacket(
+        id,
+        static_cast<int32_t>(playerCurrency.quantity / precision),
+        playerCurrency.weeklyQuantity / precision,
+        playerCurrency.trackedQuantity / precision,
+        playerCurrency.flags,
+        !printLog);
+    m_session->sendManagedPacket(updatePacket);
+}
+
+void Player::resetCurrencyWeekCap()
+{
+    for (auto& entry : m_currencies)
+    {
+        entry.second.weeklyQuantity = 0;
+        if (entry.second.state != PlayerCurrency::State::New)
+            entry.second.state = PlayerCurrency::State::Changed;
+    }
+
+    if (m_session == nullptr)
+        return;
+
+    AscEmu::Packets::SmsgWeeklyResetCurrency resetPacket;
+    m_session->sendManagedPacket(resetPacket);
+}
+
+void Player::sendSmsgSetupCurrency()
+{
+    if (m_session == nullptr)
+        return;
+
+    std::vector<AscEmu::Packets::CurrencyRecord> records;
+    records.reserve(m_currencies.size());
+
+    for (auto const& [id, currency] : m_currencies)
+    {
+        const auto* const currencyEntry = sCurrencyTypesStore.lookupEntry(id);
+        if (currencyEntry == nullptr)
+            continue;
+
+        const uint32_t precision = (currencyEntry->Flags & CURRENCY_FLAG_USES_PRECISION) ? CURRENCY_PRECISION : 1;
+
+        AscEmu::Packets::CurrencyRecord record;
+        record.id = id;
+        record.quantity = currency.quantity / precision;
+        record.weeklyQuantity = currency.weeklyQuantity / precision;
+        record.weekCap = currencyEntry->WeekCap / precision;
+        record.trackedQuantity = currency.trackedQuantity / precision;
+        record.flags = currency.flags;
+
+        records.push_back(record);
+    }
+
+    AscEmu::Packets::SmsgSetupCurrency setupPacket(std::move(records));
+    m_session->sendManagedPacket(setupPacket);
+}
+#endif
+
 bool Player::saveSpells(bool newCharacter, QueryBuffer* buf)
 {
     if (!newCharacter && buf == nullptr)
@@ -13993,6 +14261,10 @@ void Player::saveToDB(bool newCharacter /* =false */)
 
     saveReputations(newCharacter, buf);
 
+#if VERSION_STRING >= Cata
+    saveCurrencies(newCharacter, buf);
+#endif
+
     // Add player action bars
 #ifdef FT_DUAL_SPEC
     for (uint8_t s = 0; s < MAX_SPEC_COUNT; ++s)
@@ -14218,7 +14490,8 @@ namespace PlayerQuery
         Skills = 15,
         Achievements = 16,
         AchievementProgress = 17,
-        CufProfiles = 18
+        CufProfiles = 18,
+        Currencies = 19
     };
 }
 
@@ -14253,6 +14526,7 @@ bool Player::loadFromDB(uint32_t guid)
 
 #if VERSION_STRING >= Cata
     q->addQuery("SELECT id, name, frameHeight, frameWidth, sortBy, healthText, boolOptions, topPoint, bottomPoint, leftPoint, topOffset, bottomOffset, leftOffset FROM character_cuf_profiles WHERE ownerguid = %u", guid); // 18
+    q->addQuery("SELECT currency, quantity, weekly_quantity, tracked_quantity, flags FROM character_currency WHERE guid = %u", guid); // 19
 #endif
 
     // queue it!
@@ -14552,6 +14826,10 @@ void Player::loadFromDBProc(QueryResultVector& results)
     loadSpells(results[PlayerQuery::Spells].result.get());
 
     loadReputations(results[PlayerQuery::Reputation].result.get());
+
+#if VERSION_STRING >= Cata
+    loadCurrencies(results[PlayerQuery::Currencies].result.get());
+#endif
 
     // Load saved actionbars
     uint8_t Counter = 0;

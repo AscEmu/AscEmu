@@ -36,6 +36,11 @@
 void HonorHandler::AddHonorPointsToPlayer(Player* pPlayer, uint32_t uAmount)
 {
     pPlayer->addHonor(uAmount, true);
+
+#if VERSION_STRING >= Cata
+    if (pPlayer->getBattleground() != nullptr)
+        pPlayer->modifyCurrency(CURRENCY_TYPE_HONOR_POINTS, static_cast<int32_t>(uAmount));
+#endif
 }
 
 int32_t HonorHandler::CalculateHonorPointsForKill(uint32_t playerLevel, uint32_t victimLevel)

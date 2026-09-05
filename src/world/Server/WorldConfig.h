@@ -182,6 +182,8 @@ public:
         bool deactivateMasterLootNinja;
         bool enablePvPToken;
         uint32_t pvpTokenId;
+        uint32_t maxHonorPointsCurrency;
+        uint32_t maxJusticePointsCurrency;
     } player;
 
     // world.conf - Guild Settings

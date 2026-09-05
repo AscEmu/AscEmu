@@ -31,7 +31,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgSetPlayerDeclinedNamesResult.h"
 #include "Server/Packets/SmsgEnumCharactersResult.h"
 #include "Server/Packets/SmsgSetTimeZoneInformation.h"
-#include "Server/Packets/SmsgSetupCurrency.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Server/CharacterErrors.h"
 #include "AuthCodes.hpp"
@@ -773,11 +772,8 @@ void WorldSession::fullLogin(Player* player)
         player->AddToWorld();
     //////////////////////////////////////////////////////////////////////////////////////////
 
-#if VERSION_STRING == Mop
-    {
-        SmsgSetupCurrency managedPacket;
-        sendManagedPacket(managedPacket);
-    }
+#if VERSION_STRING >= Cata
+    player->sendSmsgSetupCurrency();
 #endif
 
     sHookInterface.OnFullLogin(player);

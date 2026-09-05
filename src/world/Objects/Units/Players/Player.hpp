@@ -1726,6 +1726,24 @@ private:
     uint32_t m_championingFactionId = 0;
 
     /////////////////////////////////////////////////////////////////////////////////////////
+    // Currency (Cata+, CurrencyTypes.dbc-driven, non-itemized)
+#if VERSION_STRING >= Cata
+public:
+    bool loadCurrencies(QueryResult* result);
+    bool saveCurrencies(bool newCharacter, QueryBuffer* buf);
+
+    uint32_t getCurrency(uint32_t id, bool usePrecision = true) const;
+    bool hasCurrency(uint32_t id, uint32_t count) const;
+    void setCurrency(uint32_t id, uint32_t count);
+    void modifyCurrency(uint32_t id, int32_t count, bool printLog = true, bool ignoreMultipliers = false);
+    void resetCurrencyWeekCap();
+    void sendSmsgSetupCurrency();
+
+private:
+    CurrencyMap m_currencies;
+#endif
+
+    /////////////////////////////////////////////////////////////////////////////////////////
     // Drunk system
 public:
     uint16_t getServersideDrunkValue() const;

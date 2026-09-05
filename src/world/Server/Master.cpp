@@ -99,8 +99,8 @@ namespace fs = std::filesystem;
 namespace
 {
     // DB version
-    constexpr std::string_view REQUIRED_CHAR_DB_VERSION = "20260825-00_character_cuf_profiles";
-    constexpr std::string_view REQUIRED_WORLD_DB_VERSION = "20260905-06_cata_shadow_grave_loot";
+    constexpr std::string_view REQUIRED_CHAR_DB_VERSION = "20260905-00_character_currency";
+    constexpr std::string_view REQUIRED_WORLD_DB_VERSION = "20260905-08_loot_currency_column";
 
     void printBanner()
     {

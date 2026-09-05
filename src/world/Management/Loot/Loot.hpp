@@ -38,6 +38,7 @@ struct Loot
 
     std::vector<LootItem> items;            // LootItems
     std::vector<LootItem> quest_items;      // PersonalItems
+    std::vector<LootCurrency> currencies;   // Currency drops (Cata+)
 
     uint32_t gold = 0;                      // Loot money
     uint8_t unlootedCount = 0;              // Unlooted Items count
@@ -55,14 +56,32 @@ struct Loot
     // adds an Item to our current Loot Store
     void addLootItem(LootStoreItem const& item);
 
+    // adds a Currency drop to our current Loot Store
+    void addLootCurrency(LootStoreItem const& item);
+
+    // grants the currency in the given Currencies-list slot to the Player and marks it looted
+    void lootCurrencyInSlot(uint8_t slot, Player* player);
+
     // clear our Loot
     void clear();
 
     // return true when there is Loot left
-    bool empty() const { return items.empty() && gold == 0; }
+    bool empty() const { return items.empty() && currencies.empty() && gold == 0; }
 
-    // return true when all Items and Money are Looted
-    bool isLooted() const { return gold == 0 && unlootedCount == 0; }
+    // return true when all Items, Currencies and Money are Looted
+    bool isLooted() const
+    {
+        if (gold != 0 || unlootedCount != 0)
+            return false;
+
+        for (auto const& currency : currencies)
+        {
+            if (!currency.is_looted)
+                return false;
+        }
+
+        return true;
+    }
 
     // adds an Looter to the Current Loot (Players which are on the Loot Window)
     void addLooter(uint32_t GUID) { PlayersLooting.insert(GUID); }

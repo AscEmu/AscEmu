@@ -26,6 +26,14 @@ namespace AscEmu::Packets
         uint8_t slotType = 0;
     };
 
+    // One visible currency loot row. Own slot-index namespace, separate from LootSlotEntry::slotIndex.
+    struct LootCurrencyEntry
+    {
+        uint8_t slotIndex = 0;
+        uint32_t currencyId = 0;
+        uint32_t count = 0;
+    };
+
     class SmsgLootResponse : public ManagedPacket
     {
     public:
@@ -33,19 +41,20 @@ namespace AscEmu::Packets
         uint8_t lootType = 0;
         uint32_t gold = 0;
         std::vector<LootSlotEntry> slots;
+        std::vector<LootCurrencyEntry> currencies;
 
         // The item-count byte the client sees can be higher than slots.size(): quest/FFA candidates
         // that fail the isAllowedForPlayer/is_looted check still bump the original counter even
         // though nothing gets written for them. Defaults to slots.size() when that quirk doesn't apply.
         uint32_t reportedItemCount = 0;
 
-        SmsgLootResponse() : SmsgLootResponse(0, 0, 0, {}, 0)
+        SmsgLootResponse() : SmsgLootResponse(0, 0, 0, {}, {}, 0)
         {
         }
 
-        SmsgLootResponse(uint64_t guid, uint8_t lootType, uint32_t gold, std::vector<LootSlotEntry> slots, uint32_t reportedItemCount) :
+        SmsgLootResponse(uint64_t guid, uint8_t lootType, uint32_t gold, std::vector<LootSlotEntry> slots, std::vector<LootCurrencyEntry> currencies, uint32_t reportedItemCount) :
             ManagedPacket(SMSG_LOOT_RESPONSE, 0),
-            guid(guid), lootType(lootType), gold(gold), slots(std::move(slots)), reportedItemCount(reportedItemCount)
+            guid(guid), lootType(lootType), gold(gold), slots(std::move(slots)), currencies(std::move(currencies)), reportedItemCount(reportedItemCount)
         {
         }
 
@@ -59,9 +68,8 @@ namespace AscEmu::Packets
         {
             if (m_protocol.isMop())
             {
-                // AscEmu has no separate "loot session" guid or currency-loot concept; the container
-                // guid is reused for both guid fields the client expects, and the currency
-                // section is always empty.
+                // AscEmu has no separate "loot session" guid; the container guid is reused for both
+                // guid fields the client expects. Currency section not wired for Mop yet.
                 const WoWGuid lootObjGuid(guid);
                 const WoWGuid lootSessionGuid(guid);
 
@@ -102,7 +110,7 @@ namespace AscEmu::Packets
                 packet.writeBit(lootObjGuid[1]);
                 packet.writeBit(lootObjGuid[0]);
 
-                // currency loop - always empty, AscEmu has no currency loot
+                // currency loop - not wired for Mop yet, always empty
 
                 packet.writeBit(lootSessionGuid[5]);
                 packet.writeBit(lootObjGuid[3]);
@@ -144,7 +152,7 @@ namespace AscEmu::Packets
                 packet.writeByteSeq(lootObjGuid[4]);
                 packet.writeByteSeq(lootSessionGuid[5]);
 
-                // currency data - always empty
+                // currency data - not wired for Mop yet, always empty
 
                 packet.writeByteSeq(lootObjGuid[2]);
                 packet.writeByteSeq(lootObjGuid[3]);
@@ -166,8 +174,12 @@ namespace AscEmu::Packets
                 packet << uint32_t(gold);        // gold
                 packet << uint8_t(0);            //loot size reserve
 
+                size_t currencyCountPos = 0;
                 if (m_protocol.expansion >= WoW::Expansion::_Cata)
-                    packet << uint8_t(0);        // currency count reserve
+                {
+                    currencyCountPos = packet.wpos();
+                    packet << uint8_t(0);        // currency count reserve, patched below
+                }
 
                 for (const auto& slot : slots)
                 {
@@ -178,6 +190,22 @@ namespace AscEmu::Packets
                     packet << uint32_t(slot.randomField1);
                     packet << uint32_t(slot.randomField2);
                     packet << uint8_t(slot.slotType);   // "still being rolled for" flag
+                }
+
+                // currency section: slotIndex(u8), currencyId(u32), count(u32) per entry
+                if (m_protocol.expansion >= WoW::Expansion::_Cata)
+                {
+                    for (const auto& currency : currencies)
+                    {
+                        packet << uint8_t(currency.slotIndex);
+                        packet << uint32_t(currency.currencyId);
+                        packet << uint32_t(currency.count);
+                    }
+
+                    const size_t afterCurrencies = packet.wpos();
+                    packet.wpos(currencyCountPos);
+                    packet << uint8_t(currencies.size());
+                    packet.wpos(afterCurrencies);
                 }
 
                 packet.wpos(13);

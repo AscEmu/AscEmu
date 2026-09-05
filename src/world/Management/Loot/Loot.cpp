@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Utilities/Random.hpp"
 #include <utility>
 
 using namespace AscEmu::Packets;
@@ -124,6 +125,30 @@ void Loot::addLootItem(LootStoreItem const& item)
     }
 }
 
+void Loot::addLootCurrency(LootStoreItem const& item)
+{
+    LootCurrency currency;
+    currency.currencyId = item.itemId;
+    currency.count = Util::getRandomUInt(item.mincount, item.maxcount);
+
+    currencies.push_back(currency);
+}
+
+void Loot::lootCurrencyInSlot(uint8_t slot, Player* player)
+{
+#if VERSION_STRING >= Cata
+    if (player == nullptr || slot >= currencies.size())
+        return;
+
+    auto& currency = currencies[slot];
+    if (currency.is_looted)
+        return;
+
+    currency.is_looted = true;
+    player->modifyCurrency(currency.currencyId, static_cast<int32_t>(currency.count));
+#endif
+}
+
 void Loot::clear()
 {
     PlayerQuestItems.clear();
@@ -131,6 +156,7 @@ void Loot::clear()
     PlayersLooting.clear();
     items.clear();
     quest_items.clear();
+    currencies.clear();
     gold = 0;
     unlootedCount = 0;
     roundRobinPlayer = 0;

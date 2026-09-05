@@ -25,6 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/Spec.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Strings.hpp"
 
@@ -771,6 +772,39 @@ bool ChatCommandHandler::HandleCharAddItemSetCommand(const char* args, WorldSess
 
     return true;
 }
+
+#if VERSION_STRING >= Cata
+//.character add currency
+bool ChatCommandHandler::HandleCharAddCurrencyCommand(const char* args, WorldSession* m_session)
+{
+    uint32_t currencyId = 0;
+    int32_t amount = 0;
+
+    if (sscanf(args, "%u %d", &currencyId, &amount) != 2 || currencyId == 0 || amount == 0)
+    {
+        redSystemMessage(m_session, "Command must be in format: .character add currency <currencyId> <amount>.");
+        return true;
+    }
+
+    if (sCurrencyTypesStore.lookupEntry(currencyId) == nullptr)
+    {
+        redSystemMessage(m_session, "Currency id {} is not a valid CurrencyTypes.dbc entry!", currencyId);
+        return true;
+    }
+
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    player_target->modifyCurrency(currencyId, amount);
+
+    blueSystemMessage(m_session, "Added {} of currency {} to {}.", amount, currencyId, player_target->getName());
+    greenSystemMessage(player_target->getSession(), "{} added {} of currency {} to you.", m_session->GetPlayer()->getName(), amount, currencyId);
+    sGMLog.writefromsession(m_session, "Added {} of currency {} to {}.", amount, currencyId, player_target->getName());
+
+    return true;
+}
+#endif
 
 //.character add copper
 bool ChatCommandHandler::HandleCharAddCopperCommand(const char* args, WorldSession* m_session)

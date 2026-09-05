@@ -217,6 +217,28 @@ void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* Lo
         uint32_t mincount = fields[6].asUint32();
         uint32_t maxcount = fields[7].asUint32();
 
+#if VERSION_STRING >= Cata
+        // is_currency: itemId is a CurrencyTypes.dbc id instead of an item_properties entry.
+        // Always the last column - not all six loot tables have the same preceding columns.
+        const bool isCurrencyRow = result->getFieldCount() > 8 && fields[result->getFieldCount() - 1].asUint8() != 0;
+        if (isCurrencyRow)
+        {
+            LootStoreItem storeitem = LootStoreItem(itemId, chance, mincount, maxcount);
+
+            if (LootTable->empty() || tab->first != entry)
+            {
+                const auto [tabItr, _] = LootTable->try_emplace(entry, Util::LazyInstanceCreator([] {
+                    return std::make_unique<LootTemplate>();
+                }));
+                tab = tabItr;
+            }
+
+            tab->second->addEntry(storeitem);
+            count++;
+            continue;
+        }
+#endif
+
         const auto itemProto = sMySQLStore.getItemProperties(itemId);
         if (itemProto == nullptr)
         {

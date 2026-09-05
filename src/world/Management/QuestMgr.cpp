@@ -1074,6 +1074,14 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             plr->addArenaPoints(qst->bonusarenapoints, true);
         }
 
+#if VERSION_STRING >= Cata
+        for (uint8_t i = 0; i < 4; ++i)
+        {
+            if (qst->reward_currency_id[i] != 0 && qst->reward_currency_count[i] != 0)
+                plr->modifyCurrency(qst->reward_currency_id[i], static_cast<int32_t>(qst->reward_currency_count[i]));
+        }
+#endif
+
 #if VERSION_STRING > TBC
         plr->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
         if (qst->reward_money)
