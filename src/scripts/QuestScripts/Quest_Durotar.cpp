@@ -41,6 +41,14 @@ public:
     void InitOrReset() override
     {
         getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
+
+        // The peon is a flavor NPC (WotLK data: unit_flags includes UNIT_FLAG_IMMUNE_TO_PC) -
+        // never meant to fight. Without this, casting SPELL_AWAKEN_PEON on it (a hostile-faction
+        // interaction, since it shares a regular attackable Horde faction) - or even its own
+        // self-cast of SPELL_BUFF_SLEEP on spawn - adds threat via AIInterface::onHostileAction
+        // and puts it into a combat/attack stance.
+        getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
+
         // Hackfix for Updatemgr
         addAIFunction([this](CreatureAIFunc /*pThis*/) { startSleeping(); }, DoOnceScheduler(1s));
     }

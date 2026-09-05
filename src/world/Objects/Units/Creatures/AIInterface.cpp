@@ -613,6 +613,13 @@ void AIInterface::onHostileAction(Unit* pUnit, SpellInfo const* spellInfo/* = nu
     if (m_Unit == pUnit)
         return;
 
+    // setAllowedToEnterCombat(false) only gated our own proactive target-acquisition tick
+    // (see update() above) - a hostile spell landing on this unit still reached here and started
+    // combat regardless. Scripts that mark an NPC as never-attackable (e.g. a quest-flavor NPC a
+    // player can legitimately target with a utility spell) need this path blocked too.
+    if (!m_canEnterCombat)
+        return;
+
     const auto wasEngaged = m_isEngaged;
 
     if (m_Unit->getThreatManager().canHaveThreatList())
