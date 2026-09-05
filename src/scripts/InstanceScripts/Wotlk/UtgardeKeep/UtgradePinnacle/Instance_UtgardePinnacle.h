@@ -11,7 +11,11 @@ enum CreatureEntry
     CN_SVALA_SORROWGRAVE = 26668,
     CN_GORTOK_PALEHOOF = 26687,
     CN_SKADI_THE_RUTHLESS = 26693,
-    CN_KING_YMIRON = 26861
+    CN_KING_YMIRON = 26861,
+
+    // Svala intro
+    CN_SVALA_HUMAN = 29281,     // "Svala" - the human form seen praying to the Image of Arthas before the fight
+    CN_IMAGE_OF_ARTHAS = 29280
 };
 
 enum CreatureSpells
@@ -23,6 +27,11 @@ enum CreatureSpells
     RITUAL_STRIKE = 48277,      //59930?
     N_SINISTER_STRIKE = 15667,
     H_SINISTER_STRIKE = 59409,
+
+    //Svala intro/transformation spells
+    SPELL_TRANSFORMING_CHANNEL = 54142,     // cast by Image of Arthas on human Svala
+    SPELL_TRANSFORMING_FLOATING = 54140,    // cast by human Svala while levitating
+    SPELL_TRANSFORMING = 54205,             // cast by human Svala, triggers the swap to Svala Sorrowgrave
 
     //GortokPalehoof Spells
     ARCING_SMASH = 48260,
@@ -56,6 +65,11 @@ enum CreatureSay
     SAY_SVALA_INTRO_00 = 815,  // My liege! I have done as you asked, and now beseech you for your blessing!
     SAY_SVALA_INTRO_01 = 635, // The sensation is... beyond my imagining. I am yours to command, my king.
     SAY_SVALA_INTRO_02 = 636, // I will be happy to slaughter them in your name! Come, enemies of the Scourge! I will show you the might of the Lich King!
+
+    // Image of Arthas replies - already present in npc_script_text (creature_entry 29280)
+    SAY_ARTHAS_INTRO_00 = 813, // Your sacrifice is a testament to your obedience. Indeed you are worthy of this charge. Arise, and forever be known as Svala Sorrowgrave!
+    SAY_ARTHAS_INTRO_01 = 814, // Your first test awaits you. Destroy our uninvited guests.
+
     SAY_SVALA_SORROWGRAVE_AGGRO = 637, // I will vanquish your soul!
     SAY_SVALA_SORROWGRAVE_RITUAL_01 = 642, // Your death approaches.
     SAY_SVALA_SORROWGRAVE_RITUAL_02 = 643, // Go now to my master.
@@ -106,3 +120,10 @@ enum GameobjectEntry
     GO_SKADI_DOOR = 192173,
     GO_YMIRON_DOOR = 192174
 };
+
+// Svala Sorrowgrave combat-form spawn point (she levitates up onto her fight platform during the
+// transformation, real coordinate distinct from the human "Svala" spawn point in the DB).
+static constexpr float SVALA_SORROWGRAVE_SPAWN_X = 296.703f;
+static constexpr float SVALA_SORROWGRAVE_SPAWN_Y = -346.099f;
+static constexpr float SVALA_SORROWGRAVE_SPAWN_Z = 97.6311f;
+static constexpr float SVALA_SORROWGRAVE_SPAWN_O = 4.694f;
