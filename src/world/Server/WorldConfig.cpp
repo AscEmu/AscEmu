@@ -188,6 +188,10 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     bg.maxPlayerCountStrandOfTheAncients = 15;
     bg.minPlayerCountIsleOfConquest = 10;
     bg.maxPlayerCountIsleOfConquest = 40;
+    bg.minPlayerCountTwinPeaks = 5;
+    bg.maxPlayerCountTwinPeaks = 10;
+    bg.minPlayerCountBattleForGilneas = 8;
+    bg.maxPlayerCountBattleForGilneas = 15;
     bg.firstRbgHonorValueToday = 30;
     bg.firstRbgArenaHonorValueToday = 25;
     bg.honorableKillsRbg = 15;
@@ -524,6 +528,10 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     Config.MainConfig.tryGetInt("Battleground", "SOTA_MAX", &bg.maxPlayerCountStrandOfTheAncients);
     Config.MainConfig.tryGetInt("Battleground", "IOC_MIN", &bg.minPlayerCountIsleOfConquest);
     Config.MainConfig.tryGetInt("Battleground", "IOC_MAX", &bg.maxPlayerCountIsleOfConquest);
+    Config.MainConfig.tryGetInt("Battleground", "TP_MIN", &bg.minPlayerCountTwinPeaks);
+    Config.MainConfig.tryGetInt("Battleground", "TP_MAX", &bg.maxPlayerCountTwinPeaks);
+    Config.MainConfig.tryGetInt("Battleground", "BFG_MIN", &bg.minPlayerCountBattleForGilneas);
+    Config.MainConfig.tryGetInt("Battleground", "BFG_MAX", &bg.maxPlayerCountBattleForGilneas);
     Config.MainConfig.tryGetInt("Battleground", "RBG_FIRST_WIN_HONOR", &bg.firstRbgHonorValueToday);
     Config.MainConfig.tryGetInt("Battleground", "RBG_FIRST_WIN_ARENA", &bg.firstRbgArenaHonorValueToday);
     Config.MainConfig.tryGetInt("Battleground", "RBG_WIN_HONOR", &bg.honorableKillsRbg);

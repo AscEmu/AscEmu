@@ -21,6 +21,7 @@
 
 #include "AlteracValley/AlteracValley.h"
 #include "ArathiBasin/ArathiBasin.h"
+#include "BattleForGilneas/BattleForGilneas.hpp"
 #include "CircleOfBlood/CircleOfBlood.h"
 #include "DalaranSewers/DalaranSewers.h"
 #include "EyeOfTheStorm/EyeOfTheStorm.h"
@@ -31,6 +32,7 @@
 #include "RuinsOfLordaeron/RuinsOfLordaeron.h"
 #include "Server/ServerState.h"
 #include "StrandOfTheAncient/StrandOfTheAncient.h"
+#include "TwinPeaks/TwinPeaks.hpp"
 #include "WarsongGulch/WarsongGulch.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Script/ScriptSetup.hpp"
@@ -54,6 +56,8 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* /*mgr*/)
     sBattlegroundManager.registerMapForBgType(BattlegroundDef::TYPE_EYE_OF_THE_STORM, 566);
     sBattlegroundManager.registerMapForBgType(BattlegroundDef::TYPE_STRAND_OF_THE_ANCIENT, 607);
     sBattlegroundManager.registerMapForBgType(BattlegroundDef::TYPE_ISLE_OF_CONQUEST, 628);
+    sBattlegroundManager.registerMapForBgType(BattlegroundDef::TYPE_TWIN_PEAKS, 726);
+    sBattlegroundManager.registerMapForBgType(BattlegroundDef::TYPE_BATTLE_FOR_GILNEAS_CITY, 761);
 
     // Registering factory methods
     sBattlegroundManager.registerBgFactory(30, &AlteracValley::Create);
@@ -62,6 +66,8 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* /*mgr*/)
     sBattlegroundManager.registerBgFactory(566, &EyeOfTheStorm::Create);
     sBattlegroundManager.registerBgFactory(607, &StrandOfTheAncient::Create);
     sBattlegroundManager.registerBgFactory(628, &IsleOfConquest::Create);
+    sBattlegroundManager.registerBgFactory(726, &TwinPeaks::Create);
+    sBattlegroundManager.registerBgFactory(761, &BattleForGilneas::Create);
 
     sBattlegroundManager.registerArenaFactory(559, &RingOfTrials::Create);
     sBattlegroundManager.registerArenaFactory(562, &CircleOfBlood::Create);

@@ -1086,6 +1086,14 @@
 #        Standard number of players required for each team.
 #        Default: 10 (IOC_MIN) to 40 (IOC_MAX).
 #
+#    Twin Peaks
+#        Standard number of players required for each team.
+#        Default: 5 (TP_MIN) to 10 (TP_MAX).
+#
+#    Battle For Gilneas
+#        Standard number of players required for each team.
+#        Default: 8 (BFG_MIN) to 15 (BFG_MAX).
+#
 #
 # Random Battleground system.
 #
@@ -1130,7 +1138,11 @@
               SOTA_MAX             = "15"
               IOC_MIN              = "10"
               IOC_MAX              = "40"
- 
+              TP_MIN               = "5"
+              TP_MAX               = "10"
+              BFG_MIN              = "8"
+              BFG_MAX              = "15"
+
               RBG_FIRST_WIN_HONOR  = "30"
               RBG_FIRST_WIN_ARENA  = "25"
               RBG_WIN_HONOR        = "15"

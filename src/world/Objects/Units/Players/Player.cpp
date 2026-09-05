@@ -15694,6 +15694,8 @@ void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending
         WorldMap* map = sMapMgr.createMap(mapid, this, instance_id);
         if (!map)
         {
+            sLogger.debug("Player::_Relocate: {} aborted transfer to map {} (instance {}) - sMapMgr.createMap returned nullptr (INSTANCE_ABORT_NOT_FOUND: no BaseMap for this map id - check worldmap_info/Map.dbc coverage).",
+                getName(), mapid, instance_id);
             SmsgTransferAborted managedPacket(mapid, INSTANCE_ABORT_NOT_FOUND);
             getSession()->sendManagedPacket(managedPacket);
             return;
@@ -15706,29 +15708,41 @@ void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending
                 {
                     case CANNOT_ENTER_DIFFICULTY_UNAVAILABLE:
                     {
+                        sLogger.debug("Player::_Relocate: {} aborted transfer to map {} (instance {}) - CANNOT_ENTER_DIFFICULTY_UNAVAILABLE (INSTANCE_ABORT_HEROIC_MODE_NOT_AVAILABLE).",
+                            getName(), mapid, instance_id);
                         SmsgTransferAborted managedPacket(mapid, INSTANCE_ABORT_HEROIC_MODE_NOT_AVAILABLE);
                         getSession()->sendManagedPacket(managedPacket);
                     } break;
                     case CANNOT_ENTER_INSTANCE_BIND_MISMATCH:
                     {
+                        sLogger.debug("Player::_Relocate: {} aborted transfer to map {} (instance {}) - CANNOT_ENTER_INSTANCE_BIND_MISMATCH.",
+                            getName(), mapid, instance_id);
                         m_session->systemMessage("Another group is already inside this instance of the dungeon.");
                     } break;
                     case CANNOT_ENTER_TOO_MANY_INSTANCES:
                     {
+                        sLogger.debug("Player::_Relocate: {} aborted transfer to map {} (instance {}) - CANNOT_ENTER_TOO_MANY_INSTANCES (INSTANCE_ABORT_TOO_MANY).",
+                            getName(), mapid, instance_id);
                         SmsgTransferAborted managedPacket(mapid, INSTANCE_ABORT_TOO_MANY);
                         getSession()->sendManagedPacket(managedPacket);
                     } break;
                     case CANNOT_ENTER_MAX_PLAYERS:
                     {
+                        sLogger.debug("Player::_Relocate: {} aborted transfer to map {} (instance {}) - CANNOT_ENTER_MAX_PLAYERS (INSTANCE_ABORT_FULL).",
+                            getName(), mapid, instance_id);
                         SmsgTransferAborted managedPacket(mapid, INSTANCE_ABORT_FULL);
                         getSession()->sendManagedPacket(managedPacket);
                     } break;
                     case CANNOT_ENTER_ENCOUNTER:
                     {
+                        sLogger.debug("Player::_Relocate: {} aborted transfer to map {} (instance {}) - CANNOT_ENTER_ENCOUNTER (INSTANCE_ABORT_ENCOUNTER).",
+                            getName(), mapid, instance_id);
                         SmsgTransferAborted managedPacket(mapid, INSTANCE_ABORT_ENCOUNTER);
                         getSession()->sendManagedPacket(managedPacket);
                     } break;
                     default:
+                        sLogger.debug("Player::_Relocate: {} aborted transfer to map {} (instance {}) - unhandled cannotEnter() state {}, no packet sent (silent no-op).",
+                            getName(), mapid, instance_id, static_cast<int>(state));
                         break;
                 }
                 areaTrigger = sMySQLStore.getMapGoBackTrigger(mapid);

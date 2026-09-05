@@ -140,10 +140,8 @@ void LogonCommHandler::loadAccountPermissions()
         {
             uint32_t id = result->fetch()[0].asUint32();
             std::string dbPermission = result->fetch()[1].asCString();
-            if (AscEmu::Util::Strings::isEqual(dbPermission, "az"))
-                dbPermission = "12stulfbvrjiqdmwcogenaz";
 
-            accountPermissionsStore.insert(make_pair(id, dbPermission));
+            setAccountPermission(id, dbPermission);
 
         } while (result->nextRow());
     }
@@ -267,6 +265,12 @@ void LogonCommHandler::addRealmToRealmlist(LogonCommClientSocket* Socket)
 
 void LogonCommHandler::setAccountPermission(uint32_t acct, std::string perm)
 {
+    // "az" is shorthand for "every permission letter" - expand it here so both the startup bulk
+    // load (loadAccountPermissions) and a live permission change (e.g. via .account setgmlevel,
+    // which calls this directly) grant full access consistently, instead of only the former.
+    if (AscEmu::Util::Strings::isEqual(perm, "az"))
+        perm = "12stulfbvrjiqdmwcogenaz";
+
     AccountPermissionMap::iterator itr = accountPermissionsStore.find(acct);
     if (itr != accountPermissionsStore.end())
         accountPermissionsStore.erase(acct);

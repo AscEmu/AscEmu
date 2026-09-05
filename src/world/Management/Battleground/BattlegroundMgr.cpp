@@ -897,6 +897,10 @@ uint32_t BattlegroundManager::getMinimumPlayers(uint32_t dbcIndex)
             return worldConfig.bg.minPlayerCountStrandOfTheAncients;
         case BattlegroundDef::TYPE_ISLE_OF_CONQUEST:
             return worldConfig.bg.minPlayerCountIsleOfConquest;
+        case BattlegroundDef::TYPE_TWIN_PEAKS:
+            return worldConfig.bg.minPlayerCountTwinPeaks;
+        case BattlegroundDef::TYPE_BATTLE_FOR_GILNEAS_CITY:
+            return worldConfig.bg.minPlayerCountBattleForGilneas;
         default:
             return 1;
     }
@@ -925,6 +929,10 @@ uint32_t BattlegroundManager::getMaximumPlayers(uint32_t dbcIndex)
             return worldConfig.bg.maxPlayerCountStrandOfTheAncients;
         case BattlegroundDef::TYPE_ISLE_OF_CONQUEST:
             return worldConfig.bg.maxPlayerCountIsleOfConquest;
+        case BattlegroundDef::TYPE_TWIN_PEAKS:
+            return worldConfig.bg.maxPlayerCountTwinPeaks;
+        case BattlegroundDef::TYPE_BATTLE_FOR_GILNEAS_CITY:
+            return worldConfig.bg.maxPlayerCountBattleForGilneas;
         default:
             return 1;
     }

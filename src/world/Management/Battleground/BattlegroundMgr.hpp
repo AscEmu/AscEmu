@@ -103,7 +103,7 @@ private:
     // All battlegrounds that are available for random BG queue
     std::vector<uint32_t> m_avalibleInRandom = { BattlegroundDef::TYPE_ALTERAC_VALLEY, BattlegroundDef::TYPE_WARSONG_GULCH,
         BattlegroundDef::TYPE_ARATHI_BASIN, BattlegroundDef::TYPE_EYE_OF_THE_STORM, BattlegroundDef::TYPE_STRAND_OF_THE_ANCIENT,
-        BattlegroundDef::TYPE_ISLE_OF_CONQUEST };
+        BattlegroundDef::TYPE_ISLE_OF_CONQUEST, BattlegroundDef::TYPE_TWIN_PEAKS, BattlegroundDef::TYPE_BATTLE_FOR_GILNEAS_CITY };
 };
 
 #define sBattlegroundManager BattlegroundManager::getInstance()
