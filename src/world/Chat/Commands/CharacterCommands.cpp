@@ -694,9 +694,10 @@ bool ChatCommandHandler::HandleCharAddItemCommand(const char* args, WorldSession
         numadded -= player_target->getItemInterface()->GetItemCount(itemid);
         bool result = player_target->getItemInterface()->AddItemById(itemid, count, randomprop);
         numadded += player_target->getItemInterface()->GetItemCount(itemid);
+
         if (result == true)
         {
-            if (count == 0) // test -> count == numadded
+            if (count == 0 || numadded >= static_cast<int32_t>(count))
             {
                 sGMLog.writefromsession(m_session, "Used add item command, item id {} [{}], quantity {}, to {}.", item_proto->ItemId, item_proto->Name, numadded, player_target->getName());
             }

@@ -3888,7 +3888,8 @@ MySQLStructure::LocalesItem const* MySQLDataStore::getLocalizedItem(uint32_t ent
 
 char* MySQLDataStore::getLocalizedItemName(uint32_t entry, uint32_t sessionLocale)
 {
-    return getLocalizedItem(entry, sessionLocale)->name;
+    auto localizedItem = getLocalizedItem(entry, sessionLocale);
+    return localizedItem != nullptr ? localizedItem->name : nullptr;
 }
 
 MySQLStructure::RecallStruct const* MySQLDataStore::getRecallByName(std::string const& name) const
