@@ -1775,25 +1775,22 @@ Trainer const* ObjectMgr::getTrainer(uint32_t _entry) const
 
 void ObjectMgr::loadCreatureDisplayInfo()
 {
-    for (uint32_t i = 0; i < sCreatureDisplayInfoStore.getNumRows(); ++i)
+    for (auto const& [id, displayInfoEntry] : sCreatureDisplayInfoStore)
     {
-        const auto* const displayInfoEntry = sCreatureDisplayInfoStore.lookupEntry(i);
-        if (displayInfoEntry == nullptr)
-            continue;
-
         CreatureDisplayInfoData data;
-        data.id = displayInfoEntry->id;
-        data.modelId = displayInfoEntry->modelId;
-        data.extendedDisplayInfoId = displayInfoEntry->extendedDisplayInfoId;
-        data.creatureModelScale = displayInfoEntry->creatureModelScale;
+        data.id = displayInfoEntry.id;
+        data.modelId = displayInfoEntry.modelId;
+        data.extendedDisplayInfoId = displayInfoEntry.extendedDisplayInfoId;
+        data.creatureModelScale = displayInfoEntry.creatureModelScale;
         data.modelInfo = sCreatureModelDataStore.lookupEntry(data.modelId);
+
         if (data.modelInfo != nullptr)
         {
             if (data.modelInfo->modelName.find("InvisibleStalker") != std::string::npos)
                 data.isModelInvisibleStalker = true;
         }
 
-        m_creatureDisplayInfoData.insert(std::make_pair(displayInfoEntry->id, data));
+        m_creatureDisplayInfoData.insert(std::make_pair(displayInfoEntry.id, data));
     }
 }
 
