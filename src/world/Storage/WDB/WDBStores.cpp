@@ -212,24 +212,33 @@ namespace {
         // Fallback classic and tbc, where MapDifficultyStore is not available
         if (sMapDifficultyStore.getNumRows() == 0)
         {
-            for (uint32_t i = 0; i < sMapStore.getNumRows(); ++i)
+            for (auto const& [id, entry] : sMapStore)
             {
-                if (auto const* entry = sMapStore.lookupEntry(i))
-                {
-                    uint32_t const maxPlayers = (entry->getAddon() < 1)
-                                                    ? (entry->isRaid() ? 40 : 5)
-                                                    : (entry->isRaid() ? 25 : 5);
+                uint32_t const maxPlayers = (entry.getAddon() < 1)
+                    ? (entry.isRaid() ? 40 : 5)
+                    : (entry.isRaid() ? 25 : 5);
 
-                    if (!entry->getResetTimeHeroic())
-                    {
-                        sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry->id), InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] =
-                            WDB::Structures::MapDifficulty(entry->getResetTimeNormal(), maxPlayers, false);
-                    }
-                    else
-                    {
-                        sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry->id), InstanceDifficulty::Difficulties::DUNGEON_HEROIC)] =
-                            WDB::Structures::MapDifficulty(entry->getResetTimeHeroic(), maxPlayers, false);
-                    }
+                if (!entry.getResetTimeHeroic())
+                {
+                    sMapDifficultyMap[Util::MAKE_PAIR32(
+                        static_cast<uint16_t>(entry.id),
+                        InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] =
+                        WDB::Structures::MapDifficulty(
+                            entry.getResetTimeNormal(),
+                            maxPlayers,
+                            false
+                        );
+                }
+                else
+                {
+                    sMapDifficultyMap[Util::MAKE_PAIR32(
+                        static_cast<uint16_t>(entry.id),
+                        InstanceDifficulty::Difficulties::DUNGEON_HEROIC)] =
+                        WDB::Structures::MapDifficulty(
+                            entry.getResetTimeHeroic(),
+                            maxPlayers,
+                            false
+                        );
                 }
             }
         }
