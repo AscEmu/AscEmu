@@ -10909,7 +10909,6 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
                 SmsgLootReleaseResponse(guid, 1);
                 return;
             }
-
         }
 
         GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(go);
@@ -11511,7 +11510,6 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
 
         if (hasReputationRankChanged(oldStanding, value))
         {
-    
 #ifdef FT_ACHIEVEMENTS
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->id, itr->second->standing, 0);
             if (itr->second->standing >= StandingValues::EXALTED)

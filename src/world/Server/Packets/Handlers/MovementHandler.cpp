@@ -557,7 +557,6 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         return;
     }
 #endif
-
 }
 
 void WorldSession::handleAcknowledgementOpcodes(WorldPacket& recvPacket)

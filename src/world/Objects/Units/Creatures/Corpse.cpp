@@ -190,7 +190,6 @@ void Corpse::setOwnerNotifyMap(uint64_t guid)
         map->getVisibilitySystem().setActivatorRole(h, false, 0);
     else if (oldOwnerGuid == 0)
         map->getVisibilitySystem().setActivatorRole(h, true, worldConfig.server.mapCellNumber);
-
 }
 
 void Corpse::generateLoot()

@@ -68,7 +68,6 @@ namespace visibility
     class VisibilitySystem
     {
     public:
-
         explicit VisibilitySystem(SpatialIndex& spatialIndex, Config cfg = {});
         ~VisibilitySystem() = default;
 

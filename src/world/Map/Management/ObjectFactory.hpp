@@ -81,7 +81,6 @@ public:
     uint64_t generateCorpseGuid(bool reuse = true) const;
 
 private:
-
     visibility::ObjectMeta makeMeta(Object* obj, const WoWGuid& g) const;
 
     WorldMap& m_worldMap;

@@ -274,7 +274,6 @@ namespace visibility
         /// same-cell micro movement without delaying cell-boundary updates.
         bool lastInterestRefreshValid{ false };
         LocationVector lastInterestRefreshPos{};
-
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -298,7 +297,6 @@ namespace visibility
         PublishMode publishMode{ PublishMode::None };
         int publishCells{ 0 };
         bool publishPlayersOnly{ true };
-
     };
 
     struct PubState

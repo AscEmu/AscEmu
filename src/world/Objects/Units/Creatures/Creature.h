@@ -46,11 +46,11 @@ public:
     // Essential functions
 
     virtual void Update(unsigned long time_passed);     // hides function Unit::Update
-    virtual void onPreAttachToWorld() override;
-    virtual void onAttachToWorld() override;
+    void onPreAttachToWorld() override;
+    void onAttachToWorld() override;
 
-    virtual void onPreDetachFromWorld() override;
-    virtual void onDetachFromWorld() override;
+    void onPreDetachFromWorld() override;
+    void onDetachFromWorld() override;
 
     void OnLoaded();
 

@@ -51,10 +51,10 @@ public:
     ~GameObject();
 
     //virtual void onPreAttachToWorld() override;
-    virtual void onAttachToWorld() override;
+    void onAttachToWorld() override;
 
-    virtual void onPreDetachFromWorld() override;
-    virtual void onDetachFromWorld() override;
+    void onPreDetachFromWorld() override;
+    void onDetachFromWorld() override;
 
     bool loadFromDB(MySQLStructure::GameobjectSpawn* spawn, WorldMap* map, bool addToWorld);
     void saveToDB(bool newSpawn = false);

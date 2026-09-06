@@ -2499,7 +2499,6 @@ void Creature::PrepareForRemove()
 
     if (getCreatedByGuid() != 0)
     {
-
         Unit* summoner = getWorldMapUnit(getCreatedByGuid());
         if (summoner != NULL)
         {

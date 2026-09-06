@@ -455,7 +455,6 @@ namespace visibility
                 m_next[i] = m_freeHead;
                 m_freeHead = id;
             }
-
         }
 
     private:

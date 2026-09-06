@@ -26,9 +26,9 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Essential functions
     //virtual void onPreAttachToWorld() override;
-    virtual void onAttachToWorld() override;
+    void onAttachToWorld() override;
 
-    virtual void onPreDetachFromWorld() override;
+    void onPreDetachFromWorld() override;
     //virtual void onDetachFromWorld() override;
 
     // Creates The Transporter

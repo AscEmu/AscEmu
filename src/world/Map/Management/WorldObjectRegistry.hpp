@@ -139,10 +139,8 @@ namespace world
                 Object::UpdatePin _pin(obj); // RAII-Pin
                 lk.unlock();
                 fn(*obj);
-
                 }
         }
-
     }
 
     template<class T, class Fn>
@@ -166,7 +164,6 @@ namespace world
                 typename T::UpdatePin _pin(obj); // RAII-Pin
                 lk.unlock();
                 fn(*obj);
-
                 }
         }
     }

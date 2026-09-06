@@ -111,10 +111,10 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Essential functions
     void Update(unsigned long time_passed);             // hides function Unit::Update
-    virtual void onPreAttachToWorld() override;
-    virtual void onAttachToWorld() override;
+    void onPreAttachToWorld() override;
+    void onAttachToWorld() override;
 
-    virtual void onPreDetachFromWorld() override;
+    void onPreDetachFromWorld() override;
     //virtual void onDetachFromWorld() override;
 
     bool m_isReadyToBeRemoved = false;
@@ -864,7 +864,6 @@ private:
     visibility::VisibleCache visible_;
 
 protected:
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // Stats
     // Initializes stats and unit/playerdata fields

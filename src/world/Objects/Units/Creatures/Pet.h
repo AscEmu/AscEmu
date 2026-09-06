@@ -51,9 +51,9 @@ public:
     void Update(unsigned long /*time_passed*/) override;    // overrides function Summon::Update
 
     //virtual void onPreAttachToWorld() override;
-    virtual void onAttachToWorld() override;
+    void onAttachToWorld() override;
 
-    virtual void onPreDetachFromWorld() override;
+    void onPreDetachFromWorld() override;
     //virtual void onDetachFromWorld() override;
 
     // Override superclass method that returns false

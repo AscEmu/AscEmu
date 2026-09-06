@@ -48,9 +48,9 @@ public:
     // Override Object functions
     
     //virtual void onPreAttachToWorld() override;
-    virtual void onAttachToWorld() override;
+    void onAttachToWorld() override;
 
-    virtual void onPreDetachFromWorld() override;
+    void onPreDetachFromWorld() override;
     //virtual void onDetachFromWorld() override;
 
     bool isSummon() const override;
@@ -152,9 +152,9 @@ public:
     // Override Object functions
     
     //virtual void onPreAttachToWorld() override;
-    virtual void onAttachToWorld() override;
+    void onAttachToWorld() override;
 
-    virtual void onPreDetachFromWorld() override;
+    void onPreDetachFromWorld() override;
     //virtual void onDetachFromWorld() override;
     
     bool isTotem() const override;

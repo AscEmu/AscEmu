@@ -160,9 +160,9 @@ public: //\todo Zyres: public fpr LuaEngine, sort out why
     void Update(unsigned long time_passed);                                 // hides function Object::Update
 
     //virtual void onPreAttachToWorld() {}
-    virtual void onAttachToWorld() override;
+    void onAttachToWorld() override;
 
-    virtual void onPreDetachFromWorld() override;
+    void onPreDetachFromWorld() override;
     // virtual void onDetachFromWorld() override;
 
     virtual void die(Unit* pAttacker, uint32_t damage, uint32_t spellid);

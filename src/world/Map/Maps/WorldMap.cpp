@@ -1121,7 +1121,6 @@ void WorldMap::onPlayerLeave(Player* plr)
     removeSession(plr->getSession());
     removePlayerFromMap(plr);
     factory_->detachFromWorld(plr);
-
 }
 
 void WorldMap::onObjectMoved(Object* obj)
@@ -1979,7 +1978,6 @@ void WorldMap::processPendingVisibilityChanges(std::size_t maxEvents, std::size_
             }
 
             ++attempted;
-
         }
 
         auto viewerIt = pendingVisibilityByViewer_.find(viewerRaw);
