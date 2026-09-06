@@ -93,9 +93,6 @@ Transporter* TransportHandler::createTransport(uint32_t entry, WorldMap* map /*=
         return nullptr;
     }
 
-    // create transport...
-    Transporter* trans = new Transporter((uint64_t)HIGHGUID_TYPE_TRANSPORTER << 32 | entry);
-
     // ...at first waypoint
 #if VERSION_STRING == Classic
     if (tInfo->keyFrames.size() == 0)
@@ -109,44 +106,43 @@ Transporter* TransportHandler::createTransport(uint32_t entry, WorldMap* map /*=
     float z = startNode.z;
     float o = tInfo->keyFrames.begin()->InitialOrientation;
 
-    if (!trans->Create(entry, mapId, x, y, z, o, 255))
-    {
-        delete trans;
-        return nullptr;
-    }
-
-    // Storage
-    _Transports.insert(trans);
-    if (map)
-        _TransportersByInstanceIdMap[map->getInstanceId()].insert(trans);
-    else
-        _TransportersByInstanceIdMap[trans->GetInstanceID()].insert(trans);
-
-    addTransport(trans);
-
     if (const auto mapEntry = sMapStore.lookupEntry(mapId))
     {
         if (mapEntry->isInstanceableMap() != tInfo->inInstance)
         {
             sLogger.failure("Transport {} attempted creation in instance map (id: {}) but it is not an instanced transport!", entry, mapId);
-            delete trans;
             return nullptr;
         }
     }
 
-    // Instance Case
+    WorldMap* mapMgr = nullptr;
+    const auto mapInfo = sMySQLStore.getWorldMapInfo(mapId);
+    if (mapInfo == nullptr || mapId >= MAX_NUM_MAPS)
+        return nullptr;
+
     if (map)
-    {
-        trans->AddToWorld(map);
-        trans->SetInstanceID(map->getInstanceId());
-    }      
+        mapMgr = map;
     else
-        trans->AddToWorld();
+        mapMgr = sMapMgr.findWorldMap(mapId, 0);
 
-    trans->getWorldMap()->addToMapMgr(trans);
+    Transporter* trans = nullptr;
+    if (mapMgr)
+    {
+        // Create and Spawn our Transporter
+        trans = mapMgr->getObjectFactory().createAndSpawnTransporter(entry, mapId, LocationVector(x, y, z, o));
 
-    // Load Creatures
-    trans->LoadStaticPassengers();
+        if (trans)
+        {
+            // Storage
+            _Transports.insert(trans);
+            _TransportersByInstanceIdMap[mapMgr->getInstanceId()].insert(trans);
+
+            addTransport(trans);
+
+            // Load Creatures
+            trans->LoadStaticPassengers();
+        }
+    }
 
     return trans;
 }
@@ -511,14 +507,25 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     sLogger.debugMap("TransportHandler: total time {} at transport {}.", transport->pathTime, transport->entry);
 }
 
-Transporter* TransportHandler::getTransporter(uint32_t guid)
+Transporter* TransportHandler::getTransporter(const WoWGuid& guid) const
 {
     std::lock_guard lock(_TransportLock);
 
-    Transporter* rv = nullptr;
-    auto itr = _Transporters.find(guid);
-    rv = (itr != _Transporters.end()) ? itr->second : 0;
-    return rv;
+    const auto itr = _Transporters.find(guid);
+    return itr != _Transporters.end() ? itr->second : nullptr;
+}
+
+Transporter* TransportHandler::getTransporterByEntry(uint32_t entry) const
+{
+    std::lock_guard lock(_TransportLock);
+
+    for (const auto& kv : _Transporters)
+    {
+        Transporter* t = kv.second;
+        if (t && t->getEntry() == entry)
+            return t;
+    }
+    return nullptr;
 }
 
 TransportTemplate const* TransportHandler::getTransportTemplate(uint32_t entry) const
@@ -543,7 +550,7 @@ void TransportHandler::addTransport(Transporter* transport)
 {
     std::lock_guard lock(_TransportLock);
 
-    _Transporters[transport->GetUIdFromGUID()] = transport;
+    _Transporters[transport->GetNewGUID()] = transport;
 }
 
 void TransportHandler::loadTransportAnimationAndRotation()

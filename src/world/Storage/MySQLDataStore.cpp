@@ -4637,11 +4637,14 @@ void MySQLDataStore::loadCreatureSpawns()
 
                 cspawn->entry = creature_entry;
                 cspawn->mapId = fields[4].asUint32();
-                cspawn->x = fields[5].asFloat();
-                cspawn->y = fields[6].asFloat();
-                cspawn->z = fields[7].asFloat();
-                cspawn->o = fields[8].asFloat();
+                cspawn->spawnPoint = LocationVector(fields[5].asFloat(), fields[6].asFloat(), fields[7].asFloat(), fields[8].asFloat());
                 cspawn->movetype = fields[9].asUint8();
+                if (cspawn->movetype >= MAX_DB_MOTION_TYPE)
+                {
+                    sLogger.warning("Creature spawn {} (entry {}) has invalid movement type {}. Falling back to idle.",cspawn->id, cspawn->entry, cspawn->movetype);
+                    cspawn->movetype = IDLE_MOTION_TYPE;
+                }
+
                 cspawn->displayid = fields[10].asUint32();
                 if (cspawn->displayid != 0 && !creature_properties->isTriggerNpc)
                 {
@@ -4964,7 +4967,7 @@ void MySQLDataStore::loadCreatureGroupSpawns()
                         continue;
                     }
 
-                    groupTemplate.spawns.insert(std::make_pair(spawnId, nullptr));
+                    groupTemplate.spawns.insert(spawnId);
                     _spawnGroupMapStore.emplace(spawnId, &groupTemplate);
 
                     ++load_count;
@@ -5004,14 +5007,14 @@ SpawnGroupTemplateData* MySQLDataStore::getSpawnGroupDataBySpawn(uint32_t spawnI
     return nullptr;
 }
 
-std::vector<Creature*> const MySQLDataStore::getSpawnGroupDataByBoss(uint32_t bossId)
+std::vector<uint32_t> const MySQLDataStore::getSpawnGroupDataByBoss(uint32_t bossId)
 {
-    std::vector<Creature*> data;
+    std::vector<uint32_t> data;
 
-    for (auto spawnData : _spawnGroupMapStore)
+    for (auto const& spawnData : _spawnGroupMapStore)
     {
         if (spawnData.second->bossId == bossId)
-            data.push_back(spawnData.second->spawns[spawnData.first]);
+            data.push_back(spawnData.first);
     }
 
     return data;

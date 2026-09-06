@@ -25,6 +25,8 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Management/WorldStates.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Map/Management/SpawnManager.hpp"
+#include "Map/Management/ObjectFactory.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/Master.h"
@@ -175,7 +177,7 @@ void ArathiBasin::SpawnBuff(uint32_t x)
 
     if (m_buffs[x] == nullptr)
     {
-        m_buffs[x] = spawnGameObject(chosen_buffid, LocationVector(BuffCoordinates[x][0], BuffCoordinates[x][1], BuffCoordinates[x][2],
+        m_buffs[x] = createGameObject(chosen_buffid, LocationVector(BuffCoordinates[x][0], BuffCoordinates[x][1], BuffCoordinates[x][2],
             BuffCoordinates[x][3]), 0, 114, 1);
 
         m_buffs[x]->setLocalRotation(0.f, 0.f, BuffRotations[x][0], BuffRotations[x][1]);
@@ -192,7 +194,7 @@ void ArathiBasin::SpawnBuff(uint32_t x)
 
         if (chosen_buffid != m_buffs[x]->getEntry())
         {
-            m_buffs[x]->SetNewGuid(m_mapMgr->generateGameobjectGuid());
+            m_mapMgr->getSpawnManager().regenerateGameObjectGuid(m_buffs[x], chosen_buffid);
             m_buffs[x]->setEntry(chosen_buffid);
             m_buffs[x]->SetGameObjectProperties(gameobject_info);
         }
@@ -211,7 +213,7 @@ void ArathiBasin::SpawnControlPoint(uint32_t Id, uint32_t Type)
 
     if (m_controlPoints[Id] == nullptr)
     {
-        m_controlPoints[Id] = spawnGameObject(gameobject_info->entry, LocationVector(ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
+        m_controlPoints[Id] = createGameObject(gameobject_info->entry, LocationVector(ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3]), 0, 35, 1.0f);
 
         m_controlPoints[Id]->setLocalRotation(0.f, 0.f, ControlPointRotations[Id][0], ControlPointRotations[Id][1]);
@@ -246,7 +248,7 @@ void ArathiBasin::SpawnControlPoint(uint32_t Id, uint32_t Type)
             m_controlPoints[Id]->RemoveFromWorld(false);
 
         // assign it a new guid (client needs this to see the entry change?)
-        m_controlPoints[Id]->SetNewGuid(m_mapMgr->generateGameobjectGuid());
+        m_mapMgr->getSpawnManager().regenerateGameObjectGuid(m_controlPoints[Id], gameobject_info->entry);
         m_controlPoints[Id]->setEntry(gameobject_info->entry);
         m_controlPoints[Id]->setDisplayId(gameobject_info->display_id);
         m_controlPoints[Id]->setGoType(static_cast<uint8_t>(gameobject_info->type));
@@ -283,7 +285,7 @@ void ArathiBasin::SpawnControlPoint(uint32_t Id, uint32_t Type)
 
     if (m_controlPointAuras[Id] == nullptr)
     {
-        m_controlPointAuras[Id] = spawnGameObject(gi_aura->entry, LocationVector(ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
+        m_controlPointAuras[Id] = createGameObject(gi_aura->entry, LocationVector(ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3]), 0, 35, 1.0f);
 
         m_controlPointAuras[Id]->setLocalRotation(0.f, 0.f, ControlPointRotations[Id][0], ControlPointRotations[Id][1]);
@@ -298,7 +300,7 @@ void ArathiBasin::SpawnControlPoint(uint32_t Id, uint32_t Type)
             m_controlPointAuras[Id]->RemoveFromWorld(false);
 
         // re-spawn the aura
-        m_controlPointAuras[Id]->SetNewGuid(m_mapMgr->generateGameobjectGuid());
+        m_mapMgr->getSpawnManager().regenerateGameObjectGuid(m_controlPointAuras[Id], gi_aura->entry);
         m_controlPointAuras[Id]->setEntry(gi_aura->entry);
         m_controlPointAuras[Id]->setDisplayId(gi_aura->display_id);
         m_controlPointAuras[Id]->SetGameObjectProperties(gi_aura);
@@ -309,13 +311,13 @@ void ArathiBasin::SpawnControlPoint(uint32_t Id, uint32_t Type)
 void ArathiBasin::OnCreate()
 {
     // Alliance Gate
-    GameObject* gate = spawnGameObject(180255, LocationVector(1284.597290f, 1281.166626f, -15.977916f, 0.76f), 32, 114, 1.5799990f);
+    GameObject* gate = createGameObject(180255, LocationVector(1284.597290f, 1281.166626f, -15.977916f, 0.76f), 32, 114, 1.5799990f);
     gate->setAnimationProgress(100);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
     // horde gate
-    gate = spawnGameObject(180256, LocationVector(708.0902710f, 708.4479370f, -17.3898964f, 3.92f), 32, 114, 1.5699990f);
+    gate = createGameObject(180256, LocationVector(708.0902710f, 708.4479370f, -17.3898964f, 3.92f), 32, 114, 1.5699990f);
     gate->setAnimationProgress(100);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
@@ -813,10 +815,10 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
         // this control point just got taken over by someone! oh noes!
         if (m_spiritGuides[Id] != nullptr)
         {
-            std::map<Creature*, std::set<uint32_t> >::iterator itr = m_resurrectMap.find(m_spiritGuides[Id]);
+            std::map<Creature*, std::set<WoWGuid>>::iterator itr = m_resurrectMap.find(m_spiritGuides[Id]);
             if (itr != m_resurrectMap.end())
             {
-                for (std::set<uint32_t>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
+                for (std::set<WoWGuid>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
                 {
                     Player* r_plr = m_mapMgr->getPlayer(*it2);
                     if (r_plr != nullptr && r_plr->isDead())

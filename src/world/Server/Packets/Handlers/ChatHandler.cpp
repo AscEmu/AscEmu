@@ -416,7 +416,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
 
     uint64_t rawGuid = srlPacket.guid.getRawGuid();
 
-    auto unit = _player->getWorldMap()->getUnit(rawGuid);
+    auto unit = _player->getWorldMapUnit(srlPacket.guid);
     if (unit)
     {
         targetGuid = unit->getGuid();
@@ -525,7 +525,7 @@ void WorldSession::handleReportSpamOpcode([[maybe_unused]] WorldPacket& recvPack
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debug("REPORT SPAM: type {}, guid {}, unk1 {}, unk2 {}, unk3 {}, unk4 {}, message {}", srlPacket.spam_type, srlPacket.spammer_guid.getGuidLow(),
+    sLogger.debug("REPORT SPAM: type {}, guid {}, unk1 {}, unk2 {}, unk3 {}, unk4 {}, message {}", srlPacket.spam_type, srlPacket.spammer_guid.getLowGuid(),
                   srlPacket.unk1, srlPacket.unk2, srlPacket.unk3, srlPacket.unk4, srlPacket.description);
 
     SmsgComplainResult managedPacket(0);
@@ -538,7 +538,7 @@ void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    const auto player = sObjectMgr.getPlayer(srlPacket.guid.getGuidLow());
+    const auto player = sObjectMgr.getPlayer(srlPacket.guid.getLowGuid());
     if (player == nullptr || player->getSession() == nullptr)
         return;
 

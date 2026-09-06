@@ -66,7 +66,7 @@ bool ChatCommandHandler::HandleWayPointAddCommand(const char* args, WorldSession
         creature_target->setDefaultMovementType(WAYPOINT_MOTION_TYPE);
         creature_target->getMovementManager()->movePath(pathId, true);
 
-        WorldDatabase.execute("UPDATE creature_spawns SET movetype = %u, waypoint_group = %u WHERE id = %u AND min_build <= %u AND max_build >= %u", WAYPOINT_MOTION_TYPE, pathId, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.execute("UPDATE creature_spawns SET movetype = %u, waypoint_group = %u WHERE id = %u AND min_build <= %u AND max_build >= %u", WAYPOINT_MOTION_TYPE, pathId, creature_target->getSpawnId(), VERSION_STRING, VERSION_STRING);
     }
 
     WaypointNode waypoint;
@@ -135,7 +135,7 @@ bool ChatCommandHandler::HandleWayPointDeleteAllCommand(const char* /*args*/, Wo
     Creature* creature_target = GetSelectedCreature(m_session, true);
     Player* player = m_session->GetPlayer();
     AIInterface* ai = player->m_aiInterfaceWaypoint;
-    if (creature_target == nullptr || !creature_target->GetSQL_id())
+    if (creature_target == nullptr || !creature_target->getSpawnId())
         return true;
 
     bool show = ai->isShowWayPointsActive();
@@ -169,7 +169,7 @@ bool ChatCommandHandler::HandleWayPointHideCommand(const char* /*args*/, WorldSe
         return true;
     }
 
-    systemMessage(m_session, "Hiding Waypoints for creature_spawn {}", creature_target->GetSQL_id());
+    systemMessage(m_session, "Hiding Waypoints for creature_spawn {}", creature_target->getSpawnId());
     return true;
 }
 
@@ -208,6 +208,6 @@ bool ChatCommandHandler::HandleWayPointShowCommand(const char* args, WorldSessio
             ai->activateShowWayPoints(m_session->GetPlayer(), Backwards);
     }
 
-    systemMessage(m_session, "Showing waypoints for creature {}", creature_target->GetSQL_id());
+    systemMessage(m_session, "Showing waypoints for creature {}", creature_target->getSpawnId());
     return true;
 }

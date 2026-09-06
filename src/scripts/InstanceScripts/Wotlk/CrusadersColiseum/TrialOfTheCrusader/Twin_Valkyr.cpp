@@ -380,7 +380,7 @@ void UnleashedBallAI::OnLoad()
         return;
 
     const auto maxStalkers = static_cast<uint32_t>(stalkerGUIDS.size() - 1);
-    if (Creature* pStalker = getInstanceScript()->GetCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, maxStalkers)]))
+    if (Creature* pStalker = getInstanceScript()->getCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, maxStalkers)]))
         getMovementManager()->movePoint(1, pStalker->GetPositionX(), pStalker->GetPositionY(), pStalker->GetPositionZ());
 
     RangeCheckTimer = 500;
@@ -393,7 +393,7 @@ void UnleashedBallAI::OnReachWP(uint32_t type, uint32_t /*id*/)
 
     // move to another random stalker
     const auto maxStalkers = static_cast<uint32_t>(stalkerGUIDS.size() - 1);
-    if (Creature* pStalker = getInstanceScript()->GetCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, maxStalkers)]))
+    if (Creature* pStalker = getInstanceScript()->getCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, maxStalkers)]))
         getMovementManager()->movePoint(1, pStalker->GetPositionX(), pStalker->GetPositionY(), pStalker->GetPositionZ());
 }
 
@@ -470,11 +470,11 @@ void BulletCotrollerAI::OnLoad()
         {
             const auto maxStalkers = static_cast<uint32_t>(stalkerGUIDS.size() - 1);
             if (darkCounter < 36)
-                if (Creature* pStalker = getInstanceScript()->GetCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, maxStalkers)]))
+                if (Creature* pStalker = getInstanceScript()->getCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, maxStalkers)]))
                     summonCreature(NPC_UNLEASHED_DARK, pStalker->GetPosition());
 
             if (lightCounter < 36)
-                if (Creature* pStalker = getInstanceScript()->GetCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, maxStalkers)]))
+                if (Creature* pStalker = getInstanceScript()->getCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, maxStalkers)]))
                     summonCreature(NPC_UNLEASHED_LIGHT, pStalker->GetPosition());
 
             repeatFunctionFromScheduler(pThis, 1s);

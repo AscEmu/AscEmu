@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/Channel.hpp"
 #include "Server/WorldSession.h"
 #include "Management/Battleground/Battleground.hpp"
+#include "Map/Maps/WorldMap.hpp"
 
 #include <shared_mutex>
 #include <type_traits>
@@ -175,10 +176,16 @@ namespace AscEmu::Packets
             if (sendToSelf && sourceSession != nullptr)
                 sourceSession->sendManagedPacket(packet);
 
-            for (const auto& inRangeObject : sourcePlayer.getInRangePlayersSet())
+            WorldMap* worldMap = sourcePlayer.getWorldMap();
+            if (worldMap == nullptr)
+                return;
+
+            thread_local std::vector<Player*> recipients;
+            worldMap->collectVisibilityRecipientsForObject(sourcePlayer.GetNewGUID(), recipients);
+
+            for (Player* targetPlayer : recipients)
             {
-                Player* targetPlayer = static_cast<Player*>(inRangeObject);
-                if (targetPlayer == nullptr)
+                if (targetPlayer == nullptr || targetPlayer == &sourcePlayer)
                     continue;
 
                 WorldSession* targetSession = targetPlayer->getSession();
@@ -202,17 +209,22 @@ namespace AscEmu::Packets
                 if (sourcePlayer.m_isGmInvisible && !targetSession->hasPermissions())
                     continue;
 
-                if (targetPlayer->isVisibleObject(sourcePlayer.getGuid()))
-                    targetSession->sendManagedPacket(packet);
+                targetSession->sendManagedPacket(packet);
             }
         }
 
         template <typename TPacket>
         static void sendFromObject(Object& source, TPacket& packet)
         {
-            for (const auto& inRangeObject : source.getInRangePlayersSet())
+            WorldMap* worldMap = source.getWorldMap();
+            if (worldMap == nullptr)
+                return;
+
+            thread_local std::vector<Player*> recipients;
+            worldMap->collectVisibilityRecipientsForObject(source.GetNewGUID(), recipients);
+
+            for (Player* targetPlayer : recipients)
             {
-                Player* targetPlayer = static_cast<Player*>(inRangeObject);
                 if (targetPlayer == nullptr)
                     continue;
 

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Server/EventableObject.h"
+#include "WoWGuid.hpp"
 
 class Player;
 class WorldMap;
@@ -26,9 +27,9 @@ private:
     // finish roll for item
     void finalize();
 
-    std::map<uint32_t, uint8_t> m_NeedRolls;
-    std::map<uint32_t, uint8_t> m_GreedRolls;
-    std::set<uint32_t> m_passRolls;
+    std::map<WoWGuid, uint8_t> m_NeedRolls;
+    std::map<WoWGuid, uint8_t> m_GreedRolls;
+    std::set<WoWGuid> m_passRolls;
     uint32_t _groupcount = 0;
     uint8_t _slotid = 0;
     uint32_t _itemid = 0;

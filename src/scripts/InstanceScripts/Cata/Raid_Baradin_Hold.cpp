@@ -98,7 +98,7 @@ public:
         if (doorGuid == 0)
             return;
 
-        if (GameObject* pDoor = GetGameObjectByGuid(doorGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(doorGuid))
             useDoorOrButton(pDoor);
     }
 
@@ -224,7 +224,7 @@ private:
     {
         for (const uint32_t guid : mFelFlameGuids)
         {
-            if (Creature* pFelFlame = getInstanceScript()->GetCreatureByGuid(guid))
+            if (Creature* pFelFlame = getInstanceScript()->getCreatureByGuid(guid))
                 pFelFlame->Despawn(1000, 0);
         }
 

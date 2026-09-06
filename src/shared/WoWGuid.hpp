@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Debugging/Errors.hpp"
 
 #include <cstdint>
+#include <functional>
 
 #define BitCount1(x) ((x) & 1)
 #define BitCount2(x) ( BitCount1(x) + BitCount1((x)>>1) )
@@ -81,6 +82,7 @@ public:
     }
 
     bool isEmpty() const noexcept { return _raw.value == 0; }
+    explicit operator bool() const noexcept { return !isEmpty(); }
 
     uint8_t& operator[](uint32_t index)
     {
@@ -99,9 +101,22 @@ public:
     WoWGuid& operator=(uint64_t guid) noexcept { init(guid); return *this; }
     WoWGuid& operator=(WoWGuid const& other) noexcept { init(other._raw.value); return *this; }
 
+    // Raw lower 32 bits of the packed GUID. This is not necessarily the object counter.
+    uint32_t getLowGuid() const noexcept
+    {
+        return static_cast<uint32_t>(_raw.value);
+    }
+
+    // Runtime counter stored in the low 24 bits.
     uint32_t getCounter() const noexcept
     {
-        return uint32_t(_raw.value & UINT64_C(0x00000000FFFFFFFF));
+        return static_cast<uint32_t>(_raw.value & UINT64_C(0x00FFFFFF));
+    }
+
+    // Template entry stored in bits 24..47 for entry-bearing GUID types.
+    uint32_t getEntry() const noexcept
+    {
+        return static_cast<uint32_t>((_raw.value >> 24) & UINT64_C(0x00FFFFFF));
     }
 
     void clear() noexcept
@@ -111,8 +126,8 @@ public:
         m_fieldcount = 0;
         m_compiled = false;
 
-        *reinterpret_cast<uint32_t*>(m_guidfields) = 0;
-        *reinterpret_cast<uint32_t*>(&m_guidfields[4]) = 0;
+        for (auto& field : m_guidfields)
+            field = 0;
     }
 
     void init(uint64_t guid) noexcept
@@ -151,41 +166,39 @@ public:
 
     void init(WoWGuid const& guid) noexcept { init(guid._raw.value); }
 
-    uint32_t getGuidLow() const noexcept { return static_cast<uint32_t>(_raw.value); }
-
-    uint32_t getGuidLowPart() const noexcept
+    // Raw lower 32 bits of a packed GUID.
+    static uint32_t getLowGuidFromRaw(uint64_t guid) noexcept
     {
-        const uint32_t low = *(reinterpret_cast<const uint32_t*>(&_raw.value));
-        return low & 0x00FFFFFF;
+        return static_cast<uint32_t>(guid);
     }
 
-    static uint32_t getGuidLowPartFromUInt64(uint64_t guid) noexcept
+    // Raw upper 32 bits of the packed GUID.
+    uint32_t getHighGuid() const noexcept
     {
-        return *reinterpret_cast<const uint32_t*>(&guid);
+        return static_cast<uint32_t>(_raw.value >> 32);
     }
 
-    uint32_t getGuidHigh() const noexcept { return static_cast<uint32_t>(_raw.value >> 32); }
-
-    uint32_t getGuidHighPart() const noexcept
+    // Object type encoded in the masked upper GUID bits.
+    HighGuid getHighType() const noexcept
     {
-        const uint32_t high = *(reinterpret_cast<const uint32_t*>(&_raw.value) + 1);
-        return high & 0xFFF00000;
+        return static_cast<HighGuid>(getHighGuid() & HIGHGUID_TYPE_MASK);
     }
 
-    static uint32_t getGuidHighPartFromUInt64(uint64_t guid) noexcept
+    // Raw upper 32 bits of a packed GUID.
+    static uint32_t getHighGuidFromRaw(uint64_t guid) noexcept
     {
-        return *(reinterpret_cast<const uint32_t*>(&guid) + 1);
+        return static_cast<uint32_t>(guid >> 32);
     }
 
-    HighGuid getHigh() const noexcept { return static_cast<HighGuid>(getGuidHighPart()); }
-
-    static uint64_t createItemGuid(uint32_t lowguid) noexcept
+    // Object type encoded in the masked upper GUID bits of a packed GUID.
+    static HighGuid getHighTypeFromRaw(uint64_t guid) noexcept
     {
-        uint64_t v = 0;
-        uint32_t* part = reinterpret_cast<uint32_t*>(&v);
-        part[0] = lowguid;
-        part[1] = HIGHGUID_TYPE_ITEM;
-        return v;
+        return static_cast<HighGuid>(getHighGuidFromRaw(guid) & HIGHGUID_TYPE_MASK);
+    }
+
+    static uint64_t createItemGuid(uint32_t lowGuid) noexcept
+    {
+        return (uint64_t(HIGHGUID_TYPE_ITEM) << 32) | uint64_t(lowGuid);
     }
 
     uint64_t getRawGuid() const noexcept { return _raw.value; }
@@ -196,15 +209,24 @@ public:
 
     // helpers
     bool     operator!() const noexcept { return _raw.value == 0; }
+
+    bool     operator==(int v) const noexcept { return _raw.value == static_cast<uint64_t>(v); }
+    bool     operator!=(int v) const noexcept { return _raw.value != static_cast<uint64_t>(v); }
+
     bool     operator==(uint64_t v) const noexcept { return _raw.value == v; }
     bool     operator!=(uint64_t v) const noexcept { return _raw.value != v; }
-    uint64_t operator&(uint64_t v) const noexcept  { return _raw.value & v; }
+
+    uint64_t operator&(uint64_t v) const noexcept { return _raw.value & v; }
     uint64_t operator&(unsigned int v) const noexcept { return _raw.value & uint64_t(v); }
 
     bool     operator==(WoWGuid const& other) const noexcept { return _raw.value == other._raw.value; }
     bool     operator!=(WoWGuid const& other) const noexcept { return _raw.value != other._raw.value; }
+    bool     operator<(WoWGuid const& other) const noexcept { return _raw.value < other._raw.value; }
 
     // symmetric operators
+    friend bool operator==(int v, WoWGuid const& a) noexcept { return a == v; }
+    friend bool operator!=(int v, WoWGuid const& a) noexcept { return a != v; }
+
     friend bool operator==(uint64_t v, WoWGuid const& a) noexcept { return a == v; }
     friend bool operator!=(uint64_t v, WoWGuid const& a) noexcept { return a != v; }
 
@@ -218,23 +240,23 @@ public:
     }
 
     // helpers for type checking
-    bool isPlayer()       const noexcept { return getHigh() == HighGuid::Player; }
-    bool isCorpse()       const noexcept { return getHigh() == HighGuid::Corpse; }
-    bool isItem()         const noexcept { return getHigh() == HighGuid::Item; }
-    bool isContainer()    const noexcept { return getHigh() == HighGuid::Container; }
-    bool isDynamicObject()const noexcept { return getHigh() == HighGuid::DynamicObject; }
-    bool isWaypoint()     const noexcept { return getHigh() == HighGuid::Waypoint; }
-    bool isTransporter()  const noexcept { return getHigh() == HighGuid::Transporter; }
-    bool isGameObject()   const noexcept { return getHigh() == HighGuid::GameObject; }
-    bool isTransport()    const noexcept { return getHigh() == HighGuid::Transport; }
-    bool isUnit()         const noexcept { return getHigh() == HighGuid::Unit; }
-    bool isPet()          const noexcept { return getHigh() == HighGuid::Pet; }
-    bool isVehicle()      const noexcept { return getHigh() == HighGuid::Vehicle; }
-    bool isAreaTrigger()  const noexcept { return getHigh() == HighGuid::AreaTrigger; }
-    bool isBattleground() const noexcept { return getHigh() == HighGuid::Battleground; }
-    bool isInstance()     const noexcept { return getHigh() == HighGuid::Instance; }
-    bool isGroup()        const noexcept { return getHigh() == HighGuid::Group; }
-    bool isGuild()        const noexcept { return getHigh() == HighGuid::Guild; }
+    bool isPlayer()       const noexcept { return getHighType() == HighGuid::Player; }
+    bool isCorpse()       const noexcept { return getHighType() == HighGuid::Corpse; }
+    bool isItem()         const noexcept { return getHighType() == HighGuid::Item; }
+    bool isContainer()    const noexcept { return getHighType() == HighGuid::Container; }
+    bool isDynamicObject()const noexcept { return getHighType() == HighGuid::DynamicObject; }
+    bool isWaypoint()     const noexcept { return getHighType() == HighGuid::Waypoint; }
+    bool isTransporter()  const noexcept { return getHighType() == HighGuid::Transporter; }
+    bool isGameObject()   const noexcept { return getHighType() == HighGuid::GameObject; }
+    bool isTransport()    const noexcept { return getHighType() == HighGuid::Transport; }
+    bool isUnit()         const noexcept { return getHighType() == HighGuid::Unit; }
+    bool isPet()          const noexcept { return getHighType() == HighGuid::Pet; }
+    bool isVehicle()      const noexcept { return getHighType() == HighGuid::Vehicle; }
+    bool isAreaTrigger()  const noexcept { return getHighType() == HighGuid::AreaTrigger; }
+    bool isBattleground() const noexcept { return getHighType() == HighGuid::Battleground; }
+    bool isInstance()     const noexcept { return getHighType() == HighGuid::Instance; }
+    bool isGroup()        const noexcept { return getHighType() == HighGuid::Group; }
+    bool isGuild()        const noexcept { return getHighType() == HighGuid::Guild; }
 
 private:
     // raw data union
@@ -279,3 +301,15 @@ private:
         m_compiled = true;
     }
 };
+
+namespace std
+{
+    template <>
+    struct hash<WoWGuid>
+    {
+        std::size_t operator()(const WoWGuid& guid) const noexcept
+        {
+            return std::hash<uint64_t>{}(guid.getRawGuid());
+        }
+    };
+}

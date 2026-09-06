@@ -179,7 +179,7 @@ void LfgMgr::Update(uint32_t diff)
             WoWGuid wowGuid;
             wowGuid.init(guid);
 
-            if (Player* player = sObjectMgr.getPlayer(wowGuid.getGuidLowPart()))
+            if (Player* player = sObjectMgr.getPlayer(wowGuid.getCounter()))
             {
                 player->getSession()->sendLfgRoleCheckUpdate(roleCheck);
 
@@ -215,7 +215,7 @@ void LfgMgr::Update(uint32_t diff)
                 WoWGuid wowGuid;
                 wowGuid.init(itVotes->first);
 
-                if (Player* plrg = sObjectMgr.getPlayer(wowGuid.getGuidLowPart()))
+                if (Player* plrg = sObjectMgr.getPlayer(wowGuid.getCounter()))
                 {
                     if (plrg->getGuid() != pBoot->victim)
                     {
@@ -264,7 +264,7 @@ void LfgMgr::Update(uint32_t diff)
                     WoWGuid wowGuid;
                     wowGuid.init(itPlayers->first);
 
-                    if (Player* player = sObjectMgr.getPlayer(wowGuid.getGuidLowPart()))
+                    if (Player* player = sObjectMgr.getPlayer(wowGuid.getCounter()))
                     {
                         if (auto group = player->getGroup())
                         {
@@ -346,7 +346,7 @@ void LfgMgr::Update(uint32_t diff)
                 WoWGuid wowGuid;
                 wowGuid.init(itPlayer->first);
 
-                if (Player* player = sObjectMgr.getPlayer(wowGuid.getGuidLowPart()))
+                if (Player* player = sObjectMgr.getPlayer(wowGuid.getCounter()))
                 {
                     player->getSession()->sendLfgQueueStatus(dungeonId, waitTime, m_WaitTimeAvg, m_WaitTimeTank, m_WaitTimeHealer, m_WaitTimeDps, queuedTime, queue->tanks, queue->healers, queue->dps);
                 }
@@ -872,7 +872,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, std::unique_ptr<LfgProposal>&
 
         if (wowGuid.isGroup())
         {
-            uint32_t lowGuid = wowGuid.getGuidLowPart();
+            uint32_t lowGuid = wowGuid.getCounter();
             if (auto grp = sObjectMgr.getGroupById(lowGuid))  //MAy Check these
             {
                 if (grp->isLFGGroup())
@@ -936,7 +936,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, std::unique_ptr<LfgProposal>&
         WoWGuid wowGuid;
         wowGuid.init(it->first);
 
-        if (Player* player = sObjectMgr.getPlayer(wowGuid.getGuidLowPart()))
+        if (Player* player = sObjectMgr.getPlayer(wowGuid.getCounter()))
         {
             //for (PlayerSet::const_iterator itPlayer = players.begin(); itPlayer != players.end() && player; ++itPlayer)
             //{
@@ -1028,7 +1028,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, std::unique_ptr<LfgProposal>&
                     WoWGuid wowGuid;
                     wowGuid.init(itPlayer->first);
 
-                    if (*itPlayers == sObjectMgr.getPlayer(wowGuid.getGuidLowPart()))
+                    if (*itPlayers == sObjectMgr.getPlayer(wowGuid.getCounter()))
                     {
                         queue->tanks = Tanks_Needed;
                         queue->healers = Healers_Needed;
@@ -1137,7 +1137,7 @@ void LfgMgr::UpdateRoleCheck(uint64_t gguid, uint64_t guid /* = 0 */, uint8_t ro
         WoWGuid wowGuid;
         wowGuid.init(it->first);
 
-        Player* plrg = sObjectMgr.getPlayer(wowGuid.getGuidLowPart());
+        Player* plrg = sObjectMgr.getPlayer(wowGuid.getCounter());
         if (!plrg)
         {
             if (roleCheck->state == LFG_ROLECHECK_FINISHED)
@@ -1355,7 +1355,7 @@ void LfgMgr::UpdateProposal(uint32_t proposalId, uint64_t guid, bool accept)
         WoWGuid wowGuid;
         wowGuid.init(itPlayers->first);
 
-        if (Player* player = sObjectMgr.getPlayer(wowGuid.getGuidLowPart()))
+        if (Player* player = sObjectMgr.getPlayer(wowGuid.getCounter()))
         {
             if (itPlayers->first == pProposal->leader)
                 players.push_front(player);
@@ -1395,7 +1395,7 @@ void LfgMgr::UpdateProposal(uint32_t proposalId, uint64_t guid, bool accept)
             else
                 wowGuid.init(uint64_t(0));
 
-            uint32_t lowgroupguid = (*it)->getGroup() ? wowGuid.getGuidLowPart() : 0;
+            uint32_t lowgroupguid = (*it)->getGroup() ? wowGuid.getCounter() : 0;
             if (player->groupLowGuid != lowgroupguid)
                 sLogger.debug("{} group mismatch: actual ({}) - queued ({})", (*it)->getGuid(), lowgroupguid, player->groupLowGuid);
 
@@ -1555,7 +1555,7 @@ void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType t
         WoWGuid wowGuid;
         wowGuid.init(it->first);
 
-        Player* player = sObjectMgr.getPlayer(wowGuid.getGuidLowPart());
+        Player* player = sObjectMgr.getPlayer(wowGuid.getCounter());
         if (!player)
             continue;
 
@@ -1723,7 +1723,7 @@ void LfgMgr::UpdateBoot(Player* player, bool accept)
             if (pguid != pBoot->victim)
             {
                 SetState(pguid, LFG_STATE_DUNGEON);
-                if (Player* plrg = sObjectMgr.getPlayer(wowGuid.getGuidLowPart()))
+                if (Player* plrg = sObjectMgr.getPlayer(wowGuid.getCounter()))
                 {
                     plrg->getSession()->sendLfgBootPlayer(pBoot);
                 }

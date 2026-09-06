@@ -29,6 +29,7 @@ class Field;
 class Object;
 class Corpse;
 class Charter;
+class WoWGuid;
 class ArenaTeam;
 struct ArenaTeamEmblem;
 class SpellInfo;
@@ -212,12 +213,12 @@ private:
 public:
     void loadCharters();
     void removeCharter(Charter const*);
-    Charter* createCharter(uint32_t _leaderGuid, CharterTypes _type);
+    Charter* createCharter(const WoWGuid& _leaderGuid, CharterTypes _type);
 
     Charter* getCharterByName(const std::string& _charterName, CharterTypes _type) const;
     Charter const* getCharter(uint32_t _charterId, CharterTypes _type) const;
-    Charter* getCharterByGuid(uint64_t _playerguid, CharterTypes _type) const;
-    Charter* getCharterByItemGuid(uint64_t _guid) const;
+    Charter* getCharterByGuid(const WoWGuid& _playerGuid, CharterTypes _type) const;
+    Charter* getCharterByItemGuid(const WoWGuid& _guid) const;
 
 private:
     std::array<std::unordered_map<uint32_t, std::unique_ptr<Charter>>, NUM_CHARTER_TYPES> m_charters;
@@ -241,21 +242,9 @@ private:
     // Corpse
 public:
     void loadCorpsesForInstance(WorldMap* _worldMap);
-    Corpse* loadCorpseByGuid(uint32_t _corpseGuid);
-
-    Corpse* createCorpse();
-    void removeCorpse(const Corpse*);
-
-    Corpse* getCorpseByGuid(uint32_t _corpseGuid) const;
-    Corpse* getCorpseByOwner(uint32_t _playerGuid) const;
-
-    void unloadCorpseCollector();
     void addCorpseDespawnTime(const Corpse* _corpse) const;
+    void deleteCorpseRecordsForPlayer(uint64_t ownerGuid) const;
     void delinkCorpseForPlayer(const Player* _player) const;
-
-private:
-    std::unordered_map<uint32_t, std::unique_ptr<Corpse>> m_corpses;
-    mutable std::mutex m_corpseLock;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Vendors

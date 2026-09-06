@@ -108,13 +108,13 @@ void InstanceScript::addObject(Object* obj)
     {
         ObjectInfoMap::const_iterator j = _creatureInfo.find(obj->getEntry());
         if (j != _creatureInfo.end())
-            _objectGuids[j->second] = guid.getGuidLowPart();
+            _objectGuids[j->second] = guid;
     }
     else if (obj->isGameObject())
     {
         ObjectInfoMap::const_iterator j = _gameObjectInfo.find(obj->getEntry());
         if (j != _gameObjectInfo.end())
-            _objectGuids[j->second] = guid.getGuidLowPart();
+            _objectGuids[j->second] = guid;
     }
 }
 
@@ -128,7 +128,7 @@ void InstanceScript::removeObject(Object* obj)
         if (j != _creatureInfo.end())
         {
             ObjectGuidMap::iterator i = _objectGuids.find(j->second);
-            if (i != _objectGuids.end() && i->second == guid.getGuidLowPart())
+            if (i != _objectGuids.end() && i->second == guid)
                 _objectGuids.erase(i);
         }
     }
@@ -138,29 +138,29 @@ void InstanceScript::removeObject(Object* obj)
         if (j != _gameObjectInfo.end())
         {
             ObjectGuidMap::iterator i = _objectGuids.find(j->second);
-            if (i != _objectGuids.end() && i->second == guid.getGuidLowPart())
+            if (i != _objectGuids.end() && i->second == guid)
                 _objectGuids.erase(i);
         }
     }
 }
 
-uint32_t InstanceScript::getGuidFromData(uint32_t type)
+WoWGuid InstanceScript::getGuidFromData(uint32_t type)
 {
     ObjectGuidMap::const_iterator i = _objectGuids.find(type);
     if (i != _objectGuids.end())
         return i->second;
 
-    return 0;
+    return WoWGuid{};
 }
 
 Creature* InstanceScript::getCreatureFromData(uint32_t type)
 {
-    return GetCreatureByGuid(getGuidFromData(type));
+    return getCreatureByGuid(getGuidFromData(type));
 }
 
 GameObject* InstanceScript::getGameObjectFromData(uint32_t type)
 {
-    return GetGameObjectByGuid(getGuidFromData(type));
+    return getGameObjectByGuid(getGuidFromData(type));
 }
 
 
@@ -221,6 +221,17 @@ bool InstanceScript::setBossState(uint32_t id, EncounterStates state)
 std::vector<BossInfo> InstanceScript::getBosses() { return bosses; }
 
 EncounterStates InstanceScript::getBossState(uint32_t id) const { return id < bosses.size() ? bosses[id].state : InvalidState; }
+
+EncounterStates InstanceScript::getBossStateByEntry(uint32_t entry) const
+{
+    for (auto const& boss : bosses)
+    {
+        if (boss.entry == entry)
+            return boss.state;
+    }
+
+    return InvalidState;
+}
 
 uint32_t InstanceScript::getEncounterCount() const { return static_cast<uint32_t>(bosses.size()); }
 
@@ -515,40 +526,6 @@ void InstanceScript::removeUpdateEvent()
 //////////////////////////////////////////////////////////////////////////////////////////
 // misc
 
-void InstanceScript::setCellForcedStates(float xMin, float xMax, float yMin, float yMax, bool forceActive /*true*/)
-{
-    if (xMin == xMax || yMin == yMax)
-        return;
-
-    float Y = yMin;
-    while (xMin < xMax)
-    {
-        while (yMin < yMax)
-        {
-            MapCell* CurrentCell = mInstance->getCellByCoords(xMin, yMin);
-            if (forceActive && CurrentCell == nullptr)
-            {
-                CurrentCell = mInstance->createByCoords(xMin, yMin);
-                if (CurrentCell != nullptr)
-                    CurrentCell->init(mInstance->getPosX(xMin), mInstance->getPosY(yMin), mInstance);
-            }
-
-            if (CurrentCell != nullptr)
-            {
-                if (forceActive)
-                    mInstance->addForcedCell(CurrentCell);
-                else
-                    mInstance->removeForcedCell(CurrentCell);
-            }
-
-            yMin += 40.0f;
-        }
-
-        yMin = Y;
-        xMin += 40.0f;
-    }
-}
-
 Creature* InstanceScript::spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/)
 {
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry);
@@ -558,7 +535,8 @@ Creature* InstanceScript::spawnCreature(uint32_t entry, float posX, float posY, 
         return nullptr;
     }
 
-    Creature* creature = mInstance->getInterface()->spawnCreature(entry, LocationVector(posX, posY, posZ, posO), true, true, 0, 0);
+    auto& spawnManager = mInstance->getSpawnManager();
+    Creature* creature = spawnManager.createCreature(entry, LocationVector(posX, posY, posZ, posO));
     if (creature == nullptr)
         return nullptr;
 
@@ -567,7 +545,7 @@ Creature* InstanceScript::spawnCreature(uint32_t entry, float posX, float posY, 
     else
         creature->setFaction(creatureProperties->Faction);
 
-    return creature;
+    return spawnManager.pushToWorld(creature) ? creature : nullptr;
 }
 
 Creature* InstanceScript::getCreatureBySpawnId(uint32_t entry)
@@ -575,12 +553,13 @@ Creature* InstanceScript::getCreatureBySpawnId(uint32_t entry)
     return mInstance->getSqlIdCreature(entry);
 }
 
-Creature* InstanceScript::GetCreatureByGuid(uint32_t guid)
+Creature* InstanceScript::getCreatureByGuid(const WoWGuid& guid)
 {
     return mInstance->getCreature(guid);
 }
 
-CreatureSet InstanceScript::getCreatureSetForEntry(uint32_t entry, bool debug /*= false*/, Player* player /*= nullptr*/)
+
+InstanceScript::CreatureSet InstanceScript::getCreatureSetForEntry(uint32_t entry, bool debug /*= false*/, Player* player /*= nullptr*/)
 {
     CreatureSet creatureSet;
     uint32_t countCreatures = 0;
@@ -606,7 +585,7 @@ CreatureSet InstanceScript::getCreatureSetForEntry(uint32_t entry, bool debug /*
     return creatureSet;
 }
 
-CreatureSet InstanceScript::getCreatureSetForEntries(std::vector<uint32_t> entryVector)
+InstanceScript::CreatureSet InstanceScript::getCreatureSetForEntries(std::vector<uint32_t> entryVector)
 {
     CreatureSet creatureSet;
     for (auto creature : mInstance->getCreatures())
@@ -630,9 +609,9 @@ Creature* InstanceScript::findNearestCreature(Object* pObject, uint32_t entry, f
     return pCreature;
 }
 
-GameObject* InstanceScript::spawnGameObject(uint32_t entry, float posX, float posY, float posZ, float posO, bool addToWorld /*= true*/, uint32_t misc1 /*= 0*/, uint32_t phase /*= 0*/)
+GameObject* InstanceScript::spawnGameObject(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t phase /*= 0*/)
 {
-    GameObject* spawnedGameObject = mInstance->getInterface()->spawnGameObject(entry, LocationVector(posX, posY, posZ, posO), addToWorld, misc1, phase);
+    GameObject* spawnedGameObject = mInstance->getInterface()->spawnGameObject(entry, LocationVector(posX, posY, posZ, posO), phase);
     return spawnedGameObject;
 }
 
@@ -641,10 +620,11 @@ GameObject* InstanceScript::getGameObjectBySpawnId(uint32_t entry)
     return mInstance->getSqlIdGameObject(entry);
 }
 
-GameObject* InstanceScript::GetGameObjectByGuid(uint32_t guid)
+GameObject* InstanceScript::getGameObjectByGuid(const WoWGuid& guid)
 {
     return mInstance->getGameObject(guid);
 }
+
 
 GameObject* InstanceScript::getClosestGameObjectForPosition(uint32_t entry, float posX, float posY, float posZ)
 {

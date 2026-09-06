@@ -31,6 +31,7 @@
 #include "Management/AddonMgr.h"
 #include <Utilities/utf8.hpp>
 #include <memory>
+#include <atomic>
 #include <string>
 #include "Logging/StringFormat.hpp"
 #include "Server/ClientProtocol.hpp"
@@ -209,7 +210,12 @@ public:
 
         void sendNotification(std::string_view message);
 
-        void SetInstance(uint32_t Instance) { instanceId = Instance; }
+        static constexpr uint32_t GLOBAL_SESSION_INSTANCE = 0xFFFFFFFFu;
+
+        void SetInstance(uint32_t Instance) { instanceId.store(Instance, std::memory_order_release); }
+        void SetGlobalUpdateOwner() { SetInstance(GLOBAL_SESSION_INSTANCE); }
+        void SetMapUpdateOwner(uint32_t Instance) { SetInstance(Instance); }
+        bool IsGlobalUpdateOwner() const { return GetInstance() == GLOBAL_SESSION_INSTANCE; }
         uint32_t GetLatency() const { return _latency; }
 
         std::string GetAccountName() { return _accountName; }
@@ -258,7 +264,7 @@ public:
         }
 
         bool bDeleted;
-        uint32_t GetInstance() { return instanceId; }
+        uint32_t GetInstance() const { return instanceId.load(std::memory_order_acquire); }
         std::mutex deleteMutex;
         int32_t m_moveDelayTime;
         int32_t m_clientTimeDelay;
@@ -812,6 +818,7 @@ protected:
         void handleForceSpeedChangeAck(WorldPacket& recvPacket);
         void handleWorldTeleportOpcode(WorldPacket& recvPacket);
         void handleMountSpecialAnimOpcode(WorldPacket& /*recvPacket*/);
+        bool recoverFailedWorldport(const char* reason);
         void handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/);
         void handleMoveTeleportAckOpcode(WorldPacket& recvPacket);
         void handleMoveNotActiveMoverOpcode(WorldPacket& recvPacket);
@@ -1029,8 +1036,13 @@ protected:
 #else
         uint16_t client_build;
 #endif
-        uint32_t instanceId;
+        std::atomic<uint32_t> instanceId;
         uint8_t _updatecount;
+
+        // Ownership can move between the global world thread and a map thread
+        // while an Update() call is still unwinding. Never execute two session
+        // updates concurrently during that handoff.
+        std::atomic_bool m_updateInProgress{ false };
 
 public:
     static void registerOpcodeHandler();

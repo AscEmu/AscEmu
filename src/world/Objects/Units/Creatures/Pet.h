@@ -49,22 +49,18 @@ public:
     // Essential functions
 
     void Update(unsigned long /*time_passed*/) override;    // overrides function Summon::Update
-    // void AddToWorld();                                   // not used
-    // void AddToWorld(WorldMap* pMapMgr);                  // not used
-    // void PushToWorld(WorldMap*);                         // not used
-    // void RemoveFromWorld(bool free_guid);                // not used
-    // void OnPrePushToWorld();                             // not used
-    void OnPushToWorld() override;                          // overrides function Summon::OnPushToWorld
-    // void OnPreRemoveFromWorld();                         // not used
-    // void OnRemoveFromWorld();                            // not used
+
+    //virtual void onPreAttachToWorld() override;
+    virtual void onAttachToWorld() override;
+
+    virtual void onPreDetachFromWorld() override;
+    //virtual void onDetachFromWorld() override;
 
     // Override superclass method that returns false
     bool isPet() const override { return true; }
 
     // Override from Creature class
     void PrepareForRemove() override;
-    // Override from Creature class
-    void SafeDelete() override;
 
     // Override from Creature class
     void sendSpellsToController(Unit* controller, uint32_t duration) override;

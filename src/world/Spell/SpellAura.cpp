@@ -201,7 +201,18 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
                     break;
 
             if (j != MAX_SPELL_EFFECTS)
-                static_cast<Player*>(caster)->setFarsightGuid(0);
+            {
+                auto* player = static_cast<Player*>(caster);
+
+                // Tear down the remote visibility source while PLAYER_FIELD_FARSIGHT
+                // still contains the DynamicObject guid. SpellAuraAddFarSight(false)
+                // runs later in aura teardown and cannot resolve the viewer after the
+                // guid has already been cleared here.
+                if (WorldMap* map = player->getWorldMap())
+                    map->changeFarsightLocation(player, nullptr);
+
+                player->setFarsightGuid(0);
+            }
         }
 
         // If this aura can affect one target at a time, remove this target from the caster map

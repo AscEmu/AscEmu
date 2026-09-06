@@ -40,9 +40,9 @@ public:
 
     void OpenPerotharnDoors()
     {
-        if (GameObject* pDoor1 = GetGameObjectByGuid(mLargeFirewallDoorGuid))
+        if (GameObject* pDoor1 = getGameObjectByGuid(mLargeFirewallDoorGuid))
             useDoorOrButton(pDoor1);
-        if (GameObject* pDoor2 = GetGameObjectByGuid(mSmallFirewallDoorGuid))
+        if (GameObject* pDoor2 = getGameObjectByGuid(mSmallFirewallDoorGuid))
             useDoorOrButton(pDoor2);
     }
 

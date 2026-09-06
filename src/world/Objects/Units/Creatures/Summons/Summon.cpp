@@ -231,7 +231,7 @@ void Summon::unSummon()
 {
     _onUnsummon();
     // Remove us
-    Despawn(0, 0);
+    despawn(0, 0);
 }
 
 void Summon::dieAndDisappearOnExpire()
@@ -278,29 +278,18 @@ void Summon::setNewLifeTime(uint32_t time)
     m_duration = time;
 }
 
-Group* Summon::getGroup() const
-{
-    if (const auto* const unitOwner = getUnitOwner())
-    {
-        if (const auto* const plrOwner = unitOwner->getPlayerOwnerOrSelf())
-            return plrOwner->getGroup();
-    }
-
-    return nullptr;
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Override Object functions
-void Summon::OnPushToWorld()
+void Summon::onAttachToWorld()
 {
     // Add summon to owner
     if (m_unitOwner != nullptr && (m_summonProperties != nullptr || isPet()))
         m_unitOwner->getSummonInterface()->addSummonToHandler(this);
 
-    Creature::OnPushToWorld();
+    Creature::onAttachToWorld();
 }
 
-void Summon::OnPreRemoveFromWorld()
+void Summon::onPreDetachFromWorld()
 {
     // Make sure unit is unsummoned properly before removing from world
     if (m_summonActive)
@@ -310,19 +299,23 @@ void Summon::OnPreRemoveFromWorld()
         //plrOwner->sendDestroyObjectPacket(getGuid());
 
     m_unitOwner = nullptr;
-    Creature::OnPreRemoveFromWorld();
+    Creature::onPreDetachFromWorld();
 }
 
 bool Summon::isSummon() const { return true; }
 
 void Summon::onRemoveInRangeObject(Object* object)
 {
+    if (!object)
+        return;
+
     if (m_summonProperties != nullptr || isPet())
     {
-        // Remove non-scripted summon or pet when it goes out of range from owner
+        // Remove non-scripted summon or pet when it goes out of range from owner.
         if (m_unitOwner != nullptr && object->getGuid() == m_unitOwner->getGuid())
         {
-            // Delay unsummon a bit to prevent mutex loop in inrange vectors
+            // Delay unsummon a bit to avoid mutating world/visibility containers while
+            // visibility events are still being drained.
             sEventMgr.AddEvent(this, &Summon::unSummon, EVENT_PET_DELAYED_REMOVE, 10, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
             return;
         }
@@ -571,11 +564,16 @@ void TotemSummon::unSummon()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Override Object functions
-void TotemSummon::OnPushToWorld()
+void TotemSummon::onAttachToWorld()
 {
-    Summon::OnPushToWorld();
+    Summon::onAttachToWorld();
 
     setupSpells();
+}
+
+void TotemSummon::onPreDetachFromWorld()
+{
+    Summon::onPreDetachFromWorld();
 }
 
 bool TotemSummon::isTotem() const { return true; }

@@ -15,7 +15,7 @@ class WarsongGulch : public Battleground
     GameObject* m_buffs[6];
     GameObject* m_homeFlags[2];
     GameObject* m_dropFlags[2];
-    uint32_t m_flagHolders[2];
+    WoWGuid m_flagHolders[2];
     std::list<GameObject*> m_gates;
     uint32_t m_scores[2];
     uint32_t m_lgroup;

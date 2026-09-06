@@ -34,8 +34,8 @@ public:
 protected:
     // Common
     InstanceScript* mInstance;
-    uint64_t nextVengefulShadeTargetGUID;
-    std::deque<uint64_t> reanimationQueue;
+    WoWGuid nextVengefulShadeTargetGUID;
+    std::deque<WoWGuid> reanimationQueue;
     uint32_t waveCounter;
     uint8_t dominateMindCount;
     bool introDone;

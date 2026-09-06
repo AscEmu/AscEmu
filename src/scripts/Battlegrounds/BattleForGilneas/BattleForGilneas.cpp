@@ -157,9 +157,7 @@ void BattleForGilneas::SpawnBuff(uint32_t x)
 
     if (m_buffs[x] == nullptr)
     {
-        m_buffs[x] = spawnGameObject(chosen_buffid, LocationVector(BuffCoordinates[x][0], BuffCoordinates[x][1], BuffCoordinates[x][2],
-            BuffCoordinates[x][3]), 0, 114, 1);
-
+        m_buffs[x] = createGameObject(chosen_buffid, LocationVector(BuffCoordinates[x][0], BuffCoordinates[x][1], BuffCoordinates[x][2], BuffCoordinates[x][3]), 0, 114, 1);
         m_buffs[x]->setLocalRotation(0.f, 0.f, BuffRotations[x][0], BuffRotations[x][1]);
         m_buffs[x]->setState(GO_STATE_CLOSED);
         m_buffs[x]->setGoType(GAMEOBJECT_TYPE_TRAP);
@@ -173,7 +171,7 @@ void BattleForGilneas::SpawnBuff(uint32_t x)
 
         if (chosen_buffid != m_buffs[x]->getEntry())
         {
-            m_buffs[x]->SetNewGuid(m_mapMgr->generateGameobjectGuid());
+            m_mapMgr->getSpawnManager().regenerateGameObjectGuid(m_buffs[x], chosen_buffid);
             m_buffs[x]->setEntry(chosen_buffid);
             m_buffs[x]->SetGameObjectProperties(gameobject_info);
         }
@@ -226,7 +224,7 @@ void BattleForGilneas::SpawnControlPoint(uint32_t Id, uint32_t Type)
         if (m_controlPoints[Id]->IsInWorld())
             m_controlPoints[Id]->RemoveFromWorld(false);
 
-        m_controlPoints[Id]->SetNewGuid(m_mapMgr->generateGameobjectGuid());
+        m_mapMgr->getSpawnManager().regenerateGameObjectGuid(m_controlPoints[Id], gameobject_info->entry);
         m_controlPoints[Id]->setEntry(gameobject_info->entry);
         m_controlPoints[Id]->setDisplayId(gameobject_info->display_id);
         m_controlPoints[Id]->setGoType(static_cast<uint8_t>(gameobject_info->type));

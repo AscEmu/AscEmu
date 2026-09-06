@@ -63,7 +63,7 @@ public:
         float SSZ = getCreature()->GetPositionZ();
         float SSO = getCreature()->GetOrientation();
 
-        Creature* NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(5895, LocationVector(SSX, SSY + 1, SSZ, SSO), true, false, 0, 0);
+        Creature* NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(5895, LocationVector(SSX, SSY + 1, SSZ, SSO));
         if(NewCreature != NULL)
             NewCreature->Despawn(600000, 0);
     }
@@ -100,7 +100,7 @@ public:
     {
         if(mKiller->isPlayer())
         {
-            Creature* NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(7729, LocationVector(getCreature()->GetPositionX() + 2, getCreature()->GetPositionY() + 2, getCreature()->GetPositionZ(), getCreature()->GetOrientation()), true, false, 0, 0);
+            Creature* NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(7729, LocationVector(getCreature()->GetPositionX() + 2, getCreature()->GetPositionY() + 2, getCreature()->GetPositionZ(), getCreature()->GetOrientation()));
             if(NewCreature != NULL)
                 NewCreature->Despawn(3 * 6 * 1000, 0);
         }
@@ -118,11 +118,11 @@ public:
         if(!mTarget->isPlayer())
             return;
 
-        Creature* NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(9526, LocationVector(getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()), true, false, 0, 0);
+        Creature* NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(9526, LocationVector(getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()));
         if(NewCreature != NULL)
             NewCreature->Despawn(360000, 0);
 
-        NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(9526, LocationVector(getCreature()->GetPositionX() - Util::getRandomFloat(5.0f), getCreature()->GetPositionY() - Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()), true, false, 0, 0);
+        NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(9526, LocationVector(getCreature()->GetPositionX() - Util::getRandomFloat(5.0f), getCreature()->GetPositionY() - Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()));
         if(NewCreature != NULL)
             NewCreature->Despawn(360000, 0);
     }
@@ -139,11 +139,11 @@ public:
         if(!mTarget->isPlayer())
             return;
 
-        Creature* NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(9527, LocationVector(getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()), true, false, 0, 0);
+        Creature* NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(9527, LocationVector(getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()));
         if(NewCreature != NULL)
             NewCreature->Despawn(360000, 0);
 
-        NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(9527, LocationVector(getCreature()->GetPositionX() - Util::getRandomFloat(5.0f), getCreature()->GetPositionY() - Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()), true, false, 0, 0);
+        NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(9527, LocationVector(getCreature()->GetPositionX() - Util::getRandomFloat(5.0f), getCreature()->GetPositionY() - Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()));
         if(NewCreature != NULL)
             NewCreature->Despawn(360000, 0);
     }
@@ -160,11 +160,11 @@ public:
         if(!mTarget->isPlayer())
             return;
 
-        Creature* NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(9297, LocationVector(getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()), true, false, 0, 0);
+        Creature* NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(9297, LocationVector(getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()));
         if(NewCreature != NULL)
             NewCreature->Despawn(360000, 0);
 
-        NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(9297, LocationVector(getCreature()->GetPositionX() - Util::getRandomFloat(5.0f), getCreature()->GetPositionY() - Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()), true, false, 0, 0);
+        NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(9297, LocationVector(getCreature()->GetPositionX() - Util::getRandomFloat(5.0f), getCreature()->GetPositionY() - Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()));
         if(NewCreature != NULL)
             NewCreature->Despawn(360000, 0);
     }
@@ -181,11 +181,11 @@ public:
         if(!mTarget->isPlayer())
             return;
 
-        Creature* NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(9521, LocationVector(getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()), true, false, 0, 0);
+        Creature* NewCreature = getCreature()->getWorldMap()->getInterface()->spawnCreature(9521, LocationVector(getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()));
         if(NewCreature != NULL)
             NewCreature->Despawn(360000, 0);
 
-        getCreature()->getWorldMap()->getInterface()->spawnCreature(9521, LocationVector(getCreature()->GetPositionX() - Util::getRandomFloat(5.0f), getCreature()->GetPositionY() - Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()), true, false, 0, 0);
+        getCreature()->getWorldMap()->getInterface()->spawnCreature(9521, LocationVector(getCreature()->GetPositionX() - Util::getRandomFloat(5.0f), getCreature()->GetPositionY() - Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation()));
         if(NewCreature != NULL)
             NewCreature->Despawn(360000, 0);
     }
@@ -351,7 +351,7 @@ public:
         float SSZ = getCreature()->GetPositionZ();
         float SSO = getCreature()->GetOrientation();
 
-        Creature* SilithidGrub = getCreature()->getWorldMap()->getInterface()->spawnCreature(3251, LocationVector(SSX, SSY + 1, SSZ, SSO), true, false, 0, 0);
+        Creature* SilithidGrub = getCreature()->getWorldMap()->getInterface()->spawnCreature(3251, LocationVector(SSX, SSY + 1, SSZ, SSO));
         if(SilithidGrub != NULL)
             SilithidGrub->Despawn(600000, 0);
     }
@@ -434,7 +434,7 @@ public:
     {
         if (getCreature()->hasAurasWithId(29528))
         {
-            if (auto* player = getCreature()->getWorldMap()->getPlayer(static_cast<uint32_t>(getCreature()->getTargetGuid())))
+            if (auto* player = getCreature()->getWorldMapPlayer(getCreature()->getTargetGuid()))
             {
                 if (!player->hasQuestInQuestLog(9303) || player->hasQuestFinished(9303))
                     return;

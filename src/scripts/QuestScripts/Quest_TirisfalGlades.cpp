@@ -31,7 +31,7 @@ class TheDormantShade : public QuestScript
 public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* creat = mTarget->getWorldMap()->getInterface()->spawnCreature(1946, LocationVector(2467.314f, 14.8471f, 23.5950f), true, false, 0, 0);
+        Creature* creat = mTarget->getWorldMap()->getInterface()->spawnCreature(1946, LocationVector(2467.314f, 14.8471f, 23.5950f));
         creat->Despawn(60000, 0);
         creat->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have disturbed my rest. Now face my wrath!");
     }
@@ -151,7 +151,7 @@ public:
         getCreature()->getAIInterface()->setIgnoreCreatureCombat(true);
     }
 
-    uint64_t _playerGuid = 0;
+    WoWGuid _playerGuid;
 };
 
 class Zealot : public CreatureAIScript

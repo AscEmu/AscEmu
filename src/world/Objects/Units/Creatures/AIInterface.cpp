@@ -3,9 +3,8 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef UNIX
 #include <cmath>
-#endif
+#include <limits>
 
 #include "AIInterface.h"
 
@@ -17,6 +16,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Map/Management/MapMgr.hpp"
+#include "Map/Management/SpawnManager.hpp"
+#include "Map/Visibility/SpatialIndex.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Macros/AIInterfaceMacros.hpp"
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
@@ -83,17 +84,18 @@ float spellChanceModifierType[12] =
     1.0f,    // Debuff
 };
 
-static inline constexpr uint16_t TARGET_UPDATE_TIMER = 1500;
+static inline constexpr uint16_t AI_MAINTENANCE_INTERVAL = 1500;
 
 AIInterface::AIInterface()
     :
-    m_targetUpdateTimer(std::make_unique<Util::SmallTimeTracker>(1500)),
-    m_cannotReachTimer(std::make_unique<Util::SmallTimeTracker>(500)),
-    m_boundaryCheckTime(std::make_unique<Util::SmallTimeTracker>(2500)),
     m_fleeTimer(std::make_unique<Util::SmallTimeTracker>(0)),
-    m_outOfCombatSpellTimer(std::make_unique<Util::SmallTimeTracker>(AISPELL_GLOBAL_COOLDOWN)),
+    m_boundaryCheckTime(std::make_unique<Util::SmallTimeTracker>(2500)),
     mSpellWaitTimer(std::make_unique<Util::SmallTimeTracker>(AISPELL_GLOBAL_COOLDOWN)),
-    m_noTargetTimer(std::make_unique<Util::SmallTimeTracker>(3000))
+    m_outOfCombatSpellTimer(std::make_unique<Util::SmallTimeTracker>(AISPELL_GLOBAL_COOLDOWN)),
+    m_noTargetTimer(std::make_unique<Util::SmallTimeTracker>(3000)),
+    m_cannotReachTimer(std::make_unique<Util::SmallTimeTracker>(500)),
+    m_maintenanceUpdateTimer(std::make_unique<Util::SmallTimeTracker>(AI_MAINTENANCE_INTERVAL)),
+    m_awarenessWarmupTimer(std::make_unique<Util::SmallTimeTracker>(DefaultAwarenessWarmupMs))
 {
     m_boundaries.clear();
     m_assistTargets.clear();
@@ -395,13 +397,36 @@ void AIInterface::update(unsigned long time_passed)
     if (!m_Unit->isAIEnabled())
         return;
 
+    _updateAwarenessWarmup(time_passed);
+
+    // A stealth movement event can arrive while the creature is in its 5 second
+    // suspicion/distract reaction. Do not lose that event: once the distract
+    // generator releases UNIT_STATE_DISTRACTED, schedule exactly one fresh
+    // neighborhood evaluation. This remains event-driven and does not reintroduce
+    // the old periodic in-range sweep.
+    if (m_deferredAwarenessAfterDistract && !m_Unit->hasUnitStateFlag(UNIT_STATE_DISTRACTED))
+    {
+        m_deferredAwarenessAfterDistract = false;
+        requestAwarenessRefresh(UnitAwarenessSignal::ControlStateChanged);
+    }
+
     if (m_canEnterCombat)
     {
-        m_targetUpdateTimer->updateTimer(time_passed);
-        if (m_targetUpdateTimer->isTimePassed())
+        // Idle target discovery is event-driven. The old 1.5s whole-neighborhood
+        // sweep is retained only for active flee/assist/combat maintenance.
+        const bool needsPeriodicTargetMaintenance =
+            m_isEngaged || m_currentTarget != nullptr ||
+            m_AiCurrentAgent == AGENT_FLEE ||
+            m_Unit->hasUnitStateFlag(UNIT_STATE_CONFUSED | UNIT_STATE_FLEEING);
+
+        if (needsPeriodicTargetMaintenance)
         {
-            m_targetUpdateTimer->resetInterval(TARGET_UPDATE_TIMER);
-            _updateTargets();
+            m_maintenanceUpdateTimer->updateTimer(time_passed);
+            if (m_maintenanceUpdateTimer->isTimePassed())
+            {
+                m_maintenanceUpdateTimer->resetInterval(AI_MAINTENANCE_INTERVAL);
+                _updateTargets();
+            }
         }
 
         // When we dont Have Any Targets do Nothing
@@ -550,10 +575,16 @@ void AIInterface::combatStart(Unit* target)
     // make AI group attack
     if (const auto* group = sMySQLStore.getSpawnGroupDataBySpawn(m_Unit->ToCreature()->getSpawnId()))
     {
-        for (const auto& members : group->spawns)
+        if (WorldMap* map = m_Unit->getWorldMap())
         {
-            if (members.second && members.second->isAlive() && members.second->IsInWorld())
-                members.second->getAIInterface()->onHostileAction(target, nullptr, false);
+            for (uint32_t spawnId : group->spawns)
+            {
+                if (Creature* member = map->getSpawnManager().findLiveCreature(spawnId);
+                    member && member->isAlive() && member->IsInWorld())
+                {
+                    member->getAIInterface()->onHostileAction(target, nullptr, false);
+                }
+            }
         }
     }
 
@@ -605,6 +636,10 @@ void AIInterface::combatStop()
 
     // Remove Instance Combat
     instanceCombatProgress(false);
+
+    // If combat ended without any movement (for example the current victim died),
+    // a stationary hostile unit nearby still has to be considered once.
+    requestAwarenessRefresh(UnitAwarenessSignal::ControlStateChanged);
 }
 
 void AIInterface::onHostileAction(Unit* pUnit, SpellInfo const* spellInfo/* = nullptr*/, bool ignoreThreatRedirects/* = false*/)
@@ -651,85 +686,213 @@ void AIInterface::onHostileAction(Unit* pUnit, SpellInfo const* spellInfo/* = nu
 
 void AIInterface::setCurrentTarget(Unit* pUnit) { m_currentTarget = pUnit; }
 
-Unit* AIInterface::findTarget()
+void AIInterface::setAwarenessWarmup(uint32_t delayMs)
 {
-    // find nearest hostile Target to attack
-    if (!m_Unit->IsInWorld())
-        return nullptr;
+    m_awarenessWarmupMs = delayMs;
 
-    //target is immune to all form of attacks, cant attack either.
-    // not attackable creatures sometimes fight enemies in scripted fights though
-    if (m_Unit->hasUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE))
-        return nullptr;
+    if (m_awarenessWarmupPending)
+        m_awarenessWarmupTimer->resetInterval(delayMs);
+}
 
-    if (m_reactState != REACT_AGGRESSIVE)
-        return nullptr;
+void AIInterface::armAwarenessWarmup()
+{
+    m_automaticAwarenessActive = false;
+    m_awarenessWarmupPending = true;
+    m_awarenessWarmupTimer->resetInterval(m_awarenessWarmupMs);
 
-    // Should not look for new target while creature is in these states
-    if (m_Unit->hasUnitStateFlag(UNIT_STATE_STUNNED | UNIT_STATE_FLEEING | UNIT_STATE_CONFUSED | UNIT_STATE_POLYMORPHED | UNIT_STATE_EVADING))
-        return nullptr;
-
-    Unit* target = nullptr;
-    Unit* critterTarget = nullptr;
-
-    float distance = 999999.0f; // that should do it.. :p
-
-    for (const auto& itr2 : m_Unit->getInRangeObjectsSet())
+    // Immediate mode still defers the actual neighborhood callbacks to the map's
+    // awareness queue, so scripts never run from inside ObjectFactory attach.
+    if (m_awarenessWarmupMs == 0)
     {
-        if (itr2)
+        m_awarenessWarmupPending = false;
+        m_automaticAwarenessActive = true;
+    }
+}
+
+void AIInterface::_updateAwarenessWarmup(unsigned long timePassed)
+{
+    if (!m_awarenessWarmupPending || !m_Unit || !m_Unit->IsInWorld() || !m_Unit->isAlive())
+        return;
+
+    if (m_awarenessWarmupMs != 0)
+    {
+        m_awarenessWarmupTimer->updateTimer(timePassed);
+        if (!m_awarenessWarmupTimer->isTimePassed())
+            return;
+    }
+
+    m_awarenessWarmupPending = false;
+    m_automaticAwarenessActive = true;
+    requestAwarenessRefresh(UnitAwarenessSignal::WarmupComplete);
+}
+
+bool AIInterface::_isObservableUnit(Unit* unit) const
+{
+    if (!unit || unit == m_Unit || !m_Unit || !m_Unit->IsInWorld() || !unit->IsInWorld())
+        return false;
+
+    if (!m_Unit->isAlive() || !unit->isAlive())
+        return false;
+
+    if (unit->getWorldMap() != m_Unit->getWorldMap())
+        return false;
+
+    if (!m_Unit->canSee(unit))
+        return false;
+
+    if (worldConfig.terrainCollision.isCollisionEnabled && !m_Unit->IsWithinLOSInMap(unit))
+        return false;
+
+    return true;
+}
+
+bool AIInterface::_canAutomaticallyAcquireTarget() const
+{
+    return m_Unit && m_automaticAwarenessActive && m_canEnterCombat && !m_isEngaged && m_currentTarget == nullptr &&
+        m_reactState == REACT_AGGRESSIVE &&
+        !m_Unit->hasUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE) &&
+        !m_Unit->hasUnitStateFlag(UNIT_STATE_STUNNED | UNIT_STATE_FLEEING | UNIT_STATE_CONFUSED | UNIT_STATE_POLYMORPHED | UNIT_STATE_EVADING);
+}
+
+void AIInterface::_notifyObservationScript(Unit* unit, UnitAwarenessSignal reason)
+{
+    if (!m_Unit || !m_Unit->isCreature())
+        return;
+
+    Creature* creature = m_Unit->ToCreature();
+    if (creature && creature->GetScript())
+        creature->GetScript()->OnUnitObserved(unit, reason);
+}
+
+void AIInterface::requestAwarenessRefresh(UnitAwarenessSignal reason)
+{
+    if (!m_Unit || !m_Unit->IsInWorld() || !m_Unit->getWorldMap())
+        return;
+
+    m_Unit->getWorldMap()->queueUnitAwareness(m_Unit, reason);
+}
+
+void AIInterface::_tryStealthSuspicion(Unit* unit)
+{
+    if (!unit || !unit->isPlayer() || !unit->isStealthed() || !m_Unit || !m_Unit->isCreature())
+        return;
+
+    if (!m_automaticAwarenessActive || !m_Unit->IsInWorld() || !unit->IsInWorld() || m_Unit->getWorldMap() != unit->getWorldMap())
+        return;
+
+    if (m_isEngaged || m_currentTarget != nullptr || m_reactState != REACT_AGGRESSIVE ||
+        m_Unit->hasUnitStateFlag(UNIT_STATE_CONFUSED | UNIT_STATE_STUNNED | UNIT_STATE_FLEEING | UNIT_STATE_EVADING) ||
+        !m_Unit->isHostileTo(unit) || !canOwnerAttackUnit(unit, false))
+        return;
+
+    // Do not stack another DistractMovementGenerator while the existing alert is
+    // running. Remember that something relevant happened and perform one refresh
+    // when the current distract state ends instead of silently dropping the event.
+    if (m_Unit->hasUnitStateFlag(UNIT_STATE_DISTRACTED))
+    {
+        m_deferredAwarenessAfterDistract = true;
+        return;
+    }
+
+    // Aggro distance remains a single dynamic calculation and therefore keeps all
+    // level, aura, mining, elite and range modifiers in one place. Stealth merely
+    // decides whether the unit sits in the narrow suspicion band before normal
+    // detection/aggro becomes possible.
+    const float aggroRange = calcAggroRange(unit);
+    if (!m_Unit->canNoticeStealthed(unit, aggroRange))
+        return;
+
+    m_Unit->SendAIReaction();
+    m_Unit->getMovementManager()->moveDistract(5000, m_Unit->getAbsoluteAngle(unit));
+}
+
+void AIInterface::considerObservedUnit(Unit* unit, UnitAwarenessSignal reason)
+{
+    if (!m_automaticAwarenessActive || !m_Unit || !unit || unit == m_Unit)
+        return;
+
+    if (!m_Unit->IsInWorld() || !unit->IsInWorld() || !m_Unit->isAlive() || !unit->isAlive())
+        return;
+
+    WorldMap* map = m_Unit->getWorldMap();
+    if (!map || unit->getWorldMap() != map)
+        return;
+
+    Creature* ownerCreature = m_Unit->ToCreature();
+    const bool hasObservationScript = ownerCreature && ownerCreature->GetScript();
+    const bool canAcquire = _canAutomaticallyAcquireTarget();
+
+    // If this AI cannot currently acquire a target and no script consumes the
+    // observation hook, avoid visibility/LOS work altogether. Stealth suspicion
+    // remains independent so an eligible aggressive creature can still react to
+    // a stealthed player before normal visibility succeeds.
+    if (!canAcquire && !hasObservationScript)
+    {
+        _tryStealthSuspicion(unit);
+        return;
+    }
+
+    bool potentialAutoTarget = false;
+    if (canAcquire && m_Unit->isHostileTo(unit))
+    {
+        const float aggroRange = calcAggroRange(unit);
+        if (aggroRange > 0.0f && m_Unit->GetDistance2dSq(unit) <= aggroRange * aggroRange &&
+            (m_Unit->canFly() || m_Unit->getDistanceZ(unit) <= (3 + m_Unit->getMeleeRange(unit))))
         {
-            if (!itr2->isCreatureOrPlayer())
-                continue;
-
-            Unit* pUnit = static_cast<Unit*>(itr2);
-
-            // Must be hostile, not neutral, to target
-            if (!m_Unit->isHostileTo(pUnit))
-                continue;
-
-            if (!canOwnerAttackUnit(pUnit))
-                continue;
-
-            if (worldConfig.terrainCollision.isCollisionEnabled)
-            {
-                if (!m_Unit->IsWithinLOSInMap(pUnit))
-                    continue;
-            }
-
-            //on blizz there is no Z limit check
-            const float dist = m_Unit->GetDistance2dSq(pUnit);
-
-            if (pUnit->m_factionTemplate != nullptr && pUnit->m_factionTemplate->faction == 28) // only Attack a critter if there is no other Enemy in range
-            {
-                if (dist < 10.0f)
-                    critterTarget = pUnit;
-
-                continue;
-            }
-
-            if (dist > calcAggroRange(pUnit))
-                continue;
-
-            // Do not aggro flying stuff that cannot be reached
-            if (!m_Unit->canFly() && (m_Unit->getDistanceZ(pUnit) > (3 + m_Unit->getMeleeRange(pUnit))))
-                continue;
-
-            if (dist > distance)     // we want to find the CLOSEST target
-                continue;
-
-            distance = dist;
-            target = pUnit;
+            // Run attackability/accessibility/script vetoes before canSee()/LOS.
+            // requireVisibility=false deliberately leaves the expensive visibility
+            // test for the final stage below.
+            potentialAutoTarget = canOwnerAttackUnit(unit, false);
         }
     }
 
-    if (target == nullptr)
-        target = critterTarget;
+    // Observation scripts still preserve the old semantics: every actually
+    // observable nearby unit is reported, regardless of hostility or aggro range.
+    // Without such a script, only a viable automatic target needs canSee()/LOS.
+    if (!hasObservationScript && !potentialAutoTarget)
+    {
+        _tryStealthSuspicion(unit);
+        return;
+    }
 
-    if (target != nullptr)
-        onHostileAction(target);
+    if (!_isObservableUnit(unit))
+    {
+        _tryStealthSuspicion(unit);
+        return;
+    }
 
-    return target;
+    const WoWGuid observedGuid = unit->GetNewGUID();
+
+    if (hasObservationScript)
+    {
+        _notifyObservationScript(unit, reason);
+
+        // Scripts may synchronously change combat/world state or transfer/despawn
+        // either unit. Re-resolve before continuing with automatic acquisition.
+        if (!m_Unit->IsInWorld() || m_Unit->getWorldMap() != map)
+            return;
+
+        unit = map->getUnit(observedGuid);
+        if (!unit || !unit->IsInWorld() || unit->getWorldMap() != map || !unit->isAlive() || !_canAutomaticallyAcquireTarget())
+            return;
+
+        if (!m_Unit->isHostileTo(unit))
+            return;
+
+        const float aggroRange = calcAggroRange(unit);
+        if (aggroRange <= 0.0f || m_Unit->GetDistance2dSq(unit) > aggroRange * aggroRange)
+            return;
+
+        if (!m_Unit->canFly() && m_Unit->getDistanceZ(unit) > (3 + m_Unit->getMeleeRange(unit)))
+            return;
+
+        if (!canOwnerAttackUnit(unit, false) || !_isObservableUnit(unit))
+            return;
+    }
+
+    onHostileAction(unit);
 }
+
 
 void AIInterface::findFriends(float sqrtRange)
 {
@@ -744,43 +907,44 @@ void AIInterface::findFriends(float sqrtRange)
     if (!m_Unit->isHostileTo(currentTarget))
         return;
 
-    for (const auto& itr : m_Unit->getInRangeObjectsSet())
+    const float assistRange = std::sqrt(std::max(0.0f, sqrtRange));
+    std::vector<Creature*> helpers;
+    helpers.reserve(16);
+    m_Unit->getWorldMap()->getSpatialIndex().collectObjectsInRange<Creature>(m_Unit->GetPosition(), assistRange, helpers);
+
+    for (Creature* helper : helpers)
     {
-        if (itr != nullptr && itr->isCreature())
+        if (!helper || helper == m_Unit || !helper->IsInWorld() || helper->getWorldMap() != m_Unit->getWorldMap())
+            continue;
+
+        if (isAlreadyAssisting(helper) || helper->getAIInterface()->isAlreadyAssisting(m_Unit))
+            continue;
+
+        if (m_Unit->getDistanceSq(helper) > sqrtRange)
+            continue;
+
+        // Helper must be hostile to current target. Neutral mobs cannot assist
+        // other neutral mobs.
+        if (!helper->isHostileTo(currentTarget))
+            continue;
+
+        if (!helper->getAIInterface()->canOwnerAssistUnit(m_Unit))
+            continue;
+
+        if (worldConfig.terrainCollision.isCollisionEnabled && !m_Unit->IsWithinLOSInMap(helper))
+            continue;
+
+        m_assistTargets.insert(helper);
+
+        if (!helper->isInCombat())
         {
-            Creature* helper = itr->ToCreature();
-            if (isAlreadyAssisting(helper) || helper->getAIInterface()->isAlreadyAssisting(m_Unit))
-                continue;
-
-            if (m_Unit->getDistanceSq(helper) > sqrtRange)
-                continue;
-
-            // Helper must be hostile to current target
-            // Neutral mobs cannot assist other neutral mobs
-            if (!helper->isHostileTo(currentTarget))
-                continue;
-
-            if (!helper->getAIInterface()->canOwnerAssistUnit(m_Unit))
-                continue;
-
-            if (worldConfig.terrainCollision.isCollisionEnabled)
-            {
-                if (!m_Unit->IsWithinLOSInMap(helper))
-                    continue;
-            }
-
-            m_assistTargets.insert(helper);
-
-            if (!helper->isInCombat())
-            {
-                helper->getAIInterface()->setEngagedByAssist();
-                helper->getAIInterface()->onHostileAction(currentTarget);
-            }
+            helper->getAIInterface()->setEngagedByAssist();
+            helper->getAIInterface()->onHostileAction(currentTarget);
         }
     }
 }
 
-bool AIInterface::canOwnerAttackUnit(Unit* pUnit) const
+bool AIInterface::canOwnerAttackUnit(Unit* pUnit, bool requireVisibility) const
 {
     if (pUnit == nullptr)
         return false;
@@ -806,7 +970,7 @@ bool AIInterface::canOwnerAttackUnit(Unit* pUnit) const
             return false;
     }
 
-    if (!m_Unit->isValidAttackableTarget(pUnit))
+    if (!m_Unit->isValidAttackableTarget(pUnit, nullptr, requireVisibility))
         return false;
 
     if (!pUnit->isInAccessiblePlaceFor(m_Unit->ToCreature()))
@@ -826,7 +990,7 @@ bool AIInterface::canOwnerAttackUnit(Unit* pUnit) const
 #endif
     {
         // Guards can detect feign death
-        // TODO: other than guards can also detect, but it's based on chance
+        // TODO: other than guards can also detect but its based on chance
         if (!isGuard())
             return false;
     }
@@ -836,28 +1000,30 @@ bool AIInterface::canOwnerAttackUnit(Unit* pUnit) const
         if (m_Unit->getWorldMap()->getBaseMap()->isInstanceMap())
             return true;
 
-        if ((m_Unit->ToCreature()->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_BOSS) == 0 || m_Unit->hasAuraWithAuraEffect(SPELL_AURA_MOD_TAUNT))
+        if (!(m_Unit->ToCreature()->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_BOSS) != 0 || m_Unit->hasAuraWithAuraEffect(SPELL_AURA_MOD_TAUNT))
             return true;
     }
 
-    // Map Visibility Range but not more than the Distance of 2 Cells
-    auto distance = std::min<float>(m_Unit->getWorldMap()->getVisibilityRange(), Map::Cell::cellSize * 2);
+    // Keep this in sync with the spatial awareness query. Automatic creature
+    // aggro is capped at 45 yards and the shared range adds a 5-yard margin.
+    const float awarenessSearchRange = std::min<float>(
+        m_Unit->getWorldMap()->getVisibilityDistance(), AIConstants::AutomaticAwarenessSearchRange);
 
     if (auto* const unit = m_Unit->getUnitOwner())
     {
-        return pUnit->IsWithinDistInMap(unit, distance);
+        return pUnit->IsWithinDistInMap(unit, awarenessSearchRange);
     }
-
-    // include sizes for huge npcs
-    distance += m_Unit->getCombatReach() + pUnit->getCombatReach();
-
-    // to prevent creatures in air ignore attacks because distance is already too high...
-    if (m_Unit->ToCreature()->getMovementTemplate().isFlightAllowed())
+    else
     {
-        return pUnit->isInDist2d(m_Unit->GetSpawnPosition(), distance);
-    }
+        // include sizes for huge npcs
+        float distance = awarenessSearchRange + m_Unit->getCombatReach() + pUnit->getCombatReach();
 
-    return pUnit->isInDist(m_Unit->GetSpawnPosition(), distance);
+        // to prevent creatures in air ignore attacks because distance is already too high...
+        if (m_Unit->ToCreature()->getMovementTemplate().isFlightAllowed())
+            return pUnit->isInDist2d(m_Unit->GetSpawnPosition(), distance);
+        else
+            return pUnit->isInDist(m_Unit->GetSpawnPosition(), distance);
+    }
 }
 
 bool AIInterface::canOwnerAssistUnit(Unit const* pUnit) const
@@ -1049,11 +1215,26 @@ void AIInterface::setIgnorePlayerCombat(bool apply)
 
 bool AIInterface::isAllowedToEnterCombat() const { return m_canEnterCombat; }
 
+void AIInterface::setReactState(ReactStates state)
+{
+    if (m_reactState == state)
+        return;
+
+    m_reactState = state;
+    requestAwarenessRefresh(UnitAwarenessSignal::ControlStateChanged);
+}
+
 void AIInterface::setAllowedToEnterCombat(bool value)
 {
+    if (m_canEnterCombat == value)
+        return;
+
     setIgnoreCreatureCombat(!value);
     setIgnorePlayerCombat(!value);
     m_canEnterCombat = value;
+
+    if (value)
+        requestAwarenessRefresh(UnitAwarenessSignal::ControlStateChanged);
 }
 
 void AIInterface::_updateTargets()
@@ -1071,12 +1252,8 @@ void AIInterface::_updateTargets()
         return;
     }
 
-    // Hostile NPCs look for attackable unit every 1.5s when out of combat
-    // When in combat they look for friendly units to assist it every 1.5s
-
-    // Find Target when no Threat List is available
-    if (!m_isEngaged && m_reactState == REACT_AGGRESSIVE)
-        findTarget();
+    // Idle hostile target discovery is event-driven. This periodic path now only
+    // maintains flee/assist/combat state.
 
     if (m_isEngaged || m_currentTarget != nullptr)
     {
@@ -1167,7 +1344,7 @@ bool AIInterface::_canEvade() const
     // If unit cant find path to target wait 4 seconds before evading
     if (m_cannotReachTarget && !m_Unit->getWorldMap()->getBaseMap()->isRaid())
     {
-        m_cannotReachTimer->updateTimer(TARGET_UPDATE_TIMER);
+        m_cannotReachTimer->updateTimer(AI_MAINTENANCE_INTERVAL);
         if (m_cannotReachTimer->isTimePassed())
             return true;
     }
@@ -1175,7 +1352,7 @@ bool AIInterface::_canEvade() const
     if (m_currentTarget == nullptr)
     {
         // If current target does not exist wait 3 seconds before evading
-        m_noTargetTimer->updateTimer(TARGET_UPDATE_TIMER);
+        m_noTargetTimer->updateTimer(AI_MAINTENANCE_INTERVAL);
         if (m_noTargetTimer->isTimePassed())
         {
             m_noTargetTimer->resetInterval(3000);
@@ -1190,7 +1367,7 @@ bool AIInterface::_canEvade() const
     }
 
     // Check boundaries every 3 seconds
-    m_boundaryCheckTime->updateTimer(TARGET_UPDATE_TIMER);
+    m_boundaryCheckTime->updateTimer(AI_MAINTENANCE_INTERVAL);
     if (m_boundaryCheckTime->isTimePassed())
     {
         if (!isWithinBoundary(m_Unit->GetPosition()))
@@ -1423,41 +1600,37 @@ bool AIInterface::_findFriendWhileFleeing()
     auto* const currentTarget = _selectCurrentTarget();
     Creature* helper = nullptr;
     float distance = 999999.0f;
-    for (const auto& itr : m_Unit->getInRangeObjectsSet())
+    m_Unit->getWorldMap()->getSpatialIndex().forEachObjectInRangeReadOnly<Creature>(m_Unit->GetPosition(), fleeRadius, [&](Creature* candidate)
     {
-        if (itr != nullptr && itr->isCreature())
-        {
-            auto* candidate = itr->ToCreature();
-            if (isAlreadyAssisting(candidate) || candidate->getAIInterface()->isAlreadyAssisting(m_Unit))
-                continue;
+        if (candidate == nullptr || candidate == m_Unit)
+            return;
 
-            const auto distToHelper = m_Unit->getDistanceSq(candidate);
-            if (distToHelper > (fleeRadius * fleeRadius))
-                continue;
+        if (isAlreadyAssisting(candidate) || candidate->getAIInterface()->isAlreadyAssisting(m_Unit))
+            return;
 
-            if (candidate->isInCombat())
-                continue;
+        const auto distToHelper = m_Unit->getDistanceSq(candidate);
+        if (distToHelper > (fleeRadius * fleeRadius))
+            return;
 
-            if (!candidate->isHostileTo(currentTarget))
-                continue;
+        if (candidate->isInCombat())
+            return;
 
-            if (!candidate->getAIInterface()->canOwnerAssistUnit(m_Unit))
-                continue;
+        if (!candidate->isHostileTo(currentTarget))
+            return;
 
-            if (worldConfig.terrainCollision.isCollisionEnabled)
-            {
-                if (!m_Unit->IsWithinLOSInMap(candidate))
-                    continue;
-            }
+        if (!candidate->getAIInterface()->canOwnerAssistUnit(m_Unit))
+            return;
 
-            // Find the closest candidate
-            if (distToHelper > distance)
-                continue;
+        if (worldConfig.terrainCollision.isCollisionEnabled && !m_Unit->IsWithinLOSInMap(candidate))
+            return;
 
-            distance = distToHelper;
-            helper = candidate;
-        }
-    }
+        // Find the closest candidate
+        if (distToHelper > distance)
+            return;
+
+        distance = distToHelper;
+        helper = candidate;
+    });
 
     if (helper == nullptr)
         return false;
@@ -2214,30 +2387,23 @@ SpellCastTargets AIInterface::setSpellTargets(SpellInfo const* /*spellInfo*/, Un
 
 float AIInterface::calcCombatRange(Unit* target, bool ranged)
 {
-    if (!target)
+    if (!target || !m_Unit)
         return 0.0f;
 
-    float rang = 0.0f;
+    float range = m_Unit->getCombatRange(target);
     if (ranged)
-        rang = 5.0f;
-
-    float selfreach = m_Unit->getCombatReach();
-    float targetradius = target->getModelHalfSize();
-    float selfradius = m_Unit->getModelHalfSize();
-
-    float range = targetradius + selfreach + selfradius + rang;
+        range += 5.0f;
 
     return range;
 }
 
 float AIInterface::calcAggroRange(Unit* target)
 {
-    if (!m_Unit->canSee(target))
-        return 0;
+    if (!target || !m_Unit)
+        return 0.0f;
 
-    // WoW Wiki: the minimum radius seems to be 5 yards, while the maximum range is 45 yards
-    float maxRadius = 45.0f;
-    float minRadius = 5.0f;
+    const float minRadius = AIConstants::MinAutomaticAggroRange;
+    const float maxRadius = AIConstants::MaxAutomaticAggroRange;
 
     int32_t levelDifference = getUnit()->getLevel() - target->getLevel();
 
@@ -2298,6 +2464,8 @@ float AIInterface::calcAggroRange(Unit* target)
     return aggroRadius;
 }
 
+
+
 void AIInterface::updateTotem(uint32_t p_time)
 {
     if (totemspell != nullptr)
@@ -2307,7 +2475,7 @@ void AIInterface::updateTotem(uint32_t p_time)
             Spell* pSpell = sSpellMgr.newSpell(m_Unit, totemspell, true, 0);
             Unit* nextTarget = getCurrentTarget();
             if (nextTarget == NULL ||
-                (!m_Unit->getWorldMap()->getUnit(nextTarget->getGuid()) ||
+                (!m_Unit->getWorldMapUnit(nextTarget->getGuid()) ||
                     !nextTarget->isAlive() ||
                     !(m_Unit->isInRange(nextTarget->GetPosition(), pSpell->getSpellInfo()->custom_base_range_or_radius_sqr)) ||
                     !m_Unit->isValidAttackableTarget(nextTarget, pSpell->getSpellInfo())
@@ -2571,7 +2739,10 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
                 }
             }
 
-            if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
+            MySQLStructure::CreatureSpawn spawnTemplate{};
+            if (creature->getWorldMap() &&
+                creature->getWorldMap()->getSpawnManager().getCreatureSpawnTemplate(creature->getGuid(), spawnTemplate) &&
+                (spawnTemplate.channel_target_go || spawnTemplate.channel_target_creature))
             {
                 m_Unit->setChannelSpellId(0);
                 m_Unit->setChannelObjectGuid(0);
@@ -2670,13 +2841,15 @@ void AIInterface::eventLeaveCombat(Unit* /*pUnit*/, uint32_t /*misc1*/)
         else
             m_Unit->setEmoteState(EMOTE_ONESHOT_NONE);
 
-        if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
+        MySQLStructure::CreatureSpawn spawnTemplate{};
+        if (creature->getWorldMap() &&
+            creature->getWorldMap()->getSpawnManager().getCreatureSpawnTemplate(creature->getGuid(), spawnTemplate))
         {
-            if (creature->m_spawn->channel_target_go)
-                sEventMgr.AddEvent(creature, &Creature::ChannelLinkUpGO, creature->m_spawn->channel_target_go, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, 0);
+            if (spawnTemplate.channel_target_go)
+                sEventMgr.AddEvent(creature, &Creature::ChannelLinkUpGO, spawnTemplate.channel_target_go, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, 0);
 
-            if (creature->m_spawn->channel_target_creature)
-                sEventMgr.AddEvent(creature, &Creature::ChannelLinkUpCreature, creature->m_spawn->channel_target_creature, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, 0);
+            if (spawnTemplate.channel_target_creature)
+                sEventMgr.AddEvent(creature, &Creature::ChannelLinkUpCreature, spawnTemplate.channel_target_creature, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, 0);
         }
 
         // Leave Combat Scripts
@@ -2715,18 +2888,25 @@ void AIInterface::eventLeaveCombat(Unit* /*pUnit*/, uint32_t /*misc1*/)
         {
             if (!m_Unit->getWorldMap()->isUnloadPending())
             {
-                for (auto spawns : data->spawns)
+                for (uint32_t spawnId : data->spawns)
                 {
-                    if (spawns.second && spawns.second->m_spawn && !spawns.second->isAlive())
-                        spawns.second->Despawn(0, 1000);
+                    if (Creature* member = m_Unit->getWorldMap()->getSpawnManager().findLiveCreature(spawnId);
+                        member && !member->isAlive())
+                    {
+                        member->despawn(0, 1000);
+                    }
                 }
             }
         }
 
         // Remount if mounted
         Creature* creature = static_cast<Creature*>(m_Unit);
-        if (creature->m_spawn)
-            m_Unit->setMountDisplayId(creature->m_spawn->MountedDisplayID);
+        MySQLStructure::CreatureSpawn spawnTemplate{};
+        if (creature->getWorldMap() &&
+            creature->getWorldMap()->getSpawnManager().getCreatureSpawnTemplate(creature->getGuid(), spawnTemplate))
+        {
+            m_Unit->setMountDisplayId(spawnTemplate.MountedDisplayID);
+        }
     }
 
     initialiseScripts(getUnit()->getEntry());
@@ -2837,16 +3017,19 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
             }
 
             // Killed Group checks
-            auto spawnGroupData = sMySQLStore.getSpawnGroupDataBySpawn(pCreature->spawnid);
+            auto spawnGroupData = sMySQLStore.getSpawnGroupDataBySpawn(pCreature->getSpawnId());
 
             // Spawn Group Handling
             if (spawnGroupData && spawnGroupData->groupId)
             {
                 bool killed = true;
-                for (auto spawns : spawnGroupData->spawns)
+                for (uint32_t spawnId : spawnGroupData->spawns)
                 {
-                    if (!unitMapMgr->getRespawnInfo(SPAWN_TYPE_CREATURE, spawns.first))
+                    if (!unitMapMgr->getSpawnManager().getRespawnTime(SPAWN_TYPE_CREATURE, spawnId))
+                    {
                         killed = false;
+                        break;
+                    }
                 }
 
                 if (killed)
@@ -3902,40 +4085,41 @@ void AIInterface::UpdateAISpells()
 
 Unit* AIInterface::getBestPlayerTarget(TargetFilter pTargetFilter, float pMinRange, float pMaxRange)
 {
-    //Build potential target list
+    // Build the potential target list directly from the player spatial bucket.
     UnitArray TargetArray;
-    for (const auto& PlayerIter : getUnit()->getInRangePlayersSet())
+    const float legacySearchRange = static_cast<float>(std::max<int>(1, static_cast<int>(worldConfig.server.mapCellNumber))) * visibility::Cell::Size;
+    const float searchRange = ((pTargetFilter & TargetFilter_InRangeOnly) && pMaxRange > 0.0f) ? pMaxRange : legacySearchRange;
+
+    getUnit()->getWorldMap()->getSpatialIndex().forEachObjectInRangeReadOnly<Player>(getUnit()->GetPosition(), searchRange, [&](Player* player)
     {
-        if (PlayerIter && isValidUnitTarget(PlayerIter, pTargetFilter, pMinRange, pMaxRange))
-            TargetArray.push_back(static_cast<Unit*>(PlayerIter));
-    }
+        if (player != nullptr && isValidUnitTarget(player, pTargetFilter, pMinRange, pMaxRange))
+            TargetArray.push_back(player);
+    });
 
     return getBestTargetInArray(TargetArray, pTargetFilter);
 }
 
 Unit* AIInterface::getBestUnitTarget(TargetFilter pTargetFilter, float pMinRange, float pMaxRange)
 {
-    //potential target list
+    // Build the potential target list directly from unit spatial buckets.
     UnitArray TargetArray;
-    if (pTargetFilter & TargetFilter_Friendly)
-    {
-        for (const auto& ObjectIter : getUnit()->getInRangeObjectsSet())
-        {
-            if (ObjectIter && isValidUnitTarget(ObjectIter, pTargetFilter, pMinRange, pMaxRange))
-                TargetArray.push_back(static_cast<Unit*>(ObjectIter));
-        }
+    const float legacySearchRange = static_cast<float>(std::max<int>(1, static_cast<int>(worldConfig.server.mapCellNumber))) * visibility::Cell::Size;
+    const float searchRange = ((pTargetFilter & TargetFilter_InRangeOnly) && pMaxRange > 0.0f) ? pMaxRange : legacySearchRange;
 
-        if (isValidUnitTarget(getUnit(), pTargetFilter))
-            TargetArray.push_back(getUnit());    //add self as possible friendly target
-    }
-    else
+    getUnit()->getWorldMap()->getSpatialIndex().forEachUnitInRangeReadOnly(getUnit()->GetPosition(), searchRange, [&](Unit* candidate)
     {
-        for (const auto& ObjectIter : getUnit()->getInRangeOppositeFactionSet())
-        {
-            if (ObjectIter && isValidUnitTarget(ObjectIter, pTargetFilter, pMinRange, pMaxRange))
-                TargetArray.push_back(static_cast<Unit*>(ObjectIter));
-        }
-    }
+        if (candidate == nullptr || candidate == getUnit())
+            return;
+
+        if (!(pTargetFilter & TargetFilter_Friendly) && !getUnit()->isHostileTo(candidate))
+            return;
+
+        if (isValidUnitTarget(candidate, pTargetFilter, pMinRange, pMaxRange))
+            TargetArray.push_back(candidate);
+    });
+
+    if ((pTargetFilter & TargetFilter_Friendly) && isValidUnitTarget(getUnit(), pTargetFilter))
+        TargetArray.push_back(getUnit());    //add self as possible friendly target
 
     return getBestTargetInArray(TargetArray, pTargetFilter);
 }

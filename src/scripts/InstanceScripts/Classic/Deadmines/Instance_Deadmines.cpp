@@ -42,13 +42,13 @@ public:
         switch (pGameObject->getEntry())
         {
         case Deadmines::GO_FACTORY_DOOR:
-            mFactoryDoor_GUID = static_cast<uint32_t>(pGameObject->getGuid());
+            mFactoryDoor_GUID = pGameObject->GetNewGUID();
             break;
         case Deadmines::GO_FACTORY_DOOR_LEVER:
-            mDoorLever_GUID = static_cast<uint32_t>(pGameObject->getGuid());
+            mDoorLever_GUID = pGameObject->GetNewGUID();
             break;
         case Deadmines::GO_IRONCLAD_DOOR:
-            mIronCladDoor_GUID = static_cast<uint32_t>(pGameObject->getGuid());
+            mIronCladDoor_GUID = pGameObject->GetNewGUID();
             break;
         }
     }
@@ -59,7 +59,7 @@ public:
         {
             case Deadmines::NPC_RHAHK_ZOR:
             {
-                GameObject* pDoor1 = GetGameObjectByGuid(mFactoryDoor_GUID);
+                GameObject* pDoor1 = getGameObjectByGuid(mFactoryDoor_GUID);
                 if (pDoor1 != nullptr)
                     pDoor1->setState(GO_STATE_OPEN);
             }
@@ -90,21 +90,21 @@ public:
         {
             case Deadmines::GO_DEFIAS_CANNON:
             {
-                GameObject* pDoor4 = GetGameObjectByGuid(mIronCladDoor_GUID);
+                GameObject* pDoor4 = getGameObjectByGuid(mIronCladDoor_GUID);
                 if (pDoor4 != nullptr && pDoor4->getState() != GO_STATE_ALTERNATIVE_OPEN)
                     pDoor4->setState(GO_STATE_ALTERNATIVE_OPEN);
             }
             break;
             case Deadmines::GO_FACTORY_DOOR_LEVER:
             {
-                GameObject* pDoor5 = GetGameObjectByGuid(mFactoryDoor_GUID);
+                GameObject* pDoor5 = getGameObjectByGuid(mFactoryDoor_GUID);
                 if (pDoor5 != nullptr)
                     pDoor5->setState(pDoor5->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
             }
             break;
             case Deadmines::GO_IRONCLAD_LEVER:
             {
-                GameObject* pDoor6 = GetGameObjectByGuid(mFactoryDoor_GUID);
+                GameObject* pDoor6 = getGameObjectByGuid(mFactoryDoor_GUID);
                 //Door can be opened by lever if state isn't 2
                 if (pDoor6 != nullptr && pDoor6->getState() != GO_STATE_ALTERNATIVE_OPEN)
                     pDoor6->setState(pDoor6->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
@@ -128,11 +128,11 @@ public:
     }
 
 protected:
-    uint32_t mFactoryDoor_GUID;
-    uint32_t mDefiasCannon_GUID;
-    uint32_t mDoorLever_GUID;
-    uint32_t mMrSmiteChest_GUID;
-    uint32_t mIronCladDoor_GUID;
+    WoWGuid mFactoryDoor_GUID;
+    WoWGuid mDefiasCannon_GUID;
+    WoWGuid mDoorLever_GUID;
+    WoWGuid mMrSmiteChest_GUID;
+    WoWGuid mIronCladDoor_GUID;
     uint32_t InstanceEncounter;
 };
 

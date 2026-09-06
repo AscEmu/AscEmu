@@ -31,7 +31,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    const auto playerTarget = _player->getWorldMapPlayer(srlPacket.guid.getGuidLow());
+    const auto playerTarget = _player->getWorldMapPlayer(srlPacket.guid.getRawGuid());
 
     if (_player->m_TradeData != nullptr)
     {

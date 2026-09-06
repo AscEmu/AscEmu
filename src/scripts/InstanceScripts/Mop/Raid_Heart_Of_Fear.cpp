@@ -72,7 +72,7 @@ public:
     {
         for (uint32_t guid : mAmberDoorGuids)
         {
-            if (GameObject* pDoor = GetGameObjectByGuid(guid))
+            if (GameObject* pDoor = getGameObjectByGuid(guid))
                 useDoorOrButton(pDoor);
         }
     }

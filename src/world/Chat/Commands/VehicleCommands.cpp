@@ -32,7 +32,7 @@ bool ChatCommandHandler::HandleVehicleEjectPassengerCommand(const char* args, Wo
         return false;
     }
 
-    Unit* u = p->getWorldMap()->getUnit(p->getTargetGuid());
+    Unit* u = p->getWorldMapUnit(p->getTargetGuid());
     if (u == nullptr)
     {
         redSystemMessage(session, "You need to select a vehicle.");
@@ -56,7 +56,7 @@ bool ChatCommandHandler::HandleVehicleEjectAllPassengersCommand(const char* /*ar
         redSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    Unit* u = p->getWorldMap()->getUnit(p->getTargetGuid());
+    Unit* u = p->getWorldMapUnit(p->getTargetGuid());
     if (u == nullptr)
     {
         redSystemMessage(session, "You need to select a vehicle.");
@@ -80,7 +80,7 @@ bool ChatCommandHandler::HandleVehicleInstallAccessoriesCommand(const char* /*ar
         redSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    Unit* u = p->getWorldMap()->getUnit(p->getTargetGuid());
+    Unit* u = p->getWorldMapUnit(p->getTargetGuid());
     if (u == nullptr)
     {
         redSystemMessage(session, "You need to select a vehicle.");
@@ -111,7 +111,7 @@ bool ChatCommandHandler::HandleVehicleAddPassengerCommand(const char* args, Worl
         redSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    Unit* u = session->GetPlayer()->getWorldMap()->getUnit(session->GetPlayer()->getTargetGuid());
+    Unit* u = session->GetPlayer()->getWorldMapUnit(session->GetPlayer()->getTargetGuid());
     if (u == nullptr)
     {
         redSystemMessage(session, "You need to select a vehicle.");
@@ -134,10 +134,12 @@ bool ChatCommandHandler::HandleVehicleAddPassengerCommand(const char* args, Worl
         redSystemMessage(session, "Creature {} doesn't exist in the database", creature_entry);
         return false;
     }
-    Creature* c = u->getWorldMap()->createCreature(creature_entry);
-    c->Load(cp, u->GetPositionX(), u->GetPositionY(), u->GetPositionZ(), u->GetOrientation());
-    c->PushToWorld(u->getWorldMap());
-    c->callEnterVehicle(u);
+
+    if (Creature* c = u->getWorldMap()->getSpawnManager().spawnCreature(creature_entry, u->GetPosition()))
+    {
+        c->callEnterVehicle(u);
+    }
+
     return true;
 }
 #endif

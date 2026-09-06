@@ -44,12 +44,15 @@ public:
     // Resets life time and time left
     void setNewLifeTime(uint32_t time);
 
-    Group* getGroup() const;
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // Override Object functions
-    virtual void OnPushToWorld() override;
-    void OnPreRemoveFromWorld() override;
+    
+    //virtual void onPreAttachToWorld() override;
+    virtual void onAttachToWorld() override;
+
+    virtual void onPreDetachFromWorld() override;
+    //virtual void onDetachFromWorld() override;
+
     bool isSummon() const override;
     void onRemoveInRangeObject(Object* object) override;
     virtual void Update(unsigned long /*time_passed*/) override;
@@ -147,7 +150,13 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Override Object functions
-    void OnPushToWorld() override;
+    
+    //virtual void onPreAttachToWorld() override;
+    virtual void onAttachToWorld() override;
+
+    virtual void onPreDetachFromWorld() override;
+    //virtual void onDetachFromWorld() override;
+    
     bool isTotem() const override;
 
     //////////////////////////////////////////////////////////////////////////////////////////

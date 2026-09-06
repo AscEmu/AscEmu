@@ -33,11 +33,11 @@ CreatureAIScript* NazanAI::Create(Creature* pCreature) { return new NazanAI(pCre
 
 void NazanAI::OnSummon(Unit* summoner)
 {
-    WoWGuid guid = summoner->getGuid();
+    const WoWGuid& guid = summoner->GetNewGUID();
 
     if (summoner->getEntry() == NPC_VAZRUDEN_HERALD)
     {
-        VazrudenGUID = guid.getGuidLowPart();
+        VazrudenGUID = guid;
         setScriptPhase(AIR_PHASE);
     }
 }
@@ -46,7 +46,7 @@ void NazanAI::AIUpdate(unsigned long time_passed)
 {
     if (getScriptPhase() == AIR_PHASE)
     {
-        Creature* Vazruden = getInstanceScript()->GetCreatureByGuid(VazrudenGUID);
+        Creature* Vazruden = getInstanceScript()->getCreatureByGuid(VazrudenGUID);
         if (Fly_Timer < time_passed || !(Vazruden && Vazruden->isAlive() && Vazruden->getHealthPct() > 20))
         {
             getCreature()->setMoveDisableGravity(false);
@@ -169,8 +169,8 @@ void VazrudenTheHeraldAI::AIUpdate(unsigned long /*time_passed*/)
         } break;
         case SUMMON_PHASE:
         {
-            Creature* Nazan = getInstanceScript()->GetCreatureByGuid(nazanGUID);
-            Creature* Vazruden = getInstanceScript()->GetCreatureByGuid(vazrudenGUID);
+            Creature* Nazan = getInstanceScript()->getCreatureByGuid(nazanGUID);
+            Creature* Vazruden = getInstanceScript()->getCreatureByGuid(vazrudenGUID);
             if ((Nazan && Nazan->isAlive()) || (Vazruden && Vazruden->isAlive()))
             {
                 if ((Nazan && Nazan->getAIInterface()->getCurrentTarget()) || (Vazruden && Vazruden->getAIInterface()->getCurrentTarget()))
@@ -210,8 +210,8 @@ void VazrudenTheHeraldAI::summonAdds()
     {
         if (Creature* Vazruden = summonCreature(NPC_VAZRUDEN, VazrudenMiddle[0], VazrudenMiddle[1], VazrudenMiddle[2], 0, CORPSE_TIMED_DESPAWN, 100 * 60 * 1000))
         {
-            WoWGuid guid = Vazruden->getGuid();
-            vazrudenGUID = guid.getGuidLowPart();
+            const WoWGuid& guid = Vazruden->GetNewGUID();
+            vazrudenGUID = guid;
             Vazruden->m_noRespawn = true;
 
             if (Unit* player = getBestPlayerTarget(TargetFilter_Closest))
@@ -220,8 +220,8 @@ void VazrudenTheHeraldAI::summonAdds()
 
         if (Creature* Nazan = summonCreature(NPC_NAZAN, VazrudenMiddle[0], VazrudenMiddle[1], VazrudenMiddle[2], 0, CORPSE_TIMED_DESPAWN, 100 * 60 * 1000))
         {
-            WoWGuid guid = Nazan->getGuid();
-            nazanGUID = guid.getGuidLowPart();
+            const WoWGuid& guid = Nazan->GetNewGUID();
+            nazanGUID = guid;
             Nazan->m_noRespawn = true;
 
             if (Unit* player = getBestPlayerTarget(TargetFilter_Closest))

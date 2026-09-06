@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/QuestMgr.h"
@@ -246,7 +247,7 @@ class Thunderan : public QuestScript
 public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        mTarget->getWorldMap()->createAndSpawnCreature(14435, LocationVector(-6241.0f, 1715.0f, 4.8f, 0.605017f));
+        mTarget->getWorldMap()->getSpawnManager().spawnCreature(14435, LocationVector(-6241.0f, 1715.0f, 4.8f, 0.605017f));
     }
 };
 

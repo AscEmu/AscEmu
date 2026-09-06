@@ -38,7 +38,7 @@ public:
         if (pPlayer->isTeamHorde() && SpawnBaronAquanis == true) // Horde
         {
             // Spawn Baron Aquanis
-            _gameobject->getWorldMap()->getInterface()->spawnCreature(BlackfathomDeeps::CN_BARON_AQUANIS, LocationVector(-782.021f, -63.5876f, -45.0935f, -2.44346f), true, false, 0, 0);
+            _gameobject->getWorldMap()->getInterface()->spawnCreature(BlackfathomDeeps::CN_BARON_AQUANIS, LocationVector(-782.021f, -63.5876f, -45.0935f, -2.44346f));
             SpawnBaronAquanis = false;
         }
     }

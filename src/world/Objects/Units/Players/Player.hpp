@@ -111,16 +111,12 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Essential functions
     void Update(unsigned long time_passed);             // hides function Unit::Update
-    void AddToWorld();                                  // hides virtual function Object::AddToWorld
-    void AddToWorld(WorldMap* pMapMgr);                 // hides virtual function Object::AddToWorld
-    // void PushToWorld(WorldMap*);                     // not used
-    // void RemoveFromWorld(bool free_guid);            // not used
-    void OnPrePushToWorld() override;                   // overrides virtual function  Object::OnPrePushToWorld
-    void OnPushToWorld() override;                      // overrides virtual function  Object::OnPushToWorld
-    // void OnPreRemoveFromWorld();                     // not used
-    // void OnRemoveFromWorld();                        // not used
+    virtual void onPreAttachToWorld() override;
+    virtual void onAttachToWorld() override;
 
-    void removeFromWorld();
+    virtual void onPreDetachFromWorld() override;
+    //virtual void onDetachFromWorld() override;
+
     bool m_isReadyToBeRemoved = false;
 
 private:
@@ -602,11 +598,36 @@ public:
     //\Todo: this function is not as "safe" as the one above, reduce it to one function.
     void safeTeleport(WorldMap* mgr, const LocationVector& vec);
 
+    void resetPossessionBeforeRelocation();
+    void resetVisibilityBeforeRelocation();
+    void refreshVisibilityAfterRelocation();
+
+    void collectVisibleObjectGuidsForRelocation(std::vector<WoWGuid>& out) const;
+    void clearVisibleObjectCachesForRelocation();
+
     void setTransferStatus(uint8_t status);
     uint8_t getTransferStatus() const;
     bool isTransferPending() const;
 
     uint32_t getTeleportState() const;
+
+    void setTeleportTransport(const WoWGuid& guid, const LocationVector& offset)
+    {
+        m_teleportTransportGuid = guid;
+        m_teleportTransportOffset = offset;
+        m_hasTeleportTransport = true;
+    }
+
+    void clearTeleportTransport()
+    {
+        m_teleportTransportGuid = WoWGuid();
+        m_teleportTransportOffset = LocationVector();
+        m_hasTeleportTransport = false;
+    }
+
+    bool hasTeleportTransport() const { return m_hasTeleportTransport; }
+    const WoWGuid& getTeleportTransportGuid() const { return m_teleportTransportGuid; }
+    const LocationVector& getTeleportTransportOffset() const { return m_teleportTransportOffset; }
 
     void sendTeleportPacket(LocationVector position);
     void sendTeleportAckPacket(LocationVector position);
@@ -634,6 +655,9 @@ protected:
     float m_noseLevel = .0f;
 
     LocationVector m_sentTeleportPosition;
+    WoWGuid m_teleportTransportGuid;
+    LocationVector m_teleportTransportOffset;
+    bool m_hasTeleportTransport = false;
     uint8_t m_transferStatus = TRANSFER_NONE;
     uint32_t m_teleportState = 1;
 
@@ -811,14 +835,35 @@ protected:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Visiblility
 public:
-    void addVisibleObject(uint64_t guid);
-    void removeVisibleObject(uint64_t guid);
-    bool isVisibleObject(uint64_t guid);
+    void _visAdd(const WoWGuid& g)
+    {
+        visible_.any.insert(g.getRawGuid());
+    }
 
-    void removeIfVisiblePushOutOfRange(uint64_t guid);
+    void _visRemove(const WoWGuid& g)
+    {
+        visible_.any.erase(g.getRawGuid());
+    }
+
+    void _visReset()
+    {
+        visible_.clear();
+    }
+    visibility::VisibleCache& visible()             noexcept { return visible_; }
+    const visibility::VisibleCache& visible() const noexcept { return visible_; }
+
+    bool seesGuid(const WoWGuid& g) const { return visible_.any.count(g.getRawGuid()) != 0; }
+    bool seesPlayer(const WoWGuid& g) const { return g.getHighType() == HighGuid::Player && seesGuid(g); }
+    bool seesCreature(const WoWGuid& g) const
+    {
+        const auto high = g.getHighType();
+        return (high == HighGuid::Unit || high == HighGuid::Vehicle) && seesGuid(g);
+    }
+
+private:
+    visibility::VisibleCache visible_;
 
 protected:
-    std::set<uint64_t> m_visibleObjects;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Stats
@@ -1205,9 +1250,12 @@ private:
 public:
     void die(Unit* unitAttacker, uint32_t damage, uint32_t spellId) override;
 
-    void setCorpseData(LocationVector position, int32_t instanceId);
+    void setCorpseData(LocationVector position, uint32_t mapId);
+    void clearCorpseData();
+    bool hasCorpseData() const;
     LocationVector getCorpseLocation() const;
-    int32_t getCorpseInstanceId() const;
+    uint32_t getCorpseMapId() const;
+    bool loadCorpseDataFromDB();
 
     void setAllowedToCreateCorpse(bool allowed);
     bool isAllowedToCreateCorpse() const;
@@ -1239,7 +1287,8 @@ private:
     struct CorpseData
     {
         LocationVector location = {0,0,0,0};
-        int32_t instanceId = 0;
+        uint32_t mapId = 0;
+        bool valid = false;
     };
     CorpseData m_corpseData;
 
@@ -1282,6 +1331,7 @@ public:
     LocationVector getBGEntryPosition() const;
     uint32_t getBGEntryMapId() const;
     int32_t getBGEntryInstanceId() const;
+    bool hasValidBGEntryPoint() const;
 
 private:
     struct BGEntryData
@@ -1695,12 +1745,12 @@ public:
     Standing getFactionStandingRank(uint32_t faction) const;
 
     void applyForcedReaction(uint32_t faction_id, Standing rank, bool apply);
+    std::optional<Standing> getForcedReputationRank(uint32_t factionId) const;
     std::optional<Standing> getForcedReputationRank(WDB::Structures::FactionTemplateEntry const* factionTemplateEntry) const;
 
     void setFactionAtWar(uint32_t faction, bool set);
 
     bool isHostileBasedOnReputation(WDB::Structures::FactionEntry const* factionEntry, bool skipForcedReactions = false) const;
-    void updateInrangeSetsBasedOnReputation();
 
     void onKillUnitReputation(Unit* unit, bool innerLoop);
     void onTalkReputation(WDB::Structures::FactionEntry const* factionEntry);
@@ -2059,13 +2109,13 @@ public:
     void eventDeath();
 
     /////////////////////////////////////////////////////////////////////////////////////////
-    // Inrange
-    void addToInRangeObjects(Object* object) override;
+    // Inrange / visibility bridge
+public:
     void onRemoveInRangeObject(Object* object) override;
-    void clearInRangeSets() override;
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // PVP Stuff
+public:
     float m_spellHasteRatingBonus = 1.0f;
     void updateAttackSpeed();
 
@@ -2203,6 +2253,9 @@ public:
 private:
     uint32_t m_pendingBindId = 0;
     uint32_t m_pendingBindTimer = 0;
+
+private:
+    void leaveCurrentWorldMapForTransfer();
 
 public:
     //movement/position

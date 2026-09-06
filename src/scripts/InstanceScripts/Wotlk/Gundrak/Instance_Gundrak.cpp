@@ -13,21 +13,21 @@ This file is released under the MIT license. See README-MIT for more information
 class GundrakScript : public InstanceScript
 {
 public:
-    uint32_t mSladranAltarGUID;
-    uint32_t mSladranStatueGUID;
-    uint32_t mColossusAltarGUID;
-    uint32_t mColossusStatueGUID;
-    uint32_t mMoorabiAltarGUID;
-    uint32_t mMoorabiStatueGUID;
+    WoWGuid mSladranAltarGUID;
+    WoWGuid mSladranStatueGUID;
+    WoWGuid mColossusAltarGUID;
+    WoWGuid mColossusStatueGUID;
+    WoWGuid mMoorabiAltarGUID;
+    WoWGuid mMoorabiStatueGUID;
 
-    uint32_t mEckDoorsGUID;
+    WoWGuid mEckDoorsGUID;
 
-    uint32_t mTrapDoorGUID;
-    uint32_t mCoilisionGUID;
+    WoWGuid mTrapDoorGUID;
+    WoWGuid mCoilisionGUID;
 
-    uint32_t mCombatDoorsGUID;
-    uint32_t mDoor1GUID;
-    uint32_t mDoor2GUID;
+    WoWGuid mCombatDoorsGUID;
+    WoWGuid mDoor1GUID;
+    WoWGuid mDoor2GUID;
 
     uint8_t mStatueCount;
 
@@ -60,72 +60,72 @@ public:
         {
             case GO_ALTAR1_SLADRAN:
             {
-                mSladranAltarGUID = pGameObject->getGuidLow();
+                mSladranAltarGUID = pGameObject->GetNewGUID();
                 pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
             }
             break;
             case GO_STATUE1_SLADRAN:
             {
-                mSladranStatueGUID = pGameObject->getGuidLow();
+                mSladranStatueGUID = pGameObject->GetNewGUID();
                 pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
             }
             break;
             case GO_ALTAR2_COLOSSUS:
             {
-                mColossusAltarGUID = pGameObject->getGuidLow();
+                mColossusAltarGUID = pGameObject->GetNewGUID();
                 pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
             }
             break;
             case GO_STATUE2_COLOSSUS:
             {
-                mColossusStatueGUID = pGameObject->getGuidLow();
+                mColossusStatueGUID = pGameObject->GetNewGUID();
                 pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
             }
             break;
             case GO_ALTAR3_MOORABI:
             {
-                mMoorabiAltarGUID = pGameObject->getGuidLow();
+                mMoorabiAltarGUID = pGameObject->GetNewGUID();
                 pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
             }
             break;
             case GO_STATUE3_MOORABI:
             {
-                mMoorabiStatueGUID = pGameObject->getGuidLow();
+                mMoorabiStatueGUID = pGameObject->GetNewGUID();
                 pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
             }
             break;
             case GO_ECKDOOR:
             {
-                mEckDoorsGUID = pGameObject->getGuidLow();
+                mEckDoorsGUID = pGameObject->GetNewGUID();
                 pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
             }
             break;
             case GO_TRAPDOOR:
             {
-                mTrapDoorGUID = pGameObject->getGuidLow();
+                mTrapDoorGUID = pGameObject->GetNewGUID();
                 pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
             }
             break;
             case GO_COILISION:
             {
-                mCoilisionGUID = pGameObject->getGuidLow();
+                mCoilisionGUID = pGameObject->GetNewGUID();
                 pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
             }
             break;
             case GO_GAL_DARAH_DOOR1:
             {
-                mDoor1GUID = pGameObject->getGuidLow();
+                mDoor1GUID = pGameObject->GetNewGUID();
                 pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
             }
             break;
             case GO_GAL_DARAH_DOOR2:
             {
-                mDoor2GUID = pGameObject->getGuidLow();
+                mDoor2GUID = pGameObject->GetNewGUID();
                 pGameObject->setFlags(GO_FLAG_NOT_SELECTABLE);
             }
             break;
             case 192568:
-                mCombatDoorsGUID = pGameObject->getGuidLow();
+                mCombatDoorsGUID = pGameObject->GetNewGUID();
                 break;
         }
     }
@@ -136,7 +136,7 @@ public:
         {
             case GO_ALTAR1_SLADRAN:
             {
-                GameObject* pStatue = GetGameObjectByGuid(mSladranStatueGUID);
+                GameObject* pStatue = getGameObjectByGuid(mSladranStatueGUID);
                 if (pStatue)
                     pStatue->setState(pStatue->getState() == 1 ? 0 : 1);
 
@@ -146,7 +146,7 @@ public:
             break;
             case GO_ALTAR2_COLOSSUS:
             {
-                GameObject* pStatue = GetGameObjectByGuid(mColossusStatueGUID);
+                GameObject* pStatue = getGameObjectByGuid(mColossusStatueGUID);
                 if (pStatue)
                     pStatue->setState(pStatue->getState() == 1 ? 0 : 1);
 
@@ -156,7 +156,7 @@ public:
             break;
             case GO_ALTAR3_MOORABI:
             {
-                GameObject* pStatue = GetGameObjectByGuid(mMoorabiStatueGUID);
+                GameObject* pStatue = getGameObjectByGuid(mMoorabiStatueGUID);
                 if (pStatue)
                     pStatue->setState(pStatue->getState() == 1 ? 0 : 1);
 
@@ -169,8 +169,8 @@ public:
         if (mStatueCount < 3)
             return;
 
-            GameObject* pTrapDoors = GetGameObjectByGuid(mTrapDoorGUID);
-            GameObject* pCoilision = GetGameObjectByGuid(mCoilisionGUID);
+            GameObject* pTrapDoors = getGameObjectByGuid(mTrapDoorGUID);
+            GameObject* pCoilision = getGameObjectByGuid(mCoilisionGUID);
             if (pTrapDoors)
                 pTrapDoors->setState(pTrapDoors->getState() == 1 ? 0 : 1);
             if (pCoilision)
@@ -185,39 +185,39 @@ public:
         {
             case CN_MOORABI:
             {
-                pAltar = GetGameObjectByGuid(mMoorabiAltarGUID);
+                pAltar = getGameObjectByGuid(mMoorabiAltarGUID);
                 if (pAltar)
                     pAltar->removeFlags(GO_FLAG_NOT_SELECTABLE);
 
                 if (mInstance->getDifficulty() != InstanceDifficulty::DUNGEON_HEROIC)
                     return;
 
-                pDoors = GetGameObjectByGuid(mEckDoorsGUID);
+                pDoors = getGameObjectByGuid(mEckDoorsGUID);
                 if (pDoors)
                     pDoors->setState(GO_STATE_OPEN);
             }
             break;
             case CN_GAL_DARAH:
             {
-                pDoors = GetGameObjectByGuid(mDoor1GUID);
+                pDoors = getGameObjectByGuid(mDoor1GUID);
                 if (pDoors)
                     pDoors->setState(GO_STATE_OPEN);
 
-                pDoors = GetGameObjectByGuid(mDoor2GUID);
+                pDoors = getGameObjectByGuid(mDoor2GUID);
                 if (pDoors)
                     pDoors->setState(GO_STATE_OPEN);
             }
             break;
             case CN_SLADRAN:
             {
-                pAltar = GetGameObjectByGuid(mSladranAltarGUID);
+                pAltar = getGameObjectByGuid(mSladranAltarGUID);
                 if (pAltar)
                     pAltar->removeFlags(GO_FLAG_NOT_SELECTABLE);
             }
             break;
             case CN_DRAKKARI_COLOSSUS:
             {
-                pAltar = GetGameObjectByGuid(mColossusAltarGUID);
+                pAltar = getGameObjectByGuid(mColossusAltarGUID);
                 if (pAltar)
                     pAltar->removeFlags(GO_FLAG_NOT_SELECTABLE);
             }

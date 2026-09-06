@@ -38,8 +38,8 @@ protected:
 
     Unit* boneStormtarget;
     LocationVector coldflameLastPos;
-    uint64_t coldflameTarget;
-    std::vector<uint64_t> boneSpikeImmune;
+    WoWGuid coldflameTarget;
+    std::vector<WoWGuid> boneSpikeImmune;
 
     // Spells
     CreatureAISpells* boneSliceSpell;

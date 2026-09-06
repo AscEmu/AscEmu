@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Utilities/Random.hpp"
@@ -23,7 +24,16 @@ public:
                 float x = mTarget->GetPositionX() + Util::getRandomUInt(20) - 10;
                 float y = mTarget->GetPositionY() + Util::getRandomUInt(20) - 10;
                 float z = mTarget->GetPositionZ();
-                Creature* guard = getCreature()->getWorldMap()->getInterface()->spawnCreature(26253, LocationVector(x, y, z), true, false, getCreature()->getFactionTemplate(), 50);
+                auto& spawnManager = getCreature()->getWorldMap()->getSpawnManager();
+                Creature* guard = spawnManager.createCreature(26253, LocationVector(x, y, z));
+                if (guard != nullptr)
+                {
+                    guard->setFaction(getCreature()->getFactionTemplate());
+                    if (!spawnManager.pushToWorld(guard))
+                        guard = nullptr;
+                }
+                if (guard != nullptr)
+                    guard->Despawn(50, 0);
 
                 if (guard != nullptr)
                 {

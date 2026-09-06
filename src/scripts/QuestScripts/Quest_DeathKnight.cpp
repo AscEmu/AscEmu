@@ -314,8 +314,8 @@ public:
 protected:
     std::vector<uint32_t> emoteVectorStart;
     std::vector<uint32_t> emoteVectorAttack;
-    uint64_t anchorGUID = 0;
-    uint64_t playerGUID = 0;
+    WoWGuid anchorGUID;
+    WoWGuid playerGUID;
     uint32_t wait_timer = 0;
     float anchorX, anchorY = 0.0f;
 };
@@ -339,7 +339,7 @@ public:
     }
 
 protected:
-    uint64_t prisonerGUID = 0;
+    WoWGuid prisonerGUID;
 };
 
 class AcherusSoulPrison : GameObjectAIScript
@@ -357,7 +357,7 @@ public:
         {
             if (anchor->GetScript())
             {
-                if (uint64_t prisonerGUID = anchor->GetScript()->GetCreatureData64(1))
+                if (WoWGuid prisonerGUID = anchor->GetScript()->GetCreatureData64(1))
                 {
                     if (Creature* prisoner = pPlayer->getWorldMapCreature(prisonerGUID))
                     {

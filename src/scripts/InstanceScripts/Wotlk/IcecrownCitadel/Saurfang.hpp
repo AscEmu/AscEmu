@@ -94,7 +94,7 @@ protected:
     bool _dead;
     uint32_t FightWonValue;
 
-    std::vector<uint64_t> _markedTargetGuids;
+    std::vector<WoWGuid> _markedTargetGuids;
 
     // Spells
     CreatureAISpells* GripOfAgonySpell;
@@ -162,7 +162,7 @@ public:
     SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t /*effIndex*/) override;
 
 private:
-    uint64_t randomTargetGuid = 0;
+    WoWGuid randomTargetGuid;
 };
 
 class BloodLink : public SpellScript

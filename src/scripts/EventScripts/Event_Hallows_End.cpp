@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/GameObject.h"
@@ -183,7 +184,7 @@ public:
 
     void OnDied(Unit* pKiller) override
     {
-        GameObject* Pumpkin = pKiller->getWorldMap()->createAndSpawnGameObject(2883, LocationVector(getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), 0), 1);
+        GameObject* Pumpkin = pKiller->getWorldMap()->getSpawnManager().spawnGameObject(2883, LocationVector(getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), 0), 1);
         if (Pumpkin != nullptr)
             getCreature()->castSpell(Pumpkin->getGuid(), 42277, true);
     }

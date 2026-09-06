@@ -63,7 +63,7 @@ public:
         if (mogor != nullptr)
             mogor->Despawn(1000, 0);
 
-        mTarget->getWorldMap()->getInterface()->spawnCreature(18069, LocationVector(-712.443115f, 7932.182129f, 59.430191f, 4.515952f), true, false, 0, 0);
+        mTarget->getWorldMap()->getInterface()->spawnCreature(18069, LocationVector(-712.443115f, 7932.182129f, 59.430191f, 4.515952f));
     }
 };
 
@@ -82,7 +82,7 @@ public:
             //char msg2[256];
             //snprintf((char*)msg2, 256, "They had to ship the champion in from the Blade's Edge gladiator pits. He was training on mountain giants - three at a time.", mTarget->GetName());
             pQgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
-            mTarget->getWorldMap()->getInterface()->spawnCreature(18402, LocationVector(-704.669f, 7871.08f, 45.0387f, 1.59531f), true, false, 0, 0);
+            mTarget->getWorldMap()->getInterface()->spawnCreature(18402, LocationVector(-704.669f, 7871.08f, 45.0387f, 1.59531f));
         };
     };
 
@@ -119,7 +119,7 @@ public:
             //char msg2[256];
             //snprintf((char*)msg2, 256, "From the parts unknown: Ska'gath! Can %s possibly survive the onslaught of void energies?", mTarget->GetName());
             Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
-            mTarget->getWorldMap()->getInterface()->spawnCreature(18401, LocationVector(-704.669f, 7871.08f, 45.0387f, 1.59531f), true, false, 0, 0);
+            mTarget->getWorldMap()->getInterface()->spawnCreature(18401, LocationVector(-704.669f, 7871.08f, 45.0387f, 1.59531f));
         };
     };
 
@@ -155,7 +155,7 @@ public:
             msg2 += " is in for the fight of his life.";
             Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
 
-            mTarget->getWorldMap()->getInterface()->spawnCreature(18400, LocationVector(-704.669f, 7871.08f, 45.0387f, 1.59531f), true, false, 0, 0);
+            mTarget->getWorldMap()->getInterface()->spawnCreature(18400, LocationVector(-704.669f, 7871.08f, 45.0387f, 1.59531f));
         };
     };
 
@@ -189,8 +189,8 @@ public:
             std::string msg2 = "The battle is about to begin! The unmerciful Murkblood twins versus ";
             msg2 += mTarget->getName();
             Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
-            mTarget->getWorldMap()->getInterface()->spawnCreature(18399, LocationVector(-704.669f, 7871.08f, 45.0387f, 1.59531f), true, false, 0, 0);
-            mTarget->getWorldMap()->getInterface()->spawnCreature(18399, LocationVector(-708.076f, 7870.41f, 44.8457f, 1.59531f), true, false, 0, 0);
+            mTarget->getWorldMap()->getInterface()->spawnCreature(18399, LocationVector(-704.669f, 7871.08f, 45.0387f, 1.59531f));
+            mTarget->getWorldMap()->getInterface()->spawnCreature(18399, LocationVector(-708.076f, 7870.41f, 44.8457f, 1.59531f));
         };
     };
 
@@ -225,7 +225,7 @@ public:
             char msg[256];
             snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->getName().c_str());
             Qgiver->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-            mTarget->getWorldMap()->getInterface()->spawnCreature(18398, LocationVector(-704.669f, 7871.08f, 45.0387f, 1.59531f), true, false, 0, 0)->Despawn(600000, 0);
+            mTarget->getWorldMap()->getInterface()->spawnCreature(18398, LocationVector(-704.669f, 7871.08f, 45.0387f, 1.59531f))->Despawn(600000, 0);
         };
     };
 

@@ -46,29 +46,29 @@ public:
     {
         switch (pVictim->getEntry())
         {
-            case NPC_INSTRUCTOR_MALICIA:
-                setBossState(DATA_MALICIA, Performed);
-                break;
-            case NPC_THEOLEN_KRASTINOV:
-                setBossState(DATA_THEOLEN, Performed);
-                break;
-            case NPC_LOREKEEPER_POLKELT:
-                setBossState(DATA_POLKELT, Performed);
-                break;
-            case NPC_RAVENIAN:
-                setBossState(DATA_RAVENIAN, Performed);
-                break;
-            case NPC_ALEXEI_BAROV:
-                setBossState(DATA_ALEXEI_BAROV, Performed);
-                break;
-            case NPC_ILLUCIA_BAROV:
-                setBossState(DATA_ILLUCIA_BAROV, Performed);
-                break;
-            case NPC_DARKMASTER_GANDLING:
-                setBossState(DATA_GANDLING, Performed);
-                return;
-            default:
-                return;
+        case NPC_INSTRUCTOR_MALICIA:
+            setBossState(DATA_MALICIA, Performed);
+            break;
+        case NPC_THEOLEN_KRASTINOV:
+            setBossState(DATA_THEOLEN, Performed);
+            break;
+        case NPC_LOREKEEPER_POLKELT:
+            setBossState(DATA_POLKELT, Performed);
+            break;
+        case NPC_RAVENIAN:
+            setBossState(DATA_RAVENIAN, Performed);
+            break;
+        case NPC_ALEXEI_BAROV:
+            setBossState(DATA_ALEXEI_BAROV, Performed);
+            break;
+        case NPC_ILLUCIA_BAROV:
+            setBossState(DATA_ILLUCIA_BAROV, Performed);
+            break;
+        case NPC_DARKMASTER_GANDLING:
+            setBossState(DATA_GANDLING, Performed);
+            return;
+        default:
+            return;
         }
 
         trySpawnGandling();

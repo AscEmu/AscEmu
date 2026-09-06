@@ -346,9 +346,9 @@ void WorldSession::handleInspectArenaStatsOpcode([[maybe_unused]] WorldPacket& r
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_INSPECT_ARENA_STATS: {} (guidLow).", srlPacket.guid.getGuidLow());
+    sLogger.debugOpcode("Received CMSG_INSPECT_ARENA_STATS: {} (guidLow).", srlPacket.guid.getLowGuid());
 
-    const auto player = _player->getWorldMap()->getPlayer(srlPacket.guid.getGuidLow());
+    const auto player = _player->getWorldMapPlayer(srlPacket.guid.getRawGuid());
     if (player == nullptr)
         return;
 

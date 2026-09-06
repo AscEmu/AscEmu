@@ -11,6 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/HonorHandler.h"
 #include "Management/WorldStates.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Map/Management/ObjectFactory.hpp"
+#include "Map/Management/SpawnManager.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/Master.h"
@@ -489,9 +491,10 @@ AlteracValley::AVNode::AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint3
 
         while (spi->x != 0.0f)
         {
-            sp = m_bg->getWorldMap()->createCreature(cp->Id);
-            sp->Load(cp, spi->x, spi->y, spi->z, spi->o);
-            sp->PushToWorld(m_bg->getWorldMap());
+            sp = m_bg->getWorldMap()->getSpawnManager().createCreature(
+                cp->Id, LocationVector(spi->x, spi->y, spi->z, spi->o));
+            if (sp != nullptr)
+                sp->PushToWorld(m_bg->getWorldMap());
             ++spi;
         }
     }
@@ -597,7 +600,7 @@ void AlteracValley::AVNode::Spawn()
         if (m_flag == nullptr)
         {
             // initial spawn
-            m_flag = m_bg->spawnGameObject(g->id[m_state], LocationVector(g->x, g->y, g->z, g->o), 0, 0, 1.0f);
+            m_flag = m_bg->createGameObject(g->id[m_state], LocationVector(g->x, g->y, g->z, g->o), 0, 0, 1.0f);
             m_flag->SetFaction(g_gameObjectFactions[m_state]);
             m_flag->setAnimationProgress(100);
             m_flag->setDynamicFlags(GO_DYN_FLAG_INTERACTABLE);
@@ -611,7 +614,7 @@ void AlteracValley::AVNode::Spawn()
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(g->id[m_state]);
                 m_flag->RemoveFromWorld(false);
                 m_flag->setEntry(g->id[m_state]);
-                m_flag->SetNewGuid(m_bg->getWorldMap()->generateGameobjectGuid());
+                m_bg->getWorldMap()->getSpawnManager().regenerateGameObjectGuid(m_flag, g->id[m_state]);
                 m_flag->SetGameObjectProperties(gameobject_info);
                 m_flag->setDisplayId(gameobject_info->display_id);
                 m_flag->setGoType(static_cast<uint8_t>(gameobject_info->type));
@@ -642,7 +645,7 @@ void AlteracValley::AVNode::Spawn()
         if (m_aura == nullptr)
         {
             // initial spawn
-            m_aura = m_bg->spawnGameObject(g->id[m_state], LocationVector(g->x, g->y, g->z, g->o), 0, 0, 3.0f);
+            m_aura = m_bg->createGameObject(g->id[m_state], LocationVector(g->x, g->y, g->z, g->o), 0, 0, 3.0f);
             m_aura->SetFaction(g_gameObjectFactions[m_state]);
             m_aura->setAnimationProgress(100);
             m_aura->setFlags(GO_FLAG_NONSELECTABLE);
@@ -657,7 +660,7 @@ void AlteracValley::AVNode::Spawn()
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(g->id[m_state]);
                 m_aura->RemoveFromWorld(false);
                 m_aura->setEntry(g->id[m_state]);
-                m_aura->SetNewGuid(m_bg->getWorldMap()->generateGameobjectGuid());
+                m_bg->getWorldMap()->getSpawnManager().regenerateGameObjectGuid(m_aura, g->id[m_state]);
                 m_aura->SetGameObjectProperties(gameobject_info);
                 m_aura->setDisplayId(gameobject_info->display_id);
                 m_aura->setGoType(static_cast<uint8_t>(gameobject_info->type));
@@ -689,7 +692,7 @@ void AlteracValley::AVNode::Spawn()
         if (m_glow == nullptr)
         {
             // initial spawn
-            m_glow = m_bg->spawnGameObject(g->id[m_state], LocationVector(g->x, g->y, g->z, g->o), 0, 0, 1.0f);
+            m_glow = m_bg->createGameObject(g->id[m_state], LocationVector(g->x, g->y, g->z, g->o), 0, 0, 1.0f);
             m_glow->SetFaction(g_gameObjectFactions[m_state]);
             m_glow->setAnimationProgress(100);
             m_glow->setFlags(GO_FLAG_NONSELECTABLE);
@@ -708,7 +711,7 @@ void AlteracValley::AVNode::Spawn()
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(g->id[m_state]);
                 m_glow->RemoveFromWorld(false);
                 m_glow->setEntry(g->id[m_state]);
-                m_glow->SetNewGuid(m_bg->getWorldMap()->generateGameobjectGuid());
+                m_bg->getWorldMap()->getSpawnManager().regenerateGameObjectGuid(m_glow, g->id[m_state]);
                 m_glow->SetGameObjectProperties(gameobject_info);
                 m_glow->setDisplayId(gameobject_info->display_id);
                 m_glow->setGoType(static_cast<uint8_t>(gameobject_info->type));
@@ -767,10 +770,10 @@ void AlteracValley::AVNode::Spawn()
         {
             DLLLogDetail("AlteracValley : AVNode::Spawn({}) : despawning spirit guide", m_template->m_name);
             // move everyone in the revive queue to a different node
-            std::map<Creature*, std::set<uint32_t> >::iterator itr = m_bg->m_resurrectMap.find(m_spiritGuide);
+            std::map<Creature*, std::set<WoWGuid>>::iterator itr = m_bg->m_resurrectMap.find(m_spiritGuide);
             if (itr != m_bg->m_resurrectMap.end())
             {
-                for (std::set<uint32_t>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
+                for (std::set<WoWGuid>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
                 {
                     // repop him at a new GY
                     Player* plr_tmp = m_bg->getWorldMap()->getPlayer(*it2);
@@ -854,7 +857,7 @@ void AlteracValley::AVNode::Capture()
             DLLLogDetail("AlteracValley : spawning fires at bunker {}", m_template->m_name);
             while (spi->x != 0.0f)
             {
-                go = m_bg->spawnGameObject(AV_GAMEOBJECT_FIRE, LocationVector(spi->x, spi->y, spi->z, spi->o), 0, 35, 1.0f);
+                go = m_bg->createGameObject(AV_GAMEOBJECT_FIRE, LocationVector(spi->x, spi->y, spi->z, spi->o), 0, 35, 1.0f);
                 go->PushToWorld(m_bg->getWorldMap());
                 ++spi;
             }
@@ -1073,13 +1076,13 @@ void AlteracValley::DropFlag(Player* /*plr*/)
 void AlteracValley::OnCreate()
 {
     // Alliance Gate
-    GameObject* gate = spawnGameObject(AV_GAMEOBJECT_GATE, LocationVector(780.487f, -493.024f, 99.9553f, 3.0976f), 32, 114, 3.000000f);
+    GameObject* gate = createGameObject(AV_GAMEOBJECT_GATE, LocationVector(780.487f, -493.024f, 99.9553f, 3.0976f), 32, 114, 3.000000f);
     gate->setLocalRotation(0.f, 0.f, 0.0129570f, -0.0602880f);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
     // Horde gate
-    gate = spawnGameObject(AV_GAMEOBJECT_GATE, LocationVector(-1375.73f, -538.966f, 55.3006f, 0.791198f), 32, 114, 3.000000f);
+    gate = createGameObject(AV_GAMEOBJECT_GATE, LocationVector(-1375.73f, -538.966f, 55.3006f, 0.791198f), 32, 114, 3.000000f);
     gate->setLocalRotation(0.f, 0.f, 0.36f, 0.922766f);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);

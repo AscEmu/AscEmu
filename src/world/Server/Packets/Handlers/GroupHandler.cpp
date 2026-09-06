@@ -333,9 +333,9 @@ void WorldSession::handleGroupUninviteGuidOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_GROUP_UNINVITE_GUID: {} (guidLow).", srlPacket.guid.getGuidLow());
+    sLogger.debugOpcode("Received CMSG_GROUP_UNINVITE_GUID: {} (guidLow).", srlPacket.guid.getLowGuid());
 
-    const auto uninvitePlayer = sObjectMgr.getPlayer(srlPacket.guid.getGuidLow());
+    const auto uninvitePlayer = sObjectMgr.getPlayer(srlPacket.guid.getLowGuid());
     if (uninvitePlayer == nullptr)
     {
         SmsgPartyCommandResult managedPacket(0, "unknown", ERR_PARTY_CANNOT_FIND);
@@ -424,9 +424,9 @@ void WorldSession::handleGroupSetLeaderOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_GROUP_SET_LEADER: {} (guidLow).", srlPacket.guid.getGuidLow());
+    sLogger.debugOpcode("Received CMSG_GROUP_SET_LEADER: {} (guidLow).", srlPacket.guid.getLowGuid());
 
-    const auto targetPlayer = sObjectMgr.getPlayer(srlPacket.guid.getGuidLow());
+    const auto targetPlayer = sObjectMgr.getPlayer(srlPacket.guid.getLowGuid());
     if (targetPlayer == nullptr)
     {
         SmsgPartyCommandResult managedPacket(0, _player->getName(), ERR_PARTY_CANNOT_FIND);
@@ -459,7 +459,7 @@ void WorldSession::handleLootMethodOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_LOOT_METHOD: {} (method), {} (guidLow), {} (theshold).", srlPacket.method, srlPacket.guid.getGuidLow(), srlPacket.threshold);
+    sLogger.debugOpcode("Received CMSG_LOOT_METHOD: {} (method), {} (guidLow), {} (theshold).", srlPacket.method, srlPacket.guid.getLowGuid(), srlPacket.threshold);
 
     if (!_player->isGroupLeader())
     {
@@ -472,7 +472,7 @@ void WorldSession::handleLootMethodOpcode(WorldPacket& recvPacket)
     if (group == nullptr)
         return;
 
-    const auto lootMasterPlayer = sObjectMgr.getPlayer(srlPacket.guid.getGuidLow());
+    const auto lootMasterPlayer = sObjectMgr.getPlayer(srlPacket.guid.getLowGuid());
     if (lootMasterPlayer == nullptr)
         group->SetLooter(_player, static_cast<uint8_t>(srlPacket.method), static_cast<uint16_t>(srlPacket.threshold));
     else
@@ -567,7 +567,7 @@ void WorldSession::handlePartyMemberStatsOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_REQUEST_PARTY_MEMBER_STATS: {} (guidLow).", srlPacket.guid.getGuidLow());
+    sLogger.debugOpcode("Received CMSG_REQUEST_PARTY_MEMBER_STATS: {} (guidLow).", srlPacket.guid.getLowGuid());
 
     if (_player->getWorldMap() == nullptr)
     {
@@ -575,7 +575,7 @@ void WorldSession::handlePartyMemberStatsOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const auto requestedPlayer = _player->getWorldMap()->getPlayer(srlPacket.guid.getGuidLow());
+    const auto requestedPlayer = _player->getWorldMapPlayer(srlPacket.guid.getRawGuid());
     if (_player->getGroup() == nullptr || requestedPlayer == nullptr)
     {
 #if VERSION_STRING < Mop
@@ -588,7 +588,7 @@ void WorldSession::handlePartyMemberStatsOpcode(WorldPacket& recvPacket)
     if (!_player->getGroup()->HasMember(requestedPlayer))
         return;
 
-    if (_player->isVisibleObject(requestedPlayer->getGuid()))
+    if (_player->seesGuid(requestedPlayer->GetNewGUID()))
         return;
 
     // SMSG_PARTY_MEMBER_STATS_FULL was replaced by SMSG_PARTY_MEMBER_STATE in Mop, which is not implemented yet
@@ -635,7 +635,7 @@ void WorldSession::handleGroupChangeSubGroup(WorldPacket& recvPacket)
         return;
 
     const auto playerInfo = _socket->getClientProtocol().isMop()
-        ? sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow())
+        ? sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getLowGuid())
         : sObjectMgr.getCachedCharacterInfoByName(srlPacket.name);
     if (playerInfo == nullptr || playerInfo->m_Group == nullptr)
         return;
@@ -665,7 +665,7 @@ void WorldSession::handleGroupAssistantLeader(WorldPacket& recvPacket)
 
     if (srlPacket.isActivated)
     {
-        const auto playerInfo = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow());
+        const auto playerInfo = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getLowGuid());
         if (playerInfo == nullptr)
         {
             group->SetAssistantLeader(nullptr);
@@ -698,7 +698,7 @@ void WorldSession::handleGroupPromote(WorldPacket& recvPacket)
     CachedCharacterInfo* playerInfo = nullptr;
 
     if (srlPacket.isActivated)
-        playerInfo = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow());
+        playerInfo = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getLowGuid());
 
     if (srlPacket.promoteType == 1)
         group->SetMainAssist(playerInfo);
@@ -868,7 +868,7 @@ void WorldSession::handleSetPartyAssignmentOpcode(WorldPacket& recvPacket)
 
     CachedCharacterInfo* playerInfo = nullptr;
     if (srlPacket.apply)
-        playerInfo = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow());
+        playerInfo = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getLowGuid());
 
     if (srlPacket.assignment == 1)
         group->SetMainAssist(playerInfo);

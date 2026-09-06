@@ -558,9 +558,9 @@ void WorldSession::handleGameobjReportUseOpCode([[maybe_unused]] WorldPacket& re
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_GAMEOBJ_REPORT_USE: {} (guid.low).", srlPacket.guid.getGuidLow());
+    sLogger.debugOpcode("Received CMSG_GAMEOBJ_REPORT_USE: {} (guid.low).", srlPacket.guid.getLowGuid());
 
-    const auto gameobject = _player->getWorldMap()->getGameObject(srlPacket.guid.getGuidLow());
+    const auto gameobject = _player->getWorldMapGameObject(srlPacket.guid.getRawGuid());
     if (gameobject == nullptr)
         return;
 
@@ -668,17 +668,17 @@ void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_LOOT_ROLL: {} (objectGuid) {} (slot) {} (choice).", srlPacket.objectGuid.getGuidLow(), srlPacket.slot, srlPacket.choice);
+    sLogger.debugOpcode("Received CMSG_LOOT_ROLL: {} (objectGuid) {} (slot) {} (choice).", srlPacket.objectGuid.getLowGuid(), srlPacket.slot, srlPacket.choice);
 
     LootItem* lootItem = nullptr;
 
-    const HighGuid guidType = srlPacket.objectGuid.getHigh();
+    const HighGuid guidType = srlPacket.objectGuid.getHighType();
 
     switch (guidType)
     {
         case HighGuid::GameObject:
         {
-            auto gameObject = _player->getWorldMap()->getGameObject(srlPacket.objectGuid.getGuidLowPart());
+            auto gameObject = _player->getWorldMapGameObject(srlPacket.objectGuid.getRawGuid());
             if (gameObject == nullptr)
                 return;
 
@@ -694,7 +694,7 @@ void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
         } break;
         case HighGuid::Unit:
         {
-            auto creature = _player->getWorldMap()->getCreature(srlPacket.objectGuid.getGuidLowPart());
+            auto creature = _player->getWorldMapCreature(srlPacket.objectGuid.getRawGuid());
             if (creature == nullptr)
                 return;
 
@@ -872,9 +872,9 @@ void WorldSession::handleResurrectResponse(WorldPacket& recvPacket)
     if (!_player->isAlive())
         return;
 
-    auto player = _player->getWorldMap()->getPlayer(srlPacket.guid.getGuidLow());
+    auto player = _player->getWorldMapPlayer(srlPacket.guid.getRawGuid());
     if (player == nullptr)
-        player = sObjectMgr.getPlayer(srlPacket.guid.getGuidLow());
+        player = sObjectMgr.getPlayer(srlPacket.guid.getLowGuid());
 
     if (player == nullptr)
         return;
@@ -1223,14 +1223,14 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
     if (srlPacket.guid.getRawGuid() == 0)
         return;
 
-    auto corpse = sObjectMgr.getCorpseByGuid(srlPacket.guid.getGuidLow());
+    auto corpse = _player->getWorldMap() ? _player->getWorldMap()->getRegistry().getCorpse(srlPacket.guid) : nullptr;
     if (corpse == nullptr)
         return;
 
     WoWGuid wowGuid;
     wowGuid.init(corpse->getOwnerGuid());
 
-    if (wowGuid.getGuidLowPart() != _player->getGuidLow() && corpse->getFlags() == 5)
+    if (wowGuid.getCounter() != _player->getGuidLow() && corpse->getFlags() == 5)
     {
         SmsgResurrectFailed managedPacket(1);
         sendManagedPacket(managedPacket);
@@ -1296,7 +1296,7 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.failure("handleObjectUpdateFailedOpcode : Object update failed for playerguid {}", srlPacket.guid.getGuidLowPart());
+    sLogger.failure("handleObjectUpdateFailedOpcode : Object update failed for playerguid {}", srlPacket.guid.getCounter());
 
     if (_player == nullptr)
         return;
@@ -1646,9 +1646,9 @@ void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_GAMEOBJ_USE: {} (gobj guidLow).", srlPacket.guid.getGuidLowPart());
+    sLogger.debugOpcode("Received CMSG_GAMEOBJ_USE: {} (gobj guidLow).", srlPacket.guid.getCounter());
 
-    auto gameObject = _player->getWorldMap()->getGameObject(srlPacket.guid.getGuidLowPart());
+    auto gameObject = _player->getWorldMapGameObject(srlPacket.guid.getRawGuid());
     if (!gameObject)
         return;
 
@@ -1701,7 +1701,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
 
     sLogger.debugOpcode("Received CMSG_INSPECT: {} (player guid).", static_cast<uint32_t>(srlPacket.guid));
 
-    auto inspectedPlayer = _player->getWorldMap()->getPlayer(static_cast<uint32_t>(srlPacket.guid));
+    auto inspectedPlayer = _player->getWorldMapPlayer(srlPacket.guid);
     if (inspectedPlayer == nullptr)
     {
         sLogger.debug("Error received CMSG_INSPECT for unknown player!");
@@ -1841,10 +1841,10 @@ void WorldSession::handleFarSightOpcode(WorldPacket& recvPacket)
     if (srlPacket.apply)
     {
         const auto farsightGuid = WoWGuid(_player->getFarsightGuid());
-        const auto dynObj = _player->getWorldMap()->getDynamicObject(farsightGuid.getGuidLowPart());
+        const auto dynObj = _player->getWorldMap()->getDynamicObject(farsightGuid.getCounter());
         if (dynObj == nullptr)
         {
-            sLogger.debugOpcode("Player {} requested non-existing farsight object {}.", _player->getGuidLow(), farsightGuid.getGuidLowPart());
+            sLogger.debugOpcode("Player {} requested non-existing farsight object {}.", _player->getGuidLow(), farsightGuid.getCounter());
             return;
         }
 
@@ -1918,7 +1918,7 @@ void WorldSession::handleReportOpcode([[maybe_unused]] WorldPacket& recvPacket)
             recvPacket >> unk2;                             // probably mail id
             recvPacket >> unk3;                             // const 0
 
-            sLogger.debug("Received REPORT SPAM: type {}, guid {}, unk1 {}, unk2 {}, unk3 {}", spam_type, WoWGuid::getGuidLowPartFromUInt64(spammer_guid), unk1, unk2, unk3);
+            sLogger.debug("Received REPORT SPAM: type {}, guid {}, unk1 {}, unk2 {}, unk3 {}", spam_type, WoWGuid::getLowGuidFromRaw(spammer_guid), unk1, unk2, unk3);
 
         } break;
         case 1:
@@ -1929,7 +1929,7 @@ void WorldSession::handleReportOpcode([[maybe_unused]] WorldPacket& recvPacket)
             recvPacket >> unk4;                             // unk random value
             recvPacket >> description;                      // spam description string (messagetype, channel name, player name, message)
 
-            sLogger.debug("Received REPORT SPAM: type {}, guid {}, unk1 {}, unk2 {}, unk3 {}, unk4 {}, message {}", spam_type, WoWGuid::getGuidLowPartFromUInt64(spammer_guid), unk1, unk2, unk3, unk4, description);
+            sLogger.debug("Received REPORT SPAM: type {}, guid {}, unk1 {}, unk2 {}, unk3 {}, unk4 {}, message {}", spam_type, WoWGuid::getLowGuidFromRaw(spammer_guid), unk1, unk2, unk3, unk4, description);
 
         } break;
     }
@@ -2007,7 +2007,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 
     const uint64_t GUID = srlPacket.guid.getRawGuid();
 
-    Unit* Image = _player->getWorldMap()->getUnit(GUID);
+    Unit* Image = _player->getWorldMapUnit(GUID);
     if (Image == nullptr)
         return; // ups no unit found with that GUID on the map. Spoofed packet?
 
@@ -2015,7 +2015,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
         return;
 
     uint64_t CasterGUID = Image->getCreatedByGuid();
-    Unit* Caster = _player->getWorldMap()->getUnit(CasterGUID);
+    Unit* Caster = _player->getWorldMapUnit(CasterGUID);
 
     if (Caster == nullptr)
         return; // apperantly this mirror image mirrors nothing, poor lonely soul :(Maybe it's the Caster's ghost called Casper

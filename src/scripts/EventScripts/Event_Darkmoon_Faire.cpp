@@ -55,19 +55,19 @@ public:
 
     void OnActivate(Player* pPlayer) override
     {
-        if (mPlayerGuid != 0)
+        if (mPlayerGuid)
             return;
 
         pPlayer->castSpell(pPlayer, 24832, true);
         pPlayer->setMoveRoot(true);
         _gameobject->PlaySoundToSet(8476);
-        mPlayerGuid = static_cast<uint32_t>(pPlayer->getGuid());
+        mPlayerGuid = pPlayer->GetNewGUID();
         RegisterAIUpdateEvent(2200);
     }
 
     void AIUpdate() override
     {
-        auto CurrentPlayer = sObjectMgr.getPlayer(mPlayerGuid);
+        auto CurrentPlayer = sObjectMgr.getPlayer(mPlayerGuid.getLowGuid());
         if (CurrentPlayer == nullptr)
         {
             RemoveAIUpdateEvent();
@@ -96,7 +96,7 @@ public:
     }
 
 protected:
-    uint32_t mPlayerGuid;
+    WoWGuid mPlayerGuid;
 };
 
 /*
@@ -136,7 +136,7 @@ void OnActivate(Player* pPlayer)
     tonkConsole->setState(GO_STATE_OPEN);
 
     // Spawn Steam Tonk
-    pPlayer->getWorldMap()->GetInterface()->SpawnCreature(19405, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), true, false, 0, 0)->Despawn(310000, 0);;
+    pPlayer->getWorldMap()->GetInterface()->SpawnCreature(19405, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation())->Despawn(310000, 0);;
 
     // Store the tonk just spawned
     Creature* pTonk = NULL;

@@ -22,12 +22,12 @@ InstanceScript* HellfireRampartsInstanceScript::Create(WorldMap* pMapMgr) { retu
 
 void HellfireRampartsInstanceScript::OnCreaturePushToWorld(Creature* pCreature)
 {
-    WoWGuid guid = pCreature->getGuid();
+    const WoWGuid& guid = pCreature->GetNewGUID();
 
     switch (pCreature->getEntry())
     {
         case NPC_VAZRUDEN_HERALD:
-            vazrudenHeraldGUID = guid.getGuidLowPart();
+            vazrudenHeraldGUID = guid;
             break;
     }
 }
@@ -38,7 +38,7 @@ void HellfireRampartsInstanceScript::OnGameObjectPushToWorld(GameObject* pGameOb
     {
         case GO_FEL_IRON_CHEST_NORMAL:
         case GO_FEL_IRON_CHEST_HEROIC:
-            felIronChestGUID = pGameObject->getGuidLow();
+            felIronChestGUID = pGameObject->GetNewGUID();
             break;
     }
 }
@@ -51,7 +51,7 @@ void HellfireRampartsInstanceScript::OnEncounterStateChange(uint32_t entry, uint
         case DATA_NAZAN:
         {
             if (getBossState(DATA_VAZRUDEN) == Performed && getBossState(DATA_NAZAN) == Performed)
-                if (GameObject* chest = GetGameObjectByGuid(felIronChestGUID))
+                if (GameObject* chest = getGameObjectByGuid(felIronChestGUID))
                     chest->removeFlags(GO_FLAG_NOT_SELECTABLE);
         } break;
         default:
@@ -63,7 +63,7 @@ void HellfireRampartsInstanceScript::OnSpawnGroupKilled(uint32_t groupId)
 {
     if (groupId == 1)
     {
-        if (Creature* vazruden = GetCreatureByGuid(vazrudenHeraldGUID))
+        if (Creature* vazruden = getCreatureByGuid(vazrudenHeraldGUID))
             if (vazruden->GetScript())
                 vazruden->GetScript()->DoAction(0);
     }

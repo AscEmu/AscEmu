@@ -94,8 +94,8 @@ enum GameObjectOverrides
 {
     GAMEOBJECT_NORMAL_DISTANCE = 0x00,
     GAMEOBJECT_INFVIS = 0x01,                   // Makes the gameobject forever visible on the map after you saw it at least once - for various transports; actually it just doesn't erase it while you're on the same map.
-    GAMEOBJECT_MAPWIDE = 0x02,                  // When you enter its map, the gameobject gets pushed to you no matter how far it is (but only for players), especially for Deeprun and Ulduar Trams.
-    GAMEOBJECT_AREAWIDE = 0x04,                 //\todo UNIMPLEMENTED, but will work like this: the Map will get marked that it contains an object like this, and on player movement these objects will get distance-checked to spawn them from a greater distance than normal if needed - for few objects on smaller maps, like on battlegrounds; maybe they'll get area-triggered, haven't decided yet.
+    GAMEOBJECT_MAPWIDE = 0x02,                  // Legacy name: published grid-wide by the visibility system, not across the entire map.
+    GAMEOBJECT_AREAWIDE = 0x04,                 // Published with an extended cell radius by the visibility system.
     GAMEOBJECT_ONMOVEWIDE = 0x08,               // When this gameobject moves and sends updates about it's position, do so in the second range - MapMgr::ChangeObjectLocation, +/- 6 units wide instead of +/- 1.
     GAMEOBJECT_OVERRIDE_FLAGS = 0x10,           //\todo UNIMPLEMENTED, Let the core decide about the flags sent in the A9 - example: 252 instead of 352 for Deeprun Tram.
     GAMEOBJECT_OVERRIDE_BYTES1 = 0x20,          //\todo UNIMPLEMENTED, Let the core use the full field instead an uint8_t in GAMEOBJECT_BYTES_1, if the database creator knows what to do with it.

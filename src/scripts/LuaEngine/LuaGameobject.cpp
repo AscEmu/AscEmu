@@ -3,7 +3,9 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Map/Maps/BaseMap.hpp"
 #include "LuaGameobject.hpp"
+#include "Map/Management/SpawnManager.hpp"
 
 #include "LUAEngine.hpp"
 
@@ -351,14 +353,12 @@ int LuaGameObject::SpawnCreature(lua_State* L, GameObject* ptr)
         lua_pushnil(L);
         return 1;
     }
-    Creature* pCreature = ptr->getWorldMap()->createCreature(entry);
+    Creature* pCreature = ptr->getWorldMap()->getSpawnManager().createCreature(entry, LocationVector(x, y, z, o));
     if (pCreature == nullptr)
     {
         lua_pushnil(L);
         return 1;
     }
-    pCreature->Load(p, x, y, z, o);
-    pCreature->m_loadedFromDB = true;
     pCreature->setFaction(faction);
     pCreature->setVirtualItemSlotId(MELEE, equip1);
     pCreature->setVirtualItemSlotId(OFFHAND, equip2);
@@ -393,8 +393,12 @@ int LuaGameObject::SpawnGameObject(lua_State* L, GameObject* ptr)
     if (!entry_id)
         return 0;
 
-    GameObject* go = ptr->getWorldMap()->createGameObject(entry_id);
-    go->create(entry_id, ptr->getWorldMap(), ptr->GetPhase(), LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
+    GameObject* go = ptr->getWorldMap()->getSpawnManager().createGameObject(entry_id, LocationVector(x, y, z, o));
+    if (!go)
+    {
+        lua_pushnil(L);
+        return 1;
+    }
     go->Phase(PHASE_SET, phase);
     go->setScale(scale);
     go->AddToWorld(ptr->getWorldMap());
@@ -738,9 +742,9 @@ int LuaGameObject::Update(lua_State* /*L*/, GameObject* ptr)
     }
 
     auto* mapmgr = ptr->getWorldMap();
-    uint32_t NewGuid = mapmgr->generateGameobjectGuid();
-    ptr->RemoveFromWorld(true);
-    ptr->SetNewGuid(NewGuid);
+    ptr->RemoveFromWorld(false);
+    if (!mapmgr->getSpawnManager().regenerateGameObjectGuid(ptr, ptr->getEntry()))
+        return 0;
     ptr->PushToWorld(mapmgr);
     ptr->saveToDB();
     return 0;
@@ -847,13 +851,10 @@ int LuaGameObject::PhaseSet(lua_State* L, GameObject* ptr)
     if (!ptr)
         return 0;
     ptr->Phase(PHASE_SET, newphase);
-    if (ptr->m_spawn)
-        ptr->m_spawn->phase = newphase;
     if (Save)
-    {
         ptr->saveToDB();
-        ptr->m_loadedFromDB = true;
-    }
+    else if (ptr->getWorldMap())
+        ptr->getWorldMap()->getSpawnManager().syncGameObjectSpawn(ptr);
     return 0;
 }
 
@@ -864,13 +865,10 @@ int LuaGameObject::PhaseAdd(lua_State* L, GameObject* ptr)
     if (!ptr)
         return 0;
     ptr->Phase(PHASE_ADD, newphase);
-    if (ptr->m_spawn)
-        ptr->m_spawn->phase |= newphase;
     if (Save)
-    {
         ptr->saveToDB();
-        ptr->m_loadedFromDB = true;
-    }
+    else if (ptr->getWorldMap())
+        ptr->getWorldMap()->getSpawnManager().syncGameObjectSpawn(ptr);
     return 0;
 }
 
@@ -881,13 +879,10 @@ int LuaGameObject::PhaseDelete(lua_State* L, GameObject* ptr)
     if (!ptr)
         return 0;
     ptr->Phase(PHASE_DEL, newphase);
-    if (ptr->m_spawn)
-        ptr->m_spawn->phase &= ~newphase;
     if (Save)
-    {
         ptr->saveToDB();
-        ptr->m_loadedFromDB = true;
-    }
+    else if (ptr->getWorldMap())
+        ptr->getWorldMap()->getSpawnManager().syncGameObjectSpawn(ptr);
     return 0;
 }
 
@@ -1076,7 +1071,7 @@ int LuaGameObject::GetSpawnId(lua_State* L, GameObject* ptr)
         return 0;
     }
 
-    lua_pushnumber(L, ptr->m_spawn != NULL ? ptr->m_spawn->id : 0);
+    lua_pushnumber(L, ptr->getSpawnId());
     return 1;
 }
 
@@ -1102,9 +1097,12 @@ int LuaGameObject::SetPosition(lua_State* L, GameObject* ptr)
     }
 
     auto* mapMgr = ptr->getWorldMap();
-    uint32_t NewGuid = mapMgr->generateGameobjectGuid();
-    ptr->RemoveFromWorld(true);
-    ptr->SetNewGuid(NewGuid);
+    ptr->RemoveFromWorld(false);
+    if (!mapMgr->getSpawnManager().regenerateGameObjectGuid(ptr, ptr->getEntry()))
+    {
+        lua_pushboolean(L, 0);
+        return 1;
+    }
     float x = CHECK_FLOAT(L, 1);
     float y = CHECK_FLOAT(L, 2);
     float z = CHECK_FLOAT(L, 3);
@@ -1142,9 +1140,12 @@ int LuaGameObject::ChangeScale(lua_State* L, GameObject* ptr)
     if (updateNow)
     {
         auto* mapMgr = ptr->getWorldMap();
-        uint32_t nguid = mapMgr->generateGameobjectGuid();
-        ptr->RemoveFromWorld(true);
-        ptr->SetNewGuid(nguid);
+        ptr->RemoveFromWorld(false);
+        if (!mapMgr->getSpawnManager().regenerateGameObjectGuid(ptr, ptr->getEntry()))
+        {
+            lua_pushboolean(L, 0);
+            return 1;
+        }
         ptr->PushToWorld(mapMgr);
     }
     RET_BOOL(true)
@@ -1266,7 +1267,7 @@ int LuaGameObject::GetWoWObject(lua_State* L, GameObject* ptr)
     }
 
     uint64_t guid = CHECK_GUID(L, 1);
-    Object* obj = ptr->getWorldMap()->getObject(guid);
+    Object* obj = ptr->getWorldMapObject(guid);
     if (obj != NULL && obj->isCreatureOrPlayer())
     PUSH_UNIT(L, obj);
     else if (obj != NULL && obj->isGameObject())

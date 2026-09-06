@@ -46,14 +46,11 @@ public:
     // Essential functions
 
     virtual void Update(unsigned long time_passed);     // hides function Unit::Update
-    void AddToWorld();                                  // hides virtual function Object::AddToWorld
-    void AddToWorld(WorldMap* pMapMgr);                 // hides virtual function Object::AddToWorld
-    // void PushToWorld(WorldMap*);                     // not used
-    virtual void RemoveFromWorld(bool free_guid);       // hides virtual function Unit::RemoveFromWorld
-    void OnPrePushToWorld() override;                   // overrides virtual function Unit::OnPrePushToWorld
-    virtual void OnPushToWorld() override;              // overrides virtual function Unit::OnPushToWorld
-    // void OnPreRemoveFromWorld();                     // not used
-    // void OnRemoveFromWorld();                        // not used
+    virtual void onPreAttachToWorld() override;
+    virtual void onAttachToWorld() override;
+
+    virtual void onPreDetachFromWorld() override;
+    virtual void onDetachFromWorld() override;
 
     void OnLoaded();
 
@@ -139,9 +136,7 @@ public:
 
     virtual void setDeathState(DeathState s);
 
-    void addToInRangeObjects(Object* pObj) override;
     void onRemoveInRangeObject(Object* pObj) override;
-    void clearInRangeSets() override;
 
     void registerDatabaseGossip();
 
@@ -153,7 +148,8 @@ public:
     void signalFormationMovement();
     bool isFormationLeaderMoveAllowed() const;
 
-    uint32_t getSpawnId() { return spawnid; }
+    uint32_t getSpawnId() { return m_spawnId; }
+    void setSpawnId(uint32_t spawnId) { m_spawnId = spawnId; }
 
     void motion_Initialize();
     void immediateMovementFlagsUpdate();
@@ -179,10 +175,8 @@ public:
 
         bool teleport(const LocationVector& vec, WorldMap* map);
 
-        bool Load(MySQLStructure::CreatureSpawn* spawn, uint8_t mode, MySQLStructure::MapInfo const* info);
         void Load(CreatureProperties const* c_properties, float x, float y, float z, float o = 0);
-
-        void RemoveFromWorld(bool addrespawnevent, bool free_guid);
+        bool LoadFromDB(MySQLStructure::CreatureSpawn* spawn, WorldMap* map, bool addToWorld);
 
         // remove auras, guardians, scripts
         virtual void PrepareForRemove();
@@ -202,7 +196,7 @@ public:
 
         void SummonExpire()
         {
-            DeleteMe();
+            despawn();
         }
 
         int32_t GetSlotByItemId(uint32_t itemid);
@@ -268,7 +262,6 @@ public:
         uint16_t GetRequiredLootSkill();
 
         // Misc
-        uint32_t GetSQL_id();
         void SetTransportHomePosition(float x, float y, float z, float o) { m_transportHomePosition.x = x, m_transportHomePosition.y = y, m_transportHomePosition.z = z, m_transportHomePosition.o = o; }
         void SetTransportHomePosition(const LocationVector &pos) { m_transportHomePosition = pos; }
         void GetTransportHomePosition(float &x, float &y, float &z, float &ori) { x = m_transportHomePosition.x, y = m_transportHomePosition.y, z = m_transportHomePosition.z, ori = m_transportHomePosition.o; }
@@ -284,15 +277,12 @@ public:
         void DeleteFromDB();
 
         void OnRemoveCorpse();
-        void OnRespawn(WorldMap* m);
+        void OnRespawn();
 
     private:
         // Waypoint path
         uint32_t _waypointPathId = 0;
         std::pair<uint32_t/*nodeId*/, uint32_t/*pathId*/> _currentWaypointNodeInfo = {0, 0};
-
-    protected:
-        virtual void SafeDelete();      // use DeleteMe() instead of SafeDelete() to avoid crashes like InWorld Creatures deleted.
 
     public:
         // Demon
@@ -334,20 +324,17 @@ public:
         void ChannelLinkUpGO(uint32_t SqlId);
         void ChannelLinkUpCreature(uint32_t SqlId);
 
-        uint32_t spawnid = 0;
+        uint32_t m_spawnId = 0;
         uint32_t original_emotestate = 0;
 
         MySQLStructure::CreatureSpawn* m_spawn = nullptr;
 
-        virtual void Despawn(uint32_t delay, uint32_t respawntime);
-        virtual void despawn(uint32_t delay);
-        void saveRespawnTime(uint32_t forceDelay = 0);
-        void respawn(bool force = false);
+        void despawn(uint32_t delayMs = 0, uint32_t respawnDelayMs = 0);
+        void Despawn(uint32_t delayMs = 0, uint32_t respawnDelayMs = 0) { despawn(delayMs, respawnDelayMs); }
         void TriggerScriptEvent(int);
 
         AuctionHouse* auctionHouse = nullptr;
 
-        void DeleteMe();
         bool CanAddToWorld();
 
         // scriptdev2
@@ -360,7 +347,6 @@ public:
         static uint32_t GetLineByFamily(WDB::Structures::CreatureFamilyEntry const* family);
         void RemoveLimboState(Unit* healer);
 
-        MapCell* m_respawnCell = nullptr;
         bool m_noRespawn = false;
 
         float GetBaseParry();

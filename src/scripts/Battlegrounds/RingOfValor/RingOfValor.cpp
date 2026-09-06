@@ -21,6 +21,7 @@
 #include "RingOfValor.h"
 
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Map/Maps/BaseMap.hpp"
 #include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Master.h"
@@ -36,24 +37,24 @@ void RingOfValor::OnCreate()
 {
     GameObject* obj = nullptr;
 
-    obj = spawnGameObject(194030, LocationVector(763.93f, -295.0f, 26.0f, 0.0f), 40, 1375, 1.0f);
+    obj = createGameObject(194030, LocationVector(763.93f, -295.0f, 26.0f, 0.0f), 40, 1375, 1.0f);
     obj->PushToWorld(m_mapMgr);
 
-    obj = spawnGameObject(194031, LocationVector(763.93f, -274.0f, 26.0f, 0.0f), 40, 1375, 1.0f);
+    obj = createGameObject(194031, LocationVector(763.93f, -274.0f, 26.0f, 0.0f), 40, 1375, 1.0f);
     obj->PushToWorld(m_mapMgr);
 
-    obj = spawnGameObject(193458, LocationVector(763.630f, -261.783f, 26.0f, 0.0f), 40, 1375, 1.0f);
+    obj = createGameObject(193458, LocationVector(763.630f, -261.783f, 26.0f, 0.0f), 40, 1375, 1.0f);
     obj->PushToWorld(m_mapMgr);
 
-    obj = spawnGameObject(193461, LocationVector(723.522f, -284.428f, 24.6f, 0.0f), 40, 1375, 1.0f);
+    obj = createGameObject(193461, LocationVector(723.522f, -284.428f, 24.6f, 0.0f), 40, 1375, 1.0f);
     obj->PushToWorld(m_mapMgr);
 
-    obj = spawnGameObject(192392, LocationVector(763.93f, -295.0f, 27.0f, 0.0f), 32, 1375, 1.0f);
+    obj = createGameObject(192392, LocationVector(763.93f, -295.0f, 27.0f, 0.0f), 32, 1375, 1.0f);
     obj->setState(GO_STATE_CLOSED);
     obj->setAnimationProgress(100);
     m_gates.insert(obj);
 
-    obj = spawnGameObject(192391, LocationVector(763.93f, -274.0f, 27.0f, 0.0f), 32, 1375, 1.0f);
+    obj = createGameObject(192391, LocationVector(763.93f, -274.0f, 27.0f, 0.0f), 32, 1375, 1.0f);
     obj->setState(GO_STATE_CLOSED);
     obj->setAnimationProgress(100);
     m_gates.insert(obj);

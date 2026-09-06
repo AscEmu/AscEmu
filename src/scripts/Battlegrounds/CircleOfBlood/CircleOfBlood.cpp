@@ -21,6 +21,7 @@
 #include "CircleOfBlood.h"
 
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Map/Maps/BaseMap.hpp"
 #include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
 
@@ -35,22 +36,22 @@ void CircleOfBlood::OnCreate()
 {
     GameObject* obj = nullptr;
 
-    obj = spawnGameObject(183972, LocationVector( 6177.707520f, 227.348145f, 3.604374f, -2.260201f), 32, 1375, 1.0f);
+    obj = createGameObject(183972, LocationVector( 6177.707520f, 227.348145f, 3.604374f, -2.260201f), 32, 1375, 1.0f);
     obj->setState(GO_STATE_CLOSED);
     obj->setLocalRotation(0.f, 0.f, 0.90445f, -0.426569f);
     obj->PushToWorld(m_mapMgr);
 
-    obj = spawnGameObject(183973, LocationVector(6189.546387f, 241.709854f, 3.101481f, 0.881392f), 32, 1375, 1.0f);
+    obj = createGameObject(183973, LocationVector(6189.546387f, 241.709854f, 3.101481f, 0.881392f), 32, 1375, 1.0f);
     obj->setState(GO_STATE_CLOSED);
     obj->setLocalRotation(0.f, 0.f, 0.426569f, 0.904455f);
     m_gates.insert(obj);
 
-    obj = spawnGameObject(183970, LocationVector(6299.115723f, 296.549438f, 3.308032f, 0.881392f), 32, 1375, 1.0f);
+    obj = createGameObject(183970, LocationVector(6299.115723f, 296.549438f, 3.308032f, 0.881392f), 32, 1375, 1.0f);
     obj->setState(GO_STATE_CLOSED);
     obj->setLocalRotation(0.f, 0.f, 0.426569f, 0.904455f);
     obj->PushToWorld(m_mapMgr);
 
-    obj = spawnGameObject(183971, LocationVector(6287.276855f, 282.187714f, 3.810925f, -2.260201f), 32, 1375, 1.0f);
+    obj = createGameObject(183971, LocationVector(6287.276855f, 282.187714f, 3.810925f, -2.260201f), 32, 1375, 1.0f);
     obj->setState(GO_STATE_CLOSED);
     obj->setLocalRotation(0.f, 0.f, 0.904455f, -0.426569f);
     m_gates.insert(obj);
@@ -60,14 +61,14 @@ void CircleOfBlood::OnCreate()
 
 void CircleOfBlood::HookOnShadowSight()
 {
-    m_buffs[0] = spawnGameObject(184664, LocationVector(6249.276855f, 275.187714f, 11.201481f, -2.260201f), 32, 1375, 1.0f);
+    m_buffs[0] = createGameObject(184664, LocationVector(6249.276855f, 275.187714f, 11.201481f, -2.260201f), 32, 1375, 1.0f);
     m_buffs[0]->setState(GO_STATE_CLOSED);
     m_buffs[0]->setLocalRotation(0.f, 0.f, 0.904455f, -0.426569f);
     m_buffs[0]->setGoType(GAMEOBJECT_TYPE_TRAP);
     m_buffs[0]->setAnimationProgress(100);
     m_buffs[0]->PushToWorld(m_mapMgr);
 
-    m_buffs[1] = spawnGameObject(184664, LocationVector(6228.546387f, 249.709854f, 11.201481f, 0.881392f), 32, 1375, 1.0f);
+    m_buffs[1] = createGameObject(184664, LocationVector(6228.546387f, 249.709854f, 11.201481f, 0.881392f), 32, 1375, 1.0f);
     m_buffs[1]->setState(GO_STATE_CLOSED);
     m_buffs[1]->setLocalRotation(0.f, 0.f, 0.90445f, -0.426569f);
     m_buffs[1]->setGoType(GAMEOBJECT_TYPE_TRAP);

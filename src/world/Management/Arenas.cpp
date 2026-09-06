@@ -289,9 +289,14 @@ void Arena::HookOnPlayerDeath(Player* _player)
 
 void Arena::OnCreate()
 {
-    // push gates into world
-    for (std::set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
-        (*itr)->PushToWorld(m_mapMgr);
+    // Push gates through SpawnManager so lifecycle/grid bookkeeping stays consistent.
+    for (GameObject* gate : m_gates)
+    {
+        if (!gate || gate->IsInWorld())
+            continue;
+
+        m_mapMgr->getSpawnManager().pushToWorld(gate);
+    }
 }
 
 void Arena::HookOnShadowSight()
@@ -458,7 +463,7 @@ void Arena::HookOnAreaTrigger(Player* _player, uint32_t id)
                 s->prepare(&targets);
 
                 // despawn the gameobject (not delete!)
-                m_buffs[buffslot]->despawn(0, 30 /*BUFF_RESPAWN_TIME*/);
+                m_buffs[buffslot]->despawn(0, 30 * 1000 /*BUFF_RESPAWN_TIME*/);
             }
         }
     }

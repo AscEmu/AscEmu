@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Movement/MovementManager.h"
@@ -67,7 +68,7 @@ public:
         Creature* cyclonian = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(323.947f, -1483.68f, 43.1363f, 6239);
         if (cyclonian == nullptr)
         {
-            cyclonian = pPlayer->getWorldMap()->createAndSpawnCreature(6239, LocationVector(323.947f, -1483.68f, 43.1363f, 0.682991f));
+            cyclonian = pPlayer->getWorldMap()->getSpawnManager().spawnCreature(6239, LocationVector(323.947f, -1483.68f, 43.1363f, 0.682991f));
 
             // if spawning cyclonian failed, we have to return.
             if (cyclonian == nullptr)

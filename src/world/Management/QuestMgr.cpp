@@ -594,7 +594,7 @@ void QuestMgr::OnPlayerCast(Player* plr, uint32_t spellid, uint64_t & victimguid
     if (!plr || !plr->hasQuestSpell(spellid))
         return;
 
-    Unit* victim = plr->getWorldMap() ? plr->getWorldMap()->getUnit(victimguid) : nullptr;
+    Unit* victim = plr->getWorldMap() ? plr->getWorldMapUnit(victimguid) : nullptr;
 
     const uint32_t entry = victim ? victim->getEntry() : 0;
 
@@ -2183,7 +2183,7 @@ void QuestMgr::OnPlayerEmote(Player* plr, uint32_t emoteid, uint64_t & victimgui
     if (!plr || !emoteid || !victimguid)
         return;
 
-    Unit* victim = plr->getWorldMap() ? plr->getWorldMap()->getUnit(victimguid) : nullptr;
+    Unit* victim = plr->getWorldMap() ? plr->getWorldMapUnit(victimguid) : nullptr;
 
     uint8_t j;
     const uint32_t entry = victim ? victim->getEntry() : 0;

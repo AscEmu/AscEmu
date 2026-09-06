@@ -22,6 +22,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <mutex>
 
 namespace G3D
 {
@@ -40,6 +41,7 @@ namespace VMAP
 class DynamicMapTree
 {
     std::unique_ptr<DynTreeImpl> impl;
+    mutable std::mutex _mutex;
 
 public:
 

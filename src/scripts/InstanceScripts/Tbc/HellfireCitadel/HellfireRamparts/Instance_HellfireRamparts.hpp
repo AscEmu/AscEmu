@@ -43,6 +43,6 @@ public:
     void OnSpawnGroupKilled(uint32_t /*groupId*/) override;
 
 protected:
-    uint32_t felIronChestGUID = 0;
-    uint32_t vazrudenHeraldGUID = 0;
+    WoWGuid felIronChestGUID = 0;
+    WoWGuid vazrudenHeraldGUID = 0;
 };

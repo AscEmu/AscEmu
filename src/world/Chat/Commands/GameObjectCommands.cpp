@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatDefines.hpp"
 #include "Chat/ChatCommandHandler.hpp"
 #include "Map/Management/MapMgr.hpp"
+#include "Map/Management/SpawnManager.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObject.h"
 #include "Objects/GameObjectProperties.hpp"
@@ -25,6 +26,56 @@ This file is released under the MIT license. See README-MIT for more information
 #include <string>
 #include <system_error>
 #include <vector>
+
+namespace
+{
+    SpawnManager* getSpawnManager(GameObject* gameObject)
+    {
+        if (!gameObject)
+            return nullptr;
+
+        WorldMap* map = gameObject->getWorldMap();
+        return map ? &map->getSpawnManager() : nullptr;
+    }
+
+    bool isPersistentGameObject(GameObject* gameObject)
+    {
+        if (SpawnManager* spawnManager = getSpawnManager(gameObject))
+            return spawnManager->isPersistentSpawn(gameObject->getGuid());
+        return false;
+    }
+
+    void syncGameObjectSpawn(GameObject* gameObject, bool updateHomePosition = false)
+    {
+        if (SpawnManager* spawnManager = getSpawnManager(gameObject))
+            spawnManager->syncGameObjectSpawn(gameObject, updateHomePosition);
+    }
+
+    bool prepareGameObjectClientRecreate(GameObject* gameObject, Player* player, WorldMap*& map, SpawnManager*& spawnManager)
+    {
+        if (!gameObject || !player || !gameObject->IsInWorld())
+            return false;
+
+        map = gameObject->getWorldMap();
+        if (!map)
+            return false;
+
+        spawnManager = &map->getSpawnManager();
+        const uint64_t oldGuid = gameObject->getGuid();
+
+        gameObject->RemoveFromWorld(false);
+
+        if (!spawnManager->regenerateGameObjectGuid(gameObject))
+        {
+            gameObject->PushToWorld(map);
+            player->setSelectedGo(oldGuid);
+            return false;
+        }
+
+        player->setSelectedGo(gameObject->getGuid());
+        return true;
+    }
+}
 
 //.gobject damage
 bool ChatCommandHandler::HandleGODamageCommand(const char* args, WorldSession* session)
@@ -89,39 +140,34 @@ bool ChatCommandHandler::HandleGODeleteCommand(const char* /*args*/, WorldSessio
         return true;
     }
 
-    if (selected_gobject->m_spawn != nullptr && selected_gobject->m_spawn->entry == selected_gobject->getEntry())
-    {
-        uint32_t cellx = uint32_t(((Map::Terrain::_maxX - selected_gobject->m_spawn->spawnPoint.x) / Map::Cell::cellSize));
-        uint32_t celly = uint32_t(((Map::Terrain::_maxY - selected_gobject->m_spawn->spawnPoint.y) / Map::Cell::cellSize));
+    WorldMap* map = selected_gobject->getWorldMap();
+    if (!map)
+        return true;
 
-        if (cellx < Map::Cell::_sizeX && celly < Map::Cell::_sizeY)
-        {
-            CellSpawns* cell_spawns = selected_gobject->getWorldMap()->getBaseMap()->getSpawnsList(cellx, celly);
-            if (cell_spawns != nullptr)
-            {
-                for (GameobjectSpawnList::iterator itr = cell_spawns->GameobjectSpawns.begin(); itr != cell_spawns->GameobjectSpawns.end(); ++itr)
-                {
-                    if ((*itr) == selected_gobject->m_spawn)
-                    {
-                        cell_spawns->GameobjectSpawns.erase(itr);
-                        break;
-                    }
-                }
-            }
+    SpawnManager& spawnManager = map->getSpawnManager();
+    const uint32_t spawnId = selected_gobject->getSpawnId();
+    const bool persistent = spawnManager.isPersistentSpawn(selected_gobject->getGuid());
 
-            selected_gobject->deleteFromDB();
+    sGMLog.writefromsession(
+        m_session,
+        "Deleted game object entry {} spawnId {} persistent {} on map {} at X:{} Y:{} Z:{} (name: {}).",
+        selected_gobject->getEntry(),
+        spawnId,
+        persistent ? 1u : 0u,
+        selected_gobject->GetMapId(),
+        selected_gobject->GetPositionX(),
+        selected_gobject->GetPositionY(),
+        selected_gobject->GetPositionZ(),
+        sMySQLStore.getGameObjectProperties(selected_gobject->getEntry())->name);
 
-            delete selected_gobject->m_spawn;
-            selected_gobject->m_spawn = nullptr;
-        }
-    }
-    sGMLog.writefromsession(m_session, "Deleted game object {} on map {} at X:{} Y:{} Z:{} (name: {}).",
-    selected_gobject->getEntry(), selected_gobject->GetMapId(), selected_gobject->GetPositionX(), selected_gobject->GetPositionY(), selected_gobject->GetPositionZ(),
-    sMySQLStore.getGameObjectProperties(selected_gobject->getEntry())->name);
-    selected_gobject->despawn(0, 0);
+    // Only persistent spawns have a DB row.
+    if (persistent)
+        selected_gobject->deleteFromDB();
+
+    spawnManager.eraseGameObjectSpawnBySpawnID(spawnId);
+    spawnManager.despawn(selected_gobject, 0);
 
     m_session->GetPlayer()->setSelectedGo(0);
-
     return true;
 }
 
@@ -135,7 +181,7 @@ bool ChatCommandHandler::HandleGOEnableCommand(const char* /*args*/, WorldSessio
         return true;
     }
 
-    if (gameobject->IsActive())
+    if (gameobject->isActive())
     {
         // Deactivate
         gameobject->setDynamicFlags(GO_DYN_FLAG_NONE);
@@ -191,7 +237,9 @@ bool ChatCommandHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession*
     }
 
     systemMessage(m_session, "======== {} Information =======", MSG_COLOR_SUBWHITE);
-    systemMessage(m_session, "{} SpawnID:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->m_spawn != nullptr ? gameobject->m_spawn->id : 0);
+    const bool persistent = isPersistentGameObject(gameobject);
+    systemMessage(m_session, "{} SpawnID:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getSpawnId());
+    systemMessage(m_session, "{} Spawn type:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, persistent ? "persistent" : "ephemeral");
     systemMessage(m_session, "{} Entry:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getEntry());
     systemMessage(m_session, "{} GUID:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getGuidLow());
     systemMessage(m_session, "{} Model:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getDisplayId());
@@ -324,10 +372,10 @@ bool ChatCommandHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession*
 
     systemMessage(m_session, "=================================");
 
-    if (gameobject->m_spawn != nullptr)
-        systemMessage(m_session, "Is part of table: {}", gameobject->m_spawn->origine);
+    if (persistent)
+        systemMessage(m_session, "Persistent DB-backed spawn.");
     else
-        systemMessage(m_session, "Is spawnd by an internal script");
+        systemMessage(m_session, "Ephemeral runtime spawn.");
 
     return true;
 }
@@ -335,37 +383,49 @@ bool ChatCommandHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession*
 //.gobject movehere
 bool ChatCommandHandler::HandleGOMoveHereCommand(const char* /*args*/, WorldSession* m_session)
 {
-    auto gameobject = m_session->GetPlayer()->getSelectedGo();
+    Player* player = m_session->GetPlayer();
+    GameObject* gameobject = player->getSelectedGo();
     if (gameobject == nullptr)
     {
         redSystemMessage(m_session, "No selected GameObject!");
         return true;
     }
 
-    float position_x = m_session->GetPlayer()->GetPositionX();
-    float position_y = m_session->GetPlayer()->GetPositionY();
-    float position_z = m_session->GetPlayer()->GetPositionZ();
-    float position_o = gameobject->GetOrientation();
+    const float position_x = player->GetPositionX();
+    const float position_y = player->GetPositionY();
+    const float position_z = player->GetPositionZ();
+    const float position_o = gameobject->GetOrientation();
 
-    gameobject->SetPosition(position_x, position_y, position_z, position_o);
-    auto go_spawn = gameobject->m_spawn;
-
-    if (go_spawn == nullptr)
+    WorldMap* map = nullptr;
+    SpawnManager* spawnManager = nullptr;
+    if (!prepareGameObjectClientRecreate(gameobject, player, map, spawnManager))
     {
-        redSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
+        redSystemMessage(m_session, "Failed to recreate selected GameObject.");
         return true;
     }
 
-    greenSystemMessage(m_session, "Updated gameobject position in gameobject_spawns table for spawn ID: {}.", go_spawn->id);
-    WorldDatabase.execute("UPDATE gameobject_spawns SET position_x = %f, position_y = %f, position_z = %f WHERE id = %u AND min_build <= %u AND max_build >= %u", position_x, position_y, position_z, go_spawn->id, VERSION_STRING, VERSION_STRING);
-    sGMLog.writefromsession(m_session, "Updated gameobject position in gameobject_spawns table for spawn ID: {}.", go_spawn->id);
+    gameobject->SetPosition(LocationVector(position_x, position_y, position_z, position_o));
+    spawnManager->syncGameObjectSpawn(gameobject, true);
+    gameobject->PushToWorld(map);
 
-    uint32_t new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
-    gameobject->RemoveFromWorld(true);
-    gameobject->SetNewGuid(new_go_guid);
-    gameobject->PushToWorld(m_session->GetPlayer()->getWorldMap());
+    const uint32_t spawnId = gameobject->getSpawnId();
+    const bool persistent = spawnManager->isPersistentSpawn(gameobject->getGuid());
 
-    m_session->GetPlayer()->setSelectedGo(new_go_guid);
+    if (persistent)
+    {
+        gameobject->saveToDB();
+        greenSystemMessage(m_session, "GameObject spawn ID {} moved and saved.", spawnId);
+    }
+    else
+    {
+        greenSystemMessage(m_session, "Ephemeral GameObject spawn ID {} moved.", spawnId);
+    }
+
+    sGMLog.writefromsession(
+        m_session,
+        "changed gameobject position of spawn ID: %u persistent %u.",
+        spawnId,
+        persistent ? 1u : 0u);
 
     return true;
 }
@@ -430,45 +490,61 @@ bool ChatCommandHandler::HandleGORotateCommand(const char* args, WorldSession* m
     if (sscanf(args, "%c %f", &Axis, &deg) < 1)
         return false;
 
-    GameObject* go = m_session->GetPlayer()->getSelectedGo();
+    Player* player = m_session->GetPlayer();
+    GameObject* go = player->getSelectedGo();
     if (!go)
     {
         redSystemMessage(m_session, "No selected GameObject...");
         return true;
     }
 
-    float rotation_x = m_session->GetPlayer()->m_goLastXRotation;
-    float rotation_y = m_session->GetPlayer()->m_goLastYRotation;
-    float orientation = go->GetOrientation();
+    const float rotation_x = player->m_goLastXRotation;
+    const float rotation_y = player->m_goLastYRotation;
+    const float orientation = go->GetOrientation();
+
+    if (tolower(Axis) != 'x' && tolower(Axis) != 'y' && tolower(Axis) != 'o')
+    {
+        redSystemMessage(m_session, "Invalid Axis, Please use x, y, or o.");
+        return true;
+    }
+
+    WorldMap* map = nullptr;
+    SpawnManager* spawnManager = nullptr;
+    if (!prepareGameObjectClientRecreate(go, player, map, spawnManager))
+    {
+        redSystemMessage(m_session, "Failed to recreate selected GameObject.");
+        return true;
+    }
 
     switch (tolower(Axis))
     {
         case 'x':
             go->setLocalRotationAngles(orientation, rotation_y, deg);
-            m_session->GetPlayer()->m_goLastXRotation = deg;
+            player->m_goLastXRotation = deg;
             break;
         case 'y':
             go->setLocalRotationAngles(orientation, deg, rotation_x);
-            m_session->GetPlayer()->m_goLastYRotation = deg;
+            player->m_goLastYRotation = deg;
             break;
         case 'o':
-            go->SetOrientation(m_session->GetPlayer()->GetOrientation());
+            go->SetOrientation(player->GetOrientation());
             go->setLocalRotationAngles(go->GetOrientation(), rotation_y, rotation_x);
             break;
-        default:
-            redSystemMessage(m_session, "Invalid Axis, Please use x, y, or o.");
-            return true;
     }
 
-    greenSystemMessage(m_session, "Gameobject spawn id: {} rotated", go->m_spawn->id);
+    spawnManager->syncGameObjectSpawn(go);
+    go->PushToWorld(map);
 
-    uint32_t NewGuid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
-    go->RemoveFromWorld(true);
-    go->SetNewGuid(NewGuid);
-    go->PushToWorld(m_session->GetPlayer()->getWorldMap());
-    go->saveToDB();
+    if (spawnManager->isPersistentSpawn(go->getGuid()))
+    {
+        go->saveToDB();
+        greenSystemMessage(m_session, "GameObject spawn ID {} rotated and saved.", go->getSpawnId());
+    }
+    else
+    {
+        greenSystemMessage(m_session, "Ephemeral GameObject spawn ID {} rotated.", go->getSpawnId());
+    }
 
-    m_session->GetPlayer()->setSelectedGo(NewGuid);
     return true;
 }
 
@@ -558,9 +634,8 @@ bool ChatCommandHandler::HandleGOSelectGuidCommand(const char* args, WorldSessio
         return false;
 
     Player* player = m_session->GetPlayer();
-    auto gameobject = player->getWorldMap()->getGameObject(guid);
-
-    if (!gameobject)
+    auto gameobject = player->getWorldMapGameObject(guid);
+    if (gameobject == nullptr)
     {
         redSystemMessage(m_session, "No GameObject found with guid {}", guid);
         return true;
@@ -571,37 +646,82 @@ bool ChatCommandHandler::HandleGOSelectGuidCommand(const char* args, WorldSessio
     auto* props = gameobject->GetGameObjectProperties();
     std::string goName = props ? props->name : "Unknown GameObject";
 
-    greenSystemMessage(m_session, "GameObject [ {} ] with distance {} to your position selected.",
-                       goName, player->CalcDistance(gameobject));
+    greenSystemMessage(
+        m_session,
+        "GameObject [ {} ] with distance {} to your position selected.",
+        goName,
+        player->CalcDistance(gameobject));
+
     return true;
 }
 
 //.gobject spawn
 bool ChatCommandHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session)
 {
-    uint32_t go_entry = 0;
-    if (sscanf(args, "%u", &go_entry) < 1)
+    uint32_t entry = 0;
+    uint32_t persistent = 0;
+    if (!args || sscanf(args, "%u %u", &entry, &persistent) < 1 || entry == 0 || persistent > 1)
     {
-        redSystemMessage(m_session, "Wrong Syntax! Use: .gobject spawn <entry>");
-        redSystemMessage(m_session, "Use: .gobject spawn <entry>");
+        redSystemMessage(m_session, "Wrong Syntax! Use: .gobject spawn <entry> [persistent 0|1]");
         return true;
     }
 
-    auto gameobject_prop = sMySQLStore.getGameObjectProperties(go_entry);
-    if (gameobject_prop == nullptr)
+    auto const* gameObjectProperties = sMySQLStore.getGameObjectProperties(entry);
+    if (gameObjectProperties == nullptr)
     {
-        redSystemMessage(m_session, "GameObject entry {} is a invalid entry!", go_entry);
+        redSystemMessage(m_session, "GameObject entry {} is an invalid entry!", entry);
         return true;
     }
 
-    auto player = m_session->GetPlayer();
-    auto gameobject = player->getWorldMap()->createAndSpawnGameObject(go_entry, player->GetPosition());
+    Player* player = m_session->GetPlayer();
+    if (!player || !player->getWorldMap())
+        return true;
 
-    greenSystemMessage(m_session, "Spawned gameobject {} (entry: {}). Added to gameobject_spawns table.", gameobject_prop->name, gameobject->getEntry());
-    gameobject->saveToDB(true);
-    sGMLog.writefromsession(m_session, "Spawned gameobject {} (entry: {}) at map {} X:{} Y:{} Z:{}.", gameobject_prop->name, gameobject->getEntry(), player->GetMapId(), gameobject->GetPositionX(), gameobject->GetPositionY(), gameobject->GetPositionZ());
+    GameObject* gameObject = player->getWorldMap()->getSpawnManager().spawnGameObject(
+        entry,
+        player->GetPosition());
 
-    m_session->GetPlayer()->setSelectedGo(gameobject->getGuid());
+    if (gameObject == nullptr)
+    {
+        redSystemMessage(m_session, "Failed to spawn GameObject with entry {}.", entry);
+        return true;
+    }
+
+    const uint32_t ephemeralSpawnId = gameObject->getSpawnId();
+
+    if (persistent != 0)
+        gameObject->saveToDB(true);
+
+    greenSystemMessage(
+        m_session,
+        "Spawned GameObject `{}` entry {} spawnId {}{}.",
+        gameObjectProperties->name,
+        entry,
+        gameObject->getSpawnId(),
+        persistent != 0 ? " (persistent)" : " (ephemeral)");
+
+    if (persistent != 0 && ephemeralSpawnId != gameObject->getSpawnId())
+    {
+        systemMessage(
+            m_session,
+            "Ephemeral spawnId {} migrated to DB spawnId {}.",
+            ephemeralSpawnId,
+            gameObject->getSpawnId());
+    }
+
+    sGMLog.writefromsession(
+        m_session,
+        "spawned gameobject %s entry %u spawnId %u persistent %u at map %u %f %f %f",
+        gameObjectProperties->name.c_str(),
+        gameObject->getEntry(),
+        gameObject->getSpawnId(),
+        persistent,
+        player->GetMapId(),
+        gameObject->GetPositionX(),
+        gameObject->GetPositionY(),
+        gameObject->GetPositionZ());
+
+    player->setSelectedGo(gameObject->getGuid());
 
     return true;
 }
@@ -658,18 +778,40 @@ bool ChatCommandHandler::HandleGOSetFactionCommand(const char* args, WorldSessio
     }
 
     gameobject->SetFaction(go_faction);
+    syncGameObjectSpawn(gameobject);
 
-    auto go_spawn = gameobject->m_spawn;
+    const uint32_t spawnId = gameobject->getSpawnId();
+    const bool persistent = isPersistentGameObject(gameobject);
 
-    if (go_spawn == nullptr)
+    if (persistent)
     {
-        redSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
-        return true;
+        WorldDatabase.execute(
+            "REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)",
+            spawnId,
+            VERSION_STRING,
+            VERSION_STRING,
+            gameobject->getScale(),
+            go_faction,
+            gameobject->getFlags());
+
+        greenSystemMessage(
+            m_session,
+            "Faction changed and saved for GameObject spawn ID {}.",
+            spawnId);
+    }
+    else
+    {
+        greenSystemMessage(
+            m_session,
+            "Faction changed for ephemeral GameObject spawn ID {}.",
+            spawnId);
     }
 
-    greenSystemMessage(m_session, "Updated gameobject faction in gameobject_spawns table for spawn ID: {}.", go_spawn->id);
-    WorldDatabase.execute("REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)", go_spawn->id, VERSION_STRING, VERSION_STRING, gameobject->getScale(), go_faction, gameobject->getFlags());
-    sGMLog.writefromsession(m_session, "Updated gameobject faction in gameobject_spawns table for spawn ID: {}.", go_spawn->id);
+    sGMLog.writefromsession(
+        m_session,
+        "changed gameobject faction of spawn ID: %u persistent %u.",
+        spawnId,
+        persistent ? 1u : 0u);
 
     return true;
 }
@@ -693,17 +835,40 @@ bool ChatCommandHandler::HandleGOSetFlagsCommand(const char* args, WorldSession*
     }
 
     gameobject->setFlags(go_flags);
+    syncGameObjectSpawn(gameobject);
 
-    auto go_spawn = gameobject->m_spawn;
+    const uint32_t spawnId = gameobject->getSpawnId();
+    const bool persistent = isPersistentGameObject(gameobject);
 
-    if (go_spawn == nullptr)
+    if (persistent)
     {
-        redSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
-        return true;
+        WorldDatabase.execute(
+            "REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)",
+            spawnId,
+            VERSION_STRING,
+            VERSION_STRING,
+            gameobject->getScale(),
+            gameobject->getFactionTemplate(),
+            go_flags);
+
+        greenSystemMessage(
+            m_session,
+            "Flags changed and saved for GameObject spawn ID {}.",
+            spawnId);
     }
-    greenSystemMessage(m_session, "Updated gameobject flags in gameobject_spawns table for spawn ID: {}.", go_spawn->id);
-    WorldDatabase.execute("REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)", go_spawn->id, VERSION_STRING, VERSION_STRING, gameobject->getScale(), gameobject->getFactionTemplate(), go_flags);
-    sGMLog.writefromsession(m_session, "Updated gameobject flags in gameobject_spawns table for spawn ID: {}.", go_spawn->id);
+    else
+    {
+        greenSystemMessage(
+            m_session,
+            "Flags changed for ephemeral GameObject spawn ID {}.",
+            spawnId);
+    }
+
+    sGMLog.writefromsession(
+        m_session,
+        "changed gameobject flags of spawn ID: %u persistent %u.",
+        spawnId,
+        persistent ? 1u : 0u);
 
     return true;
 }
@@ -725,23 +890,51 @@ bool ChatCommandHandler::HandleGOSetOverridesCommand(const char* args, WorldSess
         return true;
     }
 
-    gameobject->SetOverrides(go_override);
-    auto go_spawn = gameobject->m_spawn;
-
-    if (go_spawn == nullptr)
+    Player* player = m_session->GetPlayer();
+    WorldMap* map = nullptr;
+    SpawnManager* spawnManager = nullptr;
+    if (!prepareGameObjectClientRecreate(gameobject, player, map, spawnManager))
     {
-        redSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
+        redSystemMessage(m_session, "Failed to recreate selected GameObject.");
         return true;
     }
-    greenSystemMessage(m_session, "Updated gameobject scale in gameobject_spawns table for spawn ID: {} to {}.", go_override, go_spawn->id);
-    WorldDatabase.execute("UPDATE gameobject_spawns SET overrides = %u WHERE id = %u AND min_build <= %u AND max_build >= %u", go_override, go_spawn->id, VERSION_STRING, VERSION_STRING);
-    sGMLog.writefromsession(m_session, "Updated gameobject scale in gameobject_spawns table for spawn ID: {} to {}.", go_spawn->id, go_override);
 
-    uint32_t new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
-    gameobject->RemoveFromWorld(true);
-    gameobject->SetNewGuid(new_go_guid);
-    gameobject->PushToWorld(m_session->GetPlayer()->getWorldMap());
-    m_session->GetPlayer()->setSelectedGo(new_go_guid);
+    gameobject->SetOverrides(go_override);
+    spawnManager->syncGameObjectSpawn(gameobject);
+    gameobject->PushToWorld(map);
+
+    const uint32_t spawnId = gameobject->getSpawnId();
+    const bool persistent = spawnManager->isPersistentSpawn(gameobject->getGuid());
+
+    if (persistent)
+    {
+        WorldDatabase.execute(
+            "UPDATE gameobject_spawns SET overrides = %u WHERE id = %u AND min_build <= %u AND max_build >= %u",
+            go_override,
+            spawnId,
+            VERSION_STRING,
+            VERSION_STRING);
+
+        greenSystemMessage(
+            m_session,
+            "Overrides changed and saved for GameObject spawn ID {}.",
+            spawnId);
+    }
+    else
+    {
+        greenSystemMessage(
+            m_session,
+            "Overrides changed for ephemeral GameObject spawn ID {}.",
+            spawnId);
+    }
+
+    sGMLog.writefromsession(
+        m_session,
+        "changed gameobject overrides of spawn ID: %u to %u persistent %u",
+        spawnId,
+        go_override,
+        persistent ? 1u : 0u);
+
     return true;
 }
 
@@ -764,24 +957,50 @@ bool ChatCommandHandler::HandleGOSetPhaseCommand(const char* args, WorldSession*
         return true;
     }
 
-    auto go_spawn = gameobject->m_spawn;
-    gameobject->Phase(PHASE_SET, phase);
-
-    if (go_spawn == nullptr)
+    Player* player = m_session->GetPlayer();
+    WorldMap* map = nullptr;
+    SpawnManager* spawnManager = nullptr;
+    if (!prepareGameObjectClientRecreate(gameobject, player, map, spawnManager))
     {
-        redSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
+        redSystemMessage(m_session, "Failed to recreate selected GameObject.");
         return true;
     }
-    greenSystemMessage(m_session, "Updated gameobject phase in gameobject_spawns table for spawn ID: {} to {}.", phase, go_spawn->id);
-    WorldDatabase.execute("UPDATE gameobject_spawns SET phase = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", phase, go_spawn->id, VERSION_STRING, VERSION_STRING);
-    sGMLog.writefromsession(m_session, "Updated gameobject phase in gameobject_spawns table for spawn ID: {} to {}.", go_spawn->id, phase);
 
-    uint32_t new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
-    gameobject->RemoveFromWorld(true);
-    gameobject->SetNewGuid(new_go_guid);
-    gameobject->PushToWorld(m_session->GetPlayer()->getWorldMap());
+    gameobject->Phase(PHASE_SET, phase);
+    spawnManager->syncGameObjectSpawn(gameobject);
+    gameobject->PushToWorld(map);
 
-    m_session->GetPlayer()->setSelectedGo(new_go_guid);
+    const uint32_t spawnId = gameobject->getSpawnId();
+    const bool persistent = spawnManager->isPersistentSpawn(gameobject->getGuid());
+
+    if (persistent)
+    {
+        WorldDatabase.execute(
+            "UPDATE gameobject_spawns SET phase = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u",
+            phase,
+            spawnId,
+            VERSION_STRING,
+            VERSION_STRING);
+
+        greenSystemMessage(
+            m_session,
+            "Phase changed and saved for GameObject spawn ID {}.",
+            spawnId);
+    }
+    else
+    {
+        greenSystemMessage(
+            m_session,
+            "Phase changed for ephemeral GameObject spawn ID {}.",
+            spawnId);
+    }
+
+    sGMLog.writefromsession(
+        m_session,
+        "changed gameobject phase of spawn ID: %u to %u persistent %u",
+        spawnId,
+        phase,
+        persistent ? 1u : 0u);
 
     return true;
 }
@@ -803,24 +1022,53 @@ bool ChatCommandHandler::HandleGOSetScaleCommand(const char* args, WorldSession*
         return true;
     }
 
-    gameobject->setScale(scale);
-    auto go_spawn = gameobject->m_spawn;
-
-    if (go_spawn == nullptr)
+    Player* player = m_session->GetPlayer();
+    WorldMap* map = nullptr;
+    SpawnManager* spawnManager = nullptr;
+    if (!prepareGameObjectClientRecreate(gameobject, player, map, spawnManager))
     {
-        redSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
+        redSystemMessage(m_session, "Failed to recreate selected GameObject.");
         return true;
     }
-    greenSystemMessage(m_session, "Updated gameobject scale in gameobject_spawns table for spawn ID: {} to {:.3f}.", go_spawn->id, scale);
-    WorldDatabase.execute("REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)", go_spawn->id, VERSION_STRING, VERSION_STRING, scale, gameobject->getFactionTemplate(), gameobject->getFlags());
-    sGMLog.writefromsession(m_session, "Updated gameobject scale in gameobject_spawns table for spawn ID: {} to {:.3f}.", go_spawn->id, scale);
 
-    uint32_t new_go_guid = m_session->GetPlayer()->getWorldMap()->generateGameobjectGuid();
-    gameobject->RemoveFromWorld(true);
-    gameobject->SetNewGuid(new_go_guid);
-    gameobject->PushToWorld(m_session->GetPlayer()->getWorldMap());
+    gameobject->setScale(scale);
+    spawnManager->syncGameObjectSpawn(gameobject);
+    gameobject->PushToWorld(map);
 
-    m_session->GetPlayer()->setSelectedGo(new_go_guid);
+    const uint32_t spawnId = gameobject->getSpawnId();
+    const bool persistent = spawnManager->isPersistentSpawn(gameobject->getGuid());
+
+    if (persistent)
+    {
+        WorldDatabase.execute(
+            "REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)",
+            spawnId,
+            VERSION_STRING,
+            VERSION_STRING,
+            scale,
+            gameobject->getFactionTemplate(),
+            gameobject->getFlags());
+
+        greenSystemMessage(
+            m_session,
+            "Scale changed and saved for GameObject spawn ID {}.",
+            spawnId);
+    }
+    else
+    {
+        greenSystemMessage(
+            m_session,
+            "Scale changed for ephemeral GameObject spawn ID {}.",
+            spawnId);
+    }
+
+    sGMLog.writefromsession(
+        m_session,
+        "changed gameobject scale of spawn ID: %u to %3.3lf persistent %u",
+        spawnId,
+        scale,
+        persistent ? 1u : 0u);
+
     return true;
 }
 
@@ -843,17 +1091,38 @@ bool ChatCommandHandler::HandleGOSetStateCommand(const char* args, WorldSession*
     }
 
     gameobject->setState(static_cast<uint8_t>(go_state));
+    syncGameObjectSpawn(gameobject);
 
-    auto go_spawn = gameobject->m_spawn;
+    const uint32_t spawnId = gameobject->getSpawnId();
+    const bool persistent = isPersistentGameObject(gameobject);
 
-    if (go_spawn == nullptr)
+    if (persistent)
     {
-        redSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
-        return true;
+        WorldDatabase.execute(
+            "UPDATE gameobject_spawns SET state = %u WHERE id = %u AND min_build <= %u AND max_build >= %u",
+            go_state,
+            spawnId,
+            VERSION_STRING,
+            VERSION_STRING);
+
+        greenSystemMessage(
+            m_session,
+            "State changed and saved for GameObject spawn ID {}.",
+            spawnId);
     }
-    greenSystemMessage(m_session, "Updated gameobject state in gameobject_spawns table for spawn ID: {}.", go_spawn->id);
-    WorldDatabase.execute("UPDATE gameobject_spawns SET state = %u WHERE id = %u AND min_build <= %u AND max_build >= %u", go_state, go_spawn->id, VERSION_STRING, VERSION_STRING);
-    sGMLog.writefromsession(m_session, "Updated gameobject state in gameobject_spawns table for spawn ID: {}.", go_spawn->id);
+    else
+    {
+        greenSystemMessage(
+            m_session,
+            "State changed for ephemeral GameObject spawn ID {}.",
+            spawnId);
+    }
+
+    sGMLog.writefromsession(
+        m_session,
+        "changed gameobject state of spawn ID: %u persistent %u.",
+        spawnId,
+        persistent ? 1u : 0u);
 
     return true;
 }

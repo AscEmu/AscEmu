@@ -1364,7 +1364,7 @@ void WorldSession::handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket)
     bool hasDualWield2H = false;
 
     sLogger.debug("CMSG_AUTOEQUIP_ITEM_SLOT ItemGUID: {}, SrcSlot: {}, DestSlot: {}, SlotType: {}",
-        srlPacket.itemGuid.getGuidLow(), srcSlot, srlPacket.destSlot, slotType);
+        srlPacket.itemGuid.getLowGuid(), srcSlot, srlPacket.destSlot, slotType);
 
     if (srcSlot == srlPacket.destSlot)
         return;
@@ -1594,7 +1594,7 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    Creature* unit = _player->getWorldMap()->getCreature(srlPacket.vendorGuid.getGuidLowPart());
+    Creature* unit = _player->getWorldMapCreature(srlPacket.vendorGuid.getRawGuid());
     // Check if Vendor exists
     if (unit == nullptr)
     {
@@ -1689,7 +1689,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
 
     _player->interruptSpell();
 
-    Creature* unit = _player->getWorldMap()->getCreature(srlPacket.srcGuid.getGuidLowPart());
+    Creature* unit = _player->getWorldMapCreature(srlPacket.srcGuid.getRawGuid());
     if (unit == nullptr || !unit->HasItems())
         return;
 
@@ -1858,7 +1858,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
     uint8_t error = 0;
     SlotResult slotResult;
 
-    auto creature = _player->getWorldMap()->getCreature(srlPacket.sourceGuid.getGuidLowPart());
+    auto creature = _player->getWorldMapCreature(srlPacket.sourceGuid.getRawGuid());
     if (creature == nullptr || !creature->HasItems())
         return;
 
@@ -2003,7 +2003,10 @@ void WorldSession::handleListInventoryOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    Creature* unit = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
+    WoWGuid wowGuid;
+    wowGuid.init(srlPacket.guid);
+
+    Creature* unit = _player->getWorldMapCreature(wowGuid.getRawGuid());
     if (unit == nullptr)
         return;
 
@@ -2238,7 +2241,7 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    Creature* pCreature = _player->getWorldMap()->getCreature(srlPacket.creatureGuid.getGuidLowPart());
+    Creature* pCreature = _player->getWorldMapCreature(srlPacket.creatureGuid.getRawGuid());
     if (pCreature == nullptr)
         return;
 
@@ -2302,7 +2305,7 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
             }
         }
     }
-    sLogger.debugOpcode("Received CMSG_REPAIR_ITEM {}.", srlPacket.itemGuid.getGuidLowPart());
+    sLogger.debugOpcode("Received CMSG_REPAIR_ITEM {}.", srlPacket.itemGuid.getCounter());
 }
 
 void WorldSession::handleAutoBankItemOpcode(WorldPacket& recvPacket)
@@ -2779,7 +2782,7 @@ void WorldSession::handleEquipmentSetSave([[maybe_unused]] WorldPacket& data)
     if (!parsePacket(data, srlPacket))
         return;
 
-    uint32_t setGUID = srlPacket.setGuid.getGuidLowPart();
+    uint32_t setGUID = srlPacket.setGuid.getCounter();
 
     if (setGUID == 0)
         setGUID = sObjectMgr.generateEquipmentSetId();
@@ -2793,7 +2796,7 @@ void WorldSession::handleEquipmentSetSave([[maybe_unused]] WorldPacket& data)
     equipmentSet->iconName = srlPacket.iconName;
 
     for (uint32_t i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
-        equipmentSet->itemGuid[i] = srlPacket.itemGuid[i].getGuidLowPart();
+        equipmentSet->itemGuid[i] = srlPacket.itemGuid[i].getCounter();
 
     const auto setId = equipmentSet->setId;
     if (_player->getItemInterface()->m_EquipmentSets.addEquipmentSet(setId, std::move(equipmentSet)))
@@ -2817,10 +2820,10 @@ void WorldSession::handleEquipmentSetDelete([[maybe_unused]] WorldPacket& data)
     if (!parsePacket(data, srlPacket))
         return;
 
-    if (_player->getItemInterface()->m_EquipmentSets.deleteEquipmentSet(srlPacket.guid.getGuidLowPart()))
-        sLogger.debug("Equipmentset with GUID {} was successfully deleted.", srlPacket.guid.getGuidLowPart());
+    if (_player->getItemInterface()->m_EquipmentSets.deleteEquipmentSet(srlPacket.guid.getCounter()))
+        sLogger.debug("Equipmentset with GUID {} was successfully deleted.", srlPacket.guid.getCounter());
     else
-        sLogger.debug("Equipmentset with GUID {} couldn't be deleted.", srlPacket.guid.getGuidLowPart());
+        sLogger.debug("Equipmentset with GUID {} couldn't be deleted.", srlPacket.guid.getCounter());
 #endif
 }
 

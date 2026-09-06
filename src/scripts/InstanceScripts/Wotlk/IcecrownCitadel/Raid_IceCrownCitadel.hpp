@@ -1492,7 +1492,8 @@ public:
     static InstanceScript* Create(WorldMap* pMapMgr);
 
     void setLocalData(uint32_t /*type*/, uint32_t /*data*/) override;
-    uint32_t getLocalData(uint32_t type) const;
+    uint32_t getLocalData(uint32_t type) const override;
+    WoWGuid getLocalGuidData(uint32_t type) const override;
     Creature* getLocalCreatureData(uint32_t type) const;
 
     void OnCreaturePushToWorld(Creature* pCreature) override;
@@ -1521,34 +1522,34 @@ protected:
 
     // Entrance
     bool introDone;
-    uint32_t HighlordEntranceGUID;
-    uint32_t LichKingEntranceGUID;
-    uint32_t BolvarEntranceGUID;
-    std::array<std::vector<uint32_t>, 2> nerubarBroodkeepersGUIDs;
+    WoWGuid HighlordEntranceGUID;
+    WoWGuid LichKingEntranceGUID;
+    WoWGuid BolvarEntranceGUID;
+    std::array<std::vector<WoWGuid>, 2> nerubarBroodkeepersGUIDs;
 
     // Marrowgar
-    uint32_t LordMarrowgarGUID;
-    uint32_t MarrowgarIcewall1GUID;
-    uint32_t MarrowgarIcewall2GUID;
-    uint32_t MarrowgarEntranceDoorGUID;
+    WoWGuid LordMarrowgarGUID;
+    WoWGuid MarrowgarIcewall1GUID;
+    WoWGuid MarrowgarIcewall2GUID;
+    WoWGuid MarrowgarEntranceDoorGUID;
     bool bonedAchievement;
 
     // Lady Deathwhisper
-    uint32_t LadyDeathwisperGUID;
-    uint32_t LadyDeathwisperElevatorGUID;
-    uint32_t LadyDeathwisperEntranceDoorGUID;
+    WoWGuid LadyDeathwisperGUID;
+    WoWGuid LadyDeathwisperElevatorGUID;
+    WoWGuid LadyDeathwisperEntranceDoorGUID;
 
     // Gunship Event			
-    uint32_t SkybreakerBossGUID;
-    uint32_t OrgrimmarBossGUID;
-    uint32_t DeathbringerSaurfangGbGUID;
-    uint32_t MuradinBronzebeardGbGUID;
-    uint32_t GbBattleMageGUID;
+    WoWGuid SkybreakerBossGUID;
+    WoWGuid OrgrimmarBossGUID;
+    WoWGuid DeathbringerSaurfangGbGUID;
+    WoWGuid MuradinBronzebeardGbGUID;
+    WoWGuid GbBattleMageGUID;
     bool isPrepared;
 
     // Deathbringer Saurfang
-    uint32_t DeathbringerDoorGUID;
-    uint32_t DeathbringerSaurfangGUID;
+    WoWGuid DeathbringerDoorGUID;
+    WoWGuid DeathbringerSaurfangGUID;
     bool deathbringerGoSpawned;
 };
 

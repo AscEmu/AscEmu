@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Objects/GameObject.h"
 #include "Objects/GameObjectProperties.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -487,8 +488,18 @@ public:
     void SwitchToHumanForm()
     {
         getCreature()->setDisplayId(20514);
-        getCreature()->setVirtualItemSlotId(MELEE, (getCreature()->m_spawn != nullptr) ? getCreature()->m_spawn->Item1SlotEntry : 0);
-        getCreature()->setVirtualItemSlotId(OFFHAND, (getCreature()->m_spawn != nullptr) ?  getCreature()->m_spawn->Item2SlotEntry : 0);
+        MySQLStructure::CreatureSpawn spawnTemplate{};
+        if (getCreature()->getWorldMap() &&
+            getCreature()->getWorldMap()->getSpawnManager().getCreatureSpawnTemplate(getCreature()->getGuid(), spawnTemplate))
+        {
+            getCreature()->setVirtualItemSlotId(MELEE, spawnTemplate.Item1SlotEntry);
+            getCreature()->setVirtualItemSlotId(OFFHAND, spawnTemplate.Item2SlotEntry);
+        }
+        else
+        {
+            getCreature()->setVirtualItemSlotId(MELEE, 0);
+            getCreature()->setVirtualItemSlotId(OFFHAND, 0);
+        }
     }
 
     void SwitchToDemonForm()
@@ -1980,7 +1991,7 @@ class SerpentshrineCavern : public InstanceScript
 {
 public:
     // Console & Bridge parts
-    uint32_t mBridgePart[3];
+    WoWGuid mBridgePart[3];
 
     explicit SerpentshrineCavern(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
@@ -1995,13 +2006,13 @@ public:
         switch (pGameObject->getEntry())
         {
             case 184203:
-                mBridgePart[0] = pGameObject->getGuidLow();
+                mBridgePart[0] = pGameObject->GetNewGUID();
                 break;
             case 184204:
-                mBridgePart[1] = pGameObject->getGuidLow();
+                mBridgePart[1] = pGameObject->GetNewGUID();
                 break;
             case 184205:
-                mBridgePart[2] = pGameObject->getGuidLow();
+                mBridgePart[2] = pGameObject->GetNewGUID();
                 break;
         }
     }
@@ -2015,7 +2026,7 @@ public:
 
         for (uint8_t i = 0; i < 3; ++i)
         {
-            pBridgePart = GetGameObjectByGuid(mBridgePart[i]);
+            pBridgePart = getGameObjectByGuid(mBridgePart[i]);
             if (pBridgePart != NULL)
                 pBridgePart->setState(GO_STATE_OPEN);
         }

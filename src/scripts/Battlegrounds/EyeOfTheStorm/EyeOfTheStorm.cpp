@@ -24,6 +24,8 @@
 #include "Management/HonorHandler.h"
 #include "Management/WorldStates.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Map/Management/SpawnManager.hpp"
+#include "Map/Management/ObjectFactory.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/Master.h"
 #include "Server/WorldSessionLog.hpp"
@@ -245,10 +247,10 @@ bool EyeOfTheStorm::HandleFinishBattlegroundRewardCalculation(PlayerTeam winning
 
 void EyeOfTheStorm::RepopPlayersOfTeam(int32_t team, Creature* sh)
 {
-    std::map<Creature*, std::set<uint32_t> >::iterator itr = m_resurrectMap.find(sh);
+    std::map<Creature*, std::set<WoWGuid>>::iterator itr = m_resurrectMap.find(sh);
     if (itr != m_resurrectMap.end())
     {
-        for (std::set<uint32_t>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
+        for (std::set<WoWGuid>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
         {
             Player* r_plr = m_mapMgr->getPlayer(*it2);
             if (r_plr != nullptr && (team < 0 || (int32_t)r_plr->getTeam() == team) && r_plr->isDead())
@@ -365,7 +367,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32_t id)
     }
 
     const auto team = plr->getTeam();
-    if (plr->getGuidLow() != m_flagHolder)
+    if (plr->GetNewGUID() != m_flagHolder)
         return;
 
     int32_t val;
@@ -412,7 +414,7 @@ void EyeOfTheStorm::HookOnPlayerDeath(Player* plr)
 {
     plr->m_bgScore.Deaths++;
 
-    if (m_flagHolder == plr->getGuidLow())
+    if (m_flagHolder == plr->GetNewGUID())
         HookOnFlagDrop(plr);
 
     updatePvPData();
@@ -423,11 +425,8 @@ void EyeOfTheStorm::HookFlagDrop(Player* plr, GameObject* /*obj*/)
     if (!m_dropFlag->IsInWorld())
         return;
 
-    std::map<uint32_t, Standing>::iterator itr = plr->m_forcedReactions.find(1059);
-    if (itr != plr->m_forcedReactions.end())
-    {
+    if (plr->getForcedReputationRank(1059).has_value())
         return;
-    }
 
     m_dropFlag->RemoveFromWorld(false);
     plr->castSpell(plr->getGuid(), EOTS_NETHERWING_FLAG_SPELL, true);
@@ -435,7 +434,7 @@ void EyeOfTheStorm::HookFlagDrop(Player* plr, GameObject* /*obj*/)
     setWorldState(EOTS_NETHERWING_FLAG_READY, 0);
     playSoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
     sendChatMessage(static_cast<uint8_t>(CHAT_MSG_BG_EVENT_ALLIANCE) + static_cast<uint8_t>(plr->getTeam()), plr->getGuid(), "%s has taken the flag!", plr->getName().c_str());
-    m_flagHolder = plr->getGuidLow();
+    m_flagHolder = plr->GetNewGUID();
 
     event_RemoveEvents(EVENT_EOTS_RESET_FLAG);
 }
@@ -446,7 +445,7 @@ void EyeOfTheStorm::HookFlagStand(Player* /*plr*/, GameObject* /*obj*/)
 
 bool EyeOfTheStorm::HookSlowLockOpen(GameObject* /*pGo*/, Player* pPlayer, Spell* /*pSpell*/)
 {
-    if (m_flagHolder != 0)
+    if (m_flagHolder)
         return false;
 
     m_standFlag->RemoveFromWorld(false);
@@ -455,13 +454,13 @@ bool EyeOfTheStorm::HookSlowLockOpen(GameObject* /*pGo*/, Player* pPlayer, Spell
     setWorldState(EOTS_NETHERWING_FLAG_READY, 0);
     playSoundToAll(pPlayer->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
     sendChatMessage(static_cast<uint8_t>(CHAT_MSG_BG_EVENT_ALLIANCE) + static_cast<uint8_t>(pPlayer->getTeam()), pPlayer->getGuid(), "%s has taken the flag!", pPlayer->getName().c_str());
-    m_flagHolder = pPlayer->getGuidLow();
+    m_flagHolder = pPlayer->GetNewGUID();
     return true;
 }
 
 void EyeOfTheStorm::HookOnMount(Player* plr)
 {
-    if (m_flagHolder == plr->getGuidLow())
+    if (m_flagHolder == plr->GetNewGUID())
     {
         HookOnFlagDrop(plr);
     }
@@ -484,7 +483,7 @@ void EyeOfTheStorm::OnRemovePlayer(Player* plr)
         m_CPDisplay[i].erase(plr);
     }
 
-    if (m_flagHolder == plr->getGuidLow())
+    if (m_flagHolder == plr->GetNewGUID())
     {
         HookOnFlagDrop(plr);
     }
@@ -495,7 +494,7 @@ void EyeOfTheStorm::OnRemovePlayer(Player* plr)
 
 void EyeOfTheStorm::DropFlag2(Player* plr, uint32_t id)
 {
-    if (m_flagHolder != plr->getGuidLow())
+    if (m_flagHolder != plr->GetNewGUID())
         return;
 
     switch (id)
@@ -527,7 +526,7 @@ void EyeOfTheStorm::DropFlag2(Player* plr, uint32_t id)
 
 void EyeOfTheStorm::HookOnFlagDrop(Player* plr)
 {
-    if (m_flagHolder != plr->getGuidLow())
+    if (m_flagHolder != plr->GetNewGUID())
         return;
 
     plr->removeAllAurasById(EOTS_NETHERWING_FLAG_SPELL);
@@ -572,8 +571,9 @@ void EyeOfTheStorm::OnCreate()
             return;
         }
 
-        m_CPStatusGO[i] = m_mapMgr->createGameObject(gameobject_info->entry);
-        m_CPStatusGO[i]->create(gameobject_info->entry, m_mapMgr, 0, LocationVector(EOTSTCLocations[i][0], EOTSTCLocations[i][1], EOTSTCLocations[i][2]), QuaternionData(), GO_STATE_CLOSED);
+        m_CPStatusGO[i] = m_mapMgr->getSpawnManager().createGameObject(
+            gameobject_info->entry,
+            LocationVector(EOTSTCLocations[i][0], EOTSTCLocations[i][1], EOTSTCLocations[i][2]));
         m_CPStatusGO[i]->PushToWorld(m_mapMgr);
 
         gameobject_info = sMySQLStore.getGameObjectProperties(EOTS_BANNER_NEUTRAL);
@@ -584,18 +584,21 @@ void EyeOfTheStorm::OnCreate()
             return;
         }
 
-        m_CPBanner[i] = m_mapMgr->createGameObject(gameobject_info->entry);
-        m_CPBanner[i]->create(gameobject_info->entry, m_mapMgr, 0, LocationVector(EOTSCPLocations[i][0], EOTSCPLocations[i][1], EOTSCPLocations[i][2], EOTSCPLocations[i][3]), QuaternionData(), GO_STATE_CLOSED);
+        m_CPBanner[i] = m_mapMgr->getSpawnManager().createGameObject(
+            gameobject_info->entry,
+            LocationVector(EOTSCPLocations[i][0], EOTSCPLocations[i][1], EOTSCPLocations[i][2], EOTSCPLocations[i][3]));
         m_CPBanner[i]->setScale(1.7f);
         m_CPBanner[i]->PushToWorld(m_mapMgr);
 
-        m_CPBanner2[i] = m_mapMgr->createGameObject(gameobject_info->entry);
-        m_CPBanner2[i]->create(gameobject_info->entry, m_mapMgr, 0, LocationVector(EOTSCPLocations2[i][0], EOTSCPLocations2[i][1], EOTSCPLocations2[i][2], EOTSCPLocations2[i][3]), QuaternionData(), GO_STATE_CLOSED);
+        m_CPBanner2[i] = m_mapMgr->getSpawnManager().createGameObject(
+            gameobject_info->entry,
+            LocationVector(EOTSCPLocations2[i][0], EOTSCPLocations2[i][1], EOTSCPLocations2[i][2], EOTSCPLocations2[i][3]));
         m_CPBanner2[i]->setScale(1.7f);
         m_CPBanner2[i]->PushToWorld(m_mapMgr);
 
-        m_CPBanner3[i] = m_mapMgr->createGameObject(gameobject_info->entry);
-        m_CPBanner3[i]->create(gameobject_info->entry, m_mapMgr, 0, LocationVector(EOTSCPLocations3[i][0], EOTSCPLocations3[i][1], EOTSCPLocations3[i][2], EOTSCPLocations3[i][3]), QuaternionData(), GO_STATE_CLOSED);
+        m_CPBanner3[i] = m_mapMgr->getSpawnManager().createGameObject(
+            gameobject_info->entry,
+            LocationVector(EOTSCPLocations3[i][0], EOTSCPLocations3[i][1], EOTSCPLocations3[i][2], EOTSCPLocations3[i][3]));
         m_CPBanner3[i]->setScale(1.7f);
         m_CPBanner3[i]->PushToWorld(m_mapMgr);
     }
@@ -603,8 +606,10 @@ void EyeOfTheStorm::OnCreate()
     // BUBBLES
     for (uint8_t i = 0; i < 2; ++i)
     {
-        m_bubbles[i] = m_mapMgr->createGameObject((uint32_t)EOTSBubbleLocations[i][0]);
-        if (!m_bubbles[i]->create((uint32_t)EOTSBubbleLocations[i][0], m_mapMgr, 0, LocationVector(EOTSBubbleLocations[i][1], EOTSBubbleLocations[i][2], EOTSBubbleLocations[i][3], EOTSBubbleLocations[i][4]), QuaternionData(), GO_STATE_CLOSED))
+        m_bubbles[i] = m_mapMgr->getSpawnManager().createGameObject(
+            static_cast<uint32_t>(EOTSBubbleLocations[i][0]),
+            LocationVector(EOTSBubbleLocations[i][1], EOTSBubbleLocations[i][2], EOTSBubbleLocations[i][3], EOTSBubbleLocations[i][4]));
+        if (m_bubbles[i] == nullptr)
         {
             DLLLogDetail("EOTS is being created and you are missing gameobjects. Terminating.");
             abort();
@@ -626,30 +631,30 @@ void EyeOfTheStorm::OnCreate()
     SpawnBuff(EOTS_TOWER_BE);
 
     // Flag
-    m_standFlag = m_mapMgr->createGameObject(184141);
-    m_standFlag->create(184141, m_mapMgr, 0, LocationVector(2174.284912f, 1569.466919f, 1159.960083f, 4.4892f), QuaternionData(), GO_STATE_CLOSED);
+    m_standFlag = m_mapMgr->getSpawnManager().createGameObject(
+        184141, LocationVector(2174.284912f, 1569.466919f, 1159.960083f, 4.4892f));
     m_standFlag->setScale(2.0f);
     m_standFlag->PushToWorld(m_mapMgr);
 
-    m_dropFlag = m_mapMgr->createGameObject(184142);
-    m_dropFlag->create(184142, m_mapMgr, 0, LocationVector(2174.284912f, 1569.466919f, 1159.960083f, 0.1641f), QuaternionData(), GO_STATE_CLOSED);
+    m_dropFlag = m_mapMgr->getSpawnManager().createGameObject(
+        184142, LocationVector(2174.284912f, 1569.466919f, 1159.960083f, 0.1641f));
     m_dropFlag->setScale(2.0f);
 }
 
 void EyeOfTheStorm::RespawnCPFlag(uint32_t i, uint32_t id)
 {
     m_CPBanner[i]->RemoveFromWorld(false);
-    m_CPBanner[i]->SetNewGuid(m_mapMgr->generateGameobjectGuid());
+    m_mapMgr->getSpawnManager().regenerateGameObjectGuid(m_CPBanner[i], id);
     m_CPBanner[i]->create(id, m_mapMgr, 0, LocationVector(m_CPBanner[i]->GetPositionX(), m_CPBanner[i]->GetPositionY(), m_CPBanner[i]->GetPositionZ(), m_CPBanner[i]->GetOrientation()), QuaternionData(), GO_STATE_CLOSED);
     m_CPBanner[i]->PushToWorld(m_mapMgr);
 
     m_CPBanner2[i]->RemoveFromWorld(false);
-    m_CPBanner2[i]->SetNewGuid(m_mapMgr->generateGameobjectGuid());
+    m_mapMgr->getSpawnManager().regenerateGameObjectGuid(m_CPBanner2[i], id);
     m_CPBanner2[i]->create(id, m_mapMgr, 0, LocationVector(m_CPBanner2[i]->GetPositionX(), m_CPBanner2[i]->GetPositionY(), m_CPBanner2[i]->GetPositionZ(), m_CPBanner2[i]->GetOrientation()), QuaternionData(), GO_STATE_CLOSED);
     m_CPBanner2[i]->PushToWorld(m_mapMgr);
 
     m_CPBanner3[i]->RemoveFromWorld(false);
-    m_CPBanner3[i]->SetNewGuid(m_mapMgr->generateGameobjectGuid());
+    m_mapMgr->getSpawnManager().regenerateGameObjectGuid(m_CPBanner3[i], id);
     m_CPBanner3[i]->create(id, m_mapMgr, 0, LocationVector(m_CPBanner3[i]->GetPositionX(), m_CPBanner3[i]->GetPositionY(), m_CPBanner3[i]->GetPositionZ(), m_CPBanner3[i]->GetOrientation()), QuaternionData(), GO_STATE_CLOSED);
     m_CPBanner3[i]->PushToWorld(m_mapMgr);
 }
@@ -901,7 +906,7 @@ void EyeOfTheStorm::SpawnBuff(uint32_t x)
 
     if (EOTSm_buffs[x] == nullptr)
     {
-        EOTSm_buffs[x] = spawnGameObject(chosen_buffid, LocationVector(EOTSBuffCoordinates[x][0], EOTSBuffCoordinates[x][1], EOTSBuffCoordinates[x][2], EOTSBuffCoordinates[x][3]), 0, 114, 1);
+        EOTSm_buffs[x] = createGameObject(chosen_buffid, LocationVector(EOTSBuffCoordinates[x][0], EOTSBuffCoordinates[x][1], EOTSBuffCoordinates[x][2], EOTSBuffCoordinates[x][3]), 0, 114, 1);
 
         EOTSm_buffs[x]->setLocalRotation(0.f, 0.f, EOTSBuffRotations[x][0], EOTSBuffRotations[x][1]);
         EOTSm_buffs[x]->setState(GO_STATE_CLOSED);
@@ -916,7 +921,7 @@ void EyeOfTheStorm::SpawnBuff(uint32_t x)
 
         if (chosen_buffid != EOTSm_buffs[x]->getEntry())
         {
-            EOTSm_buffs[x]->SetNewGuid(m_mapMgr->generateGameobjectGuid());
+            m_mapMgr->getSpawnManager().regenerateGameObjectGuid(EOTSm_buffs[x], chosen_buffid);
             EOTSm_buffs[x]->setEntry(chosen_buffid);
             EOTSm_buffs[x]->SetGameObjectProperties(goi);
         }

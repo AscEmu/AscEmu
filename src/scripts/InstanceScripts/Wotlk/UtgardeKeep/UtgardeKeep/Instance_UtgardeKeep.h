@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <cstdint>
+#include "WoWGuid.hpp"
 
 enum UtgardeData
 {
@@ -21,16 +22,16 @@ enum UtgardeData
 
 struct ForgeMasterData
 {
-    ForgeMasterData(uint32_t pB = 0, uint32_t pF = 0, uint32_t pA = 0)
+    ForgeMasterData(WoWGuid pB = {}, WoWGuid pF = {}, WoWGuid pA = {})
     {
         mBellow = pB;
         mFire = pF;
         mAnvil = pA;
     }
 
-    uint32_t mBellow;
-    uint32_t mFire;
-    uint32_t mAnvil;
+    WoWGuid mBellow;
+    WoWGuid mFire;
+    WoWGuid mAnvil;
 };
 
 enum CreatureEntry

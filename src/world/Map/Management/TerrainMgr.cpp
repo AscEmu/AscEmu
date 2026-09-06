@@ -15,6 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Storage/WDB/WDBStructures.hpp"
 
+using namespace visibility;
+
 static uint16_t const holetab_h[4] = { 0x1111, 0x2222, 0x4444, 0x8888 };
 static uint16_t const holetab_v[4] = { 0x000F, 0x00F0, 0x0F00, 0xF000 };
 
@@ -217,15 +219,15 @@ float TileMap::getHeightFromFloat(float x, float y) const
     if (!m_heightMap8F || !m_heightMap9F)
         return m_tileHeight;
 
-    x = Map::Terrain::MapResoloution * (Map::Terrain::MapCenter - x / Map::Terrain::TileSize);
-    y = Map::Terrain::MapResoloution * (Map::Terrain::MapCenter - y / Map::Terrain::TileSize);
+    x = Terrain::MapResolution * (Terrain::MapCenter - x / Terrain::TileSize);
+    y = Terrain::MapResolution * (Terrain::MapCenter - y / Terrain::TileSize);
 
     int x_int = static_cast<int>(x);
     int y_int = static_cast<int>(y);
     x -= x_int;
     y -= y_int;
-    x_int &= (Map::Terrain::MapResoloution - 1);
-    y_int &= (Map::Terrain::MapResoloution - 1);
+    x_int &= (Terrain::MapResolution - 1);
+    y_int &= (Terrain::MapResolution - 1);
 
     if (isHole(x_int, y_int))
         return INVALID_HEIGHT;
@@ -302,15 +304,15 @@ float TileMap::getHeightFromUint8(float x, float y) const
     if (!m_heightMap8B || !m_heightMap9B)
         return m_tileHeight;
 
-    x = Map::Terrain::MapResoloution * (Map::Terrain::MapCenter - x / Map::Terrain::TileSize);
-    y = Map::Terrain::MapResoloution * (Map::Terrain::MapCenter - y / Map::Terrain::TileSize);
+    x = Terrain::MapResolution * (Terrain::MapCenter - x / Terrain::TileSize);
+    y = Terrain::MapResolution * (Terrain::MapCenter - y / Terrain::TileSize);
 
     int x_int = static_cast<int>(x);
     int y_int = static_cast<int>(y);
     x -= x_int;
     y -= y_int;
-    x_int &= (Map::Terrain::MapResoloution - 1);
-    y_int &= (Map::Terrain::MapResoloution - 1);
+    x_int &= (Terrain::MapResolution - 1);
+    y_int &= (Terrain::MapResolution - 1);
 
     if (isHole(x_int, y_int))
         return INVALID_HEIGHT;
@@ -372,15 +374,15 @@ float TileMap::getHeightFromUint16(float x, float y) const
     if (!m_heightMap8S || !m_heightMap9S)
         return m_tileHeight;
 
-    x = Map::Terrain::MapResoloution * (Map::Terrain::MapCenter - x / Map::Terrain::TileSize);
-    y = Map::Terrain::MapResoloution * (Map::Terrain::MapCenter - y / Map::Terrain::TileSize);
+    x = Terrain::MapResolution * (Terrain::MapCenter - x / Terrain::TileSize);
+    y = Terrain::MapResolution * (Terrain::MapCenter - y / Terrain::TileSize);
 
     int x_int = static_cast<int>(x);
     int y_int = static_cast<int>(y);
     x -= x_int;
     y -= y_int;
-    x_int &= (Map::Terrain::MapResoloution - 1);
-    y_int &= (Map::Terrain::MapResoloution - 1);
+    x_int &= (Terrain::MapResolution - 1);
+    y_int &= (Terrain::MapResolution - 1);
 
     if (isHole(x_int, y_int))
         return INVALID_HEIGHT;
@@ -442,8 +444,8 @@ uint16_t TileMap::getArea(float x, float y) const
     if (!m_areaMap)
         return m_tileArea;
 
-    x = 16 * (Map::Terrain::MapCenter - x / Map::Terrain::TileSize);
-    y = 16 * (Map::Terrain::MapCenter - y / Map::Terrain::TileSize);
+    x = 16 * (Terrain::MapCenter - x / Terrain::TileSize);
+    y = 16 * (Terrain::MapCenter - y / Terrain::TileSize);
     int lx = static_cast<int>(x) & 15;
     int ly = static_cast<int>(y) & 15;
     return m_areaMap[lx * 16 + ly];
@@ -454,11 +456,11 @@ float TileMap::getLiquidLevel(float x, float y) const
     if (!m_liquidMap)
         return m_liquidLevel;
 
-    x = Map::Terrain::MapResoloution * (Map::Terrain::MapCenter - x / Map::Terrain::TileSize);
-    y = Map::Terrain::MapResoloution * (Map::Terrain::MapCenter - y / Map::Terrain::TileSize);
+    x = Terrain::MapResolution * (Terrain::MapCenter - x / Terrain::TileSize);
+    y = Terrain::MapResolution * (Terrain::MapCenter - y / Terrain::TileSize);
 
-    int cx_int = (static_cast<int>(x) & (Map::Terrain::MapResoloution - 1)) - m_liquidOffY;
-    int cy_int = (static_cast<int>(y) & (Map::Terrain::MapResoloution - 1)) - m_liquidOffX;
+    int cx_int = (static_cast<int>(x) & (Terrain::MapResolution - 1)) - m_liquidOffY;
+    int cy_int = (static_cast<int>(y) & (Terrain::MapResolution - 1)) - m_liquidOffX;
 
     if (cx_int < 0 || cx_int >= m_liquidHeight)
         return INVALID_HEIGHT;
@@ -476,11 +478,11 @@ ZLiquidStatus TileMap::getLiquidStatus(LocationVector pos, uint8_t ReqLiquidType
         return LIQUID_MAP_NO_WATER;
 
     // Get cell
-    float cx = Map::Terrain::MapResoloution * (Map::Terrain::MapCenter - pos.x / Map::Terrain::TileSize);
-    float cy = Map::Terrain::MapResoloution * (Map::Terrain::MapCenter - pos.y / Map::Terrain::TileSize);
+    float cx = Terrain::MapResolution * (Terrain::MapCenter - pos.x / Terrain::TileSize);
+    float cy = Terrain::MapResolution * (Terrain::MapCenter - pos.y / Terrain::TileSize);
 
-    int x_int = static_cast<int>(cx) & (Map::Terrain::MapResoloution - 1);
-    int y_int = static_cast<int>(cy) & (Map::Terrain::MapResoloution - 1);
+    int x_int = static_cast<int>(cx) & (Terrain::MapResolution - 1);
+    int y_int = static_cast<int>(cy) & (Terrain::MapResolution - 1);
 
     // Check water type in cell
     int idx = (x_int >> 3) * 16 + (y_int >> 3);
@@ -589,9 +591,9 @@ TerrainHolder::TerrainHolder(uint32_t mapid)
     TileStartX = TileEndX = 0;
     TileStartY = TileEndY = 0;
 
-    for (uint8_t i = 0; i < Map::Terrain::TilesCount; ++i)
+    for (uint8_t i = 0; i < Terrain::TilesCount; ++i)
     {
-        for (uint8_t j = 0; j < Map::Terrain::TilesCount; ++j)
+        for (uint8_t j = 0; j < Terrain::TilesCount; ++j)
         {
             m_tiles[i][j] = nullptr;
             if (TileOffsets[i][j])
@@ -615,15 +617,15 @@ TerrainHolder::TerrainHolder(uint32_t mapid)
 
 TerrainHolder::~TerrainHolder()
 {
-    for (uint8_t i = 0; i < Map::Terrain::TilesCount; ++i)
-        for (uint8_t j = 0; j < Map::Terrain::TilesCount; ++j)
+    for (uint8_t i = 0; i < Terrain::TilesCount; ++i)
+        for (uint8_t j = 0; j < Terrain::TilesCount; ++j)
             unloadTile(i, j);
 }
 
 TerrainTile* TerrainHolder::getTile(float x, float y)
 {
-    int32_t tx = static_cast<int32_t>(Map::Terrain::MapCenter - (x / Map::Terrain::TileSize));
-    int32_t ty = static_cast<int32_t>(Map::Terrain::MapCenter - (y / Map::Terrain::TileSize));
+    int32_t tx = static_cast<int32_t>(Terrain::MapCenter - (x / Terrain::TileSize));
+    int32_t ty = static_cast<int32_t>(Terrain::MapCenter - (y / Terrain::TileSize));
 
     return getTile(tx, ty);
 }
@@ -636,8 +638,8 @@ TerrainTile* TerrainHolder::getTile(int32_t tx, int32_t ty)
 
 void TerrainHolder::loadTile(float x, float y)
 {
-    int32_t tx = static_cast<int32_t>(Map::Terrain::MapCenter - (x / Map::Terrain::TileSize));
-    int32_t ty = static_cast<int32_t>(Map::Terrain::MapCenter - (y / Map::Terrain::TileSize));
+    int32_t tx = static_cast<int32_t>(Terrain::MapCenter - (x / Terrain::TileSize));
+    int32_t ty = static_cast<int32_t>(Terrain::MapCenter - (y / Terrain::TileSize));
     loadTile(tx, ty);
 }
 
@@ -655,8 +657,8 @@ void TerrainHolder::loadTile(int32_t tx, int32_t ty)
 
 void TerrainHolder::unloadTile(float x, float y)
 {
-    int32_t tx = static_cast<int32_t>(Map::Terrain::MapCenter - (x / Map::Terrain::TileSize));
-    int32_t ty = static_cast<int32_t>(Map::Terrain::MapCenter - (y / Map::Terrain::TileSize));
+    int32_t tx = static_cast<int32_t>(Terrain::MapCenter - (x / Terrain::TileSize));
+    int32_t ty = static_cast<int32_t>(Terrain::MapCenter - (y / Terrain::TileSize));
     unloadTile(tx, ty);
 }
 

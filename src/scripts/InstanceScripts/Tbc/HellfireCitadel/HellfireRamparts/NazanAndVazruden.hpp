@@ -81,7 +81,7 @@ public:
 
 protected:
     uint32_t Fly_Timer = 45000;
-    uint32_t VazrudenGUID = 0;
+    WoWGuid VazrudenGUID = 0;
 
     CreatureAISpells* m_FireballSpell;
     CreatureAISpells* m_ConeOfFireSpell;
@@ -128,6 +128,6 @@ public:
 
 protected:
     bool summoned = false;
-    uint32_t nazanGUID = 0;
-    uint32_t vazrudenGUID = 0;
+    WoWGuid nazanGUID = 0;
+    WoWGuid vazrudenGUID = 0;
 };

@@ -38,16 +38,16 @@ public:
             switch (rand)
             {
                 case 0:
-                    mTarget->getWorldMap()->getInterface()->spawnCreature(2306, LocationVector(692.64f, -904.74f, 157.79f), true, false, 0, 0)->Despawn(1800000, 0);
+                    mTarget->getWorldMap()->getInterface()->spawnCreature(2306, LocationVector(692.64f, -904.74f, 157.79f))->Despawn(1800000, 0);
                     break;
                 case 1:
-                    mTarget->getWorldMap()->getInterface()->spawnCreature(2306, LocationVector(939.0f, -852.46f, 114.644f), true, false, 0, 0)->Despawn(1800000, 0);
+                    mTarget->getWorldMap()->getInterface()->spawnCreature(2306, LocationVector(939.0f, -852.46f, 114.644f))->Despawn(1800000, 0);
                     break;
                 case 2:
-                    mTarget->getWorldMap()->getInterface()->spawnCreature(2306, LocationVector(1184.07f, -553.43f, 71.3346f), true, false, 0, 0)->Despawn(1800000, 0);
+                    mTarget->getWorldMap()->getInterface()->spawnCreature(2306, LocationVector(1184.07f, -553.43f, 71.3346f))->Despawn(1800000, 0);
                     break;
                 case 3:
-                    mTarget->getWorldMap()->getInterface()->spawnCreature(2306, LocationVector(1001.20f, -793.93f, 108.65f), true, false, 0, 0)->Despawn(1800000, 0);
+                    mTarget->getWorldMap()->getInterface()->spawnCreature(2306, LocationVector(1001.20f, -793.93f, 108.65f))->Despawn(1800000, 0);
                     break;
             }
             BaronVardusAllowSpawn = false;

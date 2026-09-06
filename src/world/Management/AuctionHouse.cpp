@@ -54,13 +54,13 @@ void Auction::deleteFromDB()
 void Auction::saveToDB(uint32_t auctionHouseId)
 {
     CharacterDatabase.execute("INSERT INTO auctions VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)", 
-        Id, auctionHouseId, auctionItem->getGuidLow(), ownerGuid.getGuidLow(), startPrice, buyoutPrice, expireTime, highestBidderGuid.getGuidLow(), 
+        Id, auctionHouseId, auctionItem->getGuidLow(), ownerGuid.getLowGuid(), startPrice, buyoutPrice, expireTime, highestBidderGuid.getLowGuid(), 
         highestBid, depositAmount);
 }
 
 void Auction::updateInDB()
 {
-    CharacterDatabase.execute("UPDATE auctions SET bidder = %u, bid = %u WHERE auctionId = %u", highestBidderGuid.getGuidLow(), highestBid, Id);
+    CharacterDatabase.execute("UPDATE auctions SET bidder = %u, bid = %u WHERE auctionId = %u", highestBidderGuid.getLowGuid(), highestBid, Id);
 }
 
 AuctionPacketList Auction::getListMember()
@@ -168,7 +168,7 @@ void AuctionHouse::updateAuctions()
 
         if (time >= auction->expireTime)
         {
-            if (auction->highestBidderGuid.getGuidLow() == 0)
+            if (auction->highestBidderGuid.getLowGuid() == 0)
             {
                 auction->removedType = AUCTION_REMOVE_EXPIRED;
                 sendAuctionExpiredNotificationPacket(auction.get());
@@ -219,7 +219,7 @@ void AuctionHouse::removeAuction(Auction* auction)
             snprintf(subject, 100, "%u:0:1", auction->auctionItem->getEntry());
 
             // <owner player guid>:bid:buyout
-            snprintf(body, 200, "%X:%s:%s", auction->ownerGuid.getGuidLow(), std::to_string(auction->highestBid).c_str(), std::to_string(auction->buyoutPrice).c_str());
+            snprintf(body, 200, "%X:%s:%s", auction->ownerGuid.getLowGuid(), std::to_string(auction->highestBid).c_str(), std::to_string(auction->buyoutPrice).c_str());
 
             // Auction won by highest bidder. He gets the item.
             sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, auctionHouseEntryDbc->id, auction->highestBidderGuid, subject, body, 0, 0, auction->auctionItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
@@ -233,9 +233,9 @@ void AuctionHouse::removeAuction(Auction* auction)
 
             // <hex player guid>:bid:0:deposit:cut
             if (auction->highestBid == auction->buyoutPrice)       // Buyout
-                snprintf(body, 200, "%X:%s:%s:%u:%u", auction->highestBidderGuid.getGuidLow(), std::to_string(auction->highestBid).c_str(), std::to_string(auction->buyoutPrice).c_str(), auction->depositAmount, (unsigned int)auction_cut);
+                snprintf(body, 200, "%X:%s:%s:%u:%u", auction->highestBidderGuid.getLowGuid(), std::to_string(auction->highestBid).c_str(), std::to_string(auction->buyoutPrice).c_str(), auction->depositAmount, (unsigned int)auction_cut);
             else
-                snprintf(body, 200, "%X:%s:0:%u:%u", auction->highestBidderGuid.getGuidLow(), std::to_string(auction->highestBid).c_str(), auction->depositAmount, (unsigned int)auction_cut);
+                snprintf(body, 200, "%X:%s:0:%u:%u", auction->highestBidderGuid.getLowGuid(), std::to_string(auction->highestBid).c_str(), auction->depositAmount, (unsigned int)auction_cut);
 
             // send message away.
             sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, auctionHouseEntryDbc->id, auction->ownerGuid, subject, body, static_cast<uint32_t>(amount), 0, 0, MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
@@ -253,7 +253,7 @@ void AuctionHouse::removeAuction(Auction* auction)
             {
                 snprintf(subject, 100, "%u:0:5", auction->auctionItem->getEntry());
                 const auto cut = Util::float2int32(cutPercent * static_cast<float_t>(auction->highestBid));
-                Player* plr = sObjectMgr.getPlayer(auction->ownerGuid.getGuidLow());
+                Player* plr = sObjectMgr.getPlayer(auction->ownerGuid.getLowGuid());
                 if (cut && plr && plr->hasEnoughCoinage(static_cast<uint32_t>(cut)))
                     plr->modCoinage(-cut);
 
@@ -343,10 +343,10 @@ void AuctionHouse::updateOwner(uint32_t oldGuid, uint32_t newGuid)
     for (auto& itr : auctions)
     {
         const auto& auction = itr.second;
-        if (auction->ownerGuid.getGuidLow() == oldGuid)
+        if (auction->ownerGuid.getLowGuid() == oldGuid)
             auction->ownerGuid = newGuid;
 
-        if (auction->highestBidderGuid.getGuidLow() == oldGuid)
+        if (auction->highestBidderGuid.getLowGuid() == oldGuid)
         {
             auction->highestBidderGuid = newGuid;
             auction->updateInDB();
@@ -379,7 +379,7 @@ void AuctionHouse::sendBidListPacket(Player* player)
 
 void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
 {
-    Player* bidder = sObjectMgr.getPlayer(auction->highestBidderGuid.getGuidLow());
+    Player* bidder = sObjectMgr.getPlayer(auction->highestBidderGuid.getLowGuid());
     if (bidder && bidder->IsInWorld())
     {
         auto outbid = (auction->highestBid / 100) * 5;
@@ -391,7 +391,7 @@ void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
         bidder->getSession()->sendManagedPacket(managedPacket);
     }
 
-    Player* owner = sObjectMgr.getPlayer(auction->ownerGuid.getGuidLow());
+    Player* owner = sObjectMgr.getPlayer(auction->ownerGuid.getLowGuid());
     if (owner && owner->IsInWorld())
     {
         SmsgAuctionOwnerNotification managedPacket(auction->Id, static_cast<uint32_t>(auction->highestBid),
@@ -402,7 +402,7 @@ void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
 
 void AuctionHouse::sendAuctionOutBidNotificationPacket(Auction* auction, uint64_t newBidder, uint32_t newHighestBid)
 {
-    Player* bidder = sObjectMgr.getPlayer(auction->highestBidderGuid.getGuidLow());
+    Player* bidder = sObjectMgr.getPlayer(auction->highestBidderGuid.getLowGuid());
     if (bidder && bidder->IsInWorld())
     {
         auto outbid = (auction->highestBid / 100) * 5;
@@ -419,7 +419,7 @@ void AuctionHouse::sendAuctionExpiredNotificationPacket(Auction* auction)
 {
     if (auction)
     {
-        Player* owner = sObjectMgr.getPlayer(auction->ownerGuid.getGuidLow());
+        Player* owner = sObjectMgr.getPlayer(auction->ownerGuid.getLowGuid());
         if (owner && owner->getSession())
         {
             SmsgAuctionRemovedNotification managedPacket(auction->Id, auction->auctionItem->getEntry(),

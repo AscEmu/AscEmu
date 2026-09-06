@@ -165,7 +165,7 @@ void ThreatManager::initialize()
     {
         // TODO: Summoner is set in Summon::Load and we call ThreatManager initialize from Summon constructor
         // so summoner is always nullptr here. Maybe in the future it's set in constructor ;) -Appled
-        if (Unit* summoner = pUnit->getWorldMap()->getUnit(WoWGuid::getGuidLowPartFromUInt64(pUnit->getSummonedByGuid())))
+        if (Unit* summoner = pUnit->getWorldMapUnit(pUnit->getSummonedByGuid()))
             if (summoner->isPlayer())
                 return false;
     }

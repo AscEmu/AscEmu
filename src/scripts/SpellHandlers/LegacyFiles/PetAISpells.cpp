@@ -85,7 +85,7 @@ public:
                 pet->m_baseDamage[0] += ownerBonus;
                 pet->m_baseDamage[1] += ownerBonus;
 
-                const auto unitTarget = pet->getWorldMap()->getUnit(playerOwner->getTargetGuid());
+                const auto unitTarget = pet->getWorldMapUnit(playerOwner->getTargetGuid());
                 if (unitTarget != nullptr && playerOwner->isValidAttackableTarget(unitTarget))
                 {
                     pet->getAIInterface()->onHostileAction(unitTarget);

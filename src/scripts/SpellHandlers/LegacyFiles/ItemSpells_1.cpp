@@ -216,7 +216,7 @@ bool NetherWraithBeacon(uint8_t /*effectIndex*/, Spell* pSpell)
     float SSZ = pSpell->getPlayerCaster()->GetPositionZ();
     float SSO = pSpell->getPlayerCaster()->GetOrientation();
 
-    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(22408, LocationVector(SSX, SSY, SSZ, SSO), true, false, 0, 0);
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(22408, LocationVector(SSX, SSY, SSZ, SSO));
     return true;
 }
 
@@ -311,9 +311,9 @@ bool MinionsOfGurok(uint8_t /*effectIndex*/, Spell* pSpell)
     float SSZ = target->GetPositionZ();
     float SSO = target->GetOrientation();
 
-    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(18181, LocationVector(SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO), true, false, 0, 0);
-    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(18181, LocationVector(SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO), true, false, 0, 0);
-    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(18181, LocationVector(SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO), true, false, 0, 0);
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(18181, LocationVector(SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO));
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(18181, LocationVector(SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO));
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(18181, LocationVector(SSX + Util::getRandomUInt(8) - 4, SSY + Util::getRandomUInt(8) - 4, SSZ, SSO));
 
     return true;
 }
@@ -344,7 +344,7 @@ bool WarpRiftGenerator(uint8_t /*effectIndex*/, Spell* pSpell)
     float SSZ = pSpell->getPlayerCaster()->GetPositionZ();
     float SSO = pSpell->getPlayerCaster()->GetOrientation();
 
-    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(16939, LocationVector(SSX, SSY, SSZ, SSO), true, false, 0, 0);
+    pSpell->getPlayerCaster()->getWorldMap()->getInterface()->spawnCreature(16939, LocationVector(SSX, SSY, SSZ, SSO));
 
     return true;
 }

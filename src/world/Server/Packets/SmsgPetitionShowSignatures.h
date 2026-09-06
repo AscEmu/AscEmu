@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include <cstdint>
 #include <vector>
+#include "WoWGuid.hpp"
 
 namespace AscEmu::Packets
 {
@@ -19,16 +20,16 @@ namespace AscEmu::Packets
         uint32_t chartId;
         uint8_t signatureCount;
         uint32_t petitionSlots;
-        std::vector<uint32_t> signatures;
+        std::vector<WoWGuid> signatures;
 
         SmsgPetitionShowSignatures() : SmsgPetitionShowSignatures(0, 0, 0, 0, 0, { 0 })
         {
         }
 
-        SmsgPetitionShowSignatures(uint64_t itemGuid, uint64_t leaderGuid, uint32_t chartId, uint8_t signatureCount, uint32_t petitionSlots, std::vector<uint32_t> signatures) :
+        SmsgPetitionShowSignatures(uint64_t itemGuid, const WoWGuid& leaderGuid, uint32_t chartId, uint8_t signatureCount, uint32_t petitionSlots, std::vector<WoWGuid> signatures) :
             ManagedPacket(SMSG_PETITION_SHOW_SIGNATURES, 0),
             itemGuid(itemGuid),
-            leaderGuid(leaderGuid),
+            leaderGuid(leaderGuid.getRawGuid()),
             chartId(chartId),
             signatureCount(signatureCount),
             petitionSlots(petitionSlots),
@@ -47,10 +48,10 @@ namespace AscEmu::Packets
             packet << signatureCount;
             for (auto const signature : signatures)
             {
-                if (signature == 0)
+                if (signature.getRawGuid() == 0)
                     continue;
 
-                packet << signature;
+                packet << signature.getLowGuid();
                 packet << uint32_t(1);
             }
             packet << uint8_t(0);

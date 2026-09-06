@@ -52,7 +52,7 @@ namespace AscEmu::Packets
                 WoWGuid guid = leader;
                 auto itLeaderRoles = roles.find(leader);
                 uint8_t leaderRoles = itLeaderRoles != roles.end() ? itLeaderRoles->second : 0;
-                Player* player = sObjectMgr.getPlayer(guid.getGuidLowPart());
+                Player* player = sObjectMgr.getPlayer(guid.getCounter());
 
                 packet << uint8_t(state);                                       // RoleCheckStatus
                 packet << uint8_t(0);                                           // PartyIndex
@@ -124,7 +124,7 @@ namespace AscEmu::Packets
                             continue;
 
                         guid = rolePair.first;
-                        Player* member = sObjectMgr.getPlayer(guid.getGuidLowPart());
+                        Player* member = sObjectMgr.getPlayer(guid.getCounter());
 
                         packet << uint8_t(member ? member->getLevel() : 0);     // Level
                         packet.writeByteSeq(guid[3]);
@@ -186,7 +186,7 @@ namespace AscEmu::Packets
                     WoWGuid wowGuid;
                     wowGuid.init(guid);
 
-                    Player* player = sObjectMgr.getPlayer(wowGuid.getGuidLowPart());
+                    Player* player = sObjectMgr.getPlayer(wowGuid.getCounter());
                     packet << uint8_t(player ? player->getLevel() : 0);             // Level
 
                     for (const auto rolePair : roles)
@@ -203,7 +203,7 @@ namespace AscEmu::Packets
                         packet << uint8_t(playerRoles > 0);                         // Ready
                         packet << uint32_t(playerRoles);                            // Roles
 
-                        player = sObjectMgr.getPlayer(guidItr.getGuidLowPart());
+                        player = sObjectMgr.getPlayer(guidItr.getCounter());
                         packet << uint8_t(player ? player->getLevel() : 0);         // Level
                     }
                 }

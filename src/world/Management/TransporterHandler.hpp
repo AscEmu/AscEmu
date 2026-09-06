@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "AEVersion.hpp"
+#include "WoWGuid.hpp"
 #include <memory>
 #include <mutex>
 #include <vector>
@@ -34,8 +35,8 @@ typedef MovementMgr::Spline<double>                         TransportSpline;
 typedef std::vector<KeyFrame>                               KeyFrameVec;
 typedef std::unordered_map<uint32_t, TransportTemplate>     TransportTemplates;
 typedef std::set<Transporter*>                              TransporterSet;
-typedef std::unordered_map<uint32_t, Transporter*>          TransporterMap;
-typedef std::unordered_map<uint32_t, TransporterSet>        TransporterInstancedMap;
+typedef std::unordered_map<WoWGuid, Transporter*>           TransporterMap;
+typedef std::unordered_map<uint32_t /*instanceId*/, TransporterSet>        TransporterInstancedMap;
 typedef std::unordered_map<uint32_t, std::set<uint32_t>>    TransportInstanceMap;
 
 typedef std::map<uint32_t, WDB::Structures::TransportAnimationEntry const*> TransportPathContainer;
@@ -170,11 +171,13 @@ public:
 
     void addTransport(Transporter* transport);
 
-    Transporter* getTransporter(uint32_t guid);
+    Transporter* getTransporter(const WoWGuid& guid) const;
+    Transporter* getTransporterByEntry(uint32_t entry) const;
+
     TransportTemplate const* getTransportTemplate(uint32_t entry) const;
     TransportAnimation const* getTransportAnimInfo(uint32_t entry) const;
 
-    std::mutex _TransportLock;
+    mutable std::mutex _TransportLock;
 
 private:
     TransportHandler() = default;

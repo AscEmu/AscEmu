@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/EventableObject.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Logging/Log.hpp"
+#include "WoWGuid.hpp"
 
 #include <mutex>
 #include <atomic>
@@ -66,7 +67,7 @@ protected:
     // "pending" players
     std::set<uint32_t> m_pendPlayers[2];
 
-    std::map<Creature*, std::set<uint32_t> > m_resurrectMap;
+    std::map<Creature*, std::set<WoWGuid>> m_resurrectMap;
 
     bool m_isWeekend = false;
 
@@ -120,6 +121,7 @@ public:
     void removePendingPlayer(Player* plr);
     uint32_t getFreeSlots(uint32_t t, uint32_t type);
 
+    GameObject* createGameObject(uint32_t entry, LocationVector const& v, uint32_t flags, uint32_t faction, float scale);
     GameObject* spawnGameObject(uint32_t entry, LocationVector const& v, uint32_t flags, uint32_t faction, float scale);
     Creature* spawnCreature(uint32_t entry, float x, float y, float z, float o, uint32_t faction = 0);
     Creature* spawnCreature(uint32_t entry, LocationVector& v, uint32_t faction = 0);

@@ -39,6 +39,43 @@ class SpellInfo;
 enum MovementGeneratorType : uint8_t;
 enum SpellCastResult : uint8_t;
 
+namespace AIConstants
+{
+    // Automatic creature aggro is clamped to 5-45 yards. Awareness scans use
+    // an additional 5-yard safety margin beyond the maximum automatic range.
+    inline constexpr float MinAutomaticAggroRange = 5.0f;
+    inline constexpr float MaxAutomaticAggroRange = 45.0f;
+    inline constexpr float AutomaticAwarenessSearchRange = MaxAutomaticAggroRange + 5.0f;
+}
+
+enum class UnitAwarenessSignal : uint16_t
+{
+    None                = 0,
+    Movement            = 1 << 0,
+    EnteredWorld        = 1 << 1,
+    Respawned           = 1 << 2,
+    PhaseChanged        = 1 << 3,
+    StealthChanged      = 1 << 4,
+    InvisibilityChanged = 1 << 5,
+    DetectionChanged    = 1 << 6,
+    VisibilityChanged   = 1 << 7,
+    ReactionChanged     = 1 << 8,
+    ControlStateChanged = 1 << 9,
+    WarmupComplete      = 1 << 10,
+    CombatEligibilityChanged = 1 << 11,
+    AreaMovement         = 1 << 12
+};
+
+inline constexpr UnitAwarenessSignal operator|(UnitAwarenessSignal lhs, UnitAwarenessSignal rhs)
+{
+    return static_cast<UnitAwarenessSignal>(static_cast<uint16_t>(lhs) | static_cast<uint16_t>(rhs));
+}
+
+inline constexpr bool hasAwarenessSignal(UnitAwarenessSignal value, UnitAwarenessSignal flag)
+{
+    return (static_cast<uint16_t>(value) & static_cast<uint16_t>(flag)) != 0;
+}
+
 enum AI_SCRIPT_EVENT_TYPES
 {
     onLoad              = 0,
@@ -343,10 +380,20 @@ public:
 
     void setCurrentTarget(Unit* pUnit);
 
-    Unit* findTarget();
+    // Event-driven automatic awareness. The default keeps the effective delay of
+    // the old 1.5s polling system, but only for the one initial spawn/respawn scan.
+    // Scripts may set the warmup to 0 for encounter-specific immediate behavior.
+    static constexpr uint32_t DefaultAwarenessWarmupMs = 1500;
+    void setAwarenessWarmup(uint32_t delayMs);
+    uint32_t getAwarenessWarmup() const { return m_awarenessWarmupMs; }
+    void armAwarenessWarmup();
+    bool isAutomaticAwarenessActive() const { return m_automaticAwarenessActive; }
+    void requestAwarenessRefresh(UnitAwarenessSignal reason);
+    void considerObservedUnit(Unit* unit, UnitAwarenessSignal reason);
+
     void findFriends(float sqrtRange);
 
-    bool canOwnerAttackUnit(Unit* pUnit) const;
+    bool canOwnerAttackUnit(Unit* pUnit, bool requireVisibility = true) const;
     bool canOwnerAssistUnit(Unit const* pUnit) const;
     bool isAlreadyAssisting(Unit const* helper) const;
 
@@ -372,15 +419,26 @@ public:
     void setAllowedToEnterCombat(bool value);
 
 private:
-    // Called every 1500ms to find an enemy to attack or friends to assist unit
+    // Periodic maintenance is only used for active combat/flee/assist state.
+    // Idle hostile target discovery is event-driven through considerObservedUnit().
     void _updateTargets();
+    void _updateAwarenessWarmup(unsigned long timePassed);
+    bool _isObservableUnit(Unit* unit) const;
+    bool _canAutomaticallyAcquireTarget() const;
+    void _tryStealthSuspicion(Unit* unit);
+    void _notifyObservationScript(Unit* unit, UnitAwarenessSignal reason);
     // Called Eacht AIUpdate Tick to select a new Target
     bool _updateCurrentTarget();
     Unit* _selectCurrentTarget() const;
 
     bool _canEvade() const;
 
-    std::unique_ptr<Util::SmallTimeTracker> m_targetUpdateTimer;
+    std::unique_ptr<Util::SmallTimeTracker> m_maintenanceUpdateTimer;
+    std::unique_ptr<Util::SmallTimeTracker> m_awarenessWarmupTimer;
+    uint32_t m_awarenessWarmupMs = DefaultAwarenessWarmupMs;
+    bool m_awarenessWarmupPending = false;
+    bool m_automaticAwarenessActive = false;
+    bool m_deferredAwarenessAfterDistract = false;
     std::set<Unit const*> m_assistTargets;
     bool m_isEngaged = false;
     bool m_isEngagedByAssist = false;
@@ -467,7 +525,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Combat functions
 public:
-    void setReactState(ReactStates st) { m_reactState = st; }
+    void setReactState(ReactStates st);
     ReactStates getReactState() const { return m_reactState; }
     bool hasReactState(ReactStates state) const { return (m_reactState == state); }
     void initializeReactState();

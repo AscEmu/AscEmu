@@ -99,7 +99,7 @@ bool TheVioletHoldScript::setBossState(uint32_t type, EncounterStates state)
 
 void TheVioletHoldScript::OnCreaturePushToWorld(Creature* pCreature)
 {
-    WoWGuid guid = pCreature->getGuid();
+    const WoWGuid& guid = pCreature->GetNewGUID();
 
     switch (pCreature->getEntry())
     {
@@ -108,7 +108,7 @@ void TheVioletHoldScript::OnCreaturePushToWorld(Creature* pCreature)
             for (uint8_t i = 0; i < ErekemGuardCount; ++i)
                 if (!ErekemGuardGUIDs[i])
                 {
-                    ErekemGuardGUIDs[i] = guid.getGuidLowPart();
+                    ErekemGuardGUIDs[i] = guid;
                     break;
                 }
         } break;
@@ -126,7 +126,7 @@ void TheVioletHoldScript::OnGameObjectPushToWorld(GameObject* pGameObject)
             for (uint8_t i = 0; i < ActivationCrystalCount; ++i)
                 if (!ActivationCrystalGUIDs[i])
                 {
-                    ActivationCrystalGUIDs[i] = pGameObject->getGuidLow();
+                    ActivationCrystalGUIDs[i] = pGameObject->GetNewGUID();
                     break;
                 }
         } break;
@@ -281,9 +281,9 @@ void TheVioletHoldScript::UpdateEvent()
                                 {
                                     boss->getMovementManager()->moveSmoothPath(POINT_INTRO, ErekemPath, ErekemPathSize, true);
 
-                                    if (Creature* guard = GetCreatureByGuid(getLocalData(DATA_EREKEM_GUARD_1)))
+                                    if (Creature* guard = getCreatureByGuid(getLocalData(DATA_EREKEM_GUARD_1)))
                                         guard->getMovementManager()->moveSmoothPath(POINT_INTRO, ErekemGuardLeftPath, ErekemGuardLeftPathSize, true);
-                                    if (Creature* guard = GetCreatureByGuid(getLocalData(DATA_EREKEM_GUARD_2)))
+                                    if (Creature* guard = getCreatureByGuid(getLocalData(DATA_EREKEM_GUARD_2)))
                                         guard->getMovementManager()->moveSmoothPath(POINT_INTRO, ErekemGuardRightPath, ErekemGuardRightPathSize, true);
                                 } break;
                             case DATA_ICHORON:
@@ -330,7 +330,7 @@ void TheVioletHoldScript::UpdateEvent()
 
                                     for (uint32_t i = DATA_EREKEM_GUARD_1; i <= DATA_EREKEM_GUARD_2; ++i)
                                     {
-                                        if (Creature* guard = GetCreatureByGuid(getLocalData(i)))
+                                        if (Creature* guard = getCreatureByGuid(getLocalData(i)))
                                         {
                                             guard->getAIInterface()->setIgnoreCreatureCombat(false);
                                             guard->getAIInterface()->setIgnorePlayerCombat(false);
@@ -414,7 +414,7 @@ void TheVioletHoldScript::setLocalData(uint32_t type, uint32_t data)
 
                             // Make Activation Crystalls not Selectable
                             for (uint8_t i = 0; i < ActivationCrystalCount; ++i)
-                                if (GameObject* crystal = GetGameObjectByGuid(ActivationCrystalGUIDs[i]))
+                                if (GameObject* crystal = getGameObjectByGuid(ActivationCrystalGUIDs[i]))
                                     crystal->setFlags(GO_FLAG_NOT_SELECTABLE);
                         } break;
                     case EncounterStates::InProgress: // We Started the Encounter
@@ -428,7 +428,7 @@ void TheVioletHoldScript::setLocalData(uint32_t type, uint32_t data)
                             scriptEvents.addEvent(EVENT_STATE_CHECK, 3 * TimeVarsMs::Second);
 
                             for (uint8_t i = 0; i < ActivationCrystalCount; ++i)
-                                if (GameObject* crystal = GetGameObjectByGuid(ActivationCrystalGUIDs[i]))
+                                if (GameObject* crystal = getGameObjectByGuid(ActivationCrystalGUIDs[i]))
                                     crystal->removeFlags(GO_FLAG_NOT_SELECTABLE);
                         } break;
                     case EncounterStates::Performed: // Encounter Done
@@ -484,10 +484,6 @@ uint32_t TheVioletHoldScript::getLocalData(uint32_t type) const
             return WaveCount;
         case DATA_DOOR_INTEGRITY:
             return DoorIntegrity;
-        case DATA_EREKEM_GUARD_1:
-            return ErekemGuardGUIDs[0];
-        case DATA_EREKEM_GUARD_2:
-            return ErekemGuardGUIDs[1];
         case DATA_DEFENSELESS:
             return Defenseless ? 1 : 0;
         default:
@@ -495,6 +491,19 @@ uint32_t TheVioletHoldScript::getLocalData(uint32_t type) const
     }
 
     return 0;
+}
+
+WoWGuid TheVioletHoldScript::getLocalGuidData(uint32_t type) const
+{
+    switch (type)
+    {
+        case DATA_EREKEM_GUARD_1:
+            return ErekemGuardGUIDs[0];
+        case DATA_EREKEM_GUARD_2:
+            return ErekemGuardGUIDs[1];
+        default:
+            return {};
+    }
 }
 
 void TheVioletHoldScript::spawnPortal()
@@ -589,7 +598,7 @@ void TheVioletHoldScript::resetBossEncounter(uint8_t bossId)
         {
             for (uint32_t i = DATA_EREKEM_GUARD_1; i <= DATA_EREKEM_GUARD_2; ++i)
             {
-                if (Creature* guard = GetCreatureByGuid(getLocalData(i)))
+                if (Creature* guard = getCreatureByGuid(getLocalGuidData(i)))
                 {
                     if (guard->isDead())
                         guard->Despawn(1000, 1);

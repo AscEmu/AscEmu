@@ -57,7 +57,7 @@ public:
 
 protected:
     int32_t m_CPStatus[EOTS_TOWER_COUNT];
-    uint32_t m_flagHolder;
+    WoWGuid m_flagHolder;
 
     GameObject* m_standFlag;
     GameObject* m_dropFlag;

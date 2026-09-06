@@ -226,7 +226,7 @@ SpellScriptCheckDummy IchronBubble::onAuraDummyEffect(Aura* aur, AuraEffectModif
     {
         for (AreaAuraList::iterator itr = aur->targets.begin(); itr != aur->targets.end(); ++itr)
         {
-            auto unit = aur->getOwner()->getWorldMap()->getUnit(*itr);
+            auto unit = aur->getOwner()->getWorldMapUnit(*itr);
             if (unit == nullptr || !unit->ToCreature())
                 return SpellScriptCheckDummy::DUMMY_OK;
 

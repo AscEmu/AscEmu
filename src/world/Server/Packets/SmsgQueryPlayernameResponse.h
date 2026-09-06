@@ -147,7 +147,7 @@ namespace AscEmu::Packets
             else
             {
                 // Classic/TBC
-                packet << guid.getGuidLow() << uint32_t(0) << player_name << uint8_t(0) << uint32_t(race) << uint32_t(gender) << uint32_t(class_) << uint8_t(0);
+                packet << guid.getLowGuid() << uint32_t(0) << player_name << uint8_t(0) << uint32_t(race) << uint32_t(gender) << uint32_t(class_) << uint8_t(0);
             }
             
             return true;

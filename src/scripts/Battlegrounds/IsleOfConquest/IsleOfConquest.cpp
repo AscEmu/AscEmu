@@ -22,6 +22,8 @@
 #include "Chat/ChatDefines.hpp"
 #include "Management/WorldStates.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Map/Management/SpawnManager.hpp"
+#include "Map/Management/ObjectFactory.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/Master.h"
 #include "Management/Battleground/BattlegroundDefines.hpp"
@@ -342,47 +344,47 @@ void IsleOfConquest::OnCreate()
     // Spawn Teleporters
     for (uint8_t i = 0; i < 3; i++)
     {
-        teleporter[i].teleporter = spawnGameObject(IOC_TELEPORTER_A_IN, LocationVector(iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3]), 0, 1, 1.0f);
+        teleporter[i].teleporter = createGameObject(IOC_TELEPORTER_A_IN, LocationVector(iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3]), 0, 1, 1.0f);
         teleporter[i].teleporter->PushToWorld(m_mapMgr);
     }
 
     for (uint8_t i = 3; i < 6; i++)
     {
-        teleporter[i].teleporter = spawnGameObject(IOC_TELEPORTER_A_OUT, LocationVector(iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3]), 0, 1, 1.0f);
+        teleporter[i].teleporter = createGameObject(IOC_TELEPORTER_A_OUT, LocationVector(iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3]), 0, 1, 1.0f);
         teleporter[i].teleporter->PushToWorld(m_mapMgr);
     }
 
     for (uint8_t i = 6; i < 9; i++)
     {
-        teleporter[i].teleporter = spawnGameObject(IOC_TELEPORTER_H_IN, LocationVector(iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3]), 0, 2, 1.0f);
+        teleporter[i].teleporter = createGameObject(IOC_TELEPORTER_H_IN, LocationVector(iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3]), 0, 2, 1.0f);
         teleporter[i].teleporter->PushToWorld(m_mapMgr);
     }
 
     for (uint8_t i = 9; i < 12; i++)
     {
-        teleporter[i].teleporter = spawnGameObject(IOC_TELEPORTER_H_OUT, LocationVector(iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3]), 0, 2, 1.0f);
+        teleporter[i].teleporter = createGameObject(IOC_TELEPORTER_H_OUT, LocationVector(iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3]), 0, 2, 1.0f);
         teleporter[i].teleporter->PushToWorld(m_mapMgr);
     }
 
     // spawn teleporter effects
     for (uint8_t i = 0; i < 6; i++)
     {
-        teleporter[i].effect = spawnGameObject(TELEPORTER_EFFECT_A, LocationVector(iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3]), 0, 1, 1.0f);
+        teleporter[i].effect = createGameObject(TELEPORTER_EFFECT_A, LocationVector(iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3]), 0, 1, 1.0f);
         teleporter[i].effect->PushToWorld(m_mapMgr);
     }
 
     for (uint8_t i = 6; i < 12; i++)
     {
-        teleporter[i].effect = spawnGameObject(TELEPORTER_EFFECT_H, LocationVector(iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3]), 0, 1, 1.0f);
+        teleporter[i].effect = createGameObject(TELEPORTER_EFFECT_H, LocationVector(iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3]), 0, 1, 1.0f);
         teleporter[i].effect->PushToWorld(m_mapMgr);
     }
 
     // Spawn Alliance gates
     for (uint8_t i = 0; i < 3; i++)
     {
-        gates[TEAM_ALLIANCE][i].gate = spawnGameObject(allygateids[i], LocationVector(allygatelocations[i][0], allygatelocations[i][1], allygatelocations[i][2], allygatelocations[i][3]), 0, 1, 1.0f);
+        gates[TEAM_ALLIANCE][i].gate = createGameObject(allygateids[i], LocationVector(allygatelocations[i][0], allygatelocations[i][1], allygatelocations[i][2], allygatelocations[i][3]), 0, 1, 1.0f);
         gates[TEAM_ALLIANCE][i].gate->PushToWorld(m_mapMgr);
-        gates[TEAM_ALLIANCE][i].dyngate = spawnGameObject(IOC_DYNAMIC_GATE_ALLY, LocationVector(allygatelocations[i][0], allygatelocations[i][1], allygatelocations[i][2], allygatelocations[i][3]), 0, 1, 1.0f);
+        gates[TEAM_ALLIANCE][i].dyngate = createGameObject(IOC_DYNAMIC_GATE_ALLY, LocationVector(allygatelocations[i][0], allygatelocations[i][1], allygatelocations[i][2], allygatelocations[i][3]), 0, 1, 1.0f);
         gates[TEAM_ALLIANCE][i].dyngate->setFlags(GO_FLAG_UNTARGETABLE);
         gates[TEAM_ALLIANCE][i].dyngate->PushToWorld(m_mapMgr);
     }
@@ -390,9 +392,9 @@ void IsleOfConquest::OnCreate()
     //Spawn Horde gates
     for (uint8_t i = 0; i < 3; i++)
     {
-        gates[TEAM_HORDE][i].gate = spawnGameObject(hordegateids[i], LocationVector(hordegatelocations[i][0], hordegatelocations[i][1], hordegatelocations[i][2], hordegatelocations[i][3]), 0, 2, 1.0f);
+        gates[TEAM_HORDE][i].gate = createGameObject(hordegateids[i], LocationVector(hordegatelocations[i][0], hordegatelocations[i][1], hordegatelocations[i][2], hordegatelocations[i][3]), 0, 2, 1.0f);
         gates[TEAM_HORDE][i].gate->PushToWorld(m_mapMgr);
-        gates[TEAM_HORDE][i].dyngate = spawnGameObject(IOC_DYNAMIC_GATE_HORDE, LocationVector(hordegatelocations[i][0], hordegatelocations[i][1], hordegatelocations[i][2], hordegatelocations[i][3]), 0, 2, 1.0f);
+        gates[TEAM_HORDE][i].dyngate = createGameObject(IOC_DYNAMIC_GATE_HORDE, LocationVector(hordegatelocations[i][0], hordegatelocations[i][1], hordegatelocations[i][2], hordegatelocations[i][3]), 0, 2, 1.0f);
         gates[TEAM_HORDE][i].dyngate->setFlags(GO_FLAG_UNTARGETABLE);
         gates[TEAM_HORDE][i].dyngate->PushToWorld(m_mapMgr);
     }
@@ -400,7 +402,7 @@ void IsleOfConquest::OnCreate()
     //Spawn ally towergates
     for (uint8_t i = 0; i < 2; i++)
     {
-        towergates[TEAM_ALLIANCE][i] = spawnGameObject(195436, AllyTowerGates[i], 0, 35, 1.0f);
+        towergates[TEAM_ALLIANCE][i] = createGameObject(195436, AllyTowerGates[i], 0, 35, 1.0f);
         towergates[TEAM_ALLIANCE][i]->setFlags(GO_FLAG_UNTARGETABLE);
         towergates[TEAM_ALLIANCE][i]->PushToWorld(m_mapMgr);
     }
@@ -408,7 +410,7 @@ void IsleOfConquest::OnCreate()
     //Spawn horde towergates
     for (uint8_t i = 0; i < 2; i++)
     {
-        towergates[TEAM_HORDE][i] = spawnGameObject(195437, HordeTowerGates[i], 0, 35, 0.5f);
+        towergates[TEAM_HORDE][i] = createGameObject(195437, HordeTowerGates[i], 0, 35, 0.5f);
         towergates[TEAM_HORDE][i]->setFlags(GO_FLAG_UNTARGETABLE);
         towergates[TEAM_HORDE][i]->PushToWorld(m_mapMgr);
     }
@@ -432,7 +434,7 @@ void IsleOfConquest::OnCreate()
     // Flagpole
     for (uint8_t i = 0; i < IOC_NUM_CONTROL_POINTS; ++i)
     {
-        controlpoint[i].pole = spawnGameObject(IOC_FLAGPOLE, LocationVector(ControlPointCoordinates[i][0], ControlPointCoordinates[i][1], ControlPointCoordinates[i][2], ControlPointCoordinates[i][3]), 0, 35, 1.0f);
+        controlpoint[i].pole = createGameObject(IOC_FLAGPOLE, LocationVector(ControlPointCoordinates[i][0], ControlPointCoordinates[i][1], ControlPointCoordinates[i][2], ControlPointCoordinates[i][3]), 0, 35, 1.0f);
         controlpoint[i].pole->PushToWorld(m_mapMgr);
     }
 
@@ -523,7 +525,7 @@ void IsleOfConquest::SpawnControlPoint(uint32_t Id, uint32_t Type)
 
     if (controlpoint[Id].banner == nullptr)
     {
-        controlpoint[Id].banner = spawnGameObject(gameobject_info->entry, LocationVector(ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
+        controlpoint[Id].banner = createGameObject(gameobject_info->entry, LocationVector(ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3]), 0, 35, 1.0f);
 
         controlpoint[Id].banner->setState(GO_STATE_CLOSED);
@@ -557,7 +559,7 @@ void IsleOfConquest::SpawnControlPoint(uint32_t Id, uint32_t Type)
             controlpoint[Id].banner->RemoveFromWorld(false);
 
         // assign it a new guid (client needs this to see the entry change?)
-        controlpoint[Id].banner->SetNewGuid(m_mapMgr->generateGameobjectGuid());
+        m_mapMgr->getSpawnManager().regenerateGameObjectGuid(controlpoint[Id].banner, gameobject_info->entry);
         controlpoint[Id].banner->setEntry(gameobject_info->entry);
         controlpoint[Id].banner->setDisplayId(gameobject_info->display_id);
         controlpoint[Id].banner->setGoType(static_cast<uint8_t>(gameobject_info->type));
@@ -622,7 +624,7 @@ void IsleOfConquest::SpawnControlPoint(uint32_t Id, uint32_t Type)
 
     if (controlpoint[Id].aura == nullptr)
     {
-        controlpoint[Id].aura = spawnGameObject(gi_aura->entry, LocationVector(ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
+        controlpoint[Id].aura = createGameObject(gi_aura->entry, LocationVector(ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3]), 0, 35, 5.0f);
 
         controlpoint[Id].aura->setState(GO_STATE_CLOSED);
@@ -636,7 +638,7 @@ void IsleOfConquest::SpawnControlPoint(uint32_t Id, uint32_t Type)
             controlpoint[Id].aura->RemoveFromWorld(false);
 
         // re-spawn the aura
-        controlpoint[Id].aura->SetNewGuid(m_mapMgr->generateGameobjectGuid());
+        m_mapMgr->getSpawnManager().regenerateGameObjectGuid(controlpoint[Id].aura, gi_aura->entry);
         controlpoint[Id].aura->setEntry(gi_aura->entry);
         controlpoint[Id].aura->setDisplayId(gi_aura->display_id);
         controlpoint[Id].aura->SetGameObjectProperties(gi_aura);

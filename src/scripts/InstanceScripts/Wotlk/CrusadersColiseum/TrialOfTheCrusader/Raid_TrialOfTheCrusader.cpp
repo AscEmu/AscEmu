@@ -184,7 +184,7 @@ bool TrialOfTheCrusaderInstanceScript::setBossState(uint32_t type, EncounterStat
         {
             // Cleanup chest
             if (GameObject* cache = getGameObjectFromData(DATA_CRUSADERS_CHEST))
-                cache->Delete();
+                cache->destroy();
 
             switch (state)
             {
@@ -244,8 +244,7 @@ bool TrialOfTheCrusaderInstanceScript::setBossState(uint32_t type, EncounterStat
 
                     if (tributeChest)
                         if (Creature* tirion = getCreatureFromData(DATA_FORDRING))
-                            if (GameObject* chest = tirion->summonGameObject(tributeChest, LocationVector(805.62f, 134.87f, 142.16f, 3.27f), QuaternionData(), 7 * TimeVarsMs::Day))
-                                chest->setRespawnTime(chest->getRespawnDelay());
+                            tirion->summonGameObject(tributeChest, LocationVector(805.62f, 134.87f, 142.16f, 3.27f), QuaternionData(), 7 * TimeVarsMs::Day);
                 }  break;
                 default:
                     break;
@@ -348,8 +347,8 @@ void TrialOfTheCrusaderInstanceScript::setLocalData(uint32_t type, uint32_t data
         } break;
         case DATA_DESPAWN_SNOBOLDS:
         {
-            for (uint32_t const guid : snoboldGUIDS)
-                if (Creature* snobold = GetCreatureByGuid(guid))
+            for (const WoWGuid& guid : snoboldGUIDS)
+                if (Creature* snobold = getCreatureByGuid(guid))
                     snobold->Despawn(2000, 0);
 
             snoboldGUIDS.clear();
@@ -382,19 +381,19 @@ uint32_t TrialOfTheCrusaderInstanceScript::getLocalData(uint32_t type) const
 
 void TrialOfTheCrusaderInstanceScript::OnCreaturePushToWorld(Creature* pCreature)
 {
-    WoWGuid guid = pCreature->getGuid();
+    const WoWGuid& guid = pCreature->GetNewGUID();
 
     switch (pCreature->getEntry())
     {
         case NPC_VALKYR_STALKER_DARK:
         case NPC_VALKYR_STALKER_LIGHT:
         {
-            stalkerGUIDS.push_back(guid.getGuidLowPart());
+            stalkerGUIDS.push_back(guid);
         } break;
         case NPC_SNOBOLD_VASSAL:
         {
             ++SnoboldCount;
-            snoboldGUIDS.push_back(guid.getGuidLowPart());
+            snoboldGUIDS.push_back(guid);
         } break;
         case jaraxxus::NPC_MISTRESS_OF_PAIN:
         {

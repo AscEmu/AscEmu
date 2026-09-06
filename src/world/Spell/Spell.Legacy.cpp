@@ -1259,7 +1259,7 @@ void Spell::HandleAddAura(uint64_t guid)
     if (u_caster && u_caster->getGuid() == guid)
         Target = u_caster;
     else if (m_caster->IsInWorld())
-        Target = m_caster->getWorldMap()->getUnit(guid);
+        Target = m_caster->getWorldMapUnit(guid);
 
     if (Target == nullptr)
     {
@@ -1711,7 +1711,7 @@ uint8_t Spell::CanCast(bool /*tolerate*/)
      */
     if (m_caster && m_caster->IsInWorld())
     {
-        Unit* target = m_caster->getWorldMap()->getUnit(m_targets.getUnitTargetGuid());
+        Unit* target = m_caster->getWorldMapUnit(m_targets.getUnitTargetGuid());
 
         /**
          * Check for valid targets
@@ -1837,7 +1837,7 @@ uint8_t Spell::CanCast(bool /*tolerate*/)
      */
     if (m_targets.getUnitTargetGuid())
     {
-        Unit* target = (m_caster->IsInWorld()) ? m_caster->getWorldMap()->getUnit(m_targets.getUnitTargetGuid()) : NULL;
+        Unit* target = (m_caster->IsInWorld()) ? m_caster->getWorldMapUnit(m_targets.getUnitTargetGuid()) : nullptr;
 
         if (target)
         {
@@ -2888,7 +2888,7 @@ void Spell::SpellEffectJumpTarget(uint8_t effectIndex)
 
     if (m_targets.getTargetMask() & TARGET_FLAG_UNIT)
     {
-        Object* uobj = m_caster->getWorldMap()->getObject(m_targets.getUnitTargetGuid());
+        Object* uobj = m_caster->getWorldMapObject(m_targets.getUnitTargetGuid());
 
         if (uobj == nullptr || !uobj->isCreatureOrPlayer())
         {
@@ -2981,7 +2981,7 @@ void Spell::SpellEffectJumpBehindTarget(uint8_t effectIndex)
 
     if (m_targets.getTargetMask() & TARGET_FLAG_UNIT)
     {
-        Object* uobj = m_caster->getWorldMap()->getObject(m_targets.getUnitTargetGuid());
+        Object* uobj = m_caster->getWorldMapObject(m_targets.getUnitTargetGuid());
 
         if (uobj == nullptr || !uobj->isCreatureOrPlayer())
             return;

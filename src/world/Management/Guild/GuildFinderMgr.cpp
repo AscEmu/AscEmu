@@ -325,7 +325,7 @@ void GuildFinderMgr::deleteGuild(uint32_t guildId)
 void GuildFinderMgr::sendApplicantListUpdate(Guild& guild)
 {
     SmsgLfGuildApplicantListUpdated managedPacket;
-    if (Player* player = sObjectMgr.getPlayer(WoWGuid::getGuidLowPartFromUInt64(guild.getLeaderGUID())))
+    if (Player* player = sObjectMgr.getPlayer(WoWGuid::getLowGuidFromRaw(guild.getLeaderGUID())))
     {
         PacketBroadcast::sendToSet(*player, managedPacket, false);
     }

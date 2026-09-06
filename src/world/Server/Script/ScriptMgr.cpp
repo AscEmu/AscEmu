@@ -920,15 +920,9 @@ void ScriptMgr::register_creature_gossip(uint32_t entry, GossipScript* script)
 
     const auto itr = creaturegossip_.find(entry);
     if (itr == creaturegossip_.end())
-    {
         creaturegossip_.insert(std::make_pair(entry, script));
-        // keeping track of all created gossips to delete them all on shutdown
-        _customgossipscripts.insert(script);
-    }
-    else
-    {
-        delete script;
-    }
+
+    _customgossipscripts.insert(script);
 }
 
 bool ScriptMgr::has_creature_gossip(uint32_t entry) const

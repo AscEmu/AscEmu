@@ -172,7 +172,7 @@ bool Guild::create(Player* pLeader, std::string const& name)
     m_todayExperience = 0;
     createLogHolders();
 
-    sLogger.debug("GUILD: creating guild {} for leader {} ({})", name, pLeader->getName(), WoWGuid::getGuidLowPartFromUInt64(m_leaderGuid));
+    sLogger.debug("GUILD: creating guild {} for leader {} ({})", name, pLeader->getName(), WoWGuid::getLowGuidFromRaw(m_leaderGuid));
 
     CharacterDatabase.execute("DELETE FROM guild_members WHERE guildId = %u", m_id);
 
@@ -595,7 +595,7 @@ void Guild::handleAcceptMember(WorldSession* session)
     if (player == nullptr)
         return;
 
-    Player* leader = sObjectMgr.getPlayer(WoWGuid::getGuidLowPartFromUInt64(getLeaderGUID()));
+    Player* leader = sObjectMgr.getPlayer(WoWGuid::getLowGuidFromRaw(getLeaderGUID()));
     if (leader == nullptr)
         return;
 
@@ -666,7 +666,7 @@ void Guild::handleRemoveMember(WorldSession* session, uint64_t guid)
             else
             {
                 deleteMember(guid, false, true);
-                logEvent(GE_LOG_UNINVITE_PLAYER, player->getGuidLow(), WoWGuid::getGuidLowPartFromUInt64(guid));
+                logEvent(GE_LOG_UNINVITE_PLAYER, player->getGuidLow(), WoWGuid::getLowGuidFromRaw(guid));
                 broadcastEvent(GE_REMOVED, 0, { name, player->getName() });
 
                 SmsgGuildCommandResult managedPacket(GC_TYPE_REMOVE, name, GC_ERROR_SUCCESS);
@@ -730,7 +730,7 @@ void Guild::handleUpdateMemberRank(WorldSession* session, uint64_t guid, bool de
         const uint32_t newRankId = member->getRankId() + (demote ? 1 : -1);
         member->changeRank(static_cast<uint8_t>(newRankId));
 
-        logEvent(demote ? GE_LOG_DEMOTE_PLAYER : GE_LOG_PROMOTE_PLAYER, player->getGuidLow(), WoWGuid::getGuidLowPartFromUInt64(member->getGUID()), static_cast<uint8_t>(newRankId));
+        logEvent(demote ? GE_LOG_DEMOTE_PLAYER : GE_LOG_PROMOTE_PLAYER, player->getGuidLow(), WoWGuid::getLowGuidFromRaw(member->getGUID()), static_cast<uint8_t>(newRankId));
         broadcastEvent(demote ? GE_DEMOTION : GE_PROMOTION, 0, { player->getName(), name, getRankName(static_cast<uint8_t>(newRankId)) });
     }
 }
@@ -1352,7 +1352,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
     WoWGuid wGuid;
     wGuid.init(guid);
 
-    Player* player = sObjectMgr.getPlayer(wGuid.getGuidLowPart());
+    Player* player = sObjectMgr.getPlayer(wGuid.getCounter());
     if (player)
     {
         if (player->getGuildId() != 0)
@@ -1360,7 +1360,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
     }
     else
     {
-        if (auto result = CharacterDatabase.query("SELECT guildId, playerGuid FROM guild_members WHERE playerid = %u", WoWGuid::getGuidLowPartFromUInt64(guid)))
+        if (auto result = CharacterDatabase.query("SELECT guildId, playerGuid FROM guild_members WHERE playerid = %u", WoWGuid::getLowGuidFromRaw(guid)))
         {
             Field* fields = result->fetch();
             if (fields[0].asUint32() != 0)
@@ -1368,7 +1368,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
         }
     }
 
-    uint32_t lowguid = wGuid.getGuidLow();
+    uint32_t lowguid = wGuid.getLowGuid();
 
     if (rankId == GUILD_RANK_NONE)
         rankId = _getLowestRankId();
@@ -1428,7 +1428,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
 
 void Guild::deleteMember(uint64_t guid, bool isDisbanding, bool /*isKicked*/)
 {
-    uint32_t lowguid = WoWGuid::getGuidLowPartFromUInt64(guid);
+    uint32_t lowguid = WoWGuid::getLowGuidFromRaw(guid);
     Player* player = sObjectMgr.getPlayer(lowguid);
 
     if (m_leaderGuid == guid && !isDisbanding)
@@ -1505,7 +1505,7 @@ bool Guild::changeMemberRank(uint64_t guid, uint8_t newRank)
 
 bool Guild::isMember(uint64_t guid) const
 {
-    auto itr = _guildMembersStore.find(WoWGuid::getGuidLowPartFromUInt64(guid));
+    auto itr = _guildMembersStore.find(WoWGuid::getLowGuidFromRaw(guid));
     return itr != _guildMembersStore.end();
 }
 
@@ -1625,7 +1625,7 @@ void Guild::setLeaderGuid(GuildMember* pLeader)
     m_leaderGuid = pLeader->getGUID();
     pLeader->changeRank(GR_GUILDMASTER);
 
-    CharacterDatabase.execute("UPDATE guild SET leaderGuid = '%u' WHERE guildId = %u", WoWGuid::getGuidLowPartFromUInt64(m_leaderGuid), m_id);
+    CharacterDatabase.execute("UPDATE guild SET leaderGuid = '%u' WHERE guildId = %u", WoWGuid::getLowGuidFromRaw(m_leaderGuid), m_id);
 }
 
 void Guild::setRankBankMoneyPerDay(uint8_t rankId, uint32_t moneyPerDay)
@@ -1931,7 +1931,7 @@ void Guild::sendGuildRanksUpdate(uint64_t setterGuid, uint64_t targetGuid, uint3
     member->changeRank(static_cast<uint8_t>(rank));
 
     sLogger.debugOpcode("SMSG_GUILD_RANKS_UPDATE target: {}, issuer: {}, rankId: {}",
-        WoWGuid::getGuidLowPartFromUInt64(targetGuid), WoWGuid::getGuidLowPartFromUInt64(setterGuid), rank);
+        WoWGuid::getLowGuidFromRaw(targetGuid), WoWGuid::getLowGuidFromRaw(setterGuid), rank);
 }
 
 void Guild::giveXP(uint32_t xp, Player* source)
@@ -2025,7 +2025,7 @@ void Guild::resetTimes(bool weekly)
 
 void Guild::addGuildNews(uint8_t type, uint64_t guid, uint32_t flags, uint32_t value)
 {
-    uint32_t lowGuid = WoWGuid::getGuidLowPartFromUInt64(guid);
+    uint32_t lowGuid = WoWGuid::getLowGuidFromRaw(guid);
     auto newsHolder = std::make_unique<GuildNewsLogEntry>(m_id, mNewsLog->getNextGUID(), GuildNews(type), lowGuid, flags, value);
 
     const auto* news = newsHolder.get();
@@ -2473,13 +2473,13 @@ bool Guild::GuildMember::checkStats() const
 {
     if (mLevel < 1)
     {
-        sLogger.failure("Player (GUID: {}) has a broken data in field `characters`.`level`, deleting him from guild!", WoWGuid::getGuidLowPartFromUInt64(mGuid));
+        sLogger.failure("Player (GUID: {}) has a broken data in field `characters`.`level`, deleting him from guild!", WoWGuid::getLowGuidFromRaw(mGuid));
         return false;
     }
 
     if (mClass < 1 || mClass >= 12)
     {
-        sLogger.failure("Player (GUID: {}) has a broken data in field `characters`.`class`, deleting him from guild!", WoWGuid::getGuidLowPartFromUInt64(mGuid));
+        sLogger.failure("Player (GUID: {}) has a broken data in field `characters`.`class`, deleting him from guild!", WoWGuid::getLowGuidFromRaw(mGuid));
         return false;
     }
 
@@ -2493,7 +2493,7 @@ void Guild::GuildMember::setPublicNote(std::string const& publicNote)
 
     mPublicNote = publicNote;
 
-    CharacterDatabase.execute("UPDATE guild_members SET publicNote = '%s' WHERE playerid = %u", publicNote.c_str(), WoWGuid::getGuidLowPartFromUInt64(mGuid));
+    CharacterDatabase.execute("UPDATE guild_members SET publicNote = '%s' WHERE playerid = %u", publicNote.c_str(), WoWGuid::getLowGuidFromRaw(mGuid));
 }
 
 void Guild::GuildMember::setOfficerNote(std::string const& officerNote)
@@ -2503,7 +2503,7 @@ void Guild::GuildMember::setOfficerNote(std::string const& officerNote)
 
     mOfficerNote = officerNote;
 
-    CharacterDatabase.execute("UPDATE guild_members SET officerNote = '%s' WHERE playerid = %u", officerNote.c_str(), WoWGuid::getGuidLowPartFromUInt64(mGuid));
+    CharacterDatabase.execute("UPDATE guild_members SET officerNote = '%s' WHERE playerid = %u", officerNote.c_str(), WoWGuid::getLowGuidFromRaw(mGuid));
 }
 
 void Guild::GuildMember::setZoneId(uint32_t id)
@@ -2561,8 +2561,8 @@ bool Guild::GuildMember::loadGuildMembersFromDB(Field* fields, Field* fields2)
 
     if (!mZoneId)
     {
-        sLogger.failure("Player (GUID: {}) has broken zone-data", WoWGuid::getGuidLowPartFromUInt64(mGuid));
-        mZoneId = sObjectMgr.getPlayer(WoWGuid::getGuidLowPartFromUInt64(mGuid))->getZoneId();
+        sLogger.failure("Player (GUID: {}) has broken zone-data", WoWGuid::getLowGuidFromRaw(mGuid));
+        mZoneId = sObjectMgr.getPlayer(WoWGuid::getLowGuidFromRaw(mGuid))->getZoneId();
     }
 
     resetFlags();
@@ -2573,7 +2573,7 @@ bool Guild::GuildMember::loadGuildMembersFromDB(Field* fields, Field* fields2)
 void Guild::GuildMember::saveGuildMembersToDB(bool /*_delete*/) const
 {
     CharacterDatabase.execute("REPLACE INTO guild_members VALUES (%u, %u, %u, '%s', '%s')",
-        mGuildId, WoWGuid::getGuidLowPartFromUInt64(mGuid), static_cast<uint32_t>(mRankId), mPublicNote.c_str(), mOfficerNote.c_str());
+        mGuildId, WoWGuid::getLowGuidFromRaw(mGuid), static_cast<uint32_t>(mRankId), mPublicNote.c_str(), mOfficerNote.c_str());
 }
 
 uint64_t Guild::GuildMember::getGUID() const
@@ -2670,10 +2670,10 @@ void Guild::GuildMember::changeRank(uint8_t newRank)
 {
     mRankId = newRank;
 
-    if (Player* player = sObjectMgr.getPlayer(WoWGuid::getGuidLowPartFromUInt64(mGuid)))
+    if (Player* player = sObjectMgr.getPlayer(WoWGuid::getLowGuidFromRaw(mGuid)))
         player->setGuildRank(newRank);
 
-    CharacterDatabase.execute("UPDATE guild_members SET guildRank = '%u' WHERE playerid = %u", static_cast<uint32_t>(newRank), WoWGuid::getGuidLowPartFromUInt64(mGuid));
+    CharacterDatabase.execute("UPDATE guild_members SET guildRank = '%u' WHERE playerid = %u", static_cast<uint32_t>(newRank), WoWGuid::getLowGuidFromRaw(mGuid));
 }
 
 void Guild::GuildMember::updateLogoutTime()
@@ -2701,7 +2701,7 @@ void Guild::GuildMember::updateBankWithdrawValue(uint8_t tabId, uint32_t amount)
     mBankWithdraw[tabId] += amount;
 
     CharacterDatabase.execute("REPLACE INTO guild_members_withdraw VALUES('%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u')",
-        WoWGuid::getGuidLowPartFromUInt64(mGuid),
+        WoWGuid::getLowGuidFromRaw(mGuid),
         mBankWithdraw[0], mBankWithdraw[1], mBankWithdraw[2], mBankWithdraw[3], mBankWithdraw[4],
         mBankWithdraw[5], mBankWithdraw[6], 0, 0);
 }
@@ -2728,5 +2728,5 @@ int32_t Guild::GuildMember::getBankWithdrawValue(uint8_t tabId) const
 
 Player* Guild::GuildMember::getPlayerByGuid(uint64_t m_guid)
 {
-    return sObjectMgr.getPlayer(WoWGuid::getGuidLowPartFromUInt64(m_guid));
+    return sObjectMgr.getPlayer(WoWGuid::getLowGuidFromRaw(m_guid));
 }

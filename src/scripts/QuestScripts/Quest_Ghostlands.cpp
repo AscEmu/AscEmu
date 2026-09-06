@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -120,7 +121,7 @@ public:
     {
         if (pPlayer->hasQuestInQuestLog(9174))
         {
-            Creature* naga = pPlayer->getWorldMap()->createAndSpawnCreature(16292, LocationVector(7938, -7632, 114, 3.05f));
+            Creature* naga = pPlayer->getWorldMap()->getSpawnManager().spawnCreature(16292, LocationVector(7938, -7632, 114, 3.05f));
             naga->Despawn(6 * 60 * 1000, 0);
         }
     }

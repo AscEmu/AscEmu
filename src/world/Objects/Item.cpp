@@ -1371,8 +1371,8 @@ void Item::saveToDB(int8_t containerslot, int8_t slot, bool firstsave, QueryBuff
     ss << getGuidLow() << ",";
     ss << getEntry() << ",";
     ss << m_wrappedItemId << ",";
-    ss << WoWGuid::getGuidLowPartFromUInt64(GiftCreatorGUID) << ",";
-    ss << WoWGuid::getGuidLowPartFromUInt64(CreatorGUID) << ",";
+    ss << WoWGuid::getLowGuidFromRaw(GiftCreatorGUID) << ",";
+    ss << WoWGuid::getLowGuidFromRaw(CreatorGUID) << ",";
 
     ss << getStackCount() << ",";
     ss << static_cast<int32_t>(getChargesLeft()) << ",";
@@ -1523,10 +1523,7 @@ void Item::removeFromWorld()
     if (!IsInWorld())
         return;
 
-    m_WorldMap->RemoveObject(this, false);
-    m_WorldMap = nullptr;
-
-    event_Relocate();
+    unregisterFromWorld();
 }
 
 void Item::eventRemoveItem()

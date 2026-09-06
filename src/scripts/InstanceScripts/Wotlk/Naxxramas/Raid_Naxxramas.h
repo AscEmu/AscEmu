@@ -176,7 +176,7 @@ public:
     void AIUpdate() override;
     void Destroy() override;
 
-    uint64_t mPlayerGuid;
+    WoWGuid mPlayerGuid;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2058,7 +2058,7 @@ public:
             GameObject* IceBlock = getNearestGameObject(IceBlocks[i].x, IceBlocks[i].y, IceBlocks[i].z, ICE_BLOCK_GO);
             if (IceBlock != NULL)
             {
-                IceBlock->Delete();
+                IceBlock->destroy();
             }
         }
 
@@ -2168,10 +2168,11 @@ public:
                             LastOne = Block;
 
                             GameObject* IceBlock = NULL;
-                            IceBlock = getCreature()->getWorldMap()->getInterface()->spawnGameObject(ICE_BLOCK_GO, IceBlocks[Block], true, 0, 0);
+                            IceBlock = getCreature()->getWorldMap()->getSpawnManager().createGameObject(ICE_BLOCK_GO, IceBlocks[Block]);
                             if (IceBlock != NULL)
                             {
                                 IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
+                                IceBlock->PushToWorld(getCreature()->getWorldMap());
                             }
                         }
 
@@ -2192,10 +2193,11 @@ public:
                                 Block = Util::getRandomUInt(10, 13);
 
                             GameObject* IceBlock = NULL;
-                            IceBlock = getCreature()->getWorldMap()->getInterface()->spawnGameObject(ICE_BLOCK_GO, IceBlocks[Block], true, 0, 0);
+                            IceBlock = getCreature()->getWorldMap()->getSpawnManager().createGameObject(ICE_BLOCK_GO, IceBlocks[Block]);
                             if (IceBlock != NULL)
                             {
                                 IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
+                                IceBlock->PushToWorld(getCreature()->getWorldMap());
                             }
                         }
                     }
@@ -2211,10 +2213,11 @@ public:
                                 Block = Util::getRandomUInt(7) + 13;
 
                             GameObject* IceBlock = NULL;
-                            IceBlock = getCreature()->getWorldMap()->getInterface()->spawnGameObject(ICE_BLOCK_GO, IceBlocks[Block], true, 0, 0);
+                            IceBlock = getCreature()->getWorldMap()->getSpawnManager().createGameObject(ICE_BLOCK_GO, IceBlocks[Block]);
                             if (IceBlock != NULL)
                             {
                                 IceBlock->setFlags(GO_FLAG_NONSELECTABLE);
+                                IceBlock->PushToWorld(getCreature()->getWorldMap());
                             }
                         }
                     }
@@ -2251,7 +2254,7 @@ public:
                     GameObject* IceBlock = getNearestGameObject(IceBlocks[i].x, IceBlocks[i].y, IceBlocks[i].z, ICE_BLOCK_GO);
                     if (IceBlock != NULL)
                     {
-                        IceBlock->Delete();
+                        IceBlock->destroy();
                     }
                 }
 

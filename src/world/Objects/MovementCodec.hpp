@@ -190,9 +190,32 @@ private:
             case MovementOp::Flags:
             {
                 if constexpr (Version == WoW::Expansion::_Cata || Version == WoW::Expansion::_Mop)
+                {
                     movementInfo.flags = buffer.readBits(30);
+                }
                 else
+                {
                     buffer >> movementInfo.flags;
+
+                    movementInfo.hasTransportData =
+                        movementInfo.hasMovementFlag(MOVEFLAG_TRANSPORT);
+
+                    movementInfo.status_info.hasFallDirection =
+                        movementInfo.hasMovementFlag(MOVEFLAG_FALLING);
+
+                    movementInfo.status_info.hasFallData =
+                        movementInfo.status_info.hasFallDirection;
+
+                    movementInfo.status_info.hasSplineElevation =
+                        movementInfo.hasMovementFlag(MovementFlags(MOVEFLAG_SPLINE_ELEVATION));
+
+                    if constexpr (Version == WoW::Expansion::_Classic)
+                    {
+                        movementInfo.status_info.hasPitch =
+                            movementInfo.hasMovementFlag(
+                                MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING));
+                    }
+                }
             } break;
 
             case MovementOp::Flags2:
@@ -215,6 +238,22 @@ private:
                         else
                         {
                             buffer >> movementInfo.flags2;
+                        }
+                    }
+
+                    if constexpr (Version == WoW::Expansion::_TBC ||
+                        Version == WoW::Expansion::_WotLK)
+                    {
+                        movementInfo.status_info.hasPitch =
+                            movementInfo.hasMovementFlag(
+                                MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) ||
+                            movementInfo.hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING);
+
+                        if constexpr (Version == WoW::Expansion::_WotLK)
+                        {
+                            movementInfo.status_info.hasTransportTime2 =
+                                movementInfo.hasTransportData &&
+                                movementInfo.hasMovementFlag2(MOVEFLAG2_INTERPOLATED_MOVE);
                         }
                     }
                 }

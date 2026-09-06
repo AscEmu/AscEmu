@@ -6,8 +6,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ObjectMgr.hpp"
 
 #include <utility>
+#include <unordered_map>
 
 #include "Charter.hpp"
+#include "shared/WoWGuid.hpp"
 #include "Group.h"
 #include "QuestMgr.h"
 #include "Gossip/GossipMenu.hpp"
@@ -64,9 +66,6 @@ void ObjectMgr::initialize()
 
 void ObjectMgr::finalize()
 {
-    sLogger.info("ObjectMgr : Deleting Corpses...");
-    unloadCorpseCollector();
-
     sLogger.info("ObjectMgr : Clearing Vendors...");
     m_vendors.clear();
 
@@ -350,7 +349,7 @@ void ObjectMgr::removeCharter(Charter const* _charter)
     }
 }
 
-Charter* ObjectMgr::createCharter(uint32_t _leaderGuid, CharterTypes _type)
+Charter* ObjectMgr::createCharter(const WoWGuid& _leaderGuid, CharterTypes _type)
 {
     uint32_t charterId = ++m_hiCharterId;
 
@@ -378,7 +377,7 @@ Charter const* ObjectMgr::getCharter(const uint32_t _charterId, const CharterTyp
     return charterPair == m_charters[_type].end() ? nullptr : charterPair->second.get();
 }
 
-Charter* ObjectMgr::getCharterByGuid(const uint64_t _playerGuid, const CharterTypes _type) const
+Charter* ObjectMgr::getCharterByGuid(const WoWGuid& _playerGuid, const CharterTypes _type) const
 {
     std::lock_guard guard(m_charterLock);
     for (auto& charterPair : m_charters[_type])
@@ -386,7 +385,7 @@ Charter* ObjectMgr::getCharterByGuid(const uint64_t _playerGuid, const CharterTy
         if (_playerGuid == charterPair.second->getLeaderGuid())
             return charterPair.second.get();
 
-        for (const uint32_t playerGuid : charterPair.second->getSignatures())
+        for (const auto& playerGuid : charterPair.second->getSignatures())
             if (playerGuid == _playerGuid)
                 return charterPair.second.get();
     }
@@ -394,7 +393,7 @@ Charter* ObjectMgr::getCharterByGuid(const uint64_t _playerGuid, const CharterTy
     return nullptr;
 }
 
-Charter* ObjectMgr::getCharterByItemGuid(const uint64_t _itemGuid) const
+Charter* ObjectMgr::getCharterByItemGuid(const WoWGuid& _itemGuid) const
 {
     std::lock_guard guard(m_charterLock);
     for (auto& charterType : m_charters)
@@ -491,114 +490,112 @@ void ObjectMgr::deleteCachedCharacterInfo(const uint32_t _playerGuid)
 // Corpse
 void ObjectMgr::loadCorpsesForInstance(WorldMap* _worldMap)
 {
-    if (auto result = CharacterDatabase.query("SELECT * FROM corpses WHERE instanceid = %u", _worldMap->getInstanceId()))
+    if (!_worldMap)
+        return;
+
+    if (auto result = CharacterDatabase.query(
+        "SELECT guid, positionx, positiony, positionz, orientation, zoneId, mapId, instanceid, data "
+        "FROM corpses WHERE mapId = %u AND instanceid = %u",
+        _worldMap->getBaseMap()->getMapId(), _worldMap->getInstanceId()))
     {
+        std::unordered_map<uint32_t, Corpse*> loadedCorpseByOwner;
+
         do
         {
             Field* fields = result->fetch();
-            auto corpse = std::make_unique<Corpse>(HIGHGUID_TYPE_CORPSE, fields[0].asUint32());
+            const uint64_t rawGuid = (static_cast<uint64_t>(fields[0].asUint32()) << 32 | HIGHGUID_TYPE_CORPSE);
+            Corpse* corpse = _worldMap->getObjectFactory().createCorpse(rawGuid);
+            if (!corpse)
+                continue;
+
             corpse->SetPosition(fields[1].asFloat(), fields[2].asFloat(), fields[3].asFloat(), fields[4].asFloat());
             corpse->setZoneId(fields[5].asUint32());
             corpse->SetMapId(fields[6].asUint32());
             corpse->SetInstanceID(fields[7].asUint32());
             corpse->setCorpseDataFromDbString(fields[8].asCString());
+            corpse->setLoadedFromDB(true);
 
             if (corpse->getDisplayId() == 0)
+            {
+                delete corpse;
                 continue;
+            }
 
-            corpse->PushToWorld(_worldMap);
-            std::lock_guard guard(m_corpseLock);
-            m_corpses.try_emplace(corpse->getGuidLow(), std::move(corpse));
+            WoWGuid owner;
+            owner.init(corpse->getOwnerGuid());
+            const uint32_t ownerLow = owner.getCounter();
+
+            if (ownerLow != 0)
+            {
+                auto duplicateItr = loadedCorpseByOwner.find(ownerLow);
+                if (duplicateItr != loadedCorpseByOwner.end())
+                {
+                    Corpse* keep = duplicateItr->second;
+                    Corpse* drop = corpse;
+
+                    // Crash recovery: if multiple body corpses for the same owner
+                    // exist in the DB, keep the newest/highest corpse guid and
+                    // delink/delete the older one so resurrection never targets a
+                    // stale corpse.
+                    if (corpse->getGuidLow() > keep->getGuidLow())
+                    {
+                        drop = keep;
+                        keep = corpse;
+                        duplicateItr->second = corpse;
+                    }
+
+                    drop->delink();
+
+                    if (drop == corpse)
+                    {
+                        delete corpse;
+                        continue;
+                    }
+
+                    addCorpseDespawnTime(drop);
+                }
+                else
+                {
+                    loadedCorpseByOwner.emplace(ownerLow, corpse);
+                }
+            }
+
+            _worldMap->getObjectFactory().attachToWorld(corpse);
         } while (result->nextRow());
     }
 }
 
-Corpse* ObjectMgr::loadCorpseByGuid(const uint32_t _corpseGuid)
-{
-    if (auto result = CharacterDatabase.query("SELECT * FROM corpses WHERE guid =%u ", _corpseGuid))
-    {
-        Field* field = result->fetch();
-        auto corpse = std::make_unique<Corpse>(HIGHGUID_TYPE_CORPSE, field[0].asUint32());
-        corpse->SetPosition(field[1].asFloat(), field[2].asFloat(), field[3].asFloat(), field[4].asFloat());
-        corpse->setZoneId(field[5].asUint32());
-        corpse->SetMapId(field[6].asUint32());
-        corpse->setCorpseDataFromDbString(field[7].asCString());
-
-        if (corpse->getDisplayId() == 0)
-            return nullptr;
-
-        corpse->setLoadedFromDB(true);
-        corpse->SetInstanceID(field[8].asUint32());
-        corpse->AddToWorld();
-
-        std::lock_guard guard(m_corpseLock);
-        const auto [itr, _] = m_corpses.try_emplace(corpse->getGuidLow(), std::move(corpse));
-        return itr->second.get();
-    }
-
-    return nullptr;
-}
-
-Corpse* ObjectMgr::createCorpse()
-{
-    uint32_t corpseGuid = ++m_hiCorpseGuid;
-
-    std::lock_guard guard(m_corpseLock);
-    const auto [corpseItr, _] = m_corpses.try_emplace(corpseGuid, Util::LazyInstanceCreator([corpseGuid] {
-        return std::make_unique<Corpse>(HIGHGUID_TYPE_CORPSE, corpseGuid);
-    }));
-    return corpseItr->second.get();
-}
-
-void ObjectMgr::removeCorpse(const Corpse* _corpse)
-{
-    std::lock_guard guard(m_corpseLock);
-    m_corpses.erase(_corpse->getGuidLow());
-}
-
-Corpse* ObjectMgr::getCorpseByGuid(uint32_t _corpseGuid) const
-{
-    std::lock_guard guard(m_corpseLock);
-    const auto corpsePair = m_corpses.find(_corpseGuid);
-    return corpsePair != m_corpses.end() ? corpsePair->second.get() : nullptr;
-}
-
-Corpse* ObjectMgr::getCorpseByOwner(const uint32_t _playerGuid) const
-{
-    std::lock_guard guard(m_corpseLock);
-    for (const auto& corpsePair : m_corpses)
-    {
-        WoWGuid wowGuid;
-        wowGuid.init(corpsePair.second->getOwnerGuid());
-
-        if (wowGuid.getGuidLowPart() == _playerGuid)
-            return corpsePair.second.get();
-    }
-
-    return nullptr;
-}
-
-void ObjectMgr::unloadCorpseCollector()
-{
-    std::lock_guard guard(m_corpseLock);
-    for (const auto& corpsePair : m_corpses)
-    {
-        const auto corpse = corpsePair.second.get();
-        if (corpse->IsInWorld())
-            corpse->RemoveFromWorld(false);
-    }
-    m_corpses.clear();
-}
-
 void ObjectMgr::addCorpseDespawnTime(const Corpse* _corpse) const
 {
-    if (_corpse->IsInWorld())
-        _corpse->getWorldMap()->addCorpseDespawn(_corpse->getGuid(), 600000);
+    if (!_corpse || !_corpse->IsInWorld())
+        return;
+
+    auto* corpse = const_cast<Corpse*>(_corpse);
+
+    sEventMgr.AddEvent(corpse, &Corpse::destroy, EVENT_CORPSE_DESPAWN, 600000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+}
+
+void ObjectMgr::deleteCorpseRecordsForPlayer(uint64_t ownerGuid) const
+{
+    if (!ownerGuid)
+        return;
+
+    // The corpse owner is stored as the fifth token in the serialized data
+    // column: guid otype entry scale ownerGuid displayId ...
+    // Clean up stale duplicates left behind by crashes before a new body corpse
+    // is saved. This keeps the active invariant: one linked body corpse per
+    // player.
+    CharacterDatabase.execute(
+        "DELETE FROM corpses WHERE data REGEXP '^([^ ]+ ){4}%llu( |$)'",
+        static_cast<unsigned long long>(ownerGuid));
 }
 
 void ObjectMgr::delinkCorpseForPlayer(const Player* _player) const
 {
-    if (const auto corpse = getCorpseByOwner(_player->getGuidLow()))
+    if (!_player || !_player->getWorldMap())
+        return;
+
+    if (Corpse* corpse = _player->getWorldMap()->getRegistry().getCorpseByOwner(_player->getGuidLow()))
     {
         corpse->delink();
         addCorpseDespawnTime(corpse);

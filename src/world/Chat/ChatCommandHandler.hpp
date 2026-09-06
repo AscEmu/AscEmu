@@ -231,6 +231,13 @@ public:
     bool HandleMoveDBCItemSetsToDB(const char* args, WorldSession* session);
     bool HandleMoveDB2ItemsToDB(const char* args, WorldSession* session);
     bool HandleDebugDumpState(const char* args, WorldSession* session);
+    bool HandleDebugMapStats(const char* args, WorldSession* session);
+    bool HandleDebugGridPosition(const char* args, WorldSession* session);
+    bool HandleDebugGrid(const char* args, WorldSession* session);
+    bool HandleDebugObjectVisibility(const char* args, WorldSession* session);
+    bool HandleDebugSpawnAudit(const char* args, WorldSession* session);
+    bool HandleDebugSummonCreature(const char* args, WorldSession* session);
+    bool HandleDebugSummonGameObject(const char* args, WorldSession* session);
     bool HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session);
     bool HandleDebugHover(const char* /*args*/, WorldSession* m_session);
     bool HandleDebugState(const char* /*args*/, WorldSession* m_session);

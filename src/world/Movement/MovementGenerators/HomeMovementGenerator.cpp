@@ -116,7 +116,10 @@ void HomeMovementGenerator<Creature>::doFinalize(Creature* owner, bool active, b
 {
     addFlag(MOVEMENTGENERATOR_FLAG_FINALIZED);
     if (active)
+    {
         owner->removeUnitStateFlag(UNIT_STATE_ROAMING_MOVE | UNIT_STATE_EVADING);
+        owner->getAIInterface()->requestAwarenessRefresh(UnitAwarenessSignal::ControlStateChanged);
+    }
 
     if (movementInform && hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED))
     {

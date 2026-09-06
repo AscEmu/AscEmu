@@ -33,13 +33,14 @@ class Player;
 class SERVER_DECL Corpse : public Object
 {
 public:
-    Corpse(uint32_t high, uint32_t low);
+    Corpse(uint64_t guid);
     ~Corpse();
 
     void create(Player* owner, uint32_t mapid, LocationVector lv);
     void setCorpseDataFromDbString(std::string dbString);
     void saveToDB();
     void deleteFromDB();
+    void destroy() override;
 
     void setLoadedFromDB(bool value);
     bool getLoadedFromDB();
@@ -52,7 +53,6 @@ public:
     Loot loot;
     void generateLoot();
 
-    void despawn();
     void spawnBones();
     void delink();
 

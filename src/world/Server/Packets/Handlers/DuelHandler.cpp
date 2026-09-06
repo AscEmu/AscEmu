@@ -91,7 +91,7 @@ void WorldSession::handleDuelProposed(WorldPacket& recvPacket)
     // Mop's client sends a dedicated opcode instead of casting the Duel spell (7266/62875)
     // itself; casting it here on the client's behalf routes through the existing
     // Spell::SpellEffectDuel -> Player::requestDuel validation and request flow unchanged.
-    const auto target = sObjectMgr.getPlayer(srlPacket.targetGuid.getGuidLow());
+    const auto target = sObjectMgr.getPlayer(srlPacket.targetGuid.getLowGuid());
     if (target == nullptr)
         return;
 

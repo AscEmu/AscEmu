@@ -20,6 +20,7 @@
  */
 
 #include "Setup.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Creatures/Creature.h"
@@ -63,17 +64,16 @@ public:
         if (p == nullptr)
             return;
 
-        Creature* creature = pThis->getWorldMap()->createCreature(entry);
-        creature->m_spawn = nullptr;
-        creature->Load(p, posX, posY, posZ);
-        creature->SetOrientation(posO);
+        Creature* creature = pThis->getWorldMap()->getSpawnManager().createCreature(entry, LocationVector(posX, posY, posZ, posO));
+        if (!creature)
+            return;
         creature->getAIInterface()->setCombatDisabled(true);
         creature->getAIInterface()->setMeleeDisabled(true);
         creature->getAIInterface()->setTargetingDisabled(true);
-        creature->PushToWorld(pThis->getWorldMap());
-        creature->Despawn(180000, 0);
         creature->setFactionTemplate(35);
         creature->setServersideFaction();
+        creature->PushToWorld(pThis->getWorldMap());
+        creature->Despawn(180000, 0);
     }
 };
 

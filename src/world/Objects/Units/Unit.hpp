@@ -158,14 +158,13 @@ public: //\todo Zyres: public fpr LuaEngine, sort out why
     // Essential functions
 
     void Update(unsigned long time_passed);                                 // hides function Object::Update
-    // void AddToWorld();                                                   // not used
-    // void AddToWorld(WorldMap* pMapMgr);                                  // not used
-    // void PushToWorld(WorldMap*);                                         // not used
-    virtual void RemoveFromWorld(bool free_guid);                           // hides virtual function Object::RemoveFromWorld
-    // void OnPrePushToWorld();                                             // not used
-    virtual void OnPushToWorld();                                           // hides virtual function Object::OnPushToWorld
-    // void OnPreRemoveFromWorld();                                         // not used
-    // void OnRemoveFromWorld();                                            // not used
+
+    //virtual void onPreAttachToWorld() {}
+    virtual void onAttachToWorld() override;
+
+    virtual void onPreDetachFromWorld() override;
+    // virtual void onDetachFromWorld() override;
+
     virtual void die(Unit* pAttacker, uint32_t damage, uint32_t spellid);
 
 private:
@@ -261,11 +260,7 @@ public:
     void setFactionTemplate(uint32_t id);
 
     // helper
-    void setFaction(uint32_t factionId)
-    {
-        setFactionTemplate(factionId);
-        setServersideFaction();
-    }
+    void setFaction(uint32_t factionId);
 
 #if VERSION_STRING >= WotLK
     // Returns item entry in wotlk and above
@@ -537,6 +532,7 @@ public:
     bool isWithinMeleeRange(Unit* obj) { return isWithinMeleeRangeAt(GetPosition(), obj); }
     bool isWithinMeleeRangeAt(LocationVector const& pos, Unit* obj);
     float getMeleeRange(Unit* target);
+    float getCombatRange(Unit const* target) const;
 
     bool isInInstance() const;
     virtual bool isInWater() const;
@@ -674,6 +670,7 @@ public:
 
 private:
     std::unordered_set<AbstractFollower*> m_followingMe;
+    std::unordered_set<uint64_t> m_dynamicObjectTargets;
 
 protected:
     std::unique_ptr<MovementManager> i_movementManager;
@@ -885,6 +882,8 @@ public:
     uint32_t getTransformAura() const;
     void setTransformAura(uint32_t auraId);
 
+    void queueInitialVisiblePacketsForPlayer(Player* target) override;
+
     // Sends packet for new or removed aura
     void sendAuraUpdate(Aura* aur, bool remove);
     void sendFullAuraUpdate();
@@ -926,6 +925,17 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Visibility system
     bool canSee(Object const* obj) const;
+    bool canSeeFrom(Object const* obj, Object const* viewpoint) const;
+    bool canSeeFrom(Object const* obj, Object const* viewpoint, float visibilityDistanceSq) const;
+    bool canNoticeStealthed(Object const* obj, float aggroRange) const;
+    bool canDetectStealthed(Object const* obj) const;
+
+private:
+    bool _canSeeFrom(Object const* obj, Object const* viewpoint, bool stealthSuspicionCheck, float visibilityDistanceSq = 0.0f) const;
+    bool _canDetectStealthed(Object const* obj, bool stealthSuspicionCheck) const;
+    float _getStealthDetectionRange(Object const* obj, bool stealthSuspicionCheck) const;
+
+public:
 
     // Stealth
     int32_t getStealthLevel(StealthFlag flag) const;
@@ -942,8 +952,6 @@ public:
     bool isInvisible() const;
 
     void setVisible(const bool visible);
-
-    void updateVisibility();
 
 private:
      // Stealth
@@ -1085,9 +1093,8 @@ public:
     void smsg_AttackStart(Unit* pVictim);
     void smsg_AttackStop(Unit* pVictim);
 
-    virtual void addToInRangeObjects(Object* pObj);
-    virtual void onRemoveInRangeObject(Object* pObj);
-    void clearInRangeSets();
+    void onRemoveInRangeObject(Object* pObj) override;
+
 
     bool setDetectRangeMod(uint64_t guid, int32_t amount);
     void unsetDetectRangeMod(uint64_t guid);
@@ -1104,7 +1111,7 @@ public:
     void removeGameObject(GameObject* gameObj, bool del);
     void removeGameObject(uint32_t spellId, bool del);
 
-    uint32_t m_objectSlots[4] = { 0 };
+    WoWGuid m_objectSlots[4] = {};
 
     void removeAllGameObjects();
 
@@ -1251,6 +1258,7 @@ public:
 
     void possess(Unit* unitTarget, uint32_t delay = 0);
     void unPossess();
+    void setPossessedVisibilityRoles(bool possessed);
 
     // noInterrupt counter set through possess/unpossess
     uint16_t hasNoInterrupt() const { return m_noInterrupt; }
@@ -1514,6 +1522,13 @@ public:
     bool m_diminishActive = false;
 
     DynamicObject* m_dynamicObject = nullptr;
+
+    // Dynamic area spells that currently affect this unit. Keeping the reverse
+    // membership lets movement/state events re-evaluate areas the unit has just
+    // left without rescanning every DynamicObject on the map.
+    void addDynamicObjectTarget(uint64_t guid) { m_dynamicObjectTargets.insert(guid); }
+    void removeDynamicObjectTarget(uint64_t guid) { m_dynamicObjectTargets.erase(guid); }
+    const std::unordered_set<uint64_t>& getDynamicObjectTargets() const { return m_dynamicObjectTargets; }
 
     bool m_isProcInUse = false;
     bool m_isInvincible = false;

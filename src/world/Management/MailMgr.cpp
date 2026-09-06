@@ -143,7 +143,7 @@ void MailSystem::SendAutomatedMessage(uint32_t type, uint64_t sender, uint64_t r
     msg.money = money;
     msg.cod = cod;
     for (std::vector<uint64_t>::iterator itr = item_guids.begin(); itr != item_guids.end(); ++itr)
-        msg.items.push_back(WoWGuid::getGuidLowPartFromUInt64(*itr));
+        msg.items.push_back(WoWGuid::getLowGuidFromRaw(*itr));
 
     msg.stationery = stationery;
     msg.delivery_time = (uint32_t)UNIXTIME + deliverdelay;

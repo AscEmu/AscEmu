@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 bool ChatCommandHandler::HandleGetTransporterTime(const char* /*args*/, WorldSession* m_session)
 {
-    auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
+    auto transporter = sTransportHandler.getTransporter(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid);
     if (transporter)
         transporter->GetTimer();
     else
@@ -28,7 +28,7 @@ bool ChatCommandHandler::HandleGetTransporterTime(const char* /*args*/, WorldSes
 
 bool ChatCommandHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSession* m_session)
 {
-    auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
+    auto transporter = sTransportHandler.getTransporter(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid);
     if (transporter == nullptr)
     {
         redSystemMessage(m_session, "You must be on a transport to use this command.");
@@ -51,7 +51,7 @@ bool ChatCommandHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSes
 
 bool ChatCommandHandler::HandleStopTransport(const char* /*args*/, WorldSession* m_session)
 {
-    auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
+    auto transporter = sTransportHandler.getTransporter(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid);
     if (transporter)
         transporter->EnableMovement(false, m_session->GetPlayer()->getWorldMap());
     else
@@ -62,7 +62,7 @@ bool ChatCommandHandler::HandleStopTransport(const char* /*args*/, WorldSession*
 
 bool ChatCommandHandler::HandleStartTransport(const char* /*args*/, WorldSession* m_session)
 {
-    Transporter* transport = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
+    Transporter* transport = sTransportHandler.getTransporter(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid);
     if (transport)
         transport->EnableMovement(true, m_session->GetPlayer()->getWorldMap());
     else

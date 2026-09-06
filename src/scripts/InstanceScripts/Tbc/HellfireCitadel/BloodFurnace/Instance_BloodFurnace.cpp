@@ -32,8 +32,8 @@ public:
                 if (state == Performed)
                 {
                     if (m_broggokDoorGUID)
-                        if (GetGameObjectByGuid(m_broggokDoorGUID))
-                            GetGameObjectByGuid(m_broggokDoorGUID)->setState(GO_STATE_OPEN);
+                        if (getGameObjectByGuid(m_broggokDoorGUID))
+                            getGameObjectByGuid(m_broggokDoorGUID)->setState(GO_STATE_OPEN);
                 }
             } break;
             case DATA_KELIDAN_THE_BREAKER:
@@ -41,8 +41,8 @@ public:
                 if (state == Performed)
                 {
                     if (m_theMakerDoorGUID)
-                        if (GetGameObjectByGuid(m_theMakerDoorGUID))
-                            GetGameObjectByGuid(m_theMakerDoorGUID)->setState(GO_STATE_OPEN);
+                        if (getGameObjectByGuid(m_theMakerDoorGUID))
+                            getGameObjectByGuid(m_theMakerDoorGUID)->setState(GO_STATE_OPEN);
                 }
             } break;
             default:
@@ -56,18 +56,18 @@ public:
         switch (pGameObject->getEntry())
         {
             case GO_BROGGOK:
-                m_broggokDoorGUID = pGameObject->getGuidLow();
+                m_broggokDoorGUID = pGameObject->GetNewGUID();
                 break;
             case GO_THE_MAKER:
-                m_theMakerDoorGUID = pGameObject->getGuidLow();
+                m_theMakerDoorGUID = pGameObject->GetNewGUID();
                 break;
             default:
                 break;
         }
     }
 
-    uint32_t m_broggokDoorGUID = 0;
-    uint32_t m_theMakerDoorGUID = 0;
+    WoWGuid m_broggokDoorGUID = 0;
+    WoWGuid m_theMakerDoorGUID = 0;
 
 };
 

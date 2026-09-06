@@ -147,8 +147,8 @@ protected:
     void summonFrostSphere(CreatureAIFunc pThis);
     void summonScarabs(CreatureAIFunc pThis);
 
-    std::vector<uint64_t> burrowGuids;
-    std::vector<uint64_t> sphereGuids;
+    std::vector<WoWGuid> burrowGuids;
+    std::vector<WoWGuid> sphereGuids;
 
     bool introDone;
     bool reachedPhase3;

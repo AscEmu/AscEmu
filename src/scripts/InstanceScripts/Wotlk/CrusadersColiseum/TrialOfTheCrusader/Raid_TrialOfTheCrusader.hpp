@@ -519,14 +519,14 @@ public:
 
     void DoAction(int32_t action) override;
 
-    void getStalkersGuidVector(std::vector<uint32_t>& vVector) const { vVector = stalkerGUIDS; }
+    void getStalkersGuidVector(std::vector<WoWGuid>& vVector) const { vVector = stalkerGUIDS; }
 
 protected:
     uint32_t NorthrendBeasts;
     uint32_t TrialCounter;
 
-    std::vector<uint32_t> snoboldGUIDS;
-    std::vector<uint32_t> stalkerGUIDS;
+    std::vector<WoWGuid> snoboldGUIDS;
+    std::vector<WoWGuid> stalkerGUIDS;
 
     // Achievement stuff
     uint32_t NotOneButTwoJormungarsTimer;

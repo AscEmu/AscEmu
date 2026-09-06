@@ -134,7 +134,7 @@ void GameEvent::DestroyAllEntities()
         if (mEventScript != nullptr)
             mEventScript->OnAfterCreatureDespawn(this, npc);
 
-        npc->Delete();
+        npc->destroy();
     }
 
     for (auto gameobject : active_gameobjects)
@@ -145,7 +145,7 @@ void GameEvent::DestroyAllEntities()
         if (mEventScript != nullptr)
             mEventScript->OnAfterGameObjectDespawn(this, gameobject);
 
-        gameobject->Delete();
+        gameobject->destroy();
     }
 
     active_npcs.clear();
@@ -160,7 +160,7 @@ void GameEvent::CreateNPCs()
         if (mapMgr == nullptr)
             continue;
 
-        Creature* creature = mapMgr->createCreature(npc.entry);
+        Creature* creature = mapMgr->getSpawnManager().createCreature(npc.entry, LocationVector(npc.position_x, npc.position_y, npc.position_z, npc.orientation));
         CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(npc.entry);
         if (creatureProperties == nullptr)
         {
@@ -168,7 +168,6 @@ void GameEvent::CreateNPCs()
             continue;
         }
 
-        creature->Load(creatureProperties, npc.position_x, npc.position_y, npc.position_z, npc.orientation);
         if (npc.waypoint_group != 0)
         {
             // todo aaron02
@@ -193,13 +192,13 @@ void GameEvent::CreateNPCs()
             addToWorld = mEventScript->OnCreatureLoad(this, creature);
         }
         if (addToWorld)
-        {
+        {        
             creature->AddToWorld(mapMgr);
             active_npcs.push_back(creature);
         }
         else
         {
-            creature->Delete();
+            creature->destroy();
         }
     }
 }
@@ -208,12 +207,14 @@ void GameEvent::CreateObjects()
 {
     for (auto gobj : gameobject_data)
     {
-        auto mapmgr = sMapMgr.findWorldMap(gobj.map_id);
-        if (mapmgr == nullptr)
+        auto mapMgr = sMapMgr.findWorldMap(gobj.map_id);
+        if (mapMgr == nullptr)
             continue;
 
-        GameObject* gameObject = mapmgr->createGameObject(gobj.entry);
-        gameObject->create(gobj.entry, mapmgr, gobj.phase, LocationVector(gobj.position_x, gobj.position_y, gobj.position_z, gobj.facing), QuaternionData(), GameObject_State(gobj.state));
+        GameObject* gameObject = mapMgr->getSpawnManager().createGameObject(gobj.entry, LocationVector(gobj.position_x, gobj.position_y, gobj.position_z, gobj.facing));
+
+        gameObject->m_phase = gobj.phase;
+        gameObject->setState(gobj.state);
 
         // Set up spawn specific information
         if (MySQLStructure::GameObjectSpawnOverrides const* overrides = sMySQLStore.getGameObjectOverride(gobj.id))
@@ -233,12 +234,12 @@ void GameEvent::CreateObjects()
         }
         if (addToWorld)
         {
-            gameObject->AddToWorld(mapmgr);
+            gameObject->AddToWorld(mapMgr);
             active_gameobjects.push_back(gameObject);
         }
         else
         {
-            gameObject->Delete();
+            gameObject->destroy();
         }
     }
 }

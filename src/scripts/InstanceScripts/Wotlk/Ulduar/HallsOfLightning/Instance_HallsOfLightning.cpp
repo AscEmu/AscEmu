@@ -15,11 +15,11 @@ This file is released under the MIT license. See README-MIT for more information
 class HallsOfLightningScript : public InstanceScript
 {
 public:
-    uint32_t mGeneralDoorsGUID;
-    uint32_t mVolkhanDoorsGUID;
-    uint32_t mLokenDoorsGUID;
-    uint32_t mIonarDoors1GUID;
-    uint32_t mIonarDoors2GUID;
+    WoWGuid mGeneralDoorsGUID;
+    WoWGuid mVolkhanDoorsGUID;
+    WoWGuid mLokenDoorsGUID;
+    WoWGuid mIonarDoors1GUID;
+    WoWGuid mIonarDoors2GUID;
 
     explicit HallsOfLightningScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
@@ -37,19 +37,19 @@ public:
         switch (pGameObject->getEntry())
         {
             case GO_GENERAL_DOORS:
-                mGeneralDoorsGUID = pGameObject->getGuidLow();
+                mGeneralDoorsGUID = pGameObject->GetNewGUID();
                 break;
             case GO_VOLKHAN_DOORS:
-                mVolkhanDoorsGUID = pGameObject->getGuidLow();
+                mVolkhanDoorsGUID = pGameObject->GetNewGUID();
                 break;
             case GO_LOKEN_DOORS:
-                mLokenDoorsGUID = pGameObject->getGuidLow();
+                mLokenDoorsGUID = pGameObject->GetNewGUID();
                 break;
             case GO_IONAR_DOORS1:
-                mIonarDoors1GUID = pGameObject->getGuidLow();
+                mIonarDoors1GUID = pGameObject->GetNewGUID();
                 break;
             case GO_IONAR_DOORS2:
-                mIonarDoors2GUID = pGameObject->getGuidLow();
+                mIonarDoors2GUID = pGameObject->GetNewGUID();
                 break;
         }
     }
@@ -61,32 +61,32 @@ public:
         {
             case CN_GENERAL_BJARNGRIM:
             {
-                pDoors = GetGameObjectByGuid(mGeneralDoorsGUID);
+                pDoors = getGameObjectByGuid(mGeneralDoorsGUID);
                 if (pDoors)
                     pDoors->setState(GO_STATE_OPEN);
             }
             break;
             case CN_VOLKHAN:
             {
-                pDoors = GetGameObjectByGuid(mVolkhanDoorsGUID);
+                pDoors = getGameObjectByGuid(mVolkhanDoorsGUID);
                     if (pDoors)
                         pDoors->setState(GO_STATE_OPEN);
             }
             break;
             case CN_LOKEN:
             {
-                pDoors = GetGameObjectByGuid(mLokenDoorsGUID);
+                pDoors = getGameObjectByGuid(mLokenDoorsGUID);
                 if (pDoors)
                     pDoors->setState(GO_STATE_OPEN);
             }
             break;
             case CN_IONAR:
             {
-                pDoors = GetGameObjectByGuid(mIonarDoors1GUID);
+                pDoors = getGameObjectByGuid(mIonarDoors1GUID);
                 if (pDoors)
                     pDoors->setState(GO_STATE_OPEN);
 
-                pDoors = GetGameObjectByGuid(mIonarDoors2GUID);
+                pDoors = getGameObjectByGuid(mIonarDoors2GUID);
                 if (pDoors)
                     pDoors->setState(GO_STATE_OPEN);
             }

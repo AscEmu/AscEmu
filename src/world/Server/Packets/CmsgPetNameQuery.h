@@ -92,7 +92,7 @@ namespace AscEmu::Packets
                 packet.readByteSeq(guid[1]);
                 packet.readByteSeq(guid[7]);
 
-                petNumber = petNumberGuid.getGuidLowPart();
+                petNumber = petNumberGuid.getCounter();
                 return true;
             }
 

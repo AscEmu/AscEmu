@@ -274,21 +274,23 @@ Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY
     if (_creature->getWorldMap()->getInterface() == nullptr)
         return nullptr;
 
-    Creature* creature = _creature->getWorldMap()->getInterface()->spawnCreature(entry, LocationVector(posX, posY, posZ, posO), true, true, 0, 0, phase);
+    auto& spawnManager = _creature->getWorldMap()->getSpawnManager();
+    Creature* creature = spawnManager.createCreature(entry, LocationVector(posX, posY, posZ, posO));
     if (creature == nullptr)
         return nullptr;
 
+    creature->setPhase(phase);
     if (factionId != 0)
         creature->setFaction(factionId);
     else
         creature->setFaction(creatureProperties->Faction);
 
-    return creature;
+    return spawnManager.pushToWorld(creature) ? creature : nullptr;
 }
 
-void CreatureAIScript::despawn(uint32_t delay /*= 2000*/, uint32_t respawnTime /*= 0*/)
+void CreatureAIScript::despawn(uint32_t delayMs /*= 2000*/, uint32_t respawnDelayMs /*= 0*/)
 {
-    _creature->Despawn(delay, respawnTime);
+    _creature->Despawn(delayMs, respawnDelayMs);
 }
 
 bool CreatureAIScript::isAlive()
@@ -1372,7 +1374,7 @@ void CreatureAIScript::_unsetTargetToChannel()
 
 Unit* CreatureAIScript::_getTargetToChannel()
 {
-    return _creature->getWorldMap()->getUnit(_creature->getChannelObjectGuid());
+    return _creature->getWorldMapUnit(_creature->getChannelObjectGuid());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

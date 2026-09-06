@@ -72,7 +72,7 @@ void WorldSession::handleCalendarAddEvent([[maybe_unused]] WorldPacket& recvPack
 
     for (const auto& invitee : srlPacket.invitees)
     {
-        auto invite = std::make_unique<CalendarInvite>(sCalendarMgr.generateInviteId(), calendarEvent->m_entry, invitee.guid.getGuidLowPart(),
+        auto invite = std::make_unique<CalendarInvite>(sCalendarMgr.generateInviteId(), calendarEvent->m_entry, invitee.guid.getCounter(),
             lowGuid, static_cast<CalendarInviteStatus>(invitee.status), time_t(946684800), invitee.rank, "");
         sCalendarMgr.addInvite(calendarEvent->m_entry, std::move(invite));
     }

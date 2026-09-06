@@ -20,6 +20,7 @@
  */
 
 #include "Setup.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/QuestProperties.hpp"
@@ -90,7 +91,7 @@ public:
                 {
                     pPlayer->addQuestKill(10895, 0, 0);
 
-                    GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-819.77f, 2029.09f, 55.6082f, 0), 4);
+                    GameObject* pGameobject = pPlayer->getWorldMap()->getSpawnManager().spawnGameObject(183816, LocationVector(-819.77f, 2029.09f, 55.6082f, 0), 4);
                     if (pGameobject != nullptr)
                         pGameobject->despawn(1 * 60 * 1000, 0);
 
@@ -106,7 +107,7 @@ public:
                 {
                     pPlayer->addQuestKill(10895, 1, 0);
 
-                    GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-1150.53f, 2109.92f, 84.4204f, 0), 4);
+                    GameObject* pGameobject = pPlayer->getWorldMap()->getSpawnManager().spawnGameObject(183816, LocationVector(-1150.53f, 2109.92f, 84.4204f, 0), 4);
                     if (pGameobject != nullptr)
                         pGameobject->despawn(1 * 60 * 1000, 0);
 
@@ -122,7 +123,7 @@ public:
                 {
                     pPlayer->addQuestKill(10895, 2, 0);
 
-                    GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-893.499f, 1919.27f, 81.6449f, 0), 4);
+                    GameObject* pGameobject = pPlayer->getWorldMap()->getSpawnManager().spawnGameObject(183816, LocationVector(-893.499f, 1919.27f, 81.6449f, 0), 4);
                     if (pGameobject != nullptr)
                         pGameobject->despawn(1 * 60 * 1000, 0);
 
@@ -138,7 +139,7 @@ public:
                 {
                     pPlayer->addQuestKill(10895, 3, 0);
 
-                    GameObject* pGameobject = pPlayer->getWorldMap()->createAndSpawnGameObject(183816, LocationVector(-977.713f, 1879.500f, 110.892f, 0), 4);
+                    GameObject* pGameobject = pPlayer->getWorldMap()->getSpawnManager().spawnGameObject(183816, LocationVector(-977.713f, 1879.500f, 110.892f, 0), 4);
                     if (pGameobject != nullptr)
                         pGameobject->despawn(1 * 60 * 1000, 0);
 

@@ -230,11 +230,9 @@ void Vehicle::loadAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t 
     if (cp == nullptr)
         return;
 
-    Creature* accessory = getBase()->getWorldMap()->createCreature(entry);
-    accessory->Load(cp, getBase()->GetPositionX(), getBase()->GetPositionY(), getBase()->GetPositionZ(), getBase()->GetOrientation());
+    Creature* accessory = getBase()->getWorldMap()->getSpawnManager().summonCreature(entry, getBase()->GetPosition());
     accessory->setPhase(PHASE_SET, getBase()->GetPhase());
     accessory->setFaction(getBase()->getFactionTemplate());
-    accessory->PushToWorld(getBase()->getWorldMap());
 
 #if VERSION_STRING <= WotLK
     accessory->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);

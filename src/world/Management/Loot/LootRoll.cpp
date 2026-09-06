@@ -44,26 +44,26 @@ void LootRoll::finalize()
     // in need gets the item.
     uint8_t highest = 0;
     int8_t hightype = -1;
-    uint32_t playerLowGuid = 0;
+    WoWGuid playerGuid;
 
-    for (const auto& [lowPlrGuid, roll] : m_NeedRolls)
+    for (const auto& [guid, roll] : m_NeedRolls)
     {
         if (roll > highest)
         {
             highest = roll;
-            playerLowGuid = lowPlrGuid;
+            playerGuid = guid;
             hightype = ROLL_NEED;
         }
     }
 
     if (highest == 0)
     {
-        for (const auto& [lowPlrGuid, roll] : m_GreedRolls)
+        for (const auto& [guid, roll] : m_GreedRolls)
         {
             if (roll > highest)
             {
                 highest = roll;
-                playerLowGuid = lowPlrGuid;
+                playerGuid = guid;
                 hightype = ROLL_GREED;
             }
         }
@@ -78,12 +78,12 @@ void LootRoll::finalize()
 
     if (wowGuid.isUnit())
     {
-        if ((creature = _mgr->getCreature(wowGuid.getGuidLowPart())))
+        if (creature = _mgr->getCreature(wowGuid))
             pLoot = &creature->loot;
     }
     else if (wowGuid.isGameObject())
     {
-        if ((gameObject = _mgr->getGameObject(wowGuid.getGuidLowPart())))
+        if (gameObject = _mgr->getGameObject(wowGuid))
         {
             if (gameObject->IsLootable())
             {
@@ -110,13 +110,13 @@ void LootRoll::finalize()
         return;
     }
 
-    Player* _player = playerLowGuid != 0 ? _mgr->getPlayer(playerLowGuid) : nullptr;
+    Player* _player = !playerGuid.isEmpty() ? _mgr->getPlayer(playerGuid) : nullptr;
     if (_player == nullptr)
     {
         /* all passed */
         auto pitr = m_passRolls.cbegin();
         while (_player == nullptr && pitr != m_passRolls.cend())
-            _player = _mgr->getPlayer((*(pitr++)));
+            _player = _mgr->getPlayer(*(pitr++));
 
         if (_player != nullptr)
         {
@@ -171,21 +171,21 @@ void LootRoll::finalize()
 bool LootRoll::playerRolled(Player* player, uint8_t choice)
 {
     // don't allow cheaters
-    if (m_NeedRolls.find(player->getGuidLow()) != m_NeedRolls.cend() || m_GreedRolls.find(player->getGuidLow()) != m_GreedRolls.cend())
+    if (m_NeedRolls.find(player->GetNewGUID()) != m_NeedRolls.cend() || m_GreedRolls.find(player->GetNewGUID()) != m_GreedRolls.cend())
         return false;
 
     auto roll = static_cast<uint8_t>(Util::getRandomUInt(99) + 1);
     switch (choice)
     {
         case ROLL_PASS:
-            m_passRolls.insert(player->getGuidLow());
+            m_passRolls.insert(player->GetNewGUID());
             roll = 128;
             break;
         case ROLL_GREED:
-            m_GreedRolls.insert({ player->getGuidLow(), roll });
+            m_GreedRolls.insert({ player->GetNewGUID(), roll });
             break;
         case ROLL_NEED:
-            m_NeedRolls.insert({ player->getGuidLow(), roll });
+            m_NeedRolls.insert({ player->GetNewGUID(), roll });
             break;
         case ROLL_DISENCHANT:
             roll = 128;

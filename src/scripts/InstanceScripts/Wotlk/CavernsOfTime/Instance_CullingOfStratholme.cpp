@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Instance_CullingOfStratholme.h"
+#include "Map/Management/SpawnManager.hpp"
 
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
@@ -228,9 +229,9 @@ public:
             sendDBChatMessage(SAY_MALGANIS_17);
 
             //spawn a chest and go
-            GameObject* go = getCreature()->getWorldMap()->createGameObject(190663);
-            go->create(190663, getCreature()->getWorldMap(), 0, getCreature()->GetPosition(), QuaternionData(), GO_STATE_CLOSED);
-            go->PushToWorld(getCreature()->getWorldMap());
+            GameObject* go = getCreature()->getWorldMap()->getSpawnManager().createGameObject(190663, getCreature()->GetPosition());
+            if (go)
+                go->PushToWorld(getCreature()->getWorldMap());
             getCreature()->Despawn(1, 0);
         }
     }
@@ -296,9 +297,9 @@ public:
         if (crate)
             crate->despawn(0, 0);
 
-        GameObject* go = pMapMgr->createGameObject(entry);
-        go->create(entry, pMapMgr, 0, LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
-        go->PushToWorld(pMapMgr);
+        GameObject* go = pMapMgr->getSpawnManager().createGameObject(entry, LocationVector(x, y, z, o));
+        if (go)
+            go->PushToWorld(pMapMgr);
     }
 };
 
@@ -485,13 +486,7 @@ public:
                 Creature* c = nullptr;
                 if (cp)
                 {
-                    c = getCreature()->getWorldMap()->createCreature(26533);
-                    if (c)
-                    {
-                        //position is guessed
-                        c->Load(cp, 2113.52f, 1288.01f, 136.382f, 2.30383f);
-                        c->PushToWorld(getCreature()->getWorldMap());
-                    }
+                    c = getCreature()->getWorldMap()->getSpawnManager().createCreature(26533, LocationVector(2113.52f, 1288.01f, 136.382f, 2.30383f));
                 }
                 if (c)
                 {
@@ -501,6 +496,7 @@ public:
                     for (uint8_t i = 0; i < 7; i++)
                         c->m_schoolImmunityList[i] = 1;
                     c->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
+                    c->PushToWorld(getCreature()->getWorldMap());
                     //1 = 0s
                     c->SendScriptTextChatMessage(SAY_MALGANIS_01);
                     //2 = 13s

@@ -117,31 +117,37 @@ DynamicMapTree::~DynamicMapTree() = default;
 
 void DynamicMapTree::insert(const GameObjectModel& mdl)
 {
+    std::lock_guard<std::mutex> lock(_mutex);
     impl->insert(mdl);
 }
 
 void DynamicMapTree::remove(const GameObjectModel& mdl)
 {
+    std::lock_guard<std::mutex> lock(_mutex);
     impl->remove(mdl);
 }
 
 bool DynamicMapTree::contains(const GameObjectModel& mdl) const
 {
+    std::lock_guard<std::mutex> lock(_mutex);
     return impl->contains(mdl);
 }
 
 void DynamicMapTree::balance()
 {
+    std::lock_guard<std::mutex> lock(_mutex);
     impl->balance();
 }
 
 int DynamicMapTree::size() const
 {
+    std::lock_guard<std::mutex> lock(_mutex);
     return impl->size();
 }
 
 void DynamicMapTree::update(uint32_t t_diff)
 {
+    std::lock_guard<std::mutex> lock(_mutex);
     impl->update(t_diff);
 }
 
@@ -218,6 +224,7 @@ private:
 bool DynamicMapTree::getIntersectionTime(const uint32_t phasemask, const G3D::Ray& ray,
                                          const G3D::Vector3& endPos, float& maxDist) const
 {
+    std::lock_guard<std::mutex> lock(_mutex);
     float distance = maxDist;
     DynamicTreeIntersectionCallback callback(phasemask);
     impl->intersectRay(ray, callback, distance, endPos);
@@ -268,6 +275,7 @@ bool DynamicMapTree::getObjectHitPos(const uint32_t phasemask, const G3D::Vector
 
 bool DynamicMapTree::isInLineOfSight(float x1, float y1, float z1, float x2, float y2, float z2, uint32_t phasemask) const
 {
+    std::lock_guard<std::mutex> lock(_mutex);
     G3D::Vector3 v1(x1, y1, z1), v2(x2, y2, z2);
 
     float maxDist = (v2 - v1).magnitude();
@@ -284,6 +292,7 @@ bool DynamicMapTree::isInLineOfSight(float x1, float y1, float z1, float x2, flo
 
 float DynamicMapTree::getHeight(float x, float y, float z, float maxSearchDist, uint32_t phasemask) const
 {
+    std::lock_guard<std::mutex> lock(_mutex);
     G3D::Vector3 v(x, y, z);
     G3D::Ray r(v, G3D::Vector3(0, 0, -1));
     DynamicTreeIntersectionCallback callback(phasemask);
@@ -297,6 +306,7 @@ float DynamicMapTree::getHeight(float x, float y, float z, float maxSearchDist, 
 
 bool DynamicMapTree::getAreaInfo(float x, float y, float& z, uint32_t phasemask, uint32_t& flags, int32_t& adtId, int32_t& rootId, int32_t& groupId) const
 {
+    std::lock_guard<std::mutex> lock(_mutex);
     G3D::Vector3 v(x, y, z + 0.5f);
     DynamicTreeAreaInfoCallback intersectionCallBack(phasemask);
     impl->intersectPoint(v, intersectionCallBack);
@@ -314,6 +324,7 @@ bool DynamicMapTree::getAreaInfo(float x, float y, float& z, uint32_t phasemask,
 
 void DynamicMapTree::getAreaAndLiquidData(float x, float y, float z, uint32_t phasemask, uint8_t reqLiquidType, VMAP::AreaAndLiquidData& data) const
 {
+    std::lock_guard<std::mutex> lock(_mutex);
     G3D::Vector3 v(x, y, z + 0.5f);
     DynamicTreeLocationInfoCallback intersectionCallBack(phasemask);
     impl->intersectPoint(v, intersectionCallBack);

@@ -32,8 +32,14 @@ void UpdateManager::clearPendingUpdates()
     std::lock_guard packet_guard(m_mutexDelayedPackets);
 
     m_processPending = false;
+
+    m_creationCount = 0;
     m_updateCount = 0;
+    m_outOfRangeIdCount = 0;
+
+    m_creationBuffer.clear();
     m_updateBuffer.clear();
+    m_outOfRangeIds.clear();
 }
 
 void UpdateManager::pushCreationData(ByteBuffer* data, uint32_t updateCount)
@@ -55,6 +61,11 @@ void UpdateManager::pushOutOfRangeGuid(const WoWGuid& guid)
     std::lock_guard packet_guard(m_mutexDelayedPackets);
 
     internalPushUpdatesIfBufferIsFull(static_cast<size_t>(8));
+
+#if VERSION_STRING <= TBC
+    if (guid.isGameObject() && !guid.isTransport() && !guid.isTransporter())
+        m_owner->sendDestroyObjectPacket(guid.getRawGuid());
+#endif
 
     m_outOfRangeIds << guid;
     ++m_outOfRangeIdCount;
@@ -90,9 +101,14 @@ void UpdateManager::processPendingUpdates()
 
 void UpdateManager::queueDelayedPacket(std::unique_ptr<WorldPacket> packet)
 {
-    std::lock_guard packet_guard(m_mutexDelayedPackets);
+    {
+        std::lock_guard packet_guard(m_mutexDelayedPackets);
+        m_delayedPackets.emplace_back(std::move(packet));
+    }
 
-    m_delayedPackets.emplace_back(std::move(packet));
+    // Delayed packets are pending work on their own. Schedule the owner for
+    // processing even when no object create/value/out-of-range update exists.
+    internalUpdateMapMgr();
 }
 
 size_t UpdateManager::calculateBufferSize() const
@@ -107,7 +123,7 @@ size_t UpdateManager::calculateBufferSize() const
 
 bool UpdateManager::readyForUpdate() const
 {
-    return m_creationBuffer.size() != 0 || m_updateBuffer.size() != 0 || m_outOfRangeIds.size() != 0;
+    return m_creationBuffer.size() != 0 || m_updateBuffer.size() != 0 || m_outOfRangeIds.size() != 0 || !m_delayedPackets.empty();
 }
 
 void UpdateManager::internalProcessPendingUpdates()

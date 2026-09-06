@@ -44,7 +44,7 @@ bool ChatCommandHandler::HandleGuildCreateCommand(const char* args, WorldSession
         }
     }
 
-    Charter tempCharter(0, selected_player->getGuidLow(), CHARTER_TYPE_GUILD);
+    Charter tempCharter(0, selected_player->GetNewGUID(), CHARTER_TYPE_GUILD);
     tempCharter.setGuildName(std::string(args));
 
     auto* guild = sGuildMgr.createGuild(selected_player, std::string(args));

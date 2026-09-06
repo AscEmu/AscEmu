@@ -236,7 +236,7 @@ public:
     void HeadCrack(CreatureAIFunc pThis);
 
 protected:
-    uint64_t targetGUID;
+    WoWGuid targetGUID;
     bool mountedOnPlayer;
     bool gormokDead;
 

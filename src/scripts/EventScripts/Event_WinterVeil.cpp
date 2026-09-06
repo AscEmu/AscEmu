@@ -117,7 +117,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
 
 void WinterVeilEmote(Player* pPlayer, uint32_t Emote, Unit* pUnit)
 {
-    pUnit = pPlayer->getWorldMap()->getUnit(pPlayer->getTargetGuid());
+    pUnit = pPlayer->getWorldMapUnit(pPlayer->getTargetGuid());
     if (!pUnit || !pUnit->isAlive() || pUnit->getAIInterface()->getCurrentTarget())
         return;
 

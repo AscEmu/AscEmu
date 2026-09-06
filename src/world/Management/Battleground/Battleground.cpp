@@ -248,12 +248,12 @@ void Battleground::portPlayer(Player* plr, bool skip_teleport)
     // remove from any auto queue remove events
     sEventMgr.RemoveEvents(plr, EVENT_BATTLEGROUND_QUEUE_UPDATE);
 
-    if (!skip_teleport)
-        if (plr->IsInWorld())
-            plr->removeFromWorld();
+    // Do not detach here. safeTeleport() owns the complete old-map leave /
+    // transfer handoff and must be the single path for map changes.
 
     plr->setPendingBattleground(nullptr);
-    plr->setBattleground(this);
+    if (skip_teleport)
+        plr->setBattleground(this);
     plr->setLastBattlegroundPetId(0);
     plr->setLastBattlegroundPetSpell(0);
 
@@ -286,8 +286,12 @@ void Battleground::portPlayer(Player* plr, bool skip_teleport)
 
     if (!skip_teleport)
     {
-        // This is where we actually teleport the player to the battleground
+        // safeTeleport() performs the authoritative old-map leave. Assign the
+        // destination battleground only after that detach, otherwise
+        // Player::onPreDetachFromWorld() would treat the destination BG as the
+        // battleground being left and remove the player from it again.
         plr->safeTeleport(m_mapMgr, GetStartingCoords(plr->getBgTeam()));
+        plr->setBattleground(this);
         sBattlegroundManager.sendBattlefieldStatus(plr, BattlegroundDef::STATUS_TIME, m_type, m_id, static_cast<uint32_t>(UNIXTIME) - m_startTime, m_mapMgr->getBaseMap()->getMapId(), Rated());     // Elapsed time is the last argument
     }
     else
@@ -297,22 +301,29 @@ void Battleground::portPlayer(Player* plr, bool skip_teleport)
     }
 }
 
-GameObject* Battleground::spawnGameObject(uint32_t entry, LocationVector const& v, uint32_t flags, uint32_t faction, float scale)
+GameObject* Battleground::createGameObject(uint32_t entry, LocationVector const& v, uint32_t flags, uint32_t faction, float scale)
 {
-    if (GameObject* go = m_mapMgr->createGameObject(entry))
+    if (GameObject* go = m_mapMgr->getSpawnManager().createGameObject(entry, v))
     {
-        go->create(entry, m_mapMgr, 0, v, QuaternionData(), GO_STATE_CLOSED);
-
+        go->setState(GO_STATE_CLOSED);
         go->SetFaction(faction);
         go->setScale(scale);
         go->setFlags(flags);
         go->SetPosition(v);
         go->SetInstanceID(m_mapMgr->getInstanceId());
-
         return go;
     }
 
     return nullptr;
+}
+
+GameObject* Battleground::spawnGameObject(uint32_t entry, LocationVector const& v, uint32_t flags, uint32_t faction, float scale)
+{
+    GameObject* go = createGameObject(entry, v, flags, faction, scale);
+    if (!go)
+        return nullptr;
+
+    return m_mapMgr->getSpawnManager().pushToWorld(go) ? go : nullptr;
 }
 
 Creature* Battleground::spawnCreature(uint32_t entry, float x, float y, float z, float o, uint32_t faction)
@@ -324,15 +335,12 @@ Creature* Battleground::spawnCreature(uint32_t entry, float x, float y, float z,
         return nullptr;
     }
 
-    if (Creature* c = m_mapMgr->createCreature(entry))
+    if (Creature* c = m_mapMgr->getSpawnManager().createCreature(entry, LocationVector(x, y, z, o)))
     {
-        c->Load(cp, x, y, z, o);
-
         if (faction != 0)
             c->setFaction(faction);
 
-        c->PushToWorld(m_mapMgr);
-        return c;
+        return m_mapMgr->getSpawnManager().pushToWorld(c) ? c : nullptr;
     }
 
     return nullptr;
@@ -523,9 +531,12 @@ void Battleground::playSoundToTeam(uint32_t Team, uint32_t Sound)
 
 void Battleground::removePlayer(Player* plr, bool logout)
 {
-    std::lock_guard lock(m_mutex);
+    if (!plr)
+        return;
 
-    // Don't show invisible gm's leaving the game.
+    // Never call packet distribution or virtual battleground hooks while
+    // holding m_mutex. Both paths may legitimately call back into
+    // Battleground helpers which acquire m_mutex themselves.
     if (plr->m_isGmInvisible == false)
     {
         AscEmu::Packets::SmsgBattlegroundPlayerLeft leftPacket(plr->getGuid());
@@ -534,44 +545,59 @@ void Battleground::removePlayer(Player* plr, bool logout)
     else
         --m_invisGMs;
 
-    // Call subclassed virtual method
     OnRemovePlayer(plr);
 
-    // Clean-up
-    plr->setBattleground(nullptr);
-    plr->setFullHealthMana();
-    plr->setLastBattlegroundPetId(0);
-    plr->setLastBattlegroundPetSpell(0);
-    m_players[plr->getBgTeam()].erase(plr);
-    memset(&plr->m_bgScore, 0, sizeof(BGScore));
+    bool shouldClose = false;
 
-    // are we in the group?
-    if (plr->getGroup() == m_groups[plr->getBgTeam()])
-        plr->getGroup()->RemovePlayer(plr->getPlayerInfo());
-
-    // reset team
-    plr->resetTeam();
-
-    // revive the player if he is dead
-    if (!plr->isAlive())
     {
-        plr->setHealth(plr->getMaxHealth());
-        plr->resurrect();
+        std::lock_guard lock(m_mutex);
+
+        if (plr->m_isGmInvisible)
+            --m_invisGMs;
+
+        // Clean-up
+        plr->setBattleground(nullptr);
+        plr->setFullHealthMana();
+        plr->setLastBattlegroundPetId(0);
+        plr->setLastBattlegroundPetSpell(0);
+        m_players[plr->getBgTeam()].erase(plr);
+        memset(&plr->m_bgScore, 0, sizeof(BGScore));
+
+        // are we in the group?
+        if (plr->getGroup() == m_groups[plr->getBgTeam()])
+            plr->getGroup()->RemovePlayer(plr->getPlayerInfo());
+
+        // reset team
+        plr->resetTeam();
+
+        // revive the player if he is dead
+        if (!plr->isAlive())
+        {
+            plr->setHealth(plr->getMaxHealth());
+            plr->resurrect();
+        }
+
+        plr->removeAllAurasById(32727); // Arena preparation
+        plr->removeAllAurasById(44521); // BG preparation
+        plr->removeAllAurasById(44535);
+        plr->removeAllAurasById(21074);
+
+        plr->setMoveRoot(false);
+
+        shouldClose = m_players[0].empty() && m_players[1].empty();
+
+        plr->setBgTeam(plr->getTeam());
     }
 
-    plr->removeAllAurasById(32727); // Arena preparation
-    plr->removeAllAurasById(44521); // BG preparation
-    plr->removeAllAurasById(44535);
-    plr->removeAllAurasById(21074);
-
-    plr->setMoveRoot(false);
-
-    // teleport out
+    // Teleporting/casting can enter map/session code. Keep it outside the
+    // battleground mutex for the same reason as the virtual hook above.
     if (!logout)
     {
         if (!m_hasEnded)
-            if(!plr->getSession()->HasGMPermissions())
+        {
+            if (!plr->getSession()->HasGMPermissions())
                 plr->castSpell(plr, BattlegroundDef::DESERTER, true);
+        }
 
         if (!IS_INSTANCE(plr->getBGEntryMapId()))
             plr->safeTeleport(plr->getBGEntryMapId(), plr->getBGEntryInstanceId(), plr->getBGEntryPosition());
@@ -581,14 +607,11 @@ void Battleground::removePlayer(Player* plr, bool logout)
         sBattlegroundManager.sendBattlefieldStatus(plr, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
     }
 
-    if (m_players[0].size() == 0 && m_players[1].size() == 0)
+    if (shouldClose)
     {
-        // create an inactive event
         sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
-        this->close();
+        close();
     }
-
-    plr->setBgTeam(plr->getTeam());
 }
 
 void Battleground::sendPVPData(Player* plr)
@@ -690,35 +713,51 @@ void Battleground::setWorldState(uint32_t Index, uint32_t Value)
 
 void Battleground::close()
 {
-    std::lock_guard lock(m_mutex);
+    std::vector<Player*> playersToRemove;
+    std::vector<uint32_t> pendingPlayersToRemove;
 
-    // remove all players from the battleground
-    m_hasEnded = true;
-    for (uint8_t i = 0; i < 2; ++i)
     {
-        std::set<Player*>::iterator itr;
-        std::set<uint32_t>::iterator it2;
+        std::lock_guard lock(m_mutex);
 
-        uint32_t guid;
-        Player* plr;
+        if (m_hasEnded)
+            return;
 
-        for (itr = m_players[i].begin(); itr != m_players[i].end();)
+        m_hasEnded = true;
+
+        for (uint8_t i = 0; i < 2; ++i)
         {
-            plr = *itr;
-            ++itr;
-            removePlayer(plr, false);
+            playersToRemove.insert(
+                playersToRemove.end(),
+                m_players[i].begin(),
+                m_players[i].end());
+
+            pendingPlayersToRemove.insert(
+                pendingPlayersToRemove.end(),
+                m_pendPlayers[i].begin(),
+                m_pendPlayers[i].end());
         }
+    }
 
-        for (it2 = m_pendPlayers[i].begin(); it2 != m_pendPlayers[i].end();)
+    // removePlayer() and removePendingPlayer() both take m_mutex.
+    // Perform those operations only after releasing the close() lock.
+    for (Player* plr : playersToRemove)
+    {
+        if (plr && plr->getBattleground() == this)
+            removePlayer(plr, false);
+    }
+
+    for (uint32_t guid : pendingPlayersToRemove)
+    {
+        Player* plr = sObjectMgr.getPlayer(guid);
+        if (plr)
         {
-            guid = *it2;
-            ++it2;
-            plr = sObjectMgr.getPlayer(guid);
-
-            if (plr)
-                removePendingPlayer(plr);
-            else
-                m_pendPlayers[i].erase(guid);
+            removePendingPlayer(plr);
+        }
+        else
+        {
+            std::lock_guard lock(m_mutex);
+            m_pendPlayers[0].erase(guid);
+            m_pendPlayers[1].erase(guid);
         }
     }
 
@@ -739,63 +778,63 @@ Creature* Battleground::spawnSpiritGuide(float x, float y, float z, float o, uin
     if (pInfo == nullptr)
         return nullptr;
 
-    Creature* pCreature = m_mapMgr->createCreature(pInfo->Id);
+    if (Creature* pCreature = m_mapMgr->getSpawnManager().createCreature(pInfo->Id, LocationVector(x, y, z, o)))
+    {
+        pCreature->setEntry(13116 + horde);
+        pCreature->setScale(1.0f);
 
-    pCreature->Create(m_mapMgr->getBaseMap()->getMapId(), x, y, z, o);
-
-    pCreature->setEntry(13116 + horde);
-    pCreature->setScale(1.0f);
-
-    pCreature->setMaxHealth(10000);
-    pCreature->setMaxPower(POWER_TYPE_MANA, 4868);
-    pCreature->setMaxPower(POWER_TYPE_FOCUS, 200);
+        pCreature->setMaxHealth(10000);
+        pCreature->setMaxPower(POWER_TYPE_MANA, 4868);
+        pCreature->setMaxPower(POWER_TYPE_FOCUS, 200);
 #if VERSION_STRING < Cata
-    pCreature->setMaxPower(POWER_TYPE_HAPPINESS, 2000000);
+        pCreature->setMaxPower(POWER_TYPE_HAPPINESS, 2000000);
 #endif
 
-    pCreature->setHealth(100000);
-    pCreature->setPower(POWER_TYPE_MANA, 4868);
-    pCreature->setPower(POWER_TYPE_FOCUS, 200);
+        pCreature->setHealth(100000);
+        pCreature->setPower(POWER_TYPE_MANA, 4868);
+        pCreature->setPower(POWER_TYPE_FOCUS, 200);
 #if VERSION_STRING < Cata
-    pCreature->setPower(POWER_TYPE_HAPPINESS, 2000000);
+        pCreature->setPower(POWER_TYPE_HAPPINESS, 2000000);
 #endif
 
-    pCreature->setLevel(60);
-    pCreature->setFaction(84 - horde);
+        pCreature->setLevel(60);
+        pCreature->setFaction(84 - horde);
 
-    pCreature->setRace(0);
-    pCreature->setClass(2);
-    pCreature->setGender(1);
-    pCreature->setPowerType(0);
+        pCreature->setRace(0);
+        pCreature->setClass(2);
+        pCreature->setGender(1);
+        pCreature->setPowerType(0);
 
-    pCreature->setVirtualItemSlotId(MELEE, 22802);
+        pCreature->setVirtualItemSlotId(MELEE, 22802);
 
-    pCreature->setUnitFlags(UNIT_FLAG_PLUS_MOB | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_IGNORE_CREATURE_COMBAT); // 832
-    pCreature->setPvpFlag();
+        pCreature->setUnitFlags(UNIT_FLAG_PLUS_MOB | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_IGNORE_CREATURE_COMBAT); // 832
+        pCreature->setPvpFlag();
 
-    pCreature->setBaseAttackTime(MELEE, 2000);
-    pCreature->setBaseAttackTime(OFFHAND, 2000);
-    pCreature->setBoundingRadius(0.208f);
-    pCreature->setCombatReach(1.5f);
+        pCreature->setBaseAttackTime(MELEE, 2000);
+        pCreature->setBaseAttackTime(OFFHAND, 2000);
+        pCreature->setBoundingRadius(0.208f);
+        pCreature->setCombatReach(1.5f);
 
-    pCreature->setDisplayId(13337 + horde);
-    pCreature->setNativeDisplayId(13337 + horde);
+        pCreature->setDisplayId(13337 + horde);
+        pCreature->setNativeDisplayId(13337 + horde);
 
-    pCreature->setChannelSpellId(22011);
-    pCreature->setModCastSpeed(1.0f);
+        pCreature->setChannelSpellId(22011);
+        pCreature->setModCastSpeed(1.0f);
 
-    pCreature->setNpcFlags(UNIT_NPC_FLAG_SPIRITGUIDE);
-    pCreature->setSheathType(SHEATH_STATE_MELEE);
+        pCreature->setNpcFlags(UNIT_NPC_FLAG_SPIRITGUIDE);
+        pCreature->setSheathType(SHEATH_STATE_MELEE);
 #if VERSION_STRING == TBC
-    pCreature->setPositiveAuraLimit(POS_AURA_LIMIT_CREATURE);
+        pCreature->setPositiveAuraLimit(POS_AURA_LIMIT_CREATURE);
 #endif
 
-    pCreature->setAItoUse(false);
+        pCreature->setAItoUse(false);
 
-    pCreature->SetCreatureProperties(sMySQLStore.getCreatureProperties(pInfo->Id));
+        pCreature->SetCreatureProperties(sMySQLStore.getCreatureProperties(pInfo->Id));
 
-    pCreature->PushToWorld(m_mapMgr);
-    return pCreature;
+        return m_mapMgr->getSpawnManager().pushToWorld(pCreature) ? pCreature : nullptr;
+    }
+
+    return nullptr;
 }
 
 Creature* Battleground::spawnSpiritGuide(LocationVector &v, uint32_t faction)
@@ -814,7 +853,7 @@ void Battleground::queuePlayerForResurrect(Player* plr, Creature* spirit_healer)
 
     const auto itr = m_resurrectMap.find(spirit_healer);
     if (itr != m_resurrectMap.end())
-        itr->second.insert(plr->getGuidLow());
+        itr->second.insert(plr->GetNewGUID());
     plr->setAreaSpiritHealerGuid(spirit_healer->getGuid());
 }
 
@@ -824,7 +863,7 @@ void Battleground::removePlayerFromResurrect(Player* plr, Creature* spirit_heale
 
     const auto itr = m_resurrectMap.find(spirit_healer);
     if (itr != m_resurrectMap.end())
-        itr->second.erase(plr->getGuidLow());
+        itr->second.erase(plr->GetNewGUID());
     plr->setAreaSpiritHealerGuid(0);
 }
 
@@ -835,7 +874,7 @@ void Battleground::addSpiritGuide(Creature* pCreature)
     const auto itr = m_resurrectMap.find(pCreature);
     if (itr == m_resurrectMap.end())
     {
-        std::set<uint32_t> ti;
+        std::set<WoWGuid> ti;
         m_resurrectMap.insert(make_pair(pCreature, ti));
     }
 }
@@ -853,7 +892,7 @@ void Battleground::eventResurrectPlayers()
 
     for (auto& i : m_resurrectMap)
     {
-        for (unsigned int itr : i.second)
+        for (const WoWGuid& itr : i.second)
         {
             Player* plr = m_mapMgr->getPlayer(itr);
             if (plr && plr->isDead())
@@ -925,7 +964,7 @@ void Battleground::queueAtNearestSpiritGuide(Player* plr, Creature* old)
 {
     float dist = 999999.0f;
     const Creature* cl = nullptr;
-    std::set<uint32_t> *closest = nullptr;
+    std::set<WoWGuid>* closest = nullptr;
 
     std::lock_guard lock(m_lock);
 
@@ -945,7 +984,7 @@ void Battleground::queueAtNearestSpiritGuide(Player* plr, Creature* old)
 
     if (closest != nullptr)
     {
-        closest->insert(plr->getGuidLow());
+        closest->insert(plr->GetNewGUID());
         plr->setAreaSpiritHealerGuid(cl->getGuid());
         plr->castSpell(plr, 2584, true);
     }

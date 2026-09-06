@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Creatures/Vehicle.hpp"
-#include "Map/Cells/CellHandlerDefines.hpp"
+#include "Map/Visibility/VisibilityTypes.hpp"
 #include "Objects/GameObject.h"
 #include "Server/Warden/SpeedDetector.h"
 #include "Management/ObjectMgr.hpp"
@@ -34,6 +34,41 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
+namespace
+{
+    void addPetToTransport(Player* player, Transporter* transport, const LocationVector& transportOffset)
+    {
+        if (!player || !transport)
+            return;
+
+        Pet* pet = player->getPet();
+        if (!pet || !pet->IsInWorld() || pet->getWorldMap() != player->getWorldMap())
+            return;
+
+        if (pet->GetTransport() == transport)
+            return;
+
+        if (pet->GetTransport())
+            pet->GetTransport()->RemovePassenger(pet);
+
+        // Put the pet onto the same local transport position as its owner.
+        // The transport will keep the pet in world-space from this point on.
+        transport->AddPassenger(pet, transportOffset);
+    }
+
+    void removePetFromTransport(Player* player, Transporter* transport)
+    {
+        if (!player || !transport)
+            return;
+
+        if (Pet* pet = player->getPet())
+        {
+            if (pet->GetTransport() == transport)
+                transport->RemovePassenger(pet);
+        }
+    }
+}
+
 void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
 {
     CmsgSetActiveMover srlPacket;
@@ -45,7 +80,7 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
 
 #if VERSION_STRING < Cata
     #if VERSION_STRING > TBC
-    if (_player->getCharmGuid() != srlPacket.guid.getRawGuid() || _player->getGuid() != srlPacket.guid.getRawGuid())
+    if (_player->getCharmGuid() != srlPacket.guid.getRawGuid() && _player->getGuid() != srlPacket.guid.getRawGuid())
     {
         auto bad_packet = true;
         if (const auto vehicle = _player->getVehicle())
@@ -217,10 +252,10 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     /// out of bounds check
     {
         bool out_of_bounds = false;
-        out_of_bounds = out_of_bounds || sessionMovementInfo.position.y < Map::Terrain::_minY;
-        out_of_bounds = out_of_bounds || sessionMovementInfo.position.y > Map::Terrain::_maxY;
-        out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > Map::Terrain::_maxX;
-        out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > Map::Terrain::_maxX;
+        out_of_bounds = out_of_bounds || sessionMovementInfo.position.y < visibility::Terrain::MinY;
+        out_of_bounds = out_of_bounds || sessionMovementInfo.position.y > visibility::Terrain::MaxY;
+        out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > visibility::Terrain::MaxX;
+        out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > visibility::Terrain::MaxX;
 
         if (out_of_bounds)
         {
@@ -249,14 +284,20 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// hack detected?
-    if (isHackDetectedInMovementData(static_cast<uint16_t>(opcode)))
+    // Player movement anti-cheat currently relies on player-specific state/position.
+    // A possessed creature is a different authoritative mover, so feeding its
+    // coordinates into the player checks can falsely reject perfectly valid movement
+    // (most notably the teleport-distance check against the player's stationary body).
+    if (mover == _player && isHackDetectedInMovementData(static_cast<uint16_t>(opcode)))
     {
         return;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Lets update our internal save vars
-    updatePlayerMovementVars(static_cast<uint16_t>(opcode));
+    // These flags belong to Player itself. Do not derive them from a possessed unit.
+    if (mover == _player)
+        updatePlayerMovementVars(static_cast<uint16_t>(opcode));
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Remove emote state if available
@@ -298,9 +339,10 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         {
             if (!mover->GetTransport())
             {
-                if (Transporter* transport = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(movementInfo.transport_guid)))
+                if (Transporter* transport = sTransportHandler.getTransporter(movementInfo.transport_guid))
                 {
-                    transport->AddPassenger(mover->ToPlayer());
+                    transport->AddPassenger(mover, sessionMovementInfo.transport_position);
+                    addPetToTransport(mover->ToPlayer(), transport, sessionMovementInfo.transport_position);
 
                     /* set variables */
                     mover->obj_movement_info.transport_time = sessionMovementInfo.transport_time;
@@ -310,12 +352,15 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
                     mover->obj_movement_info.transport_position.o = sessionMovementInfo.transport_position.o;
                 }
             }
-            else if (mover->GetTransport() != sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(movementInfo.transport_guid)))
+            else if (mover->GetTransport() != sTransportHandler.getTransporter(movementInfo.transport_guid))
             {
-                mover->GetTransport()->RemovePassenger(mover);
-                if (Transporter* transport = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(movementInfo.transport_guid)))
+                Transporter* oldTransport = mover->GetTransport();
+                removePetFromTransport(mover->ToPlayer(), oldTransport);
+                oldTransport->RemovePassenger(mover);
+                if (Transporter* transport = sTransportHandler.getTransporter(movementInfo.transport_guid))
                 {
-                    transport->AddPassenger(mover->ToPlayer());
+                    transport->AddPassenger(mover, sessionMovementInfo.transport_position);
+                    addPetToTransport(mover->ToPlayer(), transport, sessionMovementInfo.transport_position);
 
                     /* set variables */
                     mover->obj_movement_info.transport_time = sessionMovementInfo.transport_time;
@@ -363,7 +408,9 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     }
     else if (mover->ToPlayer() && mover->GetTransport()) // if we were on a transport, leave
     {
-        mover->GetTransport()->RemovePassenger(mover);
+        Transporter* transport = mover->GetTransport();
+        removePetFromTransport(mover->ToPlayer(), transport);
+        transport->RemovePassenger(mover);
         movementInfo.clearTransportData();
     }
 #else
@@ -374,13 +421,14 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         {
             sLogger.debug("MovementHandler transport_guid={} currentTransport={} lookedUpTransport={}",
                 movementInfo.transport_guid.getRawGuid(), mover->GetTransport() ? mover->GetTransport()->getGuid() : 0,
-                sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(movementInfo.transport_guid)) ? "found" : "NOT FOUND");
+                sTransportHandler.getTransporter(movementInfo.transport_guid.getLowGuid()) ? "found" : "NOT FOUND");
 
             if (!mover->GetTransport())
             {
-                if (Transporter* transport = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(movementInfo.transport_guid)))
+                if (Transporter* transport = sTransportHandler.getTransporter(movementInfo.transport_guid))
                 {
-                    transport->AddPassenger(mover->ToPlayer());
+                    transport->AddPassenger(mover, sessionMovementInfo.transport_position);
+                    addPetToTransport(mover->ToPlayer(), transport, sessionMovementInfo.transport_position);
 
                     /* set variables */
                     mover->obj_movement_info.transport_time = sessionMovementInfo.transport_time;
@@ -392,10 +440,13 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
             }
             else if (mover->GetTransport()->getGuid() != movementInfo.transport_guid)
             {
-                mover->GetTransport()->RemovePassenger(mover);
-                if (Transporter* transport = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(movementInfo.transport_guid)))
+                Transporter* oldTransport = mover->GetTransport();
+                removePetFromTransport(mover->ToPlayer(), oldTransport);
+                oldTransport->RemovePassenger(mover);
+                if (Transporter* transport = sTransportHandler.getTransporter(movementInfo.transport_guid))
                 {
-                    transport->AddPassenger(mover->ToPlayer());
+                    transport->AddPassenger(mover, sessionMovementInfo.transport_position);
+                    addPetToTransport(mover->ToPlayer(), transport, sessionMovementInfo.transport_position);
 
                     /* set variables */
                     mover->obj_movement_info.transport_time = sessionMovementInfo.transport_time;
@@ -432,7 +483,9 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         else if (mover && mover->GetTransport())
         {
             // if we were on a transport, leave
-            mover->GetTransport()->RemovePassenger(mover);
+            Transporter* transport = mover->GetTransport();
+            removePetFromTransport(mover->ToPlayer(), transport);
+            transport->RemovePassenger(mover);
             movementInfo.clearTransportData();
             mover->obj_movement_info.clearTransportData();
         }
@@ -440,12 +493,24 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    /// Breathing & Underwaterstate
-    _player->handleBreathing(sessionMovementInfo, this);
+    /// Update the authoritative server position before visibility routing/broadcast.
+    // For possessed units this also moves the SpatialIndex entry, transfers grid/cell
+    // ownership and refreshes the remote viewer before recipients are collected below.
+    mover->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y,
+        sessionMovementInfo.position.z, sessionMovementInfo.position.o);
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    /// Aura Interruption
-    _player->handleAuraInterruptForMovementFlags(sessionMovementInfo);
+    /// Breathing & Underwaterstate
+    // These are player-body systems. Movement of a possessed creature must not modify
+    // the stationary controller's breathing/aura state.
+    if (mover == _player)
+    {
+        _player->handleBreathing(sessionMovementInfo, this);
+
+        //////////////////////////////////////////////////////////////////////////////////////
+        /// Aura Interruption
+        _player->handleAuraInterruptForMovementFlags(sessionMovementInfo);
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// send our move to all inrange players
@@ -493,9 +558,6 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     }
 #endif
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Update our Server position
-    mover->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y, sessionMovementInfo.position.z, sessionMovementInfo.position.o);
 }
 
 void WorldSession::handleAcknowledgementOpcodes(WorldPacket& recvPacket)
@@ -597,6 +659,57 @@ void WorldSession::handleMountSpecialAnimOpcode(WorldPacket& /*recvPacket*/)
     PacketBroadcast::sendToSet(*_player, managedPacket, true);
 }
 
+bool WorldSession::recoverFailedWorldport(const char* reason)
+{
+    if (_player == nullptr)
+        return false;
+
+    const uint32_t failedMapId = _player->GetMapId();
+    const uint32_t failedInstanceId = _player->GetInstanceID();
+    const LocationVector failedPosition = _player->GetPosition();
+
+    if (_player->hasValidBGEntryPoint())
+    {
+        const LocationVector entryPosition = _player->getBGEntryPosition();
+        const uint32_t entryMapId = _player->getBGEntryMapId();
+        const uint32_t entryInstanceId = static_cast<uint32_t>(_player->getBGEntryInstanceId());
+
+        // Do not bounce forever if the recovery destination itself is
+        // the world that just failed to attach. MapId 0 is valid; only
+        // an all-zero location is considered an empty entry point.
+        const float entryDx = failedPosition.x - entryPosition.x;
+        const float entryDy = failedPosition.y - entryPosition.y;
+        const float entryDz = failedPosition.z - entryPosition.z;
+        const bool failedAtEntryPoint =
+            failedMapId == entryMapId &&
+            failedInstanceId == entryInstanceId &&
+            (entryDx * entryDx + entryDy * entryDy + entryDz * entryDz) < 0.01f;
+
+        if (!failedAtEntryPoint && _player->safeTeleport(entryMapId, entryInstanceId, entryPosition))
+        {
+            sLogger.failure("{} for player GUID {} MapId {} InstanceId {}. Returning player to BG/instance entry point MapId {} InstanceId {}.",
+                reason, std::to_string(_player->getGuid()), failedMapId, failedInstanceId, entryMapId, entryInstanceId);
+            return true;
+        }
+    }
+
+    const uint32_t bindMapId = _player->getBindMapId();
+    const LocationVector bindPosition = _player->getBindPosition();
+
+    if ((failedMapId != bindMapId || failedInstanceId != 0) &&
+        _player->safeTeleport(bindMapId, 0, bindPosition))
+    {
+        sLogger.failure("{} for player GUID {} MapId {} InstanceId {}. Returning player to bind map {}.",
+            reason, std::to_string(_player->getGuid()), failedMapId, failedInstanceId, bindMapId);
+        return true;
+    }
+
+    sLogger.failure("{} for player GUID {} MapId {} InstanceId {} and recovery also failed. Disconnecting.",
+        reason, std::to_string(_player->getGuid()), failedMapId, failedInstanceId);
+    Disconnect();
+    return false;
+}
+
 void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
 {
     _player->setTransferStatus(TRANSFER_NONE);
@@ -605,28 +718,86 @@ void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
 
     sLogger.debugOpcode("Received CMSG_MOVE_WORLDPORT_ACK.");
 
-    if (_player->GetTransport() && _player->GetMapId() != _player->GetTransport()->GetMapId())
+    // A transport can cross another map boundary before a slow client finishes
+    // the previous worldport. Follow the transport to its current map while
+    // preserving the transport-local passenger offset.
+    if (_player->hasTeleportTransport())
     {
-        const auto transporter = _player->GetTransport();
+        if (Transporter* transporter = sTransportHandler.getTransporter(_player->getTeleportTransportGuid()))
+        {
+            if (transporter->IsInWorld() && _player->GetMapId() != transporter->GetMapId())
+            {
+                LocationVector positionOnTransport = _player->getTeleportTransportOffset();
+                transporter->calculatePassengerPosition(
+                    positionOnTransport.x,
+                    positionOnTransport.y,
+                    positionOnTransport.z,
+                    &positionOnTransport.o);
 
-        const float transportPositionX = transporter->GetPositionX() + _player->GetTransOffsetX();
-        const float transportPositionY = transporter->GetPositionY() + _player->GetTransOffsetY();
-        const float transportPositionZ = transporter->GetPositionZ() + _player->GetTransOffsetZ();
+                _player->SetMapId(transporter->GetMapId());
+                _player->SetInstanceID(transporter->GetInstanceID());
+                _player->SetPosition(positionOnTransport);
 
-        const auto positionOnTransport = LocationVector(transportPositionX, transportPositionY, transportPositionZ, _player->GetOrientation());
+                SmsgNewWorld managedPacket(transporter->GetMapId(), positionOnTransport);
+                sendManagedPacket(managedPacket);
 
-        _player->SetMapId(transporter->GetMapId());
-        _player->SetPosition(transportPositionX, transportPositionY, transportPositionZ, _player->GetOrientation());
-
-        SmsgNewWorld managedPacket(transporter->GetMapId(), positionOnTransport);
-        sendManagedPacket(managedPacket);
+                _player->resetTimeSync();
+                _player->sendTimeSync();
+                return;
+            }
+        }
     }
-    else
+
+    _player->m_teleportState = 2;
+
+    const auto mapInfo = sMySQLStore.getWorldMapInfo(_player->GetMapId());
+    if (mapInfo == nullptr || _player->GetMapId() >= MAX_NUM_MAPS)
     {
-        _player->m_teleportState = 2;
-        _player->AddToWorld();
+        recoverFailedWorldport("Invalid worldport destination");
+        return;
     }
 
+    WorldMap* world = sMapMgr.findWorldMap(_player->GetMapId(), _player->GetInstanceID());
+    if (world == nullptr)
+    {
+        recoverFailedWorldport("Worldport destination map not found");
+        return;
+    }
+
+    // Preserve the transport relationship across world transfers. Resolve the
+    // transport by the GUID saved with the teleport destination, restore the
+    // passenger relation and derive the player's world position from the
+    // transport's current transform before attaching the player to the target map.
+    if (_player->hasTeleportTransport())
+    {
+        Transporter* transporter = sTransportHandler.getTransporter(_player->getTeleportTransportGuid());
+        if (transporter && transporter->IsInWorld() && transporter->getWorldMap() == world)
+        {
+            const LocationVector transportOffset = _player->getTeleportTransportOffset();
+            transporter->RestorePassengerAfterTeleport(_player, transportOffset);
+
+            LocationVector worldPosition = transportOffset;
+            transporter->calculatePassengerPosition(
+                worldPosition.x,
+                worldPosition.y,
+                worldPosition.z,
+                &worldPosition.o);
+
+            _player->SetPosition(worldPosition);
+        }
+        else
+        {
+            sLogger.warning("Worldport transport rebind failed for player {}: transportGuid={} playerMap={} instance={}.", _player->getName(), _player->getTeleportTransportGuid().getRawGuid(), _player->GetMapId(), _player->GetInstanceID());
+        }
+    }
+
+    if (!world->onPlayerEnter(_player))
+    {
+        recoverFailedWorldport("Worldport attach failed");
+        return;
+    }
+
+    _player->clearTeleportTransport();
     _player->resetTimeSync();
     _player->sendTimeSync();
 }

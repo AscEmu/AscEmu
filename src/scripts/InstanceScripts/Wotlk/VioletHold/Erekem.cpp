@@ -63,7 +63,7 @@ void ErekemAI::AIUpdate(unsigned long /*time_passed*/)
     {
         for (uint32_t i = DATA_EREKEM_GUARD_1; i <= DATA_EREKEM_GUARD_2; ++i)
         {
-            Creature* guard = mInstance->GetCreatureByGuid(mInstance->getLocalData(i));
+            Creature* guard = mInstance->getCreatureByGuid(mInstance->getLocalGuidData(i));
 
             if (guard && guard->isAlive() && checkGuardAuras(guard))
             {
@@ -86,7 +86,7 @@ bool ErekemAI::checkGuardsAlive()
     {
         for (uint32_t i = DATA_EREKEM_GUARD_1; i <= DATA_EREKEM_GUARD_2; ++i)
         {
-            if (Creature* guard = mInstance->GetCreatureByGuid(mInstance->getLocalData(i)))
+            if (Creature* guard = mInstance->getCreatureByGuid(mInstance->getLocalGuidData(i)))
                 if (guard->isAlive())
                     return true;
         }

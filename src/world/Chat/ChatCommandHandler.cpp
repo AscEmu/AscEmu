@@ -472,7 +472,7 @@ Player* ChatCommandHandler::GetSelectedPlayer(WorldSession* m_session, bool show
     WoWGuid wowGuid;
     wowGuid.init(guid);
 
-    switch (wowGuid.getHigh())
+    switch (wowGuid.getHighType())
     {
         case HighGuid::Pet:
         case HighGuid::Unit:
@@ -502,7 +502,7 @@ Player* ChatCommandHandler::GetSelectedPlayer(WorldSession* m_session, bool show
     }
     else
     {
-        player_target = m_session->GetPlayer()->getWorldMap()->getPlayer((uint32_t)guid);
+        player_target = m_session->GetPlayer()->getWorldMapPlayer(guid);
     }
 
     return player_target;
@@ -518,15 +518,18 @@ Creature* ChatCommandHandler::GetSelectedCreature(WorldSession* m_session, bool 
     WoWGuid wowGuid;
     wowGuid.init(m_session->GetPlayer()->getTargetGuid());
 
-    switch(wowGuid.getHigh())
+    if (!m_session->GetPlayer()->getWorldMap())
+        return nullptr;
+
+    switch(wowGuid.getHighType())
     {
         case HighGuid::Pet:
-            creature = reinterpret_cast<Creature*>(m_session->GetPlayer()->getWorldMap()->getPet(wowGuid.getGuidLowPart()));
+            creature = reinterpret_cast<Creature*>(m_session->GetPlayer()->getWorldMapPet(wowGuid.getRawGuid()));
             break;
 
         case HighGuid::Unit:
         case HighGuid::Vehicle:
-            creature = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
+            creature = m_session->GetPlayer()->getWorldMapCreature(wowGuid.getRawGuid());
             break;
         default:
             is_invalid_type = true;
@@ -551,7 +554,7 @@ Unit* ChatCommandHandler::GetSelectedUnit(WorldSession* m_session, bool showerro
 
     uint64_t guid = m_session->GetPlayer()->getTargetGuid();
 
-    Unit* unit = m_session->GetPlayer()->getWorldMap()->getUnit(guid);
+    Unit* unit = m_session->GetPlayer()->getWorldMapUnit(guid);
     if (unit == nullptr)
     {
         if (showerror)
@@ -580,7 +583,7 @@ uint32_t ChatCommandHandler::GetSelectedWayPointId(WorldSession* m_session)
         return 0;
     }
 
-    return WoWGuid::getGuidLowPartFromUInt64(guid);
+    return WoWGuid::getLowGuidFromRaw(guid);
 }
 
 const char* ChatCommandHandler::GetMapTypeString(uint8_t type)

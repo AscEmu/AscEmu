@@ -30,9 +30,9 @@ void WorldSession::handleAuctionListOwnerItems(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_AUCTION_LIST_OWNER_ITEMS {} (guidLow).", srlPacket.guid.getGuidLowPart());
+    sLogger.debugOpcode("Received CMSG_AUCTION_LIST_OWNER_ITEMS {} (guidLow).", srlPacket.guid.getCounter());
 
-    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
+    const auto creature = _player->getWorldMapCreature(srlPacket.guid.getRawGuid());
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
@@ -45,9 +45,9 @@ void WorldSession::handleAuctionListItems(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_AUCTION_LIST_ITEMS {} (guidLow).", srlPacket.guid.getGuidLowPart());
+    sLogger.debugOpcode("Received CMSG_AUCTION_LIST_ITEMS {} (guidLow).", srlPacket.guid.getCounter());
 
-    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
+    const auto creature = _player->getWorldMapCreature(srlPacket.guid.getRawGuid());
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
@@ -62,7 +62,7 @@ void WorldSession::handleCancelAuction(WorldPacket& recvPacket)
 
     sLogger.debugOpcode("Received CMSG_AUCTION_REMOVE_ITEM {} (auctionId).", srlPacket.auctionId);
 
-    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
+    const auto creature = _player->getWorldMapCreature(srlPacket.guid.getRawGuid());
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
@@ -84,9 +84,9 @@ void WorldSession::handleAuctionListBidderItems(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_AUCTION_LIST_BIDDER_ITEMS {} (lowguid).", srlPacket.guid.getGuidLowPart());
+    sLogger.debugOpcode("Received CMSG_AUCTION_LIST_BIDDER_ITEMS {} (lowguid).", srlPacket.guid.getCounter());
 
-    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
+    const auto creature = _player->getWorldMapCreature(srlPacket.guid.getRawGuid());
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
@@ -100,7 +100,7 @@ void WorldSession::handleAuctionListPendingSales([[maybe_unused]] WorldPacket& r
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_AUCTION_LIST_PRENDING_SALES {} (lowguid).", srlPacket.guid.getGuidLowPart());
+    sLogger.debugOpcode("Received CMSG_AUCTION_LIST_PRENDING_SALES {} (lowguid).", srlPacket.guid.getCounter());
 
     //\todo SMSG_AUCTION_LIST_PENDING_SALES needs to be researched!
 #endif
@@ -117,7 +117,7 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
     if (!srlPacket.bidMoney || !srlPacket.expireTime)
         return;
 
-    const auto creature = _player->getWorldMap()->getCreature(srlPacket.auctioneerGuid.getGuidLowPart());
+    const auto creature = _player->getWorldMapCreature(srlPacket.auctioneerGuid.getRawGuid());
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
@@ -228,7 +228,7 @@ void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)
 
     sLogger.debugOpcode("Received CMSG_AUCTION_PLACE_BID: {} (auctionId), {} (price).", srlPacket.auctionId, srlPacket.price);
 
-    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
+    const auto creature = _player->getWorldMapCreature(srlPacket.guid.getRawGuid());
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
@@ -263,7 +263,7 @@ void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)
     }
 
     _player->modCoinage(-static_cast<int32_t>(srlPacket.price));
-    if (auction->highestBidderGuid.getGuidLow() != 0)
+    if (auction->highestBidderGuid.getLowGuid() != 0)
     {
         char subject[100];
         snprintf(subject, 100, "%u:0:0", static_cast<int>(auction->auctionItem->getEntry()));

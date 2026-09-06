@@ -213,7 +213,7 @@ public:
 protected:
     TrialOfTheCrusaderInstanceScript* mInstance;
     uint32_t RangeCheckTimer;
-    std::vector<uint32_t> stalkerGUIDS;
+    std::vector<WoWGuid> stalkerGUIDS;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -257,7 +257,7 @@ protected:
     uint32_t darkCounter = 0;
 
     TrialOfTheCrusaderInstanceScript* mInstance;
-    std::vector<uint32_t> stalkerGUIDS;
+    std::vector<WoWGuid> stalkerGUIDS;
 };
 
 

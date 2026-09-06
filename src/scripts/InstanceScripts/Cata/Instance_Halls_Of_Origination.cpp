@@ -87,7 +87,7 @@ public:
 
     void OpenAnhuurDoor()
     {
-        if (GameObject* pDoor = GetGameObjectByGuid(mAnhuurDoorGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mAnhuurDoorGuid))
             useDoorOrButton(pDoor);
     }
 

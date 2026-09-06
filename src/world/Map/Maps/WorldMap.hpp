@@ -5,18 +5,31 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Map/Cells/CellHandler.hpp"
 #include "Management/WorldStatesHandler.hpp"
 #include "DynamicTree.h"
 #include "Server/EventableObject.h"
 
 #include <queue>
 #include <algorithm>
+#include <deque>
+#include <functional>
+#include <unordered_map>
+#include <unordered_set>
+#include <map>
+#include <vector>
+#include <mutex>
 
 #include "InstanceDefines.hpp"
 #include "Debugging/Errors.hpp"
 #include "Map/SpawnGroups.hpp"
 #include "Server/Packets/SmsgMessageChat.h"
+#include "Map/Management/TerrainMgr.hpp"
+
+#include "Map/Visibility/VisibilitySystem.hpp"
+#include "Map/Management/ObjectFactory.hpp"
+#include "Map/Management/WorldObjectRegistry.hpp"
+#include "Map/Management/GuidAllocator.hpp"
+#include "Map/Management/SpawnManager.hpp"
 
 namespace AscEmu::Threading
 {
@@ -29,12 +42,17 @@ namespace WDB::Structures
     struct MapDifficulty;
 }
 
+namespace visibility { class SpatialIndex; class VisibilitySystem; }
+namespace world { class WorldObjectRegistry; }
+class GuidAllocator;
+class ObjectFactory;
+
 class WorldSession;
 class ByteBuffer;
 class WorldPacket;
 class DynamicObject;
-template <typename T>
-class CellHandler;
+
+class BaseMap;
 class InstanceScript;
 class MapScriptInterface;
 class Object;
@@ -51,114 +69,44 @@ class Summon;
 class InstanceMap;
 class CreatureGroup;
 enum LineOfSightChecks : uint8_t;
-enum SpawnObjectType;
 enum EnterState;
-
-struct CorpseInfo
-{
-    time_t time;
-    uint64_t guid;
-
-    CorpseInfo(time_t time, uint64_t guid)
-        : time(time), guid(guid)
-    {}
-};
-
-struct RespawnInfo
-{
-    SpawnObjectType type;
-    uint32_t spawnId;
-    uint32_t entry;
-    time_t time;
-
-    Object* obj;
-    float cellX;
-    float cellY;
-};
-
-struct CompareRespawnInfo
-{
-    bool operator()(std::unique_ptr<RespawnInfo> const& a, std::unique_ptr<RespawnInfo> const& b)
-    {
-        if (a == b)
-            return false;
-        if (a->time != b->time)
-            return (a->time > b->time);
-        if (a->spawnId != b->spawnId)
-            return a->spawnId < b->spawnId;
-        ASSERT(a->type != b->type);
-        return a->type < b->type;
-    }
-};
-
-typedef std::unordered_map<uint32_t, RespawnInfo*> RespawnInfoMap;
-
-inline bool operator==(const RespawnInfo& a, const RespawnInfo& b)
-{
-    if (a.spawnId != b.spawnId)
-        return false;
-    if (a.entry != b.entry)
-        return false;
-    if (a.type != b.type)
-        return false;
-
-    return true;
-}
-
-class respawnQueue : public std::priority_queue<std::unique_ptr<RespawnInfo>, std::vector<std::unique_ptr<RespawnInfo>>, CompareRespawnInfo>
-{
-public:
-    bool remove(RespawnInfo const* value)
-    {
-        auto it = std::find_if(this->c.begin(), this->c.end(), [value](std::unique_ptr<RespawnInfo> const& respawn) { return respawn.get() == value; });
-        if (it != this->c.end())
-        {
-            this->c.erase(it);
-            std::make_heap(this->c.begin(), this->c.end(), this->comp);
-            return true;
-        }
-
-        return false;
-    }
-
-    void clear()
-    {
-        this->c.clear();
-    }
-};
-
-template <typename T>
-struct CompareTimeAndGuid
-{
-    bool operator()(T const& p1, T const& p2)
-    {
-        return p1.time < p2.time && p1.guid < p2.guid;
-    }
-};
-
-typedef std::unordered_map<uint32_t /*lowGUID*/, Player*> PlayerStorageMap;
-typedef std::vector<Creature*> CreaturesStorageMap;
-typedef std::unordered_map<uint32_t /*lowGUID*/, Pet*> PetStorageMap;
-typedef std::vector<GameObject*> GameObjectStorageMap;
-typedef std::unordered_map<uint32_t /*lowGUID*/, DynamicObject*> DynamicObjectStorageMap;
-typedef std::set<Transporter*> TransportsContainer;
-
-typedef std::set<Creature*> CreatureSet;
-typedef std::set<Object*> ObjectSet;
-typedef std::set<Creature*> ActiveCreatureSet;
-typedef std::set<GameObject*> ActiveGameObjectSet;
+enum class UnitAwarenessSignal : uint16_t;
 
 typedef std::set<Object*> UpdateQueue;
 typedef std::set<Player*> PUpdateQueue;
 
 typedef std::set<uint64_t> CombatProgressMap;
-typedef std::unordered_map<uint32_t /*lowGUID*/, Creature*> CreatureSqlIdMap;
-typedef std::unordered_map<uint32_t /*lowGUID*/, GameObject*> GameObjectSqlIdMap;
 
-class SERVER_DECL WorldMap : public CellHandler <MapCell>, public EventableObject, public WorldStatesHandler::WorldStatesObserver
+struct SpatialPerformanceSnapshot
+{
+    uint64_t windowMs = 0;
+    uint32_t ticks = 0;
+
+    uint64_t spatialQueries = 0;
+    uint64_t spatialCandidates = 0;
+    uint64_t spatialTryGets = 0;
+    uint64_t spatialMoves = 0;
+    uint64_t cellMoves = 0;
+
+    uint64_t visibilityPairChecks = 0;
+    uint64_t visibilityCreates = 0;
+    uint64_t visibilityDestroys = 0;
+    uint64_t ringSubscribes = 0;
+    uint64_t ringUnsubscribes = 0;
+
+    uint64_t awarenessQueries = 0;
+    uint64_t awarenessCandidates = 0;
+
+    uint64_t maxSpatialCandidatesPerTick = 0;
+    uint64_t maxSpatialTryGetsPerTick = 0;
+    uint64_t maxVisibilityPairChecksPerTick = 0;
+    uint64_t maxAwarenessCandidatesPerTick = 0;
+};
+
+class SERVER_DECL WorldMap : public EventableObject, public WorldStatesHandler::WorldStatesObserver
 {
     friend class MapScriptInterface;
-    friend class MapCell;
+    friend class ObjectFactory;
 
 public:
     WorldMap(BaseMap* baseMap, uint32_t id, uint32_t expiryTime, uint32_t InstanceId, uint8_t SpawnMode);
@@ -166,6 +114,7 @@ public:
 
     virtual void initialize();
     virtual void update(uint32_t);
+    virtual void delayedUpdate(std::chrono::milliseconds diff);
     virtual void unloadAll(bool onShutdown = false);
 
     void startMapThread();
@@ -179,39 +128,206 @@ public:
     void setUnloadPending(bool value) { m_unloadPending = value; }
     bool isUnloadPending() { return m_unloadPending; }
 
-    float getVisibilityRange() const { return m_VisibleDistance; }
-    float getUpdateDistance(Object* curObj, Object* obj, Player* plObj);
+    float getVisibilityDistance() const noexcept { return m_visibilityDistance; }
+    float getVisibilityDistanceSq() const noexcept { return m_visibilityDistanceSq; }
     virtual void initVisibilityDistance();
+    void syncVisibilitySubscriptionRadius();
 
     void outOfMapBoundariesTeleport(Object* object);
 
-    std::mutex m_objectinsertlock;
-    ObjectSet m_objectinsertpool;
-    void AddObject(Object*);
-    void PushObject(Object* obj);
-    void PushStaticObject(Object* obj);
-    void RemoveObject(Object* obj, bool free_guid);
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Visibility System
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+    void updateAll(std::chrono::milliseconds diff);
 
-    void addObjectToActiveSet(Object* obj);
-    void removeObjectFromActiveSet(Object* obj);
+    // Run cross-map handoffs on the target map thread.
+    void queueMapTask(std::function<void()> task);
 
+    void drainDeferredDestroy();
+
+    void hookVisibilityEvents();
+    bool onPlayerEnter(Player* plr);
+    void onPlayerLeave(Player* plr);
+    void addSession(WorldSession* session);
+    void removeSession(WorldSession* session);
+    void onObjectMoved(Object* obj);
+    void refreshVisibilityForObject(Object* obj);
+
+    // Queue creature awareness changes and process duplicates together.
+    void queueUnitAwareness(Unit* unit, UnitAwarenessSignal reason);
+    void processPendingUnitAwareness();
+
+    // Refresh nearby area spells when units or DynamicObjects change.
+    void refreshDynamicObjectTargets(DynamicObject* dynamicObject);
+
+    void onObjectBecameVisible(const WoWGuid& viewer, const WoWGuid& obj);
+    void onObjectBecameHidden(const WoWGuid& viewer, const WoWGuid& obj);
+
+    void processPendingVisibilityChanges(std::size_t maxEvents = 2048, std::size_t maxCreatesPerPlayer = 32, std::size_t maxDestroysPerPlayer = 96);
+    void processPendingVisibilityChangesForViewer(const WoWGuid& viewer, std::size_t maxCreates = 256, std::size_t maxDestroys = 256);
+    void flushVisibilityRemovalForObject(const WoWGuid& object);
+    void purgePendingVisibilityForGuid(const WoWGuid& guid);
+    void clearVisibilitySourceForRecipient(const WoWGuid& viewer, Player* recipient);
+    void resetVisibilityForPlayerRelocation(Player* player);
+    void logVisibilityMemoryDiagnostics(const char* reason);
+    const SpatialPerformanceSnapshot& getSpatialPerformanceSnapshot() const noexcept { return m_lastSpatialPerformance; }
+    void collectVisibilityRecipientsForObject(const WoWGuid& object, std::vector<Player*>& out);
+    void setVisibilityRecipientForViewer(const WoWGuid& viewer, Player* recipient);
+    void clearVisibilityRecipientForViewer(const WoWGuid& viewer);
+
+    // Temporary legacy map API while old scripts/commands are migrated to
+    // ObjectRegistry/SpatialIndex. Keep these as thin registry views only.
+    std::map<uint32_t, Player*> getPlayers() const;
+    std::vector<Creature*> getCreatures() const;
+    std::vector<GameObject*> getGameObjects() const;
+
+    uint32_t getPlayerCount() const;
+    bool hasPlayers() const { return getPlayerCount() != 0; }
+
+    Creature* getSqlIdCreature(uint32_t spawnId) const;
+    GameObject* getSqlIdGameObject(uint32_t spawnId) const;
+
+    visibility::SpatialIndex& getSpatialIndex() const { assert(spatialIndex_); return *spatialIndex_; }
+    visibility::VisibilitySystem& getVisibilitySystem() const { assert(visibilitySystem_); return *visibilitySystem_; }
+    world::WorldObjectRegistry& getRegistry() const { assert(registry_); return *registry_; }
+    ObjectFactory& getObjectFactory() const { assert(factory_);  return *factory_; }
+    SpawnManager& getSpawnManager() const { assert(spawnMgr_); return *spawnMgr_; }
+
+private:
+    enum class PendingVisibilityAction : uint8_t
+    {
+        Visible,
+        Hidden
+    };
+
+    struct PendingVisibilityEvent
+    {
+        WoWGuid viewer;
+        WoWGuid object;
+        PendingVisibilityAction action = PendingVisibilityAction::Visible;
+    };
+
+    void queueVisibilityChange(const WoWGuid& viewer, const WoWGuid& object, PendingVisibilityAction action);
+    void finalizeSpatialPerformanceSample(std::chrono::milliseconds diff);
+    Player* getVisibilityRecipientPlayer(const WoWGuid& viewer);
+    bool hasOtherVisibilitySourceForRecipient(const WoWGuid& losingViewer, const WoWGuid& object, Player* recipient);
+    bool applyQueuedVisibilityVisible(const WoWGuid& viewer, const WoWGuid& object);
+    bool applyQueuedVisibilityHidden(const WoWGuid& viewer, const WoWGuid& object, bool hardDestroy = false);
+    bool shouldSuppressInitialValueUpdateForViewer(uint64_t viewerRaw, uint64_t objectRaw) const;
+
+    // Only ObjectFactory may schedule raw object deletion. All callers must go
+    // through the object lifecycle so detach cleanup cannot be skipped.
+    bool deferDestroy(Object* object);
+    void processMapTasks();
+
+    std::mutex mapTaskMutex_;
+    std::deque<std::function<void()>> mapTasks_;
+
+
+    std::unordered_set<Object*> deferred_destroy_;
+    std::mutex deferredDestroyMutex_;
+
+    // Pending visibility is coalesced per viewer/object pair. Repeated
+    // Visible/Hidden transitions before processing only keep the final state.
+    // The viewer queue provides round-robin fairness without stale events.
+    std::unordered_map<uint64_t, std::unordered_map<uint64_t, PendingVisibilityEvent>> pendingVisibilityByViewer_;
+    std::deque<uint64_t> pendingVisibilityViewers_;
+    std::unordered_set<uint64_t> pendingVisibilityQueuedViewers_;
+
+    // Map-thread-owned AI awareness queue. The value is a bit-mask of
+    // UnitAwarenessSignal values and naturally deduplicates movement/state events
+    // generated multiple times before the next processing pass.
+    std::unordered_map<uint64_t, uint16_t> pendingUnitAwareness_;
+    std::unordered_map<uint64_t, uint16_t> processingUnitAwareness_;
+    std::unordered_map<uint64_t, LocationVector> lastMovementAwarenessPosition_;
+    std::mutex unitAwarenessMutex_;
+
+    // High-water mark is intentionally not reduced when an area disappears. It
+    // keeps unit-event lookup exact for any radius seen on this map without
+    // requiring a global DynamicObject scan to recompute the maximum.
+    float maxDynamicObjectTargetRadius_ = 0.0f;
+
+    // Objects created for a viewer in the current visibility flush already include
+    // their complete initial value state in the create block. If the object also
+    // has a pending value update from before the viewer saw it, suppress that
+    // one values update for this new viewer to avoid replaying GO animations.
+    std::unordered_map<uint64_t, std::unordered_set<uint64_t>> initialCreateValueUpdateSuppress_;
+
+    // Remote visibility sources (possessed units, Eyes of the Beast, farsight)
+    // have their own spatial viewer GUID but deliver packets to a player. Keep
+    // that relationship explicit so packet delivery and cleanup do not depend
+    // on the remote object still being resolvable from the registry.
+    std::unordered_map<uint64_t, uint64_t> visibilityRecipientByViewer_;
+
+    // One-second rolling map-local performance window. Component counters are
+    // map-thread owned and consumed once at the end of each WorldMap update.
+    SpatialPerformanceSnapshot m_spatialPerformanceWindow{};
+    SpatialPerformanceSnapshot m_lastSpatialPerformance{};
+    std::chrono::milliseconds m_spatialPerformanceAccum{ 0 };
+    uint64_t m_awarenessQueriesThisTick = 0;
+    uint64_t m_awarenessCandidatesThisTick = 0;
+    uint64_t m_visibilityCreatesThisTick = 0;
+    uint64_t m_visibilityDestroysThisTick = 0;
+
+protected:
+    // Spatial/Visibility Systems
+    std::unique_ptr<visibility::SpatialIndex> spatialIndex_;
+    std::unique_ptr<visibility::VisibilitySystem> visibilitySystem_;
+    std::unique_ptr<ObjectFactory>             factory_;
+    std::unique_ptr<GuidAllocator>             guids_;
+    std::unique_ptr<world::WorldObjectRegistry> registry_;
+    std::unique_ptr<SpawnManager>               spawnMgr_;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Object Registry
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+    Object* getObject(const WoWGuid& guid) const { return registry_ ? registry_->getAny(guid) : nullptr; }
+    Creature* getCreature(const WoWGuid& guid) const { return registry_ ? registry_->getCreature(guid) : nullptr; }
+    GameObject* getGameObject(const WoWGuid& guid) const { return registry_ ? registry_->getGameObject(guid) : nullptr; }
+    DynamicObject* getDynamicObject(const WoWGuid& guid) const { return registry_ ? registry_->getDynamicObject(guid) : nullptr; }
+    Player* getPlayer(const WoWGuid& guid) const { return registry_ ? registry_->getPlayer(guid) : nullptr; }
+    Pet* getPet(const WoWGuid& guid) const { return registry_ ? registry_->getPet(guid) : nullptr; }
+    Corpse* getCorpse(const WoWGuid& guid) const { return registry_ ? registry_->getCorpse(guid) : nullptr; }
+    Unit* getUnit(const WoWGuid& guid) const;
+
+    // Legacy migration helpers. These are O(n) and must not be used by new code.
+    Creature* findCreatureByLow32(uint32_t lowGuid) const { return registry_ ? registry_->findCreatureByLow32(lowGuid) : nullptr; }
+    GameObject* findGameObjectByLow32(uint32_t lowGuid) const { return registry_ ? registry_->findGameObjectByLow32(lowGuid) : nullptr; }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Navigation System
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+    void navAcquireGrid(int gid);
+    void navReleaseGrid(int gid);
+
+private:
+    std::mutex nav_mtx_;
+    std::unordered_map<int, uint32_t> nav_gridRefs_;
+
+    std::vector<int> collectTerrainGridsForArea(uint32_t id, bool matchZone);
+    bool gridMatchesForcedRegion(int gid);
+    bool shouldRuleForceGrid(int gid);
+    bool ensureRuleGridPinned(int gid);
+    void reevaluateRuleGridPins();
+
+    bool forceAllGridsActive_ = false;
+    std::unordered_set<int> forcedExplicitGrids_;
+    std::unordered_set<int> rulePinnedGrids_;
+    std::unordered_set<uint32_t> forcedZones_;
+    std::unordered_set<uint32_t> forcedAreas_;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+public:
     bool canUnload(uint32_t diff);
 
     virtual bool addPlayerToMap(Player*) { return true; }
     virtual void removePlayerFromMap(Player*) {};
 
     virtual EnterState cannotEnter(Player* /*player*/) { return EnterState::CAN_ENTER; }
-
-    // Storage
-    PlayerStorageMap const& getPlayers() const;
-    CreaturesStorageMap const& getCreatures() const;
-    PetStorageMap const& getPets() const;
-    GameObjectStorageMap const& getGameObjects() const;
-    DynamicObjectStorageMap const& getDynamicObjects() const;
-    TransportsContainer const& getTransports() const;
-
-    std::deque<uint32_t> _reusable_guids_gameobject;
-    std::deque<uint32_t> _reusable_guids_creature;
 
     // Difficulty
     InstanceDifficulty::Difficulties getDifficulty() const { return InstanceDifficulty::Difficulties(getSpawnMode()); }
@@ -223,6 +339,18 @@ public:
     uint32_t getAreaId(uint32_t phaseMask, LocationVector const& pos);
     uint32_t getZoneId(uint32_t phaseMask, LocationVector const& pos);
     void getZoneAndAreaId(uint32_t phaseMask, uint32_t& zoneid, uint32_t& areaid, LocationVector const& pos);
+
+    // Persistent grid activation. These functions are map-thread operations. Forced
+    // grids stay spawned/loaded, while client visibility still uses normal distance.
+    bool setGridForcedActive(int gid, bool active);
+    size_t setAllGridsForcedActive(bool active);
+    size_t setZoneGridsForcedActive(uint32_t zoneId, bool active);
+    size_t setAreaGridsForcedActive(uint32_t areaId, bool active);
+    bool isGridForcedActive(int gid) const;
+
+    // Called whenever a grid starts being used by runtime objects or subscriptions.
+    // Persistent map/zone/area rules are applied here so newly used grids stay active.
+    void onGridMaterialized(int gid);
 
     void getFullTerrainStatusForPosition(uint32_t phaseId, float x, float y, float z, PositionFullTerrainStatus& data, uint8_t reqLiquidType, float collisionHeight) const;
 
@@ -262,85 +390,21 @@ public:
     bool is25ManRaid();
 
     // Player
-    Player* getPlayer(uint32_t guid);
-    Player* getPlayer(uint64_t guid);
-    uint32_t getPlayerCount();
-    bool hasPlayers();
     virtual void removeAllPlayers();
 
     // Creatures
-    CreatureSet::iterator creature_iterator;
-    uint32_t m_CreatureHighGuid = 0;
-    Creature* createCreature(uint32_t entry);
-    Creature* createAndSpawnCreature(uint32_t pEntry, LocationVector pos);
-
-    uint64_t generateCreatureGuid(uint32_t entry, bool canUseOldGuid = true);
-
-    Creature* getCreature(uint32_t guid);
-    Creature* getSqlIdCreature(uint32_t sqlid);
-
     std::unordered_map<uint32_t /*leaderSpawnId*/, std::unique_ptr<CreatureGroup>> CreatureGroupHolder;
-
-    // Pets
-    Pet* getPet(uint32_t guid);
-
-    // GameObject
-    ActiveGameObjectSet::iterator gameObject_iterator;
-    uint32_t m_GOHighGuid = 0;
-    GameObject* createGameObject(uint32_t entry);
-    GameObject* createAndSpawnGameObject(uint32_t entryID, LocationVector pos, float scale = 1.0f, uint32_t spawnTime = 0);
-
-    uint32_t generateGameobjectGuid() { return ++m_GOHighGuid; }
-
-    GameObject* getGameObject(uint32_t guid);
-    GameObject* getSqlIdGameObject(uint32_t sqlid);
-
-    // DynamicObjects
-    uint32_t m_DynamicObjectHighGuid = 0;
-    DynamicObject* createDynamicObject();
-    DynamicObject* getDynamicObject(uint32_t guid);
 
     // Summons
     Summon* summonCreature(uint32_t entry, LocationVector pos, WDB::Structures::SummonPropertiesEntry const* = nullptr, uint32_t duration = 0, Object* summoner = nullptr, uint32_t spellId = 0);
-
-    // Transports
-    bool addToMapMgr(Transporter* obj);
-    void removeFromMapMgr(Transporter* obj);
-    void markDelayedRemoveFor(Transporter* transport, bool removeFromMap);
-    void removeDelayedRemoveFor(Transporter* transport);
-
-    // Corpse
-    void addCorpseDespawn(uint64_t guid, time_t time);
-    std::priority_queue<CorpseInfo, std::vector<CorpseInfo>, CompareTimeAndGuid<CorpseInfo>> _corpseDespawnTimes;
-
-    // Lookup Wrappers
-    Unit* getUnit(const uint64_t& guid);
-    Object* getObject(const uint64_t& guid);
+    GameObject* summonGameObject(uint32_t entryID, LocationVector pos, QuaternionData const& rot, uint32_t duration = 0, Object* summoner = nullptr);
 
     // Base Template
     BaseMap* getBaseMap() const { return m_baseMap; }
 
-    // Cell Handling
-    void addForcedCell(MapCell* c);
-    void removeForcedCell(MapCell* c);
-    void addForcedCell(MapCell* c, uint32_t range);
-    void removeForcedCell(MapCell* c, uint32_t range);
-
     bool cellHasAreaID(uint32_t x, uint32_t y, uint16_t& AreaID);
-    void updateAllCells(bool apply, uint32_t areamask);
-    void updateAllCells(bool apply);
-    void updateCellActivity(uint32_t x, uint32_t y, uint32_t radius);
-
-    void setCellIdle(uint16_t x, uint16_t y, MapCell* cell);
-    void unloadCell(uint32_t x, uint32_t y);
-    bool isCellActive(uint32_t x, uint32_t y);
-
-    void updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, std::unique_ptr<ByteBuffer>& buf);
-
-    void changeObjectLocation(Object* obj);
+   
     void changeFarsightLocation(Player* plr, DynamicObject* farsight);
-
-    std::set<MapCell*> m_forcedcells;
 
     // Packts
     void sendChatMessageToCellPlayers(Object* obj, AscEmu::Packets::SmsgMessageChat& packet, uint32_t cell_radius, uint32_t lang, WorldSession* originator);
@@ -349,58 +413,19 @@ public:
     void sendPacketToPlayersInZone(uint32_t zone, WorldPacket* packet) const;
 
     EventableObjectHolder eventHolder;
-    ObjectSet _mapWideStaticObjects;
-    ActiveGameObjectSet activeGameObjects;
-    ActiveCreatureSet activeCreatures;
-    std::set<Corpse*> m_corpses;
-
-    // Respawn Handling
-    void loadRespawnTimes();
-    void saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t entry, time_t respawnTime, float cellX, float cellY, bool startup = false);
-    void saveRespawnDB(RespawnInfo const& info);
-    bool addRespawn(RespawnInfo const& info);
-    void removeRespawnTime(SpawnObjectType type, uint32_t spawnId);
-
-    void deleteRespawnTimes() { unloadAllRespawnInfos(); deleteRespawnTimesInDB(getBaseMap()->getMapId(), getInstanceId()); }
-    static void deleteRespawnTimesInDB(uint32_t mapId, uint32_t instanceId);
-
-    void unloadAllRespawnInfos();
-
-    void deleteRespawn(RespawnInfo const* info);
-    void deleteRespawnFromDB(SpawnObjectType type, uint32_t spawnId);
-
-    void processRespawns();
-    bool checkRespawn(RespawnInfo* info);
-    void doRespawn(SpawnObjectType type, Object* obj,uint32_t spawnId, float cellX, float cellY);
-    RespawnInfo* getRespawnInfo(SpawnObjectType type, uint32_t spawnId) const;
-
-    respawnQueue _respawnTimes;
-    RespawnInfoMap _creatureRespawnTimesBySpawnId;
-    RespawnInfoMap _gameObjectRespawnTimesBySpawnId;
-
-    RespawnInfoMap& getRespawnMapForType(SpawnObjectType type);
-    RespawnInfoMap const& getRespawnMapForType(SpawnObjectType type) const;
-
-    time_t getRespawnTime(SpawnObjectType type, uint32_t spawnId) const;
-    time_t getCreatureRespawnTime(uint32_t spawnId) const { return getRespawnTime(SPAWN_TYPE_CREATURE, spawnId); }
-    time_t getGORespawnTime(uint32_t spawnId) const { return getRespawnTime(SPAWN_TYPE_GAMEOBJECT, spawnId); }
 
     void respawnBossLinkedGroups(uint32_t bossId);
-    void spawnManualGroup(uint32_t groupId);
-
-    CreatureSqlIdMap _sqlids_creatures;
-    GameObjectSqlIdMap _sqlids_gameobjects;
 
     // Update Timers
-    uint32_t m_lastTransportUpdateTimer = 0;
-    uint32_t m_lastDynamicUpdateTimer = 0;
-    uint32_t m_lastPlayerUpdateTimer = 0;
-    uint32_t m_lastPetUpdateTimer = 0;
-    uint32_t m_lastCreatureUpdateTimer = 0;
-    uint32_t m_lastGameObjectUpdateTimer = 0;
-    uint32_t m_lastSessionUpdateTimer = 0;
-    uint32_t m_lastRespawnUpdateTimer = 0;
-
+    std::chrono::milliseconds m_visibilityAccum{ 0 };
+    std::chrono::milliseconds m_respawnAccum{ 0 };
+    std::chrono::milliseconds m_sessionAccum{ 0 };
+    std::chrono::milliseconds m_dynamicObjectAccum{ 0 };
+    std::chrono::milliseconds m_transporterAccum{ 0 };
+    std::chrono::milliseconds m_gameObjectAccum{ 0 };
+    std::chrono::milliseconds m_playersAccum{ 0 };
+    std::chrono::milliseconds m_petsAccum{ 0 };
+    std::chrono::milliseconds m_creaturesAccum{ 0 };
     uint32_t m_lastUpdateTime = 0;
 
     // Worldstates
@@ -444,28 +469,23 @@ private:
     uint32_t _instanceId;
     uint8_t _instanceSpawnMode = InstanceDifficulty::Difficulties::DUNGEON_NORMAL;
 
-    // Storage
-    PlayerStorageMap m_PlayerStorage;
-    CreaturesStorageMap m_CreatureStorage;
-    PetStorageMap m_PetStorage;
-    GameObjectStorageMap m_GameObjectStorage;
-    DynamicObjectStorageMap m_DynamicObjectStorage;
-    TransportsContainer m_TransportStorage;
-    // <Transporter, remove from map>
-    std::map<Transporter*, bool> m_TransportDelayedRemoveStorage;
-    std::mutex m_transportsLock;
-    std::mutex m_delayedTransportLock;
-
-    std::mutex m_cellActivityLock;
-
     // Sessions
     std::set<WorldSession*> Sessions;
+    std::mutex m_sessionMutex;
 
 protected:
     InstanceScript* mInstanceScript = nullptr;
     DynamicMapTree _dynamicTree;
     uint32_t m_unloadTimer = 0;
-    float m_VisibleDistance;
+
+    void setVisibilityDistance(float distance) noexcept
+    {
+        m_visibilityDistance = distance > 0.0f ? distance : 0.0f;
+        m_visibilityDistanceSq = m_visibilityDistance * m_visibilityDistance;
+    }
+
+    float m_visibilityDistance = 0.0f;
+    float m_visibilityDistanceSq = 0.0f;
     BaseMap* m_baseMap = nullptr;
     InstanceMap* pInstance = nullptr;
 };

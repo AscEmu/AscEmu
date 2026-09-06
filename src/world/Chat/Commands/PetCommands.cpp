@@ -58,7 +58,7 @@ bool ChatCommandHandler::HandlePetCreateCommand(const char* args, WorldSession* 
     const auto pet = sObjectMgr.createPet(entry, nullptr);
     if (!pet->createAsSummon(creature_proto, nullptr, selected_player, vector, 0, nullptr, 0, PET_TYPE_HUNTER))
     {
-        pet->DeleteMe();
+        pet->destroy();
         return true;
     }
 

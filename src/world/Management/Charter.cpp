@@ -17,9 +17,9 @@ Charter::Charter(Field const* _field)
 {
     m_charterId = _field[0].asUint32();
     m_charterType = _field[1].asUint8();
-    m_leaderGuid = _field[2].asUint32();
+    m_leaderGuid = WoWGuid(_field[2].asUint64());
     m_guildName = _field[3].asCString();
-    m_itemGuid = _field[4].asUint64();
+    m_itemGuid = WoWGuid(_field[4].asUint64());
 
     m_availableSlots = getNumberOfAvailableSlots();
 
@@ -27,12 +27,12 @@ Charter::Charter(Field const* _field)
     {
         constexpr uint8_t fieldOffset = 5;
 
-        if (uint32_t playerGuid = _field[i + fieldOffset].asUint32())
-            m_signatures.push_back(playerGuid);
+        if (const uint64_t playerGuid = _field[i + fieldOffset].asUint64())
+            m_signatures.emplace_back(playerGuid);
     }
 }
 
-Charter::Charter(uint32_t _id, uint32_t _leaderGuid, uint8_t _type) : m_charterId(_id), m_charterType(_type), m_leaderGuid(_leaderGuid)
+Charter::Charter(uint32_t _id, const WoWGuid& _leaderGuid, uint8_t _type) : m_charterId(_id), m_charterType(_type), m_leaderGuid(_leaderGuid)
 {
     m_availableSlots = getNumberOfAvailableSlots();
 }
@@ -44,10 +44,10 @@ void Charter::saveToDB()
     CharacterDatabase.execute("DELETE FROM charters WHERE charterId = %u;", m_charterId);
 
     std::stringstream ss;
-    ss << "INSERT INTO charters VALUES(" << m_charterId << "," << m_charterType << "," << m_leaderGuid << ",'" << m_guildName << "'," << m_itemGuid;
+    ss << "INSERT INTO charters VALUES(" << m_charterId << "," << m_charterType << "," << m_leaderGuid.getRawGuid() << ",'" << m_guildName << "'," << m_itemGuid.getRawGuid();
 
-    for (const auto playerGuid : m_signatures)
-        ss << "," << playerGuid;
+    for (const auto& playerGuid : m_signatures)
+        ss << "," << playerGuid.getRawGuid();
 
     for (uint8_t i = getSignatureCount(); i < 9; ++i)
         ss << ",0";
@@ -60,16 +60,16 @@ void Charter::destroy()
 {
     CharacterDatabase.execute("DELETE FROM charters WHERE charterId = %u", m_charterId);
 
-    for (const auto playerGuid : m_signatures)
+    for (const auto& playerGuid : m_signatures)
     {
-        if (Player* player = sObjectMgr.getPlayer(playerGuid))
+        if (Player* player = sObjectMgr.getPlayer(playerGuid.getLowGuid()))
             player->unsetCharter(m_charterType);
     }
 
     sObjectMgr.removeCharter(this);
 }
 
-uint32_t Charter::getLeaderGuid() const { return m_leaderGuid; }
+const WoWGuid& Charter::getLeaderGuid() const { return m_leaderGuid; }
 
 uint32_t Charter::getId() const { return m_charterId; }
 
@@ -78,8 +78,8 @@ uint8_t Charter::getCharterType() const { return m_charterType; }
 std::string Charter::getGuildName() { return m_guildName; }
 void Charter::setGuildName(const std::string& _guildName) { m_guildName = _guildName; }
 
-uint64_t Charter::getItemGuid() const { return m_itemGuid; }
-void Charter::setItemGuid(const uint64_t _itemGuid) { m_itemGuid = _itemGuid; }
+const WoWGuid& Charter::getItemGuid() const { return m_itemGuid; }
+void Charter::setItemGuid(const WoWGuid& _itemGuid) { m_itemGuid = _itemGuid; }
 
 uint8_t Charter::getNumberOfAvailableSlots() const
 {
@@ -100,7 +100,7 @@ uint8_t Charter::getNumberOfAvailableSlots() const
 bool Charter::isFull() const { return m_signatures.size() == m_availableSlots; }
 uint8_t Charter::getAvailableSlots() const { return m_availableSlots; }
 
-void Charter::addSignature(uint32_t _playerGuid)
+void Charter::addSignature(const WoWGuid& _playerGuid)
 {
     if (m_signatures.size() >= m_availableSlots)
         return;
@@ -108,7 +108,7 @@ void Charter::addSignature(uint32_t _playerGuid)
     m_signatures.push_back(_playerGuid);
 }
 
-void Charter::removeSignature(uint32_t _playerGuid)
+void Charter::removeSignature(const WoWGuid& _playerGuid)
 {
     std::erase(m_signatures, _playerGuid);
 
@@ -116,4 +116,4 @@ void Charter::removeSignature(uint32_t _playerGuid)
 }
 
 uint8_t Charter::getSignatureCount() const { return static_cast<uint8_t>(m_signatures.size()); }
-std::vector<uint32_t> Charter::getSignatures() { return m_signatures; }
+const std::vector<WoWGuid>& Charter::getSignatures() const { return m_signatures; }

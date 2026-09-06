@@ -58,6 +58,7 @@
 #include "Management/Battleground/BattlegroundDefines.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObject.h"
+#include "Objects/DynamicObject.hpp"
 #include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Server/EventMgr.h"
 #include "Storage/WDB/WDBStructures.hpp"
@@ -83,7 +84,7 @@ Player* Aura::GetPlayerCaster()
     }
 
     if (m_target->getWorldMap())
-        return m_target->getWorldMap()->getPlayer(WoWGuid::getGuidLowPartFromUInt64(m_casterGuid));
+        return m_target->getWorldMapPlayer(m_casterGuid);
 
     return nullptr;
 }
@@ -112,7 +113,7 @@ Unit* Aura::GetUnitCaster()
         return m_target;
 
     if (m_target->getWorldMap())
-        return m_target->getWorldMap()->getUnit(m_casterGuid);
+        return m_target->getWorldMapUnit(m_casterGuid);
 
     return nullptr;
 }
@@ -282,7 +283,7 @@ void Aura::EventUpdateGroupAA(AuraEffectModifier* /*aurEff*/, float r)
         AreaAuraList::iterator itr2 = itr;
         ++itr;
 
-        Player* tp = m_target->getWorldMap()->getPlayer(WoWGuid::getGuidLowPartFromUInt64(*itr2));
+        Player* tp = m_target->getWorldMapPlayer(*itr2);
 
         bool removable = false;
         if (tp == nullptr)
@@ -393,7 +394,7 @@ void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
         AreaAuraList::iterator itr2 = itr;
         ++itr;
 
-        Player* tp = m_target->getWorldMap()->getPlayer(WoWGuid::getGuidLowPartFromUInt64(*itr2));
+        Player* tp = m_target->getWorldMapPlayer(*itr2);
         bool removable = false;
 
         if (tp == nullptr)
@@ -482,7 +483,7 @@ void Aura::EventUpdateFriendAA(AuraEffectModifier* /*aurEff*/, float r)
         AreaAuraList::iterator itr2 = itr;
         ++itr;
 
-        Unit* tu = u->getWorldMap()->getUnit(*itr2);
+        Unit* tu = u->getWorldMapUnit(*itr2);
         bool removable = false;
 
         if (tu == nullptr)
@@ -549,7 +550,7 @@ void Aura::EventUpdateEnemyAA(AuraEffectModifier* /*aurEff*/, float r)
         AreaAuraList::iterator itr2 = itr;
         ++itr;
 
-        Unit* tu = u->getWorldMap()->getUnit(*itr2);
+        Unit* tu = u->getWorldMapUnit(*itr2);
         bool removable = false;
 
         if (tu == nullptr)
@@ -671,7 +672,7 @@ void Aura::EventUpdateAreaAura(uint8_t effIndex, float r)
 
     for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end(); ++itr)
     {
-        auto unit = m_target->getWorldMap()->getUnit(*itr);
+        auto unit = m_target->getWorldMapUnit(*itr);
         if (unit == nullptr)
             return;
 
@@ -691,7 +692,7 @@ void Aura::ClearAATargets()
 
     for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end(); ++itr)
     {
-        Unit* tu = m_target->getWorldMap()->getUnit(*itr);
+        Unit* tu = m_target->getWorldMapUnit(*itr);
 
         if (tu == nullptr)
             continue;
@@ -709,7 +710,7 @@ void Aura::ClearAATargets()
 #if VERSION_STRING >= TBC
     if (m_spellInfo->hasEffect(SPELL_EFFECT_APPLY_OWNER_AREA_AURA))
     {
-        Unit* u = m_target->getWorldMap()->getUnit(m_target->getCreatedByGuid());
+        Unit* u = m_target->getWorldMapUnit(m_target->getCreatedByGuid());
 
         if (u != nullptr)
             u->removeAllAurasById(spellid);
@@ -810,8 +811,7 @@ void Aura::SpellAuraModPossess(AuraEffectModifier* /*aurEff*/, bool apply)
             m_target->setCharmedByGuid(0);
             m_target->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
             m_target->setFaction(m_target->getCharmTempVal());
-            m_target->updateInRangeOppositeFactionSet();
-        }
+            }
         else
         {
             //mob woke up and realized he was controlled. He will turn to controller and also notify the other mobs he is fighting that they should attack the caster
@@ -908,7 +908,6 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
         m_target->addUnitStateFlag(UNIT_STATE_CHARMED);
         m_target->setCharmTempVal(m_target->getFactionTemplate());
         m_target->setFaction(caster->getFactionTemplate());
-        m_target->updateInRangeOppositeFactionSet();
         m_target->getAIInterface()->Init(m_target, caster);
         m_target->setCharmedByGuid(caster->getGuid());
         caster->setCharmGuid(target->getGuid());
@@ -928,7 +927,6 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
         m_target->removeUnitStateFlag(UNIT_STATE_CHARMED);
         m_target->setFaction(m_target->getCharmTempVal());
         m_target->getThreatManager().clearAllThreat();
-        m_target->updateInRangeOppositeFactionSet();
         m_target->getAIInterface()->Init(m_target);
         m_target->setCharmedByGuid(0);
 
@@ -1593,7 +1591,11 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
         }
     }
 
-    m_target->updateVisibility();
+    if (m_target->IsInWorld())
+    {
+        m_target->getWorldMap()->refreshVisibilityForObject(m_target);
+        m_target->getWorldMap()->queueUnitAwareness(m_target, UnitAwarenessSignal::StealthChanged);
+    }
 }
 
 void Aura::SpellAuraModStealthDetection(AuraEffectModifier* aurEff, bool apply)
@@ -1602,6 +1604,9 @@ void Aura::SpellAuraModStealthDetection(AuraEffectModifier* aurEff, bool apply)
         m_target->modStealthDetection(StealthFlag(aurEff->getEffectMiscValue()), aurEff->getEffectDamage());
     else
         m_target->modStealthDetection(StealthFlag(aurEff->getEffectMiscValue()), -aurEff->getEffectDamage());
+
+    if (m_target->IsInWorld())
+        m_target->getWorldMap()->queueUnitAwareness(m_target, UnitAwarenessSignal::DetectionChanged);
 }
 
 void Aura::SpellAuraModInvisibility(AuraEffectModifier* aurEff, bool apply)
@@ -1637,7 +1642,11 @@ void Aura::SpellAuraModInvisibility(AuraEffectModifier* aurEff, bool apply)
         }
     }
 
-    m_target->updateVisibility();
+    if (m_target->IsInWorld())
+    {
+        m_target->getWorldMap()->refreshVisibilityForObject(m_target);
+        m_target->getWorldMap()->queueUnitAwareness(m_target, UnitAwarenessSignal::InvisibilityChanged);
+    }
 }
 
 void Aura::SpellAuraModInvisibilityDetection(AuraEffectModifier* aurEff, bool apply)
@@ -1655,7 +1664,13 @@ void Aura::SpellAuraModInvisibilityDetection(AuraEffectModifier* aurEff, bool ap
             m_target->modInvisibilityDetection(InvisibilityFlag(aurEff->getEffectMiscValue()), -aurEff->getEffectDamage());
 
         if (m_target->isPlayer())
-            m_target->updateVisibility();
+        {
+            if (m_target->IsInWorld())
+                m_target->getWorldMap()->refreshVisibilityForObject(m_target);
+        }
+
+        if (m_target->IsInWorld())
+            m_target->getWorldMap()->queueUnitAwareness(m_target, UnitAwarenessSignal::DetectionChanged);
     }
 }
 
@@ -2999,14 +3014,33 @@ void Aura::SpellAuraAddFarSight(AuraEffectModifier* /*aurEff*/, bool apply)
     {
         if (!m_target->isPlayer())
             return;
-
-        //FIXME:grep aka Nublex will fix this
-        //Make update circle bigger here
     }
     else
     {
-        //Destroy new updated objects here if they are still out of update range
-        //w/e
+        if (!m_target->isPlayer())
+            return;
+
+        auto* player = static_cast<Player*>(m_target);
+        WorldMap* map = player->getWorldMap();
+        if (!map)
+            return;
+
+        // The generic aura teardown clears PLAYER_FIELD_FARSIGHT afterwards.
+        // Cleanup must happen while the old guid still identifies the remote viewer.
+        const uint64_t farsightGuid = player->getFarsightGuid();
+        map->changeFarsightLocation(player, nullptr);
+
+        // A farsight focus has no purpose once the aura ends. Removing it here also
+        // prevents a later generic visibility refresh from re-enabling its canonical
+        // viewer/activator interest profile before its duration timer expires.
+        if (farsightGuid)
+        {
+            if (DynamicObject* dyn = player->getWorldMapDynamicObject(farsightGuid);
+                dyn && dyn->getDynamicType() == DYNAMIC_OBJECT_FARSIGHT_FOCUS)
+            {
+                dyn->remove();
+            }
+        }
     }
 }
 
@@ -3036,7 +3070,7 @@ void Aura::SpellAuraMechanicImmunity(AuraEffectModifier* aurEff, bool apply)
         // Demonic Circle hack
         if (m_spellInfo->getId() == 48020 && m_target->isPlayer() && m_target->hasAurasWithId(62388))
         {
-            GameObject* obj = m_target->getWorldMap()->getGameObject(m_target->m_objectSlots[0]);
+            GameObject* obj = m_target->getWorldMapGameObject(m_target->m_objectSlots[0].getRawGuid());
 
             if (obj != nullptr)
             {
@@ -3378,7 +3412,7 @@ void Aura::SpellAuraChannelDeathItem(AuraEffectModifier* aurEff, bool apply)
 
             if (m_target->isDead())
             {
-                Player* pCaster = m_target->getWorldMap()->getPlayer((uint32_t)m_casterGuid);
+                Player* pCaster = m_target->getWorldMapPlayer(m_casterGuid);
                 if (!pCaster)
                     return;
                 /*int32_t delta=pCaster->getLevel()-m_target->getLevel();
@@ -5651,7 +5685,7 @@ void Aura::HandleAuraControlVehicle([[maybe_unused]] AuraEffectModifier* aurEff,
         if (getSpellId() == 53111) // Devour Humanoid
         {
             if (caster->getObjectTypeId() == TYPEID_UNIT)
-                caster->ToCreature()->Despawn(0, 0);
+                caster->ToCreature()->despawn(0, 0);
         }
 
         if (seatId == m_target->getVehicleKit()->getSeatForNumberPassenger(caster))

@@ -15,14 +15,14 @@ This file is released under the MIT license. See README-MIT for more information
 class UtgardeKeepScript : public InstanceScript
 {
 public:
-    uint32_t mKelesethGUID;
-    uint32_t mSkarvaldGUID;
-    uint32_t mDalronnGUID;
-    uint32_t mIngvarGUID;
+    WoWGuid mKelesethGUID;
+    WoWGuid mSkarvaldGUID;
+    WoWGuid mDalronnGUID;
+    WoWGuid mIngvarGUID;
 
     ForgeMasterData m_fmData[3];
-    uint32_t mDalronnDoorsGUID;
-    uint32_t mIngvarDoors[2];
+    WoWGuid mDalronnDoorsGUID;
+    WoWGuid mIngvarDoors[2];
 
     uint32_t mUtgardeData[UTGARDE_DATA_END];
 
@@ -58,16 +58,16 @@ public:
         switch (pCreature->getEntry())
         {
             case CN_PRINCE_KELESETH:
-                mKelesethGUID = pCreature->getGuidLow();
+                mKelesethGUID = pCreature->GetNewGUID();
                 break;
             case CN_SKARVALD:
-                mSkarvaldGUID = pCreature->getGuidLow();
+                mSkarvaldGUID = pCreature->GetNewGUID();
                 break;
             case CN_DALRONN:
-                mDalronnGUID = pCreature->getGuidLow();
+                mDalronnGUID = pCreature->GetNewGUID();
                 break;
             case CN_INGVAR:
-                mIngvarGUID = pCreature->getGuidLow();
+                mIngvarGUID = pCreature->GetNewGUID();
                 break;
         }
     }
@@ -77,40 +77,40 @@ public:
         switch (pGameObject->getEntry())
         {
             case BELLOW_1:
-                m_fmData[0].mBellow = pGameObject->getGuidLow();
+                m_fmData[0].mBellow = pGameObject->GetNewGUID();
                 break;
             case BELLOW_2:
-                m_fmData[1].mBellow = pGameObject->getGuidLow();
+                m_fmData[1].mBellow = pGameObject->GetNewGUID();
                 break;
             case BELLOW_3:
-                m_fmData[2].mBellow = pGameObject->getGuidLow();
+                m_fmData[2].mBellow = pGameObject->GetNewGUID();
                 break;
             case FORGEFIRE_1:
-                m_fmData[0].mFire = pGameObject->getGuidLow();
+                m_fmData[0].mFire = pGameObject->GetNewGUID();
                 break;
             case FORGEFIRE_2:
-                m_fmData[1].mFire = pGameObject->getGuidLow();
+                m_fmData[1].mFire = pGameObject->GetNewGUID();
                 break;
             case FORGEFIRE_3:
-                m_fmData[2].mFire = pGameObject->getGuidLow();
+                m_fmData[2].mFire = pGameObject->GetNewGUID();
                 break;
             case GLOWING_ANVIL_1:
-                m_fmData[0].mAnvil = pGameObject->getGuidLow();
+                m_fmData[0].mAnvil = pGameObject->GetNewGUID();
                 break;
             case GLOWING_ANVIL_2:
-                m_fmData[1].mAnvil = pGameObject->getGuidLow();
+                m_fmData[1].mAnvil = pGameObject->GetNewGUID();
                 break;
             case GLOWING_ANVIL_3:
-                m_fmData[2].mAnvil = pGameObject->getGuidLow();
+                m_fmData[2].mAnvil = pGameObject->GetNewGUID();
                 break;
             case DALRONN_DOORS:
-                mDalronnDoorsGUID = pGameObject->getGuidLow();
+                mDalronnDoorsGUID = pGameObject->GetNewGUID();
                 break;
             case INGVAR_DOORS_1:
-                mIngvarDoors[0] = pGameObject->getGuidLow();
+                mIngvarDoors[0] = pGameObject->GetNewGUID();
                 break;
             case INGVAR_DOORS_2:
-                mIngvarDoors[1] = pGameObject->getGuidLow();
+                mIngvarDoors[1] = pGameObject->GetNewGUID();
                 break;
         }
     }
@@ -133,7 +133,7 @@ public:
                     GameObject* pGO = nullptr;
                     for (uint8_t i = 0; i < 2; ++i)
                     {
-                        pGO = GetGameObjectByGuid(mIngvarDoors[i]);
+                        pGO = getGameObjectByGuid(mIngvarDoors[i]);
                         if (pGO)
                         {
                             pGO->setState(pGO->getState() == 1 ? 0 : 1);
@@ -147,19 +147,19 @@ public:
     void HandleForge()
     {
         GameObject* pGO = nullptr;
-        pGO = GetGameObjectByGuid(m_fmData[mUtgardeData[UTGARDE_FORGE_MASTER] - 1].mBellow);
+        pGO = getGameObjectByGuid(m_fmData[mUtgardeData[UTGARDE_FORGE_MASTER] - 1].mBellow);
         if (pGO)
         {
             pGO->setState(pGO->getState() == 1 ? 0 : 1);
         }
 
-        pGO = GetGameObjectByGuid(m_fmData[mUtgardeData[UTGARDE_FORGE_MASTER] - 1].mFire);
+        pGO = getGameObjectByGuid(m_fmData[mUtgardeData[UTGARDE_FORGE_MASTER] - 1].mFire);
         if (pGO)
         {
             pGO->setState(pGO->getState() == 1 ? 0 : 1);
         }
 
-        pGO = GetGameObjectByGuid(m_fmData[mUtgardeData[UTGARDE_FORGE_MASTER] - 1].mAnvil);
+        pGO = getGameObjectByGuid(m_fmData[mUtgardeData[UTGARDE_FORGE_MASTER] - 1].mAnvil);
         if (pGO)
         {
             pGO->setState(pGO->getState() == 1 ? 0 : 1);

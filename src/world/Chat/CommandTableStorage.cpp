@@ -80,7 +80,7 @@ CommandTableStorage::CommandTableStorage()
         {"character add honorkills",      "m", 1, wrap(&ChatCommandHandler::HandleCharAddHonorKillCommand),     "Adds x amount of honor kills" },
         {"character add item",            "m", 1, wrap(&ChatCommandHandler::HandleCharAddItemCommand),          "Adds item x count y" },
         {"character add itemset",         "m", 1, wrap(&ChatCommandHandler::HandleCharAddItemSetCommand),       "Adds item set to inv." },
-#if VERSION_STRING >= Cata
+        #if VERSION_STRING >= Cata
         {"character add currency",        "m", 2, wrap(&ChatCommandHandler::HandleCharAddCurrencyCommand),      "Adds x amount of currency (by CurrencyTypes.dbc id) to character." },
 #endif
 
@@ -165,6 +165,13 @@ CommandTableStorage::CommandTableStorage()
         {"debug dist",                    "d", 0, wrap(&ChatCommandHandler::HandleDistanceCommand),                 "" },
         {"debug face",                    "d", 0, wrap(&ChatCommandHandler::HandleFaceCommand),                     "" },
         {"debug dumpstate",               "d", 0, wrap(&ChatCommandHandler::HandleDebugDumpState),                  "" },
+        {"debug mapstats",                "d", 0, wrap(&ChatCommandHandler::HandleDebugMapStats),                   "Shows registry, spatial, visibility and spawn manager counters." },
+        {"debug gridpos",                 "d", 0, wrap(&ChatCommandHandler::HandleDebugGridPosition),               "Shows current grid/cell and distance to the next boundaries." },
+        {"debug grid",                    "d", 0, wrap(&ChatCommandHandler::HandleDebugGrid),                       "Shows diagnostics for a grid ID; without an argument uses your current grid." },
+        {"debug objectvis",               "d", 0, wrap(&ChatCommandHandler::HandleDebugObjectVisibility),           "Shows visibility/spatial state for selected unit/gameobject." },
+        {"debug spawnaudit",              "d", 0, wrap(&ChatCommandHandler::HandleDebugSpawnAudit),                "Runs SpawnManager consistency audit and writes it to the server log." },
+        {"debug summoncreature",          "d", 1, wrap(&ChatCommandHandler::HandleDebugSummonCreature),             "Spawns an ephemeral creature summon. Usage: .debug summoncreature <entry> [noRespawn 0|1]" },
+        {"debug summongo",                "d", 1, wrap(&ChatCommandHandler::HandleDebugSummonGameObject),           "Spawns an ephemeral GameObject summon. Usage: .debug summongo <entry> [noRespawn 0|1]" },
         {"debug moveinfo",                "d", 0, wrap(&ChatCommandHandler::HandleDebugMoveInfo),                   "" },
         {"debug landwalk",                "d", 0, wrap(&ChatCommandHandler::HandleDebugLandWalk),                   "Sets landwalk move for unit" },
         {"debug waterwalk",               "d", 0, wrap(&ChatCommandHandler::HandleDebugWaterWalk),                  "Sets waterwal move for unit" },
@@ -261,7 +268,7 @@ CommandTableStorage::CommandTableStorage()
         {"gobject set phase",             "o", 1, wrap(&ChatCommandHandler::HandleGOSetPhaseCommand),             "Sets phase of selected GO" },
         {"gobject set scale",             "o", 1, wrap(&ChatCommandHandler::HandleGOSetScaleCommand),             "Sets scale of selected GO" },
         {"gobject set state",             "o", 1, wrap(&ChatCommandHandler::HandleGOSetStateCommand),             "Sets the state byte of the GO" },
-        {"gobject spawn",                 "o", 1, wrap(&ChatCommandHandler::HandleGOSpawnCommand),               "Spawns a GameObject by ID" },
+        {"gobject spawn",                 "o", 1, wrap(&ChatCommandHandler::HandleGOSpawnCommand),               "Spawns ephemeral GameObject; optional persistent=1 saves it. Usage: .gobject spawn <entry> [persistent 0|1]" },
 
         {"gocreature",                    "v", 1, wrap(&ChatCommandHandler::HandleGoCreatureSpawnCommand),        "Teleports you to the creature with <spawn_id>."},
         {"gogameobject",                  "v", 1, wrap(&ChatCommandHandler::HandleGoGameObjectSpawnCommand),      "Teleports you to the gameobject with <spawn_id>."},
@@ -382,7 +389,7 @@ CommandTableStorage::CommandTableStorage()
         {"npc set standstate",            "m", 1, wrap(&ChatCommandHandler::HandleNpcSetStandstateCommand),       "Sets standstate for selected creature" },
         {"npc set entry",                 "m", 1, wrap(&ChatCommandHandler::HandleNpcChangeEntry),                "Sets a New Entry for selected creature" },
 
-        {"npc spawn",                     "n", 1, wrap(&ChatCommandHandler::HandleNpcSpawnCommand),               "Spawns NPC of entry <id>" },
+        {"npc spawn",                     "n", 1, wrap(&ChatCommandHandler::HandleNpcSpawnCommand),               "Spawns ephemeral NPC; optional persistent=1 saves it. Usage: .npc spawn <entry> [persistent 0|1]" },
         {"npc showtimers",                "m", 0, wrap(&ChatCommandHandler::HandleNpcShowTimersCommand),          "Shows timers for selected creature" },
         {"npc vendoradditem",             "n", 1, wrap(&ChatCommandHandler::HandleNpcVendorAddItemCommand),       "Adds item to vendor" },
         {"npc vendorremoveitem",          "n", 1, wrap(&ChatCommandHandler::HandleNpcVendorRemoveItemCommand),    "Removes item from vendor." },

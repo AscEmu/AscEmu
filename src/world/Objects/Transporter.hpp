@@ -16,7 +16,7 @@ namespace MySQLStructure
 
 class SERVER_DECL Transporter : public GameObject, public TransportBase
 {
-    friend Transporter* TransportHandler::createTransport(uint32_t, WorldMap*);
+    friend Transporter* ObjectFactory::createTransporter(uint32_t, uint32_t, const LocationVector&);
     Transporter(uint64_t guid);
 
 public:
@@ -25,13 +25,21 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Essential functions
-    void OnPushToWorld() override;
+    //virtual void onPreAttachToWorld() override;
+    virtual void onAttachToWorld() override;
+
+    virtual void onPreDetachFromWorld() override;
+    //virtual void onDetachFromWorld() override;
 
     // Creates The Transporter
     bool Create(uint32_t entry, uint32_t mapid, float x, float y, float z, float ang, uint8_t animprogress);
 
     // Update Transporter Position and Transport Passengers
     void Update(unsigned long /*time_passed*/);
+    void delayedUpdate(unsigned long /*time_passed*/);
+
+    void setLastUpdate(std::chrono::steady_clock::time_point tp) { lastUpdate_ = tp; }
+    auto getLastUpdate() const { return lastUpdate_; }
 
     // Populate Transporters with Creatures and Gameobjects
     void LoadStaticPassengers();
@@ -39,8 +47,12 @@ public:
     // Remove Creatures and Gameobjects from Transporter
     void UnloadStaticPassengers();
 
-    // Add Passenger to Transporter
-    void AddPassenger(Player* passenger);
+    // Add a dynamic passenger using transport-local coordinates.
+    void AddPassenger(Object* passenger, const LocationVector& transportOffset);
+
+    // Restore the transport relationship after a cross-map player teleport without
+    // firing board/disembark script hooks a second time.
+    void RestorePassengerAfterTeleport(Object* passenger, const LocationVector& transportOffset);
 
     // Remove Passenger from Transporter ( could be an Creature or Gameobject or even a Player)
     void RemovePassenger(Object* passenger);
@@ -50,7 +62,6 @@ public:
     GameObject* createGOPassenger(MySQLStructure::GameobjectSpawn* data);
 
     // Build Update for Player
-    uint32_t buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target) override;
     void UpdateForMap(WorldMap* map);
 
     // Removes transport from map
@@ -80,6 +91,9 @@ public:
 
     void delayedTeleportTransport();
 
+    // Helper to Port Players
+    void TeleportPlayers(float x, float y, float z, float o, uint32_t newMapId, uint32_t oldMapId, bool newMap, WorldMap* targetMap = nullptr);
+
     bool isTransporter() const override { return true; }
 
 private:
@@ -88,9 +102,6 @@ private:
 
     // Occours when Transport reaches Teleport Frame
     bool TeleportTransport(uint32_t newMapId, float x, float y, float z, float o);
-
-    // Helper to Port Players
-    void TeleportPlayers(float x, float y, float z, float o, uint32_t newMapId, uint32_t oldMapId, bool newMap);
 
     // Update all Passenger Positions
     void UpdatePassengerPositions(PassengerSet& passengers);
@@ -105,9 +116,6 @@ private:
     void SetMoving(bool val) { _isMoving = val; }
 
     bool _delayedAddModel = false;
-    bool _delayedMapRemove = false;
-
-    WorldMap* _delayedTransportFromMap = nullptr;
 
     TransportTemplate const* _transportInfo = nullptr;
 
@@ -115,7 +123,6 @@ private:
     KeyFrameVec::const_iterator _nextFrame;
     bool _isMoving = true;
     bool _pendingStop = false;
-    bool _pendingMapChange = false;
 
     // These are needed to properly control events triggering only once for each frame
     bool _triggeredArrivalEvent = false;
@@ -125,10 +132,11 @@ private:
     PassengerSet::iterator _passengerTeleportItr;
     PassengerSet _staticPassengers;
 
-    int32_t _delayedMapRemoveTimer = 100;
     int32_t _positionChangeTimer = 100;
     int32_t _mapUpdateTimer = 0;
 
     uint32_t positionUpdateDelay = 100;
     bool _delayedTeleport = false;
+
+    std::chrono::steady_clock::time_point lastUpdate_{ std::chrono::steady_clock::now() };
 };

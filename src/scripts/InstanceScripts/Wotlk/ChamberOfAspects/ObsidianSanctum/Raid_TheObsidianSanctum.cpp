@@ -12,11 +12,12 @@ This file is released under the MIT license. See README-MIT for more information
 class ObsidianSanctumScript : public InstanceScript
 {
 public:
-    uint32_t m_creatureGuid[OS_DATA_END];
+    WoWGuid m_creatureGuid[OS_DATA_END];
 
     explicit ObsidianSanctumScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
     {
-        memset(m_creatureGuid, 0, sizeof(m_creatureGuid));
+        for (auto& guid : m_creatureGuid)
+            guid.clear();
     }
 
     static InstanceScript* Create(WorldMap* pMapMgr) { return new ObsidianSanctumScript(pMapMgr); }
@@ -26,16 +27,16 @@ public:
         switch (pCreature->getEntry())
         {
             case CN_DRAKE_TENEBRON:
-                m_creatureGuid[DRAKE_TENEBRON] = pCreature->getGuidLow();
+                m_creatureGuid[DRAKE_TENEBRON] = pCreature->GetNewGUID();
                 break;
             case CN_DRAKE_VESPERON:
-                m_creatureGuid[DRAKE_VESPERON] = pCreature->getGuidLow();
+                m_creatureGuid[DRAKE_VESPERON] = pCreature->GetNewGUID();
                 break;
             case CN_DRAKE_SHADRON:
-                m_creatureGuid[DRAKE_SHADRON] = pCreature->getGuidLow();
+                m_creatureGuid[DRAKE_SHADRON] = pCreature->GetNewGUID();
                 break;
             case CN_SARTHARION:
-                m_creatureGuid[BOSS_SARTHARION] = pCreature->getGuidLow();
+                m_creatureGuid[BOSS_SARTHARION] = pCreature->GetNewGUID();
                 break;
             default:
                 break;
@@ -85,7 +86,7 @@ public:
         if (pData >= OS_DATA_END)   // impossible tho
             return NULL;
 
-        return GetCreatureByGuid(m_creatureGuid[pData]);
+        return getCreatureByGuid(m_creatureGuid[pData]);
     }
 };
 

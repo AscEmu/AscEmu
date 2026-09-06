@@ -14,7 +14,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Loot/LootRoll.hpp"
 #include "Objects/Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/Cells/MapCell.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Pet.h"
@@ -189,8 +188,8 @@ Creature::~Creature()
         _myScriptClass = nullptr;
     }
 
-    if (m_respawnCell)
-        m_respawnCell->_respawnObjects.erase(this);
+    delete m_spawn;
+    m_spawn = nullptr;
 
     if (m_escorter)
         m_escorter = nullptr;
@@ -485,16 +484,19 @@ void Creature::setDeathState(DeathState s)
         // Respawn Handling
         const auto now = Util::getTimeNow();
 
+        const bool isRaidBoss = getWorldMap()->getBaseMap()->isRaid() && creature_properties->isBoss;
+        const bool canRespawn = !isRaidBoss && !m_noRespawn && (m_respawnDelay > 0);
+
+        // Calculate Respawn Times
         m_corpseRemoveTime = now + m_corpseDelay;
+        m_respawnTime = 0;
 
-        uint32_t respawnDelay = m_respawnDelay;
-
-        if (isDungeonBoss() && !m_respawnDelay)
-            m_respawnTime = std::numeric_limits<time_t>::max(); // never respawn in this instance
-        else
-            m_respawnTime = now + respawnDelay + m_corpseDelay;
-
-        saveRespawnTime();
+        // Schedule Respawn
+        if (canRespawn)
+        {
+            m_respawnTime = now + m_respawnDelay + m_corpseDelay;
+            getWorldMap()->getSpawnManager().addRespawnForCreature(this);
+        }
 
         setTargetGuid(0);
 
@@ -554,34 +556,27 @@ void Creature::setDeathState(DeathState s)
 
         removeUnitStateFlag(UNIT_STATE_ALL_ERASABLE);
 
-        OnRespawn(getWorldMap());
+        OnRespawn();
 
         motion_Initialize();
         Unit::setDeathState(ALIVE);
     }
 }
 
-void Creature::addToInRangeObjects(Object* pObj)
-{
-    Unit::addToInRangeObjects(pObj);
-}
-
 void Creature::onRemoveInRangeObject(Object* pObj)
 {
+    if (!pObj)
+        return;
+
     if (m_escorter == pObj)
     {
         stopMoving();
 
         m_escorter = nullptr;
-        Despawn(1000, 1000);
+        despawn(1000, 1000);
     }
 
     Unit::onRemoveInRangeObject(pObj);
-}
-
-void Creature::clearInRangeSets()
-{
-    Unit::clearInRangeSets();
 }
 
 //! brief: used to generate gossip menu based on db values from table gossip_menu, gossip_menu_item and gossip_menu_option. WIP.
@@ -855,11 +850,6 @@ void Creature::Update(unsigned long time_passed)
     // Update DeathState
     switch (m_deathState)
     {
-        case DEAD:
-        {
-            if (m_respawnTime <= now)
-                respawn();
-        } break;
         case CORPSE:
         {
             if (m_corpseRemoveTime <= now)
@@ -868,21 +858,6 @@ void Creature::Update(unsigned long time_passed)
         default:
             break;
     }
-}
-
-void Creature::SafeDelete()
-{
-    sEventMgr.RemoveEvents(this);
-
-    delete this;
-}
-
-void Creature::DeleteMe()
-{
-    if (IsInWorld())
-        RemoveFromWorld(false, true);
-    else
-        SafeDelete();
 }
 
 void Creature::OnRemoveCorpse()
@@ -907,17 +882,7 @@ void Creature::OnRemoveCorpse()
 
         getMovementManager()->clear();
 
-        if ((getWorldMap()->getBaseMap()->isRaid() && creature_properties->isBoss) || m_noRespawn)
-        {
-            RemoveFromWorld(false, true);
-        }
-        else
-        {
-            if (m_respawnTime)
-                RemoveFromWorld(true, false);
-            else
-                RemoveFromWorld(false, true);
-        }
+        getWorldMap()->getSpawnManager().despawnAt(getGuid(), m_respawnTime);
     }
     else
     {
@@ -925,7 +890,7 @@ void Creature::OnRemoveCorpse()
     }
 }
 
-void Creature::OnRespawn(WorldMap* m)
+void Creature::OnRespawn()
 {
     if (m_noRespawn)
         return;
@@ -937,28 +902,52 @@ void Creature::OnRespawn(WorldMap* m)
     getMovementManager()->clear();
 
     sLogger.info("Respawning {}...", std::to_string(getGuid()));
+    
+    auto minlevel = std::min(GetCreatureProperties()->MaxLevel, GetCreatureProperties()->MinLevel);
+    auto maxlevel = std::max(GetCreatureProperties()->MaxLevel, GetCreatureProperties()->MinLevel);
+    auto level = minlevel == maxlevel ? minlevel : Util::getRandomUInt(minlevel, maxlevel);
+    setLevel(level);
     setHealth(getMaxHealth());
+    uint32_t displayID = getNativeDisplayId();
+    uint8_t gender = GetCreatureProperties()->generateRandomDisplayIdAndReturnGender(&displayID);
 
-    if (m_spawn)
+    setGender(gender);
+    setDisplayId(displayID);
+    setNativeDisplayId(displayID);
+
+    m_respawnTime = 0;
+
+    MySQLStructure::CreatureSpawn spawnTemplate{};
+    if (getWorldMap()->getSpawnManager().getCreatureSpawnTemplate(GetNewGUID().getRawGuid(), spawnTemplate))
     {
         setNpcFlags(creature_properties->NPCFLags);
-        setEmoteState(m_spawn->emote_state);
+        setEmoteState(spawnTemplate.emote_state);
 
-        // creature's death state
-        if (m_spawn->death_state == CREATURE_STATE_APPEAR_DEAD)
+        // Restore the configured spawn death state for both DB-backed and ephemeral spawns.
+        if (spawnTemplate.death_state == CREATURE_STATE_APPEAR_DEAD)
         {
             m_limbostate = true;
             setDeathState(ALIVE);   // we are not actually dead, we just appear dead
             setDynamicFlags(U_DYN_FLAG_DEAD);
         }
-        else if (m_spawn->death_state == CREATURE_STATE_DEAD)
+        else if (spawnTemplate.death_state == CREATURE_STATE_DEAD)
         {
             setHealth(0);
             m_limbostate = true;
             setDeathState(CORPSE);
         }
         else
+        {
+            m_limbostate = false;
             setDeathState(ALIVE);
+        }
+    }
+    else
+    {
+        // Managed creatures should always have a SpawnState. Keep the runtime instance
+        // usable even if lifecycle metadata is unexpectedly unavailable.
+        m_limbostate = false;
+        setDeathState(ALIVE);
     }
 
     removeUnitFlags(UNIT_FLAG_SKINNABLE);
@@ -966,6 +955,7 @@ void Creature::OnRespawn(WorldMap* m)
     setTaggerGuid(nullptr);
 
     //empty loot
+    loot.clear();
     loot.items.clear();
 
     // Init Movement Handlers
@@ -980,7 +970,41 @@ void Creature::OnRespawn(WorldMap* m)
 #endif
 
     m_PickPocketed = false;
-    PushToWorld(m);
+
+    // Respawn can happen while nearby players/NPCs are completely still. Re-arm
+    // the one-shot awareness warmup and notify nearby observers that this unit
+    // became relevant again.
+    getAIInterface()->armAwarenessWarmup();
+    if (IsInWorld() && getWorldMap())
+        getWorldMap()->queueUnitAwareness(this, UnitAwarenessSignal::Respawned);
+}
+
+void Creature::despawn(uint32_t delayMs, uint32_t respawnDelayMs)
+{
+    if (delayMs)
+    {
+        sEventMgr.AddEvent(this, &Creature::despawn, uint32_t(0), respawnDelayMs, EVENT_CREATURE_RESPAWN, delayMs, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        return;
+    }
+
+    PrepareForRemove();
+
+    if (!IsInWorld())
+        return;
+
+    if (GetScript())
+        GetScript()->OnDespawn();
+
+    if (respawnDelayMs && !m_noRespawn)
+    {
+        sEventMgr.RemoveEvents(this);
+        m_position = m_spawnLocation;
+        getWorldMap()->getSpawnManager().despawn(getGuid(), respawnDelayMs);
+    }
+    else
+    {
+        getWorldMap()->getSpawnManager().despawn(getGuid(), 0);
+    }
 }
 
 void Creature::Create(uint32_t mapid, float x, float y, float z, float ang)
@@ -998,112 +1022,114 @@ void Creature::CreateWayPoint(uint32_t /*WayPointID*/, uint32_t mapid, float x, 
 
 void Creature::SaveToDB()
 {
-    if (m_spawn == NULL)
+    const bool firstSave = (m_spawn == nullptr);
+
+    if (firstSave)
     {
-        m_spawn = new MySQLStructure::CreatureSpawn;
+        m_spawn = new MySQLStructure::CreatureSpawn{};
         m_spawn->entry = getEntry();
-        m_spawn->id = spawnid = sObjectMgr.generateCreatureSpawnId();
-        m_spawn->movetype = getDefaultMovementType();
-        m_spawn->displayid = getDisplayId();
-        m_spawn->x = m_position.x;
-        m_spawn->y = m_position.y;
-        m_spawn->z = m_position.z;
-        m_spawn->o = m_position.o;
-        m_spawn->emote_state = getEmoteState();
-        m_spawn->flags = getUnitFlags();
-        m_spawn->pvp_flagged = isPvpFlagSet() ? 1 : 0;
-        m_spawn->factionid = getFactionTemplate();
-        m_spawn->bytes0 = getBytes0();
-        m_spawn->stand_state = getStandState();
-        m_spawn->death_state = 0;
+        m_spawn->id = (m_spawnId && !SpawnManager::isEphemeralSpawnId(m_spawnId))
+            ? m_spawnId
+            : sObjectMgr.generateCreatureSpawnId();
+        m_spawnId = m_spawn->id;
+        m_spawn->mapId = GetMapId();
+        m_spawn->spawnPoint = m_position;
         m_spawn->channel_target_creature = 0;
         m_spawn->channel_target_go = 0;
         m_spawn->channel_spell = 0;
-        m_spawn->MountedDisplayID = getMountDisplayId();
-        m_spawn->sheath_state = getSheathType();
+        m_spawn->death_state = 0;
+        m_spawn->wander_distance = 0;
+        m_spawn->waypoint_id = 0;
+        m_spawn->origine = "creature_spawns";
+    }
+    else if (SpawnManager::isEphemeralSpawnId(m_spawn->id))
+    {
+        // A row/template already exists, but this is the first DB persistence.
+        // Keep its existing home position and metadata; only migrate the id.
+        m_spawn->id = m_spawnId = sObjectMgr.generateCreatureSpawnId();
+        m_spawn->origine = "creature_spawns";
+    }
+
+    if (m_spawn->origine.empty())
+        m_spawn->origine = "creature_spawns";
+
+    // Runtime-editable spawn properties are refreshed on every save. The home position
+    // and persistent-only metadata above are intentionally kept from m_spawn once it exists.
+    m_spawn->entry = getEntry();
+    m_spawn->mapId = GetMapId();
+    m_spawn->movetype = getDefaultMovementType();
+    m_spawn->displayid = getDisplayId();
+    m_spawn->emote_state = getEmoteState();
+    m_spawn->flags = getUnitFlags();
+    m_spawn->pvp_flagged = isPvpFlagSet() ? 1 : 0;
+    m_spawn->factionid = getFactionTemplate();
+    m_spawn->bytes0 = getBytes0();
+    m_spawn->stand_state = getStandState();
+    m_spawn->MountedDisplayID = getMountDisplayId();
+    m_spawn->sheath_state = getSheathType();
 
 #if VERSION_STRING < WotLK
-        m_spawn->Item1SlotEntry = getVirtualItemEntry(MELEE);
-        m_spawn->Item2SlotEntry = getVirtualItemEntry(OFFHAND);
-        m_spawn->Item3SlotEntry = getVirtualItemEntry(RANGED);
+    m_spawn->Item1SlotEntry = getVirtualItemEntry(MELEE);
+    m_spawn->Item2SlotEntry = getVirtualItemEntry(OFFHAND);
+    m_spawn->Item3SlotEntry = getVirtualItemEntry(RANGED);
 #else
-        m_spawn->Item1SlotEntry = getVirtualItemSlotId(MELEE);
-        m_spawn->Item2SlotEntry = getVirtualItemSlotId(OFFHAND);
-        m_spawn->Item3SlotEntry = getVirtualItemSlotId(RANGED);
+    m_spawn->Item1SlotEntry = getVirtualItemSlotId(MELEE);
+    m_spawn->Item2SlotEntry = getVirtualItemSlotId(OFFHAND);
+    m_spawn->Item3SlotEntry = getVirtualItemSlotId(RANGED);
 #endif
 
-        if (IsFlying())
-            m_spawn->CanFly = 1;
-        else
-            m_spawn->CanFly = 0;
-
-        m_spawn->phase = m_phase;
-
-        uint32_t x = getWorldMap()->getPosX(GetPositionX());
-        uint32_t y = getWorldMap()->getPosY(GetPositionY());
-
-        // Add spawn to map
-        getWorldMap()->getBaseMap()->getSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(m_spawn);
-    }
+    m_spawn->CanFly = IsFlying() ? 1 : 0;
+    m_spawn->phase = m_phase;
 
     std::stringstream ss;
 
-    ss << "DELETE FROM " << m_spawn->origine << " WHERE id = ";
-    ss << spawnid;
-    ss << " AND min_build <= ";
-    ss << VERSION_STRING;
-    ss << " AND max_build >= ";
-    ss << VERSION_STRING;
-    ss << ";";
+    ss << "DELETE FROM " << m_spawn->origine << " WHERE id = "
+       << m_spawnId
+       << " AND min_build <= " << VERSION_STRING
+       << " AND max_build >= " << VERSION_STRING
+       << ";";
 
     WorldDatabase.execute(ss.str().c_str());
-
     ss.rdbuf()->str("");
 
     ss << "INSERT INTO " << m_spawn->origine << " VALUES("
-        << spawnid << ","
+        << m_spawnId << ","
         << VERSION_STRING << ","
         << VERSION_STRING << ","
-        << getEntry() << ","
-        << GetMapId() << ","
-        << m_position.x << ","
-        << m_position.y << ","
-        << m_position.z << ","
-        << m_position.o << ","
-        << static_cast<uint32_t>(getDefaultMovementType()) << ","
-        << getDisplayId() << ","
-        << getFactionTemplate() << ","
-        << getUnitFlags() << ","
-        << (isPvpFlagSet() ? "1" : "0") << ","
-        << getBytes0() << ","
-        << getEmoteState() << ",0,";
-
-    ss << m_spawn->channel_spell << ","
+        << m_spawn->entry << ","
+        << m_spawn->mapId << ","
+        << m_spawn->spawnPoint.x << ","
+        << m_spawn->spawnPoint.y << ","
+        << m_spawn->spawnPoint.z << ","
+        << m_spawn->spawnPoint.o << ","
+        << static_cast<uint32_t>(m_spawn->movetype) << ","
+        << m_spawn->displayid << ","
+        << m_spawn->factionid << ","
+        << m_spawn->flags << ","
+        << static_cast<uint32_t>(m_spawn->pvp_flagged) << ","
+        << m_spawn->bytes0 << ","
+        << m_spawn->emote_state << ",0,"
+        << m_spawn->channel_spell << ","
         << m_spawn->channel_target_go << ","
-        << m_spawn->channel_target_creature << ",";
-
-    ss << uint32_t(getStandState()) << ",";
-
-    ss << m_spawn->death_state << ",";
-
-    ss << getMountDisplayId() << ","
-        << std::to_string(getSheathType()) << ","
+        << m_spawn->channel_target_creature << ","
+        << static_cast<uint32_t>(m_spawn->stand_state) << ","
+        << m_spawn->death_state << ","
+        << m_spawn->MountedDisplayID << ","
+        << static_cast<uint32_t>(m_spawn->sheath_state) << ","
         << m_spawn->Item1SlotEntry << ","
         << m_spawn->Item2SlotEntry << ","
-        << m_spawn->Item3SlotEntry << ",";
-
-    if (IsFlying())
-        ss << 1 << ",";
-    else
-        ss << 0 << ",";
-
-    ss << m_phase << ","
-        << "0"  // event_entry
-        << ",0"  // wander distance
-        << ",0" // waypoint_group
+        << m_spawn->Item3SlotEntry << ","
+        << m_spawn->CanFly << ","
+        << m_spawn->phase << ","
+        << "0,"  // event_entry
+        << m_spawn->wander_distance << ","
+        << m_spawn->waypoint_id
         << ")";
 
     WorldDatabase.execute(ss.str().c_str());
+
+    if (getWorldMap())
+        getWorldMap()->getSpawnManager().registerPersistentCreature(this, *m_spawn);
 }
 
 void Creature::LoadScript()
@@ -1113,10 +1139,10 @@ void Creature::LoadScript()
 
 void Creature::DeleteFromDB()
 {
-    if (!GetSQL_id())
+    if (!m_spawn || !getSpawnId())
         return;
 
-    WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u", m_spawn->origine.c_str(), GetSQL_id(), VERSION_STRING, VERSION_STRING);
+    WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u", m_spawn->origine.c_str(), getSpawnId(), VERSION_STRING, VERSION_STRING);
 }
 
 
@@ -1219,77 +1245,146 @@ bool Creature::HasQuest(uint32_t id, uint32_t type)
     return false;
 }
 
-void Creature::AddToWorld()
+void Creature::onPreAttachToWorld()
 {
-    // force set faction
-    if (m_factionTemplate == NULL || m_factionEntry == NULL)
+    if (m_factionTemplate == nullptr || m_factionEntry == nullptr)
         setServersideFaction();
 
     if (creature_properties == nullptr)
         creature_properties = sMySQLStore.getCreatureProperties(getEntry());
+    if (!creature_properties) return;
 
-    if (creature_properties == nullptr)
+    if (m_factionTemplate == nullptr || m_factionEntry == nullptr)
         return;
 
-    if (m_factionTemplate == NULL || m_factionEntry == NULL)
-        return;
-
-    Object::AddToWorld();
-    searchFormation();   
-    motion_Initialize();
     immediateMovementFlagsUpdate();
 
     if (getMovementTemplate().isRooted())
         setControlled(true, UNIT_STATE_ROOTED);
+
+    Unit::onPreAttachToWorld();
 }
 
-void Creature::AddToWorld(WorldMap* pMapMgr)
+void Creature::onAttachToWorld()
 {
-    // force set faction
-    if (m_factionTemplate == NULL || m_factionEntry == NULL)
-        setServersideFaction();
-
     if (creature_properties == nullptr)
-        creature_properties = sMySQLStore.getCreatureProperties(getEntry());
-
-    if (creature_properties == nullptr)
+    {
+        sLogger.failure("Something tried to push Creature with entry {} with invalid creature_properties!", getEntry());
         return;
+    }
 
-    if (m_factionTemplate == NULL || m_factionEntry == NULL)
-        return;
-
-    Object::AddToWorld(pMapMgr);
     searchFormation();
     motion_Initialize();
     immediateMovementFlagsUpdate();
 
     if (getMovementTemplate().isRooted())
         setControlled(true, UNIT_STATE_ROOTED);
+
+    OnLoaded();
+
+    // Send initial power regen modifiers
+    // TODO: missing mana regen update for creatures
+    //updateManaRegeneration(true);
+    updateFocusRegeneration(true);
+    updateEnergyRegeneration(true);
+
+    std::set<uint32_t>::iterator itr = creature_properties->start_auras.begin();
+    for (; itr != creature_properties->start_auras.end(); ++itr)
+    {
+        SpellInfo const* sp = sSpellMgr.getSpellInfo((*itr));
+        if (sp == nullptr)
+            continue;
+
+        castSpell(this, sp, 0);
+    }
+
+    if (!sScriptMgr.has_creature_gossip(getEntry()))
+        registerDatabaseGossip();
+
+    if (GetScript() == NULL)
+    {
+        LoadScript();
+    }
+
+    if (_myScriptClass)
+    {
+        _myScriptClass->OnLoad();
+        _myScriptClass->InitOrReset();
+    }
+
+    MySQLStructure::CreatureSpawn spawnTemplate{};
+    if (m_WorldMap && m_WorldMap->getSpawnManager().getCreatureSpawnTemplate(getGuid(), spawnTemplate))
+    {
+        if (spawnTemplate.channel_target_creature)
+            sEventMgr.AddEvent(this, &Creature::ChannelLinkUpCreature, spawnTemplate.channel_target_creature, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);    // only 5 attempts
+
+        if (spawnTemplate.channel_target_go)
+            sEventMgr.AddEvent(this, &Creature::ChannelLinkUpGO, spawnTemplate.channel_target_go, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);    // only 5 attempts
+    }
+
+    if (m_WorldMap)
+        m_aiInterface->m_is_in_instance = (!m_WorldMap->getBaseMap()->isWorldMap()) ? true : false;
+    else
+        m_aiInterface->m_is_in_instance = false;
+
+    if (this->HasItems())
+    {
+        for (std::vector<CreatureItem>::iterator itr2 = m_SellItems->begin(); itr2 != m_SellItems->end(); ++itr2)
+        {
+            if (itr2->max_amount == 0)
+                itr2->available_amount = 0;
+            else if (itr2->available_amount < itr2->max_amount)
+                sEventMgr.AddEvent(this, &Creature::UpdateItemAmount, itr2->itemid, EVENT_ITEM_UPDATE, vendorItemsUpdate, 1, 0);
+        }
+
+    }
+
+    getAIInterface()->setCreatureProtoDifficulty(creature_properties->Id);
+
+    if (mEvent != nullptr)
+    {
+        if (mEvent->mEventScript != nullptr)
+            mEvent->mEventScript->OnCreaturePushToWorld(mEvent, this);
+    }
+
+    if (m_WorldMap && m_WorldMap->getScript())
+    {
+        m_WorldMap->getScript()->OnCreaturePushToWorld(this);
+    }
+
+    Unit::onAttachToWorld();
+
+    // Normal DB creatures preserve the old core's roughly 1.5s delayed first
+    // target check, but only once. Encounter scripts can call
+    // setAwarenessWarmup(0) during OnLoad/InitOrReset for immediate behavior.
+    getAIInterface()->armAwarenessWarmup();
+    if (m_WorldMap)
+        m_WorldMap->queueUnitAwareness(this, UnitAwarenessSignal::EnteredWorld);
+}
+
+void Creature::onPreDetachFromWorld()
+{
+    PrepareForRemove();
+
+    Unit::onPreDetachFromWorld();
+}
+
+void Creature::onDetachFromWorld()
+{
+    sEventMgr.RemoveEvents(this);
+
+    Unit::onDetachFromWorld();
 }
 
 bool Creature::CanAddToWorld()
 {
-    if (m_factionEntry == NULL || m_factionTemplate == NULL)
+    if (m_factionEntry == nullptr || m_factionTemplate == nullptr)
         setServersideFaction();
 
-    if (m_factionTemplate == NULL || m_factionEntry == NULL || creature_properties == nullptr)
+    if (m_factionTemplate == nullptr || m_factionEntry == nullptr || creature_properties == nullptr)
         return false;
 
     return true;
-}
-
-void Creature::RemoveFromWorld(bool addrespawnevent, bool /*free_guid*/)
-{
-    if (addrespawnevent && m_respawnTime > 0)
-        despawn(0);
-    else
-        Despawn(0, 0);
-}
-
-void Creature::RemoveFromWorld(bool free_guid)
-{
-    PrepareForRemove();
-    Unit::RemoveFromWorld(free_guid);
 }
 
 void Creature::EnslaveExpire()
@@ -1298,7 +1393,7 @@ void Creature::EnslaveExpire()
 
     uint64_t charmer = getCharmedByGuid();
 
-    Player* caster = sObjectMgr.getPlayer(WoWGuid::getGuidLowPartFromUInt64(charmer));
+    Player* caster = sObjectMgr.getPlayer(WoWGuid::getLowGuidFromRaw(charmer));
     if (caster)
     {
         caster->setCharmGuid(0);
@@ -1322,8 +1417,6 @@ void Creature::EnslaveExpire()
 
     getAIInterface()->Init(this);
 
-    updateInRangeOppositeFactionSet();
-    updateInRangeSameFactionSet();
 }
 
 uint32_t Creature::GetEnslaveCount()
@@ -1617,7 +1710,10 @@ void Creature::ChannelLinkUpGO(uint32_t SqlId)
     {
         event_RemoveEvents(EVENT_CREATURE_CHANNEL_LINKUP);
         setChannelObjectGuid(go->getGuid());
-        setChannelSpellId(m_spawn->channel_spell);
+
+        MySQLStructure::CreatureSpawn spawnTemplate{};
+        if (getWorldMap()->getSpawnManager().getCreatureSpawnTemplate(getGuid(), spawnTemplate))
+            setChannelSpellId(spawnTemplate.channel_spell);
     }
 }
 
@@ -1631,7 +1727,10 @@ void Creature::ChannelLinkUpCreature(uint32_t SqlId)
     {
         event_RemoveEvents(EVENT_CREATURE_CHANNEL_LINKUP);
         setChannelObjectGuid(creature->getGuid());
-        setChannelSpellId(m_spawn->channel_spell);
+
+        MySQLStructure::CreatureSpawn spawnTemplate{};
+        if (getWorldMap()->getSpawnManager().getCreatureSpawnTemplate(getGuid(), spawnTemplate))
+            setChannelSpellId(spawnTemplate.channel_spell);
     }
 }
 
@@ -1664,274 +1763,15 @@ bool Creature::teleport(const LocationVector& vec, WorldMap* map)
     if (map == nullptr)
         return false;
 
-    if (map->getCreature(this->getGuidLow()))
+    if (map->getCreature(GetNewGUID()))
     {
-        this->SetPosition(vec);
+        SetPosition(vec);
         return true;
     }
     else
     {
         return false;
     }
-}
-
-bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8_t mode, MySQLStructure::MapInfo const* info)
-{
-    m_spawn = spawn;
-    creature_properties = sMySQLStore.getCreatureProperties(spawn->entry);
-    if (creature_properties == nullptr)
-        return false;
-
-    spawnid = spawn->id;
-    m_phase = spawn->phase;
-
-    setSpeedRate(TYPE_WALK, creature_properties->walk_speed, false);
-    setSpeedRate(TYPE_RUN, creature_properties->run_speed, false);
-    setSpeedRate(TYPE_FLY, creature_properties->fly_speed, false);
-    resetCurrentSpeeds();
-
-    //Set fields
-    setEntry(creature_properties->Id);
-    setScale(creature_properties->Scale);
-
-#if VERSION_STRING > TBC
-    setHoverHeight(creature_properties->Scale);
-#endif
-
-    uint32_t health;
-    if (creature_properties->MinHealth > creature_properties->MaxHealth)
-    {
-        sLogger.failure("MinHealth is bigger than MaxHealt! Using MaxHealth value. You should fix this in creature_proto table for entry: {}!", creature_properties->Id);
-        health = creature_properties->MaxHealth - Util::getRandomUInt(10);
-    }
-    else
-    {
-        health = creature_properties->MinHealth + Util::getRandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
-    }
-
-    setMaxHealth(health);
-    setHealth(health);
-    setBaseHealth(health);
-
-    setMaxPower(POWER_TYPE_MANA, creature_properties->Mana);
-    setBaseMana(creature_properties->Mana);
-    setPower(POWER_TYPE_MANA, creature_properties->Mana);
-
-
-    setDisplayId(spawn->displayid);
-    setNativeDisplayId(spawn->displayid);
-    setMountDisplayId(spawn->MountedDisplayID);
-
-    eventModelChange();
-
-    setLevel(creature_properties->MinLevel + (Util::getRandomUInt(creature_properties->MaxLevel - creature_properties->MinLevel)));
-
-    if (mode && info)
-        setLevel(std::min(73 - getLevel(), info->lvl_mod_a));
-
-    for (uint8_t i = 0; i < 7; ++i)
-        setResistance(i, creature_properties->Resistances[i]);
-
-    setBaseAttackTime(MELEE, creature_properties->AttackTime);
-
-    setMinDamage(creature_properties->MinDamage);
-    setMaxDamage(creature_properties->MaxDamage);
-
-    setBaseAttackTime(RANGED, creature_properties->RangedAttackTime);
-    setMinRangedDamage(creature_properties->RangedMinDamage);
-    setMaxRangedDamage(creature_properties->RangedMaxDamage);
-
-    setVirtualItemSlotId(MELEE, spawn->Item1SlotEntry);
-    setVirtualItemSlotId(OFFHAND, spawn->Item2SlotEntry);
-    setVirtualItemSlotId(RANGED, spawn->Item3SlotEntry);
-
-    setFaction(spawn->factionid);
-    setUnitFlags(spawn->flags);
-    setEmoteState(spawn->emote_state);
-    setBoundingRadius(creature_properties->BoundingRadius);
-    setCombatReach(creature_properties->CombatReach);
-    original_emotestate = spawn->emote_state;
-
-#if VERSION_STRING == TBC
-    // Summons are set in Summon::load
-    if (!isSummon())
-        setPositiveAuraLimit(POS_AURA_LIMIT_CREATURE);
-#endif
-
-    // set position
-    m_position.changeCoords({ spawn->x, spawn->y, spawn->z, spawn->o });
-    m_spawnLocation.changeCoords({ spawn->x, spawn->y, spawn->z, spawn->o });
-    m_aiInterface->timed_emotes = sObjectMgr.getTimedEmoteList(spawn->id);
-
-    // not a neutral creature
-    if (!(m_factionEntry != nullptr && m_factionEntry->reputationIndex == -1 && m_factionTemplate->hostileMask == 0 && m_factionTemplate->friendlyMask == 0))
-    {
-        getAIInterface()->setCanCallForHelp(true);
-    }
-
-    getAIInterface()->initializeReactState();
-
-    // set if creature can shoot or not.
-    if (creature_properties->CanRanged == 1)
-        getAIInterface()->setRangedDisabled(false);
-    else
-        m_aiInterface->setRangedDisabled(true);
-
-    // checked at loading
-    m_defaultMovementType = MovementGeneratorType(spawn->movetype);
-
-    setMaxWanderDistance(static_cast<float_t>(spawn->wander_distance));
-    if (getMaxWanderDistance() == 0.0f && m_defaultMovementType == RANDOM_MOTION_TYPE)
-        m_defaultMovementType = IDLE_MOTION_TYPE;
-
-    _waypointPathId = spawn->waypoint_id;
-
-    //SETUP NPC FLAGS
-    setNpcFlags(creature_properties->NPCFLags);
-
-    if (isVendor())
-        m_SellItems = sObjectMgr.getVendorList(getEntry());
-
-    if (isQuestGiver())
-        _LoadQuests();
-
-    if (isTrainer() || isProfessionTrainer())
-        mTrainer = sObjectMgr.getTrainer(getEntry());
-
-    if (isAuctioneer())
-        auctionHouse = sAuctionMgr.getAuctionHouse(getEntry());
-
-    //load resistances
-    for (uint8_t x = 0; x < TOTAL_SPELL_SCHOOLS; ++x)
-        m_baseResistance[x] = getResistance(x);
-    for (uint8_t x = 0; x < STAT_COUNT; ++x)
-        m_baseStats[x] = getStat(x);
-
-    m_baseDamage[0] = getMinDamage();
-    m_baseDamage[1] = getMaxDamage();
-    m_baseOffhandDamage[0] = getMinOffhandDamage();
-    m_baseOffhandDamage[1] = getMaxOffhandDamage();
-    m_baseRangedDamage[0] = getMinRangedDamage();
-    m_baseRangedDamage[1] = getMaxRangedDamage();
-    BaseAttackType = creature_properties->attackSchool;
-
-    setModCastSpeed(1.0f);   // better set this one
-
-    // Bytes 0
-    setBytes0(spawn->bytes0);
-
-    // Bytes 1
-    setBytes1(0);
-    setStandState(spawn->stand_state);
-
-    // Bytes 2
-    setBytes2(0);
-    setSheathType(spawn->sheath_state);
-    if (spawn->pvp_flagged == 1)
-        setPvpFlag();
-
-    ////////////AI
-
-    if (isattackable(spawn))
-        getAIInterface()->setAllowedToEnterCombat(true);
-
-    //////////////AI
-
-    myFamily = sCreatureFamilyStore.lookupEntry(creature_properties->Family);
-
-
-    //HACK!
-    if (getDisplayId() == 17743 ||
-        getDisplayId() == 20242 ||
-        getDisplayId() == 15435 ||
-        (creature_properties->Family == UNIT_TYPE_MISC))
-    {
-        setAItoUse(false);
-    }
-
-    // more hacks!
-    if (creature_properties->Mana != 0)
-        setPowerType(POWER_TYPE_MANA);
-    else
-        setPowerType(0);
-
-    /*  // Dont was Used in old AIInterface left the code here if needed at other Date
-    if (creature_properties->guardtype == GUARDTYPE_CITY)
-        getAIInterface()->setGuard(true);
-    else
-        getAIInterface()->setGuard(false);*/
-
-    if (creature_properties->guardtype == GUARDTYPE_NEUTRAL)
-        getAIInterface()->setGuard(true);
-    else
-        getAIInterface()->setGuard(false);
-
-
-    // creature death state
-    if (spawn->death_state == CREATURE_STATE_APPEAR_DEAD)
-    {
-        m_limbostate = true;
-        setDynamicFlags(U_DYN_FLAG_DEAD);
-    }
-    else if (spawn->death_state == CREATURE_STATE_DEAD)
-    {
-        setHealth(0);
-        m_limbostate = true;
-        setDeathState(CORPSE);
-    }
-
-    m_aiInterface->eventAiInterfaceParamsetFinish();
-
-    this->m_position.x = spawn->x;
-    this->m_position.y = spawn->y;
-    this->m_position.z = spawn->z;
-    this->m_position.o = spawn->o;
-
-    // Set spell immunities
-    if (creature_properties->modImmunities != 0)
-    {
-        const auto immunityMask = static_cast<SpellImmunityMask>(creature_properties->modImmunities);
-        addSpellImmunity(immunityMask, true);
-    }
-
-#ifdef FT_VEHICLES
-    if (isVehicle())
-    {
-        createVehicleKit(creature_properties->vehicleid, creature_properties->Id);
-        addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
-        setAItoUse(false);
-    }
-#endif
-
-    if (getMovementTemplate().isRooted())
-        setControlled(true, UNIT_STATE_ROOTED);
-
-    // Respawn
-    m_respawnDelay = creature_properties->RespawnTime / IN_MILLISECONDS;
-
-    if (isDungeonBoss())
-        m_respawnDelay = 0; // special value, prevents respawn for dungeon bosses unless overridden
-
-    switch (this->creature_properties->Rank)
-    {
-        case ELITE_ELITE:
-            m_corpseDelay = worldConfig.corpseDecay.eliteTimeInSeconds;
-            break;
-        case ELITE_RAREELITE:
-            m_corpseDelay = worldConfig.corpseDecay.rareEliteTimeInSeconds;
-            break;
-        case ELITE_WORLDBOSS:
-            m_corpseDelay = worldConfig.corpseDecay.worldbossTimeInSeconds;
-            break;
-        case ELITE_RARE:
-            m_corpseDelay = worldConfig.corpseDecay.rareTimeInSeconds;
-            break;
-        default:
-            m_corpseDelay = worldConfig.corpseDecay.normalTimeInSeconds;
-            break;
-    }
-
-    return true;
 }
 
 void Creature::Load(CreatureProperties const* properties_, float x, float y, float z, float o)
@@ -2112,307 +1952,319 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     // Respawn
     m_respawnDelay = creature_properties->RespawnTime / IN_MILLISECONDS;
 
+    // Default 5 min if Database lacks info
+    if (!m_respawnDelay)
+        m_respawnDelay = 300;
+
     if (isDungeonBoss())
         m_respawnDelay = 0; // special value, prevents respawn for dungeon bosses unless overridden
 
     switch (this->creature_properties->Rank)
     {
-        case ELITE_ELITE:
-            m_corpseDelay = worldConfig.corpseDecay.eliteTimeInSeconds;
-            break;
-        case ELITE_RAREELITE:
-            m_corpseDelay = worldConfig.corpseDecay.rareEliteTimeInSeconds;
-            break;
-        case ELITE_WORLDBOSS:
-            m_corpseDelay = worldConfig.corpseDecay.worldbossTimeInSeconds;
-            break;
-        case ELITE_RARE:
-            m_corpseDelay = worldConfig.corpseDecay.rareTimeInSeconds;
-            break;
-        default:
-            m_corpseDelay = worldConfig.corpseDecay.normalTimeInSeconds;
-            break;
+    case ELITE_ELITE:
+        m_corpseDelay = worldConfig.corpseDecay.eliteTimeInSeconds;
+        break;
+    case ELITE_RAREELITE:
+        m_corpseDelay = worldConfig.corpseDecay.rareEliteTimeInSeconds;
+        break;
+    case ELITE_WORLDBOSS:
+        m_corpseDelay = worldConfig.corpseDecay.worldbossTimeInSeconds;
+        break;
+    case ELITE_RARE:
+        m_corpseDelay = worldConfig.corpseDecay.rareTimeInSeconds;
+        break;
+    default:
+        m_corpseDelay = worldConfig.corpseDecay.normalTimeInSeconds;
+        break;
     }
+}
+
+bool Creature::LoadFromDB(MySQLStructure::CreatureSpawn* spawn, WorldMap* map, bool addToWorld)
+{
+    if (!spawn)
+    {
+        sLogger.failure("Creature (spawnId: {}) not found in table gameobject_spawns, cant load.");
+        return false;
+    }
+
+    if (!map || !map->getBaseMap())
+    {
+        sLogger.failure("Creature (spawnId: {}) invalid WorldMap or base data Invalid, cant load.");
+        return false;
+    }
+
+    auto* ownedSpawn = new MySQLStructure::CreatureSpawn(*spawn);
+
+    m_loadedFromDB = true;
+    creature_properties = sMySQLStore.getCreatureProperties(ownedSpawn->entry);
+    if (creature_properties == nullptr)
+    {
+        delete ownedSpawn;
+        return false;
+    }
+
+    delete m_spawn;
+    m_spawn = ownedSpawn;
+
+    m_spawnId = m_spawn->id;
+    m_phase = m_spawn->phase;
+
+    setSpeedRate(TYPE_WALK, creature_properties->walk_speed, false);
+    setSpeedRate(TYPE_RUN, creature_properties->run_speed, false);
+    setSpeedRate(TYPE_FLY, creature_properties->fly_speed, false);
+    resetCurrentSpeeds();
+
+    //Set fields
+    setEntry(creature_properties->Id);
+    setScale(creature_properties->Scale);
+
+#if VERSION_STRING > TBC
+    setHoverHeight(creature_properties->Scale);
+#endif
+
+    uint32_t health;
+    if (creature_properties->MinHealth > creature_properties->MaxHealth)
+    {
+        sLogger.failure("MinHealth is bigger than MaxHealt! Using MaxHealth value. You should fix this in creature_proto table for entry: {}!", creature_properties->Id);
+        health = creature_properties->MaxHealth - Util::getRandomUInt(10);
+    }
+    else
+    {
+        health = creature_properties->MinHealth + Util::getRandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
+    }
+
+    setMaxHealth(health);
+    setHealth(health);
+    setBaseHealth(health);
+
+    setMaxPower(POWER_TYPE_MANA, creature_properties->Mana);
+    setBaseMana(creature_properties->Mana);
+    setPower(POWER_TYPE_MANA, creature_properties->Mana);
+
+
+    setDisplayId(spawn->displayid);
+    setNativeDisplayId(spawn->displayid);
+    setMountDisplayId(spawn->MountedDisplayID);
+
+    eventModelChange();
+
+    setLevel(creature_properties->MinLevel + (Util::getRandomUInt(creature_properties->MaxLevel - creature_properties->MinLevel)));
+
+    const MySQLStructure::MapInfo* mi = map->getBaseMap()->getMapInfo();
+
+    if (map->getDifficulty() && mi)
+        setLevel(std::min(73 - getLevel(), mi->lvl_mod_a));
+
+    for (uint8_t i = 0; i < 7; ++i)
+        setResistance(i, creature_properties->Resistances[i]);
+
+    setBaseAttackTime(MELEE, creature_properties->AttackTime);
+
+    setMinDamage(creature_properties->MinDamage);
+    setMaxDamage(creature_properties->MaxDamage);
+
+    setBaseAttackTime(RANGED, creature_properties->RangedAttackTime);
+    setMinRangedDamage(creature_properties->RangedMinDamage);
+    setMaxRangedDamage(creature_properties->RangedMaxDamage);
+
+    setVirtualItemSlotId(MELEE, spawn->Item1SlotEntry);
+    setVirtualItemSlotId(OFFHAND, spawn->Item2SlotEntry);
+    setVirtualItemSlotId(RANGED, spawn->Item3SlotEntry);
+
+    setFaction(spawn->factionid);
+    setUnitFlags(spawn->flags);
+    setEmoteState(spawn->emote_state);
+    setBoundingRadius(creature_properties->BoundingRadius);
+    setCombatReach(creature_properties->CombatReach);
+    original_emotestate = spawn->emote_state;
+
+#if VERSION_STRING == TBC
+    // Summons are set in Summon::load
+    if (!isSummon())
+        setPositiveAuraLimit(POS_AURA_LIMIT_CREATURE);
+#endif
+
+    // set position
+    m_position.changeCoords(spawn->spawnPoint);
+    m_spawnLocation.changeCoords(spawn->spawnPoint);
+    m_aiInterface->timed_emotes = sObjectMgr.getTimedEmoteList(spawn->id);
+
+    // not a neutral creature
+    if (m_factionEntry && !(m_factionEntry->reputationIndex == -1 && m_factionTemplate->hostileMask == 0 && m_factionTemplate->friendlyMask == 0))
+    {
+        getAIInterface()->setCanCallForHelp(true);
+    }
+
+    getAIInterface()->initializeReactState();
+
+    // set if creature can shoot or not.
+    if (creature_properties->CanRanged == 1)
+        getAIInterface()->setRangedDisabled(false);
+    else
+        m_aiInterface->setRangedDisabled(true);
+
+    // checked at loading
+    m_defaultMovementType = MovementGeneratorType(spawn->movetype);
+
+    setMaxWanderDistance(static_cast<float_t>(spawn->wander_distance));
+    if (getMaxWanderDistance() == 0.0f && m_defaultMovementType == RANDOM_MOTION_TYPE)
+        m_defaultMovementType = IDLE_MOTION_TYPE;
+
+    _waypointPathId = spawn->waypoint_id;
+
+    //SETUP NPC FLAGS
+    setNpcFlags(creature_properties->NPCFLags);
+
+    if (isVendor())
+        m_SellItems = sObjectMgr.getVendorList(getEntry());
+
+    if (isQuestGiver())
+        _LoadQuests();
+
+    if (isTrainer() || isProfessionTrainer())
+        mTrainer = sObjectMgr.getTrainer(getEntry());
+
+    if (isAuctioneer())
+        auctionHouse = sAuctionMgr.getAuctionHouse(getEntry());
+
+    //load resistances
+    for (uint8_t x = 0; x < TOTAL_SPELL_SCHOOLS; ++x)
+        m_baseResistance[x] = getResistance(x);
+    for (uint8_t x = 0; x < STAT_COUNT; ++x)
+        m_baseStats[x] = getStat(x);
+
+    m_baseDamage[0] = getMinDamage();
+    m_baseDamage[1] = getMaxDamage();
+    m_baseOffhandDamage[0] = getMinOffhandDamage();
+    m_baseOffhandDamage[1] = getMaxOffhandDamage();
+    m_baseRangedDamage[0] = getMinRangedDamage();
+    m_baseRangedDamage[1] = getMaxRangedDamage();
+    BaseAttackType = creature_properties->attackSchool;
+
+    setModCastSpeed(1.0f);   // better set this one
+
+    // Bytes 0
+    setBytes0(spawn->bytes0);
+
+    // Bytes 1
+    setBytes1(0);
+    setStandState(spawn->stand_state);
+
+    // Bytes 2
+    setBytes2(0);
+    setSheathType(spawn->sheath_state);
+    if (spawn->pvp_flagged == 1)
+        setPvpFlag();
+
+    ////////////AI
+
+    if (isattackable(spawn))
+        getAIInterface()->setAllowedToEnterCombat(true);
+
+    //////////////AI
+
+    myFamily = sCreatureFamilyStore.lookupEntry(creature_properties->Family);
+
+
+    //HACK!
+    if (getDisplayId() == 17743 ||
+        getDisplayId() == 20242 ||
+        getDisplayId() == 15435 ||
+        (creature_properties->Family == UNIT_TYPE_MISC))
+    {
+        setAItoUse(false);
+    }
+
+    // more hacks!
+    if (creature_properties->Mana != 0)
+        setPowerType(POWER_TYPE_MANA);
+    else
+        setPowerType(0);
+
+    /*  // Dont was Used in old AIInterface left the code here if needed at other Date
+    if (creature_properties->guardtype == GUARDTYPE_CITY)
+        getAIInterface()->setGuard(true);
+    else
+        getAIInterface()->setGuard(false);*/
+
+    if (creature_properties->guardtype == GUARDTYPE_NEUTRAL)
+        getAIInterface()->setGuard(true);
+    else
+        getAIInterface()->setGuard(false);
+
+
+    // creature death state
+    if (spawn->death_state == CREATURE_STATE_APPEAR_DEAD)
+    {
+        m_limbostate = true;
+        setDynamicFlags(U_DYN_FLAG_DEAD);
+    }
+    else if (spawn->death_state == CREATURE_STATE_DEAD)
+    {
+        setHealth(0);
+        m_limbostate = true;
+        setDeathState(CORPSE);
+    }
+
+    m_aiInterface->eventAiInterfaceParamsetFinish();
+
+    m_position = spawn->spawnPoint;
+
+    // Set spell immunities
+    if (creature_properties->modImmunities != 0)
+    {
+        const auto immunityMask = static_cast<SpellImmunityMask>(creature_properties->modImmunities);
+        addSpellImmunity(immunityMask, true);
+    }
+
+#ifdef FT_VEHICLES
+    if (isVehicle())
+    {
+        createVehicleKit(creature_properties->vehicleid, creature_properties->Id);
+        addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
+        setAItoUse(false);
+    }
+#endif
+
+    if (getMovementTemplate().isRooted())
+        setControlled(true, UNIT_STATE_ROOTED);
+
+    // Respawn
+    m_respawnDelay = creature_properties->RespawnTime / IN_MILLISECONDS;
+
+    // Default 5 min if Database lacks info
+    if (!m_respawnDelay)
+        m_respawnDelay = 300;
+
+    if (isDungeonBoss())
+        m_respawnDelay = 0; // special value, prevents respawn for dungeon bosses unless overridden
+
+    switch (this->creature_properties->Rank)
+    {
+    case ELITE_ELITE:
+        m_corpseDelay = worldConfig.corpseDecay.eliteTimeInSeconds;
+        break;
+    case ELITE_RAREELITE:
+        m_corpseDelay = worldConfig.corpseDecay.rareEliteTimeInSeconds;
+        break;
+    case ELITE_WORLDBOSS:
+        m_corpseDelay = worldConfig.corpseDecay.worldbossTimeInSeconds;
+        break;
+    case ELITE_RARE:
+        m_corpseDelay = worldConfig.corpseDecay.rareTimeInSeconds;
+        break;
+    default:
+        m_corpseDelay = worldConfig.corpseDecay.normalTimeInSeconds;
+        break;
+    }
+
+    return true;
 }
 
 void Creature::OnLoaded()
 {
     getAIInterface()->initialiseScripts(getEntry());
     getAIInterface()->eventOnLoad();
-}
-
-void Creature::OnPrePushToWorld()
-{
-    immediateMovementFlagsUpdate();
-    Unit::OnPrePushToWorld();
-}
-
-void Creature::OnPushToWorld()
-{
-    if (creature_properties == nullptr)
-    {
-        sLogger.failure("Something tried to push Creature with entry {} with invalid creature_properties!", getEntry());
-        return;
-    }
-
-    OnLoaded();
-
-    // Send initial power regen modifiers
-    // TODO: missing mana regen update for creatures
-    //updateManaRegeneration(true);
-    updateFocusRegeneration(true);
-    updateEnergyRegeneration(true);
-
-    std::set<uint32_t>::iterator itr = creature_properties->start_auras.begin();
-    for (; itr != creature_properties->start_auras.end(); ++itr)
-    {
-        SpellInfo const* sp = sSpellMgr.getSpellInfo((*itr));
-        if (sp == nullptr)
-            continue;
-
-        castSpell(this, sp, 0);
-    }
-
-    if (!sScriptMgr.has_creature_gossip(getEntry()))
-        registerDatabaseGossip();
-
-    if (GetScript() == NULL)
-    {
-        LoadScript();
-    }
-
-    // Formations
-    searchFormation();
-    motion_Initialize();
-
-    Unit::OnPushToWorld();
-
-    if (_myScriptClass)
-    {
-        _myScriptClass->OnLoad();
-        _myScriptClass->InitOrReset();
-    }
-
-    if (m_spawn)
-    {
-        if (m_spawn->channel_target_creature)
-            sEventMgr.AddEvent(this, &Creature::ChannelLinkUpCreature, m_spawn->channel_target_creature, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);    // only 5 attempts
-
-        if (m_spawn->channel_target_go)
-            sEventMgr.AddEvent(this, &Creature::ChannelLinkUpGO, m_spawn->channel_target_go, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);    // only 5 attempts
-    }
-
-    if (m_WorldMap)
-        m_aiInterface->m_is_in_instance = (!m_WorldMap->getBaseMap()->isWorldMap()) ? true : false;
-    else
-        m_aiInterface->m_is_in_instance = false;
-
-    if (this->HasItems())
-    {
-        for (std::vector<CreatureItem>::iterator itr2 = m_SellItems->begin(); itr2 != m_SellItems->end(); ++itr2)
-        {
-            if (itr2->max_amount == 0)
-                itr2->available_amount = 0;
-            else if (itr2->available_amount < itr2->max_amount)
-                sEventMgr.AddEvent(this, &Creature::UpdateItemAmount, itr2->itemid, EVENT_ITEM_UPDATE, vendorItemsUpdate, 1, 0);
-        }
-
-    }
-
-    getAIInterface()->setCreatureProtoDifficulty(creature_properties->Id);
-
-    if (mEvent != nullptr)
-    {
-        if (mEvent->mEventScript != nullptr)
-            mEvent->mEventScript->OnCreaturePushToWorld(mEvent, this);
-    }
-
-    if (m_WorldMap && m_WorldMap->getScript())
-    {
-        m_WorldMap->getScript()->OnCreaturePushToWorld(this);
-        m_WorldMap->getScript()->addObject(this);
-    }
-}
-
-void Creature::respawn(bool force)
-{
-    if (force)
-    {
-        if (isAlive())
-            setDeathState(JUST_DIED);
-        else if (getDeathState() != CORPSE)
-            setDeathState(CORPSE);
-    }
-
-    // do this for now delete the part when we are only respawning with spawnid
-    if (true)
-    {
-        OnRemoveCorpse();
-
-        if (getDeathState() == DEAD)
-        {
-            sLogger.debug("Respawning creature {} ({})", GetCreatureProperties()->Name, getGuid());
-            m_respawnTime = 0;
-            loot.clear();
-
-            auto minlevel = std::min(GetCreatureProperties()->MaxLevel, GetCreatureProperties()->MinLevel);
-            auto maxlevel = std::max(GetCreatureProperties()->MaxLevel, GetCreatureProperties()->MinLevel);
-            auto level = minlevel == maxlevel ? minlevel : Util::getRandomUInt(minlevel, maxlevel);
-            setLevel(level);
-
-            setDeathState(JUST_RESPAWNED);
-
-            uint32_t displayID = getNativeDisplayId();
-            uint8_t gender = GetCreatureProperties()->generateRandomDisplayIdAndReturnGender(&displayID);
-
-            setGender(gender);
-            setDisplayId(displayID);
-            setNativeDisplayId(displayID);
-
-            getMovementManager()->initializeDefault();
-
-            // Re-initialize reactstate that could be altered by movementgenerators
-            getAIInterface()->initializeReactState();
-        }
-    }
-    else
-    {
-        if (getSpawnId())
-        {
-            MapCell* pCell = getWorldMap()->getCellByCoords(GetSpawnX(), GetSpawnY());
-            if (pCell == nullptr)
-                pCell = GetMapCell();
-
-            getWorldMap()->doRespawn(SPAWN_TYPE_CREATURE, nullptr, getSpawnId(), pCell->getPositionX(), pCell->getPositionY());
-        }
-    }
-
-    sLogger.debug("Respawning creature {} ({})", GetCreatureProperties()->Name, getGuid());
-}
-
-void Creature::Despawn(uint32_t delay, uint32_t respawntime)
-{
-    if (delay)
-    {
-        sEventMgr.AddEvent(this, &Creature::Despawn, (uint32_t)0, respawntime, EVENT_CREATURE_RESPAWN, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    }
-    else
-    {
-        PrepareForRemove();
-
-        if (!IsInWorld())
-            return;
-
-        if (_myScriptClass != NULL)
-            _myScriptClass->OnDespawn();
-
-        if (respawntime && !m_noRespawn)
-        {
-            // get the cell with our SPAWN location. if we've moved cell this might break :P
-            MapCell* pCell = m_WorldMap->getCellByCoords(m_spawnLocation.x, m_spawnLocation.y);
-            if (pCell == nullptr)
-                pCell = GetMapCell();
-
-            if (pCell != nullptr)
-            {
-                pCell->_respawnObjects.insert(this);
-
-                sEventMgr.RemoveEvents(this);
-
-                m_position = m_spawnLocation;
-                m_respawnCell = pCell;
-
-                saveRespawnTime(respawntime);
-                Unit::RemoveFromWorld(false);
-            }
-            else
-            {
-                sLogger.failure("Creature::Despawn not able to get a valid MapCell (nullptr)");
-            }
-        }
-        else
-        {
-            Unit::RemoveFromWorld(true);
-            SafeDelete();
-        }
-    }
-}
-
-void Creature::despawn(uint32_t delay)
-{
-    if (delay)
-    {
-        sEventMgr.AddEvent(this, &Creature::despawn, (uint32_t)0, EVENT_CREATURE_RESPAWN, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    }
-    else
-    {
-        PrepareForRemove();
-
-        if (!IsInWorld())
-            return;
-
-        if (_myScriptClass != nullptr)
-            _myScriptClass->OnDespawn();
-
-        if (!m_noRespawn)
-        {
-            // get the cell with our SPAWN location. if we've moved cell this might break :P
-            MapCell* pCell = m_WorldMap->getCellByCoords(m_spawnLocation.x, m_spawnLocation.y);
-            if (pCell == nullptr)
-                pCell = GetMapCell();
-
-            if (pCell != nullptr)
-            {
-                pCell->_respawnObjects.insert(this);
-
-                sEventMgr.RemoveEvents(this);
-
-                m_position = m_spawnLocation;
-                m_respawnCell = pCell;
-
-                saveRespawnTime();
-                Unit::RemoveFromWorld(false);
-            }
-            else
-            {
-                sLogger.failure("Creature::Despawn not able to get a valid MapCell (nullptr)");
-            }
-        }
-        else
-        {
-            Unit::RemoveFromWorld(true);
-            SafeDelete();
-        }
-    }
-}
-
-void Creature::saveRespawnTime(uint32_t forceDelay)
-{
-    if (isSummon() || !getSpawnId() || !getWorldMap())
-        return;
-
-    const auto now = Util::getTimeNow();
-
-    // do this for now delete the part when we are only respawning with spawnid
-    if (true)
-    {
-        RespawnInfo ri;
-        ri.type = SPAWN_TYPE_CREATURE;
-        ri.spawnId = getSpawnId();
-        ri.entry = getEntry();
-        ri.time = forceDelay ? now + forceDelay / IN_MILLISECONDS : m_respawnTime;
-        ri.cellX = m_spawnLocation.x;
-        ri.cellY = m_spawnLocation.y;
-        ri.obj = this;
-
-        bool success = getWorldMap()->addRespawn(ri);
-        if (success)
-            getWorldMap()->saveRespawnDB(ri);
-        return;
-    }
-
-    time_t thisRespawnTime = forceDelay ? now + forceDelay / IN_MILLISECONDS : m_respawnTime;
-    getWorldMap()->saveRespawnTime(SPAWN_TYPE_CREATURE, getSpawnId(), getEntry(), thisRespawnTime, m_respawnCell->getPositionX(), m_respawnCell->getPositionY());
 }
 
 void Creature::TriggerScriptEvent(int fRef)
@@ -2442,7 +2294,13 @@ void Creature::RemoveLimboState(Unit* /*healer*/)
         return;
 
     m_limbostate = false;
-    setEmoteState(m_spawn ? m_spawn->emote_state : EMOTE_ONESHOT_NONE);
+
+    MySQLStructure::CreatureSpawn spawnTemplate{};
+    if (getWorldMap() && getWorldMap()->getSpawnManager().getCreatureSpawnTemplate(getGuid(), spawnTemplate))
+        setEmoteState(spawnTemplate.emote_state);
+    else
+        setEmoteState(EMOTE_ONESHOT_NONE);
+
     setHealth(getMaxHealth());
     m_isInvincible = false;
 }
@@ -2541,11 +2399,6 @@ uint16_t Creature::GetRequiredLootSkill()
     else
         return SKILL_SKINNING;      // skinning
 }
-
-uint32_t Creature::GetSQL_id()
-{
-    return spawnid;
-};
 
 bool Creature::HasItems()
 {
@@ -2707,7 +2560,7 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
                 if (spl->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
                     uint64_t guid = getChannelObjectGuid();
-                    DynamicObject* dObj = getWorldMap()->getDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
+                    DynamicObject* dObj = getWorldMapDynamicObject(guid);
                     if (!dObj)
                         return;
 
@@ -2773,7 +2626,7 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
     // Add Kills if Player is in Vehicle
     if (pAttacker != nullptr && pAttacker->isVehicle())
     {
-        Unit* vehicle_owner = getWorldMap()->getUnit(pAttacker->getCharmedByGuid());
+        Unit* vehicle_owner = getWorldMapUnit(pAttacker->getCharmedByGuid());
 
         if (vehicle_owner != nullptr && vehicle_owner->isPlayer())
         {
@@ -2786,7 +2639,7 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
     Player* looter = nullptr;
     if (getTaggerGuid())
     {
-        if (Unit* tagger = m_WorldMap->getUnit(getTaggerGuid()))
+        if (Unit* tagger = getWorldMapUnit(getTaggerGuid()))
             looter = tagger->ToPlayer();
     }
     else if (pAttacker != nullptr && pAttacker->isPlayer())
@@ -2876,16 +2729,16 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
     if (getCharmedByGuid())
     {
         //remove owner warlock soul link from caster
-        Unit* owner = getWorldMap()->getUnit(getCharmedByGuid());
+        Unit* owner = getWorldMapUnit(getCharmedByGuid());
 
-        if (owner != NULL && owner->isPlayer())
+        if (owner != nullptr && owner->isPlayer())
             static_cast<Player*>(owner)->eventDismissPet();
     }
 
     if (getCharmedByGuid() != 0)
     {
-        Unit* charmer = m_WorldMap->getUnit(getCharmedByGuid());
-        if (charmer != NULL)
+        Unit* charmer = getWorldMapUnit(getCharmedByGuid());
+        if (charmer != nullptr)
             charmer->unPossess();
     }
 
@@ -2947,7 +2800,7 @@ void Creature::setRespawnTime(uint32_t respawn)
 
 CreatureMovementData const& Creature::getMovementTemplate()
 {
-    if (CreatureMovementData const* movementOverride = sObjectMgr.getCreatureMovementOverride(spawnid))
+    if (CreatureMovementData const* movementOverride = sObjectMgr.getCreatureMovementOverride(m_spawnId))
         return *movementOverride;
 
     return GetCreatureProperties()->Movement;

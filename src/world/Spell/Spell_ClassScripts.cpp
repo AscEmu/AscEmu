@@ -287,7 +287,7 @@ public:
         {
             if (m_caster != NULL && m_caster->IsInWorld())
             {
-                Unit* target = m_caster->getWorldMap()->getUnit(m_targets.getUnitTargetGuid());
+                Unit* target = m_caster->getWorldMapUnit(m_targets.getUnitTargetGuid());
 
                 if (target == NULL || !(m_caster->isValidAttackableTarget(target) || target->getRace() == RACE_UNDEAD))
                     result = SPELL_FAILED_BAD_TARGETS;

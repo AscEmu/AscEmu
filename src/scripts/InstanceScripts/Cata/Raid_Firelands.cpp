@@ -114,23 +114,23 @@ public:
         if (getBossState(DATA_ALYSRAZOR) != EncounterStates::Performed)
             return;
 
-        if (GameObject* pDoor = GetGameObjectByGuid(mBalerocDoorGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mBalerocDoorGuid))
             useDoorOrButton(pDoor);
     }
 
     // Opens the path toward Majordomo Staghelm's platform after Baleroc.
     void OpenStaghelmFireWalls()
     {
-        if (GameObject* pWall = GetGameObjectByGuid(mStaghelmFireWall1Guid))
+        if (GameObject* pWall = getGameObjectByGuid(mStaghelmFireWall1Guid))
             useDoorOrButton(pWall);
-        if (GameObject* pWall = GetGameObjectByGuid(mStaghelmFireWall2Guid))
+        if (GameObject* pWall = getGameObjectByGuid(mStaghelmFireWall2Guid))
             useDoorOrButton(pWall);
     }
 
     // Opens the way into Ragnaros' Sulfuron Keep chamber after Majordomo Staghelm.
     void OpenSulfuronKeepDoor()
     {
-        if (GameObject* pDoor = GetGameObjectByGuid(mSulfuronKeepDoorGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mSulfuronKeepDoorGuid))
             useDoorOrButton(pDoor);
     }
 

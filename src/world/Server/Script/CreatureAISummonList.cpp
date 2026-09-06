@@ -29,7 +29,7 @@ void SummonList::despawnEntry(uint32_t entry)
         else if (summon->getEntry() == entry)
         {
             i = _storage.erase(i);
-            summon->Despawn(1000, 0);
+            summon->despawn(1000, 0);
         }
         else
         {
@@ -45,7 +45,7 @@ void SummonList::despawnAll()
         Creature* summon = _creature->getWorldMapCreature(_storage.front());
         _storage.pop_front();
         if (summon)
-            summon->Despawn(1000, 0);
+            summon->despawn(1000, 0);
     }
 }
 

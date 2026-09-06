@@ -6,24 +6,17 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <cstdint>
-#include <map>
+#include "Map/SpawnTypes.hpp"
+#include <set>
 #include <string>
 
-class Creature;
-
-enum SpawnObjectType
-{
-    SPAWN_TYPE_CREATURE                     = 0,
-    SPAWN_TYPE_GAMEOBJECT                   = 1,
-    NUM_SPAWN_TYPES_WITH_DATA
-};
 
 enum SpawnObjectTypeMask
 {
-    SPAWN_TYPEMASK_CREATURE = (1 << SPAWN_TYPE_CREATURE),
-    SPAWN_TYPEMASK_GAMEOBJECT = (1 << SPAWN_TYPE_GAMEOBJECT),
-
-    SPAWN_TYPEMASK_WITH_DATA = (1 << NUM_SPAWN_TYPES_WITH_DATA) - 1
+    // Masks are a separate bitset and intentionally keep the historical bit layout.
+    SPAWN_TYPEMASK_CREATURE                 = 0x01,
+    SPAWN_TYPEMASK_GAMEOBJECT               = 0x02,
+    SPAWN_TYPEMASK_WITH_DATA                = SPAWN_TYPEMASK_CREATURE | SPAWN_TYPEMASK_GAMEOBJECT
 };
 
 enum SpawnFlags
@@ -54,6 +47,6 @@ struct SpawnGroupTemplateData
     uint32_t mapId;
     SpawnGroupFlags groupFlags;
     SpawnFlags spawnFlags;
-    std::map<uint32_t, Creature*> spawns;
+    std::set<uint32_t> spawns;
     uint32_t bossId;
 };

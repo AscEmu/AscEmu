@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/MapScriptInterface.h"
@@ -38,7 +39,7 @@ public:
 
         if (!spawncheckcr)
         {
-            Creature* general = mTarget->getWorldMap()->createAndSpawnCreature(7750, LocationVector(-10619, -2997, 28.8f, 4));
+            Creature* general = mTarget->getWorldMap()->getSpawnManager().spawnCreature(7750, LocationVector(-10619, -2997, 28.8f, 4));
             general->Despawn(3 * 60 * 1000, 0);
         }
 
@@ -46,7 +47,7 @@ public:
 
         if (!spawncheckgobj)
         {
-            GameObject* generalsbox = mTarget->getWorldMap()->createAndSpawnGameObject(141980, LocationVector(-10622, -2994, 28.6f, 4), 4);
+            GameObject* generalsbox = mTarget->getWorldMap()->getSpawnManager().spawnGameObject(141980, LocationVector(-10622, -2994, 28.6f, 4), 4);
             if (generalsbox != nullptr)
                 generalsbox->despawn(3 * 60 * 1000, 0);
         }
@@ -89,14 +90,14 @@ public:
                 Creature* spawncheckcr = plr->getWorldMap()->getInterface()->getCreatureNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 7750);
                 if (!spawncheckcr)
                 {
-                    general = plr->getWorldMap()->createAndSpawnCreature(7750, LocationVector(-10619, -2997, 28.8f, 4));
+                    general = plr->getWorldMap()->getSpawnManager().spawnCreature(7750, LocationVector(-10619, -2997, 28.8f, 4));
                     general->Despawn(3 * 60 * 1000, 0);
                 }
 
                 GameObject* spawncheckgobj = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 141980);
                 if (!spawncheckgobj)
                 {
-                    GameObject* generalsbox = plr->getWorldMap()->createAndSpawnGameObject(141980, LocationVector(-10622, -2994, 28.6f, 4), 4);
+                    GameObject* generalsbox = plr->getWorldMap()->getSpawnManager().spawnGameObject(141980, LocationVector(-10622, -2994, 28.6f, 4), 4);
                     if (generalsbox != nullptr)
                         generalsbox->despawn(3 * 60 * 1000, 0);
                 }

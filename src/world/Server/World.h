@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <set>
 #include <string>
+#include <mutex>
 #include <unordered_map>
 
 #include "Platform/PerformanceCounter.hpp"
@@ -165,9 +166,11 @@ public:
     // GlobalSession functions
 private:
     SessionSet globalSessionSet;
+    std::mutex globalSessionMutex;
 
 public:
     void addGlobalSession(WorldSession* worldSession);
+    void removeGlobalSession(WorldSession* worldSession);
     void updateGlobalSession(uint32_t diff);
 
     //////////////////////////////////////////////////////////////////////////////////////////

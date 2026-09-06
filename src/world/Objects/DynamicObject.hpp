@@ -23,13 +23,18 @@ struct WoWDynamicObject;
 class SERVER_DECL DynamicObject : public Object
 {
 public:
-    DynamicObject(uint32_t high, uint32_t low);
+    DynamicObject(uint64_t guid);
     ~DynamicObject();
 
     void create(Unit* caster, Spell* pSpell, LocationVector lv, uint32_t duration, float radius, uint32_t type);
-    void updateTargets();
+    // Target membership is event-driven. The map feeds changed units into
+    // considerTarget(), while refreshTargets() is used when the area itself
+    // is created, moved or resized.
+    void considerTarget(Unit* target);
+    void removeTarget(Unit* target);
+    void refreshCurrentTargets();
+    void updateLifetime(uint32_t diff);
 
-    void onRemoveInRangeObject(Object* pObj) override;
     void remove();
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +78,7 @@ protected:
     Player* m_playerCaster = nullptr;
     Spell* m_parentSpell = nullptr;
 
-    std::set<uint64_t> m_targets = { 0 };
+    std::set<uint64_t> m_targets;
 
     uint32_t m_aliveDuration = 0;
 

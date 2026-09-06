@@ -49,7 +49,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
 
     if (srlPacket.guid.isUnit())
     {
-        const auto creature = _player->getWorldMapCreature(srlPacket.guid.getGuidLowPart());
+        const auto creature = _player->getWorldMapCreature(srlPacket.guid.getRawGuid());
         if (creature == nullptr)
             return;
 
@@ -76,7 +76,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
         return;
     }
 
-    const auto pet = _player->getWorldMapPet(srlPacket.guid.getGuidLowPart());
+    const auto pet = _player->getWorldMapPet(srlPacket.guid.getRawGuid());
     if (pet == nullptr)
         return;
 
@@ -233,7 +233,7 @@ void WorldSession::handlePetNameQuery(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    const auto pet = _player->getWorldMapPet(srlPacket.guid.getGuidLowPart());
+    const auto pet = _player->getWorldMapPet(srlPacket.guid.getRawGuid());
     if (pet == nullptr)
         return;
 
@@ -578,7 +578,7 @@ void WorldSession::handlePetCancelAura(WorldPacket& recvPacket)
     if (spellInfo != nullptr && spellInfo->getAttributes() & static_cast<uint32_t>(ATTRIBUTES_CANT_CANCEL))
         return;
 
-    const auto creature = _player->getWorldMapCreature(srlPacket.guid.getGuidLow());
+    const auto creature = _player->getWorldMapCreature(srlPacket.guid.getRawGuid());
 #ifdef FT_VEHICLES
     if (creature != nullptr && (creature->getPlayerOwner() == _player || (_player->getVehicleKit() && _player->getVehicleKit()->isControler(_player))))
         creature->removeAllAurasById(srlPacket.spellId);
@@ -721,7 +721,7 @@ void WorldSession::handleDismissCritter([[maybe_unused]] WorldPacket& recvPacket
 
     const auto unit = _player->getWorldMapUnit(srlPacket.guid.getRawGuid());
     if (unit != nullptr)
-        unit->Delete();
+        unit->destroy();
 
     _player->setCritterGuid(0);
 #endif

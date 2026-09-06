@@ -105,9 +105,6 @@ bool FollowMovementGenerator::update(Unit* owner, uint32_t diff)
         _lastTargetPosition = target->GetPosition();
         if (owner->hasUnitStateFlag(UNIT_STATE_FOLLOW_MOVE) || !positionOkay(owner, target, _range + FOLLOW_RANGE_TOLERANCE))
         {
-            if (!_path)
-                _path = std::make_unique<PathGenerator>(owner);
-
             float x, y, z;
 
             // select angle
@@ -130,27 +127,42 @@ bool FollowMovementGenerator::update(Unit* owner, uint32_t diff)
             if (owner->isHovering())
                 owner->updateAllowedPositionZ(x, y, z);
 
-            // pets are allowed to "cheat" on pathfinding when following their master
-            bool allowShortcut = false;
-            if (Unit* oPet = owner)
-            {
-                auto* const petOwner = oPet->getUnitOwner();
-                if (petOwner && target->getGuid() == petOwner->getGuid())
-                    allowShortcut = true;
-            }
+            const auto* const petOwner = owner->getUnitOwner();
+            const bool followsOwner = petOwner && target->getGuid() == petOwner->getGuid();
 
-            bool success = _path->calculatePath(x, y, z, allowShortcut);
-            if (!success || (_path->getPathType() & PATHFIND_NOPATH))
-            {
-                owner->stopMoving();
-                return true;
-            }
+            // Moving transports are not represented by the navmesh. When a pet follows
+            // its owner and either unit is on a transporter, use a direct spline. This
+            // covers boarding, leaving and movement while both are on the transport.
+            const bool transportFollow = followsOwner && (owner->GetTransport() || target->GetTransport());
 
             owner->addUnitStateFlag(UNIT_STATE_FOLLOW_MOVE);
             addFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED);
 
             MovementMgr::MoveSplineInit init(owner);
-            init.MovebyPath(_path->getPath());
+
+            if (transportFollow)
+            {
+                _path = nullptr;
+                init.MoveTo(x, y, z, false);
+            }
+            else
+            {
+                if (!_path)
+                    _path = std::make_unique<PathGenerator>(owner);
+
+                // Pets are allowed to "cheat" on pathfinding when following their owner.
+                const bool allowShortcut = followsOwner;
+                const bool success = _path->calculatePath(x, y, z, allowShortcut);
+                if (!success || (_path->getPathType() & PATHFIND_NOPATH))
+                {
+                    owner->removeUnitStateFlag(UNIT_STATE_FOLLOW_MOVE);
+                    owner->stopMoving();
+                    return true;
+                }
+
+                init.MovebyPath(_path->getPath());
+            }
+
             init.SetWalk(target->isWalking());
             init.SetFacing(target->GetOrientation());
             init.Launch();

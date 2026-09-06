@@ -76,7 +76,7 @@ WorldSession::WorldSession(uint32_t id, std::string name, WorldSocket* sock) :
     LoggingOut(false),
     _latency(0),
     client_build(0),
-    instanceId(0),
+    instanceId(GLOBAL_SESSION_INSTANCE),
     _updatecount(0),
     floodLines(0),
     floodTime(UNIXTIME),
@@ -114,6 +114,17 @@ WorldSession::~WorldSession()
 
 uint8_t WorldSession::Update(uint32_t InstanceID)
 {
+    // A session can briefly be present in both ownership containers during a
+    // global <-> map handoff. Only one thread may execute Update() at a time.
+    if (m_updateInProgress.exchange(true, std::memory_order_acquire))
+        return 0;
+
+    struct SessionUpdateGuard
+    {
+        std::atomic_bool& flag;
+        ~SessionUpdateGuard() { flag.store(false, std::memory_order_release); }
+    } updateGuard{ m_updateInProgress };
+
     m_currMsTime = Util::getMSTime();
 
     if (!((++_updatecount) % 2) && _socket)
@@ -122,7 +133,7 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
     if (m_loginTime == 0)
         m_loginTime = Util::getMSTime();
 
-    if (InstanceID != instanceId)
+    if (InstanceID != GetInstance())
     {
         // We're being updated by the wrong thread.
         // "Remove us!" - 2
@@ -154,7 +165,7 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
             packet.value() = nullptr;
 
             // If we hit this -> means a packet has changed our map.
-            if (InstanceID != instanceId)
+            if (InstanceID != GetInstance())
                 return 2;
 
             if (bDeleted)
@@ -163,10 +174,10 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
     }
 
     // If we hit this -> means a packet has changed our map.
-    if (InstanceID != instanceId)
+    if (InstanceID != GetInstance())
         return 2;
 
-    if (_logoutTime && (m_currMsTime >= _logoutTime) && instanceId == InstanceID)
+    if (_logoutTime && (m_currMsTime >= _logoutTime) && GetInstance() == InstanceID)
     {
         // Check if the player is in the process of being moved. We can't delete him if we are.
         if (_player && _player->m_beingPushed)
@@ -212,10 +223,19 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
 
 uint8_t WorldSession::processQueuedPackets(uint32_t InstanceID)
 {
-    if (InstanceID != instanceId)
+    if (m_updateInProgress.exchange(true, std::memory_order_acquire))
+        return 0;
+
+    struct SessionUpdateGuard
+    {
+        std::atomic_bool& flag;
+        ~SessionUpdateGuard() { flag.store(false, std::memory_order_release); }
+    } updateGuard{ m_updateInProgress };
+
+    if (InstanceID != GetInstance())
         return 2;
     uint32_t processed = 0;
-    sLogger.info("WORLD: ProcessQueuedPackets called (InstanceID={}, instanceId={})", InstanceID, instanceId);
+    sLogger.info("WORLD: ProcessQueuedPackets called (InstanceID={}, instanceId={})", InstanceID, GetInstance());
     while (auto packet = _recvQueue.tryPop())
     {
         if (packet.value() != nullptr)
@@ -223,14 +243,14 @@ uint8_t WorldSession::processQueuedPackets(uint32_t InstanceID)
             OpcodeHandlerRegistry::instance().handleOpcode(*this, *packet.value());
             packet.value() = nullptr;
             ++processed;
-            if (InstanceID != instanceId)
+            if (InstanceID != GetInstance())
                 return 2;
             if (bDeleted)
                 return 1;
         }
     }
     if (processed > 0)
-        sLogger.info("WORLD: ProcessQueuedPackets processed {} packets (instanceId={})", processed, instanceId);
+        sLogger.info("WORLD: ProcessQueuedPackets processed {} packets (instanceId={})", processed, GetInstance());
     return 0;
 }
 
@@ -246,6 +266,10 @@ void WorldSession::LogoutPlayer(bool Save)
 
     if (_player != nullptr)
     {
+        // Logout must not leave a possessed NPC behind as a temporary
+        // visibility viewer/activator. Do this before aura/spell/session cleanup.
+        _player->resetPossessionBeforeRelocation();
+
         _player->setFaction(_player->getInitialFactionId());
 
         sObjectMgr.removePlayer(_player);
@@ -257,7 +281,7 @@ void WorldSession::LogoutPlayer(bool Save)
 
         if (_player->m_currentLoot && _player->IsInWorld())
         {
-            Object* obj = _player->getWorldMap()->getObject(_player->m_currentLoot);
+            Object* obj = _player->getWorldMapObject(_player->m_currentLoot);
             if (obj != nullptr)
             {
                 switch (obj->getObjectTypeId())
@@ -302,12 +326,6 @@ void WorldSession::LogoutPlayer(bool Save)
         // part channels
         _player->removeAllChannels();
 
-        auto transport = _player->GetTransport();
-        if (transport != nullptr)
-        {
-            transport->RemovePassenger(_player);
-        }
-
         // cancel current spell
         for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
         {
@@ -350,6 +368,12 @@ void WorldSession::LogoutPlayer(bool Save)
         if (Save)
             _player->saveToDB(false);
 
+        // Keep the transport association intact until after saveToDB().
+        // Character persistence stores the transport entry and offsets from
+        // GetTransport()/obj_movement_info. RemovePassenger() clears both.
+        if (auto* transport = _player->GetTransport())
+            transport->RemovePassenger(_player);
+
         // Remove pet/summons after save so current pet is properly saved
         // Keep pet active so it will be summoned again when player logs in
         _player->unSummonPetTemporarily();
@@ -366,8 +390,13 @@ void WorldSession::LogoutPlayer(bool Save)
         _player->cleanupAfterTaxiFlight();
 
         _player->removeAllAuras();
+
+        // Keep the lifecycle map before onPlayerLeave() unregisters the Player.
+        // onPlayerLeave() is map cleanup only; the actual Player destruction is
+        // deliberately deferred until every logout-side Player access is done.
+        WorldMap* lifecycleMap = _player->IsInWorld() ? _player->getWorldMap() : _player->getLifecycleMap();
         if (_player->IsInWorld())
-            _player->removeFromWorld();
+            _player->getWorldMap()->onPlayerLeave(_player);
 
         if (_player->m_playerInfo->m_Group != nullptr)
             _player->m_playerInfo->m_Group->Update();
@@ -410,8 +439,21 @@ void WorldSession::LogoutPlayer(bool Save)
             }
         }
 
-        delete _player;
+        Player* detachedPlayer = _player;
         _player = nullptr;
+
+        if (lifecycleMap)
+            lifecycleMap->getObjectFactory().recycleAndDestroy(detachedPlayer, true);        
+
+        // A connected client is now back at character select and must be
+        // processed by the global world-session thread. Disconnected sessions
+        // are about to be deleted and must never be re-added globally. Publish
+        // global ownership only after all Player cleanup has finished.
+        if (_socket != nullptr && !bDeleted)
+        {
+            SetGlobalUpdateOwner();
+            sWorld.addGlobalSession(this);
+        }
 
         SmsgLogoutComplete managedPacket;
         sendManagedPacket(managedPacket);

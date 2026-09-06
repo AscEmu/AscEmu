@@ -102,22 +102,22 @@ public:
         Creature* cre = NULL;
         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I don't want to go back!");
         _unit->PlaySoundToSet(11420);
-        cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(22990, 643.741f, 305.852f, 271.689f, 0.00628f, true, false, 0, 0);
+        cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(22990, 643.741f, 305.852f, 271.689f, 0.00628f);
         //cre->GetAIInterface()->setOutOfCombatRange(30000);
         RemoveAIUpdateEvent();
     }
 
     void spawnAdds(float x, float y, float z, float o)
     {
-        _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASHTONGUE_CHANNELER, x, y, z, o, true, false, 0, 0);
+        _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASHTONGUE_CHANNELER, x, y, z, o);
 
-        _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASHTONGUE_DEFENDER, x, y, z, o, true, false, 0, 0);
+        _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASHTONGUE_DEFENDER, x, y, z, o);
 
-        _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASHTONGUE_ELEMENTALIST, x, y, z, o, true, false, 0, 0);
+        _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASHTONGUE_ELEMENTALIST, x, y, z, o);
 
-        _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASHTONGUE_ROGUE, x, y, z, o, true, false, 0, 0);
+        _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASHTONGUE_ROGUE, x, y, z, o);
 
-        _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASHTONGUE_SPIRITBINDER, x, y, z, o, true, false, 0, 0);
+        _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASHTONGUE_SPIRITBINDER, x, y, z, o);
     }
 
     void AIUpdate()
@@ -128,7 +128,7 @@ public:
             for(int i = 0; i < 2; i++)
             {
                 cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(23421, _unit->GetPositionX(), _unit->GetPositionY(),
-                                                                               _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+                                                                               _unit->GetPositionZ(), _unit->GetOrientation());
                 if(cre)
                 cre->GetAIInterface()->setOutOfCombatRange(30000);
             }
@@ -142,7 +142,7 @@ public:
             for(int i = 0; i < 2; i++)
             {
                 cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(23215, _unit->GetPositionX(), _unit->GetPositionY(),
-                                                                               _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+                                                                               _unit->GetPositionZ(), _unit->GetOrientation());
                 if(cre)
                     cre->GetAIInterface()->setOutOfCombatRange(30000);
             }
@@ -156,7 +156,7 @@ public:
             for(int i = 0; i < 2; i++)
             {
                 cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(23216, _unit->GetPositionX(), _unit->GetPositionY(),
-                                                                               _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+                                                                               _unit->GetPositionZ(), _unit->GetOrientation());
                 if(cre)
                     cre->GetAIInterface()->setOutOfCombatRange(30000);
             }
@@ -170,7 +170,7 @@ public:
             for(int i = 0; i < 2; i++)
             {
                 cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(23523, _unit->GetPositionX(), _unit->GetPositionY(),
-                                                                               _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+                                                                               _unit->GetPositionZ(), _unit->GetOrientation());
                 if(cre)
                     cre->GetAIInterface()->setOutOfCombatRange(30000);
             }
@@ -184,7 +184,7 @@ public:
             for(int i = 0; i < 5; i++)
             {
                 cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(23318, _unit->GetPositionX(), _unit->GetPositionY(),
-                                                                               _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+                                                                               _unit->GetPositionZ(), _unit->GetOrientation());
                if(cre)
                     cre->GetAIInterface()->setOutOfCombatRange(30000);
             }
@@ -198,7 +198,7 @@ public:
             for(int i = 0; i < 5; i++)
             {
                 cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(23524, _unit->GetPositionX(), _unit->GetPositionY(),
-                                                                               _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+                                                                               _unit->GetPositionZ(), _unit->GetOrientation());
                 if(cre)
                     cre->GetAIInterface()->setOutOfCombatRange(30000);
             }

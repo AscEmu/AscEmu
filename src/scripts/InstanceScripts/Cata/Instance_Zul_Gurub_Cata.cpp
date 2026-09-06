@@ -147,7 +147,7 @@ public:
         if (doorGuid == 0)
             return;
 
-        if (GameObject* pDoor = GetGameObjectByGuid(doorGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(doorGuid))
             useDoorOrButton(pDoor);
     }
 

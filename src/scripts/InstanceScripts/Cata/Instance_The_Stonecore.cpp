@@ -75,7 +75,7 @@ public:
     {
         for (uint32_t guid : mRockWallGuids)
         {
-            if (GameObject* pWall = GetGameObjectByGuid(guid))
+            if (GameObject* pWall = getGameObjectByGuid(guid))
                 useDoorOrButton(pWall);
         }
     }

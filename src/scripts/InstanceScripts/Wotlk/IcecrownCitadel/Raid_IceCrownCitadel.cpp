@@ -89,9 +89,9 @@ void IceCrownCitadelScript::setLocalData(uint32_t type, uint32_t data)
         {
             uint8_t group = (data == ICC_BROODKEEPER1) ? 0 : 1;
 
-            for (uint32_t guid : nerubarBroodkeepersGUIDs[group])
+            for (const WoWGuid& guid : nerubarBroodkeepersGUIDs[group])
             {
-                if (Creature* nerubar = GetCreatureByGuid(guid))
+                if (Creature* nerubar = getCreatureByGuid(guid))
                     nerubar->GetScript()->DoAction(ACTION_NERUBAR_FALL);
             }
         } break;
@@ -103,10 +103,6 @@ uint32_t IceCrownCitadelScript::getLocalData(uint32_t type) const
     switch (type)
     {
             // Deathbringer Suarfang
-        case DATA_SAURFANG_DOOR:
-        {
-            return DeathbringerDoorGUID;
-        }
         case DATA_BONED_ACHIEVEMENT:
         {
             return bonedAchievement;
@@ -115,6 +111,17 @@ uint32_t IceCrownCitadelScript::getLocalData(uint32_t type) const
             break;
     }
     return 0;
+}
+
+WoWGuid IceCrownCitadelScript::getLocalGuidData(uint32_t type) const
+{
+    switch (type)
+    {
+        case DATA_SAURFANG_DOOR:
+            return DeathbringerDoorGUID;
+        default:
+            return {};
+    }
 }
 
 Creature* IceCrownCitadelScript::getLocalCreatureData(uint32_t type) const
@@ -126,51 +133,51 @@ Creature* IceCrownCitadelScript::getLocalCreatureData(uint32_t type) const
             // Intro
         case NPC_INTRO_TIRION:
         {
-            return script->GetCreatureByGuid(HighlordEntranceGUID);
+            return script->getCreatureByGuid(HighlordEntranceGUID);
         }
         case NPC_INTRO_LICH_KING:
         {
-            return script->GetCreatureByGuid(LichKingEntranceGUID);
+            return script->getCreatureByGuid(LichKingEntranceGUID);
         }
         case NPC_INTRO_BOLVAR:
         {
-            return script->GetCreatureByGuid(BolvarEntranceGUID);
+            return script->getCreatureByGuid(BolvarEntranceGUID);
         }
             // Marrowgar
         case CN_LORD_MARROWGAR:
         {
-            return script->GetCreatureByGuid(LordMarrowgarGUID);
+            return script->getCreatureByGuid(LordMarrowgarGUID);
         }
             // Lady Deathwhisper
         case CN_LADY_DEATHWHISPER:
         {
-            return script->GetCreatureByGuid(LadyDeathwisperGUID);
+            return script->getCreatureByGuid(LadyDeathwisperGUID);
         }
             // Gunshipbattle
         case DATA_SKYBREAKER_BOSS:
         {
-            return script->GetCreatureByGuid(SkybreakerBossGUID);
+            return script->getCreatureByGuid(SkybreakerBossGUID);
         }
         case DATA_ORGRIMMAR_HAMMER_BOSS:
         {
-            return script->GetCreatureByGuid(OrgrimmarBossGUID);
+            return script->getCreatureByGuid(OrgrimmarBossGUID);
         }
         case DATA_GB_HIGH_OVERLORD_SAURFANG:
         {
-            return script->GetCreatureByGuid(DeathbringerSaurfangGbGUID);
+            return script->getCreatureByGuid(DeathbringerSaurfangGbGUID);
         }
         case DATA_GB_MURADIN_BRONZEBEARD:
         {
-            return script->GetCreatureByGuid(MuradinBronzebeardGbGUID);
+            return script->getCreatureByGuid(MuradinBronzebeardGbGUID);
         }
         case DATA_GB_BATTLE_MAGE:
         {
-            return script->GetCreatureByGuid(GbBattleMageGUID);
+            return script->getCreatureByGuid(GbBattleMageGUID);
         }
             // Deathbringer Saurfang
         case CN_DEATHBRINGER_SAURFANG:
         {
-            return script->GetCreatureByGuid(DeathbringerSaurfangGUID);
+            return script->getCreatureByGuid(DeathbringerSaurfangGUID);
         }
         default:
             break;
@@ -180,76 +187,76 @@ Creature* IceCrownCitadelScript::getLocalCreatureData(uint32_t type) const
 
 void IceCrownCitadelScript::OnCreaturePushToWorld(Creature* pCreature)
 {
-    WoWGuid guid = pCreature->getGuid();
+    const WoWGuid& guid = pCreature->GetNewGUID();
 
     switch (pCreature->getEntry())
     {
             // Intro
         case NPC_INTRO_TIRION:
         {
-            HighlordEntranceGUID = guid.getGuidLowPart();
+            HighlordEntranceGUID = guid;
             break;
         }
         case NPC_INTRO_LICH_KING:
         {
-            LichKingEntranceGUID = guid.getGuidLowPart();
+            LichKingEntranceGUID = guid;
             break;
         }
         case NPC_INTRO_BOLVAR:
         {
-            BolvarEntranceGUID = guid.getGuidLowPart();
+            BolvarEntranceGUID = guid;
             break;
         }
             // Broodkeepers
         case NPC_NERUBAR_BROODKEEPER:
         {
             uint8_t group = (pCreature->GetPositionX() > -230.0f) ? 0 : 1;
-            nerubarBroodkeepersGUIDs[group].emplace_back(guid.getGuidLowPart());
+            nerubarBroodkeepersGUIDs[group].emplace_back(guid);
             break;
         }
             // Lord Marrowgar
         case CN_LORD_MARROWGAR:
         {
-            LordMarrowgarGUID = guid.getGuidLowPart();
+            LordMarrowgarGUID = guid;
             break;
         }
             // Lady Deathwisper
         case CN_LADY_DEATHWHISPER:
         {
-            LadyDeathwisperGUID = guid.getGuidLowPart();
+            LadyDeathwisperGUID = guid;
             break;
         }
             // Gunship
         case NPC_GB_SKYBREAKER:
         {
-            SkybreakerBossGUID = guid.getGuidLowPart();
+            SkybreakerBossGUID = guid;
             break;
         }
         case NPC_GB_ORGRIMS_HAMMER:
         {
-            OrgrimmarBossGUID = guid.getGuidLowPart();
+            OrgrimmarBossGUID = guid;
             break;
         }
         case NPC_GB_HIGH_OVERLORD_SAURFANG:
         {
-            DeathbringerSaurfangGbGUID = guid.getGuidLowPart();
+            DeathbringerSaurfangGbGUID = guid;
             break;
         }
         case NPC_GB_MURADIN_BRONZEBEARD:
         {
-            MuradinBronzebeardGbGUID = guid.getGuidLowPart();
+            MuradinBronzebeardGbGUID = guid;
             break;
         }
         case NPC_GB_SKYBREAKER_SORCERERS:
         case NPC_GB_KORKRON_BATTLE_MAGE:
         {
-            GbBattleMageGUID = guid.getGuidLowPart();
+            GbBattleMageGUID = guid;
             break;
         }
             // Deathbringer Suarfang
         case CN_DEATHBRINGER_SAURFANG:
         {
-            DeathbringerSaurfangGUID = guid.getGuidLowPart();
+            DeathbringerSaurfangGUID = guid;
             break;
         }
         default:
@@ -263,27 +270,27 @@ void IceCrownCitadelScript::OnGameObjectPushToWorld(GameObject* pGameObject)
     {
         case GO_MARROWGAR_ICEWALL_1:
         {
-            MarrowgarIcewall1GUID = pGameObject->getGuidLow();
+            MarrowgarIcewall1GUID = pGameObject->GetNewGUID();
             break;
         }
         case GO_MARROWGAR_ICEWALL_2:
         {
-            MarrowgarIcewall2GUID = pGameObject->getGuidLow();
+            MarrowgarIcewall2GUID = pGameObject->GetNewGUID();
             break;
         }
         case GO_MARROWGAR_DOOR:
         {
-            MarrowgarEntranceDoorGUID = pGameObject->getGuidLow();
+            MarrowgarEntranceDoorGUID = pGameObject->GetNewGUID();
             break;
         }
         case GO_ORATORY_OF_THE_DAMNED_ENTRANCE:
         {
-            LadyDeathwisperEntranceDoorGUID = pGameObject->getGuidLow();
+            LadyDeathwisperEntranceDoorGUID = pGameObject->GetNewGUID();
             break;
         }
         case GO_LADY_DEATHWHISPER_ELEVATOR:
         {
-            LadyDeathwisperElevatorGUID = pGameObject->getGuidLow();
+            LadyDeathwisperElevatorGUID = pGameObject->GetNewGUID();
             break;
         }
         case GO_TELE_1:
@@ -297,7 +304,7 @@ void IceCrownCitadelScript::OnGameObjectPushToWorld(GameObject* pGameObject)
         }
         case GO_SAURFANG_S_DOOR:
         {
-            DeathbringerDoorGUID = pGameObject->getGuidLow();
+            DeathbringerDoorGUID = pGameObject->GetNewGUID();
             break;
         }
         default:
@@ -314,48 +321,48 @@ void IceCrownCitadelScript::SetGameobjectStates(GameObject* /*pGameObject*/)
     if (getBossState(DATA_LORD_MARROWGAR) == Performed)
     {
         if (MarrowgarIcewall1GUID)
-            if (GetGameObjectByGuid(MarrowgarIcewall1GUID))
-                GetGameObjectByGuid(MarrowgarIcewall1GUID)->setState(GO_STATE_OPEN);        // Icewall 1
+            if (getGameObjectByGuid(MarrowgarIcewall1GUID))
+                getGameObjectByGuid(MarrowgarIcewall1GUID)->setState(GO_STATE_OPEN);        // Icewall 1
 
         if (MarrowgarIcewall2GUID)
-            if (GetGameObjectByGuid(MarrowgarIcewall2GUID))
-                GetGameObjectByGuid(MarrowgarIcewall2GUID)->setState(GO_STATE_OPEN);        // Icewall 2
+            if (getGameObjectByGuid(MarrowgarIcewall2GUID))
+                getGameObjectByGuid(MarrowgarIcewall2GUID)->setState(GO_STATE_OPEN);        // Icewall 2
 
         if (MarrowgarEntranceDoorGUID)
-            if (GetGameObjectByGuid(MarrowgarEntranceDoorGUID))
-                GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);    // Door  
+            if (getGameObjectByGuid(MarrowgarEntranceDoorGUID))
+                getGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);    // Door  
     }
 
     if (getBossState(DATA_LADY_DEATHWHISPER) == Performed)
     {
         if (LadyDeathwisperEntranceDoorGUID)
-            if (GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
-                GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
+            if (getGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
+                getGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
 
         if (LadyDeathwisperElevatorGUID)
-            if (GetGameObjectByGuid(LadyDeathwisperElevatorGUID))
-            GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_OPEN);
+            if (getGameObjectByGuid(LadyDeathwisperElevatorGUID))
+            getGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_OPEN);
     }
 
     if (getBossState(DATA_LADY_DEATHWHISPER) == NotStarted)
     {
         if (LadyDeathwisperEntranceDoorGUID)
-            if (GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
-            GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
+            if (getGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
+            getGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
     }
 
     if (getBossState(DATA_DEATHBRINGER_SAURFANG) == NotStarted)
     {
         if (DeathbringerDoorGUID)
-            if (GetGameObjectByGuid(DeathbringerDoorGUID))
-            GetGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_CLOSED);
+            if (getGameObjectByGuid(DeathbringerDoorGUID))
+            getGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_CLOSED);
     }
 
     if (getBossState(DATA_DEATHBRINGER_SAURFANG) == Performed)
     {
         if (DeathbringerDoorGUID)
-            if (GetGameObjectByGuid(DeathbringerDoorGUID))
-            GetGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_OPEN);
+            if (getGameObjectByGuid(DeathbringerDoorGUID))
+            getGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_OPEN);
 
         if (!getLocalCreatureData(CN_DEATHBRINGER_SAURFANG))
         {
@@ -373,28 +380,28 @@ void IceCrownCitadelScript::OnEncounterStateChange(uint32_t entry, uint32_t stat
             if (state == InProgress)
             {
                 if (MarrowgarEntranceDoorGUID)
-                    if (GetGameObjectByGuid(MarrowgarEntranceDoorGUID))
-                        GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_CLOSED);
+                    if (getGameObjectByGuid(MarrowgarEntranceDoorGUID))
+                        getGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_CLOSED);
             }
             if (state == NotStarted)
             {
                 if (MarrowgarEntranceDoorGUID)
-                    if (GetGameObjectByGuid(MarrowgarEntranceDoorGUID))
-                        GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);
+                    if (getGameObjectByGuid(MarrowgarEntranceDoorGUID))
+                        getGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);
             }
             if (state == Performed)
             {
                 if (MarrowgarIcewall1GUID)
-                    if (GetGameObjectByGuid(MarrowgarIcewall1GUID))
-                        GetGameObjectByGuid(MarrowgarIcewall1GUID)->setState(GO_STATE_OPEN);        // Icewall 1
+                    if (getGameObjectByGuid(MarrowgarIcewall1GUID))
+                        getGameObjectByGuid(MarrowgarIcewall1GUID)->setState(GO_STATE_OPEN);        // Icewall 1
 
                 if (MarrowgarIcewall2GUID)
-                    if (GetGameObjectByGuid(MarrowgarIcewall2GUID))
-                        GetGameObjectByGuid(MarrowgarIcewall2GUID)->setState(GO_STATE_OPEN);        // Icewall 2
+                    if (getGameObjectByGuid(MarrowgarIcewall2GUID))
+                        getGameObjectByGuid(MarrowgarIcewall2GUID)->setState(GO_STATE_OPEN);        // Icewall 2
 
                 if (MarrowgarEntranceDoorGUID)
-                    if (GetGameObjectByGuid(MarrowgarEntranceDoorGUID))
-                        GetGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);    // Door  
+                    if (getGameObjectByGuid(MarrowgarEntranceDoorGUID))
+                        getGameObjectByGuid(MarrowgarEntranceDoorGUID)->setState(GO_STATE_OPEN);    // Door  
             }
             break;
         }
@@ -403,24 +410,24 @@ void IceCrownCitadelScript::OnEncounterStateChange(uint32_t entry, uint32_t stat
             if (state == InProgress)
             {
                 if (LadyDeathwisperEntranceDoorGUID)
-                    if (GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
-                        GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_CLOSED);
+                    if (getGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
+                        getGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_CLOSED);
             }
             if (state == NotStarted)
             {
                 if (LadyDeathwisperEntranceDoorGUID)
-                    if (GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
-                        GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_CLOSED);
+                    if (getGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
+                        getGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_CLOSED);
             }
             if (state == Performed)
             {
                 if (LadyDeathwisperEntranceDoorGUID)
-                    if (GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
-                        GetGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
+                    if (getGameObjectByGuid(LadyDeathwisperEntranceDoorGUID))
+                        getGameObjectByGuid(LadyDeathwisperEntranceDoorGUID)->setState(GO_STATE_OPEN);
 
                 if (LadyDeathwisperElevatorGUID)
-                    if (GetGameObjectByGuid(LadyDeathwisperElevatorGUID))
-                        GetGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_OPEN);
+                    if (getGameObjectByGuid(LadyDeathwisperElevatorGUID))
+                        getGameObjectByGuid(LadyDeathwisperElevatorGUID)->setState(GO_STATE_OPEN);
             }
             break;
         }
@@ -429,23 +436,23 @@ void IceCrownCitadelScript::OnEncounterStateChange(uint32_t entry, uint32_t stat
             if (state == InProgress)
             {
                 if (DeathbringerDoorGUID)
-                    if (GetGameObjectByGuid(DeathbringerDoorGUID))
-                        if (GetGameObjectByGuid(DeathbringerDoorGUID))
-                    GetGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_CLOSED);
+                    if (getGameObjectByGuid(DeathbringerDoorGUID))
+                        if (getGameObjectByGuid(DeathbringerDoorGUID))
+                    getGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_CLOSED);
             }
 
             if (state == NotStarted)
             {
                 if (DeathbringerDoorGUID)
-                    if (GetGameObjectByGuid(DeathbringerDoorGUID))
-                    GetGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_CLOSED);
+                    if (getGameObjectByGuid(DeathbringerDoorGUID))
+                    getGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_CLOSED);
             }
 
             if (state == Performed)
             {
                 if (DeathbringerDoorGUID)
-                    if (GetGameObjectByGuid(DeathbringerDoorGUID))
-                    GetGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_OPEN);
+                    if (getGameObjectByGuid(DeathbringerDoorGUID))
+                    getGameObjectByGuid(DeathbringerDoorGUID)->setState(GO_STATE_OPEN);
 
                 if (!getLocalCreatureData(CN_DEATHBRINGER_SAURFANG))
                 {
@@ -581,7 +588,7 @@ void IceCrownCitadelScript::UpdateEvent()
             {
                 if (getInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
                 {
-                    DoCheckFallingPlayer(GetCreatureByGuid(MuradinBronzebeardGbGUID));
+                    DoCheckFallingPlayer(getCreatureByGuid(MuradinBronzebeardGbGUID));
                     if (DoWipeCheck(skybreaker))
                         scriptEvents.addEvent(EVENT_WIPE_CHECK, 3000);
                     else
@@ -589,7 +596,7 @@ void IceCrownCitadelScript::UpdateEvent()
                 }
                 else
                 {
-                    DoCheckFallingPlayer(GetCreatureByGuid(DeathbringerSaurfangGbGUID));
+                    DoCheckFallingPlayer(getCreatureByGuid(DeathbringerSaurfangGbGUID));
                     if (DoWipeCheck(orgrimmar))
                         scriptEvents.addEvent(EVENT_WIPE_CHECK, 3000);
                     else

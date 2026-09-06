@@ -149,7 +149,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
         "ChrRaces.dbc",
         {
             "niixiixxixxxxxixissssssssxxxx"/*Classic*/,
-            "niixiixxixxxxissssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi"/*BC*/,
+            "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi"/*BC*/,
             "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi"/*WotLK*/,
             "niixiixixxxxixsxxxxxixxx"/*Cata*/,
             "niixiixixxxxixsxxxxxxxxxxxxxxxxxixxx"/*Mop*/

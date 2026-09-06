@@ -22,6 +22,7 @@ public:
     {
         setBossNumber(1);
     }
+
     static InstanceScript* Create(WorldMap* pMapMgr) { return new UtgardePinnacleInstanceScript(pMapMgr); }
 };
 
@@ -126,7 +127,6 @@ public:
         mCallFlamesArgs.setInitialCooldown(10s);
         addAISpell(SpellDesc(CALL_FLAMES, FilterArgs(TargetFilter_Player)), mCallFlamesArgs);
     }
-
 protected:
     InstanceScript* mInstance;
 

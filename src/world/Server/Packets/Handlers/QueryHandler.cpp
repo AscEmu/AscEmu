@@ -51,7 +51,7 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
     SmsgQueryPlayerNameResponse response;
     response.guid = srlPacket.guid;
 
-    if (const auto info = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow()))
+    if (const auto info = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getLowGuid()))
     {
         sLogger.debugOpcode("Received CMSG_NAME_QUERY for name: {}, race: {}, gender: {}, class: {}, level: {}.",
             info->name, info->race, info->gender, info->cl, info->lastLevel);
@@ -68,7 +68,7 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
     }
     else
     {
-        sLogger.debugOpcode("CMSG_NAME_QUERY for unknown GUID: {}.", srlPacket.guid.getGuidLow());
+        sLogger.debugOpcode("CMSG_NAME_QUERY for unknown GUID: {}.", srlPacket.guid.getLowGuid());
         response.hasData = false;
     }
 
@@ -156,7 +156,7 @@ void WorldSession::handleAchievmentQueryOpcode([[maybe_unused]] WorldPacket& rec
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    auto player = sObjectMgr.getPlayer(srlPacket.guid.getGuidLow());
+    auto player = sObjectMgr.getPlayer(srlPacket.guid.getLowGuid());
     if (player == nullptr)
         return;
 
@@ -169,6 +169,9 @@ void WorldSession::handleAchievmentQueryOpcode([[maybe_unused]] WorldPacket& rec
 
 void WorldSession::handleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/)
 {
+    if (!_player || !_player->IsInWorld())
+        return;
+
     std::vector<QuestgiverInrangeStatus> questgiverSet;
     QuestgiverInrangeStatus temp;
 
@@ -238,7 +241,7 @@ void WorldSession::handleItemNameQueryOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleCorpseQueryOpcode(WorldPacket& /*recvPacket*/)
 {
-    const auto corpse = sObjectMgr.getCorpseByOwner(_player->getGuidLow());
+    const auto corpse = (_player->getWorldMap() ? _player->getWorldMap()->getRegistry().getCorpseByOwner(_player->getGuidLow()) : nullptr);
     if (corpse == nullptr)
         return;
 

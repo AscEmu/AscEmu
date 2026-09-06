@@ -25,6 +25,7 @@
 #include "Management/Group.h"
 #include "Objects/Units/Unit.hpp"
 #include "Objects/DynamicObject.hpp"
+#include "Objects/Transporter.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Stats.h"
@@ -114,15 +115,6 @@ void Pet::Update(unsigned long time_passed)
 #endif
 }
 
-void Pet::OnPushToWorld()
-{
-    Summon::OnPushToWorld();
-
-    // Cast pet related spells
-    if (auto* plrOwner = getPlayerOwner())
-        plrOwner->eventSummonPet(this);
-}
-
 void Pet::PrepareForRemove()
 {
     Summon::PrepareForRemove();
@@ -152,18 +144,33 @@ void Pet::PrepareForRemove()
     m_isScheduledForDeletion = false;
     m_isScheduledForTemporaryUnsummon = false;
 
-    if (IsInWorld() && IsActive())
+    if (IsInWorld() && isActive())
         deactivate(m_WorldMap);
 }
 
-void Pet::SafeDelete()
+void Pet::onAttachToWorld()
+{
+    // Cast pet related spells
+    if (auto* plrOwner = getPlayerOwner())
+        plrOwner->eventSummonPet(this);
+
+    Summon::onAttachToWorld();
+}
+
+void Pet::onPreDetachFromWorld()
 {
     sEventMgr.RemoveEvents(this);
 
+    // Temporary unsummon during a map transfer must also remove the pet from
+    // the transport passenger set. Otherwise the transporter keeps a stale
+    // Pet* while the owner changes maps.
+    if (auto* transport = GetTransport())
+        transport->RemovePassenger(this);
+
     if (m_unitOwner != nullptr)
         m_unitOwner->addGarbagePet(this);
-    else
-        delete this;
+
+    Summon::onPreDetachFromWorld();
 }
 
 void Pet::sendSpellsToController(Unit* controller, uint32_t duration)
@@ -886,7 +893,11 @@ bool Pet::_preparePetForPush(PetCache const* petCache)
         }
     }
 
-    PushToWorld(m_unitOwner->getWorldMap());
+    if (m_unitOwner->getWorldMap())
+    {
+        m_unitOwner->getWorldMap()->getObjectFactory().attachToWorld(this);
+    }
+
     if (!IsInWorld())
     {
         sLogger.failure("Pet::_preparePetForPush : Pet was pushed to world but it is not in world, aborting");
@@ -1793,7 +1804,7 @@ void Pet::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32_t sp
                 if (spl->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
                     uint64_t guid = getChannelObjectGuid();
-                    DynamicObject* dObj = getWorldMap()->getDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
+                    DynamicObject* dObj = getWorldMapDynamicObject(guid);
                     if (!dObj)
                         return;
 

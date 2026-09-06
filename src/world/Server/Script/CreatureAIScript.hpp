@@ -33,6 +33,11 @@ public:
 
     virtual void OnCombatStart(Unit* /*_target*/) {}
     virtual void OnCombatStop(Unit* /*_target*/) {}
+
+    // Called when the core observes a nearby unit through the event-driven AI
+    // awareness pipeline. This does not imply hostility or combat; encounter
+    // scripts can use it for dialogue, staging or custom reactions.
+    virtual void OnUnitObserved(Unit* /*unit*/, UnitAwarenessSignal /*reason*/) {}
     virtual void OnDamageTaken(Unit* /*_attacker*/, uint32_t /*_amount*/) {}
     virtual void DamageTaken(Unit* /*_attacker*/, uint32_t* /*damage*/) {} // Warning triggers before dmg applied, you can modify the damage done here
     virtual void OnCastSpell(uint32_t /*_spellId*/) {}
@@ -134,7 +139,7 @@ public:
 
     Creature* spawnCreature(uint32_t entry, LocationVector pos, uint32_t factionId = 0, uint32_t phase = 1);
     Creature* spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0, uint32_t phase = 1);
-    void despawn(uint32_t delay = 2000, uint32_t respawnTime = 0);
+    void despawn(uint32_t delayMs = 2000, uint32_t respawnDelayMs = 0);
 
     bool isAlive();
 
@@ -227,6 +232,10 @@ public:
     bool canEnterCombat();
     void setCanEnterCombat(bool enterCombat);
     bool _isInCombat();
+
+    // Controls only automatic nearby-unit acquisition after spawn/respawn. Scripted
+    // attackStart/addThreat logic remains immediate regardless of this warmup.
+    void setAutomaticAwarenessWarmup(uint32_t delayMs) { getCreature()->getAIInterface()->setAwarenessWarmup(delayMs); }
     void _delayNextAttack(uint32_t milliseconds);
 
     void _setMeleeDisabled(bool disable);

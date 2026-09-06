@@ -352,7 +352,7 @@ void MuradinSaurfangEvent::DoAction(int32_t const action)
             scriptEvents.addEvent(EVENT_INTRO_ALLIANCE_4_SE, 29500, PHASE_INTRO_A);
 
             // Open Suarfangs Door
-            if (GameObject* Door = mInstance->GetGameObjectByGuid(mInstance->getLocalData(DATA_SAURFANG_DOOR)))
+            if (GameObject* Door = mInstance->getGameObjectByGuid(mInstance->getLocalGuidData(DATA_SAURFANG_DOOR)))
                 Door->setState(GO_STATE_OPEN);
 
             // Start Intro on Suarfang        
@@ -693,7 +693,7 @@ void OverlordSaurfangEvent::DoAction(int32_t const action)
             scriptEvents.addEvent(EVENT_INTRO_HORDE_3_SE, 18500, PHASE_INTRO_H);
 
             // Open Suarfangs Door
-            if (GameObject* Door = mInstance->GetGameObjectByGuid(mInstance->getLocalData(DATA_SAURFANG_DOOR)))
+            if (GameObject* Door = mInstance->getGameObjectByGuid(mInstance->getLocalGuidData(DATA_SAURFANG_DOOR)))
                 Door->setState(GO_STATE_OPEN);
 
             // Start Intro on Suarfang        
@@ -1015,7 +1015,7 @@ void DeathbringerSaurfangAI::OnReachWP(uint32_t type, uint32_t iWaypointId)
         return;
 
     // Close Suarfangs Door
-    if (GameObject* Door = mInstance->GetGameObjectByGuid(mInstance->getLocalData(DATA_SAURFANG_DOOR)))
+    if (GameObject* Door = mInstance->getGameObjectByGuid(mInstance->getLocalGuidData(DATA_SAURFANG_DOOR)))
         Door->setState(GO_STATE_CLOSED);
 }
 
@@ -1303,7 +1303,7 @@ void BloodNova::filterEffectTargets(Spell* spell, uint8_t effIndex, std::vector<
     if (effIndex != EFF_INDEX_0)
     {
         effectTargets->clear();
-        if (randomTargetGuid == 0)
+        if (!randomTargetGuid)
             return;
 
         effectTargets->push_back(randomTargetGuid);

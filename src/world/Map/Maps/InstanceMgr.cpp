@@ -394,11 +394,11 @@ void InstanceMgr::resetInstance(uint32_t mapid, uint32_t instanceId)
 
     if (iMap)
     {
-        iMap->deleteRespawnTimes();
+        iMap->getSpawnManager().deleteRespawnTimes();
     }
     else
     {
-        WorldMap::deleteRespawnTimesInDB(mapid, instanceId);
+        SpawnManager::deleteRespawnTimesInDB(mapid, instanceId);
     }
 
     // Free up the used instanceId from Our instanceId Pool

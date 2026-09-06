@@ -54,7 +54,7 @@ public:
             if (Brazier)
             {
                 Brazier->setState(GO_STATE_OPEN);
-                pPlayer->getWorldMap()->getInterface()->spawnCreature(17716, pPlayer->GetPosition(), true, false, 0, 0)->Despawn(600000, 0);
+                pPlayer->getWorldMap()->getInterface()->spawnCreature(17716, pPlayer->GetPosition())->Despawn(600000, 0);
             }
         }
         else

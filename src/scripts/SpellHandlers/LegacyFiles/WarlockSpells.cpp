@@ -31,6 +31,7 @@
 #include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Objects/GameObject.h"
+#include "Utilities/CommonTime.hpp"
 
 //////////////////////////////////////////////////////////////
  //bool SoulLinkParent( uint32_t i, Spell *s )
@@ -511,54 +512,53 @@ bool MasterDemonologist5(uint8_t /*effectIndex*/, Spell* s)
 
 bool SummonSuccubusQuest(uint8_t /*effectIndex*/, Spell* s)
 {
-    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(5677);
-    if (cp == nullptr)
+    Player* p_caster = s->getPlayerCaster();
+
+    if (p_caster == nullptr)
         return false;
 
-    Creature* pCreature = s->getPlayerCaster()->getWorldMap()->createCreature(cp->Id);
-    pCreature->Load(cp, s->getPlayerCaster()->GetPositionX(), s->getPlayerCaster()->GetPositionY(), s->getPlayerCaster()->GetPositionZ());
-    pCreature->getAIInterface()->Init(pCreature);
-    pCreature->getThreatManager().tauntUpdate();
-    pCreature->PushToWorld(s->getPlayerCaster()->getWorldMap());
-    pCreature->Despawn(60000, 0);
+    if (Creature* pCreature = p_caster->summonCreature(5677, p_caster->GetPosition(), CreatureSummonDespawnType::TIMED_OR_CORPSE_DESPAWN, 1 * TimeVarsMs::Minute))
+    {
+        pCreature->getAIInterface()->Init(pCreature);
+        pCreature->getThreatManager().tauntUpdate();
+        return true;
+    }
 
-    return true;
+    return false;
 }
 
 bool SummonVoidWalkerQuest(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->getPlayerCaster();
 
-    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(5676);
-    if (cp == nullptr)
+    if (p_caster == nullptr)
         return false;
 
-    Creature* pCreature = p_caster->getWorldMap()->createCreature(cp->Id);
-    pCreature->Load(cp, p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
-    pCreature->getAIInterface()->Init(pCreature);
-    pCreature->getThreatManager().tauntUpdate();
-    pCreature->PushToWorld(p_caster->getWorldMap());
-    pCreature->Despawn(60000, 0);
+    if (Creature* pCreature = p_caster->summonCreature(5676, p_caster->GetPosition(), CreatureSummonDespawnType::TIMED_OR_CORPSE_DESPAWN, 1 * TimeVarsMs::Minute))
+    {
+        pCreature->getAIInterface()->Init(pCreature);
+        pCreature->getThreatManager().tauntUpdate();
+        return true;
+    }
 
-    return true;
+    return false;
 }
 
 bool SummonFelHunterQuest(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->getPlayerCaster();
 
-    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(6268);
-    if (cp == nullptr)
+    if (p_caster == nullptr)
         return false;
 
-    Creature* pCreature = p_caster->getWorldMap()->createCreature(cp->Id);
-    pCreature->Load(cp, p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
-    pCreature->getAIInterface()->Init(pCreature);
-    pCreature->getThreatManager().tauntUpdate();
-    pCreature->PushToWorld(p_caster->getWorldMap());
-    pCreature->Despawn(60000, 0);
+    if (Creature* pCreature = p_caster->summonCreature(6268, p_caster->GetPosition(), CreatureSummonDespawnType::TIMED_OR_CORPSE_DESPAWN, 1 * TimeVarsMs::Minute))
+    {
+        pCreature->getAIInterface()->Init(pCreature);
+        pCreature->getThreatManager().tauntUpdate();
+        return true;
+    }
 
-    return true;
+    return false;
 }
 
 bool DemonicKnowledge(uint8_t effectIndex, Aura* a, bool apply)
@@ -656,7 +656,7 @@ bool DemonicCircleSummon(uint8_t /*effectIndex*/, Aura* a, bool apply)
     if (apply)
     {
 
-        GameObject* circle = m_target->getWorldMap()->getGameObject(a->getOwner()->m_objectSlots[0]);
+        GameObject* circle = m_target->getWorldMapGameObject(a->getOwner()->m_objectSlots[0].getRawGuid());
         SpellInfo const* sp = sSpellMgr.getSpellInfo(48020);
 
         if (circle != NULL && sp != NULL && m_target->CalcDistance(circle) <= sp->getMaxRange())

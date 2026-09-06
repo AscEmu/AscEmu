@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Map/Cells/TerrainMgr.hpp"
+#include "Map/Management/TerrainMgr.hpp"
 #include <array>
 #include <memory>
 #include <string>
@@ -19,19 +19,8 @@ namespace WDB::Structures
 
 namespace MySQLStructure
 {
-    struct CreatureSpawn;
-    struct GameobjectSpawn;
     struct MapInfo;
 }
-
-typedef std::vector<MySQLStructure::CreatureSpawn*> CreatureSpawnList;
-typedef std::vector<MySQLStructure::GameobjectSpawn*> GameobjectSpawnList;
-
-struct CellSpawns
-{
-    CreatureSpawnList CreatureSpawns;
-    GameobjectSpawnList GameobjectSpawns;
-};
 
 enum LineOfSightChecks : uint8_t
 {
@@ -63,23 +52,10 @@ public:
     bool isInstanceableMap() const;
     bool getEntrancePos(int32_t& mapid, float& x, float& y) const;
 
-    // Cell
-    void loadSpawns(bool reload);    // set to true to make clean up
-    CellSpawns* getSpawnsList(uint32_t cellx, uint32_t celly);
-    CellSpawns* getSpawnsListAndCreate(uint32_t cellx, uint32_t celly);
-
-    uint32_t CreatureSpawnCount;
-    uint32_t GameObjectSpawnCount;
-
-    CellSpawns mapWideSpawns;
-    CellSpawns areaWideSpawns;
-
 private:
     WDB::Structures::MapEntry const* _mapEntry = nullptr;
     MySQLStructure::MapInfo const* _mapInfo = nullptr;
     uint32_t _mapId;
    
     std::string name;
-
-    std::array<std::unique_ptr<std::array<std::unique_ptr<CellSpawns>, Map::Cell::_sizeY>>, Map::Cell::_sizeX> spawns = { nullptr };
 };

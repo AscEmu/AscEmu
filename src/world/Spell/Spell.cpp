@@ -452,7 +452,7 @@ void Spell::castMe(const bool doReCheck)
     {
         const auto creature = static_cast<Creature*>(m_caster);
         sLogger.debugSpell("Spell::castMe : Creature guid {} (entry {}) casted spell {} (id {}).",
-            creature->spawnid, creature->getEntry(), getSpellInfo()->getName(), getSpellInfo()->getId());
+            creature->getSpawnId(), creature->getEntry(), getSpellInfo()->getName(), getSpellInfo()->getId());
     }
     else
     {
@@ -519,7 +519,7 @@ void Spell::castMe(const bool doReCheck)
         {
             const auto creatureMagnet = static_cast<Creature*>(magnetTarget);
             if (creatureMagnet->isTotem())
-                creatureMagnet->Despawn(1, 0);
+                creatureMagnet->despawn(1, 0);
         }
         m_magnetTarget = 0;
     }
@@ -1441,7 +1441,7 @@ void Spell::cancel()
                     {
                         auto obj = getPlayerCaster()->getSummonedObject();
                         if (obj->IsInWorld())
-                            obj->RemoveFromWorld(true);
+                            obj->destroy();
 
                         delete obj;
                         getPlayerCaster()->setSummonedObject(nullptr);
@@ -1819,7 +1819,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         if (target->isCorpse())
         {
             // Player can't cast spells on corpses with bones only left
-            const auto targetCorpse = sObjectMgr.getCorpseByOwner(target->getGuidLow());
+            const auto targetCorpse = (target->getWorldMap() ? target->getWorldMap()->getRegistry().getCorpseByOwner(target->getGuidLow()) : nullptr);
             if (targetCorpse == nullptr || !targetCorpse->IsInWorld() || targetCorpse->getCorpseState() == CORPSE_STATE_BONES)
                 return SPELL_FAILED_BAD_TARGETS;
         }
@@ -4603,7 +4603,7 @@ void Spell::sendChannelUpdate(const uint32_t time, const uint32_t diff/* = 0*/)
                 }
             }
 
-            const auto dynamicObject = u_caster->getWorldMapDynamicObject(WoWGuid::getGuidLowPartFromUInt64(channelGuid));
+            const auto dynamicObject = u_caster->getWorldMapDynamicObject(channelGuid);
             if (dynamicObject != nullptr)
                 dynamicObject->remove();
 
@@ -5711,17 +5711,17 @@ void Spell::_updateTargetPointers(const uint64_t targetGuid)
             WoWGuid wowGuid;
             wowGuid.init(targetGuid);
 
-            switch (wowGuid.getHigh())
+            switch (wowGuid.getHighType())
             {
                 case HighGuid::Unit:
                 case HighGuid::Vehicle:
-                    m_unitTarget = getCaster()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
+                    m_unitTarget = getCaster()->getWorldMapCreature(wowGuid.getRawGuid());
                     break;
                 case HighGuid::Pet:
-                    m_unitTarget = getCaster()->getWorldMap()->getPet(wowGuid.getGuidLowPart());
+                    m_unitTarget = getCaster()->getWorldMapPet(wowGuid.getRawGuid());
                     break;
                 case HighGuid::Player:
-                    m_unitTarget = getCaster()->getWorldMap()->getPlayer(wowGuid.getGuidLowPart());
+                    m_unitTarget = getCaster()->getWorldMapPlayer(wowGuid.getRawGuid());
                     m_playerTarget = dynamic_cast<Player*>(m_unitTarget);
                     break;
                 case HighGuid::Item:
@@ -5729,13 +5729,13 @@ void Spell::_updateTargetPointers(const uint64_t targetGuid)
                         m_itemTarget = getPlayerCaster()->getItemInterface()->GetItemByGUID(targetGuid);
                     break;
                 case HighGuid::GameObject:
-                    m_gameObjTarget = getCaster()->getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
+                    m_gameObjTarget = getCaster()->getWorldMapGameObject(wowGuid.getRawGuid());
                     break;
                 case HighGuid::Corpse:
-                    m_corpseTarget = sObjectMgr.getCorpseByGuid(wowGuid.getGuidLowPart());
+                    m_corpseTarget = m_caster->getWorldMap() ? m_caster->getWorldMap()->getRegistry().getCorpse(wowGuid) : nullptr;
                     break;
                 default:
-                    sLogger.failure("Spell::_updateTargetPointers : Invalid object type for spell target (low guid {}) in spell {}", wowGuid.getGuidLowPart(), getSpellInfo()->getId());
+                    sLogger.failure("Spell::_updateTargetPointers : Invalid object type for spell target (low guid {}) in spell {}", wowGuid.getCounter(), getSpellInfo()->getId());
                     break;
             }
         }

@@ -18,6 +18,7 @@
  */
 
 #include "Setup.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
@@ -81,7 +82,7 @@ class SummonElizaQuest : public QuestScript
 public:
     void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-        Creature* Eliza = mTarget->getWorldMap()->createAndSpawnCreature(314, LocationVector(-10271.127f, 53.784f, 42.711f, 1.72f));
+        Creature* Eliza = mTarget->getWorldMap()->getSpawnManager().spawnCreature(314, LocationVector(-10271.127f, 53.784f, 42.711f, 1.72f));
         if (Eliza != nullptr)
             Eliza->Despawn(300000, 0);    // Should it be that much ?
     }

@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MySQLStructures.h"
 #include "Macros/MapsMacros.hpp"
 #include "Movement/Spline/SplineChain.h"
+#include "Map/SpawnGroups.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Management/QuestProperties.hpp"
 #include "Management/ItemProperties.hpp"
@@ -252,7 +253,7 @@ public:
 
     SpawnGroupTemplateData* getSpawnGroupDataBySpawn(uint32_t spawnId);
     SpawnGroupTemplateData* getSpawnGroupDataByGroup(uint32_t groupId);
-    std::vector<Creature*> const getSpawnGroupDataByBoss(uint32_t bossId);
+    std::vector<uint32_t> const getSpawnGroupDataByBoss(uint32_t bossId);
 
     std::vector<SplineChainLink> const* getSplineChain(uint32_t entry, uint16_t chainId) const;
     std::vector<SplineChainLink> const* getSplineChain(Creature const* pCreature, uint16_t id) const;

@@ -501,10 +501,10 @@ private:
 class NexusScript : public InstanceScript
 {
 public:
-    uint32_t mAnomalusGUID;
-    uint32_t mTelestraGUID;
-    uint32_t mOrmorokGUID;
-    uint32_t mKeristraszaGUID;
+    WoWGuid mAnomalusGUID;
+    WoWGuid mTelestraGUID;
+    WoWGuid mOrmorokGUID;
+    WoWGuid mKeristraszaGUID;
 
     uint8_t mCSCount;
 
@@ -560,16 +560,16 @@ public:
         switch (pCreature->getEntry())
         {
         case CN_KERISTRASZA:
-            mKeristraszaGUID = pCreature->getGuidLow();
+            mKeristraszaGUID = pCreature->GetNewGUID();
             break;
         case CN_ANOMALUS:
-            mAnomalusGUID = pCreature->getGuidLow();
+            mAnomalusGUID = pCreature->GetNewGUID();
             break;
         case CN_TELESTRA:
-            mTelestraGUID = pCreature->getGuidLow();
+            mTelestraGUID = pCreature->GetNewGUID();
             break;
         case CN_ORMOROK:
-            mOrmorokGUID = pCreature->getGuidLow();
+            mOrmorokGUID = pCreature->GetNewGUID();
             break;
         }
     }
@@ -612,7 +612,7 @@ public:
 
         if (mCSCount == 3)   // release last boss
         {
-            Creature* pKeristrasza = GetCreatureByGuid(mKeristraszaGUID);
+            Creature* pKeristrasza = getCreatureByGuid(mKeristraszaGUID);
             if (pKeristrasza == NULL)
                 return;
 

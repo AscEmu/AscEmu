@@ -3,6 +3,7 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Map/Maps/BaseMap.hpp"
 #include "LUAEngine.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Script/ScriptSetup.hpp"
@@ -1836,7 +1837,7 @@ public:
 
         LuaGlobal::instance()->m_onLoadInfo.push_back(getCreature()->GetMapId());
         LuaGlobal::instance()->m_onLoadInfo.push_back(iid);
-        LuaGlobal::instance()->m_onLoadInfo.push_back(wowGuid.getGuidLowPart());
+        LuaGlobal::instance()->m_onLoadInfo.push_back(wowGuid.getCounter());
     }
 
     void OnReachWP(uint32_t iWaypointId, bool bForwards)
@@ -3371,7 +3372,7 @@ void LuaEngine::Restart()
 
         if (mgr != nullptr)
         {
-            Creature* unit = mgr->getCreature(*(itr + 2));
+            Creature* unit = mgr->findCreatureByLow32(*(itr + 2));
             if (unit != nullptr && unit->IsInWorld() && unit->GetScript() != nullptr)
                 unit->GetScript()->OnLoad();
         }

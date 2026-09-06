@@ -1781,7 +1781,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
         if (m_unitTarget == m_caster)
         {
             /* try to get a selection */
-            m_unitTarget = m_caster->getWorldMap()->getUnit(m_targets.getUnitTargetGuid());
+            m_unitTarget = m_caster->getWorldMapUnit(m_targets.getUnitTargetGuid());
             if ((!m_unitTarget) || !p_caster->isValidAttackableTarget(m_unitTarget, getSpellInfo()) || (m_unitTarget->CalcDistance(p_caster) > 28.0f))
             {
                 return;
@@ -1944,7 +1944,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
                 char msg[150];
                 snprintf(msg, 150, "Many thanks to you %s. I'd best get to the crash site and see how I can help out. Until we meet again...", testo[p_caster->getClass()]);
                 m_unitTarget->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
-                ((Creature*)m_unitTarget)->Despawn(900000, 300000);
+                ((Creature*)m_unitTarget)->despawn(900000, 300000);
             }
         }break;
         case 38177:
@@ -1954,7 +1954,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
 
             if (m_unitTarget->getEntry() == 21387)
             {
-                ((Creature*)m_unitTarget)->Despawn(5000, 360000);
+                ((Creature*)m_unitTarget)->despawn(5000, 360000);
                 p_caster->castSpell(p_caster, 38178, true);
             }
             else
@@ -2476,7 +2476,7 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
         WoWGuid wowGuid;
         wowGuid.init(m_corpseTarget->getOwnerGuid());
 
-        m_playerTarget = sObjectMgr.getPlayer(wowGuid.getGuidLowPart());
+        m_playerTarget = sObjectMgr.getPlayer(wowGuid.getCounter());
         if (!m_playerTarget) return;
     }
 
@@ -2775,8 +2775,8 @@ void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura
     // grep: this is a hack!
     // our shitty dynobj system doesn't support GO casters, so we gotta
     // kinda have 2 summoners for traps that apply AA.
-    DynamicObject* dynObj = m_caster->getWorldMap()->createDynamicObject();
-
+    
+    DynamicObject* dynObj = m_caster->getWorldMap()->getObjectFactory().createDynamic();
     if (g_caster != nullptr && g_caster->getUnitOwner() && !m_unitTarget)
     {
         Unit* caster = g_caster->getUnitOwner();
@@ -2997,9 +2997,8 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
         float tempx = x + (getEffectRadius(effectIndex) * (cosf(m_fallowAngle + m_caster->GetOrientation())));
         float tempy = y + (getEffectRadius(effectIndex) * (sinf(m_fallowAngle + m_caster->GetOrientation())));
 
-        if (Creature* p = m_caster->getWorldMap()->createCreature(cr_entry))
+        if (Creature* p = m_caster->getWorldMap()->getSpawnManager().summonCreature(cr_entry, LocationVector(tempx, tempy, z)))
         {
-            p->Load(properties, tempx, tempy, z);
             p->setZoneId(m_caster->getZoneId());
 
             if (p->GetCreatureProperties()->Faction == 35)
@@ -3016,8 +3015,6 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
 
             p->setSummonedByGuid(m_caster->getGuid());
             p->setCreatedByGuid(m_caster->getGuid());
-
-            p->PushToWorld(m_caster->getWorldMap());
 
             // Delay this a bit to make sure its Spawned
             sEventMgr.AddEvent(p, &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -3096,7 +3093,7 @@ void Spell::SpellEffectSummonTemporaryPet(uint32_t /*i*/, WDB::Structures::Summo
         const auto pet = sObjectMgr.createPet(properties_->Id, spe);
         if (!pet->createAsSummon(ci, nullptr, p_caster, v, static_cast<uint32_t>(getDuration()), m_spellInfo, static_cast<uint8_t>(i), PET_TYPE_SUMMON))
         {
-            pet->DeleteMe();
+            pet->destroy();
             break;
         }
 
@@ -3131,7 +3128,7 @@ void Spell::SpellEffectSummonCompanion(uint32_t /*i*/, [[maybe_unused]] WDB::Str
 #if VERSION_STRING > TBC
     if (u_caster->getCritterGuid() != 0)
     {
-        auto critter = u_caster->getWorldMap()->getUnit(u_caster->getCritterGuid());
+        auto critter = u_caster->getWorldMapUnit(u_caster->getCritterGuid());
         if (critter == nullptr)
             return;
 
@@ -3139,7 +3136,7 @@ void Spell::SpellEffectSummonCompanion(uint32_t /*i*/, [[maybe_unused]] WDB::Str
 
         uint32_t currententry = creature->GetCreatureProperties()->Id;
 
-        creature->RemoveFromWorld(false, true);
+        creature->despawn();
         u_caster->setCritterGuid(0);
 
         // Before WOTLK when you cast the companion summon spell the second time it removed the companion
@@ -3165,22 +3162,26 @@ void Spell::SpellEffectSummonVehicle(uint32_t /*i*/, WDB::Structures::SummonProp
     if ((properties_->vehicleid == 0) && (p_caster == nullptr))
         return;
 
-    Creature* c = u_caster->getWorldMap()->createCreature(properties_->Id);
-    c->Load(properties_, v.x, v.y, v.z, v.o);
-    c->setPhase(PHASE_SET, u_caster->GetPhase());
-    c->setCreatedBySpellId(m_spellInfo->getId());
-    c->setCreatedByGuid(u_caster->getGuid());
-    c->setSummonedByGuid(u_caster->getGuid());
-    c->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
-    c->PushToWorld(u_caster->getWorldMap());
+    if (Creature* c = u_caster->getWorldMap()->getSpawnManager().summonCreature(properties_->Id, v))
+    {
+        c->setPhase(PHASE_SET, u_caster->GetPhase());
+        c->setCreatedBySpellId(m_spellInfo->getId());
+        c->setCreatedByGuid(u_caster->getGuid());
+        c->setSummonedByGuid(u_caster->getGuid());
+        c->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
 
-    // Delay this a bit to make sure its Spawned
-    sEventMgr.AddEvent(c->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        // Delay this a bit to make sure its Spawned
+        sEventMgr.AddEvent(c->ToCreature(), &Creature::InitSummon, m_caster, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
 #ifdef FT_VEHICLES
-    // Need to delay this a bit since first the client needs to see the vehicle
-    u_caster->callEnterVehicle(c);
+        // Need to delay this a bit since first the client needs to see the vehicle
+        u_caster->callEnterVehicle(c);
 #endif
+    }
+    else
+    {
+        sLogger.failure("SpellEffectSummonVehicle:: Creature could not be created for entry {}", properties_->Id);
+    }
 }
 
 void Spell::SpellEffectLeap(uint8_t effectIndex) // Leap
@@ -3998,22 +3999,14 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         if (map->getLiquidStatus(m_caster->GetPhase(), LocationVector(posx, posy, posz), MAP_ALL_LIQUIDS, &liquidData, m_caster->getCollisionHeight()))
             liquidLevel = liquidData.level;
 
-        go = u_caster->getWorldMap()->createGameObject(entry);
-
         LocationVector pos = { posx, posy, liquidLevel, u_caster->GetOrientation() };
         QuaternionData rot = QuaternionData::fromEulerAnglesZYX(u_caster->GetOrientation(), 0.f, 0.f);
 
-        if (!go->create(entry, map, p_caster->GetPhase(), pos, rot, GO_STATE_CLOSED))
-        {
-            delete go;
-            return;
-        }
+        go = u_caster->getWorldMap()->getSpawnManager().summonGameObject(entry, pos, rot);
 
         go->setGoType(GAMEOBJECT_TYPE_FISHINGNODE);
         go->setCreatedByGuid(m_caster->getGuid());
         u_caster->addGameObject(go);
-
-        go->PushToWorld(m_caster->getWorldMap());
 
         u_caster->setChannelObjectGuid(go->getGuid());
     }
@@ -4032,16 +4025,11 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
 
         LocationVector pos = { posx, posy, pz, u_caster->GetOrientation() };
         QuaternionData rot = QuaternionData::fromEulerAnglesZYX(u_caster->GetOrientation(), 0.f, 0.f);
-        go = u_caster->getWorldMap()->createGameObject(entry);
-        if (!go->create(entry, map, u_caster->GetPhase(), pos, rot, GO_STATE_CLOSED))
-        {
-            delete go;
-            return;
-        }
+       
+        go = u_caster->getWorldMap()->getSpawnManager().summonGameObject(entry, pos, rot);
 
         go->setCreatedByGuid(m_caster->getGuid());
         u_caster->addGameObject(go);
-        go->PushToWorld(m_caster->getWorldMap());
     }
 
     switch (info->type)
@@ -4087,12 +4075,14 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
             break;
     }
 
-    go->setRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
+    if (duration > 0)
+        go->despawn(static_cast<uint32_t>(duration), 0);
     go->setSpellId(m_spellInfo->getId());
 
     if (GameObject* linkedTrap = go->getLinkedTrap())
     {
-        linkedTrap->setRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
+        if (duration > 0)
+            linkedTrap->despawn(static_cast<uint32_t>(duration), 0);
         linkedTrap->setSpellId(m_spellInfo->getId());
     }
 
@@ -4205,9 +4195,9 @@ void Spell::SpellEffectTameCreature(uint8_t effectIndex)
     const auto pet = sObjectMgr.createPet(tame->getEntry(), nullptr);
     if (!pet->createAsSummon(tame->GetCreatureProperties(), tame, p_caster, p_caster->GetPosition(), 0, nullptr, effectIndex, PET_TYPE_HUNTER))
     {
-        pet->DeleteMe();//CreateAsSummon() returns false if an error occurred.
+        pet->destroy();//CreateAsSummon() returns false if an error occurred.
     }
-    tame->Despawn(0, tame->GetCreatureProperties()->RespawnTime);
+    tame->despawn(0, tame->GetCreatureProperties()->RespawnTime);
 }
 
 void Spell::SpellEffectSummonPet(uint8_t effectIndex) //summon - pet
@@ -4285,7 +4275,7 @@ void Spell::SpellEffectSummonPet(uint8_t effectIndex) //summon - pet
         const auto pet = sObjectMgr.createPet(getSpellInfo()->getEffectMiscValue(effectIndex), nullptr);
         if (!pet->createAsSummon(ci, nullptr, u_caster, u_caster->GetPosition(), 0, m_spellInfo, effectIndex, PET_TYPE_SUMMON))
         {
-            pet->DeleteMe();//CreateAsSummon() returns false if an error occurred.
+            pet->destroy();//CreateAsSummon() returns false if an error occurred.
         }
     }
 }
@@ -4615,7 +4605,7 @@ void Spell::SpellEffectAddFarsight(uint8_t effectIndex) // Add Farsight
         lv = m_targets.getSource();
     }
 
-    DynamicObject* dynObj = p_caster->getWorldMap()->createDynamicObject();
+    DynamicObject* dynObj = m_caster->getWorldMap()->getObjectFactory().createDynamic();
     dynObj->create(u_caster, this, lv, static_cast<uint32_t>(getDuration()), getEffectRadius(effectIndex), DYNAMIC_OBJECT_FARSIGHT_FOCUS);
     dynObj->SetInstanceID(p_caster->GetInstanceID());
     p_caster->setFarsightGuid(dynObj->getGuid());
@@ -4709,27 +4699,24 @@ void Spell::SpellEffectSummonObjectWild(uint8_t effectIndex)
 
     WorldMap* map = u_caster->getWorldMap();
 
+    LocationVector pos = LocationVector(x, y, z, m_caster->GetOrientation());
     QuaternionData rot = QuaternionData::fromEulerAnglesZYX(m_caster->GetOrientation(), 0.f, 0.f);
 
     // spawn a new one
-    GameObject* GoSummon = u_caster->getWorldMap()->createGameObject(gameobject_id);
-    if (!GoSummon->create(gameobject_id, map, m_caster->GetPhase(), LocationVector(x, y, z, m_caster->GetOrientation()), rot, GO_STATE_CLOSED))
-    {
-        delete GoSummon;
-        return;
-    }
+    GameObject* GoSummon = u_caster->getWorldMap()->getSpawnManager().summonGameObject(gameobject_id, pos, rot);
 
     int32_t duration = getDuration();
 
-    GoSummon->setRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
+    if (duration > 0)
+        GoSummon->despawn(static_cast<uint32_t>(duration), 0);
 
-    GoSummon->PushToWorld(u_caster->getWorldMap());
     u_caster->addGameObject(GoSummon);
     GoSummon->setSpellId(m_spellInfo->getId());
 
     if (GameObject* linkedTrap = GoSummon->getLinkedTrap())
     {
-        linkedTrap->setRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
+        if (duration > 0)
+            linkedTrap->despawn(static_cast<uint32_t>(duration), 0);
         linkedTrap->setSpellId(m_spellInfo->getId());
     }
 }
@@ -4889,7 +4876,7 @@ void Spell::SpellEffectBuildingDamage(uint8_t effectIndex)
     Unit* controller = nullptr;
 #ifdef FT_VEHICLES
     if (u_caster->getVehicle() != nullptr)
-        controller = u_caster->getWorldMap()->getUnit(u_caster->getCharmedByGuid());
+        controller = u_caster->getWorldMapUnit(u_caster->getCharmedByGuid());
 #endif
 
     if (controller == nullptr)
@@ -5244,10 +5231,10 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
     GameObject* GoSummon = nullptr;
 
     uint32_t slot = getSpellInfo()->getEffect(effectIndex) - SPELL_EFFECT_SUMMON_OBJECT_SLOT1;
-    GoSummon = u_caster->m_objectSlots[slot] ? u_caster->getWorldMap()->getGameObject(u_caster->m_objectSlots[slot]) : 0;
-    u_caster->m_objectSlots[slot] = 0;
+    GoSummon = u_caster->m_objectSlots[slot] ? u_caster->getWorldMapGameObject(u_caster->m_objectSlots[slot].getRawGuid()) : nullptr;
+    u_caster->m_objectSlots[slot].clear();
 
-    if (uint32_t guid = u_caster->m_objectSlots[slot])
+    if (const uint64_t guid = u_caster->m_objectSlots[slot].getRawGuid())
     {
         if (GameObject* obj = u_caster->getWorldMapGameObject(guid))
         {
@@ -5256,11 +5243,8 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
                 obj->setSpellId(0);
             u_caster->removeGameObject(obj, true);
         }
-        u_caster->m_objectSlots[slot] = 0;
+        u_caster->m_objectSlots[slot].clear();
     }
-
-    // spawn a new one
-    GoSummon = u_caster->getWorldMap()->createGameObject(getSpellInfo()->getEffectMiscValue(effectIndex));
 
     float dx = 0.0f;
     float dy = 0.0f;
@@ -5280,25 +5264,24 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
         dz = m_caster->GetPositionZ();
     }
 
+    LocationVector pos = LocationVector(dx, dy, dz, m_caster->GetOrientation());
     QuaternionData rot = QuaternionData::fromEulerAnglesZYX(m_caster->GetOrientation(), 0.f, 0.f);
-    if (!GoSummon->create(getSpellInfo()->getEffectMiscValue(effectIndex), m_caster->getWorldMap(), m_caster->GetPhase(), LocationVector(dx, dy, dz, m_caster->GetOrientation()), rot, GO_STATE_CLOSED))
-    {
-        delete GoSummon;
-        return;
-    }
+    
+    // spawn a new one
+    GoSummon = u_caster->getWorldMap()->getSpawnManager().summonGameObject(getSpellInfo()->getEffectMiscValue(effectIndex), pos, rot);
 
+    GoSummon->m_phase = m_caster->GetPhase();
     GoSummon->setLevel(u_caster->getLevel());
     GoSummon->setCreatedByGuid(m_caster->getGuid());
     GoSummon->Phase(PHASE_SET, u_caster->GetPhase());
 
-    GoSummon->PushToWorld(m_caster->getWorldMap());
-
     int32_t duration = getDuration();
 
-    GoSummon->setRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
+    if (duration > 0)
+        GoSummon->despawn(static_cast<uint32_t>(duration), 0);
     GoSummon->setSpellId(m_spellInfo->getId());
     u_caster->addGameObject(GoSummon);
-    u_caster->m_objectSlots[slot] = GoSummon->GetUIdFromGUID();
+    u_caster->m_objectSlots[slot] = GoSummon->GetNewGUID();
 }
 
 void Spell::SpellEffectDispelMechanic(uint8_t effectIndex)
@@ -5449,7 +5432,7 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
         WoWGuid wowGuid;
         wowGuid.init(m_corpseTarget->getOwnerGuid());
 
-        m_playerTarget = sObjectMgr.getPlayer(wowGuid.getGuidLowPart());
+        m_playerTarget = sObjectMgr.getPlayer(wowGuid.getCounter());
         if (!m_playerTarget) return;
     }
 
@@ -5495,11 +5478,13 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
     if (!m_playerTarget)
     {
         // means we're "skinning" a corpse
-        corpse = sObjectMgr.getCorpseByGuid((uint32_t)m_targets.getUnitTargetGuid());  // hacky
+        WoWGuid corpseGuid;
+        corpseGuid.init(m_targets.getUnitTargetGuid());
+        corpse = m_caster->getWorldMap() ? m_caster->getWorldMap()->getRegistry().getCorpse(corpseGuid) : nullptr;
     }
     else if (m_playerTarget->getDeathState() == CORPSE)   // repopped while we were casting
     {
-        corpse = sObjectMgr.getCorpseByGuid(m_playerTarget->getGuidLow());
+        corpse = m_playerTarget->getWorldMap() ? m_playerTarget->getWorldMap()->getRegistry().getCorpseByOwner(m_playerTarget->getGuidLow()) : nullptr;
     }
 
     if (p_caster == nullptr)
@@ -5542,7 +5527,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         WoWGuid wowGuid;
         wowGuid.init(corpse->getOwnerGuid());
 
-        Player* owner = sObjectMgr.getPlayer(wowGuid.getGuidLowPart());
+        Player* owner = sObjectMgr.getPlayer(wowGuid.getCounter());
         if (owner)
         {
             if (!owner->getBattleground())
@@ -6099,7 +6084,7 @@ void Spell::SpellEffectCreatePet(uint8_t effectIndex)
         const auto pet = sObjectMgr.createPet(getSpellInfo()->getEffectMiscValue(effectIndex), nullptr);
         if (!pet->createAsSummon(ci, nullptr, m_playerTarget, m_playerTarget->GetPosition(), 0, m_spellInfo, effectIndex, PET_TYPE_HUNTER))
         {
-            pet->DeleteMe();//CreateAsSummon() returns false if an error occurred.
+            pet->destroy();//CreateAsSummon() returns false if an error occurred.
         }
     }
 }

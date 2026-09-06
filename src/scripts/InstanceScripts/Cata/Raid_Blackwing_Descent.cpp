@@ -88,7 +88,7 @@ public:
     // Opens after Chimaeron, granting access to the Atramedes/Maloriak wing.
     void OpenAthenaeumDoor()
     {
-        if (GameObject* pDoor = GetGameObjectByGuid(mAthenaeumDoorGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mAthenaeumDoorGuid))
             useDoorOrButton(pDoor);
     }
 
@@ -101,7 +101,7 @@ public:
         if (getBossState(DATA_MALORIAK) != EncounterStates::Performed)
             return;
 
-        if (GameObject* pDoor = GetGameObjectByGuid(mInnerChamberDoorGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mInnerChamberDoorGuid))
             useDoorOrButton(pDoor);
     }
 

@@ -87,15 +87,15 @@ public:
 
     void OpenUlthokDoors()
     {
-        if (GameObject* pDoor1 = GetGameObjectByGuid(mUlthokDoor1Guid))
+        if (GameObject* pDoor1 = getGameObjectByGuid(mUlthokDoor1Guid))
             useDoorOrButton(pDoor1);
-        if (GameObject* pDoor2 = GetGameObjectByGuid(mUlthokDoor2Guid))
+        if (GameObject* pDoor2 = getGameObjectByGuid(mUlthokDoor2Guid))
             useDoorOrButton(pDoor2);
     }
 
     void OpenOzumatDoor()
     {
-        if (GameObject* pDoor = GetGameObjectByGuid(mOzumatDoorGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mOzumatDoorGuid))
             useDoorOrButton(pDoor);
     }
 

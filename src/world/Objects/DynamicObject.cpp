@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Objects/Units/Players/Player.hpp"
 
-DynamicObject::DynamicObject(uint32_t high, uint32_t low)
+DynamicObject::DynamicObject(uint64_t guid)
 {
     m_objectType |= TYPE_DYNAMICOBJECT;
     m_objectTypeId = TYPEID_DYNAMICOBJECT;
@@ -44,7 +44,7 @@ DynamicObject::DynamicObject(uint32_t high, uint32_t low)
     m_updateMask.SetCount(getSizeOfStructure(WoWDynamicObject));
 
     setOType(TYPE_DYNAMICOBJECT | TYPE_OBJECT);
-    setGuid(low, high);
+    setGuid(guid);
 
     setScale(1.0f);
 }
@@ -100,119 +100,128 @@ void DynamicObject::create(Unit* caster, Spell* spell, LocationVector lv, uint32
     m_phase = caster->GetPhase();
 
     if (spell->g_caster)
-        PushToWorld(spell->g_caster->getWorldMap());
+        spell->g_caster->getWorldMap()->getObjectFactory().attachToWorld(this);
     else
-        PushToWorld(caster->getWorldMap());
+        caster->getWorldMap()->getObjectFactory().attachToWorld(this);    
 
     if (caster->m_dynamicObject != nullptr)
         caster->m_dynamicObject->remove();
 
     caster->m_dynamicObject = this;
 
-    updateTargets();
+    getWorldMap()->refreshDynamicObjectTargets(this);
 }
 
-void DynamicObject::updateTargets()
+void DynamicObject::considerTarget(Unit* target)
 {
-    if (m_aliveDuration == 0)
+    if (!target || !IsInWorld() || m_aliveDuration == 0 || !m_unitCaster || !m_spellInfo)
         return;
 
-    if (m_aliveDuration >= 100)
+    const uint64_t targetGuid = target->getGuid();
+    const bool alreadyTargeted = m_targets.find(targetGuid) != m_targets.end();
+
+    const bool validTarget =
+        target->IsInWorld() &&
+        target->getWorldMap() == getWorldMap() &&
+        target->isAlive() &&
+        m_unitCaster->isValidAttackableTarget(target, m_spellInfo) &&
+        getDistanceSq(target) <= getRadius() * getRadius();
+
+    if (!validTarget)
     {
-        float radius = getRadius() * getRadius();
-
-        for (const auto& itr : getInRangeObjectsSet())
-        {
-            Object* object = itr;
-            if (!object || !object->isCreatureOrPlayer() || !static_cast<Unit*>(object)->isAlive())
-                continue;
-
-            Unit* target = static_cast<Unit*>(object);
-
-            if (!m_unitCaster->isValidAttackableTarget(target, m_spellInfo))
-                continue;
-
-            // skip units already hit, their range will be tested later
-            if (m_targets.find(target->getGuid()) != m_targets.end())
-                continue;
-
-            if (getDistanceSq(target) <= radius)
-            {
-                auto aura = sSpellMgr.newAura(m_spellInfo, m_aliveDuration, m_unitCaster, target, true);
-                for (uint8_t i = 0; i < 3; ++i)
-                {
-                    if (m_spellInfo->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
-                    {
-                        aura->addAuraEffect(static_cast<AuraEffect>(m_spellInfo->getEffectApplyAuraName(i)),
-                            m_spellInfo->getEffectBasePoints(i) + 1, m_spellInfo->getEffectMiscValue(i), 1.0f, false, i);
-                    }
-                }
-
-                target->addAura(std::move(aura));
-
-                m_targets.insert(target->getGuid());
-            }
-        }
-
-        for (auto jtr = m_targets.begin(); jtr != m_targets.end();)
-        {
-            Unit* target = getWorldMap() ? getWorldMap()->getUnit(*jtr) : nullptr;
-
-            auto jtr2 = jtr;
-            ++jtr;
-
-            if (target && getDistanceSq(target) > radius)
-            {
-                target->removeAllAurasById(m_spellInfo->getId());
-                m_targets.erase(jtr2);
-            }
-        }
-
-        m_aliveDuration -= 100;
+        if (alreadyTargeted)
+            removeTarget(target);
+        return;
     }
-    else
+
+    if (alreadyTargeted)
+        return;
+
+    auto aura = sSpellMgr.newAura(m_spellInfo, m_aliveDuration, m_unitCaster, target, true);
+    for (uint8_t i = 0; i < 3; ++i)
     {
+        if (m_spellInfo->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+        {
+            aura->addAuraEffect(static_cast<AuraEffect>(m_spellInfo->getEffectApplyAuraName(i)),
+                m_spellInfo->getEffectBasePoints(i) + 1, m_spellInfo->getEffectMiscValue(i), 1.0f, false, i);
+        }
+    }
+
+    target->addAura(std::move(aura));
+    m_targets.insert(targetGuid);
+    target->addDynamicObjectTarget(getGuid());
+}
+
+void DynamicObject::removeTarget(Unit* target)
+{
+    if (!target || !m_spellInfo)
+        return;
+
+    const uint64_t targetGuid = target->getGuid();
+    if (m_targets.erase(targetGuid) == 0)
+        return;
+
+    target->removeAllAurasById(m_spellInfo->getId());
+    target->removeDynamicObjectTarget(getGuid());
+}
+
+void DynamicObject::refreshCurrentTargets()
+{
+    if (!IsInWorld() || m_targets.empty())
+        return;
+
+    // considerTarget() can erase from m_targets, so iterate over a snapshot.
+    const std::vector<uint64_t> targets(m_targets.begin(), m_targets.end());
+    for (uint64_t targetGuid : targets)
+    {
+        if (Unit* target = getWorldMapUnit(targetGuid))
+            considerTarget(target);
+        else
+            m_targets.erase(targetGuid);
+    }
+}
+
+void DynamicObject::updateLifetime(uint32_t diff)
+{
+    if (m_aliveDuration == 0 || diff == 0)
+        return;
+
+    if (diff >= m_aliveDuration)
         m_aliveDuration = 0;
-    }
+    else
+        m_aliveDuration -= diff;
 
     if (m_aliveDuration == 0)
         remove();
-}
-
-void DynamicObject::onRemoveInRangeObject(Object* pObj)
-{
-    if (pObj->isCreatureOrPlayer())
-        m_targets.erase(pObj->getGuid());
-
-    Object::onRemoveInRangeObject(pObj);
 }
 
 void DynamicObject::remove()
 {
     if (!IsInWorld())
     {
-        delete this;
         return;
     }
 
     for (auto const targetGuid : m_targets)
     {
-        if (Unit* target = m_WorldMap->getUnit(targetGuid))
+        if (Unit* target = getWorldMapUnit(targetGuid))
+        {
             target->removeAllAurasById(m_spellInfo->getId());
+            target->removeDynamicObjectTarget(getGuid());
+        }
     }
+    m_targets.clear();
 
     sendGameobjectDespawnAnim();
 
     if (IsInWorld())
-        RemoveFromWorld(true);
+        destroy();
 
     if (m_unitCaster && m_spellInfo->getChannelInterruptFlags() != 0)
     {
         m_unitCaster->setChannelObjectGuid(0);
         m_unitCaster->setChannelSpellId(0);
     }
-
-    delete this;
 }
 
  //////////////////////////////////////////////////////////////////////////////////////////
@@ -234,7 +243,13 @@ uint32_t DynamicObject::getSpellId() const { return dynamicObjectData()->spell_i
 void DynamicObject::setSpellId(uint32_t id) { write(dynamicObjectData()->spell_id, id); }
 
 float DynamicObject::getRadius() const { return dynamicObjectData()->radius; }
-void DynamicObject::setRadius(float radius) { write(dynamicObjectData()->radius, radius); }
+void DynamicObject::setRadius(float radius)
+{
+    write(dynamicObjectData()->radius, radius);
+
+    if (IsInWorld() && getWorldMap())
+        getWorldMap()->refreshDynamicObjectTargets(this);
+}
 
 // Position set for classic and TBC
 float DynamicObject::getDynamicX() const { return m_position.x; }
@@ -264,7 +279,7 @@ void DynamicObject::setDynamicZ(float z)
 #endif
 }
 
-float DynamicObject::getDynamicO() const { return m_position.x; }
+float DynamicObject::getDynamicO() const { return m_position.o; }
 void DynamicObject::setDynamicO(float o)
 {
     m_position.o = o;

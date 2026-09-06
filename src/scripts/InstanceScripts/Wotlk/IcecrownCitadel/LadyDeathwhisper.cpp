@@ -367,8 +367,8 @@ void LadyDeathwhisperAI::ReanimateCultist()
     if (reanimationQueue.empty())
         return;
 
-    uint64_t cultistGUID = reanimationQueue.front();
-    Creature* cultist = mInstance->GetCreatureByGuid(static_cast<uint32_t>(cultistGUID));
+    const WoWGuid cultistGUID = reanimationQueue.front();
+    Creature* cultist = mInstance->getCreatureByGuid(cultistGUID);
     reanimationQueue.pop_front();
     if (!cultist)
         return;
@@ -414,7 +414,7 @@ void LadyDeathwhisperAI::SetCreatureData64(uint32_t Type, uint64_t Data)
     {
         case DATA_CULTIST_GUID:
         {
-            reanimationQueue.push_back(Data);
+            reanimationQueue.emplace_back(Data);
             scriptEvents.addEvent(EVENT_P1_REANIMATE_CULTIST, 3000, PHASE_ONE);
             break;
         }
@@ -531,5 +531,5 @@ void DarkMartyrdom::afterSpellEffect(Spell* spell, uint8_t effIndex, DamageInfo 
         return;
 
     if (Creature* owner = spell->getCaster()->getWorldMapCreature(spell->getUnitCaster()->getSummonedByGuid()))
-        owner->GetScript()->SetCreatureData64(DATA_CULTIST_GUID, spell->getUnitCaster()->getGuidLow());
+        owner->GetScript()->SetCreatureData64(DATA_CULTIST_GUID, spell->getUnitCaster()->getGuid());
 }

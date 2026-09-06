@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Objects/Units/Players/Player.hpp"
@@ -95,11 +96,11 @@ public:
             say += "!";
             Dashel->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }
-        Creature* ct1 = mTarget->getWorldMap()->createAndSpawnCreature(4969, LocationVector(-8686.803711f, 445.267792f, 99.789223f, 5.461184f));
+        Creature* ct1 = mTarget->getWorldMap()->getSpawnManager().spawnCreature(4969, LocationVector(-8686.803711f, 445.267792f, 99.789223f, 5.461184f));
         if (ct1 != nullptr)
             ct1->Despawn(300000, 0);
 
-        Creature* ct2 = mTarget->getWorldMap()->createAndSpawnCreature(4969, LocationVector(-8675.571289f, 444.162262f, 99.644737f, 3.834103f));
+        Creature* ct2 = mTarget->getWorldMap()->getSpawnManager().spawnCreature(4969, LocationVector(-8675.571289f, 444.162262f, 99.644737f, 3.834103f));
         if (ct2 != nullptr)
             ct2->Despawn(300000, 0);
     }

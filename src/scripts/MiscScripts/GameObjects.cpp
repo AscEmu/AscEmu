@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Map/Maps/MapScriptInterface.h"
@@ -24,7 +25,7 @@ public:
     void OnActivate(Player* player) override
     {
         LocationVector pos = player->GetPosition();
-        Creature* creature = player->getWorldMap()->createAndSpawnCreature(20787, pos);
+        Creature* creature = player->getWorldMap()->getSpawnManager().spawnCreature(20787, pos);
         if (creature != nullptr)
             creature->Despawn(2 * 60 * 1000, 0);
     }
@@ -122,7 +123,7 @@ public:
     void OnLootTaken(Player* player, ItemProperties const* /*itemProperties*/) override
     {
         LocationVector pos = player->GetPosition();
-        Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(11120, pos, true, false, 0, 0);
+        Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(11120, pos);
         if (NewCreature != nullptr)
             NewCreature->Despawn(600000, 0);
     }
@@ -136,7 +137,7 @@ public:
 
     void OnActivate(Player* player) override
     {
-        Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(14515, LocationVector(-11556.3f, -1628.32f, 41.299f, 4.1f), true, false, 0, 0);
+        Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(14515, LocationVector(-11556.3f, -1628.32f, 41.299f, 4.1f));
         if (NewCreature != nullptr)
             NewCreature->Despawn(1200000, 0);
     }
@@ -153,7 +154,7 @@ public:
         if (player->hasQuestInQuestLog(11073) && player->getItemInterface()->GetItemCount(32720, 1))
         {
             LocationVector pos = player->GetPosition();
-            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(21838, pos, true, false, 0, 0);
+            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(21838, pos);
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
@@ -173,15 +174,15 @@ public:
     void OnActivate(Player* player) override
     {
         LocationVector pos = player->GetPosition();
-        Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(14748, LocationVector(pos.x, pos.y + 1, pos.z, pos.o), true, false, 0, 0);
+        Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(14748, LocationVector(pos.x, pos.y + 1, pos.z, pos.o));
         if (NewCreature != nullptr)
             NewCreature->Despawn(600000, 0);
 
-        NewCreature = player->getWorldMap()->getInterface()->spawnCreature(14748, pos, true, false, 0, 0);
+        NewCreature = player->getWorldMap()->getInterface()->spawnCreature(14748, pos);
         if (NewCreature != nullptr)
             NewCreature->Despawn(600000, 0);
 
-        NewCreature = player->getWorldMap()->getInterface()->spawnCreature(14748, LocationVector(pos.x - 1, pos.y, pos.z, pos.o), true, false, 0, 0);
+        NewCreature = player->getWorldMap()->getInterface()->spawnCreature(14748, LocationVector(pos.x - 1, pos.y, pos.z, pos.o));
         if (NewCreature != nullptr)
             NewCreature->Despawn(600000, 0);
     }
@@ -198,7 +199,7 @@ public:
         if (player->getItemInterface()->GetItemCount(9240, 1))
         {
             LocationVector pos = player->GetPosition();
-            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(7273, LocationVector(pos.x, pos.y + 1, pos.z, pos.o), true, false, 0, 0);
+            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(7273, LocationVector(pos.x, pos.y + 1, pos.z, pos.o));
             if (NewCreature != nullptr)
                 NewCreature->Despawn(1800000, 0);
         }
@@ -220,7 +221,7 @@ public:
         if (player->hasQuestInQuestLog(11078))
         {
             LocationVector pos = player->GetPosition();
-            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(23282, LocationVector(pos.x, pos.y + 1, pos.z, pos.o), true, false, 0, 0);
+            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(23282, LocationVector(pos.x, pos.y + 1, pos.z, pos.o));
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
@@ -242,7 +243,7 @@ public:
         if (player->hasQuestInQuestLog(11078))
         {
             LocationVector pos = player->GetPosition();
-            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(23061, LocationVector(pos.x, pos.y + 1, pos.z, pos.o), true, false, 0, 0);
+            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(23061, LocationVector(pos.x, pos.y + 1, pos.z, pos.o));
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
@@ -264,7 +265,7 @@ public:
         if (player->hasQuestInQuestLog(11078))
         {
             LocationVector pos = player->GetPosition();
-            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(23261, LocationVector(pos.x, pos.y + 1, pos.z, pos.o), true, false, 0, 0);
+            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(23261, LocationVector(pos.x, pos.y + 1, pos.z, pos.o));
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
@@ -286,7 +287,7 @@ public:
         if (player->hasQuestInQuestLog(11078))
         {
             LocationVector pos = player->GetPosition();
-            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(23281, LocationVector(pos.x, pos.y + 1, pos.z, pos.o), true, false, 0, 0);
+            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(23281, LocationVector(pos.x, pos.y + 1, pos.z, pos.o));
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
@@ -308,7 +309,7 @@ public:
         if (player->hasQuestInQuestLog(63))
         {
             LocationVector pos = player->GetPosition();
-            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(5894, LocationVector(pos.x, pos.y + 1, pos.z, pos.o), true, false, 0, 0);
+            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(5894, LocationVector(pos.x, pos.y + 1, pos.z, pos.o));
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
@@ -330,7 +331,7 @@ public:
         if (player->hasQuestInQuestLog(9508))
         {
             LocationVector pos = player->GetPosition();
-            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(17359, LocationVector(pos.x, pos.y + 1, pos.z, pos.o), true, false, 0, 0);
+            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(17359, LocationVector(pos.x, pos.y + 1, pos.z, pos.o));
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
@@ -355,7 +356,7 @@ public:
         if (en == nullptr || pDoor == nullptr || Ulag == nullptr)
             return;
 
-        Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(6390, LocationVector(2390.101807f, 336.676788f, 40.015614f, 2.259590f), true, false, 0, 0);
+        Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(6390, LocationVector(2390.101807f, 336.676788f, 40.015614f, 2.259590f));
         if (NewCreature != nullptr)
         {
             NewCreature->Despawn(180000, 0);
@@ -380,7 +381,7 @@ public:
             return;
 
         LocationVector pos = player->GetPosition();
-        Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(1770, pos, true, false, 0, 0);
+        Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(1770, pos);
         if (NewCreature != nullptr)
             NewCreature->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The Sons of Arugal will rise against all who challenge the power of the Moonrage!");
     }
@@ -398,7 +399,7 @@ public:
         if (Chance <= 10)
         {
             LocationVector pos = player->GetPosition();
-            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(3619, LocationVector(pos.x, pos.y + 1, pos.z, pos.o), true, false, 0, 0);
+            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(3619, LocationVector(pos.x, pos.y + 1, pos.z, pos.o));
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
@@ -423,7 +424,7 @@ public:
             float x = 4017.96f;
             float y = 2315.91f;
             float z = 116.418f;
-            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(20482, LocationVector(x, y, z, pos.o), true, false, 0, 0);
+            Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(20482, LocationVector(x, y, z, pos.o));
             if (NewCreature != nullptr)
                 NewCreature->Despawn(1 * 60 * 1000, 0);
         }
@@ -462,7 +463,7 @@ public:
         if (bird != nullptr)
             return;
 
-        bird = player->getWorldMap()->createAndSpawnCreature(19055, pos);
+        bird = player->getWorldMap()->getSpawnManager().spawnCreature(19055, pos);
         if (bird != nullptr)
             bird->Despawn(5 * 60 * 1000, 0);
     }
@@ -476,7 +477,7 @@ public:
 
     void OnActivate(Player* player) override
     {
-        player->getWorldMap()->getInterface()->spawnCreature(16292, LocationVector(7934.343750f, -7637.020996f, 112.694130f, 3.098388f), true, false, 0, 0);
+        player->getWorldMap()->getInterface()->spawnCreature(16292, LocationVector(7934.343750f, -7637.020996f, 112.694130f, 3.098388f));
     }
 };
 
@@ -507,7 +508,7 @@ public:
             GameObject* go = player->getWorldMap()->getInterface()->getGameObjectNearestCoords(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), 177491);
             if (go == nullptr)
             {
-                GameObject* barel = player->getWorldMap()->createAndSpawnGameObject(177491, LocationVector(2449.51f, -1662.32f, 104.38f, 1.0f), 1);
+                GameObject* barel = player->getWorldMap()->getSpawnManager().spawnGameObject(177491, LocationVector(2449.51f, -1662.32f, 104.38f, 1.0f), 1);
                 if (barel != nullptr)
                     barel->despawn(2 * 60 * 1000, 0);
             }
@@ -527,7 +528,7 @@ public:
         if (qle == nullptr)
             return;
 
-        Creature* naga = player->getWorldMap()->createAndSpawnCreature(12369, LocationVector(246.741f, 2953.3f, 5.8631f, 1.078f));
+        Creature* naga = player->getWorldMap()->getSpawnManager().spawnCreature(12369, LocationVector(246.741f, 2953.3f, 5.8631f, 1.078f));
         if (naga != nullptr)
             naga->Despawn(6 * 60 * 1000, 0);
     }
@@ -547,27 +548,27 @@ public:
 
         LocationVector pos = player->GetPosition();
 
-        Creature* pirate = player->getWorldMap()->createAndSpawnCreature(7899, LocationVector(pos.x + Util::getRandomFloat(5.0f), pos.y + Util::getRandomFloat(5.0f), pos.z, pos.o));
+        Creature* pirate = player->getWorldMap()->getSpawnManager().spawnCreature(7899, LocationVector(pos.x + Util::getRandomFloat(5.0f), pos.y + Util::getRandomFloat(5.0f), pos.z, pos.o));
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 
-        pirate = player->getWorldMap()->createAndSpawnCreature(7899, LocationVector(pos.x - Util::getRandomFloat(5.0f), pos.y + Util::getRandomFloat(5.0f), pos.z, pos.o));
+        pirate = player->getWorldMap()->getSpawnManager().spawnCreature(7899, LocationVector(pos.x - Util::getRandomFloat(5.0f), pos.y + Util::getRandomFloat(5.0f), pos.z, pos.o));
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 
-        pirate = player->getWorldMap()->createAndSpawnCreature(7901, LocationVector(pos.x + Util::getRandomFloat(5.0f), pos.y - Util::getRandomFloat(5.0f), pos.z, pos.o));
+        pirate = player->getWorldMap()->getSpawnManager().spawnCreature(7901, LocationVector(pos.x + Util::getRandomFloat(5.0f), pos.y - Util::getRandomFloat(5.0f), pos.z, pos.o));
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 
-        pirate = player->getWorldMap()->createAndSpawnCreature(7901, LocationVector(pos.x + Util::getRandomFloat(5.0f), pos.y + Util::getRandomFloat(5.0f), pos.z, pos.o));
+        pirate = player->getWorldMap()->getSpawnManager().spawnCreature(7901, LocationVector(pos.x + Util::getRandomFloat(5.0f), pos.y + Util::getRandomFloat(5.0f), pos.z, pos.o));
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 
-        pirate = player->getWorldMap()->createAndSpawnCreature(7902, LocationVector(pos.x - Util::getRandomFloat(5.0f), pos.y - Util::getRandomFloat(5.0f), pos.z, pos.o));
+        pirate = player->getWorldMap()->getSpawnManager().spawnCreature(7902, LocationVector(pos.x - Util::getRandomFloat(5.0f), pos.y - Util::getRandomFloat(5.0f), pos.z, pos.o));
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 
-        GameObject* gobj = player->getWorldMap()->createAndSpawnGameObject(142194, LocationVector(pos.x + 5, pos.y, pos.z, pos.o), 1);
+        GameObject* gobj = player->getWorldMap()->getSpawnManager().spawnGameObject(142194, LocationVector(pos.x + 5, pos.y, pos.z, pos.o), 1);
         if (gobj != nullptr)
             gobj->despawn(10 * 60 * 1000, 0);
     }
@@ -591,7 +592,7 @@ public:
         if (shaghost)
             return;
 
-        Creature* shaghostspawn = player->getWorldMap()->createAndSpawnCreature(9136, pos);
+        Creature* shaghostspawn = player->getWorldMap()->getSpawnManager().spawnCreature(9136, pos);
         if (shaghostspawn != nullptr)
             shaghostspawn->Despawn(2 * 60 * 1000, 0);
     }
@@ -609,7 +610,7 @@ public:
         if (qle == nullptr)
             return;
 
-        Creature* demon = player->getWorldMap()->createAndSpawnCreature(11876, LocationVector(-348.231f, 1763.85f, 138.371f, 4.42728f));
+        Creature* demon = player->getWorldMap()->getSpawnManager().spawnCreature(11876, LocationVector(-348.231f, 1763.85f, 138.371f, 4.42728f));
         if (demon != nullptr)
             demon->Despawn(6 * 60 * 1000, 0);
     }
@@ -657,7 +658,7 @@ public:
         if (qle == nullptr)
             return;
 
-        Creature* razormaw = player->getWorldMap()->createAndSpawnCreature(17592, LocationVector(-1203.8f, -12424.7f, 95.36f, 4.7f));
+        Creature* razormaw = player->getWorldMap()->getSpawnManager().spawnCreature(17592, LocationVector(-1203.8f, -12424.7f, 95.36f, 4.7f));
         if (razormaw != nullptr)
             razormaw->Despawn(6 * 60 * 1000, 0);
     }
@@ -703,7 +704,7 @@ public:
                 return;
         }
 
-        Creature* grenkaspawn = player->getWorldMap()->createAndSpawnCreature(4490, pos);
+        Creature* grenkaspawn = player->getWorldMap()->getSpawnManager().spawnCreature(4490, pos);
         if (grenkaspawn != nullptr)
             grenkaspawn->Despawn(6 * 60 * 1000, 0);
     }
@@ -721,7 +722,7 @@ public:
         if (qle == nullptr)
             return;
 
-        Creature* exarch = player->getWorldMap()->createAndSpawnCreature(22452, LocationVector(-3365.9f, 5143.19f, -9.00132f, 3.05f));
+        Creature* exarch = player->getWorldMap()->getSpawnManager().spawnCreature(22452, LocationVector(-3365.9f, 5143.19f, -9.00132f, 3.05f));
         if (exarch != nullptr)
             exarch->Despawn(6 * 60 * 1000, 0);
     }
@@ -753,7 +754,7 @@ public:
 
         LocationVector pos = player->GetPosition();
 
-        Creature* xandivious = player->getWorldMap()->createAndSpawnCreature(15623, LocationVector(pos.x + 5, pos.y, pos.z, pos.o));
+        Creature* xandivious = player->getWorldMap()->getSpawnManager().spawnCreature(15623, LocationVector(pos.x + 5, pos.y, pos.z, pos.o));
         if (xandivious != nullptr)
             xandivious->Despawn(6 * 60 * 1000, 0);
     }
@@ -775,7 +776,7 @@ public:
         if (gobj != nullptr)
             gobj->despawn(6 * 60 * 1000, 0);
 
-        Creature* spike = player->getWorldMap()->createAndSpawnCreature(21319, LocationVector(1315.54f, 6688.33f, -18, 0.001f));
+        Creature* spike = player->getWorldMap()->getSpawnManager().spawnCreature(21319, LocationVector(1315.54f, 6688.33f, -18, 0.001f));
         if (spike != nullptr)
             spike->Despawn(5 * 60 * 1000, 0);
     }
@@ -802,7 +803,7 @@ public:
             LocationVector pos2 = reaver->GetPosition();
             reaver->Despawn(1, 5 * 60 * 1000);
 
-            Creature* reaver2 = player->getWorldMap()->getInterface()->spawnCreature(17556, pos2, true, false, 0, 0);
+            Creature* reaver2 = player->getWorldMap()->getInterface()->spawnCreature(17556, pos2);
             if (reaver2 != nullptr)
                 reaver2->Despawn(5 * 60 * 1000, 0);
         }
@@ -830,7 +831,7 @@ public:
     void OnActivate(Player* player) override
     {
         if (player->getWorldMap()->getDifficulty() == InstanceDifficulty::DUNGEON_HEROIC)
-            player->getWorldMap()->createAndSpawnCreature(23035, LocationVector(-87.3546f, 288.006f, 26.4832f, 0));
+            player->getWorldMap()->getSpawnManager().spawnCreature(23035, LocationVector(-87.3546f, 288.006f, 26.4832f, 0));
     }
 };
 
@@ -911,7 +912,7 @@ public:
     void OnActivate(Player* player) override
     {
         LocationVector pos = player->GetPosition();
-        Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(10882, pos, true, false, 0, 0);
+        Creature* NewCreature = player->getWorldMap()->getInterface()->spawnCreature(10882, pos);
         if (NewCreature != nullptr)
             NewCreature->Despawn(600000, 0);
     }

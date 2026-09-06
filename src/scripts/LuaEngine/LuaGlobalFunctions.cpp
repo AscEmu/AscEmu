@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "LuaGlobalFunctions.hpp"
+#include "Map/Management/SpawnManager.hpp"
 
 #include "BuildInfo.hpp"
 #include "LUAEngine.hpp"
@@ -58,8 +59,9 @@ int LuaGlobalFunctions::PerformIngameSpawn(lua_State* L)
                 return 0;
 
             //int32_t instanceid = static_cast<int32_t>(luaL_optinteger(L, 13, mapMgr->GetInstanceID()));
-            Creature* pCreature = mapMgr->createCreature(entry);
-            pCreature->Load(p, x, y, z, o);
+            Creature* pCreature = mapMgr->getSpawnManager().createCreature(entry, LocationVector(x, y, z, o));
+            if (!pCreature)
+                return 0;
             pCreature->setFaction(faction);
             pCreature->setVirtualItemSlotId(MELEE, equip1);
             pCreature->setVirtualItemSlotId(OFFHAND, equip2);
@@ -83,8 +85,9 @@ int LuaGlobalFunctions::PerformIngameSpawn(lua_State* L)
             if (!mapMgr)
                 return 0;
 
-            GameObject* go = mapMgr->createGameObject(entry);
-            go->create(entry, mapMgr, 0, LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
+            GameObject* go = mapMgr->getSpawnManager().createGameObject(entry, LocationVector(x, y, z, o));
+            if (!go)
+                return 0;
             go->Phase(PHASE_SET, 1);
             go->setScale(((float)faction) / 100.0f);
 
@@ -649,7 +652,7 @@ int LuaGlobalFunctions::GetInstanceCreature(lua_State* L)
     {
         WoWGuid wowGuid;
         wowGuid.init(guid);
-        pCreature = pInstance->getCreature(wowGuid.getGuidLowPart());
+        pCreature = pInstance->getCreature(wowGuid);
     }
     else
         pCreature = pInstance->getSqlIdCreature(spawnId);

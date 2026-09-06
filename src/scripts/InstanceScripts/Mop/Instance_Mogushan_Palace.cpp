@@ -61,7 +61,7 @@ public:
     {
         for (uint32_t guid : mGuoLaiDoorGuids)
         {
-            if (GameObject* pDoor = GetGameObjectByGuid(guid))
+            if (GameObject* pDoor = getGameObjectByGuid(guid))
                 useDoorOrButton(pDoor);
         }
     }

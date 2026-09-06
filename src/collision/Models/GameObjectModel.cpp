@@ -261,6 +261,10 @@ bool GameObjectModel::UpdatePosition()
     }
 
     iPos = owner->GetPosition();
+    iScale = owner->GetScale();
+    if (iScale <= 0.0f)
+        return false;
+    iInvScale = 1.0f / iScale;
 
     G3D::Matrix3 iRotation = G3D::Matrix3::fromEulerAnglesZYX(owner->GetOrientation(), 0, 0);
     iInvRot = iRotation.inverse();

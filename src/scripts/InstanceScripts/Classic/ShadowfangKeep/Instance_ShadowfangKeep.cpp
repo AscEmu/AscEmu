@@ -20,23 +20,23 @@ This file is released under the MIT license. See README-MIT for more information
 // Instance script for map 33 (Shadowfang Keep)
 class ShadowfangKeepInstance : public InstanceScript
 {
-    // Gameobjects low guids
-    uint32_t go_leftCell_GUID;
-    uint32_t go_middleCell_GUID;
-    uint32_t go_rightCell_GUID;
-    uint32_t go_arugalsLair_GUID;
-    uint32_t go_sorcererGate_GUID;
-    uint32_t go_leftCellLever_GUID;
-    uint32_t go_middleCellLever_GUID;
-    uint32_t go_rightCellLever_GUID;
-    uint32_t go_courtyarDoor_GUID;
+    // Gameobject GUIDs
+    WoWGuid go_leftCell_GUID;
+    WoWGuid go_middleCell_GUID;
+    WoWGuid go_rightCell_GUID;
+    WoWGuid go_arugalsLair_GUID;
+    WoWGuid go_sorcererGate_GUID;
+    WoWGuid go_leftCellLever_GUID;
+    WoWGuid go_middleCellLever_GUID;
+    WoWGuid go_rightCellLever_GUID;
+    WoWGuid go_courtyarDoor_GUID;
 
-    // Creatures low guids
-    uint32_t npc_ashcrombe_GUID;
-    uint32_t npc_adamant_GUID;
+    // Creature GUIDs
+    WoWGuid npc_ashcrombe_GUID;
+    WoWGuid npc_adamant_GUID;
 
     // Nandos event related
-    std::list<uint32_t /*guid*/> nandos_summons;
+    std::list<WoWGuid> nandos_summons;
 
     // Encounters data
     uint32_t m_encounterData[ShadowfangKeep::INDEX_MAX];
@@ -44,20 +44,20 @@ class ShadowfangKeepInstance : public InstanceScript
 public:
     explicit ShadowfangKeepInstance(WorldMap* pMapMgr) : InstanceScript(pMapMgr),
 
-    // Gameobjects low guids
-    go_leftCell_GUID(0),
-    go_middleCell_GUID(0),
-    go_rightCell_GUID(0),
-    go_arugalsLair_GUID(0),
-    go_sorcererGate_GUID(0),
-    go_leftCellLever_GUID(0),
-    go_middleCellLever_GUID(0),
-    go_rightCellLever_GUID(0),
-    go_courtyarDoor_GUID(0),
+    // Gameobject GUIDs
+    go_leftCell_GUID(),
+    go_middleCell_GUID(),
+    go_rightCell_GUID(),
+    go_arugalsLair_GUID(),
+    go_sorcererGate_GUID(),
+    go_leftCellLever_GUID(),
+    go_middleCellLever_GUID(),
+    go_rightCellLever_GUID(),
+    go_courtyarDoor_GUID(),
 
-    // Creatures low guids
-    npc_ashcrombe_GUID(0),
-    npc_adamant_GUID(0)
+    // Creature GUIDs
+    npc_ashcrombe_GUID(),
+    npc_adamant_GUID()
     {
         // NandosAI event related
         nandos_summons.clear();
@@ -96,7 +96,7 @@ public:
                 // Despawn all summons on fail or on boos death
                 if (pData == InvalidState || pData == Performed)
                 {
-                    for (std::list<uint32_t>::iterator itr = nandos_summons.begin(); itr != nandos_summons.end();)
+                    for (auto itr = nandos_summons.begin(); itr != nandos_summons.end();)
                     {
                         if (Creature* pCreature = getInstance()->getCreature(*itr))
                         {
@@ -109,7 +109,7 @@ public:
 
                 if (pData == Performed)
                 {
-                    GameObject* pGate = GetGameObjectByGuid(go_arugalsLair_GUID);
+                    GameObject* pGate = getGameObjectByGuid(go_arugalsLair_GUID);
                     if (pGate != nullptr && pGate->getState() == GO_STATE_CLOSED)
                     {
                         pGate->setState(GO_STATE_OPEN);
@@ -145,17 +145,17 @@ public:
                     }
 
                     // Make levers targetable
-                    if (GameObject* pGO = GetGameObjectByGuid(go_leftCellLever_GUID))
+                    if (GameObject* pGO = getGameObjectByGuid(go_leftCellLever_GUID))
                     {
                         pGO->removeFlags(GO_FLAG_NONSELECTABLE);
                     }
 
-                    if (GameObject* pGO = GetGameObjectByGuid(go_middleCellLever_GUID))
+                    if (GameObject* pGO = getGameObjectByGuid(go_middleCellLever_GUID))
                     {
                         pGO->removeFlags(GO_FLAG_NONSELECTABLE);
                     }
 
-                    if (GameObject* pGO = GetGameObjectByGuid(go_rightCellLever_GUID))
+                    if (GameObject* pGO = getGameObjectByGuid(go_rightCellLever_GUID))
                     {
                         pGO->removeFlags(GO_FLAG_NONSELECTABLE);
                     }
@@ -166,7 +166,7 @@ public:
                 // Open doors in any case
                 if (pData == Performed)
                 {
-                    if (GameObject* pGO = GetGameObjectByGuid(go_courtyarDoor_GUID))
+                    if (GameObject* pGO = getGameObjectByGuid(go_courtyarDoor_GUID))
                     {
                         if (pGO->getState() != GO_STATE_OPEN)
                             pGO->setState(GO_STATE_OPEN);
@@ -178,7 +178,7 @@ public:
                 if (pData == Performed)
                 {
                     SetLocaleInstanceData(0, ShadowfangKeep::INDEX_VOIDWALKER, InProgress);
-                    GameObject* pGate = GetGameObjectByGuid(go_sorcererGate_GUID);
+                    GameObject* pGate = getGameObjectByGuid(go_sorcererGate_GUID);
                     if (pGate != nullptr && pGate->getState() == GO_STATE_CLOSED)
                     {
                         pGate->setState(GO_STATE_OPEN);
@@ -204,19 +204,19 @@ public:
         {
             case ShadowfangKeep::GO_LEFT_CELL:
             {
-                go_leftCell_GUID = pGameObject->getGuidLow();
+                go_leftCell_GUID = pGameObject->GetNewGUID();
             }break;
             case ShadowfangKeep::GO_MIDDLE_CELL:
             {
-                go_middleCell_GUID = pGameObject->getGuidLow();
+                go_middleCell_GUID = pGameObject->GetNewGUID();
             }break;
             case ShadowfangKeep::GO_RIGHT_CELL:
             {
-                go_rightCell_GUID = pGameObject->getGuidLow();
+                go_rightCell_GUID = pGameObject->GetNewGUID();
             }break;
             case ShadowfangKeep::GO_ARUGALS_LAIR_GATE:
             {
-                go_arugalsLair_GUID = pGameObject->getGuidLow();
+                go_arugalsLair_GUID = pGameObject->GetNewGUID();
                 if (GetInstanceData(0, ShadowfangKeep::INDEX_NANDOS) == Performed && pGameObject->getState() == GO_STATE_CLOSED)
                 {
                     pGameObject->setState(GO_STATE_OPEN);
@@ -224,7 +224,7 @@ public:
             }break;
             case ShadowfangKeep::GO_SORCERER_GATE:
             {
-                go_sorcererGate_GUID = pGameObject->getGuidLow();
+                go_sorcererGate_GUID = pGameObject->GetNewGUID();
                 if (GetInstanceData(0, ShadowfangKeep::INDEX_FENRUS) == Performed && pGameObject->getState() == GO_STATE_CLOSED)
                 {
                     pGameObject->setState(GO_STATE_OPEN);
@@ -232,7 +232,7 @@ public:
             }break;
             case ShadowfangKeep::GO_LEFT_LEVER:
             {
-                go_leftCellLever_GUID = pGameObject->getGuidLow();
+                go_leftCellLever_GUID = pGameObject->GetNewGUID();
                 if (GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) != Performed)
                 {
                     pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
@@ -240,7 +240,7 @@ public:
             }break;
             case ShadowfangKeep::GO_RIGHT_LEVER:
             {
-                go_rightCellLever_GUID = pGameObject->getGuidLow();
+                go_rightCellLever_GUID = pGameObject->GetNewGUID();
                 if (GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) != Performed)
                 {
                     pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
@@ -248,7 +248,7 @@ public:
             }break;
             case ShadowfangKeep::GO_MIDDLE_LEVER:
             {
-                go_middleCellLever_GUID = pGameObject->getGuidLow();
+                go_middleCellLever_GUID = pGameObject->GetNewGUID();
                 if (GetInstanceData(0, ShadowfangKeep::INDEX_RETHILGORE) != Performed)
                 {
                     pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
@@ -256,7 +256,7 @@ public:
             }break;
             case ShadowfangKeep::GO_COURTYARD_DOOR:
             {
-                go_courtyarDoor_GUID = pGameObject->getGuidLow();
+                go_courtyarDoor_GUID = pGameObject->GetNewGUID();
                 if (GetInstanceData(0, ShadowfangKeep::INDEX_PRISONER_EVENT) == Performed && pGameObject->getState() == GO_STATE_CLOSED)
                 {
                     pGameObject->setState(GO_STATE_OPEN);
@@ -273,7 +273,7 @@ public:
         {
             case ShadowfangKeep::GO_RIGHT_LEVER:
             {
-                if (GameObject* pGO = GetGameObjectByGuid(go_rightCell_GUID))
+                if (GameObject* pGO = getGameObjectByGuid(go_rightCell_GUID))
                 {
                     pGO->setState(pGO->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN : GO_STATE_CLOSED);
                     pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
@@ -281,7 +281,7 @@ public:
             }break;
             case ShadowfangKeep::GO_MIDDLE_LEVER:
             {
-                if (GameObject* pGO = GetGameObjectByGuid(go_middleCell_GUID))
+                if (GameObject* pGO = getGameObjectByGuid(go_middleCell_GUID))
                 {
                     pGO->setState(pGO->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN : GO_STATE_CLOSED);
                     pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
@@ -289,7 +289,7 @@ public:
             }break;
             case ShadowfangKeep::GO_LEFT_LEVER:
             {
-                if (GameObject* pGO = GetGameObjectByGuid(go_leftCell_GUID))
+                if (GameObject* pGO = getGameObjectByGuid(go_leftCell_GUID))
                 {
                     pGO->setState(pGO->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN : GO_STATE_CLOSED);
                     pGameObject->setFlags(GO_FLAG_NONSELECTABLE);
@@ -323,18 +323,15 @@ public:
 
     void OnCreaturePushToWorld(Creature* pCreature) override
     {
-        WoWGuid wowGuid;
-        wowGuid.init(pCreature->getGuid());
-
         switch (pCreature->getEntry())
         {
             case ShadowfangKeep::CN_ADAMANT:
             {
-                npc_adamant_GUID = wowGuid.getGuidLowPart();
+                npc_adamant_GUID = pCreature->GetNewGUID();
             }break;
             case ShadowfangKeep::CN_ASHCROMBE:
             {
-                npc_ashcrombe_GUID = wowGuid.getGuidLowPart();
+                npc_ashcrombe_GUID = pCreature->GetNewGUID();
             }break;
             // Make him hidden
             case ShadowfangKeep::CN_ARUGAL:
@@ -349,7 +346,7 @@ public:
                 if (GetInstanceData(0, ShadowfangKeep::INDEX_NANDOS) == InProgress)
                 {
                     pCreature->Despawn(60 * 4 * 1000, 0);   // Despawn in 4 mins
-                    nandos_summons.push_back(wowGuid.getGuidLowPart());
+                    nandos_summons.push_back(pCreature->GetNewGUID());
                 }
             }break;
             case ShadowfangKeep::CN_LUPINE_DELUSION:
@@ -357,7 +354,7 @@ public:
                 // Add to nandos summon lists only on his event is started
                 if (GetInstanceData(0, ShadowfangKeep::INDEX_NANDOS) == InProgress)
                 {
-                    nandos_summons.push_back(wowGuid.getGuidLowPart());
+                    nandos_summons.push_back(pCreature->GetNewGUID());
                 }
                 pCreature->Despawn(60 * 4 * 1000, 0); // Despawn in 4 mins
             }break;

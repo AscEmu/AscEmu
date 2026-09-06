@@ -603,6 +603,7 @@ public:
 
     void setLocalData(uint32_t /*type*/, uint32_t /*data*/) override;
     uint32_t getLocalData(uint32_t /*type*/) const override;
+    WoWGuid getLocalGuidData(uint32_t type) const override;
 
     void spawnPortal();
     void startBossEncounter(uint8_t bossId);
@@ -619,10 +620,10 @@ public:
 
 protected:
     static uint8_t const ErekemGuardCount = 2;
-    uint32_t ErekemGuardGUIDs[ErekemGuardCount] = { 0, 0 };
+    WoWGuid ErekemGuardGUIDs[ErekemGuardCount] = { 0, 0 };
 
     static uint8_t const ActivationCrystalCount = 5;
-    uint32_t ActivationCrystalGUIDs[ActivationCrystalCount] = { 0, 0, 0, 0, 0};
+    WoWGuid ActivationCrystalGUIDs[ActivationCrystalCount] = { 0, 0, 0, 0, 0};
 
     uint8_t FirstBossId;
     uint8_t SecondBossId;

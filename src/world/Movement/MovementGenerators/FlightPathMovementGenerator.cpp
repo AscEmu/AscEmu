@@ -245,7 +245,11 @@ void FlightPathMovementGenerator::preloadEndGrid()
     if (endMap)
     {
         sLogger.debug("FlightPathMovementGenerator:: Preloading of Cell({}, {}) for map {} at node index {}/{}", _endGridX, _endGridY, _endMapId, _preloadTargetNode, (uint32_t)(_path.size() - 1));
-        if (endMap->getCellByCoords(_endGridX, _endGridY))
-            endMap->getCellByCoords(_endGridX, _endGridY)->setActivity(true);
+
+        auto [gx, gy] = visibility::worldToGrid(LocationVector(_endGridX, _endGridY));
+        auto gid = visibility::packGridId(gx, gy);
+
+        // Activate Destination Grid
+        endMap->getVisibilitySystem().activateGrid(gid);
     }
 }

@@ -90,7 +90,7 @@ void SpellCastTargets::read(WorldPacket& data)
         data >> m_destination.y;
         data >> m_destination.z;
 
-        if (auto transporter = sTransportHandler.getTransporter(m_transportDestinationGuid.getGuidLow()))
+        if (auto transporter = sTransportHandler.getTransporter(m_transportDestinationGuid))
             transporter->calculatePassengerPosition(m_destination.x, m_destination.y, m_destination.z);
     }
 

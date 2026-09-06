@@ -140,7 +140,7 @@ void WorldSession::handleSaveGuildEmblem(WorldPacket& recvPacket)
         return;
 
     sLogger.debug("MSG_SAVE_GUILD_EMBLEM {}: vendorGuid: {} style: {}, color: {}, borderStyle: {}, borderColor: {}, backgroundColor: {}",
-        _player->getName(), srlPacket.guid.getGuidLow(), srlPacket.emblemInfo.getStyle(), srlPacket.emblemInfo.getColor(),
+        _player->getName(), srlPacket.guid.getLowGuid(), srlPacket.emblemInfo.getStyle(), srlPacket.emblemInfo.getColor(),
         srlPacket.emblemInfo.getBorderStyle(), srlPacket.emblemInfo.getBorderColor(), srlPacket.emblemInfo.getBackgroundColor());
 
     Guild* guild = _player->getGuild();
@@ -510,7 +510,7 @@ void WorldSession::handleGuildBankerActivate(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    const auto gameObject = _player->getWorldMap()->getGameObject(srlPacket.guid.getGuidLow());
+    const auto gameObject = _player->getWorldMapGameObject(srlPacket.guid.getRawGuid());
     if (gameObject == nullptr)
         return;
 
@@ -566,7 +566,7 @@ void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    Player* pTarget = _player->getWorldMap()->getPlayer(srlPacket.playerGuid.getGuidLow());
+    Player* pTarget = _player->getWorldMapPlayer(srlPacket.playerGuid.getRawGuid());
     const auto pCharter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid);
     if (pCharter == nullptr)
     {
@@ -609,7 +609,7 @@ void WorldSession::handleCharterSign(WorldPacket& recvPacket)
 
     if (const auto charter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid))
     {
-        for (const uint32_t playerGuid : charter->getSignatures())
+        for (const auto& playerGuid : charter->getSignatures())
         {
             if (playerGuid == _player->getGuid())
             {
@@ -623,19 +623,20 @@ void WorldSession::handleCharterSign(WorldPacket& recvPacket)
         if (charter->isFull())
             return;
 
-        charter->addSignature(_player->getGuidLow());
+        charter->addSignature(_player->GetNewGUID());
         charter->saveToDB();
         _player->m_charters[charter->getCharterType()] = charter;
         _player->saveToDB(false);
 
-        Player* player = _player->getWorldMap()->getPlayer(charter->getLeaderGuid());
+        // todo aaron02 maprework
+        Player* player = _player->getWorldMapPlayer(charter->getLeaderGuid().getRawGuid());
         if (player == nullptr)
             return;
 
         SmsgPetitionSignResult managedSigneePacket(srlPacket.itemGuid, _player->getGuid(), PetitionSignResult::OK);
         player->getSession()->sendManagedPacket(managedSigneePacket);
 
-        SmsgPetitionSignResult managedPacket(srlPacket.itemGuid, uint64_t(charter->getLeaderGuid()), PetitionSignResult::OK);
+        SmsgPetitionSignResult managedPacket(srlPacket.itemGuid, charter->getLeaderGuid().getRawGuid(), PetitionSignResult::OK);
         sendManagedPacket(managedPacket);
     }
 }
@@ -650,7 +651,7 @@ void WorldSession::handleCharterDecline(WorldPacket& recvPacket)
     if (charter == nullptr)
         return;
 
-    Player* player = sObjectMgr.getPlayer(charter->getLeaderGuid());
+    Player* player = sObjectMgr.getPlayer(charter->getLeaderGuid().getLowGuid());
     if (player && player->getSession())
     {
         MsgPetitionDecline managedPacket(_player->getGuid());
@@ -765,13 +766,13 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
             sObjectMgr.updateArenaTeamRankings();
 
             // set up the members
-            for (const uint32_t playerGuid : charter->getSignatures())
+            for (const auto& playerGuid : charter->getSignatures())
             {
-                if (const auto info = sObjectMgr.getCachedCharacterInfo(playerGuid))
+                if (const auto info = sObjectMgr.getCachedCharacterInfo(playerGuid.getLowGuid()))
                 {
                     if (arenaTeam->addMember(info))
                     {
-                        if (const auto arenaMember = sObjectMgr.getPlayer(playerGuid))
+                        if (const auto arenaMember = sObjectMgr.getPlayer(playerGuid.getLowGuid()))
                             arenaMember->setArenaTeam(arenaTeam->m_type, arenaTeam);
                     }
                 }
@@ -795,7 +796,7 @@ void WorldSession::handleCharterQuery(WorldPacket& recvPacket)
 
     if (auto const charter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid))
     {
-        SmsgPetitionQueryResponse managedPacket(srlPacket.charterId, charter->getLeaderGuid(),
+        SmsgPetitionQueryResponse managedPacket(srlPacket.charterId, charter->getLeaderGuid().getRawGuid(),
             charter->getGuildName(), charter->getCharterType(), charter->getAvailableSlots());
         sendManagedPacket(managedPacket);
     }
@@ -807,7 +808,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    Creature* creature = _player->getWorldMap()->getCreature(srlPacket.creatureGuid.getGuidLowPart());
+    Creature* creature = _player->getWorldMapCreature(srlPacket.creatureGuid.getRawGuid());
     if (!creature)
     {
         Disconnect();
@@ -880,7 +881,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         {
             auto item = sObjectMgr.createItem(item_ids[arena_type], _player);
 
-            auto const charter = sObjectMgr.createCharter(_player->getGuidLow(), static_cast<CharterTypes>(srlPacket.arenaIndex));
+            auto const charter = sObjectMgr.createCharter(_player->GetNewGUID(), static_cast<CharterTypes>(srlPacket.arenaIndex));
             if (item == nullptr || charter == nullptr)
                 return;
 
@@ -955,7 +956,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 
             auto item = sObjectMgr.createItem(CharterEntry::Guild, _player);
 
-            auto const guildCharter = sObjectMgr.createCharter(_player->getGuidLow(), CHARTER_TYPE_GUILD);
+            auto const guildCharter = sObjectMgr.createCharter(_player->GetNewGUID(), CHARTER_TYPE_GUILD);
             if (item == nullptr || guildCharter == nullptr)
                 return;
 
@@ -999,7 +1000,7 @@ void WorldSession::handleGuildAssignRankOpcode([[maybe_unused]] WorldPacket& rec
     const WoWGuid setterGuid = _socket->getClientProtocol().isMop() ? _player->GetNewGUID() : srlPacket.setterGuid;
 
     sLogger.debug("CMSG_GUILD_ASSIGN_MEMBER_RANK {}: Target: {} Rank: {}, Issuer: {}",
-        _player->getName(), WoWGuid::getGuidLowPartFromUInt64(srlPacket.targetGuid), srlPacket.rankId, WoWGuid::getGuidLowPartFromUInt64(setterGuid));
+        _player->getName(), WoWGuid::getLowGuidFromRaw(srlPacket.targetGuid), srlPacket.rankId, WoWGuid::getLowGuidFromRaw(setterGuid));
 
     if (Guild* guild = _player->getGuild())
         guild->handleSetMemberRank(this, srlPacket.targetGuid, setterGuid, srlPacket.rankId);
@@ -1013,9 +1014,9 @@ void WorldSession::handleGuildQueryRanksOpcode([[maybe_unused]] WorldPacket& rec
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debug("CMSG_GUILD_QUERY_RANKS {}: Guild: {}", _player->getName(), WoWGuid::getGuidLowPartFromUInt64(srlPacket.guildGuid));
+    sLogger.debug("CMSG_GUILD_QUERY_RANKS {}: Guild: {}", _player->getName(), srlPacket.guildGuid.getLowGuid());
 
-    if (Guild* guild = sGuildMgr.getGuildById(WoWGuid::getGuidLowPartFromUInt64(srlPacket.guildGuid)))
+    if (Guild* guild = sGuildMgr.getGuildById(WoWGuid::getLowGuidFromRaw(srlPacket.guildGuid)))
     {
         if (guild->isMember(_player->getGuid()))
             guild->sendGuildRankInfo(this);
@@ -1038,7 +1039,7 @@ void WorldSession::handleGuildQueryXPOpcode([[maybe_unused]] WorldPacket& recvPa
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    uint32_t guildId = srlPacket.guildGuid.getGuidLowPart();
+    uint32_t guildId = srlPacket.guildGuid.getLowGuid();
 
     sLogger.debug("CMSG_QUERY_GUILD_XP {}: guildId: {}", _player->getName(), guildId);
 
@@ -1057,7 +1058,7 @@ void WorldSession::handleGuildRequestPartyState([[maybe_unused]] WorldPacket& re
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    const uint32_t guildId = WoWGuid::getGuidLowPartFromUInt64(srlPacket.guildGuid);
+    const uint32_t guildId = WoWGuid::getLowGuidFromRaw(srlPacket.guildGuid);
 
     if (Guild* guild = sGuildMgr.getGuildById(guildId))
         guild->handleGuildPartyRequest(this);
@@ -1071,7 +1072,7 @@ void WorldSession::handleGuildRequestMaxDailyXP([[maybe_unused]] WorldPacket& re
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    const uint32_t guildId = WoWGuid::getGuidLowPartFromUInt64(srlPacket.guildGuid);
+    const uint32_t guildId = WoWGuid::getLowGuidFromRaw(srlPacket.guildGuid);
 
     if (Guild* guild = sGuildMgr.getGuildById(guildId))
     {
@@ -1163,7 +1164,7 @@ void WorldSession::handleGuildFinderAddRecruit([[maybe_unused]] WorldPacket& rec
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    const uint32_t guildLowGuid = WoWGuid::getGuidLowPartFromUInt64(uint64_t(srlPacket.guid));
+    const uint32_t guildLowGuid = WoWGuid::getLowGuidFromRaw(uint64_t(srlPacket.guid));
 
     if (!(srlPacket.classRoles & GUILDFINDER_ALL_ROLES) || srlPacket.classRoles > GUILDFINDER_ALL_ROLES)
         return;
@@ -1253,7 +1254,7 @@ void WorldSession::handleGuildFinderDeclineRecruit([[maybe_unused]] WorldPacket&
     if (!wowGuid.isPlayer())
         return;
 
-    sGuildFinderMgr.removeMembershipRequest(wowGuid.getGuidLowPart(), _player->getGuildId());
+    sGuildFinderMgr.removeMembershipRequest(wowGuid.getCounter(), _player->getGuildId());
 #endif
 }
 
@@ -1361,7 +1362,7 @@ void WorldSession::handleGuildFinderRemoveRecruit([[maybe_unused]] WorldPacket& 
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sGuildFinderMgr.removeMembershipRequest(WoWGuid::getGuidLowPartFromUInt64(_player->getGuid()), WoWGuid::getGuidLowPartFromUInt64(srlPacket.guildGuid));
+    sGuildFinderMgr.removeMembershipRequest(WoWGuid::getLowGuidFromRaw(_player->getGuid()), WoWGuid::getLowGuidFromRaw(srlPacket.guildGuid));
 #endif
 }
 

@@ -196,9 +196,9 @@ void WebWrapAI::OnCombatStop(Unit* /*pTarget*/)
 void WebWrapAI::OnDied(Unit* /*pKiller*/)
 {
     // Slower, but safer
-    if (mPlayerGuid != 0)
+    if (mPlayerGuid)
     {
-        Player* PlayerPtr = sObjectMgr.getPlayer(static_cast<uint32_t>(mPlayerGuid));
+        Player* PlayerPtr = sObjectMgr.getPlayer(mPlayerGuid.getLowGuid());
         if (PlayerPtr != NULL && PlayerPtr->hasAurasWithId(MAEXXNA_WEB_WRAP))
         {
             PlayerPtr->removeAllAurasById(MAEXXNA_WEB_WRAP);
@@ -211,9 +211,9 @@ void WebWrapAI::OnDied(Unit* /*pKiller*/)
 
 void WebWrapAI::AIUpdate()
 {
-    if (mPlayerGuid != 0)
+    if (mPlayerGuid)
     {
-        Player* PlayerPtr = sObjectMgr.getPlayer(static_cast<uint32_t>(mPlayerGuid));
+        Player* PlayerPtr = sObjectMgr.getPlayer(mPlayerGuid.getLowGuid());
         if (PlayerPtr == NULL || !PlayerPtr->isAlive() || !PlayerPtr->hasAurasWithId(MAEXXNA_WEB_WRAP))
         {
             mPlayerGuid = 0;
@@ -225,9 +225,9 @@ void WebWrapAI::AIUpdate()
 
 void WebWrapAI::Destroy()
 {
-    if (mPlayerGuid != 0)
+    if (mPlayerGuid)
     {
-        Player* PlayerPtr = sObjectMgr.getPlayer(static_cast<uint32_t>(mPlayerGuid));
+        Player* PlayerPtr = sObjectMgr.getPlayer(mPlayerGuid.getLowGuid());
         if (PlayerPtr != NULL && PlayerPtr->hasAurasWithId(MAEXXNA_WEB_WRAP))
         {
             PlayerPtr->removeAllAurasById(MAEXXNA_WEB_WRAP);
@@ -870,7 +870,6 @@ void AnubRekhanAI::Destroy()
 //                continue;
 //
 //            PlayerPtr = static_cast<Player*>(Iter);
-//            std::set<uint32_t>::iterator PlayerIter = AnubRekhan->mUsedCorpseGuids.find(static_cast<uint32_t>(PlayerPtr->getGuid()));
 //            if (PlayerIter != AnubRekhan->mUsedCorpseGuids.end())
 //            {
 //                if (PlayerPtr->isAlive())
@@ -886,7 +885,6 @@ void AnubRekhanAI::Destroy()
 //                spawnLocation = PlayerPtr->GetPosition();
 //            else if (PlayerPtr->getDeathState() == CORPSE)
 //            {
-//                Corpse* myCorpse = sObjectMgr.GetCorpseByOwner(PlayerPtr->getGuidLow());
 //                if (myCorpse == NULL || myCorpse->GetCorpseState() != CORPSE_STATE_BODY)
 //                    continue;
 //
@@ -910,7 +908,6 @@ void AnubRekhanAI::Destroy()
 //        {
 //            uint32_t Id = Util::getRandomUInt(static_cast<uint32_t>(PlayerCorpses.size() - 1));
 //            PlayerPtr = PlayerCorpses[Id].first;
-//            AnubRekhan->mUsedCorpseGuids.insert(static_cast<uint32_t>(PlayerPtr->getGuid()));
 //
 //            for (uint8_t i = 0; i < 5; ++i)
 //            {
@@ -1771,7 +1768,7 @@ void PlagueFissureGO::DoErrupt()
 {
     _gameobject->sendGameobjectCustomAnim();
 
-    Creature* pFissureTrigger = _gameobject->getWorldMap()->getInterface()->spawnCreature(15384, _gameobject->GetPosition(), true, false, 0, 0, 1);
+    Creature* pFissureTrigger = _gameobject->getWorldMap()->getInterface()->spawnCreature(15384, _gameobject->GetPosition(), 1);
     if (!pFissureTrigger)
         return;
 

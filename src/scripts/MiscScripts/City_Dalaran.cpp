@@ -107,7 +107,7 @@ public:
     explicit FactionInvisible(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // 0 = all (default), 1 = horde, 2 = alliance
-        switch (getCreature()->spawnid)
+        switch (getCreature()->getSpawnId())
         {
             case 128959:
             case 129859:

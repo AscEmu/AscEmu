@@ -108,7 +108,7 @@ public:
 
     void OpenHalfusExit()
     {
-        if (GameObject* pDoor = GetGameObjectByGuid(mHalfusExitGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mHalfusExitGuid))
             useDoorOrButton(pDoor);
         TryOpenChogallEntrance();
     }
@@ -121,7 +121,7 @@ public:
             return;
 
         setBossState(DATA_THERALION_AND_VALIONA, EncounterStates::Performed);
-        if (GameObject* pDoor = GetGameObjectByGuid(mDragonSiblingsExitGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mDragonSiblingsExitGuid))
             useDoorOrButton(pDoor);
         TryOpenChogallEntrance();
     }
@@ -134,7 +134,7 @@ public:
             return;
 
         setBossState(DATA_ASCENDANT_COUNCIL, EncounterStates::Performed);
-        if (GameObject* pDoor = GetGameObjectByGuid(mAscendantCouncilExitGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mAscendantCouncilExitGuid))
             useDoorOrButton(pDoor);
         TryOpenChogallEntrance();
     }
@@ -150,9 +150,9 @@ public:
         if (getBossState(DATA_ASCENDANT_COUNCIL) != EncounterStates::Performed)
             return;
 
-        if (GameObject* pDoor = GetGameObjectByGuid(mChogallEntranceGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mChogallEntranceGuid))
             useDoorOrButton(pDoor);
-        if (GameObject* pDoor = GetGameObjectByGuid(mTwilightsHammerThroneGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mTwilightsHammerThroneGuid))
             useDoorOrButton(pDoor);
     }
 

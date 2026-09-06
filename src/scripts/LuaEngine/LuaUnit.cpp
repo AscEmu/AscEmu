@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "LuaUnit.hpp"
+#include "Map/Maps/BaseMap.hpp"
+#include "Map/Management/SpawnManager.hpp"
 
 #include "LUAEngine.hpp"
 #include "LuaGlobal.hpp"
@@ -291,13 +293,10 @@ int LuaUnit::PhaseSet(lua_State* L, Unit* ptr)
         case TYPEID_UNIT:
             crt = dynamic_cast<Creature*>(ptr);
             crt->setPhase(PHASE_SET, newphase);
-            if (crt->m_spawn)
-                crt->m_spawn->phase = newphase;
             if (Save)
-            {
                 crt->SaveToDB();
-                crt->m_loadedFromDB = true;
-            }
+            else if (crt->getWorldMap())
+                crt->getWorldMap()->getSpawnManager().syncCreatureSpawn(crt);
             break;
 
         case TYPEID_PLAYER:
@@ -327,14 +326,10 @@ int LuaUnit::PhaseAdd(lua_State* L, Unit* ptr)
         case TYPEID_UNIT:
             crt = dynamic_cast<Creature*>(ptr);
             crt->setPhase(PHASE_ADD, newphase);
-            if (crt->m_spawn)
-                crt->m_spawn->phase |= newphase;
-
             if (Save)
-            {
                 crt->SaveToDB();
-                crt->m_loadedFromDB = true;
-            }
+            else if (crt->getWorldMap())
+                crt->getWorldMap()->getSpawnManager().syncCreatureSpawn(crt);
             break;
 
         case TYPEID_PLAYER:
@@ -364,14 +359,10 @@ int LuaUnit::PhaseDelete(lua_State* L, Unit* ptr)
         case TYPEID_UNIT:
             crt = dynamic_cast<Creature*>(ptr);
             crt->setPhase(PHASE_DEL, newphase);
-            if (crt->m_spawn)
-                crt->m_spawn->phase &= ~newphase;
-
             if (Save)
-            {
                 crt->SaveToDB();
-                crt->m_loadedFromDB = true;
-            }
+            else if (crt->getWorldMap())
+                crt->getWorldMap()->getSpawnManager().syncCreatureSpawn(crt);
             break;
 
         case TYPEID_PLAYER:
@@ -602,13 +593,12 @@ int LuaUnit::SpawnCreature(lua_State* L, Unit* ptr)
         lua_pushnil(L);
         return 1;
     }
-    Creature* pCreature = ptr->getWorldMap()->createCreature(entry);
+    Creature* pCreature = ptr->getWorldMap()->getSpawnManager().createCreature(entry, LocationVector(x, y, z, o));
     if (pCreature == nullptr)
     {
         lua_pushnil(L);
         return 1;
     }
-    pCreature->Load(p, x, y, z, o);
     pCreature->setFaction(faction);
     pCreature->setVirtualItemSlotId(MELEE, equip1);
     pCreature->setVirtualItemSlotId(OFFHAND, equip2);
@@ -647,8 +637,12 @@ int LuaUnit::SpawnGameObject(lua_State* L, Unit* ptr)
             return 1;
         }
 
-        GameObject* go = ptr->getWorldMap()->createGameObject(entry_id);
-        go->create(entry_id, ptr->getWorldMap(), ptr->GetPhase(), LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
+        GameObject* go = ptr->getWorldMap()->getSpawnManager().createGameObject(entry_id, LocationVector(x, y, z, o));
+        if (!go)
+        {
+            lua_pushnil(L);
+            return 1;
+        }
         go->Phase(PHASE_SET, phase);
         go->setScale(scale);
         go->AddToWorld(ptr->getWorldMap());
@@ -2983,7 +2977,7 @@ int LuaUnit::GetUnitByGUID(lua_State* L, Unit* ptr)
 {
     const uint64_t guid = CHECK_GUID(L, 1);
     if (ptr && guid)
-        PUSH_UNIT(L, ptr->getWorldMap()->getUnit(guid));
+        PUSH_UNIT(L, ptr->getWorldMapUnit(guid));
     return 1;
 }
 
@@ -2998,7 +2992,7 @@ int LuaUnit::GetAITargets(lua_State* L, Unit* ptr)
     int count = 0;
     for (const ThreatReference* ref : ptr->getThreatManager().getModifiableThreatList())
     {
-        ret = ptr->getWorldMap()->getUnit(ref->getOwner()->getGuid());
+        ret = ptr->getWorldMapUnit(ref->getOwner()->getGuid());
         count++;
         lua_pushvalue(L, count);
         PUSH_UNIT(L, ret);
@@ -3439,35 +3433,11 @@ int LuaUnit::Unpossess(lua_State* /*L*/, Unit* ptr)
 int LuaUnit::RemoveFromWorld(lua_State* /*L*/, Unit* ptr)
 {
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())
-    {
         return 0;
-    }
-    Creature* unit = dynamic_cast<Creature*>(ptr);
-    if (unit->IsInWorld())
-    {
-        if (unit->m_spawn)
-        {
-            const uint32_t cellx = uint32_t(((Map::Terrain::_maxX - unit->m_spawn->x) / Map::Cell::cellSize));
-            const uint32_t celly = uint32_t(((Map::Terrain::_maxY - unit->m_spawn->y) / Map::Cell::cellSize));
 
-            if (cellx <= Map::Cell::_sizeX && celly <= Map::Cell::_sizeY)
-            {
-                CellSpawns* sp = unit->getWorldMap()->getBaseMap()->getSpawnsList(cellx, celly);
-                if (sp != nullptr)
-                {
-                    for (CreatureSpawnList::iterator itr = sp->CreatureSpawns.begin(); itr != sp->CreatureSpawns.end(); ++itr)
-                        if ((*itr) == unit->m_spawn)
-                        {
-                            sp->CreatureSpawns.erase(itr);
-                            break;
-                        }
-                }
-                delete unit->m_spawn;
-                unit->m_spawn = nullptr;
-            }
-        }
-        unit->RemoveFromWorld(false, true);
-    }
+    // SpawnManager owns grid/spawn bookkeeping now. Do not mutate legacy
+    // BaseMap cell spawn containers or delete m_spawn directly.
+    ptr->RemoveFromWorld(false);
     return 0;
 }
 
@@ -4054,7 +4024,7 @@ int LuaUnit::GetSelection(lua_State* L, Unit* ptr)
     }
 
     const Player* plr = dynamic_cast<Player*>(ptr);
-    Unit* selection = plr->getWorldMap()->getUnit(plr->getTargetGuid());
+    Unit* selection = plr->getWorldMapUnit(plr->getTargetGuid());
     if (selection)
         PUSH_UNIT(L, selection);
     else
@@ -4547,7 +4517,7 @@ int LuaUnit::SendLootWindow(lua_State* L, Unit* ptr)
 
     if (wowGuid.isUnit())
     {
-        Unit* pUnit = plr->getWorldMap()->getUnit(guid);
+        Unit* pUnit = plr->getWorldMapUnit(guid);
         CreatureProperties const* creature_properties = dynamic_cast<Creature*>(pUnit)->GetCreatureProperties();
         const auto lootType = pUnit->getWorldMap() ? (pUnit->getWorldMap()->getDifficulty() ? true : false) : false;
         switch (loot_type)
@@ -4569,7 +4539,7 @@ int LuaUnit::SendLootWindow(lua_State* L, Unit* ptr)
     }
     else if (wowGuid.isGameObject())
     {
-        GameObject* pGO = plr->getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
+        GameObject* pGO = plr->getWorldMap()->getGameObject(wowGuid);
         if (pGO != nullptr && pGO->IsLootable())
         {
             GameObject_Lootable* lt = dynamic_cast<GameObject_Lootable*>(pGO);
@@ -5771,7 +5741,7 @@ int LuaUnit::GetSpawnId(lua_State* L, Unit* ptr)
         return 0;
     }
     Creature* cre = dynamic_cast<Creature*>(ptr);
-    lua_pushnumber(L, cre->GetSQL_id());
+    lua_pushnumber(L, cre->getSpawnId());
     return 1;
 }
 
@@ -6231,7 +6201,7 @@ int LuaUnit::GetObjectByGuid(lua_State* L, Unit* ptr)
         return 0;
     }
     const uint64_t guid = CHECK_GUID(L, 1);
-    Object* obj = ptr->getWorldMap()->getObject(guid);
+    Object* obj = ptr->getWorldMapObject(guid);
     if (obj != nullptr && obj->isCreatureOrPlayer())
         PUSH_UNIT(L, obj);
     else if (obj != nullptr && obj->isGameObject())
@@ -6393,7 +6363,7 @@ int LuaUnit::StopPlayerAttack(lua_State* /*L*/, Unit* ptr)
         return 0;
     }
 
-    ptr->smsg_AttackStop(ptr->getWorldMap()->getUnit(dynamic_cast<Player*>(ptr)->getTargetGuid()));
+    ptr->smsg_AttackStop(ptr->getWorldMapUnit(dynamic_cast<Player*>(ptr)->getTargetGuid()));
     return 0;
 }
 
@@ -6470,8 +6440,9 @@ int LuaUnit::SpawnAndEnterVehicle([[maybe_unused]] lua_State* L, [[maybe_unused]
 
     const LocationVector v(ptr->GetPosition());
 
-    Creature* c = ptr->getWorldMap()->createCreature(cp->Id);
-    c->Load(cp, v.x, v.y, v.z, v.o);
+    Creature* c = ptr->getWorldMap()->getSpawnManager().createCreature(cp->Id, v);
+    if (!c)
+        return 0;
     c->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
     c->PushToWorld(ptr->getWorldMap());
     c->callEnterVehicle(ptr);
@@ -6508,7 +6479,7 @@ int LuaUnit::DismissVehicle(lua_State* /*L*/, [[maybe_unused]] Unit* ptr)
     if (o->isPlayer())
         o->removeAllAurasByAuraEffect(SPELL_AURA_MOUNTED);
     else
-        o->Delete();
+        o->destroy();
 #endif
     return 0;
 }
@@ -6546,8 +6517,9 @@ int LuaUnit::AddVehiclePassenger([[maybe_unused]] lua_State* L, [[maybe_unused]]
 
     Unit* u = v->getBase();
 
-    Creature* c = u->getWorldMap()->createCreature(creature_entry);
-    c->Load(cp, u->GetPositionX(), u->GetPositionY(), u->GetPositionZ(), u->GetOrientation());
+    Creature* c = u->getWorldMap()->getSpawnManager().createCreature(creature_entry, u->GetPosition());
+    if (!c)
+        return 0;
     c->PushToWorld(u->getWorldMap());
     c->callEnterVehicle(u);
 #endif

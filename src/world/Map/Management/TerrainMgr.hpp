@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Movement/MovementDefines.h"
-#include "CellHandlerDefines.hpp"
+#include "Map/Visibility/VisibilityTypes.hpp"
 
 #include <array>
 #include <memory>
@@ -205,9 +205,9 @@ class TerrainHolder
 {
 public:
     uint32_t m_mapid;
-    std::array<std::array<std::unique_ptr<TerrainTile>, Map::Terrain::TilesCount>, Map::Terrain::TilesCount> m_tiles;
-    std::array<std::array<std::mutex, Map::Terrain::TilesCount>, Map::Terrain::TilesCount> m_lock;
-    std::array<std::array<std::atomic<unsigned long>, Map::Terrain::TilesCount>, Map::Terrain::TilesCount> m_tilerefs;
+    std::array<std::array<std::unique_ptr<TerrainTile>, visibility::Terrain::TilesCount>, visibility::Terrain::TilesCount> m_tiles;
+    std::array<std::array<std::mutex, visibility::Terrain::TilesCount>, visibility::Terrain::TilesCount> m_lock;
+    std::array<std::array<std::atomic<unsigned long>, visibility::Terrain::TilesCount>, visibility::Terrain::TilesCount> m_tilerefs;
 
     /// Our memory saving system for small allocations
     uint32_t TileCountX, TileCountY;
@@ -215,7 +215,7 @@ public:
     uint32_t TileStartY, TileEndY;
 
     /// This holds the offsets of the tile information for each tile.
-    std::array<std::array<uint32_t, Map::Terrain::TilesCount>, Map::Terrain::TilesCount> TileOffsets;
+    std::array<std::array<uint32_t, visibility::Terrain::TilesCount>, visibility::Terrain::TilesCount> TileOffsets;
 
     TerrainHolder(uint32_t mapid);
     ~TerrainHolder();

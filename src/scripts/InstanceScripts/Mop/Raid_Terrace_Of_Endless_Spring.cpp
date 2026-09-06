@@ -59,7 +59,7 @@ public:
     {
         for (uint32_t guid : mCelestialDoorGuids)
         {
-            if (GameObject* pDoor = GetGameObjectByGuid(guid))
+            if (GameObject* pDoor = getGameObjectByGuid(guid))
                 useDoorOrButton(pDoor);
         }
     }

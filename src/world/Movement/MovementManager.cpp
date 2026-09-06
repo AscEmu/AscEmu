@@ -117,7 +117,19 @@ void MovementManager::initialize()
 
 void MovementManager::initializeDefault()
 {
-    add(FactorySelector::selectMovementGenerator(_owner), MOTION_SLOT_DEFAULT);
+    MovementGenerator* generator = FactorySelector::selectMovementGenerator(_owner);
+
+    if (!generator)
+    {
+        sLogger.failure(
+            "MovementManager: no default movement generator for guid={} entry={} movementType={}",
+            _owner->getGuid(),
+            _owner->getEntry(),
+            static_cast<uint32_t>(_owner->getDefaultMovementType()));
+        return;
+    }
+
+    add(generator, MOTION_SLOT_DEFAULT);
 }
 
 void MovementManager::addToWorld()

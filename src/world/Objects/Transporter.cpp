@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Map/Visibility/VisibilitySystem.hpp"
 #include "Models/GameObjectModel.h"
 #include "Server/Packets/SmsgTransferPending.h"
 #include "Movement/Spline/Spline.h"
@@ -25,6 +26,39 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Players/Player.hpp"
 
 using namespace AscEmu::Packets;
+
+namespace
+{
+    void applyTransportPassengerInterest(WorldMap* map, Object* passenger)
+    {
+        if (!map || !passenger)
+            return;
+
+        auto h = map->getSpatialIndex().handleByGuid(passenger->GetNewGUID());
+        if (!h.id)
+            return;
+
+        auto interest = map->getVisibilitySystem().buildInterestProfile(passenger);
+        interest.publishMode = visibility::PublishMode::CellRadius;
+        interest.publishCells = 4;
+        interest.publishPlayersOnly = true;
+
+        map->getVisibilitySystem().applyInterestProfile(h, interest);
+    }
+
+    void restorePassengerInterest(WorldMap* map, Object* passenger)
+    {
+        if (!map || !passenger)
+            return;
+
+        auto h = map->getSpatialIndex().handleByGuid(passenger->GetNewGUID());
+        if (!h.id)
+            return;
+
+        map->getVisibilitySystem().applyInterestProfile(
+            h, map->getVisibilitySystem().buildInterestProfile(passenger));
+    }
+}
 
 Transporter::Transporter(uint64_t guid) : GameObject(guid), _passengerTeleportItr(_passengers.begin())
 {
@@ -47,18 +81,29 @@ Transporter::Transporter(uint64_t guid) : GameObject(guid), _passengerTeleportIt
 
 Transporter::~Transporter()
 {
-    if (getWorldMap())
-        getWorldMap()->removeDelayedRemoveFor(this);
-
     ASSERT(_passengers.empty());
     _passengers.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Essential functions
-void Transporter::OnPushToWorld()
+void Transporter::onAttachToWorld()
 {
-    _pendingMapChange = false;
+    GameObject::onAttachToWorld();
+}
+
+void Transporter::onPreDetachFromWorld()
+{
+    sTransportHandler.removeInstancedTransport(this, GetInstanceID());
+
+    UnloadStaticPassengers();
+    while (!_passengers.empty())
+    {
+        Object* obj = *_passengers.begin();
+        RemovePassenger(obj);
+    }
+
+    GameObject::onPreDetachFromWorld();
 }
 
 bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float z, float ang, uint8_t animprogress)
@@ -116,25 +161,7 @@ bool Transporter::Create(uint32_t entry, uint32_t mapid, float x, float y, float
 
 void Transporter::Update(unsigned long time_passed)
 {
-    if (_delayedTeleport)
-    {
-        _delayedTeleport = false;
-        _pendingMapChange = true;
-        getWorldMap()->markDelayedRemoveFor(this, false);
-    }
-
-    if (_delayedMapRemove)
-    {
-        _delayedMapRemoveTimer -= time_passed;
-        if (_delayedMapRemoveTimer <= 0)
-        {
-            _delayedMapRemove = false;
-            _pendingMapChange = true;
-            getWorldMap()->markDelayedRemoveFor(this, true);
-        }
-    }
-
-    if (_pendingMapChange)
+    if (!IsInWorld())
         return;
 
     if (GetKeyFrames().size() <= 1)
@@ -211,7 +238,7 @@ void Transporter::Update(unsigned long time_passed)
     if (_delayedAddModel)
     {
         _delayedAddModel = false;
-        if (m_model)
+        if (m_model && getWorldMap())
             getWorldMap()->insertGameObjectModel(*m_model);
     }
 
@@ -241,24 +268,68 @@ void Transporter::Update(unsigned long time_passed)
     }
 }
 
-void Transporter::AddPassenger(Player* passenger)
+void Transporter::delayedUpdate(unsigned long /*time_passed*/)
 {
-    if (!IsInWorld())
+    if (GetKeyFrames().size() <= 1)
+        return;
+
+    delayedTeleportTransport();
+}
+
+void Transporter::AddPassenger(Object* passenger, const LocationVector& transportOffset)
+{
+    if (!passenger || !IsInWorld())
         return;
 
     if (_passengers.insert(passenger).second)
     {
         passenger->SetTransport(this);
+        passenger->obj_movement_info.setTransportData(
+            GetNewGUID(),
+            transportOffset.x,
+            transportOffset.y,
+            transportOffset.z,
+            transportOffset.o,
+            GetTimer(),
+            -1);
+
 #if VERSION_STRING <= WotLK
         passenger->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
+        if (auto* unit = passenger->ToUnit())
+            unit->addUnitMovementFlag(MOVEFLAG_TRANSPORT);
 #endif
-        passenger->obj_movement_info.transport_guid = getGuid();
-        if (passenger->isPlayer())
+
+        applyTransportPassengerInterest(getWorldMap(), passenger);
+
+        if (auto* player = passenger->ToPlayer())
         {
             if (getWorldMap() && getWorldMap()->getScript())
-                getWorldMap()->getScript()->TransportBoarded(passenger, this);
+                getWorldMap()->getScript()->TransportBoarded(player, this);
         }
     }
+}
+
+void Transporter::RestorePassengerAfterTeleport(Object* passenger, const LocationVector& transportOffset)
+{
+    if (!passenger || !IsInWorld())
+        return;
+
+    _passengers.insert(passenger);
+    passenger->SetTransport(this);
+    passenger->obj_movement_info.setTransportData(
+        GetNewGUID(),
+        transportOffset.x,
+        transportOffset.y,
+        transportOffset.z,
+        transportOffset.o,
+        GetTimer(),
+        -1);
+
+#if VERSION_STRING <= WotLK
+    passenger->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
+    if (auto* unit = passenger->ToUnit())
+        unit->addUnitMovementFlag(MOVEFLAG_TRANSPORT);
+#endif
 }
 
 void Transporter::RemovePassenger(Object* passenger)
@@ -280,17 +351,24 @@ void Transporter::RemovePassenger(Object* passenger)
     else
         erased = _passengers.erase(passenger) > 0;
 
-    if (erased || _staticPassengers.erase(passenger))
+    const bool staticPassengerErased = _staticPassengers.erase(passenger) > 0;
+    if (erased || staticPassengerErased)
     {
         passenger->SetTransport(nullptr);
 #if VERSION_STRING <= WotLK
         passenger->obj_movement_info.removeMovementFlag(MOVEFLAG_TRANSPORT);
+        if (auto* unit = passenger->ToUnit())
+            unit->removeUnitMovementFlag(MOVEFLAG_TRANSPORT);
 #endif
         passenger->obj_movement_info.clearTransportData();
-        if (passenger->isPlayer())
+
+        if (erased)
+            restorePassengerInterest(getWorldMap(), passenger);
+
+        if (auto* player = passenger->ToPlayer())
         {
             if (getWorldMap() && getWorldMap()->getScript())
-                getWorldMap()->getScript()->TransportUnboarded(passenger->ToPlayer(), this);
+                getWorldMap()->getScript()->TransportUnboarded(player, this);
         }
     }
 }
@@ -298,87 +376,105 @@ void Transporter::RemovePassenger(Object* passenger)
 Creature* Transporter::createNPCPassenger(MySQLStructure::CreatureSpawn* data)
 {
     WorldMap* map = getWorldMap();
+    if (data == nullptr || map == nullptr)
+        return nullptr;
 
-    CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(data->entry);
-    if (creature_properties == nullptr || map == nullptr)
-        return 0;
+    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(data->entry);
+    if (creatureProperties == nullptr)
+        return nullptr;
 
-    Creature* pCreature = map->createCreature(data->entry);
+    float localX = data->spawnPoint.x;
+    float localY = data->spawnPoint.y;
+    float localZ = data->spawnPoint.z;
+    float localO = data->spawnPoint.o;
 
-    float x, y, z, o;
-    x = data->x;
-    y = data->y;
-    z = data->z;
-    o = data->o;
+    float worldX = localX;
+    float worldY = localY;
+    float worldZ = localZ;
+    float worldO = localO;
+    calculatePassengerPosition(worldX, worldY, worldZ, &worldO);
 
-    pCreature->SetTransport(this);
-    pCreature->obj_movement_info.setTransportData(this->getGuid(), x, y, z, o, 0, 0);
+    // Transport spawn rows use transport-local coordinates and may omit values
+    // that normal map spawn rows override. Initialize the creature from its
+    // creature properties while detached, then attach it only after the
+    // transport-specific state is complete.
+    Creature* creature = map->getObjectFactory().createCreature(data->entry);
+    if (creature == nullptr)
+        return nullptr;
 
-    calculatePassengerPosition(x, y, z, &o);
-    pCreature->SetPosition(x, y, z, o);
-    pCreature->SetSpawnLocation(x, y, z, o);
-    pCreature->SetTransportHomePosition(pCreature->obj_movement_info.transport_position);
+    creature->Create(map->getBaseMap()->getMapId(), worldX, worldY, worldZ, worldO);
+    creature->Load(creatureProperties, worldX, worldY, worldZ, worldO);
 
-    pCreature->addUnitStateFlag(UNIT_STATE_IGNORE_PATHFINDING);
+    creature->SetTransport(this);
+    creature->obj_movement_info.setTransportData(getGuid(), localX, localY, localZ, localO, 0, 0);
+    creature->SetPosition(worldX, worldY, worldZ, worldO);
+    creature->SetSpawnLocation(worldX, worldY, worldZ, worldO);
+    creature->SetTransportHomePosition(creature->obj_movement_info.transport_position);
+    creature->addUnitStateFlag(UNIT_STATE_IGNORE_PATHFINDING);
 
-    // Create Creature
-    pCreature->Create(map->getBaseMap()->getMapId(), x, y, z, o);
-    pCreature->Load(creature_properties, x, y, z, o);
-
-    // AddToWorld
-    pCreature->AddToWorld(map);
 #if VERSION_STRING <= WotLK
-    pCreature->setUnitMovementFlags(MOVEFLAG_TRANSPORT);
-    pCreature->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
+    creature->addUnitMovementFlag(MOVEFLAG_TRANSPORT);
+    creature->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
 #endif
 
-    // Equipment
-    pCreature->setVirtualItemSlotId(MELEE, creature_properties->itemslot_1);
-    pCreature->setVirtualItemSlotId(OFFHAND, creature_properties->itemslot_2);
-    pCreature->setVirtualItemSlotId(RANGED, creature_properties->itemslot_3);
+    creature->setVirtualItemSlotId(MELEE, creatureProperties->itemslot_1);
+    creature->setVirtualItemSlotId(OFFHAND, creatureProperties->itemslot_2);
+    creature->setVirtualItemSlotId(RANGED, creatureProperties->itemslot_3);
 
     if (data->emote_state)
-        pCreature->setEmoteState(data->emote_state);
+        creature->setEmoteState(data->emote_state);
 
-    if (creature_properties->NPCFLags)
-        pCreature->setNpcFlags(creature_properties->NPCFLags);
+    if (creatureProperties->NPCFLags)
+        creature->setNpcFlags(creatureProperties->NPCFLags);
 
-    _staticPassengers.insert(pCreature);
-    return pCreature;
+    map->getObjectFactory().attachToWorld(creature);
+    if (!creature->IsInWorld())
+    {
+        map->getObjectFactory().recycleAndDestroy(creature, true);
+        return nullptr;
+    }
+
+    applyTransportPassengerInterest(map, creature);
+    _staticPassengers.insert(creature);
+    return creature;
 }
 
 GameObject* Transporter::createGOPassenger(MySQLStructure::GameobjectSpawn* data)
 {
     WorldMap* map = getWorldMap();
-
-    const auto properties = sMySQLStore.getGameObjectProperties(data->entry);
-    if (properties == nullptr || map == nullptr)
+    if (data == nullptr || map == nullptr)
         return nullptr;
 
-    GameObject* pGameobject = map->createGameObject(data->entry);
-
-    if (!pGameobject->loadFromDB(data, map, false))
-    {
-        delete pGameobject;
+    if (sMySQLStore.getGameObjectProperties(data->entry) == nullptr)
         return nullptr;
-    }
+
+    // Load the complete DB-backed object before it is inserted into collision or
+    // spatial structures. Reinitializing an attached GameObject can replace its
+    // collision model while the old model is still referenced by the map tree.
+    GameObject* gameObject = map->getObjectFactory().createGameObjectFromSpawns(*data);
+    if (gameObject == nullptr)
+        return nullptr;
 
     float x, y, z, o;
     data->spawnPoint.getPosition(x, y, z, o);
 
-    pGameobject->SetTransport(this);
-    pGameobject->obj_movement_info.setTransportData(this->getGuid(), x, y, z, o, 0, 0);
+    gameObject->SetTransport(this);
+    gameObject->obj_movement_info.setTransportData(getGuid(), x, y, z, o, 0, 0);
 
     calculatePassengerPosition(x, y, z, &o);
-    pGameobject->SetPosition(x, y, z, o);
+    gameObject->SetPosition(x, y, z, o);
+    gameObject->setAnimationProgress(255);
 
-    pGameobject->setAnimationProgress(255);
+    map->getObjectFactory().attachToWorld(gameObject);
+    if (!gameObject->IsInWorld())
+    {
+        map->getObjectFactory().recycleAndDestroy(gameObject, true);
+        return nullptr;
+    }
 
-    // AddToWorld
-    pGameobject->AddToWorld(map);
-
-    _staticPassengers.insert(pGameobject);
-    return pGameobject;
+    applyTransportPassengerInterest(map, gameObject);
+    _staticPassengers.insert(gameObject);
+    return gameObject;
 }
 
 void Transporter::UpdatePosition(float x, float y, float z, float o)
@@ -407,11 +503,11 @@ void Transporter::LoadStaticPassengers()
                 sLogger.failure("Failed to add npc entry: {} to transport: {}", creature_spawn->entry, getGuid());
         }
 
-        /*for (auto go_spawn : sMySQLStore._gameobjectSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
+        for (auto go_spawn : sMySQLStore._gameobjectSpawnsStore[GetGameObjectProperties()->mo_transport.map_id])
         {
             if (createGOPassenger(go_spawn) == 0)
                 sLogger.failure("Failed to add go entry: {} to transport: {}", go_spawn->entry, getGuid());
-        }*/
+        }
     }
 }
 
@@ -420,20 +516,13 @@ void Transporter::UnloadStaticPassengers()
     while (!_staticPassengers.empty())
     {
         Object* obj = *_staticPassengers.begin();
-        RemovePassenger(obj);
-
-        switch (obj->getObjectTypeId())
+        if (obj)
         {
-            case TYPEID_UNIT:
-                obj->ToCreature()->Despawn(0, 0);
-                break;
-            case TYPEID_GAMEOBJECT:
-                obj->ToGameObject()->despawn(0, 0);
-                break;
-            default:
-                if (obj->IsInWorld())
-                    obj->Delete();
-                break;
+            RemovePassenger(obj);
+
+            WorldMap* map = getWorldMap();
+            if (map != nullptr)
+                map->getObjectFactory().removeAndDestroy(obj, true);
         }
     }
 }
@@ -575,8 +664,7 @@ float Transporter::CalculateSegmentPos(float now)
 void Transporter::removeFromMap()
 {
     UnloadStaticPassengers();
-    _delayedMapRemoveTimer = 100;
-    _delayedMapRemove = true;
+    destroy();
 }
 
 void Transporter::calculatePassengerPosition(float& x, float& y, float& z, float* o)
@@ -597,8 +685,6 @@ bool Transporter::TeleportTransport(uint32_t newMapid, float x, float y, float z
     {
         // Unload at old Map
         UnloadStaticPassengers();
-        // Wait a bit before we Procced in new MapMgr
-        _delayedTransportFromMap = oldMap;
         _delayedTeleport = true;
         return true;
     }
@@ -615,11 +701,13 @@ bool Transporter::TeleportTransport(uint32_t newMapid, float x, float y, float z
 
 void Transporter::delayedTeleportTransport()
 {
-    if (!_delayedTransportFromMap || !_pendingMapChange)
+    if (!_delayedTeleport)
         return;
 
-    _delayedTransportFromMap->removeFromMapMgr(this);
-    RemoveFromWorld(false);
+    _delayedTeleport = false;
+
+    WorldMap* newMap = sMapMgr.findWorldMap(_nextFrame->Node.mapid, GetInstanceID());
+    WorldMap* oldMap = getWorldMap();
 
     // Set new Map Information
     SetMapId(_nextFrame->Node.mapid);
@@ -631,41 +719,38 @@ void Transporter::delayedTeleportTransport()
 
     SetPosition(x, y, z, o, false);
 
-    // Add new Object to new MapMgr
-    AddToWorld();
-    getWorldMap()->addToMapMgr(this);
-
-    // Teleport Players
-    TeleportPlayers(x, y, z, o, _nextFrame->Node.mapid, _delayedTransportFromMap->getBaseMap()->getMapId(), true);
-
-    _delayedTransportFromMap = nullptr;
-
-    // Update Transport Positions
-    UpdatePosition(x, y, z, o);
-
-    LoadStaticPassengers();
+    // The target map finishes the attach on its own thread.
+    oldMap->getObjectFactory().transferWorld(this, newMap);
 }
 
-void Transporter::TeleportPlayers(float x, float y, float z, float o, uint32_t newMapId, uint32_t oldMapId, bool newMap)
+void Transporter::TeleportPlayers(float x, float y, float z, float o, uint32_t newMapId, uint32_t oldMapId, bool newMap, WorldMap* targetMap)
 {
-    for (PassengerSet::iterator itr = _passengers.begin(); itr != _passengers.end(); ++itr)
+    for (_passengerTeleportItr = _passengers.begin(); _passengerTeleportItr != _passengers.end();)
     {
-        if ((*itr)->isPlayer())
+        Object* obj = (*_passengerTeleportItr++);
+
+        if (obj->isPlayer())
         {
-            Player* player = reinterpret_cast<Player*>(*itr);
+            Player* player = reinterpret_cast<Player*>(obj);
 
             float destX, destY, destZ, destO;
-            LocationVector transPos = (*itr)->obj_movement_info.transport_position;
+            LocationVector transPos = obj->obj_movement_info.transport_position;
             transPos.getPosition(destX, destY, destZ, destO);
             TransportBase::CalculatePassengerPosition(destX, destY, destZ, &destO, x, y, z, o);
 
             if (newMap)
             {
+                // Preserve the transport identity and local passenger offset across
+                // the worldport. The relationship is restored explicitly when the
+                // client acknowledges the destination map.
+                player->setTeleportTransport(GetNewGUID(), transPos);
+
                 SmsgTransferPending managedPacket(newMapId, true, getEntry(), oldMapId);
                 player->getSession()->sendManagedPacket(managedPacket);
             }
 
-            bool teleport_successful = player->teleport(LocationVector(destX, destY, destZ, destO), getWorldMap());
+            WorldMap* destinationMap = targetMap ? targetMap : getWorldMap();
+            bool teleport_successful = player->teleport(LocationVector(destX, destY, destZ, destO), destinationMap);
             if (!teleport_successful)
             {
                 player->repopAtGraveyard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId());
@@ -676,54 +761,25 @@ void Transporter::TeleportPlayers(float x, float y, float z, float o, uint32_t n
 
 void Transporter::UpdateForMap(WorldMap* targetMap)
 {
-    if (!targetMap->hasPlayers())
+    if (!targetMap->getRegistry().countPlayers())
         return;
 
     if (GetMapId() == targetMap->getBaseMap()->getMapId())
     {
-        for (const auto& itr : targetMap->getPlayers())
-        {
-            ByteBuffer transData(500);
-            uint32_t count = 0;
-            count = Object::buildCreateUpdateBlockForPlayer(&transData, itr.second);
-            itr.second->getUpdateMgr().pushUpdateData(&transData, count);
-        }
+        thread_local std::vector<Player*> s_players;
+        targetMap->getRegistry().snapshotPlayers(s_players);
+
+        targetMap->getRegistry().forEachPinned(s_players, [&](Player& player)
+            {
+                if (player.getWorldMap() != targetMap)
+                    return;
+
+                ByteBuffer transData(500);
+                uint32_t count = 0;
+                count = Object::buildCreateUpdateBlockForPlayer(&transData, &player);
+                player.getUpdateMgr().pushUpdateData(&transData, count);
+            });
     }
-}
-
-uint32_t Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
-{
-    uint32_t cnt = Object::buildCreateUpdateBlockForPlayer(data, target);
-
-    // add all the npcs and gos to the packet
-    // comment this out for now until we decided if we want creatures and gos always be loaded for transports
-    /*for (auto itr = _staticPassengers.begin(); itr != _staticPassengers.end(); ++itr)
-    {
-        Object* passenger = *itr;
-        float x, y, z, o;
-        passenger->obj_movement_info.transport_position.getPosition(x, y, z, o);
-        CalculatePassengerPosition(x, y, z, &o);
-        switch (passenger->getObjectTypeId())
-        {
-        case TYPEID_UNIT:
-        {
-            Creature* creature = static_cast<Creature*>(passenger);
-            creature->SetPosition(x, y, z, o, false);
-            creature->GetTransportHomePosition(x, y, z, o);
-            CalculatePassengerPosition(x, y, z, &o);
-            creature->SetSpawnLocation(x, y, z, o);
-            break;
-        }
-        case TYPEID_GAMEOBJECT:
-        {
-            GameObject* gameobject = static_cast<GameObject*>(passenger);
-            gameobject->SetPosition(x, y, z, o, false);
-            break;
-        }
-        }
-        cnt += passenger->buildCreateUpdateBlockForPlayer(data, target);
-    }*/
-    return cnt;
 }
 
 void Transporter::DoEventIfAny(KeyFrame const& node, bool departure)
@@ -736,27 +792,43 @@ void Transporter::DoEventIfAny(KeyFrame const& node, bool departure)
         if (getWorldMap() && getWorldMap()->getScript())
             getWorldMap()->getScript()->TransporterEvents(this, eventid);
 
-        // TODO Sort out ships and zeppelins
         switch (eventid)
         {
-        case 16501:
-        case 16400:
-        case 19126:
-        case 15318:
-        case 19032:
-        case 10301:
-        case 19124:
-        case 16398:
-        case 19139:
-        case 16396:
-        case 16402:
-        case 15314:
-            PlaySoundToSet(5154);   // ShipDocked         LightHouseFogHorn.wav
-            break;
-        case 16401:
-            PlaySoundToSet(11804);  // ZeppelinDocked     ZeppelinHorn.wav
-            break;
-        }
+            case 16400:
+            case 16395:
+            case 16399:
+            case 19033:
+            case 10302:
+            case 19031:
+            case 16397:
+            case 16402:
+            case 16396:
+            case 16398:
+            case 19032:
+            case 19030:
+            case 10301:
+            case 19124:
+            case 15314:
+                PlaySoundToSet(5154);   // ShipDocked         LightHouseFogHorn.wav
+                break;
+
+            case 19139:
+            case 15318:
+            case 19126:
+            case 19137:
+            case 15312:
+            case 15320:
+            case 15322:
+            case 19127:
+            case 21870:
+            case 15324:
+            case 16401:
+                PlaySoundToSet(11804);  // ZeppelinDocked     ZeppelinHorn.wav
+                break;
+
+            default:
+                break;
+            }
     }
 }
 

@@ -318,13 +318,13 @@ private:
 
     inline const GuildMember* getMember(uint64_t guid) const
     {
-        GuildMembersStore::const_iterator itr = _guildMembersStore.find(WoWGuid::getGuidLowPartFromUInt64(guid));
+        GuildMembersStore::const_iterator itr = _guildMembersStore.find(WoWGuid::getLowGuidFromRaw(guid));
         return itr != _guildMembersStore.end() ? itr->second.get() : nullptr;
     }
 
     inline GuildMember* getMember(uint64_t guid)
     {
-        GuildMembersStore::iterator itr = _guildMembersStore.find(WoWGuid::getGuidLowPartFromUInt64(guid));
+        GuildMembersStore::iterator itr = _guildMembersStore.find(WoWGuid::getLowGuidFromRaw(guid));
         return itr != _guildMembersStore.end() ? itr->second.get() : nullptr;
     }
 

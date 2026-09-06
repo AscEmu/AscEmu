@@ -377,19 +377,25 @@ size_t World::getSessionCount()
 
 void World::deleteSession(WorldSession* worldSession)
 {
-    std::lock_guard<std::mutex> guard(mSessionLock);
+    if (!worldSession)
+        return;
 
+    removeGlobalSession(worldSession);
+
+    std::lock_guard<std::mutex> guard(mSessionLock);
     mActiveSessionMapStore.erase(worldSession->GetAccountId());
 }
 
 void World::deleteSessions(std::list<WorldSession*>& slist)
 {
-    std::lock_guard<std::mutex> guard(mSessionLock);
+    for (WorldSession* session : slist)
+        removeGlobalSession(session);
 
-    for (auto sessionList = slist.begin(); sessionList != slist.end(); ++sessionList)
+    std::lock_guard<std::mutex> guard(mSessionLock);
+    for (WorldSession* session : slist)
     {
-        WorldSession* session = *sessionList;
-        mActiveSessionMapStore.erase(session->GetAccountId());
+        if (session)
+            mActiveSessionMapStore.erase(session->GetAccountId());
     }
 }
 
@@ -477,36 +483,60 @@ void World::disconnectSessionByPlayerName(const std::string& playerName, WorldSe
 // GlobalSession functions - not used?
 void World::addGlobalSession(WorldSession* worldSession)
 {
-    if (worldSession)
-        globalSessionSet.insert(worldSession);
+    if (!worldSession)
+        return;
+
+    std::lock_guard<std::mutex> guard(globalSessionMutex);
+    globalSessionSet.insert(worldSession);
+}
+
+void World::removeGlobalSession(WorldSession* worldSession)
+{
+    if (!worldSession)
+        return;
+
+    std::lock_guard<std::mutex> guard(globalSessionMutex);
+    globalSessionSet.erase(worldSession);
 }
 
 void World::updateGlobalSession(uint32_t /*diff*/)
 {
-    std::list<WorldSession*> ErasableSessions;
-
-    for (SessionSet::iterator itr = globalSessionSet.begin(); itr != globalSessionSet.end();)
+    std::vector<WorldSession*> sessions;
     {
-        WorldSession* session = (*itr);
-        SessionSet::iterator it2 = itr;
-        ++itr;
-        if (!session || session->GetInstance() != 0)
+        std::lock_guard<std::mutex> guard(globalSessionMutex);
+        sessions.assign(globalSessionSet.begin(), globalSessionSet.end());
+    }
+
+    std::list<WorldSession*> erasableSessions;
+
+    for (WorldSession* session : sessions)
+    {
+        if (!session)
+            continue;
+
+        // -1/UINT32_MAX is the only global owner. Instance 0 is a perfectly
+        // valid overworld WorldMap and therefore belongs to its map thread.
+        if (!session->IsGlobalUpdateOwner())
         {
-            globalSessionSet.erase(it2);
+            removeGlobalSession(session);
             continue;
         }
 
-        if (int result = session->Update(0))
-        {
-            if (result == 1)
-                ErasableSessions.push_back(session);
+        const uint8_t result = session->Update(WorldSession::GLOBAL_SESSION_INSTANCE);
 
-            globalSessionSet.erase(it2);
+        // Ownership can change from inside an opcode handler (login/worldport).
+        if (!session->IsGlobalUpdateOwner())
+            removeGlobalSession(session);
+
+        if (result != 0)
+        {
+            removeGlobalSession(session);
+            if (result == 1)
+                erasableSessions.push_back(session);
         }
     }
 
-    deleteSessions(ErasableSessions);
-    ErasableSessions.clear();
+    deleteSessions(erasableSessions);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -995,7 +1025,6 @@ void World::loadMySQLTablesByTask()
             sMySQLStore.loadGameObjectSpawnsOverrideTable();
         },
         []{
-            sMySQLStore.loadCreatureGroupSpawns();
             sMySQLStore.loadCreatureSplineChains();
         },
         []{
@@ -1042,6 +1071,11 @@ void World::loadMySQLTablesByTask()
             sCommandTableStorage.loadOverridePermission();
         }
     });
+
+    // Spawn group members reference creature spawn IDs and therefore must be
+    // loaded only after loadCreatureSpawns() has completed.
+    sMySQLStore.loadCreatureGroupSpawns();
+
     sLogger.info("WordFilter : Loading...");
 
     g_chatFilter = std::make_unique<WordFilter>();

@@ -3,7 +3,6 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Map/Cells/MapCell.hpp"
 #include "Corpse.hpp"
 
 #include <sstream>
@@ -12,12 +11,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.hpp"
 #include "Data/WoWCorpse.hpp"
 #include "Objects/Units/Players/Player.hpp"
+#include "Map/Maps/WorldMap.hpp"
+#include "Map/Management/ObjectFactory.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Utilities/Random.hpp"
 #include "Utilities/Strings.hpp"
 #include "Utilities/Util.hpp"
+#include "Server/World.h"
 
-Corpse::Corpse(uint32_t high, uint32_t low)
+Corpse::Corpse(uint64_t guid)
 {
     m_objectType |= TYPE_CORPSE;
     m_objectTypeId = TYPEID_CORPSE;
@@ -44,13 +46,26 @@ Corpse::Corpse(uint32_t high, uint32_t low)
     m_updateMask.SetCount(getSizeOfStructure(WoWCorpse));
 
     setOType(TYPE_CORPSE | TYPE_OBJECT);
-    setGuid(low, high);
+    setGuid(guid);
 
     setScale(1);
 }
 
 Corpse::~Corpse()
 {
+}
+
+void Corpse::destroy()
+{
+    WorldMap* map = getWorldMap();
+    if (!map)
+    {
+        sLogger.warning("Corpse::destroy called without WorldMap guid={}", GetNewGUID().getRawGuid());
+        return;
+    }
+
+    if (IsInWorld())
+        map->getObjectFactory().removeAndDestroy(this, /*recycleGuid=*/true);
 }
 
 void Corpse::create(Player* owner, uint32_t mapid, LocationVector lv)
@@ -154,24 +169,33 @@ uint32_t Corpse::getCorpseState() { return m_state; }
 
 void Corpse::setOwnerNotifyMap(uint64_t guid)
 {
+    const uint64_t oldOwnerGuid = getOwnerGuid();
     setOwnerGuid(guid);
 
+    if (oldOwnerGuid == guid)
+        return;
+
+    // Player corpses keep their area active while they still belong to an owner.
+    // Once the owner link is cleared (bones/delink), the corpse should stop being
+    // an activator so its cells/grid can unload after the normal delay.
+    WorldMap* map = getWorldMap();
+    if (!map || !IsInWorld())
+        return;
+
+    auto h = map->getSpatialIndex().handleByGuid(GetNewGUID());
+    if (!h.id)
+        return;
+
     if (guid == 0)
-    {
-        if (MapCell* mapCell = GetMapCell())
-            mapCell->corpseGoneIdle(this);
-    }
+        map->getVisibilitySystem().setActivatorRole(h, false, 0);
+    else if (oldOwnerGuid == 0)
+        map->getVisibilitySystem().setActivatorRole(h, true, worldConfig.server.mapCellNumber);
+
 }
 
 void Corpse::generateLoot()
 {
     loot.gold = Util::getRandomUInt(50, 150);
-}
-
-void Corpse::despawn()
-{
-    if (this->IsInWorld())
-        RemoveFromWorld(false);
 }
 
 void Corpse::spawnBones()

@@ -21,6 +21,7 @@
  */
 
 #include "Setup.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
@@ -48,7 +49,7 @@ public:
 
         Player* plr = static_cast<Player*>(mKiller);
 
-        Creature* ct = plr->getWorldMap()->createAndSpawnCreature(12144, getCreature()->GetPosition());
+        Creature* ct = plr->getWorldMap()->getSpawnManager().spawnCreature(12144, getCreature()->GetPosition());
         if (ct != nullptr)
             ct->Despawn(1 * 60 * 1000, 0);
     }

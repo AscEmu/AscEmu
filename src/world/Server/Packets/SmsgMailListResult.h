@@ -90,7 +90,7 @@ namespace AscEmu::Packets
                         case MAIL_TYPE_COD:
                         case MAIL_TYPE_AUCTION:
                         case MAIL_TYPE_ITEM:
-                            packet << uint32_t(WoWGuid::getGuidLowPartFromUInt64(message.second.sender_guid));
+                            packet << uint32_t(WoWGuid::getLowGuidFromRaw(message.second.sender_guid));
                             break;
                         case MAIL_TYPE_GAMEOBJECT:
                         case MAIL_TYPE_CREATURE:
@@ -299,7 +299,7 @@ namespace AscEmu::Packets
                             case MAIL_TYPE_COD:
                             case MAIL_TYPE_AUCTION:
                             case MAIL_TYPE_ITEM:
-                                packet << uint32_t(WoWGuid::getGuidLowPartFromUInt64(message.second.sender_guid));
+                                packet << uint32_t(WoWGuid::getLowGuidFromRaw(message.second.sender_guid));
                                 break;
                             case MAIL_TYPE_GAMEOBJECT:
                             case MAIL_TYPE_CREATURE:

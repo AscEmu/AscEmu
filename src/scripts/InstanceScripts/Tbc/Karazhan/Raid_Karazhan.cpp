@@ -507,7 +507,7 @@ public:
             case 1:
             {
                 static_cast<Creature*>(pObject)->Despawn(100, 0);
-                Creature* pop = pObject->getWorldMap()->getInterface()->spawnCreature(17521, pObject->GetPosition(), true, true, 0, 0);
+                Creature* pop = pObject->getWorldMap()->getInterface()->spawnCreature(17521, pObject->GetPosition());
                 if (pop)
                     pop->getAIInterface()->onHostileAction(Plr);
                 break;
@@ -1168,7 +1168,7 @@ public:
                 if (!FlameWreathTarget[i])
                     continue;
 
-                Unit* pTarget = getCreature()->getWorldMap()->getUnit(FlameWreathTarget[i]);
+                Unit* pTarget = getCreature()->getWorldMapUnit(FlameWreathTarget[i]);
                 if (pTarget && pTarget->getDistanceSq(FWTargPosX[i], FWTargPosY[i], getCreature()->GetPositionZ()) > 3)
                 {
                     pTarget->castSpell(pTarget, 20476, true);
@@ -2215,7 +2215,7 @@ public:
     {
         for (uint8_t i = 0; i < 5; ++i)
         {
-            Unit* ETarget = getCreature()->getWorldMap()->getUnit(Enfeeble_Targets[i]);
+            Unit* ETarget = getCreature()->getWorldMapUnit(Enfeeble_Targets[i]);
             if (ETarget && ETarget->isAlive())
                 ETarget->setHealth(Enfeeble_Health[i]);
             Enfeeble_Targets[i] = 0;

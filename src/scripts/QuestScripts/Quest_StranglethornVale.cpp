@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
@@ -59,7 +60,7 @@ public:
         if (!plr->getWorldMap() || !plr->getWorldMap()->getInterface())
             return;
 
-        Creature* firstenemy = plr->getWorldMap()->createAndSpawnCreature(1511, LocationVector(-13770.5f, -6.79f, 42.8f, 5.7f));
+        Creature* firstenemy = plr->getWorldMap()->getSpawnManager().spawnCreature(1511, LocationVector(-13770.5f, -6.79f, 42.8f, 5.7f));
         if (firstenemy != nullptr)
         {
             firstenemy->getAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
@@ -79,7 +80,7 @@ public:
         if (mKiller->isPlayer())
         {
             Player* mPlayer = static_cast<Player*>(mKiller);
-            Creature* beka1 =mPlayer->getWorldMap()->createAndSpawnCreature(1516, LocationVector(-13770.5f, -6.79f, 42.8f, 5.7f));
+            Creature* beka1 =mPlayer->getWorldMap()->getSpawnManager().spawnCreature(1516, LocationVector(-13770.5f, -6.79f, 42.8f, 5.7f));
             if (beka1 != nullptr)
             {
                 beka1->getAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
@@ -92,7 +93,7 @@ public:
             Player* mPlayer = getCreature()->getWorldMap()->getInterface()->getPlayerNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
             if (mPlayer)
             {
-                Creature* beka1 = mPlayer->getWorldMap()->createAndSpawnCreature(1516, LocationVector(-13770.5f, -6.79f, 42.8f, 5.7f));
+                Creature* beka1 = mPlayer->getWorldMap()->getSpawnManager().spawnCreature(1516, LocationVector(-13770.5f, -6.79f, 42.8f, 5.7f));
                 if (beka1 != nullptr)
                 {
                     beka1->getAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
@@ -115,7 +116,7 @@ public:
         if (mKiller->isPlayer())
         {
             Player* mPlayer = static_cast<Player*>(mKiller);
-            Creature* beka1 = mPlayer->getWorldMap()->createAndSpawnCreature(1514, LocationVector(-13770.5f, -6.79f, 42.8f, 5.7f));
+            Creature* beka1 = mPlayer->getWorldMap()->getSpawnManager().spawnCreature(1514, LocationVector(-13770.5f, -6.79f, 42.8f, 5.7f));
             if (beka1 != nullptr)
             {
                 beka1->getAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
@@ -128,7 +129,7 @@ public:
             Player* mPlayer = getCreature()->getWorldMap()->getInterface()->getPlayerNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
             if (mPlayer)
             {
-                Creature* beka1 = mPlayer->getWorldMap()->createAndSpawnCreature(1514, LocationVector(-13770.5f, -6.79f, 42.8f, 5.7f));
+                Creature* beka1 = mPlayer->getWorldMap()->getSpawnManager().spawnCreature(1514, LocationVector(-13770.5f, -6.79f, 42.8f, 5.7f));
                 if (beka1 != nullptr)
                 {
                     beka1->getAIInterface()->moveTo(-13727.8f, -26.2f, 46.15f);
@@ -255,26 +256,26 @@ class FacingNegolash : public QuestScript
 
         for (uint8_t i = 0; i < 9; ++i)
         {
-            obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_MEAT, LocationVector(MeatSpawnPoints[i].x, MeatSpawnPoints[i].y, MeatSpawnPoints[i].z, MeatSpawnPoints[i].orientation), 1);
+            obj = pPlayer->getWorldMap()->getSpawnManager().spawnGameObject(GO_MEAT, LocationVector(MeatSpawnPoints[i].x, MeatSpawnPoints[i].y, MeatSpawnPoints[i].z, MeatSpawnPoints[i].orientation), 1);
             if (obj != nullptr)
                 obj->despawn(2 * 60 * 1000, 0);
         }
 
         for (uint8_t i = 0; i < 5; ++i)
         {
-            obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_BOTTLE, LocationVector(BottleSpawnPoints[i].x, BottleSpawnPoints[i].y, BottleSpawnPoints[i].z, BottleSpawnPoints[i].orientation), 1);
+            obj = pPlayer->getWorldMap()->getSpawnManager().spawnGameObject(GO_BOTTLE, LocationVector(BottleSpawnPoints[i].x, BottleSpawnPoints[i].y, BottleSpawnPoints[i].z, BottleSpawnPoints[i].orientation), 1);
             if (obj != nullptr)
                 obj->despawn(2 * 60 * 1000, 0);
         }
 
         for (uint8_t i = 0; i < 3; ++i)
         {
-            obj = pPlayer->getWorldMap()->createAndSpawnGameObject(GO_BREAD, LocationVector(BreadSpawnPoints[i].x, BreadSpawnPoints[i].y, BreadSpawnPoints[i].z, BreadSpawnPoints[i].orientation), 1);
+            obj = pPlayer->getWorldMap()->getSpawnManager().spawnGameObject(GO_BREAD, LocationVector(BreadSpawnPoints[i].x, BreadSpawnPoints[i].y, BreadSpawnPoints[i].z, BreadSpawnPoints[i].orientation), 1);
             if (obj != nullptr)
                 obj->despawn(2 * 60 * 1000, 0);
         }
 
-        Creature* Negolash = pPlayer->getWorldMap()->createAndSpawnCreature(1494, LocationVector(-14657.400391f, 155.115997f, 4.081050f, 0.353429f));
+        Creature* Negolash = pPlayer->getWorldMap()->getSpawnManager().spawnCreature(1494, LocationVector(-14657.400391f, 155.115997f, 4.081050f, 0.353429f));
         if (Negolash != nullptr)
         {
             Negolash->getAIInterface()->moveTo(-14647.526367f, 143.710052f, 1.164550f);

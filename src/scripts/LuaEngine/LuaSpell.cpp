@@ -126,7 +126,7 @@ int LuaSpell::GetTarget(lua_State* L, Spell* sp)
 
     if (sp->m_targets.getUnitTargetGuid())
     {
-        PUSH_UNIT(L, sp->getCaster()->getWorldMap()->getUnit(sp->m_targets.getUnitTargetGuid()));
+        PUSH_UNIT(L, sp->getCaster()->getWorldMapUnit(sp->m_targets.getUnitTargetGuid()));
         return 1;
     }
 

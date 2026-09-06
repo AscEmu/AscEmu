@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Management/QuestProperties.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Map/Maps/MapScriptInterface.h"
@@ -88,7 +89,7 @@ void ZuluhedtheWhacked(Player* pPlayer, Object* /*pObject*/)
     Creature* Zuluhed = pPlayer->getWorldMap()->getInterface()->getCreatureNearestCoords(-4206.199219f, 313.5462f, 122.907f, 11980);
     if(Zuluhed == nullptr)
     {
-        pPlayer->getWorldMap()->createAndSpawnCreature(11980, LocationVector(-4206.199219f, 313.5462f, 122.907f, 1.2589f));
+        pPlayer->getWorldMap()->getSpawnManager().spawnCreature(11980, LocationVector(-4206.199219f, 313.5462f, 122.907f, 1.2589f));
     }
 }
 
@@ -321,7 +322,7 @@ void InnkeeperChicken(Player* pPlayer, Unit* pUnit)
 
 void OnEmote(Player* pPlayer, uint32_t Emote, Unit* pUnit)
 {
-    pUnit = pPlayer->getWorldMap()->getUnit(pPlayer->getTargetGuid());
+    pUnit = pPlayer->getWorldMapUnit(pPlayer->getTargetGuid());
     if(!pUnit || !pUnit->isAlive() || pUnit->getAIInterface()->getCurrentTarget())
         return;
 

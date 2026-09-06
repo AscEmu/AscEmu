@@ -229,7 +229,7 @@ void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* Lo
             {
                 const auto [tabItr, _] = LootTable->try_emplace(entry, Util::LazyInstanceCreator([] {
                     return std::make_unique<LootTemplate>();
-                }));
+                    }));
                 tab = tabItr;
             }
 

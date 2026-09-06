@@ -421,11 +421,11 @@ void WorldSession::handleQuestgiverHelloOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    if (const auto questGiver = _player->getWorldMap()->getCreature(srlPacket.questGiverGuid.getGuidLowPart()))
+    if (const auto questGiver = _player->getWorldMapCreature(srlPacket.questGiverGuid.getRawGuid()))
     {
         if (!questGiver->isQuestGiver())
         {
-            sLogger.debug("Creature with guid {} is not a questgiver.", srlPacket.questGiverGuid.getGuidLowPart());
+            sLogger.debug("Creature with guid {} is not a questgiver.", srlPacket.questGiverGuid.getCounter());
             return;
         }
 
@@ -433,7 +433,7 @@ void WorldSession::handleQuestgiverHelloOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        sLogger.debug("Invalid questgiver guid {}.", srlPacket.questGiverGuid.getGuidLowPart());
+        sLogger.debug("Invalid questgiver guid {}.", srlPacket.questGiverGuid.getCounter());
     }
 }
 
@@ -450,7 +450,7 @@ void WorldSession::handleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket)
 
     if (srlPacket.questGiverGuid.isUnit())
     {
-        Creature* quest_giver = _player->getWorldMap()->getCreature(srlPacket.questGiverGuid.getGuidLowPart());
+        Creature* quest_giver = _player->getWorldMapCreature(srlPacket.questGiverGuid.getRawGuid());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -472,7 +472,7 @@ void WorldSession::handleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket)
     }
     else if (srlPacket.questGiverGuid.isGameObject())
     {
-        GameObject* quest_giver = _player->getWorldMap()->getGameObject(srlPacket.questGiverGuid.getGuidLowPart());
+        GameObject* quest_giver = _player->getWorldMapGameObject(srlPacket.questGiverGuid.getRawGuid());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -516,7 +516,7 @@ void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)
 
     if (srlPacket.guid.isUnit())
     {
-        Creature* quest_giver = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
+        Creature* quest_giver = _player->getWorldMapCreature(srlPacket.guid.getRawGuid());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -529,7 +529,7 @@ void WorldSession::handleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket)
     }
     else if (srlPacket.guid.isGameObject())
     {
-        GameObject* quest_giver = _player->getWorldMap()->getGameObject(srlPacket.guid.getGuidLowPart());
+        GameObject* quest_giver = _player->getWorldMapGameObject(srlPacket.guid.getRawGuid());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -657,7 +657,7 @@ void WorldSession::handleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket)
 
     if (srlPacket.questgiverGuid.isUnit())
     {
-        Creature* quest_giver = _player->getWorldMap()->getCreature(srlPacket.questgiverGuid.getGuidLowPart());
+        Creature* quest_giver = _player->getWorldMapCreature(srlPacket.questgiverGuid.getRawGuid());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -680,7 +680,7 @@ void WorldSession::handleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket)
     }
     else if (srlPacket.questgiverGuid.isGameObject())
     {
-        GameObject* quest_giver = _player->getWorldMap()->getGameObject(srlPacket.questgiverGuid.getGuidLowPart());
+        GameObject* quest_giver = _player->getWorldMapGameObject(srlPacket.questgiverGuid.getRawGuid());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -734,7 +734,7 @@ void WorldSession::handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
 
     if (srlPacket.questgiverGuid.isUnit())
     {
-        Creature* quest_giver = _player->getWorldMap()->getCreature(srlPacket.questgiverGuid.getGuidLowPart());
+        Creature* quest_giver = _player->getWorldMapCreature(srlPacket.questgiverGuid.getRawGuid());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -754,7 +754,7 @@ void WorldSession::handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
     }
     else if (srlPacket.questgiverGuid.isGameObject())
     {
-        GameObject* quest_giver = _player->getWorldMap()->getGameObject(srlPacket.questgiverGuid.getGuidLowPart());
+        GameObject* quest_giver = _player->getWorldMapGameObject(srlPacket.questgiverGuid.getRawGuid());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -818,7 +818,7 @@ void WorldSession::handleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 
     if (srlPacket.questgiverGuid.isUnit())
     {
-        Creature* quest_giver = _player->getWorldMap()->getCreature(srlPacket.questgiverGuid.getGuidLowPart());
+        Creature* quest_giver = _player->getWorldMapCreature(srlPacket.questgiverGuid.getRawGuid());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -832,7 +832,7 @@ void WorldSession::handleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     }
     else if (srlPacket.questgiverGuid.isGameObject())
     {
-        GameObject* quest_giver = _player->getWorldMap()->getGameObject(srlPacket.questgiverGuid.getGuidLowPart());
+        GameObject* quest_giver = _player->getWorldMapGameObject(srlPacket.questgiverGuid.getRawGuid());
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -934,7 +934,7 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
                             response = QUEST_SHARE_MSG_BUSY;
                         }
                         
-                        if (response == QUEST_SHARE_MSG_SHARING_QUEST && !pPlayer->isVisibleObject(_player->getGuid()))
+                        if (response == QUEST_SHARE_MSG_SHARING_QUEST && !pPlayer->seesGuid(_player->GetNewGUID()))
                         {
                             response = QUEST_SHARE_MSG_BUSY;
                         }

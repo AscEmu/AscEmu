@@ -135,10 +135,7 @@ namespace MySQLStructure
         //max_build
         uint32_t entry;
         uint32_t mapId;
-        float x;
-        float y;
-        float z;
-        float o;
+        LocationVector spawnPoint;
         uint8_t movetype;
         uint32_t displayid;
         uint32_t factionid;

@@ -58,12 +58,12 @@ TwinPeaks::TwinPeaks(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_
     m_homeFlags[1]->setAnimationProgress(100);
 
     // dropped flags - same generic reusable props Warsong Gulch uses, position set on drop
-    m_dropFlags[1] = m_mapMgr->createGameObject(HORDE_FLAG_DROP);
-    if (!m_dropFlags[1]->create(ALLIANCE_FLAG_DROP, m_mapMgr, 0, LocationVector(), QuaternionData(), GO_STATE_CLOSED))
+    m_dropFlags[1] = m_mapMgr->getSpawnManager().createGameObject(ALLIANCE_FLAG_DROP, LocationVector());
+    if (m_dropFlags[1] == nullptr)
         DLLLogDetail("TwinPeaks : Could not create dropped flag 1");
 
-    m_dropFlags[0] = m_mapMgr->createGameObject(HORDE_FLAG_DROP);
-    if (!m_dropFlags[0]->create(HORDE_FLAG_DROP, m_mapMgr, 0, LocationVector(), QuaternionData(), GO_STATE_CLOSED))
+    m_dropFlags[0] = m_mapMgr->getSpawnManager().createGameObject(HORDE_FLAG_DROP, LocationVector());
+    if (m_dropFlags[0] == nullptr)
         DLLLogDetail("TwinPeaks : Could not create dropped flag 0");
 
     for (uint8_t i = 0; i < 2; ++i)
@@ -327,7 +327,7 @@ void TwinPeaks::HookFlagDrop(Player* plr, GameObject* obj)
 
     // Same reguid workaround Warsong Gulch documents - respawning the same guid after a
     // despawn/respawn cycle silently fails to show client-side.
-    m_dropFlags[plr->getTeam()]->SetNewGuid(m_mapMgr->generateGameobjectGuid());
+    m_mapMgr->getSpawnManager().regenerateGameObjectGuid(m_dropFlags[plr->getTeam()]);
 
     SpellInfo const* pSp = sSpellMgr.getSpellInfo(23333 + (plr->getTeam() * 2));
     Spell* sp = sSpellMgr.newSpell(plr, pSp, true, 0);

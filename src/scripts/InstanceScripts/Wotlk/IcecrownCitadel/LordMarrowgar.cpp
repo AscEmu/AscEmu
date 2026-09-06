@@ -236,12 +236,12 @@ void LordMarrowgarAI::SetCreatureData64(uint32_t Type, uint64_t Data)
     {
         case DATA_COLDFLAME_GUID:
         {
-            coldflameTarget = Data;
+            coldflameTarget = WoWGuid(Data);
             break;
         }
         case DATA_SPIKE_IMMUNE:
         {
-            boneSpikeImmune.push_back(Data);
+            boneSpikeImmune.emplace_back(Data);
             break;
         }
         default:
@@ -325,7 +325,7 @@ void ColdflameAI::OnSummon(Unit* summoner)
     // Random target Case
     else
     {
-        Unit* target = mInstance->getInstance()->getUnit(static_cast<Creature*>(summoner)->GetScript()->GetCreatureData64(DATA_COLDFLAME_GUID));
+        Unit* target = summoner->getWorldMapUnit(static_cast<Creature*>(summoner)->GetScript()->GetCreatureData64(DATA_COLDFLAME_GUID));
         if (!target)
         {
             getCreature()->Despawn(100, 0);

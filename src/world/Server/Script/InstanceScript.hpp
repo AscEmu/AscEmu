@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AEVersion.hpp"
 #include "ScriptEvent.hpp"
 #include "ScriptMgrDefines.hpp"
+#include "WoWGuid.hpp"
 #include <cstdint>
 #include <map>
 #include <set>
@@ -82,7 +83,7 @@ public:
     void addObject(Object* obj);
     void removeObject(Object* obj);
 
-    uint32_t getGuidFromData(uint32_t type);
+    WoWGuid getGuidFromData(uint32_t type);
     Creature* getCreatureFromData(uint32_t type);
     GameObject* getGameObjectFromData(uint32_t type);
 
@@ -91,6 +92,7 @@ public:
     virtual void setLocalData(uint32_t /*type*/, uint32_t /*data*/) {}
     virtual void setLocalData64(uint32_t /*type*/, uint64_t /*data*/) {}
     virtual uint32_t getLocalData(uint32_t /*type*/) const { return 0; }
+    virtual WoWGuid getLocalGuidData(uint32_t /*type*/) const { return {}; }
     virtual Creature* getLocalCreatureData(uint32_t /*type*/) const { return nullptr; }
     virtual uint64_t getLocalData64(uint32_t /*type*/) const { return 0; }
     virtual void DoAction(int32_t /*action*/) {}
@@ -115,6 +117,7 @@ public:
     virtual bool setBossState(uint32_t id, EncounterStates state);
     std::vector<BossInfo> getBosses();
     EncounterStates getBossState(uint32_t id) const;
+    EncounterStates getBossStateByEntry(uint32_t entry) const;
     //used for debug
     std::string getDataStateString(uint8_t state);
 
@@ -158,7 +161,7 @@ private:
     uint32_t mTimerCount = 0;
 
     typedef std::map<uint32_t, uint32_t> ObjectInfoMap;
-    typedef std::map<uint32_t, uint32_t> ObjectGuidMap;
+    typedef std::map<uint32_t, WoWGuid> ObjectGuidMap;
 
     // FaST Acess Instance Data
     static void setupObjectData(ObjectData const* creatureData, ObjectInfoMap& objectInfo);
@@ -207,19 +210,17 @@ public:
     typedef std::set<Creature*> CreatureSet;
     typedef std::set<GameObject*> GameObjectSet;
 
-    void setCellForcedStates(float xMin, float xMax, float yMin, float yMax, bool forceActive = true);
-
     Creature* spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0);
     Creature* getCreatureBySpawnId(uint32_t entry);
-    Creature* GetCreatureByGuid(uint32_t guid);
+    Creature* getCreatureByGuid(const WoWGuid& guid);
     Creature* findNearestCreature(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/);
 
     CreatureSet getCreatureSetForEntry(uint32_t entry, bool debug = false, Player* player = nullptr);
     CreatureSet getCreatureSetForEntries(std::vector<uint32_t> entryVector);
 
-    GameObject* spawnGameObject(uint32_t entry, float posX, float posY, float posZ, float posO, bool addToWorld = true, uint32_t misc1 = 0, uint32_t phase = 0);
+    GameObject* spawnGameObject(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t phase = 0);
     GameObject* getGameObjectBySpawnId(uint32_t entry);
-    GameObject* GetGameObjectByGuid(uint32_t guid);
+    GameObject* getGameObjectByGuid(const WoWGuid& guid);
 
     GameObject* getClosestGameObjectForPosition(uint32_t entry, float posX, float posY, float posZ);
 

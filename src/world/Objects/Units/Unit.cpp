@@ -44,6 +44,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellTarget.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -86,6 +87,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Transporter.hpp"
 #include "Server/EventMgr.h"
 #include "Server/World.h"
+#include "Map/Maps/WorldMap.hpp"
 #include "Server/Script/HookInterface.hpp"
 #include "Spell/Spell.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
@@ -301,69 +303,9 @@ void Unit::Update(unsigned long time_passed)
     getMovementManager()->update(time_passed);
 }
 
-void Unit::RemoveFromWorld(bool free_guid)
+void Unit::onAttachToWorld()
 {
-#ifdef FT_VEHICLES
-    if (isVehicle())
-        removeVehicleKit();
-#endif
-    removeAllFollowers();
-
-    getCombatHandler().onRemoveFromWorld();
-
-#if VERSION_STRING > TBC
-    if (getCritterGuid() != 0)
-    {
-        setCritterGuid(0);
-
-        if (Unit* unit = m_WorldMap->getUnit(getCritterGuid()))
-            unit->Delete();
-    }
-#endif
-
-    m_summonInterface->removeAllSummons();
-
-    if (m_dynamicObject != nullptr)
-        m_dynamicObject->remove();
-
-    for (unsigned int& m_ObjectSlot : m_objectSlots)
-    {
-        if (m_ObjectSlot != 0)
-        {
-            if (GameObject* game_object = m_WorldMap->getGameObject(m_ObjectSlot))
-                game_object->expireAndDelete();
-
-            m_ObjectSlot = 0;
-        }
-    }
-
-    clearAllAreaAuraTargets();
-    removeAllAreaAurasCastedByOther();
-
-    // Attempt to prevent memory corruption
-    for (const auto& object : getInRangeObjectsSet())
-    {
-        if (!object->isCreatureOrPlayer())
-            continue;
-
-        dynamic_cast<Unit*>(object)->clearCasterFromHealthBatch(this);
-    }
-
-    Object::RemoveFromWorld(free_guid);
-
-    for (const auto& aura : m_auraList)
-    {
-        if (aura != nullptr)
-        {
-            aura->RelocateEvents();
-        }
-    }
-    getThreatManager().removeMeFromThreatLists();
-}
-
-void Unit::OnPushToWorld()
-{
-    for (const auto& aura : m_auraList)
+    for (const auto& aura : getAuraList())
     {
         if (aura != nullptr)
             aura->RelocateEvents();
@@ -380,6 +322,87 @@ void Unit::OnPushToWorld()
 #endif
 
     getMovementManager()->addToWorld();
+
+    Object::onAttachToWorld();
+}
+
+void Unit::onPreDetachFromWorld()
+{
+    if (!IsInWorld())
+        return;
+
+#ifdef FT_VEHICLES
+    if (isVehicle())
+        removeVehicleKit();
+#endif
+    removeAllFollowers();
+
+    getCombatHandler().onRemoveFromWorld();
+
+#if VERSION_STRING > TBC
+    if (getCritterGuid() != 0)
+    {
+        setCritterGuid(0);
+
+        if (Unit* unit = getWorldMapUnit(getCritterGuid()))
+            unit->destroy();
+    }
+#endif
+
+    m_summonInterface->removeAllSummons();
+
+    if (m_dynamicObject != nullptr)
+        m_dynamicObject->remove();
+
+    if (!m_dynamicObjectTargets.empty())
+    {
+        const std::vector<uint64_t> dynamicTargets(m_dynamicObjectTargets.begin(), m_dynamicObjectTargets.end());
+        for (uint64_t dynamicGuid : dynamicTargets)
+        {
+            if (DynamicObject* dynamicObject = getWorldMap()->getDynamicObject(WoWGuid(dynamicGuid)))
+                dynamicObject->removeTarget(this);
+        }
+        m_dynamicObjectTargets.clear();
+    }
+
+    for (auto& objectSlot : m_objectSlots)
+    {
+        if (objectSlot)
+        {
+            if (GameObject* game_object = getWorldMapGameObject(objectSlot.getRawGuid()))
+                game_object->destroy();
+
+            objectSlot.clear();
+        }
+    }
+
+    clearAllAreaAuraTargets();
+    removeAllAreaAurasCastedByOther();
+
+    // Attempt to prevent memory corruption
+    for (const auto& object : getInRangeObjectsSet())
+    {
+        if (!object->isCreatureOrPlayer())
+            continue;
+
+        dynamic_cast<Unit*>(object)->clearCasterFromHealthBatch(this);
+    }
+
+    for (const auto& aura : m_auraList)
+    {
+        if (aura != nullptr)
+        {
+            if (aura->isDeleted())
+            {
+                aura->removeAura();
+                continue;
+            }
+            aura->RelocateEvents();
+        }
+    }
+    getThreatManager().removeMeFromThreatLists();
+
+    Object::onPreDetachFromWorld();
 }
 
 void Unit::die(Unit* /*pAttacker*/, uint32_t /*damage*/, uint32_t /*spellid*/)
@@ -982,7 +1005,32 @@ void Unit::setLevel(uint32_t level)
 }
 
 uint32_t Unit::getFactionTemplate() const { return unitData()->faction_template; }
-void Unit::setFactionTemplate(uint32_t id) { write(unitData()->faction_template, id); }
+
+void Unit::setFactionTemplate(uint32_t id)
+{
+    const uint32_t oldFaction = getFactionTemplate();
+    if (oldFaction == id)
+        return;
+
+    write(unitData()->faction_template, id);
+    setServersideFaction();
+
+    if (!IsInWorld())
+        return;
+
+    // A runtime faction change invalidates existing threat relationships and must
+    // also be observed by nearby creature AI in both directions.
+    if (AIInterface* ai = getAIInterface())
+        ai->eventChangeFaction();
+
+    if (WorldMap* map = getWorldMap())
+        map->queueUnitAwareness(this, UnitAwarenessSignal::ReactionChanged);
+}
+
+void Unit::setFaction(uint32_t factionId)
+{
+    setFactionTemplate(factionId);
+}
 
 #if VERSION_STRING >= WotLK
 uint32_t Unit::getVirtualItemSlotId(uint8_t slot) const { return unitData()->virtual_item_slot_display[slot]; }
@@ -1132,7 +1180,20 @@ void Unit::setVirtualItemInfo(uint8_t slot, uint64_t item_info) { write(unitData
 #endif
 
 uint32_t Unit::getUnitFlags() const { return unitData()->unit_flags; }
-void Unit::setUnitFlags(uint32_t unitFlags) { write(unitData()->unit_flags, unitFlags); }
+void Unit::setUnitFlags(uint32_t unitFlags)
+{
+    const uint32_t oldFlags = getUnitFlags();
+    write(unitData()->unit_flags, unitFlags);
+
+    constexpr uint32_t AwarenessRelevantFlags =
+        UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_IGNORE_CREATURE_COMBAT |
+        UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE |
+        UNIT_FLAG_UNKNOWN_8 | UNIT_FLAG_PACIFIED | UNIT_FLAG_MOUNTED_TAXI | UNIT_FLAG_ALIVE |
+        UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_FEIGN_DEATH;
+
+    if (IsInWorld() && ((oldFlags ^ unitFlags) & AwarenessRelevantFlags) != 0)
+        getWorldMap()->queueUnitAwareness(this, UnitAwarenessSignal::CombatEligibilityChanged);
+}
 void Unit::addUnitFlags(uint32_t unitFlags) { setUnitFlags(getUnitFlags() | unitFlags); }
 void Unit::removeUnitFlags(uint32_t unitFlags) { setUnitFlags(getUnitFlags() & ~unitFlags); }
 bool Unit::hasUnitFlags(uint32_t unitFlags) const { return (getUnitFlags() & unitFlags) != 0; }
@@ -1160,7 +1221,16 @@ bool Unit::canSwim()
 
 #if VERSION_STRING > Classic
 uint32_t Unit::getUnitFlags2() const { return unitData()->unit_flags_2; }
-void Unit::setUnitFlags2(uint32_t unitFlags2) { write(unitData()->unit_flags_2, unitFlags2); }
+void Unit::setUnitFlags2(uint32_t unitFlags2)
+{
+    const uint32_t oldFlags = getUnitFlags2();
+    write(unitData()->unit_flags_2, unitFlags2);
+
+#if VERSION_STRING >= WotLK
+    if (IsInWorld() && ((oldFlags ^ unitFlags2) & UNIT_FLAG2_FEIGN_DEATH) != 0)
+        getWorldMap()->queueUnitAwareness(this, UnitAwarenessSignal::CombatEligibilityChanged);
+#endif
+}
 void Unit::addUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() | unitFlags2); }
 void Unit::removeUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() & ~unitFlags2); }
 bool Unit::hasUnitFlags2(uint32_t unitFlags2) const { return (getUnitFlags2() & unitFlags2) != 0; }
@@ -1749,15 +1819,14 @@ void Unit::setLocationWithoutUpdate(LocationVector& location)
 
 void Unit::setPhase(uint8_t command/* = PHASE_SET*/, uint32_t newPhase/* = 1*/)
 {
+    const uint32_t oldPhase = GetPhase();
     Object::Phase(command, newPhase);
 
-    for (const auto& itr : getInRangeObjectsSet())
+    if (IsInWorld() && GetPhase() != oldPhase)
     {
-        if (itr && itr->isCreatureOrPlayer())
-            dynamic_cast<Unit*>(itr)->updateVisibility();
+        getWorldMap()->refreshVisibilityForObject(this);
+        getWorldMap()->queueUnitAwareness(this, UnitAwarenessSignal::PhaseChanged);
     }
-
-    updateVisibility();
 }
 
 bool Unit::isWithinCombatRange(Unit* obj, float dist2compare)
@@ -1795,6 +1864,19 @@ float Unit::getMeleeRange(Unit* target)
 {
     float range = getCombatReach() + target->getCombatReach() + 4.0f / 3.0f;
     return std::max(range, NOMINAL_MELEE_RANGE);
+}
+
+float Unit::getCombatRange(Unit const* target) const
+{
+    if (!target)
+        return 0.0f;
+
+    // AscEmu stores model radius separately from UNIT_FIELD_COMBATREACH.
+    // Keep one shared centre-to-centre physical contact range for AI combat
+    // and close-range stealth detection.
+    return std::max(0.0f, getCombatReach()) +
+        std::max(0.0f, getModelHalfSize()) +
+        std::max(0.0f, target->getModelHalfSize());
 }
 
 bool Unit::isInInstance() const
@@ -2096,9 +2178,9 @@ void Unit::sendMovementFlagsToPlayer(Player* target)
 
         const auto resolvedOpcode = resolveMovementOpcodeForReceiver(opcode, isPlayer());
 
-        WorldPacket packet(resolvedOpcode, 0);
-        obj_movement_info.write(packet, true);
-        target->getSession()->SendPacket(&packet);
+        auto packet = std::make_unique<WorldPacket>(resolvedOpcode, 0);
+        obj_movement_info.write(*packet, true);
+        target->getUpdateMgr().queueDelayedPacket(std::move(packet));
     }
 }
 
@@ -2904,6 +2986,12 @@ void Unit::setControlled(bool apply, UnitStates state)
         }
 
         applyControlStatesIfNeeded();
+    }
+
+    if (IsInWorld() && isCreature() &&
+        (state == UNIT_STATE_STUNNED || state == UNIT_STATE_CONFUSED || state == UNIT_STATE_FLEEING))
+    {
+        getWorldMap()->queueUnitAwareness(this, UnitAwarenessSignal::ControlStateChanged);
     }
 }
 
@@ -4571,7 +4659,7 @@ void Unit::removeAllAurasById(uint32_t const* auraId, uint64_t casterGuid/* = 0*
 
         for (int x = 0; auraId[x] != 0; ++x)
         {
-            if (aur->getSpellId() == auraId[x])
+            if (aur && (aur->getSpellId() == auraId[x]))
             {
                 aur->removeAura(mode);
                 break;
@@ -4972,6 +5060,72 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
 #endif
 }
 
+void Unit::queueInitialVisiblePacketsForPlayer(Player* target)
+{
+#if VERSION_STRING >= WotLK
+    if (target == nullptr)
+        return;
+
+    auto packetData = SmsgAuraUpdateAll(getGuid(), {});
+    auto updates = 0u;
+
+    for (const auto& aur : getAuraList())
+    {
+        if (aur == nullptr)
+            continue;
+
+        // Update only auras with a visual slot
+        if (aur->m_visualSlot == 0xFF)
+            continue;
+
+        SmsgAuraUpdateAll::AuraUpdate auraUpdate;
+
+        auraUpdate.flags = aur->getAuraFlags();
+        auraUpdate.visualSlot = aur->m_visualSlot;
+        auraUpdate.spellId = aur->getSpellId();
+
+        const auto casterUnit = aur->GetUnitCaster();
+        if (casterUnit != nullptr)
+            auraUpdate.level = static_cast<uint8_t>(casterUnit->getLevel());
+        else
+            auraUpdate.level = static_cast<uint8_t>(worldConfig.player.playerLevelCap);
+
+        const uint32_t stackAmount = aur->getSpellInfo()->getMaxstack() > 0 ? aur->getStackCount() : aur->getCharges();
+        auraUpdate.stackCount = static_cast<uint8_t>(stackAmount <= 255 ? stackAmount : 255);
+
+        if (!(auraUpdate.flags & AFLAG_IS_CASTER))
+            auraUpdate.casterGuid = aur->getCasterGuid();
+
+        if (auraUpdate.flags & AFLAG_DURATION)
+        {
+            auraUpdate.duration = aur->getMaxDuration();
+            auraUpdate.timeLeft = aur->getTimeLeft();
+        }
+
+#if VERSION_STRING >= Cata
+        if (auraUpdate.flags & AFLAG_SEND_EFFECT_AMOUNT)
+        {
+            for (uint8_t x = 0; x < MAX_SPELL_EFFECTS; ++x)
+            {
+                if (aur->getAuraEffect(x)->getAuraEffectType() != SPELL_AURA_NONE)
+                    auraUpdate.effAmount[x] = aur->getAuraEffect(x)->getEffectDamage();
+                else
+                    auraUpdate.effAmount[x] = 0;
+            }
+        }
+#endif
+
+        packetData.addAuraUpdate(auraUpdate);
+        ++updates;
+    }
+
+    if (updates > 0)
+        target->getUpdateMgr().queueDelayedPacket(packetData.serialise());
+#endif
+
+    sendMovementFlagsToPlayer(target);
+}
+
 void Unit::sendFullAuraUpdate()
 {
 #if VERSION_STRING < Mop
@@ -5191,44 +5345,48 @@ void Unit::_updateAuras(unsigned long diff) const
 // Visibility system
 bool Unit::canSee(Object const* obj) const
 {
-    if (obj == nullptr)
+    return canSeeFrom(obj, this);
+}
+
+bool Unit::canSeeFrom(Object const* obj, Object const* viewpoint) const
+{
+    return _canSeeFrom(obj, viewpoint, false);
+}
+
+bool Unit::canSeeFrom(Object const* obj, Object const* viewpoint, float visibilityDistanceSq) const
+{
+    return _canSeeFrom(obj, viewpoint, false, visibilityDistanceSq);
+}
+
+bool Unit::_canSeeFrom(Object const* obj, Object const* viewpoint, bool stealthSuspicionCheck, float visibilityDistanceSq) const
+{
+    if (obj == nullptr || viewpoint == nullptr)
         return false;
 
     if (this == obj)
         return true;
 
-    if (!IsInWorld() || !obj->IsInWorld() || GetMapId() != obj->GetMapId())
+    if (!IsInWorld() || !obj->IsInWorld() || !viewpoint->IsInWorld() ||
+        GetMapId() != obj->GetMapId() || viewpoint->GetMapId() != obj->GetMapId())
         return false;
 
-    // Unit cannot see objects from different phases
-    if ((GetPhase() & obj->GetPhase()) == 0)
+    // Visibility rules belong to this unit/player, while the physical viewpoint can
+    // be a possessed unit, pet or farsight DynamicObject. The viewpoint phase is
+    // authoritative for what exists around that remote camera position.
+    if ((viewpoint->GetPhase() & obj->GetPhase()) == 0)
         return false;
 
-    // Get map view distance (WIP: usually 100 yards for open world and 500 yards for instanced maps)
-    //\ todo: there are some objects which should be visible even further and some objects which should always be visible
-    // should cover all Instances with 5000 * 5000 easyier for far Gameobjects / Creatures to Handle, also Loaded Cells affect the Distance standart 2 Cells equal 500.0f * 500.0f : aaron02
-    const auto viewDistance = getWorldMap()->getBaseMap()->isInstanceMap() ? 5000.0f * 5000.0f : getWorldMap()->getVisibilityRange();
-    if (const auto* const gobj = obj->ToGameObject())
-    {
-        // TODO: for now, all maps have 500 yard view distance
-        // problem is that objects on active map cells are updated only if player can see it, iirc
+    // Published objects can use a visibility range that differs from the map's
+    // normal view distance. The visibility system resolves that range from the
+    // object's active publish profile and passes it in here. A zero override
+    // means the object uses the map's normal visibility distance.
+    const float mapVisibilityDistanceSq = getWorldMap()->getVisibilityDistanceSq();
+    const float effectiveVisibilityDistanceSq = visibilityDistanceSq > 0.0f
+        ? std::max(mapVisibilityDistanceSq, visibilityDistanceSq)
+        : mapVisibilityDistanceSq;
 
-        // Transports and Destructible Buildings should always be visible
-        if (gobj->getGoType() == GAMEOBJECT_TYPE_TRANSPORT || gobj->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT || gobj->getGoType() == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
-        {
-            return true;
-        }
-        else
-        {
-            if (!isInRange(gobj->GetPosition(), viewDistance))
-                return false;
-        }
-    }
-    else
-    {
-        if (!isInRange(obj->GetPosition(), viewDistance))
-            return false;
-    }
+    if (!viewpoint->isInRange(obj->GetPosition(), effectiveVisibilityDistanceSq))
+        return false;
 
     const auto* const playerMe = ToPlayer();
     const auto* const playerObj = obj->ToPlayer();
@@ -5254,28 +5412,32 @@ bool Unit::canSee(Object const* obj) const
             return true;
 
         const float_t corpseViewDistance = 1600.0f; // 40*40 yards
+        const bool corpseIsOnCurrentMap = playerMe->hasCorpseData() && playerMe->getCorpseMapId() == playerMe->GetMapId();
+        const bool spiritIsNearCorpse = corpseIsOnCurrentMap && playerMe->isInRange(playerMe->getCorpseLocation(), corpseViewDistance);
 
         // If object is another player
         if (playerObj != nullptr)
         {
-            // Player can see all friendly and unfriendly players within 40 yards from their corpse
-            if (playerMe->getCorpseInstanceId() == playerMe->GetInstanceID() &&
-                playerObj->isInRange(playerMe->getCorpseLocation(), corpseViewDistance))
+            // While released, the player may see living players around the corpse only while the
+            // spirit is actually near the corpse. Otherwise a graveyard spirit would keep stale
+            // corpse-area visibility without receiving proper movement updates for those units.
+            if (spiritIsNearCorpse && playerObj->isInRange(playerMe->getCorpseLocation(), corpseViewDistance))
                 return true;
 
             // Otherwise player can only see other players who have released their spirits as well
             return playerObj->getDeathState() == CORPSE;
         }
 
-        if (playerMe->getCorpseInstanceId() == GetInstanceID())
+        if (corpseIsOnCurrentMap)
         {
-            // Player can see their own corpse
+            // Player can always see their own corpse on the same instance.
             const auto* const corpseObj = obj->isCorpse() ? dynamic_cast<Corpse const*>(obj) : nullptr;
             if (corpseObj != nullptr && corpseObj->getOwnerGuid() == getGuid())
                 return true;
 
-            // Player can see all objects within 40 yards from their own corpse
-            if (obj->isInRange(playerMe->getCorpseLocation(), corpseViewDistance))
+            // Player can see objects around their own corpse only while the spirit is near the
+            // corpse. At the graveyard this must not keep creatures at the death location visible.
+            if (spiritIsNearCorpse && obj->isInRange(playerMe->getCorpseLocation(), corpseViewDistance))
                 return true;
         }
 
@@ -5445,77 +5607,160 @@ bool Unit::canSee(Object const* obj) const
 
     if ((unitTarget != nullptr && unitTarget->isStealthed()) || (gobTarget != nullptr && gobTarget->inStealth))
     {
-        // Get absolute distance
-        const auto distance = meUnit->CalcDistance(obj);
-        const auto combatReach = meUnit->getCombatReach();
-        if (unitTarget != nullptr)
-        {
-#if VERSION_STRING >= TBC
-            // Shadow Sight buff in arena makes unit detect stealth regardless of distance and facing
-            if (meUnit->hasAuraWithAuraEffect(SPELL_AURA_DETECT_STEALTH))
-                return true;
-#endif
-
-            // Normally units not in front cannot be detected
-            if (!meUnit->isInFront(obj))
-                return false;
-
-            // If object is closer than unit's combat reach
-            if (distance < combatReach)
-                return true;
-        }
-
-        // Objects outside of Line of Sight cannot be detected
-        if (worldConfig.terrainCollision.isCollisionEnabled)
-        {
-            if (!meUnit->IsWithinLOSInMap(obj))
-                return false;
-        }
-
-        // In unit cases base stealth level and base stealth detection increases by 5 points per unit's level
-        // Stealth detection base points start from 30ish, exact value unknown
-        int detectionValue = 30 + meUnit->getLevel() * 5;
-
-        // Apply modifiers which increases unit's stealth detection
-        if (unitTarget != nullptr)
-            detectionValue += meUnit->getStealthDetection(STEALTH_FLAG_NORMAL);
-        else if (gobTarget != nullptr)
-            detectionValue += meUnit->getStealthDetection(STEALTH_FLAG_TRAP);
-
-        // Subtract object's stealth level from detection value
-        if (unitTarget != nullptr)
-        {
-            detectionValue -= unitTarget->getStealthLevel(STEALTH_FLAG_NORMAL);
-        }
-        else if (gobTarget != nullptr)
-        {
-            // Base value for stealthed gameobjects seems to be 70 according to spell id 2836
-            detectionValue -= 70;
-            if (const auto* const summoner = gobTarget->getUnitOwner())
-            {
-                // If trap has an owner, subtract owner's stealth level (unit level * 5) from detection value
-                detectionValue -= summoner->getLevel() * 5;
-            }
-            else
-            {
-                // If trap has no owner, subtract trap's level from detection value
-                detectionValue -= gobTarget->GetGameObjectProperties()->trap.level * 5;
-            }
-        }
-
-        auto visibilityRange = detectionValue * 0.3f + combatReach;
-        if (visibilityRange <= 0.0f)
-            return false;
-
-        // Players cannot see stealthed objects from further than 30 yards
-        if (meUnit->isPlayer() && visibilityRange > 30.0f)
-            visibilityRange = 30.0f;
-
-        // Object is further than unit's visibility range
-        if (distance > visibilityRange)
+        if (!_canDetectStealthed(obj, stealthSuspicionCheck))
             return false;
     }
     return true;
+}
+
+bool Unit::canNoticeStealthed(Object const* obj, float aggroRange) const
+{
+    if (!obj || aggroRange <= 0.0f)
+        return false;
+
+    const auto* unitTarget = obj->ToUnit();
+    const auto* gobTarget = obj->ToGameObject();
+    if ((unitTarget == nullptr || !unitTarget->isStealthed()) && (gobTarget == nullptr || !gobTarget->inStealth))
+        return false;
+
+    // Suspicion is only meaningful while normal detection still fails. Run the
+    // exact same visibility stack with only the stealth detector switched to its
+    // narrow alert margin. Phase, invisibility, ownership and all other rules stay
+    // identical to normal visibility.
+    const bool normallyVisible = _canSeeFrom(obj, this, false);
+    const bool suspicionVisible = _canSeeFrom(obj, this, true);
+    const float alertRange = _getStealthDetectionRange(obj, true);
+
+    if (normallyVisible || !suspicionVisible)
+        return false;
+
+    // Match the established WoW alert behaviour: if the extended stealth range
+    // already reaches the dynamic attack distance there is no separate suspicion
+    // band to trigger.
+    if (alertRange <= 0.0f || alertRange >= aggroRange)
+        return false;
+
+    return true;
+}
+
+bool Unit::canDetectStealthed(Object const* obj) const
+{
+    return _canDetectStealthed(obj, false);
+}
+
+float Unit::_getStealthDetectionRange(Object const* obj, bool stealthSuspicionCheck) const
+{
+    if (!obj)
+        return 0.0f;
+
+    const auto* unitTarget = obj->ToUnit();
+    const auto* gobTarget = obj->ToGameObject();
+    if ((unitTarget == nullptr || !unitTarget->isStealthed()) && (gobTarget == nullptr || !gobTarget->inStealth))
+        return 0.0f;
+
+    const Unit* detector = getUnitOwnerOrSelf();
+    if (detector != this)
+    {
+        const Unit* nextOwner = detector->getUnitOwner();
+        while (nextOwner != nullptr)
+        {
+            detector = nextOwner;
+            nextOwner = detector->getUnitOwner();
+        }
+    }
+
+    const float combatReach = unitTarget != nullptr
+        ? detector->getCombatRange(unitTarget)
+        : std::max(0.0f, detector->getCombatReach()) + std::max(0.0f, detector->getModelHalfSize());
+
+    // Stealth detection starts at 30 points and gains 5 points for each level
+    // after level 1. One stealth point corresponds to roughly 0.3 yard.
+    const int32_t detectorLevel = std::max<int32_t>(1, static_cast<int32_t>(detector->getLevel()));
+    int32_t detectionValue = 30 + (detectorLevel - 1) * 5;
+
+    if (unitTarget != nullptr)
+    {
+        detectionValue += detector->getStealthDetection(STEALTH_FLAG_NORMAL);
+        detectionValue -= unitTarget->getStealthLevel(STEALTH_FLAG_NORMAL);
+    }
+    else
+    {
+        detectionValue += detector->getStealthDetection(STEALTH_FLAG_TRAP);
+        detectionValue -= 70;
+
+        if (const auto* summoner = gobTarget->getUnitOwner())
+        {
+            const int32_t summonerLevel = std::max<int32_t>(1, static_cast<int32_t>(summoner->getLevel()));
+            detectionValue -= (summonerLevel - 1) * 5;
+        }
+        else
+        {
+            const int32_t trapLevel = std::max<int32_t>(1, static_cast<int32_t>(gobTarget->GetGameObjectProperties()->trap.level));
+            detectionValue -= (trapLevel - 1) * 5;
+        }
+    }
+
+    float visibilityRange = static_cast<float>(detectionValue) * 0.3f + combatReach;
+
+    // Player stealth detection is capped at 30 yards. NPC detection is allowed to
+    // use the complete calculated distance. Apply the suspicion margin afterwards,
+    // matching the client-era alert behaviour.
+    if (detector->isPlayer() && visibilityRange > 30.0f)
+        visibilityRange = 30.0f;
+
+    if (stealthSuspicionCheck)
+        visibilityRange += visibilityRange * 0.08f + 1.5f;
+
+    return std::max(0.0f, visibilityRange);
+}
+
+bool Unit::_canDetectStealthed(Object const* obj, bool stealthSuspicionCheck) const
+{
+    if (!obj)
+        return false;
+
+    const auto* unitTarget = obj->ToUnit();
+    const auto* gobTarget = obj->ToGameObject();
+    if ((unitTarget == nullptr || !unitTarget->isStealthed()) && (gobTarget == nullptr || !gobTarget->inStealth))
+        return true;
+
+    const Unit* detector = getUnitOwnerOrSelf();
+    if (detector != this)
+    {
+        const Unit* nextOwner = detector->getUnitOwner();
+        while (nextOwner != nullptr)
+        {
+            detector = nextOwner;
+            nextOwner = detector->getUnitOwner();
+        }
+    }
+
+    const float distance = detector->CalcDistance(obj);
+    const float combatReach = unitTarget != nullptr
+        ? detector->getCombatRange(unitTarget)
+        : std::max(0.0f, detector->getCombatReach()) + std::max(0.0f, detector->getModelHalfSize());
+
+    // Combat range is the minimum stealth detection distance in front and
+    // behind. The facing check is only applied outside that close range.
+    if (distance < combatReach)
+        return true;
+
+    if (unitTarget != nullptr)
+    {
+#if VERSION_STRING >= TBC
+        if (detector->hasAuraWithAuraEffect(SPELL_AURA_DETECT_STEALTH))
+            return true;
+#endif
+
+        if (!detector->isInFront(obj))
+            return false;
+    }
+
+    if (worldConfig.terrainCollision.isCollisionEnabled && !detector->IsWithinLOSInMap(obj))
+        return false;
+
+    const float visibilityRange = _getStealthDetectionRange(obj, stealthSuspicionCheck);
+    return visibilityRange > 0.0f && distance <= visibilityRange;
 }
 
 int32_t Unit::getStealthLevel(StealthFlag flag) const
@@ -5570,122 +5815,18 @@ bool Unit::isInvisible() const
 
 void Unit::setVisible(const bool visible)
 {
+    const bool wasVisible = getInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE) == 0;
+
     if (!visible)
         modInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE, 1);
     else
         modInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE, -getInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE));
-    updateVisibility();
-}
 
-void Unit::updateVisibility()
-{
-    ByteBuffer buf(3000);
-    uint32_t count;
-    bool canSee;
-    bool isVisible;
-
-    if (isPlayer())
+    if (IsInWorld())
     {
-        Player* player = dynamic_cast<Player*>(this);
-        for (const auto& inRangeObject : getInRangeObjectsSet())
-        {
-            if (inRangeObject)
-            {
-                canSee = player->canSee(inRangeObject);
-                isVisible = player->isVisibleObject(inRangeObject->getGuid());
-                if (canSee)
-                {
-                    if (!isVisible)
-                    {
-                        buf.clear();
-                        count = inRangeObject->buildCreateUpdateBlockForPlayer(&buf, player);
-                        player->getUpdateMgr().pushCreationData(&buf, count);
-                        player->addVisibleObject(inRangeObject->getGuid());
-                    }
-                }
-                else
-                {
-                    if (isVisible)
-                    {
-                        player->sendDestroyObjectPacket(inRangeObject->getGuid());
-                        player->removeVisibleObject(inRangeObject->getGuid());
-                    }
-                }
-
-                if (inRangeObject->isPlayer())
-                {
-                    Player* inRangePlayer = dynamic_cast<Player*>(inRangeObject);
-                    canSee = inRangePlayer->canSee(player);
-                    isVisible = inRangePlayer->isVisibleObject(player->getGuid());
-                    if (canSee)
-                    {
-                        if (!isVisible)
-                        {
-                            buf.clear();
-                            count = player->buildCreateUpdateBlockForPlayer(&buf, inRangePlayer);
-                            inRangePlayer->getUpdateMgr().pushCreationData(&buf, count);
-                            inRangePlayer->addVisibleObject(player->getGuid());
-                        }
-                    }
-                    else
-                    {
-                        if (isVisible)
-                        {
-                            inRangePlayer->sendDestroyObjectPacket(player->getGuid());
-                            inRangePlayer->removeVisibleObject(player->getGuid());
-                        }
-                    }
-                }
-                else if (inRangeObject->isCreature() && player->getSession() && player->getSession()->HasGMPermissions())
-                {
-                    auto* const inRangeCreature = dynamic_cast<Creature*>(inRangeObject);
-
-                    uint32_t fieldIds[] =
-                    {
-                        // Update unit flags to remove not selectable flag
-                        getOffsetForStructuredField(WoWUnit, unit_flags),
-                        // Placeholder if creature is a trigger npc
-                        0,
-                        0
-                    };
-
-                    // Update trigger model
-                    if (inRangeCreature->GetCreatureProperties()->isTriggerNpc)
-                        fieldIds[1] = getOffsetForStructuredField(WoWUnit, display_id);
-
-                    inRangeCreature->forceBuildUpdateValueForFields(fieldIds, player);
-                }
-            }
-        }
-    }
-    else // For units we can save a lot of work
-    {
-        for (const auto& inRangeObject : getInRangePlayersSet())
-        {
-            if (Player* inRangePlayer = dynamic_cast<Player*>(inRangeObject))
-            {
-                canSee = inRangePlayer->canSee(this);
-                isVisible = inRangePlayer->isVisibleObject(this->getGuid());
-                if (!canSee)
-                {
-                    if (isVisible)
-                    {
-                        inRangePlayer->sendDestroyObjectPacket(getGuid());
-                        inRangePlayer->removeVisibleObject(getGuid());
-                    }
-                }
-                else
-                {
-                    if (!isVisible)
-                    {
-                        buf.clear();
-                        count = buildCreateUpdateBlockForPlayer(&buf, inRangePlayer);
-                        inRangePlayer->getUpdateMgr().pushCreationData(&buf, count);
-                        inRangePlayer->addVisibleObject(this->getGuid());
-                    }
-                }
-            }
-        }
+        getWorldMap()->refreshVisibilityForObject(this);
+        if (wasVisible != visible)
+            getWorldMap()->queueUnitAwareness(this, UnitAwarenessSignal::VisibilityChanged);
     }
 }
 
@@ -6430,6 +6571,34 @@ void Unit::emoteExpire()
 
 uint32_t Unit::getOldEmote() const { return m_oldEmote; }
 
+namespace
+{
+    void handleDamageAuraInterrupts(Unit& victim, uint32_t spellId, bool directDamage, uint32_t damage)
+    {
+        // Preserve the existing any-damage behavior and additionally honor the
+        // dedicated direct-damage interrupt flag that was previously never
+        // processed by the damage pipeline.
+        if (spellId != 0)
+        {
+            victim.removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN, spellId);
+            if (directDamage)
+                victim.removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_DIRECT_DAMAGE, spellId);
+        }
+        else
+        {
+            victim.removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
+            if (directDamage)
+                victim.removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_DIRECT_DAMAGE);
+        }
+
+        // Some legacy spell data does not carry the expected interrupt flag on
+        // stealth auras. Real direct damage must still break stealth. skipSpell
+        // keeps an aura created by the same spell from being removed accidentally.
+        if (directDamage && damage > 0 && victim.isStealthed())
+            victim.removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH, spellId);
+    }
+}
+
 void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool removeAuras/* = true*/)
 {
     // Not accepted cases
@@ -6478,22 +6647,11 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
 
     if (removeAuras)
     {
-        // Check for auras which are interrupted on damage taken
-        // But do not remove the aura created by this spell
-        if (spellId != 0)
-        {
-            victim->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN, spellId);
-            ///\ todo: fix this, currently used for root and fear auras
-            if (Util::checkChance(35.0f))
-                victim->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_UNUSED2, spellId);
-        }
-        else
-        {
-            victim->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
-            ///\ todo: fix this, currently used for root and fear auras
-            if (Util::checkChance(35.0f))
-                victim->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_UNUSED2);
-        }
+        handleDamageAuraInterrupts(*victim, spellId, true, damage);
+
+        ///\ todo: fix this, currently used for root and fear auras
+        if (Util::checkChance(35.0f))
+            victim->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_UNUSED2, spellId);
     }
 
     victim->takeDamage(this, damage, spellId);
@@ -6953,35 +7111,16 @@ void Unit::smsg_AttackStart(Unit* pVictim)
     }
 }
 
-void Unit::addToInRangeObjects(Object* pObj)
-{
-    if (pObj->isCreatureOrPlayer())
-    {
-        if (this->isHostileTo(pObj))
-            addInRangeOppositeFaction(pObj);
-
-        if (this->isFriendlyTo(pObj))
-            addInRangeSameFaction(pObj);
-    }
-
-    Object::addToInRangeObjects(pObj);
-}
-
 void Unit::onRemoveInRangeObject(Object* pObj)
 {
-    removeObjectFromInRangeOppositeFactionSet(pObj);
-    removeObjectFromInRangeSameFactionSet(pObj);
+    if (!pObj)
+        return;
 
     if (pObj->isCreatureOrPlayer())
     {
         if (getCharmGuid() == pObj->getGuid())
             interruptSpell();
     }
-}
-
-void Unit::clearInRangeSets()
-{
-    Object::clearInRangeSets();
 }
 
 bool Unit::setDetectRangeMod(uint64_t guid, int32_t amount)
@@ -7217,22 +7356,11 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
 
     setStandState(STANDSTATE_STAND);
 
-    // Check for auras which are interrupted on damage taken
-    // But do not remove the aura created by this spell
-    if (spellId != 0)
-    {
-        removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN, spellId);
-        ///\ todo: fix this, currently used for root and fear auras
-        if (Util::checkChance(35.0f))
-            removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_UNUSED2, spellId);
-    }
-    else
-    {
-        removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
-        ///\ todo: fix this, currently used for root and fear auras
-        if (Util::checkChance(35.0f))
-            removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_UNUSED2);
-    }
+    handleDamageAuraInterrupts(*this, spellId, !batch->isPeriodic, damage);
+
+    ///\ todo: fix this, currently used for root and fear auras
+    if (Util::checkChance(35.0f))
+        removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_UNUSED2, spellId);
 
     return damage;
 }
@@ -7780,7 +7908,7 @@ void Unit::enterVehicle(Vehicle* vehicle, int8_t seatId)
     if (!vehicle->addPassenger(this, seatId))
     {
         if (isCreature())
-            ToCreature()->Despawn(2000, 0);
+            ToCreature()->despawn(2000, 0);
     }
 }
 
@@ -7887,7 +8015,7 @@ void Unit::exitVehicle(LocationVector const* exitPosition)
     // Despawn Accessories
     if (vehicle->getBase()->hasUnitStateFlag(UNIT_STATE_ACCESSORY) && vehicle->getBase()->isCreature())
         if ((vehicle->getBase())->getVehicleKit()->getBase() == this)
-            vehicle->getBase()->ToCreature()->Despawn(2000, 0);
+            vehicle->getBase()->ToCreature()->despawn(2000, 0);
 
     if (hasUnitStateFlag(UNIT_STATE_ACCESSORY))
     {
@@ -7900,7 +8028,7 @@ void Unit::exitVehicle(LocationVector const* exitPosition)
         {
             // If for other reason we as Accessories are exiting the vehicle 
             // (ejected, master dismounted) despawn.
-            ToCreature()->Despawn(2000, 0);
+            ToCreature()->despawn(2000, 0);
         }
     }
 }
@@ -8137,9 +8265,9 @@ void Unit::removeGameObject(GameObject* gameObj, bool del)
 
     for (uint8_t i = 0; i < 4; ++i)
     {
-        if (m_objectSlots[i] == gameObj->GetUIdFromGUID())
+        if (m_objectSlots[i] == gameObj->GetNewGUID())
         {
-            m_objectSlots[i] = 0;
+            m_objectSlots[i].clear();
             break;
         }
     }
@@ -8152,8 +8280,7 @@ void Unit::removeGameObject(GameObject* gameObj, bool del)
 
     if (del)
     {
-        gameObj->setRespawnTime(0);
-        gameObj->Delete();
+        gameObj->despawn(0, 0);
     }
 }
 
@@ -8171,8 +8298,7 @@ void Unit::removeGameObject(uint32_t spellId, bool del)
             (*i)->setOwnerGuid(0);
             if (del)
             {
-                (*i)->setRespawnTime(0);
-                (*i)->Delete();
+                (*i)->despawn(0, 0);
             }
 
             next = m_gameObj.erase(i);
@@ -8191,8 +8317,7 @@ void Unit::removeAllGameObjects()
     {
         GameObjectList::iterator i = m_gameObj.begin();
         (*i)->setOwnerGuid(0);
-        (*i)->setRespawnTime(0);
-        (*i)->Delete();
+        (*i)->despawn(0, 0);
         m_gameObj.erase(i);
     }
 }
@@ -8394,16 +8519,19 @@ void Unit::possess(Unit* unitTarget, uint32_t delay)
     unitTarget->setCharmTempVal(unitTarget->getFactionTemplate());
 
     playerController->setFarsightGuid(unitTarget->getGuid());
-    playerController->m_controledUnit = unitTarget;
+    // Keep the session active-mover GUID and controlled-unit pointer in sync.
+    // Directly assigning m_controledUnit leaves the movement session half-switched
+    // (and Cata+ clients also require SMSG_MOVE_SET_ACTIVE_MOVER from setMover()).
+    playerController->setMover(unitTarget);
 
     unitTarget->setFaction(getFactionTemplate());
     unitTarget->addUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
 
     addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
-    playerController->sendClientControlPacket(unitTarget, 1);
+    unitTarget->setPossessedVisibilityRoles(true);
 
-    unitTarget->updateInRangeOppositeFactionSet();
+    playerController->sendClientControlPacket(unitTarget, 1);
 
     if (!(unitTarget->isPet() && dynamic_cast<Pet*>(unitTarget) == playerController->getPet()))
     {
@@ -8426,11 +8554,33 @@ void Unit::unPossess()
     if (!getCharmGuid())
         return;
 
-    Unit* unitTarget = getWorldMap()->getUnit(getCharmGuid());
+    Unit* unitTarget = getWorldMapUnit(getCharmGuid());
     if (!unitTarget)
+    {
+        // Defensive cleanup for interrupted map changes / forced despawns.
+        // The controlled unit is already gone from this map, so we can only clear
+        // the controller-side state here. This prevents stale charm/farsight state
+        // on the player even when the target can no longer be resolved.
+        playerController->speedCheatReset();
+        playerController->setFarsightGuid(0);
+        playerController->setMover(this);
+        setCharmGuid(0);
+        removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+        setMoveRoot(false);
+
+        if (m_noInterrupt > 0)
+            --m_noInterrupt;
+
+        playerController->sendEmptyPetSpellList();
         return;
+    }
 
     playerController->speedCheatReset();
+
+    // Remove the possessed viewer/activator roles while m_playerControler still
+    // points to the possessor. Hidden visibility events emitted during this drain
+    // must still be delivered to that player.
+    unitTarget->setPossessedVisibilityRoles(false);
 
     if (unitTarget->isCreature())
     {
@@ -8439,9 +8589,10 @@ void Unit::unPossess()
         unitTarget->m_playerControler = nullptr;
     }
 
-    m_noInterrupt--;
+    if (m_noInterrupt > 0)
+        --m_noInterrupt;
     playerController->setFarsightGuid(0);
-    playerController->m_controledUnit = this;
+    playerController->setMover(this);
 
     setCharmGuid(0);
     unitTarget->setCharmedByGuid(0);
@@ -8450,7 +8601,6 @@ void Unit::unPossess()
 
     unitTarget->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
     unitTarget->setFaction(unitTarget->getCharmTempVal());
-    unitTarget->updateInRangeOppositeFactionSet();
 
     playerController->sendClientControlPacket(unitTarget, 0);
 
@@ -8460,7 +8610,7 @@ void Unit::unPossess()
     setMoveRoot(false);
 
     if (!unitTarget->isPet() && (unitTarget->getCreatedByGuid() == getGuid()))
-        sEventMgr.AddEvent(static_cast<Object*>(unitTarget), &Object::Delete, 0, 1, 1, 0);
+        sEventMgr.AddEvent(static_cast<Object*>(unitTarget), &Object::destroy, 0, 1, 1, 0);
 }
 
 void Unit::deactivate(WorldMap* mgr)
@@ -8469,7 +8619,7 @@ void Unit::deactivate(WorldMap* mgr)
         getAIInterface()->enterEvadeMode();
 
     getCombatHandler().clearCombat();
-    Object::deactivate(mgr);
+    Object::deactivate();
 }
 
 float Unit::getChanceToDaze(Unit* target)
@@ -8670,7 +8820,7 @@ void Unit::addExtraStrikeTarget(SpellInfo const* spellInfo, uint32_t charges)
 
 uint32_t Unit::doDamageSplitTarget(uint32_t res, SchoolMask schoolMask, bool isMeleeDmg)
 {
-    Unit* splittarget = (getWorldMap() != nullptr) ? getWorldMap()->getUnit(m_damageSplitTarget->m_target) : nullptr;
+    Unit* splittarget = (getWorldMap() != nullptr) ? getWorldMapUnit(m_damageSplitTarget->m_target) : nullptr;
     if (splittarget != nullptr && res > 0)
     {
         // calculate damage
@@ -10726,7 +10876,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         //ugly hack for shadowfiend restoring mana
         if (getSummonedByGuid() != 0 && getEntry() == 19668)
         {
-            Player* owner = getWorldMap()->getPlayer(static_cast<uint32_t>(getSummonedByGuid()));
+            Player* owner = getWorldMapPlayer(getSummonedByGuid());
             if (owner)
             {
                 uint32_t amount = static_cast<uint32_t>(owner->getMaxPower(POWER_TYPE_MANA) * 0.05f);
@@ -10736,8 +10886,8 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         //ugly hack for Bloodsworm restoring hp
         if (getSummonedByGuid() != 0 && getEntry() == 28017)
         {
-            Player* owner = getWorldMap()->getPlayer(static_cast<uint32_t>(getSummonedByGuid()));
-            if (owner != NULL)
+            Player* owner = getWorldMapPlayer(getSummonedByGuid());
+            if (owner != nullptr)
                 owner->addSimpleHealingBatchEvent(Util::float2int32(1.5f * dmg.realDamage), owner, sSpellMgr.getSpellInfo(50452));
         }
     }
@@ -16428,5 +16578,54 @@ void Unit::handleProcDmgShield(uint32_t flag, Unit* attacker)
         }
     }
     m_damageShieldsInUse = false;
+}
+
+void Unit::setPossessedVisibilityRoles(bool possessed)
+{
+    if (!IsInWorld())
+        return;
+
+    WorldMap* map = getWorldMap();
+    if (!map)
+        return;
+
+    auto h = map->getSpatialIndex().handleByGuid(GetNewGUID());
+    if (!h.id)
+        return;
+
+    if (possessed)
+    {
+        Player* controller = m_playerControler;
+        if (!controller || !controller->IsInWorld() || controller->getWorldMap() != map)
+            return;
+
+        // Keep packet routing explicit. The controlled unit is the spatial viewer,
+        // while the controlling player owns the client-visible GUID set/session.
+        map->setVisibilityRecipientForViewer(GetNewGUID(), controller);
+
+        // Store possession in the canonical interest profile. This prevents later
+        // visibility refreshes from reverting the controlled creature to the normal
+        // non-viewer Creature profile.
+        const auto profile = map->getVisibilitySystem().buildInterestProfile(this);
+        map->getVisibilitySystem().applyInterestProfile(h, profile);
+
+        // Deliver the initial remote view synchronously. Subsequent movement uses
+        // WorldMap::onObjectMoved(), which refreshes and flushes this viewer as it moves.
+        map->getVisibilitySystem().refreshObjectVisibility(h);
+        map->processPendingVisibilityChangesForViewer(GetNewGUID(), 512, 512);
+        return;
+    }
+
+    Player* controller = m_playerControler;
+    if (controller)
+        map->clearVisibilitySourceForRecipient(GetNewGUID(), controller);
+
+    // Do not rebuild the interest profile here while m_playerControler is still set.
+    // That would classify the unit as player-controlled and immediately re-enable
+    // the viewer/activator roles we are trying to remove.
+    map->getVisibilitySystem().setViewerRole(h, false, 0);
+    map->getVisibilitySystem().setActivatorRole(h, false, 0);
+    map->processPendingVisibilityChangesForViewer(GetNewGUID(), 512, 512);
+    map->clearVisibilityRecipientForViewer(GetNewGUID());
 }
 

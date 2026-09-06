@@ -22,7 +22,6 @@ enum GroupAIFlags
 class Creature;
 class CreatureGroup;
 class Unit;
-struct Position;
 
 struct FormationInfo
 {

@@ -330,12 +330,12 @@ void SnoboldAI::SetCreatureData64(uint32_t type, uint64_t data)
 {
     if (type == Beasts::DATA_NEW_TARGET)
     {
-        if (Unit* target = getInstanceScript()->getInstance()->getUnit(data))
+        if (Unit* target = getCreature()->getWorldMapUnit(data))
         {
             attackStart(target);
             moveChase(target);
 
-            targetGUID = data;
+            targetGUID = WoWGuid(data);
 
             func_Snowballed = addAISpell(SpellDesc(Beasts::Gormok::SPELL_SNOBOLLED, FilterArgs(TargetFilter(TargetFilter_AOE | TargetFilter_Player)), true), DoOnceScheduler(500ms));
             func_Batter = addAIFunction(&SnoboldAI::Batter, DoOnceScheduler(5s, 50.0f));

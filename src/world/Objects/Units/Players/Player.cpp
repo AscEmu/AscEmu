@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <zlib.h>
 
 #include "Player.hpp"
+#include "Objects/Units/Creatures/AIInterface.h"
 
 #include "TradeData.hpp"
 #include "Chat/ChatDefines.hpp"
@@ -29,6 +30,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/Management/MapMgr.hpp"
+#include "Map/Management/ObjectFactory.hpp"
+#include "Map/Visibility/VisibilityTypes.hpp"
+#include "Map/Visibility/VisibilitySystem.hpp"
+#include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
@@ -202,6 +207,44 @@ This file is released under the MIT license. See README-MIT for more information
 #include <vector>
 
 using namespace AscEmu::Packets;
+
+namespace
+{
+    void sendMapTransferFailure(Player* player, uint32_t mapId, EnterState state)
+    {
+        if (!player || !player->getSession())
+            return;
+
+        switch (state)
+        {
+            case CANNOT_ENTER_DIFFICULTY_UNAVAILABLE:
+                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_HEROIC_MODE_NOT_AVAILABLE).serialise().get());
+                break;
+            case CANNOT_ENTER_INSTANCE_BIND_MISMATCH:
+                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_ERROR).serialise().get());
+                break;
+            case CANNOT_ENTER_TOO_MANY_INSTANCES:
+                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_TOO_MANY).serialise().get());
+                break;
+            case CANNOT_ENTER_MAX_PLAYERS:
+                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_FULL).serialise().get());
+                break;
+            case CANNOT_ENTER_ENCOUNTER:
+                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_ENCOUNTER).serialise().get());
+                break;
+            case CANNOT_ENTER_NOT_IN_RAID:
+                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_NOT_IN_RAID_GROUP).serialise().get());
+                break;
+            case CANNOT_ENTER_XPACK01:
+            case CANNOT_ENTER_XPACK02:
+                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_EXPANSION).serialise().get());
+                break;
+            default:
+                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_ERROR).serialise().get());
+                break;
+        }
+    }
+}
 using namespace MapManagement::AreaManagement;
 using namespace InstanceDifficulty;
 
@@ -320,6 +363,73 @@ Player::~Player()
 
     m_cachedPets.clear();
     removeGarbageItems();
+}
+
+void Player::resetPossessionBeforeRelocation()
+{
+    if (!getCharmGuid())
+        return;
+
+    unPossess();
+
+    // unPossess() should clear the charm guid in the normal path. Keep this
+    // as a defensive fallback for stale/broken states where the possessed unit
+    // can no longer be resolved.
+    if (getCharmGuid())
+        setCharmGuid(0);
+
+    if (isCastingSpell())
+        interruptSpell();
+}
+
+void Player::resetVisibilityBeforeRelocation()
+{
+    if (!IsInWorld() || !m_WorldMap)
+        return;
+
+    m_WorldMap->resetVisibilityForPlayerRelocation(this);
+}
+
+void Player::refreshVisibilityAfterRelocation()
+{
+    if (!IsInWorld() || !m_WorldMap)
+        return;
+
+    // resetVisibilityBeforeRelocation() removes the stale viewer/activator
+    // subscriptions from the old position. Re-apply the normal player interest
+    // profile at the new position before processing pending creates.
+    const WoWGuid guid = GetNewGUID();
+    if (auto h = m_WorldMap->getSpatialIndex().handleByGuid(guid); h.id)
+    {
+        auto profile = m_WorldMap->getVisibilitySystem().buildInterestProfile(this);
+        m_WorldMap->getVisibilitySystem().applyInterestProfile(h, profile);
+    }
+
+    // A same-map teleport/repop can relocate the player without an immediate
+    // client movement packet. Force the visibility/activation state to the new
+    // position now, otherwise nearby creatures may remain inactive until the
+    // ghost moves once.
+    m_WorldMap->onObjectMoved(this);
+    m_WorldMap->processPendingVisibilityChangesForViewer(guid, 512, 512);
+}
+
+void Player::collectVisibleObjectGuidsForRelocation(std::vector<WoWGuid>& out) const
+{
+    std::set<uint64_t> unique;
+
+    for (uint64_t raw : visible_.any)
+        unique.insert(raw);
+
+
+    out.reserve(out.size() + unique.size());
+    for (uint64_t raw : unique)
+        out.emplace_back(WoWGuid(raw));
+}
+
+void Player::clearVisibleObjectCachesForRelocation()
+{
+    _visReset();
+    _visAdd(GetNewGUID());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -507,73 +617,28 @@ void Player::Update(unsigned long time_passed)
     }
 }
 
-void Player::AddToWorld()
+void Player::onPreAttachToWorld()
 {
-    if (auto transport = this->GetTransport())
+    // When a released ghost enters the instance that contains the corpse, the
+    // corpse must be converted before this player receives the destination
+    // map's initial visibility/create packets. ObjectFactory builds that
+    // visibility between onPreAttachToWorld() and onAttachToWorld(), while the
+    // actual resurrection happens later in onWorldPortAck().
+    if (m_WorldMap && isDead() && hasCorpseData() &&
+        m_WorldMap->getBaseMap()->isInstanceableMap() &&
+        getCorpseMapId() == m_WorldMap->getBaseMap()->getMapId())
     {
-        this->SetPosition(transport->GetPositionX() + GetTransOffsetX(),
-            transport->GetPositionY() + GetTransOffsetY(),
-            transport->GetPositionZ() + GetTransOffsetZ(),
-            GetOrientation(), false);
+        if (Corpse* corpse = m_WorldMap->getRegistry().getCorpseByOwner(getGuidLow()))
+        {
+            if (corpse->getCorpseState() == CORPSE_STATE_BODY)
+            {
+                corpse->spawnBones();
+                if (corpse->IsInWorld())
+                    sObjectMgr.addCorpseDespawnTime(corpse);
+            }
+        }
     }
 
-    // If we join an invalid instance and get booted out, this will prevent our stats from doubling :P
-    if (IsInWorld())
-        return;
-
-    m_beingPushed = true;
-    Object::AddToWorld();
-
-    if (m_WorldMap == nullptr)
-    {
-        m_beingPushed = false;
-        ejectFromInstance();
-        return;
-    }
-
-    if (m_session)
-        m_session->SetInstance(m_WorldMap->getInstanceId());
-
-#if VERSION_STRING > TBC
-    sendInstanceDifficultyPacket(m_WorldMap->getDifficulty());
-#endif
-}
-
-void Player::AddToWorld(WorldMap* pMapMgr)
-{
-    if (auto transport = this->GetTransport())
-    {
-        auto t_loc = transport->GetPosition();
-        this->SetPosition(t_loc.x + this->GetTransOffsetX(),
-            t_loc.y + this->GetTransOffsetY(),
-            t_loc.z + this->GetTransOffsetZ(),
-            this->GetOrientation(), false);
-    }
-
-    // If we join an invalid instance and get booted out, this will prevent our stats from doubling :P
-    if (IsInWorld())
-        return;
-
-    m_beingPushed = true;
-    Object::AddToWorld(pMapMgr);
-
-    if (m_WorldMap == nullptr)
-    {
-        m_beingPushed = false;
-        ejectFromInstance();
-        return;
-    }
-
-    if (m_session)
-        m_session->SetInstance(m_WorldMap->getInstanceId());
-
-#if VERSION_STRING > TBC
-    sendInstanceDifficultyPacket(m_WorldMap->getDifficulty());
-#endif
-}
-
-void Player::OnPrePushToWorld()
-{
     sendInitialLogonPackets();
 #if VERSION_STRING > TBC
     m_achievementMgr->sendAllAchievementData(this);
@@ -587,24 +652,34 @@ void Player::OnPrePushToWorld()
 #if VERSION_STRING >= WotLK
     updateRunicPowerRegeneration(true);
 #endif
+
+    m_beingPushed = true;
+
+    if (m_WorldMap == nullptr)
+    {
+        m_beingPushed = false;
+        ejectFromInstance();
+    }
+    else
+    {
+#if VERSION_STRING > TBC
+        sendInstanceDifficultyPacket(m_WorldMap->getDifficulty());
+#endif
+    }
+
+    _visReset();
+    visible().reserve(256);
+
+    Object::onPreAttachToWorld();
 }
 
-void Player::OnPushToWorld()
+void Player::onAttachToWorld()
 {
     uint8_t class_ = getClass();
     uint8_t startlevel = 1;
 
     // Process create packet
     processPendingUpdates();
-
-#if VERSION_STRING == Mop
-    // MoP: process any CMSG_OBJECT_UPDATE_FAILED (0x1061) already in queue so resend runs in same tick.
-    if (m_session)
-        m_session->processQueuedPackets(static_cast<uint32_t>(GetInstanceID()));
-    // MoP: 0x1061 often arrive after create send; schedule a second drain in 150ms.
-    if (m_session)
-        sEventMgr.AddEvent(this, &Player::eventProcessQueuedPacketsMoP, EVENT_PLAYER_MOP_PROCESS_QUEUE, 150, 1, 0);
-#endif
 
     if (m_teleportState == 2)   // Worldport Ack
         onWorldPortAck();
@@ -613,10 +688,8 @@ void Player::OnPushToWorld()
     m_beingPushed = false;
     addItemsToWorld();
 
-#if VERSION_STRING < Mop
     // set fly if cheat is active
     setMoveCanFly(m_cheats.hasFlyCheat);
-#endif
 
     getMovementManager()->initialize();
 
@@ -625,8 +698,6 @@ void Player::OnPushToWorld()
 
     if (m_playerInfo->lastOnline + 900 < UNIXTIME)    // did we logged out for more than 15 minutes?
         getItemInterface()->RemoveAllConjured();
-
-    Unit::OnPushToWorld();
 
     sHookInterface.OnEnterWorld(this);
 
@@ -642,7 +713,6 @@ void Player::OnPushToWorld()
     m_enteringWorld = false;
     m_teleportState = 0;
 
-#if VERSION_STRING < Mop
     // can only fly in outlands or northrend (northrend requires cold weather flying)
     if (m_flyingAura && ((m_mapId != 530) && (m_mapId != 571 || !hasSpell(54197) && getDeathState() == ALIVE)))
     {
@@ -652,7 +722,6 @@ void Player::OnPushToWorld()
 
     // send weather
     sWeatherMgr.sendWeather(this);
-#endif
 
     setHealth(m_loadHealth > getMaxHealth() ? getMaxHealth() : m_loadHealth);
     if (getPowerType() == POWER_TYPE_MANA)
@@ -672,29 +741,29 @@ void Player::OnPushToWorld()
         // Sometimes power types aren't initialized - so initialize it again
         switch (getClass())
         {
-            case WARRIOR:
-                setMaxPower(POWER_TYPE_RAGE, 1000);
-                setPower(POWER_TYPE_RAGE, 0);
-                break;
-            case ROGUE:
-                setMaxPower(POWER_TYPE_ENERGY, 100);
-                setPower(POWER_TYPE_ENERGY, 100);
-                break;
+        case WARRIOR:
+            setMaxPower(POWER_TYPE_RAGE, 1000);
+            setPower(POWER_TYPE_RAGE, 0);
+            break;
+        case ROGUE:
+            setMaxPower(POWER_TYPE_ENERGY, 100);
+            setPower(POWER_TYPE_ENERGY, 100);
+            break;
 #if VERSION_STRING >= WotLK
-            case DEATHKNIGHT:
-                setMaxPower(POWER_TYPE_RUNES, 8);
-                setMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
-                setPower(POWER_TYPE_RUNES, 8);
-                break;
+        case DEATHKNIGHT:
+            setMaxPower(POWER_TYPE_RUNES, 8);
+            setMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
+            setPower(POWER_TYPE_RUNES, 8);
+            break;
 #endif
 #if VERSION_STRING >= Cata
-            case HUNTER:
-                setPower(POWER_TYPE_FOCUS, 0);
-                setMaxPower(POWER_TYPE_FOCUS, 100);
+        case HUNTER:
+            setPower(POWER_TYPE_FOCUS, 0);
+            setMaxPower(POWER_TYPE_FOCUS, 100);
 #endif
-            default:
-                setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
-                break;
+        default:
+            setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
+            break;
         }
         m_firstLogin = false;
 
@@ -735,8 +804,6 @@ void Player::OnPushToWorld()
     summonTemporarilyUnsummonedPet();
 
 #if VERSION_STRING == Mop
-    updateVisibility();
-
     SmsgBattlePetJournal battlePetJournalPacket;
     getSession()->sendManagedPacket(battlePetJournalPacket);
 
@@ -750,16 +817,23 @@ void Player::OnPushToWorld()
     getSession()->sendManagedPacket(cufProfilesPacket);
 #endif
 
-#if VERSION_STRING < Mop
     sendTaxiNodeStatusMultiple();
     continueTaxiFlight();
-#endif
+
+    Unit::onAttachToWorld();
 }
 
-void Player::removeFromWorld()
+void Player::onPreDetachFromWorld()
 {
+    // Logout, map detach and forced relocation must never leave a controlled NPC
+    // behind as temporary viewer/activator. This is harmless if teleport/death
+    // already cleared the possession earlier.
+    resetPossessionBeforeRelocation();
+
     if (m_sendOnlyRaidgroup)
         event_RemoveEvents(EVENT_PLAYER_EJECT_FROM_INSTANCE);
+
+    _visReset();
 
     m_loadHealth = getHealth();
     m_loadMana = getPower(POWER_TYPE_MANA);
@@ -778,7 +852,7 @@ void Player::removeFromWorld()
     //clear buyback
     getItemInterface()->EmptyBuyBack();
 
-    // Keep current pet active, Unit::RemoveFromWorld removes other summons
+    // Keep current pet active, removes other summons
     unSummonPetTemporarily();
 
     if (m_summonedObject)
@@ -790,21 +864,17 @@ void Player::removeFromWorld()
         else
         {
             if (m_summonedObject->IsInWorld())
-                m_summonedObject->RemoveFromWorld(true);
-
-            delete m_summonedObject;
+                m_summonedObject->destroy();
         }
         m_summonedObject = nullptr;
     }
 
-    if (IsInWorld())
-    {
-        removeItemsFromWorld();
-        Unit::RemoveFromWorld(false);
-    }
+    removeItemsFromWorld();
 
     m_changingMaps = true;
     m_playerInfo->lastOnline = UNIXTIME; // don't destroy conjured items yet
+
+    Unit::onPreDetachFromWorld();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1618,9 +1688,13 @@ bool Player::teleport(const LocationVector& vec, WorldMap* map)
 {
     if (map)
     {
-        if (map->getPlayer(this->getGuidLow()))
+        resetPossessionBeforeRelocation();
+
+        if (map->getPlayer(this->GetNewGUID()))
         {
+            resetVisibilityBeforeRelocation();
             this->SetPosition(vec);
+            refreshVisibilityAfterRelocation();
         }
         else
         {
@@ -1646,26 +1720,60 @@ void Player::eventTeleport(uint32_t mapId, LocationVector position, uint32_t ins
 
 bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVector& vec)
 {
-    // do not teleport to an unallowed mapId
+    const bool changesWorld = mapId != m_mapId ||
+        (instanceId && static_cast<uint32_t>(m_instanceId) != instanceId);
+
+    if (changesWorld)
+    {
+        const EnterState denyReason = sMapMgr.canPlayerEnter(mapId, 0, this, false, instanceId);
+        if (denyReason != CAN_ENTER)
+        {
+            sendMapTransferFailure(this, mapId, denyReason);
+            return false;
+        }
+
+        WorldMap* targetMap = sMapMgr.createMap(mapId, this, instanceId);
+        if (!targetMap)
+        {
+            sendMapTransferFailure(this, mapId, CANNOT_ENTER_INSTANCE_BIND_MISMATCH);
+            return false;
+        }
+
+        if (targetMap->getBaseMap()->isInstanceMap() &&
+            !targetMap->getBaseMap()->isBattlegroundOrArena())
+        {
+            if (const EnterState denyReason = targetMap->cannotEnter(this))
+            {
+                sendMapTransferFailure(this, mapId, denyReason);
+                return false;
+            }
+        }
+
+        instanceId = targetMap->getInstanceId();
+    }
+
     if (const auto mapInfo = sMySQLStore.getWorldMapInfo(mapId))
     {
-        if (mapInfo->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
+        if (mapInfo->flags & WMI_INSTANCE_XPACK_01 &&
+            !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) &&
+            !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
         {
             sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, getSession()->localizedWorldSrv(SS_MUST_HAVE_BC));
             return false;
         }
 
-        if (mapInfo->flags & WMI_INSTANCE_XPACK_02 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
+        if (mapInfo->flags & WMI_INSTANCE_XPACK_02 &&
+            !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
         {
             sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, getSession()->localizedWorldSrv(SS_MUST_HAVE_WOTLK));
             return false;
         }
     }
 
-    // hide waypoints otherwise it will crash when trying to unload map
+    resetPossessionBeforeRelocation();
+
     if (m_aiInterfaceWaypoint != nullptr)
         m_aiInterfaceWaypoint->hideWayPoints(this);
-
     m_aiInterfaceWaypoint = nullptr;
 
     speedCheatDelay(10000);
@@ -1674,34 +1782,19 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
     {
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_TELEPORT);
         setMountDisplayId(0);
-
         removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
         removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
-
         setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
     }
 
     if (obj_movement_info.transport_guid)
     {
-        if (const auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid)))
-        {
+        if (const auto transporter = sTransportHandler.getTransporter(obj_movement_info.transport_guid))
             transporter->RemovePassenger(this);
-            obj_movement_info.transport_guid = 0;
-        }
+        else
+            obj_movement_info.clearTransportData();
     }
 
-    bool instance = false;
-    if (instanceId && static_cast<uint32_t>(m_instanceId) != instanceId)
-    {
-        instance = true;
-        this->SetInstanceID(instanceId);
-    }
-    else if (m_mapId != mapId)
-    {
-        instance = true;
-    }
-
-    // make sure player does not drown when teleporting from under water
     if (m_underwaterState & UNDERWATERSTATE_UNDERWATER)
         m_underwaterState &= ~UNDERWATERSTATE_UNDERWATER;
 
@@ -1716,15 +1809,19 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
     callExitVehicle();
 #endif
 
-    if (m_bg && m_bg->getWorldMap() && getWorldMap() && getWorldMap()->getBaseMap()->getMapInfo()->mapid != mapId)
+    if (m_bg && m_bg->getWorldMap() && getWorldMap() &&
+        getWorldMap()->getBaseMap()->getMapInfo()->mapid != mapId)
     {
         m_bg->removePlayer(this, false);
     }
 
-    _Relocate(mapId, vec, true, instance, instanceId);
+    if (!changesWorld && IsInWorld())
+        resetVisibilityBeforeRelocation();
+
+    _Relocate(mapId, vec, true, changesWorld, instanceId);
 
     speedCheatReset();
-
+    refreshVisibilityAfterRelocation();
     forceZoneUpdate();
 
     return true;
@@ -1732,36 +1829,85 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
 
 void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
 {
-    if (mgr)
-    {
-        speedCheatDelay(10000);
+    if (!mgr)
+        return;
 
-        // can only fly in outlands or northrend (northrend requires cold weather flying)
-        if (m_flyingAura && ((m_mapId != 530) && (m_mapId != 571 || (!hasSpell(54197) && getDeathState() == ALIVE))))
+    // Use the already resolved map and keep transport data during the transfer.
+    const uint32_t mapId = mgr->getBaseMap()->getMapId();
+    const uint32_t instanceId = mgr->getInstanceId();
+
+    if (mgr->getBaseMap()->isInstanceMap() &&
+        !mgr->getBaseMap()->isBattlegroundOrArena())
+    {
+        if (const EnterState denyReason = mgr->cannotEnter(this))
         {
-            removeAllAurasById(m_flyingAura);
-            m_flyingAura = 0;
+            sendMapTransferFailure(this, mapId, denyReason);
+            return;
+        }
+    }
+
+    if (const auto mapInfo = sMySQLStore.getWorldMapInfo(mapId))
+    {
+        if (mapInfo->flags & WMI_INSTANCE_XPACK_01 &&
+            !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) &&
+            !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
+        {
+            sendChatMessage(
+                CHAT_MSG_SYSTEM,
+                LANG_UNIVERSAL,
+                getSession()->localizedWorldSrv(SS_MUST_HAVE_BC));
+
+            return;
         }
 
-        if (IsInWorld())
-            removeFromWorld();
+        if (mapInfo->flags & WMI_INSTANCE_XPACK_02 &&
+            !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
+        {
+            sendChatMessage(
+                CHAT_MSG_SYSTEM,
+                LANG_UNIVERSAL,
+                getSession()->localizedWorldSrv(SS_MUST_HAVE_WOTLK));
 
-        m_mapId = mgr->getBaseMap()->getMapId();
-        m_instanceId = mgr->getInstanceId();
-
-        SmsgTransferPending managedTransferPacket(mgr->getBaseMap()->getMapId());
-        getSession()->sendManagedPacket(managedTransferPacket);
-
-        SmsgNewWorld managedPacket(mgr->getBaseMap()->getMapId(), vec);
-        getSession()->sendManagedPacket(managedPacket);
-
-        setTransferStatus(TRANSFER_PENDING);
-        m_sentTeleportPosition = vec;
-        SetPosition(vec);
-
-        speedCheatReset();
-        forceZoneUpdate();
+            return;
+        }
     }
+
+    resetPossessionBeforeRelocation();
+    speedCheatDelay(10000);
+
+    // Can only fly in Outland or Northrend
+    // (Northrend requires Cold Weather Flying while alive).
+    if (m_flyingAura &&
+        ((m_mapId != 530) &&
+            (m_mapId != 571 || (!hasSpell(54197) && getDeathState() == ALIVE))))
+    {
+        removeAllAurasById(m_flyingAura);
+        m_flyingAura = 0;
+    }
+
+    // Do not remove transport passengers here or their transport data is lost.
+    leaveCurrentWorldMapForTransfer();
+
+    SetMapId(mapId);
+    SetInstanceID(instanceId);
+
+    // Transporters already sent their own transfer-pending packet.
+    if (!GetTransport())
+    {
+        SmsgTransferPending managedPacket(mapId);
+        getSession()->sendManagedPacket(managedPacket);
+    }
+
+    SmsgNewWorld managedPacket(mapId, vec);
+    getSession()->sendManagedPacket(managedPacket);
+
+    setTransferStatus(TRANSFER_PENDING);
+    m_sentTeleportPosition = vec;
+    SetPosition(vec);
+
+    refreshVisibilityAfterRelocation();
+    speedCheatReset();
+    forceZoneUpdate();
 }
 
 void Player::setTransferStatus(uint8_t status) { m_transferStatus = status; }
@@ -1901,7 +2047,7 @@ void Player::setPhase(uint8_t command, uint32_t newPhase)
 
     getSummonInterface()->setPhase(command, newPhase);
 
-    if (Unit* charm = m_WorldMap->getUnit(getCharmGuid()))
+    if (Unit* charm = getWorldMapUnit(getCharmGuid()))
         charm->setPhase(command, newPhase);
 }
 
@@ -1925,7 +2071,7 @@ void Player::zoneUpdate(uint32_t zoneId)
         auto at = GetArea();
         if (at && (at->team == AREAC_SANCTUARY || at->flags & AREA_FLAG_SANCTUARY))
         {
-            Unit* pUnit = (getTargetGuid() == 0) ? nullptr : (m_WorldMap ? m_WorldMap->getUnit(getTargetGuid()) : nullptr);
+            Unit* pUnit = (getTargetGuid() == 0) ? nullptr : (m_WorldMap ? getWorldMapUnit(getTargetGuid()) : nullptr);
             if (pUnit && m_duelPlayer != pUnit)
             {
                 eventAttackStop();
@@ -2016,10 +2162,7 @@ void Player::eventExploration()
     if (!IsInWorld())
         return;
 
-    if (m_position.x > Map::Terrain::_maxX || m_position.x < Map::Terrain::_minX || m_position.y > Map::Terrain::_maxY || m_position.y < Map::Terrain::_minY)
-        return;
-
-    if (getWorldMap()->getCellByCoords(GetPositionX(), GetPositionY()) == nullptr)
+    if (m_position.x > visibility::Terrain::MaxX || m_position.x < visibility::Terrain::MinX || m_position.y > visibility::Terrain::MaxY || m_position.y < visibility::Terrain::MinY)
         return;
 
     if (auto areaTableEntry = this->GetArea())
@@ -2111,7 +2254,7 @@ void Player::eventExploration()
 
 void Player::ejectFromInstance()
 {
-    if (getBGEntryPosition().isSet() && !IS_INSTANCE(getBGEntryMapId()))
+    if (hasValidBGEntryPoint() && !IS_INSTANCE(getBGEntryMapId()))
         if (safeTeleport(getBGEntryMapId(), getBGEntryInstanceId(), getBGEntryPosition()))
             return;
 
@@ -2120,15 +2263,10 @@ void Player::ejectFromInstance()
 
 bool Player::exitInstance()
 {
-    if (getBGEntryPosition().isSet())
-    {
-        removeFromWorld();
-        safeTeleport(getBGEntryMapId(), getBGEntryInstanceId(), getBGEntryPosition());
+    if (!hasValidBGEntryPoint())
+        return false;
 
-        return true;
-    }
-
-    return false;
+    return safeTeleport(getBGEntryMapId(), getBGEntryInstanceId(), getBGEntryPosition());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2155,7 +2293,7 @@ std::string Player::getBanReason() const { return m_banreason; }
 GameObject* Player::getSelectedGo() const
 {
     if (m_GMSelectedGO)
-        return getWorldMap()->getGameObject(static_cast<uint32_t>(m_GMSelectedGO));
+        return getWorldMapGameObject(m_GMSelectedGO);
 
     return nullptr;
 }
@@ -2970,20 +3108,18 @@ void Player::outPacketToSet(uint16_t opcode, uint16_t length, const void* data, 
     if (sendToSelf)
         outPacket(opcode, length, data);
 
-    for (const auto& objectPlayer : getInRangePlayersSet())
+    thread_local std::vector<Player*> s_recipients;
+    m_WorldMap->collectVisibilityRecipientsForObject(GetNewGUID(), s_recipients);
+
+    for (Player* player : s_recipients)
     {
-        if (Player* player = static_cast<Player*>(objectPlayer))
-        {
-            if (m_isGmInvisible)
-            {
-                if (player->getSession()->hasPermissions())
-                    player->outPacket(opcode, length, data);
-            }
-            else
-            {
-                player->outPacket(opcode, length, data);
-            }
-        }
+        if (!player || player == this || player->getSession() == nullptr)
+            continue;
+
+        if (m_isGmInvisible && !player->getSession()->hasPermissions())
+            continue;
+
+        player->outPacket(opcode, length, data);
     }
 }
 
@@ -2995,32 +3131,30 @@ void Player::sendMessageToSet(WorldPacket* data, bool sendToSelf, bool sendToOwn
     if (sendToSelf)
         sendPacket(data);
 
-    for (const auto& objectPlayer : getInRangePlayersSet())
+    thread_local std::vector<Player*> s_recipients;
+    m_WorldMap->collectVisibilityRecipientsForObject(GetNewGUID(), s_recipients);
+
+    for (Player* player : s_recipients)
     {
-        if (Player* player = static_cast<Player*>(objectPlayer))
+        if (!player || player == this || player->getSession() == nullptr)
+            continue;
+
+        if (sendToOwnTeam && player->getTeam() != getTeam())
+            continue;
+
+        if ((player->GetPhase() & GetPhase()) == 0)
+            continue;
+
+        if (data->getOpcode() != SMSG_MESSAGECHAT)
         {
-            if (player->getSession() == nullptr)
+            if (m_isGmInvisible && !player->getSession()->hasPermissions())
                 continue;
 
-            if (sendToOwnTeam && player->getTeam() != getTeam())
-                continue;
-
-            if ((player->GetPhase() & GetPhase()) == 0)
-                continue;
-
-            if (data->getOpcode() != SMSG_MESSAGECHAT)
-            {
-                if (m_isGmInvisible && !player->getSession()->hasPermissions())
-                    continue;
-
-                if (player->isVisibleObject(getGuid()))
-                    player->sendPacket(data);
-            }
-            else
-            {
-                if (!player->isIgnored(getGuidLow()))
-                    player->sendPacket(data);
-            }
+            player->sendPacket(data);
+        }
+        else if (!player->isIgnored(getGuidLow()))
+        {
+            player->sendPacket(data);
         }
     }
 }
@@ -3377,37 +3511,6 @@ void Player::setUpdateBits(UpdateMask* updateMask, Player* target) const
     {
         Object::setUpdateBits(updateMask, target);
         *updateMask &= Player::m_visibleUpdateMask;
-    }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Visiblility
-void Player::addVisibleObject(uint64_t guid) { m_visibleObjects.insert(guid); }
-
-void Player::removeVisibleObject(uint64_t guid)
-{
-    if (isVisibleObject(guid))
-    {
-        m_visibleObjects.erase(guid);
-#if VERSION_STRING <= TBC
-        if (WoWGuid(guid).isGameObject() && !WoWGuid(guid).isTransport() && !WoWGuid(guid).isTransporter())
-            sendDestroyObjectPacket(guid);
-#endif
-    }
-}
-
-bool Player::isVisibleObject(uint64_t guid) { return m_visibleObjects.contains(guid); }
-
-void Player::removeIfVisiblePushOutOfRange(uint64_t guid)
-{
-    if (m_visibleObjects.contains(guid))
-    {
-        m_visibleObjects.erase(guid);
-#if VERSION_STRING <= TBC
-        if (WoWGuid(guid).isGameObject() && !WoWGuid(guid).isTransport() && !WoWGuid(guid).isTransporter())
-            sendDestroyObjectPacket(guid);
-#endif
-        getUpdateMgr().pushOutOfRangeGuid(guid);
     }
 }
 
@@ -4308,9 +4411,9 @@ void Player::sendSpellCategoryCooldowns() const
         const uint32_t category = static_cast<uint32_t>(aurEff->getEffectMiscValue());
 
         const auto itr = std::find_if(entries.begin(), entries.end(), [category](SpellCategoryCooldownEntry const& entry)
-        {
-            return entry.category == category;
-        });
+            {
+                return entry.category == category;
+            });
 
         if (itr == entries.end())
             entries.push_back({ category, -aurEff->getEffectDamage() });
@@ -7114,6 +7217,8 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
     if (unitAttacker != nullptr && !sHookInterface.OnPreUnitDie(unitAttacker, this))
         return;
 
+    resetPossessionBeforeRelocation();
+
     if (unitAttacker != nullptr && !unitAttacker->isPlayer())
         calcDeathDurabilityLoss(0.10);
 
@@ -7128,8 +7233,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
             {
                 if (spell->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
-                    const uint64_t guid = getChannelObjectGuid();
-                    DynamicObject* dynamicObject = getWorldMap()->getDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
+                    DynamicObject* dynamicObject = getWorldMapDynamicObject(getChannelObjectGuid());
                     if (!dynamicObject)
                         continue;
 
@@ -7250,10 +7354,21 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
     sHookInterface.OnDeath(this);
 }
 
-void Player::setCorpseData(LocationVector position, int32_t instanceId)
+void Player::setCorpseData(LocationVector position, uint32_t mapId)
 {
     m_corpseData.location = position;
-    m_corpseData.instanceId = instanceId;
+    m_corpseData.mapId = mapId;
+    m_corpseData.valid = true;
+}
+
+void Player::clearCorpseData()
+{
+    m_corpseData = CorpseData{};
+}
+
+bool Player::hasCorpseData() const
+{
+    return m_corpseData.valid;
 }
 
 LocationVector Player::getCorpseLocation() const
@@ -7261,9 +7376,26 @@ LocationVector Player::getCorpseLocation() const
     return m_corpseData.location;
 }
 
-int32_t Player::getCorpseInstanceId() const
+uint32_t Player::getCorpseMapId() const
 {
-    return m_corpseData.instanceId;
+    return m_corpseData.mapId;
+}
+
+bool Player::loadCorpseDataFromDB()
+{
+    auto result = CharacterDatabase.query(
+        "SELECT positionx, positiony, positionz, orientation, mapId FROM corpses "
+        "WHERE data REGEXP '^([^ ]+ ){4}%llu( |$)' LIMIT 1",
+        static_cast<unsigned long long>(getGuid()));
+
+    if (!result)
+        return false;
+
+    Field* fields = result->fetch();
+    setCorpseData(
+        LocationVector(fields[0].asFloat(), fields[1].asFloat(), fields[2].asFloat(), fields[3].asFloat()),
+        fields[4].asUint32());
+    return true;
 }
 
 void Player::setAllowedToCreateCorpse(bool allowed)
@@ -7279,6 +7411,7 @@ bool Player::isAllowedToCreateCorpse() const
 void Player::createCorpse()
 {
     sObjectMgr.delinkCorpseForPlayer(this);
+    sObjectMgr.deleteCorpseRecordsForPlayer(getGuid());
 
     if (!isAllowedToCreateCorpse())
     {
@@ -7286,7 +7419,13 @@ void Player::createCorpse()
         return;
     }
 
-    const auto corpse = sObjectMgr.createCorpse();
+    if (!m_WorldMap)
+        return;
+
+    const auto corpse = m_WorldMap->getObjectFactory().createCorpse();
+    if (!corpse)
+        return;
+
     corpse->SetInstanceID(GetInstanceID());
     corpse->create(this, GetMapId(), GetPosition());
 
@@ -7337,43 +7476,95 @@ void Player::createCorpse()
     }
 
     corpse->saveToDB();
+
+    // Corpse routing only needs the map. The concrete instance is resolved through
+    // the player's/group's InstanceSaved binding when entering the dungeon.
+    setCorpseData(corpse->GetPosition(), corpse->GetMapId());
+
+    // createCorpse() only allocates the object. The corpse enters the
+    // WorldObjectRegistry/SpatialIndex/VisibilitySystem exactly once here
+    m_WorldMap->getObjectFactory().attachToWorld(corpse);
 }
 
 void Player::spawnCorpseBody()
 {
-    if (const auto corpse = sObjectMgr.getCorpseByOwner(this->getGuidLow()))
+    if (const auto corpse = (m_WorldMap ? m_WorldMap->getRegistry().getCorpseByOwner(this->getGuidLow()) : nullptr))
     {
-        if (!corpse->IsInWorld())
-        {
-            if (m_lootableOnCorpse && corpse->getDynamicFlags() != 1)
-                corpse->setDynamicFlags(1);
+        if (m_lootableOnCorpse && corpse->getDynamicFlags() != 1)
+            corpse->setDynamicFlags(1);
 
-            if (m_WorldMap == nullptr)
-                corpse->AddToWorld();
-            else
-                corpse->PushToWorld(m_WorldMap);
-        }
+        if (!corpse->IsInWorld() && m_WorldMap != nullptr)
+            m_WorldMap->getObjectFactory().attachToWorld(corpse);
 
-        setCorpseData(corpse->GetPosition(), corpse->GetInstanceID());
-    }
-    else
-    {
-        setCorpseData({ 0, 0, 0, 0 }, 0);
+        corpse->setOwnerNotifyMap(getGuid());
+
+        // Persistent corpse data is authoritative for routing. Do not overwrite
+        // it with a runtime corpse from the player's current map.
+        if (!hasCorpseData())
+            setCorpseData(corpse->GetPosition(), corpse->GetMapId());
     }
 }
 
 void Player::spawnCorpseBones()
 {
-    setCorpseData({ 0, 0, 0, 0 }, 0);
+    Corpse* corpse = nullptr;
 
-    if (const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow()))
+    if (m_WorldMap)
     {
-        if (corpse->IsInWorld() && corpse->getCorpseState() == CORPSE_STATE_BODY)
+        corpse = m_WorldMap->getRegistry().getCorpseByOwner(getGuidLow());
+
+        // Corpse ownership is stored as the full player GUID. Keep a direct
+        // fallback here so reclaim is not dependent on the registry helper's
+        // low-guid conversion. This is especially important for corpses loaded
+        // together with an unloaded instance.
+        if (!corpse)
         {
-            corpse->spawnBones();
-            sObjectMgr.addCorpseDespawnTime(corpse);
+            std::vector<Corpse*> corpses;
+            m_WorldMap->getRegistry().snapshotCorpses(corpses);
+
+            for (Corpse* candidate : corpses)
+            {
+                if (candidate && candidate->getOwnerGuid() == getGuid())
+                {
+                    corpse = candidate;
+                    break;
+                }
+            }
         }
     }
+
+    if (corpse && corpse->getCorpseState() == CORPSE_STATE_BODY)
+    {
+        // Convert the runtime corpse even when it has only just been restored
+        // with the instance. spawnBones() clears owner/equipment and removes the
+        // persistent body from the database.
+        corpse->spawnBones();
+
+        if (corpse->IsInWorld())
+        {
+            sObjectMgr.addCorpseDespawnTime(corpse);
+
+            // The entering player may already have received the corpse create
+            // packet before onWorldPortAck() performs the resurrection. Refresh
+            // visibility after the conversion so clients immediately see bones
+            // instead of the previously dressed body.
+            if (WorldMap* corpseMap = corpse->getWorldMap())
+                corpseMap->refreshVisibilityForObject(corpse);
+        }
+    }
+    else if (!corpse && hasCorpseData() && m_WorldMap &&
+             getCorpseMapId() == m_WorldMap->getBaseMap()->getMapId())
+    {
+        // The corpse belongs to this map, but no body exists in the destination
+        // WorldMap. This is the expected case when the old instance save expired:
+        // startup keeps the corpse row as an orphan (instanceId = 0) so the ghost
+        // can still route back to the correct map. Once the player successfully
+        // enters that map and is resurrected, the old body no longer has a world
+        // in which it can exist, so remove the persistent orphan now.
+        sObjectMgr.deleteCorpseRecordsForPlayer(getGuid());
+    }
+
+    clearCorpseData();
 }
 
 void Player::repopRequest()
@@ -7381,14 +7572,18 @@ void Player::repopRequest()
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_CHECKFORCHEATS);
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_FORCED_RESURRECT);
 
-    if (m_corpseData.instanceId != 0)
+    if (hasCorpseData())
     {
-        if (const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow()))
-            corpse->resetDeathClock();
+        const auto corpseMap = sMapMgr.findBaseMap(getCorpseMapId());
+        if (corpseMap && corpseMap->isInstanceableMap())
+        {
+            if (const auto corpse = (m_WorldMap ? m_WorldMap->getRegistry().getCorpseByOwner(getGuidLow()) : nullptr))
+                corpse->resetDeathClock();
 
-        resurrect();
-        repopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
-        return;
+            resurrect();
+            repopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
+            return;
+        }
     }
 
     if (auto transport = this->GetTransport())
@@ -7402,7 +7597,8 @@ void Player::repopRequest()
 
     setDeathState(CORPSE);
 
-    updateVisibility();
+    if (IsInWorld())
+        getWorldMap()->refreshVisibilityForObject(this);
 
     removeUnitFlags(UNIT_FLAG_SKINNABLE);
 
@@ -7444,8 +7640,8 @@ void Player::repopRequest()
     {
         spawnCorpseBody();
 
-        if (m_corpseData.instanceId != 0)
-            if (const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow()))
+        if (hasCorpseData())
+            if (const auto corpse = (m_WorldMap ? m_WorldMap->getRegistry().getCorpseByOwner(getGuidLow()) : nullptr))
                 corpse->resetDeathClock();
 
         SmsgDeathReleaseLoc managedPacket(m_mapId, m_position);
@@ -7530,7 +7726,8 @@ void Player::resurrect()
     removePlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE);
     setDeathState(ALIVE);
 
-    updateVisibility();
+    if (IsInWorld())
+        getWorldMap()->refreshVisibilityForObject(this);
 
     if (m_resurrecter && IsInWorld() && m_resurrectInstanceID == static_cast<uint32_t>(GetInstanceID()))
         safeTeleport(m_resurrectMapId, m_resurrectInstanceID, m_resurrectPosition);
@@ -7669,6 +7866,12 @@ LocationVector Player::getBGEntryPosition() const { return m_bgEntryData.locatio
 uint32_t Player::getBGEntryMapId() const { return m_bgEntryData.mapId; }
 int32_t Player::getBGEntryInstanceId() const { return m_bgEntryData.instanceId; }
 
+bool Player::hasValidBGEntryPoint() const
+{
+    const auto& location = m_bgEntryData.location;
+    return location.x != 0.0f || location.y != 0.0f || location.z != 0.0f || location.o != 0.0f;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Charter
 void Player::unsetCharter(uint8_t charterType) { m_charters[charterType] = nullptr; }
@@ -7694,7 +7897,7 @@ bool Player::canSignCharter(Charter const* charter, Player* requester)
 void Player::initialiseCharters()
 {
     for (uint8_t i = 0; i < NUM_CHARTER_TYPES; ++i)
-        m_charters[i] = sObjectMgr.getCharterByGuid(getGuid(), static_cast<CharterTypes>(i));
+        m_charters[i] = sObjectMgr.getCharterByGuid(GetNewGUID(), static_cast<CharterTypes>(i));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -7706,7 +7909,7 @@ bool Player::isInGuild() { return getGuild() != nullptr; }
 
 uint32_t Player::getGuildRankFromDB()
 {
-    if (auto result = CharacterDatabase.query("SELECT playerid, guildRank FROM guild_members WHERE playerid = %u", WoWGuid::getGuidLowPartFromUInt64(getGuid())))
+    if (auto result = CharacterDatabase.query("SELECT playerid, guildRank FROM guild_members WHERE playerid = %u", WoWGuid::getLowGuidFromRaw(getGuid())))
     {
         Field* fields = result->fetch();
         return fields[1].asUint32();
@@ -8499,7 +8702,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
 
     if (wowGuid.isUnit())
     {
-        Creature* quest_giver = m_WorldMap->getCreature(wowGuid.getGuidLowPart());
+        Creature* quest_giver = getWorldMapCreature(guid);
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -8514,7 +8717,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
     }
     else if (wowGuid.isGameObject())
     {
-        GameObject* quest_giver = m_WorldMap->getGameObject(wowGuid.getGuidLowPart());
+        GameObject* quest_giver = getWorldMapGameObject(guid);
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -8537,7 +8740,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
     }
     else if (wowGuid.isPlayer())
     {
-        Player* quest_giver = m_WorldMap->getPlayer(static_cast<uint32_t>(guid));
+        Player* quest_giver = getWorldMapPlayer(guid);
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -9260,24 +9463,43 @@ PlayerSpec& Player::getActiveSpec()
 
 void Player::logIntoBattleground()
 {
+    BaseMap* baseMap = sMapMgr.findBaseMap(GetMapId());
+
+    // This login recovery only applies when the character is actually stored
+    // on a battleground/arena map. Normal world and dungeon logins must keep
+    // their saved destination untouched.
+    if (!baseMap || !baseMap->isBattlegroundOrArena())
+        return;
+
     const auto mapMgr = sMapMgr.findWorldMap(GetMapId(), GetInstanceID());
-    if (mapMgr && mapMgr->getBaseMap()->isBattlegroundOrArena())
+
+    // Battlegrounds are runtime-only. A relog may return to the exact existing
+    // battleground while it is still active.
+    if (mapMgr)
     {
         const auto battleground = reinterpret_cast<BattlegroundMap*>(mapMgr)->getBattleground();
-        if (battleground->hasEnded() && battleground->hasFreeSlots(getInitialTeam(), battleground->getType()))
-        {
-            if (!IS_INSTANCE(getBGEntryMapId()))
-            {
-                m_position.changeCoords(getBGEntryPosition());
-                m_mapId = getBGEntryMapId();
-            }
-            else
-            {
-                m_position.changeCoords(getBindPosition());
-                m_mapId = getBindMapId();
-            }
-        }
+
+        if (battleground && !battleground->hasEnded())
+            return;
     }
+
+    // The stored battleground no longer exists (for example after a server
+    // restart), has ended, or has no valid battleground object. Return to the
+    // saved entry point, otherwise to the character bind position.
+    if (hasValidBGEntryPoint() && !IS_INSTANCE(getBGEntryMapId()))
+    {
+        m_position.changeCoords(getBGEntryPosition());
+        m_mapId = getBGEntryMapId();
+        m_instanceId = getBGEntryInstanceId();
+    }
+    else
+    {
+        m_position.changeCoords(getBindPosition());
+        m_mapId = getBindMapId();
+        m_instanceId = 0;
+    }
+
+    obj_movement_info.clearTransportData();
 }
 
 bool Player::logOntoTransport()
@@ -9285,7 +9507,7 @@ bool Player::logOntoTransport()
     bool success = true;
     if (!obj_movement_info.transport_guid.isEmpty())
     {
-        const auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
+        const auto transporter = sTransportHandler.getTransporter(obj_movement_info.transport_guid);
         if (transporter)
         {
             if (isDead())
@@ -9311,7 +9533,7 @@ bool Player::logOntoTransport()
             }
 
             SetPosition(positionOnTransport.x, positionOnTransport.y, positionOnTransport.z, positionOnTransport.o, false);
-            transporter->AddPassenger(this);
+            transporter->AddPassenger(this, obj_movement_info.transport_position);
         }
     }
 
@@ -10013,7 +10235,7 @@ bool Player::isAtGroupRewardDistance(Object* pRewardSource)
         return false;
 
     Object* player = nullptr;
-    const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow());
+    const auto corpse = (m_WorldMap ? m_WorldMap->getRegistry().getCorpseByOwner(getGuidLow()) : nullptr);
     if (corpse)
         player = sObjectMgr.getPlayer(static_cast<uint32_t>(corpse->getOwnerGuid()));
 
@@ -10044,45 +10266,31 @@ AchievementMgr* Player::getAchievementMgr() { return m_achievementMgr.get(); }
 
 void Player::sendUpdateDataToSet(ByteBuffer* groupBuf, ByteBuffer* nonGroupBuf, bool sendToSelf)
 {
-    if (groupBuf && nonGroupBuf)
+    if (!IsInWorld())
+        return;
+
+    thread_local std::vector<Player*> s_recipients;
+    m_WorldMap->collectVisibilityRecipientsForObject(GetNewGUID(), s_recipients);
+
+    for (Player* player : s_recipients)
     {
-        for (const auto& object : getInRangePlayersSet())
+        if (!player || player == this)
+            continue;
+
+        const bool sameGroup = player->getGroup() && getGroup() && player->getGroup()->GetID() == getGroup()->GetID();
+
+        if (sameGroup)
         {
-            if (Player* player = static_cast<Player*>(object))
-            {
-                if (player->getGroup() && getGroup() && player->getGroup()->GetID() == getGroup()->GetID())
-                    player->getUpdateMgr().pushUpdateData(groupBuf, 1);
-                else
-                    player->getUpdateMgr().pushUpdateData(nonGroupBuf, 1);
-            }
+            if (groupBuf)
+                player->getUpdateMgr().pushUpdateData(groupBuf, 1);
         }
-    }
-    else
-    {
-        if (groupBuf && nonGroupBuf == nullptr)
+        else if (nonGroupBuf)
         {
-            for (const auto& object : getInRangePlayersSet())
-            {
-                if (Player* player = static_cast<Player*>(object))
-                    if (player->getGroup() && getGroup() && player->getGroup()->GetID() == getGroup()->GetID())
-                        player->getUpdateMgr().pushUpdateData(groupBuf, 1);
-            }
-        }
-        else
-        {
-            if (groupBuf == nullptr && nonGroupBuf)
-            {
-                for (const auto& object : getInRangePlayersSet())
-                {
-                    if (Player* player = static_cast<Player*>(object))
-                        if (player->getGroup() == nullptr || player->getGroup()->GetID() != getGroup()->GetID())
-                            player->getUpdateMgr().pushUpdateData(nonGroupBuf, 1);
-                }
-            }
+            player->getUpdateMgr().pushUpdateData(nonGroupBuf, 1);
         }
     }
 
-    if (sendToSelf && groupBuf != nullptr)
+    if (sendToSelf && groupBuf)
         getUpdateMgr().pushUpdateData(groupBuf, 1);
 }
 
@@ -10149,7 +10357,7 @@ bool Player::canTrainAt(Trainer const* trainer)
 
 void Player::sendCinematicCamera(uint32_t id)
 {
-    m_WorldMap->changeObjectLocation(this);
+    m_WorldMap->onObjectMoved(this);
     SetPosition(float(GetPositionX() + 0.01), float(GetPositionY() + 0.01), float(GetPositionZ() + 0.01), GetOrientation());
 
     SmsgTriggerCinematic managedPacket(id);
@@ -10670,14 +10878,14 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
 
     if (wowGuid.isUnit())
     {
-        Creature* pCreature = getWorldMap()->getCreature(wowGuid.getGuidLowPart());
+        Creature* pCreature = getWorldMapCreature(guid);
         if (!pCreature)return;
         pLoot = &pCreature->loot;
         m_currentLoot = pCreature->getGuid();
     }
     else if (wowGuid.isGameObject())
     {
-        GameObject* go = getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
+        GameObject* go = getWorldMapGameObject(guid);
 
         if (!go)
         {
@@ -10702,11 +10910,6 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
                 return;
             }
 
-            if (loot_type == LOOT_CORPSE && go->getRespawnTime() && go->isSpawnedByDefault())
-            {
-                SmsgLootReleaseResponse(guid, 1);
-                return;
-            }
         }
 
         GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(go);
@@ -10715,7 +10918,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
         // loot was generated and respawntime has passed since then, allow to recreate loot
         // to avoid bugs, this rule covers spawned gameobjects only
         // Don't allow to regenerate chest loot inside instances and raids
-        if (go->isSpawnedByDefault() && go->getLootState() == GO_ACTIVATED && !pLGO->loot.isLooted() && !go->getWorldMap()->getBaseMap()->isInstanceableMap() && pLGO->getLootGenerationTime() + go->getRespawnDelay() < Util::getTimeNow())
+        if (!go->hasNoRespawn() && go->getLootState() == GO_ACTIVATED && !pLGO->loot.isLooted() && !go->getWorldMap()->getBaseMap()->isInstanceableMap() && pLGO->getLootGenerationTime() + go->getRespawnDelay() < Util::getTimeNow())
             go->setLootState(GO_READY);
 
         if (go->getLootState() == GO_READY)
@@ -10751,7 +10954,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     }
     else if (wowGuid.isPlayer())
     {
-        Player* p = getWorldMap()->getPlayer((uint32_t)guid);
+        Player* p = getWorldMapPlayer(guid);
         if (!p)
             return;
 
@@ -10760,7 +10963,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     }
     else if (wowGuid.isCorpse())
     {
-        if (const auto corpse = sObjectMgr.getCorpseByGuid(static_cast<uint32_t>(guid)))
+        if (const auto corpse = (m_WorldMap ? m_WorldMap->getRegistry().getCorpse(wowGuid) : nullptr))
         {
             pLoot = &corpse->loot;
             m_currentLoot = corpse->getGuid();
@@ -10795,7 +10998,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
         switch (loot_method)
         {
         case PARTY_LOOT_GROUP:
-            getGroup()->sendGroupLoot(pLoot, getWorldMap()->getObject(m_currentLoot), this, mapId);
+            getGroup()->sendGroupLoot(pLoot, getWorldMapObject(m_currentLoot), this, mapId);
             break;
         case PARTY_LOOT_NEED_BEFORE_GREED:
         case PARTY_LOOT_MASTER_LOOTER:
@@ -10989,7 +11192,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
 
 void Player::sendLootUpdate(Object* object)
 {
-    if (!isVisibleObject(object->getGuid()))
+    if (!seesGuid(object->GetNewGUID()))
         return;
 
     if (object->isCreatureOrPlayer())
@@ -11213,7 +11416,6 @@ void Player::setFactionStanding(uint32_t faction, int32_t value)
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->id, reputation->second->standing, 0);
 #endif
 
-        updateInrangeSetsBasedOnReputation();
         onModStanding(factionEntry, reputation->second.get());
     }
     else
@@ -11228,8 +11430,7 @@ void Player::setFactionStanding(uint32_t faction, int32_t value)
 #endif
 
             reputation->second->standing = value;
-            updateInrangeSetsBasedOnReputation();
-
+    
 #ifdef FT_ACHIEVEMENTS
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->id, value, 0);
 #endif
@@ -11293,7 +11494,6 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->id, itr->second->standing, 0);
 #endif
 
-        updateInrangeSetsBasedOnReputation();
         onModStanding(factionEntry, itr->second.get());
     }
     else
@@ -11311,8 +11511,7 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
 
         if (hasReputationRankChanged(oldStanding, value))
         {
-            updateInrangeSetsBasedOnReputation();
-
+    
 #ifdef FT_ACHIEVEMENTS
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->id, itr->second->standing, 0);
             if (itr->second->standing >= StandingValues::EXALTED)
@@ -11339,16 +11538,21 @@ void Player::applyForcedReaction(uint32_t faction_id, Standing rank, bool apply)
         m_forcedReactions.erase(faction_id);
 }
 
+std::optional<Standing> Player::getForcedReputationRank(uint32_t factionId) const
+{
+    const auto itr = m_forcedReactions.find(factionId);
+    if (itr != m_forcedReactions.cend())
+        return itr->second;
+
+    return std::nullopt;
+}
+
 std::optional<Standing> Player::getForcedReputationRank(WDB::Structures::FactionTemplateEntry const* factionTemplateEntry) const
 {
     if (factionTemplateEntry == nullptr)
         return std::nullopt;
 
-    const auto itr = m_forcedReactions.find(factionTemplateEntry->faction);
-    if (itr != m_forcedReactions.cend())
-        return itr->second;
-
-    return std::nullopt;
+    return getForcedReputationRank(factionTemplateEntry->faction);
 }
 
 void Player::setFactionAtWar(uint32_t faction, bool set)
@@ -11366,8 +11570,10 @@ void Player::setFactionAtWar(uint32_t faction, bool set)
     if (!factionReputation->canToggleAtWar())
         return;
 
-    if (factionReputation->setAtWar(set))
-        updateInrangeSetsBasedOnReputation();
+    factionReputation->setAtWar(set);
+
+    if (IsInWorld() && getWorldMap())
+        getWorldMap()->queueUnitAwareness(this, UnitAwarenessSignal::ReactionChanged);
 }
 
 bool Player::isHostileBasedOnReputation(WDB::Structures::FactionEntry const* factionEntry, bool skipForcedReactions/* = false*/) const
@@ -11390,29 +11596,6 @@ bool Player::isHostileBasedOnReputation(WDB::Structures::FactionEntry const* fac
     }
 
     return factionReputation->isAtWar() || getReputationRankFromStanding(factionReputation->standing) <= Standing::HOSTILE;
-}
-
-void Player::updateInrangeSetsBasedOnReputation()
-{
-    for (const auto& object : getInRangeObjectsSet())
-    {
-        if (!object->isCreatureOrPlayer())
-            continue;
-
-        if (const auto unit = dynamic_cast<Unit*>(object))
-        {
-            if (unit->getServersideFactionEntry() == nullptr || !unit->getServersideFactionEntry()->canHaveReputation())
-                continue;
-
-            bool isHostile = isHostileBasedOnReputation(unit->getServersideFactionEntry());
-            bool currentHostileObject = isObjectInInRangeOppositeFactionSet(unit);
-
-            if (isHostile && !currentHostileObject)
-                addInRangeOppositeFaction(unit);
-            else if (!isHostile && currentHostileObject)
-                removeObjectFromInRangeOppositeFactionSet(unit);
-        }
-    }
 }
 
 void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
@@ -11540,6 +11723,9 @@ void Player::onModStanding(WDB::Structures::FactionEntry const* factionEntry, Fa
         SmsgSetFactionStanding managedPacket(factionEntry->reputationIndex, reputation->calcStanding());
         getSession()->sendManagedPacket(managedPacket);
     }
+
+    if (IsInWorld() && getWorldMap())
+        getWorldMap()->queueUnitAwareness(this, UnitAwarenessSignal::ReactionChanged);
 }
 
 uint32_t Player::getExaltedCount() const
@@ -11598,7 +11784,8 @@ void Player::setServersideDrunkValue(uint16_t newDrunkenValue, uint32_t itemId)
     else
         modInvisibilityDetection(INVIS_FLAG_DRUNK, -getInvisibilityDetection(INVIS_FLAG_DRUNK));
 
-    updateVisibility();
+    if (IsInWorld())
+        getWorldMap()->refreshVisibilityForObject(this);
 
     sendNewDrunkStatePacket(newDrunkenState, itemId);
 }
@@ -11648,7 +11835,7 @@ void Player::requestDuel(Player* target)
     const float z = (GetPositionZ() + target->GetPositionZ() * distance) / (1 + distance);
 
     // create flag
-    if (GameObject* goFlag = getWorldMap()->createGameObject(21680))
+    if (GameObject* goFlag = getWorldMap()->getSpawnManager().summonGameObject(21680, LocationVector(x, y, z, GetOrientation())))
     {
         goFlag->create(21680, m_WorldMap, GetPhase(), LocationVector(x, y, z, GetOrientation()), QuaternionData(), GO_STATE_CLOSED);
 
@@ -11658,8 +11845,6 @@ void Player::requestDuel(Player* target)
 
         setDuelArbiter(goFlag->getGuid());
         target->setDuelArbiter(goFlag->getGuid());
-
-        goFlag->PushToWorld(m_WorldMap);
 
         addGameObject(goFlag);
 
@@ -11676,7 +11861,7 @@ void Player::testDuelBoundary()
     WoWGuid wowGuid;
     wowGuid.init(getDuelArbiter());
 
-    if (GameObject* goFlag = getWorldMap()->getGameObject(wowGuid.getGuidLowPart()))
+    if (GameObject* goFlag = getWorldMapGameObject(getDuelArbiter()))
     {
         if (CalcDistance(goFlag) > 75.0f)
         {
@@ -11718,13 +11903,12 @@ void Player::endDuel(uint8_t condition)
 
     if (m_duelState == DUEL_STATE_FINISHED)
     {
-        if (wowGuid.getGuidLowPart())
+        if (wowGuid.getCounter())
         {
-            GameObject* arbiter = m_WorldMap ? getWorldMap()->getGameObject(wowGuid.getGuidLowPart()) : nullptr;
+            GameObject* arbiter = getWorldMapGameObject(getDuelArbiter());
             if (arbiter)
             {
-                arbiter->RemoveFromWorld(true);
-                delete arbiter;
+                arbiter->destroy();
             }
 
             m_duelPlayer->setDuelArbiter(0);
@@ -11784,11 +11968,10 @@ void Player::endDuel(uint8_t condition)
     else
         sHookInterface.OnDuelFinished(this, m_duelPlayer);
 
-    GameObject* goFlag = m_WorldMap ? getWorldMap()->getGameObject(wowGuid.getGuidLowPart()) : nullptr;
+    GameObject* goFlag = getWorldMapGameObject(getDuelArbiter());
     if (goFlag)
     {
-        goFlag->RemoveFromWorld(true);
-        delete goFlag;
+        goFlag->destroy();
     }
 
     setDuelArbiter(0);
@@ -11837,9 +12020,9 @@ void Player::cancelDuel()
     WoWGuid wowGuid;
     wowGuid.init(getDuelArbiter());
 
-    const auto goFlag = getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
+    const auto goFlag = getWorldMapGameObject(getDuelArbiter());
     if (goFlag)
-        goFlag->RemoveFromWorld(true);
+        goFlag->destroy();
 
     setDuelArbiter(0);
     m_duelPlayer->setDuelArbiter(0);
@@ -12468,6 +12651,26 @@ void Player::eventSummonPet(Pet* summonPet)
         for (const auto& aura : getAuraList())
             if (aura && aura->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_ON_PET)
                 aura->removeAura();
+
+        // A pet can be summoned after its owner has already boarded a transporter.
+        // In that case there is no player movement packet that would attach the pet,
+        // so bind it to the owner's transporter here.
+        if (auto* transport = GetTransport())
+        {
+            if (summonPet->GetTransport() != transport)
+            {
+                if (summonPet->GetTransport())
+                    summonPet->GetTransport()->RemovePassenger(summonPet);
+
+                float x = summonPet->GetPositionX();
+                float y = summonPet->GetPositionY();
+                float z = summonPet->GetPositionZ();
+                float o = summonPet->GetOrientation();
+
+                transport->calculatePassengerOffset(x, y, z, &o);
+                transport->AddPassenger(summonPet, LocationVector(x, y, z, o));
+            }
+        }
     }
 }
 
@@ -12486,7 +12689,7 @@ void Player::_spawnPet(PetCache const* petCache)
     const auto pet = sObjectMgr.createPet(petCache->entry, nullptr);
     if (!pet->loadFromDB(this, petCache))
     {
-        pet->DeleteMe();
+        pet->destroy();
         return;
     }
 
@@ -13467,10 +13670,7 @@ void Player::_castSpellArea()
     if (!IsInWorld())
         return;
 
-    if (m_position.x > Map::Terrain::_maxX || m_position.x < Map::Terrain::_minX || m_position.y > Map::Terrain::_maxY || m_position.y < Map::Terrain::_minY)
-        return;
-
-    if (getWorldMap()->getCellByCoords(GetPositionX(), GetPositionY()) == nullptr)
+    if (m_position.x > visibility::Terrain::MaxX || m_position.x < visibility::Terrain::MinX || m_position.y > visibility::Terrain::MaxY || m_position.y < visibility::Terrain::MinY)
         return;
 
     uint32_t AreaId = 0;
@@ -13617,7 +13817,7 @@ void Player::_eventAttack(bool offhand)
 
     Unit* pVictim = nullptr;
     if (getTargetGuid())
-        pVictim = getWorldMap()->getUnit(getTargetGuid());
+        pVictim = getWorldMapUnit(getTargetGuid());
 
     if (!pVictim)
     {
@@ -13706,7 +13906,7 @@ void Player::eventCharmAttack()
         return;
     }
 
-    Unit* pVictim = getWorldMap()->getUnit(getTargetGuid());
+    Unit* pVictim = getWorldMapUnit(getTargetGuid());
     if (!pVictim)
     {
         sLogger.failure("WORLD: {} doesn't exist.", std::to_string(getTargetGuid()));
@@ -13718,7 +13918,7 @@ void Player::eventCharmAttack()
     }
     else
     {
-        Unit* currentCharm = getWorldMap()->getUnit(getCharmGuid());
+        Unit* currentCharm = getWorldMapUnit(getCharmGuid());
         if (!currentCharm)
             return;
 
@@ -14824,6 +15024,54 @@ void Player::loadFromDBProc(QueryResultVector& results)
     m_playedTime[1] = (uint32_t)atoi(strtok(nullptr, " "));
 
     m_deathState = (DeathState)field[47].asUint32();
+
+    // Reconcile persisted death state. Corpse persistence is authoritative once a
+    // spirit has been released; PLAYER_FLAG_DEATH_WORLD_ENABLE is only the
+    // visual/runtime ghost flag and may be stale if the character was not saved
+    // immediately after death or resurrection.
+    clearCorpseData();
+    const bool hasPersistentCorpse = loadCorpseDataFromDB();
+    bool persistDeathStateRepair = false;
+
+    if (hasPersistentCorpse)
+    {
+        if (m_deathState != CORPSE)
+        {
+            m_deathState = CORPSE;
+            persistDeathStateRepair = true;
+        }
+
+        if (!hasPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE))
+        {
+            addPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE);
+            persistDeathStateRepair = true;
+        }
+    }
+    else if (m_deathState != JUST_DIED)
+    {
+        // No body exists. A persisted CORPSE state or death-world flag is stale
+        // (typically left behind after resurrection). Do not touch JUST_DIED:
+        // that state legitimately has no corpse until the player releases spirit.
+        if (m_deathState != ALIVE)
+        {
+            m_deathState = ALIVE;
+            persistDeathStateRepair = true;
+        }
+
+        if (hasPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE))
+        {
+            removePlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE);
+            persistDeathStateRepair = true;
+        }
+    }
+
+    if (persistDeathStateRepair)
+    {
+        CharacterDatabase.execute(
+            "UPDATE characters SET deathstate = %u, player_flags = %u WHERE guid = %u",
+            static_cast<uint32_t>(m_deathState), getPlayerFlags(), getGuidLow());
+    }
+
     m_talentResetsCount = field[48].asUint32();
     m_firstLogin = field[49].asBool();
     m_loginFlag = field[50].asUint32();
@@ -14854,16 +15102,27 @@ void Player::loadFromDBProc(QueryResultVector& results)
     std::string taxi_nodes = field[60].asCString();
     uint32_t taxi_currentNode = field[61].asInt32();
 
-    uint32_t transportGuid = field[62].asUint32();
+    uint32_t transportEntry = field[62].asUint32();
     float transportX = field[63].asFloat();
     float transportY = field[64].asFloat();
     float transportZ = field[65].asFloat();
     float transportO = field[66].asFloat();
 
-    if (transportGuid != 0)
-        obj_movement_info.setTransportData(transportGuid, transportX, transportY, transportZ, transportO, 0, 0);
+    if (transportEntry != 0)
+    {
+        if (const auto transporter = sTransportHandler.getTransporterByEntry(transportEntry))
+        {
+            obj_movement_info.setTransportData(transporter->GetNewGUID(), transportX, transportY, transportZ, transportO, 0, 0);
+        }
+        else
+        {
+            obj_movement_info.clearTransportData();
+        }
+    }
     else
+    {
         obj_movement_info.clearTransportData();
+    }
 
     loadDeletedSpells(results[PlayerQuery::DeletedSpells].result.get());
 
@@ -15160,16 +15419,86 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     m_mailBox->Load(results[PlayerQuery::Mailbox].result.get());
 
+    // Group membership is required before instance bindings and the login
+    // destination are resolved.
+    setPlayerInfoIfNeeded();
+
     // Saved Instances
     loadBoundInstances();
     loadInstanceTimeRestrictions();
 
-    // Create Instance when needed
-    if (sMapMgr.findBaseMap(GetMapId()) && sMapMgr.findBaseMap(GetMapId())->isInstanceableMap())
+    // Resolve the final login destination before fullLogin() sends
+    // LOGIN_VERIFY_WORLD. A rejected stored instance is never exposed to the
+    // client as an intermediate loading screen.
+    if (BaseMap* baseMap = sMapMgr.findBaseMap(GetMapId());
+        baseMap && baseMap->isInstanceableMap() && !baseMap->isBattlegroundOrArena())
     {
-        // No Instance Found Lets Create it
-        if (!sMapMgr.findWorldMap(GetMapId(), GetInstanceID()))
-            sMapMgr.createInstanceForPlayer(GetMapId(), this, GetInstanceID());
+        const uint32_t storedMapId = GetMapId();
+        const uint32_t storedInstanceId = GetInstanceID();
+
+        WorldMap* loginMap = nullptr;
+        EnterState denyReason = sMapMgr.canPlayerEnter(storedMapId, 0, this, true, storedInstanceId);
+
+        if (denyReason == CAN_ENTER)
+            loginMap = sMapMgr.createInstanceForPlayer(storedMapId, this, storedInstanceId);
+
+        if (loginMap && loginMap->getBaseMap()->isInstanceMap())
+        {
+            if (const EnterState mapDenyReason = loginMap->cannotEnter(this))
+            {
+                if (mapDenyReason != CANNOT_ENTER_ALREADY_IN_MAP)
+                {
+                    denyReason = mapDenyReason;
+                    loginMap = nullptr;
+                }
+            }
+        }
+
+        if (!loginMap)
+        {
+            uint32_t fallbackMapId = 0;
+            uint32_t fallbackInstanceId = 0;
+            LocationVector fallbackPosition;
+
+            if (hasValidBGEntryPoint() && !IS_INSTANCE(getBGEntryMapId()))
+            {
+                fallbackMapId = getBGEntryMapId();
+                fallbackInstanceId = getBGEntryInstanceId();
+                fallbackPosition = getBGEntryPosition();
+            }
+            else if (const auto* goBack = sMySQLStore.getMapGoBackTrigger(storedMapId))
+            {
+                fallbackMapId = goBack->mapId;
+                fallbackPosition = LocationVector(goBack->x, goBack->y, goBack->z, goBack->o);
+            }
+            else
+            {
+                fallbackMapId = getBindMapId();
+                fallbackPosition = getBindPosition();
+            }
+
+            SetMapId(fallbackMapId);
+            SetInstanceID(fallbackInstanceId);
+            SetPosition(fallbackPosition);
+            obj_movement_info.clearTransportData();
+
+            sMapMgr.createMap(fallbackMapId, this, fallbackInstanceId);
+
+            sLogger.info(
+                "Player '{}' ({}) cannot restore stored instance {}:{} (reason {}); login destination changed to map {}:{} before world verification.",
+                getName(), getGuid(), storedMapId, storedInstanceId, static_cast<uint32_t>(denyReason),
+                fallbackMapId, fallbackInstanceId);
+        }
+        else
+        {
+            SetInstanceID(loginMap->getInstanceId());
+
+            if (storedInstanceId && loginMap->getInstanceId() != storedInstanceId)
+            {
+                if (const auto* entrance = sMySQLStore.getMapEntranceTrigger(storedMapId))
+                    SetPosition(entrance->x, entrance->y, entrance->z, entrance->o);
+            }
+        }
     }
 
     // SOCIAL
@@ -15193,8 +15522,10 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     if (!isAlive())
     {
-        if (const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow()))
-            setCorpseData(corpse->GetPosition(), corpse->GetInstanceID());
+        if (const auto corpse = (m_WorldMap ? m_WorldMap->getRegistry().getCorpseByOwner(getGuidLow()) : nullptr))
+            setCorpseData(corpse->GetPosition(), corpse->GetMapId());
+        else
+            loadCorpseDataFromDB();
     }
 
 #if VERSION_STRING > Classic
@@ -15815,27 +16146,19 @@ void Player::updateStats()
     calculateDamage();
 }
 
-void Player::addToInRangeObjects(Object* object)
-{
-    Unit::addToInRangeObjects(object);
-}
-
 void Player::onRemoveInRangeObject(Object* object)
 {
     if (object == nullptr)
         return;
 
-    if (isVisibleObject(object->getGuid()))
-    {
-        getUpdateMgr().pushOutOfRangeGuid(object->GetNewGUID());
-    }
-
-    m_visibleObjects.erase(object->getGuid());
+    // Visibility cache / out-of-range packet handling is now owned by
+    // WorldMap::applyQueuedVisibilityHidden(). This hook keeps the old non-container
+    // side effects only.
     Unit::onRemoveInRangeObject(object);
 
     if (object->getGuid() == getCharmGuid())
     {
-        Unit* unit = getWorldMap()->getUnit(getCharmGuid());
+        Unit* unit = getWorldMapUnit(getCharmGuid());
         if (!unit)
             return;
 
@@ -15846,12 +16169,6 @@ void Player::onRemoveInRangeObject(Object* object)
 
         setCharmGuid(0);
     }
-}
-
-void Player::clearInRangeSets()
-{
-    m_visibleObjects.clear();
-    Unit::clearInRangeSets();
 }
 
 void Player::eventCannibalize(uint32_t amount)
@@ -15994,134 +16311,68 @@ void Player::regenerateHealth(bool inCombat)
     modHealth(static_cast<int32_t>(std::ceil(amt)));
 }
 
+void Player::leaveCurrentWorldMapForTransfer()
+{
+    if (!IsInWorld())
+        return;
+
+    WorldMap* oldMap = getWorldMap();
+    if (!oldMap)
+        return;
+
+    // WorldMap::onPlayerLeave is the one map-side detach path. The Player
+    // object itself remains alive and is reused when WORLDPORT_ACK attaches it
+    // to the destination map.
+    oldMap->onPlayerLeave(this);
+
+    // Between maps the session belongs to the global updater so it can process
+    // WORLDPORT_ACK. The update guard in WorldSession prevents overlap with the
+    // currently unwinding map-owned Update() call.
+    if (m_session)
+    {
+        m_session->SetGlobalUpdateOwner();
+        sWorld.addGlobalSession(m_session);
+    }
+}
+
 void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending, bool force_new_world, uint32_t instance_id)
 {
-    // this func must only be called when switching between maps!
-    if (sendpending && mapid != m_mapId && force_new_world)
+    const bool sameWorld =
+        mapid == m_mapId &&
+        (!instance_id || instance_id == static_cast<uint32_t>(m_instanceId));
+
+    if (sameWorld && !force_new_world)
+    {
+        // Same-map teleports have no worldport ACK, so clear the transfer state here.
+        sendTeleportAckPacket(v);
+        m_sentTeleportPosition = v;
+        SetPosition(v);
+        sendTeleportPacket(v);
+        m_zAxisPosition = 0.0f;
+        setTransferStatus(TRANSFER_NONE);
+        return;
+    }
+
+    dismount(false);
+
+    if (sendpending)
     {
         SmsgTransferPending managedPacket(mapid);
         getSession()->sendManagedPacket(managedPacket);
     }
 
-    bool sendpacket = (mapid == m_mapId);
-    // Dismount before teleport and before being removed from world,
-    // otherwise we may spawn the active pet while not being in world.
-    dismount(false);
+    leaveCurrentWorldMapForTransfer();
 
-    MySQLStructure::AreaTrigger const* areaTrigger = nullptr;
-    bool check = false;
+    SetMapId(mapid);
+    SetInstanceID(instance_id);
 
-    if (!sendpacket || force_new_world)
-    {
-        WorldMap* map = sMapMgr.createMap(mapid, this, instance_id);
-        if (!map)
-        {
-            sLogger.debug("Player::_Relocate: {} aborted transfer to map {} (instance {}) - sMapMgr.createMap returned nullptr (INSTANCE_ABORT_NOT_FOUND: no BaseMap for this map id - check worldmap_info/Map.dbc coverage).",
-                getName(), mapid, instance_id);
-            SmsgTransferAborted managedPacket(mapid, INSTANCE_ABORT_NOT_FOUND);
-            getSession()->sendManagedPacket(managedPacket);
-            return;
-        }
-        else if (map->getBaseMap()->isInstanceMap())
-        {
-            if (auto state = map->cannotEnter(this))
-            {
-                switch (state)
-                {
-                    case CANNOT_ENTER_DIFFICULTY_UNAVAILABLE:
-                    {
-                        sLogger.debug("Player::_Relocate: {} aborted transfer to map {} (instance {}) - CANNOT_ENTER_DIFFICULTY_UNAVAILABLE (INSTANCE_ABORT_HEROIC_MODE_NOT_AVAILABLE).",
-                            getName(), mapid, instance_id);
-                        SmsgTransferAborted managedPacket(mapid, INSTANCE_ABORT_HEROIC_MODE_NOT_AVAILABLE);
-                        getSession()->sendManagedPacket(managedPacket);
-                    } break;
-                    case CANNOT_ENTER_INSTANCE_BIND_MISMATCH:
-                    {
-                        sLogger.debug("Player::_Relocate: {} aborted transfer to map {} (instance {}) - CANNOT_ENTER_INSTANCE_BIND_MISMATCH.",
-                            getName(), mapid, instance_id);
-                        m_session->systemMessage("Another group is already inside this instance of the dungeon.");
-                    } break;
-                    case CANNOT_ENTER_TOO_MANY_INSTANCES:
-                    {
-                        sLogger.debug("Player::_Relocate: {} aborted transfer to map {} (instance {}) - CANNOT_ENTER_TOO_MANY_INSTANCES (INSTANCE_ABORT_TOO_MANY).",
-                            getName(), mapid, instance_id);
-                        SmsgTransferAborted managedPacket(mapid, INSTANCE_ABORT_TOO_MANY);
-                        getSession()->sendManagedPacket(managedPacket);
-                    } break;
-                    case CANNOT_ENTER_MAX_PLAYERS:
-                    {
-                        sLogger.debug("Player::_Relocate: {} aborted transfer to map {} (instance {}) - CANNOT_ENTER_MAX_PLAYERS (INSTANCE_ABORT_FULL).",
-                            getName(), mapid, instance_id);
-                        SmsgTransferAborted managedPacket(mapid, INSTANCE_ABORT_FULL);
-                        getSession()->sendManagedPacket(managedPacket);
-                    } break;
-                    case CANNOT_ENTER_ENCOUNTER:
-                    {
-                        sLogger.debug("Player::_Relocate: {} aborted transfer to map {} (instance {}) - CANNOT_ENTER_ENCOUNTER (INSTANCE_ABORT_ENCOUNTER).",
-                            getName(), mapid, instance_id);
-                        SmsgTransferAborted managedPacket(mapid, INSTANCE_ABORT_ENCOUNTER);
-                        getSession()->sendManagedPacket(managedPacket);
-                    } break;
-                    default:
-                        sLogger.debug("Player::_Relocate: {} aborted transfer to map {} (instance {}) - unhandled cannotEnter() state {}, no packet sent (silent no-op).",
-                            getName(), mapid, instance_id, static_cast<int>(state));
-                        break;
-                }
-                areaTrigger = sMySQLStore.getMapGoBackTrigger(mapid);
-                check = true;
-            }
-            else if (instance_id && !sInstanceMgr.getInstanceSave(instance_id)) // ... and instance is reseted then look for entrance.
-            {
-                areaTrigger = sMySQLStore.getMapEntranceTrigger(mapid);
-                check = true;
-            }
-        }
-
-        // Special Cases
-        if (check)
-        {
-            if (areaTrigger)
-            {
-                // our Instance got reset, port us to the entrance
-                sendTeleportAckPacket(LocationVector(areaTrigger->x, areaTrigger->y, areaTrigger->z, areaTrigger->o));
-                if (mapid != areaTrigger->mapId)
-                {
-                    mapid = areaTrigger->mapId;
-                    map = sMapMgr.createMap(mapid, this);
-                }
-            }
-            else
-            {
-                return;
-            }
-        }
-
-        if (IsInWorld())
-            removeFromWorld();
-
-        SmsgNewWorld managedPacket(mapid, v);
-        getSession()->sendManagedPacket(managedPacket);
-
-        SetMapId(mapid);
-        SetInstanceID(map->getInstanceId());
-    }
-    else
-    {
-        sendTeleportAckPacket(v);
-    }
+    SmsgNewWorld managedPacket(mapid, v);
+    getSession()->sendManagedPacket(managedPacket);
 
     setTransferStatus(TRANSFER_PENDING);
     m_sentTeleportPosition = v;
     SetPosition(v);
-
-    if (sendpacket)
-        sendTeleportPacket(v);
-
-    speedCheatReset();
-
     m_zAxisPosition = 0.0f;
-
-    setTransferStatus(TRANSFER_NONE);
 }
 
 #ifdef AE_TBC
@@ -16159,7 +16410,7 @@ void Player::addItemsToWorld()
     {
         if (Item* inventoryItem = getItemInterface()->GetInventoryItem(slotIndex))
         {
-            inventoryItem->PushToWorld(m_WorldMap);
+            inventoryItem->registerToWorld(*m_WorldMap);
 
             if (slotIndex < INVENTORY_SLOT_BAG_END)
                 applyItemMods(inventoryItem, slotIndex, true, false, true);
@@ -16172,7 +16423,7 @@ void Player::addItemsToWorld()
                 for (uint32_t containerSlot = 0; containerSlot < inventoryItem->getItemProperties()->ContainerSlots; ++containerSlot)
                 {
                     if (Item* item = (static_cast<Container*>(inventoryItem))->getItem(static_cast<int16_t>(containerSlot)))
-                        item->PushToWorld(m_WorldMap);
+                        item->registerToWorld(*m_WorldMap);
                 }
             }
         }
@@ -16325,35 +16576,43 @@ void Player::completeLoading()
         }
     }
 
-    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Player::loadFromDB : login death-state check - health {} hasDeathWorldFlag {} hasCorpseRow {}",
-        getHealth(), hasPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE), sObjectMgr.getCorpseByOwner(getGuidLow()) != nullptr);
-
     if (getHealth() <= 0 && !hasPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE))
     {
         setDeathState(CORPSE);
     }
     else if (hasPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE))
     {
-        if (sObjectMgr.getCorpseByOwner(getGuidLow()) != nullptr)
-        {
+        // A persistent corpse can live in another (or currently unloaded) instance.
+        // Do not use the current WorldMap registry to decide whether this ghost
+        // already released spirit; otherwise login would send an existing ghost
+        // back to the graveyard and overwrite its saved ghost position.
+        if (hasCorpseData())
             setDeathState(CORPSE);
-        }
+        else if (const auto corpse = (m_WorldMap ? m_WorldMap->getRegistry().getCorpseByOwner(getGuidLow()) : nullptr))
+            setDeathState(CORPSE);
         else
-        {
             sEventMgr.AddEvent(this, &Player::repopAtGraveyard, GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId(), EVENT_PLAYER_CHECKFORCHEATS, 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        }
     }
 
-    if (isDead())
+    // A normal character login does not run onWorldPortAck(). If a released
+    // ghost was saved inside the instance that contains its corpse, complete
+    // the same automatic resurrection here that a portal worldport would do.
+    // CorpseData is map-based on purpose; the concrete instance is resolved by
+    // the normal player/group InstanceSave logic.
+    if (isDead() && hasCorpseData() && m_WorldMap &&
+        m_WorldMap->getBaseMap()->isInstanceableMap() &&
+        getCorpseMapId() == m_WorldMap->getBaseMap()->getMapId())
     {
-        if (getCorpseInstanceId() != 0)
-        {
-            if (const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow()))
-                corpse->resetDeathClock();
+        resurrect();
+    }
 
-            SmsgCorpseReclaimDelay managedPacket(CORPSE_RECLAIM_TIME_MS);
-            getSession()->sendManagedPacket(managedPacket);
-        }
+    if (isDead() && hasCorpseData())
+    {
+        if (const auto corpse = (m_WorldMap ? m_WorldMap->getRegistry().getCorpseByOwner(getGuidLow()) : nullptr))
+            corpse->resetDeathClock();
+
+        SmsgCorpseReclaimDelay managedPacket(CORPSE_RECLAIM_TIME_MS);
+        getSession()->sendManagedPacket(managedPacket);
     }
 
 #if VERSION_STRING > TBC
@@ -16369,7 +16628,7 @@ void Player::completeLoading()
     {
         kickFromServer(10000);
         broadcastMessage(getSession()->localizedWorldSrv(ServerString::SS_NOT_ALLOWED_TO_PLAY));
-        broadcastMessage(getSession()->localizedWorldSrv(ServerString::SS_BANNED_FOR_TIME), getBanReason());
+        broadcastMessage(getSession()->localizedWorldSrv(ServerString::SS_BANNED_FOR_TIME), getBanReason().c_str());
     }
 
     if (m_playerInfo->m_Group)

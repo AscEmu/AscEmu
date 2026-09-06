@@ -35,17 +35,19 @@ void FormationMgr::addCreatureToGroup(uint32_t leaderSpawnId, Creature* creature
 
         // With dynamic spawn the creature may have just respawned
         // we need to find previous instance of creature and delete it from the formation, as it'll be invalidated
-        for (const auto& pair : map->_sqlids_creatures)
-        {
-            if (pair.first == creature->getSpawnId())
-            {
-                Creature* other = pair.second;
-                if (other == creature)
-                    continue;
+        std::vector<Creature*> creatures;
+        map->getRegistry().snapshotCreatures(creatures);
 
-                if (itr->second->hasMember(other))
-                    itr->second->removeMember(other);
-            }
+        for (Creature* other : creatures)
+        {
+            if (!other || other == creature)
+                continue;
+
+            if (other->getSpawnId() != creature->getSpawnId())
+                continue;
+
+            if (itr->second->hasMember(other))
+                itr->second->removeMember(other);
         }
     }
     else
@@ -228,14 +230,15 @@ void CreatureGroup::memberEngagingTarget(Creature* member, Unit* target)
     for (auto const& pair : _members)
     {
         Creature* other = pair.first;
-        if (other == member)
+        if (!other || other == member || !other->isAlive())
             continue;
 
-        if (!other->isAlive())
+        AIInterface* ai = other->getAIInterface();
+        if (!ai)
             continue;
 
         if (((other != _leader && (groupAI & FLAG_MEMBERS_ASSIST_LEADER)) || (other == _leader && (groupAI & FLAG_LEADER_ASSISTS_MEMBER))))
-            other->getAIInterface()->onHostileAction(target);
+            ai->onHostileAction(target);
     }
 
     _engaging = false;
@@ -245,14 +248,16 @@ void CreatureGroup::formationReset(bool dismiss)
 {
     for (auto const& pair : _members)
     {
-        if (pair.first != _leader && pair.first->isAlive())
-        {
-            if (dismiss)
-                pair.first->getMovementManager()->initialize();
-            else
-                pair.first->getMovementManager()->moveIdle();
-            sLogger.debug("FormationMgr : CreatureGroup::FormationReset: Set {} movement for member {}", dismiss ? "default" : "idle", pair.first->getGuid());
-        }
+        Creature* member = pair.first;
+        if (!member || member == _leader || !member->isAlive())
+            continue;
+
+        if (dismiss)
+            member->getMovementManager()->initialize();
+        else
+            member->getMovementManager()->moveIdle();
+
+        sLogger.debug("FormationMgr : CreatureGroup::FormationReset: Set {} movement for member {}", dismiss ? "default" : "idle", member->getGuid());
     }
 
     _formed = !dismiss;
@@ -266,26 +271,43 @@ void CreatureGroup::leaderStartedMoving()
     for (auto const& pair : _members)
     {
         Creature* member = pair.first;
-        if (member == _leader || !member->isAlive() || member->getAIInterface()->isEngaged() || !(pair.second->GroupAI & FLAG_IDLE_IN_FORMATION))
+        FormationInfo* info = pair.second;
+        if (!member || !info || member == _leader || !member->isAlive())
             continue;
 
-        float angle = pair.second->FollowAngle + AscEmu::Math::PiF; // for some reason, someone thought it was a great idea to invert relativ angles...
-        float dist = pair.second->FollowDist;
+        AIInterface* ai = member->getAIInterface();
+        if (!ai || ai->isEngaged() || !(info->GroupAI & FLAG_IDLE_IN_FORMATION))
+            continue;
+
+        float angle = info->FollowAngle + AscEmu::Math::PiF; // for some reason, someone thought it was a great idea to invert relativ angles...
+        float dist = info->FollowDist;
 
         if (!member->hasUnitStateFlag(UNIT_STATE_FOLLOW_FORMATION))
-            member->getMovementManager()->moveFormation(_leader, dist, angle, pair.second->LeaderWaypointIDs[0], pair.second->LeaderWaypointIDs[1]);
+            member->getMovementManager()->moveFormation(_leader, dist, angle, info->LeaderWaypointIDs[0], info->LeaderWaypointIDs[1]);
     }
 }
 
 bool CreatureGroup::canLeaderStartMoving() const
 {
-    for (std::unordered_map<Creature*, FormationInfo*>::value_type const& pair : _members)
+    for (const auto& pair : _members)
     {
-        if (pair.first != _leader && pair.first->isAlive())
-        {
-            if (pair.first->getAIInterface()->isEngaged() || pair.first->isReturningHome())
-                return false;
-        }
+        Creature* creature = pair.first;
+
+        if (!creature)
+            continue;
+
+        if (creature == _leader)
+            continue;
+
+        if (!creature->isAlive())
+            continue;
+
+        AIInterface* ai = creature->getAIInterface();
+        if (!ai)
+            continue;
+
+        if (ai->isEngaged() || creature->isReturningHome())
+            return false;
     }
 
     return true;

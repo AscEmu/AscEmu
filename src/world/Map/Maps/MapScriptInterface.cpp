@@ -1,459 +1,191 @@
 /*
-Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
 #include "MapScriptInterface.h"
 
 #include "WorldMap.hpp"
-#include "Logging/Logger.hpp"
+#include "Map/Management/SpawnManager.hpp"
+#include "Map/Management/ObjectFactory.hpp"
+#include "Map/Visibility/SpatialIndex.hpp"
+#include "Map/Management/WorldObjectRegistry.hpp"
+
+#include "Objects/Object.hpp"
 #include "Objects/GameObject.h"
-#include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/DynamicObject.hpp"
 #include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Storage/MySQLDataStore.hpp"
-#include "Utilities/TimeTracker.hpp"
+#include <limits>
+#include <cmath>
 
-MapScriptInterface::MapScriptInterface(WorldMap& mgr) : m_worldMap(mgr)
-{}
-
-MapScriptInterface::~MapScriptInterface()
+MapScriptInterface::MapScriptInterface(WorldMap& map, visibility::SpatialIndex& spatialIndex, world::WorldObjectRegistry& reg, ObjectFactory& factory, SpawnManager& manager)
+    : m_worldMap(map), m_spatialIndex(spatialIndex), m_registry(reg), m_factory(factory), m_spawnManager(manager)
 {
-    m_worldMap.ScriptInterface = nullptr;
 }
 
-GameObject* MapScriptInterface::getGameObjectNearestCoords(float x, float y, float z/* = 0.0f*/, uint32_t Entry/* = 0*/)
+MapScriptInterface::~MapScriptInterface() = default;
+
+// nearest by coords
+GameObject* MapScriptInterface::getGameObjectNearestCoords(float x, float y, float z, uint32_t entry)
 {
-    MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(x), m_worldMap.getPosY(y));
-    if (pCell == nullptr)
-        return 0;
-
-    GameObject* ClosestObject = nullptr;
-    float ClosestDist = 999999.0f;
-    float CurrentDist = 0;
-
-    ObjectSet::const_iterator iter = pCell->Begin();
-    for (; iter != pCell->End(); ++iter)
-    {
-        CurrentDist = (*iter)->CalcDistance(x, y, (z != 0.0f ? z : (*iter)->GetPositionZ()));
-        if (CurrentDist < ClosestDist && (*iter)->isGameObject())
-        {
-            if ((Entry && (*iter)->getEntry() == Entry) || !Entry)
-            {
-                ClosestDist = CurrentDist;
-                ClosestObject = ((GameObject*)(*iter));
-            }
-        }
-    }
-
-    return ClosestObject;
+    return m_spatialIndex.findNearestByEntry<GameObject>(LocationVector{ x,y,z,0.f }, entry, /*maxRange=*/250.f);
 }
 
-Creature* MapScriptInterface::getCreatureNearestCoords(float x, float y, float z/* = 0.0f*/, uint32_t Entry/* = 0*/)
+Creature* MapScriptInterface::getCreatureNearestCoords(float x, float y, float z, uint32_t entry)
 {
-    MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(x), m_worldMap.getPosY(y));
-    if (pCell == nullptr)
-        return 0;
+    return m_spatialIndex.findNearestByEntry<Creature>(LocationVector{ x,y,z,0.f }, entry, /*maxRange=*/250.f);
+}
 
-    Creature* ClosestObject = nullptr;
-    float ClosestDist = 999999.0f;
-    float CurrentDist = 0;
+// nearest by object
+Creature* MapScriptInterface::findNearestCreature(Object* center, uint32_t entry, float maxSearchRange) const
+{
+    if (!center || maxSearchRange <= 0.f) return nullptr;
+    return m_spatialIndex.findNearestByEntry<Creature>(center->GetPosition(), entry, maxSearchRange);
+}
 
-    ObjectSet::const_iterator iter = pCell->Begin();
-    for (; iter != pCell->End(); ++iter)
-    {
-        CurrentDist = (*iter)->CalcDistance(x, y, (z != 0.0f ? z : (*iter)->GetPositionZ()));
-        if (CurrentDist < ClosestDist && (*iter)->isCreature())
-        {
-            if ((Entry && (*iter)->getEntry() == Entry) || !Entry)
-            {
-                ClosestDist = CurrentDist;
-                ClosestObject = ((Creature*)(*iter));
-            }
-        }
-    }
+GameObject* MapScriptInterface::findNearestGameObject(Object* center, uint32_t entry, float maxSearchRange) const
+{
+    if (!center || maxSearchRange <= 0.f) return nullptr;
+    return m_spatialIndex.findNearestByEntry<GameObject>(center->GetPosition(), entry, maxSearchRange);
+}
 
-    return ClosestObject;
+// lists in range
+void MapScriptInterface::getCreatureListWithEntryInRange(Creature* center, std::list<Creature*>& out, uint32_t entry, float maxRange) const
+{
+    out.clear();
+    if (!center || maxRange <= 0.f) return;
+    m_spatialIndex.collectByEntryInRange<Creature>(center->GetPosition(), out, entry, maxRange);
+}
+
+void MapScriptInterface::getGameObjectListWithEntryInRange(Creature* center, std::list<GameObject*>& out, uint32_t entry, float maxRange) const
+{
+    out.clear();
+    if (!center || maxRange <= 0.f) return;
+    m_spatialIndex.collectByEntryInRange<GameObject>(center->GetPosition(), out, entry, maxRange);
 }
 
 GameObject* MapScriptInterface::findNearestGoWithType(Object* o, uint32_t type)
 {
-    GameObject* go = nullptr;
-    float r = FLT_MAX;
+    if (!o) return nullptr;
 
-    for (const auto& itr : o->getInRangeObjectsSet())
-    {
-        Object* iro = itr;
-        if (!iro || !iro->isGameObject())
-            continue;
+    thread_local std::vector<WoWGuid> ids;
+    ids.clear(); ids.reserve(64);
 
-        GameObject* irgo = static_cast<GameObject*>(iro);
+    m_spatialIndex.collectGuidsInCellsAroundPos<GameObject>(o->GetPosition(), /*Rcells=*/2, 0, ids);
 
-        if (irgo->getGoType() != type)
-            continue;
-
-        if ((irgo->GetPhase() & o->GetPhase()) == 0)
-            continue;
-
-        float range = o->getDistanceSq(iro);
-
-        if (range < r)
-        {
-            r = range;
-            go = irgo;
-        }
-    }
-
-    return go;
-}
-
-Creature* MapScriptInterface::findNearestCreature(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
-{
-    if (!pObject || maxSearchRange <= 0.0f)
-        return nullptr;
-
-    const float ox = pObject->GetPositionX();
-    const float oy = pObject->GetPositionY();
-    const float r2 = maxSearchRange * maxSearchRange;
-
-    const int cx = m_worldMap.getPosX(ox);
-    const int cy = m_worldMap.getPosY(oy);
-
-    const float cellSizeX = Map::Cell::_sizeX;
-    const float cellSizeY = Map::Cell::_sizeY;
-
-    const int rx = cellSizeX > 0.0f ? static_cast<int>(std::ceil(maxSearchRange / cellSizeX)) : 1;
-    const int ry = cellSizeY > 0.0f ? static_cast<int>(std::ceil(maxSearchRange / cellSizeY)) : 1;
-
-    Creature* target = nullptr;
+    GameObject* best = nullptr;
     float bestD2 = std::numeric_limits<float>::infinity();
+    const uint32_t phase = o->GetPhase();
 
-    for (int ix = cx - rx; ix <= cx + rx; ++ix)
+    for (const WoWGuid& g : ids)
     {
-        for (int iy = cy - ry; iy <= cy + ry; ++iy)
-        {
-            MapCell* cell = m_worldMap.getCell(ix, iy);
-            if (!cell)
-                continue;
+        GameObject* go = m_registry.getGameObject(g);
+        if (!go || go->getWorldMap() != &m_worldMap) continue;
+        if (go->getGoType() != type)         continue;
+        if ((go->GetPhase() & phase) == 0)   continue;
 
-            for (auto it = cell->Begin(); it != cell->End(); ++it)
-            {
-                Object* obj = *it;
-                if (!obj || !obj->isCreature())
-                    continue;
-
-                if (obj->getEntry() != entry)
-                    continue;
-
-                Creature* go = static_cast<Creature*>(obj);
-
-                const float dx = go->GetPositionX() - ox;
-                const float dy = go->GetPositionY() - oy;
-                const float d2 = dx * dx + dy * dy;
-
-                if (d2 > r2)
-                    continue;
-
-                if (d2 < bestD2)
-                {
-                    bestD2 = d2;
-                    target = go;
-
-                    if (bestD2 <= 1e-6f)
-                        return target;
-                }
-            }
-        }
+        const float d2 = o->getDistanceSq(go);
+        if (d2 < bestD2) { bestD2 = d2; best = go; }
     }
-
-    return target;
+    return best;
 }
 
-void MapScriptInterface::getCreatureListWithEntryInRange(Creature* pCreature, std::list<Creature*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+Player* MapScriptInterface::getPlayerNearestCoords(float x, float y, float z)
 {
-    float CurrentDist = 0;
+    thread_local std::vector<WoWGuid> ids;
+    ids.clear(); ids.reserve(64);
+    m_spatialIndex.collectGuidsInCellsAroundPos<Player>(LocationVector{ x,y,z,0.f }, /*Rcells=*/4, 0, ids);
 
-    for (auto const& target : m_worldMap.activeCreatures)
-    {
-        if (target->isCreature() && target->getEntry() == entry)
-        {
-            CurrentDist = target->CalcDistance(pCreature);
-            if (CurrentDist <= maxSearchRange)
-                container.push_back(target);
-        }
-    }
-}
-
-void MapScriptInterface::getGameObjectListWithEntryInRange(Creature* pCreature, std::list<GameObject*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
-{
-    float CurrentDist = 0;
-
-    for (auto const& target : m_worldMap.activeGameObjects)
-    {
-        if (target->isGameObject() && target->getEntry() == entry)
-        {
-            CurrentDist = target->CalcDistance(pCreature);
-            if (CurrentDist <= maxSearchRange)
-                container.push_back(target);
-        }
-    }
-}
-
-GameObject* MapScriptInterface::findNearestGameObject(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
-{
-    if (!pObject || maxSearchRange <= 0.0f)
-        return nullptr;
-
-    const float ox = pObject->GetPositionX();
-    const float oy = pObject->GetPositionY();
-    const float r2 = maxSearchRange * maxSearchRange;
-
-    const int cx = m_worldMap.getPosX(ox);
-    const int cy = m_worldMap.getPosY(oy);
-
-    const float cellSizeX = Map::Cell::_sizeX;
-    const float cellSizeY = Map::Cell::_sizeY;
-
-    const int rx = cellSizeX > 0.0f ? static_cast<int>(std::ceil(maxSearchRange / cellSizeX)) : 1;
-    const int ry = cellSizeY > 0.0f ? static_cast<int>(std::ceil(maxSearchRange / cellSizeY)) : 1;
-
-    GameObject* target = nullptr;
+    Player* best = nullptr;
     float bestD2 = std::numeric_limits<float>::infinity();
-
-    for (int ix = cx - rx; ix <= cx + rx; ++ix)
-    {
-        for (int iy = cy - ry; iy <= cy + ry; ++iy)
-        {
-            MapCell* cell = m_worldMap.getCell(ix, iy);
-            if (!cell)
-                continue;
-
-            for (auto it = cell->Begin(); it != cell->End(); ++it)
-            {
-                Object* obj = *it;
-                if (!obj || !obj->isGameObject())
-                    continue;
-
-                if (obj->getEntry() != entry)
-                    continue;
-
-                GameObject* go = static_cast<GameObject*>(obj);
-
-                const float dx = go->GetPositionX() - ox;
-                const float dy = go->GetPositionY() - oy;
-                const float d2 = dx * dx + dy * dy;
-
-                if (d2 > r2)
-                    continue;
-
-                if (d2 < bestD2)
-                {
-                    bestD2 = d2;
-                    target = go;
-
-                    if (bestD2 <= 1e-6f)
-                        return target;
-                }
-            }
-        }
+    for (const WoWGuid& id : ids) {
+        Player* p = m_registry.getPlayer(id);
+        if (!p || p->getWorldMap() != &m_worldMap) continue;
+        const float dx = p->GetPositionX() - x, dy = p->GetPositionY() - y;
+        const float d2 = dx * dx + dy * dy;
+        if (d2 < bestD2) { bestD2 = d2; best = p; }
     }
-
-    return target;
+    return best;
 }
 
-Player* MapScriptInterface::getPlayerNearestCoords(float x, float y, float z/* = 0.0f*/, uint32_t Entry/* = 0*/)
+uint32_t MapScriptInterface::getPlayerCountInRadius(float x, float y, float z, float radius)
 {
-    MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(x), m_worldMap.getPosY(y));
-    if (pCell == nullptr)
-        return 0;
+    if (radius <= 0.f) return 0;
 
-    Player* ClosestObject = nullptr;
-    float ClosestDist = 999999.0f;
-    float CurrentDist = 0;
+    thread_local std::vector<WoWGuid> ids;
+    ids.clear(); ids.reserve(64);
+    m_spatialIndex.collectGuidsInCellsAroundPos<Player>(LocationVector{ x,y,z,0.f }, /*Rcells=*/4, 0, ids);
 
-    ObjectSet::const_iterator iter = pCell->Begin();
-    for (; iter != pCell->End(); ++iter)
-    {
-        CurrentDist = (*iter)->CalcDistance(x, y, (z != 0.0f ? z : (*iter)->GetPositionZ()));
-        if (CurrentDist < ClosestDist && (*iter)->isPlayer())
-        {
-            if ((Entry && (*iter)->getEntry() == Entry) || !Entry)
-            {
-                ClosestDist = CurrentDist;
-                ClosestObject = ((Player*)(*iter));
-            }
-        }
+    const float r2 = radius * radius;
+    uint32_t count = 0;
+    for (const WoWGuid& id : ids) {
+        Player* p = m_registry.getPlayer(id);
+        if (!p || p->getWorldMap() != &m_worldMap) continue;
+        const float dx = p->GetPositionX() - x, dy = p->GetPositionY() - y;
+        if (dx * dx + dy * dy < r2) ++count;
     }
-
-    return ClosestObject;
+    return count;
 }
 
-uint32_t MapScriptInterface::getPlayerCountInRadius(float x, float y, float z /* = 0.0f */, float radius /* = 5.0f */)
+// ---------- Spawns/Deletes via Factory ----------
+GameObject* MapScriptInterface::spawnGameObject(uint32_t entry, LocationVector pos, uint32_t phase)
 {
-    // use a cell radius of 2
-    uint32_t PlayerCount = 0;
-    uint32_t cellX = m_worldMap.getPosX(x);
-    uint32_t cellY = m_worldMap.getPosY(y);
-
-    uint32_t endX = cellX < Map::Cell::_sizeX ? cellX + 1 : Map::Cell::_sizeX;
-    uint32_t endY = cellY < Map::Cell::_sizeY ? cellY + 1 : Map::Cell::_sizeY;
-    uint32_t startX = cellX > 0 ? cellX - 1 : 0;
-    uint32_t startY = cellY > 0 ? cellY - 1 : 0;
-    MapCell* pCell;
-    ObjectSet::iterator iter, iter_end;
-
-    for (uint32_t cx = startX; cx < endX; ++cx)
-    {
-        for (uint32_t cy = startY; cy < endY; ++cy)
-        {
-            pCell = m_worldMap.getCell(cx, cy);
-            if (pCell == nullptr || pCell->getPlayerCount() == 0)
-                continue;
-
-            iter = pCell->Begin();
-            iter_end = pCell->End();
-
-            for (; iter != iter_end; ++iter)
-            {
-                if ((*iter)->isPlayer() &&
-                    (*iter)->CalcDistance(x, y, (z == 0.0f ? (*iter)->GetPositionZ() : z)) < radius)
-                {
-                    ++PlayerCount;
-                }
-            }
-        }
-    }
-
-    return PlayerCount;
-}
-
-GameObject* MapScriptInterface::spawnGameObject(uint32_t Entry, LocationVector pos, bool AddToWorld, uint32_t /*Misc1*/, uint32_t /*Misc2*/, uint32_t phase)
-{
-
-    GameObject* pGameObject = m_worldMap.createGameObject(Entry);
-    if (!pGameObject->create(Entry, &m_worldMap, phase, pos, QuaternionData(), GO_STATE_CLOSED))
-    {
-        delete pGameObject;
+    GameObject* go = m_spawnManager.createGameObject(entry, pos);
+    if (!go)
         return nullptr;
-    }
-    pGameObject->m_phase = phase;
-    pGameObject->m_spawn = nullptr;
 
-    if (AddToWorld)
-        pGameObject->PushToWorld(&m_worldMap);
-
-    return pGameObject;
+    go->m_phase = phase;
+    return m_spawnManager.pushToWorld(go) ? go : nullptr;
 }
 
-GameObject* MapScriptInterface::spawnGameObject(MySQLStructure::GameobjectSpawn* gs, bool AddToWorld)
+GameObject* MapScriptInterface::spawnGameObject(MySQLStructure::GameobjectSpawn* gs)
 {
     if (!gs)
         return nullptr;
 
-    GameObject* pGameObject = m_worldMap.createGameObject(gs->entry);
-    if (!pGameObject->loadFromDB(gs, &m_worldMap, false))
-    {
-        delete pGameObject;
+    GameObject* go = m_spawnManager.spawnGameObject(0, {}, {}, gs);
+    if (!go)
         return nullptr;
-    }
 
-    if (AddToWorld)
-        pGameObject->PushToWorld(&m_worldMap);
-
-    return pGameObject;
+    return go;
 }
 
-// Zyres 11/06/2017 - bool tmplate not used!
-Creature* MapScriptInterface::spawnCreature(uint32_t Entry, LocationVector pos, bool AddToWorld, bool /*tmplate*/, uint32_t /*Misc1*/, uint32_t /*Misc2*/, uint32_t phase)
+Creature* MapScriptInterface::spawnCreature(uint32_t entry, LocationVector pos, uint32_t phase)
 {
-    CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(Entry);
-    if (creature_properties == nullptr)
+    Creature* creature = m_spawnManager.createCreature(entry, pos);
+    if (!creature)
         return nullptr;
 
-    MySQLStructure::CreatureSpawn* spawn = new MySQLStructure::CreatureSpawn;
-    spawn->entry = Entry;
-    uint32_t DisplayID = 0;
-    uint8_t Gender = creature_properties->generateRandomDisplayIdAndReturnGender(&DisplayID);
-    spawn->displayid = DisplayID;
-    spawn->id = 0;
-    spawn->movetype = 0;
-    spawn->x = pos.x;
-    spawn->y = pos.y;
-    spawn->z = pos.z;
-    spawn->o = pos.o;
-    spawn->emote_state = 0;
-    spawn->flags = 0;
-    spawn->pvp_flagged = 0;
-    spawn->factionid = creature_properties->Faction;
-    spawn->bytes0 = 0;
-    spawn->stand_state = 0;
-    spawn->death_state = 0;
-    spawn->channel_target_creature = 0;
-    spawn->channel_target_go = 0;
-    spawn->channel_spell = 0;
-    spawn->MountedDisplayID = 0;
-    spawn->sheath_state = 0;
-
-    spawn->Item1SlotEntry = creature_properties->itemslot_1;
-    spawn->Item2SlotEntry = creature_properties->itemslot_2;
-    spawn->Item3SlotEntry = creature_properties->itemslot_3;
-
-    spawn->CanFly = 0;
-    spawn->phase = phase;
-
-    Creature* creature = this->m_worldMap.createCreature(Entry);
-    if (creature)
-    {
-        creature->Load(spawn, 0, nullptr);
-        creature->setGender(Gender);
-        creature->spawnid = 0;
-        creature->m_spawn = nullptr;
-
-        delete spawn;
-
-        if (AddToWorld)
-            creature->PushToWorld(&m_worldMap);
-
-        return creature;
-    }
-
-    sLogger.failure("MapScriptInterface::SpawnCreature tried to spawn invalid creature {} (nullptr), returning nullptr!", Entry);
-    return nullptr;
+    creature->setPhase(phase);
+    return m_spawnManager.pushToWorld(creature) ? creature : nullptr;
 }
 
-Creature* MapScriptInterface::spawnCreature(MySQLStructure::CreatureSpawn* sp, bool AddToWorld)
+Creature* MapScriptInterface::spawnCreature(MySQLStructure::CreatureSpawn* sp)
 {
     if (!sp)
         return nullptr;
 
-    CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(sp->entry);
-    if (creature_properties == nullptr)
-    {
+    Creature* creature = m_spawnManager.spawnCreature(0, {}, sp);
+    if (!creature)
         return nullptr;
-    }
 
-    uint8_t Gender = creature_properties->generateRandomDisplayIdAndReturnGender(&sp->displayid);
-    Creature* p = this->m_worldMap.createCreature(sp->entry);
-    if (p)
-    {
-        p->Load(sp, 0, nullptr);
-        p->setGender(Gender);
-        p->spawnid = 0;
-        p->m_spawn = nullptr;
-        if (AddToWorld)
-            p->PushToWorld(&m_worldMap);
-        return p;
-    }
-
-    sLogger.failure("MapScriptInterface::SpawnCreature tried to spawn invalid creature {} (nullptr), returning nullptr!", sp->entry);
-    return nullptr;
+    return creature;
 }
 
 void MapScriptInterface::deleteCreature(Creature* ptr)
 {
-    delete ptr;
+    if (!ptr)
+        return;
+
+    m_spawnManager.despawn(ptr);
 }
 
 void MapScriptInterface::deleteGameObject(GameObject* ptr)
 {
-    delete ptr;
+    if (!ptr)
+        return;
+
+    m_spawnManager.despawn(ptr);
 }

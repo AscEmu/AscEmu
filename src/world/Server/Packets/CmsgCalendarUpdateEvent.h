@@ -89,8 +89,8 @@ namespace AscEmu::Packets
                 packet.readByteSeq(inviteGuid[2]);
                 packet.readByteSeq(eventGuid[7]);
 
-                eventId = eventGuid.getGuidLowPart();
-                inviteId = inviteGuid.getGuidLowPart();
+                eventId = eventGuid.getCounter();
+                inviteId = inviteGuid.getCounter();
 
                 return true;
             }

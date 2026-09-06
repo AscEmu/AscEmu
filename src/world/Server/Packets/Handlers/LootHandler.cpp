@@ -37,18 +37,18 @@ using namespace AscEmu::Packets;
 
 Loot* WorldSession::getItemLootFromHighGuidType(WoWGuid wowGuid)
 {
-    switch(wowGuid.getHigh())
+    switch(wowGuid.getHighType())
     {
         case HighGuid::Unit:
         {
-            if (auto creature = _player->getWorldMap()->getCreature(wowGuid.getGuidLowPart()))
+            if (auto creature = _player->getWorldMapCreature(wowGuid.getRawGuid()))
                 return &creature->loot;
 
             return nullptr;
         }
         case HighGuid::GameObject:
         {
-            if (auto gameObject = _player->getWorldMap()->getGameObject(wowGuid.getGuidLowPart()))
+            if (auto gameObject = _player->getWorldMapGameObject(wowGuid.getRawGuid()))
             {
                 if (gameObject->IsLootable())
                     return &dynamic_cast<GameObject_Lootable*>(gameObject)->loot;
@@ -65,7 +65,7 @@ Loot* WorldSession::getItemLootFromHighGuidType(WoWGuid wowGuid)
         }
         case HighGuid::Player:
         {
-            if (auto player = _player->getWorldMap()->getPlayer(wowGuid.getGuidLowPart()))
+            if (auto player = _player->getWorldMapPlayer(wowGuid.getRawGuid()))
                 return &player->loot;
 
             return nullptr;
@@ -98,13 +98,13 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
 
     if (wowGuid.isUnit())
     {
-        lootCreature = _player->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
+        lootCreature = _player->getWorldMapCreature(wowGuid.getRawGuid());
         if (lootCreature == nullptr)
             return;
     }
     else if (wowGuid.isGameObject())
     {
-        lootGameObject = _player->getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
+        lootGameObject = _player->getWorldMapGameObject(wowGuid.getRawGuid());
         if (lootGameObject == nullptr)
             return;
     }
@@ -116,7 +116,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
     }
     else if (wowGuid.isPlayer())
     {
-        const auto player = _player->getWorldMap()->getPlayer(wowGuid.getGuidLowPart());
+        const auto player = _player->getWorldMapPlayer(wowGuid.getRawGuid());
         if (player == nullptr)
             return;
     }
@@ -149,7 +149,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
             count += itemFromLoot.count;
 
         if (!count)
-            lootGameObject->expireAndDelete();
+            lootGameObject->destroy();
     }
 
     if (loot->isLooted() && wowGuid.isItem())
@@ -174,18 +174,18 @@ void WorldSession::handleLootCurrencyOpcode(WorldPacket& recvPacket)
 
 Loot* WorldSession::getMoneyLootFromHighGuidType(WoWGuid wowGuid)
 {
-    switch (wowGuid.getHigh())
+    switch (wowGuid.getHighType())
     {
         case HighGuid::Unit:
         {
-            if (auto creature = _player->getWorldMap()->getCreature(wowGuid.getGuidLowPart()))
+            if (auto creature = _player->getWorldMapCreature(wowGuid.getRawGuid()))
                 return &creature->loot;
 
             return nullptr;
         }
         case HighGuid::GameObject:
         {
-            if (auto gameObject = _player->getWorldMap()->getGameObject(wowGuid.getGuidLowPart()))
+            if (auto gameObject = _player->getWorldMapGameObject(wowGuid.getRawGuid()))
             {
                 if (gameObject->IsLootable())
                     return &dynamic_cast<GameObject_Lootable*>(gameObject)->loot;
@@ -202,14 +202,14 @@ Loot* WorldSession::getMoneyLootFromHighGuidType(WoWGuid wowGuid)
         }
         case HighGuid::Player:
         {
-            if (auto player = _player->getWorldMap()->getPlayer(wowGuid.getGuidLowPart()))
+            if (auto player = _player->getWorldMapPlayer(wowGuid.getRawGuid()))
                 return &player->loot;
 
             return nullptr;
         }
         case HighGuid::Corpse:
         {
-            if (auto corpse = sObjectMgr.getCorpseByGuid(wowGuid.getGuidLowPart()))
+            if (auto corpse = (_player->getWorldMap() ? _player->getWorldMap()->getRegistry().getCorpse(wowGuid) : nullptr))
                 return &corpse->loot;
 
             return nullptr;
@@ -236,14 +236,14 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
 
     if (wowGuid.isUnit())
     {
-        Creature* pCreature = _player->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
+        Creature* pCreature = _player->getWorldMapCreature(wowGuid.getRawGuid());
         if (!pCreature)
             return;
         pt = pCreature;
     }
     else if (wowGuid.isPlayer())
     {
-        Player* pPlayer = _player->getWorldMap()->getPlayer(wowGuid.getGuidLowPart());
+        Player* pPlayer = _player->getWorldMapPlayer(wowGuid.getRawGuid());
         if (!pPlayer)
             return;
 
@@ -409,7 +409,7 @@ void WorldSession::doLootRelease(WoWGuid lguid)
 
     if (lguid.isGameObject())
     {
-        GameObject* go = GetPlayer()->getWorldMap()->getGameObject(lguid.getGuidLowPart());
+        GameObject* go = GetPlayer()->getWorldMapGameObject(lguid.getRawGuid());
         if (auto gameObjectLootable = dynamic_cast<GameObject_Lootable*>(go))
         {
             // Remove our Guid
@@ -458,7 +458,7 @@ void WorldSession::doLootRelease(WoWGuid lguid)
     }
     else if (lguid.isCorpse())        // ONLY remove insignia at BG
     {
-        auto* corpse = sObjectMgr.getCorpseByGuid(lguid.getGuidLow());
+        auto* corpse = _player->getWorldMap() ? _player->getWorldMap()->getRegistry().getCorpse(lguid) : nullptr;
         if (!corpse || !corpse->IsWithinDistInMap(_player, 5.0f))
             return;
 
@@ -489,7 +489,7 @@ void WorldSession::doLootRelease(WoWGuid lguid)
     }
     else if (lguid.isPlayer())
     {
-        if (auto lootablePlayer = sObjectMgr.getPlayer(lguid.getGuidLow()))
+        if (auto lootablePlayer = sObjectMgr.getPlayer(lguid.getLowGuid()))
         {
             lootablePlayer->m_lootableOnCorpse = false;
             lootablePlayer->loot.items.clear();
@@ -498,7 +498,7 @@ void WorldSession::doLootRelease(WoWGuid lguid)
     }
     else
     {
-        if (Creature* creature = GetPlayer()->getWorldMap()->getCreature(lguid.getGuidLowPart()))
+        if (Creature* creature = GetPlayer()->getWorldMapCreature(lguid.getRawGuid()))
         {
             // Remove roundrobin and make Lootable for evryone in our group
             creature->loot.roundRobinPlayer = 0;
@@ -554,7 +554,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
     if (_player->getGroup() == nullptr || _player->getGroup()->GetLooter() != _player->getPlayerInfo())
         return;
 
-    auto player = _player->getWorldMap()->getPlayer(srlPacket.playerGuid.getGuidLow());
+    auto player = _player->getWorldMapPlayer(srlPacket.playerGuid.getRawGuid());
     if (player == nullptr)
         return;
 
@@ -569,7 +569,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
 
     if (lootGuid.isUnit())
     {
-        creature = _player->getWorldMap()->getCreature(srlPacket.creatureGuid.getGuidLowPart());
+        creature = _player->getWorldMapCreature(srlPacket.creatureGuid.getRawGuid());
         if (creature == nullptr)
             return;
 
@@ -577,7 +577,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
     }
     else if (lootGuid.isGameObject())
     {
-        auto gameObject = _player->getWorldMap()->getGameObject(srlPacket.creatureGuid.getGuidLowPart());
+        auto gameObject = _player->getWorldMapGameObject(srlPacket.creatureGuid.getRawGuid());
         if (gameObject == nullptr)
             return;
 

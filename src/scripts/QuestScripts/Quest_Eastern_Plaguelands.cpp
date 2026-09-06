@@ -20,6 +20,7 @@
  */
 
 #include "Setup.h"
+#include "Map/Management/SpawnManager.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/MapScriptInterface.h"
@@ -38,7 +39,7 @@ public:
         if (!mKiller->isPlayer())
             return;
 
-        Creature* creat = getCreature()->getWorldMap()->getInterface()->spawnCreature(11064, getCreature()->GetPosition(), true, false, 0, 0);
+        Creature* creat = getCreature()->getWorldMap()->getInterface()->spawnCreature(11064, getCreature()->GetPosition());
         if (creat)
             creat->Despawn(60000, 0);
     }
@@ -71,7 +72,7 @@ public:
         if (!mKiller->isPlayer())
             return;
 
-        GameObject* go = mKiller->getWorldMap()->createAndSpawnGameObject(177241, getCreature()->GetPosition(), 1);
+        GameObject* go = mKiller->getWorldMap()->getSpawnManager().spawnGameObject(177241, getCreature()->GetPosition(), 1);
         if (go != nullptr)
             go->despawn(60 * 1000, 0);
     }

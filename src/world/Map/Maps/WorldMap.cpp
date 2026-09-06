@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/DynamicObject.hpp"
 #include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Units/Unit.hpp"
 #include "VMapFactory.h"
@@ -33,6 +34,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <ctime>
 #include <cstdarg>
+#include <cmath>
+#include <set>
+
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 #include "Logging/Logger.hpp"
 #include "Management/ObjectMgr.hpp"
@@ -45,8 +52,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 using namespace AscEmu::Threading;
+using namespace visibility;
 
-WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t InstanceId, uint8_t SpawnMode) : CellHandler<MapCell>(baseMap), eventHolder(InstanceId), worldstateshandler(id),
+extern bool bServerShutdown;
+
+WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t InstanceId, uint8_t SpawnMode) : eventHolder(InstanceId), worldstateshandler(id),
     _terrain(std::make_unique<TerrainHolder>(id)), m_unloadTimer(expiry), m_baseMap(baseMap)
 {
     // Map
@@ -56,40 +66,39 @@ WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t Inst
     m_holder = &eventHolder;
     m_event_Instanceid = eventHolder.GetInstanceID();
 
-    // Create script interface
-    ScriptInterface = std::make_unique<MapScriptInterface>(*this);
-
-    // Set up storage arrays
-    m_CreatureStorage.resize(getBaseMap()->CreatureSpawnCount, nullptr);
-    m_GameObjectStorage.resize(getBaseMap()->GameObjectSpawnCount, nullptr);
-
     // Thread
     const std::string threadName("WorldMap - M" + std::to_string(getBaseMap()->getMapId()) + "|I" + std::to_string(getInstanceId()));
     m_thread = std::make_unique<AEThread>(threadName, [this](AEThread& /*thread*/) { this->runThread(); }, std::chrono::milliseconds(20), false);
 
     //lets initialize visibility distance for Continent
     WorldMap::initVisibilityDistance();
+
+    // VisibilitySystem. Derive the spatial subscription radius from the actual
+    // map visibility distance so candidate cells always cover the configured view.
+    Config cfg;
+    const int visibilityCells = visibility::SpatialIndex::cellsForRadius(getVisibilityDistance());
+    cfg.defaultViewerRadius = visibilityCells;
+    cfg.defaultActivatorRadius = cfg.defaultViewerRadius + 1;
+    cfg.cellUnloadDelay = std::chrono::minutes(worldConfig.server.mapUnloadTime);
+
+    spatialIndex_ = std::make_unique<visibility::SpatialIndex>();
+    visibilitySystem_ = std::make_unique<visibility::VisibilitySystem>(*spatialIndex_, cfg);
+    registry_ = std::make_unique<world::WorldObjectRegistry>();
+    guids_ = std::make_unique<GuidAllocator>();
+
+    factory_ = std::make_unique<ObjectFactory>(*this, *visibilitySystem_, *registry_, *guids_);
+    spawnMgr_ = std::make_unique<SpawnManager>(*this, *visibilitySystem_, *factory_);
+
+    hookVisibilityEvents();
+
+    // Create script interface
+    ScriptInterface = std::make_unique<MapScriptInterface>(*this, *spatialIndex_, *registry_, *factory_, *spawnMgr_);
 }
 
 void WorldMap::initialize()
 {
     // Create Instance script
     loadInstanceScript();
-
-    // create Map Wide objects
-    for (auto& GameobjectSpawn : _map->mapWideSpawns.GameobjectSpawns)
-    {
-        GameObject* obj = createGameObject(GameobjectSpawn->entry);
-        obj->loadFromDB(GameobjectSpawn, this, false);
-        PushStaticObject(obj);
-    }
-
-    for (auto& CreatureSpawn : _map->mapWideSpawns.CreatureSpawns)
-    {
-        Creature* obj = createCreature(CreatureSpawn->entry);
-        obj->Load(CreatureSpawn, 0, getBaseMap()->getMapInfo());
-        PushStaticObject(obj);
-    }
 
     // Call script OnLoad virtual procedure
     if (getScript())
@@ -109,73 +118,12 @@ WorldMap::~WorldMap()
     // Prevents a crash on map shutdown -Appled
     ScriptInterface = nullptr;
 
-    // Remove objects
-    if (_cells != nullptr)
-    {
-        for (uint32_t i = 0; i < Map::Cell::_sizeX; i++)
-        {
-            if ((*_cells)[i] != nullptr)
-            {
-                for (uint32_t j = 0; j < Map::Cell::_sizeY; j++)
-                {
-                    if ((*(*_cells)[i])[j] != nullptr)
-                    {
-                        (*(*_cells)[i])[j]->_unloadpending = false;
-                        (*(*_cells)[i])[j]->removeObjects();
-                    }
-                }
-            }
-        }
-    }
-
-    // Static Spawns
-    for (auto _mapWideStaticObject : _mapWideStaticObjects)
-    {
-        if (_mapWideStaticObject->IsInWorld())
-            _mapWideStaticObject->RemoveFromWorld(false);
-        delete _mapWideStaticObject;
-    }
-    _mapWideStaticObjects.clear();
-
-    m_GameObjectStorage.clear();
-    m_CreatureStorage.clear();
-    m_TransportStorage.clear();
-    m_TransportDelayedRemoveStorage.clear();
-
-    unloadAllRespawnInfos();
-
-    for (auto itr = m_corpses.begin(); itr != m_corpses.end();)
-    {
-        Corpse* pCorpse = *itr;
-        ++itr;
-
-        if (pCorpse->IsInWorld())
-            pCorpse->RemoveFromWorld(false);
-
-        delete pCorpse;
-    }
-    m_corpses.clear();
-
     if (mInstanceScript != nullptr)
         mInstanceScript->Destroy();
-
-    // Empty remaining containers
-    m_PlayerStorage.clear();
-    m_PetStorage.clear();
-    m_DynamicObjectStorage.clear();
 
     _updates.clear();
     _processQueue.clear();
     Sessions.clear();
-
-    activeCreatures.clear();
-    creature_iterator = activeCreatures.begin();
-    activeGameObjects.clear();
-    gameObject_iterator = activeGameObjects.begin();
-    _sqlids_creatures.clear();
-    _sqlids_gameobjects.clear();
-    _reusable_guids_creature.clear();
-    _reusable_guids_gameobject.clear();
 
     MMAP::MMapFactory::createOrGetMMapManager()->unloadMapInstance(getBaseMap()->getMapId(), getInstanceId());
 
@@ -197,13 +145,26 @@ void WorldMap::runThread()
     }
     catch (const std::exception& e)
     {
-        // Log the standard C++ error so we know why the thread stopped
-        sLogger.failure("WorldMap thread stopped due to C++ exception: {}", e.what());
+        sLogger.failure(
+            "WorldMap thread stopped: mapId={} instanceId={} map='{}' exception='{}'",
+            getBaseMap() ? getBaseMap()->getMapId() : 0,
+            getInstanceId(),
+            getBaseMap() ? getBaseMap()->getMapName() : "<unknown>",
+            e.what());
     }
     catch (...)
     {
-        // Catch everything else
-        sLogger.failure("WorldMap thread stopped due to an unknown C++ exception.");
+        sLogger.failure(
+            "WorldMap thread stopped: mapId={} instanceId={} map='{}' due to an unknown C++ exception.",
+            getBaseMap() ? getBaseMap()->getMapId() : 0,
+            getInstanceId(),
+            getBaseMap() ? getBaseMap()->getMapName() : "<unknown>");
+    }
+
+    if (m_threadRunning)
+    {
+        m_threadRunning = false;
+        m_thread->requestKill();
     }
 }
 
@@ -225,294 +186,762 @@ bool WorldMap::isMapReadyForDelete() const
 
 void WorldMap::Do()
 {
+    using clock = std::chrono::steady_clock;
+    using namespace std::chrono_literals;
+
     m_threadRunning = true;
 
-    if (!m_terminateThread)
+    auto last = clock::now();
+
+    while (!m_terminateThread)
     {
-        const auto execStart = Util::getMSTime();
-
-        // Time In Milliseconds ( exact Difftime Since last update Cycle )
-        const uint32_t diffTime = execStart - m_lastUpdateTime;
-
-        //first push to world new objects
-        try
-        {
-            std::scoped_lock<std::mutex> lock(m_objectinsertlock);
-
-            if (!m_objectinsertpool.empty())
-            {
-                for (const auto& o : m_objectinsertpool)
-                    o->PushToWorld(this);
-
-                m_objectinsertpool.clear();
-            }
-        }
-        catch (const std::bad_alloc&)
-        {
-            sLogger.failure(
-                "bad_alloc during PushToWorld: mapId={}, instanceId={}",
-                getBaseMap()->getMapId(),
-                getInstanceId()
-            );
-
-            throw;
-        }
+        const auto now = clock::now();
+        const auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(now - last);
+        last = now;
 
         try
         {
-            // Update Our Map
-            update(diffTime);
+            update(static_cast<uint32_t>(diff.count()));
         }
         catch (const std::bad_alloc&)
         {
             sLogger.failure(
                 "bad_alloc during WorldMap::update: mapId={}, instanceId={}",
                 getBaseMap()->getMapId(),
-                getInstanceId()
-            );
+                getInstanceId());
 
             throw;
         }
 
-        m_lastUpdateTime = Util::getMSTime();
-        return;
+        try
+        {
+            delayedUpdate(diff);
+        }
+        catch (const std::bad_alloc&)
+        {
+            sLogger.failure(
+                "bad_alloc during WorldMap::delayedUpdate: mapId={}, instanceId={}",
+                getBaseMap()->getMapId(),
+                getInstanceId());
+
+            throw;
+        }
+
+        std::this_thread::sleep_for(10ms);
     }
 
     m_threadRunning = false;
-
-    // Map is added to MapMgr remove pool which deletes map when thread has finished all its work
     m_thread->requestKill();
 }
 
 void WorldMap::update(uint32_t t_diff)
 {
-    const auto msTime = Util::getMSTime();
+    using namespace std::chrono_literals;
 
-    // Update any events.
-    // we make update of events before objects so in case there are 0 timediff events they do not get deleted after update but on next server update loop
+    processMapTasks();
+
+    const auto dt = std::chrono::milliseconds{ t_diff };
+    const auto instanceId = getInstanceId();
+
     eventHolder.Update(t_diff);
-
-    // Update Dynamic Map
     _dynamicTree.update(t_diff);
 
-    // Update Transporters
-    auto transportDiffTime = msTime - m_lastTransportUpdateTimer;
-    if (transportDiffTime >= 100)
+    spawnMgr_->processQueuedAdds();
+
+    m_visibilityAccum += dt;
+    if (m_visibilityAccum >= 100ms)
     {
+        visibilitySystem_->tick(m_visibilityAccum);
+        m_visibilityAccum = 0ms;
+    }
+
+    m_respawnAccum += dt;
+    if (m_respawnAccum >= 1000ms)
+    {
+        spawnMgr_->processRespawns();
+        m_respawnAccum = 0ms;
+    }
+
+    updateAll(dt);
+
+    m_sessionAccum += dt;
+    if (m_sessionAccum >= 100ms)
+    {
+        std::vector<WorldSession*> sessions;
         {
-            std::scoped_lock<std::mutex> guard(m_transportsLock);
-            for (auto itr = m_TransportStorage.cbegin(); itr != m_TransportStorage.cend();)
+            std::lock_guard<std::mutex> sessionGuard(m_sessionMutex);
+            sessions.assign(Sessions.begin(), Sessions.end());
+        }
+
+        for (WorldSession* session : sessions)
+        {
+            if (session == nullptr)
+                continue;
+
+            if (session->GetInstance() != instanceId)
             {
-                Transporter* trans = *itr;
-                ++itr;
-
-                if (!trans || !trans->IsInWorld())
-                    continue;
-
-                trans->Update(transportDiffTime);
-            }
-        }
-
-        {
-            std::scoped_lock<std::mutex> guard(m_delayedTransportLock);
-            for (auto itr = m_TransportDelayedRemoveStorage.cbegin(); itr != m_TransportDelayedRemoveStorage.cend();)
-            {
-                auto* trans = itr->first;
-                if (!trans || !trans->IsInWorld())
-                {
-                    itr = m_TransportDelayedRemoveStorage.erase(itr);
-                    continue;
-                }
-
-                if (itr->second)
-                {
-                    removeFromMapMgr(trans);
-                    trans->RemoveFromWorld(true);
-                }
-                else
-                {
-                    trans->delayedTeleportTransport();
-                }
-
-                itr = m_TransportDelayedRemoveStorage.erase(itr);
-            }
-        }
-
-        m_lastTransportUpdateTimer = msTime;
-    }
-
-    // Update Creatures
-    {
-        auto creatureDiffTime = msTime - m_lastCreatureUpdateTimer;
-        creature_iterator = activeCreatures.begin();
-        for (; creature_iterator != activeCreatures.end();)
-        {
-            Creature* ptr = *creature_iterator;
-            ++creature_iterator;
-            ptr->Update(creatureDiffTime);
-        }
-
-        m_lastCreatureUpdateTimer = msTime;
-    }
-
-    // Update Pets
-    {
-        const auto petDiffTime = msTime - m_lastPetUpdateTimer;
-        for (auto itr = m_PetStorage.cbegin(); itr != m_PetStorage.cend();)
-        {
-            Pet* ptr = itr->second;
-            ++itr;
-            ptr->Update(petDiffTime);
-        }
-
-        m_lastPetUpdateTimer = msTime;
-    }
-
-    // Update Players
-    {
-        auto playerDiffTime  = msTime - m_lastPlayerUpdateTimer;
-        for (auto itr = m_PlayerStorage.cbegin(); itr != m_PlayerStorage.cend();)
-        {
-            Player* ptr = itr->second;
-            ++itr;
-            ptr->Update(playerDiffTime);
-        }
-
-        m_lastPlayerUpdateTimer = msTime;
-    }
-
-    // Dynamic objects are updated every 100ms
-    auto dynamicDiffTime = msTime - m_lastDynamicUpdateTimer;
-    if (dynamicDiffTime >= 100)
-    {
-        for (auto itr = m_DynamicObjectStorage.cbegin(); itr != m_DynamicObjectStorage.cend();)
-        {
-            DynamicObject* o = itr->second;
-            ++itr;
-            o->updateTargets();
-        }
-
-        m_lastDynamicUpdateTimer = msTime;
-    }
-
-    // Update gameobjects only every 200ms
-    auto gameObjectDiffTime = msTime - m_lastGameObjectUpdateTimer;
-    if (gameObjectDiffTime >= 200)
-    {
-        gameObject_iterator = activeGameObjects.begin();
-        for (; gameObject_iterator != activeGameObjects.end();)
-        {
-            GameObject* gameobject = *gameObject_iterator;
-            ++gameObject_iterator;
-            if (gameobject != nullptr)
-                gameobject->Update(gameObjectDiffTime);
-        }
-
-        m_lastGameObjectUpdateTimer = msTime;
-    }
-
-    // Update Sessions every 100ms
-    auto sessionDiffTime = msTime - m_lastSessionUpdateTimer;
-    if (sessionDiffTime >= 100)
-    {
-        for (auto itr = Sessions.cbegin(); itr != Sessions.cend();)
-        {
-            WorldSession* session = (*itr);
-            auto it2 = itr;
-            ++itr;
-
-            if (session->GetInstance() != getInstanceId())
-            {
-                Sessions.erase(it2);
+                removeSession(session);
                 continue;
             }
 
-            // Don't update players not on our map.
-            // If we abort in the handler, it means we will "lose" packets, or not process this.
-            // .. and that could be disastrous to our client :P
-            if (session->GetPlayer() && (session->GetPlayer()->getWorldMap() != this && session->GetPlayer()->getWorldMap() != nullptr))
-                continue;
-
-            uint8_t result;
-
-            if ((result = session->Update(getInstanceId())) != 0)
+            Player* player = session->GetPlayer();
+            if (player == nullptr || player->getWorldMap() != this)
             {
+                removeSession(session);
+                continue;
+            }
+
+            const uint8_t result = session->Update(instanceId);
+            if (result != 0)
+            {
+                removeSession(session);
+
                 if (result == 1)
-                {
-                    // complete deletion
                     sWorld.deleteSession(session);
-                }
-                Sessions.erase(it2);
             }
         }
 
-        m_lastSessionUpdateTimer = msTime;
+        m_sessionAccum = 0ms;
     }
 
-    /// Update Respawns every 1000ms
-    auto respawnDiffTime = msTime - m_lastRespawnUpdateTimer;
-    if (respawnDiffTime >= 1000)
-    {
-        processRespawns();
+    processPendingUnitAwareness();
+    processPendingVisibilityChanges();
 
-        // Time In Seconds
-        const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-
-        while (!_corpseDespawnTimes.empty())
-        {
-            CorpseInfo next = _corpseDespawnTimes.top();
-            if (now < next.time)
-                break;
-
-            _corpseDespawnTimes.pop();
-            if (auto* const pCorpse = sObjectMgr.getCorpseByGuid(static_cast<uint32_t>(next.guid)))
-            {
-                if (pCorpse->getWorldMap() != this)
-                    break;
-
-                pCorpse->despawn();
-            }
-            break;
-        }
-
-        m_lastRespawnUpdateTimer = msTime;
-    }
-
-    // Finally, A9 Building/Distribution
     updateObjects();
+    drainDeferredDestroy();
+
+    finalizeSpatialPerformanceSample(dt);
 }
 
-void WorldMap::processRespawns()
+void WorldMap::finalizeSpatialPerformanceSample(std::chrono::milliseconds diff)
 {
-    const auto now = Util::getTimeNow();
+    if (!spatialIndex_ || !visibilitySystem_)
+        return;
 
-    while (!_respawnTimes.empty())
+    const auto spatial = spatialIndex_->takePerformanceCounters();
+    const auto visibility = visibilitySystem_->takePerformanceCounters();
+
+    auto& window = m_spatialPerformanceWindow;
+    const uint64_t elapsedMs = diff.count() > 0 ? static_cast<uint64_t>(diff.count()) : 0ULL;
+    window.windowMs += elapsedMs;
+    ++window.ticks;
+
+    window.spatialQueries += spatial.queries;
+    window.spatialCandidates += spatial.candidates;
+    window.spatialTryGets += spatial.tryGets;
+    window.spatialMoves += spatial.moves;
+    window.cellMoves += spatial.cellMoves;
+
+    window.visibilityPairChecks += visibility.pairChecks;
+    window.visibilityCreates += m_visibilityCreatesThisTick;
+    window.visibilityDestroys += m_visibilityDestroysThisTick;
+    window.ringSubscribes += visibility.ringSubscribes;
+    window.ringUnsubscribes += visibility.ringUnsubscribes;
+
+    window.awarenessQueries += m_awarenessQueriesThisTick;
+    window.awarenessCandidates += m_awarenessCandidatesThisTick;
+
+
+    window.maxSpatialCandidatesPerTick = std::max(window.maxSpatialCandidatesPerTick, spatial.candidates);
+    window.maxSpatialTryGetsPerTick = std::max(window.maxSpatialTryGetsPerTick, spatial.tryGets);
+    window.maxVisibilityPairChecksPerTick = std::max(window.maxVisibilityPairChecksPerTick, visibility.pairChecks);
+    window.maxAwarenessCandidatesPerTick = std::max(window.maxAwarenessCandidatesPerTick, m_awarenessCandidatesThisTick);
+
+    m_awarenessQueriesThisTick = 0;
+    m_awarenessCandidatesThisTick = 0;
+    m_visibilityCreatesThisTick = 0;
+    m_visibilityDestroysThisTick = 0;
+
+
+    m_spatialPerformanceAccum += diff;
+    if (m_spatialPerformanceAccum >= std::chrono::milliseconds(1000))
     {
-        RespawnInfo* next = _respawnTimes.top().get();
-        if (now < next->time) // done for this tick
-            break;
+        m_lastSpatialPerformance = window;
+        window = {};
+        m_spatialPerformanceAccum = std::chrono::milliseconds(0);
+    }
+}
 
-        if (checkRespawn(next)) // see if we're allowed to respawn
+void WorldMap::delayedUpdate(std::chrono::milliseconds diff)
+{
+    thread_local std::vector<Transporter*> s_trans;
+
+    registry_->snapshotTransporters(s_trans);
+    registry_->forEachPinned(s_trans, [&](Transporter& t)
         {
-            // ok, respawn
-            getRespawnMapForType(next->type).erase(next->spawnId);
-            doRespawn(next->type, next->obj, next->spawnId, next->cellX, next->cellY);
-            _respawnTimes.pop();
-        }
-        else if (!next->time) // just remove respawn entry without rescheduling
+        t.delayedUpdate(static_cast<unsigned long>(diff.count()));
+        });
+
+}
+
+void WorldMap::updateAll(std::chrono::milliseconds diff)
+{
+    using namespace std::chrono_literals;
+    using clock = std::chrono::steady_clock;
+
+    thread_local std::vector<Player*>        s_players;
+    thread_local std::vector<Creature*>      s_creatures;
+    thread_local std::vector<GameObject*>    s_gos;
+    thread_local std::vector<Transporter*>   s_trans;
+    thread_local std::vector<DynamicObject*> s_dyns;
+    thread_local std::vector<Pet*>           s_pets;
+
+    // Transporters:
+    registry_->snapshotTransporters(s_trans);
+    registry_->forEachPinned(s_trans, [&](Transporter& t)
         {
-            getRespawnMapForType(next->type).erase(next->spawnId);
-            _respawnTimes.pop();
-        }
-        else
+            const auto last = t.getLastUpdate();
+            const auto passed = std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - last);
+
+            if (passed >= 100ms)
+            {
+                t.Update(static_cast<uint32_t>(passed.count()));
+                t.setLastUpdate(clock::now());
+            }
+        });
+
+    // DynamicObjects
+    m_dynamicObjectAccum += diff;
+    if (m_dynamicObjectAccum >= 200ms)
+    {
+        const auto dynamicObjectDiff = static_cast<uint32_t>(m_dynamicObjectAccum.count());
+        registry_->snapshotDynamicObjects(s_dyns);
+        registry_->forEachPinned(s_dyns, [&](DynamicObject& d)
+            {
+                d.updateLifetime(dynamicObjectDiff);
+            });
+        m_dynamicObjectAccum = 0ms;
+    }
+
+    // Creatures
+    m_creaturesAccum += diff;
+    if (m_creaturesAccum >= 100ms)
+    {
+        registry_->snapshotCreatures(s_creatures);
+        registry_->forEachPinned(s_creatures, [&](Creature& c)
+            {
+                if (c.IsInWorld())
+                    c.Update(static_cast<uint32_t>(m_creaturesAccum.count()));
+            });
+        m_creaturesAccum = 0ms;
+    }
+
+    // GameObjects
+    m_gameObjectAccum += diff;
+    if (m_gameObjectAccum >= 100ms)
+    {
+        registry_->snapshotGameObjects(s_gos);
+        registry_->forEachPinned(s_gos, [&](GameObject& g)
+            {
+                if (g.IsInWorld())
+                    g.Update(static_cast<uint32_t>(m_gameObjectAccum.count()));
+            });
+        m_gameObjectAccum = 0ms;
+    }
+
+    // Players
+    m_playersAccum += diff;
+    if (m_playersAccum >= 50ms)
+    {
+        registry_->snapshotPlayers(s_players);
+        registry_->forEachPinned(s_players, [&](Player& p)
+            {
+                p.Update(static_cast<uint32_t>(m_playersAccum.count()));
+            });
+        m_playersAccum = 0ms;
+    }
+
+    // Pets
+    m_petsAccum += diff;
+    if (m_petsAccum >= 100ms)
+    {
+        registry_->snapshotPets(s_pets);
+        registry_->forEachPinned(s_pets, [&](Pet& pet)
+            {
+                pet.Update(static_cast<uint32_t>(m_petsAccum.count()));
+            });
+        m_petsAccum = 0ms;
+    }
+
+}
+
+void WorldMap::queueMapTask(std::function<void()> task)
+{
+    if (!task)
+        return;
+
+    std::lock_guard<std::mutex> guard(mapTaskMutex_);
+    mapTasks_.push_back(std::move(task));
+}
+
+void WorldMap::processMapTasks()
+{
+    std::deque<std::function<void()>> tasks;
+
+    {
+        std::lock_guard<std::mutex> guard(mapTaskMutex_);
+        if (mapTasks_.empty())
+            return;
+
+        tasks.swap(mapTasks_);
+    }
+
+    for (auto& task : tasks)
+    {
+        if (task)
+            task();
+    }
+}
+
+bool WorldMap::deferDestroy(Object* object)
+{
+    if (!object)
+        return false;
+
+    // Destruction is normally scheduled from the map thread, but a disconnected
+    // session can finish logout while it is temporarily owned by the global
+    // updater during a world transfer. Protect the deferred set so that case is
+    // safe without making ordinary object updates contend on a global lock.
+    std::lock_guard<std::mutex> destroyGuard(deferredDestroyMutex_);
+    return deferred_destroy_.insert(object).second;
+}
+
+void WorldMap::drainDeferredDestroy()
+{
+    // Lock update queues before the destroy set. objectUpdated() already uses the
+    // update mutex, so this ordering avoids introducing an inverse lock order for
+    // code that schedules destruction while processing an update.
+    std::unique_lock<std::mutex> updateGuard(m_updateMutex);
+    std::unique_lock<std::mutex> destroyGuard(deferredDestroyMutex_);
+
+    if (deferred_destroy_.empty())
+        return;
+
+    // World objects are deleted only here, after updateObjects(). Before the final
+    // delete, make sure no legacy raw-pointer update queue can retain them into a
+    // later tick. Keep the destroy-set lock through deletion so a concurrent
+    // duplicate request cannot requeue a pointer that is already being destroyed.
+    for (Object* object : deferred_destroy_)
+    {
+        _updates.erase(object);
+
+        if (object && object->isPlayer())
+            _processQueue.erase(static_cast<Player*>(object));
+    }
+
+    updateGuard.unlock();
+
+    for (Object* object : deferred_destroy_)
+        delete object;
+
+    deferred_destroy_.clear();
+}
+
+std::map<uint32_t, Player*> WorldMap::getPlayers() const
+{
+    std::vector<Player*> players;
+    if (registry_)
+        registry_->snapshotPlayers(players);
+
+    std::map<uint32_t, Player*> out;
+    for (Player* player : players)
+    {
+        if (player)
+            out.emplace(player->getGuidLow(), player);
+    }
+    return out;
+}
+
+std::vector<Creature*> WorldMap::getCreatures() const
+{
+    std::vector<Creature*> out;
+    if (registry_)
+        registry_->snapshotCreatures(out);
+    return out;
+}
+
+std::vector<GameObject*> WorldMap::getGameObjects() const
+{
+    std::vector<GameObject*> out;
+    if (registry_)
+        registry_->snapshotGameObjects(out);
+    return out;
+}
+
+uint32_t WorldMap::getPlayerCount() const
+{
+    return registry_ ? static_cast<uint32_t>(registry_->countPlayers()) : 0;
+}
+
+Creature* WorldMap::getSqlIdCreature(uint32_t spawnId) const
+{
+    std::vector<Creature*> creatures;
+    if (registry_)
+        registry_->snapshotCreatures(creatures);
+
+    for (Creature* creature : creatures)
+        if (creature && creature->getSpawnId() == spawnId)
+            return creature;
+    return nullptr;
+}
+
+GameObject* WorldMap::getSqlIdGameObject(uint32_t spawnId) const
+{
+    std::vector<GameObject*> gameObjects;
+    if (registry_)
+        registry_->snapshotGameObjects(gameObjects);
+
+    for (GameObject* go : gameObjects)
+        if (go && go->getSpawnId() == spawnId)
+            return go;
+    return nullptr;
+}
+
+Unit* WorldMap::getUnit(const WoWGuid& g) const
+{
+    switch (g.getHighType())
+    {
+        case HighGuid::Unit:
+        case HighGuid::Vehicle:
+            return getCreature(g);
+        case HighGuid::Player:
+            return getPlayer(g);
+        case HighGuid::Pet:
+            return getPet(g);
+    }
+
+    return nullptr;
+}
+
+inline int MinGridToNavIdx(int g_min)
+{
+    return Terrain::TilesCount - 1 - g_min;
+}
+
+void WorldMap::navAcquireGrid(int gid)
+{
+    auto [gx, gy] = unpackGridId(gid);
+
+    if (!worldConfig.terrainCollision.isCollisionEnabled) return;
+
+    std::lock_guard<std::mutex> g(nav_mtx_);
+    auto& ref = nav_gridRefs_[gid];
+    if (ref++ != 0) return;
+
+    auto* vmap = VMAP::VMapFactory::createOrGetVMapManager();
+    auto* mmap = MMAP::MMapFactory::createOrGetMMapManager();
+
+    const int nx = MinGridToNavIdx(gx);
+    const int ny = MinGridToNavIdx(gy);
+
+    getTerrain()->loadTile(nx, ny);
+
+    const std::string vpath = worldConfig.server.dataDir + "vmaps";
+    const std::string mpath = worldConfig.server.dataDir + "mmaps";
+    const int mapId = getBaseMap()->getMapId();
+
+    vmap->loadMap(vpath.c_str(), mapId, nx, ny);
+    mmap->loadMap(mpath, mapId, nx, ny);
+}
+
+void WorldMap::navReleaseGrid(int gid)
+{
+    auto [gx, gy] = unpackGridId(gid);
+
+    if (!worldConfig.terrainCollision.isCollisionEnabled) return;
+
+    std::lock_guard<std::mutex> g(nav_mtx_);
+    auto it = nav_gridRefs_.find(gid);
+    if (it == nav_gridRefs_.end()) return;
+    if (--(it->second) != 0) return;
+
+    const int nx = MinGridToNavIdx(gx);
+    const int ny = MinGridToNavIdx(gy);
+
+    getTerrain()->unloadTile(nx, ny);
+
+    auto* vmap = VMAP::VMapFactory::createOrGetVMapManager();
+    auto* mmap = MMAP::MMapFactory::createOrGetMMapManager();
+    const int mapId = getBaseMap()->getMapId();
+
+    vmap->unloadMap(mapId, nx, ny);
+    mmap->unloadMap(mapId, nx, ny);
+
+    nav_gridRefs_.erase(it);
+}
+
+
+std::vector<int> WorldMap::collectTerrainGridsForArea(uint32_t id, bool matchZone)
+{
+    std::vector<int> grids;
+    if (!id || !getTerrain())
+        return grids;
+
+    grids.reserve(32);
+
+    constexpr int samplesPerGrid = 16;
+    constexpr float sampleStep = Terrain::TileSize / static_cast<float>(samplesPerGrid);
+
+    for (int gy = 0; gy < Terrain::TilesCount; ++gy)
+    {
+        for (int gx = 0; gx < Terrain::TilesCount; ++gx)
         {
-            saveRespawnDB(*next);
+            const int tileX = MinGridToNavIdx(gx);
+            const int tileY = MinGridToNavIdx(gy);
+            if (!getTerrain()->areTilesValid(tileX, tileY))
+                continue;
+
+            getTerrain()->loadTile(tileX, tileY);
+            TerrainTile* tile = getTerrain()->getTile(tileX, tileY);
+
+            bool matches = false;
+            if (tile)
+            {
+                const float minX = Terrain::MinX + static_cast<float>(gx) * Terrain::TileSize;
+                const float minY = Terrain::MinY + static_cast<float>(gy) * Terrain::TileSize;
+
+                for (int sy = 0; sy < samplesPerGrid && !matches; ++sy)
+                {
+                    const float y = minY + (static_cast<float>(sy) + 0.5f) * sampleStep;
+
+                    for (int sx = 0; sx < samplesPerGrid; ++sx)
+                    {
+                        const float x = minX + (static_cast<float>(sx) + 0.5f) * sampleStep;
+                        const uint16_t areaId = tile->m_map.getArea(x, y);
+                        if (!areaId || areaId == 0xFFFF)
+                            continue;
+
+                        const auto* area = MapManagement::AreaManagement::AreaStorage::getAreaById(areaId);
+                        if (!area)
+                            continue;
+
+                        const uint32_t value = matchZone ? (area->zone ? area->zone : area->id) : area->id;
+                        if (value == id)
+                        {
+                            matches = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            getTerrain()->unloadTile(tileX, tileY);
+
+            if (matches)
+                grids.push_back(visibility::packGridId(gx, gy));
         }
     }
+
+    return grids;
+}
+
+bool WorldMap::gridMatchesForcedRegion(int gid)
+{
+    if ((forcedZones_.empty() && forcedAreas_.empty()) || !getTerrain())
+        return false;
+
+    const auto [gx, gy] = visibility::unpackGridId(gid);
+    if (gx < 0 || gy < 0 || gx >= Terrain::TilesCount || gy >= Terrain::TilesCount)
+        return false;
+
+    const int tileX = MinGridToNavIdx(gx);
+    const int tileY = MinGridToNavIdx(gy);
+    if (!getTerrain()->areTilesValid(tileX, tileY))
+        return false;
+
+    getTerrain()->loadTile(tileX, tileY);
+    TerrainTile* tile = getTerrain()->getTile(tileX, tileY);
+    if (!tile)
+    {
+        getTerrain()->unloadTile(tileX, tileY);
+        return false;
+    }
+
+    constexpr int samplesPerGrid = 16;
+    constexpr float sampleStep = Terrain::TileSize / static_cast<float>(samplesPerGrid);
+    const float minX = Terrain::MinX + static_cast<float>(gx) * Terrain::TileSize;
+    const float minY = Terrain::MinY + static_cast<float>(gy) * Terrain::TileSize;
+
+    bool matches = false;
+    for (int sy = 0; sy < samplesPerGrid && !matches; ++sy)
+    {
+        const float y = minY + (static_cast<float>(sy) + 0.5f) * sampleStep;
+        for (int sx = 0; sx < samplesPerGrid; ++sx)
+        {
+            const float x = minX + (static_cast<float>(sx) + 0.5f) * sampleStep;
+            const uint16_t areaId = tile->m_map.getArea(x, y);
+            if (!areaId || areaId == 0xFFFF)
+                continue;
+
+            const auto* area = MapManagement::AreaManagement::AreaStorage::getAreaById(areaId);
+            if (!area)
+                continue;
+
+            const uint32_t zoneId = area->zone ? area->zone : area->id;
+            if (forcedZones_.count(zoneId) != 0 || forcedAreas_.count(area->id) != 0)
+            {
+                matches = true;
+                break;
+            }
+        }
+    }
+
+    getTerrain()->unloadTile(tileX, tileY);
+    return matches;
+}
+
+bool WorldMap::shouldRuleForceGrid(int gid)
+{
+    if (gid < 0 || gid >= Terrain::TilesCount * Terrain::TilesCount)
+        return false;
+
+    if (forceAllGridsActive_)
+        return true;
+
+    return gridMatchesForcedRegion(gid);
+}
+
+bool WorldMap::ensureRuleGridPinned(int gid)
+{
+    if (!shouldRuleForceGrid(gid))
+        return false;
+
+    if (!rulePinnedGrids_.insert(gid).second)
+        return true;
+
+    visibilitySystem_->pinGrid(gid);
+    return true;
+}
+
+void WorldMap::reevaluateRuleGridPins()
+{
+    for (auto it = rulePinnedGrids_.begin(); it != rulePinnedGrids_.end();)
+    {
+        if (shouldRuleForceGrid(*it))
+        {
+            ++it;
+            continue;
+        }
+
+        visibilitySystem_->unpinGrid(*it);
+        it = rulePinnedGrids_.erase(it);
+    }
+}
+
+void WorldMap::onGridMaterialized(int gid)
+{
+    ensureRuleGridPinned(gid);
+}
+
+bool WorldMap::setGridForcedActive(int gid, bool active)
+{
+    if (gid < 0 || gid >= Terrain::TilesCount * Terrain::TilesCount)
+        return false;
+
+    if (active)
+    {
+        if (!forcedExplicitGrids_.insert(gid).second)
+            return true;
+
+        visibilitySystem_->pinGrid(gid);
+        return true;
+    }
+
+    if (forcedExplicitGrids_.erase(gid) == 0)
+        return false;
+
+    visibilitySystem_->unpinGrid(gid);
+    return true;
+}
+
+size_t WorldMap::setAllGridsForcedActive(bool active)
+{
+    if (forceAllGridsActive_ == active)
+        return rulePinnedGrids_.size();
+
+    forceAllGridsActive_ = active;
+
+    if (active)
+    {
+        // Load every grid that already has spawn definitions. Empty grids stay sparse;
+        // if one becomes used later, onGridMaterialized() pins it automatically.
+        for (int gid : spawnMgr_->definedGridIds())
+            ensureRuleGridPinned(gid);
+
+        // Preserve grids that are already allocated/active even when they currently
+        // have no static spawn definition.
+        for (auto const& [gid, grid] : spatialIndex_->gridPointersSnapshot())
+        {
+            if (grid)
+                ensureRuleGridPinned(gid);
+        }
+    }
+    else
+    {
+        reevaluateRuleGridPins();
+    }
+
+    return rulePinnedGrids_.size();
+}
+
+size_t WorldMap::setZoneGridsForcedActive(uint32_t zoneId, bool active)
+{
+    if (!zoneId)
+        return 0;
+
+    if (active)
+    {
+        if (!forcedZones_.insert(zoneId).second)
+            return rulePinnedGrids_.size();
+
+        for (int gid : collectTerrainGridsForArea(zoneId, true))
+            ensureRuleGridPinned(gid);
+    }
+    else
+    {
+        if (forcedZones_.erase(zoneId) == 0)
+            return rulePinnedGrids_.size();
+
+        reevaluateRuleGridPins();
+    }
+
+    return rulePinnedGrids_.size();
+}
+
+size_t WorldMap::setAreaGridsForcedActive(uint32_t areaId, bool active)
+{
+    if (!areaId)
+        return 0;
+
+    if (active)
+    {
+        if (!forcedAreas_.insert(areaId).second)
+            return rulePinnedGrids_.size();
+
+        for (int gid : collectTerrainGridsForArea(areaId, false))
+            ensureRuleGridPinned(gid);
+    }
+    else
+    {
+        if (forcedAreas_.erase(areaId) == 0)
+            return rulePinnedGrids_.size();
+
+        reevaluateRuleGridPins();
+    }
+
+    return rulePinnedGrids_.size();
+}
+
+bool WorldMap::isGridForcedActive(int gid) const
+{
+    return visibilitySystem_ && visibilitySystem_->isGridPinned(gid);
 }
 
 bool WorldMap::canUnload(uint32_t diff)
 {
+    if (getPlayerCount())
+        return false;
+
     if (!m_unloadTimer)
         return false;
 
@@ -525,7 +954,7 @@ bool WorldMap::canUnload(uint32_t diff)
 
 void WorldMap::unloadAll(bool onShutdown/* = false*/)
 {
-    if (getPlayerCount())
+    if (registry_->countPlayers())
         return;
 
     if (onShutdown)
@@ -540,7 +969,16 @@ void WorldMap::unloadAll(bool onShutdown/* = false*/)
 void WorldMap::initVisibilityDistance()
 {
     //init visibility for continents
-    m_VisibleDistance = 100 * 100;
+    setVisibilityDistance(visibility::Cell::Size * worldConfig.server.mapCellNumber);
+}
+
+void WorldMap::syncVisibilitySubscriptionRadius()
+{
+    if (!visibilitySystem_)
+        return;
+
+    visibilitySystem_->setDefaultSubscriptionRadius(
+        visibility::SpatialIndex::cellsForRadius(getVisibilityDistance()));
 }
 
 void WorldMap::outOfMapBoundariesTeleport(Object* object)
@@ -567,477 +1005,1134 @@ void WorldMap::outOfMapBoundariesTeleport(Object* object)
     }
 }
 
-void WorldMap::removeAllPlayers()
+void WorldMap::hookVisibilityEvents()
 {
-    if (getPlayerCount())
-    {
-        for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
+    visibilitySystem_->onGridActivated([this](int gid)
         {
-            Player* player = itr->second;
-            ++itr;
+            sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Grid Activated {} ", gid);
 
-            if (!sMaster().isShutdownActive())
-            {
-                player->ejectFromInstance();
-            }
-            else
-            {
-                if (player->getSession())
-                    player->getSession()->LogoutPlayer(false);
-                else
-                    delete player;
-            }
+            // Apply persistent map/zone/area activation rules to grids that become
+            // active through normal runtime subscriptions.
+            onGridMaterialized(gid);
+
+            // Navigation
+            navAcquireGrid(gid);
+            
+            // Spawns
+            spawnMgr_->onGridActivated(gid);
+        });
+
+    visibilitySystem_->onGridDeactivated([this](int gid)
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Grid Deactivated {}", gid);
+        });
+
+    visibilitySystem_->onGridUnload([this](int gid)
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Grid Unloaded {} ", gid);
+
+            // Spawns
+            spawnMgr_->onGridUnload(gid);
+
+            // Navigation
+            navReleaseGrid(gid);
+        });
+
+    visibilitySystem_->onGridChanged([this](const WoWGuid& g, int oldGid, int newGid)
+        {
+            spawnMgr_->onGridChanged(g, oldGid, newGid);
+        });
+
+    // A9 Packets...
+    visibilitySystem_->onBecameVisible([this](WoWGuid viewer, WoWGuid object)
+        {
+            onObjectBecameVisible(viewer, object);
+        });
+
+    visibilitySystem_->onBecameHidden([this](WoWGuid viewer, WoWGuid object)
+        {
+            onObjectBecameHidden(viewer, object);
+        });
+}
+
+void WorldMap::addSession(WorldSession* session)
+{
+    if (!session)
+        return;
+
+    std::lock_guard<std::mutex> sessionGuard(m_sessionMutex);
+    Sessions.insert(session);
+}
+
+void WorldMap::removeSession(WorldSession* session)
+{
+    if (!session)
+        return;
+
+    std::lock_guard<std::mutex> sessionGuard(m_sessionMutex);
+    Sessions.erase(session);
+}
+
+bool WorldMap::onPlayerEnter(Player* plr)
+{
+    if (!plr)
+        return false;
+
+    WorldSession* session = plr->getSession();
+    if (!session)
+        return false;
+
+    // A player must be detached before entering another map.
+    if (plr->IsInWorld() || plr->getWorldMap() != nullptr)
+    {
+        sLogger.failure("Refusing to attach player '{}' ({}) to map {} instance {} while it is still attached to another WorldMap",
+            plr->getName(), plr->getGuidLow(), getBaseMap()->getMapId(), getInstanceId());
+        return false;
+    }
+
+    // Check the map-specific entry rules before attaching the player.
+    if (!addPlayerToMap(plr))
+    {
+        sLogger.failure("Failed to add player '{}' ({}) to map {} instance {}",
+            plr->getName(), plr->getGuidLow(), getBaseMap()->getMapId(), getInstanceId());
+        return false;
+    }
+
+    // Attach the player before the map starts updating the session.
+    factory_->attachToWorld(plr);
+
+    // From here on the session is updated by this map.
+    session->SetMapUpdateOwner(getInstanceId());
+    addSession(session);
+    sWorld.removeGlobalSession(session);
+
+    // Let nearby creatures react even if nothing is moving yet.
+    queueUnitAwareness(plr, UnitAwarenessSignal::EnteredWorld);
+
+    return true;
+}
+
+void WorldMap::onPlayerLeave(Player* plr)
+{
+    if (!plr || plr->getWorldMap() != this)
+        return;
+
+    // Use the same cleanup path for logout and map transfers.
+    removeSession(plr->getSession());
+    removePlayerFromMap(plr);
+    factory_->detachFromWorld(plr);
+
+}
+
+void WorldMap::onObjectMoved(Object* obj)
+{
+    if (!obj || !visibilitySystem_) 
+        return;
+
+    if (obj->getWorldMap() != this)
+        return;
+    
+    // Fix invalid positions before updating the spatial index.
+    if (!std::isfinite(obj->GetPositionX()) || !std::isfinite(obj->GetPositionY()) ||
+        obj->GetPositionX() < Terrain::MinX || obj->GetPositionX() > Terrain::MaxX ||
+        obj->GetPositionY() < Terrain::MinY || obj->GetPositionY() > Terrain::MaxY)
+    {
+        outOfMapBoundariesTeleport(obj);
+    }
+
+    // Update Gameobject Collision
+    if (obj->isGameObject())
+        obj->ToGameObject()->updateModelPosition();
+
+    // Retrieve the visibility-system handle for this object
+    auto h = spatialIndex_->handleByGuid(obj->GetNewGUID());
+    if (!h.id)
+        return;
+
+    Unit* controlledViewer = obj->ToUnit();
+    if (controlledViewer && controlledViewer->m_playerControler)
+    {
+        Player* controller = controlledViewer->m_playerControler;
+        if (controller->IsInWorld() && controller->getWorldMap() == this)
+        {
+            // Possession / Eyes of the Beast must never depend on a one-shot role
+            // assignment done when control starts. Ensure the moving unit is still
+            // a canonical viewer + activator before transferring its subscriptions
+            // to the new cell/grid.
+            setVisibilityRecipientForViewer(obj->GetNewGUID(), controller);
+            const auto profile = visibilitySystem_->buildInterestProfile(obj);
+            visibilitySystem_->applyInterestProfile(h, profile);
         }
+    }
+
+    const LocationVector now = obj->GetPosition();
+
+    // Always update the spatial index. This keeps slot position, cell membership
+    // and the object's own near-cache correct for scripts, spells, AI and area
+    // helpers. Expensive visibility/interest refreshes are throttled inside
+    // VisibilitySystem::onObjectMoved().
+    auto move = spatialIndex_->moveObject(h, now);
+    if (move.valid && move.gridChanged)
+        onGridMaterialized(move.newGrid);
+
+    visibilitySystem_->onObjectMoved(h, move);
+
+    // Spatial position is updated for every relocation, but normal AI awareness
+    // only needs a new evaluation after a meaningful displacement. DynamicObject
+    // area membership remains exact: while area effects exist, movement still gets
+    // an unthrottled area-only signal that never triggers nearby AI acquisition.
+    if (Unit* movedUnit = obj->ToUnit(); movedUnit && move.valid)
+    {
+        if (maxDynamicObjectTargetRadius_ > 0.0f || !movedUnit->getDynamicObjectTargets().empty())
+            queueUnitAwareness(movedUnit, UnitAwarenessSignal::AreaMovement);
+
+        queueUnitAwareness(movedUnit, UnitAwarenessSignal::Movement);
+    }
+
+    if (move.valid && obj->getObjectTypeId() == TYPEID_DYNAMICOBJECT)
+        refreshDynamicObjectTargets(static_cast<DynamicObject*>(obj));
+
+    // A player-controlled remote viewpoint is driven directly by client movement.
+    // Re-evaluate its complete remote view and flush it immediately; the controlling
+    // player's physical body may remain several grids behind.
+    if (controlledViewer && controlledViewer->m_playerControler)
+    {
+        visibilitySystem_->refreshObjectVisibility(h);
+        processPendingVisibilityChangesForViewer(obj->GetNewGUID(), 512, 512);
     }
 }
 
-void WorldMap::AddObject(Object* obj)
+void WorldMap::queueUnitAwareness(Unit* unit, UnitAwarenessSignal reason)
 {
-    std::scoped_lock<std::mutex> lock(m_objectinsertlock);
-    m_objectinsertpool.insert(obj);
+    if (!unit || !unit->IsInWorld() || unit->getWorldMap() != this || reason == UnitAwarenessSignal::None)
+        return;
 
-    if (obj->isPlayer())
-        addPlayerToMap(obj->ToPlayer());
+    constexpr float movementRefreshDistanceSq = 2.0f * 2.0f;
+    const uint64_t rawGuid = unit->GetNewGUID().getRawGuid();
+    const LocationVector currentPosition = unit->GetPosition();
+    const bool movementOnly = reason == UnitAwarenessSignal::Movement;
+    const bool areaMovementOnly = reason == UnitAwarenessSignal::AreaMovement;
+
+    std::lock_guard<std::mutex> guard(unitAwarenessMutex_);
+
+    auto positionIt = lastMovementAwarenessPosition_.find(rawGuid);
+    if (movementOnly && positionIt != lastMovementAwarenessPosition_.end())
+    {
+        const float dx = currentPosition.x - positionIt->second.x;
+        const float dy = currentPosition.y - positionIt->second.y;
+        if ((dx * dx + dy * dy) < movementRefreshDistanceSq)
+            return;
+    }
+
+    // Accepted AI movement and explicit state changes become the new movement
+    // baseline. AreaMovement is deliberately excluded because it exists only to
+    // keep DynamicObject area boundaries exact and must not reset the AI threshold.
+    if (!areaMovementOnly)
+        lastMovementAwarenessPosition_[rawGuid] = currentPosition;
+
+    auto& mask = pendingUnitAwareness_[rawGuid];
+    mask |= static_cast<uint16_t>(reason);
 }
 
-void WorldMap::PushObject(Object* obj)
+void WorldMap::processPendingUnitAwareness()
 {
-    if (obj != nullptr)
+    // Keep the cross-thread critical section tiny. Most producers run on the map
+    // thread, but login/world-attach and a few legacy event paths can enqueue from
+    // elsewhere. The expensive spatial/script work always happens after unlock.
     {
-        //\todo That object types are not map objects. TODO: add AI groups here?
-        if (obj->isItem() || obj->isContainer())
-        {
-            // mark object as updatable and exit
+        std::lock_guard<std::mutex> guard(unitAwarenessMutex_);
+        if (pendingUnitAwareness_.empty())
             return;
-        }
 
-        //Zyres: this was an old ASSERT MapMgr for map x is not allowed to push objects for mapId z
-        if (obj->GetMapId() != getBaseMap()->getMapId())
+        // Reuse both maps' bucket capacity across ticks.
+        processingUnitAwareness_.clear();
+        processingUnitAwareness_.swap(pendingUnitAwareness_);
+    }
+
+    thread_local std::vector<Creature*> observerCreatures;
+    thread_local std::vector<Unit*> nearbyUnits;
+    thread_local std::vector<DynamicObject*> nearbyDynamicObjects;
+    thread_local std::vector<uint64_t> currentDynamicObjects;
+    thread_local std::unordered_set<uint64_t> processedDynamicObjects;
+
+    // Automatic creature aggro is capped at 45 yards; the shared awareness
+    // range keeps a 5-yard safety margin while avoiding unnecessary wider scans.
+    const float awarenessSearchRange = std::min<float>(
+        getVisibilityDistance(), AIConstants::AutomaticAwarenessSearchRange);
+
+    for (const auto& [rawGuid, rawMask] : processingUnitAwareness_)
+    {
+        Unit* source = getUnit(WoWGuid(rawGuid));
+        if (!source || !source->IsInWorld() || source->getWorldMap() != this)
+            continue;
+
+        const auto reason = static_cast<UnitAwarenessSignal>(rawMask);
+
+        const bool refreshDynamicAreaTargets =
+            hasAwarenessSignal(reason, UnitAwarenessSignal::Movement) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::AreaMovement) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::EnteredWorld) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::Respawned) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::PhaseChanged) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::StealthChanged) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::InvisibilityChanged) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::DetectionChanged) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::VisibilityChanged) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::ReactionChanged) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::ControlStateChanged) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::CombatEligibilityChanged);
+
+        if (refreshDynamicAreaTargets)
         {
-            sLogger.failure("WorldMap::PushObject manager for mapId {} tried to push object for mapId {}, return!", getBaseMap()->getMapId(), obj->GetMapId());
-            return;
-        }
+            processedDynamicObjects.clear();
 
-        if (obj->GetPositionY() > Map::Terrain::_maxY || obj->GetPositionY() < Map::Terrain::_minY)
-        {
-            sLogger.failure("WorldMap::PushObject not allowed to push object to y: {} (max {}/min {}), return!", obj->GetPositionY(), Map::Terrain::_maxY, Map::Terrain::_minY);
-            return;
-        }
-
-        if (_cells == nullptr)
-        {
-            sLogger.failure("WorldMap::PushObject not allowed to push object to invalid cell (nullptr), return!");
-            return;
-        }
-
-        if (obj->isCorpse())
-        {
-            m_corpses.insert(static_cast<Corpse*>(obj));
-        }
-
-        obj->clearInRangeSets();
-
-        // Check valid cell x/y values
-        if (!(obj->GetPositionX() < Map::Terrain::_maxX && obj->GetPositionX() > Map::Terrain::_minX) || !(obj->GetPositionY() < Map::Terrain::_maxY && obj->GetPositionY() > Map::Terrain::_minY))
-        {
-            outOfMapBoundariesTeleport(obj);
-        }
-
-        // Get cell coordinates
-        uint32_t x = getPosX(obj->GetPositionX());
-        uint32_t y = getPosY(obj->GetPositionY());
-
-        if (x >= Map::Cell::_sizeX || y >= Map::Cell::_sizeY)
-        {
-            outOfMapBoundariesTeleport(obj);
-
-            x = getPosX(obj->GetPositionX());
-            y = getPosY(obj->GetPositionY());
-        }
-
-        MapCell* objCell = getCell(x, y);
-        if (objCell == nullptr)
-        {
-            objCell = create(x, y);
-            if (objCell != nullptr)
+            // First re-evaluate areas that currently own an aura on this unit.
+            // They must be processed even if the unit moved completely outside
+            // their radius in a single relocation.
+            currentDynamicObjects.assign(source->getDynamicObjectTargets().begin(), source->getDynamicObjectTargets().end());
+            for (uint64_t dynamicGuid : currentDynamicObjects)
             {
-                objCell->init(x, y, this);
-            }
-            else
-            {
-                sLogger.fatal("MapCell for x {} and y {} seems to be invalid!", x, y);
-                return;
-            }
-        }
-
-        // Build update-block for player
-        std::unique_ptr<ByteBuffer> buf;
-        uint32_t count;
-        Player* plObj = nullptr;
-
-        if (obj->isPlayer())
-        {
-            plObj = static_cast<Player*>(obj);
-
-            sLogger.debug("Creating player {} for himself.", std::to_string(obj->getGuid()));
-            ByteBuffer pbuf(10000);
-            count = plObj->buildCreateUpdateBlockForPlayer(&pbuf, plObj);
-            plObj->getUpdateMgr().pushCreationData(&pbuf, count);
-        }
-
-        // Build in-range data
-        uint8_t cellNumber = worldConfig.server.mapCellNumber;
-
-        uint32_t endX = (x <= Map::Cell::_sizeX) ? x + cellNumber : (Map::Cell::_sizeX - cellNumber);
-        uint32_t endY = (y <= Map::Cell::_sizeY) ? y + cellNumber : (Map::Cell::_sizeY - cellNumber);
-        uint32_t startX = x > 0 ? x - cellNumber : 0;
-        uint32_t startY = y > 0 ? y - cellNumber : 0;
-
-        for (uint32_t posX = startX; posX <= endX; posX++)
-        {
-            for (uint32_t posY = startY; posY <= endY; posY++)
-            {
-                MapCell* cell = getCell(posX, posY);
-                if (cell)
+                if (DynamicObject* dynamicObject = getDynamicObject(WoWGuid(dynamicGuid)))
                 {
-                    updateInRangeSet(obj, plObj, cell, buf);
+                    processedDynamicObjects.insert(dynamicGuid);
+                    dynamicObject->considerTarget(source);
+                }
+                else
+                {
+                    source->removeDynamicObjectTarget(dynamicGuid);
+                }
+            }
+
+            // Then discover areas the unit may just have entered. The high-water
+            // radius guarantees that every active DynamicObject capable of
+            // containing the current position is included in this spatial query.
+            if (maxDynamicObjectTargetRadius_ > 0.0f)
+            {
+                nearbyDynamicObjects.clear();
+                spatialIndex_->collectObjectsInRange<DynamicObject>(
+                    source->GetPosition(), maxDynamicObjectTargetRadius_, nearbyDynamicObjects);
+                ++m_awarenessQueriesThisTick;
+                m_awarenessCandidatesThisTick += nearbyDynamicObjects.size();
+
+                for (DynamicObject* dynamicObject : nearbyDynamicObjects)
+                {
+                    if (!dynamicObject || !dynamicObject->IsInWorld() || dynamicObject->getWorldMap() != this)
+                        continue;
+
+                    const uint64_t dynamicGuid = dynamicObject->getGuid();
+                    if (!processedDynamicObjects.insert(dynamicGuid).second)
+                        continue;
+
+                    dynamicObject->considerTarget(source);
                 }
             }
         }
 
-        // Forced Cells
-        for (auto& cell : m_forcedcells)
-            updateInRangeSet(obj, plObj, cell, buf);
+        const bool notifyNearbyObservers =
+            hasAwarenessSignal(reason, UnitAwarenessSignal::Movement) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::EnteredWorld) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::Respawned) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::PhaseChanged) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::StealthChanged) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::InvisibilityChanged) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::VisibilityChanged) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::ReactionChanged) ||
+            hasAwarenessSignal(reason, UnitAwarenessSignal::CombatEligibilityChanged);
 
-        //Add to the cell's object list
-        objCell->addObject(obj);
+        const bool refreshSourceCreature =
+            source->isCreature() &&
+            (hasAwarenessSignal(reason, UnitAwarenessSignal::Movement) ||
+             hasAwarenessSignal(reason, UnitAwarenessSignal::EnteredWorld) ||
+             hasAwarenessSignal(reason, UnitAwarenessSignal::Respawned) ||
+             hasAwarenessSignal(reason, UnitAwarenessSignal::PhaseChanged) ||
+             hasAwarenessSignal(reason, UnitAwarenessSignal::DetectionChanged) ||
+             hasAwarenessSignal(reason, UnitAwarenessSignal::ReactionChanged) ||
+             hasAwarenessSignal(reason, UnitAwarenessSignal::ControlStateChanged) ||
+             hasAwarenessSignal(reason, UnitAwarenessSignal::CombatEligibilityChanged) ||
+             hasAwarenessSignal(reason, UnitAwarenessSignal::WarmupComplete));
 
-        // Add Object
-        if (getScript())
-            getScript()->addObject(obj);
-
-        obj->SetMapCell(objCell);
-        //Add to the mapmanager's object list
-        if (plObj != nullptr)
+        // A creature movement/state change is naturally bidirectional: nearby
+        // creatures may notice the source and the source may notice nearby units.
+        // Collect the unit neighborhood only once and reuse it for both directions.
+        if (source->isCreature() && (notifyNearbyObservers || refreshSourceCreature))
         {
-            m_PlayerStorage[plObj->getGuidLow()] = plObj;
-            updateCellActivity(x, y, 2U + cellNumber);
+            Creature* sourceCreature = source->ToCreature();
+            AIInterface* sourceAI = sourceCreature ? sourceCreature->getAIInterface() : nullptr;
+            const bool sourceCanObserve = refreshSourceCreature && sourceAI && sourceAI->isAutomaticAwarenessActive();
+
+            nearbyUnits.clear();
+            spatialIndex_->collectUnitsInRange(source->GetPosition(), awarenessSearchRange, nearbyUnits);
+            ++m_awarenessQueriesThisTick;
+            m_awarenessCandidatesThisTick += nearbyUnits.size();
+
+            for (Unit* nearby : nearbyUnits)
+            {
+                if (!nearby || nearby == source || !nearby->IsInWorld() || nearby->getWorldMap() != this)
+                    continue;
+
+                if (notifyNearbyObservers && nearby->isCreature())
+                {
+                    Creature* observer = nearby->ToCreature();
+                    AIInterface* observerAI = observer ? observer->getAIInterface() : nullptr;
+                    if (observerAI && observer->isAlive())
+                        observerAI->considerObservedUnit(source, reason);
+                }
+
+                if (sourceCanObserve)
+                    sourceAI->considerObservedUnit(nearby, reason);
+
+                // A script may despawn/transfer the source while handling the hook.
+                if (!source->IsInWorld() || source->getWorldMap() != this)
+                    break;
+            }
+
+            continue;
+        }
+
+        // Players/pets/non-creature units only need to tell nearby creatures that
+        // their observable state changed; they do not own Creature AI awareness.
+        if (notifyNearbyObservers)
+        {
+            observerCreatures.clear();
+            spatialIndex_->collectObjectsInRange<Creature>(source->GetPosition(), awarenessSearchRange, observerCreatures);
+            ++m_awarenessQueriesThisTick;
+            m_awarenessCandidatesThisTick += observerCreatures.size();
+
+            for (Creature* observer : observerCreatures)
+            {
+                if (!observer || !observer->IsInWorld() || observer->getWorldMap() != this || !observer->isAlive())
+                    continue;
+
+                AIInterface* ai = observer->getAIInterface();
+                if (ai)
+                    ai->considerObservedUnit(source, reason);
+            }
+        }
+    }
+
+    processingUnitAwareness_.clear();
+}
+
+void WorldMap::refreshDynamicObjectTargets(DynamicObject* dynamicObject)
+{
+    if (!dynamicObject || !dynamicObject->IsInWorld() || dynamicObject->getWorldMap() != this)
+        return;
+
+    const float radius = std::max(0.0f, dynamicObject->getRadius());
+    maxDynamicObjectTargetRadius_ = std::max(maxDynamicObjectTargetRadius_, radius);
+
+    // Movement or radius changes must also evict existing targets that are no
+    // longer valid, including targets now outside the current search radius.
+    dynamicObject->refreshCurrentTargets();
+
+    if (radius <= 0.0f)
+        return;
+
+    thread_local std::vector<Unit*> nearbyUnits;
+    nearbyUnits.clear();
+    spatialIndex_->collectUnitsInRange(dynamicObject->GetPosition(), radius, nearbyUnits);
+    ++m_awarenessQueriesThisTick;
+    m_awarenessCandidatesThisTick += nearbyUnits.size();
+
+    for (Unit* target : nearbyUnits)
+    {
+        if (!target || !target->IsInWorld() || target->getWorldMap() != this)
+            continue;
+
+        dynamicObject->considerTarget(target);
+
+        // Aura/script application may despawn the DynamicObject.
+        if (!dynamicObject->IsInWorld() || dynamicObject->getWorldMap() != this)
+            break;
+    }
+}
+
+void WorldMap::refreshVisibilityForObject(Object* obj)
+{
+    if (!obj || !visibilitySystem_)
+        return;
+
+    if (obj->getWorldMap() != this)
+        return;
+
+    auto h = spatialIndex_->handleByGuid(obj->GetNewGUID());
+    if (!h.id)
+        return;
+
+
+    // Keep default interest roles in sync for objects whose role can change while
+    // already attached. applyInterestProfile is idempotent for already enabled
+    // roles and is the single place that knows object-type defaults.
+    auto profile = visibilitySystem_->buildInterestProfile(obj);
+    visibilitySystem_->applyInterestProfile(h, profile);
+
+    visibilitySystem_->refreshObjectVisibility(h);
+
+    if (profile.viewer)
+        processPendingVisibilityChangesForViewer(obj->GetNewGUID(), 512, 512);
+    else
+        processPendingVisibilityChanges(2048, 64, 256);
+}
+
+
+void WorldMap::resetVisibilityForPlayerRelocation(Player* player)
+{
+    if (!player)
+        return;
+
+    const WoWGuid viewerGuid = player->GetNewGUID();
+    const uint64_t playerRaw = viewerGuid.getRawGuid();
+
+    // Same-map relocation/repop must be a hard client-visibility boundary.
+    // Do not only clear Player::visible_: the VisibilitySystem can still have
+    // the old player viewer subscribed to the death-location cells. If that
+    // stale subscription remains, the old creatures are recreated or stay
+    // visible until the player moves enough to trigger normal reconciliation.
+    //
+    // Also drop pending create/update data from the old location before queuing
+    // the destroy list. Player::die()/updateVisibility() can enqueue create
+    // blocks for corpse-area creatures immediately before Release Spirit. If
+    // those pending creates survive this relocation reset, the outgoing packet
+    // can contain: OutOfRange(old NPCs) followed by Create(old NPCs), which
+    // makes the client keep the death-location creatures visible at the graveyard.
+    player->getUpdateMgr().clearPendingUpdates();
+
+
+    std::vector<WoWGuid> oldVisible;
+    player->collectVisibleObjectGuidsForRelocation(oldVisible);
+
+    if (auto h = getSpatialIndex().handleByGuid(viewerGuid); h.id)
+        getVisibilitySystem().resetViewerForRelocation(h, oldVisible);
+    else
+        getVisibilitySystem().clearVisibleObjectsForViewer(viewerGuid, oldVisible);
+
+    std::set<uint64_t> unique;
+    for (const WoWGuid& objectGuid : oldVisible)
+    {
+        const uint64_t raw = objectGuid.getRawGuid();
+        if (!raw || raw == playerRaw)
+            continue;
+
+        if (unique.insert(raw).second)
+            player->getUpdateMgr().pushOutOfRangeGuid(objectGuid);
+    }
+
+    player->clearVisibleObjectCachesForRelocation();
+
+    initialCreateValueUpdateSuppress_.erase(playerRaw);
+    purgePendingVisibilityForGuid(viewerGuid);
+
+    // Send the destroy list before new creates for the destination are queued.
+    player->processPendingUpdates();
+}
+
+void WorldMap::logVisibilityMemoryDiagnostics(const char* reason)
+{
+    if (!visibilitySystem_ || !registry_)
+        return;
+
+    const auto vis = visibilitySystem_->snapshot();
+    const auto reg = registry_->counts();
+
+    std::size_t pendingPairs = 0;
+    for (const auto& [viewerRaw, objects] : pendingVisibilityByViewer_)
+        pendingPairs += objects.size();
+
+    std::size_t suppressPairs = 0;
+    for (const auto& [viewerRaw, objects] : initialCreateValueUpdateSuppress_)
+        suppressPairs += objects.size();
+
+    sLogger.warning(
+        "mapmem: reason={} map={} inst={} registry[any={},total={},players={},creatures={},gos={},dyn={},pets={},corpses={}] "
+        "pending[queuedViewers={},viewers={},pairs={}] suppress[viewers={},pairs={}] deferredDestroy={} "
+        "vis[grids={},activeGrids={},cells={},activeCells={},poolLive={},guidIndex={},visiblePairs={},seenPairs={},gridWidePub={},cellRadiusPub={},nearCached={},nearGuidCap={},nearStampCap={}]",
+        reason ? reason : "",
+        getBaseMap() ? getBaseMap()->getMapId() : 0,
+        getInstanceId(),
+        reg.any,
+        reg.total,
+        reg.players,
+        reg.creatures,
+        reg.gameObjects,
+        reg.dynamics,
+        reg.pets,
+        reg.corpses,
+        pendingVisibilityViewers_.size(),
+        pendingVisibilityByViewer_.size(),
+        pendingPairs,
+        initialCreateValueUpdateSuppress_.size(),
+        suppressPairs,
+        deferred_destroy_.size(),
+        vis.grids,
+        vis.activeGrids,
+        vis.cells,
+        vis.activeCells,
+        vis.poolLive,
+        vis.guidIndex,
+        vis.visiblePairs,
+        vis.seenPairs,
+        vis.gridWidePublishers,
+        vis.cellRadiusPublishers,
+        vis.nearCacheCachedGuids,
+        vis.nearCacheGuidsCapacity,
+        vis.nearCacheStampsCapacity);
+
+    visibilitySystem_->logMemoryDiagnostics(reason);
+}
+
+void WorldMap::queueVisibilityChange(const WoWGuid& viewer, const WoWGuid& object, PendingVisibilityAction action)
+{
+    const uint64_t viewerRaw = viewer.getRawGuid();
+    const uint64_t objectRaw = object.getRawGuid();
+
+    if (!viewerRaw || !objectRaw)
+        return;
+
+    auto& pending = pendingVisibilityByViewer_[viewerRaw];
+    pending[objectRaw] = { viewer, object, action };
+
+    if (pendingVisibilityQueuedViewers_.insert(viewerRaw).second)
+        pendingVisibilityViewers_.push_back(viewerRaw);
+}
+
+void WorldMap::purgePendingVisibilityForGuid(const WoWGuid& guid)
+{
+    const uint64_t raw = guid.getRawGuid();
+    if (!raw)
+        return;
+
+    // This function is called during detach. It must only purge state where the
+    // removed guid acts as a viewer. Hidden states for this guid as an object
+    // must remain queued so recipients can still receive the removal.
+    pendingVisibilityByViewer_.erase(raw);
+    pendingVisibilityQueuedViewers_.erase(raw);
+    initialCreateValueUpdateSuppress_.erase(raw);
+
+    // The same detach point is also the lifetime boundary for movement-awareness
+    // throttling. Purge queued state and the last evaluated position so a reused
+    // GUID can never inherit the previous object's movement baseline.
+    {
+        std::lock_guard<std::mutex> guard(unitAwarenessMutex_);
+        pendingUnitAwareness_.erase(raw);
+        lastMovementAwarenessPosition_.erase(raw);
+    }
+}
+
+void WorldMap::setVisibilityRecipientForViewer(const WoWGuid& viewerGuid, Player* recipient)
+{
+    const uint64_t viewerRaw = viewerGuid.getRawGuid();
+    if (!viewerRaw || !recipient || !recipient->IsInWorld() || recipient->getWorldMap() != this)
+        return;
+
+    visibilityRecipientByViewer_[viewerRaw] = recipient->GetNewGUID().getRawGuid();
+}
+
+void WorldMap::clearVisibilityRecipientForViewer(const WoWGuid& viewerGuid)
+{
+    const uint64_t viewerRaw = viewerGuid.getRawGuid();
+    if (viewerRaw)
+        visibilityRecipientByViewer_.erase(viewerRaw);
+}
+
+Player* WorldMap::getVisibilityRecipientPlayer(const WoWGuid& viewerGuid)
+{
+    if (Player* player = getPlayer(viewerGuid))
+        return player;
+
+    const uint64_t viewerRaw = viewerGuid.getRawGuid();
+    if (auto it = visibilityRecipientByViewer_.find(viewerRaw); it != visibilityRecipientByViewer_.end())
+    {
+        Player* recipient = getPlayer(WoWGuid(it->second));
+        if (recipient && recipient->IsInWorld() && recipient->getWorldMap() == this)
+            return recipient;
+
+        visibilityRecipientByViewer_.erase(it);
+    }
+
+    Object* viewerObject = getObject(viewerGuid);
+    if (!viewerObject)
+        return nullptr;
+
+    if (Unit* viewerUnit = viewerObject->ToUnit())
+    {
+        Player* controller = viewerUnit->m_playerControler;
+        if (!controller || !controller->IsInWorld() || controller->getWorldMap() != this)
+            return nullptr;
+        return controller;
+    }
+
+    if (auto* dyn = dynamic_cast<DynamicObject*>(viewerObject))
+    {
+        if (dyn->getDynamicType() != DYNAMIC_OBJECT_FARSIGHT_FOCUS)
+            return nullptr;
+
+        Player* caster = getPlayer(WoWGuid(dyn->getCasterGuid()));
+        if (!caster || !caster->IsInWorld() || caster->getWorldMap() != this)
+            return nullptr;
+        return caster;
+    }
+
+    return nullptr;
+}
+
+void WorldMap::collectVisibilityRecipientsForObject(const WoWGuid& objectGuid, std::vector<Player*>& out)
+{
+    out.clear();
+
+    if (!visibilitySystem_)
+        return;
+
+    thread_local std::vector<WoWGuid> s_viewers;
+    s_viewers.clear();
+    visibilitySystem_->collectViewersOf(objectGuid, s_viewers);
+
+    std::unordered_set<uint64_t> seenRecipients;
+    seenRecipients.reserve(s_viewers.size() + 1);
+
+    auto addRecipient = [&](Player* player)
+    {
+        if (!player || !player->IsInWorld() || player->getWorldMap() != this)
+            return;
+
+        const uint64_t raw = player->GetNewGUID().getRawGuid();
+        if (!raw || !seenRecipients.insert(raw).second)
+            return;
+
+        // Only forward ordinary world updates to clients for which the object has
+        // already completed its visibility create. This keeps packet ordering
+        // correct for normal, possessed and farsight viewer sources alike.
+        if (player->seesGuid(objectGuid))
+            out.push_back(player);
+    };
+
+    for (const WoWGuid& viewerGuid : s_viewers)
+        addRecipient(getVisibilityRecipientPlayer(viewerGuid));
+
+    // A controlled unit must always be able to send controller-specific movement/
+    // state packets to its player. Normally it is already present through the
+    // possessed viewer relation above; this is a defensive bridge during the short
+    // possess/unpossess transition while visibility events are still being drained.
+    if (Object* object = getObject(objectGuid))
+    {
+        if (Unit* unit = object->ToUnit())
+            addRecipient(unit->m_playerControler);
+    }
+}
+
+bool WorldMap::hasOtherVisibilitySourceForRecipient(const WoWGuid& losingViewerGuid, const WoWGuid& objectGuid, Player* recipient)
+{
+    if (!recipient)
+        return false;
+
+    thread_local std::vector<WoWGuid> s_viewers;
+    s_viewers.clear();
+
+    getVisibilitySystem().collectViewersOf(objectGuid, s_viewers);
+
+    const uint64_t losingRaw = losingViewerGuid.getRawGuid();
+    for (const WoWGuid& otherViewerGuid : s_viewers)
+    {
+        if (otherViewerGuid.getRawGuid() == losingRaw)
+            continue;
+
+        if (getVisibilityRecipientPlayer(otherViewerGuid) == recipient)
+            return true;
+    }
+
+    return false;
+}
+
+void WorldMap::clearVisibilitySourceForRecipient(const WoWGuid& viewerGuid, Player* recipient)
+{
+    if (!recipient)
+        return;
+
+    thread_local std::vector<WoWGuid> s_objects;
+    s_objects.clear();
+
+    // Tear down the source inside VisibilitySystem first. Merely reading the
+    // viewer's visible set leaves visibleNow_/seenBy_ intact, which means the
+    // source can still be treated as an active owner of those client objects
+    // while farsight/possession is ending.
+    getVisibilitySystem().clearVisibleObjectsForViewer(viewerGuid, s_objects);
+
+    const uint64_t recipientRaw = recipient->GetNewGUID().getRawGuid();
+
+    for (const WoWGuid& objectGuid : s_objects)
+    {
+        if (!recipient->seesGuid(objectGuid))
+            continue;
+
+        // Keep objects that the same client still sees through another viewer source,
+        // for example the player's own body after possession ends near the body.
+        if (hasOtherVisibilitySourceForRecipient(viewerGuid, objectGuid, recipient))
+            continue;
+
+        // Important: this helper is used by Unit::unPossess() while the
+        // possessor still has charm/farsight state pointing at the controlled unit.
+        // Do not run legacy onRemoveInRangeObject side effects here: if objectGuid
+        // is the possessed unit, Player/Unit cleanup can interrupt the possess aura
+        // and re-enter unPossess while it is already executing. Normal visibility
+        // hidden events still run these callbacks through applyQueuedVisibilityHidden().
+        // Here we only remove the client-side visibility introduced by the temporary
+        // viewer source and queue the matching OutOfRange update.
+        recipient->_visRemove(objectGuid);
+
+        if (auto it = initialCreateValueUpdateSuppress_.find(recipientRaw); it != initialCreateValueUpdateSuppress_.end())
+        {
+            it->second.erase(objectGuid.getRawGuid());
+            if (it->second.empty())
+                initialCreateValueUpdateSuppress_.erase(it);
+        }
+
+        recipient->getUpdateMgr().pushOutOfRangeGuid(objectGuid);
+    }
+}
+
+
+bool WorldMap::applyQueuedVisibilityVisible(const WoWGuid& viewerGuid, const WoWGuid& objectGuid)
+{
+    Player* player = getVisibilityRecipientPlayer(viewerGuid);
+    if (!player)
+        return false;
+
+    Object* object = getObject(objectGuid);
+    if (!object)
+        return false;
+
+    // If the object already left the recipient player's visibility again while queued, do not create it.
+    // This also deduplicates cases where the player sees the same object through both their body and
+    // a possessed/farsight-controlled unit.
+    if (player->seesGuid(objectGuid))
+        return true;
+
+    player->_visAdd(objectGuid);
+    ++m_visibilityCreatesThisTick;
+
+    object->prepareInitialCreateForPlayer(player);
+
+    ByteBuffer buf(2500);
+    const uint32_t cnt = object->buildCreateUpdateBlockForPlayer(&buf, player);
+    if (cnt)
+        player->getUpdateMgr().pushCreationData(&buf, cnt);
+
+    object->queueInitialVisiblePacketsForPlayer(player);
+
+    initialCreateValueUpdateSuppress_[player->GetNewGUID().getRawGuid()].insert(objectGuid.getRawGuid());
+
+    // The create block already contains the current values for this recipient.
+    // Scheduling a normal value update here is redundant and can replay
+    // GameObject state/animation updates immediately after spawn.
+    return true;
+}
+
+bool WorldMap::applyQueuedVisibilityHidden(const WoWGuid& viewerGuid, const WoWGuid& objectGuid, bool hardDestroy)
+{
+    Player* player = getVisibilityRecipientPlayer(viewerGuid);
+    if (!player)
+        return false;
+
+    if (!player->seesGuid(objectGuid))
+        return true;
+
+    // Do not destroy the object on the client if the same player still sees it
+    // through another visibility source, e.g. both their own body and a possessed NPC.
+    if (hasOtherVisibilitySourceForRecipient(viewerGuid, objectGuid, player))
+        return true;
+
+    // Cache stable ids before invoking any legacy callbacks. Those callbacks can
+    // re-enter visibility/gameplay cleanup and may invalidate native Object/Player
+    // pointers or mutate visibility bookkeeping. Never keep an STL iterator or a
+    // native object pointer alive across them.
+    const WoWGuid recipientGuid = player->GetNewGUID();
+    const uint64_t recipientRaw = recipientGuid.getRawGuid();
+    const uint64_t objectRaw = objectGuid.getRawGuid();
+
+    // Once the final visibility state is Hidden, an initial-create suppression for
+    // this pair is no longer useful. Remove it before legacy callbacks so re-entrant
+    // cleanup cannot invalidate an iterator/reference that this function still owns.
+    if (auto suppressIt = initialCreateValueUpdateSuppress_.find(recipientRaw); suppressIt != initialCreateValueUpdateSuppress_.end())
+    {
+        suppressIt->second.erase(objectRaw);
+        if (suppressIt->second.empty())
+            initialCreateValueUpdateSuppress_.erase(recipientRaw);
+    }
+
+    // Bridge old in-range removal side effects into the new visibility system.
+    // Important: only run these callbacks for the player's own normal viewer.
+    // A possessed NPC is a temporary viewer whose packet recipient is the
+    // possessor player. When that temporary viewer is removed during unPossess(),
+    // running Player::onRemoveInRangeObject(possessedNpc) can interrupt the
+    // possess aura and re-enter unPossess(), causing recursive cleanup/crashes.
+    // The player's real viewer source will still run normal gameplay side effects.
+    const bool normalPlayerViewer = viewerGuid.getRawGuid() == recipientRaw;
+    if (normalPlayerViewer)
+    {
+        if (Object* object = getObject(objectGuid))
+        {
+            player->onRemoveInRangeObject(object);
+
+            // The player callback is legacy code and can synchronously remove the
+            // object or relocate/remove the player. Resolve both sides again before
+            // invoking the reverse callback.
+            player = getPlayer(recipientGuid);
+            object = getObject(objectGuid);
+            if (player && player->IsInWorld() && player->getWorldMap() == this && object)
+                object->onRemoveInRangeObject(player);
+        }
+    }
+
+    // Legacy callbacks above are allowed to synchronously alter world membership.
+    // Re-resolve the recipient before touching client visibility/update state.
+    player = getPlayer(recipientGuid);
+    if (!player || !player->IsInWorld() || player->getWorldMap() != this)
+        return true;
+
+    // Another re-entrant visibility path may already have consumed this removal.
+    if (!player->seesGuid(objectGuid))
+        return true;
+
+    player->_visRemove(objectGuid);
+    ++m_visibilityDestroysThisTick;
+
+    // Normal visibility leave stays batched through SMSG_UPDATE_OBJECT.
+    // Explicit editor refreshes need a hard destroy so the client fully drops
+    // the cached GameObject movement/create state before the same GUID is
+    // created again. Position and rotation are part of the create/movement
+    // block and are otherwise retained by some clients until relog.
+    if (hardDestroy)
+        player->sendDestroyObjectPacket(objectRaw);
+    else
+        player->getUpdateMgr().pushOutOfRangeGuid(objectGuid);
+
+    return true;
+}
+
+
+bool WorldMap::shouldSuppressInitialValueUpdateForViewer(uint64_t viewerRaw, uint64_t objectRaw) const
+{
+    auto viewerIt = initialCreateValueUpdateSuppress_.find(viewerRaw);
+    if (viewerIt == initialCreateValueUpdateSuppress_.end())
+        return false;
+
+    return viewerIt->second.find(objectRaw) != viewerIt->second.end();
+}
+
+void WorldMap::processPendingVisibilityChanges(std::size_t maxEvents, std::size_t maxCreatesPerPlayer, std::size_t maxDestroysPerPlayer)
+{
+    if (pendingVisibilityViewers_.empty() || maxEvents == 0)
+        return;
+
+    std::size_t attempted = 0;
+    const std::size_t viewersToVisit = pendingVisibilityViewers_.size();
+
+    for (std::size_t viewerIndex = 0; viewerIndex < viewersToVisit && attempted < maxEvents && !pendingVisibilityViewers_.empty(); ++viewerIndex)
+    {
+        const uint64_t viewerRaw = pendingVisibilityViewers_.front();
+        pendingVisibilityViewers_.pop_front();
+        pendingVisibilityQueuedViewers_.erase(viewerRaw);
+
+        std::size_t creates = 0;
+        std::size_t destroys = 0;
+
+        while (attempted < maxEvents)
+        {
+            auto viewerIt = pendingVisibilityByViewer_.find(viewerRaw);
+            if (viewerIt == pendingVisibilityByViewer_.end())
+                break;
+
+            auto& pending = viewerIt->second;
+            auto eventIt = pending.end();
+
+            for (auto it = pending.begin(); it != pending.end(); ++it)
+            {
+                const bool isCreate = it->second.action == PendingVisibilityAction::Visible;
+                if ((isCreate && creates >= maxCreatesPerPlayer) || (!isCreate && destroys >= maxDestroysPerPlayer))
+                    continue;
+
+                eventIt = it;
+                break;
+            }
+
+            if (eventIt == pending.end())
+                break;
+
+            // Visibility callbacks can synchronously re-enter the visibility system.
+            // Never keep an iterator/reference into pendingVisibilityByViewer_ alive
+            // across those callbacks. Consume the queued state first, then apply it.
+            const PendingVisibilityEvent event = eventIt->second;
+            pending.erase(eventIt);
+
+            if (pending.empty())
+                pendingVisibilityByViewer_.erase(viewerIt);
+
+            const bool isCreate = event.action == PendingVisibilityAction::Visible;
+            if (isCreate)
+            {
+                if (applyQueuedVisibilityVisible(event.viewer, event.object))
+                    ++creates;
+            }
+            else
+            {
+                if (applyQueuedVisibilityHidden(event.viewer, event.object))
+                    ++destroys;
+            }
+
+            ++attempted;
+
+        }
+
+        auto viewerIt = pendingVisibilityByViewer_.find(viewerRaw);
+        if (viewerIt != pendingVisibilityByViewer_.end() && !viewerIt->second.empty())
+        {
+            if (pendingVisibilityQueuedViewers_.insert(viewerRaw).second)
+                pendingVisibilityViewers_.push_back(viewerRaw);
+        }
+    }
+}
+
+void WorldMap::processPendingVisibilityChangesForViewer(const WoWGuid& viewer, std::size_t maxCreates, std::size_t maxDestroys)
+{
+    const uint64_t viewerRaw = viewer.getRawGuid();
+    if (!viewerRaw)
+        return;
+
+    std::size_t creates = 0;
+    std::size_t destroys = 0;
+
+    while (true)
+    {
+        auto viewerIt = pendingVisibilityByViewer_.find(viewerRaw);
+        if (viewerIt == pendingVisibilityByViewer_.end())
+            break;
+
+        auto& pending = viewerIt->second;
+        auto eventIt = pending.end();
+
+        for (auto it = pending.begin(); it != pending.end(); ++it)
+        {
+            const bool isCreate = it->second.action == PendingVisibilityAction::Visible;
+            if ((isCreate && creates >= maxCreates) || (!isCreate && destroys >= maxDestroys))
+                continue;
+
+            eventIt = it;
+            break;
+        }
+
+        if (eventIt == pending.end())
+            break;
+
+        // applyQueuedVisibilityVisible/Hidden may synchronously trigger gameplay
+        // callbacks which mutate visibility again. Remove the current state before
+        // entering those callbacks and reacquire the viewer map on every iteration.
+        const PendingVisibilityEvent event = eventIt->second;
+        pending.erase(eventIt);
+
+        if (pending.empty())
+            pendingVisibilityByViewer_.erase(viewerIt);
+
+        const bool isCreate = event.action == PendingVisibilityAction::Visible;
+        if (isCreate)
+        {
+            if (applyQueuedVisibilityVisible(event.viewer, event.object))
+                ++creates;
         }
         else
         {
-            switch (obj->GetTypeFromGUID())
-            {
-                case HIGHGUID_TYPE_PET:
-                    {
-                        m_PetStorage[obj->GetUIdFromGUID()] = static_cast<Pet*>(obj);
-                    } break;
-                case HIGHGUID_TYPE_UNIT:
-                case HIGHGUID_TYPE_VEHICLE:
-                    {
-                        if (obj->GetUIdFromGUID() <= m_CreatureHighGuid)
-                        {
-                            m_CreatureStorage[obj->GetUIdFromGUID()] = static_cast<Creature*>(obj);
-                            if (static_cast<Creature*>(obj)->m_spawn != nullptr)
-                            {
-                                _sqlids_creatures.insert(std::make_pair(static_cast<Creature*>(obj)->m_spawn->id, static_cast<Creature*>(obj)));
-                            }
-                        }
-                    } break;
-                case HIGHGUID_TYPE_GAMEOBJECT:
-                    {
-                        m_GameObjectStorage[obj->GetUIdFromGUID()] = static_cast<GameObject*>(obj);
-                        if (static_cast<GameObject*>(obj)->m_spawn != nullptr)
-                        {
-                            _sqlids_gameobjects.insert(std::make_pair(static_cast<GameObject*>(obj)->m_spawn->id, static_cast<GameObject*>(obj)));
-                        }
-                    } break;
-
-                case HIGHGUID_TYPE_DYNAMICOBJECT:
-                    {
-                        m_DynamicObjectStorage[obj->getGuidLow()] = static_cast<DynamicObject*>(obj);
-                    } break;
-            }
-        }
-
-        // Handle activation of that object.
-        if (objCell->isActive() && obj->CanActivate())
-            obj->Activate(this);
-
-        // Add the session to our set if it is a player.
-        if (plObj)
-        {
-            Sessions.insert(plObj->getSession());
-
-            // Change the instance ID, this will cause it to be removed from the world thread (return value 1)
-            plObj->getSession()->SetInstance(getInstanceId());
-
-            // Add the map wide objects
-            if (_mapWideStaticObjects.size())
-            {
-                uint32_t globalcount = 0;
-                if (buf == nullptr)
-                    buf = std::make_unique<ByteBuffer>(300);
-
-                for (auto _mapWideStaticObject : _mapWideStaticObjects)
-                {
-                    count = _mapWideStaticObject->buildCreateUpdateBlockForPlayer(buf.get(), plObj);
-                    globalcount += count;
-                }
-                /*VLack: It seems if we use the same buffer then it is a BAD idea to try and push created data one by one, add them at once!
-                       If you try to add them one by one, then as the buffer already contains data, they'll end up repeating some object.
-                       Like 6 object updates for Deeprun Tram, but the built package will contain these entries: 2AFD0, 2AFD0, 2AFD1, 2AFD0, 2AFD1, 2AFD2*/
-                if (globalcount > 0)
-                    plObj->getUpdateMgr().pushCreationData(buf.get(), globalcount);
-            }
+            if (applyQueuedVisibilityHidden(event.viewer, event.object))
+                ++destroys;
         }
     }
-    else
+
+    auto viewerIt = pendingVisibilityByViewer_.find(viewerRaw);
+    if (viewerIt != pendingVisibilityByViewer_.end() && !viewerIt->second.empty())
     {
-        sLogger.failure("WorldMap::PushObject tried to push invalid object (nullptr)!");
+        if (pendingVisibilityQueuedViewers_.insert(viewerRaw).second)
+            pendingVisibilityViewers_.push_back(viewerRaw);
     }
 }
 
-void WorldMap::PushStaticObject(Object* obj)
+void WorldMap::flushVisibilityRemovalForObject(const WoWGuid& objectGuid)
 {
-    _mapWideStaticObjects.insert(obj);
-
-    obj->SetInstanceID(getInstanceId());
-    obj->SetMapId(getBaseMap()->getMapId());
-
-    switch (obj->GetTypeFromGUID())
-    {
-        case HIGHGUID_TYPE_UNIT:
-        case HIGHGUID_TYPE_VEHICLE:
-            m_CreatureStorage[obj->GetUIdFromGUID()] = static_cast<Creature*>(obj);
-            break;
-
-        case HIGHGUID_TYPE_GAMEOBJECT:
-            m_GameObjectStorage[obj->GetUIdFromGUID()] = static_cast<GameObject*>(obj);
-            break;
-
-        default:
-            sLogger.debug("WorldMap::PushStaticObject called for invalid type {}.", obj->GetTypeFromGUID());
-            break;
-    }
-
-    if (getScript())
-        getScript()->addObject(obj);
-}
-
-void WorldMap::RemoveObject(Object* obj, bool free_guid)
-{
-    // Assertions
-    if (obj == nullptr)
-    {
-        sLogger.failure("WorldMap::RemoveObject tried to remove invalid object (nullptr)");
+    const uint64_t wantedObjectRaw = objectGuid.getRawGuid();
+    if (!wantedObjectRaw)
         return;
-    }
 
-    if (obj->GetMapId() != getBaseMap()->getMapId())
+    std::vector<PendingVisibilityEvent> removals;
+
+    // First detach the matching Hidden events from the pending containers.
+    // Applying them can re-enter visibility and must not happen while iterating
+    // pendingVisibilityByViewer_.
+    for (auto viewerIt = pendingVisibilityByViewer_.begin(); viewerIt != pendingVisibilityByViewer_.end();)
     {
-        sLogger.failure("WorldMap::RemoveObject tried to remove object with map {} but WorldMap is for map {}!", obj->GetMapId(), getBaseMap()->getMapId());
-        return;
-    }
+        auto& pending = viewerIt->second;
+        auto objectIt = pending.find(wantedObjectRaw);
 
-    if (_cells == nullptr)
-    {
-        sLogger.failure("WorldMap::RemoveObject tried to remove invalid cells (nullptr)");
-        return;
-    }
-
-    // Call Script Object Got Removed
-    if (getScript())
-        getScript()->removeObject(obj);
-
-    if (obj->IsActive())
-        obj->deactivate(this);
-
-    //there is a very small chance that on double player ports on same update player is added to multiple insertpools but not removed
-    //one clear example was the double port proc when exploiting double resurrect
-    {
-        std::scoped_lock<std::mutex> lock(m_objectinsertlock);
-        m_objectinsertpool.erase(obj);
-    }
-
-    {
-        std::scoped_lock<std::mutex> lock(m_updateMutex);
-        // If this object still has an un-flushed field update pending (e.g. a creature's
-        // health being set to 0 right before an immediate despawn), send it now instead of
-        // silently discarding it - otherwise nearby clients keep the stale pre-death values
-        // for an object that is about to disappear from their world.
-        if (_updates.find(obj) != _updates.end())
-            flushPendingObjectUpdate(obj);
-
-        _updates.erase(obj);
-        obj->ClearUpdateMask();
-    }
-
-    // Remove object from all needed places
-    switch (obj->GetTypeFromGUID())
-    {
-        case HIGHGUID_TYPE_UNIT:
-        case HIGHGUID_TYPE_VEHICLE:
+        if (objectIt != pending.end() && objectIt->second.action == PendingVisibilityAction::Hidden)
         {
-            if (obj->GetUIdFromGUID() <= m_CreatureHighGuid)
-            {
-                m_CreatureStorage[obj->GetUIdFromGUID()] = nullptr;
-
-                if (static_cast<Creature*>(obj)->m_spawn != nullptr)
-                    _sqlids_creatures.erase(static_cast<Creature*>(obj)->m_spawn->id);
-
-                if (free_guid)
-                    _reusable_guids_creature.push_back(obj->GetUIdFromGUID());
-            }
-        } break;
-        case HIGHGUID_TYPE_PET:
-        {
-            m_PetStorage.erase(obj->GetUIdFromGUID());
-        } break;
-        case HIGHGUID_TYPE_DYNAMICOBJECT:
-        {
-            m_DynamicObjectStorage.erase(obj->getGuidLow());
-        } break;
-        case HIGHGUID_TYPE_GAMEOBJECT:
-        {
-            if (obj->GetUIdFromGUID() <= m_GOHighGuid)
-            {
-                m_GameObjectStorage[obj->GetUIdFromGUID()] = nullptr;
-                if (static_cast<GameObject*>(obj)->m_spawn != nullptr)
-                    _sqlids_gameobjects.erase(static_cast<GameObject*>(obj)->m_spawn->id);
-
-                if (free_guid)
-                    _reusable_guids_gameobject.push_back(obj->GetUIdFromGUID());
-            }
-        } break;
-        case HIGHGUID_TYPE_TRANSPORTER:
-            break;
-        default:
-        {
-            if (!obj->isPlayer())
-                sLogger.debug("WorldMap::RemoveObject called for invalid type {} (not player).", obj->GetTypeFromGUID());
-            break;
+            removals.push_back(objectIt->second);
+            pending.erase(objectIt);
         }
+
+        if (pending.empty())
+            viewerIt = pendingVisibilityByViewer_.erase(viewerIt);
+        else
+            ++viewerIt;
     }
 
-    //\todo That object types are not map objects. TODO: add AI groups here?
-    if (obj->isItem() || obj->isContainer())
-    {
-        return;
-    }
-
-    if (obj->isCorpse())
-    {
-        m_corpses.erase(static_cast<Corpse*>(obj));
-    }
-
-    MapCell* cell = getCell(obj->GetMapCellX(), obj->GetMapCellY());
-    if (cell == nullptr)
-    {
-        // set the map cell correctly
-        if (obj->GetPositionX() < Map::Terrain::_maxX || obj->GetPositionX() > Map::Terrain::_minY || obj->GetPositionY() < Map::Terrain::_maxY || obj->GetPositionY() > Map::Terrain::_minY)
-        {
-            cell = this->getCellByCoords(obj->GetPositionX(), obj->GetPositionY());
-            obj->SetMapCell(cell);
-        }
-    }
-
-    if (cell != nullptr)
-    {
-        cell->removeObject(obj);        // Remove object from cell
-        obj->SetMapCell(nullptr);          // Unset object's cell
-    }
-
-    Player* plObj = nullptr;
-    if (obj->isPlayer())
-    {
-        plObj = static_cast<Player*>(obj);
-
-        _processQueue.erase(plObj);     // Clear any updates pending
-        plObj->getUpdateMgr().clearPendingUpdates();
-
-        removePlayerFromMap(plObj);
-    }
-
-    obj->removeSelfFromInrangeSets();
-    obj->clearInRangeSets();             // Clear object's in-range set
-
-    uint8_t cellNumber = worldConfig.server.mapCellNumber;
-
-    // If it's a player - update his nearby cells
-    if (obj->isPlayer())
-    {// get x/y
-        if (obj->GetPositionX() < Map::Terrain::_maxX || obj->GetPositionX() > Map::Terrain::_minY || obj->GetPositionY() < Map::Terrain::_maxY || obj->GetPositionY() > Map::Terrain::_minY)
-        {
-            uint32_t x = getPosX(obj->GetPositionX());
-            uint32_t y = getPosY(obj->GetPositionY());
-            updateCellActivity(x, y, 2U + cellNumber);
-        }
-        m_PlayerStorage.erase(obj->getGuidLow());
-    }
-    else if (obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->m_playerControler != nullptr)
-    {
-        if (obj->GetPositionX() < Map::Terrain::_maxX || obj->GetPositionX() > Map::Terrain::_minY || obj->GetPositionY() < Map::Terrain::_maxY || obj->GetPositionY() > Map::Terrain::_minY)
-        {
-            uint32_t x = getPosX(obj->GetPositionX());
-            uint32_t y = getPosY(obj->GetPositionY());
-            updateCellActivity(x, y, 2U + cellNumber);
-        }
-    }
-
-    // Remove the session from our set if it is a player.
-    if (obj->isPlayer() || (obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->m_playerControler != nullptr))
-    {
-        if (plObj)
-        {
-            for (const auto* mapWideStaticObject : _mapWideStaticObjects)
-            {
-                if (mapWideStaticObject != nullptr)
-                {
-                    plObj->getUpdateMgr().pushOutOfRangeGuid(mapWideStaticObject->GetNewGUID());
-                }
-            }
-
-            // Setting an instance ID here will trigger the session to be removed by WorldMap::run(). :)
-            if (plObj->getSession())
-            {
-                plObj->getSession()->SetInstance(0);
-
-                // Add it to the global session set. Don't "re-add" to session if it is being deleted.
-                if (!plObj->getSession()->bDeleted)
-                {
-                    sWorld.addGlobalSession(plObj->getSession());
-                }
-            }
-        }
-    }
+    for (const PendingVisibilityEvent& event : removals)
+        applyQueuedVisibilityHidden(event.viewer, event.object, true);
 }
 
-void WorldMap::addForcedCell(MapCell* c)
+void WorldMap::onObjectBecameVisible(const WoWGuid& viewer, const WoWGuid& obj)
 {
-    uint8_t cellNumber = worldConfig.server.mapCellNumber;
-
-    m_forcedcells.insert(c);
-    updateCellActivity(c->getPositionX(), c->getPositionY(), cellNumber);
+    queueVisibilityChange(viewer, obj, PendingVisibilityAction::Visible);
 }
 
-void WorldMap::removeForcedCell(MapCell* c)
+void WorldMap::onObjectBecameHidden(const WoWGuid& viewer, const WoWGuid& obj)
 {
-    uint8_t cellNumber = worldConfig.server.mapCellNumber;
-
-    m_forcedcells.erase(c);
-    updateCellActivity(c->getPositionX(), c->getPositionY(), cellNumber);
+    queueVisibilityChange(viewer, obj, PendingVisibilityAction::Hidden);
 }
 
-void WorldMap::addForcedCell(MapCell* c, uint32_t range)
+inline int homeGridFromWorld(float x, float y) 
 {
-    m_forcedcells.insert(c);
-    updateCellActivity(c->getPositionX(), c->getPositionY(), range);
+    LocationVector p{ x, y, 0.f, 0.f };
+    auto [gx, gy] = visibility::worldToGrid(p);
+    return visibility::packGridId(gx, gy);
 }
 
-void WorldMap::removeForcedCell(MapCell* c, uint32_t range)
+void WorldMap::removeAllPlayers()
 {
-    m_forcedcells.erase(c);
-    updateCellActivity(c->getPositionX(), c->getPositionY(), range);
+    thread_local std::vector<Player*> s_players;
+    registry_->snapshotPlayers(s_players);
+
+    thread_local std::vector<WoWGuid> s_playerGuids;
+    s_playerGuids.clear();
+    s_playerGuids.reserve(s_players.size());
+    for (Player* p : s_players)
+    {
+        if (p && p->getWorldMap() == this)
+            s_playerGuids.push_back(p->GetNewGUID());
+    }
+
+    for (const WoWGuid& g : s_playerGuids)
+    {
+        Player* player = registry_->getPlayer(g);
+        if (!player || player->getWorldMap() != this)
+            continue;
+
+        if (WorldSession* session = player->getSession())
+        {
+            session->LogoutPlayer(false);
+        }
+        else
+        {
+            onPlayerLeave(player);
+            factory_->recycleAndDestroy(player, true);
+        }
+    }
+
+    drainDeferredDestroy();
 }
 
 bool WorldMap::cellHasAreaID(uint32_t CellX, uint32_t CellY, uint16_t& AreaID)
@@ -1064,9 +2159,9 @@ bool WorldMap::cellHasAreaID(uint32_t CellX, uint32_t CellY, uint16_t& AreaID)
         return Result;
     }
 
-    for (uint32_t xc = (CellX % Map::Cell::CellsPerTile) * 16 / Map::Cell::CellsPerTile; xc < (CellX % Map::Cell::CellsPerTile) * 16 / Map::Cell::CellsPerTile + 16 / Map::Cell::CellsPerTile; xc++)
+    for (uint32_t xc = (CellX % Cell::CellsPerTile) * 16 / Cell::CellsPerTile; xc < (CellX % Cell::CellsPerTile) * 16 / Cell::CellsPerTile + 16 / Cell::CellsPerTile; xc++)
     {
-        for (uint32_t yc = (CellY % Map::Cell::CellsPerTile) * 16 / Map::Cell::CellsPerTile; yc < (CellY % Map::Cell::CellsPerTile) * 16 / Map::Cell::CellsPerTile + 16 / Map::Cell::CellsPerTile; yc++)
+        for (uint32_t yc = (CellY % Cell::CellsPerTile) * 16 / Cell::CellsPerTile; yc < (CellY % Cell::CellsPerTile) * 16 / Cell::CellsPerTile + 16 / Cell::CellsPerTile; yc++)
         {
             const auto areaid = getTerrain()->getTile(OffsetTileX, OffsetTileY)->m_map.m_areaMap[yc * 16 + xc];
             if (areaid)
@@ -1084,699 +2179,66 @@ bool WorldMap::cellHasAreaID(uint32_t CellX, uint32_t CellY, uint16_t& AreaID)
     return Result;
 }
 
-void WorldMap::updateAllCells(bool apply, uint32_t areamask)
-{
-    uint16_t AreaID = 0;
-    MapCell* cellInfo;
-    CellSpawns* spawns;
-    uint32_t StartX = 0, EndX = 0, StartY = 0, EndY = 0;
-    getTerrain()->getCellLimits(StartX, EndX, StartY, EndY);
-
-    if (!areamask)
-        sLogger.debugMapCell("Updating all cells for map {:03}, server might lag.", getBaseMap()->getMapId());
-
-    for (uint32_t x = StartX; x < EndX; x++)
-    {
-        for (uint32_t y = StartY; y < EndY; y++)
-        {
-            if (areamask)
-            {
-                if (!cellHasAreaID(x, y, AreaID))
-                    continue;
-
-                auto at = MapManagement::AreaManagement::AreaStorage::getAreaById(AreaID);
-                if (at == nullptr)
-                    continue;
-                if (at->zone != areamask)
-                    if (at->id != areamask)
-                        continue;
-                AreaID = 0;
-            }
-
-            cellInfo = getCell(x, y);
-            if (apply)
-            {
-                if (!cellInfo)
-                {   // Cell doesn't exist, create it.
-                    cellInfo = create(x, y);
-                    cellInfo->init(x, y, this);
-                    sLogger.debugMapCell("Created cell [{},{}] on map {} (instance {}).", x, y, getBaseMap()->getMapId(), getInstanceId());
-                }
-
-                spawns = _map->getSpawnsList(x, y);
-                if (spawns)
-                {
-                    addForcedCell(cellInfo, 1);
-                }
-            }
-            else
-            {
-                if (!cellInfo)
-                    continue;
-
-                removeForcedCell(cellInfo, 1);
-            }
-        }
-    }
-
-    if (!areamask)
-        sLogger.debugMapCell("Cell updating success for map {:03}.", getBaseMap()->getMapId());
-}
-
-void WorldMap::updateAllCells(bool apply)
-{
-    if (!getTerrain())
-        return;
-
-    MapCell* cellInfo;
-    CellSpawns* spawns;
-    uint32_t StartX = 0, EndX = 0, StartY = 0, EndY = 0;
-    getTerrain()->getCellLimits(StartX, EndX, StartY, EndY);
-
-    for (uint32_t x = StartX; x < EndX; x++)
-    {
-        for (uint32_t y = StartY; y < EndY; y++)
-        {
-            cellInfo = getCell(x, y);
-            if (apply)
-            {
-                if (!cellInfo)
-                {   // Cell doesn't exist, create it.
-                    cellInfo = create(x, y);
-                    cellInfo->init(x, y, this);
-                    sLogger.debugMapCell("Created cell [{},{}] on map {} (instance {}).", x, y, getBaseMap()->getMapId(), getInstanceId());
-                }
-
-                spawns = _map->getSpawnsList(cellInfo->getPositionX(), cellInfo->getPositionY());
-                if (spawns)
-                {
-                    addForcedCell(cellInfo, 1);
-                }
-            }
-            else
-            {
-                if (!cellInfo)
-                    continue;
-
-                removeForcedCell(cellInfo, 1);
-            }
-        }
-    }
-    sLogger.debugMapCell("Cell updating success for map {:03}.", getBaseMap()->getMapId());
-}
-
-void WorldMap::updateCellActivity(uint32_t x, uint32_t y, uint32_t radius)
-{
-    std::scoped_lock<std::mutex> guard(m_cellActivityLock);
-
-    CellSpawns* sp;
-    uint32_t endX = (x + radius) <= Map::Cell::_sizeX ? x + radius : (Map::Cell::_sizeX - 1);
-    uint32_t endY = (y + radius) <= Map::Cell::_sizeY ? y + radius : (Map::Cell::_sizeY - 1);
-    uint32_t startX = x > radius ? x - radius : 0;
-    uint32_t startY = y > radius ? y - radius : 0;
-
-    for (uint32_t posX = startX; posX <= endX; posX++)
-    {
-        for (uint32_t posY = startY; posY <= endY; posY++)
-        {
-            MapCell* objCell = getCell(posX, posY);
-            if (objCell == nullptr)
-            {
-                if (isCellActive(posX, posY))
-                {
-                    objCell = create(posX, posY);
-                    objCell->init(posX, posY, this);
-
-                    sLogger.debug("WorldMap : Cell [{},{}] on map {} (instance {}) is now active.", posX, posY, getBaseMap()->getMapId(), getInstanceId());
-                    objCell->setActivity(true);
-
-                    getTerrain()->loadTile(static_cast<int32_t>(posX) / 8, static_cast<int32_t>(posY) / 8);
-
-                    if (!objCell->isLoaded())
-                    {
-                        sLogger.debug("WorldMap : Loading objects for Cell [{}][{}] on map {} (instance {})...", posX, posY, getBaseMap()->getMapId(), getInstanceId());
-
-                        sp = _map->getSpawnsList(posX, posY);
-                        if (sp)
-                            objCell->loadObjects(sp);
-                    }
-                }
-            }
-            else
-            {
-                //Cell is now active
-                if (isCellActive(posX, posY) && (!objCell->isActive() || (objCell->isActive() && objCell->isIdlePending())))
-                {
-                    if (objCell->isIdlePending())
-                        objCell->cancelPendingIdle();
-
-                    sLogger.debug("Cell [{},{}] on map {} (instance {}) is now active.", posX, posY, getBaseMap()->getMapId(), getInstanceId());
-
-                    getTerrain()->loadTile(static_cast<int32_t>(posX) / 8, static_cast<int32_t>(posY) / 8);
-                    objCell->setActivity(true);
-
-                    if (!objCell->isLoaded())
-                    {
-                        sLogger.debug("Loading objects for Cell [{}][{}] on map {} (instance {})...", posX, posY, getBaseMap()->getMapId(), getInstanceId());
-                        sp = _map->getSpawnsList(posX, posY);
-                        if (sp)
-                            objCell->loadObjects(sp);
-                    }
-                }
-                //Cell is no longer active
-                else if (!isCellActive(posX, posY) && objCell->isActive() && !objCell->isIdlePending())
-                {
-                    objCell->scheduleCellIdleState();
-                }
-            }
-        }
-    }
-}
-
-void WorldMap::setCellIdle(uint16_t x, uint16_t y, MapCell* cell)
-{
-    sLogger.debug("Cell [{},{}] on map {} (instance {}) is now idle.", x, y, getBaseMap()->getMapId(), getInstanceId());
-    cell->setActivity(false);
-
-    _terrain->unloadTile(static_cast<int32_t>(x) / 8, static_cast<int32_t>(y) / 8);
-}
-
-void WorldMap::unloadCell(uint32_t x, uint32_t y)
-{
-    MapCell* c = getCell(x, y);
-    if (c == nullptr || isCellActive(x, y) || !c->isUnloadPending())
-        return;
-
-    sLogger.debug("Unloading Cell [{}][{}] on map {} (instance {})...", x, y, getBaseMap()->getMapId(), getInstanceId());
-
-    c->unload();
-}
-
-bool WorldMap::isCellActive(uint32_t x, uint32_t y)
-{
-    uint8_t cellNumber = worldConfig.server.mapCellNumber;
-
-    uint32_t endX = ((x + cellNumber) <= Map::Cell::_sizeX) ? x + cellNumber : (Map::Cell::_sizeX - cellNumber);
-    uint32_t endY = ((y + cellNumber) <= Map::Cell::_sizeY) ? y + cellNumber : (Map::Cell::_sizeY - cellNumber);
-    uint32_t startX = x > 0 ? x - cellNumber : 0;
-    uint32_t startY = y > 0 ? y - cellNumber : 0;
-
-    for (uint32_t posX = startX; posX <= endX; posX++)
-    {
-        for (uint32_t posY = startY; posY <= endY; posY++)
-        {
-            MapCell* objCell = getCell(posX, posY);
-            if (objCell != nullptr)
-            {
-                if (objCell->hasPlayers() || objCell->hasTransporters() || m_forcedcells.find(objCell) != m_forcedcells.end())
-                {
-                    return true;
-                }
-            }
-        }
-    }
-
-    return false;
-}
-
-void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, std::unique_ptr<ByteBuffer>& buf)
-{
-    if (cell == nullptr)
-        return;
-
-    Player* plObj2;
-    uint32_t count;
-    bool cansee, isvisible;
-
-    auto iter = cell->Begin();
-    while (iter != cell->End())
-    {
-        // Prevent undefined behaviour (related to transports) -Appled
-        if (cell->_objects.empty())
-            break;
-
-        Object* curObj = *iter;
-        ++iter;
-
-        if (curObj == nullptr)
-            continue;
-
-        float fRange = getUpdateDistance(curObj, obj, plObj);
-
-        if (curObj != obj && (curObj->GetDistance2dSq(obj) <= fRange || fRange == 0.0f))
-        {
-            if (!obj->isObjectInInRangeObjectsSet(curObj))
-            {
-                obj->addToInRangeObjects(curObj);          // Object in range, add to set
-                curObj->addToInRangeObjects(obj);
-
-                if (curObj->isPlayer())
-                {
-                    plObj2 = static_cast<Player*>(curObj);
-
-                    if (plObj2->canSee(obj) && !plObj2->isVisibleObject(obj->getGuid()))
-                    {
-                        if (buf == nullptr)
-                            buf = std::make_unique<ByteBuffer>(2500);
-
-                        count = obj->buildCreateUpdateBlockForPlayer(buf.get(), plObj2);
-                        plObj2->getUpdateMgr().pushCreationData(buf.get(), count);
-                        plObj2->addVisibleObject(obj->getGuid());
-                        buf->clear();
-
-                        // The static creation snapshot alone isn't enough for the client to start
-                        // the flying/hover/no-gravity animation - it needs the dedicated movement
-                        // packet(s) too, which a broadcast-at-transition-time send never reaches a
-                        // player who enters range only later.
-                        if (obj->isCreatureOrPlayer())
-                            static_cast<Unit*>(obj)->sendMovementFlagsToPlayer(plObj2);
-                    }
-                }
-                else if (curObj->isCreatureOrPlayer() && static_cast<Unit*>(curObj)->m_playerControler != nullptr)
-                {
-                    plObj2 = static_cast<Unit*>(curObj)->m_playerControler;
-
-                    if (plObj2->canSee(obj) && !plObj2->isVisibleObject(obj->getGuid()))
-                    {
-                        if (buf == nullptr)
-                            buf = std::make_unique<ByteBuffer>(2500);
-
-                        count = obj->buildCreateUpdateBlockForPlayer(buf.get(), plObj2);
-                        plObj2->getUpdateMgr().pushCreationData(buf.get(), count);
-                        plObj2->addVisibleObject(obj->getGuid());
-                        buf->clear();
-
-                        if (obj->isCreatureOrPlayer())
-                            static_cast<Unit*>(obj)->sendMovementFlagsToPlayer(plObj2);
-                    }
-                }
-
-                if (plObj != nullptr)
-                {
-                    if (plObj->canSee(curObj) && !plObj->isVisibleObject(curObj->getGuid()))
-                    {
-                        if (buf == nullptr)
-                            buf = std::make_unique<ByteBuffer>(2500);
-
-                        count = curObj->buildCreateUpdateBlockForPlayer(buf.get(), plObj);
-                        plObj->getUpdateMgr().pushCreationData(buf.get(), count);
-                        plObj->addVisibleObject(curObj->getGuid());
-                        buf->clear();
-
-                        if (curObj->isCreatureOrPlayer())
-                            static_cast<Unit*>(curObj)->sendMovementFlagsToPlayer(plObj);
-                    }
-                }
-            }
-            else
-            {
-                // Check visibility
-                if (curObj->isPlayer())
-                {
-                    plObj2 = static_cast<Player*>(curObj);
-                    cansee = plObj2->canSee(obj);
-                    isvisible = plObj2->isVisibleObject(obj->getGuid());
-                    if (!cansee && isvisible)
-                    {
-                        plObj2->getUpdateMgr().pushOutOfRangeGuid(obj->GetNewGUID());
-                        plObj2->removeVisibleObject(obj->getGuid());
-                    }
-                    else if (cansee && !isvisible)
-                    {
-                        if (buf == nullptr)
-                            buf = std::make_unique<ByteBuffer>(2500);
-
-                        count = obj->buildCreateUpdateBlockForPlayer(buf.get(), plObj2);
-                        plObj2->getUpdateMgr().pushCreationData(buf.get(), count);
-                        plObj2->addVisibleObject(obj->getGuid());
-                        buf->clear();
-
-                        if (obj->isCreatureOrPlayer())
-                            static_cast<Unit*>(obj)->sendMovementFlagsToPlayer(plObj2);
-                    }
-                }
-                else if (curObj->isCreatureOrPlayer() && static_cast<Unit*>(curObj)->m_playerControler != nullptr)
-                {
-                    plObj2 = static_cast<Unit*>(curObj)->m_playerControler;
-                    cansee = plObj2->canSee(obj);
-                    isvisible = plObj2->isVisibleObject(obj->getGuid());
-                    if (!cansee && isvisible)
-                    {
-                        plObj2->getUpdateMgr().pushOutOfRangeGuid(obj->GetNewGUID());
-                        plObj2->removeVisibleObject(obj->getGuid());
-                    }
-                    else if (cansee && !isvisible)
-                    {
-                        if (buf == nullptr)
-                            buf = std::make_unique<ByteBuffer>(2500);
-
-                        count = obj->buildCreateUpdateBlockForPlayer(buf.get(), plObj2);
-                        plObj2->getUpdateMgr().pushCreationData(buf.get(), count);
-                        plObj2->addVisibleObject(obj->getGuid());
-                        buf->clear();
-
-                        if (obj->isCreatureOrPlayer())
-                            static_cast<Unit*>(obj)->sendMovementFlagsToPlayer(plObj2);
-                    }
-                }
-
-                if (plObj != nullptr)
-                {
-                    cansee = plObj->canSee(curObj);
-                    isvisible = plObj->isVisibleObject(curObj->getGuid());
-                    if (!cansee && isvisible)
-                    {
-                        plObj->getUpdateMgr().pushOutOfRangeGuid(curObj->GetNewGUID());
-                        plObj->removeVisibleObject(curObj->getGuid());
-                    }
-                    else if (cansee && !isvisible)
-                    {
-                        if (buf == nullptr)
-                            buf = std::make_unique<ByteBuffer>(2500);
-
-                        count = curObj->buildCreateUpdateBlockForPlayer(buf.get(), plObj);
-                        plObj->getUpdateMgr().pushCreationData(buf.get(), count);
-                        plObj->addVisibleObject(curObj->getGuid());
-                        buf->clear();
-
-                        if (curObj->isCreatureOrPlayer())
-                            static_cast<Unit*>(curObj)->sendMovementFlagsToPlayer(plObj);
-                    }
-                }
-            }
-        }
-    }
-}
-
-void WorldMap::changeObjectLocation(Object* obj)
-{
-    if (obj == nullptr)
-        return;
-
-    // Items and containers are of no interest for us
-    if (obj->isItem() || obj->isContainer() || obj->getWorldMap() != this)
-        return;
-
-    Player* plObj = nullptr;
-
-    if (obj->isPlayer())
-        plObj = static_cast<Player*>(obj);
-    if (obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->m_playerControler != nullptr)
-        plObj = static_cast<Unit*>(obj)->m_playerControler;
-
-    float fRange = 0.0f;
-
-    if (obj->isGameObject())
-        obj->ToGameObject()->updateModelPosition();
-
-    // Update in-range data for old objects
-    if (obj->hasInRangeObjects())
-    {
-        for (const auto& iter : obj->getInRangeObjectsSet())
-        {
-            if (iter)
-            {
-                Object* curObj = iter;
-
-                fRange = getUpdateDistance(curObj, obj, plObj);
-
-                if (fRange > 0.0f && (curObj->GetDistance2dSq(obj) > fRange))
-                {
-                    if (plObj != nullptr)
-                        plObj->removeIfVisiblePushOutOfRange(curObj->getGuid());
-
-                    if (curObj->isPlayer())
-                        static_cast<Player*>(curObj)->removeIfVisiblePushOutOfRange(obj->getGuid());
-
-                    if (curObj->isCreatureOrPlayer() && static_cast<Unit*>(curObj)->m_playerControler != nullptr)
-                        static_cast<Unit*>(curObj)->m_playerControler->removeIfVisiblePushOutOfRange(obj->getGuid());
-
-                    curObj->removeObjectFromInRangeObjectsSet(obj);
-
-                    if (obj->getWorldMap() != this)
-                        return;             //Something removed us.
-
-                    obj->removeObjectFromInRangeObjectsSet(curObj);
-                }
-            }
-        }
-    }
-
-    // Get new cell coordinates
-    if (obj->getWorldMap() != this)
-    {
-        return;                 //Something removed us.
-    }
-
-    if (obj->GetPositionX() >= Map::Terrain::_maxX || obj->GetPositionX() <= Map::Terrain::_minX || obj->GetPositionY() >= Map::Terrain::_maxY || obj->GetPositionY() <= Map::Terrain::_minY)
-    {
-        outOfMapBoundariesTeleport(obj);
-    }
-
-    uint32_t cellX = getPosX(obj->GetPositionX());
-    uint32_t cellY = getPosY(obj->GetPositionY());
-
-    if (cellX >= Map::Cell::_sizeX || cellY >= Map::Cell::_sizeY)
-    {
-        return;
-    }
-
-    MapCell* objCell = getCell(cellX, cellY);
-    MapCell* pOldCell = obj->GetMapCell();
-    if (objCell == nullptr)
-    {
-        objCell = create(cellX, cellY);
-        if (objCell != nullptr)
-        {
-            objCell->init(cellX, cellY, this);
-        }
-        else
-        {
-            sLogger.failure("WorldMap::ChangeObjectLocation not able to create object cell (nullptr), return!");
-            return;
-        }
-    }
-    uint8_t cellNumber = worldConfig.server.mapCellNumber;
-
-    // If object moved cell
-    if (objCell != pOldCell)
-    {
-        // THIS IS A HACK!
-        // Current code, if a creature on a long waypoint path moves from an active
-        // cell into an inactive one, it will disable itself and will never return.
-        // This is to prevent cpu leaks. I will think of a better solution very soon :P
-
-        if (!objCell->isActive() && !plObj && obj->IsActive())
-            obj->deactivate(this);
-
-        if (pOldCell != nullptr)
-            pOldCell->removeObject(obj);
-
-        objCell->addObject(obj);
-        obj->SetMapCell(objCell);
-
-        // if player we need to update cell activity radius = 2 is used in order to update
-        // both old and new cells
-        if (obj->isPlayer() || (obj->isCreatureOrPlayer() && static_cast<Unit*>(obj)->m_playerControler != nullptr))
-        {
-            // have to unlock/lock here to avoid a deadlock situation.
-            updateCellActivity(cellX, cellY, 2U + cellNumber);
-            if (pOldCell != nullptr)
-            {
-                const auto threshold = 2 + static_cast<int>(cellNumber);
-
-                // only do the second check if there's -/+ 2 difference
-                if (std::abs(static_cast<int>(cellX) - static_cast<int>(pOldCell->_x)) > threshold ||
-                    std::abs(static_cast<int>(cellY) - static_cast<int>(pOldCell->_y)) > threshold)
-                {
-                    updateCellActivity(pOldCell->_x, pOldCell->_y, cellNumber);
-                }
-            }
-        }
-    }
-
-    // Update in-range set for new objects
-    uint32_t endX = cellX + cellNumber;
-    uint32_t endY = cellY + cellNumber;
-    uint32_t startX = cellX > 0 ? cellX - cellNumber : 0;
-    uint32_t startY = cellY > 0 ? cellY - cellNumber : 0;
-
-    //If the object announcing it's position is a special one, then it should do so in a much wider area - like the distance between the two transport towers in Orgrimmar, or more. - By: VLack
-    if (obj->isGameObject() && (static_cast<GameObject*>(obj)->GetOverrides() & GAMEOBJECT_ONMOVEWIDE))
-    {
-        endX = cellX + 5 <= Map::Cell::_sizeX ? cellX + 6 : (Map::Cell::_sizeX - 1);
-        endY = cellY + 5 <= Map::Cell::_sizeY ? cellY + 6 : (Map::Cell::_sizeY - 1);
-        startX = cellX > 5 ? cellX - 6 : 0;
-        startY = cellY > 5 ? cellY - 6 : 0;
-    }
-
-    std::unique_ptr<ByteBuffer> buf;
-    for (uint32_t posX = startX; posX <= endX; ++posX)
-    {
-        for (uint32_t posY = startY; posY <= endY; ++posY)
-        {
-            MapCell* cell = getCell(posX, posY);
-            if (cell)
-                updateInRangeSet(obj, plObj, cell, buf);
-        }
-    }
-}
-
 void WorldMap::changeFarsightLocation(Player* plr, DynamicObject* farsight)
 {
-    uint8_t cellNumber = worldConfig.server.mapCellNumber;
+    if (!plr)
+        return;
 
-    if (farsight == 0)
+    // Farsight is a real VisibilitySystem viewer/activator. Its physical position
+    // drives subscriptions while the caster player remains the packet recipient
+    // and supplies player-specific visibility rules (GM invisibility, stealth, etc.).
+    // ObjectFactory already applies the DynamicObject interest profile on attach;
+    // refresh here so the initial remote view is available synchronously to the spell.
+    if (farsight)
     {
-        // We're clearing.
-        for (auto itr = plr->m_visibleFarsightObjects.begin(); itr != plr->m_visibleFarsightObjects.end(); ++itr)
-        {
-            if (plr->isVisibleObject((*itr)->getGuid()) && !plr->canSee((*itr)))
-                plr->getUpdateMgr().pushOutOfRangeGuid((*itr)->GetNewGUID());      // Send destroy
-        }
+        setVisibilityRecipientForViewer(farsight->GetNewGUID(), plr);
 
-        plr->m_visibleFarsightObjects.clear();
+        auto h = spatialIndex_->handleByGuid(farsight->GetNewGUID());
+        if (!h.id)
+            return;
+
+        auto profile = visibilitySystem_->buildInterestProfile(farsight);
+        visibilitySystem_->applyInterestProfile(h, profile);
+        visibilitySystem_->refreshObjectVisibility(h);
+        processPendingVisibilityChangesForViewer(farsight->GetNewGUID(), 512, 512);
+        return;
     }
-    else
-    {
-        uint32_t cellX = getPosX(farsight->GetPositionX());
-        uint32_t cellY = getPosY(farsight->GetPositionY());
-        uint32_t endX = (cellX <= Map::Cell::_sizeX) ? cellX + cellNumber : (Map::Cell::_sizeX - cellNumber);
-        uint32_t endY = (cellY <= Map::Cell::_sizeY) ? cellY + cellNumber : (Map::Cell::_sizeY - cellNumber);
-        uint32_t startX = cellX > 0 ? cellX - cellNumber : 0;
-        uint32_t startY = cellY > 0 ? cellY - cellNumber : 0;
 
-        for (uint32_t posX = startX; posX <= endX; ++posX)
+    // Farsight ends when the aura clears the player's farsight guid, which can
+    // happen before the DynamicObject itself reaches its lifetime/destruction path.
+    // Tear down the remote viewer synchronously here so the client does not keep
+    // objects that were visible only from the remote camera.
+    const WoWGuid viewerGuid(plr->getFarsightGuid());
+    if (viewerGuid.getRawGuid())
+    {
+        if (DynamicObject* viewer = getDynamicObject(viewerGuid);
+            viewer && viewer->getDynamicType() == DYNAMIC_OBJECT_FARSIGHT_FOCUS)
         {
-            for (uint32_t posY = startY; posY <= endY; ++posY)
+            clearVisibilitySourceForRecipient(viewerGuid, plr);
+
+            // Send the OutOfRange batch before this source can be removed or
+            // refreshed again. Waiting for the normal map process queue is too late
+            // for aura teardown because the camera has already returned to the player.
+            plr->processPendingUpdates();
+
+            if (auto h = spatialIndex_->handleByGuid(viewerGuid); h.id)
             {
-                MapCell* cell = getCell(posX, posY);
-                if (cell != nullptr)
-                {
-                    for (auto iter = cell->Begin(); iter != cell->End(); ++iter)
-                    {
-                        Object* obj = (*iter);
-                        if (obj == nullptr)
-                            continue;
-
-                        if (!plr->isVisibleObject(obj->getGuid()) && plr->canSee(obj) && farsight->GetDistance2dSq(obj) <= getVisibilityRange())
-                        {
-                            ByteBuffer buf;
-                            uint32_t count = obj->buildCreateUpdateBlockForPlayer(&buf, plr);
-                            plr->getUpdateMgr().pushCreationData(&buf, count);
-                            plr->m_visibleFarsightObjects.insert(obj);
-                        }
-                    }
-                }
+                visibilitySystem_->setViewerRole(h, false, 0);
+                visibilitySystem_->setActivatorRole(h, false, 0);
+                processPendingVisibilityChangesForViewer(viewerGuid, 4096, 4096);
             }
+
+            clearVisibilityRecipientForViewer(viewerGuid);
+            purgePendingVisibilityForGuid(viewerGuid);
+
+            // changeFarsightLocation() is called while PLAYER_FIELD_FARSIGHT still
+            // contains this guid. Remove the focus here, not later in the aura-effect
+            // callback where the guid may already have been cleared (interrupt path).
+            viewer->remove();
         }
     }
-}
 
-Player* WorldMap::getPlayer(uint32_t guid)
-{
-    auto itr = m_PlayerStorage.find(guid);
-    return itr != m_PlayerStorage.end() ? itr->second : nullptr;
-}
-
-Player* WorldMap::getPlayer(uint64_t guid)
-{
-    return getPlayer(static_cast<uint32_t>(guid));
-}
-
-uint32_t WorldMap::getPlayerCount()
-{
-    return static_cast<uint32_t>(m_PlayerStorage.size());
-}
-
-bool WorldMap::hasPlayers()
-{
-    return (m_PlayerStorage.size() > 0);
-}
-
-uint64_t WorldMap::generateCreatureGuid(uint32_t entry, bool canUseOldGuid/* = true*/)
-{
-    uint64_t newguid = 0;
-
-    CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(entry);
-    if (creature_properties == nullptr || creature_properties->vehicleid == 0)
-        newguid = static_cast<uint64_t>(HIGHGUID_TYPE_UNIT) << 32;
-    else
-        newguid = static_cast<uint64_t>(HIGHGUID_TYPE_VEHICLE) << 32;
-
-    char* pHighGuid = reinterpret_cast<char*>(&newguid);
-    char* pEntry = reinterpret_cast<char*>(&entry);
-
-    pHighGuid[3] |= pEntry[0];
-    pHighGuid[4] |= pEntry[1];
-    pHighGuid[5] |= pEntry[2];
-    pHighGuid[6] |= pEntry[3];
-
-    uint32_t guid = 0;
-
-    if (!_reusable_guids_creature.empty() && canUseOldGuid)
-    {
-        guid = _reusable_guids_creature.front();
-        _reusable_guids_creature.pop_front();
-
-    }
-    else
-    {
-        m_CreatureHighGuid++;
-
-        if (m_CreatureHighGuid >= m_CreatureStorage.size())
-        {
-            // Reallocate array with larger size.
-            size_t newsize = m_CreatureStorage.size() + RESERVE_EXPAND_SIZE;
-            m_CreatureStorage.resize(newsize, nullptr);
-        }
-        guid = m_CreatureHighGuid;
-    }
-
-    newguid |= guid;
-
-    return newguid;
-}
-
-Creature* WorldMap::createCreature(uint32_t entry)
-{
-    uint64_t guid = generateCreatureGuid(entry);
-    return new Creature(guid);
-}
-
-Creature* WorldMap::createAndSpawnCreature(uint32_t pEntry, LocationVector pos)
-{
-    auto* creature = createCreature(pEntry);
-    const auto* cp = sMySQLStore.getCreatureProperties(pEntry);
-    if (cp == nullptr)
-    {
-        delete creature;
-        return nullptr;
-    }
-
-    creature->Load(cp, pos.x, pos.y, pos.z, pos.o);
-    creature->AddToWorld(this);
-    return creature;
-}
-
-Creature* WorldMap::getCreature(uint32_t guid)
-{
-    if (guid == 0 || guid > m_CreatureHighGuid)
-        return nullptr;
-
-    return m_CreatureStorage[guid];
-}
-
-Creature* WorldMap::getSqlIdCreature(uint32_t sqlid)
-{
-    auto itr = _sqlids_creatures.find(sqlid);
-    return itr == _sqlids_creatures.end() ? nullptr : itr->second;
-}
-
-Pet* WorldMap::getPet(uint32_t guid)
-{
-    auto itr = m_PetStorage.find(guid);
-    return itr != m_PetStorage.end() ? itr->second : nullptr;
+    plr->m_visibleFarsightObjects.clear();
 }
 
 Summon* WorldMap::summonCreature(uint32_t entry, LocationVector pos, WDB::Structures::SummonPropertiesEntry const* properties /*= nullptr*/, uint32_t duration /*= 0*/, Object* summoner /*= nullptr*/, uint32_t spellId /*= 0*/)
@@ -1787,7 +2249,8 @@ Summon* WorldMap::summonCreature(uint32_t entry, LocationVector pos, WDB::Struct
             properties->ControlType == SUMMON_CONTROL_TYPE_GUARDIAN ||
             properties->ControlType == SUMMON_CATEGORY_UNK) &&
         properties->Type == SUMMONTYPE_TOTEM;
-    uint64_t guid = generateCreatureGuid(entry, !isTotemSummon);
+
+    uint64_t guid = factory_->generateCreatureGuid(entry, !isTotemSummon);
 
     // Phase
     uint32_t phase = 1;
@@ -1865,7 +2328,8 @@ Summon* WorldMap::summonCreature(uint32_t entry, LocationVector pos, WDB::Struct
 
     summon->load(cp, summonerUnit, pos, duration, spellId);
     summon->setPhase(PHASE_SET, phase);
-    summon->PushToWorld(this);
+    factory_->attachToWorld(summon);
+
     // This is needed to CastSpells or Move Right at Spawn
     updateObjects();
 
@@ -1875,37 +2339,7 @@ Summon* WorldMap::summonCreature(uint32_t entry, LocationVector pos, WDB::Struct
     return summon;
 }
 
-GameObject* WorldMap::createGameObject(uint32_t entry)
-{
-    uint32_t GUID = 0;
-
-    if (_reusable_guids_gameobject.size() > GO_GUID_RECYCLE_INTERVAL)
-    {
-        uint32_t guid = _reusable_guids_gameobject.front();
-        _reusable_guids_gameobject.pop_front();
-
-        GUID = guid;
-    }
-    else
-    {
-        if (++m_GOHighGuid >= m_GameObjectStorage.size())
-        {
-            // Reallocate array with larger size.
-            size_t newsize = m_GameObjectStorage.size() + RESERVE_EXPAND_SIZE;
-            m_GameObjectStorage.resize(newsize, nullptr);
-        }
-
-        GUID = m_GOHighGuid;
-    }
-
-    GameObject* gameobject = sObjectMgr.createGameObjectByGuid(entry, GUID);
-    if (gameobject == nullptr)
-        return nullptr;
-
-    return gameobject;
-}
-
-GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector pos, float scale, uint32_t respawnTime)
+GameObject* WorldMap::summonGameObject(uint32_t entryID, LocationVector pos, QuaternionData const& rot, uint32_t durationMs, Object* summoner)
 {
     auto gameobject_info = sMySQLStore.getGameObjectProperties(entryID);
     if (gameobject_info == nullptr)
@@ -1916,144 +2350,53 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
 
     sLogger.debug("CreateAndSpawnGameObject: By Entry '{}'", entryID);
 
-    GameObject* go = createGameObject(entryID);
+    GameObject* go = getSpawnManager().summonGameObject(entryID, pos, rot);
+    if (!go)
+        return nullptr;
 
-    // Setup game object
-    go->create(entryID, this, go->GetPhase(), pos, QuaternionData(), GO_STATE_CLOSED, sObjectMgr.generateGameObjectSpawnId());
-    go->setScale(scale);
-    go->InitAI();
-    go->PushToWorld(this);
+    if (summoner)
+        go->m_phase = summoner->GetPhase();
 
-    // Create spawn instance
-    auto go_spawn = new MySQLStructure::GameobjectSpawn;
-    go_spawn->entry = go->getEntry();
-    go_spawn->id = go->getSpawnId();
-    go_spawn->map = go->GetMapId();
-    go_spawn->spawnPoint = go->GetPosition();
-    go_spawn->rotation = go->getLocalRotation();
-    go_spawn->state = GameObject_State(go->getState());
-    go_spawn->phase = go->GetPhase();
-    go_spawn->spawntimesecs = respawnTime;
-    go->m_spawn = go_spawn;
-
-    uint32_t cx = getPosX(pos.x);
-    uint32_t cy = getPosY(pos.y);
-
-    getBaseMap()->getSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(go_spawn);
-
-    if (respawnTime)
-        go->setRespawnTime(respawnTime);
-
-    MapCell* mCell = getCell(cx, cy);
-
-    if (mCell != nullptr)
-        mCell->setLoaded();
+    if (durationMs > 0)
+        go->despawn(durationMs, 0);
 
     return go;
 }
 
-GameObject* WorldMap::getGameObject(uint32_t guid)
-{
-    if (guid == 0 || guid > m_GOHighGuid)
-        return nullptr;
-
-    return m_GameObjectStorage[guid];
-}
-
-GameObject* WorldMap::getSqlIdGameObject(uint32_t sqlid)
-{
-    auto itr = _sqlids_gameobjects.find(sqlid);
-    return itr == _sqlids_gameobjects.end() ? nullptr : itr->second;
-}
-
-DynamicObject* WorldMap::createDynamicObject()
-{
-    return new DynamicObject(HIGHGUID_TYPE_DYNAMICOBJECT, (++m_DynamicObjectHighGuid));
-}
-
-DynamicObject* WorldMap::getDynamicObject(uint32_t guid)
-{
-    auto itr = m_DynamicObjectStorage.find(guid);
-    return itr != m_DynamicObjectStorage.end() ? itr->second : nullptr;
-}
-
-Unit* WorldMap::getUnit(const uint64_t& guid)
-{
-    if (guid == 0)
-        return nullptr;
-
-    WoWGuid wowGuid;
-    wowGuid.init(guid);
-
-    switch (wowGuid.getHigh())
-    {
-        case HighGuid::Unit:
-        case HighGuid::Vehicle:
-            return getCreature(wowGuid.getGuidLowPart());
-        case HighGuid::Player:
-            return getPlayer(wowGuid.getGuidLowPart());
-        case HighGuid::Pet:
-            return getPet(wowGuid.getGuidLowPart());
-        default:
-            break;
-    }
-
-    return nullptr;
-}
-
-Object* WorldMap::getObject(const uint64_t& guid)
-{
-    if (!guid)
-        return nullptr;
-
-    WoWGuid wowGuid;
-    wowGuid.init(guid);
-
-    switch (wowGuid.getHigh())
-    {
-        case HighGuid::GameObject:
-            return getGameObject(wowGuid.getGuidLowPart());
-        case HighGuid::Unit:
-        case HighGuid::Vehicle:
-            return getCreature(wowGuid.getGuidLowPart());
-        case HighGuid::DynamicObject:
-            return getDynamicObject(wowGuid.getGuidLowPart());
-        case HighGuid::Transporter:
-            return sTransportHandler.getTransporter(wowGuid.getGuidLowPart());
-        default:
-            return getUnit(guid);
-    }
-}
-
 void WorldMap::sendChatMessageToCellPlayers(Object* obj, SmsgMessageChat& packet, uint32_t cell_radius, uint32_t lang, WorldSession* originator)
 {
-    uint32_t cellX = getPosX(obj->GetPositionX());
-    uint32_t cellY = getPosY(obj->GetPositionY());
-    uint32_t endX = ((cellX + cell_radius) <= Map::Cell::_sizeX) ? cellX + cell_radius : (Map::Cell::_sizeX - 1);
-    uint32_t endY = ((cellY + cell_radius) <= Map::Cell::_sizeY) ? cellY + cell_radius : (Map::Cell::_sizeY - 1);
-    uint32_t startX = cellX > cell_radius ? cellX - cell_radius : 0;
-    uint32_t startY = cellY > cell_radius ? cellY - cell_radius : 0;
+    if (!obj)
+        return;
 
-    MapCell::ObjectSet::iterator iter, iend;
-    for (uint32_t posX = startX; posX <= endX; ++posX)
+    thread_local std::vector<WoWGuid> s_guids;
+    s_guids.clear();
+    s_guids.reserve(128);
+
+    spatialIndex_->collectGuidsInCellsAroundPos<Player>(obj->GetPosition(), static_cast<int>(cell_radius), 0, s_guids);
+
+    const uint32_t senderPhase = obj->GetPhase();
+
+    for (const WoWGuid& guid : s_guids)
     {
-        for (uint32_t posY = startY; posY <= endY; ++posY)
+        Player* player = registry_->getPlayer(guid);
+        if (!player)
+            continue;
+
+        if (player->getWorldMap() != this)
+            continue;
+
+        if ((player->GetPhase() & senderPhase) == 0)
+            continue;
+
+        Object::UpdatePin pin(player);
+
+        if (WorldSession* session = player->getSession())
         {
-            MapCell* cell = getCell(posX, posY);
-            if (cell && cell->hasPlayers())
-            {
-                iter = cell->Begin();
-                iend = cell->End();
-                for (; iter != iend; ++iter)
-                {
-                    if ((*iter)->isPlayer())
-                    {
-                        //TO< Player* >(*iter)->getSession()->SendPacket(packet);
-                        if ((*iter)->GetPhase() & obj->GetPhase())
-                            static_cast<Player*>(*iter)->getSession()->sendChatPacket(packet, lang, originator);
-                    }
-                }
-            }
+            session->sendChatPacket(packet, lang, originator);
+        }
+        else
+        {
+            sLogger.failure("sendChatMessageToCellPlayers: invalid session for player {}", guid.getCounter());
         }
     }
 }
@@ -2067,39 +2410,65 @@ void WorldMap::sendPvPCaptureMessage(int32_t ZoneMask, uint32_t ZoneId, const ch
     vsnprintf(msgbuf, 200, Message, ap);
     va_end(ap);
 
-    for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
-    {
-        Player* plr = itr->second;
-        ++itr;
+    thread_local std::vector<Player*> s_players;
+    registry_->snapshotPlayers(s_players);
+    registry_->forEachPinned(s_players, [&](Player& player)
+        {
+            if (player.getWorldMap() != this)
+                return;
 
-        if ((ZoneMask != ZONE_MASK_ALL && plr->getZoneId() != static_cast<uint32_t>(ZoneMask)))
-            continue;
+            if ((ZoneMask != ZONE_MASK_ALL && player.getZoneId() != static_cast<uint32_t>(ZoneMask)))
+                return;
 
-        SmsgDefenseMessage managedPacket(ZoneId, msgbuf);
-        plr->getSession()->sendManagedPacket(managedPacket);
-    }
+            SmsgDefenseMessage managedPacket(ZoneId, msgbuf);
+            player.getSession()->sendManagedPacket(managedPacket);
+        });
 }
 
 void WorldMap::sendPacketToAllPlayers(WorldPacket* packet) const
 {
-    for (const auto& itr : m_PlayerStorage)
-    {
-        Player* p = itr.second;
+    if (!packet)
+        return;
 
-        if (p->getSession() != nullptr)
-            p->getSession()->SendPacket(packet);
-    }
+    thread_local std::vector<Player*> s_players;
+    registry_->snapshotPlayers(s_players);
+
+    registry_->forEachPinned(s_players, [&](Player& player)
+        {
+            if (player.getWorldMap() != this) return;
+
+            if (WorldSession* session = player.getSession())
+                session->SendPacket(packet);
+            else
+                sLogger.failure("sendPacketToAllPlayers: invalid session for player {}", player.getGuidLow());
+        });
 }
 
 void WorldMap::sendPacketToPlayersInZone(uint32_t zone, WorldPacket* packet) const
 {
-    for (const auto& itr : m_PlayerStorage)
-    {
-        Player* p = itr.second;
+    if (!packet)
+        return;
 
-        if ((p->getSession() != nullptr) && (p->getZoneId() == zone))
-            p->getSession()->SendPacket(packet);
-    }
+    thread_local std::vector<Player*> s_players;
+    registry_->snapshotPlayers(s_players);
+
+    registry_->forEachPinned(s_players, [&](Player& player)
+        {
+            if (player.getWorldMap() != this)
+                return;
+
+            if (player.getZoneId() != zone)
+                return;
+
+            if (WorldSession* session = player.getSession())
+            {
+                session->SendPacket(packet);
+            }
+            else
+            {
+                sLogger.failure("sendPacketToPlayersInZone: invalid session for player {}", player.getGuidLow());
+            }
+        });
 }
 
 InstanceScript* WorldMap::getScript()
@@ -2125,402 +2494,110 @@ void WorldMap::callScriptUpdate()
     }
 };
 
-void WorldMap::loadRespawnTimes()
+void WorldMap::updateObjects()
 {
-    // Load Saved Respawns
-    auto result = CharacterDatabase.query("SELECT type, spawnId, respawnTime FROM respawn WHERE mapId = %u AND instanceId = %u", getBaseMap()->getMapId(), getInstanceId());
-    if (!result)
-        return;
+    std::scoped_lock<std::mutex> lock(m_updateMutex);
 
-    do
+    if (!_updates.size() && !_processQueue.size())
     {
-        Field* fields = result->fetch();
-        SpawnObjectType type = SpawnObjectType(fields[0].asUint16());
-        uint32_t spawnId = fields[1].asUint32();
-        uint64_t respawnTime = fields[2].asUint64();
+        initialCreateValueUpdateSuppress_.clear();
+        return;
+    }
 
-        if (type == SPAWN_TYPE_CREATURE)
+    ByteBuffer update(2500);
+    uint32_t count = 0;
+
+    for (auto pObj : _updates)
+    {
+        if (pObj == nullptr)
+            continue;
+
+        if (pObj->isItem() || pObj->isContainer())
         {
-            const auto& creature_spawns = sMySQLStore._creatureSpawnsStore[getBaseMap()->getMapId()];
-            if (creature_spawns.size())
+            // our update is only sent to the owner here.
+            Player* pOwner = static_cast<Item*>(pObj)->getOwner();
+            if (pOwner != nullptr)
             {
-                for (auto const& spawn : creature_spawns)
+                count = pObj->BuildValuesUpdateBlockForPlayer(&update, pOwner);
+                // send update to owner
+                if (count)
                 {
-                    if (spawn->id == spawnId)
-                        saveRespawnTime(type, spawnId, spawn->entry, time_t(respawnTime), spawn->x, spawn->y, true);
-                }
-            }
-        }
-        else if (type == SPAWN_TYPE_GAMEOBJECT)
-        {
-            const auto& gameobject_spawns = sMySQLStore._gameobjectSpawnsStore[getBaseMap()->getMapId()];
-            if (gameobject_spawns.size())
-            {
-                for (auto const& spawn : gameobject_spawns)
-                {
-                    if (spawn->id == spawnId)
-                        saveRespawnTime(type, spawnId, spawn->entry, time_t(respawnTime), spawn->spawnPoint.x, spawn->spawnPoint.y, true);
+                    pOwner->getUpdateMgr().pushUpdateData(&update, count);
+                    update.clear();
                 }
             }
         }
         else
         {
-            sLogger.debug("Loading saved respawn time of {} for spawnid ({}, {}) - invalid spawn type, ignoring", respawnTime, static_cast<uint32_t>(type), spawnId);
-        }
-
-    } while (result->nextRow());
-}
-
-RespawnInfoMap& WorldMap::getRespawnMapForType(SpawnObjectType type)
-{
-    if (type == SPAWN_TYPE_CREATURE)
-        return _creatureRespawnTimesBySpawnId;
-
-    return _gameObjectRespawnTimesBySpawnId;
-}
-
-RespawnInfoMap const& WorldMap::getRespawnMapForType(SpawnObjectType type) const
-{
-    if (type == SPAWN_TYPE_CREATURE)
-        return _creatureRespawnTimesBySpawnId;
-
-    return _gameObjectRespawnTimesBySpawnId;
-}
-
-time_t WorldMap::getRespawnTime(SpawnObjectType type, uint32_t spawnId) const
-{
-    auto const& map = getRespawnMapForType(type);
-    auto it = map.find(spawnId);
-    return (it == map.end()) ? 0 : it->second->time;
-}
-
-void WorldMap::saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t entry, time_t respawnTime, float cellX, float cellY, bool startup)
-{
-    if (!respawnTime)
-    {
-        // Delete only
-        removeRespawnTime(type, spawnId);
-        return;
-    }
-
-    RespawnInfo ri{};
-    ri.type = type;
-    ri.spawnId = spawnId;
-    ri.entry = entry;
-    ri.time = respawnTime;
-    ri.obj = nullptr;
-    ri.cellX = cellX;
-    ri.cellY = cellY;
-
-    bool success = addRespawn(ri);
-    if (startup)
-    {
-        if (!success)
-            sLogger.failure("Attempt to load saved respawn {} for ({},{}) failed - duplicate respawn? Skipped.", respawnTime, static_cast<uint32_t>(type), spawnId);
-    }
-    else if (success)
-    {
-        saveRespawnDB(ri);
-    }
-}
-
-void WorldMap::saveRespawnDB(RespawnInfo const& info)
-{
-    CharacterDatabase.execute("REPLACE INTO respawn (type, spawnId, respawnTime, mapId, instanceId) VALUES (%u, %u, %u, %u, %u)", info.type, info.spawnId, uint64_t(info.time), getBaseMap()->getMapId(), getInstanceId());
-}
-
-bool WorldMap::addRespawn(RespawnInfo const& info)
-{
-    if (!info.spawnId)
-    {
-        sLogger.failure("Attempt to insert respawn info for zero spawn id (type {})", uint32_t(info.type));
-        return false;
-    }
-
-    RespawnInfoMap& bySpawnIdMap = getRespawnMapForType(info.type);
-
-    // check if we already have the maximum possible number of respawns scheduled
-    if (info.type == SPAWN_TYPE_CREATURE || info.type == SPAWN_TYPE_GAMEOBJECT)
-    {
-        auto it = bySpawnIdMap.find(info.spawnId);
-        if (it != bySpawnIdMap.end()) // spawnid already has a respawn scheduled
-        {
-            RespawnInfo const* existing = it->second;
-            if (info.time <= existing->time) // delete existing in this case
-                deleteRespawn(existing);
-            else
-                return false;
-        }
-    }
-    else
-    {
-        sLogger.failure("Invalid respawn info for spawn id ({},{}) being inserted", uint32_t(info.type), info.spawnId);
-    }
-
-    auto ri = std::make_unique<RespawnInfo>(info);
-    bySpawnIdMap.emplace(ri->spawnId, ri.get());
-    _respawnTimes.emplace(std::move(ri));
-    return true;
-}
-
-RespawnInfo* WorldMap::getRespawnInfo(SpawnObjectType type, uint32_t spawnId) const
-{
-    RespawnInfoMap const& map = getRespawnMapForType(type);
-    auto it = map.find(spawnId);
-    if (it == map.end())
-        return nullptr;
-    return it->second;
-}
-
-void WorldMap::unloadAllRespawnInfos()
-{
-    _respawnTimes.clear();
-    _creatureRespawnTimesBySpawnId.clear();
-    _gameObjectRespawnTimesBySpawnId.clear();
-}
-
-
-void WorldMap::removeRespawnTime(SpawnObjectType type,uint32_t spawnId)
-{
-    if (RespawnInfo* info = getRespawnInfo(type, spawnId))
-        deleteRespawn(info);
-}
-
-void WorldMap::deleteRespawn(RespawnInfo const* info)
-{
-    // Delete from all relevant containers to ensure consistency
-    ASSERT(info);
-
-    // spawnid store
-    auto& spawnMap = getRespawnMapForType(info->type);
-    auto range = spawnMap.equal_range(info->spawnId);
-    auto it = std::find_if(range.first, range.second, [info](RespawnInfoMap::value_type const& pair) { return (pair.second == info); });
-    ASSERT(it != range.second);
-    spawnMap.erase(it);
-
-    // database
-    deleteRespawnFromDB(info->type, info->spawnId);
-
-    // respawn heap and cleanup the object
-    _respawnTimes.remove(info);
-}
-
-void WorldMap::deleteRespawnTimesInDB(uint32_t mapId, uint32_t instanceId)
-{
-    CharacterDatabase.execute("DELETE FROM respawn WHERE mapId = %u AND instanceId = %u", mapId, instanceId);
-}
-
-void WorldMap::deleteRespawnFromDB(SpawnObjectType type, uint32_t spawnId)
-{
-    CharacterDatabase.execute("DELETE FROM respawn WHERE type = %u AND spawnId = %u AND mapId = %u AND instanceId = %u", type, spawnId, getBaseMap()->getMapId(), getInstanceId());
-}
-
-bool WorldMap::checkRespawn(RespawnInfo* info)
-{
-    bool doDelete = false;
-    switch (info->type)
-    {
-        case SPAWN_TYPE_CREATURE:
-        {
-            if (_sqlids_creatures.find(info->spawnId) != _sqlids_creatures.end())
-                doDelete = true;
-            break;
-        }
-        case SPAWN_TYPE_GAMEOBJECT:
-        {
-            if (_sqlids_gameobjects.find(info->spawnId) != _sqlids_gameobjects.end())
-                doDelete = true;
-            break;
-        }
-        default:
-        {
-            sLogger.failure("Invalid spawn type {} with spawnId {} on map {}", uint32_t(info->type), info->spawnId, getBaseMap()->getMapId());
-            return true;
-        }
-    }
-
-    if (doDelete)
-    {
-        info->time = 0;
-        return false;
-    }
-
-    // everything ok, let's spawn
-    return true;
-}
-
-void WorldMap::doRespawn(SpawnObjectType type, Object* object, uint32_t spawnId, float cellX, float cellY)
-{
-    deleteRespawnFromDB(type, spawnId);
-    
-    MapCell* cell = getCellByCoords(cellX, cellY);
-    if (cell == nullptr) //cell got deleted while waiting for respawn.
-        return;
-
-    switch (type)
-    {
-        case SPAWN_TYPE_CREATURE:
-        {
-            if (object)
+            if (pObj->IsInWorld())
             {
-                Creature* obj = object->ToCreature();
-                if (obj)
+                // players have to receive their own updates ;)
+                if (pObj->isPlayer())
                 {
-                    auto itr = cell->_respawnObjects.find(obj);
-                    if (itr != cell->_respawnObjects.end())
+                    // need to be different! ;)
+                    count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(pObj));
+                    if (count)
                     {
-                        obj->m_respawnCell = nullptr;
-                        cell->_respawnObjects.erase(itr);
-                        obj->OnRespawn(this);
+                        static_cast<Player*>(pObj)->getUpdateMgr().pushUpdateData(&update, count);
+                        update.clear();
                     }
                 }
-            }
-            break;
-        }
-        case SPAWN_TYPE_GAMEOBJECT:
-        {
-            if (object)
-            {
-                GameObject* obj = object->ToGameObject();
-                if (obj)
-                {
-                    auto itr = cell->_respawnObjects.find(obj);
-                    if (itr != cell->_respawnObjects.end())
-                    {
-                        obj->m_respawnCell = nullptr;
-                        cell->_respawnObjects.erase(itr);
-                        obj->PushToWorld(this);
-                    }
-                }
-            }
-            else
-            {
-                for (auto& GameobjectSpawn : sMySQLStore._gameobjectSpawnsStore[getBaseMap()->getMapId()])
-                {
-                    if (GameobjectSpawn && GameobjectSpawn->id == spawnId)
-                    {
-                        GameObject* obj = createGameObject(GameobjectSpawn->entry);
-                        if (!obj->loadFromDB(GameobjectSpawn, this, true))
-                            delete obj;
-                    }
-                }
-            }
-            break;
-        }
-        default:
-        {
-            sLogger.failure("Invalid spawn type {} (spawnid {}) on map {}", static_cast<uint32_t>(type), spawnId, getBaseMap()->getMapId());
-        }
-    }
-}
 
-void WorldMap::addCorpseDespawn(uint64_t guid, time_t time)
-{
-    const auto now = Util::getTimeNow();
-    _corpseDespawnTimes.emplace(now + time, guid);
-}
-
-void WorldMap::flushPendingObjectUpdate(Object* pObj)
-{
-    if (pObj == nullptr)
-        return;
-
-    ByteBuffer update(2500);
-    uint32_t count = 0;
-
-    if (pObj->isItem() || pObj->isContainer())
-    {
-        // our update is only sent to the owner here.
-        Player* pOwner = static_cast<Item*>(pObj)->getOwner();
-        if (pOwner != nullptr)
-        {
-            count = pObj->BuildValuesUpdateBlockForPlayer(&update, pOwner);
-            // send update to owner
-            if (count)
-            {
-                pOwner->getUpdateMgr().pushUpdateData(&update, count);
+                // build the update
+                count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(nullptr));
                 update.clear();
-            }
-        }
-    }
-    else
-    {
-        if (pObj->IsInWorld())
-        {
-            // players have to receive their own updates ;)
-            if (pObj->isPlayer())
-            {
-                // need to be different! ;)
-                count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(pObj));
+
                 if (count)
                 {
-                    static_cast<Player*>(pObj)->getUpdateMgr().pushUpdateData(&update, count);
-                    update.clear();
-                }
-            }
-            else if (pObj->isCreatureOrPlayer() && static_cast<Unit*>(pObj)->m_playerControler != nullptr)
-            {
-                count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Unit*>(pObj)->m_playerControler);
-                if (count)
-                {
-                    static_cast<Unit*>(pObj)->m_playerControler->getUpdateMgr().pushUpdateData(&update, count);
-                    update.clear();
-                }
-            }
+                    thread_local std::vector<Player*> s_visibilityRecipients;
+                    collectVisibilityRecipientsForObject(pObj->GetNewGUID(), s_visibilityRecipients);
 
-            // build the update
-            count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(nullptr));
-            update.clear();
-
-            if (count)
-            {
-                for (const auto& itr : pObj->getInRangePlayersSet())
-                {
-                    Player* lplr = static_cast<Player*>(itr);
-
-                    // Make sure that the target player can see us.
-                    if (lplr && lplr->isVisibleObject(pObj->getGuid()))
+                    for (Player* lplr : s_visibilityRecipients)
                     {
-                        // Build correct update to each player
-                        // Data may differ from player to player
-                        pObj->BuildValuesUpdateBlockForPlayer(&update, lplr);
-                        lplr->getUpdateMgr().pushUpdateData(&update, count);
+                        if (!lplr)
+                            continue;
+
+                        // Players already receive their own update in the dedicated branch above.
+                        if (pObj->isPlayer() && lplr == pObj)
+                            continue;
+
+                        const uint64_t viewerRaw = lplr->GetNewGUID().getRawGuid();
+                        const uint64_t objectRaw = pObj->GetNewGUID().getRawGuid();
+
+                        // The queued create packet already contains the initial values for
+                        // this recipient. Suppress exactly one normal value-update pass so
+                        // delayed visibility creates do not immediately replay stale/duplicate
+                        // GameObject, animation, dynamic flag, or combat-state values.
+                        if (shouldSuppressInitialValueUpdateForViewer(viewerRaw, objectRaw))
+                            continue;
+
+                        // Build the recipient-specific values. Remote visibility sources use
+                        // the same player recipient as normal visibility, so field filtering
+                        // remains player-correct.
+                        const uint32_t recipientCount = pObj->BuildValuesUpdateBlockForPlayer(&update, lplr);
+                        if (recipientCount)
+                            lplr->getUpdateMgr().pushUpdateData(&update, recipientCount);
                         update.clear();
                     }
                 }
             }
         }
+        pObj->ClearUpdateMask();
     }
-}
+    _updates.clear();
+    initialCreateValueUpdateSuppress_.clear();
 
-void WorldMap::updateObjects()
-{
+    // generate pending a9packets and send to clients.
+    for (auto it = _processQueue.begin(); it != _processQueue.end();)
     {
-        std::scoped_lock<std::mutex> lock(m_updateMutex);
+        Player* player = *it;
 
-        if (!_updates.size() && !_processQueue.size())
-            return;
+        auto it2 = it;
+        ++it;
 
-        for (auto pObj : _updates)
-        {
-            flushPendingObjectUpdate(pObj);
-            if (pObj != nullptr)
-                pObj->ClearUpdateMask();
-        }
-        _updates.clear();
-
-        // generate pending a9packets and send to clients.
-        for (auto it = _processQueue.begin(); it != _processQueue.end();)
-        {
-            Player* player = *it;
-
-            auto it2 = it;
-            ++it;
-
-            _processQueue.erase(it2);
-            if (player->getWorldMap() == this)
-                player->processPendingUpdates();
-        }
+        _processQueue.erase(it2);
+        if (player->getWorldMap() == this)
+            player->processPendingUpdates();
     }
 }
 
@@ -2559,85 +2636,11 @@ void WorldMap::removeCombatInProgress(uint64_t guid)
     _combatProgress.erase(guid);
 }
 
-bool WorldMap::addToMapMgr(Transporter* obj)
-{
-    std::scoped_lock<std::mutex> lock(m_transportsLock);
-
-    m_TransportStorage.insert(obj);
-    return true;
-}
-
-void WorldMap::removeFromMapMgr(Transporter* obj)
-{
-    std::scoped_lock<std::mutex> lock(m_transportsLock);
-
-    m_TransportStorage.erase(obj);
-    sTransportHandler.removeInstancedTransport(obj, getInstanceId());
-}
-
-void WorldMap::markDelayedRemoveFor(Transporter* transport, bool removeFromMap)
-{
-    std::scoped_lock<std::mutex> lock(m_delayedTransportLock);
-    auto itr = m_TransportDelayedRemoveStorage.find(transport);
-    if (itr != m_TransportDelayedRemoveStorage.end())
-    {
-        // If boolean is already set to true, do not set it to false
-        if (!itr->second)
-            itr->second = removeFromMap;
-
-        return;
-    }
-
-    m_TransportDelayedRemoveStorage.insert(std::make_pair(transport, removeFromMap));
-}
-
-void WorldMap::removeDelayedRemoveFor(Transporter* transport)
-{
-    std::scoped_lock<std::mutex> lock(m_delayedTransportLock);
-    m_TransportDelayedRemoveStorage.erase(transport);
-}
-
 void WorldMap::objectUpdated(Object* obj)
 {
     // set our fields to dirty stupid fucked up code in places.. i hate doing this but i've got to :<- burlex
     std::scoped_lock<std::mutex> lock(m_updateMutex);
     _updates.insert(obj);
-}
-
-float WorldMap::getUpdateDistance(Object* curObj, Object* obj, Player* plObj)
-{
-    static float no_distance = 0.0f;
-
-    // unlimited distance for people on same boat
-#if VERSION_STRING < Cata
-    if (curObj->isPlayer() && obj->isPlayer() && plObj != nullptr && plObj->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT) && plObj->obj_movement_info.transport_guid == curObj->obj_movement_info.transport_guid)
-        return no_distance;
-#else
-    if (curObj->isPlayer() && obj->isPlayer() && plObj != nullptr && plObj->obj_movement_info.transport_guid == curObj->obj_movement_info.transport_guid)
-        return no_distance;
-#endif
-    // unlimited distance for transporters (only up to 2 cells +/- anyway.)
-    if (curObj->GetTypeFromGUID() == HIGHGUID_TYPE_TRANSPORTER)
-        return no_distance;
-
-     // unlimited distance for Destructible Buildings (only up to 2 cells +/- anyway.)
-    if (curObj->isGameObject() && (static_cast<GameObject*>(curObj)->getGoType() == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING))
-        return no_distance;
-
-    // unlimited distance in Instances/Raids
-    if (getBaseMap()->isInstanceMap())
-        return no_distance;
-
-    //If the object announcing its position is a transport, or other special object, then deleting it from visible objects should be avoided. - By: VLack
-    if (obj->isGameObject() && (static_cast<GameObject*>(obj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
-        return no_distance;
-
-    //If the object we're checking for possible removal is a transport or other special object, and we are players on the same map, don't remove it, and add it whenever possible...
-    if (plObj && curObj->isGameObject() && (static_cast<GameObject*>(curObj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
-        return no_distance;
-
-    // normal distance
-    return m_VisibleDistance;
 }
 
 bool WorldMap::isRegularDifficulty()
@@ -2883,6 +2886,8 @@ void WorldMap::getFullTerrainStatusForPosition(uint32_t phaseMask, float x, floa
     VMAP::AreaAndLiquidData* wmoData = nullptr;
 
     TerrainTile* gmap = getTerrain()->getTile(x, y);
+    if (!gmap)
+        return;
 
     vmgr->getAreaAndLiquidData(getBaseMap()->getMapId(), x, y, z, reqLiquidType, vmapData);
     _dynamicTree.getAreaAndLiquidData(x, y, z, phaseMask, reqLiquidType, dynData);
@@ -3148,116 +3153,20 @@ float WorldMap::getGridHeight(float x, float y) const
     return VMAP_INVALID_HEIGHT_VALUE;
 }
 
-void WorldMap::addObjectToActiveSet(Object* obj)
-{
-    switch (obj->getObjectTypeId())
-    {
-        case TYPEID_UNIT:
-            activeCreatures.insert(static_cast<Creature*>(obj));
-            break;
-        case TYPEID_GAMEOBJECT:
-            activeGameObjects.insert(static_cast<GameObject*>(obj));
-            break;
-    }
-}
-
-void WorldMap::removeObjectFromActiveSet(Object* obj)
-{
-    switch (obj->getObjectTypeId())
-    {
-        case TYPEID_UNIT:
-        {
-            // Prevent Deletion of Current Update Iterator
-            if (creature_iterator != activeCreatures.end() && (*creature_iterator)->getGuid() == obj->getGuid())
-                ++creature_iterator;
-
-            activeCreatures.erase(static_cast<Creature*>(obj));
-        } break;
-        case TYPEID_GAMEOBJECT:
-        {
-            // Prevent Deletion of Current Update Iterator
-            if (gameObject_iterator != activeGameObjects.end() && (*gameObject_iterator)->getGuid() == obj->getGuid())
-                ++gameObject_iterator;
-
-            activeGameObjects.erase(static_cast<GameObject*>(obj));
-        } break;
-    }
-}
-
-PlayerStorageMap const& WorldMap::getPlayers() const { return m_PlayerStorage; }
-CreaturesStorageMap const& WorldMap::getCreatures() const { return m_CreatureStorage; }
-PetStorageMap const& WorldMap::getPets() const { return m_PetStorage; }
-GameObjectStorageMap const& WorldMap::getGameObjects() const { return m_GameObjectStorage; }
-DynamicObjectStorageMap const& WorldMap::getDynamicObjects() const { return m_DynamicObjectStorage; }
-TransportsContainer const& WorldMap::getTransports() const { return m_TransportStorage; }
-
 void WorldMap::respawnBossLinkedGroups(uint32_t bossId)
 {
-    // Get all Killed npcs out of Killed npc Store
-    for (Creature* spawn : sMySQLStore.getSpawnGroupDataByBoss(bossId))
+    for (uint32_t spawnId : sMySQLStore.getSpawnGroupDataByBoss(bossId))
     {
-        if (spawn && spawn->m_spawn && spawn->getSpawnId())
+        const SpawnGroupTemplateData* group = sMySQLStore.getSpawnGroupDataBySpawn(spawnId);
+        if (!group || !(group->spawnFlags & SPAWFLAG_FLAG_BOUNDTOBOSS))
+            continue;
+
+        if (Creature* creature = getSpawnManager().findLiveCreature(spawnId);
+            creature && creature->isAlive())
         {
-            // Get the Group Data and see if we have to Respawn the npcs
-            auto data = sMySQLStore.getSpawnGroupDataBySpawn(spawn->getSpawnId());
-
-            if (data && data->spawnFlags & SPAWFLAG_FLAG_BOUNDTOBOSS)
-            {
-                // Respawn the Npc
-                if (spawn->IsInWorld() && !spawn->isAlive())
-                {
-                    spawn->Despawn(0, 1000);
-                }
-                else if (!spawn->isAlive())
-                {
-                    // get the cell with our SPAWN location. if we've moved cell this might break :P
-                    MapCell* pCell = getCellByCoords(spawn->GetSpawnX(), spawn->GetSpawnY());
-                    if (pCell == nullptr)
-                        pCell = spawn->GetMapCell();
-
-                    if (pCell != nullptr)
-                    {
-                        pCell->_respawnObjects.insert(spawn);
-
-                        sEventMgr.RemoveEvents(spawn);
-                        doRespawn(SPAWN_TYPE_CREATURE, spawn, spawn->getSpawnId(), pCell->getPositionX(), pCell->getPositionY());
-
-                        spawn->SetPosition(spawn->GetSpawnPosition(), true);
-                        spawn->m_respawnCell = pCell;
-                    }
-                }
-            }
+            continue;
         }
-    }
-}
 
-void WorldMap::spawnManualGroup(uint32_t groupId)
-{
-    auto data = sMySQLStore.getSpawnGroupDataByGroup(groupId);
-
-    if (data)
-    {
-        for (auto& spawns : data->spawns)
-        {
-            if (auto creature = spawns.second)
-            {
-                creature->PrepareForRemove();
-
-                // get the cell with our SPAWN location. if we've moved cell this might break :P
-                MapCell* pCell = getCellByCoords(creature->GetSpawnX(), creature->GetSpawnY());
-                if (pCell == nullptr)
-                    pCell = creature->GetMapCell();
-
-                if (pCell != nullptr)
-                {
-                    pCell->_respawnObjects.insert(creature);
-
-                    sEventMgr.RemoveEvents(creature);
-                    doRespawn(SPAWN_TYPE_CREATURE, creature, creature->getSpawnId(), pCell->getPositionX(), pCell->getPositionY());
-                    creature->SetPosition(creature->GetSpawnPosition(), true);
-                    creature->m_respawnCell = pCell;
-                }
-            }
-        }
+        getSpawnManager().respawnNow(SPAWN_TYPE_CREATURE, spawnId);
     }
 }

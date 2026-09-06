@@ -13,6 +13,7 @@ BattlegroundMap::BattlegroundMap(BaseMap* baseMap, uint32_t id, uint32_t expiry,
 {
     //lets initialize visibility distance for Battlegrounds/Arenas
     BattlegroundMap::initVisibilityDistance();
+    syncVisibilitySubscriptionRadius();
 }
 
 BattlegroundMap::~BattlegroundMap()
@@ -44,7 +45,7 @@ void BattlegroundMap::update(uint32_t t_diff)
 void BattlegroundMap::initVisibilityDistance()
 {
     //init visibility distance for Battlegrounds/Arenas
-    m_VisibleDistance = 500 * 500;
+    setVisibilityDistance(500.0f);
 }
 
 EnterState BattlegroundMap::cannotEnter(Player* player)

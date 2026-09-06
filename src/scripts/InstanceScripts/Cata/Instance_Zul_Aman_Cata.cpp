@@ -101,13 +101,13 @@ public:
 
     void OpenWindDoor()
     {
-        if (GameObject* pDoor = GetGameObjectByGuid(mWindDoorGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mWindDoorGuid))
             useDoorOrButton(pDoor);
     }
 
     void OpenLynxTempleExit()
     {
-        if (GameObject* pDoor = GetGameObjectByGuid(mLynxTempleExitGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mLynxTempleExitGuid))
             useDoorOrButton(pDoor);
     }
 
@@ -123,16 +123,16 @@ public:
         if (getBossState(DATA_HALAZZI) != EncounterStates::Performed)
             return;
 
-        if (GameObject* pDoor = GetGameObjectByGuid(mHexlordEntranceGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mHexlordEntranceGuid))
             useDoorOrButton(pDoor);
-        if (GameObject* pDoor = GetGameObjectByGuid(mHexlordWoodenDoorGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mHexlordWoodenDoorGuid))
             useDoorOrButton(pDoor);
     }
 
     // Opens the way to Daakara's summit after Hex Lord Malacrass.
     void OpenMassiveGate()
     {
-        if (GameObject* pDoor = GetGameObjectByGuid(mMassiveGateGuid))
+        if (GameObject* pDoor = getGameObjectByGuid(mMassiveGateGuid))
             useDoorOrButton(pDoor);
     }
 

@@ -44,7 +44,7 @@ public:
     // Start for each row in worldmap_info an Instance
     void initialize();
     void initializeInstanceIds();
-    EnterState canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* player, bool loginCheck = false);
+    EnterState canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* player, bool loginCheck = false, uint32_t requestedInstanceId = 0);
     void shutdown();
     void removeInstance(uint32_t instanceId);
     void addMapToRemovePool(WorldMap const* map);
@@ -68,6 +68,7 @@ public:
 
     // Multi
     WorldMap* findWorldMap(uint32_t mapId, uint32_t instanceId) const;
+    bool isBattlegroundLoginValid(uint32_t mapId, uint32_t instanceId, PlayerTeam team);
 
     // InstanceId Generation
     UniqueNumberPool instanceIdPool;

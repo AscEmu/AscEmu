@@ -18,10 +18,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Management/Battleground/Battleground.hpp"
 #include "Map/Maps/InstanceMap.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
+#include "Server/DatabaseDefinition.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 
 MapMgr::MapMgr() = default;
@@ -172,7 +174,7 @@ std::unique_ptr<WorldMap> MapMgr::createWorldMap(uint32_t mapId, uint32_t unload
     auto map = std::make_unique<WorldMap>(baseMap, mapId, unloadTime, 0, InstanceDifficulty::Difficulties::DUNGEON_NORMAL);
 
     // Load Saved Respawns when existing
-    map->loadRespawnTimes();
+    map->getSpawnManager().loadRespawnTimes();
 
     // Initialize Map Script and Load Static Spawns
     map->initialize();
@@ -192,7 +194,14 @@ WorldMap* MapMgr::findWorldMap(uint32_t mapid) const
 InstanceMap* MapMgr::findInstanceMap(uint32_t instanceId) const
 {
     const auto& iter = m_InstancedMaps.find(instanceId);
-    return (iter == m_InstancedMaps.end() ? nullptr : static_cast<InstanceMap*>(iter->second.get()));
+    if (iter == m_InstancedMaps.end())
+        return nullptr;
+
+    WorldMap* map = iter->second.get();
+    if (!map || !map->getBaseMap()->isInstanceMap())
+        return nullptr;
+
+    return static_cast<InstanceMap*>(map);
 }
 
 std::list<InstanceMap*> MapMgr::findInstancedMaps(uint32_t mapId)
@@ -210,87 +219,157 @@ std::list<InstanceMap*> MapMgr::findInstancedMaps(uint32_t mapId)
 
 WorldMap* MapMgr::findWorldMap(uint32_t mapId, uint32_t instanceId) const
 {
-    WorldMap* map = nullptr;
     BaseMap* baseMap = findBaseMap(mapId);
     if (!baseMap)
         return nullptr;
 
     if (baseMap->isInstanceableMap())
     {
-        map = findInstanceMap(instanceId);
+        const auto iter = m_InstancedMaps.find(instanceId);
+        if (iter == m_InstancedMaps.end())
+            return nullptr;
+
+        WorldMap* map = iter->second.get();
+        if (!map || map->getBaseMap()->getMapId() != mapId)
+            return nullptr;
+
+        return map;
     }
-    else if (instanceId == 0)
-    {
-        map = findWorldMap(mapId);
-    }
-    return map;
+
+    if (instanceId == 0)
+        return findWorldMap(mapId);
+
+    return nullptr;
 }
 
-WorldMap* MapMgr::createInstanceForPlayer(uint32_t mapId, Player* player, uint32_t loginInstanceId /*= 0*/)
+bool MapMgr::isBattlegroundLoginValid(uint32_t mapId, uint32_t instanceId, PlayerTeam team)
+{
+    std::scoped_lock<std::mutex> lock(m_mapsLock);
+
+    const auto iter = m_InstancedMaps.find(instanceId);
+    if (iter == m_InstancedMaps.end())
+        return false;
+
+    WorldMap* map = iter->second.get();
+    if (!map || map->getBaseMap()->getMapId() != mapId || !map->getBaseMap()->isBattlegroundOrArena())
+        return false;
+
+    auto* battlegroundMap = static_cast<BattlegroundMap*>(map);
+    Battleground* battleground = battlegroundMap->getBattleground();
+    if (!battleground || battleground->hasEnded())
+        return false;
+
+    return battleground->hasFreeSlots(team, battleground->getType());
+}
+
+WorldMap* MapMgr::createInstanceForPlayer(uint32_t mapId, Player* player, uint32_t requestedInstanceId /*= 0*/)
 {
     const auto& baseMap = findBaseMap(mapId);
-    if (baseMap == nullptr)
+    if (!baseMap || baseMap->isBattlegroundOrArena())
         return nullptr;
 
-    WorldMap* map = nullptr;
-    uint32_t newInstanceId = 0;
+    const auto difficulty = player->getGroup()
+        ? player->getGroup()->getDifficulty(baseMap->isRaid())
+        : player->getDifficulty(baseMap->isRaid());
 
-    if (baseMap->isBattlegroundOrArena())
+    InstancePlayerBind* playerBind = player->getBoundInstance(mapId, difficulty);
+    InstanceSaved* playerSave = playerBind ? playerBind->save : nullptr;
+
+    InstanceSaved* groupSave = nullptr;
+    if (Group* group = player->getGroup())
+    {
+        if (InstanceGroupBind* groupBind = group->getBoundInstance(baseMap))
+            groupSave = groupBind->save;
+    }
+
+    // A permanent character bind and a group bind may never point at different
+    // runs of the same instance.
+    if (playerBind && playerBind->perm && playerSave && groupSave &&
+        playerSave->getInstanceId() != groupSave->getInstanceId())
     {
         return nullptr;
     }
-    else
+
+    InstanceSaved* selectedSave = nullptr;
+
+    if (playerBind && playerBind->perm && playerSave)
+        selectedSave = playerSave;
+    else if (groupSave)
+        selectedSave = groupSave;
+    else if (playerSave)
+        selectedSave = playerSave;
+
+    // An explicit runtime instance is a constraint, not an override. Current
+    // player/group bindings remain authoritative.
+    if (requestedInstanceId && selectedSave &&
+        selectedSave->getInstanceId() != requestedInstanceId)
     {
-        InstancePlayerBind* pBind = player->getBoundInstance(baseMap->getMapId(), player->getDifficulty(baseMap->isRaid()));
-        InstanceSaved* pSave = pBind ? pBind->save : nullptr;
-
-        if (!pBind || !pBind->perm)
-        {
-            // if the player has a saved instance id on login,
-            // we use this instance
-            // or port him to the entrance
-            if (loginInstanceId)
-            {
-                map = findInstanceMap(loginInstanceId);
-                if (!map && pSave && pSave->getInstanceId() == loginInstanceId)
-                    map = createInstance(mapId, loginInstanceId, pSave, pSave->getDifficulty(), player->getTeam());
-                return map;
-            }
-
-            if (const auto group = player->getGroup())
-            {
-                if (const InstanceGroupBind* groupBind = group->getBoundInstance(baseMap))
-                {
-                    // solo instance saves should be reset when entering a group's instance
-                    player->unbindInstance(baseMap->getMapId(), player->getDifficulty(baseMap->isRaid()));
-                    pSave = groupBind->save;
-                }
-            }
-        }
-
-        if (pSave)
-        {
-            // solo/permanent/group saves
-            newInstanceId = pSave->getInstanceId();
-            map = findInstanceMap(newInstanceId);
-            if (!map)
-                map = createInstance(mapId, newInstanceId, pSave, pSave->getDifficulty(), player->getTeam());
-        }
-        else
-        {
-            // when we land here the Instance gets Created for the first Time
-            newInstanceId = instanceIdPool.generateId();
-            InstanceDifficulty::Difficulties diff = player->getGroup() ? player->getGroup()->getDifficulty(baseMap->isRaid()) : player->getDifficulty(baseMap->isRaid());
-            map = findInstanceMap(newInstanceId);
-            if (!map)
-                map = createInstance(mapId, newInstanceId, nullptr, diff, player->getTeam());
-        }
+        return nullptr;
     }
 
-    if (map)
-        sLogger.debug("MapMgr::createInstanceForPlayer Create Instance {} for Map {}", baseMap->getMapName(), mapId);
+    if (selectedSave)
+    {
+        const uint32_t selectedInstanceId = selectedSave->getInstanceId();
 
-    return map;
+        if (WorldMap* map = findInstanceMap(selectedInstanceId))
+            return map->getBaseMap()->getMapId() == mapId ? map : nullptr;
+
+        if (groupSave && playerBind && !playerBind->perm && playerSave &&
+            playerSave->getInstanceId() != groupSave->getInstanceId())
+        {
+            player->unbindInstance(mapId, difficulty);
+        }
+
+        return createInstance(
+            mapId,
+            selectedInstanceId,
+            selectedSave,
+            selectedSave->getDifficulty(),
+            player->getTeam());
+    }
+
+    if (requestedInstanceId)
+    {
+        // No current binding exists. Restore the exact stored run only while its
+        // persisted instance record is still valid.
+        if (WorldMap* map = findInstanceMap(requestedInstanceId))
+            return map->getBaseMap()->getMapId() == mapId ? map : nullptr;
+
+        InstanceSaved* requestedSave = sInstanceMgr.getInstanceSave(requestedInstanceId);
+
+        if (!requestedSave)
+        {
+            if (auto result = CharacterDatabase.query(
+                "SELECT difficulty, resettime FROM instance WHERE id = %u AND map = %u AND (resettime = 0 OR resettime > UNIX_TIMESTAMP())",
+                requestedInstanceId, mapId))
+            {
+                Field* fields = result->fetch();
+                const auto savedDifficulty = InstanceDifficulty::Difficulties(fields[0].asUint8());
+                const time_t resetTime = time_t(fields[1].asUint64());
+
+                requestedSave = sInstanceMgr.addInstanceSave(
+                    mapId,
+                    requestedInstanceId,
+                    savedDifficulty,
+                    resetTime,
+                    true,
+                    true);
+            }
+        }
+
+        if (!requestedSave || requestedSave->getMapId() != mapId)
+            return nullptr;
+
+        return createInstance(
+            mapId,
+            requestedInstanceId,
+            requestedSave,
+            requestedSave->getDifficulty(),
+            player->getTeam());
+    }
+
+    const uint32_t newInstanceId = instanceIdPool.generateId();
+    return createInstance(mapId, newInstanceId, nullptr, difficulty, player->getTeam());
 }
 
 InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, InstanceSaved* save, InstanceDifficulty::Difficulties difficulty, PlayerTeam InstanceTeam)
@@ -330,7 +409,7 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
     auto map = std::make_unique<InstanceMap>(baseMap, mapId, worldConfig.server.mapUnloadTime * 1000, InstanceId, difficulty, InstanceTeam);
 
     // Load Saved Respawns when existing
-    map->loadRespawnTimes();
+    map->getSpawnManager().loadRespawnTimes();
 
     // Initialize Map Script and Load Static Spawns
     map->initialize();
@@ -339,8 +418,9 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
     bool load_data = save != nullptr;
     map->createInstanceData(load_data);
     
-    // In Instances we load all Cells
-    map->updateAllCells(true);
+    // Instance scripts may address objects anywhere on the map, so keep every
+    // terrain-backed grid loaded. Client visibility remains distance based.
+    map->setAllGridsForcedActive(true);
 
     // Save pointer to InstanceMap to avoid casting later -Appled
     auto* instMap = map.get();
@@ -379,8 +459,9 @@ BattlegroundMap* MapMgr::createBattleground(uint32_t mapId)
     // Initialize Map Script and Load Static Spawns
     map->initialize();
 
-    // In Battlegrounds we load all Cells
-    map->updateAllCells(true);
+    // Battleground logic may address objects anywhere on the map, so keep every
+    // terrain-backed grid loaded. Client visibility remains distance based.
+    map->setAllGridsForcedActive(true);
 
     // Save pointer to BattlegroundMap to avoid casting later -Appled
     auto* bgMap = map.get();
@@ -402,21 +483,26 @@ WorldMap* MapMgr::createMap(uint32_t mapId, Player* player, uint32_t instanceId)
 
     if (baseMap)
     {
-        if (baseMap->isInstanceableMap())
+        if (baseMap->isBattlegroundOrArena())
         {
-            // instance check.
+            // Battleground and arena maps are created by their own manager.
+            // A transfer must resolve the exact existing runtime instance and
+            // must never try to create a normal dungeon instance for it.
+            map = instanceId ? findWorldMap(mapId, instanceId) : nullptr;
+        }
+        else if (baseMap->isInstanceableMap())
+        {
             map = createInstanceForPlayer(mapId, player, instanceId);
         }
         else
         {
-            // main continent check.
             map = findWorldMap(mapId);
         }
     }
     return map;
 }
 
-EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* player, bool loginCheck)
+EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* player, bool loginCheck, uint32_t requestedInstanceId)
 {
     WDB::Structures::MapEntry const* entry = sMapStore.lookupEntry(mapid);
     if (!entry)
@@ -425,89 +511,150 @@ EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* pla
     if (!entry->isInstanceMap())
         return CAN_ENTER;
 
+    if (entry->isBattlegroundOrArena())
+    {
+        if (!requestedInstanceId)
+            return CANNOT_ENTER_INSTANCE_BIND_MISMATCH;
+
+        WorldMap* battlegroundMap = findWorldMap(mapid, requestedInstanceId);
+        if (!battlegroundMap || !battlegroundMap->getBaseMap()->isBattlegroundOrArena())
+            return CANNOT_ENTER_INSTANCE_BIND_MISMATCH;
+
+        return CAN_ENTER;
+    }
+
     MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(mapid);
-    if (!mapInfo && mapInfo->isWorldMap())
+    if (!mapInfo)
         return CANNOT_ENTER_UNINSTANCED_DUNGEON;
 
-    InstanceDifficulty::Difficulties targetDifficulty, requestedDifficulty;
-    targetDifficulty = requestedDifficulty = player->getDifficulty(entry->isRaid());
+    const auto group = player->getGroup();
+    InstanceDifficulty::Difficulties targetDifficulty = group
+        ? group->getDifficulty(entry->isRaid())
+        : player->getDifficulty(entry->isRaid());
 
 #if VERSION_STRING > TBC
-    // Get the highest available difficulty if current setting is higher than the instance allows
     WDB::Structures::MapDifficulty const* mapDiff = getDownscaledMapDifficultyData(entry->id, targetDifficulty);
     if (!mapDiff)
         return CANNOT_ENTER_DIFFICULTY_UNAVAILABLE;
 #endif
 
-    //Bypass checks for GMs
     if (player->isGMFlagSet())
         return CAN_ENTER;
 
-    //Other requirements
-    if (!mapInfo || !mapInfo->hasFlag(WMI_INSTANCE_ENABLED))
+    if (!mapInfo->hasFlag(WMI_INSTANCE_ENABLED))
         return CANNOT_ENTER_UNSPECIFIED_REASON;
 
-    if (mapInfo->hasFlag(WMI_INSTANCE_XPACK_01) && !player->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_01) && !player->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
+    if (mapInfo->hasFlag(WMI_INSTANCE_XPACK_01) &&
+        !player->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_01) &&
+        !player->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
+    {
         return CANNOT_ENTER_XPACK01;
+    }
 
-    if (mapInfo->hasFlag(WMI_INSTANCE_XPACK_02) && !player->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
+    if (mapInfo->hasFlag(WMI_INSTANCE_XPACK_02) &&
+        !player->getSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
+    {
         return CANNOT_ENTER_XPACK02;
+    }
 
     if (minLevel && player->getLevel() < minLevel)
         return CANNOT_ENTER_MIN_LEVEL;
 
-    if (mapInfo->required_quest_A && (player->getTeam() == TEAM_ALLIANCE) && !player->hasQuestFinished(mapInfo->required_quest_A))
+    if (mapInfo->required_quest_A && player->getTeam() == TEAM_ALLIANCE &&
+        !player->hasQuestFinished(mapInfo->required_quest_A))
+    {
         return CANNOT_ENTER_ATTUNE_QA;
+    }
 
-    if (mapInfo->required_quest_H && (player->getTeam() == TEAM_HORDE) && !player->hasQuestFinished(mapInfo->required_quest_H))
+    if (mapInfo->required_quest_H && player->getTeam() == TEAM_HORDE &&
+        !player->hasQuestFinished(mapInfo->required_quest_H))
+    {
         return CANNOT_ENTER_ATTUNE_QH;
+    }
 
-    if (mapInfo->required_item && !player->getItemInterface()->GetItemCount(mapInfo->required_item, true))
+    if (mapInfo->required_item &&
+        !player->getItemInterface()->GetItemCount(mapInfo->required_item, true))
+    {
         return CANNOT_ENTER_ATTUNE_ITEM;
+    }
 
     if (player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC &&
-        mapInfo->isMultimodeDungeon()
-        && ((mapInfo->heroic_key_1 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_1, false))
-            && (mapInfo->heroic_key_2 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_2, false))
-            )
-        )
+        mapInfo->isMultimodeDungeon() &&
+        ((mapInfo->heroic_key_1 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_1, false)) &&
+         (mapInfo->heroic_key_2 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_2, false))))
+    {
         return CANNOT_ENTER_KEY;
+    }
 
-    if (!entry->isWorldMap() && player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC && player->getLevel() < mapInfo->minlevel_heroic)
+    if (!entry->isWorldMap() &&
+        player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC &&
+        player->getLevel() < mapInfo->minlevel_heroic)
+    {
         return CANNOT_ENTER_MIN_LEVEL_HC;
+    }
 
-    const auto group = player->getGroup();
-    if (entry->isRaid()) // can only enter in a raid group
-        if ((!group || !group->isRaidGroup()) && !player->m_cheats.hasTriggerpassCheat)
-            return CANNOT_ENTER_NOT_IN_RAID;
+    if (entry->isRaid() &&
+        (!group || !group->isRaidGroup()) &&
+        !player->m_cheats.hasTriggerpassCheat)
+    {
+        return CANNOT_ENTER_NOT_IN_RAID;
+    }
 
     if (!player->isAlive())
     {
-        // only let us enter when its the instance our corpse is in
-        uint32_t corpseInstance = player->getCorpseInstanceId();
-
-        const auto instance = sMapMgr.findWorldMap(mapid, corpseInstance);
-        if (instance == nullptr || instance->getBaseMap()->getMapId() != mapid)
+        if (!player->hasCorpseData() || player->getCorpseMapId() != mapid)
             return CANNOT_ENTER_CORPSE_IN_DIFFERENT_INSTANCE;
     }
 
-    //Get instance where player's group is bound & its map
-    if (!loginCheck && group)
+    InstancePlayerBind* playerBind = player->getBoundInstance(mapid, targetDifficulty);
+    InstanceSaved* playerSave = playerBind ? playerBind->save : nullptr;
+
+    InstanceSaved* groupSave = nullptr;
+    if (group)
     {
-        InstanceGroupBind* boundInstance = group->getBoundInstance(entry);
-        if (boundInstance && boundInstance->save)
-            if (WorldMap* boundMap = sMapMgr.findWorldMap(mapid, boundInstance->save->getInstanceId()))
-                if (EnterState denyReason = boundMap->cannotEnter(player))
-                    return denyReason;
+        if (InstanceGroupBind* groupBind = group->getBoundInstance(targetDifficulty, mapid))
+            groupSave = groupBind->save;
     }
 
-    // players are only allowed to enter 5 instances per hour
-    if (entry->isInstanceMap() && (!player->getGroup() || (player->getGroup() && !player->getGroup()->isLFGGroup())))
+    if (playerBind && playerBind->perm && playerSave && groupSave &&
+        playerSave->getInstanceId() != groupSave->getInstanceId())
     {
-        uint32_t instanceIdToCheck = 0;
-        if (InstanceSaved* save = player->getInstanceSave(mapid, entry->isRaid()))
-            instanceIdToCheck = save->getInstanceId();
+        return CANNOT_ENTER_INSTANCE_BIND_MISMATCH;
+    }
 
+    InstanceSaved* selectedSave = nullptr;
+    if (playerBind && playerBind->perm && playerSave)
+        selectedSave = playerSave;
+    else if (groupSave)
+        selectedSave = groupSave;
+    else if (playerSave)
+        selectedSave = playerSave;
+
+    if (requestedInstanceId && selectedSave &&
+        selectedSave->getInstanceId() != requestedInstanceId)
+    {
+        return CANNOT_ENTER_INSTANCE_BIND_MISMATCH;
+    }
+
+    if (!loginCheck)
+    {
+        uint32_t targetInstanceId = requestedInstanceId;
+        if (!targetInstanceId && selectedSave)
+            targetInstanceId = selectedSave->getInstanceId();
+
+        if (targetInstanceId)
+        {
+            if (WorldMap* targetMap = findWorldMap(mapid, targetInstanceId))
+            {
+                if (EnterState denyReason = targetMap->cannotEnter(player))
+                    return denyReason;
+            }
+        }
+    }
+
+    if (!group || !group->isLFGGroup())
+    {
+        const uint32_t instanceIdToCheck = selectedSave ? selectedSave->getInstanceId() : requestedInstanceId;
         if (!player->checkInstanceCount(instanceIdToCheck) && !player->isDead())
             return CANNOT_ENTER_TOO_MANY_INSTANCES;
     }

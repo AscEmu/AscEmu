@@ -16,7 +16,7 @@ protected:
     std::list<GameObject*> m_gates;
     uint32_t m_reinforcements[2];
     bool m_nearingVictory[2];
-    std::map<Creature*, std::set<uint32_t> > Get_m_resurrectMap() const { return m_resurrectMap; }
+    std::map<Creature*, std::set<WoWGuid>> Get_m_resurrectMap() const { return m_resurrectMap; }
 
 public:
     AlteracValley(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t);

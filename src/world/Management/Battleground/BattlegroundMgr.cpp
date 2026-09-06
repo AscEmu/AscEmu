@@ -462,7 +462,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
     std::queue<uint32_t> teams[MAX_PLAYER_TEAMS];
 
     std::lock_guard queueLock(m_queueLock);
-    std::lock_guard instanceLock(m_instanceLock);
+    std::unique_lock instanceLock(m_instanceLock);
 
     for (uint32_t _bgType = 0; _bgType < BATTLEGROUND_NUM_TYPES; ++_bgType)
     {
@@ -590,7 +590,13 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
 
                 if (canCreateInstance(_bgType, _levelGroup))
                 {
+                    // createInstance() owns m_instanceLock while registering the new instance.
+                    // eventQueueUpdate() already holds it, so release it to avoid recursively
+                    // locking the same non-recursive mutex.
+                    instanceLock.unlock();
                     arena = dynamic_cast<Arena*>(createInstance(_bgType, _levelGroup));
+                    instanceLock.lock();
+
                     if (arena == nullptr)
                     {
                         sLogger.failure("{} ({}): Couldn't create Arena Instance", __FILE__, __LINE__);
@@ -697,7 +703,12 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
                 {
                     if (canCreateInstance(bgToStart, _levelGroup))
                     {
+                        // createInstance() registers the instance under m_instanceLock.
+                        // Do not hold the same mutex while calling it.
+                        instanceLock.unlock();
                         battleground = createInstance(bgToStart, _levelGroup);
+                        instanceLock.lock();
+
                         if (battleground == nullptr)
                             return;
 
@@ -809,41 +820,63 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
 
 void BattlegroundManager::removePlayerFromQueues(Player* player)
 {
-    if (player->getBgQueueType() >= BATTLEGROUND_NUM_TYPES)
+    if (!player)
+        return;
+
+    const uint32_t queueType = player->getBgQueueType();
+    if (queueType >= BATTLEGROUND_NUM_TYPES)
     {
-        sLogger.failure("BattlegroundManager::removePlayerFromQueues queueType {} is not valid!", BATTLEGROUND_NUM_TYPES);
+        sLogger.failure("BattlegroundManager::removePlayerFromQueues queueType {} is not valid!", queueType);
         return;
     }
 
-    std::lock_guard queueLock(m_queueLock);
+    const uint32_t levelGroup = player->getLevelGrouping();
+    const uint32_t playerGuid = player->getGuidLow();
 
-    sEventMgr.RemoveEvents(player, EVENT_BATTLEGROUND_QUEUE_UPDATE);
+    uint32_t groupId = 0;
+    if (auto group = player->getGroup())
+        groupId = group->GetID();
 
-    uint32_t lgroup = player->getLevelGrouping();
-
-    std::list<uint32_t>::iterator itr = m_queuedPlayers[player->getBgQueueType()][lgroup].begin();
-    while (itr != m_queuedPlayers[player->getBgQueueType()][lgroup].end())
     {
-        if (*itr == player->getGuidLow())
+        std::lock_guard queueLock(m_queueLock);
+
+        sEventMgr.RemoveEvents(player, EVENT_BATTLEGROUND_QUEUE_UPDATE);
+
+        auto& queue = m_queuedPlayers[queueType][levelGroup];
+        for (auto itr = queue.begin(); itr != queue.end(); ++itr)
         {
-            sLogger.debug("Removing player {} from queue instance {} type {}", player->getGuidLow(), player->getQueuedBgInstanceId(), player->getBgQueueType());
-            m_queuedPlayers[player->getBgQueueType()][lgroup].erase(itr);
-            break;
+            if (*itr == playerGuid)
+            {
+                sLogger.debug(
+                    "Removing player {} from queue instance {} type {}",
+                    playerGuid,
+                    player->getQueuedBgInstanceId(),
+                    queueType);
+
+                queue.erase(itr);
+                break;
+            }
         }
 
-        ++itr;
+        player->setIsQueuedForBg(false);
+        player->setBgTeam(player->getTeam());
+        player->setPendingBattleground(nullptr);
     }
 
-    player->setIsQueuedForBg(false);
-    player->setBgTeam(player->getTeam());
-    player->setPendingBattleground(nullptr);
-
+    // Packet/session work does not need the queue mutex.
     sendBattlefieldStatus(player, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
 
-    if (auto group = player->getGroup())
+    // removeGroupFromQueues() acquires m_queueLock itself. Calling it while
+    // removePlayerFromQueues() owns m_queueLock causes a recursive lock and
+    // std::system_error("resource deadlock would occur").
+    if (groupId != 0)
     {
-        sLogger.debug("Player {} removed whilst in a group. Removing players group {} from queue", player->getGuidLow(), group->GetID());
-        removeGroupFromQueues(group->GetID());
+        sLogger.debug(
+            "Player {} removed whilst in a group. Removing players group {} from queue",
+            playerGuid,
+            groupId);
+
+        removeGroupFromQueues(groupId);
     }
 }
 
@@ -948,6 +981,13 @@ uint32_t BattlegroundManager::getMaximumPlayers(uint32_t dbcIndex)
 
 Battleground* BattlegroundManager::createInstance(uint32_t type, uint32_t levelGroup)
 {
+    if (type >= BATTLEGROUND_NUM_TYPES)
+    {
+        sLogger.failure("BattlegroundManager", "Cannot create battleground with invalid type {} (max {}).",
+            type, BATTLEGROUND_NUM_TYPES - 1);
+        return nullptr;
+    }
+
     if (!m_bgMaps.contains(type))
     {
         if (!Battleground::isTypeArena(type))
@@ -1059,15 +1099,23 @@ Battleground* BattlegroundManager::createInstance(uint32_t type, uint32_t levelG
     // Call the create function
     iid = ++m_maxBattlegroundId[type];
     bg = cfunc(mgr, iid, levelGroup, type);
+    if (bg == nullptr)
+    {
+        sLogger.failure("BattlegroundManager", "Battleground factory returned nullptr for type {}, level group {}.",
+            type, levelGroup);
+        return nullptr;
+    }
+
     bg->SetIsWeekend(isWeekend);
     mgr->setBattleground(bg);
 
-    sEventMgr.AddEvent(bg, &Battleground::eventCreate, EVENT_BATTLEGROUND_QUEUE_UPDATE, 1, 1, 0);
-    sLogger.info("BattlegroundManager : Created battleground type {} for level group {}.", type, levelGroup);
+    {
+        std::lock_guard instanceLock(m_instanceLock);
+        m_instances[type].insert(std::make_pair(iid, bg));
+    }
 
-    // m_instanceLock is already held by the caller (eventQueueUpdate) - std::mutex is not
-    // recursive, so locking it again here deadlocks (crashes the WorldMap thread).
-    m_instances[type].insert(std::make_pair(iid, bg));
+    sLogger.info("BattlegroundManager : Created battleground type {} for level group {}.", type, levelGroup);
+    sEventMgr.AddEvent(bg, &Battleground::eventCreate, EVENT_BATTLEGROUND_QUEUE_UPDATE, 1, 1, 0);
 
     return bg;
 }
@@ -1077,8 +1125,8 @@ void BattlegroundManager::deleteBattleground(Battleground* battleground)
     uint32_t type = battleground->getType();
     uint32_t levelGroup = battleground->getLevelGroup();
 
-    std::lock_guard instanceLock(m_instanceLock);
     std::lock_guard queueLock(m_queueLock);
+    std::lock_guard instanceLock(m_instanceLock);
 
     m_instances[type].erase(battleground->getId());
 
