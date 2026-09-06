@@ -202,21 +202,14 @@ namespace {
     {
         sMapDifficultyMap.clear();
 
-        // Fill the map difficulty map with data from MapDifficultyStore if available Cata / MoP
-        for (uint32_t i = 0; i < sMapDifficultyStore.getNumRows(); ++i)
+        // Fill the map difficulty map with data from MapDifficultyStore if available wotlk / Cata / MoP
+        for (auto const& [id, entry] : sMapDifficultyStore)
         {
-            if (auto const* entry = sMapDifficultyStore.lookupEntry(i))
-            {
-                uint32_t const key = Util::MAKE_PAIR32(static_cast<uint16_t>(entry->mapId), static_cast<uint16_t>(entry->difficulty));
-                sMapDifficultyMap[key] = WDB::Structures::MapDifficulty(
-                    entry->raidDuration,
-                    entry->maxPlayers,
-                    !entry->message.empty()
-                );
-            }
+            uint32_t const key = Util::MAKE_PAIR32(static_cast<uint16_t>(entry.mapId), static_cast<uint16_t>(entry.difficulty));
+            sMapDifficultyMap[key] = WDB::Structures::MapDifficulty(entry.raidDuration, entry.maxPlayers, !entry.message.empty());
         }
 
-        // Fallback classic, tbc and wotlk, where MapDifficultyStore is not available
+        // Fallback classic and tbc, where MapDifficultyStore is not available
         if (sMapDifficultyStore.getNumRows() == 0)
         {
             for (uint32_t i = 0; i < sMapStore.getNumRows(); ++i)
