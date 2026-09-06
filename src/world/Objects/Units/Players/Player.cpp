@@ -7830,18 +7830,16 @@ void Player::updateChannels()
 #endif
 
     // Update only default channels
-    for (uint8_t i = 0; i < sChatChannelsStore.getNumRows(); ++i)
+    for (auto const& [id, channelEntry] : sChatChannelsStore)
     {
-        const auto channelDbc = sChatChannelsStore.lookupEntry(i);
-        if (channelDbc == nullptr)
-            continue;
+        auto const* channelDbc = &channelEntry;
 
         Channel* oldChannel = nullptr;
 
         m_mutexChannel.lock();
         for (auto _channel : m_channels)
         {
-            if (_channel->getChannelId() == i)
+            if (_channel->getChannelId() == id)
             {
                 // Found same channel
                 oldChannel = _channel;
@@ -7866,6 +7864,7 @@ void Player::updateChannels()
             {
                 // Join new channel
                 newChannel->attemptJoin(this, "", true);
+
                 // Leave old channel if it exists
                 if (oldChannel != nullptr)
                     oldChannel->leaveChannel(this, false);
@@ -11561,10 +11560,9 @@ void Player::sendSmsgInitialFactions()
 
 void Player::initialiseReputation()
 {
-    for (uint32_t i = 0; i < sFactionStore.getNumRows(); ++i)
+    for (auto const& [id, factionEntry] : sFactionStore)
     {
-        WDB::Structures::FactionEntry const* factionEntry = sFactionStore.lookupEntry(i);
-        addNewFaction(factionEntry, 0, true);
+        addNewFaction(&factionEntry, 0, true);
     }
 }
 

@@ -189,12 +189,9 @@ namespace {
         if (!areaMapCollection)
             return;
 
-        for (uint32_t i = 0; i < sMapStore.getNumRows(); ++i)
+        for (auto const& [id, mapObject] : sMapStore)
         {
-            if (auto const* mapObject = sMapStore.lookupEntry(i))
-            {
-                areaMapCollection->insert({mapObject->id, mapObject->linkedZone});
-            }
+            areaMapCollection->insert({ mapObject.id, mapObject.linkedZone });
         }
     }
 
@@ -220,25 +217,11 @@ namespace {
 
                 if (!entry.getResetTimeHeroic())
                 {
-                    sMapDifficultyMap[Util::MAKE_PAIR32(
-                        static_cast<uint16_t>(entry.id),
-                        InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] =
-                        WDB::Structures::MapDifficulty(
-                            entry.getResetTimeNormal(),
-                            maxPlayers,
-                            false
-                        );
+                    sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry.id), InstanceDifficulty::Difficulties::DUNGEON_NORMAL)] = WDB::Structures::MapDifficulty(entry.getResetTimeNormal(), maxPlayers, false);
                 }
                 else
                 {
-                    sMapDifficultyMap[Util::MAKE_PAIR32(
-                        static_cast<uint16_t>(entry.id),
-                        InstanceDifficulty::Difficulties::DUNGEON_HEROIC)] =
-                        WDB::Structures::MapDifficulty(
-                            entry.getResetTimeHeroic(),
-                            maxPlayers,
-                            false
-                        );
+                    sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry.id), InstanceDifficulty::Difficulties::DUNGEON_HEROIC)] = WDB::Structures::MapDifficulty(entry.getResetTimeHeroic(), maxPlayers, false);
                 }
             }
         }
@@ -756,17 +739,10 @@ bool loadDBCs()
         }
     );
 
-    for (uint32_t i = 0; i < sMapDifficultyStore.getNumRows(); ++i)
+    for (auto const& [id, entry] : sMapDifficultyStore)
     {
-        if (auto entry = sMapDifficultyStore.lookupEntry(i))
-        {
-            uint32_t key = Util::MAKE_PAIR32(static_cast<uint16_t>(entry->mapId), static_cast<uint16_t>(entry->difficulty));
-            sMapDifficultyMap[key] = WDB::Structures::MapDifficulty(
-                entry->raidDuration,
-                entry->maxPlayers,
-                !entry->message.empty()
-            );
-        }
+        uint32_t const key = Util::MAKE_PAIR32(static_cast<uint16_t>(entry.mapId), static_cast<uint16_t>(entry.difficulty));
+        sMapDifficultyMap[key] = WDB::Structures::MapDifficulty(entry.raidDuration, entry.maxPlayers, !entry.message.empty());
     }
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sNameGenStore, dbc_path, "NameGen.dbc");

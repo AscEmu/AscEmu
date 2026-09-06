@@ -2379,27 +2379,19 @@ Pet* ObjectMgr::createPet(uint32_t _entry, WDB::Structures::SummonPropertiesEntr
 
 void ObjectMgr::loadPetSpellCooldowns()
 {
-    for (uint32_t i = 0; i < sCreatureSpellDataStore.getNumRows(); ++i)
+    for (auto const& [id, creatureSpellData] : sCreatureSpellDataStore)
     {
-        const auto cretureSpellData = sCreatureSpellDataStore.lookupEntry(i);
-
         for (uint8_t j = 0; j < 3; ++j)
         {
-            if (cretureSpellData == nullptr)
+            uint32_t const spellId = creatureSpellData.spells[j];
+            uint32_t const cooldown = creatureSpellData.cooldowns[j] * 10;
+
+            if (spellId == 0)
                 continue;
 
-            uint32_t spellId = cretureSpellData->spells[j];
-            uint32_t cooldown = cretureSpellData->cooldowns[j] * 10;
-
-            if (spellId != 0)
-            {
-                auto petCooldownPair = m_petSpellCooldowns.find(spellId);
-                if (petCooldownPair == m_petSpellCooldowns.end())
-                {
-                    if (cooldown)
-                        m_petSpellCooldowns.insert(std::make_pair(spellId, cooldown));
-                }
-            }
+            auto const petCooldownPair = m_petSpellCooldowns.find(spellId);
+            if (petCooldownPair == m_petSpellCooldowns.end() && cooldown != 0)
+                m_petSpellCooldowns.emplace(spellId, cooldown);
         }
     }
 }
