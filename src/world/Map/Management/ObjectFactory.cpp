@@ -313,24 +313,26 @@ void ObjectFactory::transferWorld(Object* obj, WorldMap* newMap)
 
             newMap->getObjectFactory().finishTransferWorld(obj, transferPosition);
 
-            if (isTransporter)
-            {
-                auto* transporter = reinterpret_cast<Transporter*>(obj);
-
-                // Only teleport passengers after the transporter is fully attached
-                // to the destination map. This guarantees that players can see and
-                // remain attached to their transport when WORLDPORT_ACK is handled.
-                transporter->TeleportPlayers(
-                    transferPosition.x,
-                    transferPosition.y,
-                    transferPosition.z,
-                    transferPosition.o,
-                    newMapId,
-                    oldMapId,
-                    true,
-                    newMap);
-            }
+            
         });
+
+    if (isTransporter)
+    {
+        auto* transporter = reinterpret_cast<Transporter*>(obj);
+
+        // Only teleport passengers after the transporter is fully attached
+        // to the destination map. This guarantees that players can see and
+        // remain attached to their transport when WORLDPORT_ACK is handled.
+        transporter->TeleportPlayers(
+            transferPosition.x,
+            transferPosition.y,
+            transferPosition.z,
+            transferPosition.o,
+            newMapId,
+            oldMapId,
+            true,
+            newMap);
+    }
 }
 
 void ObjectFactory::finishTransferWorld(Object* obj, const LocationVector& transferPosition)

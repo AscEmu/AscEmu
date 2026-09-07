@@ -29,7 +29,7 @@ namespace
 {
     Player* resolvePlayer(uint64_t guid)
     {
-        return sObjectMgr.getPlayer(WoWGuid::getGuidLowPartFromUInt64(guid));
+        return sObjectMgr.getPlayer(WoWGuid::getLowGuidFromRaw(guid));
     }
 }
 
