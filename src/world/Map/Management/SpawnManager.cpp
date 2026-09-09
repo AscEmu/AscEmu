@@ -288,7 +288,7 @@ void SpawnManager::refreshTemplateFromObjectNoLock(SpawnState& state, Object* ob
     state.gameObjectOverridesMask = go->GetOverrides();
 }
 
-Object* SpawnManager::findLiveObject(const SpawnKey& key) const
+Object* SpawnManager::findSpawnObject(const SpawnKey& key) const
 {
     uint64_t guidRaw = 0;
     {
@@ -826,19 +826,20 @@ Creature* SpawnManager::spawnCreature(uint32_t entry, LocationVector const& pos,
         if (Object* object = m_worldMap.getObject(WoWGuid(existingGuid)))
         {
             if (object->IsInWorld())
+            {
+                sLogger.failure("SpawnMgr: creature DB spawn {} on map {} is already in world as guid {}.", row->id, m_worldMap.getBaseMap()->getMapId(), existingGuid);
                 return object->ToCreature();
-
-            spawnFromTemplate(key);
-            return object->ToCreature();
+            }
         }
-
-        std::unique_lock lk(m_mutex);
-        m_guidToSpawn.erase(existingGuid);
-        m_spawnToGuid.erase(key);
+        else
+        {
+            std::unique_lock lk(m_mutex);
+            m_guidToSpawn.erase(existingGuid);
+            m_spawnToGuid.erase(key);
+        }
     }
 
-    spawnFromTemplate(key);
-    if (Object* object = findLiveObject(key))
+    if (Object* object = spawnFromTemplate(key))
         return object->ToCreature();
 
     return nullptr;
@@ -904,19 +905,20 @@ GameObject* SpawnManager::spawnGameObject(uint32_t entry, LocationVector const& 
         if (Object* object = m_worldMap.getObject(WoWGuid(existingGuid)))
         {
             if (object->IsInWorld())
+            {
+                sLogger.failure("SpawnMgr: gameobject DB spawn {} on map {} is already in world as guid {}.", row->id, m_worldMap.getBaseMap()->getMapId(), existingGuid);
                 return object->ToGameObject();
-
-            spawnFromTemplate(key);
-            return object->ToGameObject();
+            }
         }
-
-        std::unique_lock lk(m_mutex);
-        m_guidToSpawn.erase(existingGuid);
-        m_spawnToGuid.erase(key);
+        else
+        {
+            std::unique_lock lk(m_mutex);
+            m_guidToSpawn.erase(existingGuid);
+            m_spawnToGuid.erase(key);
+        }
     }
 
-    spawnFromTemplate(key);
-    if (Object* object = findLiveObject(key))
+    if (Object* object = spawnFromTemplate(key))
         return object->ToGameObject();
 
     return nullptr;
@@ -1038,7 +1040,7 @@ void SpawnManager::onGridUnload(int gid)
 
         /// Grid unload is only a world-lifetime transition, never a gameplay despawn.
         const bool retainInstance = !persistent;
-        deactivateLiveInstance(key, retainInstance, /*preserveDesiredState=*/true);
+        deactivateSpawnInstance(key, retainInstance, /*preserveDesiredState=*/true);
 
         if (homeGrid != gid && desired && !pending)
         {
@@ -1133,7 +1135,7 @@ uint32_t SpawnManager::spawnIdForGuid(uint64_t guidRaw) const
 
 Creature* SpawnManager::findLiveCreature(uint32_t spawnId) const
 {
-    Object* object = findLiveObject({ SPAWN_TYPE_CREATURE, spawnId });
+    Object* object = findSpawnObject({ SPAWN_TYPE_CREATURE, spawnId });
     return object && object->isCreature() ? static_cast<Creature*>(object) : nullptr;
 }
 
@@ -1380,8 +1382,8 @@ bool SpawnManager::respawnNow(SpawnObjectType type, uint32_t spawnId)
     if (!isGridActiveForDebug(homeGrid))
         return true;
 
-    if (Object* current = findLiveObject(key))
-        deactivateLiveInstance(key, /*retainInstance=*/!persistent, /*preserveDesiredState=*/true);
+    if (Object* current = findSpawnObject(key))
+        deactivateSpawnInstance(key, /*retainInstance=*/!persistent, /*preserveDesiredState=*/true);
 
     spawnFromTemplate(key);
     return true;
@@ -1451,7 +1453,7 @@ bool SpawnManager::isSpawnBlockedByBossState(const SpawnState& state) const
     return script->getBossStateByEntry(group->bossId) == Performed;
 }
 
-void SpawnManager::spawnFromTemplate(const SpawnKey& key)
+Object* SpawnManager::spawnFromTemplate(const SpawnKey& key)
 {
     SpawnState snapshot{};
     uint64_t retainedGuid = 0;
@@ -1461,19 +1463,19 @@ void SpawnManager::spawnFromTemplate(const SpawnKey& key)
 
         auto stateIt = m_spawns.find(key);
         if (stateIt == m_spawns.end())
-            return;
+            return nullptr;
 
         if (!stateIt->second.desiredInWorld)
-            return;
+            return nullptr;
 
         /// allowRespawn is intentionally not checked here. This function is also used
         /// to restore a still-living object after grid activation. A no-respawn summon
         /// remains desiredInWorld until its real death/despawn removes the SpawnState.
         if (!isGridActive(stateIt->second.homeGrid))
-            return;
+            return nullptr;
 
         if (stateIt->second.respawnPending && stateIt->second.respawnTime > std::time(nullptr))
-            return;
+            return nullptr;
 
         snapshot = stateIt->second;
 
@@ -1493,7 +1495,7 @@ void SpawnManager::spawnFromTemplate(const SpawnKey& key)
             std::unique_lock lk(m_mutex);
             auto stateIt = m_spawns.find(key);
             if (stateIt == m_spawns.end())
-                return;
+                return nullptr;
 
             stateIt->second.desiredInWorld = false;
             stateIt->second.respawnPending = false;
@@ -1510,7 +1512,7 @@ void SpawnManager::spawnFromTemplate(const SpawnKey& key)
         if (deletePersistentRespawn)
             deleteRespawnFromDB(key.type, key.id);
 
-        return;
+        return nullptr;
     }
 
     const bool wasRespawn = snapshot.respawnPending || snapshot.respawnTime != 0;
@@ -1522,7 +1524,7 @@ void SpawnManager::spawnFromTemplate(const SpawnKey& key)
         if (Object* retained = m_worldMap.getObject(WoWGuid(retainedGuid)))
         {
             if (retained->IsInWorld())
-                return;
+                return retained;
 
             /// Grid reloads and respawns always restore the object's home spawn position.
             if (key.type == SPAWN_TYPE_CREATURE)
@@ -1544,7 +1546,7 @@ void SpawnManager::spawnFromTemplate(const SpawnKey& key)
 
             m_objectFactory.attachToWorld(retained);
             if (!retained->IsInWorld())
-                return;
+                return nullptr;
 
             const int currentGrid = gridForPosition(retained->GetPosition());
 
@@ -1552,7 +1554,7 @@ void SpawnManager::spawnFromTemplate(const SpawnKey& key)
                 std::unique_lock lk(m_mutex);
                 auto stateIt = m_spawns.find(key);
                 if (stateIt == m_spawns.end())
-                    return;
+                    return nullptr;
 
                 stateIt->second.respawnPending = false;
                 stateIt->second.respawnTime = 0;
@@ -1565,7 +1567,7 @@ void SpawnManager::spawnFromTemplate(const SpawnKey& key)
                     creature->OnRespawn();
             }
 
-            return;
+            return retained;
         }
 
         /// Mapping survived but the registry no longer has the object: make it stale-free
@@ -1581,11 +1583,11 @@ void SpawnManager::spawnFromTemplate(const SpawnKey& key)
     {
         auto const* row = std::get_if<MySQLStructure::CreatureSpawn>(&snapshot.templateData);
         if (!row)
-            return;
+            return nullptr;
 
         Creature* creature = m_objectFactory.createCreatureFromSpawns(*row);
         if (!creature)
-            return;
+            return nullptr;
 
         creature->setLifecycleMap(&m_worldMap);
         creature->m_loadedFromDB = snapshot.persistent;
@@ -1596,11 +1598,11 @@ void SpawnManager::spawnFromTemplate(const SpawnKey& key)
     {
         auto const* row = std::get_if<MySQLStructure::GameobjectSpawn>(&snapshot.templateData);
         if (!row)
-            return;
+            return nullptr;
 
         GameObject* go = m_objectFactory.createGameObjectFromSpawns(*row);
         if (!go)
-            return;
+            return nullptr;
 
         go->setLifecycleMap(&m_worldMap);
         go->m_loadedFromDB = snapshot.persistent;
@@ -1623,7 +1625,7 @@ void SpawnManager::spawnFromTemplate(const SpawnKey& key)
     }
 
     if (!created)
-        return;
+        return nullptr;
 
     const uint64_t guidRaw = created->GetNewGUID().getRawGuid();
 
@@ -1634,14 +1636,17 @@ void SpawnManager::spawnFromTemplate(const SpawnKey& key)
         if (stateIt == m_spawns.end())
         {
             m_objectFactory.recycleAndDestroy(created, true);
-            return;
+            return nullptr;
         }
 
-        if (m_spawnToGuid.find(key) != m_spawnToGuid.end())
+        if (auto existingIt = m_spawnToGuid.find(key); existingIt != m_spawnToGuid.end())
         {
             /// Another path won the race. Never create a second instance for one SpawnKey.
+            const uint64_t winnerGuid = existingIt->second;
             m_objectFactory.recycleAndDestroy(created, true);
-            return;
+            lk.unlock();
+
+            return winnerGuid ? m_worldMap.getObject(WoWGuid(winnerGuid)) : nullptr;
         }
 
         m_guidToSpawn[guidRaw] = key;
@@ -1658,7 +1663,7 @@ void SpawnManager::spawnFromTemplate(const SpawnKey& key)
         }
 
         m_objectFactory.removeAndDestroy(created, true);
-        return;
+        return nullptr;
     }
 
     const int currentGrid = gridForPosition(created->GetPosition());
@@ -1667,7 +1672,7 @@ void SpawnManager::spawnFromTemplate(const SpawnKey& key)
         std::unique_lock lk(m_mutex);
         auto stateIt = m_spawns.find(key);
         if (stateIt == m_spawns.end())
-            return;
+            return nullptr;
 
         stateIt->second.respawnPending = false;
         stateIt->second.respawnTime = 0;
@@ -1679,9 +1684,11 @@ void SpawnManager::spawnFromTemplate(const SpawnKey& key)
         if (Creature* creature = created->ToCreature())
             creature->OnRespawn();
     }
+
+    return created;
 }
 
-bool SpawnManager::deactivateLiveInstance(const SpawnKey& key, bool retainInstance, bool preserveDesiredState)
+bool SpawnManager::deactivateSpawnInstance(const SpawnKey& key, bool retainInstance, bool preserveDesiredState)
 {
     uint64_t guidRaw = 0;
 
@@ -1813,7 +1820,7 @@ bool SpawnManager::despawnAt(uint64_t guidRaw, time_t respawnAt, bool keepRespaw
     /// DB-backed spawns are recreated from their stored template. Runtime respawnable
     /// objects are retained in WorldObjectRegistry so existing script pointers remain valid.
     const bool retainInstance = !persistent && allowRespawn && respawnAt > 0;
-    deactivateLiveInstance(key, retainInstance, /*preserveDesiredState=*/true);
+    deactivateSpawnInstance(key, retainInstance, /*preserveDesiredState=*/true);
 
     if (respawnAt > 0 && allowRespawn)
     {

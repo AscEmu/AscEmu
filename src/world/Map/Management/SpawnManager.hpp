@@ -359,8 +359,8 @@ public:
     void dumpInconsistencies() const;
 
 private:
-    /// Construct a new live instance from the stored template.
-    void  spawnFromTemplate(const SpawnKey& key);
+    /// Ensure the runtime object for this spawn exists in world, reusing a retained instance when possible.
+    Object* spawnFromTemplate(const SpawnKey& key);
 
     /// Keep boss-linked spawns disabled after the encounter is completed.
     bool  isSpawnBlockedByBossState(const SpawnState& state) const;
@@ -368,11 +368,11 @@ private:
     /// Save runtime changes before the live object is removed.
     void  refreshTemplateFromObjectNoLock(SpawnState& state, Object* object, bool updateHomePosition = false, bool syncPersistent = false);
 
-    /// Resolve the current live object through the registry.
-    Object* findLiveObject(const SpawnKey& key) const;
+    /// Resolve the currently registered runtime object for this spawn, whether attached or detached.
+    Object* findSpawnObject(const SpawnKey& key) const;
 
-    /// Remove the current live instance and keep it only when runtime reuse is needed.
-    bool deactivateLiveInstance(const SpawnKey& key, bool retainInstance, bool preserveDesiredState = true);
+    /// Deactivate the current runtime object for this spawn. If retained, keep it registered but detached for later reuse.
+    bool deactivateSpawnInstance(const SpawnKey& key, bool retainInstance, bool preserveDesiredState = true);
 
     /// Update the lightweight grid indices.
     void indexHomeNoLock(const SpawnKey& key, int gid);
