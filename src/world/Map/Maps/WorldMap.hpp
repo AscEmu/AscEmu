@@ -226,6 +226,7 @@ private:
 
 
     std::unordered_set<Object*> deferred_destroy_;
+    std::unordered_set<Object*> destroying_;
     std::mutex deferredDestroyMutex_;
 
     // Pending visibility is coalesced per viewer/object pair. Repeated

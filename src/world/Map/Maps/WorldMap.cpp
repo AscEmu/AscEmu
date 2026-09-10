@@ -498,43 +498,67 @@ bool WorldMap::deferDestroy(Object* object)
     if (!object)
         return false;
 
-    // Destruction is normally scheduled from the map thread, but a disconnected
-    // session can finish logout while it is temporarily owned by the global
-    // updater during a world transfer. Protect the deferred set so that case is
-    // safe without making ordinary object updates contend on a global lock.
     std::lock_guard<std::mutex> destroyGuard(deferredDestroyMutex_);
+
+    // Objects currently being destroyed must never be queued again.
+    // This can happen recursively when destructors clean up related
+    // objects and trigger additional destruction requests.
+    if (destroying_.contains(object))
+        return false;
+
+    // The set also prevents duplicate destroy requests while the object
+    // is still waiting for the next deferred-destroy pass.
     return deferred_destroy_.insert(object).second;
 }
 
 void WorldMap::drainDeferredDestroy()
 {
-    // Lock update queues before the destroy set. objectUpdated() already uses the
-    // update mutex, so this ordering avoids introducing an inverse lock order for
-    // code that schedules destruction while processing an update.
-    std::unique_lock<std::mutex> updateGuard(m_updateMutex);
-    std::unique_lock<std::mutex> destroyGuard(deferredDestroyMutex_);
+    std::vector<Object*> destroyNow;
 
-    if (deferred_destroy_.empty())
-        return;
-
-    // World objects are deleted only here, after updateObjects(). Before the final
-    // delete, make sure no legacy raw-pointer update queue can retain them into a
-    // later tick. Keep the destroy-set lock through deletion so a concurrent
-    // duplicate request cannot requeue a pointer that is already being destroyed.
-    for (Object* object : deferred_destroy_)
     {
-        _updates.erase(object);
+        // Always lock the update queues before the destroy state.
+        // objectUpdated() already uses the update mutex, so keeping this
+        // order avoids introducing an inverse lock order elsewhere.
+        std::unique_lock<std::mutex> updateGuard(m_updateMutex);
+        std::unique_lock<std::mutex> destroyGuard(deferredDestroyMutex_);
 
-        if (object && object->isPlayer())
-            _processQueue.erase(static_cast<Player*>(object));
+        if (deferred_destroy_.empty())
+            return;
+
+        destroyNow.reserve(deferred_destroy_.size());
+
+        // Before any object is destroyed, remove all remaining raw-pointer
+        // references from the legacy update queues. Move every pending object
+        // into destroying_ so recursive or concurrent deferDestroy() calls
+        // cannot queue the same object again while its destructor is running.
+        //
+        // The actual delete must happen after both mutexes are released:
+        // object destructors may themselves schedule other objects for deferred
+        // destruction (pets, summons, totems, etc..)
+        for (Object* object : deferred_destroy_)
+        {
+            _updates.erase(object);
+
+            if (object && object->isPlayer())
+                _processQueue.erase(static_cast<Player*>(object));
+
+            destroying_.insert(object);
+            destroyNow.push_back(object);
+        }
+
+        deferred_destroy_.clear();
     }
 
-    updateGuard.unlock();
-
-    for (Object* object : deferred_destroy_)
+    // Never execute Object destructors while holding deferredDestroyMutex_.
+    // Destruction may recursively call deferDestroy() for related objects.
+    // Those objects are queued normally and will be processed by a later pass.
+    for (Object* object : destroyNow)
+    {
         delete object;
 
-    deferred_destroy_.clear();
+        std::lock_guard<std::mutex> guard(deferredDestroyMutex_);
+        destroying_.erase(object);
+    }
 }
 
 std::map<uint32_t, Player*> WorldMap::getPlayers() const
