@@ -1660,16 +1660,24 @@ void WorldMap::clearVisibilityRecipientForViewer(const WoWGuid& viewerGuid)
 Player* WorldMap::getVisibilityRecipientPlayer(const WoWGuid& viewerGuid)
 {
     if (Player* player = getPlayer(viewerGuid))
+    {
+        if (!player->IsInWorld() || player->getWorldMap() != this)
+            return nullptr;
+
         return player;
+    }
 
     const uint64_t viewerRaw = viewerGuid.getRawGuid();
     if (auto it = visibilityRecipientByViewer_.find(viewerRaw); it != visibilityRecipientByViewer_.end())
     {
         Player* recipient = getPlayer(WoWGuid(it->second));
-        if (recipient && recipient->IsInWorld() && recipient->getWorldMap() == this)
-            return recipient;
+        if (!recipient || !recipient->IsInWorld() || recipient->getWorldMap() != this)
+        {
+            visibilityRecipientByViewer_.erase(it);
+            return nullptr;
+        }
 
-        visibilityRecipientByViewer_.erase(it);
+        return recipient;
     }
 
     Object* viewerObject = getObject(viewerGuid);
@@ -1681,6 +1689,7 @@ Player* WorldMap::getVisibilityRecipientPlayer(const WoWGuid& viewerGuid)
         Player* controller = viewerUnit->m_playerControler;
         if (!controller || !controller->IsInWorld() || controller->getWorldMap() != this)
             return nullptr;
+
         return controller;
     }
 
@@ -1692,6 +1701,7 @@ Player* WorldMap::getVisibilityRecipientPlayer(const WoWGuid& viewerGuid)
         Player* caster = getPlayer(WoWGuid(dyn->getCasterGuid()));
         if (!caster || !caster->IsInWorld() || caster->getWorldMap() != this)
             return nullptr;
+
         return caster;
     }
 
