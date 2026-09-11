@@ -174,6 +174,7 @@ namespace visibility
         std::array<std::unique_ptr<CellChunk>, static_cast<std::size_t>(Cell::CellsPerTile * Cell::CellsPerTile)> cells{};
 
         int activeCells{ 0 };
+        std::unordered_set<ObjectHandle> autonomousResidents; /// Runtime objects that keep only this grid resident.
         std::chrono::steady_clock::time_point idleSince{};
     };
 
@@ -290,6 +291,7 @@ namespace visibility
     {
         bool viewer{ false };
         bool activator{ false };
+        bool autonomous{ false }; /// Exists/updates independently of normal grid activation.
 
         int viewerSubscribeCells{ 0 };
         int activatorSubscribeCells{ 0 };
@@ -331,6 +333,7 @@ namespace visibility
     using HiddenCb = std::function<void(WoWGuid viewer, WoWGuid object)>;
     using GridMoveCb = std::function<void(WoWGuid object, int fromGrid, int toGrid)>;
     using GridEventCb = std::function<void(int gid)>;
+    using InterestProfileCb = std::function<void(WoWGuid object, const InterestProfile& profile)>;
 
     struct EventHub
     {
@@ -340,6 +343,7 @@ namespace visibility
         std::vector<GridEventCb>    onGridActivated;
         std::vector<GridEventCb>    onGridDeactivated;
         std::vector<GridEventCb>    onGridUnload;
+        std::vector<InterestProfileCb> onInterestProfileChanged;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////

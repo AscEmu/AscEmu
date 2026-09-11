@@ -119,6 +119,10 @@ namespace visibility
         /// Triggers one activation/deactivation cycle for a grid.
         void activateGrid(int gid);
 
+        /// Materialize a grid without activating its normal spawn/simulation content.
+        /// Autonomous runtime objects use this to move through otherwise inactive areas.
+        void ensureGridMaterialized(int gid);
+
         /// Persistent grid activation. Multiple users may pin the same grid; every
         /// pin must be paired with an unpin before the grid can become idle again.
         void pinGrid(int gid);
@@ -158,6 +162,7 @@ namespace visibility
         void onGridActivated(GridEventCb cb) { m_eventHub.onGridActivated.push_back(std::move(cb)); }
         void onGridDeactivated(GridEventCb cb) { m_eventHub.onGridDeactivated.push_back(std::move(cb)); }
         void onGridUnload(GridEventCb cb) { m_eventHub.onGridUnload.push_back(std::move(cb)); }
+        void onInterestProfileChanged(InterestProfileCb cb) { m_eventHub.onInterestProfileChanged.push_back(std::move(cb)); }
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Index helpers
@@ -208,6 +213,8 @@ namespace visibility
         void unsubscribeRing(ObjectHandle who, int baseGid, int lcx, int lcy, int r, bool asPlayer);
         void cellSubscribe(ObjectHandle who, int gid, int lcid, bool asPlayer);
         void cellUnsubscribe(ObjectHandle who, int gid, int lcid, bool asPlayer);
+        void setAutonomousResidency(ObjectHandle who, bool enabled);
+        void moveAutonomousResidency(ObjectHandle who, int oldGid, int newGid);
 
         /// Publish
         void emitPublishedForViewer(ObjectHandle viewerH, bool isSubscribe);

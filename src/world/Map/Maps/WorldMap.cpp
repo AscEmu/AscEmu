@@ -104,6 +104,13 @@ void WorldMap::initialize()
     if (getScript())
         getScript()->OnLoad();
 
+    // Continent maps may contain autonomous DB spawns (for example long waypoint
+    // creatures). Spawn only those definitions here without activating the rest of
+    // their grid content. Instance maps are force-activated by MapMgr after their
+    // persisted encounter state has been restored.
+    if (!getBaseMap()->isInstanceableMap())
+        spawnMgr_->spawnAutonomousSpawns();
+
     // load corpses
     sObjectMgr.loadCorpsesForInstance(this);
     worldstateshandler.InitWorldStates(sObjectMgr.getWorldStatesForMap(getBaseMap()->getMapId()));
@@ -1065,6 +1072,11 @@ void WorldMap::hookVisibilityEvents()
     visibilitySystem_->onGridChanged([this](const WoWGuid& g, int oldGid, int newGid)
         {
             spawnMgr_->onGridChanged(g, oldGid, newGid);
+        });
+
+    visibilitySystem_->onInterestProfileChanged([this](const WoWGuid& g, const visibility::InterestProfile& profile)
+        {
+            spawnMgr_->onInterestProfileChanged(g, profile.autonomous);
         });
 
     // A9 Packets...

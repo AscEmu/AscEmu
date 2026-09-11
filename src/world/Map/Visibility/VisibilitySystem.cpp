@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/Corpse.hpp"
+#include "Map/Maps/WorldMap.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// visibility
@@ -34,6 +35,23 @@ namespace visibility
                     return true;
             }
             return false;
+        }
+
+        bool gridHasOnlyAutonomousResidents(const GridChunk& g)
+        {
+            bool hasPhysicalObjects = false;
+
+            for (const auto& owners : g.owners)
+            {
+                for (ObjectHandle h : owners)
+                {
+                    hasPhysicalObjects = true;
+                    if (!g.autonomousResidents.contains(h))
+                        return false;
+                }
+            }
+
+            return hasPhysicalObjects;
         }
 
         bool gridHasSubscriptions(const GridChunk& g)
@@ -55,7 +73,8 @@ namespace visibility
         {
             return g.activeCells <= 0
                 && !gridHasPhysicalObjects(g)
-                && !gridHasSubscriptions(g);
+                && !gridHasSubscriptions(g)
+                && g.autonomousResidents.empty();
         }
 
         void addUnique(std::vector<ObjectHandle>& vec, ObjectHandle h)
@@ -802,6 +821,9 @@ namespace visibility
 
         hideObjectFromKnownViewers(s->meta.guid);
 
+        if (s->interest.autonomous)
+            setAutonomousResidency(h, false);
+
         if (s->sub.active)
         {
             const auto cells = m_spatialIndex.buildRingCells(s->sub.gid, s->sub.lcx, s->sub.lcy, s->sub.radius);
@@ -837,6 +859,9 @@ namespace visibility
         ObjectSlot* s = nullptr;
         if (!m_spatialIndex.tryGet(h, s))
             return;
+
+        if (move.gridChanged && s->interest.autonomous)
+            moveAutonomousResidency(h, move.oldGrid, move.newGrid);
 
         if (s->sub.active)
         {
@@ -1169,6 +1194,58 @@ namespace visibility
         }
     }
 
+    void VisibilitySystem::ensureGridMaterialized(int gid)
+    {
+        if (gid < 0 || gid >= Terrain::TilesCount * Terrain::TilesCount)
+            return;
+
+        m_spatialIndex.getOrCreateGrid(gid);
+    }
+
+    void VisibilitySystem::setAutonomousResidency(ObjectHandle who, bool enabled)
+    {
+        ObjectSlot* slot = nullptr;
+        if (!m_spatialIndex.tryGet(who, slot))
+            return;
+
+        const int gid = SpatialIndex::packGridFromPos(slot->pos);
+        GridChunk& grid = m_spatialIndex.getOrCreateGrid(gid);
+
+        if (enabled)
+        {
+            // Residency alone must not start an unload cycle: a newly materialized
+            // autonomous-only grid has never loaded its normal spawn content. If the
+            // grid was active before, the normal activator unsubscribe path already
+            // owns the idle/unload timer.
+            grid.autonomousResidents.insert(who);
+        }
+        else
+        {
+            grid.autonomousResidents.erase(who);
+
+            if (grid.activeCells <= 0 && !gridHasSubscriptions(grid) && gridHasPhysicalObjects(grid) &&
+                grid.idleSince.time_since_epoch().count() == 0)
+            {
+                grid.idleSince = std::chrono::steady_clock::now();
+            }
+        }
+    }
+
+    void VisibilitySystem::moveAutonomousResidency(ObjectHandle who, int oldGid, int newGid)
+    {
+        if (oldGid == newGid)
+            return;
+
+        // The SpatialIndex has already materialized and moved the object to newGid.
+        // Register the destination first so the object is never temporarily without
+        // a resident grid while crossing a grid boundary.
+        GridChunk& newGrid = m_spatialIndex.getOrCreateGrid(newGid);
+        newGrid.autonomousResidents.insert(who);
+
+        if (GridChunk* oldGrid = m_spatialIndex.tryGetGrid(oldGid))
+            oldGrid->autonomousResidents.erase(who);
+    }
+
     void VisibilitySystem::activateGrid(int gid)
     {
         auto& g = m_spatialIndex.getOrCreateGrid(gid);
@@ -1246,6 +1323,22 @@ namespace visibility
         if (!obj)
             return profile;
 
+        // Autonomous residency is orthogonal to viewer/activator roles. Seed it before
+        // the role-specific early returns so temporary states such as possession do not
+        // accidentally clear an autonomous spawn's base lifecycle policy.
+        if (!obj->isPlayer())
+        {
+            if (obj->isTransporter() || obj->GetTransport())
+            {
+                profile.autonomous = true;
+            }
+            else if (Creature* creature = obj->ToCreature())
+            {
+                if (WorldMap* map = creature->getWorldMap())
+                    profile.autonomous = map->getSpawnManager().isAutonomousSpawn(creature->getGuid());
+            }
+        }
+
         if (obj->isPlayer())
         {
             profile.viewer = true;
@@ -1269,7 +1362,7 @@ namespace visibility
 
         if (obj->isTransporter())
         {
-            profile.activator = true;
+            profile.autonomous = true;
             profile.publishMode = PublishMode::GridWide;
             profile.publishCells = 0;
             profile.publishPlayersOnly = true;
@@ -1351,6 +1444,7 @@ namespace visibility
         {
             return a.viewer == b.viewer &&
                 a.activator == b.activator &&
+                a.autonomous == b.autonomous &&
                 a.viewerSubscribeCells == b.viewerSubscribeCells &&
                 a.activatorSubscribeCells == b.activatorSubscribeCells &&
                 a.publishMode == b.publishMode &&
@@ -1362,9 +1456,14 @@ namespace visibility
             next.publishMode == PublishMode::GridWide ||
             (next.publishMode == PublishMode::CellRadius && next.publishCells > 0);
 
+        const int currentGrid = SpatialIndex::packGridFromPos(s->pos);
+        const GridChunk* currentGridPtr = m_spatialIndex.tryGetGrid(currentGrid);
+        const bool autonomousResident = currentGridPtr && currentGridPtr->autonomousResidents.contains(who);
+
         const bool runtimeMatches =
             s->sub.viewer == next.viewer &&
             s->sub.activator == next.activator &&
+            autonomousResident == next.autonomous &&
             (!next.viewer || s->sub.radius == next.viewerSubscribeCells || next.activator) &&
             (!next.activator || s->sub.radius == next.activatorSubscribeCells || next.viewer) &&
             isPublishActive(s->pub) == expectedPublishActive &&
@@ -1387,6 +1486,10 @@ namespace visibility
         if (!m_spatialIndex.tryGet(who, s))
             return;
 
+        setAutonomousResidency(who, next.autonomous);
+        if (!m_spatialIndex.tryGet(who, s))
+            return;
+
         s->interest = next;
 
         if (next.viewer)
@@ -1397,6 +1500,9 @@ namespace visibility
 
         if (expectedPublishActive)
             publish(who, next.publishCells, next.publishPlayersOnly);
+
+        for (auto& cb : m_eventHub.onInterestProfileChanged)
+            cb(s->meta.guid, next);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -1497,14 +1603,15 @@ namespace visibility
                         /// the visibility ring.
                         g.idleSince = {};
                     }
-                    else if (!gridHasPhysicalObjects(g))
+                    else if (!gridHasPhysicalObjects(g) || gridHasOnlyAutonomousResidents(g))
                     {
-                        /// Mark the retained GridChunk as fully unloaded. We keep the
-                        /// structural node for pointer stability; future activation
-                        /// simply reuses it.
+                        /// The normal grid content is fully unloaded. Autonomous residents
+                        /// are allowed to remain attached and keep the structural grid alive
+                        /// without making the grid active or causing repeated unload passes.
                         g.idleSince = {};
-                        sLogger.debug("vis: UNLOAD grid={} activeCells=0 owners=0 idleFor={}ms",
+                        sLogger.debug("vis: UNLOAD grid={} activeCells=0 residentOnly={} idleFor={}ms",
                             gid,
+                            gridHasPhysicalObjects(g) ? 1 : 0,
                             std::chrono::duration_cast<std::chrono::milliseconds>(idleFor).count());
                     }
                     else

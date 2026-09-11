@@ -82,6 +82,7 @@ struct SpawnState
     bool persistent{ false };
     bool allowRespawn{ true };
     bool desiredInWorld{ true };
+    bool autonomous{ false }; /// Runtime instance exists independently of normal grid activation.
 
     bool respawnPending{ false };
     time_t respawnTime{ 0 };
@@ -271,6 +272,9 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Grid lifecycle
     //////////////////////////////////////////////////////////////////////////////////////////
+    /// Spawn DB-backed objects that are allowed to exist without normal grid activation.
+    void spawnAutonomousSpawns();
+
     /// Mark grid as active and spawn due instances.
     void onGridActivated(int gid);
 
@@ -279,6 +283,9 @@ public:
 
     /// Maintain live index when an object moves across grids.
     void onGridChanged(const WoWGuid& guid, int oldGid, int newGid);
+
+    /// Keep SpawnState in sync with runtime interest-profile changes.
+    void onInterestProfileChanged(const WoWGuid& guid, bool autonomous);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -312,6 +319,7 @@ public:
 
     /// Query lifecycle metadata for the current live instance.
     bool isPersistentSpawn(uint64_t guidRaw) const;
+    bool isAutonomousSpawn(uint64_t guidRaw) const;
 
     /// Copy the authoritative creature spawn template for the current live instance.
     /// Works for both persistent DB spawns and ephemeral/runtime spawns.

@@ -42,6 +42,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Object.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Objects/GameObject.h"
+#include "Objects/Transporter.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
 #include "Objects/Item.hpp"
@@ -5729,13 +5730,17 @@ void Spell::_updateTargetPointers(const uint64_t targetGuid)
                         m_itemTarget = getPlayerCaster()->getItemInterface()->GetItemByGUID(targetGuid);
                     break;
                 case HighGuid::GameObject:
+                case HighGuid::Transport:
                     m_gameObjTarget = getCaster()->getWorldMapGameObject(wowGuid.getRawGuid());
+                    break;
+                case HighGuid::Transporter:
+                    m_gameObjTarget = sTransportHandler.getTransporter(wowGuid);
                     break;
                 case HighGuid::Corpse:
                     m_corpseTarget = m_caster->getWorldMap() ? m_caster->getWorldMap()->getRegistry().getCorpse(wowGuid) : nullptr;
                     break;
                 default:
-                    sLogger.failure("Spell::_updateTargetPointers : Invalid object type for spell target (low guid {}) in spell {}", wowGuid.getCounter(), getSpellInfo()->getId());
+                    sLogger.failure("Spell::_updateTargetPointers : Invalid object type {} for spell target (low guid {}) in spell {}", wowGuid.getHighType(),wowGuid.getCounter(), getSpellInfo()->getId());
                     break;
             }
         }

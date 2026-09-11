@@ -13,6 +13,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/InstanceScript.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/SpawnGroups.hpp"
+#include "Movement/WaypointManager.h"
+#include "Movement/MovementDefines.h"
 #include <algorithm>
 #include <type_traits>
 
@@ -25,6 +27,26 @@ namespace
     {
         auto [gx, gy] = worldToGrid(pos);
         return packGridId(gx, gy);
+    }
+
+    bool isAutonomousCreatureSpawn(const MySQLStructure::CreatureSpawn& row)
+    {
+        if (row.movetype != WAYPOINT_MOTION_TYPE || !row.waypoint_id)
+            return false;
+
+        const WaypointPath* path = sWaypointMgr->getPath(row.waypoint_id);
+        if (!path || path->nodes.empty())
+            return false;
+
+        const int homeGrid = gridForPosition(row.spawnPoint);
+        for (const WaypointNode& node : path->nodes)
+        {
+            LocationVector pos(node.x, node.y, node.z, node.orientation);
+            if (gridForPosition(pos) != homeGrid)
+                return true;
+        }
+
+        return false;
     }
 }
 
@@ -132,6 +154,7 @@ void SpawnManager::loadSpawns(bool reload)
             state.persistent = true;
             state.allowRespawn = true;
             state.desiredInWorld = true;
+            state.autonomous = isAutonomousCreatureSpawn(*row);
             state.templateData = *row;
 
             if (auto existing = m_spawns.find(key); existing != m_spawns.end())
@@ -797,6 +820,7 @@ Creature* SpawnManager::spawnCreature(uint32_t entry, LocationVector const& pos,
             state.persistent = true;
             state.allowRespawn = true;
             state.desiredInWorld = true;
+            state.autonomous = isAutonomousCreatureSpawn(*row);
             state.templateData = *row;
             m_spawns.emplace(key, std::move(state));
             indexHomeNoLock(key, gridForPosition(row->spawnPoint));
@@ -951,6 +975,30 @@ GameObject* SpawnManager::spawnGameObject(uint32_t entry, LocationVector const& 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+/// Spawn objects whose runtime lifecycle is independent of normal grid activation.
+/// Only the autonomous SpawnKeys are materialized; normal DB content stays dormant until
+/// a real viewer/activator makes the grid active.
+//////////////////////////////////////////////////////////////////////////////////////////
+void SpawnManager::spawnAutonomousSpawns()
+{
+    std::vector<SpawnKey> keys;
+
+    {
+        std::shared_lock lk(m_mutex);
+        keys.reserve(m_spawns.size());
+
+        for (const auto& [key, state] : m_spawns)
+        {
+            if (state.autonomous && state.desiredInWorld)
+                keys.push_back(key);
+        }
+    }
+
+    for (const SpawnKey& key : keys)
+        spawnFromTemplate(key);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Grid activation is now a pure lookup into the single SpawnState registry.
 //////////////////////////////////////////////////////////////////////////////////////////
 void SpawnManager::onGridActivated(int gid)
@@ -1025,6 +1073,7 @@ void SpawnManager::onGridUnload(int gid)
         bool desired = false;
         bool pending = false;
         bool persistent = false;
+        bool autonomous = false;
 
         {
             std::shared_lock lk(m_mutex);
@@ -1036,7 +1085,14 @@ void SpawnManager::onGridUnload(int gid)
             desired = stateIt->second.desiredInWorld;
             pending = stateIt->second.respawnPending;
             persistent = stateIt->second.persistent;
+            autonomous = stateIt->second.autonomous;
         }
+
+        // Autonomous runtime objects stay attached while their grid is only resident.
+        // Their SpawnKey remains in m_currentGridIndex so activating the home grid later
+        // still resolves the existing runtime instance instead of creating a duplicate.
+        if (autonomous)
+            continue;
 
         /// Grid unload is only a world-lifetime transition, never a gameplay despawn.
         const bool retainInstance = !persistent;
@@ -1052,7 +1108,11 @@ void SpawnManager::onGridUnload(int gid)
 
     {
         std::unique_lock lk(m_mutex);
-        m_currentGridIndex.erase(gid);
+        // Non-autonomous instances were removed individually above. Autonomous
+        // instances intentionally remain indexed in their current grid.
+        if (auto it = m_currentGridIndex.find(gid); it != m_currentGridIndex.end() && it->second.empty())
+            m_currentGridIndex.erase(it);
+
         m_activeGrids.erase(gid);
         m_unloadingGrids.erase(gid);
     }
@@ -1075,6 +1135,21 @@ void SpawnManager::onGridChanged(const WoWGuid& guid, int oldGid, int newGid)
     const SpawnKey key = keyIt->second;
     unindexCurrentNoLock(key, oldGid);
     indexCurrentNoLock(key, newGid);
+}
+
+void SpawnManager::onInterestProfileChanged(const WoWGuid& guid, bool autonomous)
+{
+    std::unique_lock lk(m_mutex);
+
+    auto keyIt = m_guidToSpawn.find(guid.getRawGuid());
+    if (keyIt == m_guidToSpawn.end())
+        return;
+
+    auto stateIt = m_spawns.find(keyIt->second);
+    if (stateIt == m_spawns.end())
+        return;
+
+    stateIt->second.autonomous = autonomous;
 }
 
 void SpawnManager::addRespawnForCreature(Creature* creature)
@@ -1150,6 +1225,18 @@ bool SpawnManager::isPersistentSpawn(uint64_t guidRaw) const
 
     auto stateIt = m_spawns.find(guidIt->second);
     return stateIt != m_spawns.end() && stateIt->second.persistent;
+}
+
+bool SpawnManager::isAutonomousSpawn(uint64_t guidRaw) const
+{
+    std::shared_lock lk(m_mutex);
+
+    auto guidIt = m_guidToSpawn.find(guidRaw);
+    if (guidIt == m_guidToSpawn.end())
+        return false;
+
+    auto stateIt = m_spawns.find(guidIt->second);
+    return stateIt != m_spawns.end() && stateIt->second.autonomous;
 }
 
 bool SpawnManager::getCreatureSpawnTemplate(uint64_t guidRaw, MySQLStructure::CreatureSpawn& out) const
@@ -1328,7 +1415,7 @@ void SpawnManager::processRespawns()
                 state.respawnPending = false;
                 state.respawnTime = 0;
             }
-            else if (!isGridActive(state.homeGrid))
+            else if (!isGridActive(state.homeGrid) && !state.autonomous)
             {
                 /// Timer is due. Keep the due state in SpawnState; onGridActivated()
                 /// will recreate it from templateData without needing a second queue entry.
@@ -1354,6 +1441,7 @@ bool SpawnManager::respawnNow(SpawnObjectType type, uint32_t spawnId)
 {
     const SpawnKey key{ type, spawnId };
     bool persistent = false;
+    bool autonomous = false;
     int homeGrid = -1;
 
     {
@@ -1373,14 +1461,18 @@ bool SpawnManager::respawnNow(SpawnObjectType type, uint32_t spawnId)
         stateIt->second.respawnTime = std::time(nullptr);
         stateIt->second.desiredInWorld = true;
         persistent = stateIt->second.persistent;
+        autonomous = stateIt->second.autonomous;
         homeGrid = stateIt->second.homeGrid;
     }
 
     if (persistent)
         deleteRespawnFromDB(type, spawnId);
 
-    if (!isGridActiveForDebug(homeGrid))
+    if (!isGridActiveForDebug(homeGrid) && !autonomous)
         return true;
+
+    if (autonomous)
+        m_visibilitySystem.ensureGridMaterialized(homeGrid);
 
     if (Object* current = findSpawnObject(key))
         deactivateSpawnInstance(key, /*retainInstance=*/!persistent, /*preserveDesiredState=*/true);
@@ -1471,7 +1563,7 @@ Object* SpawnManager::spawnFromTemplate(const SpawnKey& key)
         /// allowRespawn is intentionally not checked here. This function is also used
         /// to restore a still-living object after grid activation. A no-respawn summon
         /// remains desiredInWorld until its real death/despawn removes the SpawnState.
-        if (!isGridActive(stateIt->second.homeGrid))
+        if (!isGridActive(stateIt->second.homeGrid) && !stateIt->second.autonomous)
             return nullptr;
 
         if (stateIt->second.respawnPending && stateIt->second.respawnTime > std::time(nullptr))
@@ -1482,6 +1574,9 @@ Object* SpawnManager::spawnFromTemplate(const SpawnKey& key)
         if (auto liveIt = m_spawnToGuid.find(key); liveIt != m_spawnToGuid.end())
             retainedGuid = liveIt->second;
     }
+
+    if (snapshot.autonomous)
+        m_visibilitySystem.ensureGridMaterialized(snapshot.homeGrid);
 
     /// A spawn group with bossId is tied to that encounter independently of
     /// SPAWFLAG_FLAG_BOUNDTOBOSS. Once the linked boss is completed, members of the
