@@ -389,7 +389,7 @@ Player const* GameObject::getPlayerOwner() const
     return nullptr;
 }
 
-bool GameObject::loadFromDB(MySQLStructure::GameobjectSpawn* spawn, WorldMap* map, bool addToWorld)
+bool GameObject::loadFromDB(MySQLStructure::GameobjectSpawn* spawn, WorldMap* map, bool /*addToWorld*/)
 {
     if (IsInWorld())
     {

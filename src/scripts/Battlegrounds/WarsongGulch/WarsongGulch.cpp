@@ -421,7 +421,7 @@ void WarsongGulch::EventFocusedAssault()
         if (m_flagHolders[team] == 0)
             continue;
 
-        if (Player* carrier = sObjectMgr.getPlayer(m_flagHolders[team]))
+        if (Player* carrier = sObjectMgr.getPlayer(m_flagHolders[team].getLowGuid()))
             carrier->castSpell(carrier, SPELL_FOCUSED_ASSAULT, true);
     }
 }
@@ -434,7 +434,7 @@ void WarsongGulch::EventBrutalAssault()
         if (m_flagHolders[team] == 0)
             continue;
 
-        if (Player* carrier = sObjectMgr.getPlayer(m_flagHolders[team]))
+        if (Player* carrier = sObjectMgr.getPlayer(m_flagHolders[team].getLowGuid()))
         {
             carrier->removeAllAurasById(SPELL_FOCUSED_ASSAULT);
             carrier->castSpell(carrier, SPELL_BRUTAL_ASSAULT, true);
@@ -453,7 +453,7 @@ void WarsongGulch::CancelAssaultTimersAndAuras()
         if (m_flagHolders[team] == 0)
             continue;
 
-        if (Player* carrier = sObjectMgr.getPlayer(m_flagHolders[team]))
+        if (Player* carrier = sObjectMgr.getPlayer(m_flagHolders[team].getLowGuid()))
         {
             carrier->removeAllAurasById(SPELL_FOCUSED_ASSAULT);
             carrier->removeAllAurasById(SPELL_BRUTAL_ASSAULT);

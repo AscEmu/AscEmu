@@ -279,7 +279,7 @@ Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY
     if (creature == nullptr)
         return nullptr;
 
-    creature->setPhase(phase);
+    creature->setPhase(PHASE_SET, phase);
     if (factionId != 0)
         creature->setFaction(factionId);
     else

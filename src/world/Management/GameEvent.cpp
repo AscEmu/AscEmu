@@ -214,7 +214,7 @@ void GameEvent::CreateObjects()
         GameObject* gameObject = mapMgr->getSpawnManager().createGameObject(gobj.entry, LocationVector(gobj.position_x, gobj.position_y, gobj.position_z, gobj.facing));
 
         gameObject->m_phase = gobj.phase;
-        gameObject->setState(gobj.state);
+        gameObject->setState(static_cast<uint8_t>(gobj.state));
 
         // Set up spawn specific information
         if (MySQLStructure::GameObjectSpawnOverrides const* overrides = sMySQLStore.getGameObjectOverride(gobj.id))

@@ -543,11 +543,11 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
     return 1;
 }
 
-void Object::prepareInitialCreateForPlayer(Player* target)
+void Object::prepareInitialCreateForPlayer(Player* /*target*/)
 {
 }
 
-void Object::queueInitialVisiblePacketsForPlayer(Player* target)
+void Object::queueInitialVisiblePacketsForPlayer(Player* /*target*/)
 {
 }
 

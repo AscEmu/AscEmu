@@ -672,7 +672,7 @@ void BattleForGilneas::AssaultControlPoint(Player* pPlayer, uint32_t Id)
             auto itr = m_resurrectMap.find(m_spiritGuides[Id]);
             if (itr != m_resurrectMap.end())
             {
-                for (uint32_t guid : itr->second)
+                for (const WoWGuid& guid : itr->second)
                 {
                     Player* r_plr = m_mapMgr->getPlayer(guid);
                     if (r_plr != nullptr && r_plr->isDead())

@@ -1889,7 +1889,7 @@ namespace visibility
                 continue;
 
             const auto inRing = [&](int d) { return d <= viewer->sub.radius; };
-            const auto inPub = [&](int gid, int d)
+            const auto inPub = [&](int d)
             {
                 if (inRing(d))
                     return false;
@@ -1903,8 +1903,8 @@ namespace visibility
             const int oldDist = cellChebDistGlobal(viewer->sub.gid, viewer->sub.lcx, viewer->sub.lcy, oldGid, oldLcid);
             const int newDist = cellChebDistGlobal(viewer->sub.gid, viewer->sub.lcx, viewer->sub.lcy, newGid, newLcid);
 
-            const bool oldPub = inPub(oldGid, oldDist);
-            const bool newPub = inPub(newGid, newDist);
+            const bool oldPub = inPub(oldDist);
+            const bool newPub = inPub(newDist);
             const bool newRing = inRing(newDist);
             const bool oldRing = inRing(oldDist);
 

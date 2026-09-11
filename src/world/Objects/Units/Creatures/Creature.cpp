@@ -1979,7 +1979,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     }
 }
 
-bool Creature::LoadFromDB(MySQLStructure::CreatureSpawn* spawn, WorldMap* map, bool addToWorld)
+bool Creature::LoadFromDB(MySQLStructure::CreatureSpawn* spawn, WorldMap* map, bool /*addToWorld*/)
 {
     if (!spawn)
     {

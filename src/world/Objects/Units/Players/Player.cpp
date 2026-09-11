@@ -1742,9 +1742,9 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
         if (targetMap->getBaseMap()->isInstanceMap() &&
             !targetMap->getBaseMap()->isBattlegroundOrArena())
         {
-            if (const EnterState denyReason = targetMap->cannotEnter(this))
+            if (const EnterState targetDenyReason = targetMap->cannotEnter(this))
             {
-                sendMapTransferFailure(this, mapId, denyReason);
+                sendMapTransferFailure(this, mapId, targetDenyReason);
                 return false;
             }
         }

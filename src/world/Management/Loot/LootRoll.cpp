@@ -78,12 +78,14 @@ void LootRoll::finalize()
 
     if (wowGuid.isUnit())
     {
-        if (creature = _mgr->getCreature(wowGuid))
+        creature = _mgr->getCreature(wowGuid);
+        if (creature)
             pLoot = &creature->loot;
     }
     else if (wowGuid.isGameObject())
     {
-        if (gameObject = _mgr->getGameObject(wowGuid))
+        gameObject = _mgr->getGameObject(wowGuid);
+        if (gameObject)
         {
             if (gameObject->IsLootable())
             {

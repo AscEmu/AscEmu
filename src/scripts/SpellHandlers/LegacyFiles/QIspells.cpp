@@ -1412,7 +1412,7 @@ bool ArcaneDisruption(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
         GameObject* crate = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 190094);
         if (crate != nullptr)
         {
-            GameObject* go = plr->getWorldMap()->summonGameObject(190095, plr->GetPosition(), QuaternionData(), 1 * TimeVarsMs::Minute);
+            plr->getWorldMap()->summonGameObject(190095, plr->GetPosition(), QuaternionData(), 1 * TimeVarsMs::Minute);
             crate->despawn(0, 0);
 
             questLog->setMobCountForIndex(0, questLog->getMobCountByIndex(0) + 1);
@@ -1422,7 +1422,7 @@ bool ArcaneDisruption(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
             if (questLog->getMobCountByIndex(0) == 5)
             {
                 //weee, Uther
-            Creature* c = plr->summonCreature(26528, LocationVector(1759.4351f, 1265.3317f, 138.052f, 0.1902f), CreatureSummonDespawnType::TIMED_DESPAWN, 1 * TimeVarsMs::Minute);
+                plr->summonCreature(26528, LocationVector(1759.4351f, 1265.3317f, 138.052f, 0.1902f), CreatureSummonDespawnType::TIMED_DESPAWN, 1 * TimeVarsMs::Minute);
             }
         }
     }

@@ -158,7 +158,7 @@ Creature* MapScriptInterface::spawnCreature(uint32_t entry, LocationVector pos, 
     if (!creature)
         return nullptr;
 
-    creature->setPhase(phase);
+    creature->setPhase(PHASE_SET, phase);
     return m_spawnManager.pushToWorld(creature) ? creature : nullptr;
 }
 

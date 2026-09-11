@@ -4697,8 +4697,6 @@ void Spell::SpellEffectSummonObjectWild(uint8_t effectIndex)
         u_caster->getClosePoint(x, y, z, 0.388999998569489f);
     }
 
-    WorldMap* map = u_caster->getWorldMap();
-
     LocationVector pos = LocationVector(x, y, z, m_caster->GetOrientation());
     QuaternionData rot = QuaternionData::fromEulerAnglesZYX(m_caster->GetOrientation(), 0.f, 0.f);
 

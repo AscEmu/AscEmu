@@ -8613,7 +8613,7 @@ void Unit::unPossess()
         sEventMgr.AddEvent(static_cast<Object*>(unitTarget), &Object::destroy, 0, 1, 1, 0);
 }
 
-void Unit::deactivate(WorldMap* mgr)
+void Unit::deactivate(WorldMap* /*mgr*/)
 {
     if (m_useAI)
         getAIInterface()->enterEvadeMode();
