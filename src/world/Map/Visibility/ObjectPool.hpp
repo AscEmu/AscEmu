@@ -385,20 +385,16 @@ namespace visibility
             if (count == 0)
                 return;
 
-            const std::size_t oldSize = m_slots.size();
-            const std::size_t newSize = oldSize + count;
-
-            m_slots.resize(newSize);
-            m_next.resize(newSize, 0);
-
-            for (std::size_t i = oldSize; i < newSize; ++i)
+            /// ObjectSlot addresses are intentionally stable: m_slots is a deque and
+            /// slots are appended individually. Do not replace this with vector-backed
+            /// storage or code that relocates existing slots; visibility callbacks can
+            /// allocate additional objects while callers still hold ObjectSlot pointers.
+            for (std::size_t i = 0; i < count; ++i)
             {
-                const auto id = static_cast<std::uint32_t>(i);
+                const auto id = static_cast<std::uint32_t>(m_slots.size());
 
-                m_slots[i].gen = 1;
-                m_slots[i].inUse = false;
-
-                m_next[i] = m_freeHead;
+                m_slots.emplace_back();
+                m_next.push_back(m_freeHead);
                 m_freeHead = id;
             }
         }

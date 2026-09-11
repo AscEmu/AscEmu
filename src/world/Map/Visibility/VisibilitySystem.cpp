@@ -1042,14 +1042,23 @@ namespace visibility
             for (auto [ngid, nlcid] : cells)
                 cellSubscribe(who, ngid, nlcid, /*asPlayer*/true);
 
+            if (!m_spatialIndex.tryGet(who, s))
+                return;
+
             refreshViewerInterest(who, *s);
             return;
         }
 
         if (radiusCells > s->sub.radius)
         {
-            const auto oldCells = m_spatialIndex.buildRingCells(s->sub.gid, s->sub.lcx, s->sub.lcy, s->sub.radius);
-            const auto newCells = m_spatialIndex.buildRingCells(s->sub.gid, s->sub.lcx, s->sub.lcy, radiusCells);
+            const int oldGid = s->sub.gid;
+            const int oldLcx = s->sub.lcx;
+            const int oldLcy = s->sub.lcy;
+            const int oldRadius = s->sub.radius;
+            const bool wasActivator = s->sub.activator;
+
+            const auto oldCells = m_spatialIndex.buildRingCells(oldGid, oldLcx, oldLcy, oldRadius);
+            const auto newCells = m_spatialIndex.buildRingCells(oldGid, oldLcx, oldLcy, radiusCells);
 
             std::vector<CellRef> toAdd;
             std::set_difference(newCells.begin(), newCells.end(),
@@ -1058,21 +1067,39 @@ namespace visibility
 
             for (auto [ngid, nlcid] : toAdd)
             {
-                if (s->sub.activator)
+                if (wasActivator)
                     cellSubscribe(who, ngid, nlcid, /*asPlayer*/false);
                 cellSubscribe(who, ngid, nlcid, /*asPlayer*/true);
             }
+
+            if (!m_spatialIndex.tryGet(who, s))
+                return;
 
             s->sub.radius = radiusCells;
         }
 
         if (addViewer)
         {
-            const auto cells = m_spatialIndex.buildRingCells(s->sub.gid, s->sub.lcx, s->sub.lcy, s->sub.radius);
+            if (!m_spatialIndex.tryGet(who, s))
+                return;
+
+            const int subGid = s->sub.gid;
+            const int subLcx = s->sub.lcx;
+            const int subLcy = s->sub.lcy;
+            const int subRadius = s->sub.radius;
+            const auto cells = m_spatialIndex.buildRingCells(subGid, subLcx, subLcy, subRadius);
+
             for (auto [ngid, nlcid] : cells)
                 cellSubscribe(who, ngid, nlcid, /*asPlayer*/true);
+
+            if (!m_spatialIndex.tryGet(who, s))
+                return;
+
             s->sub.viewer = true;
         }
+
+        if (!m_spatialIndex.tryGet(who, s))
+            return;
 
         if (s->sub.viewer)
             refreshViewerInterest(who, *s);
@@ -1101,8 +1128,14 @@ namespace visibility
 
         if (radiusCells > s->sub.radius)
         {
-            const auto oldCells = m_spatialIndex.buildRingCells(s->sub.gid, s->sub.lcx, s->sub.lcy, s->sub.radius);
-            const auto newCells = m_spatialIndex.buildRingCells(s->sub.gid, s->sub.lcx, s->sub.lcy, radiusCells);
+            const int oldGid = s->sub.gid;
+            const int oldLcx = s->sub.lcx;
+            const int oldLcy = s->sub.lcy;
+            const int oldRadius = s->sub.radius;
+            const bool wasViewer = s->sub.viewer;
+
+            const auto oldCells = m_spatialIndex.buildRingCells(oldGid, oldLcx, oldLcy, oldRadius);
+            const auto newCells = m_spatialIndex.buildRingCells(oldGid, oldLcx, oldLcy, radiusCells);
 
             std::vector<CellRef> toAdd;
             std::set_difference(newCells.begin(), newCells.end(),
@@ -1112,18 +1145,33 @@ namespace visibility
             for (auto [ngid, nlcid] : toAdd)
             {
                 cellSubscribe(who, ngid, nlcid, /*asPlayer*/false);
-                if (s->sub.viewer)
+                if (wasViewer)
                     cellSubscribe(who, ngid, nlcid, /*asPlayer*/true);
             }
+
+            if (!m_spatialIndex.tryGet(who, s))
+                return;
 
             s->sub.radius = radiusCells;
         }
 
         if (addActivator)
         {
-            const auto cells = m_spatialIndex.buildRingCells(s->sub.gid, s->sub.lcx, s->sub.lcy, s->sub.radius);
+            if (!m_spatialIndex.tryGet(who, s))
+                return;
+
+            const int subGid = s->sub.gid;
+            const int subLcx = s->sub.lcx;
+            const int subLcy = s->sub.lcy;
+            const int subRadius = s->sub.radius;
+            const auto cells = m_spatialIndex.buildRingCells(subGid, subLcx, subLcy, subRadius);
+
             for (auto [ngid, nlcid] : cells)
                 cellSubscribe(who, ngid, nlcid, /*asPlayer*/false);
+
+            if (!m_spatialIndex.tryGet(who, s))
+                return;
+
             s->sub.activator = true;
         }
     }
@@ -1501,8 +1549,14 @@ namespace visibility
         if (expectedPublishActive)
             publish(who, next.publishCells, next.publishPlayersOnly);
 
+        /// The calls above may activate grids and synchronously spawn/despawn objects.
+        /// Never keep using an ObjectSlot pointer across those re-entrant operations.
+        if (!m_spatialIndex.tryGet(who, s))
+            return;
+
+        const WoWGuid guid = s->meta.guid;
         for (auto& cb : m_eventHub.onInterestProfileChanged)
-            cb(s->meta.guid, next);
+            cb(guid, next);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
