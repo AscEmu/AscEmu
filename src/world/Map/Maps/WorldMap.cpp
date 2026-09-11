@@ -79,7 +79,7 @@ WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t Inst
     const int visibilityCells = visibility::SpatialIndex::cellsForRadius(getVisibilityDistance());
     cfg.defaultViewerRadius = visibilityCells;
     cfg.defaultActivatorRadius = cfg.defaultViewerRadius + 1;
-    cfg.cellUnloadDelay = std::chrono::minutes(worldConfig.server.mapUnloadTime);
+    cfg.cellUnloadDelay = std::chrono::seconds(worldConfig.server.mapUnloadTime);
 
     spatialIndex_ = std::make_unique<visibility::SpatialIndex>();
     visibilitySystem_ = std::make_unique<visibility::VisibilitySystem>(*spatialIndex_, cfg);
