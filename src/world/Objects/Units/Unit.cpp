@@ -1223,7 +1223,10 @@ bool Unit::canSwim()
 uint32_t Unit::getUnitFlags2() const { return unitData()->unit_flags_2; }
 void Unit::setUnitFlags2(uint32_t unitFlags2)
 {
+#if VERSION_STRING >= WotLK
     const uint32_t oldFlags = getUnitFlags2();
+#endif
+
     write(unitData()->unit_flags_2, unitFlags2);
 
 #if VERSION_STRING >= WotLK
