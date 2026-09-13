@@ -50,7 +50,10 @@ public:
 #endif
     void handleArenaJoin(WorldSession* session, uint32_t battlegroundType, uint8_t asGroup, uint8_t ratedMatch);
     void handleGetBattlegroundQueueCommand(WorldSession* session);
-    void handleBattlegroundJoin(WorldSession* session, WorldPacket& packet);
+    void handleBattlegroundJoin(WorldSession* session, uint32_t bgType, uint32_t instanceId, bool asGroup);
+    void handleBattlegroundGroupJoin(WorldSession* session, uint32_t bgType, uint32_t instanceId);
+    void sendGroupJoinedBattleground(Player* player, int32_t status, uint32_t bgType = 0, Player* causer = nullptr);
+    static uint32_t getJoinResultForGroupJoinStatus(int32_t status);
 
     void sendBattlefieldStatus(Player* player, BattlegroundDef::Status status, uint32_t type, uint32_t instanceId, uint32_t time, uint32_t mapId, uint8_t ratedMatch);
 

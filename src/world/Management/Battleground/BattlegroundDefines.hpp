@@ -65,6 +65,60 @@ namespace BattlegroundDef
         TYPE_TIGERS_PEAK = 757,
     };
 
+    // BattlemasterList.dbc entry the client uses for every arena queue (2v2, 3v3 and 5v5)
+    const uint32_t BATTLEMASTER_LIST_ALL_ARENAS = 6;
+
+    // SMSG_GROUP_JOINED_BATTLEGROUND (Classic - WotLK)
+    enum GroupJoinStatus : int32_t
+    {
+        GROUP_JOIN_STATUS_FAIL = 0,
+        GROUP_JOIN_STATUS_NOT_ELIGIBLE = -1,                // Your group has joined a battleground queue, but you are not eligible
+        GROUP_JOIN_STATUS_DESERTERS = -2,                   // You cannot join the battleground yet because you or one of your party members is flagged as a Deserter.
+        GROUP_JOIN_STATUS_NOT_IN_TEAM = -3,                 // Incorrect party size for this arena.
+        GROUP_JOIN_STATUS_TOO_MANY_QUEUES = -4,             // You can only be queued for 2 battles at once
+        GROUP_JOIN_STATUS_CANNOT_QUEUE_FOR_RATED = -5,      // You cannot queue for a rated match while queued for other battles
+        GROUP_JOIN_STATUS_QUEUED_FOR_RATED = -6,            // You cannot queue for another battle while queued for a rated arena match
+        GROUP_JOIN_STATUS_TEAM_LEFT_QUEUE = -7,             // Your team has left the arena queue
+        GROUP_JOIN_STATUS_NOT_IN_BATTLEGROUND = -8,         // You can't do that in a battleground.
+        GROUP_JOIN_STATUS_XP_GAIN = -9,
+        GROUP_JOIN_STATUS_JOIN_RANGE_INDEX = -10,           // Cannot join the queue unless all members of your party are in the same battleground level range.
+        GROUP_JOIN_STATUS_JOIN_TIMED_OUT = -11,             // %s was unavailable to join the queue.
+        GROUP_JOIN_STATUS_JOIN_FAILED = -12,
+        GROUP_JOIN_STATUS_LFG_CANT_USE_BATTLEGROUND = -13,  // You cannot queue for a battleground or arena while using the dungeon system.
+        GROUP_JOIN_STATUS_IN_RANDOM_BG = -14,               // Can't do that while in a Random Battleground queue.
+        GROUP_JOIN_STATUS_IN_NON_RANDOM_BG = -15            // Can't queue for Random Battleground while in another Battleground queue.
+    };
+
+    // SMSG_BATTLEFIELD_STATUS_FAILED (Cata - Mop)
+    enum JoinResult : uint32_t
+    {
+        JOIN_RESULT_NONE = 0,
+        JOIN_RESULT_DESERTERS = 2,                          // You cannot join the battleground yet because you or one of your party members is flagged as a Deserter.
+        JOIN_RESULT_ARENA_TEAM_PARTY_SIZE = 3,              // Incorrect party size for this arena.
+        JOIN_RESULT_TOO_MANY_QUEUES = 4,                    // You can only be queued for 2 battles at once
+        JOIN_RESULT_CANNOT_QUEUE_FOR_RATED = 5,             // You cannot queue for a rated match while queued for other battles
+        JOIN_RESULT_QUEUED_FOR_RATED = 6,                   // You cannot queue for another battle while queued for a rated arena match
+        JOIN_RESULT_TEAM_LEFT_QUEUE = 7,                    // Your team has left the arena queue
+        JOIN_RESULT_NOT_IN_BATTLEGROUND = 8,                // You can't do that in a battleground.
+        JOIN_RESULT_XP_GAIN = 9,
+        JOIN_RESULT_RANGE_INDEX = 10,                       // Cannot join the queue unless all members of your party are in the same battleground level range.
+        JOIN_RESULT_TIMED_OUT = 11,                         // %s was unavailable to join the queue.
+        JOIN_RESULT_LFG_CANT_USE_BATTLEGROUND = 14,         // You cannot queue for a battleground or arena while using the dungeon system.
+        JOIN_RESULT_IN_RANDOM_BG = 15,                      // Can't do that while in a Random Battleground queue.
+        JOIN_RESULT_IN_NON_RANDOM_BG = 16,                  // Can't queue for Random Battleground while in another Battleground queue.
+        JOIN_RESULT_BG_DEVELOPER_ONLY = 17,
+        JOIN_RESULT_INVITATION_DECLINED = 18,
+        JOIN_RESULT_MEETING_STONE_NOT_FOUND = 19,
+        JOIN_RESULT_WARGAME_REQUEST_FAILURE = 20,
+        JOIN_RESULT_BATTLEFIELD_TEAM_PARTY_SIZE = 22,
+        JOIN_RESULT_NOT_ON_TOURNAMENT_REALM = 23,
+        JOIN_RESULT_PLAYERS_FROM_DIFFERENT_REALMS = 24,
+        JOIN_RESULT_REMOVE_FROM_PVP_QUEUE_GRANT_LEVEL = 33,
+        JOIN_RESULT_REMOVE_FROM_PVP_QUEUE_FACTION_CHANGE = 34,
+        JOIN_RESULT_JOIN_FAILED = 35,
+        JOIN_RESULT_DUPE_QUEUE = 43
+    };
+
     enum Status
     {
         STATUS_NOFLAGS = 0, // wtfbbq, why aren't there any flags?

@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgAreaSpiritHealerQueue.h"
 #include "Server/Packets/CmsgAreaSpiritHealerQuery.h"
 #include "Server/Packets/SmsgAreaSpiritHealerTime.h"
-#include "Server/Packets/SmsgGroupJoinedBattleground.h"
+#include "Server/Packets/CmsgBattlemasterJoin.h"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Management/Battleground/Battleground.hpp"
@@ -270,11 +270,13 @@ void WorldSession::handleBattlefieldStatusOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleBattleMasterJoinOpcode(WorldPacket& recvPacket)
 {
+    CmsgBattlemasterJoin srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
     if (_player->hasAurasWithId(BattlegroundDef::DESERTER))
     {
-        SmsgGroupJoinedBattleground managedPacket(static_cast<int32_t>(0xFFFFFFFE));
-        if (const auto session = _player->getSession())
-            session->sendManagedPacket(managedPacket);
+        sBattlegroundManager.sendGroupJoinedBattleground(_player, BattlegroundDef::GROUP_JOIN_STATUS_DESERTERS, srlPacket.bgType);
         return;
     }
 
@@ -288,7 +290,7 @@ void WorldSession::handleBattleMasterJoinOpcode(WorldPacket& recvPacket)
         sBattlegroundManager.removePlayerFromQueues(_player);
 
     if (_player->IsInWorld())
-        sBattlegroundManager.handleBattlegroundJoin(this, recvPacket);
+        sBattlegroundManager.handleBattlegroundJoin(this, srlPacket.bgType, srlPacket.instanceId, srlPacket.asGroup != 0);
 }
 
 void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)

@@ -18,8 +18,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/SmsgArenaError.h"
-#include "Server/Packets/CmsgBattlemasterJoin.h"
 #include "Server/Packets/SmsgBattlefieldList.h"
+#include "Server/Packets/SmsgBattlefieldStatusFailed.h"
 #include "Server/Packets/SmsgGroupJoinedBattleground.h"
 #include "Server/Packets/SmsgBattlefieldStatus.h"
 #include "Storage/WorldStrings.h"
@@ -131,54 +131,56 @@ void BattlegroundManager::handleBattlegroundListPacket(WoWGuid& wowGuid, WorldSe
 }
 #endif
 
-void BattlegroundManager::handleBattlegroundJoin(WorldSession* session, WorldPacket& packet)
+void BattlegroundManager::handleBattlegroundJoin(WorldSession* session, uint32_t bgType, uint32_t instanceId, bool asGroup)
 {
     Player* plr = session->GetPlayer();
     const uint32_t pguid = plr->getGuidLow();
     const uint32_t lgroup = plr->getLevelGrouping();
 
-    CmsgBattlemasterJoin srlPacket;
-    if (!session->parsePacket(packet, srlPacket))
-        return;
-
-    if (srlPacket.bgType == BattlegroundDef::TYPE_RANDOM)
+    if (bgType == BattlegroundDef::TYPE_RANDOM)
         plr->setIsQueuedForRbg(true);
     else
         plr->setIsQueuedForRbg(false);
 
-    if (srlPacket.bgType >= BATTLEGROUND_NUM_TYPES || srlPacket.bgType == 0 ||
-        (!m_bgMaps.contains(srlPacket.bgType) && srlPacket.bgType != BattlegroundDef::TYPE_RANDOM))
+    if (bgType >= BATTLEGROUND_NUM_TYPES || bgType == 0 ||
+        (!m_bgMaps.contains(bgType) && bgType != BattlegroundDef::TYPE_RANDOM))
     {
-        sCheatLog.writefromsession(session, "Attempted to join invalid battleground type: {}.", srlPacket.bgType);
+        sCheatLog.writefromsession(session, "Attempted to join invalid battleground type: {}.", bgType);
         plr->softDisconnect();
         return;
     }
 
-    if (srlPacket.instanceId)
+    if (instanceId)
     {
         // We haven't picked the first instance. This means we've specified an instance to join
         std::lock_guard instanceLock(m_instanceLock);
 
-        const auto itr = m_instances[srlPacket.bgType].find(srlPacket.instanceId);
-        if (itr == m_instances[srlPacket.bgType].end())
+        const auto itr = m_instances[bgType].find(instanceId);
+        if (itr == m_instances[bgType].end())
         {
             session->systemMessage(session->localizedWorldSrv(SS_JOIN_INVALID_INSTANCE));
             return;
         }
     }
 
+    if (asGroup)
+    {
+        handleBattlegroundGroupJoin(session, bgType, instanceId);
+        return;
+    }
+
     // Queue him!
     std::lock_guard queueLock(m_queueLock);
-    m_queuedPlayers[srlPacket.bgType][lgroup].push_back(pguid);
-    sLogger.info("BattlegroundManager : Player {} is now in battleground queue for instance {}", session->GetPlayer()->getGuidLow(), srlPacket.instanceId + 1);
+    m_queuedPlayers[bgType][lgroup].push_back(pguid);
+    sLogger.info("BattlegroundManager : Player {} is now in battleground queue for instance {}", session->GetPlayer()->getGuidLow(), instanceId + 1);
 
     plr->setIsQueuedForBg(true);
-    plr->setQueuedBgInstanceId(srlPacket.instanceId);
-    plr->setBgQueueType(srlPacket.bgType);
+    plr->setQueuedBgInstanceId(instanceId);
+    plr->setBgQueueType(bgType);
 
     plr->setBGEntryPoint(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetOrientation(), plr->GetMapId(), plr->GetInstanceID());
 
-    sendBattlefieldStatus(plr, BattlegroundDef::STATUS_INQUEUE, srlPacket.bgType, srlPacket.instanceId, 0, m_bgMaps[srlPacket.bgType], 0);
+    sendBattlefieldStatus(plr, BattlegroundDef::STATUS_INQUEUE, bgType, instanceId, 0, m_bgMaps[bgType], 0);
 }
 
 void ErasePlayerFromList(uint32_t guid, std::list<uint32_t>* l)
@@ -1156,6 +1158,153 @@ void BattlegroundManager::deleteBattleground(Battleground* battleground)
     delete battleground;
 }
 
+void BattlegroundManager::handleBattlegroundGroupJoin(WorldSession* session, uint32_t bgType, uint32_t instanceId)
+{
+    Player* leader = session->GetPlayer();
+    const auto group = leader->getGroup();
+    if (group == nullptr || group->GetLeader() != leader->getPlayerInfo())
+        return;
+
+    if (group->GetSubGroupCount() != 1)
+    {
+        session->systemMessage(session->localizedWorldSrv(SS_SORRY_RAID_GROUPS_JOINING_BG_ARE_UNSUPPORTED));
+        return;
+    }
+
+    // every member has to be able to join, otherwise nobody is queued
+    std::vector<Player*> members;
+    Player* deserter = nullptr;
+
+    group->Lock();
+    for (const auto itx : group->GetSubGroup(0)->getGroupMembers())
+    {
+        Player* member = sObjectMgr.getPlayer(itx->guid);
+        if (member == nullptr)
+        {
+            session->systemMessage("One or more of your party members are offline.");
+            group->Unlock();
+            return;
+        }
+
+        // interfaction groups queue with their own faction, every member ends up on his own side
+        if (member->getTeam() != leader->getTeam() && !worldConfig.player.isInterfactionGroupEnabled)
+        {
+            session->systemMessage("One or more of your party members are not of your faction.");
+            group->Unlock();
+            return;
+        }
+
+        if (member->getLevelGrouping() != leader->getLevelGrouping())
+        {
+            session->systemMessage("One or more of your party members are not in your battleground level range.");
+            group->Unlock();
+            return;
+        }
+
+        if (member != leader && (member->isQueuedForBg() || member->getBattleground() != nullptr))
+        {
+            session->systemMessage(session->localizedWorldSrv(SS_ONE_OR_MORE_OF_PARTY_MEMBERS_ARE_ALREADY_QUEUED_OR_INSIDE_BG));
+            group->Unlock();
+            return;
+        }
+
+        if (deserter == nullptr && member->hasAurasWithId(BattlegroundDef::DESERTER))
+            deserter = member;
+
+        members.push_back(member);
+    }
+    group->Unlock();
+
+    if (deserter != nullptr)
+    {
+        for (Player* member : members)
+            sendGroupJoinedBattleground(member, BattlegroundDef::GROUP_JOIN_STATUS_DESERTERS, bgType, deserter);
+
+        return;
+    }
+
+    std::lock_guard queueLock(m_queueLock);
+    for (Player* member : members)
+    {
+        m_queuedPlayers[bgType][member->getLevelGrouping()].push_back(member->getGuidLow());
+        sLogger.info("BattlegroundManager : Player {} is now in battleground queue for instance {} (group of {})", member->getGuidLow(), instanceId + 1, leader->getGuidLow());
+
+        member->setIsQueuedForRbg(bgType == BattlegroundDef::TYPE_RANDOM);
+        member->setIsQueuedForBg(true);
+        member->setQueuedBgInstanceId(instanceId);
+        member->setBgQueueType(bgType);
+
+        member->setBGEntryPoint(member->GetPositionX(), member->GetPositionY(), member->GetPositionZ(), member->GetOrientation(), member->GetMapId(), member->GetInstanceID());
+
+        sendBattlefieldStatus(member, BattlegroundDef::STATUS_INQUEUE, bgType, instanceId, 0, m_bgMaps[bgType], 0);
+        sendGroupJoinedBattleground(member, static_cast<int32_t>(bgType));
+    }
+}
+
+void BattlegroundManager::sendGroupJoinedBattleground(Player* player, int32_t status, uint32_t bgType, Player* causer)
+{
+    uint32_t mapId = 0;
+    if (status > 0)
+    {
+        const auto itr = m_bgMaps.find(static_cast<uint32_t>(status));
+        if (itr != m_bgMaps.end())
+            mapId = itr->second;
+    }
+
+    if (causer == nullptr)
+        causer = player;
+
+    // serialised for Classic - WotLK only
+    SmsgGroupJoinedBattleground managedPacket(status, mapId, causer->getGuid());
+    player->getSession()->sendManagedPacket(managedPacket);
+
+    // serialised for Cata and later only, the client has no message for successful group joins anymore
+    if (status < 0)
+    {
+        SmsgBattlefieldStatusFailed failedPacket(causer->GetNewGUID(), bgType, 0, getJoinResultForGroupJoinStatus(status), 0);
+        player->getSession()->sendManagedPacket(failedPacket);
+    }
+}
+
+uint32_t BattlegroundManager::getJoinResultForGroupJoinStatus(int32_t status)
+{
+    switch (status)
+    {
+        case BattlegroundDef::GROUP_JOIN_STATUS_DESERTERS:
+            return BattlegroundDef::JOIN_RESULT_DESERTERS;
+        case BattlegroundDef::GROUP_JOIN_STATUS_NOT_IN_TEAM:
+            return BattlegroundDef::JOIN_RESULT_ARENA_TEAM_PARTY_SIZE;
+        case BattlegroundDef::GROUP_JOIN_STATUS_TOO_MANY_QUEUES:
+            return BattlegroundDef::JOIN_RESULT_TOO_MANY_QUEUES;
+        case BattlegroundDef::GROUP_JOIN_STATUS_CANNOT_QUEUE_FOR_RATED:
+            return BattlegroundDef::JOIN_RESULT_CANNOT_QUEUE_FOR_RATED;
+        case BattlegroundDef::GROUP_JOIN_STATUS_QUEUED_FOR_RATED:
+            return BattlegroundDef::JOIN_RESULT_QUEUED_FOR_RATED;
+        case BattlegroundDef::GROUP_JOIN_STATUS_TEAM_LEFT_QUEUE:
+            return BattlegroundDef::JOIN_RESULT_TEAM_LEFT_QUEUE;
+        case BattlegroundDef::GROUP_JOIN_STATUS_NOT_IN_BATTLEGROUND:
+            return BattlegroundDef::JOIN_RESULT_NOT_IN_BATTLEGROUND;
+        case BattlegroundDef::GROUP_JOIN_STATUS_XP_GAIN:
+            return BattlegroundDef::JOIN_RESULT_XP_GAIN;
+        case BattlegroundDef::GROUP_JOIN_STATUS_JOIN_RANGE_INDEX:
+            return BattlegroundDef::JOIN_RESULT_RANGE_INDEX;
+        case BattlegroundDef::GROUP_JOIN_STATUS_JOIN_TIMED_OUT:
+            return BattlegroundDef::JOIN_RESULT_TIMED_OUT;
+        case BattlegroundDef::GROUP_JOIN_STATUS_LFG_CANT_USE_BATTLEGROUND:
+            return BattlegroundDef::JOIN_RESULT_LFG_CANT_USE_BATTLEGROUND;
+        case BattlegroundDef::GROUP_JOIN_STATUS_IN_RANDOM_BG:
+            return BattlegroundDef::JOIN_RESULT_IN_RANDOM_BG;
+        case BattlegroundDef::GROUP_JOIN_STATUS_IN_NON_RANDOM_BG:
+            return BattlegroundDef::JOIN_RESULT_IN_NON_RANDOM_BG;
+        // "not eligible" and the generic failure have no dedicated Cata message
+        case BattlegroundDef::GROUP_JOIN_STATUS_NOT_ELIGIBLE:
+        case BattlegroundDef::GROUP_JOIN_STATUS_JOIN_FAILED:
+        case BattlegroundDef::GROUP_JOIN_STATUS_FAIL:
+        default:
+            return BattlegroundDef::JOIN_RESULT_JOIN_FAILED;
+    }
+}
+
 void BattlegroundManager::sendBattlefieldStatus(Player* player, BattlegroundDef::Status status, uint32_t type, uint32_t instanceId, uint32_t time, uint32_t mapId, uint8_t ratedMatch)
 {
     SmsgBattlefieldStatus managedPacket(player->GetNewGUID(), status, type, instanceId, time, mapId, ratedMatch, Battleground::isTypeArena(type));
@@ -1276,9 +1425,7 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
                 loggedInPlayer->setIsQueuedForBg(true);
                 loggedInPlayer->setQueuedBgInstanceId(0);
                 loggedInPlayer->setBgQueueType(battlegroundType);
-                //\todo error/bgtype missing, always send all arenas (from legacy)
-                SmsgGroupJoinedBattleground managedPacket(6);
-                loggedInPlayer->getSession()->sendManagedPacket(managedPacket);
+                sendGroupJoinedBattleground(loggedInPlayer, static_cast<int32_t>(BattlegroundDef::BATTLEMASTER_LIST_ALL_ARENAS));
 
                 loggedInPlayer->setBGEntryPoint(loggedInPlayer->GetPositionX(), loggedInPlayer->GetPositionY(), loggedInPlayer->GetPositionZ(),
                     loggedInPlayer->GetOrientation(), loggedInPlayer->GetMapId(), loggedInPlayer->GetInstanceID());
