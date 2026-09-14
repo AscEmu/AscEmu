@@ -190,55 +190,79 @@ void LootMgr::loadLootProp()
     }
 }
 
-void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* LootTable)
+void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* lootTable)
 {
-    auto result = sMySQLStore.getWorldDBQuery("SELECT * FROM %s ORDER BY entryid ASC", szTableName.c_str());
+    auto result = sMySQLStore.getWorldDBQuery(
+        "SELECT entryid, itemid, normal10percentchance, normal25percentchance, "
+        "heroic10percentchance, heroic25percentchance, mincount, maxcount"
+#if VERSION_STRING >= Cata
+        ", is_currency"
+#endif
+        " FROM %s ORDER BY entryid ASC", szTableName.c_str());
     if (result == nullptr)
     {
         sLogger.failure("LootMgr::loadLootTables : Loading loot from table {} failed.", szTableName);
         return;
     }
 
-    LootTemplateMap::const_iterator tab;
+    const bool isCreatureTable = (szTableName == "loot_creatures");
+    LootTemplateMap::iterator tab = lootTable->end();
+
+    uint32_t currentEntry = std::numeric_limits<uint32_t>::max();
+    uint32_t lastCheckedEntry = std::numeric_limits<uint32_t>::max();
+    bool isCurrentCreatureValid = true;
+
     uint32_t count = 0;
     do
     {
         Field* fields = result->fetch();
 
-        std::vector<float> chance;
-        chance.reserve(4);
+        const uint32_t entry = fields[0].asUint32();
 
-        uint32_t entry = fields[0].asUint32();
+        // Check creature validity once per entry group
+        if (isCreatureTable && entry != lastCheckedEntry)
+        {
+            lastCheckedEntry = entry;
+            isCurrentCreatureValid = (sMySQLStore.getCreatureProperties(entry) != nullptr);
+        }
+
+        if (isCreatureTable && !isCurrentCreatureValid)
+        {
+            continue;
+        }
+
         uint32_t itemId = fields[1].asUint32();
-        chance.push_back(fields[2].asFloat());
-        chance.push_back(fields[3].asFloat());
-        chance.push_back(fields[4].asFloat());
-        chance.push_back(fields[5].asFloat());
-        uint32_t mincount = fields[6].asUint32();
-        uint32_t maxcount = fields[7].asUint32();
+        const uint32_t minCount = fields[6].asUint32();
+        const uint32_t maxCount = fields[7].asUint32();
 
 #if VERSION_STRING >= Cata
         // is_currency: itemId is a CurrencyTypes.dbc id instead of an item_properties entry.
         // Always the last column - not all six loot tables have the same preceding columns.
-        const bool isCurrencyRow = result->getFieldCount() > 8 && fields[result->getFieldCount() - 1].asUint8() != 0;
-        if (isCurrencyRow)
+        if (fields[8].asUint8() != 0) // is_currency
         {
-            LootStoreItem storeitem = LootStoreItem(itemId, chance, mincount, maxcount);
+            std::array<float, 4> chance = {
+                fields[2].asFloat(), // Normal 10%
+                fields[3].asFloat(), // Normal 25%
+                fields[4].asFloat(), // Heroic 10%
+                fields[5].asFloat() // Heroic 25%
+            };
 
-            if (LootTable->empty() || tab->first != entry)
+            if (tab == lootTable->end() || currentEntry != entry)
             {
-                const auto [tabItr, _] = LootTable->try_emplace(entry, Util::LazyInstanceCreator([] {
+                currentEntry = entry;
+                tab = lootTable->try_emplace(entry, Util::LazyInstanceCreator([] {
                     return std::make_unique<LootTemplate>();
-                    }));
-                tab = tabItr;
+                })).first;
             }
 
-            tab->second->addEntry(storeitem);
+            LootStoreItem storeItem(itemId, chance, minCount, maxCount);
+            tab->second->addEntry(storeItem);
             count++;
             continue;
         }
 #endif
 
+        // Validate item existence before allocating memory
         const auto itemProto = sMySQLStore.getItemProperties(itemId);
         if (itemProto == nullptr)
         {
@@ -246,20 +270,23 @@ void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* Lo
             continue;
         }
 
-        LootStoreItem storeitem = LootStoreItem(itemProto, chance, mincount, maxcount);
-
-        // Looking for the template of the entry
-        if (LootTable->empty() || tab->first != entry)
+        if (tab == lootTable->end() || currentEntry != entry)
         {
-            // Searching the template (in case template Id changed)
-            const auto [tabItr, _] = LootTable->try_emplace(entry, Util::LazyInstanceCreator([] {
+            currentEntry = entry;
+            tab = lootTable->try_emplace(entry, Util::LazyInstanceCreator([] {
                 return std::make_unique<LootTemplate>();
-            }));
-            tab = tabItr;
+            })).first;
         }
 
-        // Add Item to our Tempelate
-        tab->second->addEntry(storeitem);
+        std::array<float, 4> chance = {
+            fields[2].asFloat(), // Normal 10%
+            fields[3].asFloat(), // Normal 25%
+            fields[4].asFloat(), // Heroic 10%
+            fields[5].asFloat() // Heroic 25%
+        };
+
+        LootStoreItem storeItem(itemProto, chance, minCount, maxCount);
+        tab->second->addEntry(storeItem);
         count++;
     } while (result->nextRow());
 
@@ -303,7 +330,14 @@ void LootMgr::addLoot(Loot* loot, uint32_t itemid, std::vector<float> chance, ui
     if (itemprop == nullptr)
         return;
 
-    LootStoreItem item = LootStoreItem(itemprop, chance, mincount, maxcount);
+    // Convert incoming std::vector to fixed std::array<float, 4>
+    std::array<float, 4> chanceArray{};
+    for (size_t i = 0; i < std::min(chance.size(), chanceArray.size()); ++i)
+    {
+        chanceArray[i] = chance[i];
+    }
+
+    LootStoreItem item = LootStoreItem(itemprop, chanceArray, mincount, maxcount);
 
     // check difficulty level
     if (item.chance[lootDifficulty] < 0.0f)

@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Random.hpp"
 #include "Utilities/Util.hpp"
 
-LootStoreItem::LootStoreItem(ItemProperties const* _itemproto, std::vector<float> _chance, uint32_t _mincount, uint32_t _maxcount) :
+LootStoreItem::LootStoreItem(ItemProperties const* _itemproto, std::array<float, 4> _chance, uint32_t _mincount, uint32_t _maxcount) :
     itemId(_itemproto->ItemId), itemproto(_itemproto), chance(_chance), mincount(_mincount), maxcount(_maxcount)
 {
     starts_quest = itemproto->QuestId != 0;
@@ -21,7 +21,7 @@ LootStoreItem::LootStoreItem(ItemProperties const* _itemproto, std::vector<float
     needs_quest = itemproto->Class == ITEM_CLASS_QUEST;
 }
 
-LootStoreItem::LootStoreItem(uint32_t _currencyId, std::vector<float> _chance, uint32_t _mincount, uint32_t _maxcount) :
+LootStoreItem::LootStoreItem(uint32_t _currencyId, std::array<float, 4> _chance, uint32_t _mincount, uint32_t _maxcount) :
     itemId(_currencyId), chance(_chance), mincount(_mincount), maxcount(_maxcount), isCurrency(true)
 {
 }
