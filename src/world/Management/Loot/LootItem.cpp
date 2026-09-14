@@ -28,6 +28,12 @@ LootStoreItem::LootStoreItem(uint32_t _currencyId, std::array<float, 4> _chance,
 
 bool LootStoreItem::roll(uint8_t difficulty) const
 {
+    // MoP fallback: Map IDs > 3 (like LFR/Flex/Challenge) to Normal (0)
+    if (difficulty >= chance.size())
+    {
+        difficulty = 0;
+    }
+
     if (chance[difficulty] >= 100.0f)
         return true;
 

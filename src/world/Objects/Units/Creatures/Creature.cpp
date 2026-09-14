@@ -865,7 +865,7 @@ void Creature::OnRemoveCorpse()
     // time to respawn!
     if (IsInWorld() && (int32_t)m_WorldMap->getInstanceId() == m_instanceId)
     {
-        sLogger.info("Removing corpse of {}...", std::to_string(getGuid()));
+        sLogger.debug("Removing corpse of '{}' (Entry: {}, LowGuid: {})...", GetCreatureProperties()->Name, getEntry(), getGuidLow());
 
         setDeathState(DEAD);
         m_position = m_spawnLocation;
@@ -901,11 +901,10 @@ void Creature::OnRespawn()
 
     getMovementManager()->clear();
 
-    sLogger.info("Respawning {}...", std::to_string(getGuid()));
-    
-    auto minlevel = std::min(GetCreatureProperties()->MaxLevel, GetCreatureProperties()->MinLevel);
-    auto maxlevel = std::max(GetCreatureProperties()->MaxLevel, GetCreatureProperties()->MinLevel);
-    auto level = minlevel == maxlevel ? minlevel : Util::getRandomUInt(minlevel, maxlevel);
+    sLogger.debug("Respawning '{}' (Entry: {}, LowGuid: {})...", GetCreatureProperties()->Name, getEntry(), getGuidLow());
+
+    auto const [minLevel, maxLevel] = std::minmax(GetCreatureProperties()->MinLevel, GetCreatureProperties()->MaxLevel);
+    const uint32_t level = minLevel == maxLevel ? minLevel : Util::getRandomUInt(minLevel, maxLevel);
     setLevel(level);
     setHealth(getMaxHealth());
     uint32_t displayID = getNativeDisplayId();
