@@ -55,6 +55,11 @@ namespace AscEmu::Packets
                 packet << uint32_t(0);
                 mi.writeMovementInfo(packet, 0, false);
             }
+            else if (m_protocol.isMop())
+            {
+                // the Mop client is teleported with SMSG_MOVE_TELEPORT, this opcode only exists as CMSG_MOVE_TELEPORT_ACK
+                return false;
+            }
             return true;
         }
 
@@ -64,7 +69,7 @@ namespace AscEmu::Packets
             {
                 packet >> guid >> flags >> time;
             }
-            else
+            else if (m_protocol.isCata())
             {
                 packet >> flags >> time;
 
@@ -89,6 +94,36 @@ namespace AscEmu::Packets
 
                 guid.init(cataGuid);
             }
+            else if (m_protocol.isMop())
+            {
+                packet >> time >> flags;
+
+                WoWGuid mopGuid;
+                mopGuid[0] = packet.readBit();
+                mopGuid[7] = packet.readBit();
+                mopGuid[3] = packet.readBit();
+                mopGuid[5] = packet.readBit();
+                mopGuid[4] = packet.readBit();
+                mopGuid[6] = packet.readBit();
+                mopGuid[1] = packet.readBit();
+                mopGuid[2] = packet.readBit();
+
+                packet.readByteSeq(mopGuid[4]);
+                packet.readByteSeq(mopGuid[1]);
+                packet.readByteSeq(mopGuid[6]);
+                packet.readByteSeq(mopGuid[7]);
+                packet.readByteSeq(mopGuid[0]);
+                packet.readByteSeq(mopGuid[2]);
+                packet.readByteSeq(mopGuid[5]);
+                packet.readByteSeq(mopGuid[3]);
+
+                guid = mopGuid;
+            }
+            else
+            {
+                return false;
+            }
+
             return true;
         }
     };

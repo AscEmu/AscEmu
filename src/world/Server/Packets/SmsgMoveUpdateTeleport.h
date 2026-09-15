@@ -37,7 +37,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            if (m_protocol.isMop())
+            {
+                MovementInfo mopInfo = mi;
+                mopInfo.guid = guid;
+                mopInfo.writeMovementInfo(packet, SMSG_MOVE_UPDATE_TELEPORT);
+                return true;
+            }
+            else if (m_protocol.isCata())
             {
                 bool hasTransportData = !mi.transport_guid.isEmpty();
 

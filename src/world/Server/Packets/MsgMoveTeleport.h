@@ -103,7 +103,18 @@ namespace AscEmu::Packets
                 packet.writeByteSeq(guid[6]);
                 packet << lv.y;
             }
-            // TODO: MoP
+            else if (m_protocol.isMop())
+            {
+                // SMSG_MOVE_TELEPORT, written with the movement descriptor
+                mi.position = lv;
+                mi.guid = guid;
+                mi.writeMovementInfo(packet, MSG_MOVE_TELEPORT);
+            }
+            else
+            {
+                return false;
+            }
+
             return true;
         }
 
