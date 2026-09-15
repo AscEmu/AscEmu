@@ -1443,7 +1443,7 @@ enum GlyphSlotMask
     GS_MASK_4 = 0x004,
     GS_MASK_5 = 0x010,
     GS_MASK_6 = 0x020
-#else
+#elif VERSION_STRING == Cata
     GS_MASK_1 = 0x001,
     GS_MASK_2 = 0x002,
     GS_MASK_3 = 0x040,
@@ -1459,6 +1459,17 @@ enum GlyphSlotMask
     GS_MASK_LEVEL_25 = GS_MASK_1 | GS_MASK_2 | GS_MASK_3,
     GS_MASK_LEVEL_50 = GS_MASK_4 | GS_MASK_5 | GS_MASK_6,
     GS_MASK_LEVEL_75 = GS_MASK_7 | GS_MASK_8 | GS_MASK_9
+#elif VERSION_STRING == Mop
+    GS_MASK_1 = 0x001,
+    GS_MASK_2 = 0x002,
+    GS_MASK_3 = 0x004,
+    GS_MASK_4 = 0x008,
+    GS_MASK_5 = 0x010,
+    GS_MASK_6 = 0x020,
+
+    GS_MASK_LEVEL_25 = GS_MASK_1 | GS_MASK_2,
+    GS_MASK_LEVEL_50 = GS_MASK_3 | GS_MASK_4,
+    GS_MASK_LEVEL_75 = GS_MASK_5 | GS_MASK_6
 #endif
 };
 

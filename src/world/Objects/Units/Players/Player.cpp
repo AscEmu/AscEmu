@@ -5331,14 +5331,12 @@ void Player::updateGlyphs()
             setGlyphSlot(static_cast<uint16_t>(glyphSlot->Slot - 1), glyphSlot->Id);
     }
 #elif VERSION_STRING == Mop
-    for (uint32_t i = 0; i < sGlyphSlotStore.getNumRows(); ++i)
+    uint16_t slot = 0;
+    for (uint32_t i = 0; i < sGlyphSlotStore.getNumRows() && slot < WOWPLAYER_GLYPH_SLOT_COUNT; ++i)
     {
         const auto glyphSlot = sGlyphSlotStore.lookupEntry(i);
-        if (glyphSlot == nullptr)
-            continue;
-
-        if (glyphSlot->Slot > 0)
-            setGlyphSlot(static_cast<uint16_t>(glyphSlot->Slot - 1), glyphSlot->Id);
+        if (glyphSlot != nullptr)
+            setGlyphSlot(slot++, glyphSlot->Id);
     }
 #else
     uint16_t slot = 0;
@@ -5373,7 +5371,13 @@ void Player::updateGlyphs()
     if (level >= 75)
         slotMask |= GS_MASK_LEVEL_75;
 #elif VERSION_STRING == Mop
-    // TODO
+    const auto level = getLevel();
+    if (level >= 25)
+        slotMask |= GS_MASK_LEVEL_25;
+    if (level >= 50)
+        slotMask |= GS_MASK_LEVEL_50;
+    if (level >= 75)
+        slotMask |= GS_MASK_LEVEL_75;
 #endif
 
     setGlyphsEnabled(slotMask);
