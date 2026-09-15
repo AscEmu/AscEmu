@@ -228,6 +228,7 @@ namespace AscEmu::Logging
             case LF_SCRIPT_MGR:
             case LF_DB_TABLES:
             case LF_MOVE:
+            case LF_CREATURE_AI:
             case LF_ALL:
                 return Severity::YELLOW;
         }

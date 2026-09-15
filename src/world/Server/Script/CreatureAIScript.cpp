@@ -57,7 +57,7 @@ CreatureAIScript::~CreatureAIScript()
 // Event default management
 void CreatureAIScript::_internalOnDied(Unit* killer)
 {
-    sLogger.debug("CreatureAIScript::_internalOnDied() called");
+    sLogger.debugCreatureAi("CreatureAIScript::_internalOnDied() called");
 
     enableOnIdleEmote(false);
 
@@ -87,14 +87,14 @@ void CreatureAIScript::_internalOnDied(Unit* killer)
 
 void CreatureAIScript::_internalOnTargetDied(Unit* target)
 {
-    sLogger.debug("CreatureAIScript::_internalOnTargetDied() called");
+    sLogger.debugCreatureAi("CreatureAIScript::_internalOnTargetDied() called");
 
     sendRandomDBChatMessage(mEmotesOnTargetDied, target);
 }
 
 void CreatureAIScript::_internalOnCombatStart(Unit* target)
 {
-    sLogger.debug("CreatureAIScript::_internalOnEnterCombat() called");
+    sLogger.debugCreatureAi("CreatureAIScript::_internalOnEnterCombat() called");
 
     enableOnIdleEmote(false);
 
@@ -110,7 +110,7 @@ void CreatureAIScript::_internalOnCombatStart(Unit* target)
 
 void CreatureAIScript::_internalOnCombatStop()
 {
-    sLogger.debug("CreatureAIScript::_internalOnCombatStop() called");
+    sLogger.debugCreatureAi("CreatureAIScript::_internalOnCombatStop() called");
 
     _cancelAllTimers();
     _removeAllAuras();
@@ -168,7 +168,7 @@ void CreatureAIScript::_internalAIUpdate(unsigned long time_passed)
 
 void CreatureAIScript::_internalOnScriptPhaseChange()
 {
-    sLogger.debug("CreatureAIScript::_internalOnScriptPhaseChange() called");
+    sLogger.debugCreatureAi("CreatureAIScript::_internalOnScriptPhaseChange() called");
     if (getCreature()->GetScript())
         getCreature()->GetScript()->OnScriptPhaseChange(getScriptPhase());
 }
@@ -943,7 +943,7 @@ void CreatureAIScript::_cancelAllTimers()
         mCreatureTimer.clear();
     }
 
-    sLogger.debug("CreatureAIScript::_cancelAllTimers() - all cleared!");
+    sLogger.debugCreatureAi("CreatureAIScript::_cancelAllTimers() - all cleared!");
 }
 
 uint32_t CreatureAIScript::_getTimerCount()
@@ -1481,7 +1481,7 @@ void CreatureAIScript::enableOnIdleEmote(bool enable, uint32_t durationInMs /*= 
 {
     if (enable && mEmotesOnIdle.empty())
     {
-        sLogger.debug("CreatureAIScript::enableOnIdleEmote : no IdleEvents available!");
+        sLogger.debugCreatureAi("CreatureAIScript::enableOnIdleEmote : no IdleEvents available!");
         return;
     }
 

@@ -607,7 +607,7 @@ void AIInterface::combatStop()
 {
     if (!m_isEngaged)
     {
-        sLogger.debug("AIInterface::onCombatStop called but creature is not inCombat");
+        sLogger.debugCreatureAi("AIInterface::onCombatStop called but creature is not inCombat");
         return;
     }
     m_isEngaged = false;

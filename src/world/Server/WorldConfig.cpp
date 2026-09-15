@@ -293,6 +293,7 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     Config.MainConfig.tryGetBool("Logger", "EnableAuraLog", &logger.enableAuraLog);
     Config.MainConfig.tryGetBool("Logger", "EnableAuraEffectLog", &logger.enableAuraEffectLog);
     Config.MainConfig.tryGetBool("Logger", "EnableScriptLog", &logger.enableScriptLog);
+    Config.MainConfig.tryGetBool("Logger", "EnableCreatureAiLog", &logger.enableCreatureAiLog);
     Config.MainConfig.tryGetBool("Logger", "EnableWorldPacketLog", &logger.enableWorldPacketLog);
 
     Config.MainConfig.tryGetString("Logger", "ExtendedLogDir", &logger.extendedLogsDir);

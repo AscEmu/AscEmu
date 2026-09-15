@@ -435,6 +435,7 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     sLogger.setDebugFlags(AscEmu::Logging::LF_AURA, worldConfig.logger.enableAuraLog);
     sLogger.setDebugFlags(AscEmu::Logging::LF_AURA_EFF, worldConfig.logger.enableAuraEffectLog);
     sLogger.setDebugFlags(AscEmu::Logging::LF_SCRIPT_MGR, worldConfig.logger.enableScriptLog);
+    sLogger.setDebugFlags(AscEmu::Logging::LF_CREATURE_AI, worldConfig.logger.enableCreatureAiLog);
 
     createExtendedLogDir();
     if (!checkRequiredDirs())

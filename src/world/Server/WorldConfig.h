@@ -115,6 +115,7 @@ public:
         bool enableAuraLog;
         bool enableAuraEffectLog;
         bool enableScriptLog;
+        bool enableCreatureAiLog;
         bool enableWorldPacketLog;
         std::string extendedLogsDir;
         bool enableCheaterLog;

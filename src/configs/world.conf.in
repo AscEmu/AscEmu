@@ -204,6 +204,12 @@
 #        Set the parameter value to 1 (enabled) or 0 (disabled).
 #        Default: 0 (disabled)
 #
+#    EnableCreatureAiLog
+#        If this directive is turned on, debug messages related to creature AI
+#        will be written to the console or log files.
+#        Set the parameter value to 1 (enabled) or 0 (disabled).
+#        Default: 0 (disabled)
+#
 #    EnableWorldPacketLog
 #        If this directive is turned on, a file called `world.log`
 #        will be created in the server's directory and all packets
@@ -251,6 +257,7 @@
         EnableAuraLog        = "0"
         EnableAuraEffectLog  = "0"
         EnableScriptLog      = "0"
+        EnableCreatureAiLog  = "0"
         EnableWorldPacketLog = "0"
         ExtendedLogDir       = "logs"
         EnableCheaterLog     = "0"

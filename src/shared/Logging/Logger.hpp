@@ -148,6 +148,12 @@ namespace AscEmu::Logging
             debugFlag(LF_SCRIPT_MGR, fmt, std::forward<Args>(args)...);
         }
 
+        template <typename... Args>
+        void debugCreatureAi(std::string_view fmt, Args&&... args)
+        {
+            debugFlag(LF_CREATURE_AI, fmt, std::forward<Args>(args)...);
+        }
+
         //////////////////////////////////////////////////////////////////////////////////////////
         // standard logging helpers for different message severities.
         template <typename... Args>
