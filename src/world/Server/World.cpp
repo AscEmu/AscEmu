@@ -919,6 +919,9 @@ void World::loadMySQLStores()
     sMySQLStore.loadItemPropertiesStatsTable();
     sMySQLStore.loadCreaturePropertiesMovementTable();
     sMySQLStore.loadCreaturePropertiesTable();
+#if VERSION_STRING >= Cata
+    sMySQLStore.loadCurrencyCreatureOnKillTable();
+#endif
     sMySQLStore.loadGameObjectPropertiesTable();
     sMySQLStore.loadQuestPropertiesTable();
     sMySQLStore.loadGameObjectQuestItemBindingTable();

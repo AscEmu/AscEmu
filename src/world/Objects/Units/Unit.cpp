@@ -6708,6 +6708,9 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
             else if (isCreature())
             {
                 plrOwner->onKillUnitReputation(this, false);
+#if VERSION_STRING >= Cata
+                plrOwner->onKillUnitCurrency(this, false);
+#endif
 #ifdef FT_ACHIEVEMENTS
                 plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW, attacker->GetMapId(), 0, 0);
 #endif

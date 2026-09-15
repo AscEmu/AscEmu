@@ -243,6 +243,13 @@ namespace MySQLStructure
         uint32_t reward_currency_count[4] = { 0, 0, 0, 0 };
     };
 
+    //currency_creature_onkill (Cata+, currency awarded on kill)
+    struct CurrencyCreatureOnKill
+    {
+        uint32_t currency_id = 0;
+        uint32_t currency_count = 0;
+    };
+
     //gameobject_teleports
 
     //gossip_menu

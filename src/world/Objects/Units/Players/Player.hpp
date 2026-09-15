@@ -1752,6 +1752,9 @@ public:
     bool isHostileBasedOnReputation(WDB::Structures::FactionEntry const* factionEntry, bool skipForcedReactions = false) const;
 
     void onKillUnitReputation(Unit* unit, bool innerLoop);
+#if VERSION_STRING >= Cata
+    void onKillUnitCurrency(Unit* unit, bool innerLoop);
+#endif
     void onTalkReputation(WDB::Structures::FactionEntry const* factionEntry);
     
     void setFactionInactive(uint32_t faction, bool set);

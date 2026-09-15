@@ -11613,6 +11613,39 @@ bool Player::isHostileBasedOnReputation(WDB::Structures::FactionEntry const* fac
     return factionReputation->isAtWar() || getReputationRankFromStanding(factionReputation->standing) <= Standing::HOSTILE;
 }
 
+#if VERSION_STRING >= Cata
+void Player::onKillUnitCurrency(Unit* unit, bool innerLoop)
+{
+    if (unit == nullptr || !unit->isCreature())
+        return;
+
+    const auto* currencies = sMySQLStore.getCurrencyCreatureOnKill(unit->getEntry());
+    if (currencies == nullptr)
+        return;
+
+    if (auto* m_Group = getGroup())
+    {
+        if (!innerLoop)
+        {
+            m_Group->getLock().lock();
+
+            for (uint32_t i = 0; i < m_Group->GetSubGroupCount(); ++i)
+                for (const auto* groupMember : m_Group->GetSubGroup(i)->getGroupMembers())
+                    if (auto* player = sObjectMgr.getPlayer(groupMember->guid))
+                        if (player->isInRange(this, 100.0f))
+                            player->onKillUnitCurrency(unit, true);
+
+            m_Group->getLock().unlock();
+
+            return;
+        }
+    }
+
+    for (const auto& currency : *currencies)
+        modifyCurrency(currency.currency_id, static_cast<int32_t>(currency.currency_count));
+}
+#endif
+
 void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
 {
     if (unit == nullptr)

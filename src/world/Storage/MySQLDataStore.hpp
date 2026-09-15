@@ -78,6 +78,7 @@ public:
     typedef std::unordered_map<uint32_t, GameObjectProperties> GameObjectPropertiesContainer;
     typedef std::unordered_map<uint32_t, QuestProperties> QuestPropertiesContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::QuestPropertiesCurrencyReward> QuestPropertiesCurrenciesContainer;
+    typedef std::unordered_map<uint32_t, std::vector<MySQLStructure::CurrencyCreatureOnKill>> CurrencyCreatureOnKillContainer;
 
     typedef std::unordered_map<uint32_t, MySQLStructure::GameObjectSpawnExtra> GameObjectSpawnExtraContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::GameObjectSpawnOverrides> GameObjectSpawnOverrideContainer;
@@ -318,6 +319,8 @@ public:
     void loadQuestPropertiesTable();
 #if VERSION_STRING >= Cata
     void loadQuestPropertiesCurrenciesTable();
+    void loadCurrencyCreatureOnKillTable();
+    std::vector<MySQLStructure::CurrencyCreatureOnKill> const* getCurrencyCreatureOnKill(uint32_t creatureId) const;
 #endif
     void loadGameObjectQuestItemBindingTable();
     void loadGameObjectQuestPickupBindingTable();
@@ -413,6 +416,7 @@ public:
     QuestPropertiesContainer _questPropertiesStore;
 #if VERSION_STRING >= Cata
     QuestPropertiesCurrenciesContainer _questPropertiesCurrenciesStore;
+    CurrencyCreatureOnKillContainer _currencyCreatureOnKillStore;
 #endif
 
     GameObjectSpawnExtraContainer _gameObjectSpawnExtraStore;
