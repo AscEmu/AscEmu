@@ -1,6 +1,6 @@
 ################################################################################
 # AscEmu World Configuration File
-# Last edited: 09/05/2026
+# Last edited: 09/15/2026
 ################################################################################
 
 ################################################################################
@@ -1143,6 +1143,14 @@
 #        Amount of arena points received for losing a random battleground.
 #        Default 0
 #
+#    XP_PER_OBJECTIVE_KILL
+#        Experience for completing battleground objectives and for finishing a
+#        battleground (not for honorable kills). The value is the experience for
+#        one honorable kill worth of objective honor at level 80 and is scaled
+#        with the level of the player (a flag capture is worth 2 honorable kills,
+#        a resource tick 1, winning 3, losing 1). 0 disables battleground experience.
+#        Default 100
+#
 
 <Battleground AV_MIN               = "10"
               AV_MAX               = "40"
@@ -1170,7 +1178,8 @@
               RBG_WIN_HONOR        = "15"
               RBG_WIN_ARENA        = "0"
               RBG_LOSE_HONOR       = "5"
-              RBG_LOSE_ARENA       = "0">
+              RBG_LOSE_ARENA       = "0"
+              XP_PER_OBJECTIVE_KILL = "100">
 
 ################################################################################
 # Arena Settings

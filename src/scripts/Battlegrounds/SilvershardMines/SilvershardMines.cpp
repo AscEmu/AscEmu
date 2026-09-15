@@ -270,6 +270,7 @@ void SilvershardMines::CaptureCart(uint32_t mineIndex, uint32_t Team)
     {
         player->m_bgScore.BonusHonor += m_honorPerKill;
         HonorHandler::AddHonorPointsToPlayer(player, m_honorPerKill);
+        HonorHandler::AddBattlegroundObjectiveXp(player, 1);
     }
 
     if (m_scores[Team] >= SILVERSHARD_SCORE_MAX)

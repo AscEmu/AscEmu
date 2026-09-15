@@ -213,6 +213,7 @@ void TwinPeaks::HookOnAreaTrigger(Player* plr, uint32_t id)
         {
             player->m_bgScore.BonusHonor += honorToAdd;
             HonorHandler::AddHonorPointsToPlayer(player, honorToAdd);
+            HonorHandler::AddBattlegroundObjectiveXp(player, 2);
         }
 
         m_scores[plr->getTeam()]++;

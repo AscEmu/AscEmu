@@ -443,6 +443,7 @@ void BattleForGilneas::EventUpdateResources(uint32_t Team)
         {
             player->m_bgScore.BonusHonor += honorToAdd;
             HonorHandler::AddHonorPointsToPlayer(player, honorToAdd);
+            HonorHandler::AddBattlegroundObjectiveXp(player, 1);
         }
 
         updatePvPData();

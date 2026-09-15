@@ -884,6 +884,7 @@ void AlteracValley::AVNode::Capture()
                     if (!plr) continue;
 
                     HonorHandler::AddHonorPointsToPlayer(plr, 62);
+                    HonorHandler::AddBattlegroundObjectiveXp(plr, 3);
                 }
             }
             else if (m_template->m_defaultState == AV_NODE_STATE_HORDE_CONTROLLED)
@@ -894,6 +895,7 @@ void AlteracValley::AVNode::Capture()
                     if (!plr) continue;
 
                     HonorHandler::AddHonorPointsToPlayer(plr, 62);
+                    HonorHandler::AddBattlegroundObjectiveXp(plr, 3);
                 }
             }
 
@@ -1214,6 +1216,7 @@ void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
             if (!plr2) continue;
 
             HonorHandler::AddHonorPointsToPlayer(plr2, 62);
+            HonorHandler::AddBattlegroundObjectiveXp(plr2, 4);
         }
     }
     else if (pVictim->getEntry() == AV_NPC_GENERAL_DREK_THAR)
@@ -1227,6 +1230,7 @@ void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
             if (!plr2) continue;
 
             HonorHandler::AddHonorPointsToPlayer(plr2, AV_HONOR_ON_KILL_BOSS);
+            HonorHandler::AddBattlegroundObjectiveXp(plr2, 4);
         }
     }
     else if (pVictim->getEntry() == AV_NPC_CAPTAIN_GALVANGAR)
@@ -1238,6 +1242,7 @@ void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
             if (!plr2) continue;
 
             HonorHandler::AddHonorPointsToPlayer(plr2, AV_HONOR_ON_KILL_BOSS);
+            HonorHandler::AddBattlegroundObjectiveXp(plr2, 3);
         }
     }
     else if (pVictim->getEntry() == AV_NPC_CAPTAIN_BALINDA_STONEHEARTH)
@@ -1249,6 +1254,7 @@ void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
             if (!plr2) continue;
 
             HonorHandler::AddHonorPointsToPlayer(plr2, AV_HONOR_ON_KILL_BOSS);
+            HonorHandler::AddBattlegroundObjectiveXp(plr2, 3);
         }
     }
 }

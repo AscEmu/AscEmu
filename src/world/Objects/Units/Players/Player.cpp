@@ -8661,6 +8661,12 @@ void Player::applyRandomBattlegroundReward(bool wonBattleground)
     this->addArenaPoints(arenaPoints, false);
     this->updatePvPCurrencies();
 
+    // the bonus honor is configured in honorable kills, experience follows the same amount
+    if (wonBattleground)
+        HonorHandler::AddBattlegroundObjectiveXp(this, m_hasWonRbgToday ? worldConfig.bg.honorableKillsRbg : worldConfig.bg.firstRbgHonorValueToday);
+    else
+        HonorHandler::AddBattlegroundObjectiveXp(this, worldConfig.bg.honorByLosingRbg);
+
 #if VERSION_STRING >= Cata
     this->modifyCurrency(CURRENCY_TYPE_HONOR_POINTS, static_cast<int32_t>(honorPoints));
     this->modifyCurrency(CURRENCY_TYPE_CONQUEST_POINTS, static_cast<int32_t>(arenaPoints));

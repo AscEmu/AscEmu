@@ -511,6 +511,7 @@ void ArathiBasin::EventUpdateResources(uint32_t Team)
         {
             (*itr)->m_bgScore.BonusHonor += honorToAdd;
             HonorHandler::AddHonorPointsToPlayer((*itr), honorToAdd);
+            HonorHandler::AddBattlegroundObjectiveXp((*itr), 1);
         }
 
         updatePvPData();

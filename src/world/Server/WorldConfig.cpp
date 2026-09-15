@@ -203,6 +203,7 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     bg.honorableArenaWinRbg = 0;
     bg.honorByLosingRbg = 5;
     bg.honorByLosingArenaRbg = 0;
+    bg.xpPerObjectiveKill = 100;
 
     // world.conf - Arena Settings
     arena.arenaSeason = 8;
@@ -549,6 +550,7 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     Config.MainConfig.tryGetInt("Battleground", "RBG_WIN_ARENA", &bg.honorableArenaWinRbg);
     Config.MainConfig.tryGetInt("Battleground", "RBG_LOSE_HONOR", &bg.honorByLosingRbg);
     Config.MainConfig.tryGetInt("Battleground", "RBG_LOSE_ARENA", &bg.honorByLosingArenaRbg);
+    Config.MainConfig.tryGetInt("Battleground", "XP_PER_OBJECTIVE_KILL", &bg.xpPerObjectiveKill);
 
     // world.conf - Arena Settings
     Config.MainConfig.tryGetInt("Arena", "Season", &arena.arenaSeason);

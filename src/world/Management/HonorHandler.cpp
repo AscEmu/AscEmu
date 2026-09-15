@@ -43,6 +43,24 @@ void HonorHandler::AddHonorPointsToPlayer(Player* pPlayer, uint32_t uAmount)
 #endif
 }
 
+void HonorHandler::AddBattlegroundObjectiveXp(Player* pPlayer, uint32_t honorableKillEquivalents)
+{
+    if (pPlayer == nullptr || honorableKillEquivalents == 0 || worldConfig.bg.xpPerObjectiveKill == 0)
+        return;
+
+    // only battleground objectives give experience, arenas never do
+    Battleground* battleground = pPlayer->getBattleground();
+    if (battleground == nullptr || battleground->isArena())
+        return;
+
+    // the configured value is the experience for one honorable kill equivalent at level 80, scaled with the player's level
+    const uint64_t xp = static_cast<uint64_t>(honorableKillEquivalents) * worldConfig.bg.xpPerObjectiveKill * pPlayer->getLevel() / 80;
+    if (xp == 0)
+        return;
+
+    pPlayer->giveXp(static_cast<uint32_t>(xp), 0, false);
+}
+
 int32_t HonorHandler::CalculateHonorPointsForKill(uint32_t playerLevel, uint32_t victimLevel)
 {
     uint32_t kLevel = playerLevel;

@@ -32,5 +32,7 @@ public:
     static int32_t CalculateHonorPointsForKill(uint32_t playerLevel, uint32_t victimLevel);
     static void RecalculateHonorFields(Player* pPlayer);
     static void AddHonorPointsToPlayer(Player* pPlayer, uint32_t uAmount);
+    // experience for battleground objectives, the amount is given in honorable kill equivalents of the objective
+    static void AddBattlegroundObjectiveXp(Player* pPlayer, uint32_t honorableKillEquivalents);
     static void OnPlayerKilled(Player* pPlayer, Player* pVictim);
 };

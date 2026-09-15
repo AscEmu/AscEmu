@@ -87,6 +87,7 @@ public:
     bool hasEnded();
 
     void addHonorToTeam(uint32_t team, uint32_t amount);
+    void addObjectiveXpToTeam(uint32_t team, uint32_t honorableKillEquivalents);
 
     void castSpellOnTeam(uint32_t team, uint32_t spell);
 

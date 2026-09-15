@@ -407,6 +407,8 @@ void Battleground::endBattleground(PlayerTeam winningTeam)
 
         this->addHonorToTeam(winningTeam, 3 * 185);
         this->addHonorToTeam(losingTeam, 1 * 185);
+        this->addObjectiveXpToTeam(winningTeam, 3);
+        this->addObjectiveXpToTeam(losingTeam, 1);
     }
 
     this->playSoundToAll(winningTeam == TEAM_ALLIANCE ? BattlegroundDef::ALLIANCEWINS : BattlegroundDef::HORDEWINS);
@@ -430,6 +432,14 @@ void Battleground::addHonorToTeam(uint32_t team, uint32_t amount)
 
     for (const auto p : m_players[team])
         HonorHandler::AddHonorPointsToPlayer(p, amount);
+}
+
+void Battleground::addObjectiveXpToTeam(uint32_t team, uint32_t honorableKillEquivalents)
+{
+    std::lock_guard lock(m_mutex);
+
+    for (const auto p : m_players[team])
+        HonorHandler::AddBattlegroundObjectiveXp(p, honorableKillEquivalents);
 }
 
 void Battleground::castSpellOnTeam(uint32_t team, uint32_t spell)

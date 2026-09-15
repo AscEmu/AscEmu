@@ -360,6 +360,7 @@ public:
         uint32_t honorableArenaWinRbg;
         uint32_t honorByLosingRbg;
         uint32_t honorByLosingArenaRbg;
+        uint32_t xpPerObjectiveKill;
     } bg;
 
     // world.conf - Arena Settings

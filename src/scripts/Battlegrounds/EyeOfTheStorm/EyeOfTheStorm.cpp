@@ -862,6 +862,7 @@ bool EyeOfTheStorm::GivePoints(uint32_t team, uint32_t points)
         {
             (*itr)->m_bgScore.BonusHonor += honorToAdd;
             HonorHandler::AddHonorPointsToPlayer((*itr), honorToAdd);
+            HonorHandler::AddBattlegroundObjectiveXp((*itr), 1);
         }
 
         updatePvPData();

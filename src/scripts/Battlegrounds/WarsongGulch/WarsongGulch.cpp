@@ -237,6 +237,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32_t id)
         {
             (*itr)->m_bgScore.BonusHonor += honorToAdd;
             HonorHandler::AddHonorPointsToPlayer((*itr), honorToAdd);
+            HonorHandler::AddBattlegroundObjectiveXp((*itr), 2);
             plr->modFactionStanding(fact, repToAdd);
         }
 
