@@ -96,6 +96,18 @@ class BodyAndSoulDummy : public SpellScript
     }
 };
 
+class BodyAndSoulSpeed : public SpellScript
+{
+public:
+    void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
+    {
+        // Should proc only on Power Word: Shield
+        spellProc->setProcClassMask(0, 0x1);
+        spellProc->setProcClassMask(1, 0);
+        spellProc->setProcClassMask(2, 0x400);
+    }
+};
+
 #if VERSION_STRING == WotLK
 class BodyAndSoulPoison : public SpellScript
 {
@@ -112,20 +124,9 @@ class BodyAndSoulPoison : public SpellScript
 #endif
 #endif
 
-class BodyAndSoulSpeed : public SpellScript
-{
-public:
-    void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
-    {
-        // Should proc only on Power Word: Shield
-        spellProc->setProcClassMask(0, 0x1);
-        spellProc->setProcClassMask(1, 0);
-        spellProc->setProcClassMask(2, 0x400);
-    }
-};
 #endif
 
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && VERSION_STRING < Mop
 class DivineAegisDummy : public SpellScript
 {
 public:
@@ -564,6 +565,7 @@ void setupPriestSpells(ScriptMgr* mgr)
 #if VERSION_STRING >= WotLK
 #if VERSION_STRING < Mop
     mgr->register_spell_script(SPELL_BODY_AND_SOUL_R1, new BodyAndSoulDummy);
+    mgr->register_spell_script(SPELL_BODY_AND_SOUL_SPEED_R1, new BodyAndSoulSpeed);
 #endif
 
 #if VERSION_STRING == WotLK
@@ -571,10 +573,9 @@ void setupPriestSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_BODY_AND_SOUL_POISON, new BodyAndSoulPoison);
 #endif
 
-    mgr->register_spell_script(SPELL_BODY_AND_SOUL_SPEED_R1, new BodyAndSoulSpeed);
 #endif
 
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && VERSION_STRING < Mop
     mgr->register_spell_script(SPELL_DIVINE_AEGIS_R1, new DivineAegisDummy);
     mgr->register_spell_script(SPELL_DIVINE_AEGIS, new DivineAegis);
 #endif

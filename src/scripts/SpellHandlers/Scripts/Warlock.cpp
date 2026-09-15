@@ -36,6 +36,7 @@ public:
 };
 #endif
 
+#if VERSION_STRING < Mop
 class NightfallDummy : public SpellScript
 {
 public:
@@ -55,6 +56,7 @@ public:
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
+#endif
 
 class ShadowTrance : public SpellScript
 {
@@ -93,6 +95,9 @@ void setupWarlockSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_BACKLASH_PROC, new Backlash);
 #endif
 
+#if VERSION_STRING < Mop
     mgr->register_spell_script(SPELL_NIGHTFALL_R1, new NightfallDummy);
+#endif
+
     mgr->register_spell_script(SPELL_SHADOW_TRANCE_PROC, new ShadowTrance);
 }

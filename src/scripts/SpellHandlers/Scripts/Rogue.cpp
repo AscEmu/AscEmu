@@ -162,7 +162,7 @@ public:
 #endif
 #endif
 
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && VERSION_STRING < Mop
 class CutToTheChase : public SpellScript
 {
 public:
@@ -276,11 +276,8 @@ void setupRogueSpells(ScriptMgr* mgr)
 #endif
 #endif
 
-#if VERSION_STRING >= WotLK
-    mgr->register_spell_script(SPELL_CUT_TO_THE_CHASE_R1, new CutToTheChase);
-#endif
-
 #if VERSION_STRING >= WotLK && VERSION_STRING < Mop
+    mgr->register_spell_script(SPELL_CUT_TO_THE_CHASE_R1, new CutToTheChase);
     mgr->register_spell_script(SPELL_DEADLY_BREW_R1, new DeadlyBrew);
 #endif
 }

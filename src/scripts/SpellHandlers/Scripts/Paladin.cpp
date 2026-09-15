@@ -108,6 +108,7 @@ public:
 };
 #endif
 
+#if VERSION_STRING < Mop
 class EyeForAnEyeDummy : public SpellScript
 {
 public:
@@ -165,6 +166,7 @@ public:
 private:
     uint32_t damage = 0;
 };
+#endif
 
 // TODO: move this to SpellInfo when working with single target auras
 static constexpr bool isSealSpell(SpellInfo const* spellInfo)
@@ -1018,8 +1020,10 @@ void setupPaladinSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_ART_OF_WAR_PROC_R1, new ArtOfWar);
 #endif
 
+#if VERSION_STRING < Mop
     mgr->register_spell_script(SPELL_EYE_FOR_AN_EYE_DUMMY_R1, new EyeForAnEyeDummy);
     mgr->register_spell_script(SPELL_EYE_FOR_AN_EYE_DAMAGE, new EyeForAnEye);
+#endif
 
 #if VERSION_STRING == WotLK
     uint32_t judgementIds[] =

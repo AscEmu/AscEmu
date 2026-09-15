@@ -926,7 +926,7 @@ void Creature::OnRespawn()
         if (spawnTemplate.death_state == CREATURE_STATE_APPEAR_DEAD)
         {
             m_limbostate = true;
-            setDeathState(ALIVE);   // we are not actually dead, we just appear dead
+            setDeathState(ALIVE); // we are not actually dead, we just appear dead
             setDynamicFlags(U_DYN_FLAG_DEAD);
         }
         else if (spawnTemplate.death_state == CREATURE_STATE_DEAD)

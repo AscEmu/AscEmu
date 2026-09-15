@@ -60,7 +60,7 @@ public:
 };
 #endif
 
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
 class DeepFreezeDamage : public SpellScript
 {
 public:
@@ -72,7 +72,7 @@ public:
 };
 #endif
 
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
 class HotStreakDummy : public SpellScript
 {
 public:
@@ -444,11 +444,8 @@ void setupMageSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_ARCANE_MISSILES_PROC, new ArcaneMissilesProc);
 #endif
 
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
     mgr->register_spell_script(SPELL_DEEP_FREEZE_DAMAGE, new DeepFreezeDamage);
-#endif
-
-#if VERSION_STRING >= WotLK
     mgr->register_spell_script(SPELL_HOT_STREAK_R1, new HotStreakDummy);
     mgr->register_spell_script(SPELL_HOT_STREAK_BUFF, new HotStreak);
 #endif
