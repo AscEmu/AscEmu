@@ -11259,7 +11259,7 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
         //freeforall is 1 if everyone's supposed to get the quest item.
         if (item->is_ffa || _loot->getPlayerQuestItems().size() == 1)
         {
-            SmsgLootRemoved managedPacket(slot);
+            SmsgLootRemoved managedPacket(slot, getLootGuid());
             getSession()->sendManagedPacket(managedPacket);
         }
         else
@@ -11273,7 +11273,7 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
         {
             //freeforall case, notify only one player of the removal
             ffaItem->is_looted = true;
-            SmsgLootRemoved managedPacket(slot);
+            SmsgLootRemoved managedPacket(slot, getLootGuid());
             getSession()->sendManagedPacket(managedPacket);
         }
         else

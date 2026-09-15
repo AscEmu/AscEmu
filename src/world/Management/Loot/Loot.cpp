@@ -281,11 +281,13 @@ bool Loot::hasOverThresholdItem() const
 void Loot::itemRemoved(uint8_t lootIndex)
 {
     // notify all players that are looting this that the item was removed
-    for (auto playerGuid : PlayersLooting)
+    const auto looters = PlayersLooting;
+    for (auto playerGuid : looters)
     {
         if (const auto* player = sObjectMgr.getPlayer(playerGuid))
         {
-            SmsgLootRemoved managedPacket(lootIndex);
+            // Mop identifies the loot window by the guid of the looted object
+            SmsgLootRemoved managedPacket(lootIndex, player->getLootGuid());
             player->getSession()->sendManagedPacket(managedPacket);
         }
         else
@@ -298,11 +300,13 @@ void Loot::itemRemoved(uint8_t lootIndex)
 void Loot::moneyRemoved()
 {
     // notify all players that are looting this that the money was removed
-    for (auto playerGuid : PlayersLooting)
+    const auto looters = PlayersLooting;
+    for (auto playerGuid : looters)
     {
         if (const auto* player = sObjectMgr.getPlayer(playerGuid))
         {
-            SmsgLootClearMoney managedPacket;
+            // Mop identifies the loot window by the guid of the looted object
+            SmsgLootClearMoney managedPacket(player->getLootGuid());
             player->getSession()->sendManagedPacket(managedPacket);
         }
         else

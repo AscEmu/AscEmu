@@ -13,12 +13,7 @@ namespace AscEmu::Packets
     class SmsgLootClearMoney : public ManagedPacket
     {
     public:
-        // Guid of the object whose loot money was cleared. Only sent on Mop.
-        // NOTE: the Loot struct (Management/Loot/Loot.hpp) does not currently store the
-        // guid of the object it belongs to, so the call site in Loot.cpp cannot populate
-        // this yet and it is sent as an empty guid. Plumbing the owning object's guid into
-        // Loot::moneyRemoved() requires changes to Loot.hpp/LootHandler.cpp, which are out
-        // of scope here.
+        // guid of the looted object, only the Mop client needs it to find the loot window
         WoWGuid guid;
 
         SmsgLootClearMoney() : SmsgLootClearMoney(WoWGuid())
