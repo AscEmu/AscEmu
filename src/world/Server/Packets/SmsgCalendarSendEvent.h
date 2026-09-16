@@ -5,10 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "AEVersion.hpp"
-
-#if VERSION_STRING > TBC
-
 #include "ManagedPacket.h"
 #include "Management/CalendarMgr.hpp"
 #include "Management/Guild/Guild.hpp"
@@ -190,5 +186,3 @@ namespace AscEmu::Packets
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }
-
-#endif

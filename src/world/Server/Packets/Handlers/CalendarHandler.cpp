@@ -29,7 +29,11 @@ void WorldSession::handleCalendarGetCalendar(WorldPacket& /*recvPacket*/)
 
     const uint32_t lowGuid = _player->getGuidLow();
 
-    SmsgCalendarSendCalendar managedPacket(sCalendarMgr.getPlayerInvites(lowGuid), sCalendarMgr.getPlayerEvents(lowGuid), _player->getGuildId());
+    std::vector<CalendarInviteEntry> invites;
+    for (const auto* invite : sCalendarMgr.getPlayerInvites(lowGuid))
+        invites.push_back({ invite, sCalendarMgr.getEvent(invite->m_event) });
+
+    SmsgCalendarSendCalendar managedPacket(std::move(invites), sCalendarMgr.getPlayerEvents(lowGuid), _player->getGuildId());
     sendManagedPacket(managedPacket);
 #endif
 }

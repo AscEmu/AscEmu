@@ -12,7 +12,6 @@ namespace AscEmu::Packets
 {
     class CmsgAlterAppearance : public ManagedPacket
     {
-#if VERSION_STRING > TBC
     public:
         uint32_t hair;
         uint32_t hairColor;
@@ -38,6 +37,5 @@ namespace AscEmu::Packets
             packet >> hair >> hairColor >> facialHairOrPiercing >> skinColor;
             return true;
         }
-#endif
     };
 }

@@ -7,8 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AEVersion.hpp"
 
-#if VERSION_STRING > TBC
-
 #include <memory>
 #include <utility>
 #include <vector>
@@ -107,6 +105,8 @@ struct CalendarInvite
 typedef std::vector<std::unique_ptr<CalendarInvite>> CalendarInviteStore;
 typedef std::set<std::unique_ptr<CalendarEvent>> CalendarEventStore;
 typedef std::map<uint64_t /* eventId */, CalendarInviteStore > CalendarEventInviteStore;
+
+#if VERSION_STRING > TBC
 
 class CalendarMgr
 {

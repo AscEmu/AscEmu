@@ -1772,7 +1772,8 @@ void Guild::logBankEvent(GuildBankEventLogTypes eventType, uint8_t tabId, uint32
 
 void Guild::broadcastEvent(GuildEvents guildEvent, uint64_t guid, std::vector<std::string> vars) const
 {
-    broadcastPacket(SmsgGuildEvent(guildEvent, vars, guid).serialise().get());
+    SmsgGuildEvent packet(guildEvent, vars, guid);
+    PacketBroadcast::sendFromGuild(*this, packet);
 
     sLogger.debugOpcode("SMSG_GUILD_EVENT: {} ({})", _GetGuildEventString(guildEvent), guildEvent);
 }

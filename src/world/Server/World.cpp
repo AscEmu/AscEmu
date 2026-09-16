@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "World.h"
+#include "Server/PacketBroadcast.hpp"
 
 #include "AEVersion.hpp"
 #include "Management/AddonMgr.h"
@@ -67,6 +68,7 @@ This file is released under the MIT license. See README-MIT for more information
 WoW::Expansion WoW::g_currentExpansion = buildExpansion;
 
 using namespace WoW;
+using namespace AscEmu::Packets;
 
 std::unique_ptr<DayWatcherThread> dw = nullptr;
 
@@ -617,25 +619,17 @@ void World::removeQueuedSocket(WorldSocket* socket)
 // Send Messages
 void World::sendMessageToOnlineGms(const std::string& message, WorldSession* sendToSelf /*nullptr*/)
 {
-    const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, message).serialise();
-
-    std::lock_guard<std::mutex> guard(mSessionLock);
-
-    for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
+    SmsgMessageChat packet(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, message);
+    PacketBroadcast::sendFromWorldIf(*this, packet, [sendToSelf](WorldSession& session)
     {
-        if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second.get() != sendToSelf)
-        {
-            if (activeSessions->second->CanUseCommand('u'))
-                activeSessions->second->SendPacket(data.get());
-        }
-    }
+        return &session != sendToSelf && session.CanUseCommand('u');
+    });
 }
 
 void World::sendMessageToAll(const std::string& message, WorldSession* sendToSelf /*nullptr*/)
 {
-    const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, message).serialise();
-
-    sendGlobalMessage(data.get(), sendToSelf);
+    SmsgMessageChat packet(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, message);
+    PacketBroadcast::sendFromWorld(*this, packet, sendToSelf);
 
     if (settings.announce.showAnnounceInConsoleOutput)
     {
@@ -645,7 +639,8 @@ void World::sendMessageToAll(const std::string& message, WorldSession* sendToSel
 
 void World::sendAreaTriggerMessage(const std::string& message, WorldSession* sendToSelf /*nullptr*/)
 {
-    sendGlobalMessage(AscEmu::Packets::SmsgAreaTriggerMessage(0, message.c_str(), 0).serialise().get(), sendToSelf);
+    SmsgAreaTriggerMessage packet(0, message.c_str(), 0);
+    PacketBroadcast::sendFromWorld(*this, packet, sendToSelf);
 }
 
 void World::sendGlobalMessage(WorldPacket* worldPacket, WorldSession* sendToSelf /*nullptr*/, uint32_t team /*3*/)
@@ -716,9 +711,8 @@ void World::sendBroadcastMessageById(uint32_t broadcastId)
         {
             const auto text = activeSessions->second->localizedBroadCast(broadcastId);
 
-            const auto data = AscEmu::Packets::SmsgMessageChat(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, text).serialise();
-
-            activeSessions->second->SendPacket(data.get());
+            SmsgMessageChat packet(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, 0, text);
+            activeSessions->second->sendManagedPacket(packet);
         }
     }
 }

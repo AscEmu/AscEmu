@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "Management/Group.h"
 #include "Objects/Units/Creatures/Pet.h"
-#include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Spell/SpellAura.hpp"
@@ -169,14 +168,7 @@ namespace AscEmu::Packets
 
 
             if (mask & GROUP_UPDATE_FLAG_VEHICLE_SEAT)
-            {
-#ifdef FT_VEHICLES
-                if (Vehicle* veh = player->getVehicleKit())
-                    buffer << uint32_t(veh->getVehicleInfo()->seatID[player->getMovementInfo()->transport_seat]);
-                else
-                    buffer << uint32_t(0);
-#endif
-            }
+                buffer << uint32_t(player->getVehicleSeatId());
 
             if (!m_protocol.isMop())
             {

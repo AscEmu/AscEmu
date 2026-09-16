@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "MeetingStoneMgr.hpp"
+#include "Server/PacketBroadcast.hpp"
 
 #include <algorithm>
 
@@ -350,8 +351,7 @@ void MeetingStoneQueue::handlePendingJoin(uint64_t playerGuid)
     }
 
     SmsgMeetingstoneMemberAdded memberAddedPacket(player->getGuid());
-    if (auto const serialisedPacket = memberAddedPacket.serialise())
-        grp->SendPacketToAll(serialisedPacket.get());
+    PacketBroadcast::sendFromGroup(*grp, memberAddedPacket);
 
     SmsgMeetingstoneComplete completePacket;
     player->getSession()->sendManagedPacket(completePacket);

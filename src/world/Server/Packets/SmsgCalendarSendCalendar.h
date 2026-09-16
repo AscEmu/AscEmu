@@ -5,10 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "AEVersion.hpp"
-
-#if VERSION_STRING > TBC
-
 #include "ManagedPacket.h"
 #include "Management/CalendarMgr.hpp"
 #include "Management/Guild/Guild.hpp"
@@ -19,14 +15,21 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
+    // an invite together with the event it belongs to, the event is nullptr when it no longer exists
+    struct CalendarInviteEntry
+    {
+        const CalendarInvite* invite = nullptr;
+        const CalendarEvent* linkedEvent = nullptr;
+    };
+
     class SmsgCalendarSendCalendar : public ManagedPacket
     {
     public:
-        std::vector<CalendarInvite*> invites;
+        std::vector<CalendarInviteEntry> invites;
         std::vector<CalendarEvent*> events;
         uint32_t requestingPlayerGuildId = 0;
 
-        SmsgCalendarSendCalendar(std::vector<CalendarInvite*> invites, std::vector<CalendarEvent*> events, uint32_t requestingPlayerGuildId) :
+        SmsgCalendarSendCalendar(std::vector<CalendarInviteEntry> invites, std::vector<CalendarEvent*> events, uint32_t requestingPlayerGuildId) :
             ManagedPacket(SMSG_CALENDAR_SEND_CALENDAR, 0),
             invites(std::move(invites)),
             events(std::move(events)),
@@ -48,8 +51,9 @@ namespace AscEmu::Packets
 
                 packet.writeBits(invites.size(), 19);
                 ByteBuffer invitesInfoBuffer;
-                for (const auto* invite : invites)
+                for (const auto& inviteEntry : invites)
                 {
+                    const auto* invite = inviteEntry.invite;
                     const WoWGuid senderGuid(uint64_t(invite->m_sender));
 
                     packet.writeBit(senderGuid[1]);
@@ -74,7 +78,7 @@ namespace AscEmu::Packets
                     invitesInfoBuffer.writeByteSeq(senderGuid[5]);
                     invitesInfoBuffer << uint8_t(invite->m_rank);
 
-                    const auto* linkedEvent = sCalendarMgr.getEvent(invite->m_event);
+                    const auto* linkedEvent = inviteEntry.linkedEvent;
                     invitesInfoBuffer << uint8_t(linkedEvent != nullptr && linkedEvent->isGuildEvent() && linkedEvent->m_guildId == requestingPlayerGuildId ? 1 : 0);
                 }
 
@@ -146,14 +150,15 @@ namespace AscEmu::Packets
             else if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << uint32_t(invites.size());
-                for (const auto* invite : invites)
+                for (const auto& inviteEntry : invites)
                 {
+                    const auto* invite = inviteEntry.invite;
                     packet << uint64_t(invite->m_event);
                     packet << uint64_t(invite->m_inviteId);
                     packet << uint8_t(invite->m_status);
                     packet << uint8_t(invite->m_rank);
 
-                    if (const auto* linkedEvent = sCalendarMgr.getEvent(invite->m_event))
+                    if (const auto* linkedEvent = inviteEntry.linkedEvent)
                     {
                         packet << uint8_t(linkedEvent->isGuildEvent());
                         packet << WoWGuid(uint64_t(linkedEvent->m_creator));
@@ -201,5 +206,3 @@ namespace AscEmu::Packets
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }
-
-#endif

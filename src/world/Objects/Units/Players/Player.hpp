@@ -42,6 +42,12 @@ namespace WDB::Structures
 struct ItemSet;
 class AchievementMgr;
 class Mailbox;
+
+namespace AscEmu::Packets
+{
+    class ManagedPacket;
+}
+
 class CUFProfileMgr;
 
 namespace MySQLStructure
@@ -790,6 +796,8 @@ public:
 
     void outPacket(uint16_t opcode, uint16_t length, const void* data) override;
     void sendPacket(WorldPacket* packet) override;
+    // serialises the packet for the client version of this player's session
+    void sendManagedPacket(AscEmu::Packets::ManagedPacket& packet);
     void outPacketToSet(uint16_t opcode, uint16_t length, const void* data, bool sendToSelf) override;
     void sendMessageToSet(WorldPacket* data, bool sendToSelf, bool sendToOwnTeam = false) override;
 

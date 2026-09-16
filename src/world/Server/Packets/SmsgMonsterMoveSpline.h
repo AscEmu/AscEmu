@@ -71,10 +71,8 @@ namespace AscEmu::Packets
                 {
                     packet.setOpcode(SMSG_MONSTER_MOVE_TRANSPORT);
                     packet << WoWGuid(unit->getTransGuid());
-#if VERSION_STRING >= WotLK
                     if (m_protocol.expansion >= WoW::Expansion::_WotLK)
-                        packet << int8_t(unit->GetTransSeat());
-#endif
+                        packet << int8_t(unit->getMovementInfo()->transport_seat);
                 }
             }
 

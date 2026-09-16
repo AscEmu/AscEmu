@@ -1161,6 +1161,9 @@ public:
     SummonHandler* getSummonInterface();
     SummonHandler const* getSummonInterface() const;
 
+    // VehicleSeat.dbc id of the seat this unit occupies in its own vehicle kit, 0 without vehicle support
+    uint32_t getVehicleSeatId() const;
+
 private:
     std::unique_ptr<SummonHandler> m_summonInterface;
 

@@ -194,7 +194,10 @@ void Group::SetLeader(Player* pPlayer, bool silent)
         m_dirty = true;
 
         if (silent == false)
-            SendPacketToAll(SmsgGroupSetLeader(pPlayer->getName()).serialise().get());
+        {
+            SmsgGroupSetLeader packet(pPlayer->getName());
+            PacketBroadcast::sendFromGroup(*this, packet);
+        }
     }
 
     Update();

@@ -215,34 +215,37 @@ namespace
         if (!player || !player->getSession())
             return;
 
+        auto abortReason = INSTANCE_ABORT_ERROR;
         switch (state)
         {
             case CANNOT_ENTER_DIFFICULTY_UNAVAILABLE:
-                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_HEROIC_MODE_NOT_AVAILABLE).serialise().get());
+                abortReason = INSTANCE_ABORT_HEROIC_MODE_NOT_AVAILABLE;
                 break;
             case CANNOT_ENTER_INSTANCE_BIND_MISMATCH:
-                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_ERROR).serialise().get());
+                abortReason = INSTANCE_ABORT_ERROR;
                 break;
             case CANNOT_ENTER_TOO_MANY_INSTANCES:
-                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_TOO_MANY).serialise().get());
+                abortReason = INSTANCE_ABORT_TOO_MANY;
                 break;
             case CANNOT_ENTER_MAX_PLAYERS:
-                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_FULL).serialise().get());
+                abortReason = INSTANCE_ABORT_FULL;
                 break;
             case CANNOT_ENTER_ENCOUNTER:
-                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_ENCOUNTER).serialise().get());
+                abortReason = INSTANCE_ABORT_ENCOUNTER;
                 break;
             case CANNOT_ENTER_NOT_IN_RAID:
-                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_NOT_IN_RAID_GROUP).serialise().get());
+                abortReason = INSTANCE_ABORT_NOT_IN_RAID_GROUP;
                 break;
             case CANNOT_ENTER_XPACK01:
             case CANNOT_ENTER_XPACK02:
-                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_EXPANSION).serialise().get());
+                abortReason = INSTANCE_ABORT_EXPANSION;
                 break;
             default:
-                player->sendPacket(SmsgTransferAborted(mapId, INSTANCE_ABORT_ERROR).serialise().get());
                 break;
         }
+
+        SmsgTransferAborted packet(mapId, abortReason);
+        player->sendManagedPacket(packet);
     }
 }
 using namespace MapManagement::AreaManagement;
@@ -1926,7 +1929,8 @@ void Player::sendTeleportPacket(LocationVector position)
     SetPosition(position.x, position.y, position.z, position.o);
 
 #if VERSION_STRING >= Cata
-    sendMessageToSet(SmsgMoveUpdateTeleport(GetNewGUID(), obj_movement_info).serialise().get(), false);
+    SmsgMoveUpdateTeleport updateTeleport(GetNewGUID(), obj_movement_info);
+    PacketBroadcast::sendToSet(*this, updateTeleport, false);
 #endif
 }
 
@@ -3098,6 +3102,12 @@ void Player::sendPacket(WorldPacket* packet)
 {
     if (m_session)
         m_session->SendPacket(packet);
+}
+
+void Player::sendManagedPacket(ManagedPacket& packet)
+{
+    if (m_session != nullptr)
+        m_session->sendManagedPacket(packet);
 }
 
 void Player::outPacketToSet(uint16_t opcode, uint16_t length, const void* data, bool sendToSelf)
@@ -6261,7 +6271,23 @@ void Player::setTalentPointsFromQuests(uint32_t talentPoints)
 void Player::sendTalentsInfo()
 {
     // TODO: classic and tbc
-    SmsgUpdateTalentData managedPacket(this);
+    if (m_talentSpecsCount > MAX_SPEC_COUNT)
+        m_talentSpecsCount = MAX_SPEC_COUNT;
+
+    std::vector<TalentSpecEntry> specs;
+    for (uint8_t specId = 0; specId < m_talentSpecsCount; ++specId)
+    {
+        const PlayerSpec& spec = m_specs[specId];
+
+        TalentSpecEntry entry;
+        entry.primaryTalentTree = m_FirstTalentTreeLock;
+        entry.talents.assign(spec.getTalents().begin(), spec.getTalents().end());
+        entry.glyphs.assign(spec.getGlyphs().begin(), spec.getGlyphs().end());
+        entry.specializationId = spec.getSpecializationId();
+        specs.push_back(std::move(entry));
+    }
+
+    SmsgUpdateTalentData managedPacket(getActiveSpec().getTalentPoints(), m_talentActiveSpec, std::move(specs));
     getSession()->sendManagedPacket(managedPacket);
 }
 
@@ -6420,9 +6446,16 @@ void Player::setActionButton(uint8_t button, uint32_t action, uint8_t type, [[ma
 
 void Player::sendActionBars([[maybe_unused]] uint8_t action)
 {
-    std::array<ActionButton, PLAYER_ACTION_BUTTON_COUNT> buttons{};
+    std::array<ActionButtonEntry, PLAYER_ACTION_BUTTON_COUNT> buttons{};
     for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-        buttons[i] = getActiveSpec().getActionButton(i);
+    {
+        const ActionButton& button = getActiveSpec().getActionButton(i);
+        buttons[i].action = button.Action;
+        buttons[i].type = button.Type;
+#if VERSION_STRING < Mop
+        buttons[i].misc = button.Misc;
+#endif
+    }
 
     SmsgUpdateActionButtons managedPacket(buttons, action);
     getSession()->sendManagedPacket(managedPacket);

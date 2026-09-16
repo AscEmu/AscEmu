@@ -191,6 +191,7 @@ enum HitStatus : uint32_t
 
     //for compatibility not existant on <= TBC
     HITSTATUS_RAGE_GAIN,
+    HITSTATUS_UNK_04,
 };
 #endif
 

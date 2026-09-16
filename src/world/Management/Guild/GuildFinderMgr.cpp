@@ -330,7 +330,7 @@ void GuildFinderMgr::sendApplicantListUpdate(Guild& guild)
         PacketBroadcast::sendToSet(*player, managedPacket, false);
     }
 
-    guild.broadcastPacketToRank(managedPacket.serialise().get(), GR_OFFICER);
+    PacketBroadcast::sendFromGuildRank(guild, managedPacket, GR_OFFICER);
 }
 
 void GuildFinderMgr::sendMembershipRequestListUpdate(Player& player)

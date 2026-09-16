@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "WorldMap.hpp"
+#include "Server/PacketBroadcast.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Objects/Units/Creatures/Pet.h"
@@ -2660,7 +2661,8 @@ WorldStatesHandler& WorldMap::getWorldStatesHandler()
 
 void WorldMap::onWorldStateUpdate(uint32_t zone, uint32_t field, uint32_t value)
 {
-    sendPacketToPlayersInZone(zone, SmsgUpdateWorldState(field, value).serialise().get());
+    SmsgUpdateWorldState packet(field, value);
+    PacketBroadcast::sendFromMapZone(*this, zone, packet);
 }
 
 bool WorldMap::isCombatInProgress()

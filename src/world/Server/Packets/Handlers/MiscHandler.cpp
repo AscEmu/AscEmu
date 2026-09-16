@@ -1714,10 +1714,57 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
         _player->updateComboPoints();
 
 #if VERSION_STRING < Mop
-    SmsgInspectTalent managedPacket(inspectedPlayer);
+    std::vector<InspectSpecEntry> specs;
+    const auto talentTabIds = getTalentTabPages(inspectedPlayer->getClass());
+    for (uint8_t s = 0; s < inspectedPlayer->m_talentSpecsCount; ++s)
+    {
+        InspectSpecEntry entry;
+        for (uint8_t i = 0; i < 3; ++i)
+        {
+            for (uint32_t j = 0; j < sTalentStore.getNumRows(); ++j)
+            {
+                const auto talentInfo = sTalentStore.lookupEntry(j);
+                if (talentInfo == nullptr || talentInfo->TalentTree != talentTabIds[i])
+                    continue;
+
+                int32_t talentMaxRank = -1;
+                for (int32_t k = 4; k > -1; --k)
+                {
+                    if (talentInfo->RankID[k] != 0 && inspectedPlayer->hasSpell(talentInfo->RankID[k]))
+                    {
+                        talentMaxRank = k;
+                        break;
+                    }
+                }
+
+                if (talentMaxRank < 0)
+                    continue;
+
+                entry.talents.emplace_back(talentInfo->TalentID, static_cast<uint8_t>(talentMaxRank));
+            }
+        }
+
+        const auto& glyphs = inspectedPlayer->m_specs[s].getGlyphs();
+        entry.glyphs.assign(glyphs.begin(), glyphs.end());
+        specs.push_back(std::move(entry));
+    }
+
+    SmsgInspectTalent managedPacket(inspectedPlayer, inspectedPlayer->getActiveSpec().getTalentPoints(), inspectedPlayer->m_talentActiveSpec, std::move(specs));
     sendManagedPacket(managedPacket);
 #else // Mop
-    SmsgInspectResultsUpdate managedPacket(inspectedPlayer);
+    std::vector<uint32_t> talentIds;
+    for (uint32_t j = 0; j < sTalentStore.getNumRows(); ++j)
+    {
+        const auto talentInfo = sTalentStore.lookupEntry(j);
+        if (talentInfo == nullptr || talentInfo->playerClass != inspectedPlayer->getClass())
+            continue;
+
+        if (inspectedPlayer->hasSpell(talentInfo->SpellId))
+            talentIds.push_back(talentInfo->TalentID);
+    }
+
+    const auto& glyphs = inspectedPlayer->m_specs[inspectedPlayer->m_talentActiveSpec].getGlyphs();
+    SmsgInspectResultsUpdate managedPacket(inspectedPlayer, std::move(talentIds), std::vector<uint16_t>(glyphs.begin(), glyphs.end()));
     sendManagedPacket(managedPacket);
 #endif
 }

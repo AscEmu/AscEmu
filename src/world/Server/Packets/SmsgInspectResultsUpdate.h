@@ -9,10 +9,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Players/Player.hpp"
-#include "Storage/WDB/WDBStores.hpp"
-#include "Storage/WDB/WDBStructures.hpp"
 
 #include <cstdint>
+#include <vector>
 
 namespace AscEmu::Packets
 {
@@ -20,14 +19,18 @@ namespace AscEmu::Packets
     {
     public:
         Player* inspectedPlayer {nullptr};
+        std::vector<uint32_t> talentIds;                        // known talents of the active spec
+        std::vector<uint16_t> glyphs;                           // one entry per glyph slot of the active spec
 
-        SmsgInspectResultsUpdate() : SmsgInspectResultsUpdate(nullptr)
+        SmsgInspectResultsUpdate() : SmsgInspectResultsUpdate(nullptr, {}, {})
         {
         }
 
-        explicit SmsgInspectResultsUpdate(Player* inspectedPlayer) :
+        SmsgInspectResultsUpdate(Player* inspectedPlayer, std::vector<uint32_t> talentIds, std::vector<uint16_t> glyphs) :
             ManagedPacket(SMSG_INSPECT_RESULTS_UPDATE, 1000),
-            inspectedPlayer(inspectedPlayer)
+            inspectedPlayer(inspectedPlayer),
+            talentIds(std::move(talentIds)),
+            glyphs(std::move(glyphs))
         {
         }
 
@@ -43,18 +46,14 @@ namespace AscEmu::Packets
                 + 4 + 512;                                                        // talent points + talent block
         }
 
-        bool internalSerialise([[maybe_unused]] WorldPacket& packet) override
+        bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING == Mop
             if (inspectedPlayer == nullptr)
                 return false;
 
-            // TalentEntry only exposes playerClass/SpellId for Mop clients (SMSG_INSPECT_RESULTS_UPDATE
-            // itself does not exist before Mop, where SMSG_INSPECT_TALENT is used instead).
-
+            // replaces SMSG_INSPECT_TALENT since Mop
             if (m_protocol.isMop())
             {
-                [[maybe_unused]] uint32_t talentPoints = 41;
                 uint32_t slotCount = 0;
                 uint32_t glyphCount = 0;
                 uint32_t talentCount = 0;
@@ -193,9 +192,7 @@ namespace AscEmu::Packets
 
                 packet.writeByteSeq(guid[5]);
 
-                const PlayerSpec playerSpec = inspectedPlayer->m_specs[inspectedPlayer->m_talentActiveSpec];
-
-                for (const auto& glyph : playerSpec.getGlyphs())
+                for (const auto glyph : glyphs)
                 {
                     if (glyph)
                     {
@@ -211,19 +208,9 @@ namespace AscEmu::Packets
                 // No Mop talent anywhere yet, so send 0 ("no specialization chosen")
                 packet << uint32_t(0);
 
-                for (uint32_t j = 0; j < sTalentStore.getNumRows(); ++j)
+                for (const auto talentId : talentIds)
                 {
-                    const auto talentInfo = sTalentStore.lookupEntry(j);
-                    if (talentInfo == nullptr)
-                        continue;
-
-                    if (talentInfo->playerClass != inspectedPlayer->getClass())
-                        continue;
-
-                    if (!inspectedPlayer->hasSpell(talentInfo->SpellId))
-                        continue;
-
-                    packet << uint16_t(talentInfo->TalentID);
+                    packet << uint16_t(talentId);
                     ++talentCount;
                 }
 
@@ -235,7 +222,7 @@ namespace AscEmu::Packets
 
                 return true;
             }
-#endif
+
             return false;
         }
 

@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "Management/AddonMgr.h"
+#include "Logging/Logger.hpp"
 
 #include <cstdint>
 #include <list>
@@ -53,21 +54,24 @@ namespace AscEmu::Packets
 
             if (m_protocol.expansion <= WoW::Expansion::_TBC)
             {
-#if VERSION_STRING <= TBC
                 for (auto& itr : *addonList)
                 {
                     if (itr.crc != STANDARD_ADDON_CRC)
-                        packet.append(PublicKey, 264);
+                    {
+                        packet << uint8_t(2) << uint8_t(1) << uint8_t(1);
+                        packet.append(PublicKey, sizeof(PublicKey));
+                        packet << uint32_t(0) << uint8_t(0);
+                    }
                     else
+                    {
                         packet << uint8_t(2) << uint8_t(1) << uint8_t(0) << uint32_t(0) << uint8_t(0);
+                    }
                 }
 
                 return true;
-#endif
             }
             else if (m_protocol.isWotlk())
             {
-#if VERSION_STRING == WotLK
                 for (auto& itr : *addonList)
                 {
                     uint8_t unk;
@@ -85,12 +89,7 @@ namespace AscEmu::Packets
                         if (itr.crc != STANDARD_ADDON_CRC)
                         {
                             packet << uint8_t(1);
-                            // PublicKey (pre-Cata) is a self-contained 264-byte TBC/Classic reply
-                            // blob with its own baked-in "2,1,1" header and trailing bytes. Here we
-                            // already wrote our own header above, so only the raw 256-byte modulus
-                            // (PublicKey offset 3) belongs here - appending the full blob would
-                            // insert 8 duplicate bytes and desync every addon after this one.
-                            packet.append(PublicKey + 3, 256);
+                            packet.append(PublicKey, sizeof(PublicKey));
                         }
                         else
                         {
@@ -108,11 +107,9 @@ namespace AscEmu::Packets
                 }
 
                 return true;
-#endif
             }
             else if (m_protocol.isCata())
             {
-#if VERSION_STRING == Cata
                 for (auto& itr : *addonList)
                 {
                     packet << uint8_t(itr.state);
@@ -151,11 +148,9 @@ namespace AscEmu::Packets
                 }
 
                 return true;
-#endif
             }
             else if (m_protocol.isMop())
             {
-#if VERSION_STRING == Mop
                 packet.writeBits(bannedAddons ? static_cast<uint32_t>(bannedAddons->size()) : 0, 18);
                 packet.writeBits(static_cast<uint32_t>(addonList->size()), 23);
 
@@ -204,7 +199,6 @@ namespace AscEmu::Packets
                 }
 
                 return true;
-#endif
             }
 
             return false;

@@ -390,7 +390,8 @@ void InstanceScript::updateEncountersStateForSpell(uint32_t creditEntry, uint8_t
 void InstanceScript::sendUnitEncounter(uint32_t type, Unit* unit, uint8_t value_a, uint8_t value_b)
 {
     WorldMap* instance = getInstance();
-    instance->sendPacketToAllPlayers(AscEmu::Packets::SmsgUpdateInstanceEncounterUnit(type, unit ? unit->GetNewGUID() : WoWGuid(), value_a, value_b).serialise().get());
+    SmsgUpdateInstanceEncounterUnit packet(type, unit ? unit->GetNewGUID() : WoWGuid(), value_a, value_b);
+    PacketBroadcast::sendFromMap(*instance, packet);
 }
 
 void InstanceScript::displayDataStateList(Player* player)

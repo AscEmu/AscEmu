@@ -46,7 +46,6 @@ namespace AscEmu::Packets
         {
             if (m_protocol.isMop())
             {
-#if VERSION_STRING == Mop
                 ByteBuffer buff;
 
                 buff << uint32_t(hitStatus);
@@ -110,7 +109,6 @@ namespace AscEmu::Packets
                 packet.append(buff);
 
                 return true;
-#endif
             }
             else if (m_protocol.expansion > WoW::Expansion::_TBC)
             {

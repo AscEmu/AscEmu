@@ -9,25 +9,37 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Players/Player.hpp"
-#include "Storage/WDB/WDBStores.hpp"
-#include "Storage/WDB/WDBStructures.hpp"
 
 #include <cstdint>
+#include <utility>
+#include <vector>
 
 namespace AscEmu::Packets
 {
+    struct InspectSpecEntry
+    {
+        std::vector<std::pair<uint32_t, uint8_t>> talents;      // talent id, highest known rank
+        std::vector<uint16_t> glyphs;                           // one entry per glyph slot
+    };
+
     class SmsgInspectTalent : public ManagedPacket
     {
     public:
         Player* inspectedPlayer {nullptr};
+        uint32_t freeTalentPoints = 0;
+        uint8_t activeSpec = 0;
+        std::vector<InspectSpecEntry> specs;
 
-        SmsgInspectTalent() : SmsgInspectTalent(nullptr)
+        SmsgInspectTalent() : SmsgInspectTalent(nullptr, 0, 0, {})
         {
         }
 
-        explicit SmsgInspectTalent(Player* inspectedPlayer) :
+        SmsgInspectTalent(Player* inspectedPlayer, uint32_t freeTalentPoints, uint8_t activeSpec, std::vector<InspectSpecEntry> specs) :
             ManagedPacket(SMSG_INSPECT_TALENT, 1000),
-            inspectedPlayer(inspectedPlayer)
+            inspectedPlayer(inspectedPlayer),
+            freeTalentPoints(freeTalentPoints),
+            activeSpec(activeSpec),
+            specs(std::move(specs))
         {
         }
 
@@ -38,129 +50,93 @@ namespace AscEmu::Packets
                 return 0;
 
             return 8 + 4 + 1 + 1                                                   // packed guid, talent points, spec count, active spec
-                + inspectedPlayer->m_talentSpecsCount * 128                        // per-spec talent/glyph block
+                + specs.size() * 128                                               // per-spec talent/glyph block
                 + 4 + (EQUIPMENT_SLOT_END - EQUIPMENT_SLOT_START) * 32             // slot mask + per-slot item block
                 + 24;                                                              // optional guild block
         }
 
-        bool internalSerialise([[maybe_unused]] WorldPacket& packet) override
+        bool internalSerialise(WorldPacket& packet) override
         {
             if (inspectedPlayer == nullptr)
                 return false;
 
-#if VERSION_STRING < Mop
-            // TalentEntry only exposes TalentTree/RankID for pre-Mop clients (SMSG_INSPECT_TALENT
-            // itself does not exist past Mop, where SMSG_INSPECT_RESULTS_UPDATE is used instead).
-            if (!m_protocol.isMop())
+            // replaced by SMSG_INSPECT_RESULTS_UPDATE in Mop
+            if (m_protocol.isMop())
+                return false;
+
+            ByteBuffer packedGuid;
+            packedGuid.appendPackGuid(inspectedPlayer->getGuid());
+            packet.append(packedGuid);
+
+            packet << uint32_t(freeTalentPoints);
+            packet << uint8_t(specs.size());
+            packet << uint8_t(activeSpec);
+            for (const auto& spec : specs)
             {
-                ByteBuffer packedGuid;
-                packedGuid.appendPackGuid(inspectedPlayer->getGuid());
-                packet.append(packedGuid);
-
-                packet << uint32_t(inspectedPlayer->getActiveSpec().getTalentPoints());
-                packet << uint8_t(inspectedPlayer->m_talentSpecsCount);
-                packet << uint8_t(inspectedPlayer->m_talentActiveSpec);
-                for (uint8_t s = 0; s < inspectedPlayer->m_talentSpecsCount; ++s)
+                packet << uint8_t(spec.talents.size());
+                for (const auto& [talentId, rank] : spec.talents)
                 {
-                    const PlayerSpec playerSpec = inspectedPlayer->m_specs[s];
-
-                    uint8_t talentCount = 0;
-                    const auto talentCountPos = packet.wpos();
-                    packet << uint8_t(talentCount);
-
-                    const auto talentTabIds = getTalentTabPages(inspectedPlayer->getClass());
-                    for (uint8_t i = 0; i < 3; ++i)
-                    {
-                        const uint32_t talentTabId = talentTabIds[i];
-                        for (uint32_t j = 0; j < sTalentStore.getNumRows(); ++j)
-                        {
-                            const auto talentInfo = sTalentStore.lookupEntry(j);
-                            if (talentInfo == nullptr)
-                                continue;
-
-                            if (talentInfo->TalentTree != talentTabId)
-                                continue;
-
-                            int32_t talentMaxRank = -1;
-                            for (int32_t k = 4; k > -1; --k)
-                            {
-                                if (talentInfo->RankID[k] != 0 && inspectedPlayer->hasSpell(talentInfo->RankID[k]))
-                                {
-                                    talentMaxRank = k;
-                                    break;
-                                }
-                            }
-
-                            if (talentMaxRank < 0)
-                                continue;
-
-                            packet << uint32_t(talentInfo->TalentID);
-                            packet << uint8_t(talentMaxRank);
-
-                            ++talentCount;
-                        }
-                    }
-                    packet.put<uint8_t>(talentCountPos, talentCount);
-
-#ifdef FT_GLYPHS
-                    packet << uint8_t(GLYPHS_COUNT);
-
-                    for (const auto& glyph : playerSpec.getGlyphs())
-                        packet << uint16_t(glyph);
-#endif
+                    packet << uint32_t(talentId);
+                    packet << uint8_t(rank);
                 }
 
-                uint32_t slotMask = 0;
-                const auto slotMaskPos = packet.wpos();
-                packet << uint32_t(slotMask);
-
-                auto itemInterface = inspectedPlayer->getItemInterface();
-                for (uint32_t i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+                // glyphs exist since WotLK
+                if (m_protocol.expansion >= WoW::Expansion::_WotLK)
                 {
-                    const auto inventoryItem = itemInterface->GetInventoryItem(static_cast<uint16_t>(i));
-                    if (!inventoryItem)
+                    packet << uint8_t(spec.glyphs.size());
+                    for (const auto glyph : spec.glyphs)
+                        packet << uint16_t(glyph);
+                }
+            }
+
+            uint32_t slotMask = 0;
+            const auto slotMaskPos = packet.wpos();
+            packet << uint32_t(slotMask);
+
+            auto itemInterface = inspectedPlayer->getItemInterface();
+            for (uint32_t i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+            {
+                const auto inventoryItem = itemInterface->GetInventoryItem(static_cast<uint16_t>(i));
+                if (!inventoryItem)
+                    continue;
+
+                slotMask |= (1 << i);
+
+                packet << uint32_t(inventoryItem->getEntry());
+
+                uint16_t enchantMask = 0;
+                const auto enchantMaskPos = packet.wpos();
+
+                packet << uint16_t(enchantMask);
+
+                for (uint8_t slot = 0; slot < MAX_ENCHANTMENT_SLOT; ++slot)
+                {
+                    const uint32_t enchantId = inventoryItem->getEnchantmentId(slot);
+                    if (!enchantId)
                         continue;
 
-                    slotMask |= (1 << i);
-
-                    packet << uint32_t(inventoryItem->getEntry());
-
-                    uint16_t enchantMask = 0;
-                    const auto enchantMaskPos = packet.wpos();
-
-                    packet << uint16_t(enchantMask);
-
-                    for (uint8_t slot = 0; slot < MAX_ENCHANTMENT_SLOT; ++slot)
-                    {
-                        const uint32_t enchantId = inventoryItem->getEnchantmentId(slot);
-                        if (!enchantId)
-                            continue;
-
-                        enchantMask |= (1 << slot);
-                        packet << uint16_t(enchantId);
-                    }
-                    packet.put<uint16_t>(enchantMaskPos, enchantMask);
-
-                    packet << uint16_t(0);
-                    FastGUIDPack(packet, inventoryItem->getCreatorGuid());
-                    packet << uint32_t(0);
+                    enchantMask |= (1 << slot);
+                    packet << uint16_t(enchantId);
                 }
-                packet.put<uint32_t>(slotMaskPos, slotMask);
+                packet.put<uint16_t>(enchantMaskPos, enchantMask);
 
-                if (m_protocol.expansion >= WoW::Expansion::_Cata)
-                {
-                    if (Guild* guild = sGuildMgr.getGuildById(inspectedPlayer->getGuildId()))
-                    {
-                        packet << guild->getGUID();
-                        packet << uint32_t(guild->getLevel());
-                        packet << uint64_t(guild->getExperience());
-                        packet << uint32_t(guild->getMembersCount());
-                    }
-                }
-                return true;
+                packet << uint16_t(0);
+                FastGUIDPack(packet, inventoryItem->getCreatorGuid());
+                packet << uint32_t(0);
             }
-#endif
-            return false;
+            packet.put<uint32_t>(slotMaskPos, slotMask);
+
+            if (m_protocol.expansion >= WoW::Expansion::_Cata)
+            {
+                if (Guild* guild = sGuildMgr.getGuildById(inspectedPlayer->getGuildId()))
+                {
+                    packet << guild->getGUID();
+                    packet << uint32_t(guild->getLevel());
+                    packet << uint64_t(guild->getExperience());
+                    packet << uint32_t(guild->getMembersCount());
+                }
+            }
+            return true;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

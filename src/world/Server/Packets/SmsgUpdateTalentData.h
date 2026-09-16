@@ -6,38 +6,53 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
-#include "Macros/PetMacros.hpp"
-#include "Objects/Units/Creatures/Pet.h"
-#include "Objects/Units/Players/Player.hpp"
-#include "Storage/WDB/WDBStores.hpp"
-#include "Storage/WDB/WDBStructures.hpp"
+
 #include <cstdint>
+#include <memory>
+#include <utility>
+#include <vector>
 
 namespace AscEmu::Packets
 {
+    struct TalentSpecEntry
+    {
+        uint32_t primaryTalentTree = 0;                         // Cata: locked primary talent tree
+        std::vector<std::pair<uint32_t, uint8_t>> talents;      // talent id, rank
+        std::vector<uint16_t> glyphs;                           // one entry per glyph slot
+        uint32_t specializationId = 0;                          // Mop: chosen specialization, 0 = none
+    };
+
+    struct PetTalentData
+    {
+        uint32_t unspentPoints = 0;
+        std::vector<std::pair<uint32_t, uint8_t>> talents;      // talent id, rank
+    };
+
     class SmsgUpdateTalentData : public ManagedPacket
     {
     public:
-        Player* player;
-        Pet* pet;
+        bool isPet = false;
+        uint32_t freeTalentPoints = 0;
+        uint8_t activeSpec = 0;
+        std::vector<TalentSpecEntry> specs;
+        PetTalentData petTalents;
 
-        SmsgUpdateTalentData() : SmsgUpdateTalentData(static_cast<Player*>(nullptr))
+        SmsgUpdateTalentData() : SmsgUpdateTalentData(0, 0, {})
         {
         }
 
-        SmsgUpdateTalentData(Player* player) :
+        SmsgUpdateTalentData(uint32_t freeTalentPoints, uint8_t activeSpec, std::vector<TalentSpecEntry> specs) :
             ManagedPacket(SMSG_UPDATE_TALENT_DATA, 500),
-            player(player),
-            pet(nullptr)
+            freeTalentPoints(freeTalentPoints),
+            activeSpec(activeSpec),
+            specs(std::move(specs))
         {
         }
 
-        // Pet talent variant (Objects/Units/Creatures/Pet.cpp - Pet::SendTalentsToOwner,
-        // WotLK/Cata only build).
-        explicit SmsgUpdateTalentData(Pet* pet) :
+        explicit SmsgUpdateTalentData(PetTalentData petTalents) :
             ManagedPacket(SMSG_UPDATE_TALENT_DATA, 50),
-            player(nullptr),
-            pet(pet)
+            isPet(true),
+            petTalents(std::move(petTalents))
         {
         }
 
@@ -46,126 +61,58 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (pet != nullptr)
+            if (isPet)
             {
-                // Pet::SendTalentsToOwner is only ever compiled for WotLK/Cata server builds, and
-                // getPetTalentPoints()/TalentEntry::TalentTree/TalentEntry::RankID only exist for
-                // VERSION_STRING < Mop, so this whole branch must stay compile-time gated.
-#if VERSION_STRING < Mop
-    #if VERSION_STRING > TBC
-                // Pet::SendTalentsToOwner is only ever compiled for WotLK/Cata server builds.
+                // pet talents exist for WotLK and Cata clients only
                 if (m_protocol.expansion != WoW::Expansion::_WotLK && m_protocol.expansion != WoW::Expansion::_Cata)
                     return false;
 
-                packet << uint8_t(1);                             // Pet talent packet identificator
-                packet << uint32_t(pet->getPetTalentPoints());    // Unspent talent points
-
-                uint8_t count = 0;
-                const size_t countPos = packet.wpos();
-                packet << uint8_t(0);                             // Amount of known talents (will be filled later)
-
-                WDB::Structures::CreatureFamilyEntry const* cfe = sCreatureFamilyStore.lookupEntry(pet->GetCreatureProperties()->Family);
-                if (!cfe || static_cast<int32_t>(cfe->talentTree) < 0)
-                    return false;
-
-                // go through talent trees
-                for (uint32_t tte_id = PET_TALENT_TREE_START; tte_id <= PET_TALENT_TREE_END; tte_id++)
+                packet << uint8_t(1);                                   // pet talent packet identificator
+                packet << uint32_t(petTalents.unspentPoints);
+                packet << uint8_t(petTalents.talents.size());
+                for (const auto& [talentId, rank] : petTalents.talents)
                 {
-                    auto talent_tab = sTalentTabStore.lookupEntry(tte_id);
-                    if (talent_tab == nullptr)
-                        continue;
-
-                    // check if we match talent tab
-                    if (!(talent_tab->PetTalentMask & (1 << cfe->talentTree)))
-                        continue;
-
-                    for (uint32_t t_id = 1; t_id < sTalentStore.getNumRows(); t_id++)
-                    {
-                        // get talent entries for our talent tree
-                        auto talent = sTalentStore.lookupEntry(t_id);
-                        if (talent == nullptr)
-                            continue;
-
-                        if (talent->TalentTree != tte_id)
-                            continue;
-
-                        // check our spells
-                        for (uint8_t j = 0; j < 5; j++)
-                            if (talent->RankID[j] > 0 && pet->hasSpell(talent->RankID[j]))
-                            {
-                                // if we have the spell, include it in packet
-                                packet << talent->TalentID;   // Talent ID
-                                packet << j;                  // Rank
-                                ++count;
-                            }
-                    }
-                    // tab loaded, we can exit
-                    break;
+                    packet << uint32_t(talentId);
+                    packet << uint8_t(rank);
                 }
 
-                // fill count of talents
-                packet.put<uint8_t>(countPos, count);
-
                 return true;
-    #endif
-#else
-                return false;
-#endif
             }
-
-            if (player == nullptr)
-                return false;
 
             if (m_protocol.expansion == WoW::Expansion::_WotLK ||
                 m_protocol.expansion == WoW::Expansion::_Cata)
             {
-                packet << uint8_t(0); // sendPetTalents
-                packet << uint32_t(player->getActiveSpec().getTalentPoints()); // Free talent points
-                packet << uint8_t(player->m_talentSpecsCount); // How many specs player has
-                packet << uint8_t(player->m_talentActiveSpec); // Which spec is active right now
+                packet << uint8_t(0);                                   // sendPetTalents
+                packet << uint32_t(freeTalentPoints);
+                packet << uint8_t(specs.size());
+                packet << uint8_t(activeSpec);
 
-                if (player->m_talentSpecsCount > MAX_SPEC_COUNT)
-                    player->m_talentSpecsCount = MAX_SPEC_COUNT;
-
-                // Loop through specs
-                for (uint8_t specId = 0; specId < player->m_talentSpecsCount; ++specId)
+                for (const auto& spec : specs)
                 {
-                    PlayerSpec spec = player->m_specs[specId];
-
                     if (m_protocol.expansion == WoW::Expansion::_Cata)
-                    {
-                        // Send primary talent tree
-                        packet << uint32_t(player->m_FirstTalentTreeLock);
-                    }
+                        packet << uint32_t(spec.primaryTalentTree);
 
-                    // How many talents player has learnt
-                    packet << uint8_t(spec.getTalents().size());
-                    for (const auto& [talentId, rank] : spec.getTalents())
+                    packet << uint8_t(spec.talents.size());
+                    for (const auto& [talentId, rank] : spec.talents)
                     {
                         packet << uint32_t(talentId);
                         packet << uint8_t(rank);
                     }
 
-                    // What kind of glyphs player has
-                    packet << uint8_t(GLYPHS_COUNT);
-                    for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
-                    {
-                        packet << uint16_t(player->getGlyph(specId, i));
-                    }
+                    packet << uint8_t(spec.glyphs.size());
+                    for (const auto glyph : spec.glyphs)
+                        packet << uint16_t(glyph);
                 }
 
                 return true;
             }
             else if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
-                if (player->m_talentSpecsCount > MAX_SPEC_COUNT)
-                    player->m_talentSpecsCount = MAX_SPEC_COUNT;
+                packet << uint8_t(activeSpec);
+                packet.writeBits(specs.size(), 19);
 
-                packet << uint8_t(player->m_talentActiveSpec); // Which spec is active right now
-                packet.writeBits(player->m_talentSpecsCount, 19);
-
-                auto wpos = std::make_unique<size_t[]>(player->m_talentSpecsCount);
-                for (uint8_t i = 0; i < player->m_talentSpecsCount; ++i)
+                auto wpos = std::make_unique<size_t[]>(specs.size());
+                for (size_t i = 0; i < specs.size(); ++i)
                 {
                     wpos[i] = packet.bitwpos();
                     packet.writeBits(0, 23);
@@ -173,24 +120,19 @@ namespace AscEmu::Packets
 
                 packet.flushBits();
 
-                for (uint8_t specId = 0; specId < player->m_talentSpecsCount; ++specId)
+                for (size_t specId = 0; specId < specs.size(); ++specId)
                 {
-                    PlayerSpec spec = player->m_specs[specId];
+                    const auto& spec = specs[specId];
 
-                    for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
-                    {
-                        packet << uint16_t(player->getGlyph(specId, i));
-                    }
+                    for (const auto glyph : spec.glyphs)
+                        packet << uint16_t(glyph);
 
-                    int32_t talentCount = 0;
-                    for (const auto& [talentId, rank] : spec.getTalents())
-                    {
+                    for (const auto& [talentId, rank] : spec.talents)
                         packet << uint16_t(talentId);
-                        talentCount++;
-                    }
-                    packet.putBits(wpos[specId], talentCount, 23);
 
-                    packet << uint32_t(spec.getSpecializationId());
+                    packet.putBits(wpos[specId], static_cast<int32_t>(spec.talents.size()), 23);
+
+                    packet << uint32_t(spec.specializationId);
                 }
                 return true;
             }

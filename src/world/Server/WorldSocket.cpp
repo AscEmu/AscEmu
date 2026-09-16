@@ -652,7 +652,8 @@ void WorldSocket::handlePing(std::unique_ptr<WorldPacket> recvPacket)
         m_session->m_clientTimeDelay = 0;
     }
 
-    sendPacket(SmsgPong(ping).serialise().get());
+    SmsgPong pong(ping);
+    sendManagedPacket(pong);
 
 #ifdef WIN32
     // Dynamically change nagle buffering status based on latency.

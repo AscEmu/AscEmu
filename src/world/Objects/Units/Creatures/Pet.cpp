@@ -20,6 +20,7 @@
  */
 
 #include "Pet.h"
+#include "Macros/PetMacros.hpp"
 #include "Creature.h"
 #include "Logging/Logger.hpp"
 #include "Management/Group.h"
@@ -1510,15 +1511,48 @@ void Pet::sendPetCastFailed(uint32_t spellId, uint8_t reason)
 void Pet::SendTalentsToOwner()
 {
     auto* plrOwner = getPlayerOwner();
-    if (plrOwner == nullptr)
+    if (plrOwner == nullptr || plrOwner->getSession() == nullptr)
         return;
 
-    // send the packet to owner
-    if (plrOwner->getSession() != NULL)
+    WDB::Structures::CreatureFamilyEntry const* cfe = sCreatureFamilyStore.lookupEntry(GetCreatureProperties()->Family);
+    if (!cfe || static_cast<int32_t>(cfe->talentTree) < 0)
+        return;
+
+    PetTalentData petTalents;
+    petTalents.unspentPoints = getPetTalentPoints();
+
+    // go through talent trees
+    for (uint32_t tte_id = PET_TALENT_TREE_START; tte_id <= PET_TALENT_TREE_END; tte_id++)
     {
-        SmsgUpdateTalentData managedPacket{ this };
-        plrOwner->getSession()->sendManagedPacket(managedPacket);
+        auto talent_tab = sTalentTabStore.lookupEntry(tte_id);
+        if (talent_tab == nullptr)
+            continue;
+
+        // check if we match talent tab
+        if (!(talent_tab->PetTalentMask & (1 << cfe->talentTree)))
+            continue;
+
+        for (uint32_t t_id = 1; t_id < sTalentStore.getNumRows(); t_id++)
+        {
+            // get talent entries for our talent tree
+            auto talent = sTalentStore.lookupEntry(t_id);
+            if (talent == nullptr)
+                continue;
+
+            if (talent->TalentTree != tte_id)
+                continue;
+
+            // check our spells
+            for (uint8_t j = 0; j < 5; j++)
+                if (talent->RankID[j] > 0 && hasSpell(talent->RankID[j]))
+                    petTalents.talents.emplace_back(talent->TalentID, j);
+        }
+        // tab loaded, we can exit
+        break;
     }
+
+    SmsgUpdateTalentData managedPacket(std::move(petTalents));
+    plrOwner->getSession()->sendManagedPacket(managedPacket);
 }
 #endif
 

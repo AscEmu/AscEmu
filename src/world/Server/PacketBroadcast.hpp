@@ -154,6 +154,83 @@ namespace AscEmu::Packets
             }
         }
 
+        // every session with a player in world that passes the predicate (WorldSession&) -> bool
+        template <typename TSource, typename TPacket, typename TPredicate>
+        static void sendFromWorldIf(TSource& source, TPacket& packet, TPredicate&& shouldReceive)
+        {
+            static_assert(
+                std::is_same_v<std::remove_cvref_t<TSource>, ::World>,
+                "PacketBroadcast::sendFromWorldIf requires World as source."
+                );
+
+            std::lock_guard<std::mutex> guard(source.mSessionLock);
+
+            for (const auto& sessionEntry : source.mActiveSessionMapStore)
+            {
+                auto* targetSession = sessionEntry.second.get();
+                if (targetSession == nullptr)
+                    continue;
+
+                auto* targetPlayer = targetSession->GetPlayer();
+                if (targetPlayer == nullptr || !targetPlayer->IsInWorld())
+                    continue;
+
+                if (!shouldReceive(*targetSession))
+                    continue;
+
+                targetSession->sendManagedPacket(packet);
+            }
+        }
+
+        // team 3 = both teams
+        template <typename TSource, typename TPacket>
+        static void sendFromWorld(TSource& source, TPacket& packet, WorldSession* skipSession = nullptr, uint32_t team = 3)
+        {
+            sendFromWorldIf(source, packet, [&](WorldSession& targetSession)
+            {
+                if (&targetSession == skipSession)
+                    return false;
+
+                return team == 3 || targetSession.GetPlayer()->GetTeam() == team;
+            });
+        }
+
+        template <typename TPacket>
+        static void sendFromMap(WorldMap const& source, TPacket& packet)
+        {
+            for (const auto& playerEntry : source.getPlayers())
+                sendToPlayer(playerEntry.second, packet);
+        }
+
+        template <typename TPacket>
+        static void sendFromMapZone(WorldMap const& source, uint32_t zoneId, TPacket& packet)
+        {
+            for (const auto& playerEntry : source.getPlayers())
+            {
+                Player* targetPlayer = playerEntry.second;
+                if (targetPlayer == nullptr || targetPlayer->getZoneId() != zoneId)
+                    continue;
+
+                sendToPlayer(targetPlayer, packet);
+            }
+        }
+
+        template <typename TPacket>
+        static void sendFromGuildRank(Guild const& source, TPacket& packet, uint8_t rankId)
+        {
+            for (const auto& guildMember : source.getGuildMembers())
+            {
+                if (!guildMember.second->isRank(rankId))
+                    continue;
+
+                Player* targetPlayer = guildMember.second->getPlayerByGuid(guildMember.second->getGUID());
+                if (targetPlayer == nullptr)
+                    continue;
+
+                sendToPlayer(targetPlayer, packet);
+            }
+        }
+
     private:
         template <typename TPacket>
         static void sendToPlayer(Player* targetPlayer, TPacket& packet)

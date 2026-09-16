@@ -6,39 +6,31 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
-#include "Management/AchievementMgr.h"
-#include "Storage/WDB/WDBStores.hpp"
-#include "Storage/WDB/WDBStructures.hpp"
-#include <algorithm>
+#include "AchievementDataEntries.h"
 
-#if VERSION_STRING >= WotLK
+#include <vector>
+
 namespace AscEmu::Packets
 {
     class SmsgRespondInspectAchievements : public ManagedPacket
     {
     public:
         WoWGuid guid;
-        CriteriaProgressMap const* criteriaProgress = nullptr;
-        CompletedAchievementMap const* completedAchievements = nullptr;
+        std::vector<CriteriaProgressEntry> criteriaProgress;
+        std::vector<CompletedAchievementEntry> completedAchievements;
 
-        SmsgRespondInspectAchievements(WoWGuid guid, CriteriaProgressMap const& criteriaProgress,
-            CompletedAchievementMap const& completedAchievements) :
+        SmsgRespondInspectAchievements(WoWGuid guid, std::vector<CriteriaProgressEntry> criteriaProgress,
+            std::vector<CompletedAchievementEntry> completedAchievements) :
             ManagedPacket(SMSG_RESPOND_INSPECT_ACHIEVEMENTS, 1),
-            guid(guid), criteriaProgress(&criteriaProgress), completedAchievements(&completedAchievements)
+            guid(guid), criteriaProgress(std::move(criteriaProgress)), completedAchievements(std::move(completedAchievements))
         {
         }
 
     protected:
-        static bool isVisibleAchievement(CompletedAchievementMap::value_type const& completedAchievementPair)
-        {
-            auto achievement = sAchievementStore.lookupEntry(completedAchievementPair.first);
-            return achievement && !(achievement->flags & ACHIEVEMENT_FLAG_HIDDEN);
-        }
-
         size_t expectedSize() const override
         {
-            const size_t numCriteria = criteriaProgress->size();
-            const size_t numAchievements = std::count_if(completedAchievements->begin(), completedAchievements->end(), isVisibleAchievement);
+            const size_t numCriteria = criteriaProgress.size();
+            const size_t numAchievements = completedAchievements.size();
 
             return 1 + 8 + 3 + 3 + numAchievements * (4 + 4) + numCriteria * (0);
         }
@@ -47,8 +39,8 @@ namespace AscEmu::Packets
         {
             if (m_protocol.isCata())
             {
-                const size_t numCriteria = criteriaProgress->size();
-                const size_t numAchievements = std::count_if(completedAchievements->begin(), completedAchievements->end(), isVisibleAchievement);
+                const size_t numCriteria = criteriaProgress.size();
+                const size_t numAchievements = completedAchievements.size();
                 ByteBuffer criteriaData(numCriteria * (0));
                 WoWGuid counter;
 
@@ -61,16 +53,9 @@ namespace AscEmu::Packets
                 packet.writeBits(numCriteria, 21);
                 packet.writeBit(guid[2]);
 
-                for (const auto& progressIter : *criteriaProgress)
+                for (const auto& progress : criteriaProgress)
                 {
-                    WDB::Structures::AchievementCriteriaEntry const* acEntry = sAchievementCriteriaStore.lookupEntry(progressIter.first);
-                    if (!acEntry)
-                        continue;
-
-                    if (!sAchievementStore.lookupEntry(acEntry->referredAchievement))
-                        continue;
-
-                    counter = uint64_t(progressIter.second->counter);
+                    counter = progress.counter;
 
                     packet.writeBit(counter[5]);
                     packet.writeBit(counter[3]);
@@ -94,7 +79,7 @@ namespace AscEmu::Packets
                     criteriaData.writeByteSeq(counter[4]);
                     criteriaData << uint32_t(0);    // timer 1
                     criteriaData.writeByteSeq(guid[1]);
-                    criteriaData.appendPackedTime(progressIter.second->date);
+                    criteriaData.appendPackedTime(progress.date);
                     criteriaData.writeByteSeq(counter[3]);
                     criteriaData.writeByteSeq(counter[7]);
                     criteriaData.writeByteSeq(guid[5]);
@@ -104,7 +89,7 @@ namespace AscEmu::Packets
                     criteriaData.writeByteSeq(guid[6]);
                     criteriaData.writeByteSeq(guid[7]);
                     criteriaData.writeByteSeq(counter[6]);
-                    criteriaData << uint32_t(progressIter.first);
+                    criteriaData << uint32_t(progress.criteriaId);
                     criteriaData << uint32_t(0);    // timer 2
                     criteriaData.writeByteSeq(counter[1]);
                     criteriaData.writeByteSeq(counter[5]);
@@ -122,13 +107,10 @@ namespace AscEmu::Packets
                 packet.writeByteSeq(guid[0]);
                 packet.writeByteSeq(guid[2]);
 
-                for (auto completeIter : *completedAchievements)
+                for (const auto& completed : completedAchievements)
                 {
-                    if (!isVisibleAchievement(completeIter))
-                        continue;
-
-                    packet << uint32_t(completeIter.first);
-                    packet.appendPackedTime(completeIter.second);
+                    packet << uint32_t(completed.achievementId);
+                    packet.appendPackedTime(completed.date);
                 }
 
                 packet.writeByteSeq(guid[7]);
@@ -139,8 +121,8 @@ namespace AscEmu::Packets
             }
             else if (m_protocol.isMop())
             {
-                const size_t numCriteria = criteriaProgress->size();
-                const size_t numAchievements = std::count_if(completedAchievements->begin(), completedAchievements->end(), isVisibleAchievement);
+                const size_t numCriteria = criteriaProgress.size();
+                const size_t numAchievements = completedAchievements.size();
                 ByteBuffer criteriaData(numCriteria * 32);
                 ByteBuffer achievementsData(numAchievements * 24);
                 WoWGuid counter;
@@ -152,9 +134,9 @@ namespace AscEmu::Packets
                 packet.writeBits(numAchievements, 20);
                 packet.writeBits(numCriteria, 19);
 
-                for (const auto& progressIter : *criteriaProgress)
+                for (const auto& progress : criteriaProgress)
                 {
-                    counter = uint64_t(progressIter.second->counter);
+                    counter = progress.counter;
 
                     packet.writeBit(guid[1]);
                     packet.writeBit(guid[4]);
@@ -179,7 +161,7 @@ namespace AscEmu::Packets
                     criteriaData.writeByteSeq(counter[1]);
                     criteriaData.writeByteSeq(guid[1]);
                     criteriaData.writeByteSeq(counter[7]);
-                    criteriaData << uint32_t(progressIter.first);
+                    criteriaData << uint32_t(progress.criteriaId);
                     criteriaData.writeByteSeq(guid[3]);
                     criteriaData.writeByteSeq(counter[3]);
                     criteriaData.writeByteSeq(counter[5]);
@@ -189,7 +171,7 @@ namespace AscEmu::Packets
                     criteriaData.writeByteSeq(guid[0]);
                     criteriaData << uint32_t(0);    // timer 2
                     criteriaData.writeByteSeq(guid[7]);
-                    criteriaData.appendPackedTime(progressIter.second->date);
+                    criteriaData.appendPackedTime(progress.date);
                     criteriaData.writeByteSeq(counter[6]);
                     criteriaData.writeByteSeq(guid[2]);
                     criteriaData.writeByteSeq(guid[6]);
@@ -198,7 +180,7 @@ namespace AscEmu::Packets
 
                 packet.writeBit(guid[5]);
 
-                for (auto completeIter : *completedAchievements)
+                for (const auto& completed : completedAchievements)
                 {
                     packet.writeBit(guid[0]);
                     packet.writeBit(guid[2]);
@@ -211,9 +193,9 @@ namespace AscEmu::Packets
 
                     achievementsData.writeByteSeq(guid[1]);
                     achievementsData.writeByteSeq(guid[0]);
-                    achievementsData.appendPackedTime(completeIter.second);        // achievement date
+                    achievementsData.appendPackedTime(completed.date);        // achievement date
                     achievementsData << uint32_t(0);                               // realmId
-                    achievementsData << uint32_t(completeIter.first);              // achievement Id
+                    achievementsData << uint32_t(completed.achievementId);              // achievement Id
                     achievementsData.writeByteSeq(guid[7]);
                     achievementsData.writeByteSeq(guid[4]);
                     achievementsData.writeByteSeq(guid[6]);
@@ -250,4 +232,3 @@ namespace AscEmu::Packets
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }
-#endif

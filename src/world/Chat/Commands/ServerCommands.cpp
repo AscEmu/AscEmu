@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <sstream>
 
 #include "BuildInfo.hpp"
+#include "Server/PacketBroadcast.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Chat/ChatCommandHandler.hpp"
 #include "Chat/CommandTableStorage.hpp"
@@ -25,6 +26,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <openssl/opensslv.h>
 #include <openssl/crypto.h>
+
+using namespace AscEmu::Packets;
 
 //.server info
 bool ChatCommandHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_session)
@@ -226,7 +229,8 @@ bool ChatCommandHandler::HandleServerCancelShutdownCommand(const char* /*args*/,
     sWorld.sendMessageToOnlineGms(teamAnnounce.str());
     sGMLog.writefromsession(m_session, "Canceled server shutdown.");
 
-    sWorld.sendGlobalMessage(AscEmu::Packets::SmsgServerMessage(sMaster().isRestartActive() ? SERVER_MSG_RESTART_CANCELLED : SERVER_MSG_SHUTDOWN_CANCELLED).serialise().get());
+    SmsgServerMessage packet(sMaster().isRestartActive() ? SERVER_MSG_RESTART_CANCELLED : SERVER_MSG_SHUTDOWN_CANCELLED);
+    PacketBroadcast::sendFromWorld(sWorld, packet);
 
     sMaster().cancelShutdown();
 

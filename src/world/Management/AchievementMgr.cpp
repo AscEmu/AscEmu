@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "AchievementMgr.h"
+#include "Server/PacketBroadcast.hpp"
 
 #include "Group.h"
 #include "MailMgr.h"
@@ -1152,6 +1153,46 @@ void AchievementMgr::gmResetCriteria(uint32_t _criteriaId, bool _finishAll/* = f
 /// Realm first! achievements get sent to all players currently online.
 /// All other achievements get sent to all of the achieving player's guild members,
 /// group members, and other in-range players
+#if VERSION_STRING > WotLK
+namespace
+{
+    // criteria with a valid achievement, hidden achievements are not sent to the client
+    std::vector<AscEmu::Packets::CriteriaProgressEntry> buildCriteriaProgressEntries(CriteriaProgressMap const& criteriaProgress)
+    {
+        std::vector<AscEmu::Packets::CriteriaProgressEntry> entries;
+        entries.reserve(criteriaProgress.size());
+
+        for (const auto& progressIter : criteriaProgress)
+        {
+            const auto* criteriaEntry = sAchievementCriteriaStore.lookupEntry(progressIter.first);
+            if (criteriaEntry == nullptr || sAchievementStore.lookupEntry(criteriaEntry->referredAchievement) == nullptr)
+                continue;
+
+            entries.push_back({ progressIter.first, progressIter.second->counter, progressIter.second->date });
+        }
+
+        return entries;
+    }
+
+    std::vector<AscEmu::Packets::CompletedAchievementEntry> buildCompletedAchievementEntries(CompletedAchievementMap const& completedAchievements)
+    {
+        std::vector<AscEmu::Packets::CompletedAchievementEntry> entries;
+        entries.reserve(completedAchievements.size());
+
+        for (const auto& completeIter : completedAchievements)
+        {
+            const auto* achievement = sAchievementStore.lookupEntry(completeIter.first);
+            if (achievement == nullptr || (achievement->flags & ACHIEVEMENT_FLAG_HIDDEN))
+                continue;
+
+            entries.push_back({ completeIter.first, completeIter.second });
+        }
+
+        return entries;
+    }
+}
+#endif
+
 #if VERSION_STRING <= WotLK
 void AchievementMgr::sendAllAchievementData(Player* _player)
 {
@@ -1206,7 +1247,7 @@ void AchievementMgr::sendAllAchievementData(Player* _player)
 
 void AchievementMgr::sendAllAchievementData(Player* _player)
 {
-    SmsgAllAchievementData managedPacket{ m_player->getGuid(), m_criteriaProgress, m_completedAchievements };
+    SmsgAllAchievementData managedPacket{ m_player->getGuid(), buildCriteriaProgressEntries(m_criteriaProgress), buildCompletedAchievementEntries(m_completedAchievements) };
     _player->getSession()->sendManagedPacket(managedPacket);
 
     if (isCharacterLoading && _player == m_player)
@@ -1218,13 +1259,13 @@ void AchievementMgr::sendAllAchievementData(Player* _player)
 
 void AchievementMgr::sendRespondInspectAchievements(Player* _player)
 {
-    SmsgRespondInspectAchievements managedPacket{ m_player->getGuid(), m_criteriaProgress, m_completedAchievements };
+    SmsgRespondInspectAchievements managedPacket{ m_player->getGuid(), buildCriteriaProgressEntries(m_criteriaProgress), buildCompletedAchievementEntries(m_completedAchievements) };
     _player->getSession()->sendManagedPacket(managedPacket);
 }
 #else
 void AchievementMgr::sendAllAchievementData(Player* _player)
 {
-    SmsgAllAchievementData managedPacket{ m_player->getGuid(), m_criteriaProgress, m_completedAchievements };
+    SmsgAllAchievementData managedPacket{ m_player->getGuid(), buildCriteriaProgressEntries(m_criteriaProgress), buildCompletedAchievementEntries(m_completedAchievements) };
     _player->getSession()->sendManagedPacket(managedPacket);
 
     if (isCharacterLoading && _player == m_player)
@@ -1236,7 +1277,7 @@ void AchievementMgr::sendAllAchievementData(Player* _player)
 
 void AchievementMgr::sendRespondInspectAchievements(Player* _player)
 {
-    SmsgRespondInspectAchievements managedPacket{ m_player->getGuid(), m_criteriaProgress, m_completedAchievements };
+    SmsgRespondInspectAchievements managedPacket{ m_player->getGuid(), buildCriteriaProgressEntries(m_criteriaProgress), buildCompletedAchievementEntries(m_completedAchievements) };
     _player->getSession()->sendManagedPacket(managedPacket);
 }
 #endif
@@ -1531,9 +1572,11 @@ void AchievementMgr::sendAchievementEarned(WDB::Structures::AchievementEntry con
         uint64_t guid = getPlayer()->getGuid();
 
         // own team = clickable name
-        sWorld.sendGlobalMessage(SmsgServerFirstAchievement(playerName, guid, _entry->ID, 1).serialise().get(), nullptr, getPlayer()->GetTeam());
+        SmsgServerFirstAchievement ownTeamPacket(playerName, guid, _entry->ID, 1);
+        PacketBroadcast::sendFromWorld(sWorld, ownTeamPacket, nullptr, getPlayer()->GetTeam());
 
-        sWorld.sendGlobalMessage(SmsgServerFirstAchievement(playerName, guid, _entry->ID, 0).serialise().get(), nullptr, getPlayer()->GetTeam() == TEAM_ALLIANCE ? TEAM_HORDE : TEAM_ALLIANCE);
+        SmsgServerFirstAchievement otherTeamPacket(playerName, guid, _entry->ID, 0);
+        PacketBroadcast::sendFromWorld(sWorld, otherTeamPacket, nullptr, getPlayer()->GetTeam() == TEAM_ALLIANCE ? TEAM_HORDE : TEAM_ALLIANCE);
     }
     else
     {

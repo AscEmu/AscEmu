@@ -5123,7 +5123,11 @@ void Unit::queueInitialVisiblePacketsForPlayer(Player* target)
     }
 
     if (updates > 0)
-        target->getUpdateMgr().queueDelayedPacket(packetData.serialise());
+    {
+        if (WorldSession* session = target->getSession())
+            if (auto packet = session->buildPacket(packetData))
+                target->getUpdateMgr().queueDelayedPacket(std::move(packet));
+    }
 #endif
 
     sendMovementFlagsToPlayer(target);
@@ -7469,6 +7473,16 @@ TotemSummon* Unit::getTotem(SummonSlot slot) const
         return nullptr;
 
     return dynamic_cast<TotemSummon*>(totem);
+}
+
+uint32_t Unit::getVehicleSeatId() const
+{
+#ifdef FT_VEHICLES
+    if (Vehicle const* vehicle = getVehicleKit())
+        return vehicle->getVehicleInfo()->seatID[obj_movement_info.transport_seat];
+#endif
+
+    return 0;
 }
 
 SummonHandler* Unit::getSummonInterface()

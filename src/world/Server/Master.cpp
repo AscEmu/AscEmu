@@ -19,6 +19,7 @@
  */
 
 #include "Server/Master.h"
+#include "Server/PacketBroadcast.hpp"
 
 #include "AEVersion.hpp"
 #include "BuildInfo.hpp"
@@ -94,6 +95,7 @@
 #endif
 
 using namespace WoW;
+using namespace AscEmu::Packets;
 
 namespace fs = std::filesystem;
 
@@ -961,7 +963,8 @@ bool Master::processShutdownSequence(long long diff, uint32_t& next_printout, ui
                 uint32_t secs = timeLeft % 60U;
                 std::string timeStr = std::format("{:02}:{:02}", mins, secs);
 
-                sWorld.sendGlobalMessage(AscEmu::Packets::SmsgServerMessage(messageType, timeStr).serialise().get());
+                SmsgServerMessage packet(messageType, timeStr);
+                PacketBroadcast::sendFromWorld(sWorld, packet);
             }
         }
         nextSend = currentMsTime + 1000U;
