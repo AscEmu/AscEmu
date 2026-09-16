@@ -1719,6 +1719,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     for (uint8_t s = 0; s < inspectedPlayer->m_talentSpecsCount; ++s)
     {
         InspectSpecEntry entry;
+        entry.primaryTalentTree = inspectedPlayer->m_FirstTalentTreeLock;
         for (uint8_t i = 0; i < 3; ++i)
         {
             for (uint32_t j = 0; j < sTalentStore.getNumRows(); ++j)
@@ -1750,6 +1751,46 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     }
 
     SmsgInspectTalent managedPacket(inspectedPlayer, inspectedPlayer->getActiveSpec().getTalentPoints(), inspectedPlayer->m_talentActiveSpec, std::move(specs));
+
+    // TBC clients read the talents as a bit field, one bit per rank in talent tab order
+    if (_socket != nullptr && _socket->getClientProtocol().isTbc())
+    {
+        managedPacket.legacyTalentBits.assign(SmsgInspectTalent::LEGACY_TALENT_BYTES, 0);
+
+        uint32_t talentTabPos = 0;
+        for (uint8_t i = 0; i < 3; ++i)
+        {
+            for (uint32_t j = 0; j < sTalentStore.getNumRows(); ++j)
+            {
+                const auto talentInfo = sTalentStore.lookupEntry(j);
+                if (talentInfo == nullptr || talentInfo->TalentTree != talentTabIds[i])
+                    continue;
+
+                uint32_t talentMaxRank = 0;
+                for (uint32_t k = 5; k > 0; --k)
+                {
+                    if (talentInfo->RankID[k - 1] != 0 && inspectedPlayer->hasSpell(talentInfo->RankID[k - 1]))
+                    {
+                        talentMaxRank = k;
+                        break;
+                    }
+                }
+
+                if (talentMaxRank == 0)
+                    continue;
+
+                // bit index of the learned rank, stored in groups of 7 bits with the high bit of every byte unused
+                const uint32_t rankIndex = talentTabPos + getTalentInspectBitPosInTab(talentInfo->TalentID) + talentMaxRank - 1;
+                const uint32_t rankIndex8 = (rankIndex / 7) * 8 + (rankIndex % 7);
+                const uint32_t slot = rankIndex8 / 8;
+                if (slot < managedPacket.legacyTalentBits.size())
+                    managedPacket.legacyTalentBits[slot] |= static_cast<uint8_t>(1 << (rankIndex8 % 8));
+            }
+
+            talentTabPos += getTalentTabInspectBitSize(talentTabIds[i]);
+        }
+    }
+
     sendManagedPacket(managedPacket);
 #else // Mop
     std::vector<uint32_t> talentIds;
@@ -1763,8 +1804,8 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
             talentIds.push_back(talentInfo->TalentID);
     }
 
-    const auto& glyphs = inspectedPlayer->m_specs[inspectedPlayer->m_talentActiveSpec].getGlyphs();
-    SmsgInspectResultsUpdate managedPacket(inspectedPlayer, std::move(talentIds), std::vector<uint16_t>(glyphs.begin(), glyphs.end()));
+    const auto& activeSpec = inspectedPlayer->m_specs[inspectedPlayer->m_talentActiveSpec];
+    SmsgInspectResultsUpdate managedPacket(inspectedPlayer, std::move(talentIds), std::vector<uint16_t>(activeSpec.getGlyphs().begin(), activeSpec.getGlyphs().end()), activeSpec.getSpecializationId());
     sendManagedPacket(managedPacket);
 #endif
 }

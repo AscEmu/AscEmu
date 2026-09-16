@@ -68,6 +68,9 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellShapeshiftFormEntry> sSpellS
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentEntry> sTalentStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentTabEntry> sTalentTabStore;
 static uint32_t InspectTalentTabPages[12][3];
+// bit position of the first rank of a talent inside its tab and the bit size of a tab (talent inspect before WotLK)
+static std::map<uint32_t, uint32_t> InspectTalentTabPos;
+static std::map<uint32_t, uint32_t> InspectTalentTabSize;
 #ifdef AE_MOP
 static uint32_t ClassSpecializationTabs[12][4];
 #endif
@@ -783,8 +786,6 @@ bool loadDBCs()
     // note: This is not valid for Mop
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTalentTabStore, dbc_path, "TalentTab.dbc");
     {
-        std::map<uint32_t, uint32_t> InspectTalentTabPos;
-        std::map<uint32_t, uint32_t> InspectTalentTabSize;
         std::map<uint32_t, uint32_t> InspectTalentTabBit;
 
         uint32_t talent_max_rank;
@@ -1280,6 +1281,18 @@ std::string generateName(uint32_t type)
 uint32_t const* getTalentTabPages(uint8_t playerClass)
 {
     return InspectTalentTabPages[playerClass];
+}
+
+uint32_t getTalentInspectBitPosInTab(uint32_t talentId)
+{
+    const auto itr = InspectTalentTabPos.find(talentId);
+    return itr != InspectTalentTabPos.end() ? itr->second : 0;
+}
+
+uint32_t getTalentTabInspectBitSize(uint32_t talentTabId)
+{
+    const auto itr = InspectTalentTabSize.find(talentTabId);
+    return itr != InspectTalentTabSize.end() ? itr->second : 0;
 }
 
 #ifdef AE_MOP

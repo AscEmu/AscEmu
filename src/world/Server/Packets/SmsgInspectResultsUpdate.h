@@ -21,16 +21,18 @@ namespace AscEmu::Packets
         Player* inspectedPlayer {nullptr};
         std::vector<uint32_t> talentIds;                        // known talents of the active spec
         std::vector<uint16_t> glyphs;                           // one entry per glyph slot of the active spec
+        uint32_t specializationId = 0;                          // chosen specialization of the active spec, 0 = none
 
-        SmsgInspectResultsUpdate() : SmsgInspectResultsUpdate(nullptr, {}, {})
+        SmsgInspectResultsUpdate() : SmsgInspectResultsUpdate(nullptr, {}, {}, 0)
         {
         }
 
-        SmsgInspectResultsUpdate(Player* inspectedPlayer, std::vector<uint32_t> talentIds, std::vector<uint16_t> glyphs) :
+        SmsgInspectResultsUpdate(Player* inspectedPlayer, std::vector<uint32_t> talentIds, std::vector<uint16_t> glyphs, uint32_t specializationId) :
             ManagedPacket(SMSG_INSPECT_RESULTS_UPDATE, 1000),
             inspectedPlayer(inspectedPlayer),
             talentIds(std::move(talentIds)),
-            glyphs(std::move(glyphs))
+            glyphs(std::move(glyphs)),
+            specializationId(specializationId)
         {
         }
 
@@ -205,8 +207,7 @@ namespace AscEmu::Packets
 
                 packet.writeByteSeq(guid[0]);
 
-                // No Mop talent anywhere yet, so send 0 ("no specialization chosen")
-                packet << uint32_t(0);
+                packet << uint32_t(specializationId);
 
                 for (const auto talentId : talentIds)
                 {

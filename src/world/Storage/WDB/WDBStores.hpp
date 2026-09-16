@@ -310,6 +310,8 @@ WDB::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t r
 std::string generateName(uint32_t type = 0);
 
 uint32_t const* getTalentTabPages(uint8_t playerClass);
+uint32_t getTalentInspectBitPosInTab(uint32_t talentId);
+uint32_t getTalentTabInspectBitSize(uint32_t talentTabId);
 
 #ifdef AE_MOP
 uint32_t const* getClassSpecializations(uint8_t playerClass);
