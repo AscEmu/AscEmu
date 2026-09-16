@@ -2145,8 +2145,7 @@ void Unit::sendMoveInfoForPacket(uint16_t opcode, bool withGuid /* = true*/)
         if (auto* const plr = dynamic_cast<Player*>(this))
             plr->sendManagedPacket(packet);
 
-        MsgMovementInfo broadcastPacket(resolvedOpcode, obj_movement_info, withGuid);
-        broadcastPacket.playerMoveSinceCata = true;
+        SmsgPlayerMove broadcastPacket(obj_movement_info, withGuid, resolvedOpcode);
         PacketBroadcast::sendToSet(*this, broadcastPacket, false);
     }
 

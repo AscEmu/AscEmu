@@ -19,7 +19,6 @@ namespace AscEmu::Packets
     public:
         MovementInfo mi;
         bool withGuid = true;
-        bool playerMoveSinceCata = false;   // other clients receive SMSG_PLAYER_MOVE for player movement since Cata
 
         MsgMovementInfo(uint16_t opcode, MovementInfo mi, bool withGuid = true) :
             ManagedPacket(opcode, 0),
@@ -33,9 +32,6 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (playerMoveSinceCata && m_protocol.expansion >= WoW::Expansion::_Cata)
-                packet.setOpcode(SMSG_PLAYER_MOVE);
-
             mi.write(packet, m_protocol, withGuid);
             return true;
         }

@@ -515,28 +515,14 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     //////////////////////////////////////////////////////////////////////////////////////////
     /// send our move to all inrange players
 
-#if VERSION_STRING >= Cata
-
-    SmsgPlayerMove managedPacket(sessionMovementInfo);
-    PacketBroadcast::sendToSet(*mover, managedPacket, false);
-
-#elif VERSION_STRING == WotLK
-
-    WorldPacket data(static_cast<uint16_t>(opcode), recvData.size());
-    data << sessionMovementInfo;
-    mover->sendMessageToSet(&data, _player);
-
-#else // TBC and Classic
-
     // Zyres NOTE: versions older than WotLK do not send us the guid within the movement packet (needed for the packet send to other players)
     // but we should already received the active mover
-    sessionMovementInfo.guid = m_MoverWoWGuid;
+    if (getClientProtocol().expansion < WoW::Expansion::_WotLK)
+        sessionMovementInfo.guid = m_MoverWoWGuid;
 
-    WorldPacket data(static_cast<uint16_t>(opcode), recvData.size());
-    data << sessionMovementInfo;
-    mover->sendMessageToSet(&data, false);
-
-#endif
+    // every receiver gets the layout of its own client version
+    SmsgPlayerMove managedPacket(sessionMovementInfo, true, static_cast<uint16_t>(opcode));
+    PacketBroadcast::sendToSet(*mover, managedPacket, false);
 
 #ifdef FT_VEHICLES
     //////////////////////////////////////////////////////////////////////////////////////////
