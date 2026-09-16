@@ -43,7 +43,7 @@ namespace AscEmu::Packets
             {
                 mi.position = lv;
                 packet << guid;
-                mi.writeMovementInfo(packet, 0, false);
+                mi.writeMovementInfo(packet, 0, m_protocol.expansion, false);
 
             }
             else if (m_protocol.isCata())
@@ -108,7 +108,7 @@ namespace AscEmu::Packets
                 // SMSG_MOVE_TELEPORT, written with the movement descriptor
                 mi.position = lv;
                 mi.guid = guid;
-                mi.writeMovementInfo(packet, MSG_MOVE_TELEPORT);
+                mi.writeMovementInfo(packet, MSG_MOVE_TELEPORT, m_protocol.expansion);
             }
             else
             {

@@ -45,7 +45,8 @@ public:
     void disablePacketLog();
 
     // WorldSocket.cpp
-    void logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid = 0);
+    // versionId selects the opcode table of the session, -1 uses the configured expansion
+    void logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid = 0, int versionId = -1);
 };
 
 #define sWorldPacketLog WorldPacketLog::getInstance()

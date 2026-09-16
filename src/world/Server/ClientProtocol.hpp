@@ -44,19 +44,10 @@ namespace WoW {
     {
         Expansion expansion{Expansion::Unknown};
 
-        /*[[nodiscard]] constexpr int32_t versionId() const noexcept
-        {
-            if (expansion == Expansion::Unknown)
-            {
-                return -1;
-            }
-
-            return static_cast<int32_t>(expansion);
-        }*/
-
         [[nodiscard]] WoW::Expansion getExpansion() const { return expansion; }
 
-        //[[nodiscard]] int32_t getVersionId() const { return versionId(); }
+        // index inside the version tables, the configured expansion when the client version is unknown
+        [[nodiscard]] int32_t versionId() const noexcept;
 
         [[nodiscard]] bool isClassic() const { return expansion == WoW::Expansion::_Classic; }
         [[nodiscard]] bool isTbc() const { return expansion == WoW::Expansion::_TBC; }
@@ -177,6 +168,40 @@ namespace WoW {
     // build number used for the build columns of the database (min_build, max_build, build)
     inline uint32_t getConfigBuild() noexcept { return buildForExpansion(g_configExpansion); }
 
+    // index of an expansion inside the version tables (0 = Classic ... 4 = Mop), -1 without a table
+    [[nodiscard]] constexpr int32_t versionIdFor(Expansion expansion) noexcept
+    {
+        return expansion <= Expansion::_Mop ? static_cast<int32_t>(expansion) : -1;
+    }
+
+    inline int32_t getConfigVersionId() noexcept
+    {
+        const auto versionId = versionIdFor(g_configExpansion);
+        return versionId >= 0 ? versionId : 0;
+    }
+
+    // expansions without a version table use the configured one
+    inline int32_t versionIdOrConfig(Expansion expansion) noexcept
+    {
+        const auto versionId = versionIdFor(expansion);
+        return versionId >= 0 ? versionId : getConfigVersionId();
+    }
+
+    // short name of a version table index, used in opcode and packet logs
+    [[nodiscard]] constexpr std::string_view getNameForVersionId(int32_t versionId) noexcept
+    {
+        switch (versionId)
+        {
+            case 0: return "Classic";
+            case 1: return "BC";
+            case 2: return "WotLK";
+            case 3: return "Cata";
+            case 4: return "Mop";
+
+            default: return "";
+        }
+    }
+
 //
 //    [[nodiscard]] constexpr ClientVersion getClientVersion(Expansion expansion) noexcept
 //    {
@@ -207,6 +232,8 @@ namespace WoW {
 //        }
 //    }
 //
+    inline int32_t ClientProtocol::versionId() const noexcept { return versionIdOrConfig(expansion); }
+
     [[nodiscard]] constexpr std::string_view getExpansionName(Expansion expansion) noexcept
     {
         switch (expansion)

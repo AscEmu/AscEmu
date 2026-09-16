@@ -160,13 +160,13 @@ void WorldSocket::onRead()
         if (m_remaining > 0 && readBuffer.GetSize() < m_remaining)
             return;
 
-        auto packet = std::make_unique<WorldPacket>(sOpcodeTables.getHexValueForVersionId(m_opcode), m_size);
+        auto packet = std::make_unique<WorldPacket>(sOpcodeTables.getHexValueForVersionId(m_opcode, m_protocol), m_size);
         packet->resize(m_size);
 
         if (m_remaining > 0)
             readBuffer.Read(packet->contents(), m_remaining);
 
-        sWorldPacketLog.logPacket(m_size, static_cast<uint16_t>(m_opcode), m_size ? packet->contents() : nullptr, 0, (m_session ? m_session->GetAccountId() : 0));
+        sWorldPacketLog.logPacket(m_size, static_cast<uint16_t>(m_opcode), m_size ? packet->contents() : nullptr, 0, (m_session ? m_session->GetAccountId() : 0), m_protocol.versionId());
 
         m_remaining = m_size = 0;
 
@@ -263,16 +263,7 @@ void WorldSocket::setCurrentVersionAsProtocol()
 {
     //Zyres: this is a fallback when the client version is not set by the client information
     WoW::ClientProtocol protocol;
-    switch (sOpcodeTables.getVersionIdForAEVersion())
-    {
-        case 0: protocol.expansion = WoW::Expansion::_Classic; break;
-        case 1: protocol.expansion = WoW::Expansion::_TBC; break;
-        case 2: protocol.expansion = WoW::Expansion::_WotLK; break;
-        case 3: protocol.expansion = WoW::Expansion::_Cata; break;
-        case 4: protocol.expansion = WoW::Expansion::_Mop; break;
-
-        default: protocol.expansion = WoW::Expansion::Unknown; break;
-    }
+    protocol.expansion = WoW::getConfigExpansion();
 
     setClientProtocol(protocol);
 }
@@ -334,7 +325,7 @@ uint8_t WorldSocket::_outPacket(uint32_t opcode, size_t len, const void* data)
     }
 
     sWorldPacketLog.logPacket(static_cast<uint32_t>(len), static_cast<uint16_t>(opcode),
-        static_cast<const uint8_t*>(data), 1, (m_session ? m_session->GetAccountId() : 0));
+        static_cast<const uint8_t*>(data), 1, (m_session ? m_session->GetAccountId() : 0), m_protocol.versionId());
 
     const auto version = m_protocol.expansion;
     const bool isClassic = version == WoW::Expansion::_Classic;
@@ -351,7 +342,7 @@ uint8_t WorldSocket::_outPacket(uint32_t opcode, size_t len, const void* data)
         if (m_crypt.isInitialized())
         {
             ServerPktHeader header = ServerPktHeader::mopEncrypted(static_cast<uint32_t>(len),
-                static_cast<uint32_t>(sOpcodeTables.getHexValueForVersionId(opcode)));
+                static_cast<uint32_t>(sOpcodeTables.getHexValueForVersionId(opcode, m_protocol)));
 
             m_crypt.encryptWotlkSend(header.mopHeader, header.mopHeaderLength);
             rv = burstSend(header.mopData(), header.mopHeaderLength);
@@ -359,7 +350,7 @@ uint8_t WorldSocket::_outPacket(uint32_t opcode, size_t len, const void* data)
         else
         {
             ServerPktHeader header = ServerPktHeader::mopUnencrypted(static_cast<uint32_t>(len + 2),
-                static_cast<uint32_t>(sOpcodeTables.getHexValueForVersionId(opcode)));
+                static_cast<uint32_t>(sOpcodeTables.getHexValueForVersionId(opcode, m_protocol)));
 
             rv = burstSend(header.mopData(), header.mopHeaderLength);
         }
@@ -367,7 +358,7 @@ uint8_t WorldSocket::_outPacket(uint32_t opcode, size_t len, const void* data)
     else if (isCata)
     {
         ServerPktHeader header = ServerPktHeader::cataEncrypted(static_cast<uint32_t>(len + 2),
-            static_cast<uint16_t>(sOpcodeTables.getHexValueForVersionId(opcode)));
+            static_cast<uint16_t>(sOpcodeTables.getHexValueForVersionId(opcode, m_protocol)));
 
         m_crypt.encryptWotlkSend(header.cataHeader, header.cataHeaderLength);
         rv = burstSend(header.cataData(), header.cataHeaderLength);
@@ -375,7 +366,7 @@ uint8_t WorldSocket::_outPacket(uint32_t opcode, size_t len, const void* data)
     else
     {
         ServerPktHeader header = ServerPktHeader::legacy(ntohs(static_cast<uint16_t>(len + 2)),
-            static_cast<uint16_t>(sOpcodeTables.getHexValueForVersionId(opcode)));
+            static_cast<uint16_t>(sOpcodeTables.getHexValueForVersionId(opcode, m_protocol)));
 
         if (m_crypt.isInitialized())
         {
@@ -560,7 +551,7 @@ bool WorldSocket::processHeader()
         }
 
         m_remaining = m_size = header.getMopPayloadSize();
-        m_opcode = sOpcodeTables.getInternalIdForHex(header.getMopOpcode());
+        m_opcode = sOpcodeTables.getInternalIdForHex(header.getMopOpcode(), m_protocol);
 
         const auto opcodeState = sOpcodeTables.getStateForInternalId(m_opcode);
 
@@ -599,13 +590,13 @@ bool WorldSocket::processHeader()
         m_remaining = m_size = header.size - 4;
     }
 
-    m_opcode = sOpcodeTables.getInternalIdForHex(static_cast<uint16_t>(header.cmd));
+    m_opcode = sOpcodeTables.getInternalIdForHex(static_cast<uint16_t>(header.cmd), m_protocol);
     return true;
 }
 
 void WorldSocket::dispatchPacket(std::unique_ptr<WorldPacket> packet)
 {
-    switch (sOpcodeTables.getInternalIdForHex(packet->getOpcode()))
+    switch (sOpcodeTables.getInternalIdForHex(packet->getOpcode(), m_protocol))
     {
         case CMSG_PING:
             handlePing(std::move(packet));
@@ -873,8 +864,11 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
     }
 }
 
-void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid)
+void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid, int versionId)
 {
+    if (versionId < 0)
+        versionId = WoW::getConfigVersionId();
+
     switch (opcode)
     {
         //stop spaming opcodes here
@@ -891,7 +885,7 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
         default:
         {
             sLogger.debugOpcode("[{}]: {} {} (0x{:03X}) of {} bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
-                sOpcodeTables.getNameForInternalId(opcode), sOpcodeTables.getHexValueForVersionId(opcode), len);
+                sOpcodeTables.getNameForInternalId(opcode, versionId), sOpcodeTables.getHexValueForVersionId(opcode, versionId), len);
         } break;
     }
 
@@ -904,8 +898,8 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
         uint16_t lenght = static_cast<uint16_t>(len);
 
         fprintf(mPacketLogFile, "{%s} Packet: (0x%04X) %s PacketSize = %u stamp = %u accountid = %u\n", (direction ? "SERVER" : "CLIENT"), 
-            sOpcodeTables.getHexValueForVersionId(opcode),
-            sOpcodeTables.getNameForInternalId(opcode).c_str(), lenght, Util::getMSTime(), accountid);
+            sOpcodeTables.getHexValueForVersionId(opcode, versionId),
+            sOpcodeTables.getNameForInternalId(opcode, versionId).c_str(), lenght, Util::getMSTime(), accountid);
 
         fprintf(mPacketLogFile, "|------------------------------------------------|----------------|\n");
         fprintf(mPacketLogFile, "|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|\n");

@@ -10379,7 +10379,7 @@ std::span<MovementStep const> getClassicMovementDescriptor(uint16_t opcode, bool
 {
     uint32_t internalId = 0;
     if (read)
-        internalId = sOpcodeTables.getInternalIdForHex(opcode);
+        internalId = sOpcodeTables.getInternalIdForHex(opcode, WoW::versionIdFor(WoW::Expansion::_Classic));
     else
         internalId = static_cast<uint32_t>(opcode);
 
@@ -10464,7 +10464,7 @@ std::span<MovementStep const> getTbcMovementDescriptor(uint16_t opcode, bool rea
 {
     uint32_t internalId = 0;
     if (read)
-        internalId = sOpcodeTables.getInternalIdForHex(opcode);
+        internalId = sOpcodeTables.getInternalIdForHex(opcode, WoW::versionIdFor(WoW::Expansion::_TBC));
     else
         internalId = static_cast<uint32_t>(opcode);
 
@@ -10550,7 +10550,7 @@ std::span<MovementStep const> getWotlkMovementDescriptor(uint16_t opcode, bool r
 {
     uint32_t internalId = 0;
     if (read)
-        internalId = sOpcodeTables.getInternalIdForHex(opcode);
+        internalId = sOpcodeTables.getInternalIdForHex(opcode, WoW::versionIdFor(WoW::Expansion::_WotLK));
     else
         internalId = static_cast<uint32_t>(opcode);
 
@@ -10636,7 +10636,7 @@ std::span<MovementStep const> getCataMovementDescriptor(uint16_t opcode, bool re
 {
     uint32_t internalId = 0;
     if (read)
-        internalId = sOpcodeTables.getInternalIdForHex(opcode);
+        internalId = sOpcodeTables.getInternalIdForHex(opcode, WoW::versionIdFor(WoW::Expansion::_Cata));
     else
         internalId = static_cast<uint32_t>(opcode);
 
@@ -10853,7 +10853,7 @@ std::span<MovementStep const> getMopMovementDescriptor(uint16_t opcode, bool rea
 {
     uint32_t internalId = 0;
     if (read)
-        internalId = sOpcodeTables.getInternalIdForHex(opcode);
+        internalId = sOpcodeTables.getInternalIdForHex(opcode, WoW::versionIdFor(WoW::Expansion::_Mop));
     else
         internalId = static_cast<uint32_t>(opcode);
 

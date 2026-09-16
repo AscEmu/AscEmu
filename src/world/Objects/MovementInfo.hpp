@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Network/WorldPacket.hpp"
+#include "Server/ClientProtocol.hpp"
 #include "MovementDefines.hpp"
 #include "Utilities/LocationVector.hpp"
 #include "Map/Visibility/VisibilityTypes.hpp"
@@ -146,24 +147,13 @@ struct MovementInfo
         transport_seat = static_cast<uint8_t>(-1);
     }
 
-    void readMovementInfo(ByteBuffer& data, uint16_t opcode);
-    void read(WorldPacket& packet);
+    // the movement layout depends on the client version of the session that sends or receives the packet
+    void readMovementInfo(ByteBuffer& data, uint16_t opcode, WoW::Expansion expansion);
+    void read(WorldPacket& packet, WoW::ClientProtocol const& protocol);
 
-    void writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool withGuid = true) const;
-    void write(WorldPacket& packet, bool withGuid = true) const;
+    void writeMovementInfo(ByteBuffer& data, uint16_t opcode, WoW::Expansion expansion, bool withGuid = true) const;
+    void write(WorldPacket& packet, WoW::ClientProtocol const& protocol, bool withGuid = true) const;
 };
-
-inline WorldPacket& operator<< (WorldPacket& buf, MovementInfo const& mi)
-{
-    mi.writeMovementInfo(buf, buf.getOpcode());
-    return buf;
-}
-
-inline WorldPacket& operator>> (WorldPacket& buf, MovementInfo& mi)
-{
-    mi.readMovementInfo(buf, buf.getOpcode());
-    return buf;
-}
 
 inline void normalizeMapCoord(float &c)
 {

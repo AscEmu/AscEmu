@@ -53,7 +53,7 @@ namespace AscEmu::Packets
                 mi.position = lv;
                 packet << guid;
                 packet << uint32_t(0);
-                mi.writeMovementInfo(packet, 0, false);
+                mi.writeMovementInfo(packet, 0, m_protocol.expansion, false);
             }
             else if (m_protocol.isMop())
             {

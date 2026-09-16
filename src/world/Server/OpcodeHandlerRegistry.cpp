@@ -18,9 +18,10 @@ bool OpcodeHandlerRegistry::handleOpcode(WorldSession& session, WorldPacket& pac
 {
     uint16_t rawOpcode = packet.getOpcode();
 
-    // Get the internal ID from the opcode table
-    uint32_t internalId = sOpcodeTables.getInternalIdForHex(rawOpcode);
-    std::string opcodeName = sOpcodeTables.getNameForOpcode(rawOpcode);
+    // Get the internal ID from the opcode table of the client version of this session
+    const auto protocol = session.getClientProtocol();
+    uint32_t internalId = sOpcodeTables.getInternalIdForHex(rawOpcode, protocol);
+    std::string opcodeName = sOpcodeTables.getNameForOpcode(rawOpcode, protocol);
 
     auto it = opcodeHandlers.find(internalId);
 
@@ -32,7 +33,7 @@ bool OpcodeHandlerRegistry::handleOpcode(WorldSession& session, WorldPacket& pac
 
     const auto& entry = it->second;
 
-    if (const int versionId = sOpcodeTables.getVersionIdForAEVersion(); versionId >= NUM_VERSIONS || !entry.versions[versionId])
+    if (const int versionId = protocol.versionId(); versionId >= NUM_VERSIONS || !entry.versions[versionId])
     {
         logUnhandledOpcode(rawOpcode, internalId, opcodeName);
         return false;

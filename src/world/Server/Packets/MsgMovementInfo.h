@@ -8,21 +8,23 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "Objects/MovementInfo.hpp"
 
+#include <cstdint>
+#include <utility>
+
 namespace AscEmu::Packets
 {
-    class SmsgPlayerMove : public ManagedPacket
+    // movement info under any movement opcode, written with the descriptor of the receiving client
+    class MsgMovementInfo : public ManagedPacket
     {
     public:
         MovementInfo mi;
         bool withGuid = true;
+        bool playerMoveSinceCata = false;   // other clients receive SMSG_PLAYER_MOVE for player movement since Cata
 
-        SmsgPlayerMove() : SmsgPlayerMove(MovementInfo())
-        {
-        }
-
-        SmsgPlayerMove(MovementInfo mi, bool withGuid = true) :
-            ManagedPacket(SMSG_PLAYER_MOVE, 0),
-            mi(mi), withGuid(withGuid)
+        MsgMovementInfo(uint16_t opcode, MovementInfo mi, bool withGuid = true) :
+            ManagedPacket(opcode, 0),
+            mi(std::move(mi)),
+            withGuid(withGuid)
         {
         }
 
@@ -31,6 +33,9 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (playerMoveSinceCata && m_protocol.expansion >= WoW::Expansion::_Cata)
+                packet.setOpcode(SMSG_PLAYER_MOVE);
+
             mi.write(packet, m_protocol, withGuid);
             return true;
         }

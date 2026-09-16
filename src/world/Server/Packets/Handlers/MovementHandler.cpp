@@ -223,7 +223,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Set up some vars to simplify code. We use the internal opcode id for Multiversion support
     // Zyres: save the opcode here for better handling
-    const auto opcode = sOpcodeTables.getInternalIdForHex(recvData.getOpcode());
+    const auto opcode = sOpcodeTables.getInternalIdForHex(recvData.getOpcode(), getClientProtocol());
 
     // Zyres: We (the player) controles the movement of us or another player/unit.
     // this is always initialise with the player, can be changed to any other unit.
@@ -236,7 +236,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     //////////////////////////////////////////////////////////////////////////////////////////
     /// read movement info from packet
     MovementInfo movementInfo;
-    recvData >> movementInfo;
+    movementInfo.read(recvData, getClientProtocol());
 
     // store the read movementInfo here. We will need it for other functions related to this handler (e.g. updatePlayerMovementVars)
     sessionMovementInfo = movementInfo;
@@ -561,20 +561,20 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
 void WorldSession::handleAcknowledgementOpcodes(WorldPacket& recvPacket)
 {
-    const auto opcode = sOpcodeTables.getInternalIdForHex(recvPacket.getOpcode());
+    const auto opcode = sOpcodeTables.getInternalIdForHex(recvPacket.getOpcode(), getClientProtocol());
     switch (opcode)
     {
         case CMSG_MOVE_SET_CAN_FLY_ACK:
         {
             MovementInfo movementInfo;
-            recvPacket >> movementInfo;
+            movementInfo.read(recvPacket, getClientProtocol());
 
             _player->obj_movement_info.flags = movementInfo.getMovementFlags();
         } break;
         default:
         {
             sLogger.debug("WorldSession::handleAcknowledgementOpcodes : Opcode {} ({}) received. This opcode is not known/implemented right now!",
-                sOpcodeTables.getNameForInternalId(recvPacket.getOpcode()), recvPacket.getOpcode());
+                sOpcodeTables.getNameForOpcode(recvPacket.getOpcode(), getClientProtocol()), recvPacket.getOpcode());
 
             recvPacket.rfinish();
         }
@@ -586,7 +586,7 @@ void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
     Unit* mover = _player->m_controledUnit;
 
     MovementInfo movementInfo;
-    recvPacket >> movementInfo;
+    movementInfo.read(recvPacket, getClientProtocol());
 
     if (movementInfo.getGuid() != mover->getGuid())
         return;
@@ -598,7 +598,7 @@ void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
     UnitSpeedType move_type;
     UnitSpeedType force_move_type;
 
-    const auto opcode = sOpcodeTables.getInternalIdForHex(recvPacket.getOpcode());
+    const auto opcode = sOpcodeTables.getInternalIdForHex(recvPacket.getOpcode(), getClientProtocol());
     switch (opcode)
     {
         case CMSG_FORCE_WALK_SPEED_CHANGE_ACK:          move_type = TYPE_WALK;          force_move_type = TYPE_WALK;        break;

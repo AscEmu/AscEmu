@@ -196,6 +196,9 @@ public:
 
         WorldSocket* GetSocket() { return _socket; }
 
+        // client version of this session, the configured expansion when no socket is attached
+        WoW::ClientProtocol getClientProtocol() const { return _socket != nullptr ? _socket->getClientProtocol() : WoW::ClientProtocol{ WoW::getConfigExpansion() }; }
+
         void Disconnect();
 
         uint8_t Update(uint32_t InstanceID);

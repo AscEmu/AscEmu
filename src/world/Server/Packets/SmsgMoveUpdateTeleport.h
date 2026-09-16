@@ -41,7 +41,7 @@ namespace AscEmu::Packets
             {
                 MovementInfo mopInfo = mi;
                 mopInfo.guid = guid;
-                mopInfo.writeMovementInfo(packet, SMSG_MOVE_UPDATE_TELEPORT);
+                mopInfo.writeMovementInfo(packet, SMSG_MOVE_UPDATE_TELEPORT, m_protocol.expansion);
                 return true;
             }
             else if (m_protocol.isCata())

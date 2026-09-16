@@ -106,7 +106,7 @@ namespace AscEmu::Packets
             {
                 if (m_protocol.expansion == WoW::Expansion::_Cata)
                 {
-                    type = getMessageTypeForOpcode(static_cast<uint16_t>(sOpcodeTables.getInternalIdForHex(packet.getOpcode())));
+                    type = getMessageTypeForOpcode(static_cast<uint16_t>(sOpcodeTables.getInternalIdForHex(packet.getOpcode(), m_protocol)));
                     if (type == 0xFF)
                         return false;
 
@@ -173,7 +173,7 @@ namespace AscEmu::Packets
                 }
                 else // Mop
                 {
-                    type = getMessageTypeForOpcode(static_cast<uint16_t>(sOpcodeTables.getInternalIdForHex(packet.getOpcode())));
+                    type = getMessageTypeForOpcode(static_cast<uint16_t>(sOpcodeTables.getInternalIdForHex(packet.getOpcode(), m_protocol)));
                     if (type == 0xFF)
                         return false;
 

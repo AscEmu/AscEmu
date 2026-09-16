@@ -56,6 +56,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Packets/SmsgMonsterMove.h"
 #include "Server/Packets/SmsgPlayerMove.h"
+#include "Server/Packets/MsgMovementInfo.h"
 #include "Server/Packets/SmsgSplineMoveRoot.h"
 #include "Server/Packets/SmsgSplineMoveUnroot.h"
 #include "Server/Packets/SmsgFlightSplineSync.h"
@@ -2136,30 +2137,21 @@ void Unit::sendMoveInfoForPacket(uint16_t opcode, bool withGuid /* = true*/)
 {
     auto resolvedOpcode = resolveMovementOpcodeForReceiver(opcode, isPlayer());
 
-    WorldPacket packet(resolvedOpcode, 0);
-    obj_movement_info.write(packet, withGuid);
+    MsgMovementInfo packet(resolvedOpcode, obj_movement_info, withGuid);
 
     if (isPlayer())
     {
-#if VERSION_STRING <= WotLK
+        // the moving player receives the move opcode itself, other clients receive SMSG_PLAYER_MOVE since Cata
+        if (auto* const plr = dynamic_cast<Player*>(this))
+            plr->sendManagedPacket(packet);
 
-        sendMessageToSet(&packet, true);
-
-#else   // >= Cata
-        // since Cata we broadcast SMSG_PLAYER_MOVE to all players
-        if (auto* const plr = isPlayer() ? dynamic_cast<Player*>(this) : nullptr)
-        {
-            plr->getSession()->SendPacket(&packet);
-        }
-
-        SmsgPlayerMove managedBroadcastPacket(obj_movement_info, withGuid);
-        PacketBroadcast::sendToSet(*this, managedBroadcastPacket, false);
-
-#endif
+        MsgMovementInfo broadcastPacket(resolvedOpcode, obj_movement_info, withGuid);
+        broadcastPacket.playerMoveSinceCata = true;
+        PacketBroadcast::sendToSet(*this, broadcastPacket, false);
     }
 
     if (isCreature())
-        sendMessageToSet(&packet, false);
+        PacketBroadcast::sendToSet(*this, packet, false);
 }
 
 void Unit::sendMovementFlagsToPlayer(Player* target)
@@ -2181,9 +2173,9 @@ void Unit::sendMovementFlagsToPlayer(Player* target)
 
         const auto resolvedOpcode = resolveMovementOpcodeForReceiver(opcode, isPlayer());
 
-        auto packet = std::make_unique<WorldPacket>(resolvedOpcode, 0);
-        obj_movement_info.write(*packet, true);
-        target->getUpdateMgr().queueDelayedPacket(std::move(packet));
+        MsgMovementInfo packet(resolvedOpcode, obj_movement_info, true);
+        if (auto delayedPacket = target->getSession()->buildPacket(packet))
+            target->getUpdateMgr().queueDelayedPacket(std::move(delayedPacket));
     }
 }
 
@@ -2509,23 +2501,17 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
     if (player_mover) // unit controlled by a player.
     {
         // note: do not send this packet to the player, otherwise you will stuck in an endless loop
-        WorldPacket setPacket(moveTypeToOpcode[mtype][2], 0);
-        setPacket << mi;
+        MsgMovementInfo setPacket(moveTypeToOpcode[mtype][2], mi);
+        PacketBroadcast::sendToSet(*player_mover, setPacket, false);
 
-        player_mover->sendMessageToSet(&setPacket, false);
-
-        WorldPacket playerPacket(moveTypeToOpcode[mtype][1], 16);
-        playerPacket << mi;
-
-        player_mover->sendPacket(&playerPacket);
+        MsgMovementInfo playerPacket(moveTypeToOpcode[mtype][1], mi);
+        player_mover->sendManagedPacket(playerPacket);
     }
     else // unit controlled by AI
     {
-        WorldPacket unitPacket(moveTypeToOpcode[mtype][0], 0);
-        unitPacket << mi;
-
         // send notification to all clients
-        sendMessageToSet(&unitPacket, true);
+        MsgMovementInfo unitPacket(moveTypeToOpcode[mtype][0], mi);
+        PacketBroadcast::sendToSet(*this, unitPacket, true);
     }
 }
 

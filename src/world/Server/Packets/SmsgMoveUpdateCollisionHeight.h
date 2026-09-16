@@ -38,7 +38,7 @@ namespace AscEmu::Packets
                 return false;
 
             mi.collisionHeight = collisionHeight;
-            mi.write(packet, true);
+            mi.write(packet, m_protocol, true);
 
             return true;
         }

@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Opcodes.hpp"
-#include "AEVersion.hpp"
+#include "ClientProtocol.hpp"
 #include "Platform/SymbolVisibility.hpp"
 
 #include <cstdint>
@@ -34,66 +34,14 @@ public:
     OpcodeTables& operator=(OpcodeTables&&) = delete;
     OpcodeTables& operator=(OpcodeTables const&) = delete;
 
-    int getVersionIdForAEVersion()
-    {
-        switch (VERSION_STRING)
-        {
-            case Classic:
-                return 0;
-            case TBC:
-                return 1;
-            case WotLK:
-                return 2;
-            case Cata:
-                return 3;
-            case Mop:
-                return 4;
-            default:
-                return 0;
-        }
-    }
 
-    std::string getNameForAEVersion()
-    {
-        switch (VERSION_STRING)
-        {
-            case Classic:
-                return "Classic";
-            case TBC:
-                return "BC";
-            case WotLK:
-                return "WotLK";
-            case Cata:
-                return "Cata";
-            case Mop:
-                return "Mop";
-            default:
-                return "";
-        }
-    }
+    uint32_t getInternalIdForHex(uint16_t hex, WoW::ClientProtocol const& protocol) { return getInternalIdForHex(hex, protocol.versionId()); }
 
-    std::string getNameForVersionId(int versionId)
+    uint32_t getInternalIdForHex(uint16_t hex, int versionId)
     {
-        switch (versionId)
-        {
-            case 0:
-                return "Classic";
-            case 1:
-                return "BC";
-            case 2:
-                return "WotLK";
-            case 3:
-                return "Cata";
-            case 4:
-                return "Mop";
-            default:
-                return "";
-        }
-    }
+        if (versionId < 0 || versionId >= MAX_VERSION_INDEX)
+            return 0;
 
-    uint32_t getInternalIdForHex(uint16_t hex)
-    {
-        auto versionId = getVersionIdForAEVersion();
         uint32_t firstMatch = 0;
 
         for (const auto table : _versionHexTable[versionId])
@@ -112,30 +60,28 @@ public:
         return firstMatch;
     }
 
-    std::string getNameForOpcode(uint16_t hex)
+    std::string getNameForOpcode(uint16_t hex, WoW::ClientProtocol const& protocol) { return getNameForOpcode(hex, protocol.versionId()); }
+
+    std::string getNameForOpcode(uint16_t hex, int versionId)
     {
-        const auto internalId = getInternalIdForHex(hex);
-
-        auto multiversionTable = multiversionOpcodeStore.find(internalId);
-        if (multiversionTable != multiversionOpcodeStore.end())
-            return multiversionTable->second.name + " [" + getNameForAEVersion() + "]";
-
-        return "Unknown internal id!";
+        return getNameForInternalId(getInternalIdForHex(hex, versionId), versionId);
     }
 
-    std::string getNameForInternalId(uint32_t id)
+    std::string getNameForInternalId(uint32_t id, WoW::ClientProtocol const& protocol) { return getNameForInternalId(id, protocol.versionId()); }
+
+    std::string getNameForInternalId(uint32_t id, int versionId)
     {
         auto multiversionTable = multiversionOpcodeStore.find(id);
         if (multiversionTable != multiversionOpcodeStore.end())
-            return multiversionTable->second.name + " [" + getNameForAEVersion() + "]";
+            return multiversionTable->second.name + " [" + std::string(WoW::getNameForVersionId(versionId)) + "]";
 
         return "Unknown internal id!";
     }
 
-    uint16_t getHexValueForVersionId(uint32_t internalId)
-    {
-        auto versionId = getVersionIdForAEVersion();
+    uint16_t getHexValueForVersionId(uint32_t internalId, WoW::ClientProtocol const& protocol) { return getHexValueForVersionId(internalId, protocol.versionId()); }
 
+    uint16_t getHexValueForVersionId(uint32_t internalId, int versionId)
+    {
         if (versionId >= 0 && versionId < MAX_VERSION_INDEX)
         {
             auto multiversionTable = multiversionOpcodeStore.find(internalId);
