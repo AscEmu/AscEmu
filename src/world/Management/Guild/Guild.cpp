@@ -1323,9 +1323,8 @@ void Guild::broadcastPacket(WorldPacket* packet) const
     }
 }
 
-void Guild::massInviteToEvent([[maybe_unused]]WorldSession* session, [[maybe_unused]]uint32_t minLevel, [[maybe_unused]]uint32_t maxLevel, [[maybe_unused]]uint32_t minRank)
+void Guild::massInviteToEvent(WorldSession* session, uint32_t minLevel, uint32_t maxLevel, uint32_t minRank)
 {
-#if VERSION_STRING > TBC
     std::vector<SmsgCalendarFilterGuildEntry> guilds;
 
     for (auto itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
@@ -1344,7 +1343,6 @@ void Guild::massInviteToEvent([[maybe_unused]]WorldSession* session, [[maybe_unu
 
     SmsgCalendarFilterGuild managedPacket(guilds);
     session->sendManagedPacket(managedPacket);
-#endif
 }
 
 bool Guild::addMember(uint64_t guid, uint8_t rankId)

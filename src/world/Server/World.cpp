@@ -10,9 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/AddonMgr.h"
 #include "Management/AuctionMgr.hpp"
 
-#if VERSION_STRING > TBC
 #include "Management/CalendarMgr.hpp"
-#endif
 
 #include "Management/LFG/LFGMgr.hpp"
 #include "Management/MeetingStone/MeetingStoneMgr.hpp"
@@ -1061,9 +1059,7 @@ void World::loadMySQLTablesByTask()
             sWeatherMgr.loadFromDB();
             sAddonMgr.LoadFromDB();
             sGameEventMgr.LoadFromDB();
-#if VERSION_STRING > TBC
             sCalendarMgr.loadFromDB();
-#endif
             sCommandTableStorage.loadOverridePermission();
         }
     });

@@ -37,7 +37,8 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion <= WoW::Expansion::_Mop)
+            // the opcode exists since Cata
+            if (m_protocol.isCata())
             {
                 packet.appendPackedTime(currTime);
                 packet << mapId;

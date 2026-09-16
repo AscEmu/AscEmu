@@ -8,8 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "Server/DatabaseDefinition.hpp"
 
-#if VERSION_STRING > TBC // sch: added in the 3.0.2 content patch
-
 CalendarMgr& CalendarMgr::getInstance()
 {
     static CalendarMgr mInstance;
@@ -262,4 +260,3 @@ void CalendarMgr::removeInvite(uint32_t eventId, uint32_t inviteId)
 
     CharacterDatabase.execute("DELETE FROM calendar_invites WHERE id = %u", inviteId);
 }
-#endif

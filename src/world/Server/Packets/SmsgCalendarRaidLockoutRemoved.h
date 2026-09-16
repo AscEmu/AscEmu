@@ -44,7 +44,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion <= WoW::Expansion::_Mop)
+            if (m_protocol.expansion >= WoW::Expansion::_WotLK && m_protocol.expansion <= WoW::Expansion::_Mop)
             {
                 if (add)
                 {
