@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatCommandHandler.hpp"
+#include "Server/ClientProtocol.hpp"
 #include "Logging/Logger.hpp"
 #include "Movement/MovementManager.h"
 #include "Movement/WaypointManager.h"
@@ -66,7 +67,7 @@ bool ChatCommandHandler::HandleWayPointAddCommand(const char* args, WorldSession
         creature_target->setDefaultMovementType(WAYPOINT_MOTION_TYPE);
         creature_target->getMovementManager()->movePath(pathId, true);
 
-        WorldDatabase.execute("UPDATE creature_spawns SET movetype = %u, waypoint_group = %u WHERE id = %u AND min_build <= %u AND max_build >= %u", WAYPOINT_MOTION_TYPE, pathId, creature_target->getSpawnId(), VERSION_STRING, VERSION_STRING);
+        WorldDatabase.execute("UPDATE creature_spawns SET movetype = %u, waypoint_group = %u WHERE id = %u AND min_build <= %u AND max_build >= %u", WAYPOINT_MOTION_TYPE, pathId, creature_target->getSpawnId(), WoW::getConfigBuild(), WoW::getConfigBuild());
     }
 
     WaypointNode waypoint;

@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatCommandHandler.hpp"
+#include "Server/ClientProtocol.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/ObjectMgr.hpp"
@@ -272,7 +273,7 @@ bool ChatCommandHandler::HandleQuestFinishCommand(const char* args, WorldSession
             if (auto* questLog = plr->getQuestLogByQuestId(quest_id))
             {
                 uint32_t giver_id = 0;
-                auto creatureResult = sMySQLStore.getWorldDBQuery("SELECT id FROM creature_quest_starter WHERE quest = %u AND min_build <= %u AND max_build >= %u", quest_id, VERSION_STRING, VERSION_STRING);
+                auto creatureResult = sMySQLStore.getWorldDBQuery("SELECT id FROM creature_quest_starter WHERE quest = %u AND min_build <= %u AND max_build >= %u", quest_id, WoW::getConfigBuild(), WoW::getConfigBuild());
 
                 if (creatureResult)
                 {
@@ -281,7 +282,7 @@ bool ChatCommandHandler::HandleQuestFinishCommand(const char* args, WorldSession
                 }
                 else
                 {
-                    auto objectResult = sMySQLStore.getWorldDBQuery("SELECT id FROM gameobject_quest_starter WHERE quest = %u AND min_build <= %u AND max_build >= %u", quest_id, VERSION_STRING, VERSION_STRING);
+                    auto objectResult = sMySQLStore.getWorldDBQuery("SELECT id FROM gameobject_quest_starter WHERE quest = %u AND min_build <= %u AND max_build >= %u", quest_id, WoW::getConfigBuild(), WoW::getConfigBuild());
                     if (objectResult)
                     {
                         Field* objectFields = objectResult->fetch();
@@ -556,7 +557,7 @@ bool ChatCommandHandler::HandleQuestGiverCommand(const char* args, WorldSession*
     std::string recout;
 
     std::string my_query1 = "SELECT id FROM creature_quest_starter WHERE quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
-    auto objectResult1 = WorldDatabase.query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
+    auto objectResult1 = WorldDatabase.query(my_query1.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
 
     if (objectResult1)
     {
@@ -570,7 +571,7 @@ bool ChatCommandHandler::HandleQuestGiverCommand(const char* args, WorldSession*
             creatureName1 = creatureResult1->Name;
 
             my_query1 = "SELECT id FROM creature_spawns WHERE entry = " + creatureId1 + " AND min_build <= %u AND max_build >= %u";
-            auto spawnResult1 = WorldDatabase.query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
+            auto spawnResult1 = WorldDatabase.query(my_query1.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
 
             std::string spawnId1;
             if (spawnResult1)
@@ -607,7 +608,7 @@ bool ChatCommandHandler::HandleQuestGiverCommand(const char* args, WorldSession*
     }
 
     std::string my_query2 = "SELECT id FROM gameobject_quest_starter WHERE quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
-    auto objectResult2 = WorldDatabase.query(my_query2.c_str(), VERSION_STRING, VERSION_STRING);
+    auto objectResult2 = WorldDatabase.query(my_query2.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
 
     if (objectResult2)
     {
@@ -621,7 +622,7 @@ bool ChatCommandHandler::HandleQuestGiverCommand(const char* args, WorldSession*
             itemName2 = itemResult2->Name;
 
             my_query2 = "SELECT id FROM gameobject_spawns WHERE entry = " + itemId2 + "AND min_build <= %u AND max_build >= %u";
-            auto spawnResult2 = WorldDatabase.query(my_query2.c_str(), VERSION_STRING, VERSION_STRING);
+            auto spawnResult2 = WorldDatabase.query(my_query2.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
 
             std::string spawnId2;
             if (spawnResult2)
@@ -703,7 +704,7 @@ bool ChatCommandHandler::HandleQuestListCommand(const char* args, WorldSession* 
 
     if (quest_giver != 0)
     {
-        auto creatureResult = WorldDatabase.query("SELECT quest FROM creature_quest_starter WHERE id = %u AND min_build <= %u AND max_build >= %u", quest_giver, VERSION_STRING, VERSION_STRING);
+        auto creatureResult = WorldDatabase.query("SELECT quest FROM creature_quest_starter WHERE id = %u AND min_build <= %u AND max_build >= %u", quest_giver, WoW::getConfigBuild(), WoW::getConfigBuild());
 
         if (!creatureResult)
         {
@@ -797,7 +798,7 @@ bool ChatCommandHandler::HandleQuestAddStartCommand(const char* args, WorldSessi
     std::string quest_giver = std::to_string(unit->getEntry());
 
     std::string my_query1 = "SELECT id FROM creature_quest_starter WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
-    auto selectResult1 = WorldDatabase.query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
+    auto selectResult1 = WorldDatabase.query(my_query1.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
     if (selectResult1)
     {
         systemMessage(m_session, "Quest was already found for the specified NPC.");
@@ -805,7 +806,7 @@ bool ChatCommandHandler::HandleQuestAddStartCommand(const char* args, WorldSessi
     else
     {
         std::string my_insert1 = "INSERT INTO creature_quest_starter (id, quest, min_build, max_build) VALUES (" + quest_giver + "," + std::string(args) + " %u, %u)";
-        WorldDatabase.query(my_insert1.c_str(), VERSION_STRING, VERSION_STRING);
+        WorldDatabase.query(my_insert1.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
     }
 
     sQuestMgr.LoadExtraQuestStuff();
@@ -869,7 +870,7 @@ bool ChatCommandHandler::HandleQuestAddFinishCommand(const char* args, WorldSess
     std::string quest_giver = std::to_string(unit->getEntry());
 
     std::string my_query1 = "SELECT id FROM creature_quest_finisher WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
-    auto selectResult1 = WorldDatabase.query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
+    auto selectResult1 = WorldDatabase.query(my_query1.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
     if (selectResult1)
     {
         systemMessage(m_session, "Quest was already found for the specified NPC.");
@@ -877,7 +878,7 @@ bool ChatCommandHandler::HandleQuestAddFinishCommand(const char* args, WorldSess
     else
     {
         std::string my_insert1 = "INSERT INTO creature_quest_finisher (id, quest, min_build, max_build) VALUES (" + quest_giver + "," + std::string(args) + ", %u, %u)";
-        WorldDatabase.query(my_insert1.c_str(), VERSION_STRING, VERSION_STRING);
+        WorldDatabase.query(my_insert1.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
     }
 
     sQuestMgr.LoadExtraQuestStuff();
@@ -958,7 +959,7 @@ bool ChatCommandHandler::HandleQuestDelStartCommand(const char* args, WorldSessi
     std::string quest_giver = std::to_string(unit->getEntry());
 
     std::string my_query1 = "SELECT id FROM creature_quest_starter WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
-    auto selectResult1 = WorldDatabase.query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
+    auto selectResult1 = WorldDatabase.query(my_query1.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
     if (selectResult1 == nullptr)
     {
         systemMessage(m_session, "Quest was NOT found for the specified NPC.");
@@ -966,7 +967,7 @@ bool ChatCommandHandler::HandleQuestDelStartCommand(const char* args, WorldSessi
     }
 
     std::string my_delete1 = "DELETE FROM creature_quest_starter WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
-    WorldDatabase.query(my_delete1.c_str(), VERSION_STRING, VERSION_STRING);
+    WorldDatabase.query(my_delete1.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
 
     sQuestMgr.LoadExtraQuestStuff();
 
@@ -1032,7 +1033,7 @@ bool ChatCommandHandler::HandleQuestDelFinishCommand(const char* args, WorldSess
     std::string quest_giver = std::to_string(unit->getEntry());
 
     std::string my_query1 = "SELECT id FROM creature_quest_finisher WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
-    auto selectResult1 = WorldDatabase.query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
+    auto selectResult1 = WorldDatabase.query(my_query1.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
     if (selectResult1 == nullptr)
     {
         systemMessage(m_session, "Quest was NOT found for the specified NPC.");
@@ -1040,7 +1041,7 @@ bool ChatCommandHandler::HandleQuestDelFinishCommand(const char* args, WorldSess
     }
 
     std::string my_delete1 = "DELETE FROM creature_quest_finisher WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
-    WorldDatabase.query(my_delete1.c_str(), VERSION_STRING, VERSION_STRING);
+    WorldDatabase.query(my_delete1.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
 
     sQuestMgr.LoadExtraQuestStuff();
 
@@ -1079,7 +1080,7 @@ bool ChatCommandHandler::HandleQuestFinisherCommand(const char* args, WorldSessi
     std::string recout;
 
     std::string my_query1 = "SELECT id FROM creature_quest_finisher WHERE quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
-    auto objectResult1 = WorldDatabase.query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
+    auto objectResult1 = WorldDatabase.query(my_query1.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
 
     if (objectResult1)
     {
@@ -1094,7 +1095,7 @@ bool ChatCommandHandler::HandleQuestFinisherCommand(const char* args, WorldSessi
             creatureName1 = creatureResult1->Name;
 
             my_query1 = "SELECT id FROM creature_spawns WHERE entry = " + creatureId1 + " AND min_build <= %u AND max_build >= %u";
-            auto spawnResult1 = WorldDatabase.query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
+            auto spawnResult1 = WorldDatabase.query(my_query1.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
 
             std::string spawnId1;
             if (spawnResult1)
@@ -1130,7 +1131,7 @@ bool ChatCommandHandler::HandleQuestFinisherCommand(const char* args, WorldSessi
     }
 
     std::string my_query2 = "SELECT id FROM gameobject_quest_finisher WHERE quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
-    auto objectResult2 = WorldDatabase.query(my_query2.c_str(), VERSION_STRING, VERSION_STRING);
+    auto objectResult2 = WorldDatabase.query(my_query2.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
 
     if (objectResult2)
     {
@@ -1144,7 +1145,7 @@ bool ChatCommandHandler::HandleQuestFinisherCommand(const char* args, WorldSessi
             itemName2 = itemResult2->Name;
 
             my_query2 = "SELECT id FROM gameobject_spawns WHERE entry = " + itemId2 + " min_build <= %u AND max_build >= %u";
-            auto spawnResult2 = WorldDatabase.query(my_query2.c_str(), VERSION_STRING, VERSION_STRING);
+            auto spawnResult2 = WorldDatabase.query(my_query2.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
 
             std::string spawnId2;
             if (spawnResult2)
@@ -1190,7 +1191,7 @@ bool ChatCommandHandler::HandleQuestStarterSpawnCommand(const char* args, WorldS
     std::string recout;
 
     std::string my_query = "SELECT id FROM creature_quest_starter WHERE quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
-    auto objectResult = WorldDatabase.query(my_query.c_str(), VERSION_STRING, VERSION_STRING);
+    auto objectResult = WorldDatabase.query(my_query.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
 
     std::string starterId;
     if (objectResult)
@@ -1219,7 +1220,7 @@ bool ChatCommandHandler::HandleQuestStarterSpawnCommand(const char* args, WorldS
     }
 
     my_query = "SELECT map, position_x, position_y, position_z FROM creature_spawns WHERE entry = " + starterId + " AND min_build <= %u AND max_build >= %u";
-    auto spawnResult = WorldDatabase.query(my_query.c_str(), VERSION_STRING, VERSION_STRING);
+    auto spawnResult = WorldDatabase.query(my_query.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
 
     if (!spawnResult)
     {
@@ -1257,7 +1258,7 @@ bool ChatCommandHandler::HandleQuestFinisherSpawnCommand(const char* args, World
     std::string recout;
 
     std::string my_query = "SELECT id FROM creature_quest_finisher WHERE quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
-    auto objectResult = WorldDatabase.query(my_query.c_str(), VERSION_STRING, VERSION_STRING);
+    auto objectResult = WorldDatabase.query(my_query.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
 
     std::string finisherId;
     if (objectResult)
@@ -1286,7 +1287,7 @@ bool ChatCommandHandler::HandleQuestFinisherSpawnCommand(const char* args, World
     }
 
     my_query = "SELECT map, position_x, position_y, position_z FROM creature_spawns WHERE entry = " + finisherId + " AND min_build <= %u AND max_build >= %u";
-    auto spawnResult = WorldDatabase.query(my_query.c_str(), VERSION_STRING, VERSION_STRING);
+    auto spawnResult = WorldDatabase.query(my_query.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
 
     if (!spawnResult)
     {

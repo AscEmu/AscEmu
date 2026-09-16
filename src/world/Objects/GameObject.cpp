@@ -20,6 +20,7 @@
  */
 
 #include "GameObject.h"
+#include "Server/ClientProtocol.hpp"
 #include "GameObjectModel.h"
 #include "Data/WoWGameObject.hpp"
 
@@ -447,9 +448,9 @@ void GameObject::deleteFromDB()
         std::string tableExtra = tableOrigine + "_extra";
         std::string tableOverrides = tableOrigine + "_overrides";
 
-        WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", tableOrigine.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
-        WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", tableExtra.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
-        WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", tableOverrides.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", tableOrigine.c_str(), m_spawn->id, WoW::getConfigBuild(), WoW::getConfigBuild());
+        WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", tableExtra.c_str(), m_spawn->id, WoW::getConfigBuild(), WoW::getConfigBuild());
+        WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", tableOverrides.c_str(), m_spawn->id, WoW::getConfigBuild(), WoW::getConfigBuild());
     }
 }
 
@@ -492,8 +493,8 @@ void GameObject::saveToDB(bool newSpawn)
         // quaternion (0,0,0,1) for the vast majority of gameobjects that have no _extra row.
         ss << "INSERT INTO " << m_spawn->origine << " VALUES("
            << m_spawn->id << ","
-           << VERSION_STRING << ","
-           << VERSION_STRING << ","
+           << WoW::getConfigBuild() << ","
+           << WoW::getConfigBuild() << ","
            << getEntry() << ","
            << GetMapId() << ","
            << GetPhase() << ","
@@ -539,9 +540,9 @@ void GameObject::saveToDB(bool newSpawn)
             << "WHERE id = "
             << m_spawn->id << " AND "
             << "min_build <= "
-            << VERSION_STRING << " AND "
+            << WoW::getConfigBuild() << " AND "
             << "max_build >= "
-            << VERSION_STRING;
+            << WoW::getConfigBuild();
     }
 
     // Persist first, then update the SpawnManager's single authoritative definition.
@@ -563,8 +564,8 @@ void GameObject::saveToDB(bool newSpawn)
         std::stringstream extraSs;
         extraSs << "REPLACE INTO " << tableExtra << " VALUES("
             << m_spawn->id << ","
-            << VERSION_STRING << ","
-            << VERSION_STRING << ","
+            << WoW::getConfigBuild() << ","
+            << WoW::getConfigBuild() << ","
             << getParentRotation(0) << ","
             << getParentRotation(1) << ","
             << getParentRotation(2) << ","
@@ -573,7 +574,7 @@ void GameObject::saveToDB(bool newSpawn)
     }
     else
     {
-        WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u", tableExtra.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u", tableExtra.c_str(), m_spawn->id, WoW::getConfigBuild(), WoW::getConfigBuild());
     }
 
     const std::string tableOverrides = m_spawn->origine + "_overrides";
@@ -583,8 +584,8 @@ void GameObject::saveToDB(bool newSpawn)
         std::stringstream overrideSs;
         overrideSs << "REPLACE INTO " << tableOverrides << " VALUES("
             << m_spawn->id << ","
-            << VERSION_STRING << ","
-            << VERSION_STRING << ","
+            << WoW::getConfigBuild() << ","
+            << WoW::getConfigBuild() << ","
             << getScale() << ","
             << getFactionTemplate() << ","
             << getFlags() << ")";
@@ -592,7 +593,7 @@ void GameObject::saveToDB(bool newSpawn)
     }
     else
     {
-        WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u", tableOverrides.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u", tableOverrides.c_str(), m_spawn->id, WoW::getConfigBuild(), WoW::getConfigBuild());
     }
 }
 
@@ -1312,8 +1313,8 @@ void GameObject::SaveToFile(std::stringstream & name)
 
     ss << "INSERT INTO gameobject_spawns (id, min_build, max_build, entry, map, phase, position_x, position_y, position_z, orientation, rotation0, rotation1, rotation2, rotation3, spawntimesecs, state, event_entry) VALUES("
         << spawnId << ","
-        << VERSION_STRING << ","
-        << VERSION_STRING << ","
+        << WoW::getConfigBuild() << ","
+        << WoW::getConfigBuild() << ","
         << getEntry() << ","
         << GetMapId() << ","
         << GetPhase() << ","
@@ -1331,8 +1332,8 @@ void GameObject::SaveToFile(std::stringstream & name)
 
     ss << "INSERT INTO gameobject_spawns_extra (id, min_build, max_build, parent_rotation0, parent_rotation1, parent_rotation2, parent_rotation3) VALUES("
         << spawnId << ","
-        << VERSION_STRING << ","
-        << VERSION_STRING << ","
+        << WoW::getConfigBuild() << ","
+        << WoW::getConfigBuild() << ","
         << getParentRotation(0) << ","
         << getParentRotation(1) << ","
         << getParentRotation(2) << ","
@@ -1340,8 +1341,8 @@ void GameObject::SaveToFile(std::stringstream & name)
 
     ss << "INSERT INTO gameobject_spawns_overrides (id, min_build, max_build, scale, faction, flags) VALUES("
         << spawnId << ","
-        << VERSION_STRING << ","
-        << VERSION_STRING << ","
+        << WoW::getConfigBuild() << ","
+        << WoW::getConfigBuild() << ","
         << getScale() << ","
         << getFactionTemplate() << ","
         << getFlags() << ");\n";

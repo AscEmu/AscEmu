@@ -1,6 +1,6 @@
 ################################################################################
 # AscEmu World Configuration File
-# Last edited: 09/15/2026
+# Last edited: 09/16/2026
 ################################################################################
 
 ################################################################################
@@ -101,7 +101,9 @@
 #        Default: 0
 #
 #    ClientVersion:
-#        Note: this setting is not implemented. Use CMake version configuration.
+#        The expansion this world server serves. Decides which version bound
+#        data is loaded from the database at startup. Changing the value
+#        requires a restart.
 #        Default: 2 (WotLK)
 #        0 = 5875 (Classic)     1 = 8606 (TBC)      2 = 12340 (WotLK)
 #        3 = 15595 (Cata)       4 = 18414 (Mop)     5 = (WoD)

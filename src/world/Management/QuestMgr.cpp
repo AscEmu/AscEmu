@@ -20,6 +20,7 @@
  */
 
 #include "QuestMgr.h"
+#include "Server/ClientProtocol.hpp"
 
 #include "Group.h"
 #include "MailMgr.h"
@@ -2033,7 +2034,7 @@ void QuestMgr::LoadExtraQuestStuff()
     // load creature starters
     uint32_t entry, quest;
 
-    auto pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM creature_quest_starter WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
+    auto pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM creature_quest_starter WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (pResult)
     {
         do
@@ -2049,7 +2050,7 @@ void QuestMgr::LoadExtraQuestStuff()
         } while (pResult->nextRow());
     }
 
-    pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM creature_quest_finisher WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
+    pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM creature_quest_finisher WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (pResult)
     {
         do
@@ -2065,7 +2066,7 @@ void QuestMgr::LoadExtraQuestStuff()
         } while (pResult->nextRow());
     }
 
-    pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM gameobject_quest_starter WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
+    pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM gameobject_quest_starter WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (pResult)
     {
         do
@@ -2081,7 +2082,7 @@ void QuestMgr::LoadExtraQuestStuff()
         } while (pResult->nextRow());
     }
 
-    pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM gameobject_quest_finisher WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
+    pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM gameobject_quest_finisher WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (pResult)
     {
         do

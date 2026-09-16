@@ -83,6 +83,7 @@ public:
     WorldConfig settings;
 
     void loadWorldConfigValues(bool reload = false);
+    void applyConfigExpansion();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Player statistic

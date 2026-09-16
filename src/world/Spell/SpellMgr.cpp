@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "SpellMgr.hpp"
+#include "Server/ClientProtocol.hpp"
 
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
@@ -1271,7 +1272,7 @@ void SpellMgr::loadSpellCoefficientOverride()
 {
     //                                            0          1             2               3           4
     auto result = WorldDatabase.query("SELECT spell_id, effectIndex, sp_coefficient, ap_coefficient, flags "
-                                            "FROM spell_coefficient_override WHERE min_build <= %u AND max_build >= %u ORDER BY spell_id, effectIndex", VERSION_STRING, VERSION_STRING);
+                                            "FROM spell_coefficient_override WHERE min_build <= %u AND max_build >= %u ORDER BY spell_id, effectIndex", WoW::getConfigBuild(), WoW::getConfigBuild());
 
     if (result == nullptr)
     {
@@ -1906,7 +1907,7 @@ void SpellMgr::loadSpellRanks()
 
     //                                                  0             1          2
     const auto result = WorldDatabase.query("SELECT `spell_id`, `first_spell`, `rank` "
-        "FROM spell_ranks WHERE `min_build` <= %u AND `max_build` >= %u ORDER BY `first_spell`, `rank`", VERSION_STRING, VERSION_STRING);
+        "FROM spell_ranks WHERE `min_build` <= %u AND `max_build` >= %u ORDER BY `first_spell`, `rank`", WoW::getConfigBuild(), WoW::getConfigBuild());
 
     if (result == nullptr)
     {

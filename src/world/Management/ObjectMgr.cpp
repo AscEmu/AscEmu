@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "ObjectMgr.hpp"
+#include "Server/ClientProtocol.hpp"
 
 #include <utility>
 #include <unordered_map>
@@ -1600,7 +1601,7 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* _object, Player* 
 
 void ObjectMgr::loadTrainerSpellSets()
 {
-    auto spellSetResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties_spellset WHERE min_build <= %u AND max_build >= %u;", VERSION_STRING, VERSION_STRING);
+    auto spellSetResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties_spellset WHERE min_build <= %u AND max_build >= %u;", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (spellSetResult != nullptr)
     {
         std::vector<TrainerSpell>* trainerSpells = nullptr;
@@ -1703,7 +1704,7 @@ void ObjectMgr::loadTrainers()
 {
     std::string normalTalkMessage = "DMSG";
 
-    if (auto trainerResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties WHERE build <= %u;", VERSION_STRING))
+    if (auto trainerResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties WHERE build <= %u;", WoW::getConfigBuild()))
     {
         do
         {
@@ -2488,7 +2489,7 @@ void ObjectMgr::setHighestGuids()
         m_hiCorpseGuid = result->fetch()[0].asUint32();
     }
 
-    result = sMySQLStore.getWorldDBQuery("SELECT MAX(id) FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", VERSION_STRING, VERSION_STRING);
+    result = sMySQLStore.getWorldDBQuery("SELECT MAX(id) FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (result)
     {
         do
@@ -2497,7 +2498,7 @@ void ObjectMgr::setHighestGuids()
         } while (result->nextRow());
     }
 
-    result = sMySQLStore.getWorldDBQuery("SELECT MAX(id) FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", VERSION_STRING, VERSION_STRING);
+    result = sMySQLStore.getWorldDBQuery("SELECT MAX(id) FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (result)
     {
         do

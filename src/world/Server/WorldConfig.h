@@ -144,6 +144,7 @@ public:
         bool requireGmForCommands;
         bool saveExtendedCharData;
         std::string dataDir;
+        uint32_t clientVersion; // Realm1.ClientVersion, expansion index (0 = Classic ... 4 = Mop)
     } server;
 
     uint32_t getPlayerLimit() const;

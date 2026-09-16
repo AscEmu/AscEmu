@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Server/LogonCommClient/LogonCommHandler.h"
+#include "Server/ClientProtocol.hpp"
 
 #include <sstream>
 #include <atomic>
@@ -524,7 +525,7 @@ void LogonCommHandler::loadRealmsConfiguration()
 
             realmStructure->population = 0.0f;
             realmStructure->flags = 0;
-            realmStructure->gameBuild = VERSION_STRING;
+            realmStructure->gameBuild = WoW::getConfigBuild();
 
             std::string realmType = "Normal";
             Config.MainConfig.tryGetString(realmString.str(), "Icon", &realmType);

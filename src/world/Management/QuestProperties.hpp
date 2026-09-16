@@ -67,10 +67,8 @@ struct QuestProperties
     int32_t reward_repvalue[6];
     uint32_t reward_replimit;
 
-#if VERSION_STRING >= Cata
-    uint32_t reward_currency_id[4];
+    uint32_t reward_currency_id[4];     // Cata+
     uint32_t reward_currency_count[4];
-#endif
 
     int32_t reward_money;
     uint32_t reward_xp;

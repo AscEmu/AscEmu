@@ -317,11 +317,9 @@ public:
     void loadGameObjectSpawnsOverrideTable();
 
     void loadQuestPropertiesTable();
-#if VERSION_STRING >= Cata
     void loadQuestPropertiesCurrenciesTable();
     void loadCurrencyCreatureOnKillTable();
     std::vector<MySQLStructure::CurrencyCreatureOnKill> const* getCurrencyCreatureOnKill(uint32_t creatureId) const;
-#endif
     void loadGameObjectQuestItemBindingTable();
     void loadGameObjectQuestPickupBindingTable();
 
@@ -414,10 +412,8 @@ public:
     CreaturePropertiesMovementContainer _creaturePropertiesMovementStore;
     GameObjectPropertiesContainer _gameobjectPropertiesStore;
     QuestPropertiesContainer _questPropertiesStore;
-#if VERSION_STRING >= Cata
     QuestPropertiesCurrenciesContainer _questPropertiesCurrenciesStore;
     CurrencyCreatureOnKillContainer _currencyCreatureOnKillStore;
-#endif
 
     GameObjectSpawnExtraContainer _gameObjectSpawnExtraStore;
     GameObjectSpawnOverrideContainer _gameObjectSpawnOverrideStore;

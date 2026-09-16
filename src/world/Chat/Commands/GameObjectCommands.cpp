@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatDefines.hpp"
+#include "Server/ClientProtocol.hpp"
 #include "Chat/ChatCommandHandler.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Management/SpawnManager.hpp"
@@ -788,8 +789,8 @@ bool ChatCommandHandler::HandleGOSetFactionCommand(const char* args, WorldSessio
         WorldDatabase.execute(
             "REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)",
             spawnId,
-            VERSION_STRING,
-            VERSION_STRING,
+            WoW::getConfigBuild(),
+            WoW::getConfigBuild(),
             gameobject->getScale(),
             go_faction,
             gameobject->getFlags());
@@ -845,8 +846,8 @@ bool ChatCommandHandler::HandleGOSetFlagsCommand(const char* args, WorldSession*
         WorldDatabase.execute(
             "REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)",
             spawnId,
-            VERSION_STRING,
-            VERSION_STRING,
+            WoW::getConfigBuild(),
+            WoW::getConfigBuild(),
             gameobject->getScale(),
             gameobject->getFactionTemplate(),
             go_flags);
@@ -912,8 +913,8 @@ bool ChatCommandHandler::HandleGOSetOverridesCommand(const char* args, WorldSess
             "UPDATE gameobject_spawns SET overrides = %u WHERE id = %u AND min_build <= %u AND max_build >= %u",
             go_override,
             spawnId,
-            VERSION_STRING,
-            VERSION_STRING);
+            WoW::getConfigBuild(),
+            WoW::getConfigBuild());
 
         greenSystemMessage(
             m_session,
@@ -979,8 +980,8 @@ bool ChatCommandHandler::HandleGOSetPhaseCommand(const char* args, WorldSession*
             "UPDATE gameobject_spawns SET phase = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u",
             phase,
             spawnId,
-            VERSION_STRING,
-            VERSION_STRING);
+            WoW::getConfigBuild(),
+            WoW::getConfigBuild());
 
         greenSystemMessage(
             m_session,
@@ -1043,8 +1044,8 @@ bool ChatCommandHandler::HandleGOSetScaleCommand(const char* args, WorldSession*
         WorldDatabase.execute(
             "REPLACE INTO gameobject_spawns_overrides VALUES(%u, %u, %u, %3.3lf,%u,%u)",
             spawnId,
-            VERSION_STRING,
-            VERSION_STRING,
+            WoW::getConfigBuild(),
+            WoW::getConfigBuild(),
             scale,
             gameobject->getFactionTemplate(),
             gameobject->getFlags());
@@ -1102,8 +1103,8 @@ bool ChatCommandHandler::HandleGOSetStateCommand(const char* args, WorldSession*
             "UPDATE gameobject_spawns SET state = %u WHERE id = %u AND min_build <= %u AND max_build >= %u",
             go_state,
             spawnId,
-            VERSION_STRING,
-            VERSION_STRING);
+            WoW::getConfigBuild(),
+            WoW::getConfigBuild());
 
         greenSystemMessage(
             m_session,

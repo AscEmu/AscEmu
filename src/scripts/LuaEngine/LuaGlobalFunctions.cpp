@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "LuaGlobalFunctions.hpp"
+#include "Server/ClientProtocol.hpp"
 #include "Map/Management/SpawnManager.hpp"
 
 #include "BuildInfo.hpp"
@@ -291,7 +292,7 @@ int LuaGlobalFunctions::Rehash(lua_State* /*L*/)
 
 int LuaGlobalFunctions::GetClientVersion(lua_State* L)
 {
-    lua_pushinteger(L, VERSION_STRING);
+    lua_pushinteger(L, WoW::getConfigBuild());
     return 1;
 }
 

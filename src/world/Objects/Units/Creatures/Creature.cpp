@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Objects/DynamicObject.hpp"
+#include "Server/ClientProtocol.hpp"
 #include "Management/AuctionMgr.hpp"
 #include "Management/QuestMgr.h"
 #include "Management/QuestProperties.hpp"
@@ -1084,8 +1085,8 @@ void Creature::SaveToDB()
 
     ss << "DELETE FROM " << m_spawn->origine << " WHERE id = "
        << m_spawnId
-       << " AND min_build <= " << VERSION_STRING
-       << " AND max_build >= " << VERSION_STRING
+       << " AND min_build <= " << WoW::getConfigBuild()
+       << " AND max_build >= " << WoW::getConfigBuild()
        << ";";
 
     WorldDatabase.execute(ss.str().c_str());
@@ -1093,8 +1094,8 @@ void Creature::SaveToDB()
 
     ss << "INSERT INTO " << m_spawn->origine << " VALUES("
         << m_spawnId << ","
-        << VERSION_STRING << ","
-        << VERSION_STRING << ","
+        << WoW::getConfigBuild() << ","
+        << WoW::getConfigBuild() << ","
         << m_spawn->entry << ","
         << m_spawn->mapId << ","
         << m_spawn->spawnPoint.x << ","
@@ -1141,7 +1142,7 @@ void Creature::DeleteFromDB()
     if (!m_spawn || !getSpawnId())
         return;
 
-    WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u", m_spawn->origine.c_str(), getSpawnId(), VERSION_STRING, VERSION_STRING);
+    WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u", m_spawn->origine.c_str(), getSpawnId(), WoW::getConfigBuild(), WoW::getConfigBuild());
 }
 
 

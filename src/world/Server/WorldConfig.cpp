@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WorldConfig.h"
 #include "AEVersion.hpp"
+#include "ClientProtocol.hpp"
 #include "ConfigMgr.hpp"
 #include "WorldConf.h"
 #include "Config/Config.hpp"
@@ -62,6 +63,7 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     server.requireGmForCommands = false;
     server.saveExtendedCharData = false;
     server.dataDir = "";
+    server.clientVersion = static_cast<uint32_t>(WoW::buildExpansion);
 
     // world.conf - Player Settings
     player.playerStartingLevel = 1;
@@ -349,6 +351,8 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     Config.MainConfig.tryGetBool("Server", "AllowPlayerCommands", &server.requireGmForCommands);
     Config.MainConfig.tryGetBool("Server", "SaveExtendedCharData", &server.saveExtendedCharData);
     Config.MainConfig.tryGetString("Server", "DataDir", &server.dataDir);
+    // the client version is part of the realm section, one world server always serves one expansion
+    Config.MainConfig.tryGetInt("Realm1", "ClientVersion", &server.clientVersion);
     if (server.dataDir == "")
         server.dataDir = "./";
     else if (server.dataDir != "./")

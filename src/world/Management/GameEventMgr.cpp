@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "GameEventMgr.hpp"
+#include "Server/ClientProtocol.hpp"
 #include "GameEvent.hpp"
 #include "GameEventDefines.hpp"
 #include "Server/World.h"
@@ -149,7 +150,7 @@ void GameEventMgr::LoadFromDB()
                                                     slot1item, slot2item, slot3item, CanFly, phase, waypoint_group, event_entry \
                                                     FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry > 0";
         bool success = false;
-        auto result = WorldDatabase.query(&success, loadEventCreatureSpawnsQuery, VERSION_STRING, VERSION_STRING);
+        auto result = WorldDatabase.query(&success, loadEventCreatureSpawnsQuery, WoW::getConfigBuild(), WoW::getConfigBuild());
         if (!success)
         {
             sLogger.failure("Query failed: {}", loadEventCreatureSpawnsQuery);
@@ -227,7 +228,7 @@ void GameEventMgr::LoadFromDB()
                                                       rotation3, spawntimesecs, state, \
                                                       event_entry FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry > 0;";
         bool success = false;
-        auto result = WorldDatabase.query(&success, loadEventGameobjectSpawnsQuery, VERSION_STRING, VERSION_STRING);
+        auto result = WorldDatabase.query(&success, loadEventGameobjectSpawnsQuery, WoW::getConfigBuild(), WoW::getConfigBuild());
         if (!success)
         {
             sLogger.failure("Query failed: {}", loadEventGameobjectSpawnsQuery);

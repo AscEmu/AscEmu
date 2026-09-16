@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "BuildInfo.hpp"
+#include "Server/ClientProtocol.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Packets/CmsgSetFactionAtWar.h"
@@ -859,7 +860,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
                 sLogger.debug("Class {} and race {} is not a valid combination for Version {} - skipped",
                     static_cast<uint32_t>(charEnum.Class),
                     static_cast<uint32_t>(charEnum.race),
-                    VERSION_STRING);
+                    WoW::getConfigBuild());
                 continue;
             }
 

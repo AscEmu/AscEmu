@@ -230,10 +230,11 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
     inline SERVER_DECL WDB::WDBStore<WDB::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
     inline SERVER_DECL WDB::WDBStore<WDB::Structures::MapDifficultyEntry> sMapDifficultyStore;
 
+    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CurrencyTypesEntry> sCurrencyTypesStore;
+
 #if VERSION_STRING >= WotLK
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AchievementEntry> sAchievementStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AchievementCriteriaEntry> sAchievementCriteriaStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CurrencyTypesEntry> sCurrencyTypesStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::DungeonEncounterEntry> sDungeonEncounterStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TransportRotationEntry> sTransportRotationStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GlyphPropertiesEntry> sGlyphPropertiesStore;
@@ -252,9 +253,10 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
     inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrPowerTypesEntry> sChrPowerTypesStore;
     inline std::array<std::array<uint8_t, TOTAL_PLAYER_POWER_TYPES>, MAX_PLAYER_CLASSES> powerIndexByClass;
 
-#if VERSION_STRING >= Cata
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseHPByClassEntry> sGtOCTBaseHPByClassStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseMPByClassEntry> sGtOCTBaseMPByClassStore;
+
+#if VERSION_STRING >= Cata
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTClassCombatRatingScalarEntry> sGtOCTClassCombatRatingScalarStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GuildPerkSpellsEntry> sGuildPerkSpellsStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::EmotesEntry> sEmotesStore;

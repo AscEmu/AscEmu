@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 
 #include "LuaUnit.hpp"
+#include "Server/ClientProtocol.hpp"
 #include "Map/Maps/BaseMap.hpp"
 #include "Map/Management/SpawnManager.hpp"
 
@@ -2018,12 +2019,12 @@ int LuaUnit::QuestAddStarter(lua_State* L, Unit* ptr)
     const uint32_t quest_giver = unit->getEntry();
 
     char my_query1[200];
-    sprintf(my_query1, "SELECT id FROM creature_quest_starter WHERE id = %d AND quest = %d AND min_build <= %u AND max_build >= %u", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
+    sprintf(my_query1, "SELECT id FROM creature_quest_starter WHERE id = %d AND quest = %d AND min_build <= %u AND max_build >= %u", quest_giver, quest_id, WoW::getConfigBuild(), WoW::getConfigBuild());
     const auto selectResult1 = WorldDatabase.query(my_query1);
     if (selectResult1 == nullptr)
     {
         char my_insert1[200];
-        sprintf(my_insert1, "INSERT INTO creature_quest_starter (id, quest) VALUES (%d,%d,%u,%u)", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
+        sprintf(my_insert1, "INSERT INTO creature_quest_starter (id, quest) VALUES (%d,%d,%u,%u)", quest_giver, quest_id, WoW::getConfigBuild(), WoW::getConfigBuild());
         WorldDatabase.execute(my_insert1);
     }
 
@@ -2063,12 +2064,12 @@ int LuaUnit::QuestAddFinisher(lua_State* L, Unit* ptr)
     const uint32_t quest_giver = unit->getEntry();
 
     char my_query1[200];
-    sprintf(my_query1, "SELECT id FROM creature_quest_finisher WHERE id = %d AND quest = %d AND min_build <= %u AND max_build >= %u", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
+    sprintf(my_query1, "SELECT id FROM creature_quest_finisher WHERE id = %d AND quest = %d AND min_build <= %u AND max_build >= %u", quest_giver, quest_id, WoW::getConfigBuild(), WoW::getConfigBuild());
     const auto selectResult1 = WorldDatabase.query(my_query1);
     if (selectResult1 == nullptr)
     {
         char my_insert1[200];
-        sprintf(my_insert1, "INSERT INTO creature_quest_finisher (id, quest, min_build, max_build) VALUES (%d,%d,%u,%u)", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
+        sprintf(my_insert1, "INSERT INTO creature_quest_finisher (id, quest, min_build, max_build) VALUES (%d,%d,%u,%u)", quest_giver, quest_id, WoW::getConfigBuild(), WoW::getConfigBuild());
         WorldDatabase.execute(my_insert1);
     }
 

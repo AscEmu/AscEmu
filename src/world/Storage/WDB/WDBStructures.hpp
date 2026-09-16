@@ -1037,7 +1037,6 @@ namespace WDB::Structures
     };
 #endif
 
-#if VERSION_STRING >= WotLK
     struct CurrencyTypesEntry
     {
         //uint32_t ID;                                              // 0 not used
@@ -1058,7 +1057,6 @@ namespace WDB::Structures
         //char* description;                                        // 10
 #endif
     };
-#endif
 
 #if VERSION_STRING >= WotLK
     struct DungeonEncounterEntry
@@ -1174,7 +1172,6 @@ namespace WDB::Structures
         float ratio;                                                // 0 regen base
     };
 
-#if VERSION_STRING >= Cata
     struct GtOCTBaseHPByClassEntry
     {
         float ratio;
@@ -1185,6 +1182,7 @@ namespace WDB::Structures
         float ratio;
     };
 
+#if VERSION_STRING >= Cata
     struct GtOCTClassCombatRatingScalarEntry
     {
         float val;                                                  // 0

@@ -64,6 +64,7 @@ This file is released under the MIT license. See README-MIT for more information
 #endif
 
 WoW::Expansion WoW::g_currentExpansion = buildExpansion;
+WoW::Expansion WoW::g_configExpansion = buildExpansion;
 
 using namespace WoW;
 using namespace AscEmu::Packets;
@@ -184,8 +185,31 @@ void World::loadWorldConfigValues(bool reload /*false*/)
 {
     settings.loadWorldConfigValues(reload);
 
+    if (!reload)
+        applyConfigExpansion();
+
     if (reload)
         sChannelMgr.loadConfigSettings();
+}
+
+void World::applyConfigExpansion()
+{
+    const uint32_t configVersionId = settings.server.clientVersion;
+    Expansion expansion = expansionFromVersionId(configVersionId);
+
+    if (expansion == Expansion::Unknown)
+    {
+        sLogger.failure("world.conf ClientVersion {} is not a valid expansion id. Using the compiled expansion {} ({}).",
+            configVersionId, static_cast<uint32_t>(buildExpansion), getExpansionName(buildExpansion));
+        expansion = buildExpansion;
+    }
+    else if (expansion != buildExpansion)
+    {
+        sLogger.warning("world.conf ClientVersion {} ({}) differs from the compiled expansion {} ({}). Data is loaded for the configured expansion.",
+            configVersionId, getExpansionName(expansion), static_cast<uint32_t>(buildExpansion), getExpansionName(buildExpansion));
+    }
+
+    g_configExpansion = expansion;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -911,9 +935,7 @@ void World::loadMySQLStores()
     sMySQLStore.loadItemPropertiesStatsTable();
     sMySQLStore.loadCreaturePropertiesMovementTable();
     sMySQLStore.loadCreaturePropertiesTable();
-#if VERSION_STRING >= Cata
     sMySQLStore.loadCurrencyCreatureOnKillTable();
-#endif
     sMySQLStore.loadGameObjectPropertiesTable();
     sMySQLStore.loadQuestPropertiesTable();
     sMySQLStore.loadGameObjectQuestItemBindingTable();
