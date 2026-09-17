@@ -700,7 +700,7 @@ void ChatCommandHandler::sendModifySystemMessage(WorldSession* session, Unit* un
     {
         if (const auto player = dynamic_cast<Player*>(unitTarget))
         {
-            sGMLog.writefromsession(session, "Modified {} of player {} (GUID: {}) from {} to {}.", modType.c_str(), player->getName(), player->getGuidLow(), oldValue, newValue);
+            sGMLog.writefromsession(session, "Modified {} of player {} (GUID: {}) from {} to {}.", modType, player->getName(), player->getGuidLow(), oldValue, newValue);
             blueSystemMessage(session, "Modified {} of player {} from {} to {}.", modType, player->getName(), oldValue, newValue);
             greenSystemMessage(player->getSession(), "{} modified your {} from {} to {}.", session->GetPlayer()->getName(), modType, oldValue, newValue);
         }
@@ -709,7 +709,7 @@ void ChatCommandHandler::sendModifySystemMessage(WorldSession* session, Unit* un
     {
         if (auto creature = dynamic_cast<Creature*>(unitTarget))
         {
-            sGMLog.writefromsession(session, "Modified {} of creature {} (entry: {}) from {} to {}.", modType.c_str(), creature->GetCreatureProperties()->Name, creature->GetCreatureProperties()->Id, oldValue, newValue);
+            sGMLog.writefromsession(session, "Modified {} of creature {} (entry: {}) from {} to {}.", modType, creature->GetCreatureProperties()->Name, creature->GetCreatureProperties()->Id, oldValue, newValue);
             blueSystemMessage(session, "Modified {} of creature {} from {} to {}.", modType, creature->GetCreatureProperties()->Name, oldValue, newValue);
         }
     }

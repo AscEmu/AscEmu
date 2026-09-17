@@ -2168,7 +2168,7 @@ void WorldSession::sendMOTD()
     else
     {
         for (const auto& line : motdLines)
-            GetPlayer()->sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, line.c_str());
+            GetPlayer()->sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, line);
     }
 }
 

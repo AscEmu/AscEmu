@@ -2711,11 +2711,11 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
                         continue;
 
                     // Master Loot Stuff - Let the rest of the raid know what dropped..
-                    ///\todo Shouldn't we move this array to a global position? Or maybe it already exists^^ (VirtualAngel) --- I can see (dead) talking pigs...^^
-                    const char* itemColours[8] = { "9d9d9d", "ffffff", "1eff00", "0070dd", "a335ee", "ff8000", "e6cc80", "e6cc80" };
-                    char buffer[256];
-                    sprintf(buffer, "\174cff%s\174Hitem:%u:0:0:0:0:0:0:0\174h[%s]\174h\174r", itemColours[itr->itemproto->Quality], itr->itemproto->ItemId, itr->itemproto->Name.c_str());
-                    this->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, buffer);
+                    ///\todo Shouldn't we move this array to a global position? - VirtualAngel
+                    static constexpr std::string_view itemColours[8] = { "9d9d9d", "ffffff", "1eff00", "0070dd", "a335ee", "ff8000", "e6cc80", "e6cc80" };
+
+                    this->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, fmt::format("|4cff{}|4Hitem:{}:0:0:0:0:0:0:0|4h[{}]|4h|4r",
+                        itemColours[itr->itemproto->Quality], itr->itemproto->ItemId, itr->itemproto->Name));
                 }
             }
         }
