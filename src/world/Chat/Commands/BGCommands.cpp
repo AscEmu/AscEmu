@@ -172,7 +172,7 @@ bool ChatCommandHandler::handleBGStartCommand(std::string_view /*args*/, WorldSe
     const auto battleMessage = m_session->localizedWorldSrv(SS_THE_BATTLE_FOR_HAS_BEGUN);
     const auto battlegroundName = m_session->localizedWorldSrv(battleground->GetNameID());
 
-    battleground->sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, battleMessage.c_str(), battlegroundName.c_str());
+    battleground->sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, battleMessage, battlegroundName);
     sEventMgr.RemoveEvents(battleground, EVENT_BATTLEGROUND_COUNTDOWN);
 
     battleground->startBattleground();

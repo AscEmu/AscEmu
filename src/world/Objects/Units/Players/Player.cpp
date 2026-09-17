@@ -1855,22 +1855,14 @@ void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
             !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) &&
             !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
         {
-            sendChatMessage(
-                CHAT_MSG_SYSTEM,
-                LANG_UNIVERSAL,
-                getSession()->localizedWorldSrv(SS_MUST_HAVE_BC));
-
+            sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, getSession()->localizedWorldSrv(SS_MUST_HAVE_BC));
             return;
         }
 
         if (mapInfo->flags & WMI_INSTANCE_XPACK_02 &&
             !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
         {
-            sendChatMessage(
-                CHAT_MSG_SYSTEM,
-                LANG_UNIVERSAL,
-                getSession()->localizedWorldSrv(SS_MUST_HAVE_WOTLK));
-
+            sendChatMessage(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, getSession()->localizedWorldSrv(SS_MUST_HAVE_WOTLK));
             return;
         }
     }
@@ -16709,7 +16701,7 @@ void Player::completeLoading()
     {
         kickFromServer(10000);
         broadcastMessage(getSession()->localizedWorldSrv(ServerString::SS_NOT_ALLOWED_TO_PLAY));
-        broadcastMessage(getSession()->localizedWorldSrv(ServerString::SS_BANNED_FOR_TIME), getBanReason().c_str());
+        broadcastMessage(getSession()->localizedWorldSrv(ServerString::SS_BANNED_FOR_TIME), getBanReason());
     }
 
     if (m_playerInfo->m_Group)

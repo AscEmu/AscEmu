@@ -1394,12 +1394,11 @@ GameObject* CreatureAIScript::getNearestGameObject(float posX, float posY, float
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// chat message
-
+// Chat message
 void CreatureAIScript::sendChatMessage(uint8_t type, uint32_t soundId, std::string text)
 {
     if (text.empty() == false)
-        _creature->sendChatMessage(type, LANG_UNIVERSAL, text.c_str());
+        _creature->sendChatMessage(type, LANG_UNIVERSAL, text);
 
     if (soundId > 0)
         _creature->PlaySoundToSet(soundId);
@@ -1471,7 +1470,7 @@ void CreatureAIScript::addEmoteForEventByIndex(uint32_t eventType, uint32_t scri
 void CreatureAIScript::sendAnnouncement(std::string stringAnnounce)
 {
     if (!stringAnnounce.empty())
-        _creature->sendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, stringAnnounce.c_str());
+        _creature->sendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, stringAnnounce);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

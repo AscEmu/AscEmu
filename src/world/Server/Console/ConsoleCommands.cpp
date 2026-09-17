@@ -367,10 +367,7 @@ bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::stri
         return true;
     }
 
-    std::stringstream whisperOut;
-    whisperOut << MSG_COLOR_LIGHTBLUE << "Console whisper: |r" << consoleInput;
-
-    player->broadcastMessage(whisperOut.str().c_str());
+    player->broadcastMessage("{}Console whisper: |r{}", MSG_COLOR_LIGHTBLUE, consoleInput);
     baseConsole->Write("Message '%s' sent to player %s.\r\n", consoleInput.c_str(), player->getName().c_str());
 
     return true;

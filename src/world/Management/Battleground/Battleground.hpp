@@ -93,7 +93,15 @@ public:
 
     void removeAuraFromTeam(uint32_t team, uint32_t aura);
 
-    void sendChatMessage(uint8_t Type, uint64_t Guid, const char* Format, ...);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Messages
+    template <typename... Args>
+    void sendChatMessage(uint8_t Type, uint64_t Guid, fmt::format_string<Args...> format, Args&&... args)
+    {
+        sendChatMessage(Type, Guid, fmt::format(format, std::forward<Args>(args)...));
+    }
+
+    void sendChatMessage(uint8_t Type, uint64_t Guid, std::string_view message); 
 
     // Retrieval Functions
     uint32_t getId();

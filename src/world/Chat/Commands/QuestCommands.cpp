@@ -172,7 +172,7 @@ bool ChatCommandHandler::HandleQuestStartCommand(const char* args, WorldSession*
                         return true;
                     }
 
-                    sGMLog.writefromsession(m_session, "Started quest {} [{}] for player {}.", questProperties->id, questProperties->title.c_str(), player->getName());
+                    sGMLog.writefromsession(m_session, "Started quest {} [{}] for player {}.", questProperties->id, questProperties->title, player->getName());
 
                     auto* questLogEntry = player->createQuestLogInSlot(questProperties, open_slot);
                     questLogEntry->updatePlayerFields();
@@ -328,7 +328,7 @@ bool ChatCommandHandler::HandleQuestFinishCommand(const char* args, WorldSession
                 recout += "The quest has now been completed for that player.";
             }
 
-            sGMLog.writefromsession(m_session, "Completed quest {} [{}] for player {}.", quest_id, qst->title.c_str(), plr->getName());
+            sGMLog.writefromsession(m_session, "Completed quest {} [{}] for player {}.", quest_id, qst->title, plr->getName());
             sQuestMgr.BuildQuestComplete(plr, qst);
             plr->addQuestToFinished(quest_id);
 
@@ -820,7 +820,7 @@ bool ChatCommandHandler::HandleQuestAddStartCommand(const char* args, WorldSessi
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "Added starter of quest {} [{}] to NPC {} [{}]", qst->id, qst->title.c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name);
+    sGMLog.writefromsession(m_session, "Added starter of quest {} [{}] to NPC {} [{}]", qst->id, qst->title, unit->getEntry(), unit->GetCreatureProperties()->Name);
 
     return true;
 }
@@ -896,7 +896,7 @@ bool ChatCommandHandler::HandleQuestAddFinishCommand(const char* args, WorldSess
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "Added finisher of quest {} [{}] to NPC {} [{}]", qst->id, qst->title.c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name);
+    sGMLog.writefromsession(m_session, "Added finisher of quest {} [{}] to NPC {} [{}]", qst->id, qst->title, unit->getEntry(), unit->GetCreatureProperties()->Name);
 
     return true;
 }
@@ -984,7 +984,7 @@ bool ChatCommandHandler::HandleQuestDelStartCommand(const char* args, WorldSessi
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "Deleted starter of quest {} [{}] to NPC {} [{}]", qst->id, qst->title.c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name);
+    sGMLog.writefromsession(m_session, "Deleted starter of quest {} [{}] to NPC {} [{}]", qst->id, qst->title, unit->getEntry(), unit->GetCreatureProperties()->Name);
 
     return true;
 }
@@ -1054,7 +1054,7 @@ bool ChatCommandHandler::HandleQuestDelFinishCommand(const char* args, WorldSess
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "Deleted finisher of quest {} [{}] to NPC {} [{}]", qst->id, qst->title.c_str(), unit->getEntry(), unit->GetCreatureProperties()->Name);
+    sGMLog.writefromsession(m_session, "Deleted finisher of quest {} [{}] to NPC {} [{}]", qst->id, qst->title, unit->getEntry(), unit->GetCreatureProperties()->Name);
 
     return true;
 }

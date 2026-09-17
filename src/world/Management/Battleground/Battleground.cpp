@@ -458,15 +458,9 @@ void Battleground::removeAuraFromTeam(uint32_t team, uint32_t aura)
         p->removeAllAurasById(aura);
 }
 
-void Battleground::sendChatMessage(uint8_t Type, uint64_t Guid, const char* Format, ...)
+void Battleground::sendChatMessage(uint8_t Type, uint64_t Guid, std::string_view message)
 {
-    char msg[500];
-    va_list ap;
-    va_start(ap, Format);
-    vsnprintf(msg, 500, Format, ap);
-    va_end(ap);
-
-    AscEmu::Packets::SmsgMessageChat messagePacket(Type, 0, 0, msg, Guid);
+    AscEmu::Packets::SmsgMessageChat messagePacket(Type, 0, 0, std::string(message), Guid);
 
     std::lock_guard lock(m_mutex);
 

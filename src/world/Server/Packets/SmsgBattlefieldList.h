@@ -56,19 +56,19 @@ namespace AscEmu::Packets
                     packet << uint64_t(0);
 
                 packet << from;
-                packet << battlegroundType;                                     // typeid
+                packet << battlegroundType;                                                     // typeid
 
-                packet << uint8_t(0);                                                     // unk
-                packet << uint8_t(0);                                                     // unk
+                packet << uint8_t(0);                                                           // unk
+                packet << uint8_t(0);                                                           // unk
 
                 // Rewards
-                packet << uint8_t(0);                                                     // 3.3.3 hasWin
-                packet << uint32_t(0);                                                    // 3.3.3 winHonor
-                packet << uint32_t(0);                                                    // 3.3.3 winArena
-                packet << uint32_t(0);                                                    // 3.3.3 lossHonor
+                packet << uint8_t(0);                                                           // 3.3.3 hasWin
+                packet << uint32_t(0);                                                          // 3.3.3 winHonor
+                packet << uint32_t(0);                                                          // 3.3.3 winArena
+                packet << uint32_t(0);                                                          // 3.3.3 lossHonor
 
                 const uint8_t isRandom = battlegroundType == BattlegroundDef::TYPE_RANDOM;
-                packet << isRandom;                                                       // 3.3.3 isRandom
+                packet << isRandom;                                                             // 3.3.3 isRandom
 
                 // Random bgs
                 if (isRandom == 1)

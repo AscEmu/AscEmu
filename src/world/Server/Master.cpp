@@ -103,7 +103,7 @@ namespace
 {
     // DB version
     constexpr std::string_view REQUIRED_CHAR_DB_VERSION = "20260905-00_character_currency";
-    constexpr std::string_view REQUIRED_WORLD_DB_VERSION = "20260915-02_currency_creature_onkill";
+    constexpr std::string_view REQUIRED_WORLD_DB_VERSION = "20260917-01_worldstring_tables";
 
     void printBanner()
     {
