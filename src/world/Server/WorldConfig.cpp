@@ -63,7 +63,7 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     server.requireGmForCommands = false;
     server.saveExtendedCharData = false;
     server.dataDir = "";
-    server.clientVersion = static_cast<uint32_t>(WoW::buildExpansion);
+    server.clientVersion = static_cast<uint32_t>(WoW::COMPILED_EXPANSION);
 
     // world.conf - Player Settings
     player.playerStartingLevel = 1;

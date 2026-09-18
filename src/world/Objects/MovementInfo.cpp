@@ -17,8 +17,10 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode, WoW::Expa
         return;
     }
 
+    WoW::Expansion const effectiveExpansion = WoW::isSupportedExpansion(expansion) ? expansion : WoW::getServerExpansion();
+
     sLogger.failure("Unsupported MovementInfo::Read for 0x{:X} ({}) on {}!",
-        opcode, sOpcodeTables.getInternalIdForHex(opcode, WoW::versionIdOrConfig(expansion)), WoW::getExpansionName(expansion));
+        opcode, sOpcodeTables.getInternalIdForHex(opcode, effectiveExpansion), WoW::getExpansionName(effectiveExpansion));
 }
 
 void MovementInfo::read(WorldPacket& packet, WoW::ClientProtocol const& protocol)
@@ -34,8 +36,10 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, WoW::Exp
         return;
     }
 
+    WoW::Expansion const effectiveExpansion = WoW::isSupportedExpansion(expansion) ? expansion : WoW::getServerExpansion();
+
     sLogger.failure("Unsupported MovementInfo::Write for 0x{:X} ({}) on {}!",
-        sOpcodeTables.getHexValueForVersionId(static_cast<uint32_t>(opcode), WoW::versionIdOrConfig(expansion)), opcode, WoW::getExpansionName(expansion));
+        sOpcodeTables.getHexValueForExpansion(static_cast<uint32_t>(opcode), effectiveExpansion), opcode, WoW::getExpansionName(effectiveExpansion));
 }
 
 void MovementInfo::write(WorldPacket& packet, WoW::ClientProtocol const& protocol, bool withGuid /* = true*/) const

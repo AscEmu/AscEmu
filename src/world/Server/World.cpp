@@ -63,8 +63,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildFinderMgr.hpp"
 #endif
 
-WoW::Expansion WoW::g_currentExpansion = buildExpansion;
-WoW::Expansion WoW::g_configExpansion = buildExpansion;
+WoW::Expansion WoW::g_serverExpansion = COMPILED_EXPANSION;
 
 using namespace WoW;
 using namespace AscEmu::Packets;
@@ -86,8 +85,8 @@ World& World::getInstance()
 
 void World::initialize()
 {
-    m_protocol.expansion = buildExpansion;
-    g_currentExpansion = buildExpansion;
+    m_protocol.expansion = COMPILED_EXPANSION;
+    g_serverExpansion = COMPILED_EXPANSION;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Uptime
@@ -197,19 +196,26 @@ void World::applyConfigExpansion()
     const uint32_t configVersionId = settings.server.clientVersion;
     Expansion expansion = expansionFromVersionId(configVersionId);
 
-    if (expansion == Expansion::Unknown)
+    if (expansion == Expansion::Unknown || !isValidExpansion(expansion))
     {
         sLogger.failure("world.conf ClientVersion {} is not a valid expansion id. Using the compiled expansion {} ({}).",
-            configVersionId, static_cast<uint32_t>(buildExpansion), getExpansionName(buildExpansion));
-        expansion = buildExpansion;
+                        configVersionId, static_cast<uint32_t>(COMPILED_EXPANSION), getExpansionName(COMPILED_EXPANSION));
+        expansion = COMPILED_EXPANSION;
     }
-    else if (expansion != buildExpansion)
+    else if (!isSupportedExpansion(expansion))
+    {
+        sLogger.failure("world.conf ClientVersion {} ({}) exceeds compiled expansion {} ({}). Falling back to compiled expansion.",
+                        configVersionId, getExpansionName(expansion), static_cast<uint32_t>(COMPILED_EXPANSION), getExpansionName(COMPILED_EXPANSION));
+        expansion = COMPILED_EXPANSION;
+    }
+    else if (expansion != COMPILED_EXPANSION)
     {
         sLogger.warning("world.conf ClientVersion {} ({}) differs from the compiled expansion {} ({}). Data is loaded for the configured expansion.",
-            configVersionId, getExpansionName(expansion), static_cast<uint32_t>(buildExpansion), getExpansionName(buildExpansion));
+                        configVersionId, getExpansionName(expansion), static_cast<uint32_t>(COMPILED_EXPANSION), getExpansionName(COMPILED_EXPANSION));
     }
 
-    g_configExpansion = expansion;
+    g_serverExpansion = expansion;
+    m_protocol.expansion = expansion;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -116,8 +116,8 @@ namespace
 
     void printDiagnostics()
     {
-        const Expansion serverExpansion = g_currentExpansion;
-        const Expansion compileExpansion = buildExpansion;
+        const Expansion serverExpansion = g_serverExpansion;
+        const Expansion compileExpansion = COMPILED_EXPANSION;
 
         sLogger.info("Server Expansion: ID {} ({})", static_cast<uint32_t>(serverExpansion), getExpansionName(serverExpansion));
         sLogger.info("Build Expansion:  ID {} ({})", static_cast<uint32_t>(compileExpansion), getExpansionName(compileExpansion));

@@ -2855,7 +2855,7 @@ ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, LocationVector pos, 
                 {
                     if (const auto* area = MapManagement::AreaManagement::AreaStorage::getExactArea(this, pos, phaseMask))
                     {
-                        uint32_t const index = (WoW::getCurrentExpansion() == WoW::Expansion::_Classic) ? 0 : liquidFlagType;
+                        uint32_t const index = (WoW::getServerExpansion() == WoW::Expansion::_Classic) ? 0 : liquidFlagType;
                         uint32_t overrideLiquid = area->liquid_type_override[index];
 
                         if (!overrideLiquid && area->zone)
@@ -3019,7 +3019,7 @@ void WorldMap::getFullTerrainStatusForPosition(uint32_t phaseMask, float x, floa
 
         if (liquidType && liquidType < 21 && areaEntry)
         {
-            uint32_t const liquidIndex = (WoW::getCurrentExpansion() == WoW::Expansion::_Classic) ? 0 : liquidFlagType;
+            uint32_t const liquidIndex = (WoW::getServerExpansion() == WoW::Expansion::_Classic) ? 0 : liquidFlagType;
             uint32_t overrideLiquid = areaEntry->liquid_type_override[liquidIndex];
 
             if (!overrideLiquid && areaEntry->zone)

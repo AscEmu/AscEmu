@@ -1342,7 +1342,7 @@ void MySQLDataStore::loadCurrencyCreatureOnKillTable()
     _currencyCreatureOnKillStore.clear();
 
     // currencies exist since Cata
-    if (!WoW::dataLoadRequired(WoW::Expansion::_Cata))
+    if (!WoW::isDataLoadRequired(WoW::Expansion::_Cata))
         return;
 
     auto result = getWorldDBQuery("SELECT creature_id, currency_id, currency_count FROM currency_creature_onkill");
@@ -1393,7 +1393,7 @@ void MySQLDataStore::loadQuestPropertiesCurrenciesTable()
     _questPropertiesCurrenciesStore.clear();
 
     // currencies exist since Cata
-    if (!WoW::dataLoadRequired(WoW::Expansion::_Cata))
+    if (!WoW::isDataLoadRequired(WoW::Expansion::_Cata))
         return;
 
     auto result = getWorldDBQuery("SELECT entry, RewardCurrencyId1, RewardCurrencyId2, RewardCurrencyId3, RewardCurrencyId4, "
@@ -2838,9 +2838,9 @@ void MySQLDataStore::loadPlayerCreateInfoItems()
         uint32_t item_id = fields[2].asUint32();
 
         // items are validated against Item.dbc since Cata, against item_properties before
-        const bool isValidItem = WoW::isConfigExpansionAtLeast(WoW::Expansion::_Cata)
-            ? sItemStore.lookupEntry(item_id) != nullptr
-            : sMySQLStore.getItemProperties(item_id) != nullptr;
+        const bool isValidItem = WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata)
+                                     ? sItemStore.lookupEntry(item_id) != nullptr
+                                     : sMySQLStore.getItemProperties(item_id) != nullptr;
         if (!isValidItem)
         {
             sLogger.failure("Table `old_playercreateinfo_items` includes invalid item {}", item_id);
@@ -3139,7 +3139,7 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
     }
 
     // the class base values come from the game tables since Cata
-    if (WoW::dataLoadRequired(WoW::Expansion::_Cata))
+    if (WoW::isDataLoadRequired(WoW::Expansion::_Cata))
     {
         //Zyres: load missing and required data from dbc!
         int32_t player_classlevelstats_count = 0;

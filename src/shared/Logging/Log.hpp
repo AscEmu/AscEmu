@@ -12,6 +12,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include <utility>
 #include <fmt/core.h>
 
+namespace WoW
+{
+    enum class Expansion : uint8_t;
+}
+
 class WorldPacket;
 
 extern SERVER_DECL time_t UNIXTIME; // update this every loop to avoid the time() syscall!
@@ -46,7 +51,8 @@ public:
 
     // WorldSocket.cpp
     // versionId selects the opcode table of the session, -1 uses the configured expansion
-    void logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid = 0, int versionId = -1);
+    void logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountId = 0);
+    void logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountId, WoW::Expansion expansion);
 };
 
 #define sWorldPacketLog WorldPacketLog::getInstance()

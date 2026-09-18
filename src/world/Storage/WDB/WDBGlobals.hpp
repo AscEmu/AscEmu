@@ -201,7 +201,7 @@ namespace WDB
             }
         }
 
-        auto const currentExpansion = WoW::getCurrentExpansion();
+        auto const currentExpansion = WoW::getServerExpansion();
         auto const expansionId = static_cast<uint32_t>(currentExpansion);
         auto const expansionName = WoW::getExpansionName(currentExpansion);
 
@@ -284,7 +284,7 @@ namespace WDB
             }
         };
 
-        switch (WoW::getCurrentExpansion())
+        switch (WoW::getServerExpansion())
         {
             case WoW::Expansion::_Classic: loadRows(std::type_identity<typename Traits::classic>{}); break;
             case WoW::Expansion::_TBC:     loadRows(std::type_identity<typename Traits::tbc>{});     break;

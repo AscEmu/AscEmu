@@ -324,7 +324,7 @@ private:
             case MovementOp::ForcesCount:
             {
                 movementInfo.forcesCount = buffer.readBits(22);
-                sLogger.debugMove("{} : ForcesCount is {}.", sOpcodeTables.getNameForOpcode(opcode, WoW::versionIdFor(Version)), movementInfo.forcesCount);
+                sLogger.debugMove("{} : ForcesCount is {}.", sOpcodeTables.getNameForOpcode(opcode, Version), movementInfo.forcesCount);
             } break;
 
             case MovementOp::Count:
@@ -332,7 +332,7 @@ private:
                 uint32_t counter;
                 buffer >> counter;
                 //buffer.readSkip<uint32_t>();
-                sLogger.debugMove("MovementCodec::executeReadStep: {} : Count is {}.", sOpcodeTables.getNameForOpcode(opcode, WoW::versionIdFor(Version)), counter);
+                sLogger.debugMove("MovementCodec::executeReadStep: {} : Count is {}.", sOpcodeTables.getNameForOpcode(opcode, Version), counter);
             } break;
 
             case MovementOp::NewSpeed: buffer >> movementInfo.newSpeed; break;
@@ -344,14 +344,14 @@ private:
                     uint32_t force;
                     buffer >> force;
                     //buffer.readSkip<uint32_t>();
-                    sLogger.debugMove("MovementCodec::executeReadStep: {} : SkipForcesCountUInt32 {} is {}.", sOpcodeTables.getNameForOpcode(opcode, WoW::versionIdFor(Version)), i, force);
+                    sLogger.debugMove("MovementCodec::executeReadStep: {} : SkipForcesCountUInt32 {} is {}.", sOpcodeTables.getNameForOpcode(opcode, Version), i, force);
                 }
             } break;
 
             case MovementOp::SkipBit:
                 {
                     uint8_t bit = buffer.readBit();
-                    sLogger.debugMove("MovementCodec::executeReadStep: {} : SkipBit is {}.", sOpcodeTables.getNameForOpcode(opcode, WoW::versionIdFor(Version)), bit);
+                    sLogger.debugMove("MovementCodec::executeReadStep: {} : SkipBit is {}.", sOpcodeTables.getNameForOpcode(opcode, Version), bit);
                 } break;
 
             case MovementOp::SkipUInt32:
@@ -359,7 +359,7 @@ private:
                     uint32_t uint;
                     buffer >> uint;
                     //buffer.readSkip<uint32_t>();
-                    sLogger.debugMove("MovementCodec::executeReadStep: {} : SkipUInt32 is {}.", sOpcodeTables.getNameForOpcode(opcode, WoW::versionIdFor(Version)), uint);
+                    sLogger.debugMove("MovementCodec::executeReadStep: {} : SkipUInt32 is {}.", sOpcodeTables.getNameForOpcode(opcode, Version), uint);
                 } break;
             default:
                 break;

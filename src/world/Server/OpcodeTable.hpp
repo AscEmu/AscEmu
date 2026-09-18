@@ -34,62 +34,105 @@ public:
     OpcodeTables& operator=(OpcodeTables&&) = delete;
     OpcodeTables& operator=(OpcodeTables const&) = delete;
 
+    // Internal ID Lookups
 
-    uint32_t getInternalIdForHex(uint16_t hex, WoW::ClientProtocol const& protocol) { return getInternalIdForHex(hex, protocol.versionId()); }
-
-    uint32_t getInternalIdForHex(uint16_t hex, int versionId)
+    [[nodiscard]] uint32_t getInternalIdForHex(uint16_t const hex, int32_t const versionId) const
     {
         if (versionId < 0 || versionId >= MAX_VERSION_INDEX)
+        {
             return 0;
+        }
 
         uint32_t firstMatch = 0;
 
-        for (const auto table : _versionHexTable[versionId])
+        for (const auto& entry : _versionHexTable[versionId])
         {
-            if (table.hexValue != hex)
+            if (entry.hexValue != hex)
+            {
                 continue;
+            }
+
             if (firstMatch == 0)
-                firstMatch = table.internalId;
+            {
+                firstMatch = entry.internalId;
+            }
+
             // For incoming client packets, prefer CMSG over SMSG when hex collides (e.g. MoP 0x1061 = CLEAR_TARGET + OBJECT_UPDATE_FAILED)
-            auto it = multiversionOpcodeStore.find(table.internalId);
-            if (it != multiversionOpcodeStore.end() && it->second.name.size() >= 4 &&
-                it->second.name[0] == 'C' && it->second.name[1] == 'M' && it->second.name[2] == 'S' && it->second.name[3] == 'G')
-                return table.internalId;
+            const auto it = multiversionOpcodeStore.find(entry.internalId);
+            if (it != multiversionOpcodeStore.end() && it->second.name.starts_with("CMSG"))
+            {
+                return entry.internalId;
+            }
         }
 
         return firstMatch;
     }
 
-    std::string getNameForOpcode(uint16_t hex, WoW::ClientProtocol const& protocol) { return getNameForOpcode(hex, protocol.versionId()); }
-
-    std::string getNameForOpcode(uint16_t hex, int versionId)
+    [[nodiscard]] uint32_t getInternalIdForHex(uint16_t const hex, WoW::Expansion const expansion) const
     {
-        return getNameForInternalId(getInternalIdForHex(hex, versionId), versionId);
+        return getInternalIdForHex(hex, WoW::getOpcodeTableIndex(expansion));
     }
 
-    std::string getNameForInternalId(uint32_t id, WoW::ClientProtocol const& protocol) { return getNameForInternalId(id, protocol.versionId()); }
-
-    std::string getNameForInternalId(uint32_t id, int versionId)
+    [[nodiscard]] uint32_t getInternalIdForHex(uint16_t const hex, WoW::ClientProtocol const& protocol) const
     {
-        auto multiversionTable = multiversionOpcodeStore.find(id);
-        if (multiversionTable != multiversionOpcodeStore.end())
-            return multiversionTable->second.name + " [" + std::string(WoW::getNameForVersionId(versionId)) + "]";
+        return getInternalIdForHex(hex, protocol.expansion);
+    }
+
+    // Opcode name lookups (hex -> name)
+
+    [[nodiscard]] std::string getNameForOpcode(uint16_t const hex, WoW::Expansion const expansion) const
+    {
+        return getNameForInternalId(getInternalIdForHex(hex, expansion), expansion);
+    }
+
+    [[nodiscard]] std::string getNameForOpcode(uint32_t const opcode, WoW::Expansion const expansion) const
+    {
+        return getNameForOpcode(static_cast<uint16_t>(opcode), expansion);
+    }
+
+    [[nodiscard]] std::string getNameForOpcode(uint16_t const hex, WoW::ClientProtocol const& protocol) const
+    {
+        return getNameForOpcode(hex, protocol.expansion);
+    }
+
+    // Internal ID name lookups (Internal ID -> name)
+
+    [[nodiscard]] std::string getNameForInternalId(uint32_t const id, WoW::Expansion const expansion) const
+    {
+        const auto it = multiversionOpcodeStore.find(id);
+        if (it != multiversionOpcodeStore.end())
+        {
+            return fmt::format("{} [{}]", it->second.name, WoW::getShortExpansionName(expansion));
+        }
 
         return "Unknown internal id!";
     }
 
-    uint16_t getHexValueForVersionId(uint32_t internalId, WoW::ClientProtocol const& protocol) { return getHexValueForVersionId(internalId, protocol.versionId()); }
-
-    uint16_t getHexValueForVersionId(uint32_t internalId, int versionId)
+    [[nodiscard]] std::string getNameForInternalId(uint32_t const id, WoW::ClientProtocol const& protocol) const
     {
-        if (versionId >= 0 && versionId < MAX_VERSION_INDEX)
+        return getNameForInternalId(id, protocol.expansion);
+    }
+
+    // Hex value lookups (Internal ID -> hex)
+
+    [[nodiscard]] uint16_t getHexValueForExpansion(uint32_t const internalId, WoW::Expansion const expansion) const
+    {
+        const int32_t tableIndex = WoW::getOpcodeTableIndex(expansion);
+        if (tableIndex >= 0 && tableIndex < MAX_VERSION_INDEX)
         {
-            auto multiversionTable = multiversionOpcodeStore.find(internalId);
-            if (multiversionTable != multiversionOpcodeStore.end())
-                return multiversionTable->second.hexValues[versionId];
+            const auto it = multiversionOpcodeStore.find(internalId);
+            if (it != multiversionOpcodeStore.end())
+            {
+                return it->second.hexValues[tableIndex];
+            }
         }
 
         return 0;
+    }
+
+    [[nodiscard]] uint16_t getHexValueForExpansion(uint32_t const internalId, WoW::ClientProtocol const& protocol) const
+    {
+        return getHexValueForExpansion(internalId, protocol.expansion);
     }
 
     OpcodeDevelopmentState getStateForInternalId(uint32_t internalId)
@@ -104,7 +147,7 @@ public:
     struct HexToId
     {
         HexToId(uint16_t hex, uint32_t intId) :
-            hexValue(hex), internalId(intId){}
+            hexValue(hex), internalId(intId) {}
 
         uint16_t hexValue;
         uint32_t internalId;

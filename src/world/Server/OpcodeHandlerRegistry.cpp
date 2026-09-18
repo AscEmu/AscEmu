@@ -33,7 +33,7 @@ bool OpcodeHandlerRegistry::handleOpcode(WorldSession& session, WorldPacket& pac
 
     const auto& entry = it->second;
 
-    if (const int versionId = protocol.versionId(); versionId >= NUM_VERSIONS || !entry.versions[versionId])
+    if (const int32_t tableIndex = WoW::getOpcodeTableIndex(protocol.expansion); tableIndex < 0 || tableIndex >= NUM_VERSIONS || !entry.versions[tableIndex])
     {
         logUnhandledOpcode(rawOpcode, internalId, opcodeName);
         return false;

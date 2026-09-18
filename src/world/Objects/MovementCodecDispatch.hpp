@@ -49,8 +49,8 @@ public:
     }
 
 private:
-    static WoW::Expansion resolve(WoW::Expansion expansion)
+    [[nodiscard]] static WoW::Expansion resolve(WoW::Expansion const expansion) noexcept
     {
-        return WoW::versionIdFor(expansion) >= 0 ? expansion : WoW::getConfigExpansion();
+        return WoW::isSupportedExpansion(expansion) ? expansion : WoW::getServerExpansion();
     }
 };

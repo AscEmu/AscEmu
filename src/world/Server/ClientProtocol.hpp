@@ -15,6 +15,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <string_view>
 
+namespace WoW::Build {
+    // Suffix prevents collision with legacy bareword macros like '#define Classic 5875'
+    inline constexpr uint32_t CLASSIC_BUILD = 5875;
+    inline constexpr uint32_t TBC_BUILD = 8606;
+    inline constexpr uint32_t WOTLK_BUILD = 12340;
+    inline constexpr uint32_t CATA_BUILD = 15595;
+    inline constexpr uint32_t MOP_BUILD = 18414;
+}
+
 namespace WoW {
     enum class Expansion : uint8_t
     {
@@ -40,6 +49,7 @@ namespace WoW {
         uint8_t patch;
     };
 
+    /// Protocol and expansion information for an active client connection
     struct ClientProtocol
     {
         Expansion expansion{Expansion::Unknown};
@@ -57,6 +67,7 @@ namespace WoW {
         [[nodiscard]] bool isLegacy() const { return isClassic() || isTbc(); }
     };
 
+    /// Global protocol state configured for this server instance
     struct ServerProtocol
     {
         Expansion expansion{Expansion::Unknown};
@@ -94,27 +105,100 @@ namespace WoW {
         }
     };
 
-    // Automatically map CMake build version to the Expansion enum
+    // Compile-Time Target Mapping
+    // Represents the maximum expansion compiled into this binary via CMake definitions
+
 #if defined(AE_CLASSIC)
-    inline constexpr Expansion buildExpansion = Expansion::_Classic;
+    inline constexpr Expansion COMPILED_EXPANSION = Expansion::_Classic;
 #elif defined(AE_TBC)
-    inline constexpr Expansion buildExpansion = Expansion::_TBC;
+    inline constexpr Expansion COMPILED_EXPANSION = Expansion::_TBC;
 #elif defined(AE_WOTLK)
-    inline constexpr Expansion buildExpansion = Expansion::_WotLK;
+    inline constexpr Expansion COMPILED_EXPANSION = Expansion::_WotLK;
 #elif defined(AE_CATA)
-    inline constexpr Expansion buildExpansion = Expansion::_Cata;
+    inline constexpr Expansion COMPILED_EXPANSION = Expansion::_Cata;
 #elif defined(AE_MOP)
-    inline constexpr Expansion buildExpansion = Expansion::_Mop;
+    inline constexpr Expansion COMPILED_EXPANSION = Expansion::_Mop;
 #else
-    inline constexpr Expansion buildExpansion = Expansion::_WotLK; // Fallback
+    inline constexpr Expansion COMPILED_EXPANSION = Expansion::_WotLK; // Fallback
 #endif
 
-    extern Expansion g_currentExpansion;
+    [[nodiscard]] constexpr Expansion getCompiledExpansion() noexcept { return COMPILED_EXPANSION; }
 
-    inline Expansion getCurrentExpansion() { return g_currentExpansion; }
+    /// Checks whether the expansion is valid in the enum definition
+    [[nodiscard]] constexpr bool isValidExpansion(Expansion const expansion) noexcept
+    {
+        return expansion != Expansion::Unknown && expansion <= Expansion::MN;
+    }
 
-    // world.conf ClientVersion index (0 = Classic, 1 = TBC, 2 = WotLK, 3 = Cata, 4 = Mop, ...)
-    [[nodiscard]] constexpr Expansion expansionFromVersionId(uint32_t versionId) noexcept
+    /// Checks whether THIS compiled server binary can run this expansion
+    [[nodiscard]] constexpr bool isSupportedExpansion(Expansion const expansion) noexcept
+    {
+        return expansion != Expansion::Unknown && expansion <= COMPILED_EXPANSION;
+    }
+
+    [[nodiscard]] constexpr uint32_t getBuildForExpansion(Expansion const expansion) noexcept
+    {
+        switch (expansion)
+        {
+            case Expansion::_Classic: return Build::CLASSIC_BUILD;
+            case Expansion::_TBC:     return Build::TBC_BUILD;
+            case Expansion::_WotLK:   return Build::WOTLK_BUILD;
+            case Expansion::_Cata:    return Build::CATA_BUILD;
+            case Expansion::_Mop:     return Build::MOP_BUILD;
+            default:                  return 0;
+        }
+    }
+
+    [[nodiscard]] constexpr Expansion getExpansionFromBuild(uint32_t const build) noexcept
+    {
+        switch (build)
+        {
+            case Build::CLASSIC_BUILD: return Expansion::_Classic;
+            case Build::TBC_BUILD:     return Expansion::_TBC;
+            case Build::WOTLK_BUILD:   return Expansion::_WotLK;
+            case Build::CATA_BUILD:    return Expansion::_Cata;
+            case Build::MOP_BUILD:     return Expansion::_Mop;
+            default:                   return Expansion::Unknown;
+        }
+    }
+
+    // Runtime Server State
+    // Configured via world.conf at startup. Must satisfy: g_serverExpansion <= COMPILED_EXPANSION
+    SERVER_DECL extern Expansion g_serverExpansion;
+
+    [[nodiscard]] inline Expansion getServerExpansion() noexcept { return g_serverExpansion; }
+    [[nodiscard]] inline uint32_t getServerBuild() noexcept { return getBuildForExpansion(getServerExpansion()); }
+
+    // Checks for active server expansion
+    [[nodiscard]] inline bool isServerExpansion(Expansion const expansion) noexcept
+    {
+        return getServerExpansion() == expansion;
+    }
+
+    [[nodiscard]] inline bool isServerExpansionAtLeast(Expansion const expansion) noexcept
+    {
+        Expansion const serverExp = getServerExpansion();
+        if (serverExp == Expansion::Unknown || expansion == Expansion::Unknown)
+        {
+            return false;
+        }
+
+        return serverExp >= expansion;
+    }
+
+    [[nodiscard]] inline bool isServerExpansionBetween(Expansion const minExpansion, Expansion const maxExpansion) noexcept
+    {
+        Expansion const serverExp = getServerExpansion();
+        if (serverExp == Expansion::Unknown || minExpansion == Expansion::Unknown || maxExpansion == Expansion::Unknown)
+        {
+            return false;
+        }
+
+        return serverExp >= minExpansion && serverExp <= maxExpansion;
+    }
+
+    /// Converts world.conf integer setting (0 = Classic ... 4 = MoP) to enum
+    [[nodiscard]] constexpr Expansion expansionFromVersionId(uint32_t const versionId) noexcept
     {
         if (versionId > static_cast<uint32_t>(Expansion::MN))
             return Expansion::Unknown;
@@ -122,84 +206,24 @@ namespace WoW {
         return static_cast<Expansion>(versionId);
     }
 
-    // expansion configured in world.conf (Realm1.ClientVersion), decides which data is loaded
-    extern SERVER_DECL Expansion g_configExpansion;
-
-    inline Expansion getConfigExpansion() noexcept { return g_configExpansion; }
-    inline bool isConfigExpansion(Expansion expansion) noexcept { return g_configExpansion == expansion; }
-
-    inline bool isConfigExpansionAtLeast(Expansion expansion) noexcept
+    /// Determines if a data table or resource is required for the active server expansion
+    [[nodiscard]] inline bool isDataLoadRequired(Expansion const minExpansion, Expansion const maxExpansion = Expansion::MN) noexcept
     {
-        if (g_configExpansion == Expansion::Unknown || expansion == Expansion::Unknown)
-            return false;
-
-        return g_configExpansion >= expansion;
+        return isServerExpansionBetween(minExpansion, maxExpansion);
     }
 
-    inline bool isConfigExpansionBetween(Expansion minExpansion, Expansion maxExpansion) noexcept
-    {
-        if (g_configExpansion == Expansion::Unknown || minExpansion == Expansion::Unknown || maxExpansion == Expansion::Unknown)
-            return false;
+    /// Legacy wrapper: Build number used for database build filters
+    [[nodiscard]] inline uint32_t getConfigBuild() noexcept { return getServerBuild(); }
 
-        return g_configExpansion >= minExpansion && g_configExpansion <= maxExpansion;
-    }
-
-    // data loads: the table is used by clients from minExpansion up to maxExpansion
-    inline bool dataLoadRequired(Expansion minExpansion, Expansion maxExpansion = Expansion::MN) noexcept
+    /// Returns the array index for opcode/version tables (0 = Classic ... 4 = MoP), or -1 if unsupported
+    [[nodiscard]] constexpr int32_t getOpcodeTableIndex(Expansion const expansion) noexcept
     {
-        return isConfigExpansionBetween(minExpansion, maxExpansion);
-    }
-
-    // client build of an expansion, 0 for expansions without a supported build
-    [[nodiscard]] constexpr uint32_t buildForExpansion(Expansion expansion) noexcept
-    {
-        switch (expansion)
+        if (expansion == Expansion::Unknown || expansion > Expansion::_Mop)
         {
-            case Expansion::_Classic: return 5875;
-            case Expansion::_TBC: return 8606;
-            case Expansion::_WotLK: return 12340;
-            case Expansion::_Cata: return 15595;
-            case Expansion::_Mop: return 18414;
-
-            default: return 0;
+            return -1;
         }
-    }
 
-    // build number used for the build columns of the database (min_build, max_build, build)
-    inline uint32_t getConfigBuild() noexcept { return buildForExpansion(g_configExpansion); }
-
-    // index of an expansion inside the version tables (0 = Classic ... 4 = Mop), -1 without a table
-    [[nodiscard]] constexpr int32_t versionIdFor(Expansion expansion) noexcept
-    {
-        return expansion <= Expansion::_Mop ? static_cast<int32_t>(expansion) : -1;
-    }
-
-    inline int32_t getConfigVersionId() noexcept
-    {
-        const auto versionId = versionIdFor(g_configExpansion);
-        return versionId >= 0 ? versionId : 0;
-    }
-
-    // expansions without a version table use the configured one
-    inline int32_t versionIdOrConfig(Expansion expansion) noexcept
-    {
-        const auto versionId = versionIdFor(expansion);
-        return versionId >= 0 ? versionId : getConfigVersionId();
-    }
-
-    // short name of a version table index, used in opcode and packet logs
-    [[nodiscard]] constexpr std::string_view getNameForVersionId(int32_t versionId) noexcept
-    {
-        switch (versionId)
-        {
-            case 0: return "Classic";
-            case 1: return "BC";
-            case 2: return "WotLK";
-            case 3: return "Cata";
-            case 4: return "Mop";
-
-            default: return "";
-        }
+        return static_cast<int32_t>(expansion);
     }
 
 //
@@ -218,23 +242,9 @@ namespace WoW {
 //        }
 //    }
 //
-//    [[nodiscard]] constexpr uint32_t getClientBuild(Expansion expansion) noexcept
-//    {
-//        switch (expansion)
-//        {
-//            case Expansion::_Classic: return 5875;
-//            case Expansion::_TBC: return 8606;
-//            case Expansion::_WotLK: return 12340;
-//            case Expansion::_Cata: return 15595;
-//            case Expansion::_Mop: return 18414;
-//
-//            default: return 0;
-//        }
-//    }
-//
-    inline int32_t ClientProtocol::versionId() const noexcept { return versionIdOrConfig(expansion); }
 
-    [[nodiscard]] constexpr std::string_view getExpansionName(Expansion expansion) noexcept
+    /// Returns the full name of an expansion (useful for logs and messages)
+    [[nodiscard]] constexpr std::string_view getExpansionName(Expansion const expansion) noexcept
     {
         switch (expansion)
         {
@@ -252,6 +262,28 @@ namespace WoW {
             case Expansion::MN: return "Midnight";
             case Expansion::Unknown:
             default: return "Unknown expansion";
+        }
+    }
+
+    /// Returns the short abbreviation of an expansion (useful for compact logs and tags)
+    [[nodiscard]] constexpr std::string_view getShortExpansionName(Expansion const expansion) noexcept
+    {
+        switch (expansion)
+        {
+            case Expansion::_Classic: return "Classic";
+            case Expansion::_TBC:     return "TBC";
+            case Expansion::_WotLK:   return "WotLK";
+            case Expansion::_Cata:    return "Cata";
+            case Expansion::_Mop:     return "MoP";
+            case Expansion::WoD:      return "WoD";
+            case Expansion::Legion:   return "Legion";
+            case Expansion::BfA:      return "BfA";
+            case Expansion::SL:       return "Shadowlands";
+            case Expansion::DF:       return "Dragonflight";
+            case Expansion::TWW:      return "TWW";
+            case Expansion::MN:       return "Midnight";
+            case Expansion::Unknown:
+            default:                  return "Unknown";
         }
     }
 }
