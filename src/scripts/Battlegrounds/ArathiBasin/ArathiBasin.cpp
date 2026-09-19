@@ -524,7 +524,7 @@ void ArathiBasin::EventUpdateResources(uint32_t Team)
     if (current_resources >= RESOURCES_WARNING_THRESHOLD && !m_nearingVictory[Team])
     {
         m_nearingVictory[Team] = true;
-        sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, static_cast<uint64_t>(0), "The %s has gathered %u resources and is nearing victory!", Team ? "Horde" : "Alliance", current_resources);
+        sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, static_cast<uint64_t>(0), "The {} has gathered {} resources and is nearing victory!", Team ? "Horde" : "Alliance", current_resources);
         uint32_t sound = BattlegroundDef::ALLIANCE_BGALMOSTEND - Team;
         playSoundToAll(sound);
     }
@@ -729,7 +729,7 @@ void ArathiBasin::CaptureControlPoint(uint32_t Id, uint32_t Team)
 
     // send the chat message/sounds out
     playSoundToAll(Team ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
-    sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The %s has taken the %s!", Team ? "Horde" : "Alliance", ControlPointNames[Id]);
+    sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The {} has taken the {}!", Team ? "Horde" : "Alliance", ControlPointNames[Id]);
     DefFlag[Id][0] = false;
     DefFlag[Id][1] = false;
 
@@ -786,7 +786,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
     if (!m_hasStarted)
     {
         sCheatLog.writefromsession(pPlayer->getSession(), "{} attempted to assault an Arathi Basin control point before the battleground started (battleground ID: {}).", pPlayer->getName(), this->m_id);
-        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, pPlayer->getGuid(), "%s attempted to assault an Arathi Basin control point before the battleground started and will be removed for cheating.", pPlayer->getName().c_str());
+        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, pPlayer->getGuid(), "{} attempted to assault an Arathi Basin control point before the battleground started and will be removed for cheating.", pPlayer->getName());
         // Remove player from battleground.
         removePlayer(pPlayer, false);
         // Kick player from server.
@@ -878,7 +878,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
     if (DefFlag[Id][0] && !DefFlag[Id][1])
     {
         DefFlag[Id][0] = false;
-        sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "%s defend %s", pPlayer->getName().c_str(), ControlPointNames[Id]);
+        sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "{} defend {}", pPlayer->getName(), ControlPointNames[Id]);
         sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         pPlayer->m_bgScore.MiscData[BattlegroundDef::AB_BASES_CAPTURED]++;
         updatePvPData();
@@ -886,7 +886,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
     else if (!DefFlag[Id][0] && !DefFlag[Id][1])
     {
         DefFlag[Id][0] = true;
-        sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "%s assault %s !", pPlayer->getName().c_str(), ControlPointNames[Id]);
+        sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "{} assault {}!", pPlayer->getName(), ControlPointNames[Id]);
         playSoundToAll(Team ? 8212 : 8174);
         if (Team)
         {
@@ -943,8 +943,8 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32_t Id)
     else
     {
         DefFlag[Id][0] = true;
-        sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "%s claims the %s! If left unchallenged, the %s will control it in 1 minute!", 
-                                                                                                          pPlayer->getName().c_str(), ControlPointNames[Id], Team ? "Horde" : "Alliance");
+        sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "{} claims the {}! If left unchallenged, the {} will control it in 1 minute!", 
+                                                                                                          pPlayer->getName(), ControlPointNames[Id], Team ? "Horde" : "Alliance");
         playSoundToAll(8192);
         sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, TimeVarsMs::Minute, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }

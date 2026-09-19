@@ -951,10 +951,10 @@ void IsleOfConquest::AssaultControlPoint(Player *player, uint32_t id)
     }
 
     if (player->getTeam() == TEAM_ALLIANCE)
-        sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "%s has assaulted the %s! If it remains uncontested, the alliance will take it within a minute!", player->getName().c_str(), ControlPointNames[id]);
+        sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "{} has assaulted the {}! If it remains uncontested, the alliance will take it within a minute!", player->getName(), ControlPointNames[id]);
     else
         if (player->getTeam() == TEAM_HORDE)
-            sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "%s has assaulted the %s! If it remains uncontested, the horde will take it within a minute!", player->getName().c_str(), ControlPointNames[id]);
+            sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "{} has assaulted the {}! If it remains uncontested, the horde will take it within a minute!", player->getName(), ControlPointNames[id]);
 
     sEventMgr.AddEvent(this, &IsleOfConquest::CaptureControlPoint, id, EVENT_IOC_CAPTURE_CP_1 + id, 60 * 1 * 1000, 1, 0);
 }
@@ -968,23 +968,22 @@ void IsleOfConquest::CaptureControlPoint(uint32_t id)
         case IOC_SPAWN_TYPE_ALLIANCE_ASSAULT:
             SpawnControlPoint(id, IOC_SPAWN_TYPE_ALLIANCE_CONTROLLED);
             playSoundToAll(BattlegroundDef::ALLIANCE_CAPTURE);
-            sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The Alliance has taken the %s!", ControlPointNames[id]);
+            sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The Alliance has taken the {}!", ControlPointNames[id]);
             CALL_CAPTURE_EVENT_FOR(this, id);
             break;
 
         case IOC_SPAWN_TYPE_HORDE_ASSAULT:
             SpawnControlPoint(id, IOC_SPAWN_TYPE_HORDE_CONTROLLED);
             playSoundToAll(BattlegroundDef::HORDE_CAPTURE);
-            sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "The Horde has taken the %s!", ControlPointNames[id]);
+            sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "The Horde has taken the {}!", ControlPointNames[id]);
             CALL_CAPTURE_EVENT_FOR(this, id);
             break;
 
         default:
-            DLLLogDetail("IOC control point %u is not in assaulted state, so it cannot be captured.", id);
+            DLLLogDetail("IOC control point {} is not in assaulted state, so it cannot be captured.", id);
             return;
             break;
     }
-
 }
 
 bool IsleOfConquest::HookHandleRepop(Player* plr)

@@ -254,7 +254,7 @@ void SilvershardMines::OnTrackSwitchClicked(Creature* trackSwitch)
     *state = (*state == SILVERSHARD_TRACK_CLOSED) ? SILVERSHARD_TRACK_OPEN : SILVERSHARD_TRACK_CLOSED;
     setWorldState(worldStateId, *state);
     playSoundToAll(BattlegroundDef::FLAG_RETURNED);
-    sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The %s Crossroads tracks have been switched!", label);
+    sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The {} Crossroads tracks have been switched!", label);
 }
 
 void SilvershardMines::CaptureCart(uint32_t mineIndex, uint32_t Team)
