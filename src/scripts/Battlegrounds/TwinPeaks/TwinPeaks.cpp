@@ -194,9 +194,9 @@ void TwinPeaks::HookOnAreaTrigger(Player* plr, uint32_t id)
         playSoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_SCORES : BattlegroundDef::ALLIANCE_SCORES);
 
         if (plr->isTeamHorde())
-            sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "%s captured the Alliance flag!", plr->getName().c_str());
+            sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "{} captured the Alliance flag!", plr->getName());
         else
-            sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "%s captured the Horde flag!", plr->getName().c_str());
+            sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "{} captured the Horde flag!", plr->getName());
 
         setWorldState(plr->isTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 1);
 
@@ -263,9 +263,9 @@ void TwinPeaks::HookOnFlagDrop(Player* plr)
     playSoundToAll(BattlegroundDef::FLAG_RETURNED);
 
     if (plr->isTeamHorde())
-        sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Alliance flag was dropped by %s!", plr->getName().c_str());
+        sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Alliance flag was dropped by {}!", plr->getName());
     else
-        sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Horde flag was dropped by %s!", plr->getName().c_str());
+        sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Horde flag was dropped by {}!", plr->getName());
 }
 
 void TwinPeaks::HookFlagDrop(Player* plr, GameObject* obj)
@@ -291,9 +291,9 @@ void TwinPeaks::HookFlagDrop(Player* plr, GameObject* obj)
             playSoundToAll(BattlegroundDef::FLAG_RETURNED);
 
             if (plr->isTeamHorde())
-                sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Horde flag was returned to its base by %s!", plr->getName().c_str());
+                sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Horde flag was returned to its base by {}!", plr->getName());
             else
-                sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Alliance flag was returned to its base by %s!", plr->getName().c_str());
+                sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Alliance flag was returned to its base by {}!", plr->getName());
 
             setWorldState(plr->isTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 1);
 
@@ -338,9 +338,9 @@ void TwinPeaks::HookFlagDrop(Player* plr, GameObject* obj)
     playSoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
 
     if (plr->isTeamHorde())
-        sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Alliance's flag has been taken by %s !", plr->getName().c_str());
+        sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Alliance's flag has been taken by {} !", plr->getName());
     else
-        sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Horde's flag has been taken by %s !", plr->getName().c_str());
+        sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Horde's flag has been taken by {} !", plr->getName());
 }
 
 void TwinPeaks::ReturnFlag(PlayerTeam team)
@@ -441,7 +441,7 @@ void TwinPeaks::HookFlagStand(Player* plr, GameObject* obj)
     if (!m_hasStarted)
     {
         sCheatLog.writefromsession(plr->getSession(), "{} attempted to pick up the Twin Peaks flag before the battleground started (ID: {}).", plr->getName(), this->m_id);
-        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s attempted to pick up the Twin Peaks flag before the battleground started and will be removed for cheating.", plr->getName().c_str());
+        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "{} attempted to pick up the Twin Peaks flag before the battleground started and will be removed for cheating.", plr->getName());
         this->removePlayer(plr, false);
         plr->kickFromServer(6000);
         return;
@@ -475,9 +475,9 @@ void TwinPeaks::HookFlagStand(Player* plr, GameObject* obj)
     playSoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
     setWorldState(plr->isTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 2);
     if (plr->isTeamHorde())
-        sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Alliance's flag has been taken by %s !", plr->getName().c_str());
+        sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Alliance's flag has been taken by {} !", plr->getName());
     else
-        sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Horde's flag has been taken by %s !", plr->getName().c_str());
+        sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Horde's flag has been taken by {} !", plr->getName());
 }
 
 void TwinPeaks::HookOnPlayerKill(Player* plr, Player* /*pVictim*/)

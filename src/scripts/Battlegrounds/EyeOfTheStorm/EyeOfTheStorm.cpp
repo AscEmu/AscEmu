@@ -358,7 +358,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32_t id)
     if (!m_hasStarted)
     {
         sCheatLog.writefromsession(plr->getSession(), "{} attempted to pick up the Eye of the Storm flag before the battleground started (ID: {})", plr->getName(), this->m_id);
-        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s attempted to pick up the Eye of the Storm flag before the battleground started and will be removed for cheating.", plr->getName().c_str());
+        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "{} attempted to pick up the Eye of the Storm flag before the battleground started and will be removed for cheating.", plr->getName());
         // Remove player from battleground.
         this->removePlayer(plr, false);
         // Kick player from server.
@@ -433,7 +433,7 @@ void EyeOfTheStorm::HookFlagDrop(Player* plr, GameObject* /*obj*/)
 
     setWorldState(EOTS_NETHERWING_FLAG_READY, 0);
     playSoundToAll(plr->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
-    sendChatMessage(static_cast<uint8_t>(CHAT_MSG_BG_EVENT_ALLIANCE) + static_cast<uint8_t>(plr->getTeam()), plr->getGuid(), "%s has taken the flag!", plr->getName().c_str());
+    sendChatMessage(static_cast<uint8_t>(CHAT_MSG_BG_EVENT_ALLIANCE) + static_cast<uint8_t>(plr->getTeam()), plr->getGuid(), "{} has taken the flag!", plr->getName());
     m_flagHolder = plr->GetNewGUID();
 
     event_RemoveEvents(EVENT_EOTS_RESET_FLAG);
@@ -453,7 +453,7 @@ bool EyeOfTheStorm::HookSlowLockOpen(GameObject* /*pGo*/, Player* pPlayer, Spell
 
     setWorldState(EOTS_NETHERWING_FLAG_READY, 0);
     playSoundToAll(pPlayer->isTeamHorde() ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
-    sendChatMessage(static_cast<uint8_t>(CHAT_MSG_BG_EVENT_ALLIANCE) + static_cast<uint8_t>(pPlayer->getTeam()), pPlayer->getGuid(), "%s has taken the flag!", pPlayer->getName().c_str());
+    sendChatMessage(static_cast<uint8_t>(CHAT_MSG_BG_EVENT_ALLIANCE) + static_cast<uint8_t>(pPlayer->getTeam()), pPlayer->getGuid(), "{} has taken the flag!", pPlayer->getName());
     m_flagHolder = pPlayer->GetNewGUID();
     return true;
 }
@@ -536,7 +536,7 @@ void EyeOfTheStorm::HookOnFlagDrop(Player* plr)
     m_dropFlag->PushToWorld(m_mapMgr);
     m_flagHolder = 0;
     playSoundToAll(BattlegroundDef::FLAG_RETURNED);
-    sendChatMessage(static_cast<uint8_t>(CHAT_MSG_BG_EVENT_ALLIANCE) + static_cast<uint8_t>(plr->getTeam()), plr->getGuid(), "%s has dropped the flag!", plr->getName().c_str());
+    sendChatMessage(static_cast<uint8_t>(CHAT_MSG_BG_EVENT_ALLIANCE) + static_cast<uint8_t>(plr->getTeam()), plr->getGuid(), "{} has dropped the flag!", plr->getName());
 
     sEventMgr.AddEvent(this, &EyeOfTheStorm::EventResetFlag, EVENT_EOTS_RESET_FLAG, 10000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
@@ -725,7 +725,7 @@ void EyeOfTheStorm::UpdateCPs()
                     setWorldState(m_iconsStates[i][0], 0);
                     setWorldState(m_iconsStates[i][1], 0);
                     setWorldState(m_iconsStates[i][2], 1);
-                    sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "The Horde has taken the %s !", EOTSControlPointNames[i]);
+                    sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "The Horde has taken the {}!", EOTSControlPointNames[i]);
                     playSoundToAll(BattlegroundDef::HORDE_CAPTURE);
                 }
             }
@@ -748,7 +748,7 @@ void EyeOfTheStorm::UpdateCPs()
                     setWorldState(m_iconsStates[i][0], 0);
                     setWorldState(m_iconsStates[i][1], 1);
                     setWorldState(m_iconsStates[i][2], 0);
-                    sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The Alliance has taken the %s", EOTSControlPointNames[i]);
+                    sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The Alliance has taken the {}", EOTSControlPointNames[i]);
                     playSoundToAll(BattlegroundDef::ALLIANCE_CAPTURE);
                 }
             }
@@ -758,11 +758,11 @@ void EyeOfTheStorm::UpdateCPs()
                 {
                     if (m_CPBanner[i]->getEntry() == EOTS_BANNER_ALLIANCE)
                     {
-                        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Alliance has lost the control of the %s.", EOTSControlPointNames[i]);
+                        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Alliance has lost the control of the {}.", EOTSControlPointNames[i]);
                     }
                     else if (m_CPBanner[i]->getEntry() == EOTS_BANNER_HORDE)
                     {
-                        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Horde has lost the control of the %s.", EOTSControlPointNames[i]);
+                        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Horde has lost the control of the {}.", EOTSControlPointNames[i]);
                     }
                     RespawnCPFlag(i, EOTS_BANNER_NEUTRAL);
                     if (m_spiritGuides[i] != nullptr)
