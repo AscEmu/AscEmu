@@ -18,7 +18,7 @@ namespace AscEmu::Packets
         uint32_t value1;
         uint32_t worldState2;
         uint32_t value2;
-        
+
         SmsgUpdateWorldState() : SmsgUpdateWorldState(0, 0, 0, 0)
         {
         }
@@ -37,11 +37,24 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion == WoW::Expansion::_Classic)
+            {
+                // Arena states (0xC77 / 0xF3D) do not exist in Classic and must not be sent
+                if (worldState1 == 0xC77)
+                    return false;
+
+                // Classic SMSG_UPDATE_WORLD_STATE only supports exactly 8 bytes (1 state per packet)
+                packet << worldState1 << value1;
+                return true;
+            }
+
             if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
                 packet.writeBit(0);
             }
+
             packet << worldState1 << value1;
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 if (worldState2 != 0)

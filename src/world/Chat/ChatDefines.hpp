@@ -133,3 +133,49 @@ struct LanguageSkillSpell
 #define MSG_COLOR_SEXPINK           "|cffC67171"
 #define MSG_COLOR_SEXBLUE           "|cff00E5EE"
 #define MSG_COLOR_SEXHOTPINK        "|cffFF6EB4"
+
+struct ClassicChatTypeMapping
+{
+    uint32_t classicWireType;
+    uint32_t internalChatType;
+};
+
+static constexpr std::array<ClassicChatTypeMapping, 17> classicChatMap = { {
+    { 0,  CHAT_MSG_SAY },
+    { 1,  CHAT_MSG_PARTY },
+    { 2,  CHAT_MSG_RAID },
+    { 3,  CHAT_MSG_GUILD },
+    { 4,  CHAT_MSG_OFFICER },
+    { 5,  CHAT_MSG_YELL },
+    { 6,  CHAT_MSG_WHISPER },
+    { 7,  CHAT_MSG_WHISPER_INFORM },
+    { 8,  CHAT_MSG_EMOTE },
+    { 9,  CHAT_MSG_TEXT_EMOTE },
+    { 10, CHAT_MSG_SYSTEM },
+    { 14, CHAT_MSG_CHANNEL },
+    { 20, CHAT_MSG_AFK },
+    { 21, CHAT_MSG_DND },
+    { 22, CHAT_MSG_IGNORED },
+    { 31, CHAT_MSG_BATTLEGROUND },
+    { 32, CHAT_MSG_BATTLEGROUND_LEADER }
+} };
+
+[[nodiscard]] static constexpr uint32_t mapClassicToInternalType(uint32_t wireType) noexcept
+{
+    for (const auto& entry : classicChatMap)
+    {
+        if (entry.classicWireType == wireType)
+            return entry.internalChatType;
+    }
+    return wireType;
+}
+
+[[nodiscard]] static constexpr uint8_t mapInternalToClassicType(uint32_t internalType) noexcept
+{
+    for (const auto& entry : classicChatMap)
+    {
+        if (entry.internalChatType == internalType)
+            return static_cast<uint8_t>(entry.classicWireType);
+    }
+    return static_cast<uint8_t>(internalType);
+}

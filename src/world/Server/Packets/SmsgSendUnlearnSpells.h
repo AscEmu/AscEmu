@@ -15,7 +15,7 @@ namespace AscEmu::Packets
     {
     public:
         uint32_t count;
-        
+
         SmsgSendUnlearnSpells() : SmsgSendUnlearnSpells(0)
         {
         }
@@ -31,6 +31,10 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            // SMSG_SEND_UNLEARN_SPELLS is only available in WotLK and later expansions (dual-spec)
+            if (m_protocol.expansion < WoW::Expansion::_WotLK)
+                return false;
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << count;

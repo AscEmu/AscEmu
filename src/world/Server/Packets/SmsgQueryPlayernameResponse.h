@@ -32,7 +32,7 @@ namespace AscEmu::Packets
         uint8_t gender = 0;
         uint8_t class_ = 0;
         uint8_t level = 0;
-        
+
         bool hasData = true;
         bool hasDeclinedNames = false;
 
@@ -45,7 +45,17 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_WotLK && m_protocol.expansion < WoW::Expansion::_Mop)
+            if (m_protocol.expansion == WoW::Expansion::_Classic)
+            {
+                packet << guid.getRawGuid();
+                packet << player_name;
+                packet << ""; // Realm name, not used in Classic
+                packet << static_cast<uint32_t>(race);
+                packet << static_cast<uint32_t>(gender);
+                packet << static_cast<uint32_t>(class_);
+                return true;
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_WotLK && m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << guid << uint8_t(0) << player_name << uint8_t(0) << race << gender << class_ << uint8_t(0);
             }
@@ -146,10 +156,10 @@ namespace AscEmu::Packets
             }
             else
             {
-                // Classic/TBC
+                // TBC
                 packet << guid.getLowGuid() << uint32_t(0) << player_name << uint8_t(0) << uint32_t(race) << uint32_t(gender) << uint32_t(class_) << uint8_t(0);
             }
-            
+
             return true;
         }
 

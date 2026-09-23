@@ -293,12 +293,14 @@ bool Object::write(const uint64_t& member, uint32_t low, uint32_t high, bool ski
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 uint64_t Object::getGuid() const { return objectData()->guid.guid; }
+
 void Object::setGuid(uint64_t guid)
 {
     write(objectData()->guid.guid, guid);
     m_wowGuid.init(guid);
     obj_movement_info.guid = guid;
 }
+
 void Object::setGuid(uint32_t low, uint32_t high) { setGuid(static_cast<uint64_t>(high) << 32 | low); }
 
 uint32_t Object::getGuidLow() const { return objectData()->guid.parts.low; }
@@ -2346,10 +2348,9 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, [[maybe_
 {
     *data << uint8_t(updateFlags);
 
-    if (updateFlags & UPDATEFLAG_LIVING)  //0x20
+    if (updateFlags & UPDATEFLAG_LIVING) //0x20
     {
         *data << uint32_t(obj_movement_info.getMovementFlags());
-
         *data << Util::getMSTime();
 
         *data << float(m_position.x);
@@ -2359,33 +2360,29 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, [[maybe_
 
         if (obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT)) //0x0200
         {
-            *data << obj_movement_info.transport_guid;
+            FastGUIDPack(*data, obj_movement_info.transport_guid);
             *data << float(GetTransOffsetX());
             *data << float(GetTransOffsetY());
             *data << float(GetTransOffsetZ());
             *data << float(GetTransOffsetO());
         }
 
-        if (obj_movement_info.hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)))   // 0x2000000+0x0200000 flying/swimming, || sflags & SMOVE_FLAG_ENABLE_PITCH
+        if (obj_movement_info.hasMovementFlag(MOVEFLAG_SWIMMING)) // 0x2000000+0x0200000 flying/swimming, || sflags & SMOVE_FLAG_ENABLE_PITCH
         {
             *data << obj_movement_info.pitch_rate;
         }
 
         *data << obj_movement_info.fall_time;
 
-        if (obj_movement_info.hasMovementFlag(MOVEFLAG_FALLING))   // 0x00001000
+        if (obj_movement_info.hasMovementFlag(MOVEFLAG_FALLING)) // 0x00001000
         {
-
             *data << obj_movement_info.jump_info.velocity;
             *data << obj_movement_info.jump_info.cosAngle;
             *data << obj_movement_info.jump_info.sinAngle;
             *data << obj_movement_info.jump_info.xyspeed;
         }
 
-        if (obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION))
-            *data << float(obj_movement_info.spline_elevation);
-
-        if (Unit* unit = static_cast<Unit*>(this))
+        if (Unit* unit = dynamic_cast<Unit*>(this))
         {
             *data << unit->getSpeedRate(TYPE_WALK, true);
             *data << unit->getSpeedRate(TYPE_RUN, true);
@@ -2394,7 +2391,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, [[maybe_
             *data << unit->getSpeedRate(TYPE_SWIM_BACK, true);
             *data << unit->getSpeedRate(TYPE_TURN_RATE, true);
         }
-        else                                //\todo Zyres: this is ridiculous... only units have these types, but this function is a mess so don't breake anything.
+        else //\todo Zyres: this is ridiculous... only units have these types, but this function is a mess so don't breake anything.
         {
             *data << float(2.5f);
             *data << float(7.0f);
@@ -2403,16 +2400,10 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, [[maybe_
             *data << float(2.5f);
             *data << float(3.141594f);
         }
-
-        if (obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ENABLED))   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
-        {
-            if (Unit* unit = static_cast<Unit*>(this))
-                MovementMgr::PacketBuilder::WriteCreate(*unit->movespline, *data);
-        }
     }
-    else        // No UPDATEFLAG_LIVING
+    else // No UPDATEFLAG_LIVING
     {
-        if (updateFlags & UPDATEFLAG_HAS_POSITION)  //0x40
+        if (updateFlags & UPDATEFLAG_HAS_POSITION) //0x40
         {
             if (updateFlags & UPDATEFLAG_TRANSPORT)
             {
@@ -2437,15 +2428,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, [[maybe_
     if (updateFlags & UPDATEFLAG_ALL)
         *data << uint32_t(0x1);
 
-    if (updateFlags & UPDATEFLAG_HAS_TARGET)  //0x04
-    {
-        if (isCreatureOrPlayer())
-            FastGUIDPack(*data, static_cast<Unit*>(this)->getTargetGuid()); //some compressed GUID
-        else
-            *data << uint64_t(0);
-    }
-
-    if (updateFlags & UPDATEFLAG_TRANSPORT)   //0x2
+    if (updateFlags & UPDATEFLAG_TRANSPORT) // 0x2
     {
         GameObject const* go = static_cast<GameObject*>(this);
         if (go && go->ToTransport())

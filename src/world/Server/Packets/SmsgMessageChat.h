@@ -78,6 +78,68 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion == WoW::Expansion::_Classic)
+            {
+                packet << mapInternalToClassicType(type);
+                packet << static_cast<uint32_t>(language);
+
+                switch (type)
+                {
+                    case CHAT_MSG_SYSTEM:
+                        {
+                            packet << static_cast<uint64_t>(0);
+                            packet << static_cast<uint32_t>(message.length() + 1) << message << flag;
+                        } break;
+                    case CHAT_MSG_CHANNEL:
+                        {
+                            packet << receiverName; // Channel name (null-terminated string)
+                            packet << static_cast<uint32_t>(0);
+                            packet << senderGuid.getRawGuid();
+                            packet << static_cast<uint32_t>(message.length() + 1) << message << flag;
+                        } break;
+
+                    case CHAT_MSG_MONSTER_SAY:
+                    case CHAT_MSG_MONSTER_PARTY:
+                    case CHAT_MSG_MONSTER_YELL:
+                    case CHAT_MSG_MONSTER_WHISPER:
+                    case CHAT_MSG_MONSTER_EMOTE:
+                    case CHAT_MSG_RAID_BOSS_EMOTE:
+                    case CHAT_MSG_WHISPER_MOB:
+                        {
+                            packet << senderGuid.getRawGuid();
+                            packet << static_cast<uint32_t>(senderName.length() + 1) << senderName;
+                            packet << receiverGuid.getRawGuid();
+                            if (receiverGuid && !receiverGuid.isPlayer() && !receiverGuid.isPet() && type != CHAT_MSG_WHISPER_MOB)
+                            {
+                                packet << static_cast<uint32_t>(receiverName.length() + 1) << receiverName;
+                            }
+                            packet << static_cast<uint32_t>(message.length() + 1) << message << flag;
+                        } break;
+                    case CHAT_MSG_SAY:
+                    case CHAT_MSG_YELL:
+                    case CHAT_MSG_PARTY:
+                    case CHAT_MSG_PARTY_LEADER:
+                    case CHAT_MSG_RAID:
+                    case CHAT_MSG_RAID_LEADER:
+                    case CHAT_MSG_RAID_WARNING:
+                    case CHAT_MSG_GUILD:
+                    case CHAT_MSG_OFFICER:
+                    case CHAT_MSG_EMOTE:
+                    case CHAT_MSG_TEXT_EMOTE:
+                    case CHAT_MSG_WHISPER:
+                    case CHAT_MSG_WHISPER_INFORM:
+                    case CHAT_MSG_AFK:
+                    case CHAT_MSG_DND:
+                    default:
+                        {
+                            packet << receiverGuid.getRawGuid(); // 0
+                            packet << senderGuid.getRawGuid(); // Player GUID
+                            packet << static_cast<uint32_t>(message.length() + 1) << message << flag;
+                        } break;
+                }
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 // same for all chat types

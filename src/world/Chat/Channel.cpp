@@ -156,6 +156,7 @@ void Channel::attemptJoin(Player* plr, std::string password, bool skipCheck/* = 
             targetSession->sendManagedPacket(sendPacket);
     }
 
+#if VERSION_STRING == MoP
     // Userlist only implemented for Mop
     if (m_channelId != 0)
     {
@@ -167,6 +168,7 @@ void Channel::attemptJoin(Player* plr, std::string password, bool skipCheck/* = 
         SmsgUserlistUpdate managedPacket(m_channelId, m_channelFlags, memberFlags, m_channelName, plr->getGuid());
         PacketBroadcast::sendFromChannel(*this, managedPacket);
     }
+#endif
 }
 
 void Channel::leaveChannel(Player* plr, bool sendPacket/* = true*/)

@@ -13,22 +13,26 @@ namespace AscEmu::Packets
     class SmsgCharCreate : public ManagedPacket
     {
     public:
-        uint8_t result;
+        CharacterErrorCodes errorCode;
 
-        SmsgCharCreate() : SmsgCharCreate(0)
-        {
-        }
-
-        SmsgCharCreate(uint8_t result) :
+        explicit SmsgCharCreate(CharacterErrorCodes code) :
             ManagedPacket(SMSG_CHAR_CREATE, 1),
-            result(result)
+            errorCode(code)
         {
         }
 
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << result;
+            auto rawErrorCode = static_cast<uint8_t>(errorCode);
+
+            if (m_protocol.getExpansion() == WoW::Expansion::_Classic)
+            {
+                if (rawErrorCode >= static_cast<uint8_t>(E_CHAR_CREATE_SUCCESS))
+                    --rawErrorCode;
+            }
+
+            packet << rawErrorCode;
             return true;
         }
 

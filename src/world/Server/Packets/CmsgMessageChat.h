@@ -77,6 +77,10 @@ namespace AscEmu::Packets
             {
                 packet >> type >> language;
 
+                // Map Classic wire enum to internal AscEmu enum
+                if (m_protocol.expansion == WoW::Expansion::_Classic)
+                    type = mapClassicToInternalType(type);
+
                 switch (type)
                 {
                     case CHAT_MSG_EMOTE:

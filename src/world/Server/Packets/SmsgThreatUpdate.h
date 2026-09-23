@@ -29,6 +29,10 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            // Threat synchronization does not exist prior to WotLK
+            if (m_protocol.expansion < WoW::Expansion::_WotLK)
+                return false;
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet.appendPackGuid(guid.getRawGuid());

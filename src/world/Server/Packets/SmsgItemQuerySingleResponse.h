@@ -44,7 +44,113 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isTbc())
+            if (m_protocol.isClassic())
+            {
+                packet << itemProperties->ItemId;
+                packet << itemProperties->Class;
+                packet << uint32_t(itemProperties->SubClass);
+                packet << name;
+                packet << uint8_t(0); // name 2
+                packet << uint8_t(0); // name 3
+                packet << uint8_t(0); // name 4
+                packet << itemProperties->DisplayInfoID;
+                packet << itemProperties->Quality;
+                packet << itemProperties->Flags;
+                packet << itemProperties->BuyPrice;
+                packet << itemProperties->SellPrice;
+                packet << itemProperties->InventoryType;
+                packet << itemProperties->AllowableClass;
+                packet << itemProperties->AllowableRace;
+                packet << itemProperties->ItemLevel;
+                packet << itemProperties->RequiredLevel;
+                packet << uint32_t(itemProperties->RequiredSkill);
+                packet << itemProperties->RequiredSkillRank;
+                packet << itemProperties->RequiredSpell;
+                packet << itemProperties->RequiredPlayerRank1;
+                packet << itemProperties->RequiredPlayerRank2;
+                packet << itemProperties->RequiredFaction;
+                packet << itemProperties->RequiredFactionStanding;
+                packet << itemProperties->Unique;
+                packet << itemProperties->MaxCount;
+                packet << itemProperties->ContainerSlots;
+
+                // Classic 1.12.1 expects exactly 10 * 8 bytes of stat data, so we fill the remaining entries with zeroes if there are less than 10 stats
+                {
+                    auto it = itemProperties->generalStatsMap.begin();
+                    for (uint8_t i = 0; i < 10; ++i)
+                    {
+                        if (it != itemProperties->generalStatsMap.end())
+                        {
+                            packet << it->first;
+                            packet << it->second;
+                            ++it;
+                        }
+                        else
+                        {
+                            packet << uint32_t(0);
+                            packet << int32_t(0);
+                        }
+                    }
+                }
+
+                // Classic has only 2 damage entries, but the client expects 5 entries, so we fill the remaining 3 with zeroes
+                for (uint8_t i = 0; i < 5; ++i)
+                {
+                    if (i < 2)
+                    {
+                        packet << itemProperties->Damage[i].Min;
+                        packet << itemProperties->Damage[i].Max;
+                        packet << itemProperties->Damage[i].Type;
+                    }
+                    else
+                    {
+                        packet << 0.0f;
+                        packet << 0.0f;
+                        packet << uint32_t(0);
+                    }
+                }
+
+                packet << itemProperties->Armor;
+                packet << uint32_t(itemProperties->getStat(ITEM_MOD_HOLY_RESISTANCE));
+                packet << uint32_t(itemProperties->getStat(ITEM_MOD_FIRE_RESISTANCE));
+                packet << uint32_t(itemProperties->getStat(ITEM_MOD_NATURE_RESISTANCE));
+                packet << uint32_t(itemProperties->getStat(ITEM_MOD_FROST_RESISTANCE));
+                packet << uint32_t(itemProperties->getStat(ITEM_MOD_SHADOW_RESISTANCE));
+                packet << uint32_t(itemProperties->getStat(ITEM_MOD_ARCANE_RESISTANCE));
+
+                packet << itemProperties->Delay;
+                packet << itemProperties->AmmoType;
+                packet << itemProperties->Range;
+
+                for (uint8_t i = 0; i < 5; ++i)
+                {
+                    packet << itemProperties->Spells[i].Id;
+                    packet << itemProperties->Spells[i].Trigger;
+                    packet << itemProperties->Spells[i].Charges;
+                    packet << itemProperties->Spells[i].Cooldown;
+                    packet << itemProperties->Spells[i].Category;
+                    packet << itemProperties->Spells[i].CategoryCooldown;
+                }
+
+                packet << itemProperties->Bonding;
+                packet << description;
+                packet << itemProperties->PageId;
+                packet << itemProperties->PageLanguage;
+                packet << itemProperties->PageMaterial;
+                packet << itemProperties->QuestId;
+                packet << itemProperties->LockId;
+                packet << itemProperties->LockMaterial;
+                packet << itemProperties->SheathID;
+                packet << itemProperties->RandomPropId;
+                packet << itemProperties->RandomSuffixId;
+                packet << itemProperties->Block;
+                packet << itemProperties->ItemSet;
+                packet << itemProperties->MaxDurability;
+                packet << itemProperties->ZoneNameID;
+                packet << itemProperties->MapID;
+                packet << itemProperties->BagFamily;
+            }
+            else if (m_protocol.isTbc())
             {
                 packet << itemProperties->ItemId;
                 packet << itemProperties->Class;
