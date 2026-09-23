@@ -938,13 +938,13 @@ void StrandOfTheAncient::CaptureControlPoint(SOTAControlPoints point)
         case SOTA_CP_STATE_ALLY_CONTROL:
             SpawnControlPoint(point, SOTA_CP_STATE_HORDE_CONTROL);
             playSoundToAll(BattlegroundDef::HORDE_CAPTURE);
-            sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "The horde has captured the %s!", ControlPointNames[point]);
+            sendChatMessage(CHAT_MSG_BG_EVENT_HORDE, 0, "The horde has captured the {}!", ControlPointNames[point]);
             break;
 
         case SOTA_CP_STATE_HORDE_CONTROL:
             SpawnControlPoint(point, SOTA_CP_STATE_ALLY_CONTROL);
             playSoundToAll(BattlegroundDef::ALLIANCE_CAPTURE);
-            sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The alliance has captured the %s!", ControlPointNames[point]);
+            sendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The alliance has captured the {}!", ControlPointNames[point]);
             break;
     }
 

@@ -82,7 +82,7 @@ LuaEngine::LuaEngine() : lu(nullptr) {}
 
 void LuaEngine::ScriptLoadDir(const std::string Dirname, LUALoadScripts* pak)
 {
-    DLLLogDetail("LuaEngine : Scanning Directory {}", Dirname.c_str());
+    DLLLogDetail("LuaEngine : Scanning Directory {}", Dirname);
 
     if (!fs::exists(Dirname))
     {
@@ -117,19 +117,19 @@ void LuaEngine::LoadScripts()
         const auto errorCode = luaL_loadfile(lu, itr.c_str());
         if (errorCode)
         {
-            DLLLogDetail("loading {} failed.(could not load). Error code {}", itr.c_str(), errorCode);
+            DLLLogDetail("loading {} failed.(could not load). Error code {}", itr, errorCode);
             report(lu);
         }
         else
         {
             if (errorCode != lua_pcall(lu, 0, 0, 0))
             {
-                DLLLogDetail("{} failed.(could not run). Error code {}", itr.c_str(), errorCode);
+                DLLLogDetail("{} failed.(could not run). Error code {}", itr, errorCode);
                 report(lu);
             }
             else
             {
-                DLLLogDetail("LuaEngine : loaded {}", itr.c_str());
+                DLLLogDetail("LuaEngine : loaded {}", itr);
             }
         }
         cntUncomp++;

@@ -619,7 +619,7 @@ void BattleForGilneas::CaptureControlPoint(uint32_t Id, uint32_t Team)
     addSpiritGuide(m_spiritGuides[Id]);
 
     playSoundToAll(Team ? BattlegroundDef::HORDE_CAPTURE : BattlegroundDef::ALLIANCE_CAPTURE);
-    sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The %s has taken the %s!", Team ? "Horde" : "Alliance", ControlPointNames[Id]);
+    sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, 0, "The {} has taken the {}!", Team ? "Horde" : "Alliance", ControlPointNames[Id]);
     DefFlag[Id][0] = false;
     DefFlag[Id][1] = false;
 
@@ -647,7 +647,7 @@ void BattleForGilneas::AssaultControlPoint(Player* pPlayer, uint32_t Id)
     if (!m_hasStarted)
     {
         sCheatLog.writefromsession(pPlayer->getSession(), "{} attempted to assault a Battle for Gilneas control point before the battleground started (battleground ID: {}).", pPlayer->getName(), this->m_id);
-        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, pPlayer->getGuid(), "%s attempted to assault a Battle for Gilneas control point before the battleground started and will be removed for cheating.", pPlayer->getName().c_str());
+        sendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, pPlayer->getGuid(), "{} attempted to assault a Battle for Gilneas control point before the battleground started and will be removed for cheating.", pPlayer->getName());
         removePlayer(pPlayer, false);
         pPlayer->kickFromServer(6000);
         return;
@@ -721,7 +721,7 @@ void BattleForGilneas::AssaultControlPoint(Player* pPlayer, uint32_t Id)
     if (DefFlag[Id][0] && !DefFlag[Id][1])
     {
         DefFlag[Id][0] = false;
-        sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "%s defend %s", pPlayer->getName().c_str(), ControlPointNames[Id]);
+        sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "{} defend {}", pPlayer->getName(), ControlPointNames[Id]);
         sEventMgr.AddEvent(this, &BattleForGilneas::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         pPlayer->m_bgScore.MiscData[BattlegroundDef::AB_BASES_CAPTURED]++;
         updatePvPData();
@@ -729,7 +729,7 @@ void BattleForGilneas::AssaultControlPoint(Player* pPlayer, uint32_t Id)
     else if (!DefFlag[Id][0] && !DefFlag[Id][1])
     {
         DefFlag[Id][0] = true;
-        sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "%s assault %s !", pPlayer->getName().c_str(), ControlPointNames[Id]);
+        sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "{} assault {}!", pPlayer->getName(), ControlPointNames[Id]);
         playSoundToAll(Team ? 8212 : 8174);
         sEventMgr.AddEvent(this, &BattleForGilneas::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, TimeVarsMs::Minute, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         pPlayer->m_bgScore.MiscData[BattlegroundDef::AB_BASES_ASSAULTED]++;
@@ -738,8 +738,8 @@ void BattleForGilneas::AssaultControlPoint(Player* pPlayer, uint32_t Id)
     else
     {
         DefFlag[Id][0] = true;
-        sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "%s claims the %s! If left unchallenged, the %s will control it in 1 minute!",
-                                                                                                          pPlayer->getName().c_str(), ControlPointNames[Id], Team ? "Horde" : "Alliance");
+        sendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->getGuid(), "{} claims the {}! If left unchallenged, the {} will control it in 1 minute!",
+                                                                                                          pPlayer->getName(), ControlPointNames[Id], Team ? "Horde" : "Alliance");
         playSoundToAll(8192);
         sEventMgr.AddEvent(this, &BattleForGilneas::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, TimeVarsMs::Minute, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }

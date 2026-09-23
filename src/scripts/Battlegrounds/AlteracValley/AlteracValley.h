@@ -57,9 +57,6 @@ public:
     bool SupportsPlayerLoot() { return true; }
     void HookGenerateLoot(Player* plr, Object* pCorpse) override;
 
-    // herald
-    void Herald(const char* format, ...);
-
     void HookOnFlagDrop(Player* plr) override;
     void HookOnShadowSight() override;
 

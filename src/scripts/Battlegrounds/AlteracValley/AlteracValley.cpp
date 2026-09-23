@@ -487,7 +487,7 @@ AlteracValley::AVNode::AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint3
             return;
         }
         Creature* sp;
-        DLLLogDetail("AlteracValley : spawning guards at bunker {} of {} ({})", m_template->m_name, cp->Name.c_str(), cp->Id);
+        DLLLogDetail("AlteracValley : spawning guards at bunker {} of {} ({})", m_template->m_name, cp->Name, cp->Id);
 
         while (spi->x != 0.0f)
         {
@@ -566,14 +566,13 @@ void AlteracValley::AVNode::Assault(Player* plr)
     {
         // send message
         const uint8_t chatMsgType = static_cast<uint8_t>(CHAT_MSG_BG_EVENT_ALLIANCE) + static_cast<uint8_t>(plr->getTeam());
-        m_bg->sendChatMessage(chatMsgType, 0, "%s claims the %s! If left unchallenged, the %s will control it!", plr->getName().c_str(), m_template->m_name,
-                              plr->isTeamHorde() ? "Horde" : "Alliance");
+        m_bg->sendChatMessage(chatMsgType, 0, "{} claims the {}! If left unchallenged, the {} will control it!", plr->getName(), m_template->m_name, plr->isTeamHorde() ? "Horde" : "Alliance");
 
         plr->m_bgScore.MiscData[BattlegroundDef::AV_GRAVEYARDS_ASSAULTED]++;
     }
     else
     {
-        m_bg->Herald("%s is under attack! If left unchecked the %s will destroy it!", m_template->m_name, plr->isTeamHorde() ? "Horde" : "Alliance");
+        m_bg->sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "{} is under attack! If left unchecked the {} will destroy it!", m_template->m_name, plr->isTeamHorde() ? "Horde" : "Alliance");
         plr->m_bgScore.MiscData[BattlegroundDef::AV_TOWERS_ASSAULTED]++;
     }
 }
@@ -874,7 +873,7 @@ void AlteracValley::AVNode::Capture()
             m_destroyed = true;
 
             // send message
-            m_bg->Herald("The %s has destroyed the %s.", (m_template->m_defaultState == AV_NODE_STATE_ALLIANCE_CONTROLLED) ? "Horde" : "Alliance", m_template->m_name);
+            m_bg->sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "The {} has destroyed the {}.", (m_template->m_defaultState == AV_NODE_STATE_ALLIANCE_CONTROLLED) ? "Horde" : "Alliance", m_template->m_name);
 
             if (m_template->m_defaultState == AV_NODE_STATE_ALLIANCE_CONTROLLED)
             {
@@ -928,13 +927,13 @@ void AlteracValley::AVNode::Capture()
         else
         {
             // saved the tower
-            m_bg->Herald("The %s has taken the %s.", (m_state == AV_NODE_STATE_ALLIANCE_CONTROLLED) ? "Alliance" : "Horde", m_template->m_name);
+            m_bg->sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "The {} has taken the {}.", (m_state == AV_NODE_STATE_ALLIANCE_CONTROLLED) ? "Alliance" : "Horde", m_template->m_name);
         }
     }
     else
     {
         // captured message
-        m_bg->Herald("The %s has taken the %s.", (m_state == AV_NODE_STATE_ALLIANCE_CONTROLLED) ? "Alliance" : "Horde", m_template->m_name);
+        m_bg->sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "The {} has taken the {}.", (m_state == AV_NODE_STATE_ALLIANCE_CONTROLLED) ? "Alliance" : "Horde", m_template->m_name);
     }
 }
 
@@ -1207,7 +1206,7 @@ void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
     Player* plr2;
     if (pVictim->getEntry() == AV_NPC_GENERAL_VANNDAR_STORMPIKE)
     {
-        Herald("The Stormpike General is dead!");
+        sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "The Stormpike General is dead!");
         RemoveReinforcements(0, AV_NUM_REINFORCEMENTS);
 
         for (std::set<Player*>::iterator itx = m_players[1].begin(); itx != m_players[1].end(); ++itx)
@@ -1221,7 +1220,7 @@ void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
     }
     else if (pVictim->getEntry() == AV_NPC_GENERAL_DREK_THAR)
     {
-        Herald("The Frostwolf General is dead!");
+        sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Frostwolf General is dead!");
         RemoveReinforcements(1, AV_NUM_REINFORCEMENTS);
 
         for (std::set<Player*>::iterator itx = m_players[0].begin(); itx != m_players[0].end(); ++itx)
@@ -1373,19 +1372,6 @@ bool AlteracValley::HandleFinishBattlegroundRewardCalculation(PlayerTeam winning
     castSpellOnTeam(winningTeam, 69160);
     castSpellOnTeam(winningTeam, 69501);
     return true;
-}
-
-void AlteracValley::Herald(const char* format, ...)
-{
-    char msgbuf[100];
-    va_list ap;
-
-    va_start(ap, format);
-    vsnprintf(msgbuf, 100, format, ap);
-    va_end(ap);
-
-    AscEmu::Packets::SmsgMessageChat heraldPacket(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, 0, msgbuf, 0, "Herald");
-    AscEmu::Packets::PacketBroadcast::sendFromBattleground(*this, heraldPacket);
 }
 
 void AlteracValley::HookOnFlagDrop(Player* /*plr*/)
