@@ -13,6 +13,7 @@ file(GLOB_RECURSE SRC_OBJECTS Objects/*.cpp Objects/*.h Objects/*.hpp)
 file(GLOB_RECURSE SRC_SERVER Server/*.cpp Server/*.h Server/*.hpp)
 file(GLOB_RECURSE SRC_SPELL Spell/*.cpp Spell/*.h Spell/*.hpp)
 file(GLOB_RECURSE SRC_STORAGE Storage/*.cpp Storage/*.h Storage/*.hpp)
+file(GLOB_RECURSE SRC_VERSION Version/*.cpp Version/*.hpp)
 file(GLOB SRC_LOCAL *.cpp *.h *.hpp)
 
 if (WIN32)
@@ -33,6 +34,7 @@ add_executable(${EXECUTABLE_NAME}
     ${SRC_SERVER}
     ${SRC_SPELL}
     ${SRC_STORAGE}
+    ${SRC_VERSION}
     ${SRC_LOCAL}
     ${APP_ICON_RESOURCE_WINDOWS}
 )

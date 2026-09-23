@@ -26,6 +26,8 @@
 #include "ConfigMgr.hpp"
 #include "DatabaseDefinition.hpp"
 #include "OpcodeTable.hpp"
+#include "Version/ParallelCheck.hpp"
+#include "Version/VersionRegistry.hpp"
 #include "World.h"
 #include "WorldConf.h"
 #include "WorldRunnable.h"
@@ -496,6 +498,8 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     }
 
     sOpcodeTables.initialize();
+    sVersionRegistry.initialize();
+    Version::runParallelChecks();
     WorldSession::registerOpcodeHandler();
 
     if (!sWorld.setInitialWorldSettings())
