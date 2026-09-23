@@ -5,8 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 //\NOTE:    Version specific opcode tables. The internal opcode id (Opcodes enum) stays version
 //          neutral, one table per client version maps it to the hex value on the wire. The tables
-//          live in Version/Opcodes/OpcodeTable_<Version>.cpp and are generated from the legacy
-//          multiversion store until that store is retired.
+//          live in Version/Opcodes/OpcodeTable_<Version>.cpp, names and development state in
+//          Version/Opcodes/OpcodeMeta.cpp. A new client version is a new table file plus an
+//          entry in opcodeSourceFor().
 
 #pragma once
 

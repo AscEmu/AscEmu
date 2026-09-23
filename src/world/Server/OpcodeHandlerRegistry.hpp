@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <optional>
 #include <string>
 #include "Network/WorldPacket.hpp"
-#include "OpcodeTable.hpp"
+#include "Opcodes.hpp"
 
 // Define the number of supported versions (0 = Classic, 1 = TBC, etc.)
 constexpr int NUM_VERSIONS = 5;
