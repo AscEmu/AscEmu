@@ -8,7 +8,7 @@ set(ASCEMU_SCRIPTLIB_PATH "modules" CACHE PATH "The directory for AscEmu modules
 set(ASCEMU_TOOLS_PATH "tools" CACHE PATH "The directory for AscEmu tools.")
 
 set(ASCEMU_VERSION "WotLK" CACHE STRING "Client Version")
-set_property(CACHE ASCEMU_VERSION PROPERTY STRINGS Classic TBC WotLK Cata Mop)
+set_property(CACHE ASCEMU_VERSION PROPERTY STRINGS Classic TBC WotLK Cata Mop WoD Legion)
 
 set(ASCEMU_TOOLS_PATH "tools" CACHE PATH "The directory where you want the tools installed.")
 

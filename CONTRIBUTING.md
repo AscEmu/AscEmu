@@ -77,34 +77,34 @@ We appreciate every contribution! 😃
 
 ## Roadmap
 
-Description       | Classic    | TBC        | WotLK      | Cata       | MoP
-:---------------: | :--------: | :--------: | :--------: | :--------: | :--------:
-Authentification  | ✔️         | ✔️         | ✔️        | ✔️         | ✔️
-Worldsocket       | ✔️         | ✔️         | ✔️        | ✔️         | ✔️
-Char Enum         | ✔️         | ✔️         | ✔️        | ✔️         | ✔️
-Log into world    | ✔️         | ✔️         | ✔️        | ✔️         | ✔️
-Movement          | ❌         | ❌         | ❌        | ❌         | ❌
-Object updates    | ❌         | ❌         | ❌        | ❌         | ❌
-Chat              | ❌         | ❌         | ❌        | ❌         | ❌
-Items/inventory   | ❌         | ❌         | ❌        | ❌         | ❌
-Loot              | ❌         | ❌         | ❌        | ❌         | ❌
-Spells / Auras    | ❌         | ❌         | ❌        | ❌         | ❌
-Combat log        | ❌         | ❌         | ❌        | ❌         | ❌
-Trade             | ❌         | ❌         | ❌        | ❌         | ❌
-Vendors           | ❌         | ❌         | ❌        | ❌         | ❌
-Quests            | ❌         | ❌         | ❌        | ❌         | ❌
-Trainers          | ❌         | ❌         | ❌        | ❌         | ❌
-Taxi              | ❌         | ❌         | ❌        | ❌         | ❌
-Guild             | ❌         | ❌         | ❌        | ❌         | ❌
-Auction house     | ❌         | ❌         | ❌        | ❌         | ❌
-Instances         | ❌         | ❌         | ❌        | ❌         | ❌
-Dungeons          | ❌         | ❌         | ❌        | ❌         | ❌
-Battlegrounds     | ❌         | ❌         | ❌        | ❌         | ❌
-Arena             | ❌         | ❌         | ❌        | ❌         | ❌
-Achievements      | ❌         | ❌         | ❌        | ❌         | ❌
-Talents           | ❌         | ❌         | ❌        | ❌         | ❌
-Calendar          | ❌         | ❌         | ❌        | ❌         | ❌
-Mail              | ❌         | ❌         | ❌        | ❌         | ❌
-Pet               | ❌         | ❌         | ❌        | ❌         | ❌
+Description       | Classic    | TBC        | WotLK      | Cata       | MoP        | WoD        | Legion
+:---------------: | :--------: | :--------: | :--------: | :--------: | :--------: | :--------: | :--------:
+Authentification  | ✔️         | ✔️         | ✔️        | ✔️         | ✔️        | ❌         | ❌
+Worldsocket       | ✔️         | ✔️         | ✔️        | ✔️         | ✔️        | ❌         | ❌
+Char Enum         | ✔️         | ✔️         | ✔️        | ✔️         | ✔️        | ❌         | ❌
+Log into world    | ✔️         | ✔️         | ✔️        | ✔️         | ✔️        | ❌         | ❌
+Movement          | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Object updates    | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Chat              | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Items/inventory   | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Loot              | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Spells / Auras    | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Combat log        | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Trade             | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Vendors           | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Quests            | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Trainers          | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Taxi              | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Guild             | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Auction house     | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Instances         | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Dungeons          | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Battlegrounds     | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Arena             | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Achievements      | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Talents           | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Calendar          | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Mail              | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
+Pet               | ❌         | ❌         | ❌        | ❌         | ❌        | ❌         | ❌
 
 AscEmu - never ending place to work.

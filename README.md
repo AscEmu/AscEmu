@@ -23,12 +23,12 @@ AscEmu supports several versions as listed below. We achieved to handle differen
 
 Beside our multiversion-core we developed our world database with this attitude. Compared to other projects we are still a small project but with one core and database we are able to work on different versions at the same time. Beside all that we are able to show the changes to the game side by side in our code and database.
 
-Description       | Classic    | TBC        | WotLK      | Cata       | MoP
-:---------------: | :--------: | :--------: | :--------: | :--------: | :--------:
-Authentification  | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
-Worldsocket       | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
-Char Enum         | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
-Log into world    | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
+Description       | Classic    | TBC        | WotLK      | Cata       | MoP        | WoD        | Legion
+:---------------: | :--------: | :--------: | :--------: | :--------: | :--------: | :--------: | :--------:
+Authentification  | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ❌         | ❌
+Worldsocket       | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ❌         | ❌
+Char Enum         | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ❌         | ❌
+Log into world    | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ❌         | ❌
 
 ## Contributing & Issues
 

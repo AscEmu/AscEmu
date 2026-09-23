@@ -11,6 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 #define WotLK 12340
 #define Cata 15595
 #define Mop 18414
+#define WoD 20779
+#define Legion 26972
 
 #define VERSION_STRING @ASCEMU_VERSION@
 
@@ -29,6 +31,12 @@ This file is released under the MIT license. See README-MIT for more information
 #elif VERSION_STRING == Mop
     #define AE_MOP
     #define VERSION 5, 4, 8
+#elif VERSION_STRING == WoD
+    #define AE_WOD
+    #define VERSION 6, 2, 3
+#elif VERSION_STRING == Legion
+    #define AE_LEGION
+    #define VERSION 7, 3, 5
 #endif
 
 #if VERSION_STRING == Classic
@@ -41,6 +49,10 @@ This file is released under the MIT license. See README-MIT for more information
     #define BUILD_VERSION 15595
 #elif VERSION_STRING == Mop
     #define BUILD_VERSION 18414
+#elif VERSION_STRING == WoD
+    #define BUILD_VERSION 20779
+#elif VERSION_STRING == Legion
+    #define BUILD_VERSION 26972
 #endif
 
 #if VERSION_STRING >= Classic

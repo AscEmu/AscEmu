@@ -22,6 +22,8 @@ namespace WoW::Build {
     inline constexpr uint32_t WOTLK_BUILD = 12340;
     inline constexpr uint32_t CATA_BUILD = 15595;
     inline constexpr uint32_t MOP_BUILD = 18414;
+    inline constexpr uint32_t WOD_BUILD = 20779;
+    inline constexpr uint32_t LEGION_BUILD = 26972;
 }
 
 namespace WoW {
@@ -32,8 +34,8 @@ namespace WoW {
         _WotLK,
         _Cata,
         _Mop,
-        WoD,
-        Legion,
+        _WoD,
+        _Legion,
         BfA,
         SL,
         DF,
@@ -118,6 +120,10 @@ namespace WoW {
     inline constexpr Expansion COMPILED_EXPANSION = Expansion::_Cata;
 #elif defined(AE_MOP)
     inline constexpr Expansion COMPILED_EXPANSION = Expansion::_Mop;
+#elif defined(AE_WOD)
+    inline constexpr Expansion COMPILED_EXPANSION = Expansion::_WoD;
+#elif defined(AE_LEGION)
+    inline constexpr Expansion COMPILED_EXPANSION = Expansion::_Legion;
 #else
     inline constexpr Expansion COMPILED_EXPANSION = Expansion::_WotLK; // Fallback
 #endif
@@ -145,6 +151,8 @@ namespace WoW {
             case Expansion::_WotLK:   return Build::WOTLK_BUILD;
             case Expansion::_Cata:    return Build::CATA_BUILD;
             case Expansion::_Mop:     return Build::MOP_BUILD;
+            case Expansion::_WoD:      return Build::WOD_BUILD;
+            case Expansion::_Legion:   return Build::LEGION_BUILD;
             default:                  return 0;
         }
     }
@@ -158,6 +166,8 @@ namespace WoW {
             case Build::WOTLK_BUILD:   return Expansion::_WotLK;
             case Build::CATA_BUILD:    return Expansion::_Cata;
             case Build::MOP_BUILD:     return Expansion::_Mop;
+            case Build::WOD_BUILD:     return Expansion::_WoD;
+            case Build::LEGION_BUILD:  return Expansion::_Legion;
             default:                   return Expansion::Unknown;
         }
     }
@@ -253,8 +263,8 @@ namespace WoW {
             case Expansion::_WotLK: return "Wrath of the Lich King";
             case Expansion::_Cata: return "Cataclysm";
             case Expansion::_Mop: return "Mists of Pandaria";
-            case Expansion::WoD: return "Warlords of Draenor";
-            case Expansion::Legion: return "Legion";
+            case Expansion::_WoD: return "Warlords of Draenor";
+            case Expansion::_Legion: return "Legion";
             case Expansion::BfA: return "Battle for Azeroth";
             case Expansion::SL: return "Shadowlands";
             case Expansion::DF: return "Dragonflight";
@@ -275,8 +285,8 @@ namespace WoW {
             case Expansion::_WotLK:   return "WotLK";
             case Expansion::_Cata:    return "Cata";
             case Expansion::_Mop:     return "MoP";
-            case Expansion::WoD:      return "WoD";
-            case Expansion::Legion:   return "Legion";
+            case Expansion::_WoD:      return "WoD";
+            case Expansion::_Legion:   return "Legion";
             case Expansion::BfA:      return "BfA";
             case Expansion::SL:       return "Shadowlands";
             case Expansion::DF:       return "Dragonflight";

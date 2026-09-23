@@ -86,6 +86,10 @@ This file is released under the MIT license. See README-MIT for more information
     #define DBC_PLAYER_LEVEL_CAP 85
 #elif VERSION_STRING == Mop
     #define DBC_PLAYER_LEVEL_CAP 90
+#elif VERSION_STRING == WoD
+    #define DBC_PLAYER_LEVEL_CAP 100
+#elif VERSION_STRING == Legion
+    #define DBC_PLAYER_LEVEL_CAP 110
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
