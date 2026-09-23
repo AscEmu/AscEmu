@@ -3,9 +3,9 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-//\NOTE:    Parallel run of the version tables against the legacy code they are going to replace.
-//          Runs once at startup and logs every difference. Nothing in the packet or object path
-//          uses the new tables until this reports zero mismatches for every version.
+//\NOTE:    Parallel run of the version layout tables against the legacy structs they are going
+//          to replace. Runs once at startup and logs every difference. Nothing in the object path
+//          uses the layout tables until this reports zero mismatches for every version.
 
 #pragma once
 
@@ -42,9 +42,6 @@ namespace Version
 
     /// generated: compares the layout tables of the compiled expansion with the structs of this binary
     void checkCompiledStructLayout(CheckReport& report);
-
-    /// compares the version opcode tables with the legacy multiversion store for every version
-    void checkOpcodeTables(CheckReport& report);
 
     /// runs every check, logs the outcome and returns true when no mismatch was found
     bool runParallelChecks();

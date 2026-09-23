@@ -34,7 +34,7 @@
 #include "WorldSocket.hpp"
 #include "Packets/SmsgNotification.h"
 #include "Packets/SmsgLogoutComplete.h"
-#include "OpcodeTable.hpp"
+#include "Version/VersionRegistry.hpp"
 #include "World.h"
 #include "Management/Group.h"
 #include "Management/ObjectMgr.hpp"
@@ -656,7 +656,7 @@ void WorldSession::nothingToHandle(WorldPacket& recv_data)
     if (!recv_data.isEmpty())
     {
         sLogger.debugOpcode("Opcode {} [{}] (0x{:04X}) received. Apply nothingToHandle handler but size is {}!",
-            sOpcodeTables.getNameForOpcode(recv_data.getOpcode(), getClientProtocol()), WoW::getExpansionName(getClientProtocol().expansion), recv_data.getOpcode(), recv_data.size());
+            Version::opcodeNameForHex(recv_data.getOpcode(), getClientProtocol()), WoW::getExpansionName(getClientProtocol().expansion), recv_data.getOpcode(), recv_data.size());
     }
 }
 

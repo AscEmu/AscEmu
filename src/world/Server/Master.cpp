@@ -25,7 +25,6 @@
 #include "BuildInfo.hpp"
 #include "ConfigMgr.hpp"
 #include "DatabaseDefinition.hpp"
-#include "OpcodeTable.hpp"
 #include "Version/ParallelCheck.hpp"
 #include "Version/VersionRegistry.hpp"
 #include "World.h"
@@ -497,7 +496,6 @@ bool Master::run(int /*argc*/, char** /*argv*/)
         return false;
     }
 
-    sOpcodeTables.initialize();
     sVersionRegistry.initialize();
     Version::runParallelChecks();
     WorldSession::registerOpcodeHandler();

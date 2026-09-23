@@ -22,7 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgNewWorld.h"
 #include "Server/Packets/SmsgPlayerMove.h"
 #include "Objects/Units/Creatures/Pet.h"
-#include "Server/OpcodeTable.hpp"
+#include "Version/VersionRegistry.hpp"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Objects/Transporter.hpp"
 #include "Server/World.h"
@@ -223,7 +223,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Set up some vars to simplify code. We use the internal opcode id for Multiversion support
     // Zyres: save the opcode here for better handling
-    const auto opcode = sOpcodeTables.getInternalIdForHex(recvData.getOpcode(), getClientProtocol());
+    const auto opcode = Version::opcodeIdForHex(recvData.getOpcode(), getClientProtocol());
 
     // Zyres: We (the player) controles the movement of us or another player/unit.
     // this is always initialise with the player, can be changed to any other unit.
@@ -547,7 +547,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
 void WorldSession::handleAcknowledgementOpcodes(WorldPacket& recvPacket)
 {
-    const auto opcode = sOpcodeTables.getInternalIdForHex(recvPacket.getOpcode(), getClientProtocol());
+    const auto opcode = Version::opcodeIdForHex(recvPacket.getOpcode(), getClientProtocol());
     switch (opcode)
     {
         case CMSG_MOVE_SET_CAN_FLY_ACK:
@@ -560,7 +560,7 @@ void WorldSession::handleAcknowledgementOpcodes(WorldPacket& recvPacket)
         default:
         {
             sLogger.debug("WorldSession::handleAcknowledgementOpcodes : Opcode {} ({}) received. This opcode is not known/implemented right now!",
-                sOpcodeTables.getNameForOpcode(recvPacket.getOpcode(), getClientProtocol()), recvPacket.getOpcode());
+                Version::opcodeNameForHex(recvPacket.getOpcode(), getClientProtocol()), recvPacket.getOpcode());
 
             recvPacket.rfinish();
         }
@@ -584,7 +584,7 @@ void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
     UnitSpeedType move_type;
     UnitSpeedType force_move_type;
 
-    const auto opcode = sOpcodeTables.getInternalIdForHex(recvPacket.getOpcode(), getClientProtocol());
+    const auto opcode = Version::opcodeIdForHex(recvPacket.getOpcode(), getClientProtocol());
     switch (opcode)
     {
         case CMSG_FORCE_WALK_SPEED_CHANGE_ACK:          move_type = TYPE_WALK;          force_move_type = TYPE_WALK;        break;

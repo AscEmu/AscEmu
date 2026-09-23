@@ -145,50 +145,50 @@ namespace Version::Tables
         { 2256, 192 },  // BankSlot
         { 2448,  48 },  // BankBagSlot
         { 2496,  96 },  // VendorBuyBackSlot
-        { 2592, 160 },  // KeyRingSlot
-        { 2752,   8 },  // FarsightGuid
-        { 2760,   8 },  // FieldComboTarget
-        { 2768,   4 },  // Xp
-        { 2772,   4 },  // NextLevelXp
-        { 2776, 1536 },  // SkillInfo
-        { 4312,   4 },  // CharacterPoints1
-        { 4316,   4 },  // CharacterPoints2
-        { 4320,   4 },  // TrackCreatures
-        { 4324,   4 },  // TrackResources
-        { 4328,   4 },  // BlockPct
-        { 4332,   4 },  // DodgePct
-        { 4336,   4 },  // ParryPct
-        { 4340,   4 },  // CritPct
-        { 4344,   4 },  // RangedCritPct
-        { 4348, 256 },  // ExploredZones
-        { 4604,   4 },  // RestStateXp
-        { 4608,   4 },  // FieldCoinage
-        { 4612,  20 },  // PosStat
-        { 4632,  20 },  // NegStat
-        { 4652,  28 },  // ResistanceBuffModPositive
-        { 4680,  28 },  // ResistanceBuffModNegative
-        { 4708,  28 },  // FieldModDamageDonePositive
-        { 4736,  28 },  // FieldModDamageDoneNegative
-        { 4764,  28 },  // FieldModDamageDonePct
-        { 4792,   4 },  // PlayerFieldBytes
-        { 4796,   4 },  // AmmoId
-        { 4800,   4 },  // SelfResurrectionSpell
-        { 4804,   4 },  // FieldPvpMedals
-        { 4808,  48 },  // FieldBuyBackPrice
-        { 4856,  48 },  // FieldBuyBackTimestamp
-        { 4904,   4 },  // FieldSessionKills
-        { 4908,   4 },  // FieldYesterdayKills
-        { 4912,   4 },  // FieldLastWeekKills
-        { 4916,   4 },  // FieldThisWeekKills
-        { 4920,   4 },  // FieldThisWeekContribution
-        { 4924,   4 },  // FieldLifetimeHonorableKills
-        { 4928,   4 },  // FieldLifetimeDishonorableKills
-        { 4932,   4 },  // FieldYersterdayContribution
-        { 4936,   4 },  // FieldLastWeekContribution
-        { 4940,   4 },  // FieldLastWeekRank
-        { 4944,   4 },  // PlayerFieldBytes2
-        { 4948,   4 },  // FieldWatchedFactionIdx
-        { 4952,  80 },  // FieldCombatRating
+        { 2592, 256 },  // KeyRingSlot
+        { 2848,   8 },  // FarsightGuid
+        { 2856,   8 },  // FieldComboTarget
+        { 2864,   4 },  // Xp
+        { 2868,   4 },  // NextLevelXp
+        { 2872, 1536 },  // SkillInfo
+        { 4408,   4 },  // CharacterPoints1
+        { 4412,   4 },  // CharacterPoints2
+        { 4416,   4 },  // TrackCreatures
+        { 4420,   4 },  // TrackResources
+        { 4424,   4 },  // BlockPct
+        { 4428,   4 },  // DodgePct
+        { 4432,   4 },  // ParryPct
+        { 4436,   4 },  // CritPct
+        { 4440,   4 },  // RangedCritPct
+        { 4444, 256 },  // ExploredZones
+        { 4700,   4 },  // RestStateXp
+        { 4704,   4 },  // FieldCoinage
+        { 4708,  20 },  // PosStat
+        { 4728,  20 },  // NegStat
+        { 4748,  28 },  // ResistanceBuffModPositive
+        { 4776,  28 },  // ResistanceBuffModNegative
+        { 4804,  28 },  // FieldModDamageDonePositive
+        { 4832,  28 },  // FieldModDamageDoneNegative
+        { 4860,  28 },  // FieldModDamageDonePct
+        { 4888,   4 },  // PlayerFieldBytes
+        { 4892,   4 },  // AmmoId
+        { 4896,   4 },  // SelfResurrectionSpell
+        { 4900,   4 },  // FieldPvpMedals
+        { 4904,  48 },  // FieldBuyBackPrice
+        { 4952,  48 },  // FieldBuyBackTimestamp
+        { 5000,   4 },  // FieldSessionKills
+        { 5004,   4 },  // FieldYesterdayKills
+        { 5008,   4 },  // FieldLastWeekKills
+        { 5012,   4 },  // FieldThisWeekKills
+        { 5016,   4 },  // FieldThisWeekContribution
+        { 5020,   4 },  // FieldLifetimeHonorableKills
+        { 5024,   4 },  // FieldLifetimeDishonorableKills
+        { 5028,   4 },  // FieldYersterdayContribution
+        { 5032,   4 },  // FieldLastWeekContribution
+        { 5036,   4 },  // FieldLastWeekRank
+        { 5040,   4 },  // PlayerFieldBytes2
+        { 5044,   4 },  // FieldWatchedFactionIdx
+        { 5048,  80 },  // FieldCombatRating
         { kNoField, 0 },  // ChosenTitle - not in this version
         { kNoField, 0 },  // PlayerPadding0 - not in this version
         { kNoField, 0 },  // VanityPetSlot - not in this version
@@ -361,7 +361,7 @@ namespace Version::Tables
     {
         { classicObjectFields, static_cast<uint16_t>(std::size(classicObjectFields)), 24 },  // object
         { classicUnitFields, static_cast<uint16_t>(std::size(classicUnitFields)), 752 },  // unit
-        { classicPlayerFields, static_cast<uint16_t>(std::size(classicPlayerFields)), 5032 },  // player
+        { classicPlayerFields, static_cast<uint16_t>(std::size(classicPlayerFields)), 5128 },  // player
         { classicItemFields, static_cast<uint16_t>(std::size(classicItemFields)), 192 },  // item
         { classicContainerFields, static_cast<uint16_t>(std::size(classicContainerFields)), 432 },  // container
         { classicGameObjectFields, static_cast<uint16_t>(std::size(classicGameObjectFields)), 104 },  // gameObject
