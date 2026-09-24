@@ -38,8 +38,6 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
-private:
-
 public:
     uint32_t getSlotCount() const;
     void setSlotCount(uint32_t num);

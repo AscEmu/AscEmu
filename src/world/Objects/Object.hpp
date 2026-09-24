@@ -192,7 +192,6 @@ private:
     }
 
 public:
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
     uint64_t getGuid() const;
@@ -793,7 +792,6 @@ public:
         Transporter* m_transport = nullptr;
 
     public:
-
         bool m_loadedFromDB = false;
 
         // Andy's crap

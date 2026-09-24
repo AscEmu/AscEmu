@@ -40,8 +40,6 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
-private:
-
 public:
     uint64_t getCasterGuid() const;
     void setCasterGuid(uint64_t guid);

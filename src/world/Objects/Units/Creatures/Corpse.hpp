@@ -62,8 +62,6 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
-private:
-
 public:
     uint64_t getOwnerGuid() const;
     void setOwnerGuid(uint64_t guid);
