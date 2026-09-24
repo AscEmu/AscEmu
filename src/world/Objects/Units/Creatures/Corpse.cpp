@@ -38,6 +38,9 @@ Corpse::Corpse(uint64_t guid)
 #endif
 #if VERSION_STRING == Mop
     m_updateFlag = UPDATEFLAG_HAS_POSITION;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    m_updateFlag = UPDATEFLAG_HAS_POSITION;
 #endif
 
     m_valuesCount = getSizeOfStructure(WoWCorpse);
@@ -224,16 +227,83 @@ time_t Corpse::getDeathClock() { return m_time; }
 
  //////////////////////////////////////////////////////////////////////////////////////////
  // WoWData
-uint64_t Corpse::getOwnerGuid() const { return corpseData()->owner_guid; }
-void Corpse::setOwnerGuid(uint64_t guid) { write(corpseData()->owner_guid, guid); }
+#if defined(AE_FOREVER)
+namespace
+{
+    WoWGuid makeForeverCorpseReferenceGuid(Corpse const* owner, uint64_t legacyGuid)
+    {
+        if (legacyGuid == 0)
+            return WoWGuid::createModernEmpty();
+        return WoWGuid::createModernFromLegacy(legacyGuid, worldConfig.battleNetComm.realmId, static_cast<uint16_t>(owner->GetMapId()), 0, 0);
+    }
+}
+#endif
+
+uint64_t Corpse::getOwnerGuid() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverCorpseFields.owner.toLegacyRaw();
+#else
+    return corpseData()->owner_guid;
+#endif
+}
+void Corpse::setOwnerGuid(uint64_t guid)
+{
+#if defined(AE_FOREVER)
+    const WoWGuid value = makeForeverCorpseReferenceGuid(this, guid);
+    if (m_foreverCorpseFields.owner.getModernHigh() == value.getModernHigh() && m_foreverCorpseFields.owner.getModernLow() == value.getModernLow())
+        return;
+    m_foreverCorpseFields.owner = value;
+    m_foreverCorpseFields.markChanged(AscEmu::Version::Forever::Fields::CorpseData::OwnerBit);
+    updateObject();
+#else
+    write(corpseData()->owner_guid, guid);
+#endif
+}
 
 // party
 
-uint32_t Corpse::getDisplayId() const { return corpseData()->display_id; }
-void Corpse::setDisplayId(uint32_t id) { write(corpseData()->display_id, id); }
+uint32_t Corpse::getDisplayId() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverCorpseFields.displayId;
+#else
+    return corpseData()->display_id;
+#endif
+}
+void Corpse::setDisplayId(uint32_t id)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverCorpseFields.displayId == id)
+        return;
+    m_foreverCorpseFields.displayId = id;
+    m_foreverCorpseFields.markChanged(AscEmu::Version::Forever::Fields::CorpseData::DisplayIdBit);
+    updateObject();
+#else
+    write(corpseData()->display_id, id);
+#endif
+}
 
-uint32_t Corpse::getItem(uint8_t slot) const { return corpseData()->item[slot]; }
-void Corpse::setItem(uint8_t slot, uint32_t item) { write(corpseData()->item[slot], item); }
+uint32_t Corpse::getItem(uint8_t slot) const
+{
+#if defined(AE_FOREVER)
+    return slot < m_foreverCorpseFields.items.size() ? m_foreverCorpseFields.items[slot] : 0;
+#else
+    return corpseData()->item[slot];
+#endif
+}
+void Corpse::setItem(uint8_t slot, uint32_t item)
+{
+#if defined(AE_FOREVER)
+    if (slot >= m_foreverCorpseFields.items.size() || m_foreverCorpseFields.items[slot] == item)
+        return;
+    m_foreverCorpseFields.items[slot] = item;
+    m_foreverCorpseFields.markArrayChanged(AscEmu::Version::Forever::Fields::CorpseData::ItemsGroupBit, AscEmu::Version::Forever::Fields::CorpseData::ItemsFirstBit + slot);
+    updateObject();
+#else
+    write(corpseData()->item[slot], item);
+#endif
+}
 
 //bytes 1 start
 uint32_t Corpse::getBytes1() const { return corpseData()->corpse_bytes_1.raw; }
@@ -241,11 +311,47 @@ void Corpse::setBytes1(uint32_t bytes) { write(corpseData()->corpse_bytes_1.raw,
 
 //unk1
 
-uint8_t Corpse::getRace() const { return corpseData()->corpse_bytes_1.s.race; }
-void Corpse::setRace(uint8_t race) { write(corpseData()->corpse_bytes_1.s.race, race); }
+uint8_t Corpse::getRace() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverCorpseFields.raceId;
+#else
+    return corpseData()->corpse_bytes_1.s.race;
+#endif
+}
+void Corpse::setRace(uint8_t race)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverCorpseFields.raceId == race)
+        return;
+    m_foreverCorpseFields.raceId = race;
+    m_foreverCorpseFields.markChanged(AscEmu::Version::Forever::Fields::CorpseData::RaceIdBit);
+    updateObject();
+#else
+    write(corpseData()->corpse_bytes_1.s.race, race);
+#endif
+}
 
-uint8_t Corpse::getGender() const { return corpseData()->corpse_bytes_1.s.gender; }
-void Corpse::setGender(uint8_t gender) { write(corpseData()->corpse_bytes_1.s.gender, gender); }
+uint8_t Corpse::getGender() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverCorpseFields.sex;
+#else
+    return corpseData()->corpse_bytes_1.s.gender;
+#endif
+}
+void Corpse::setGender(uint8_t gender)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverCorpseFields.sex == gender)
+        return;
+    m_foreverCorpseFields.sex = gender;
+    m_foreverCorpseFields.markChanged(AscEmu::Version::Forever::Fields::CorpseData::SexBit);
+    updateObject();
+#else
+    write(corpseData()->corpse_bytes_1.s.gender, gender);
+#endif
+}
 
 uint8_t Corpse::getSkinColor() const { return corpseData()->corpse_bytes_1.s.skin_color; }
 void Corpse::setSkinColor(uint8_t color) { write(corpseData()->corpse_bytes_1.s.skin_color, color); }
@@ -268,8 +374,44 @@ uint8_t Corpse::getFacialFeatures() const { return corpseData()->corpse_bytes_2.
 void Corpse::setFacialFeatures(uint8_t feature) { write(corpseData()->corpse_bytes_2.s.face, feature); }
 //bytes 2 end
 
-uint32_t Corpse::getFlags() const { return corpseData()->corpse_flags; }
-void Corpse::setFlags(uint32_t flags) { write(corpseData()->corpse_flags, flags); }
+uint32_t Corpse::getFlags() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverCorpseFields.flags;
+#else
+    return corpseData()->corpse_flags;
+#endif
+}
+void Corpse::setFlags(uint32_t flags)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverCorpseFields.flags == flags)
+        return;
+    m_foreverCorpseFields.flags = flags;
+    m_foreverCorpseFields.markChanged(AscEmu::Version::Forever::Fields::CorpseData::FlagsBit);
+    updateObject();
+#else
+    write(corpseData()->corpse_flags, flags);
+#endif
+}
 
-uint32_t Corpse::getDynamicFlags() const { return corpseData()->dynamic_flags; }
-void Corpse::setDynamicFlags(uint32_t flags) { write(corpseData()->dynamic_flags, flags); }
+uint32_t Corpse::getDynamicFlags() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverCorpseFields.dynamicFlags;
+#else
+    return corpseData()->dynamic_flags;
+#endif
+}
+void Corpse::setDynamicFlags(uint32_t flags)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverCorpseFields.dynamicFlags == flags)
+        return;
+    m_foreverCorpseFields.dynamicFlags = flags;
+    m_foreverCorpseFields.markChanged(AscEmu::Version::Forever::Fields::CorpseData::DynamicFlagsBit);
+    updateObject();
+#else
+    write(corpseData()->dynamic_flags, flags);
+#endif
+}

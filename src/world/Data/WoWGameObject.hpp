@@ -17,6 +17,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <array>
 
+#include "WoWGuid.hpp"
+#include <vector>
+#include <string>
+#include <optional>
+#include <bitset>
 #pragma pack(push, 1)
 
 #if VERSION_STRING == Classic
@@ -140,6 +145,44 @@ struct WoWGameObject : WoWObject
 #endif
 
 #if VERSION_STRING == Mop
+
+static inline constexpr uint8_t GAMEOBJECT_ROTATION_COUNT = 4;
+
+struct WoWGameObject : WoWObject
+{
+    guid_union object_field_created_by;
+    uint32_t display_id;
+    uint32_t flags;
+    std::array<float, GAMEOBJECT_ROTATION_COUNT> rotation;
+    uint32_t faction_template;
+    uint32_t level;
+    
+    union gameobject_bytes_union
+    {
+        struct parts
+        {
+            uint8_t state;
+            uint8_t type;
+            uint8_t unk;
+            uint8_t health;
+        } bytes_1_gameobject;
+        uint32_t raw;
+    } bytes_1;
+
+    union gameobject_bytes_2_union
+    {
+        struct parts
+        {
+            uint8_t transparency;
+            uint8_t art_kit;
+            uint8_t unk2;
+            uint8_t animation_progress;
+        } bytes_2_gameobject;
+        uint32_t raw;
+    } bytes_2;
+};
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
 
 static inline constexpr uint8_t GAMEOBJECT_ROTATION_COUNT = 4;
 

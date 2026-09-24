@@ -7,7 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WDBLoader.hpp"
 
+#include <algorithm>
 #include <list>
+#include <utility>
+#include <vector>
 
 namespace WDB
 {
@@ -32,6 +35,9 @@ namespace WDB
             if (_id >= m_row_count)
                 return nullptr;
 
+            if (m_manual_index_table)
+                return m_manual_index_table[_id];
+
             return m_index_table.as_t[_id];
         }
 
@@ -45,6 +51,38 @@ namespace WDB
         uint32_t getNumRows() const
         {
             return m_row_count;
+        }
+
+        // Populate a legacy indexed WDBContainer from records decoded by a modern
+        // DB2/WDC reader. This preserves the historical lookupEntry(id) and
+        // getNumRows()==maxId+1 semantics used throughout AscEmu without forcing
+        // modern DB2 records through the legacy DBC loader.
+        void assignEntries(std::vector<std::pair<uint32_t, T>> const& entries)
+        {
+            clear();
+
+            if (entries.empty())
+                return;
+
+            uint32_t maxId = 0;
+            for (auto const& [id, entry] : entries)
+            {
+                (void)entry;
+                maxId = std::max(maxId, id);
+            }
+
+            m_row_count = maxId + 1;
+            m_manual_data = std::make_unique<T[]>(m_row_count);
+            m_manual_index_table = std::make_unique<T*[]>(m_row_count);
+
+            for (uint32_t i = 0; i < m_row_count; ++i)
+                m_manual_index_table[i] = nullptr;
+
+            for (auto const& [id, entry] : entries)
+            {
+                m_manual_data[id] = entry;
+                m_manual_index_table[id] = &m_manual_data[id];
+            }
         }
 
         void setFormat(std::unique_ptr<const char[]> _format)
@@ -104,15 +142,16 @@ namespace WDB
 
         void clear()
         {
-            if (m_index_table.as_t == nullptr)
-                return;
+            m_manual_index_table.reset();
+            m_manual_data.reset();
 
-            m_index_table.as_t = nullptr;
-            m_data_table = nullptr;
-
-            while (!m_string_pool_list.empty())
+            if (m_index_table.as_t != nullptr)
             {
-                m_string_pool_list.pop_front();
+                m_index_table.as_t = nullptr;
+                m_data_table = nullptr;
+
+                while (!m_string_pool_list.empty())
+                    m_string_pool_list.pop_front();
             }
 
             m_row_count = 0;
@@ -134,6 +173,9 @@ namespace WDB
 
         std::unique_ptr<char[]> m_data_table;
         StringPoolList m_string_pool_list;
+
+        std::unique_ptr<T[]> m_manual_data;
+        std::unique_ptr<T*[]> m_manual_index_table;
 
         WDBContainer(WDBContainer const& _right) = delete;
         WDBContainer& operator=(WDBContainer const& _right) = delete;

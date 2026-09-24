@@ -1384,7 +1384,7 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
         }
 
         m_target->addStandStateFlags(UNIT_STAND_FLAGS_CREEP);
-#if VERSION_STRING != Mop
+#if VERSION_STRING != Mop && VERSION_STRING != AE_PROFILE_FOREVER
         if (m_target->isPlayer())
             if (const auto player = dynamic_cast<Player*>(m_target))
                 player->addAuraVision(AURA_VISION_STEALTH);
@@ -1516,7 +1516,7 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
 
                 if (p_target != nullptr)
                 {
-#if VERSION_STRING != Mop
+#if VERSION_STRING != Mop && VERSION_STRING != AE_PROFILE_FOREVER
                     p_target->removeAuraVision(AURA_VISION_STEALTH);
 #endif
                     p_target->sendSpellCooldownEventPacket(m_spellInfo->getId());
@@ -1620,7 +1620,7 @@ void Aura::SpellAuraModInvisibility(AuraEffectModifier* aurEff, bool apply)
         m_target->modInvisibilityLevel(InvisibilityFlag(aurEff->getEffectMiscValue()), aurEff->getEffectDamage());
         if (m_target->isPlayer())
         {
-#if VERSION_STRING != Mop
+#if VERSION_STRING != Mop && VERSION_STRING != AE_PROFILE_FOREVER
             if (getSpellId() == 32612)
                 if (const auto player = dynamic_cast<Player*>(m_target))
                     player->addAuraVision(AURA_VISION_INVISIBILITY);   //Mage Invis self visual
@@ -1634,7 +1634,7 @@ void Aura::SpellAuraModInvisibility(AuraEffectModifier* aurEff, bool apply)
         m_target->modInvisibilityLevel(InvisibilityFlag(aurEff->getEffectMiscValue()), -aurEff->getEffectDamage());
         if (m_target->isPlayer())
         {
-#if VERSION_STRING != Mop
+#if VERSION_STRING != Mop && VERSION_STRING != AE_PROFILE_FOREVER
             if (getSpellId() == 32612)
                 if (const auto player = dynamic_cast<Player*>(m_target))
                     player->removeAuraVision(AURA_VISION_INVISIBILITY);
@@ -5995,7 +5995,12 @@ void Aura::SpellAuraPhase(AuraEffectModifier* aurEff, bool apply)
 
     if (apply)
     {
-#if VERSION_STRING >= Mop
+#if VERSION_STRING == Mop
+        // Mop stores the phase id in MiscValueB
+        const auto phaseId = static_cast<uint32_t>(m_spellInfo->getEffectMiscValueB(aurEff->getEffectIndex()));
+        sLogger.debug("SpellAuraPhase: spell {} MiscValue {} MiscValueB {} target {}", m_spellInfo->getId(), m_spellInfo->getEffectMiscValue(aurEff->getEffectIndex()), phaseId, m_target->getGuid());
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
         // Mop stores the phase id in MiscValueB
         const auto phaseId = static_cast<uint32_t>(m_spellInfo->getEffectMiscValueB(aurEff->getEffectIndex()));
         sLogger.debug("SpellAuraPhase: spell {} MiscValue {} MiscValueB {} target {}", m_spellInfo->getId(), m_spellInfo->getEffectMiscValue(aurEff->getEffectIndex()), phaseId, m_target->getGuid());

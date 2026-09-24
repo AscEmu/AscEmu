@@ -39,8 +39,16 @@ public:
     // WoWData
 private:
     const WoWContainer* containerData() const { return reinterpret_cast<WoWContainer*>(wow_data); }
+#if defined(AE_FOREVER)
+    AscEmu::Version::Forever::Fields::ContainerData m_foreverContainerFields{};
+#endif
 
 public:
+#if defined(AE_FOREVER)
+    AscEmu::Version::Forever::Fields::ContainerData& foreverContainerFields() { return m_foreverContainerFields; }
+    AscEmu::Version::Forever::Fields::ContainerData const& foreverContainerFields() const { return m_foreverContainerFields; }
+#endif
+
     uint32_t getSlotCount() const;
     void setSlotCount(uint32_t num);
 

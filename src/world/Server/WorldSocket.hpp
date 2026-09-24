@@ -11,10 +11,23 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ClientProtocol.hpp"
 #include "Threading/ThreadSafeQueue.hpp"
 
+#include <array>
 #include <string>
+#include <vector>
+#include <cstdint>
 
 class SocketHandler;
 class WorldSession;
+
+
+#if AE_WORLD_PROFILE_FOREVER
+namespace AscEmu::Version::Forever
+{
+    enum class Opcode : uint16_t;
+    class OpcodeHandlerRegistry;
+    namespace Packets { class Packet; }
+}
+#endif
 
 class SERVER_DECL WorldSocket : public Socket
 {
@@ -65,6 +78,12 @@ public:
 protected:
     void sendAuthChallengePacket();
     void sendVerifyConnectPacket();
+
+    // Version-specific socket adapters. Legacy uses the no-op stub; Forever
+    // provides the World V2 implementation from version_client.
+    bool initializeVersionedConnection();
+    bool processVersionedRead();
+    bool sendVersionedPacket(WorldPacket* packet);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // packet receiving CLIENT->SERVER (after onRead from Socket class)
@@ -125,4 +144,8 @@ private:
     bool m_nagleEanbled{false};
 
     WorldSession* m_session{nullptr};
+
+#if AE_WORLD_PROFILE_FOREVER
+#include "version/Forever/World/WorldSocketForever.inc"
+#endif
 };

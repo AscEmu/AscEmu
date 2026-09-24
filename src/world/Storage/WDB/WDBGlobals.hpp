@@ -291,6 +291,22 @@ namespace WDB
             case WoW::Expansion::_WotLK:   loadRows(std::type_identity<typename Traits::wotlk>{});   break;
             case WoW::Expansion::_Cata:    loadRows(std::type_identity<typename Traits::cata>{});    break;
             case WoW::Expansion::_Mop:     loadRows(std::type_identity<typename Traits::mop>{});     break;
+            case WoW::Expansion::MN:
+                // Forever currently uses the existing WotLK core-data
+                // baseline. This is intentionally independent from the wire
+                // protocol version and keeps the existing WotLK DBC set usable.
+                loadRows(std::type_identity<typename Traits::wotlk>{});
+                break;
+            case WoW::Expansion::Unknown:
+#if defined(AE_FOREVER)
+                // Forever currently shares the WotLK server core-data baseline
+                // until a dedicated modern DB2-backed core layer exists.
+                loadRows(std::type_identity<typename Traits::wotlk>{});
+                break;
+#else
+                errors.push_back("WDBStore: Attempted to load DBC for an unknown or unsupported expansion.");
+                break;
+#endif
             default:
                 errors.push_back("WDBStore: Attempted to load DBC for an unknown or unsupported expansion.");
                 break;

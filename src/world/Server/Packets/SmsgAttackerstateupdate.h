@@ -46,6 +46,7 @@ namespace AscEmu::Packets
         {
             if (m_protocol.isMop())
             {
+#if VERSION_STRING == Mop
                 ByteBuffer buff;
 
                 buff << uint32_t(hitStatus);
@@ -109,6 +110,72 @@ namespace AscEmu::Packets
                 packet.append(buff);
 
                 return true;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+                ByteBuffer buff;
+
+                buff << uint32_t(hitStatus);
+                buff << attackerGuid;
+                buff << victimGuid;
+
+                buff << uint32_t(damage);                                     // full damage
+                buff << uint32_t(overKill);                                   // overkill
+
+                buff << uint8_t(1);                                           // sub damage count
+
+                buff << uint32_t(damageInfo.schoolMask);                      // school of sub damage
+                buff << float(damage);                                       // sub damage
+                buff << uint32_t(damage);                                     // sub damage
+
+                if (hitStatus & HITSTATUS_ABSORBED)
+                    buff << uint32_t(absorbedDamage);
+
+                if (hitStatus & HITSTATUS_RESIST)
+                    buff << uint32_t(damageInfo.resistedDamage);
+
+                buff << uint8_t(visualState);
+                buff << uint32_t(0);                                         // unk, can be 0, 1000 or -1
+                buff << uint32_t(0);                                         // unk, probably GetMeleeSpell
+
+                if (hitStatus & HITSTATUS_BLOCK)
+                    buff << uint32_t(blockedDamage);
+
+                // HITSTATUS_RAGE_GAIN only exists in the post-TBC HitStatus enum.
+                if (hitStatus & HITSTATUS_RAGE_GAIN)
+                    buff << uint32_t(0);                                     // real client never reads this as rage amount
+
+                if (hitStatus & HITSTATUS_UNK_00)                            // debug information
+                {
+                    buff << uint32_t(0);
+                    buff << float(0);
+                    buff << float(0);
+                    buff << float(0);
+                    buff << float(0);
+                    buff << float(0);
+                    buff << float(0);
+                    buff << float(0);
+                    buff << float(0);
+
+                    for (uint8_t i = 0; i < 2; ++i)
+                    {
+                        buff << float(0);
+                        buff << float(0);
+                    }
+                    buff << uint32_t(0);
+                }
+
+                // HITSTATUS_UNK_04 only exists in the post-TBC HitStatus enum.
+                if (hitStatus & (HITSTATUS_BLOCK | HITSTATUS_UNK_04))
+                    buff << float(0);
+
+
+                packet.writeBit(0);                                          // hasSpellCastLogData
+                packet.flushBits();
+                packet << uint32_t(buff.size());
+                packet.append(buff);
+
+                return true;
+#endif
             }
             else if (m_protocol.expansion > WoW::Expansion::_TBC)
             {

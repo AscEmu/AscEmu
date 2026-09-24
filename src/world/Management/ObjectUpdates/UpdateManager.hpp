@@ -30,8 +30,10 @@ class UpdateManager
     uint32_t m_creationCount;
     ByteBuffer m_updateBuffer;
     bool m_processPending;
+    ByteBuffer m_destroyIds;
     ByteBuffer m_outOfRangeIds;
     uint32_t m_updateCount;
+    uint32_t m_destroyIdCount;
     uint32_t m_outOfRangeIdCount;
 
     std::vector<std::unique_ptr<WorldPacket>> m_delayedPackets;
@@ -51,6 +53,7 @@ public:
     void clearPendingUpdates();
 
     void pushCreationData(ByteBuffer* data, uint32_t updateCount);
+    void pushDestroyGuid(const WoWGuid& guid);
     void pushOutOfRangeGuid(const WoWGuid& guid);
     void pushUpdateData(ByteBuffer* data, uint32_t updateCount);
     void processPendingUpdates();

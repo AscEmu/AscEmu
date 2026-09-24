@@ -508,6 +508,14 @@ void Creature::setDeathState(DeathState s)
         // client unable to tell the creature is dead, so it kept offering attack
         // instead of loot.
         setNpcFlags(UNIT_NPC_FLAG_NONE);
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+        // Verified against the 5.4.8 client protocol: on death only the NPC
+        // interaction flags (gossip/vendor/trainer/etc.) are cleared here, not the
+        // general unit flags field - clearing UNIT_FIELD_FLAGS here left the Mop
+        // client unable to tell the creature is dead, so it kept offering attack
+        // instead of loot.
+        setNpcFlags(UNIT_NPC_FLAG_NONE);
 #else
         setUnitFlags(UNIT_NPC_FLAG_NONE);
 #endif
@@ -2593,6 +2601,13 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
     // is not a valid combat state and can make the Mop client's object/index lookups
     // for the victim guid misbehave (confirmed via a client crash dump).
     smsg_AttackStop(nullptr);
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    // Broadcast "combat stopped" for the dying creature itself. Pass nullptr, not
+    // "this" - reporting the creature as its own attack victim (attacker == victim)
+    // is not a valid combat state and can make the Mop client's object/index lookups
+    // for the victim guid misbehave (confirmed via a client crash dump).
+    smsg_AttackStop(nullptr);
 #else
     smsg_AttackStop(this);
 #endif
@@ -2688,6 +2703,15 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
         loot.generateGold(sMySQLStore.getCreatureProperties(getEntry()), getAIInterface()->getDifficultyType());
 
 #if VERSION_STRING == Mop
+        // Verified against the real 5.4.8 protocol (Skyfire-Mop's Unit::Kill): unlike the
+        // TAGGED_BY_OTHER/TAPPED_BY_PLAYER bits, U_DYN_FLAG_LOOTABLE is not recomputed per
+        // viewer on every broadcast - it is a persistent flag set once here (if this kill
+        // actually produced loot) and cleared once by the loot-release handler once
+        // everything has been taken (see handleLootReleaseOpcode in LootHandler.cpp).
+        if (!loot.empty())
+            setDynamicFlags(getDynamicFlags() | U_DYN_FLAG_LOOTABLE);
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
         // Verified against the real 5.4.8 protocol (Skyfire-Mop's Unit::Kill): unlike the
         // TAGGED_BY_OTHER/TAPPED_BY_PLAYER bits, U_DYN_FLAG_LOOTABLE is not recomputed per
         // viewer on every broadcast - it is a persistent flag set once here (if this kill

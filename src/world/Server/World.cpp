@@ -955,7 +955,9 @@ void World::loadMySQLStores()
         },
         []{
             sMySQLStore.loadNpcTextTable();
+#if !defined(AE_MODERN_CLIENT)
             sMySQLStore.loadNpcScriptTextTable();
+#endif
             sMySQLStore.loadGossipMenuOptionTable();
             sMySQLStore.loadGraveyardsTable();
             sMySQLStore.loadTeleportCoordsTable();
@@ -1001,7 +1003,9 @@ void World::loadMySQLStores()
             sMySQLStore.loadLocalesGossipMenuOption();
             sMySQLStore.loadLocalesItem();
             sMySQLStore.loadLocalesItemPages();
+#if !defined(AE_MODERN_CLIENT)
             sMySQLStore.loadLocalesNpcScriptText();
+#endif
             sMySQLStore.loadLocalesNpcText();
             sMySQLStore.loadLocalesPointsOfInterest();
             sMySQLStore.loadLocalesQuest();
@@ -1017,7 +1021,9 @@ void World::loadMySQLStores()
     sMySQLStore.loadTransportEntrys();
     sMySQLStore.loadGossipMenuItemsTable();
     sMySQLStore.loadRecallTable();
+#if !defined(AE_MODERN_CLIENT)
     sMySQLStore.loadCreatureAIScriptsTable();
+#endif
     sMySQLStore.loadSpawnGroupIds();
 
     sLogger.info("Done. MySQLStore loaded in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -1083,11 +1089,15 @@ void World::loadMySQLTablesByTask()
         },
         []{
             sQuestMgr.LoadExtraQuestStuff();
+#if !defined(AE_MODERN_CLIENT)
             sObjectMgr.loadEventScripts();
+#endif
             sWeatherMgr.loadFromDB();
             sAddonMgr.LoadFromDB();
             sGameEventMgr.LoadFromDB();
+#if VERSION_STRING > TBC
             sCalendarMgr.loadFromDB();
+#endif
             sCommandTableStorage.loadOverridePermission();
         }
     });

@@ -48,6 +48,12 @@ namespace WDB
 
     int WDBLoader::getVersionIdForAEVersion()
     {
+#if defined(AE_FOREVER)
+        // Modern protocol builds currently run on the existing WotLK core-data
+        // baseline. The client protocol remains Forever; this only
+        // selects the legacy DBC format used by the server-side core stores.
+        return 2;
+#else
         switch (VERSION_STRING)
         {
             case Classic:
@@ -63,6 +69,7 @@ namespace WDB
             default:
                 return 0;
         }
+#endif
     }
 
     bool WDBLoader::hasFormat(std::string _dbcFile)

@@ -18,6 +18,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
+#include "WoWGuid.hpp"
+#include <array>
+#include <bitset>
+#include <vector>
 #pragma pack(push, 1)
 
 #if VERSION_STRING < Cata
@@ -70,6 +74,47 @@ struct WoWObject
     }
 };
 #elif VERSION_STRING == Mop
+struct WoWObject
+{
+    guid_union guid;
+    uint64_t data;
+
+    union field_type_union
+    {
+        struct parts
+        {
+            uint16_t type;
+            uint16_t guild_id;
+        } parts;
+        uint32_t raw;
+    } field_type;
+
+    uint32_t entry;
+    union field_dynamic_union
+    {
+        struct parts
+        {
+            uint16_t dynamic_flags;
+            int16_t path_progress;
+        } dynamic_field_parts;
+        uint32_t raw;
+    } dynamic_field;
+    float scale_x;
+
+    void setLowGuid(uint32_t val)
+    {
+        *reinterpret_cast<uint32_t*>(&guid) = val;
+    }
+
+    void setHighGuid(uint32_t val)
+    {
+        *(reinterpret_cast<uint32_t*>(&guid) + 1) = val;
+    }
+};
+#elif defined(AE_FOREVER)
+// Transitional storage only: WoWUnit/WoWPlayer still inherit this packed descriptor layout while
+// their Forever migration is in progress. Object getters/setters no longer use these fields.
+// Remove this AE_FOREVER block when Unit/Player no longer depend on descriptor offsets.
 struct WoWObject
 {
     guid_union guid;

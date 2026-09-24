@@ -15,6 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WoWItem.hpp"
 
+#include <bitset>
+#include "WoWGuid.hpp"
 #pragma pack(push, 1)
 
 #if VERSION_STRING == Classic
@@ -67,6 +69,16 @@ struct WoWContainer : WoWItem
 #endif
 
 #if VERSION_STRING == Mop
+
+static inline constexpr uint8_t WOWCONTAINER_ITEM_SLOT_COUNT = 36;
+
+struct WoWContainer : WoWItem
+{
+    std::array<guid_union, WOWCONTAINER_ITEM_SLOT_COUNT> item_slot;
+    uint32_t slot_count;
+};
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
 
 static inline constexpr uint8_t WOWCONTAINER_ITEM_SLOT_COUNT = 36;
 

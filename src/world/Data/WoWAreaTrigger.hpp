@@ -15,6 +15,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WoWObject.hpp"
 
+#include "WoWGuid.hpp"
+#include "WoWUnit.hpp"
+#include <bitset>
 #pragma pack(push, 1)
 
 #if VERSION_STRING == Cata
@@ -28,6 +31,16 @@ struct WoWAreaTrigger : WoWObject
     float pos_z;
 };
 #elif VERSION_STRING == Mop
+struct WoWAreaTrigger : WoWObject
+{
+    guid_union caster_guid;
+    uint32_t duration;
+    uint32_t spell_id;
+    uint32_t spell_visual_id;
+    float scale;
+};
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
 struct WoWAreaTrigger : WoWObject
 {
     guid_union caster_guid;

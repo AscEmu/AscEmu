@@ -157,4 +157,7 @@ namespace BattlegroundDef
 #define BATTLEGROUND_NUM_TYPES 657
 #elif VERSION_STRING == Mop
 #define BATTLEGROUND_NUM_TYPES 758
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+#define BATTLEGROUND_NUM_TYPES 758
 #endif

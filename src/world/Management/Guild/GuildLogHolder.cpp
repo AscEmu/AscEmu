@@ -64,6 +64,15 @@ void GuildLogHolder::writeLogHolderPacket(WorldPacket& data) const
 
     data.flushBits();
     data.append(buffer);
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    ByteBuffer buffer;
+    data.writeBits(mLog.size(), 21);
+    for (GuildLog::const_iterator itr = mLog.begin(); itr != mLog.end(); ++itr)
+        (*itr)->writeGuildLogPacket(data, buffer);
+
+    data.flushBits();
+    data.append(buffer);
 #else
     ByteBuffer buffer;
     data << uint8_t(mLog.size());

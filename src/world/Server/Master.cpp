@@ -529,12 +529,18 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     sSocketMgr.SetThreadPool(threadPool);
 
     sSocketMgr.SpawnWorkerThreads();
+#if !defined(AE_MODERN_CLIENT)
     sScriptMgr.LoadScripts();
     sMapMgr.loadContinentScripts();
     sSpellMgr.loadSpellScripts();
 
     if (worldConfig.startup.enableSpellIdDump)
         sScriptMgr.DumpUnimplementedSpells();
+#else
+    // Forever uses no Classic-MoP external, instance, quest or spell
+    // scripts until dedicated implementations are added for the modern data.
+    sLogger.info("Server : Legacy scripts and spell handlers are disabled for this client profile.");
+#endif
 
     sLogger.info("Server : Ready for connections. Startup time: {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 

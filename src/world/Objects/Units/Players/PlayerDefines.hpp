@@ -101,7 +101,9 @@ enum Races
     RACE_WORGEN = 22,
     RACE_PANDAREN_NEUTRAL = 24,
     RACE_PANDAREN_ALLIANCE = 25,
-    RACE_PANDAREN_HORDE = 26
+    RACE_PANDAREN_HORDE = 26,
+    RACE_SKYBORNE_ALLIANCE = 95,
+    RACE_SKYBORNE_HORDE = 96,
 };
 
 enum TransferStatus : uint8_t
@@ -388,19 +390,38 @@ enum LoginFlags
     LOGIN_CUSTOMIZE_LOOKS       = 8
 };
 
-enum AccountFlags
+enum AccountFlags : uint32_t
 {
-    ACCOUNT_FLAG_TOURNAMENT     = 0x01,
-    ACCOUNT_FLAG_NO_AUTOJOIN    = 0x02,
-    //ACCOUNT_FLAG_XTEND_INFO   = 0x04,
-    ACCOUNT_FLAG_XPACK_01       = 0x08,       // The Burning Crusade
-    ACCOUNT_FLAG_XPACK_02       = 0x10,       // Wrath of the Lich King
-    ACCOUNT_FLAG_XPACK_03       = 0x20,       // Cataclysm
-    ACCOUNT_FLAG_XPACK_04       = 0x40,       // Mists of Pandaria
+    ACCOUNT_FLAG_NONE           = 0x00000000,
+    ACCOUNT_FLAG_TOURNAMENT     = 0x00000001,
+    ACCOUNT_FLAG_NO_AUTOJOIN    = 0x00000002,
+    //ACCOUNT_FLAG_XTEND_INFO   = 0x00000004,
+    ACCOUNT_FLAG_XPACK_01       = 0x00000008, // The Burning Crusade
+    ACCOUNT_FLAG_XPACK_02       = 0x00000010, // Wrath of the Lich King
+    ACCOUNT_FLAG_XPACK_03       = 0x00000020, // Cataclysm
+    ACCOUNT_FLAG_XPACK_04       = 0x00000040, // Mists of Pandaria
+    ACCOUNT_FLAG_XPACK_05       = 0x00000080, // Warlords of Draenor
+    ACCOUNT_FLAG_XPACK_06       = 0x00000100, // Legion
+    ACCOUNT_FLAG_XPACK_07       = 0x00000200, // Battle for Azeroth
+    ACCOUNT_FLAG_XPACK_08       = 0x00000400, // Shadowlands
+    ACCOUNT_FLAG_XPACK_09       = 0x00000800, // Dragonflight
+    ACCOUNT_FLAG_XPACK_10       = 0x00001000, // The War Within
+    ACCOUNT_FLAG_XPACK_11       = 0x00002000, // Midnight
+    ACCOUNT_FLAG_XPACK_12       = 0x00004000, // The Last Titan
+    ACCOUNT_FLAG_FOREVER        = 0x00008000, // WoW Forever
 
-    AF_FULL_WOTLK = ACCOUNT_FLAG_XPACK_01 | ACCOUNT_FLAG_XPACK_02,
-    AF_FULL_CATA = AF_FULL_WOTLK | ACCOUNT_FLAG_XPACK_03,
-    AF_FULL_MOP = AF_FULL_CATA | ACCOUNT_FLAG_XPACK_04
+    AF_FULL_WOTLK               = ACCOUNT_FLAG_XPACK_01 | ACCOUNT_FLAG_XPACK_02,
+    AF_FULL_CATA                = AF_FULL_WOTLK | ACCOUNT_FLAG_XPACK_03,
+    AF_FULL_MOP                 = AF_FULL_CATA | ACCOUNT_FLAG_XPACK_04,
+    AF_FULL_WOD                 = AF_FULL_MOP | ACCOUNT_FLAG_XPACK_05,
+    AF_FULL_LEGION              = AF_FULL_WOD | ACCOUNT_FLAG_XPACK_06,
+    AF_FULL_BFA                 = AF_FULL_LEGION | ACCOUNT_FLAG_XPACK_07,
+    AF_FULL_SHADOWLANDS         = AF_FULL_BFA | ACCOUNT_FLAG_XPACK_08,
+    AF_FULL_DRAGONFLIGHT        = AF_FULL_SHADOWLANDS | ACCOUNT_FLAG_XPACK_09,
+    AF_FULL_TWW                 = AF_FULL_DRAGONFLIGHT | ACCOUNT_FLAG_XPACK_10,
+    AF_FULL_MIDNIGHT            = AF_FULL_TWW | ACCOUNT_FLAG_XPACK_11,
+    AF_FULL_LAST_TITAN          = AF_FULL_MIDNIGHT | ACCOUNT_FLAG_XPACK_12,
+    AF_FULL_FOREVER             = AF_FULL_LAST_TITAN | ACCOUNT_FLAG_FOREVER
 };
 
 enum CharacterScreenFlags
@@ -759,7 +780,10 @@ enum PlayerCombatRating : uint8_t
 #if VERSION_STRING >= Cata
     CR_MASTERY                          = 25,
 #endif
-#if VERSION_STRING >= Mop
+#if VERSION_STRING == Mop
+    CR_PVP_POWER                        = 26,
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     CR_PVP_POWER                        = 26,
 #endif
 
@@ -1044,6 +1068,13 @@ struct ActionButton
     uint32_t Action = 0;
     uint32_t Type = 0;
 };
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+struct ActionButton
+{
+    uint32_t Action = 0;
+    uint32_t Type = 0;
+};
 #else
 struct ActionButton
 {
@@ -1216,7 +1247,10 @@ struct FactionReputation
 };
 
 // TODO: use posssibly more describe naming
-#if VERSION_STRING >= Mop
+#if VERSION_STRING == Mop
+static inline constexpr uint16_t PLAYER_REPUTATION_COUNT = 256;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
 static inline constexpr uint16_t PLAYER_REPUTATION_COUNT = 256;
 #else
 static inline constexpr uint8_t PLAYER_REPUTATION_COUNT = 128;

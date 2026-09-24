@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Item.hpp"
+#include "Server/World.h"
 #include "Container.hpp"
 #include "Data/Flags.hpp"
 #include "Logging/Logger.hpp"
@@ -52,6 +53,9 @@ Item::Item() : m_loot(nullptr)
     m_updateFlag = UPDATEFLAG_NONE;
 #endif
 #if VERSION_STRING == Mop
+    m_updateFlag = UPDATEFLAG_NONE;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     m_updateFlag = UPDATEFLAG_NONE;
 #endif
 
@@ -127,22 +131,134 @@ void Item::create(uint32_t itemId, Player* owner)
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 
-uint64_t Item::getOwnerGuid() const { return itemData()->owner_guid.guid; }
-uint32_t Item::getOwnerGuidLow() const { return itemData()->owner_guid.parts.low; }
-uint32_t Item::getOwnerGuidHigh() const { return itemData()->owner_guid.parts.high; }
-void Item::setOwnerGuid(uint64_t guid) { write(itemData()->owner_guid.guid, guid); }
+#if defined(AE_FOREVER)
+namespace
+{
+    WoWGuid makeForeverItemOwnerGuid(Item const* item, uint64_t legacyGuid)
+    {
+        if (legacyGuid == 0)
+            return WoWGuid::createModernEmpty();
 
-void Item::setContainerGuid(uint64_t guid) { write(itemData()->container_guid.guid, guid); }
-uint64_t Item::getContainerGuid() const { return itemData()->container_guid.guid; }
+        return WoWGuid::createModernFromLegacy(legacyGuid, worldConfig.battleNetComm.realmId, static_cast<uint16_t>(item->GetMapId()), 0, 0);
+    }
+}
+#endif
 
-uint64_t Item::getCreatorGuid() const { return itemData()->creator_guid.guid; }
-void Item::setCreatorGuid(uint64_t guid) { write(itemData()->creator_guid.guid, guid); }
+uint64_t Item::getOwnerGuid() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverItemFields.owner.toLegacyRaw();
+#else
+    return itemData()->owner_guid.guid;
+#endif
+}
+uint32_t Item::getOwnerGuidLow() const { return static_cast<uint32_t>(getOwnerGuid() & UINT64_C(0xFFFFFFFF)); }
+uint32_t Item::getOwnerGuidHigh() const { return static_cast<uint32_t>(getOwnerGuid() >> 32U); }
+void Item::setOwnerGuid(uint64_t guid)
+{
+#if defined(AE_FOREVER)
+    const WoWGuid modernGuid = makeForeverItemOwnerGuid(this, guid);
+    if (m_foreverItemFields.owner.getModernHigh() == modernGuid.getModernHigh() && m_foreverItemFields.owner.getModernLow() == modernGuid.getModernLow())
+        return;
 
-uint64_t Item::getGiftCreatorGuid() const { return itemData()->gift_creator_guid.guid; }
-void Item::setGiftCreatorGuid(uint64_t guid) { write(itemData()->gift_creator_guid.guid, guid); }
+    m_foreverItemFields.owner = modernGuid;
+    m_foreverItemFields.markChanged(AscEmu::Version::Forever::Fields::ItemData::OwnerBit);
+    updateObject();
+#else
+    write(itemData()->owner_guid.guid, guid);
+#endif
+}
 
-uint32_t Item::getStackCount() const { return itemData()->stack_count; }
-void Item::setStackCount(uint32_t count) { write(itemData()->stack_count, count); }
+void Item::setContainerGuid(uint64_t guid)
+{
+#if defined(AE_FOREVER)
+    const WoWGuid modernGuid = makeForeverItemOwnerGuid(this, guid);
+    if (m_foreverItemFields.containedIn.getModernHigh() == modernGuid.getModernHigh() && m_foreverItemFields.containedIn.getModernLow() == modernGuid.getModernLow())
+        return;
+
+    m_foreverItemFields.containedIn = modernGuid;
+    m_foreverItemFields.markChanged(AscEmu::Version::Forever::Fields::ItemData::ContainedInBit);
+    updateObject();
+#else
+    write(itemData()->container_guid.guid, guid);
+#endif
+}
+uint64_t Item::getContainerGuid() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverItemFields.containedIn.toLegacyRaw();
+#else
+    return itemData()->container_guid.guid;
+#endif
+}
+
+uint64_t Item::getCreatorGuid() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverItemFields.creator.toLegacyRaw();
+#else
+    return itemData()->creator_guid.guid;
+#endif
+}
+void Item::setCreatorGuid(uint64_t guid)
+{
+#if defined(AE_FOREVER)
+    const WoWGuid modernGuid = makeForeverItemOwnerGuid(this, guid);
+    if (m_foreverItemFields.creator.getModernHigh() == modernGuid.getModernHigh() && m_foreverItemFields.creator.getModernLow() == modernGuid.getModernLow())
+        return;
+
+    m_foreverItemFields.creator = modernGuid;
+    m_foreverItemFields.markChanged(AscEmu::Version::Forever::Fields::ItemData::CreatorBit);
+    updateObject();
+#else
+    write(itemData()->creator_guid.guid, guid);
+#endif
+}
+
+uint64_t Item::getGiftCreatorGuid() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverItemFields.giftCreator.toLegacyRaw();
+#else
+    return itemData()->gift_creator_guid.guid;
+#endif
+}
+void Item::setGiftCreatorGuid(uint64_t guid)
+{
+#if defined(AE_FOREVER)
+    const WoWGuid modernGuid = makeForeverItemOwnerGuid(this, guid);
+    if (m_foreverItemFields.giftCreator.getModernHigh() == modernGuid.getModernHigh() && m_foreverItemFields.giftCreator.getModernLow() == modernGuid.getModernLow())
+        return;
+
+    m_foreverItemFields.giftCreator = modernGuid;
+    m_foreverItemFields.markChanged(AscEmu::Version::Forever::Fields::ItemData::GiftCreatorBit);
+    updateObject();
+#else
+    write(itemData()->gift_creator_guid.guid, guid);
+#endif
+}
+
+uint32_t Item::getStackCount() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverItemFields.stackCount;
+#else
+    return itemData()->stack_count;
+#endif
+}
+void Item::setStackCount(uint32_t count)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverItemFields.stackCount == count)
+        return;
+
+    m_foreverItemFields.stackCount = count;
+    m_foreverItemFields.markChanged(AscEmu::Version::Forever::Fields::ItemData::StackCountBit);
+    updateObject();
+#else
+    write(itemData()->stack_count, count);
+#endif
+}
 void Item::modStackCount(int32_t mod)
 {
     int32_t newStackCount = getStackCount();
@@ -161,14 +277,49 @@ void Item::setTextId(const uint32_t textId)
 }
 #endif
 
-uint32_t Item::getDuration() const { return itemData()->duration; }
-void Item::setDuration(uint32_t seconds) { write(itemData()->duration, seconds); }
+uint32_t Item::getDuration() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverItemFields.expiration;
+#else
+    return itemData()->duration;
+#endif
+}
+void Item::setDuration(uint32_t seconds)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverItemFields.expiration == seconds)
+        return;
 
-int32_t Item::getSpellCharges(uint8_t index) const { return itemData()->spell_charges[index]; }
+    m_foreverItemFields.expiration = seconds;
+    m_foreverItemFields.markChanged(AscEmu::Version::Forever::Fields::ItemData::ExpirationBit);
+    updateObject();
+#else
+    write(itemData()->duration, seconds);
+#endif
+}
+
+int32_t Item::getSpellCharges(uint8_t index) const
+{
+#if defined(AE_FOREVER)
+    return index < m_foreverItemFields.spellCharges.size() ? m_foreverItemFields.spellCharges[index] : 0;
+#else
+    return itemData()->spell_charges[index];
+#endif
+}
 void Item::setSpellCharges(uint8_t index, int32_t count)
 {
+#if defined(AE_FOREVER)
+    if (index >= m_foreverItemFields.spellCharges.size() || m_foreverItemFields.spellCharges[index] == count)
+        return;
+
+    m_foreverItemFields.spellCharges[index] = count;
+    m_foreverItemFields.markArrayChanged(AscEmu::Version::Forever::Fields::ItemData::SpellChargesGroupBit, AscEmu::Version::Forever::Fields::ItemData::SpellChargesFirstBit + index);
+    updateObject();
+#else
     if (index < WOWITEM_SPELL_CHARGES_COUNT)
         write(itemData()->spell_charges[index], count);
+#endif
 }
 
 void Item::modSpellCharges(uint8_t index, int32_t mod)
@@ -185,8 +336,27 @@ void Item::modSpellCharges(uint8_t index, int32_t mod)
     }
 }
 
-uint32_t Item::getFlags() const { return itemData()->flags; }
-void Item::setFlags(uint32_t flags) { write(itemData()->flags, flags); }
+uint32_t Item::getFlags() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverItemFields.dynamicFlags;
+#else
+    return itemData()->flags;
+#endif
+}
+void Item::setFlags(uint32_t flags)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverItemFields.dynamicFlags == flags)
+        return;
+
+    m_foreverItemFields.dynamicFlags = flags;
+    m_foreverItemFields.markChanged(AscEmu::Version::Forever::Fields::ItemData::DynamicFlagsBit);
+    updateObject();
+#else
+    write(itemData()->flags, flags);
+#endif
+}
 void Item::addFlags(uint32_t flags) { setFlags(getFlags() | flags); }
 void Item::removeFlags(uint32_t flags) { setFlags(getFlags() & ~flags); }
 bool Item::hasFlags(uint32_t flags) const { return (getFlags() & flags) != 0; }
@@ -214,15 +384,72 @@ void Item:: setRandomPropertiesId(uint32_t id)
     m_randomProperties = id;
 }
 
-uint32_t Item::getDurability() const { return itemData()->durability; }
-void Item::setDurability(uint32_t durability) { write(itemData()->durability, durability); }
+uint32_t Item::getDurability() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverItemFields.durability;
+#else
+    return itemData()->durability;
+#endif
+}
+void Item::setDurability(uint32_t durability)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverItemFields.durability == durability)
+        return;
 
-uint32_t Item::getMaxDurability() const { return itemData()->max_durability; }
-void Item::setMaxDurability(uint32_t maxDurability) { write(itemData()->max_durability, maxDurability); }
+    m_foreverItemFields.durability = durability;
+    m_foreverItemFields.markChanged(AscEmu::Version::Forever::Fields::ItemData::DurabilityBit);
+    updateObject();
+#else
+    write(itemData()->durability, durability);
+#endif
+}
+
+uint32_t Item::getMaxDurability() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverItemFields.maxDurability;
+#else
+    return itemData()->max_durability;
+#endif
+}
+void Item::setMaxDurability(uint32_t maxDurability)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverItemFields.maxDurability == maxDurability)
+        return;
+
+    m_foreverItemFields.maxDurability = maxDurability;
+    m_foreverItemFields.markChanged(AscEmu::Version::Forever::Fields::ItemData::MaxDurabilityBit);
+    updateObject();
+#else
+    write(itemData()->max_durability, maxDurability);
+#endif
+}
 
 #if VERSION_STRING >= WotLK
-uint32_t Item::getCreatePlayedTime() const { return itemData()->create_played_time; }
-void Item::setCreatePlayedTime(uint32_t time) { write(itemData()->create_played_time, time); }
+uint32_t Item::getCreatePlayedTime() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverItemFields.createPlayedTime;
+#else
+    return itemData()->create_played_time;
+#endif
+}
+void Item::setCreatePlayedTime(uint32_t time)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverItemFields.createPlayedTime == time)
+        return;
+
+    m_foreverItemFields.createPlayedTime = time;
+    m_foreverItemFields.markChanged(AscEmu::Version::Forever::Fields::ItemData::CreatePlayedTimeBit);
+    updateObject();
+#else
+    write(itemData()->create_played_time, time);
+#endif
+}
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////

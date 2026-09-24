@@ -63,8 +63,16 @@ public:
     // WoWData
 private:
     const WoWCorpse* corpseData() const { return reinterpret_cast<WoWCorpse*>(wow_data); }
+#if defined(AE_FOREVER)
+    AscEmu::Version::Forever::Fields::CorpseData m_foreverCorpseFields{};
+#endif
 
 public:
+#if defined(AE_FOREVER)
+    AscEmu::Version::Forever::Fields::CorpseData& foreverCorpseFields() { return m_foreverCorpseFields; }
+    AscEmu::Version::Forever::Fields::CorpseData const& foreverCorpseFields() const { return m_foreverCorpseFields; }
+#endif
+
     uint64_t getOwnerGuid() const;
     void setOwnerGuid(uint64_t guid);
 

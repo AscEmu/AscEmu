@@ -202,8 +202,7 @@ MoveSplineInit::MoveSplineInit(Unit* m) : unit(m)
     args.TransformForTransport = unit->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) && unit->getTransGuid();
     // mix existing state into new
     args.walk = unit->hasUnitMovementFlag(MOVEFLAG_WALK);
-    // a spline is flown by creatures that can fly, hover, are flying or have gravity disabled, MOVEFLAG_CAN_FLY alone is enough for creatures
-    args.flags.flying = unit->obj_movement_info.hasMovementFlag(MovementFlags(MOVEFLAG_CAN_FLY | MOVEFLAG_HOVER | MOVEFLAG_FLYING | MOVEFLAG_DISABLEGRAVITY));
+    args.flags.flying = unit->obj_movement_info.hasMovementFlag(MOVEFLAG_FLYING_MASK);
 }
 #endif
 
@@ -216,8 +215,7 @@ MoveSplineInit::MoveSplineInit(Unit* m) : unit(m)
     // mix existing state into new
     args.flags.canswim = unit->canSwim();
     args.walk = unit->hasUnitMovementFlag(MOVEFLAG_WALK);
-    // creatures with MOVEFLAG_CAN_FLY (flight type CanFly) fly their splines as well, not only those with gravity disabled
-    args.flags.flying = unit->obj_movement_info.hasMovementFlag(MovementFlags(MOVEFLAG_CAN_FLY | MOVEFLAG_FLYING | MOVEFLAG_DISABLEGRAVITY));
+    args.flags.flying = unit->obj_movement_info.hasMovementFlag(MOVEFLAG_FLYING_MASK);
 }
 #endif
 
@@ -229,8 +227,7 @@ MoveSplineInit::MoveSplineInit(Unit* m) : unit(m)
     args.TransformForTransport = unit->getTransGuid() != 0;
     // mix existing state into new
     args.flags.walkmode = unit->obj_movement_info.hasMovementFlag(MOVEFLAG_WALK);
-    // creatures with MOVEFLAG_CAN_FLY (flight type CanFly) fly their splines as well, not only those with gravity disabled
-    args.flags.flying = unit->obj_movement_info.hasMovementFlag(MovementFlags(MOVEFLAG_CAN_FLY | MOVEFLAG_DISABLEGRAVITY));
+    args.flags.flying = unit->obj_movement_info.hasMovementFlag(MOVEFLAG_FLYING_MASK);
     args.flags.smoothGroundPath = true; // enabled by default, CatmullRom mode or client config "pathSmoothing" will disable this
 }
 #endif

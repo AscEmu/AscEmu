@@ -154,7 +154,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
 #endif
 
     // Some spell cast packets include more data
-#if VERSION_STRING == Mop
+#if VERSION_STRING == Mop || defined(AE_FOREVER)
     if (!srlPacket.hasSrcLocation)
     {
         if (_player->getTransGuid())
@@ -218,15 +218,23 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
             travelTime = static_cast<uint32_t>((sqrtf(deltaX * deltaX + deltaY * deltaY) / (cosf(srlPacket.projectilePitch) * srlPacket.projectileSpeed)) * 1000);
         }
 
-        if (srlPacket.hasMovementData)
-        {
-
-            recvPacket.setOpcode(recvPacket.read<uint16_t>()); // MSG_MOVE_STOP
-            handleMovementOpcodes(recvPacket);
-        }
-
         spell->m_missilePitch = srlPacket.projectilePitch;
         spell->m_missileTravelTime = travelTime;
+    }
+    else if (spellInfo->getSpeed() > 0.0f)
+    {
+        // Client didn't send explicit ground-target coordinates (plain "cast on selected unit").
+        // Real Mop protocol still computes the missile travel time server-side from caster-to-target
+        // distance in this case - without it the client never animates the missile flying to the target.
+        const auto unitTarget = _player->getWorldMapUnit(srlPacket.targets.getUnitTargetGuid());
+        if (unitTarget != nullptr && unitTarget != _player)
+        {
+            float dist = sqrtf(_player->getDistanceSq(unitTarget));
+            if (dist < 5.0f)
+                dist = 5.0f;
+
+            spell->m_missileTravelTime = static_cast<uint32_t>((dist / spellInfo->getSpeed()) * 1000);
+        }
     }
 #endif
 
@@ -237,6 +245,21 @@ void WorldSession::handleCancelCastOpcode(WorldPacket& recvPacket)
 {
     uint32_t spellId = 0;
 #if VERSION_STRING == Mop
+    uint8_t counter = 0;
+
+    bool hasCounter = !recvPacket.readBit();
+    bool hasSpellId = !recvPacket.readBit();
+
+    recvPacket.flushBits();
+
+    if (hasSpellId)
+        recvPacket >> spellId;
+
+    if (hasCounter)
+        recvPacket >> counter;
+
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     uint8_t counter = 0;
 
     bool hasCounter = !recvPacket.readBit();

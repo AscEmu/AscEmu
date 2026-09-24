@@ -51,6 +51,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Strings.hpp"
+#include "Utilities/Util.hpp"
+
+#if defined(AE_FOREVER)
+#include "version/Forever/Opcodes.hpp"
+#include "version/Forever/World/InWorldBootstrap.hpp"
+#include "version/Forever/World/ObjectUpdate.hpp"
+#include "version/Forever/World/PostAuthBootstrap.hpp"
+#include "WoWGuid.hpp"
+#include "Server/WorldSocket.hpp"
+#endif
 
 using namespace AscEmu::Packets;
 
@@ -209,8 +219,12 @@ void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
         return;
 
     sLogger.debugOpcode("Received CMSG_PLAYER_LOGIN {} (guidLow).", srlPacket.guid.getLowGuid());
+    beginPlayerLogin(srlPacket.guid.getLowGuid());
+}
 
-    if (sObjectMgr.getPlayer(srlPacket.guid.getLowGuid()) != nullptr || m_loggingInPlayer || _player)
+void WorldSession::beginPlayerLogin(uint32_t guidLow)
+{
+    if (sObjectMgr.getPlayer(guidLow) != nullptr || m_loggingInPlayer || _player)
     {
         SmsgCharacterLoginFailed managedPacket(E_CHAR_LOGIN_DUPLICATE_CHARACTER);
         sendManagedPacket(managedPacket);
@@ -218,10 +232,25 @@ void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
     }
 
     auto query = std::make_unique<AsyncQuery>(std::make_unique<SQLClassCallbackP0<WorldSession>>(this, &WorldSession::loadPlayerFromDBProc));
-    query->addQuery("SELECT guid,class FROM characters WHERE guid = %u AND login_flags = %u",
-        srlPacket.guid.getLowGuid(), static_cast<uint32_t>(LOGIN_NO_FLAG));
+    query->addQuery("SELECT guid,class FROM characters WHERE guid = %u AND login_flags = %u", guidLow, static_cast<uint32_t>(LOGIN_NO_FLAG));
     CharacterDatabase.queueAsyncQuery(std::move(query));
 }
+
+#if defined(AE_FOREVER)
+void WorldSession::beginForeverPlayerLogin(uint32_t guidLow)
+{
+    if (sObjectMgr.getPlayer(guidLow) != nullptr || m_loggingInPlayer || _player)
+    {
+        sLogger.warning("WorldSession::Forever: player login rejected guidLow={} because the character is already active or loading.", guidLow);
+        return;
+    }
+
+    sLogger.info("WorldSession::Forever: starting DB-backed player load guidLow={} without legacy login packets.", guidLow);
+    auto query = std::make_unique<AsyncQuery>(std::make_unique<SQLClassCallbackP0<WorldSession>>(this, &WorldSession::loadPlayerFromDBProc));
+    query->addQuery("SELECT guid,class FROM characters WHERE guid = %u AND login_flags = %u", guidLow, static_cast<uint32_t>(LOGIN_NO_FLAG));
+    CharacterDatabase.queueAsyncQuery(std::move(query));
+}
+#endif
 
 void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
 {
@@ -741,6 +770,10 @@ void WorldSession::fullLogin(Player* player)
 #if VERSION_STRING == Mop
     SmsgHotfixNotifyBlob hotfixPacket;
     sendManagedPacket(hotfixPacket);
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    SmsgHotfixNotifyBlob hotfixPacket;
+    sendManagedPacket(hotfixPacket);
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -814,6 +847,375 @@ void WorldSession::fullLogin(Player* player)
     if (Group* group = player->getGroup())
         group->Update();
 }
+
+
+#if defined(AE_FOREVER)
+void WorldSession::fullLoginForever(Player* player)
+{
+    if (player == nullptr)
+        return;
+
+    sLogger.info("WorldSession::Forever: finalizing server-side login state for {} ({}) without legacy network bootstrap.", player->getName(), player->getGuidLow());
+
+    SetPlayer(player);
+    m_MoverWoWGuid.init(player->getGuid());
+
+    player->setLoginPosition();
+    player->setPlayerInfoIfNeeded();
+
+    const bool canEnterWorld = player->logOntoTransport();
+
+    CharacterDatabase.execute("UPDATE characters SET online = 1 WHERE guid = %u", player->getGuidLow());
+    sWorld.incrementPlayerCount(player->getTeam());
+    player->m_playedTime[2] = uint32_t(UNIXTIME);
+
+    if (player->m_isResting)
+        player->applyPlayerRestState(true);
+
+    if (player->m_timeLogoff > 0 && player->getLevel() < player->getMaxLevel())
+    {
+        const uint32_t currenttime = uint32_t(UNIXTIME);
+        const uint32_t timediff = currenttime - player->m_timeLogoff;
+        if (timediff > 0)
+            player->addCalculatedRestXp(timediff);
+    }
+
+    player->setEnteringToWorld();
+
+    if (canEnterWorld && !player->getWorldMap())
+    {
+        const auto mapInfo = sMySQLStore.getWorldMapInfo(player->GetMapId());
+        if (mapInfo == nullptr || player->GetMapId() >= MAX_NUM_MAPS)
+        {
+            sLogger.failure("WorldSession::Forever: invalid login map {} for {} ({}).", player->GetMapId(), player->getName(), player->getGuidLow());
+            Disconnect();
+            return;
+        }
+
+        WorldMap* map = sMapMgr.findWorldMap(player->GetMapId(), player->GetInstanceID());
+        if (map == nullptr)
+        {
+            sLogger.failure("WorldSession::Forever: resolved login map unavailable for {} ({}) map={} instance={}.", player->getName(), player->getGuidLow(), player->GetMapId(), player->GetInstanceID());
+            Disconnect();
+            return;
+        }
+
+        if (!map->onPlayerEnter(player))
+        {
+            sLogger.failure("WorldSession::Forever: map attach rejected for {} ({}) map={} instance={}.", player->getName(), player->getGuidLow(), player->GetMapId(), player->GetInstanceID());
+            Disconnect();
+            return;
+        }
+    }
+    else if (!player->getWorldMap())
+    {
+        sLogger.failure("WorldSession::Forever: cannot enter world for {} ({}) map={} instance={}.", player->getName(), player->getGuidLow(), player->GetMapId(), player->GetInstanceID());
+        Disconnect();
+        return;
+    }
+
+    sHookInterface.OnFullLogin(player);
+    sObjectMgr.addPlayer(player);
+
+    if (Group* group = player->getGroup())
+        group->Update();
+
+    WorldSocket* instanceSocket = GetForeverInstanceSocket();
+    if (instanceSocket == nullptr || !instanceSocket->isConnected())
+    {
+        sLogger.failure("WorldSession::Forever: instance socket unavailable while starting in-world bootstrap for {} ({}).", player->getName(), player->getGuidLow());
+        Disconnect();
+        return;
+    }
+
+    player->setForeverRealmId(instanceSocket->getForeverRealmId());
+
+
+    // Synchronize the canonical modern Forever fields from the fully loaded live Player.
+    // This is intentionally kept in addition to setter mirroring while the old descriptor
+    // load path is still being migrated.
+    {
+        auto& objectFields = player->foreverObjectFields();
+        auto& unitFields = player->foreverUnitFields();
+        auto& playerFields = player->foreverPlayerFields();
+        auto& activeFields = player->foreverActivePlayerFields();
+
+        objectFields.entryId = static_cast<int32_t>(player->getEntry());
+        objectFields.dynamicFlags = player->getDynamicFlags();
+        objectFields.scale = player->getScale();
+
+        unitFields.race = player->getRace();
+        unitFields.classId = player->getClass();
+        unitFields.playerClassId = 0; // Retail 69913 self-create: separate PlayerClassId slot is zero.
+        unitFields.sex = player->getGender();
+        unitFields.displayPower = static_cast<uint8_t>(player->getPowerType());
+        unitFields.health = player->getHealth();
+        unitFields.maxHealth = player->getMaxHealth();
+        unitFields.level = static_cast<int32_t>(player->getLevel());
+        unitFields.effectiveLevel = static_cast<int32_t>(player->getLevel());
+        unitFields.factionTemplate = static_cast<int32_t>(player->getFactionTemplate());
+        unitFields.unitFlags69913 = player->getUnitFlags();
+        unitFields.unitFlags2_69913 = player->getUnitFlags2();
+        unitFields.unitFlags3_69913 = 0x00000020U; // Stable across sampled 69913 player self-creates.
+        unitFields.boundingRadius = player->getBoundingRadius();
+        unitFields.combatReach = player->getCombatReach();
+
+        // Modern Forever clients use the current ChrModel display ids rather than the
+        // legacy display ids stored by the older AscEmu player initialization path.
+        // Keep the canonical Player untouched so older client versions are unaffected.
+        if (auto const* foreverChrModel = getForeverChrModel(player->getRace(), player->getGender()))
+        {
+            unitFields.displayId = static_cast<int32_t>(foreverChrModel->displayId);
+            unitFields.nativeDisplayId = static_cast<int32_t>(foreverChrModel->displayId);
+
+        }
+        else
+        {
+            unitFields.displayId = static_cast<int32_t>(player->getDisplayId());
+            unitFields.nativeDisplayId = static_cast<int32_t>(player->getNativeDisplayId());
+
+            sLogger.failure("WorldSession::Forever: no ChrModel for {} ({}) race={} gender={}; falling back to legacy displayId={} nativeDisplayId={}.", player->getName(), player->getGuidLow(), player->getRace(), player->getGender(), player->getDisplayId(), player->getNativeDisplayId());
+        }
+
+        unitFields.mountDisplayId = static_cast<int32_t>(player->getMountDisplayId());
+        unitFields.currentAreaId = player->getAreaId();
+        unitFields.minDamage69913 = player->getMinDamage();
+        unitFields.maxDamage69913 = player->getMaxDamage();
+
+        // Owner-visible combat fields now have capture-verified semantics.
+        // The new Rogue retail capture reports AP=26, RangedAP=27 and
+        // Min/MaxRangedDamage=4.857143/6.857143 (UI rounds to 4-7).
+        unitFields.attackPower69913 = static_cast<int32_t>(player->getAttackPower());
+        unitFields.attackPowerMultiplier69913 = player->getAttackPowerMultiplier();
+        unitFields.rangedAttackPower69913 = player->getRangedAttackPower();
+        unitFields.rangedAttackPowerMultiplier69913 = player->getRangedAttackPowerMultiplier();
+        unitFields.minRangedDamage69913 = player->getMinRangedDamage();
+        unitFields.maxRangedDamage69913 = player->getMaxRangedDamage();
+
+        // Forever 69913 UnitData protocol defaults verified from the working
+        // self-create capture. These are sentinel/default values, not copied
+        // character stats.
+        unitFields.spellEmpowerStage = -1;
+        unitFields.creatureType = 7;               // Player units are humanoid.
+        unitFields.effectiveLevel = 0;              // No effective-level override.
+        unitFields.petNextLevelExperience = 0x7FFFFFFF;
+        unitFields.glideEventSpeedDivisor69913 = 1.0f;
+        unitFields.maxHealthModifier69913 = 0.0f;
+
+        // Forever 69913 inserts an owner-visible extension immediately before
+        // NameplateAttachToGUID. The capture contains a 15-byte unresolved prefix,
+        // two valid 7-byte ModernGUID encodings, and a final unresolved 3-byte
+        // suffix. Model the GUIDs explicitly while preserving the unknown bytes.
+        unitFields.ownerExtension69913.prefix = {
+            0x80, 0x3F, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00
+        };
+
+        static constexpr std::array<uint8_t, 7> ownerGuidA69913 = {
+            0x0F, 0x80, 0xD0, 0x0C, 0x04, 0x9B, 0x74
+        };
+        static constexpr std::array<uint8_t, 7> ownerGuidB69913 = {
+            0x0F, 0x80, 0x8E, 0xF0, 0x50, 0x42, 0x78
+        };
+        unitFields.ownerExtension69913.suffix = { 0xDA, 0x52, 0xAD };
+
+        if (!WoWGuid::unpackModern(
+                ownerGuidA69913.data(), ownerGuidA69913.size(), unitFields.ownerExtension69913.guidA) ||
+            !WoWGuid::unpackModern(
+                ownerGuidB69913.data(), ownerGuidB69913.size(), unitFields.ownerExtension69913.guidB))
+        {
+            sLogger.failure("WorldSession::Forever: invalid built-in 69913 owner extension GUID defaults.");
+            Disconnect();
+            return;
+        }
+
+        for (uint8_t i = 0; i < 5U; ++i)
+            unitFields.stats69913[i] = static_cast<int32_t>(player->getStat(i));
+        for (uint8_t i = 0; i < 7U; ++i)
+            unitFields.resistances69913[i] = static_cast<int32_t>(player->getResistance(i));
+
+        {
+            std::string foreverDbName(player->getName());
+            const std::size_t separator = foreverDbName.find(' ');
+
+            if (separator == std::string::npos)
+            {
+                playerFields.firstName = std::move(foreverDbName);
+                playerFields.lastName.clear();
+            }
+            else
+            {
+                playerFields.firstName = foreverDbName.substr(0, separator);
+                playerFields.lastName = foreverDbName.substr(separator + 1U);
+            }
+
+            if (playerFields.firstName.size() > 63U)
+                playerFields.firstName.resize(63U);
+            if (playerFields.lastName.size() > 63U)
+                playerFields.lastName.resize(63U);
+        }
+        playerFields.unknownU8_0_69913 = player->getGender();
+        playerFields.unknownU32_0_69913 = player->getPlayerFlags();
+        playerFields.unknownU32_6_69913 = player->getCurrentSpecId();
+        playerFields.unknownU32_5_69913 = ((instanceSocket->getForeverRegionId() & 0xFFU) << 24U) | ((instanceSocket->getForeverBattlegroupId() & 0xFFU) << 16U) | (instanceSocket->getForeverRealmId() & 0xFFFFU);
+
+
+        // Forever 69913: keep the currently wire-compatible defaults for
+        // unproven PlayerData wire slots. The field meanings are intentionally
+        // not asserted here; targeted VALUES tests will identify them.
+        playerFields.unknownCtrOptions0_69913.conditionalFlags.clear();
+        playerFields.unknownCtrOptions0_69913.conditionalFlags.emplace_back(4U);
+        playerFields.unknownCtrOptions0_69913.factionGroup = 3U;
+        playerFields.unknownCtrOptions0_69913.chromieTimeExpansionMask = 0U;
+
+        // Wire-compatible default for this unproven 32-bit wire slot.
+        playerFields.unknownI32_12_69913 = -1;
+
+        // Wire-compatible defaults for this unproven five-scalar record.
+        playerFields.unknownCustomTabard0_69913.emblemStyle = -1;
+        playerFields.unknownCustomTabard0_69913.emblemColor = -1;
+        playerFields.unknownCustomTabard0_69913.borderStyle = -1;
+        playerFields.unknownCustomTabard0_69913.borderColor = -1;
+        playerFields.unknownCustomTabard0_69913.backgroundColor = -1;
+
+        activeFields.xp = static_cast<int32_t>(player->getXp());
+        activeFields.nextLevelXp = static_cast<int32_t>(player->getNextLevelXp());
+        activeFields.coinage = player->getCoinage();
+
+        // Forever 69913 post-SkillInfo scalar/combat-stat cluster.
+        // Fields without a canonical AscEmu source remain at protocol zero until
+        // their gameplay source is implemented.
+        activeFields.trackCreatureMask = player->getTrackCreature();
+        activeFields.mainhandExpertise = static_cast<float>(player->getExpertise());
+        activeFields.offhandExpertise = static_cast<float>(player->getOffHandExpertise());
+        activeFields.blockPercentage = player->getBlockPercentage();
+        activeFields.dodgePercentage = player->getDodgePercentage();
+        activeFields.parryPercentage = player->getParryPercentage();
+        activeFields.critPercentage = player->getMeleeCritPercentage();
+        activeFields.rangedCritPercentage = player->getRangedCritPercentage();
+        activeFields.offhandCritPercentage = player->getOffHandCritPercentage();
+        activeFields.shieldBlock = static_cast<int32_t>(player->getShieldBlock());
+        activeFields.shieldBlockCritPercentage = player->getShieldBlockCritPercentage();
+
+        playerFields.customizations.clear();
+        uint32_t validCustomizationCount = 0;
+        uint32_t invalidCustomizationCount = 0;
+        if (auto customizationResult = CharacterDatabase.query("SELECT chrCustomizationOptionID, chrCustomizationChoiceID FROM character_customizations WHERE guid=%u ORDER BY chrCustomizationOptionID", player->getGuidLow()))
+        {
+            do
+            {
+                Field* fields = customizationResult->fetch();
+                AscEmu::Version::Forever::Fields::ChrCustomizationChoice choice;
+                choice.optionId = fields[0].asUint32();
+                choice.choiceId = fields[1].asUint32();
+                playerFields.customizations.emplace_back(choice);
+
+                auto const* option = sChrCustomizationOptionStore.lookupEntry(choice.optionId);
+                auto const* db2Choice = sChrCustomizationChoiceStore.lookupEntry(choice.choiceId);
+                if (option && db2Choice && db2Choice->optionId == choice.optionId)
+                {
+                    ++validCustomizationCount;
+                }
+                else
+                {
+                    ++invalidCustomizationCount;
+                }
+            }
+            while (customizationResult->nextRow());
+        }
+
+
+
+        if (invalidCustomizationCount != 0U)
+        {
+            sLogger.debug("WorldSession::Forever: {} customization DB2 entries are currently unresolved for {} ({}).", invalidCustomizationCount, player->getName(), player->getGuidLow());
+        }
+
+    }
+
+    const std::vector<uint8_t> packedPlayerGuid = WoWGuid::createModernPlayer(instanceSocket->getForeverRealmId(), player->getGuidLow()).packModern();
+    ByteBuffer accountDataTimes;
+    accountDataTimes.append(packedPlayerGuid.data(), packedPlayerGuid.size());
+    accountDataTimes << int64_t(static_cast<int64_t>(UNIXTIME));
+    for (uint32_t i = 0; i < 20U; ++i)
+        accountDataTimes << int64_t(0);
+
+    if (!instanceSocket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_ACCOUNT_DATA_TIMES, accountDataTimes.contents(), static_cast<uint32_t>(accountDataTimes.size())))
+    {
+        sLogger.failure("WorldSession::Forever: failed to send in-world SMSG_ACCOUNT_DATA_TIMES for {} ({}).", player->getName(), player->getGuidLow());
+        Disconnect();
+        return;
+    }
+
+    if (!instanceSocket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_FEATURE_SYSTEM_STATUS, AscEmu::Version::Forever::InWorldBootstrap::FeatureSystemStatus460063.data(), static_cast<uint32_t>(AscEmu::Version::Forever::InWorldBootstrap::FeatureSystemStatus460063.size())))
+    {
+        sLogger.failure("WorldSession::Forever: failed to send in-world SMSG_FEATURE_SYSTEM_STATUS for {} ({}).", player->getName(), player->getGuidLow());
+        Disconnect();
+        return;
+    }
+
+    if (!instanceSocket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_SET_TIME_ZONE_INFORMATION, AscEmu::Version::Forever::PostAuthBootstrap::TimeZone460123.data(), static_cast<uint32_t>(AscEmu::Version::Forever::PostAuthBootstrap::TimeZone460123.size())))
+    {
+        sLogger.failure("WorldSession::Forever: failed to send in-world SMSG_SET_TIME_ZONE_INFORMATION for {} ({}).", player->getName(), player->getGuidLow());
+        Disconnect();
+        return;
+    }
+
+    ByteBuffer loginVerifyWorld;
+    loginVerifyWorld << uint32_t(player->GetMapId()) << float(player->GetPositionX()) << float(player->GetPositionY()) << float(player->GetPositionZ()) << float(player->GetOrientation()) << uint32_t(0);
+    if (!instanceSocket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_LOGIN_VERIFY_WORLD, loginVerifyWorld.contents(), static_cast<uint32_t>(loginVerifyWorld.size())))
+    {
+        sLogger.failure("WorldSession::Forever: failed to send SMSG_LOGIN_VERIFY_WORLD for {} ({}).", player->getName(), player->getGuidLow());
+        Disconnect();
+        return;
+    }
+
+    const uint32_t gameTime = Util::getGameTime();
+    ByteBuffer loginSetTimeSpeed;
+    loginSetTimeSpeed << gameTime << gameTime << float(0.016666667f) << int32_t(0) << int32_t(0);
+    if (!instanceSocket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_LOGIN_SET_TIME_SPEED, loginSetTimeSpeed.contents(), static_cast<uint32_t>(loginSetTimeSpeed.size())))
+    {
+        sLogger.failure("WorldSession::Forever: failed to send SMSG_LOGIN_SET_TIME_SPEED for {} ({}).", player->getName(), player->getGuidLow());
+        Disconnect();
+        return;
+    }
+
+    // Build the Forever 69913 self CreateObject2 entirely from structured fields
+    // and explicit build defaults. Unknown wire regions remain deliberately named.
+    const std::vector<uint8_t> createFieldPayload =
+        AscEmu::Version::Forever::ObjectUpdate::buildSelfFieldPayload(player->foreverObjectFields(), player->foreverUnitFields(), player->foreverPlayerFields(), player->foreverActivePlayerFields());
+
+    if (createFieldPayload.empty())
+    {
+        sLogger.failure("WorldSession::Forever: failed to build 69913 self field payload for {} ({}).", player->getName(), player->getGuidLow());
+        Disconnect();
+        return;
+    }
+
+    const std::vector<uint8_t> selfCreatePacket =
+        AscEmu::Version::Forever::ObjectUpdate::buildSelfCreatePacket(static_cast<uint16_t>(player->GetMapId()), packedPlayerGuid, player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation(), createFieldPayload);
+
+    if (selfCreatePacket.empty())
+    {
+        sLogger.failure("WorldSession::Forever: failed to build 69913 self CreateObject2 for {} ({}).", player->getName(), player->getGuidLow());
+        Disconnect();
+        return;
+    }
+
+    if (!instanceSocket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_UPDATE_OBJECT, selfCreatePacket.data(), static_cast<uint32_t>(selfCreatePacket.size())))
+    {
+        sLogger.failure("WorldSession::Forever: failed to send 69913 self CreateObject2 for {} ({}).", player->getName(), player->getGuidLow());
+        Disconnect();
+        return;
+    }
+
+
+
+    sLogger.info("WorldSession::Forever: player login complete for {} ({}) map={} instance={}.", player->getName(), player->getGuidLow(), player->GetMapId(), player->GetInstanceID());
+}
+#endif
 
 void WorldSession::handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket)
 {

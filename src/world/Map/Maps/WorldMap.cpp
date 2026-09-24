@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "WorldMap.hpp"
-#include "Server/PacketBroadcast.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Objects/Units/Creatures/Pet.h"
@@ -2521,11 +2520,20 @@ InstanceScript* WorldMap::getScript()
 
 void WorldMap::loadInstanceScript()
 {
+#if defined(AE_MODERN_CLIENT)
+    // Forever: do not attach legacy instance scripts. Dedicated modern
+    // scripts can be enabled here once their map data and hooks are verified.
+    mInstanceScript = nullptr;
+#else
     mInstanceScript = sScriptMgr.CreateScriptClassForInstance(getBaseMap()->getMapId(), this);
+#endif
 };
 
 void WorldMap::callScriptUpdate()
 {
+#if defined(AE_MODERN_CLIENT)
+    return;
+#else
     if (mInstanceScript != nullptr)
     {
         mInstanceScript->UpdateEvent();
@@ -2535,6 +2543,7 @@ void WorldMap::callScriptUpdate()
     {
         sLogger.failure("WorldMap::callScriptUpdate tries to call without valid instance script (nullptr)");
     }
+#endif
 };
 
 void WorldMap::updateObjects()
@@ -2661,8 +2670,7 @@ WorldStatesHandler& WorldMap::getWorldStatesHandler()
 
 void WorldMap::onWorldStateUpdate(uint32_t zone, uint32_t field, uint32_t value)
 {
-    SmsgUpdateWorldState packet(field, value);
-    PacketBroadcast::sendFromMapZone(*this, zone, packet);
+    sendPacketToPlayersInZone(zone, SmsgUpdateWorldState(field, value).serialise().get());
 }
 
 bool WorldMap::isCombatInProgress()

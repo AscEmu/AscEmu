@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Objects/DynamicObject.hpp"
+#include "Server/World.h"
 
 #include "GameObject.h"
 #include "Data/Flags.hpp"
@@ -35,6 +36,9 @@ DynamicObject::DynamicObject(uint64_t guid)
     m_updateFlag = UPDATEFLAG_POSITION;
 #endif
 #if VERSION_STRING == Mop
+    m_updateFlag = UPDATEFLAG_HAS_POSITION;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     m_updateFlag = UPDATEFLAG_HAS_POSITION;
 #endif
 
@@ -227,25 +231,108 @@ void DynamicObject::remove()
  //////////////////////////////////////////////////////////////////////////////////////////
  // WoWData
 
-uint64_t DynamicObject::getCasterGuid() const { return dynamicObjectData()->caster_guid; }
-void DynamicObject::setCasterGuid(uint64_t guid) { write(dynamicObjectData()->caster_guid, guid); }
+#if defined(AE_FOREVER)
+namespace
+{
+    WoWGuid makeForeverDynamicObjectReferenceGuid(DynamicObject const* owner, uint64_t legacyGuid)
+    {
+        if (legacyGuid == 0)
+            return WoWGuid::createModernEmpty();
+        return WoWGuid::createModernFromLegacy(legacyGuid, worldConfig.battleNetComm.realmId, static_cast<uint16_t>(owner->GetMapId()), 0, 0);
+    }
+}
+#endif
+
+uint64_t DynamicObject::getCasterGuid() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverDynamicObjectFields.caster.toLegacyRaw();
+#else
+    return dynamicObjectData()->caster_guid;
+#endif
+}
+void DynamicObject::setCasterGuid(uint64_t guid)
+{
+#if defined(AE_FOREVER)
+    const WoWGuid value = makeForeverDynamicObjectReferenceGuid(this, guid);
+    if (m_foreverDynamicObjectFields.caster.getModernHigh() == value.getModernHigh() && m_foreverDynamicObjectFields.caster.getModernLow() == value.getModernLow())
+        return;
+    m_foreverDynamicObjectFields.caster = value;
+    m_foreverDynamicObjectFields.markChanged(AscEmu::Version::Forever::Fields::DynamicObjectData::CasterBit);
+    updateObject();
+#else
+    write(dynamicObjectData()->caster_guid, guid);
+#endif
+}
 
 //bytes start
-uint8_t DynamicObject::getDynamicType() const { return dynamicObjectData()->dynamicobject_bytes.s.type; }
+uint8_t DynamicObject::getDynamicType() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverDynamicObjectFields.type;
+#else
+    return dynamicObjectData()->dynamicobject_bytes.s.type;
+#endif
+}
 #if VERSION_STRING < Cata
 void DynamicObject::setDynamicType(uint8_t type) { write(dynamicObjectData()->dynamicobject_bytes.s.type, type); }
 #else
-void DynamicObject::setDynamicType(uint8_t type) { write(dynamicObjectData()->dynamicobject_bytes.s.type, static_cast<uint32_t>(type)); }
+void DynamicObject::setDynamicType(uint8_t type)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverDynamicObjectFields.type == type)
+        return;
+    m_foreverDynamicObjectFields.type = type;
+    m_foreverDynamicObjectFields.markChanged(AscEmu::Version::Forever::Fields::DynamicObjectData::TypeBit);
+    updateObject();
+#else
+    write(dynamicObjectData()->dynamicobject_bytes.s.type, static_cast<uint32_t>(type));
+#endif
+}
 #endif
 //bytes end
 
-uint32_t DynamicObject::getSpellId() const { return dynamicObjectData()->spell_id; }
-void DynamicObject::setSpellId(uint32_t id) { write(dynamicObjectData()->spell_id, id); }
+uint32_t DynamicObject::getSpellId() const
+{
+#if defined(AE_FOREVER)
+    return static_cast<uint32_t>(m_foreverDynamicObjectFields.spellId);
+#else
+    return dynamicObjectData()->spell_id;
+#endif
+}
+void DynamicObject::setSpellId(uint32_t id)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverDynamicObjectFields.spellId == static_cast<int32_t>(id))
+        return;
+    m_foreverDynamicObjectFields.spellId = static_cast<int32_t>(id);
+    m_foreverDynamicObjectFields.markChanged(AscEmu::Version::Forever::Fields::DynamicObjectData::SpellIdBit);
+    updateObject();
+#else
+    write(dynamicObjectData()->spell_id, id);
+#endif
+}
 
-float DynamicObject::getRadius() const { return dynamicObjectData()->radius; }
+float DynamicObject::getRadius() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverDynamicObjectFields.radius;
+#else
+    return dynamicObjectData()->radius;
+#endif
+}
 void DynamicObject::setRadius(float radius)
 {
+#if defined(AE_FOREVER)
+    if (m_foreverDynamicObjectFields.radius != radius)
+    {
+        m_foreverDynamicObjectFields.radius = radius;
+        m_foreverDynamicObjectFields.markChanged(AscEmu::Version::Forever::Fields::DynamicObjectData::RadiusBit);
+        updateObject();
+    }
+#else
     write(dynamicObjectData()->radius, radius);
+#endif
 
     if (IsInWorld() && getWorldMap())
         getWorldMap()->refreshDynamicObjectTargets(this);
@@ -289,6 +376,24 @@ void DynamicObject::setDynamicO(float o)
 }
 
 #if VERSION_STRING > Classic
-uint32_t DynamicObject::getCastTime() const { return dynamicObjectData()->cast_time; }
-void DynamicObject::setCastTime(uint32_t time) { write(dynamicObjectData()->cast_time, time); }
+uint32_t DynamicObject::getCastTime() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverDynamicObjectFields.castTime;
+#else
+    return dynamicObjectData()->cast_time;
+#endif
+}
+void DynamicObject::setCastTime(uint32_t time)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverDynamicObjectFields.castTime == time)
+        return;
+    m_foreverDynamicObjectFields.castTime = time;
+    m_foreverDynamicObjectFields.markChanged(AscEmu::Version::Forever::Fields::DynamicObjectData::CastTimeBit);
+    updateObject();
+#else
+    write(dynamicObjectData()->cast_time, time);
+#endif
+}
 #endif

@@ -107,6 +107,11 @@ std::vector<LanguageSkillSpell> languageSpellSkillStore =
     ,{ LANG_PANDAREN_NEUTRAL,    SKILL_LANG_PANDAREN_NEUTRAL,    108127 }
     ,{ LANG_PANDAREN_ALLIANCE,   SKILL_LANG_PANDAREN_ALLIANCE,   108130 }
     ,{ LANG_PANDAREN_HORDE,      SKILL_LANG_PANDAREN_HORDE,      108131 }
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    ,{ LANG_PANDAREN_NEUTRAL,    SKILL_LANG_PANDAREN_NEUTRAL,    108127 }
+    ,{ LANG_PANDAREN_ALLIANCE,   SKILL_LANG_PANDAREN_ALLIANCE,   108130 }
+    ,{ LANG_PANDAREN_HORDE,      SKILL_LANG_PANDAREN_HORDE,      108131 }
 #endif
 #endif
 #endif

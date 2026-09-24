@@ -76,6 +76,9 @@ Transporter::Transporter(uint64_t guid) : GameObject(guid), _passengerTeleportIt
 #endif
 #if VERSION_STRING == Mop
     m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
 #endif
 }
 

@@ -144,6 +144,24 @@ void Player::updateManaRegeneration([[maybe_unused]]bool initialUpdate/* = false
     const auto manaRegenCombat = std::ceil((baseCombatRegen + (regenerateValue * manaWhileInCombatPct / 100.0f)) * worldConfig.getFloatRate(RATE_POWER1));
     setPowerRegeneration(POWER_TYPE_MANA, manaRegen);
     setPowerRegenerationWhileInterrupted(POWER_TYPE_MANA, manaRegenCombat);
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    // In MOP base combat mana regen is 2% of player's total mana
+    float_t baseCombatRegen = getMaxPower(POWER_TYPE_MANA) * 0.02f;
+
+    // Combat Regen = Total Mana * 0.02 + (1.1287 * SPI * Meditation%)
+    float_t regenerateValue = baseRegen * spirit * getTotalPctMultiplierForAuraEffectByMiscValue(SPELL_AURA_MOD_POWER_REGEN_PERCENT, POWER_TYPE_MANA);
+    regenerateValue = (regenerateValue + getTotalFloatDamageForAuraEffectByMiscValue(SPELL_AURA_MOD_POWER_REGEN, POWER_TYPE_MANA)) / 5.0f;
+
+    auto manaWhileInCombatPct = m_modInterrManaRegenPct;
+    // Cap at 100%
+    if (manaWhileInCombatPct > 100)
+        manaWhileInCombatPct = 100;
+
+    const auto manaRegen = std::ceil((regenerateValue + baseCombatRegen) * worldConfig.getFloatRate(RATE_POWER1));
+    const auto manaRegenCombat = std::ceil((baseCombatRegen + (regenerateValue * manaWhileInCombatPct / 100.0f)) * worldConfig.getFloatRate(RATE_POWER1));
+    setPowerRegeneration(POWER_TYPE_MANA, manaRegen);
+    setPowerRegenerationWhileInterrupted(POWER_TYPE_MANA, manaRegenCombat);
 #endif
 #endif
 }

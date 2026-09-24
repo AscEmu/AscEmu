@@ -124,20 +124,23 @@ public:
 
         switch (getAEVersion())
         {
-            case 5875:
+            case Classic:
                 _accountFlags = 0;
                 break;
-            case 8606:
+            case TBC:
                 _accountFlags = ACCOUNT_FLAG_XPACK_01;
                 break;
-            case 12340:
+            case WotLK:
                 _accountFlags = AF_FULL_WOTLK;
                 break;
-            case 15595:
+            case Cata:
                 _accountFlags = AF_FULL_CATA;
                 break;
-            case 18414:
+            case Mop:
                 _accountFlags = AF_FULL_MOP;
+                break;
+            case AE_PROFILE_FOREVER:
+                _accountFlags = AF_FULL_FOREVER;
                 break;
         }
     }
@@ -162,6 +165,15 @@ public:
         {
             _socket = sock;
         }
+        void SetForeverInstanceSocket(WorldSocket* sock) { _foreverInstanceSocket = sock; }
+        void ClearForeverSocket(WorldSocket* sock)
+        {
+            if (_socket == sock)
+                _socket = nullptr;
+            if (_foreverInstanceSocket == sock)
+                _foreverInstanceSocket = nullptr;
+        }
+        WorldSocket* GetForeverInstanceSocket() const { return _foreverInstanceSocket; }
         void SetPlayer(Player* plr) { _player = plr; }
 
         void SetAccountData(uint32_t index, std::unique_ptr<char[]> data, bool initial, uint32_t sz)
@@ -190,19 +202,20 @@ public:
 
         void LogoutPlayer(bool Save);
 
+#if defined(AE_FOREVER)
+        void handleForeverLogoutRequest(bool idleLogout);
+        void handleForeverLogoutCancel();
+        bool sendForeverLogoutResponse(uint32_t reason, bool instantLogout);
+        bool sendForeverLogoutComplete();
+#endif
+
         void QueuePacket(std::unique_ptr<WorldPacket> packet);
 
         void OutPacket(uint16_t opcode, uint16_t len, const void* data);
 
         WorldSocket* GetSocket() { return _socket; }
 
-        /// Client version of this session, the configured expansion when no socket is attached
-        [[nodiscard]] WoW::ClientProtocol getClientProtocol() const noexcept
-        {
-            return _socket != nullptr
-                       ? _socket->getClientProtocol()
-                       : WoW::ClientProtocol{.expansion = WoW::getServerExpansion()};
-        }
+        [[nodiscard]] WoW::ClientProtocol getClientProtocol() const noexcept { return _socket != nullptr ? _socket->getClientProtocol() : WoW::ClientProtocol{.expansion = WoW::getServerExpansion()}; }
 
         void Disconnect();
 
@@ -384,11 +397,18 @@ protected:
         // CharacterHandler.cpp
     public:
         void loadPlayerFromDBProc(QueryResultVector& results);
+        void beginPlayerLogin(uint32_t guidLow);
+#if defined(AE_FOREVER)
+        void beginForeverPlayerLogin(uint32_t guidLow);
+#endif
         uint8_t deleteCharacter(WoWGuid guid);
 
         void initGMMyMaster();
         void sendServerStats();
         void fullLogin(Player* player);
+#if defined(AE_FOREVER)
+        void fullLoginForever(Player* player);
+#endif
         void characterEnumProc(QueryResult* result);
         void loadAccountDataProc(QueryResult* result);
 
@@ -609,6 +629,7 @@ protected:
         void handleBuyItemInSlotOpcode(WorldPacket& recvPacket);
         void handleBuyItemOpcode(WorldPacket& recvPacket);
         void handleListInventoryOpcode(WorldPacket& recvPacket);
+        void handleListInventoryGuid(uint64_t guid);
         void handleAutoStoreBagItemOpcode(WorldPacket& recvPacket);
         void handleReadItemOpcode(WorldPacket& recvPacket);
         void handleRepairItemOpcode(WorldPacket& recvPacket);
@@ -1012,6 +1033,7 @@ protected:
         friend class Player;
         Player* _player;
         WorldSocket* _socket;
+        WorldSocket* _foreverInstanceSocket{nullptr};
 
         // Preallocated buffers for movement handlers
         MovementInfo sessionMovementInfo;

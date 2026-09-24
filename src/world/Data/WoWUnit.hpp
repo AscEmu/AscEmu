@@ -14,12 +14,32 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "WoWObject.hpp"
+#include "WoWGuid.hpp"
 
 #include <array>
+#include <bitset>
+#include <vector>
+#include <string>
+#include <optional>
 
 #pragma pack(push, 1)
 
 #if VERSION_STRING == Mop
+union field_bytes_0_union
+{
+    struct parts
+    {
+        uint8_t race;
+        uint8_t unit_class;
+        uint8_t class_spec;
+        uint8_t gender;
+    } s;
+
+    uint32_t raw;
+};
+#elif defined(AE_FOREVER)
+// Temporary legacy descriptor storage used by the old AscEmu field-offset core while Forever is migrated.
+// Do not use this layout as the Forever wire schema.
 union field_bytes_0_union
 {
     struct parts
@@ -501,6 +521,131 @@ struct WoWUnit : WoWObject
     uint32_t unit_padding;
 };
 #elif VERSION_STRING == Mop
+static inline constexpr uint8_t WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT = 3;
+static inline constexpr uint8_t WOWUNIT_POWER_COUNT = 5;
+static inline constexpr uint8_t WOWUNIT_SPELL_SCHOOL_COUNT = 7;
+static inline constexpr uint8_t WOWUNIT_ATTACK_TIME_COUNT = 3;
+static inline constexpr uint8_t WOWUNIT_STAT_COUNT = 5;
+
+union field_bytes_1_union
+{
+    struct parts
+    {
+        uint8_t stand_state;
+        uint8_t unk1; // possibly pet specialization
+        uint8_t stand_state_flag;
+        uint8_t animation_flag;
+    } s;
+
+    uint32_t raw;
+};
+
+union field_bytes_2_union
+{
+    struct parts
+    {
+        uint8_t sheath_type;
+        uint8_t pvp_flag;
+        uint8_t pet_flag;
+        uint8_t shape_shift_form;
+    } s;
+
+    uint32_t raw;
+};
+
+struct WoWUnit : WoWObject
+{
+    guid_union charm_guid;
+    guid_union summon_guid;
+    guid_union critter_guid;
+    guid_union charmed_by_guid;
+    guid_union summoned_by_guid;
+    guid_union created_by_guid;
+    guid_union demon_creator_guid;
+    guid_union target_guid;
+    guid_union battle_pet_companion_guid;
+    guid_union channel_object_guid;
+    uint32_t channel_spell;
+    uint32_t summoned_by_home_realm;
+    field_bytes_0_union field_bytes_0;
+    uint32_t display_power;
+    uint32_t override_display_power_id;
+    uint32_t health;
+    uint32_t power_1;
+    uint32_t power_2;
+    uint32_t power_3;
+    uint32_t power_4;
+    uint32_t power_5;
+    uint32_t max_health;
+    uint32_t max_power_1;
+    uint32_t max_power_2;
+    uint32_t max_power_3;
+    uint32_t max_power_4;
+    uint32_t max_power_5;
+    std::array<float, WOWUNIT_POWER_COUNT> power_regen_flat_modifier;
+    std::array<float, WOWUNIT_POWER_COUNT> power_regen_interrupted_flat_modifier;
+    uint32_t level;
+    uint32_t effective_level;
+    uint32_t faction_template;
+    std::array<uint32_t, WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT> virtual_item_slot_display;    //0 = melee, 1 = offhand, 2 = ranged
+    uint32_t unit_flags;
+    uint32_t unit_flags_2;
+    uint32_t aura_state;
+    std::array<uint32_t, WOWUNIT_ATTACK_TIME_COUNT> base_attack_time;  //0 = melee, 1 = offhand, 2 = ranged
+    float bounding_radius;
+    float combat_reach;
+    uint32_t display_id;
+    uint32_t native_display_id;
+    uint32_t mount_display_id;
+    float minimum_damage;
+    float maximum_damage;
+    float minimum_offhand_damage;
+    float maximum_offhand_damage;
+    field_bytes_1_union field_bytes_1;
+    uint32_t pet_number;
+    uint32_t pet_name_timestamp;
+    uint32_t pet_experience;
+    uint32_t pet_next_level_experience;
+    float mod_cast_speed;
+    float mod_cast_haste;
+    float mod_haste;
+    float mod_ranged_haste;
+    float mod_haste_regen;
+    uint32_t created_by_spell_id;
+    uint64_t npc_flags;
+    uint32_t npc_emote_state;
+    std::array<uint32_t, WOWUNIT_STAT_COUNT> stat;
+    std::array<uint32_t, WOWUNIT_STAT_COUNT> positive_stat;
+    std::array<uint32_t, WOWUNIT_STAT_COUNT> negative_stat;
+    std::array<uint32_t, WOWUNIT_SPELL_SCHOOL_COUNT> resistance;
+    std::array<uint32_t, WOWUNIT_SPELL_SCHOOL_COUNT> resistance_buff_mod_positive;
+    std::array<uint32_t, WOWUNIT_SPELL_SCHOOL_COUNT> resistance_buff_mod_negative;
+    uint32_t base_mana;
+    uint32_t base_health;
+    field_bytes_2_union field_bytes_2;
+    uint32_t attack_power;
+    uint32_t attack_power_mod_pos;
+    uint32_t attack_power_mod_neg;
+    float attack_power_multiplier;
+    int32_t ranged_attack_power;
+    uint32_t ranged_attack_power_mods_pos;
+    uint32_t ranged_attack_power_mods_neg;
+    float ranged_attack_power_multiplier;
+    float minimum_ranged_damage;
+    float maximum_ranged_ddamage;
+    std::array<uint32_t, WOWUNIT_SPELL_SCHOOL_COUNT> power_cost_modifier;
+    std::array<float, WOWUNIT_SPELL_SCHOOL_COUNT> power_cost_multiplier;
+    float max_health_modifier;
+    float hover_height;
+    uint32_t min_item_level;
+    uint32_t max_item_level;
+    uint32_t wild_battle_pet_level;
+    uint32_t battle_pet_companion_name_timestamp;
+    uint32_t interact_spell_id;
+};
+#elif defined(AE_FOREVER)
+// Temporary legacy descriptor storage used by the old AscEmu field-offset core while Forever is migrated.
+// Do not use this layout as the Forever wire schema.
 static inline constexpr uint8_t WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT = 3;
 static inline constexpr uint8_t WOWUNIT_POWER_COUNT = 5;
 static inline constexpr uint8_t WOWUNIT_SPELL_SCHOOL_COUNT = 7;

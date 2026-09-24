@@ -171,8 +171,15 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
     const WoWUnit* unitData() const { return reinterpret_cast<WoWUnit*>(wow_data); }
+#if defined(AE_FOREVER)
+    AscEmu::Version::Forever::Fields::UnitData m_foreverUnitFields{};
+#endif
 
 public:
+#if defined(AE_FOREVER)
+    AscEmu::Version::Forever::Fields::UnitData& foreverUnitFields() { return m_foreverUnitFields; }
+    AscEmu::Version::Forever::Fields::UnitData const& foreverUnitFields() const { return m_foreverUnitFields; }
+#endif
     uint64_t getCharmGuid() const;
     void setCharmGuid(uint64_t guid);
 

@@ -48,6 +48,9 @@
 #include "Script/HookInterface.hpp"
 #include <cstdarg>
 #include "OpcodeHandlerRegistry.hpp"
+#if defined(AE_FOREVER)
+#include "version/Forever/Opcodes.hpp"
+#endif
 
 using namespace AscEmu::Packets;
 
@@ -63,6 +66,7 @@ WorldSession::WorldSession(uint32_t id, std::string name, WorldSocket* sock) :
     m_bIsWLevelSet(false),
     _player(nullptr),
     _socket(sock),
+    _foreverInstanceSocket(nullptr),
     _accountId(id),
     _accountFlags(0),
     _accountName(name),
@@ -107,6 +111,8 @@ WorldSession::~WorldSession()
 
     if (_socket)
         _socket->setSession(nullptr);
+    if (_foreverInstanceSocket && _foreverInstanceSocket != _socket)
+        _foreverInstanceSocket->setSession(nullptr);
 
     if (m_loggingInPlayer)
         m_loggingInPlayer->setSession(nullptr);
@@ -235,7 +241,6 @@ uint8_t WorldSession::processQueuedPackets(uint32_t InstanceID)
     if (InstanceID != GetInstance())
         return 2;
     uint32_t processed = 0;
-    sLogger.info("WORLD: ProcessQueuedPackets called (InstanceID={}, instanceId={})", InstanceID, GetInstance());
     while (auto packet = _recvQueue.tryPop())
     {
         if (packet.value() != nullptr)
@@ -249,10 +254,37 @@ uint8_t WorldSession::processQueuedPackets(uint32_t InstanceID)
                 return 1;
         }
     }
-    if (processed > 0)
-        sLogger.info("WORLD: ProcessQueuedPackets processed {} packets (instanceId={})", processed, GetInstance());
     return 0;
 }
+
+#if defined(AE_FOREVER)
+bool WorldSession::sendForeverLogoutResponse(uint32_t reason, bool instantLogout)
+{
+    WorldSocket* socket = GetForeverInstanceSocket();
+    if (socket == nullptr || !socket->isConnected())
+        return false;
+
+    ByteBuffer payload;
+    payload << reason;
+    payload.writeBit(instantLogout);
+    payload.flushBits();
+
+    return socket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_LOGOUT_RESPONSE, payload.contents(), static_cast<uint32_t>(payload.size()));
+}
+
+bool WorldSession::sendForeverLogoutComplete()
+{
+    WorldSocket* socket = GetForeverInstanceSocket();
+    if (socket == nullptr || !socket->isConnected())
+        return false;
+
+    ByteBuffer payload;
+    payload.writeBit(false); // verified 69913 payload = 00
+    payload.flushBits();
+
+    return socket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_LOGOUT_COMPLETE, payload.contents(), static_cast<uint32_t>(payload.size()));
+}
+#endif
 
 void WorldSession::LogoutPlayer(bool Save)
 {
@@ -455,8 +487,18 @@ void WorldSession::LogoutPlayer(bool Save)
             sWorld.addGlobalSession(this);
         }
 
+#if defined(AE_FOREVER)
+        WorldSocket* foreverInstanceSocket = GetForeverInstanceSocket();
+        sendForeverLogoutComplete();
+        if (foreverInstanceSocket != nullptr && foreverInstanceSocket != _socket)
+        {
+            ClearForeverSocket(foreverInstanceSocket);
+            foreverInstanceSocket->disconnect();
+        }
+#else
         SmsgLogoutComplete managedPacket;
         sendManagedPacket(managedPacket);
+#endif
 
         sLogger.debug("SESSION: Sent SMSG_LOGOUT_COMPLETE Message");
     }
@@ -677,12 +719,20 @@ void WorldSession::SendPacket(WorldPacket* packet)
 
 void WorldSession::OutPacket(uint16_t opcode)
 {
+#if defined(AE_FOREVER)
+    return;
+#endif
+
     if (_socket && _socket->isConnected())
         _socket->outPacket(opcode, 0, nullptr);
 }
 
 void WorldSession::OutPacket(uint16_t opcode, uint16_t len, const void* data)
 {
+#if defined(AE_FOREVER)
+    return;
+#endif
+
     if (_socket && _socket->isConnected())
         _socket->outPacket(opcode, len, data);
 }
@@ -696,10 +746,10 @@ void WorldSession::QueuePacket(std::unique_ptr<WorldPacket> packet)
 void WorldSession::Disconnect()
 {
     sLogger.info("WORLD: Disconnecting session for account {} (IP: {})", GetAccountId(), _socket ? _socket->getRemoteIp() : "NOIP");
+    if (_foreverInstanceSocket && _foreverInstanceSocket != _socket && _foreverInstanceSocket->isConnected())
+        _foreverInstanceSocket->disconnect();
     if (_socket && _socket->isConnected())
-    {
         _socket->disconnect();
-    }
 }
 
 // MIT

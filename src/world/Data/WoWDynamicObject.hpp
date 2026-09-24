@@ -15,6 +15,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WoWObject.hpp"
 
+#include "WoWGuid.hpp"
+#include "WoWUnit.hpp"
+#include <bitset>
 #pragma pack(push, 1)
 
 #if VERSION_STRING == Classic
@@ -117,6 +120,27 @@ struct WoWDynamicObject : WoWObject
 #endif
 
 #if VERSION_STRING == Mop
+union dynamic_bytes_union
+{
+    // todo: verify bits
+    struct parts
+    {
+        uint32_t spell_visual_id : 28; // not used
+        uint32_t type : 4;
+    } s;
+    uint32_t raw;
+};
+
+struct WoWDynamicObject : WoWObject
+{
+    uint64_t caster_guid;
+    dynamic_bytes_union dynamicobject_bytes;
+    uint32_t spell_id;
+    float radius;
+    uint32_t cast_time;
+};
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
 union dynamic_bytes_union
 {
     // todo: verify bits

@@ -58,11 +58,12 @@ namespace AscEmu::Packets
             if (unit == nullptr)
                 return false;
 
-            // Mop 5.4.8 has no SMSG_MONSTER_MOVE_TRANSPORT opcode at all, and the moving unit's guid
-            // is instead bit-packed directly inside the Mop payload written by 
+            // MoP and Forever serialize the mover guid inside their version-specific monster-move payload.
+            // MoP 5.4.8 has no SMSG_MONSTER_MOVE_TRANSPORT opcode at all; Forever likewise uses its
+            // modern SMSG_ON_MONSTER_MOVE body rather than the pre-MoP flat guid prefix. The payload is written by 
             // PacketBuilder::WriteMonsterMove/WriteStopMovement below - it is not
             // written up front as a flat/packed guid the way pre-Mop clients expect. So none of this
-            // applies on Mop; leave it byte-for-byte for Classic/TBC/WotLK/Cata.
+            // applies on MoP/Forever; leave it byte-for-byte for Classic/TBC/WotLK/Cata.
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << WoWGuid(unit->getGuid());
@@ -71,8 +72,10 @@ namespace AscEmu::Packets
                 {
                     packet.setOpcode(SMSG_MONSTER_MOVE_TRANSPORT);
                     packet << WoWGuid(unit->getTransGuid());
+#if VERSION_STRING >= WotLK
                     if (m_protocol.expansion >= WoW::Expansion::_WotLK)
-                        packet << int8_t(unit->getMovementInfo()->transport_seat);
+                        packet << int8_t(unit->GetTransSeat());
+#endif
                 }
             }
 
@@ -81,14 +84,14 @@ namespace AscEmu::Packets
                 if (moveSpline == nullptr)
                     return false;
 
-                if (m_protocol.isMop())
+                if (m_protocol.isMop() || m_protocol.isForever())
                     MovementMgr::PacketBuilder::WriteMonsterMove(*moveSpline, packet, unit);
                 else
                     MovementMgr::PacketBuilder::WriteMonsterMove(*moveSpline, packet);
             }
             else
             {
-                if (m_protocol.isMop())
+                if (m_protocol.isMop() || m_protocol.isForever())
                     MovementMgr::PacketBuilder::WriteStopMovement(stopLocation, splineId, packet, unit);
                 else
                     MovementMgr::PacketBuilder::WriteStopMovement(stopLocation, splineId, packet);

@@ -30,6 +30,9 @@ This file is released under the MIT license. See README-MIT for more information
     #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637))               // Cataclysm
 #elif VERSION_STRING == Mop
     #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860)) //  Mists of Pandaria (untested)
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860)) //  Mists of Pandaria (untested)
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -56,6 +59,9 @@ This file is released under the MIT license. See README-MIT for more information
 #elif VERSION_STRING == Cata
     #define MAX_NUM_MAPS 975
 #elif VERSION_STRING == Mop
+    #define MAX_NUM_MAPS 1161
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     #define MAX_NUM_MAPS 1161
 #endif
 

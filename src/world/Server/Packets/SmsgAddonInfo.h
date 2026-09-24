@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "Management/AddonMgr.h"
-#include "Logging/Logger.hpp"
 
 #include <cstdint>
 #include <list>
@@ -54,24 +53,21 @@ namespace AscEmu::Packets
 
             if (m_protocol.expansion <= WoW::Expansion::_TBC)
             {
+#if VERSION_STRING <= TBC
                 for (auto& itr : *addonList)
                 {
                     if (itr.crc != STANDARD_ADDON_CRC)
-                    {
-                        packet << uint8_t(2) << uint8_t(1) << uint8_t(1);
-                        packet.append(PublicKey, sizeof(PublicKey));
-                        packet << uint32_t(0) << uint8_t(0);
-                    }
+                        packet.append(PublicKey, 264);
                     else
-                    {
                         packet << uint8_t(2) << uint8_t(1) << uint8_t(0) << uint32_t(0) << uint8_t(0);
-                    }
                 }
 
                 return true;
+#endif
             }
             else if (m_protocol.isWotlk())
             {
+#if VERSION_STRING == WotLK
                 for (auto& itr : *addonList)
                 {
                     uint8_t unk;
@@ -89,7 +85,12 @@ namespace AscEmu::Packets
                         if (itr.crc != STANDARD_ADDON_CRC)
                         {
                             packet << uint8_t(1);
-                            packet.append(PublicKey, sizeof(PublicKey));
+                            // PublicKey (pre-Cata) is a self-contained 264-byte TBC/Classic reply
+                            // blob with its own baked-in "2,1,1" header and trailing bytes. Here we
+                            // already wrote our own header above, so only the raw 256-byte modulus
+                            // (PublicKey offset 3) belongs here - appending the full blob would
+                            // insert 8 duplicate bytes and desync every addon after this one.
+                            packet.append(PublicKey + 3, 256);
                         }
                         else
                         {
@@ -107,9 +108,11 @@ namespace AscEmu::Packets
                 }
 
                 return true;
+#endif
             }
             else if (m_protocol.isCata())
             {
+#if VERSION_STRING == Cata
                 for (auto& itr : *addonList)
                 {
                     packet << uint8_t(itr.state);
@@ -148,9 +151,11 @@ namespace AscEmu::Packets
                 }
 
                 return true;
+#endif
             }
             else if (m_protocol.isMop())
             {
+#if VERSION_STRING == Mop
                 packet.writeBits(bannedAddons ? static_cast<uint32_t>(bannedAddons->size()) : 0, 18);
                 packet.writeBits(static_cast<uint32_t>(addonList->size()), 23);
 
@@ -199,6 +204,57 @@ namespace AscEmu::Packets
                 }
 
                 return true;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+                packet.writeBits(bannedAddons ? static_cast<uint32_t>(bannedAddons->size()) : 0, 18);
+                packet.writeBits(static_cast<uint32_t>(addonList->size()), 23);
+
+                for (auto& itr : *addonList)
+                {
+                    packet.writeBit(0); // Has URL
+                    packet.writeBit(itr.enabled);
+                    packet.writeBit(!itr.usePublicKeyOrCRC);
+                }
+
+                packet.flushBits();
+
+                for (auto& itr : *addonList)
+                {
+                    if (!itr.usePublicKeyOrCRC)
+                    {
+                        const size_t pos = packet.wpos();
+                        for (int i = 0; i < 256; i++)
+                            packet << uint8_t(0);
+
+                        for (int i = 0; i < 256; i++)
+                            packet.put<uint8_t>(pos + publicKeyOrder[i], PublicKey[i]);
+                    }
+
+                    if (itr.enabled)
+                    {
+                        packet << itr.enabled;
+                        packet << static_cast<uint32_t>(0);
+                    }
+
+                    packet << itr.state;
+                }
+
+                if (bannedAddons)
+                {
+                    for (auto itr = bannedAddons->begin(); itr != bannedAddons->end(); ++itr)
+                    {
+                        packet << uint32_t(itr->id);
+                        packet << uint32_t(1); // banned?
+
+                        for (int32_t i = 0; i < 8; i++)
+                            packet << uint32_t(0);
+
+                        packet << uint32_t(itr->timestamp);
+                    }
+                }
+
+                return true;
+#endif
             }
 
             return false;

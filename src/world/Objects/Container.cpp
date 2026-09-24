@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Objects/Container.hpp"
+#include "Server/World.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Data/WoWContainer.hpp"
 #include "Logging/Logger.hpp"
@@ -324,8 +325,50 @@ bool Container::safeFullRemoveItemFromSlot(int16_t slot)
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 
-uint32_t Container::getSlotCount() const { return containerData()->slot_count; }
-void Container::setSlotCount(uint32_t count) { write(containerData()->slot_count, count); }
+uint32_t Container::getSlotCount() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverContainerFields.numSlots;
+#else
+    return containerData()->slot_count;
+#endif
+}
+void Container::setSlotCount(uint32_t count)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverContainerFields.numSlots == count)
+        return;
 
-uint64_t Container::getSlot(uint16_t slot) const { return containerData()->item_slot[slot].guid; }
-void Container::setSlot(uint16_t slot, uint64_t guid) { write(containerData()->item_slot[slot].guid, guid); }
+    m_foreverContainerFields.numSlots = count;
+    m_foreverContainerFields.markChanged(AscEmu::Version::Forever::Fields::ContainerData::NumSlotsBit);
+    updateObject();
+#else
+    write(containerData()->slot_count, count);
+#endif
+}
+
+uint64_t Container::getSlot(uint16_t slot) const
+{
+#if defined(AE_FOREVER)
+    return slot < m_foreverContainerFields.slots.size() ? m_foreverContainerFields.slots[slot].toLegacyRaw() : 0;
+#else
+    return containerData()->item_slot[slot].guid;
+#endif
+}
+void Container::setSlot(uint16_t slot, uint64_t guid)
+{
+#if defined(AE_FOREVER)
+    if (slot >= m_foreverContainerFields.slots.size())
+        return;
+
+    const WoWGuid modernGuid = guid != 0 ? WoWGuid::createModernItem(worldConfig.battleNetComm.realmId, uint64_t(WoWGuid::getLowGuidFromRaw(guid))) : WoWGuid::createModernEmpty();
+    if (m_foreverContainerFields.slots[slot].getModernHigh() == modernGuid.getModernHigh() && m_foreverContainerFields.slots[slot].getModernLow() == modernGuid.getModernLow())
+        return;
+
+    m_foreverContainerFields.slots[slot] = modernGuid;
+    m_foreverContainerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ContainerData::SlotsGroupBit, AscEmu::Version::Forever::Fields::ContainerData::SlotsFirstBit + slot);
+    updateObject();
+#else
+    write(containerData()->item_slot[slot].guid, guid);
+#endif
+}

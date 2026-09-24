@@ -70,6 +70,14 @@ WDB::Structures::SpellPowerEntry const* WDB::Structures::SpellEntry::GetSpellPow
     // casts that turned out to be a health-cost row, so Spell::takePower()
     // damaged the caster on every login and killed fresh low level characters.
     return getSpellPowerEntry(Id);
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    // Verified against the 5.4.8 data layout: Spell.dbc has no SpellPowerId on Mop,
+    // SpellPower.dbc rows carry the spell they belong to in their spellId column. Looking the
+    // row up by the spell id returned the power data of an unrelated spell - for login
+    // casts that turned out to be a health-cost row, so Spell::takePower()
+    // damaged the caster on every login and killed fresh low level characters.
+    return getSpellPowerEntry(Id);
 #endif
 }
 
@@ -101,6 +109,12 @@ WDB::Structures::SpellTotemsEntry const* WDB::Structures::SpellEntry::GetSpellTo
 }
 
 #if VERSION_STRING == Mop
+WDB::Structures::SpellMiscEntry const* WDB::Structures::SpellEntry::GetSpellMisc() const
+{
+    return SpellMiscId ? sSpellMiscStore.lookupEntry(SpellMiscId) : nullptr;
+}
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
 WDB::Structures::SpellMiscEntry const* WDB::Structures::SpellEntry::GetSpellMisc() const
 {
     return SpellMiscId ? sSpellMiscStore.lookupEntry(SpellMiscId) : nullptr;

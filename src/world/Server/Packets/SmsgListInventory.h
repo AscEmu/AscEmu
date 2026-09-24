@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -28,13 +29,15 @@ namespace AscEmu::Packets
     {
     public:
         WoWGuid vendorGuid;
+        uint16_t vendorMapId = 0;
         uint32_t rawItemCount = 0;     // unfiltered vendor item count (not just what's visible to this player)
         bool vendorIsArmorer = false;
         std::vector<VendorListItem> items;
 
-        SmsgListInventory(uint64_t vendorGuid, uint32_t rawItemCount, bool vendorIsArmorer, std::vector<VendorListItem> items) :
+        SmsgListInventory(uint64_t vendorGuid, uint16_t vendorMapId, uint32_t rawItemCount, bool vendorIsArmorer, std::vector<VendorListItem> items) :
             ManagedPacket(SMSG_LIST_INVENTORY, 0),
             vendorGuid(vendorGuid),
+            vendorMapId(vendorMapId),
             rawItemCount(rawItemCount),
             vendorIsArmorer(vendorIsArmorer),
             items(std::move(items))
@@ -50,7 +53,35 @@ namespace AscEmu::Packets
             // vendor truly has none configured.
             const uint8_t emptyListByte = rawItemCount ? static_cast<uint8_t>(rawItemCount) : static_cast<uint8_t>(vendorIsArmorer);
 
-            if (m_protocol.isMop())
+            if (m_protocol.isForever())
+            {
+                const WoWGuid modernVendorGuid = WoWGuid::createModernFromLegacy(vendorGuid.getRawGuid(), m_protocol.realmId, vendorMapId, 0);
+                const std::vector<uint8_t> packedVendorGuid = modernVendorGuid.packModern();
+                if (packedVendorGuid.empty())
+                    return false;
+
+                packet.append(packedVendorGuid.data(), packedVendorGuid.size());
+                packet << int32_t(items.empty() ? 1 : 0);
+                packet << uint32_t(items.size());
+
+                static constexpr std::array<uint8_t, 8> basicItemTrailer{ 0x00, 0x80, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
+                for (const auto& item : items)
+                {
+                    packet << uint64_t(item.price);
+                    packet << uint32_t(item.slot);
+                    packet << int32_t(item.type);
+                    packet << int32_t(item.buyCount);
+                    packet << int32_t(item.availableAmount == 0xFFFFFFFFU ? -1 : static_cast<int32_t>(item.availableAmount));
+                    packet << int32_t(item.extendedCostId);
+                    packet << int32_t(0);
+                    packet << int32_t(item.itemId);
+                    packet.append(basicItemTrailer.data(), basicItemTrailer.size());
+                }
+
+                return true;
+            }
+            else if (m_protocol.isMop())
             {
                 packet.writeBit(vendorGuid[5]);
                 packet.writeBit(vendorGuid[7]);

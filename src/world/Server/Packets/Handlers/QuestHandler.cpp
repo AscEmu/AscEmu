@@ -636,7 +636,35 @@ void WorldSession::handleQuestPOIQueryOpcode([[maybe_unused]] WorldPacket& recvP
 
 void WorldSession::handleQuestNpcQueryOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
-#if VERSION_STRING >= Mop
+#if VERSION_STRING == Mop
+    CmsgQuestNpcQuery srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    sLogger.debugOpcode("Received CMSG_QUEST_NPC_QUERY.");
+
+    std::vector<QuestNpcQueryEntry> quests;
+    for (const uint32_t questId : srlPacket.questIds)
+    {
+        if (questId == 0 || sMySQLStore.getQuestProperties(questId) == nullptr)
+            continue;
+
+        // the client only needs the finishers of the quests in its log
+        if (!_player->hasQuestInQuestLog(questId))
+            continue;
+
+        QuestNpcQueryEntry entry;
+        entry.questId = questId;
+        if (const auto finisherEntries = sQuestMgr.getQuestFinisherEntries(questId))
+            entry.finisherEntries = *finisherEntries;
+
+        quests.push_back(std::move(entry));
+    }
+
+    SmsgQuestNpcQueryResponse responsePacket(std::move(quests));
+    sendManagedPacket(responsePacket);
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     CmsgQuestNpcQuery srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;

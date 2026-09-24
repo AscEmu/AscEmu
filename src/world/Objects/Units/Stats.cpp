@@ -144,6 +144,18 @@ uint32_t getConColor(uint16_t AttackerLvl, uint16_t VictimLvl)
         57, 58, 59, 60, 61, 62, 63, 64, 65, 65,     //71-80
         65, 66, 67, 68, 69, 70, 71, 72, 74, 75      //81-90
     };
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
+    {
+        0,                                          //0
+        0, 0, 0, 0, 0, 0, 1, 2, 3, 4,               //1-10
+        5, 6, 7, 8, 9, 10, 11, 12, 13, 13,          //11-20
+        14, 15, 16, 17, 18, 19, 20, 21, 22, 22,     //21-30
+        23, 24, 25, 26, 27, 28, 29, 30, 31, 31,     //31-40
+        32, 33, 34, 35, 35, 36, 37, 38, 39, 39,     //41-50
+        40, 41, 42, 43, 43, 44, 45, 46, 47, 47     //51-60
+    };
 #endif
 
     if (AttackerLvl + 5 <= VictimLvl)

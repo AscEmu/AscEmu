@@ -121,7 +121,15 @@ void TaxiPath::initTaxiNodesForLevel(uint32_t race, [[maybe_unused]] uint32_t ch
             setTaximaskNode(2);
             break;
 #endif
-#if VERSION_STRING >= Mop
+#if VERSION_STRING == Mop
+        case RACE_PANDAREN_ALLIANCE:
+            setTaximaskNode(2);
+            break;
+        case RACE_PANDAREN_HORDE:
+            setTaximaskNode(23);
+            break;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
         case RACE_PANDAREN_ALLIANCE:
             setTaximaskNode(2);
             break;

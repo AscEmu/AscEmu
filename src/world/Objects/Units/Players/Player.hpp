@@ -11,6 +11,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/QuestDefines.hpp"
 #include "Management/ObjectUpdates/UpdateManager.hpp"
 #include "Data/WoWPlayer.hpp"
+#if defined(AE_FOREVER)
+#include "version/Forever/Fields/ForeverUpdateFields.hpp"
+#endif
 #include "AEVersion.hpp"
 #include "Logging/Log.hpp"
 #include "Server/UpdateFieldInclude.h"
@@ -297,6 +300,13 @@ public:
 #endif
 
 #if VERSION_STRING == Mop
+    uint32_t getCurrentSpecId() const;
+    void setCurrentSpecId(uint32_t specializationId);
+
+    // CMSG_SET_PRIMARY_TALENT_TREE - chooses the class specialization for the active spec slot (once, cannot be changed by this opcode)
+    void setPrimaryTalentSpecialization(uint32_t specializationTabId);
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     uint32_t getCurrentSpecId() const;
     void setCurrentSpecId(uint32_t specializationId);
 
@@ -809,6 +819,12 @@ public:
     void resendCreateAndActiveMoverForMoP();
     /// MoP: event callback to process session queue again after 150ms (catches 0x1061 that arrive after create send).
     void eventProcessQueuedPacketsMoP();
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    /// MoP: resend player create + SMSG_MOVE_SET_ACTIVE_MOVER when client reports object update failed during world enter.
+    void resendCreateAndActiveMoverForMoP();
+    /// MoP: event callback to process session queue again after 150ms (catches 0x1061 that arrive after create send).
+    void eventProcessQueuedPacketsMoP();
 #endif
     bool compressAndSendUpdateBuffer(uint32_t size, const uint8_t* update_buffer);
     uint32_t buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target) override;
@@ -830,6 +846,10 @@ private:
 
     bool m_enteringWorld = false;
 #if VERSION_STRING == Mop
+    uint32_t m_lastObjectUpdateFailedResend = 0;  // throttle for MoP resend create
+    uint32_t m_objectUpdateFailedResendCount = 0; // cap resends to avoid infinite loop when client rejects player create
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     uint32_t m_lastObjectUpdateFailedResend = 0;  // throttle for MoP resend create
     uint32_t m_objectUpdateFailedResendCount = 0; // cap resends to avoid infinite loop when client rejects player create
 #endif
@@ -2334,9 +2354,30 @@ protected:
     // Raid
     uint8_t m_targetIcon = 0;
 
+#if defined(AE_FOREVER)
+    AscEmu::Version::Forever::Fields::PlayerData m_foreverPlayerFields{};
+    AscEmu::Version::Forever::Fields::ActivePlayerData m_foreverActivePlayerFields{};
+    uint32_t m_foreverRealmId = 0;
+
+    // Server-only state whose Forever 69913 wire fields/change-mask bits are
+    // not proven yet.  Keep these out of ActivePlayerData until a sniff maps
+    // them to the real wire representation.
+    int32_t m_foreverWatchedFactionIndex = 0;
+    uint32_t m_foreverLifetimeHonorableKills = 0;
+    std::array<int32_t, 32> m_foreverCombatRatings{};
+#endif
     uint32_t _fields[getSizeOfStructure(WoWPlayer)];
 
 public:
+#if defined(AE_FOREVER)
+    AscEmu::Version::Forever::Fields::PlayerData& foreverPlayerFields() { return m_foreverPlayerFields; }
+    AscEmu::Version::Forever::Fields::PlayerData const& foreverPlayerFields() const { return m_foreverPlayerFields; }
+    AscEmu::Version::Forever::Fields::ActivePlayerData& foreverActivePlayerFields() { return m_foreverActivePlayerFields; }
+    AscEmu::Version::Forever::Fields::ActivePlayerData const& foreverActivePlayerFields() const { return m_foreverActivePlayerFields; }
+    void setForeverRealmId(uint32_t realmId) { m_foreverRealmId = realmId; }
+    uint32_t getForeverRealmId() const { return m_foreverRealmId; }
+#endif
+
     std::map<uint32_t, Standing> m_forcedReactions;
 
     bool m_passOnLoot = false;

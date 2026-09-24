@@ -1915,6 +1915,57 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
 
     session->sendManagedPacket(managedPacket);
 }
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent, bool withTabInfo) const
+{
+    GuildMember const* member = getMember(session->GetPlayer()->getGuid());
+    if (member == nullptr)
+        return;
+
+    std::vector<GuildBankListItemSlot> items;
+    if (withContent && memberHasTabRights(session->GetPlayer()->getGuid(), tabId, GB_RIGHT_VIEW_TAB))
+    {
+        if (GuildBankTab const* tab = getBankTab(tabId))
+        {
+            for (uint8_t slotId = 0; slotId < MAX_GUILD_BANK_SLOTS; ++slotId)
+            {
+                if (Item* tabItem = tab->getItem(slotId))
+                {
+                    GuildBankListItemSlot item;
+                    item.slotId = slotId;
+                    item.entry = tabItem->getEntry();
+                    item.spellCharges = static_cast<uint32_t>(abs(tabItem->getSpellCharges(0)));
+                    item.stackCount = tabItem->getStackCount();
+                    item.randomPropertiesId = tabItem->getRandomPropertiesId();
+                    item.propertySeed = tabItem->getPropertySeed();
+
+                    for (uint32_t ench = 0; ench < MAX_ENCHANTMENT_SLOT; ++ench)
+                    {
+                        if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(ench))))
+                            item.enchants.emplace_back(enchantId, ench);
+                    }
+
+                    items.push_back(std::move(item));
+                }
+            }
+        }
+    }
+
+    std::vector<GuildBankListTabInfo> tabInfo;
+    if (withTabInfo)
+    {
+        tabInfo.reserve(_getPurchasedTabsSize());
+        for (uint8_t i = 0; i < _getPurchasedTabsSize(); ++i)
+            tabInfo.push_back({ _guildBankTabsStore[i]->getName(), _guildBankTabsStore[i]->getIcon() });
+    }
+
+    SmsgGuildBankList managedPacket(m_bankMoney, tabId, static_cast<uint32_t>(getMemberRemainingSlots(member, tabId)),
+        false, withTabInfo, 21, nullptr, {}, tabInfo, items);
+    managedPacket.withContent = withContent;
+
+    session->sendManagedPacket(managedPacket);
+}
 #endif
 
 
@@ -2360,6 +2411,86 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlo
         sLogger.debugOpcode("SMSG_GUILD_BANK_LIST");
     }
 #elif VERSION_STRING == Mop
+    if (GuildBankTab const* guildBankTab = getBankTab(tabId))
+    {
+        std::vector<GuildBankListItemSlot> items;
+
+        if (sendAllSlots)
+        {
+            items.reserve(MAX_GUILD_BANK_SLOTS);
+            for (uint8_t slotId = 0; slotId < MAX_GUILD_BANK_SLOTS; ++slotId)
+            {
+                if (const auto tab = getBankTab(tabId))
+                {
+                    Item* tabItem = tab->getItem(slotId);
+
+                    GuildBankListItemSlot item;
+                    item.slotId = slotId;
+                    item.entry = tabItem ? tabItem->getEntry() : 0;
+                    item.spellCharges = tabItem ? static_cast<uint32_t>(abs(tabItem->getSpellCharges(0))) : 0;
+                    item.stackCount = tabItem ? tabItem->getStackCount() : 0;
+                    item.randomPropertiesId = tabItem ? tabItem->getRandomPropertiesId() : 0;
+                    item.propertySeed = tabItem ? tabItem->getPropertySeed() : 0;
+
+                    if (tabItem)
+                    {
+                        for (uint32_t enchSlot = 0; enchSlot < MAX_ENCHANTMENT_SLOT; ++enchSlot)
+                        {
+                            if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(enchSlot))))
+                                item.enchants.emplace_back(enchantId, enchSlot);
+                        }
+                    }
+
+                    items.push_back(std::move(item));
+                }
+            }
+        }
+        else
+        {
+            items.reserve(slots.size());
+            for (auto itr = slots.begin(); itr != slots.end(); ++itr)
+            {
+                Item* tabItem = guildBankTab->getItem(*itr);
+
+                GuildBankListItemSlot item;
+                item.slotId = *itr;
+                item.entry = tabItem ? tabItem->getEntry() : 0;
+                item.spellCharges = tabItem ? static_cast<uint32_t>(abs(tabItem->getSpellCharges(0))) : 0;
+                item.stackCount = tabItem ? tabItem->getStackCount() : 0;
+                item.randomPropertiesId = tabItem ? tabItem->getRandomPropertiesId() : 0;
+                item.propertySeed = tabItem ? tabItem->getPropertySeed() : 0;
+
+                if (tabItem)
+                {
+                    for (uint32_t enchSlot = 0; enchSlot < MAX_ENCHANTMENT_SLOT; ++enchSlot)
+                    {
+                        if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(enchSlot))))
+                            item.enchants.emplace_back(enchantId, enchSlot);
+                    }
+                }
+
+                items.push_back(std::move(item));
+            }
+        }
+
+        SmsgGuildBankList managedPacket(m_bankMoney, tabId, 0, sendAllSlots, false, 21, nullptr, {}, {}, items);
+
+        for (GuildMembersStore::const_iterator itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
+        {
+            if (memberHasTabRights(itr->second->getGUID(), tabId, GB_RIGHT_VIEW_TAB))
+            {
+                if (Player* player = itr->second->getPlayerByGuid(itr->second->getGUID()))
+                {
+                    managedPacket.remainingSlots = static_cast<uint32_t>(getMemberRemainingSlots(itr->second.get(), tabId));
+                    player->getSession()->sendManagedPacket(managedPacket);
+                }
+            }
+        }
+
+        sLogger.debugOpcode("SMSG_GUILD_BANK_LIST");
+    }
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     if (GuildBankTab const* guildBankTab = getBankTab(tabId))
     {
         std::vector<GuildBankListItemSlot> items;

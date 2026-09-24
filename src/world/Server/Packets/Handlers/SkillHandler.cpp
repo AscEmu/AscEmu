@@ -104,5 +104,12 @@ void WorldSession::handleSetPrimaryTalentTreeOpcode([[maybe_unused]] WorldPacket
         return;
 
     _player->setPrimaryTalentSpecialization(srlPacket.specializationTabId);
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    CmsgSetPrimaryTalentTree srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    _player->setPrimaryTalentSpecialization(srlPacket.specializationTabId);
 #endif
 }

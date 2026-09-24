@@ -420,6 +420,12 @@ struct ScriptingEngine_dl
 
 void ScriptMgr::LoadScripts()
 {
+#if defined(AE_MODERN_CLIENT)
+    // Forever: legacy Classic-MoP script libraries are intentionally
+    // disabled until dedicated modern-client script modules are implemented.
+    sLogger.info("ScriptMgr : Legacy external scripts are disabled for this client profile.");
+    return;
+#else
     sLogger.info("ScriptMgr : Loading External Script Libraries...");
 
     std::string modulePath = PREFIX;
@@ -517,6 +523,7 @@ void ScriptMgr::LoadScripts()
 
         sLogger.info("ScriptMgr : Done loading scripting engine(s)...");
     }
+#endif
 }
 
 void ScriptMgr::UnloadScripts()
@@ -1001,6 +1008,10 @@ GossipScript* ScriptMgr::get_item_gossip(uint32_t entry) const
 
 void ScriptMgr::ReloadScriptEngines()
 {
+#if defined(AE_MODERN_CLIENT)
+    // There are no legacy script engines for Forever.
+    return;
+#else
     for (const auto& dl : dynamiclibs)
     {
         if (dl == nullptr || !dl->isLoaded())
@@ -1017,6 +1028,7 @@ void ScriptMgr::ReloadScriptEngines()
         if (reloadCall != nullptr)
             reloadCall();
     }
+#endif
 }
 
 void ScriptMgr::UnloadScriptEngines()

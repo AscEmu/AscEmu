@@ -813,6 +813,14 @@ void Player::onAttachToWorld()
     SmsgBattlePetJournalLockAcquired battlePetJournalLockPacket;
     getSession()->sendManagedPacket(battlePetJournalLockPacket);
 
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    SmsgBattlePetJournal battlePetJournalPacket;
+    getSession()->sendManagedPacket(battlePetJournalPacket);
+
+    SmsgBattlePetJournalLockAcquired battlePetJournalLockPacket;
+    getSession()->sendManagedPacket(battlePetJournalLockPacket);
+
 #endif
 
 #if VERSION_STRING >= Cata
@@ -882,14 +890,79 @@ void Player::onPreDetachFromWorld()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Data
-uint64_t Player::getDuelArbiter() const { return playerData()->duel_arbiter; }
-void Player::setDuelArbiter(uint64_t guid) { write(playerData()->duel_arbiter, guid); }
+#if defined(AE_FOREVER)
+namespace
+{
+    WoWGuid makeForeverPlayerReferenceGuid(Player const* owner, uint64_t legacyGuid)
+    {
+        if (legacyGuid == 0)
+            return WoWGuid::createModernEmpty();
 
-uint32_t Player::getPlayerFlags() const { return playerData()->player_flags; }
+        return WoWGuid::createModernFromLegacy(legacyGuid, worldConfig.battleNetComm.realmId, static_cast<uint16_t>(owner->GetMapId()), 0, 0);
+    }
+
+    WoWGuid makeForeverItemGuid(uint64_t legacyGuid)
+    {
+        if (legacyGuid == 0)
+            return WoWGuid::createModernEmpty();
+
+        return WoWGuid::createModernItem(worldConfig.battleNetComm.realmId, uint64_t(WoWGuid::getLowGuidFromRaw(legacyGuid)));
+    }
+
+    constexpr std::size_t ForeverInventoryOffset = 0;
+    constexpr std::size_t ForeverPackOffset = ForeverInventoryOffset + WOWPLAYER_INVENTORY_SLOT_COUNT;
+    constexpr std::size_t ForeverBankOffset = ForeverPackOffset + WOWPLAYER_PACK_SLOT_COUNT;
+    constexpr std::size_t ForeverBankBagOffset = ForeverBankOffset + WOWPLAYER_BANK_SLOT_COUNT;
+    constexpr std::size_t ForeverBuybackOffset = ForeverBankBagOffset + WOWPLAYER_BANK_BAG_SLOT_COUNT;
+
+    static_assert(ForeverBuybackOffset + WOWPLAYER_BUY_BACK_COUNT <= 105);
+}
+#endif
+
+uint64_t Player::getDuelArbiter() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverPlayerFields.unknownGuid0_69913.toLegacyRaw();
+#else
+    return playerData()->duel_arbiter;
+#endif
+}
+void Player::setDuelArbiter(uint64_t guid)
+{
+#if defined(AE_FOREVER)
+    const WoWGuid modernGuid = makeForeverPlayerReferenceGuid(this, guid);
+    if (m_foreverPlayerFields.unknownGuid0_69913.getModernHigh() == modernGuid.getModernHigh() && m_foreverPlayerFields.unknownGuid0_69913.getModernLow() == modernGuid.getModernLow())
+        return;
+
+    m_foreverPlayerFields.unknownGuid0_69913 = modernGuid;
+    m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::UnknownChangeBit9_69913);
+    updateObject();
+#else
+    write(playerData()->duel_arbiter, guid);
+#endif
+}
+
+uint32_t Player::getPlayerFlags() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverPlayerFields.unknownU32_0_69913;
+#else
+    return playerData()->player_flags;
+#endif
+}
 
 void Player::setPlayerFlags(uint32_t flags)
 {
+#if defined(AE_FOREVER)
+    if (m_foreverPlayerFields.unknownU32_0_69913 != flags)
+    {
+        m_foreverPlayerFields.unknownU32_0_69913 = flags;
+        m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::UnknownChangeBit14_69913);
+        updateObject();
+    }
+#else
     write(playerData()->player_flags, flags);
+#endif
 
 #if VERSION_STRING == TBC
     // TODO Fix this later
@@ -1067,20 +1140,155 @@ void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint32_t ench
 #endif
 //VisibleItem end
 
-uint64_t Player::getInventorySlotItemGuid(uint8_t slot) const { return playerData()->inventory_slot[slot]; }
-void Player::setInventorySlotItemGuid(uint8_t slot, uint64_t guid) { write(playerData()->inventory_slot[slot], guid); }
+uint64_t Player::getInventorySlotItemGuid(uint8_t slot) const
+{
+#if defined(AE_FOREVER)
+    if (slot >= WOWPLAYER_INVENTORY_SLOT_COUNT)
+        return 0;
 
-uint64_t Player::getPackSlotItemGuid(uint8_t slot) const { return playerData()->pack_slot[slot]; }
-void Player::setPackSlotItemGuid(uint8_t slot, uint64_t guid) { write(playerData()->pack_slot[slot], guid); }
+    return m_foreverActivePlayerFields.invSlots[ForeverInventoryOffset + slot].toLegacyRaw();
+#else
+    return playerData()->inventory_slot[slot];
+#endif
+}
+void Player::setInventorySlotItemGuid(uint8_t slot, uint64_t guid)
+{
+#if defined(AE_FOREVER)
+    if (slot >= WOWPLAYER_INVENTORY_SLOT_COUNT)
+        return;
 
-uint64_t Player::getBankSlotItemGuid(uint8_t slot) const { return playerData()->bank_slot[slot]; }
-void Player::setBankSlotItemGuid(uint8_t slot, uint64_t guid) { write(playerData()->bank_slot[slot], guid); }
+    const std::size_t index = ForeverInventoryOffset + slot;
+    const WoWGuid modernGuid = makeForeverItemGuid(guid);
+    if (m_foreverActivePlayerFields.invSlots[index].getModernHigh() == modernGuid.getModernHigh() && m_foreverActivePlayerFields.invSlots[index].getModernLow() == modernGuid.getModernLow())
+        return;
 
-uint64_t Player::getBankBagSlotItemGuid(uint8_t slot) const { return playerData()->bank_bag_slot[slot]; }
-void Player::setBankBagSlotItemGuid(uint8_t slot, uint64_t guid) { write(playerData()->bank_bag_slot[slot], guid); }
+    m_foreverActivePlayerFields.invSlots[index] = modernGuid;
+    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit163_69913, AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit164_69913 + index);
+    updateObject();
+#else
+    write(playerData()->inventory_slot[slot], guid);
+#endif
+}
 
-uint64_t Player::getVendorBuybackSlot(uint8_t slot) const { return playerData()->vendor_buy_back_slot[slot]; }
-void Player::setVendorBuybackSlot(uint8_t slot, uint64_t guid) { write(playerData()->vendor_buy_back_slot[slot], guid); }
+uint64_t Player::getPackSlotItemGuid(uint8_t slot) const
+{
+#if defined(AE_FOREVER)
+    if (slot >= WOWPLAYER_PACK_SLOT_COUNT)
+        return 0;
+
+    return m_foreverActivePlayerFields.invSlots[ForeverPackOffset + slot].toLegacyRaw();
+#else
+    return playerData()->pack_slot[slot];
+#endif
+}
+void Player::setPackSlotItemGuid(uint8_t slot, uint64_t guid)
+{
+#if defined(AE_FOREVER)
+    if (slot >= WOWPLAYER_PACK_SLOT_COUNT)
+        return;
+
+    const std::size_t index = ForeverPackOffset + slot;
+    const WoWGuid modernGuid = makeForeverItemGuid(guid);
+    if (m_foreverActivePlayerFields.invSlots[index].getModernHigh() == modernGuid.getModernHigh() && m_foreverActivePlayerFields.invSlots[index].getModernLow() == modernGuid.getModernLow())
+        return;
+
+    m_foreverActivePlayerFields.invSlots[index] = modernGuid;
+    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit163_69913, AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit164_69913 + index);
+    updateObject();
+#else
+    write(playerData()->pack_slot[slot], guid);
+#endif
+}
+
+uint64_t Player::getBankSlotItemGuid(uint8_t slot) const
+{
+#if defined(AE_FOREVER)
+    if (slot >= WOWPLAYER_BANK_SLOT_COUNT)
+        return 0;
+
+    return m_foreverActivePlayerFields.invSlots[ForeverBankOffset + slot].toLegacyRaw();
+#else
+    return playerData()->bank_slot[slot];
+#endif
+}
+void Player::setBankSlotItemGuid(uint8_t slot, uint64_t guid)
+{
+#if defined(AE_FOREVER)
+    if (slot >= WOWPLAYER_BANK_SLOT_COUNT)
+        return;
+
+    const std::size_t index = ForeverBankOffset + slot;
+    const WoWGuid modernGuid = makeForeverItemGuid(guid);
+    if (m_foreverActivePlayerFields.invSlots[index].getModernHigh() == modernGuid.getModernHigh() && m_foreverActivePlayerFields.invSlots[index].getModernLow() == modernGuid.getModernLow())
+        return;
+
+    m_foreverActivePlayerFields.invSlots[index] = modernGuid;
+    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit163_69913, AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit164_69913 + index);
+    updateObject();
+#else
+    write(playerData()->bank_slot[slot], guid);
+#endif
+}
+
+uint64_t Player::getBankBagSlotItemGuid(uint8_t slot) const
+{
+#if defined(AE_FOREVER)
+    if (slot >= WOWPLAYER_BANK_BAG_SLOT_COUNT)
+        return 0;
+
+    return m_foreverActivePlayerFields.invSlots[ForeverBankBagOffset + slot].toLegacyRaw();
+#else
+    return playerData()->bank_bag_slot[slot];
+#endif
+}
+void Player::setBankBagSlotItemGuid(uint8_t slot, uint64_t guid)
+{
+#if defined(AE_FOREVER)
+    if (slot >= WOWPLAYER_BANK_BAG_SLOT_COUNT)
+        return;
+
+    const std::size_t index = ForeverBankBagOffset + slot;
+    const WoWGuid modernGuid = makeForeverItemGuid(guid);
+    if (m_foreverActivePlayerFields.invSlots[index].getModernHigh() == modernGuid.getModernHigh() && m_foreverActivePlayerFields.invSlots[index].getModernLow() == modernGuid.getModernLow())
+        return;
+
+    m_foreverActivePlayerFields.invSlots[index] = modernGuid;
+    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit163_69913, AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit164_69913 + index);
+    updateObject();
+#else
+    write(playerData()->bank_bag_slot[slot], guid);
+#endif
+}
+
+uint64_t Player::getVendorBuybackSlot(uint8_t slot) const
+{
+#if defined(AE_FOREVER)
+    if (slot >= WOWPLAYER_BUY_BACK_COUNT)
+        return 0;
+
+    return m_foreverActivePlayerFields.invSlots[ForeverBuybackOffset + slot].toLegacyRaw();
+#else
+    return playerData()->vendor_buy_back_slot[slot];
+#endif
+}
+void Player::setVendorBuybackSlot(uint8_t slot, uint64_t guid)
+{
+#if defined(AE_FOREVER)
+    if (slot >= WOWPLAYER_BUY_BACK_COUNT)
+        return;
+
+    const std::size_t index = ForeverBuybackOffset + slot;
+    const WoWGuid modernGuid = makeForeverItemGuid(guid);
+    if (m_foreverActivePlayerFields.invSlots[index].getModernHigh() == modernGuid.getModernHigh() && m_foreverActivePlayerFields.invSlots[index].getModernLow() == modernGuid.getModernLow())
+        return;
+
+    m_foreverActivePlayerFields.invSlots[index] = modernGuid;
+    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit163_69913, AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit164_69913 + index);
+    updateObject();
+#else
+    write(playerData()->vendor_buy_back_slot[slot], guid);
+#endif
+}
 
 #if VERSION_STRING < Cata
 uint64_t Player::getKeyRingSlotItemGuid(uint8_t slot) const { return playerData()->key_ring_slot[slot]; }
@@ -1097,8 +1305,28 @@ uint64_t Player::getCurrencyTokenSlotItemGuid(uint8_t slot) const { return playe
 void Player::setCurrencyTokenSlotItemGuid(uint8_t slot, uint64_t guid) { write(playerData()->currencytoken_slot[slot], guid); }
 #endif
 
-uint64_t Player::getFarsightGuid() const { return playerData()->farsight_guid; }
-void Player::setFarsightGuid(uint64_t farsightGuid) { write(playerData()->farsight_guid, farsightGuid); }
+uint64_t Player::getFarsightGuid() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverActivePlayerFields.farsightObject.toLegacyRaw();
+#else
+    return playerData()->farsight_guid;
+#endif
+}
+void Player::setFarsightGuid(uint64_t farsightGuid)
+{
+#if defined(AE_FOREVER)
+    const WoWGuid modernGuid = makeForeverPlayerReferenceGuid(this, farsightGuid);
+    if (m_foreverActivePlayerFields.farsightObject.getModernHigh() == modernGuid.getModernHigh() && m_foreverActivePlayerFields.farsightObject.getModernLow() == modernGuid.getModernLow())
+        return;
+
+    m_foreverActivePlayerFields.farsightObject = modernGuid;
+    m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit56_69913);
+    updateObject();
+#else
+    write(playerData()->farsight_guid, farsightGuid);
+#endif
+}
 
 #if VERSION_STRING > Classic
 uint64_t Player::getKnownTitles(uint8_t index) const { return playerData()->field_known_titles[index]; }
@@ -1115,12 +1343,53 @@ uint64_t Player::getKnownCurrencies() const { return playerData()->field_known_c
 void Player::setKnownCurrencies(uint64_t currencies) { write(playerData()->field_known_currencies, currencies); }
 #endif
 
-uint32_t Player::getXp() const { return playerData()->xp; }
-void Player::setXp(uint32_t xp) { write(playerData()->xp, xp); }
-void Player::addXP(uint32_t xp) { write(playerData()->xp, getXp() + xp); }
+uint32_t Player::getXp() const
+{
+#if defined(AE_FOREVER)
+    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverActivePlayerFields.xp));
+#else
+    return playerData()->xp;
+#endif
+}
+void Player::setXp(uint32_t xp)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverActivePlayerFields.xp == static_cast<int32_t>(xp))
+        return;
 
-uint32_t Player::getNextLevelXp() const { return playerData()->next_level_xp; }
-void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
+    m_foreverActivePlayerFields.xp = static_cast<int32_t>(xp);
+    m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit60_69913);
+    updateObject();
+#else
+    write(playerData()->xp, xp);
+#endif
+}
+void Player::addXP(uint32_t xp)
+{
+    setXp(getXp() + xp);
+}
+
+uint32_t Player::getNextLevelXp() const
+{
+#if defined(AE_FOREVER)
+    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverActivePlayerFields.nextLevelXp));
+#else
+    return playerData()->next_level_xp;
+#endif
+}
+void Player::setNextLevelXp(uint32_t xp)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverActivePlayerFields.nextLevelXp == static_cast<int32_t>(xp))
+        return;
+
+    m_foreverActivePlayerFields.nextLevelXp = static_cast<int32_t>(xp);
+    m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit61_69913);
+    updateObject();
+#else
+    write(playerData()->next_level_xp, xp);
+#endif
+}
 
 #if VERSION_STRING < Cata
 uint16_t Player::getSkillInfoId(uint32_t index) const { return playerData()->skill_info[index].id; }
@@ -1129,12 +1398,54 @@ uint16_t Player::getSkillInfoCurrentValue(uint32_t index) const { return playerD
 uint16_t Player::getSkillInfoMaxValue(uint32_t index) const { return playerData()->skill_info[index].max_value; }
 uint16_t Player::getSkillInfoBonusTemporary(uint32_t index) const { return playerData()->skill_info[index].bonus_temporary; }
 uint16_t Player::getSkillInfoBonusPermanent(uint32_t index) const { return playerData()->skill_info[index].bonus_permanent; }
-void Player::setSkillInfoId(uint32_t index, uint16_t id) { write(playerData()->skill_info[index].id, id); }
-void Player::setSkillInfoStep(uint32_t index, uint16_t step) { write(playerData()->skill_info[index].step, step); }
-void Player::setSkillInfoCurrentValue(uint32_t index, uint16_t current) { write(playerData()->skill_info[index].current_value, current); }
-void Player::setSkillInfoMaxValue(uint32_t index, uint16_t max) { write(playerData()->skill_info[index].max_value, max); }
-void Player::setSkillInfoBonusTemporary(uint32_t index, uint16_t bonus) { write(playerData()->skill_info[index].bonus_temporary, bonus); }
-void Player::setSkillInfoBonusPermanent(uint32_t index, uint16_t bonus) { write(playerData()->skill_info[index].bonus_permanent, bonus); }
+void Player::setSkillInfoId(uint32_t index, uint16_t id)
+{
+    write(playerData()->skill_info[index].id, id);
+#if defined(AE_FOREVER)
+    if (index < m_foreverActivePlayerFields.skill.skillLineId.size())
+        m_foreverActivePlayerFields.skill.skillLineId[index] = id;
+#endif
+}
+void Player::setSkillInfoStep(uint32_t index, uint16_t step)
+{
+    write(playerData()->skill_info[index].step, step);
+#if defined(AE_FOREVER)
+    if (index < m_foreverActivePlayerFields.skill.skillStep.size())
+        m_foreverActivePlayerFields.skill.skillStep[index] = step;
+#endif
+}
+void Player::setSkillInfoCurrentValue(uint32_t index, uint16_t current)
+{
+    write(playerData()->skill_info[index].current_value, current);
+#if defined(AE_FOREVER)
+    if (index < m_foreverActivePlayerFields.skill.skillRank.size())
+        m_foreverActivePlayerFields.skill.skillRank[index] = current;
+#endif
+}
+void Player::setSkillInfoMaxValue(uint32_t index, uint16_t max)
+{
+    write(playerData()->skill_info[index].max_value, max);
+#if defined(AE_FOREVER)
+    if (index < m_foreverActivePlayerFields.skill.skillMaxRank.size())
+        m_foreverActivePlayerFields.skill.skillMaxRank[index] = max;
+#endif
+}
+void Player::setSkillInfoBonusTemporary(uint32_t index, uint16_t bonus)
+{
+    write(playerData()->skill_info[index].bonus_temporary, bonus);
+#if defined(AE_FOREVER)
+    if (index < m_foreverActivePlayerFields.skill.skillTempBonus.size())
+        m_foreverActivePlayerFields.skill.skillTempBonus[index] = static_cast<int16_t>(bonus);
+#endif
+}
+void Player::setSkillInfoBonusPermanent(uint32_t index, uint16_t bonus)
+{
+    write(playerData()->skill_info[index].bonus_permanent, bonus);
+#if defined(AE_FOREVER)
+    if (index < m_foreverActivePlayerFields.skill.skillPermBonus.size())
+        m_foreverActivePlayerFields.skill.skillPermBonus[index] = bonus;
+#endif
+}
 #else
 uint16_t Player::getSkillInfoId(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_line[index]) + offset); }
 uint16_t Player::getSkillInfoStep(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_step[index]) + offset); }
@@ -1143,12 +1454,60 @@ uint16_t Player::getSkillInfoMaxValue(uint32_t index, uint8_t offset) const { re
 uint16_t Player::getSkillInfoBonusTemporary(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_mod[index]) + offset); }
 uint16_t Player::getSkillInfoBonusPermanent(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_talent[index]) + offset); }
 uint32_t Player::getProfessionSkillLine(uint32_t index) const { return playerData()->profession_skill_line[index]; }
-void Player::setSkillInfoId(uint32_t index, uint8_t offset, uint16_t id) { write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_line[index]) + offset), id); }
-void Player::setSkillInfoStep(uint32_t index, uint8_t offset, uint16_t step) { write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_step[index]) + offset), step); }
-void Player::setSkillInfoCurrentValue(uint32_t index, uint8_t offset, uint16_t current) { write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_rank[index]) + offset), current); }
-void Player::setSkillInfoMaxValue(uint32_t index, uint8_t offset, uint16_t max) { write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_max_rank[index]) + offset), max); }
-void Player::setSkillInfoBonusTemporary(uint32_t index, uint8_t offset, uint16_t bonus) { write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_mod[index]) + offset), bonus); }
-void Player::setSkillInfoBonusPermanent(uint32_t index, uint8_t offset, uint16_t bonus) { write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_talent[index]) + offset), bonus); }
+void Player::setSkillInfoId(uint32_t index, uint8_t offset, uint16_t id)
+{
+    write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_line[index]) + offset), id);
+#if defined(AE_FOREVER)
+    const std::size_t slot = static_cast<std::size_t>(index) * 2U + offset;
+    if (slot < m_foreverActivePlayerFields.skill.skillLineId.size())
+        m_foreverActivePlayerFields.skill.skillLineId[slot] = id;
+#endif
+}
+void Player::setSkillInfoStep(uint32_t index, uint8_t offset, uint16_t step)
+{
+    write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_step[index]) + offset), step);
+#if defined(AE_FOREVER)
+    const std::size_t slot = static_cast<std::size_t>(index) * 2U + offset;
+    if (slot < m_foreverActivePlayerFields.skill.skillStep.size())
+        m_foreverActivePlayerFields.skill.skillStep[slot] = step;
+#endif
+}
+void Player::setSkillInfoCurrentValue(uint32_t index, uint8_t offset, uint16_t current)
+{
+    write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_rank[index]) + offset), current);
+#if defined(AE_FOREVER)
+    const std::size_t slot = static_cast<std::size_t>(index) * 2U + offset;
+    if (slot < m_foreverActivePlayerFields.skill.skillRank.size())
+        m_foreverActivePlayerFields.skill.skillRank[slot] = current;
+#endif
+}
+void Player::setSkillInfoMaxValue(uint32_t index, uint8_t offset, uint16_t max)
+{
+    write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_max_rank[index]) + offset), max);
+#if defined(AE_FOREVER)
+    const std::size_t slot = static_cast<std::size_t>(index) * 2U + offset;
+    if (slot < m_foreverActivePlayerFields.skill.skillMaxRank.size())
+        m_foreverActivePlayerFields.skill.skillMaxRank[slot] = max;
+#endif
+}
+void Player::setSkillInfoBonusTemporary(uint32_t index, uint8_t offset, uint16_t bonus)
+{
+    write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_mod[index]) + offset), bonus);
+#if defined(AE_FOREVER)
+    const std::size_t slot = static_cast<std::size_t>(index) * 2U + offset;
+    if (slot < m_foreverActivePlayerFields.skill.skillTempBonus.size())
+        m_foreverActivePlayerFields.skill.skillTempBonus[slot] = static_cast<int16_t>(bonus);
+#endif
+}
+void Player::setSkillInfoBonusPermanent(uint32_t index, uint8_t offset, uint16_t bonus)
+{
+    write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_talent[index]) + offset), bonus);
+#if defined(AE_FOREVER)
+    const std::size_t slot = static_cast<std::size_t>(index) * 2U + offset;
+    if (slot < m_foreverActivePlayerFields.skill.skillPermBonus.size())
+        m_foreverActivePlayerFields.skill.skillPermBonus[slot] = bonus;
+#endif
+}
 void Player::setProfessionSkillLine(uint32_t index, uint32_t value) { write(playerData()->profession_skill_line[index], value); }
 #endif
 
@@ -1260,8 +1619,26 @@ void Player::setExploredZone(uint32_t idx, uint32_t data)
 uint32_t Player::getSelfResurrectSpell() const { return playerData()->self_resurrection_spell; }
 void Player::setSelfResurrectSpell(uint32_t spell) { write(playerData()->self_resurrection_spell, spell); }
 
-uint32_t Player::getWatchedFaction() const { return playerData()->field_watched_faction_idx; }
-void Player::setWatchedFaction(uint32_t factionId) { write(playerData()->field_watched_faction_idx, factionId); }
+uint32_t Player::getWatchedFaction() const
+{
+#if defined(AE_FOREVER)
+    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverWatchedFactionIndex));
+#else
+    return playerData()->field_watched_faction_idx;
+#endif
+}
+void Player::setWatchedFaction(uint32_t factionId)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverWatchedFactionIndex == static_cast<int32_t>(factionId))
+        return;
+
+    m_foreverWatchedFactionIndex = static_cast<int32_t>(factionId);
+    updateObject();
+#else
+    write(playerData()->field_watched_faction_idx, factionId);
+#endif
+}
 
 #if VERSION_STRING == TBC
 float Player::getManaRegeneration() const { return playerData()->field_mod_mana_regen; }
@@ -1306,8 +1683,27 @@ void Player::modCoinage(int32_t coinage)
     setCoinage(getCoinage() + coinage);
 }
 #else
-uint64_t Player::getCoinage() const { return playerData()->field_coinage; }
-void Player::setCoinage(uint64_t coinage) { write(playerData()->field_coinage, coinage); }
+uint64_t Player::getCoinage() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverActivePlayerFields.coinage;
+#else
+    return playerData()->field_coinage;
+#endif
+}
+void Player::setCoinage(uint64_t coinage)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverActivePlayerFields.coinage == coinage)
+        return;
+
+    m_foreverActivePlayerFields.coinage = coinage;
+    m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit58_69913);
+    updateObject();
+#else
+    write(playerData()->field_coinage, coinage);
+#endif
+}
 bool Player::hasEnoughCoinage(uint64_t coinage) const { return getCoinage() >= coinage; }
 
 void Player::modCoinage(int64_t coinage)
@@ -1387,10 +1783,28 @@ void Player::setFieldKills(uint32_t kills) { write(playerData()->field_kills.raw
 #endif
 #endif
 
-uint32_t Player::getLifetimeHonorableKills() const { return playerData()->field_lifetime_honorable_kills; }
-void Player::setLifetimeHonorableKills(uint32_t kills) { write(playerData()->field_lifetime_honorable_kills, kills); }
+uint32_t Player::getLifetimeHonorableKills() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverLifetimeHonorableKills;
+#else
+    return playerData()->field_lifetime_honorable_kills;
+#endif
+}
+void Player::setLifetimeHonorableKills(uint32_t kills)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverLifetimeHonorableKills == kills)
+        return;
 
-#if VERSION_STRING != Mop
+    m_foreverLifetimeHonorableKills = kills;
+    updateObject();
+#else
+    write(playerData()->field_lifetime_honorable_kills, kills);
+#endif
+}
+
+#if VERSION_STRING != Mop && VERSION_STRING != AE_PROFILE_FOREVER
 uint32_t Player::getPlayerFieldBytes2() const { return playerData()->player_field_bytes_2.raw; }
 void Player::setPlayerFieldBytes2(uint32_t bytes) { write(playerData()->player_field_bytes_2.raw, bytes); }
 
@@ -1400,8 +1814,26 @@ void Player::addAuraVision(uint8_t auraVision) { setAuraVision(getAuraVision() |
 void Player::removeAuraVision(uint8_t auraVision) { setAuraVision(getAuraVision() & ~auraVision); }
 #endif
 
-uint32_t Player::getCombatRating(uint8_t combatRating) const { return playerData()->field_combat_rating[combatRating]; }
-void Player::setCombatRating(uint8_t combatRating, uint32_t value) { write(playerData()->field_combat_rating[combatRating], value); }
+uint32_t Player::getCombatRating(uint8_t combatRating) const
+{
+#if defined(AE_FOREVER)
+    return combatRating < m_foreverCombatRatings.size() ? static_cast<uint32_t>(std::max<int32_t>(0, m_foreverCombatRatings[combatRating])) : 0;
+#else
+    return playerData()->field_combat_rating[combatRating];
+#endif
+}
+void Player::setCombatRating(uint8_t combatRating, uint32_t value)
+{
+#if defined(AE_FOREVER)
+    if (combatRating >= m_foreverCombatRatings.size() || m_foreverCombatRatings[combatRating] == static_cast<int32_t>(value))
+        return;
+
+    m_foreverCombatRatings[combatRating] = static_cast<int32_t>(value);
+    updateObject();
+#else
+    write(playerData()->field_combat_rating[combatRating], value);
+#endif
+}
 void Player::modCombatRating(uint8_t combatRating, int32_t value) { setCombatRating(combatRating, getCombatRating(combatRating) + value); }
 
 #if VERSION_STRING > Classic
@@ -2384,16 +2816,25 @@ bool Player::create(CharCreate& charCreateContent)
         return false;
     }
 
-    // check that the account creates only new ones with available races, if we're making some
-#if VERSION_STRING > Classic
-    if (charCreateContent._race >= RACE_BLOODELF && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_01))
-#else
-    if (charCreateContent._race >= RACE_TROLL)
-#endif
+#if VERSION_STRING == AE_PROFILE_FOREVER
+    if ((charCreateContent._race == RACE_SKYBORNE_ALLIANCE || charCreateContent._race == RACE_SKYBORNE_HORDE) && !(m_session->_accountFlags & ACCOUNT_FLAG_FOREVER))
     {
         m_session->Disconnect();
         return false;
     }
+#elif VERSION_STRING > Classic
+    if (charCreateContent._race >= RACE_BLOODELF && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_01))
+    {
+        m_session->Disconnect();
+        return false;
+    }
+#else
+    if (charCreateContent._race >= RACE_TROLL)
+    {
+        m_session->Disconnect();
+        return false;
+    }
+#endif
 
 #if VERSION_STRING > TBC
     // check that the account can create deathknights, if we're making one
@@ -2582,8 +3023,44 @@ bool Player::create(CharCreate& charCreateContent)
 WDB::Structures::ChrRacesEntry const* Player::getDbcRaceEntry() { return m_dbcRace; };
 WDB::Structures::ChrClassesEntry const* Player::getDbcClassEntry() { return m_dbcClass; };
 
-utf8_string Player::getName() const { return m_name; }
-void Player::setName(utf8_string name) { m_name = name; }
+utf8_string Player::getName() const
+{
+    return m_name;
+}
+void Player::setName(utf8_string name)
+{
+    m_name = std::move(name);
+#if defined(AE_FOREVER)
+    const std::string value(m_name);
+    const std::size_t separator = value.find(' ');
+
+    std::string firstName;
+    std::string lastName;
+
+    if (separator == std::string::npos)
+    {
+        firstName = value;
+    }
+    else
+    {
+        firstName = value.substr(0, separator);
+        lastName = value.substr(separator + 1U);
+    }
+
+    if (firstName.size() > 63U)
+        firstName.resize(63U);
+    if (lastName.size() > 63U)
+        lastName.resize(63U);
+
+    if (m_foreverPlayerFields.firstName != firstName || m_foreverPlayerFields.lastName != lastName)
+    {
+        m_foreverPlayerFields.firstName = std::move(firstName);
+        m_foreverPlayerFields.lastName = std::move(lastName);
+        m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::UnknownChangeBit36_69913);
+        updateObject();
+    }
+#endif
+}
 
 uint32_t Player::getLoginFlag() const { return m_loginFlag; }
 void Player::setLoginFlag(uint32_t flag) { m_loginFlag = flag; }
@@ -2887,7 +3364,15 @@ void Player::changeLanguage(uint64_t guid, uint8_t race)
             case SKILL_LANG_GILNEAN:
                 return 69270;
 #endif
-#if VERSION_STRING >= Mop
+#if VERSION_STRING == Mop
+            case SKILL_LANG_PANDAREN_NEUTRAL:
+                return 108127;
+            case SKILL_LANG_PANDAREN_ALLIANCE:
+                return 108130;
+            case SKILL_LANG_PANDAREN_HORDE:
+                return 108131;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
             case SKILL_LANG_PANDAREN_NEUTRAL:
                 return 108127;
             case SKILL_LANG_PANDAREN_ALLIANCE:
@@ -2996,6 +3481,21 @@ void Player::changeLanguage(uint64_t guid, uint8_t race)
             CharacterDatabase.execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", static_cast<uint32_t>(guid), getSpellIdForLanguage(SKILL_LANG_ORCISH));
             CharacterDatabase.execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", static_cast<uint32_t>(guid), getSpellIdForLanguage(SKILL_LANG_PANDAREN_HORDE));
             break;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+        case RACE_PANDAREN_NEUTRAL:
+            CharacterDatabase.execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", static_cast<uint32_t>(guid), getSpellIdForLanguage(SKILL_LANG_COMMON));
+            CharacterDatabase.execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", static_cast<uint32_t>(guid), getSpellIdForLanguage(SKILL_LANG_ORCISH));
+            CharacterDatabase.execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", static_cast<uint32_t>(guid), getSpellIdForLanguage(SKILL_LANG_PANDAREN_NEUTRAL));
+            break;
+        case RACE_PANDAREN_ALLIANCE:
+            CharacterDatabase.execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", static_cast<uint32_t>(guid), getSpellIdForLanguage(SKILL_LANG_COMMON));
+            CharacterDatabase.execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", static_cast<uint32_t>(guid), getSpellIdForLanguage(SKILL_LANG_PANDAREN_ALLIANCE));
+            break;
+        case RACE_PANDAREN_HORDE:
+            CharacterDatabase.execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", static_cast<uint32_t>(guid), getSpellIdForLanguage(SKILL_LANG_ORCISH));
+            CharacterDatabase.execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", static_cast<uint32_t>(guid), getSpellIdForLanguage(SKILL_LANG_PANDAREN_HORDE));
+            break;
 #endif
     }
 }
@@ -3019,6 +3519,10 @@ void Player::sendInitialLogonPackets()
 #if VERSION_STRING == Mop
     SmsgWorldServerInfo worldServerInfoPacket;
     getSession()->sendManagedPacket(worldServerInfoPacket);
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    SmsgWorldServerInfo worldServerInfoPacket;
+    getSession()->sendManagedPacket(worldServerInfoPacket);
 #endif
 
     sendSmsgInitialSpells();
@@ -3031,6 +3535,10 @@ void Player::sendInitialLogonPackets()
     sendSmsgInitialFactions();
 
 #if VERSION_STRING == Mop
+    SmsgLoadEquipmentSet equipmentSetPacket;
+    getSession()->sendManagedPacket(equipmentSetPacket);
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     SmsgLoadEquipmentSet equipmentSetPacket;
     getSession()->sendManagedPacket(equipmentSetPacket);
 #endif
@@ -3048,6 +3556,10 @@ void Player::sendInitialLogonPackets()
 #endif
 
 #if VERSION_STRING == Mop
+    SmsgSetActiveMover moverPacket(getGuid());
+    getSession()->sendManagedPacket(moverPacket);
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     SmsgSetActiveMover moverPacket(getGuid());
     getSession()->sendManagedPacket(moverPacket);
 #endif
@@ -3340,7 +3852,115 @@ void Player::initVisibleUpdateBits()
         Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + 1 + offset);
     }
 
-#if VERSION_STRING >= Mop
+#if VERSION_STRING == Mop
+    uint16_t questIdOffset = 15;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    uint16_t questIdOffset = 15;
+#else
+    uint16_t questIdOffset = 5;
+#endif
+    for (uint16_t i = getOffsetForStructuredField(WoWPlayer, quests); i < getOffsetForStructuredField(WoWPlayer, visible_items); i += questIdOffset)
+        Player::m_visibleUpdateMask.SetBit(i);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, chosen_title));
+
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    Player::m_visibleUpdateMask.SetCount(getSizeOfStructure(WoWPlayer));
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid) + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, data));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, data) + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, field_type.raw));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, entry));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, dynamic_field));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, scale_x));
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, charm_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, charm_guid) + 1);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, summon_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, summon_guid) + 1);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, charmed_by_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, charmed_by_guid) + 1);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, target_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, target_guid) + 1);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid) + 1);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, health));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_1));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_3));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_4));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_5));
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_health));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_1));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_3));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_4));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_5));
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, virtual_item_slot_display, 0));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, virtual_item_slot_display, 1));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, virtual_item_slot_display, 2));
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, level));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, faction_template));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_0));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, unit_flags));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, unit_flags_2));
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, base_attack_time, 0));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, base_attack_time, 1));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, bounding_radius));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, combat_reach));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, display_id));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, native_display_id));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, mount_display_id));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_1));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, pet_number));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, pet_name_timestamp));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid) + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_spell));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, mod_cast_speed));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, npc_flags));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, hover_height));
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_flags));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes_3));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_timestamp));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_team));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_arbiter));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_arbiter) + 1);
+
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_rank));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_level));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, base_mana));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_2));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, aura_state));
+
+    for (uint16_t i = 0; i < EQUIPMENT_SLOT_END; ++i)
+    {
+        uint32_t offset = i * 2;
+
+        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + offset);
+        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + 1 + offset);
+    }
+
+#if VERSION_STRING == Mop
+    uint16_t questIdOffset = 15;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     uint16_t questIdOffset = 15;
 #else
     uint16_t questIdOffset = 5;
@@ -3472,7 +4092,10 @@ void Player::initVisibleUpdateBits()
     uint16_t questIdOffset = 3;
 #elif VERSION_STRING == TBC
     uint16_t questIdOffset = 4;
-#elif VERSION_STRING >= Mop
+#elif VERSION_STRING == Mop
+    uint16_t questIdOffset = 15;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     uint16_t questIdOffset = 15;
 #else
     uint16_t questIdOffset = 5;
@@ -5223,6 +5846,9 @@ void Player::setInitialPlayerProfessions()
     for (uint16_t skillId = SKILL_FROST; skillId != SKILL_PET_HYDRA; ++skillId)
 #elif VERSION_STRING == Mop
     for (uint16_t skillId = SKILL_SWORDS; skillId != SKILL_DIREHORN; ++skillId)
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    for (uint16_t skillId = SKILL_SWORDS; skillId != SKILL_DIREHORN; ++skillId)
 #endif
     {
         const auto skillLine = sSkillLineStore.lookupEntry(skillId);
@@ -5333,12 +5959,25 @@ void Player::updateGlyphs()
             setGlyphSlot(static_cast<uint16_t>(glyphSlot->Slot - 1), glyphSlot->Id);
     }
 #elif VERSION_STRING == Mop
-    uint16_t slot = 0;
-    for (uint32_t i = 0; i < sGlyphSlotStore.getNumRows() && slot < WOWPLAYER_GLYPH_SLOT_COUNT; ++i)
+    for (uint32_t i = 0; i < sGlyphSlotStore.getNumRows(); ++i)
     {
         const auto glyphSlot = sGlyphSlotStore.lookupEntry(i);
-        if (glyphSlot != nullptr)
-            setGlyphSlot(slot++, glyphSlot->Id);
+        if (glyphSlot == nullptr)
+            continue;
+
+        if (glyphSlot->Slot > 0)
+            setGlyphSlot(static_cast<uint16_t>(glyphSlot->Slot - 1), glyphSlot->Id);
+    }
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    for (uint32_t i = 0; i < sGlyphSlotStore.getNumRows(); ++i)
+    {
+        const auto glyphSlot = sGlyphSlotStore.lookupEntry(i);
+        if (glyphSlot == nullptr)
+            continue;
+
+        if (glyphSlot->Slot > 0)
+            setGlyphSlot(static_cast<uint16_t>(glyphSlot->Slot - 1), glyphSlot->Id);
     }
 #else
     uint16_t slot = 0;
@@ -5373,13 +6012,10 @@ void Player::updateGlyphs()
     if (level >= 75)
         slotMask |= GS_MASK_LEVEL_75;
 #elif VERSION_STRING == Mop
-    const auto level = getLevel();
-    if (level >= 25)
-        slotMask |= GS_MASK_LEVEL_25;
-    if (level >= 50)
-        slotMask |= GS_MASK_LEVEL_50;
-    if (level >= 75)
-        slotMask |= GS_MASK_LEVEL_75;
+    // TODO
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    // TODO
 #endif
 
     setGlyphsEnabled(slotMask);
@@ -5899,6 +6535,47 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     // Add the new talent to player talent map
     getActiveSpec().addTalent(talentId, static_cast<uint8_t>(talentRank));
 
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    auto talentInfo = sTalentStore.lookupEntry(talentId);
+    if (talentInfo == nullptr)
+        return;
+
+    uint32_t maxTalentRow = playerData()->max_talent_tiers;
+
+    if (talentInfo->playerClass != getClass())
+        return;
+
+    if (talentInfo->Row > maxTalentRow)
+        return;
+
+    // Check if player has already a spell in column
+    for (uint32_t i = 0; i < sTalentStore.getNumRows(); ++i)
+    {
+        if (auto talent = sTalentStore.lookupEntry(i))
+        {
+            if (talentInfo->Row == talent->Row && hasSpell(talent->SpellId))
+                return;
+        }
+    }
+
+    uint32_t spellId = talentInfo->SpellId;
+    if (spellId == 0)
+        return;
+
+    // Check if player already has the talent spell
+    if (hasSpell(spellId))
+        return;
+
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+    if (spellInfo == nullptr)
+        return;
+
+    _addSpell(spellId, 0, false);
+
+    // Add the new talent to player talent map
+    getActiveSpec().addTalent(talentId, static_cast<uint8_t>(talentRank));
+
 #else // < Mop
     auto curTalentPoints = getActiveSpec().getTalentPoints();
     if (curTalentPoints == 0)
@@ -6050,8 +6727,72 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
 }
 
 #if VERSION_STRING == Mop
-uint32_t Player::getCurrentSpecId() const { return playerData()->current_spec_id; }
-void Player::setCurrentSpecId(uint32_t specializationId) { write(playerData()->current_spec_id, specializationId); }
+uint32_t Player::getCurrentSpecId() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverPlayerFields.unknownU32_6_69913;
+#else
+    return playerData()->current_spec_id;
+#endif
+}
+void Player::setCurrentSpecId(uint32_t specializationId)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverPlayerFields.unknownU32_6_69913 == specializationId)
+        return;
+
+    m_foreverPlayerFields.unknownU32_6_69913 = specializationId;
+    m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::UnknownChangeBit29_69913);
+    updateObject();
+#else
+    write(playerData()->current_spec_id, specializationId);
+#endif
+}
+
+void Player::setPrimaryTalentSpecialization(uint32_t specializationTabId)
+{
+    if (specializationTabId >= 4)
+        return;
+
+    // Player already chose a specialization for the currently active spec slot - this opcode only
+    // covers the initial choice, switching specs later happens through activateTalentSpec()
+    if (getActiveSpec().getSpecializationId() != 0)
+        return;
+
+    const auto specializationTabs = getClassSpecializations(static_cast<uint8_t>(getClass()));
+    const uint32_t specializationId = specializationTabs[specializationTabId];
+    if (specializationId == 0)
+        return;
+
+    getActiveSpec().setSpecializationId(specializationId);
+    setCurrentSpecId(specializationId);
+
+    sendTalentsInfo();
+    saveToDB(false);
+}
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+uint32_t Player::getCurrentSpecId() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverPlayerFields.unknownU32_6_69913;
+#else
+    return playerData()->current_spec_id;
+#endif
+}
+void Player::setCurrentSpecId(uint32_t specializationId)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverPlayerFields.unknownU32_6_69913 == specializationId)
+        return;
+
+    m_foreverPlayerFields.unknownU32_6_69913 = specializationId;
+    m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::UnknownChangeBit29_69913);
+    updateObject();
+#else
+    write(playerData()->current_spec_id, specializationId);
+#endif
+}
 
 void Player::setPrimaryTalentSpecialization(uint32_t specializationTabId)
 {
@@ -9721,8 +10462,15 @@ void Player::sendPartyKillLogPacket(uint64_t killedGuid)
 
 void Player::sendDestroyObjectPacket(uint64_t destroyedGuid)
 {
+#if defined(AE_FOREVER)
+    // Modern retail carries explicit destroys inside SMSG_UPDATE_OBJECT.
+    // UpdateManager keeps them separate from ordinary out-of-range removals
+    // and writes destroy GUIDs first in the shared removal list.
+    getUpdateMgr().pushDestroyGuid(WoWGuid(destroyedGuid));
+#else
     SmsgDestroyObject managedPacket(destroyedGuid);
     m_session->sendManagedPacket(managedPacket);
+#endif
 }
 
 void Player::sendEquipmentSetUseResultPacket(uint8_t result)
@@ -13543,6 +14291,24 @@ void Player::modifyCurrency(uint32_t id, int32_t count, bool printLog/* = true*/
         if (!printLog)
             return;
     }
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    if (isNewEntry)
+    {
+        AscEmu::Packets::CurrencyRecord record;
+        record.id = id;
+        record.quantity = playerCurrency.quantity / precision;
+        record.weeklyQuantity = playerCurrency.weeklyQuantity / precision;
+        record.weekCap = weekCap / precision;
+        record.trackedQuantity = playerCurrency.trackedQuantity / precision;
+        record.flags = playerCurrency.flags;
+
+        AscEmu::Packets::SmsgSetupCurrency setupPacket({ record });
+        m_session->sendManagedPacket(setupPacket);
+
+        if (!printLog)
+            return;
+    }
 #endif
 
     AscEmu::Packets::SmsgUpdateCurrency updatePacket(
@@ -13791,6 +14557,60 @@ void Player::processPendingUpdates()
 }
 
 #if VERSION_STRING == Mop
+void Player::resendCreateAndActiveMoverForMoP()
+{
+    if (!m_session)
+        return;
+    if (!IsInWorld())
+    {
+        sLogger.info("WORLD: resend create+active mover skipped for {} (player not InWorld yet)", getName());
+        return;
+    }
+    constexpr uint32_t kMaxObjectUpdateFailedResends = 5u;
+    if (m_objectUpdateFailedResendCount >= kMaxObjectUpdateFailedResends)
+    {
+        sLogger.failure("WORLD: MoP player create rejected {} times by client for {}; stopping resend (client may need correct SMSG_UPDATE_OBJECT format)", kMaxObjectUpdateFailedResends, getName());
+        return;
+    }
+    const uint32_t now = Util::getMSTime();
+    // First resend is always allowed (m_lastObjectUpdateFailedResend==0); then throttle 1.5s
+    if (m_lastObjectUpdateFailedResend != 0 && (now - m_lastObjectUpdateFailedResend < 1500u))
+    {
+        sLogger.debug("resendCreateAndActiveMoverForMoP: throttled for {}", getName());
+        return;
+    }
+    m_lastObjectUpdateFailedResend = now;
+    ++m_objectUpdateFailedResendCount;
+
+    sLogger.info("WORLD: resending LOGIN_VERIFY_WORLD + SetActiveMover + create for {} (attempt {}/{})", getName(), m_objectUpdateFailedResendCount, kMaxObjectUpdateFailedResends);
+    // MoP: send in order client may expect - verify world first, then mover, then create (mirrors panda-core flow).
+    sendLoginVerifyWorldPacket();
+
+    SmsgSetActiveMover moverPacket(getGuid());
+    getSession()->sendManagedPacket(moverPacket);
+
+    ByteBuffer pbuf(10000);
+    const uint32_t count = buildCreateUpdateBlockForPlayer(&pbuf, this);
+    sLogger.info("WORLD: resend create block for {} size={} bytes (attempt {}/{})", getName(), pbuf.size(), m_objectUpdateFailedResendCount, kMaxObjectUpdateFailedResends);
+    getUpdateMgr().pushCreationData(&pbuf, count);
+    processPendingUpdates();
+
+    // MoP: client may be waiting for CUF profiles after create to finish loading.
+    SmsgLoadCufProfiles cufProfilesPacket;
+    getSession()->sendManagedPacket(cufProfilesPacket);
+
+    // MoP: schedule one delayed retry in 2s (after throttle) in case client missed the first resend; stop when cap reached.
+    if (m_objectUpdateFailedResendCount < kMaxObjectUpdateFailedResends)
+        sEventMgr.AddEvent(this, &Player::resendCreateAndActiveMoverForMoP, EVENT_PLAYER_MOP_PROCESS_QUEUE, 2000, 1, 0);
+}
+
+void Player::eventProcessQueuedPacketsMoP()
+{
+    if (m_session && IsInWorld())
+        m_session->processQueuedPackets(static_cast<uint32_t>(GetInstanceID()));
+}
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
 void Player::resendCreateAndActiveMoverForMoP()
 {
     if (!m_session)
@@ -15590,7 +16410,11 @@ void Player::loadFromDBProc(QueryResultVector& results)
     m_achievementMgr->updateAllAchievementCriteria();
 #endif
 
+#if defined(AE_FOREVER)
+    m_session->fullLoginForever(this);
+#else
     m_session->fullLogin(this);
+#endif
     m_session->m_loggingInPlayer = nullptr;
 
     if (!isAlive())
@@ -15779,6 +16603,27 @@ float Player::getDodgeChance()
     float tmp = 100.0f * baseCritVal;
     if (critPerAgiVal != 0.0f)
         tmp += agi / critPerAgiVal;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    // Mop only: gtChanceToMeleeCritBase.dbc gained per-level rows (same layout as
+    // gtChanceToMeleeCrit.dbc), and the agility scaling value became a divisor
+    // ("agility points needed per 1%"), not a multiplier. Cata's DBC still has
+    // only 11 rows (class-indexed) and tiny multiplier-style values (~0.0004-0.0005),
+    // confirmed against the real Cata gtChanceToMeleeCrit.dbc, so Cata keeps the old formula below.
+    auto baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(level - 1 + (playerClass - 1) * 100);
+    if (baseCrit == nullptr)
+        baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+
+    auto critPerAgi = sGtChanceToMeleeCritStore.lookupEntry(level - 1 + (playerClass - 1) * 100);
+    if (critPerAgi == nullptr)
+        critPerAgi = sGtChanceToMeleeCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+
+    const float baseCritVal = baseCrit ? baseCrit->val : 0.0f;
+    const float critPerAgiVal = critPerAgi ? critPerAgi->val : 0.0f;
+
+    float tmp = 100.0f * baseCritVal;
+    if (critPerAgiVal != 0.0f)
+        tmp += agi / critPerAgiVal;
 #else
     // Base dodge + dodge from agility
     auto baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(playerClass - 1);
@@ -15879,6 +16724,19 @@ void Player::updateChances()
     tmp = 100 * (baseCrit ? baseCrit->val : 0.0f);
     if (CritPerAgi != nullptr && CritPerAgi->val != 0.0f)
         tmp += getStat(STAT_AGILITY) / CritPerAgi->val;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    auto baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
+    if (baseCrit == nullptr)
+        baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+
+    auto CritPerAgi = sGtChanceToMeleeCritStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
+    if (CritPerAgi == nullptr)
+        CritPerAgi = sGtChanceToMeleeCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+
+    tmp = 100 * (baseCrit ? baseCrit->val : 0.0f);
+    if (CritPerAgi != nullptr && CritPerAgi->val != 0.0f)
+        tmp += getStat(STAT_AGILITY) / CritPerAgi->val;
 #else
     auto baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(playerClass - 1);
 
@@ -15915,6 +16773,19 @@ void Player::updateChances()
     setRangedCritPercentage(std::min(rcr, 95.0f));
 
 #if VERSION_STRING == Mop
+    auto SpellCritBase = sGtChanceToSpellCritBaseStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
+    if (SpellCritBase == nullptr)
+        SpellCritBase = sGtChanceToSpellCritBaseStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+
+    auto SpellCritPerInt = sGtChanceToSpellCritStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
+    if (SpellCritPerInt == nullptr)
+        SpellCritPerInt = sGtChanceToSpellCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+
+    float spellCritFromStats = 100 * (SpellCritBase ? SpellCritBase->val : 0.0f);
+    if (SpellCritPerInt != nullptr && SpellCritPerInt->val != 0.0f)
+        spellCritFromStats += getStat(STAT_INTELLECT) / SpellCritPerInt->val;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     auto SpellCritBase = sGtChanceToSpellCritBaseStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
     if (SpellCritBase == nullptr)
         SpellCritBase = sGtChanceToSpellCritBaseStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);

@@ -148,13 +148,14 @@ protected:
 
 #if VERSION_STRING >= Cata
 inline void MoveSplineInit::SetFly() { args.flags.EnableFlying(); }
-inline void MoveSplineInit::SetWalk(bool enable) { args.flags.walkmode = enable; }
+inline void MoveSplineInit::SetWalk(bool enable) { args.walk = enable; args.flags.walkmode = enable; }
 inline void MoveSplineInit::SetSmooth() { args.flags.EnableCatmullRom(); }
 inline void MoveSplineInit::SetUncompressed() { args.flags.uncompressedPath = true; }
 inline void MoveSplineInit::SetCyclic() { args.flags.cyclic = true; }
 inline void MoveSplineInit::SetFall() { args.flags.EnableFalling(); args.flags.fallingSlow = unit->hasUnitMovementFlag(MOVEFLAG_FEATHER_FALL); }
 inline void MoveSplineInit::SetVelocity(float vel) { args.velocity = vel; args.HasVelocity = true; }
 inline void MoveSplineInit::SetOrientationInversed() { args.flags.orientationInversed = true; }
+inline void MoveSplineInit::SetBackward() { args.flags.orientationInversed = true; }
 inline void MoveSplineInit::SetTransportEnter() { args.flags.EnableTransportEnter(); }
 inline void MoveSplineInit::SetTransportExit() { args.flags.EnableTransportExit(); }
 inline void MoveSplineInit::SetOrientationFixed(bool enable) { args.flags.orientationFixed = enable; }

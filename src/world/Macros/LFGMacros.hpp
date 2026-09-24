@@ -36,4 +36,7 @@ This file is released under the MIT license. See README-MIT for more information
     #define MAX_DUNGEONS 449    // Cataclysm
 #elif VERSION_STRING == Mop
     #define MAX_DUNGEONS 449    //  Mists of Pandaria (untested)
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    #define MAX_DUNGEONS 449    //  Mists of Pandaria (untested)
 #endif

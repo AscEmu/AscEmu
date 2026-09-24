@@ -428,7 +428,12 @@ void QuestLogEntry::sendUpdateAddKill(uint8_t index)
 
 QuestScript* QuestLogEntry::getQuestScript() const
 {
+#if defined(AE_MODERN_CLIENT)
+    // Forever: legacy quest scripts are intentionally disabled.
+    return nullptr;
+#else
     if (getQuestProperties()->pQuestScript)
         return getQuestProperties()->pQuestScript;
     return nullptr;
+#endif
 }

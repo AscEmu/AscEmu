@@ -22,6 +22,7 @@ namespace WoW::Build {
     inline constexpr uint32_t WOTLK_BUILD = 12340;
     inline constexpr uint32_t CATA_BUILD = 15595;
     inline constexpr uint32_t MOP_BUILD = 18414;
+    inline constexpr uint32_t FOREVER_BUILD = 69893;
 }
 
 namespace WoW {
@@ -39,6 +40,7 @@ namespace WoW {
         DF,
         TWW,
         MN,
+        Forever,
         Unknown = 255
     };
 
@@ -53,6 +55,7 @@ namespace WoW {
     struct ClientProtocol
     {
         Expansion expansion{Expansion::Unknown};
+        uint32_t realmId{0};
 
         [[nodiscard]] WoW::Expansion getExpansion() const { return expansion; }
 
@@ -64,7 +67,8 @@ namespace WoW {
         [[nodiscard]] bool isWotlk() const { return expansion == WoW::Expansion::_WotLK; }
         [[nodiscard]] bool isCata() const { return expansion == WoW::Expansion::_Cata; }
         [[nodiscard]] bool isMop() const { return expansion == WoW::Expansion::_Mop; }
-        [[nodiscard]] bool isLegacy() const { return isClassic() || isTbc(); }
+        [[nodiscard]] bool isForever() const { return expansion == WoW::Expansion::Forever; }
+        [[nodiscard]] bool isLegacy() const { return !isForever(); }
     };
 
     /// Global protocol state configured for this server instance
@@ -118,6 +122,8 @@ namespace WoW {
     inline constexpr Expansion COMPILED_EXPANSION = Expansion::_Cata;
 #elif defined(AE_MOP)
     inline constexpr Expansion COMPILED_EXPANSION = Expansion::_Mop;
+#elif defined(AE_FOREVER)
+    inline constexpr Expansion COMPILED_EXPANSION = Expansion::Forever;
 #else
     inline constexpr Expansion COMPILED_EXPANSION = Expansion::_WotLK; // Fallback
 #endif
@@ -127,7 +133,7 @@ namespace WoW {
     /// Checks whether the expansion is valid in the enum definition
     [[nodiscard]] constexpr bool isValidExpansion(Expansion const expansion) noexcept
     {
-        return expansion != Expansion::Unknown && expansion <= Expansion::MN;
+        return expansion != Expansion::Unknown && expansion <= Expansion::Forever;
     }
 
     /// Checks whether THIS compiled server binary can run this expansion
@@ -145,6 +151,7 @@ namespace WoW {
             case Expansion::_WotLK:   return Build::WOTLK_BUILD;
             case Expansion::_Cata:    return Build::CATA_BUILD;
             case Expansion::_Mop:     return Build::MOP_BUILD;
+            case Expansion::Forever:  return Build::FOREVER_BUILD;
             default:                  return 0;
         }
     }
@@ -158,6 +165,7 @@ namespace WoW {
             case Build::WOTLK_BUILD:   return Expansion::_WotLK;
             case Build::CATA_BUILD:    return Expansion::_Cata;
             case Build::MOP_BUILD:     return Expansion::_Mop;
+            case Build::FOREVER_BUILD: return Expansion::Forever;
             default:                   return Expansion::Unknown;
         }
     }
@@ -197,17 +205,17 @@ namespace WoW {
         return serverExp >= minExpansion && serverExp <= maxExpansion;
     }
 
-    /// Converts world.conf integer setting (0 = Classic ... 4 = MoP) to enum
+    /// Converts world.conf integer setting (0 = Classic ... 12 = Forever) to enum
     [[nodiscard]] constexpr Expansion expansionFromVersionId(uint32_t const versionId) noexcept
     {
-        if (versionId > static_cast<uint32_t>(Expansion::MN))
+        if (versionId > static_cast<uint32_t>(Expansion::Forever))
             return Expansion::Unknown;
 
         return static_cast<Expansion>(versionId);
     }
 
     /// Determines if a data table or resource is required for the active server expansion
-    [[nodiscard]] inline bool isDataLoadRequired(Expansion const minExpansion, Expansion const maxExpansion = Expansion::MN) noexcept
+    [[nodiscard]] inline bool isDataLoadRequired(Expansion const minExpansion, Expansion const maxExpansion = Expansion::Forever) noexcept
     {
         return isServerExpansionBetween(minExpansion, maxExpansion);
     }
@@ -260,6 +268,7 @@ namespace WoW {
             case Expansion::DF: return "Dragonflight";
             case Expansion::TWW: return "The War Within";
             case Expansion::MN: return "Midnight";
+            case Expansion::Forever: return "Forever";
             case Expansion::Unknown:
             default: return "Unknown expansion";
         }
@@ -282,6 +291,7 @@ namespace WoW {
             case Expansion::DF:       return "Dragonflight";
             case Expansion::TWW:      return "TWW";
             case Expansion::MN:       return "Midnight";
+            case Expansion::Forever:  return "Forever";
             case Expansion::Unknown:
             default:                  return "Unknown";
         }

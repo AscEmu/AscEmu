@@ -47,7 +47,15 @@ public:
 
 private:
     const WoWItem* itemData() const { return reinterpret_cast<WoWItem*>(wow_data); }
+#if defined(AE_FOREVER)
+    AscEmu::Version::Forever::Fields::ItemData m_foreverItemFields{};
+#endif
 public:
+#if defined(AE_FOREVER)
+    AscEmu::Version::Forever::Fields::ItemData& foreverItemFields() { return m_foreverItemFields; }
+    AscEmu::Version::Forever::Fields::ItemData const& foreverItemFields() const { return m_foreverItemFields; }
+#endif
+
     void init(uint32_t high, uint32_t low);
     void create(uint32_t itemId, Player* owner);
 

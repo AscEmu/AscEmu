@@ -5,12 +5,19 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 #include <vector>
+#include <span>
 
 #include "UpdateManager.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Opcodes.hpp"
 #include "Server/WorldSession.h"
+#include "Server/World.h"
+#if defined(AE_FOREVER)
+#include "version/Forever/Opcodes.hpp"
+#include "version/Forever/World/ObjectUpdate.hpp"
+#include "Server/WorldSocket.hpp"
+#endif
 
 UpdateManager::UpdateManager(Player* owner, size_t compressionThreshold, size_t creationBufferInitialSize, size_t updateBufferInitialSize, size_t outOfRangeIdsInitialSize)
     : 
@@ -19,8 +26,10 @@ UpdateManager::UpdateManager(Player* owner, size_t compressionThreshold, size_t 
     m_creationCount(0),
     m_updateBuffer(updateBufferInitialSize),
     m_processPending(false),
+    m_destroyIds(outOfRangeIdsInitialSize),
     m_outOfRangeIds(outOfRangeIdsInitialSize),
     m_updateCount(0),
+    m_destroyIdCount(0),
     m_outOfRangeIdCount(0),
     m_owner(owner)
 {
@@ -35,10 +44,12 @@ void UpdateManager::clearPendingUpdates()
 
     m_creationCount = 0;
     m_updateCount = 0;
+    m_destroyIdCount = 0;
     m_outOfRangeIdCount = 0;
 
     m_creationBuffer.clear();
     m_updateBuffer.clear();
+    m_destroyIds.clear();
     m_outOfRangeIds.clear();
 }
 
@@ -55,6 +66,33 @@ void UpdateManager::pushCreationData(ByteBuffer* data, uint32_t updateCount)
     internalUpdateMapMgr();
 }
 
+
+void UpdateManager::pushDestroyGuid(const WoWGuid& guid)
+{
+    std::lock_guard update_guard(m_mutexUpdateBuffer);
+    std::lock_guard packet_guard(m_mutexDelayedPackets);
+
+    internalPushUpdatesIfBufferIsFull(static_cast<size_t>(8));
+
+#if defined(AE_FOREVER)
+    // Forever uses the same modern GUID identity for create, values, destroy and
+    // out-of-range. Keep this independent of recipient/session lifetime.
+    const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(
+        guid.getRawGuid(),
+        worldConfig.battleNetComm.realmId,
+        static_cast<uint16_t>(m_owner->GetMapId()),
+        0);
+    const std::vector<uint8_t> packedGuid = modernGuid.packModern();
+    m_destroyIds.append(packedGuid.data(), packedGuid.size());
+    ++m_destroyIdCount;
+#else
+    // Legacy clients use their existing explicit destroy packet paths.
+    m_owner->sendDestroyObjectPacket(guid.getRawGuid());
+#endif
+
+    internalUpdateMapMgr();
+}
+
 void UpdateManager::pushOutOfRangeGuid(const WoWGuid& guid)
 {
     std::lock_guard update_guard(m_mutexUpdateBuffer);
@@ -67,7 +105,19 @@ void UpdateManager::pushOutOfRangeGuid(const WoWGuid& guid)
         m_owner->sendDestroyObjectPacket(guid.getRawGuid());
 #endif
 
+#if defined(AE_FOREVER)
+    // Use the same modern GUID identity as CREATE_OBJECT/VALUES. Do not depend
+    // on a recipient/session here; the UpdateManager owner/map is stable.
+    const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(
+        guid.getRawGuid(),
+        worldConfig.battleNetComm.realmId,
+        static_cast<uint16_t>(m_owner->GetMapId()),
+        0);
+    const std::vector<uint8_t> packedGuid = modernGuid.packModern();
+    m_outOfRangeIds.append(packedGuid.data(), packedGuid.size());
+#else
     m_outOfRangeIds << guid;
+#endif
     ++m_outOfRangeIdCount;
 
     internalUpdateMapMgr();
@@ -113,23 +163,62 @@ void UpdateManager::queueDelayedPacket(std::unique_ptr<WorldPacket> packet)
 
 size_t UpdateManager::calculateBufferSize() const
 {
+#if defined(AE_FOREVER)
+    // UpdateData may contain create/value blocks and out-of-range GUIDs in one
+    // packet, so account for all pending buffers instead of only the larger one.
+    return 32 + m_creationBuffer.size() + m_updateBuffer.size() + m_destroyIds.size() + m_outOfRangeIds.size();
+#else
     const size_t base_size = 10 + (m_outOfRangeIds.size() * 9);
 
     if (m_creationBuffer.size() > m_updateBuffer.size())
         return m_creationBuffer.size() + base_size;
 
     return m_updateBuffer.size() + base_size;
+#endif
 }
 
 bool UpdateManager::readyForUpdate() const
 {
-    return m_creationBuffer.size() != 0 || m_updateBuffer.size() != 0 || m_outOfRangeIds.size() != 0 || !m_delayedPackets.empty();
+    return m_creationBuffer.size() != 0 || m_updateBuffer.size() != 0 || m_destroyIds.size() != 0 || m_outOfRangeIds.size() != 0 || !m_delayedPackets.empty();
 }
 
 void UpdateManager::internalProcessPendingUpdates()
 {
     if (!readyForUpdate())
         return;
+
+#if defined(AE_FOREVER)
+    {
+        ByteBuffer updateBlocks(m_creationBuffer.size() + m_updateBuffer.size());
+        if (m_creationBuffer.size() != 0)
+            updateBlocks.append(m_creationBuffer);
+        if (m_updateBuffer.size() != 0)
+            updateBlocks.append(m_updateBuffer);
+
+        const uint32_t updateCount = m_creationCount + m_updateCount;
+        const std::vector<uint8_t> packet =
+            AscEmu::Version::Forever::ObjectUpdate::buildUpdateObjectPacket(static_cast<uint16_t>(m_owner->GetMapId()), updateCount, std::span<const uint8_t>(updateBlocks.contents(), updateBlocks.size()), m_destroyIdCount, std::span<const uint8_t>(m_destroyIds.contents(), m_destroyIds.size()), m_outOfRangeIdCount, std::span<const uint8_t>(m_outOfRangeIds.contents(), m_outOfRangeIds.size()));
+
+        if (!packet.empty())
+        {
+            WorldSocket* const socket = m_owner->getSession()->GetForeverInstanceSocket();
+            if (socket && socket->isConnected())
+                socket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_UPDATE_OBJECT, packet.data(), static_cast<uint32_t>(packet.size()));
+        }
+
+        m_creationBuffer.clear();
+        m_updateBuffer.clear();
+        m_destroyIds.clear();
+        m_outOfRangeIds.clear();
+        m_creationCount = 0;
+        m_updateCount = 0;
+        m_destroyIdCount = 0;
+        m_outOfRangeIdCount = 0;
+        m_processPending = false;
+        internalSendDelayedPackets();
+        return;
+    }
+#endif
 
     ByteBuffer buffer(calculateBufferSize());
 
@@ -173,7 +262,7 @@ void UpdateManager::internalProcessPendingUpdates()
 
         if (!sent_packet)
             m_owner->getSession()->OutPacket(SMSG_UPDATE_OBJECT, uint16_t(buffer.wpos()), buffer.contents());
-}
+    }
 
     if (m_updateBuffer.size() > 0)
     {

@@ -1630,7 +1630,7 @@ namespace AscEmu::Battlenet
 
         sLogger.debug("BNet: connection #{} ConnectionService.RequestDisconnect -> token={}, error_code={}, payload={} byte(s)", m_connectionId, token, errorCode, payloadSize);
 
-        // Match Midnight protocol reference's ConnectionService::HandleRequestDisconnect:
+        // Match the modern protocol reference's ConnectionService::HandleRequestDisconnect:
         // first issue ForceDisconnect(DisconnectNotification), then return the
         // RequestDisconnect response, and only close after queued writes drain.
         std::vector<uint8_t> notification;

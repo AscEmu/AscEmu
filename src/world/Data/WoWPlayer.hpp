@@ -15,6 +15,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WoWUnit.hpp"
 
+#include "WoWGuid.hpp"
+#include <array>
+#include <cstdint>
+#include <map>
+#include <optional>
+#include <string>
+#include <vector>
 #pragma pack(push, 1)
 
 union player_bytes_union
@@ -968,5 +975,215 @@ struct WoWPlayer : WoWUnit
     uint32_t override_zone_pvp_type;
     uint32_t item_level_delta;
 };
+#elif defined(AE_FOREVER)
+// Temporary legacy descriptor storage used by the old AscEmu field-offset core while Forever is migrated.
+// Do not use this layout as the Forever wire schema.
+static inline constexpr uint8_t WOWPLAYER_EXPLORED_ZONES_COUNT = 200;
+static inline constexpr uint8_t WOWPLAYER_WEAPON_DMG_MULTIPLIER_COUNT = 3;
+static inline constexpr uint8_t WOWPLAYER_SPELL_SCHOOL_COUNT = 7;
+static inline constexpr uint8_t WOWPLAYER_BUY_BACK_COUNT = 12;
+static inline constexpr uint8_t WOWPLAYER_ARENA_TEAM_SLOTS = 3;
+static inline constexpr uint8_t WOWPLAYER_DAILY_QUESTS_COUNT = 25;
+static inline constexpr uint8_t WOWPLAYER_QUEST_COUNT = 50;
+static inline constexpr uint8_t WOWPLAYER_QUEST_UNUSED_COUNT = 10;
+static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_COUNT = 19;
+static inline constexpr uint8_t WOWPLAYER_INVENTORY_SLOT_COUNT = 23;
+static inline constexpr uint8_t WOWPLAYER_PACK_SLOT_COUNT = 16;
+static inline constexpr uint8_t WOWPLAYER_BANK_SLOT_COUNT = 28;
+static inline constexpr uint8_t WOWPLAYER_BANK_BAG_SLOT_COUNT = 7;
+static inline constexpr uint8_t WOWPLAYER_KEYRING_SLOT_COUNT = 32;
+static inline constexpr uint8_t WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT = 32;
+static inline constexpr uint8_t WOWPLAYER_KNOWN_TITLES_SIZE = 5;
+static inline constexpr uint16_t WOWPLAYER_SKILL_INFO_COUNT = 448;
+static inline constexpr uint8_t WOWPLAYER_COMBAT_RATING_COUNT = 27;
+static inline constexpr uint8_t WOWPLAYER_RUNE_REGEN_COUNT = 4;
+static inline constexpr uint8_t WOWPLAYER_NO_REAGENT_COST_COUNT = 4;
+static inline constexpr uint8_t WOWPLAYER_GLYPH_SLOT_COUNT = 6;
+static inline constexpr uint8_t WOWPLAYER_RESEARCHING_COUNT = 8;
+static inline constexpr uint8_t WOWPLAYER_PROFESSION_SKILL_COUNT = 2;
+
+union player_bytes_3_union
+{
+    struct parts
+    {
+        uint8_t gender;
+        uint8_t drunk_value;
+        uint8_t pvp_rank;
+        uint8_t arena_faction;
+    } s;
+    uint32_t raw;
+};
+
+union player_field_bytes_union
+{
+    struct parts
+    {
+        uint8_t misc_flags;
+        uint8_t raf_level; // not used
+        uint8_t enabled_action_bars;
+        uint8_t max_pvp_rank; // not used
+    } s;
+    uint32_t raw;
+};
+
+// 15 fields per slot, 50 slots (750 fields in total)
+struct WoWPlayer_Quest
+{
+    uint32_t quest_id;
+    uint32_t state;
+    uint64_t required_mob_or_go;
+    uint32_t expire_time;
+    std::array<uint32_t, WOWPLAYER_QUEST_UNUSED_COUNT> unused;
+};
+
+struct WoWPlayer_VisibleItem
+{
+    uint32_t entry;
+    union enchantment_union
+    {
+        struct parts
+        {
+            uint16_t perm_enchantment;
+            uint16_t temp_enchantment;
+        } enchantment_field_parts;
+        std::array<uint16_t, 2> raw;
+    } enchantment;
+};
+
+//\todo: guessed structure
+struct WoWPlayer_ArenaTeamInfo
+{
+    uint32_t team_id;
+    uint32_t type;
+    uint32_t member_rank;
+    uint32_t games_week;
+    uint32_t games_season;
+    uint32_t wins_season;
+    uint32_t personal_rating;
+    uint32_t unk;
+};
+
+struct WoWPlayer : WoWUnit
+{
+    uint64_t duel_arbiter;
+    uint32_t player_flags;
+    uint32_t guild_rank;
+    uint32_t guild_delete_date;
+    uint32_t guild_level;
+    player_bytes_union player_bytes;
+    player_bytes_2_union player_bytes_2;
+    player_bytes_3_union player_bytes_3;
+    uint32_t duel_team;
+    uint32_t guild_timestamp;
+    std::array<WoWPlayer_Quest, WOWPLAYER_QUEST_COUNT> quests;
+    std::array<WoWPlayer_VisibleItem, WOWPLAYER_VISIBLE_ITEM_COUNT> visible_items;
+    uint32_t chosen_title;
+    uint32_t unknownU8_1_69913;
+    uint32_t virtual_player_realm;
+    uint32_t current_spec_id;
+    uint32_t taxi_mount_anim_kit_id;
+    uint32_t current_battle_pet_breed_quality;
+    std::array<uint64_t, WOWPLAYER_INVENTORY_SLOT_COUNT> inventory_slot;
+    std::array<uint64_t, WOWPLAYER_PACK_SLOT_COUNT> pack_slot;
+    std::array<uint64_t, WOWPLAYER_BANK_SLOT_COUNT> bank_slot;
+    std::array<uint64_t, WOWPLAYER_BANK_BAG_SLOT_COUNT> bank_bag_slot;
+    std::array<uint64_t, WOWPLAYER_BUY_BACK_COUNT> vendor_buy_back_slot;
+    uint64_t farsight_guid;
+    std::array<uint64_t, WOWPLAYER_KNOWN_TITLES_SIZE> field_known_titles;
+    uint64_t field_coinage;
+    uint32_t xp;
+    uint32_t next_level_xp;
+
+    union skill_info_union
+    {
+        std::array<uint32_t, WOWPLAYER_SKILL_INFO_COUNT> skill_id;
+        struct parts
+        {
+            std::array<uint32_t, 64> skill_line;
+            std::array<uint32_t, 64> skill_step;
+            std::array<uint32_t, 64> skill_rank;
+            std::array<uint32_t, 64> skill_starting_rank;
+            std::array<uint32_t, 64> skill_max_rank;
+            std::array<uint32_t, 64> skill_mod;
+            std::array<uint32_t, 64> skill_talent;
+        } skill_info_parts;
+    } field_skill_info;
+
+    uint32_t character_points_1;
+    uint32_t max_talent_tiers;
+    uint32_t track_creatures;
+    uint32_t track_resources;
+    uint32_t expertise;
+    uint32_t offhand_expertise;
+    uint32_t ranged_expertise;
+    uint32_t combat_rating_expertise;
+    float block_pct;
+    float dodge_pct;
+    float parry_pct;
+    float crit_pct;
+    float ranged_crit_pct;
+    float offhand_crit_pct;
+    std::array<float, WOWPLAYER_SPELL_SCHOOL_COUNT> spell_crit_pct;
+    uint32_t shield_block;
+    float shield_block_crit_pct;
+    uint32_t mastery;
+    uint32_t pvp_power_damage;
+    uint32_t pvp_power_healing;
+    std::array<uint32_t, WOWPLAYER_EXPLORED_ZONES_COUNT> explored_zones;
+    uint32_t rest_state_xp;
+    std::array<uint32_t, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_positive;
+    std::array<uint32_t, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_negative;
+    std::array<float, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_pct;
+    uint32_t field_mod_healing_done;
+    float field_mod_healing_pct;
+    float field_mod_healing_done_pct;
+    float field_mod_periodic_healing_done_pct;
+    std::array<float, WOWPLAYER_WEAPON_DMG_MULTIPLIER_COUNT> weapon_dmg_multiplier;
+    float mod_spell_power_pct;
+    float mod_resilience_pct;
+    float override_spell_power_by_ap_pct;
+    float override_ap_by_spell_power_pct;
+    uint32_t field_mod_target_resistance;
+    uint32_t field_mod_target_physical_resistance;
+    player_field_bytes_union player_field_bytes;
+    uint32_t self_resurrection_spell;
+    uint32_t field_pvp_medals;
+    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_price;
+    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_timestamp;
+    union field_kills_union
+    {
+        struct parts
+        {
+            uint16_t kills_today;
+            uint16_t kills_yesterday;
+        } kills_field_parts;
+        uint32_t raw;
+    } field_kills;
+    uint32_t field_lifetime_honorable_kills;
+    uint32_t field_watched_faction_idx;
+    std::array<uint32_t, WOWPLAYER_COMBAT_RATING_COUNT> field_combat_rating;
+    std::array<WoWPlayer_ArenaTeamInfo, WOWPLAYER_ARENA_TEAM_SLOTS> field_arena_team_info;
+    uint32_t field_max_level;
+    std::array<float, WOWPLAYER_RUNE_REGEN_COUNT> rune_regen;
+    std::array<uint32_t, WOWPLAYER_NO_REAGENT_COST_COUNT> no_reagent_cost;
+    std::array<uint32_t, WOWPLAYER_GLYPH_SLOT_COUNT> field_glyph_slots;
+    std::array<uint32_t, WOWPLAYER_GLYPH_SLOT_COUNT> field_glyphs;
+    uint32_t glyphs_enabled;
+    uint32_t pet_spell_power;
+    std::array<uint32_t, WOWPLAYER_RESEARCHING_COUNT> researching;
+    std::array<uint32_t, WOWPLAYER_PROFESSION_SKILL_COUNT> profession_skill_line;
+    float ui_hit_mod;
+    float ui_hit_spell_mod;
+    uint32_t ui_home_realm_time_offset;
+    float mod_pet_haste;
+    uint64_t summoned_battle_pet_guid;
+    uint32_t override_spell_id;
+    uint32_t lfg_bonus_faction_id;
+    uint32_t loot_spec_id;
+    uint32_t override_zone_pvp_type;
+    uint32_t item_level_delta;
+};
 #endif
 #pragma pack(pop)
+
+

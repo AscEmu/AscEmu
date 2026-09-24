@@ -290,6 +290,102 @@ namespace WDB::Structures
         uint32_t power{0};
     };
 
+    struct ChrModelEntry
+    {
+        uint32_t id{0};
+        int8_t sex{0};
+        uint32_t displayId{0};
+    };
+
+    struct ChrRaceXChrModelEntry
+    {
+        uint32_t id{0};
+        uint8_t chrRacesId{0};
+        int32_t chrModelId{0};
+        int8_t sex{0};
+        int32_t allowedTransmogSlots{0};
+    };
+
+#if defined(AE_FOREVER)
+    struct ChrCustomizationChoiceEntry
+    {
+        uint32_t id{0};
+        uint32_t optionId{0};
+        int32_t reqId{0};
+        int32_t visReqId{0};
+        uint16_t sortOrder{0};
+        uint16_t uiOrderIndex{0};
+        int32_t flags{0};
+        int32_t addedInPatch{0};
+        int32_t soundKitId{0};
+        std::array<int32_t, 2> swatchColor{};
+    };
+
+    struct ChrCustomizationDisplayInfoEntry
+    {
+        uint32_t id{0};
+        int32_t shapeshiftFormId{0};
+        int32_t displayId{0};
+        float barberShopMinCameraDistance{0.0f};
+        float barberShopHeightOffset{0.0f};
+        float barberShopCameraZoomOffset{0.0f};
+    };
+
+    struct ChrCustomizationElementEntry
+    {
+        uint32_t id{0};
+        int32_t choiceId{0};
+        int32_t relatedChoiceId{0};
+        int32_t geosetId{0};
+        int32_t skinnedModelId{0};
+        int32_t materialId{0};
+        int32_t boneSetId{0};
+        int32_t condModelId{0};
+        int32_t displayInfoId{0};
+        int32_t itemGeoModifyId{0};
+        int32_t voiceId{0};
+        int32_t animKitId{0};
+        int32_t particleColorId{0};
+        int32_t geoComponentLinkId{0};
+    };
+
+    struct ChrCustomizationOptionEntry
+    {
+        uint32_t id{0};
+        uint16_t secondaryId{0};
+        int32_t flags{0};
+        uint32_t chrModelId{0};
+        int32_t sortIndex{0};
+        int32_t categoryId{0};
+        int32_t optionType{0};
+        float barberShopCostModifier{0.0f};
+        int32_t chrCustomizationId{0};
+        int32_t reqId{0};
+        int32_t uiOrderIndex{0};
+        int32_t addedInPatch{0};
+    };
+
+    struct ChrCustomizationReqEntry
+    {
+        uint32_t id{0};
+        int32_t flags{0};
+        int32_t classMask{0};
+        int32_t regionGroupMask{0};
+        int32_t achievementId{0};
+        int32_t questId{0};
+        int32_t overrideArchive{0};
+        int32_t itemModifiedAppearanceId{0};
+        std::array<int32_t, 2> raceMask{};
+    };
+
+    struct ChrCustomizationReqChoiceEntry
+    {
+        uint32_t id{0};
+        int32_t choiceId{0};
+        uint32_t reqId{0};
+    };
+#endif
+
     struct ChrRacesEntry
     {
         uint32_t raceId = 0;
@@ -1031,12 +1127,16 @@ namespace WDB::Structures
         //uint32_t rewardName_flags;                                // 59
         uint32_t count;                                             // 60
         uint32_t refAchievement;                                    // 61
-#if VERSION_STRING >= Mop
+#if VERSION_STRING == Mop
+        uint32_t criteriaTreeID;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
         uint32_t criteriaTreeID;
 #endif
     };
 #endif
 
+#if VERSION_STRING >= WotLK
     struct CurrencyTypesEntry
     {
         //uint32_t ID;                                              // 0 not used
@@ -1057,6 +1157,7 @@ namespace WDB::Structures
         //char* description;                                        // 10
 #endif
     };
+#endif
 
 #if VERSION_STRING >= WotLK
     struct DungeonEncounterEntry
@@ -1172,6 +1273,7 @@ namespace WDB::Structures
         float ratio;                                                // 0 regen base
     };
 
+#if VERSION_STRING >= Cata
     struct GtOCTBaseHPByClassEntry
     {
         float ratio;
@@ -1182,7 +1284,6 @@ namespace WDB::Structures
         float ratio;
     };
 
-#if VERSION_STRING >= Cata
     struct GtOCTClassCombatRatingScalarEntry
     {
         float val;                                                  // 0
@@ -1462,6 +1563,9 @@ namespace WDB::Structures
         uint32_t multiplier[20];
 #elif VERSION_STRING == Mop
         uint32_t multiplier[47];
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+        uint32_t multiplier[47];
 #else
         uint32_t shoulderBudget;                                    // 2
         uint32_t trinketBudget;                                     // 3
@@ -1581,6 +1685,9 @@ namespace WDB::Structures
     struct SpellAuraOptionsEntry
     {
 #if VERSION_STRING == Mop
+    uint32_t Id;                                                // 0
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     uint32_t Id;                                                // 0
 #endif
     uint32_t MaxStackAmount;                                    // 1
@@ -1746,6 +1853,11 @@ namespace WDB::Structures
     uint32_t spellId;
     //uint32_t RaidDifficulty;
     uint32_t powerType;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    uint32_t spellId;
+    //uint32_t RaidDifficulty;
+    uint32_t powerType;
 #endif
     uint32_t manaCost;                                          // 1
     uint32_t manaCostPerlevel;                                  // 2
@@ -1757,6 +1869,10 @@ namespace WDB::Structures
     //uint32_t PowerDisplayId;                                  // 6
     float ManaCostPercentageFloat;                              // 7
 #if VERSION_STRING == Mop
+    float ChannelCostPercentageFloat;
+    uint32_t ShapeShiftSpellId;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     float ChannelCostPercentageFloat;
     uint32_t ShapeShiftSpellId;
 #endif
@@ -1855,6 +1971,39 @@ namespace WDB::Structures
 
         //uint32_t SpellPowerId;                                      // 42 SpellPower.dbc
     };
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    struct SpellMiscEntry
+    {
+        uint32_t Id;                                                // 0
+        uint32_t SpellDifficultyId;
+        uint32_t Attributes;                                        // 1
+        uint32_t AttributesEx;                                      // 2
+        uint32_t AttributesExB;                                     // 3
+        uint32_t AttributesExC;                                     // 4
+        uint32_t AttributesExD;                                     // 5
+        uint32_t AttributesExE;                                     // 6
+        uint32_t AttributesExF;                                     // 7
+        uint32_t AttributesExG;                                     // 8
+        uint32_t AttributesExH;                                     // 9
+        uint32_t AttributesExI;                                     // 10
+        uint32_t AttributesExJ;                                     // 11
+        uint32_t AttributesExK;
+        uint32_t AttributesExL;
+        uint32_t AttributesExM;
+        uint32_t CastingTimeIndex;                                  // 12
+        uint32_t DurationIndex;                                     // 13
+        //int32_t powerType;                                        // 14
+        uint32_t rangeIndex;                                        // 15
+        float speed;                                                // 16
+        uint32_t SpellVisual;                                       // 17
+        uint32_t SpellVisual1;                                      // 18
+        uint32_t spellIconID;                                       // 19
+        uint32_t activeIconID;                                      // 20
+        uint32_t School;                                            // 25
+
+        //uint32_t SpellPowerId;                                      // 42 SpellPower.dbc
+    };
 #endif
 
 #endif
@@ -1881,6 +2030,9 @@ namespace WDB::Structures
         uint32_t frostRuneCost;                                     // 2
         uint32_t unholyRuneCost;                                    // 3
 #if VERSION_STRING == Mop
+        uint32_t deathRuneCost;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
         uint32_t deathRuneCost;
 #endif
         uint32_t runePowerGain;                                     // 4
@@ -1998,6 +2150,10 @@ namespace WDB::Structures
 #if VERSION_STRING == Mop
         uint32_t playerClass;
         uint32_t overrideSpellId;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+        uint32_t playerClass;
+        uint32_t overrideSpellId;
 #endif
     };
 
@@ -2021,6 +2177,16 @@ namespace WDB::Structures
     };
 
 #if VERSION_STRING == Mop
+    struct ChrSpecializationEntry
+    {
+        uint32_t Id;                                                // 0
+        uint32_t classId;                                           // 2
+        uint32_t masterySpellId;                                    // 3
+        uint32_t tabPage;                                           // 5
+        uint32_t petTabPage;                                        // 6
+    };
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     struct ChrSpecializationEntry
     {
         uint32_t Id;                                                // 0
@@ -2759,6 +2925,123 @@ namespace WDB::Structures
     typedef std::map<uint32_t, SpellEffect> SpellEffectMap;
 #endif
 #if VERSION_STRING == Mop
+
+    struct SpellEntry
+    {
+        uint32_t Id;                                                // 0
+        const char* Name;                                           // 1
+        const char* Rank;                                           // 2
+        //char* Description;                                        // 3 not used
+        //char* BuffDescription;                                    // 4 not used
+        uint32_t RuneCostID;                                        // 5
+        //uint32_t spellMissileID;                                  // 6
+        //uint32_t spellDescriptionVariableID;                      // 7
+        float AttackPowerCoefficient;                               // 8
+        uint32_t SpellScalingId;                                    // 9 SpellScaling.dbc
+        uint32_t SpellAuraOptionsId;                                // 10 SpellAuraOptions.dbc
+        uint32_t SpellAuraRestrictionsId;                           // 11 SpellAuraRestrictions.dbc
+        uint32_t SpellCastingRequirementsId;                        // 12 SpellCastingRequirements.dbc
+        uint32_t SpellCategoriesId;                                 // 13 SpellCategories.dbc
+        uint32_t SpellClassOptionsId;                               // 14 SpellClassOptions.dbc
+        uint32_t SpellCooldownsId;                                  // 15 SpellCooldowns.dbc
+        uint32_t SpellEquippedItemsId;                              // 16 SpellEquippedItems.dbc
+        uint32_t SpellInterruptsId;                                 // 17 SpellInterrupts.dbc
+        uint32_t SpellLevelsId;                                     // 18 SpellLevels.dbc
+        uint32_t SpellReagentsId;                                   // 19 SpellReagents.db2
+        uint32_t SpellShapeshiftId;                                 // 20 SpellShapeshift.dbc
+        uint32_t SpellTargetRestrictionsId;                         // 21 SpellTargetRestrictions.dbc
+        uint32_t SpellTotemsId;                                     // 22 SpellTotems.dbc
+        uint32_t ResearchProject;                                   // 23 ResearchProject.dbc
+        uint32_t SpellMiscId;                                       // 24 SpellMisc.dbc
+
+        // struct access functions
+        SpellAuraOptionsEntry const* GetSpellAuraOptions() const;
+        SpellAuraRestrictionsEntry const* GetSpellAuraRestrictions() const;
+        SpellCastingRequirementsEntry const* GetSpellCastingRequirements() const;
+        SpellCategoriesEntry const* GetSpellCategories() const;
+        SpellClassOptionsEntry const* GetSpellClassOptions() const;
+        SpellCooldownsEntry const* GetSpellCooldowns() const;
+        SpellEffectEntry const* GetSpellEffect(uint8_t eff) const;
+        SpellEquippedItemsEntry const* GetSpellEquippedItems() const;
+        SpellInterruptsEntry const* GetSpellInterrupts() const;
+        SpellLevelsEntry const* GetSpellLevels() const;
+        SpellPowerEntry const* GetSpellPower() const;
+        //SpellReagentsEntry const* GetSpellReagents() const;
+        SpellScalingEntry const* GetSpellScaling() const;
+        SpellShapeshiftEntry const* GetSpellShapeshift() const;
+        SpellTargetRestrictionsEntry const* GetSpellTargetRestrictions() const;
+        SpellTotemsEntry const* GetSpellTotems() const;
+        SpellMiscEntry const* GetSpellMisc() const;
+
+        // single fields
+        uint32_t GetManaCost() const;
+        uint32_t GetPreventionType() const;
+        uint32_t GetCategory() const;
+        uint32_t GetStartRecoveryTime() const;
+        uint32_t GetMechanic() const;
+        uint32_t GetRecoveryTime() const;
+        uint32_t GetCategoryRecoveryTime() const;
+        uint32_t GetStartRecoveryCategory() const;
+        uint32_t GetSpellLevel() const;
+        int32_t GetEquippedItemClass() const;
+        uint32_t GetSpellFamilyName() const;
+        uint32_t GetDmgClass() const;
+        uint32_t GetDispel() const;
+        uint32_t GetMaxAffectedTargets() const;
+        uint32_t GetStackAmount() const;
+        uint32_t GetManaCostPercentage() const;
+        uint32_t GetProcCharges() const;
+        uint32_t GetProcChance() const;
+        uint32_t GetMaxLevel() const;
+        uint32_t GetTargetAuraState() const;
+        uint32_t GetManaPerSecond() const;
+        uint32_t GetRequiresSpellFocus() const;
+        uint32_t GetSpellEffectIdByIndex(uint8_t index) const;
+        uint32_t GetAuraInterruptFlags() const;
+        uint32_t GetEffectImplicitTargetAByIndex(uint8_t index) const;
+        int32_t GetAreaGroupId() const;
+        uint32_t GetFacingCasterFlags() const;
+        uint32_t GetBaseLevel() const;
+        uint32_t GetInterruptFlags() const;
+        uint32_t GetTargetCreatureType() const;
+        int32_t GetEffectMiscValue(uint8_t index) const;
+        uint32_t GetStances() const;
+        uint32_t GetStancesNot() const;
+        uint32_t GetProcFlags() const;
+        uint32_t GetChannelInterruptFlags() const;
+        uint32_t GetManaCostPerLevel() const;
+        uint32_t GetCasterAuraState() const;
+        uint32_t GetTargets() const;
+        uint32_t GetEffectApplyAuraNameByIndex(uint8_t index) const;
+
+    private:
+        SpellEntry(SpellEntry const&);
+    };
+
+#pragma pack(pop)
+
+    typedef std::set<uint32_t> SpellCategorySet;
+    typedef std::map<uint32_t, SpellCategorySet> SpellCategoryStore;
+
+    struct SpellEffect
+    {
+        SpellEffect()
+        {
+            effects[0] = nullptr;
+            effects[1] = nullptr;
+            effects[2] = nullptr;
+        }
+
+        SpellEffectEntry const* effects[32];
+    };
+
+    typedef std::map<uint32_t, SpellEffect> SpellEffectMap;
+
+    // SpellPower.dbc is keyed by its own row id on Mop; the spell it belongs to is the
+    // spellId column, so like SpellEffect it needs a spell id -> row helper map.
+    typedef std::map<uint32_t, SpellPowerEntry const*> SpellPowerMap;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
 
     struct SpellEntry
     {

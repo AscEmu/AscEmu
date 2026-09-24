@@ -41,8 +41,16 @@ public:
     // WoWData
 private:
     const WoWDynamicObject* dynamicObjectData() const { return reinterpret_cast<WoWDynamicObject*>(wow_data); }
+#if defined(AE_FOREVER)
+    AscEmu::Version::Forever::Fields::DynamicObjectData m_foreverDynamicObjectFields{};
+#endif
 
 public:
+#if defined(AE_FOREVER)
+    AscEmu::Version::Forever::Fields::DynamicObjectData& foreverDynamicObjectFields() { return m_foreverDynamicObjectFields; }
+    AscEmu::Version::Forever::Fields::DynamicObjectData const& foreverDynamicObjectFields() const { return m_foreverDynamicObjectFields; }
+#endif
+
     uint64_t getCasterGuid() const;
     void setCasterGuid(uint64_t guid);
 

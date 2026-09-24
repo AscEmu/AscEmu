@@ -16,6 +16,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldSession.h"
 #include "Utilities/Random.hpp"
 #include "Packets/CmsgAuthSession.h"
+#include "Objects/Units/Players/PlayerDefines.hpp"
+#include <algorithm>
+#include <array>
+#include <cstring>
+#include <string>
+#include <string_view>
+#include <vector>
 
 using namespace AscEmu::Packets;
 
@@ -143,7 +150,11 @@ WorldSocket::~WorldSocket()
 
     if (m_session)
     {
+#if !defined(AE_FOREVER)
         m_session->SetSocket(nullptr);
+#else
+        m_session->ClearForeverSocket(this);
+#endif
         m_session = nullptr;
     }
 }
@@ -152,6 +163,12 @@ WorldSocket::~WorldSocket()
 // virtual functions (Socket)
 void WorldSocket::onRead()
 {
+    // Give a selected version-specific transport first chance to consume the
+    // socket. Legacy framing below stays version-agnostic.
+    if (processVersionedRead())
+        return;
+
+#if !defined(AE_MODERN_CLIENT)
     for (;;)
     {
         if (m_remaining == 0 && !processHeader())
@@ -172,12 +189,16 @@ void WorldSocket::onRead()
 
         dispatchPacket(std::move(packet));
     }
+#endif
 }
 
 void WorldSocket::onConnect()
 {
     sWorld.increaseAcceptedConnections();
     m_latency = Util::getMSTime();
+
+    if (initializeVersionedConnection())
+        return;
 
     if (m_protocolSetByLogonComm)
     {
@@ -230,7 +251,11 @@ void WorldSocket::onDisconnect()
 
     if (m_session)
     {
+#if !defined(AE_FOREVER)
         m_session->SetSocket(nullptr);
+#else
+        m_session->ClearForeverSocket(this);
+#endif
         m_session = nullptr;
     }
 
@@ -261,7 +286,6 @@ WoW::ClientProtocol WorldSocket::getClientProtocol()
 
 void WorldSocket::setCurrentVersionAsProtocol()
 {
-    // Fallback when client version is not set by client information
     setClientProtocol(WoW::ClientProtocol{.expansion = WoW::getServerExpansion()});
 }
 
@@ -274,6 +298,12 @@ void WorldSocket::setClientProtocolByBuild(uint32_t build)
 // packet sending SERVER->CLIENT
 void WorldSocket::outPacket(uint32_t opcode, size_t len, const void* data)
 {
+    if (m_protocol.isForever())
+    {
+        sLogger.warning("WorldSocket::Forever: blocked legacy outPacket opcode=0x{:04X} payload={}.", opcode, len);
+        return;
+    }
+
     if ((len + 10) > WORLDSOCKET_SENDBUF_SIZE)
     {
         sLogger.failure("WARNING: Tried to send a packet of {} bytes (which is too large) to a socket. Opcode was: {} (0x{:03X})",
@@ -297,6 +327,12 @@ void WorldSocket::outPacket(uint32_t opcode, size_t len, const void* data)
 
 uint8_t WorldSocket::_outPacket(uint32_t opcode, size_t len, const void* data)
 {
+    if (m_protocol.isForever())
+    {
+        sLogger.warning("WorldSocket::Forever: blocked legacy _outPacket opcode=0x{:04X} payload={}.", opcode, len);
+        return OUTPACKET_RESULT_SUCCESS;
+    }
+
     if (!isConnected())
         return OUTPACKET_RESULT_NOT_CONNECTED;
 
@@ -407,6 +443,9 @@ void WorldSocket::updateQueuedPackets()
 void WorldSocket::sendPacket(WorldPacket* packet)
 {
     if (!packet)
+        return;
+
+    if (sendVersionedPacket(packet))
         return;
 
     outPacket(packet->getOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : nullptr));

@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <regex>
 
 #include "Storage/MySQLDataStore.hpp"
-#include "Server/ClientProtocol.hpp"
 
 #include "Chat/ChatDefines.hpp"
 #include "Logging/Log.hpp"
@@ -43,7 +42,7 @@ void MySQLDataStore::finalize()
     _professionDiscoveryStore.clear();
 }
 
-static std::vector<std::string> ascemuTables = { "achievement_reward", "ai_threattospellid", "areatriggers", "auctionhouse", "battlemasters", "creature_ai_scripts", "creature_difficulty", "creature_formations", "creature_group_spawn", "creature_initial_equip", "creature_movement_override", "creature_properties", "creature_properties_movement", "creature_quest_finisher", "creature_quest_starter", "creature_script_waypoints", "creature_spawns", "creature_timed_emotes", "creature_waypoints", "currency_creature_onkill", "display_bounding_boxes", "event_scripts", "fishing", "gameevent_properties", "gameobject_properties", "gameobject_quest_finisher", "gameobject_quest_item_binding", "gameobject_quest_pickup_binding", "gameobject_quest_starter", "gameobject_spawns", "gameobject_spawns_extra", "gameobject_spawns_overrides", "gameobject_teleports", "gossip_menu", "gossip_menu_items", "gossip_menu_option", "graveyards", "guild_rewards", "guild_xp_for_level", "instance_encounters", "item_pages", "item_properties", "item_quest_association", "item_randomprop_groups", "item_randomsuffix_groups", "itemset_linked_itemsetbonus", "lfg_dungeon_rewards", "locales_achievement_reward", "locales_creature", "locales_gameobject", "locales_gossip_menu_option", "locales_item", "locales_item_pages", "locales_npc_gossip_texts", "locales_npc_script_text", "locales_points_of_interest", "locales_quest", "locales_worldbroadcast", "locales_worldmap_info", "locales_worldstring_table", "loot_creatures", "loot_fishing", "loot_gameobjects", "loot_items", "loot_pickpocketing", "loot_skinning", "npc_gossip_properties", "npc_gossip_texts", "npc_script_text", "npc_spellclick_spells", "pet_level_abilities", "petdefaultspells", "player_classlevelstats", "player_levelstats", "player_xp_for_level", "playercreateinfo", "playercreateinfo_bars", "playercreateinfo_items", "playercreateinfo_skills", "playercreateinfo_spell_cast", "playercreateinfo_spell_learn", "points_of_interest", "professiondiscoveries", "quest_poi", "quest_poi_points", "quest_properties", "recall", "reputation_creature_onkill", "reputation_faction_onkill", "reputation_instance_onkill", "spawn_group_id", "spell_area", "spell_coefficient_override", "spell_custom_override", "spell_disable", "spell_disable_trainers", "spell_effects_override", "spell_ranks", "spell_required", "spell_teleport_coords", "spelloverride", "spelltargetconstraints", "totemdisplayids", "trainer_properties", "trainer_properties_spellset", "transport_data", "vehicle_accessories", "vehicle_seat_addon", "vendor_restrictions", "vendors", "weather", "wordfilter_character_names", "wordfilter_chat", "world_db_version", "worldbroadcast", "worldmap_info", "worldstate_templates", "worldstring_tables", "zoneguards" };
+static std::vector<std::string> ascemuTables = { "achievement_reward", "ai_threattospellid", "areatriggers", "auctionhouse", "battlemasters", "creature_ai_scripts", "creature_difficulty", "creature_formations", "creature_group_spawn", "creature_initial_equip", "creature_movement_override", "creature_properties", "creature_properties_movement", "creature_quest_finisher", "creature_quest_starter", "creature_script_waypoints", "creature_spawns", "creature_timed_emotes", "creature_waypoints", "display_bounding_boxes", "event_scripts", "fishing", "gameevent_properties", "gameobject_properties", "gameobject_quest_finisher", "gameobject_quest_item_binding", "gameobject_quest_pickup_binding", "gameobject_quest_starter", "gameobject_spawns", "gameobject_spawns_extra", "gameobject_spawns_overrides", "gameobject_teleports", "gossip_menu", "gossip_menu_items", "gossip_menu_option", "graveyards", "guild_rewards", "guild_xp_for_level", "instance_encounters", "item_pages", "item_properties", "item_quest_association", "item_randomprop_groups", "item_randomsuffix_groups", "itemset_linked_itemsetbonus", "lfg_dungeon_rewards", "locales_achievement_reward", "locales_creature", "locales_gameobject", "locales_gossip_menu_option", "locales_item", "locales_item_pages", "locales_npc_gossip_texts", "locales_npc_script_text", "locales_points_of_interest", "locales_quest", "locales_worldbroadcast", "locales_worldmap_info", "locales_worldstring_table", "loot_creatures", "loot_fishing", "loot_gameobjects", "loot_items", "loot_pickpocketing", "loot_skinning", "npc_gossip_properties", "npc_gossip_texts", "npc_script_text", "npc_spellclick_spells", "pet_level_abilities", "petdefaultspells", "player_classlevelstats", "player_levelstats", "player_xp_for_level", "playercreateinfo", "playercreateinfo_bars", "playercreateinfo_items", "playercreateinfo_skills", "playercreateinfo_spell_cast", "playercreateinfo_spell_learn", "points_of_interest", "professiondiscoveries", "quest_poi", "quest_poi_points", "quest_properties", "recall", "reputation_creature_onkill", "reputation_faction_onkill", "reputation_instance_onkill", "spawn_group_id", "spell_area", "spell_coefficient_override", "spell_custom_override", "spell_disable", "spell_disable_trainers", "spell_effects_override", "spell_ranks", "spell_required", "spell_teleport_coords", "spelloverride", "spelltargetconstraints", "totemdisplayids", "trainer_properties", "trainer_properties_spellset", "transport_data", "vehicle_accessories", "vehicle_seat_addon", "vendor_restrictions", "vendors", "weather", "wordfilter_character_names", "wordfilter_chat", "world_db_version", "worldbroadcast", "worldmap_info", "worldstate_templates", "worldstring_tables", "zoneguards" };
 
 void MySQLDataStore::loadAdditionalTableConfig()
 {
@@ -231,7 +230,7 @@ void MySQLDataStore::loadItemPropertiesTable()
     uint32_t item_count = 0;
 
     auto item_result = getWorldDBQuery("SELECT * FROM item_properties base "
-        "WHERE build=(SELECT MAX(build) FROM item_properties spec WHERE base.entry = spec.entry AND build <= %u)", WoW::getConfigBuild());
+        "WHERE build=(SELECT MAX(build) FROM item_properties spec WHERE base.entry = spec.entry AND build <= %u)", VERSION_STRING);
 
     if (item_result == nullptr)
     {
@@ -589,7 +588,7 @@ void MySQLDataStore::loadItemPropertiesSpellsTable()
     uint32_t spell_count = 0;
 
     auto item_result = getWorldDBQuery("SELECT * FROM item_properties_spells base "
-        "WHERE build=(SELECT MAX(build) FROM item_properties_spells spec WHERE base.entry = spec.entry AND build <= %u)", WoW::getConfigBuild());
+        "WHERE build=(SELECT MAX(build) FROM item_properties_spells spec WHERE base.entry = spec.entry AND build <= %u)", VERSION_STRING);
 
     if (item_result == nullptr)
     {
@@ -666,7 +665,7 @@ void MySQLDataStore::loadItemPropertiesStatsTable()
     uint32_t stat_count = 0;
 
     auto item_result = getWorldDBQuery("SELECT * FROM item_properties_stats base "
-        "WHERE build=(SELECT MAX(build) FROM item_properties_stats spec WHERE base.entry = spec.entry AND build <= %u)", WoW::getConfigBuild());
+        "WHERE build=(SELECT MAX(build) FROM item_properties_stats spec WHERE base.entry = spec.entry AND build <= %u)", VERSION_STRING);
 
     if (item_result == nullptr)
     {
@@ -792,7 +791,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         //  66         67        68          69          70          71          72          73         74         75
         "vehicleid, rooted, questitem1, questitem2, questitem3, questitem4, questitem5, questitem6, waypointid, gossipId FROM creature_properties base "
         //
-        "WHERE build=(SELECT MAX(build) FROM creature_properties buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", WoW::getConfigBuild());
+        "WHERE build=(SELECT MAX(build) FROM creature_properties buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", VERSION_STRING);
 
     if (creature_properties_result == nullptr)
     {
@@ -1156,7 +1155,7 @@ void MySQLDataStore::loadGameObjectPropertiesTable()
         "parameter_29, parameter_30, parameter_31, parameter_32, size, QuestItem1, QuestItem2, QuestItem3, QuestItem4, "
         //     45         46
         "QuestItem5, QuestItem6 FROM gameobject_properties base "
-        "WHERE build=(SELECT MAX(build) FROM gameobject_properties buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", WoW::getConfigBuild());
+        "WHERE build=(SELECT MAX(build) FROM gameobject_properties buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", VERSION_STRING);
 
     if (gameobject_properties_result == nullptr)
     {
@@ -1260,7 +1259,7 @@ void MySQLDataStore::loadGameObjectSpawnsExtraTable()
 {
     auto startTime = Util::TimeNow();
 
-    auto result = getWorldDBQuery("SELECT id, parent_rotation0, parent_rotation1, parent_rotation2, parent_rotation3 FROM gameobject_spawns_extra WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
+    auto result = getWorldDBQuery("SELECT id, parent_rotation0, parent_rotation1, parent_rotation2, parent_rotation3 FROM gameobject_spawns_extra WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
     if (!result)
     {
         sLogger.info("Loaded 0 gameobjectSpawnsExtra definitions. DB table `gameobject_spawns_extra` is empty.");
@@ -1302,7 +1301,7 @@ void MySQLDataStore::loadGameObjectSpawnsOverrideTable()
 {
     auto startTime = Util::TimeNow();
 
-    auto result = getWorldDBQuery("SELECT id, scale, faction, flags FROM gameobject_spawns_overrides WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
+    auto result = getWorldDBQuery("SELECT id, scale, faction, flags FROM gameobject_spawns_overrides WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
     if (!result)
     {
         sLogger.info("Loaded 0 gameobject overrides. DB table `gameobject_spawn_overrides` is empty.");
@@ -1337,11 +1336,11 @@ MySQLStructure::GameObjectSpawnOverrides const* MySQLDataStore::getGameObjectOve
 }
 
 //quests
+#if VERSION_STRING >= Cata
 void MySQLDataStore::loadCurrencyCreatureOnKillTable()
 {
     _currencyCreatureOnKillStore.clear();
 
-    // currencies exist since Cata
     if (!WoW::isDataLoadRequired(WoW::Expansion::_Cata))
         return;
 
@@ -1350,11 +1349,9 @@ void MySQLDataStore::loadCurrencyCreatureOnKillTable()
         return;
 
     uint32_t row_count = 0;
-
     do
     {
         Field* fields = result->fetch();
-
         const uint32_t creatureId = fields[0].asUint32();
         if (getCreatureProperties(creatureId) == nullptr)
         {
@@ -1392,13 +1389,9 @@ void MySQLDataStore::loadQuestPropertiesCurrenciesTable()
 {
     _questPropertiesCurrenciesStore.clear();
 
-    // currencies exist since Cata
-    if (!WoW::isDataLoadRequired(WoW::Expansion::_Cata))
-        return;
-
     auto result = getWorldDBQuery("SELECT entry, RewardCurrencyId1, RewardCurrencyId2, RewardCurrencyId3, RewardCurrencyId4, "
         "RewardCurrencyCount1, RewardCurrencyCount2, RewardCurrencyCount3, RewardCurrencyCount4 FROM quest_properties_currencies base "
-        "WHERE build=(SELECT MAX(build) FROM quest_properties_currencies buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", WoW::getConfigBuild());
+        "WHERE build=(SELECT MAX(build) FROM quest_properties_currencies buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", VERSION_STRING);
 
     if (result == nullptr)
         return;
@@ -1424,13 +1417,16 @@ void MySQLDataStore::loadQuestPropertiesCurrenciesTable()
 
     sLogger.info("MySQLDataLoads : Loaded {} quest_properties_currencies data.", row_count);
 }
+#endif
 
 void MySQLDataStore::loadQuestPropertiesTable()
 {
     auto startTime = Util::TimeNow();
     uint32_t quest_count = 0;
 
+#if VERSION_STRING >= Cata
     loadQuestPropertiesCurrenciesTable();
+#endif
 
 
               //                                  0       1     2      3       4          5        6          7              8                 9
@@ -1471,7 +1467,7 @@ void MySQLDataStore::loadQuestPropertiesTable()
         "completionemote4, completionemotedelay1, completionemotedelay2, completionemotedelay3, completionemotedelay4, completeemote, "
         //      145                   146              147
         "incompleteemote, iscompletedbyspelleffect, RewXPId FROM quest_properties base "
-        "WHERE build=(SELECT MAX(build) FROM quest_properties buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", WoW::getConfigBuild());
+        "WHERE build=(SELECT MAX(build) FROM quest_properties buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", VERSION_STRING);
 
     if (quest_result == nullptr)
     {
@@ -1651,7 +1647,7 @@ void MySQLDataStore::loadQuestPropertiesTable()
         questInfo.iscompletedbyspelleffect = fields[146].asUint32();
         questInfo.RewXPId = fields[147].asUint32();
 
-        // the currency store stays empty when currencies are not loaded for the configured expansion
+#if VERSION_STRING >= Cata
         const auto currencyRewardItr = _questPropertiesCurrenciesStore.find(entry);
         if (currencyRewardItr != _questPropertiesCurrenciesStore.end())
         {
@@ -1661,6 +1657,7 @@ void MySQLDataStore::loadQuestPropertiesTable()
                 questInfo.reward_currency_count[i] = currencyRewardItr->second.reward_currency_count[i];
             }
         }
+#endif
 
         ++quest_count;
     } while (quest_result->nextRow());
@@ -2296,7 +2293,7 @@ void MySQLDataStore::loadWorldMapInfoTable()
                                                             "area_name, flags, cooldown, lvl_mod_a, required_quest_A, required_quest_H, required_item, "
     //                                                              17              18              19                20
                                                             "heroic_keyid_1, heroic_keyid_2, viewingDistance, required_checkpoint FROM worldmap_info base "
-                                                            "WHERE build=(SELECT MAX(build) FROM worldmap_info buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", WoW::getConfigBuild());
+                                                            "WHERE build=(SELECT MAX(build) FROM worldmap_info buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", VERSION_STRING);
     if (worldmap_info_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `worldmap_info` is empty!");
@@ -2448,7 +2445,7 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
 
     //                                                          0     1        2
     auto totemdisplayids_result = WorldDatabase.query("SELECT race, totem, displayid FROM totemdisplayids base "
-        "WHERE build=(SELECT MAX(build) FROM totemdisplayids spec WHERE base.race = spec.race AND base.totem = spec.totem AND build <= %u)", WoW::getConfigBuild());
+        "WHERE build=(SELECT MAX(build) FROM totemdisplayids spec WHERE base.race = spec.race AND base.totem = spec.totem AND build <= %u)", VERSION_STRING);
 
     if (totemdisplayids_result == nullptr)
     {
@@ -2747,7 +2744,7 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
     //                                                             1     2      3      4          5          6         7           8
     auto player_create_info_result = WorldDatabase.query("SELECT race, class, mapID, zoneID, positionX, positionY, positionZ, orientation FROM playercreateinfo pi "
 
-        "WHERE build=(SELECT MAX(build) FROM playercreateinfo buildspecific WHERE pi.race = buildspecific.race AND pi.class = buildspecific.class AND build <= %u)", WoW::getConfigBuild());
+        "WHERE build=(SELECT MAX(build) FROM playercreateinfo buildspecific WHERE pi.race = buildspecific.race AND pi.class = buildspecific.class AND build <= %u)", VERSION_STRING);
     if (player_create_info_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `playercreateinfo` is empty!");
@@ -2785,7 +2782,7 @@ void MySQLDataStore::loadPlayerCreateInfoBars()
 {
 
     //                                                                 0     1      2        3      4     5
-    auto player_create_info_bars_result = WorldDatabase.query("SELECT race, class, button, action, type, misc FROM playercreateinfo_bars WHERE build = %u", WoW::getConfigBuild());
+    auto player_create_info_bars_result = WorldDatabase.query("SELECT race, class, button, action, type, misc FROM playercreateinfo_bars WHERE build = %u", VERSION_STRING);
 
     if (player_create_info_bars_result == nullptr)
     {
@@ -2818,7 +2815,7 @@ void MySQLDataStore::loadPlayerCreateInfoItems()
     auto startTime = Util::TimeNow();
 
     //                                                                   0     1       2       3       4
-    auto player_create_info_items_result = WorldDatabase.query("SELECT race, class, protoid, slotid, amount FROM playercreateinfo_items WHERE build = %u", WoW::getConfigBuild());
+    auto player_create_info_items_result = WorldDatabase.query("SELECT race, class, protoid, slotid, amount FROM playercreateinfo_items WHERE build = %u", VERSION_STRING);
 
     if (player_create_info_items_result == nullptr)
     {
@@ -2837,11 +2834,12 @@ void MySQLDataStore::loadPlayerCreateInfoItems()
         uint8_t _class = fields[1].asUint8();
         uint32_t item_id = fields[2].asUint32();
 
-        // items are validated against Item.dbc since Cata, against item_properties before
-        const bool isValidItem = WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata)
-                                     ? sItemStore.lookupEntry(item_id) != nullptr
-                                     : sMySQLStore.getItemProperties(item_id) != nullptr;
-        if (!isValidItem)
+#if VERSION_STRING < Cata
+        auto player_item = sMySQLStore.getItemProperties(item_id);
+#else
+        WDB::Structures::ItemEntry const* player_item = sItemStore.lookupEntry(item_id);
+#endif
+        if (player_item == nullptr)
         {
             sLogger.failure("Table `old_playercreateinfo_items` includes invalid item {}", item_id);
             continue;
@@ -2981,7 +2979,7 @@ void MySQLDataStore::loadPlayerCreateInfoSpellCast()
     auto startTime = Util::TimeNow();
 
     //                                                                      0         1         2
-    auto player_create_info_spells_result = WorldDatabase.query("SELECT raceMask, classMask, spellid FROM playercreateinfo_spell_cast WHERE build = %u", WoW::getConfigBuild());
+    auto player_create_info_spells_result = WorldDatabase.query("SELECT raceMask, classMask, spellid FROM playercreateinfo_spell_cast WHERE build = %u", VERSION_STRING);
 
     if (player_create_info_spells_result == nullptr)
     {
@@ -3034,8 +3032,26 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
 {
     auto startTime = Util::TimeNow();
 
+#if VERSION_STRING == AE_PROFILE_FOREVER
+#ifndef AE_FOREVER_USE_TEMP_LEVELSTATS
+    #error "Forever still uses temporary player level stats. Implement modern DB2 player stats before removing AE_FOREVER_USE_TEMP_LEVELSTATS."
+#endif
+
+    uint32_t player_levelstats_count = 0;
+    if (auto& playerCreateInfo = _playerCreateInfoStoreNew[1][4])
+    {
+        CreateInfo_Levelstats lvl{};
+        lvl.strength = 21;
+        lvl.agility = 23;
+        lvl.stamina = 21;
+        lvl.intellect = 20;
+        lvl.spirit = 20;
+        playerCreateInfo->level_stats[1] = lvl;
+        ++player_levelstats_count;
+    }
+#else
     //                                                           0     1      2          3           4            5             6             7
-    auto player_levelstats_result = WorldDatabase.query("SELECT race, class, level, BaseStrength, BaseAgility, BaseStamina, BaseIntellect, BaseSpirit FROM player_levelstats WHERE build = %u", WoW::getConfigBuild());
+    auto player_levelstats_result = WorldDatabase.query("SELECT race, class, level, BaseStrength, BaseAgility, BaseStamina, BaseIntellect, BaseSpirit FROM player_levelstats WHERE build = %u", VERSION_STRING);
 
     if (player_levelstats_result == nullptr)
     {
@@ -3054,7 +3070,6 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
         uint32_t _class = fields[1].asUint32();
         uint32_t level = fields[2].asUint32();
 
-
         if (auto& playerCreateInfo = _playerCreateInfoStoreNew[_race][_class])
         {
             CreateInfo_Levelstats lvl{};
@@ -3063,13 +3078,11 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
             lvl.stamina = fields[5].asUint32();
             lvl.intellect = fields[6].asUint32();
             lvl.spirit = fields[7].asUint32();
-
             playerCreateInfo->level_stats.insert(std::make_pair(level, lvl));
-
             ++player_levelstats_count;
         }
-
     } while (player_levelstats_result->nextRow());
+#endif
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `player_levelstats` table in {} ms!", player_levelstats_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
@@ -3107,7 +3120,7 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
     // Zyres: load highest gamebuild version from table, otherwise we will have dead new characters
     //                                                                 0      1        2          3
     auto player_classlevelstats_result = WorldDatabase.query("SELECT class, level, BaseHealth, BaseMana FROM player_classlevelstats base "
-        "WHERE build=(SELECT MAX(build) FROM player_classlevelstats buildspecific WHERE base.class = buildspecific.class AND base.level = buildspecific.level AND build <= %u)", WoW::getConfigBuild());
+        "WHERE build=(SELECT MAX(build) FROM player_classlevelstats buildspecific WHERE base.class = buildspecific.class AND base.level = buildspecific.level AND build <= %u)", VERSION_STRING);
 
     if (player_classlevelstats_result)
     {
@@ -3138,37 +3151,36 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
         sLogger.info("MySQLDataLoads : Table `player_classlevelstats` is empty!");
     }
 
-    // the class base values come from the game tables since Cata
-    if (WoW::isDataLoadRequired(WoW::Expansion::_Cata))
+#if VERSION_STRING > WotLK
+    //Zyres: load missing and required data from dbc!
+    int32_t player_classlevelstats_count = 0;
+
+    for (uint8_t player_class = 1; player_class < MAX_PLAYER_CLASSES - 1; ++player_class)
     {
-        //Zyres: load missing and required data from dbc!
-        int32_t player_classlevelstats_count = 0;
-
-        for (uint8_t player_class = 1; player_class < MAX_PLAYER_CLASSES - 1; ++player_class)
+        for (uint8_t level = 1; level < DBC_STAT_LEVEL_CAP; ++level)
         {
-            for (uint8_t level = 1; level < DBC_STAT_LEVEL_CAP; ++level)
+            // check if we already loaded data for level/class from db
+            if (getPlayerClassLevelStats(level, player_class))
+                continue;
+
+            WDB::Structures::GtOCTBaseHPByClassEntry const* hp = sGtOCTBaseHPByClassStore.lookupEntry((player_class - 1) * DBC_STAT_LEVEL_CAP + level - 1);
+            WDB::Structures::GtOCTBaseMPByClassEntry const* mp = sGtOCTBaseMPByClassStore.lookupEntry((player_class - 1) * DBC_STAT_LEVEL_CAP + level - 1);
+
+            if (hp && mp)
             {
-                // check if we already loaded data for level/class from db
-                if (getPlayerClassLevelStats(level, player_class))
-                    continue;
+                CreateInfo_ClassLevelStats lvl;
+                lvl.health = static_cast<uint32_t>(hp->ratio);
+                lvl.mana = static_cast<uint32_t>(mp->ratio);
 
-                WDB::Structures::GtOCTBaseHPByClassEntry const* hp = sGtOCTBaseHPByClassStore.lookupEntry((player_class - 1) * DBC_STAT_LEVEL_CAP + level - 1);
-                WDB::Structures::GtOCTBaseMPByClassEntry const* mp = sGtOCTBaseMPByClassStore.lookupEntry((player_class - 1) * DBC_STAT_LEVEL_CAP + level - 1);
-
-                if (hp && mp)
-                {
-                    CreateInfo_ClassLevelStats lvl;
-                    lvl.health = static_cast<uint32_t>(hp->ratio);
-                    lvl.mana = static_cast<uint32_t>(mp->ratio);
-
-                    _playerClassLevelStatsStore[player_class].insert(std::make_pair(level, lvl));
-                    ++player_classlevelstats_count;
-                }
+                _playerClassLevelStatsStore[player_class].insert(std::make_pair(level, lvl));
+                ++player_classlevelstats_count;
             }
         }
-
-        sLogger.info("MySQLDataLoads : Loaded {} missing classlevelstats from dbc!", player_classlevelstats_count);
     }
+
+    sLogger.info("MySQLDataLoads : Loaded {} missing classlevelstats from dbc!", player_classlevelstats_count);
+
+#endif
 }
 
 
@@ -3212,7 +3224,7 @@ void MySQLDataStore::loadPlayerXpToLevelTable()
         _playerXPperLevelStore[level] = 0;
 
     auto player_xp_to_level_result = WorldDatabase.query("SELECT player_lvl, next_lvl_req_xp FROM player_xp_for_level base "
-        "WHERE build=(SELECT MAX(build) FROM player_xp_for_level spec WHERE base.player_lvl = spec.player_lvl AND build <= %u)", WoW::getConfigBuild());
+        "WHERE build=(SELECT MAX(build) FROM player_xp_for_level spec WHERE base.player_lvl = spec.player_lvl AND build <= %u)", VERSION_STRING);
 
     if (player_xp_to_level_result == nullptr)
     {
@@ -3740,7 +3752,7 @@ void MySQLDataStore::loadLocalesCreature()
     auto startTime = Util::TimeNow();
     //                                        0         1          2      3
     auto result = WorldDatabase.query("SELECT id, language_code, name, subname FROM locales_creature base "
-        "WHERE build=(SELECT MAX(build) FROM locales_creature buildspecific WHERE base.id = buildspecific.id AND build <= %u)", WoW::getConfigBuild());
+        "WHERE build=(SELECT MAX(build) FROM locales_creature buildspecific WHERE base.id = buildspecific.id AND build <= %u)", VERSION_STRING);
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `locales_creature` is empty!");
@@ -4761,7 +4773,7 @@ void MySQLDataStore::loadGameobjectSpawns()
     auto startTime = Util::TimeNow();
     uint32_t count = 0;
 
-    auto gobject_spawn_result = getWorldDBQuery("SELECT * FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", WoW::getConfigBuild(), WoW::getConfigBuild());
+    auto gobject_spawn_result = getWorldDBQuery("SELECT * FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", VERSION_STRING, VERSION_STRING);
     if (gobject_spawn_result)
     {
         uint32_t gobject_spawn_fields = gobject_spawn_result->getFieldCount();
@@ -4819,7 +4831,7 @@ void MySQLDataStore::loadRecallTable()
 
     _recallStore.clear();
 
-    auto recall_result = getWorldDBQuery("SELECT id, name, MapId, positionX, positionY, positionZ, Orientation FROM recall WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
+    auto recall_result = getWorldDBQuery("SELECT id, name, MapId, positionX, positionY, positionZ, Orientation FROM recall WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
     if (recall_result)
     {
         do
@@ -4847,7 +4859,7 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
 
     _creatureAIScriptStore.clear();
 
-    auto result = WorldDatabase.query("SELECT * FROM creature_ai_scripts WHERE min_build <= %u AND max_build >= %u ORDER BY entry, event", WoW::getConfigBuild(), WoW::getConfigBuild());
+    auto result = WorldDatabase.query("SELECT * FROM creature_ai_scripts WHERE min_build <= %u AND max_build >= %u ORDER BY entry, event", VERSION_STRING, VERSION_STRING);
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `creature_ai_scripts` is empty!");

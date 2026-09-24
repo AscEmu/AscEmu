@@ -126,8 +126,16 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
     WoWGameObject* gameObjectData() const { return reinterpret_cast<WoWGameObject*>(wow_data); }
+#if defined(AE_FOREVER)
+    AscEmu::Version::Forever::Fields::GameObjectData m_foreverGameObjectFields{};
+#endif
 
 public:
+#if defined(AE_FOREVER)
+    AscEmu::Version::Forever::Fields::GameObjectData& foreverGameObjectFields() { return m_foreverGameObjectFields; }
+    AscEmu::Version::Forever::Fields::GameObjectData const& foreverGameObjectFields() const { return m_foreverGameObjectFields; }
+#endif
+
     uint64_t getCreatedByGuid() const;
     void setCreatedByGuid(uint64_t guid);
 
@@ -149,6 +157,9 @@ public:
     uint16_t getDynamicFlags() const;
     int16_t getDynamicPathProgress() const;
     void setDynamicFlags(uint16_t dynamicFlags);
+    void setDynamicPathProgress(int16_t pathProgress);
+#elif defined(AE_FOREVER)
+    int16_t getDynamicPathProgress() const;
     void setDynamicPathProgress(int16_t pathProgress);
 #endif
 
@@ -273,6 +284,9 @@ public:
         int64_t m_packedRotation = 0;
         QuaternionData m_localRotation;
         GameObjectValue m_goValue;
+#if defined(AE_FOREVER)
+        int16_t m_foreverDynamicPathProgress = 0;
+#endif
 
         uint64_t m_linkedTrap = 0;
 

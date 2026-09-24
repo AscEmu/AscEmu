@@ -299,6 +299,73 @@ void WorldSession::handleTutorialReset(WorldPacket& /*recvPacket*/)
         _player->setTutorialValueForId(id, 0x00000000);
 }
 
+#if defined(AE_FOREVER)
+void WorldSession::handleForeverLogoutRequest(bool idleLogout)
+{
+    if (_player == nullptr)
+        return;
+
+    // Forever 69913 uses the modern logout semantics. Flight is always
+    // instant; resting/permission based instant logout is ignored for idle logout.
+    bool instantLogout = _player->isOnTaxi();
+    if (!idleLogout)
+    {
+        instantLogout = instantLogout || _player->m_isResting ||
+            (hasPermissions() && worldConfig.player.enableInstantLogoutForAccessType > 0);
+    }
+
+    uint32_t reason = 0;
+    if (_player->getCombatHandler().isInCombat() && !_player->m_isResting)
+        reason = 1;
+    else if (_player->IsFalling())
+        reason = 3;
+    else if (_player->m_duelPlayer != nullptr)
+        reason = 2;
+
+    if (!sHookInterface.OnLogoutRequest(_player))
+        reason = 1;
+
+    if (!sendForeverLogoutResponse(reason, instantLogout))
+        return;
+
+    if (reason != 0)
+    {
+        SetLogoutTimer(0);
+        return;
+    }
+
+    if (instantLogout)
+    {
+        LogoutPlayer(true);
+        return;
+    }
+
+    _player->setMoveRoot(true);
+    LoggingOut = true;
+    _player->addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+    _player->setStandState(STANDSTATE_SIT);
+    SetLogoutTimer(PLAYER_LOGOUT_DELAY);
+}
+
+void WorldSession::handleForeverLogoutCancel()
+{
+    if (!LoggingOut)
+        return;
+
+    LoggingOut = false;
+    SetLogoutTimer(0);
+
+    if (_player != nullptr)
+    {
+        _player->setMoveRoot(false);
+        _player->setStandState(STANDSTATE_STAND);
+        _player->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+    }
+
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSession::Forever: logout cancelled; SMSG_LOGOUT_CANCEL_ACK not sent until its 69913 opcode/payload is verified.");
+}
+#endif
+
 void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
 {
 #if VERSION_STRING == Mop
@@ -334,6 +401,8 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
     _player->addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
     _player->setStandState(STANDSTATE_SIT);
     SetLogoutTimer(PLAYER_LOGOUT_DELAY);
+#elif defined(AE_FOREVER)
+    handleForeverLogoutRequest(false);
 #else
     if (!sHookInterface.OnLogoutRequest(_player))
     {
@@ -1203,6 +1272,12 @@ void WorldSession::handlePlayerLogoutOpcode([[maybe_unused]] WorldPacket& recvPa
     sLogger.debug("handlePlayerLogoutOpcode called (MoP) - delegating to handleLogoutRequestOpcode");
     handleLogoutRequestOpcode(recvPacket);
     return;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    // MoP client sends 0x1349 (CMSG_LOGOUT_REQUEST); if it is mapped as CMSG_PLAYER_LOGOUT (internal 75), handle as logout request
+    sLogger.debug("handlePlayerLogoutOpcode called (MoP) - delegating to handleLogoutRequestOpcode");
+    handleLogoutRequestOpcode(recvPacket);
+    return;
 #else
     sLogger.debugOpcode("Received CMSG_PLAYER_LOGOUT.");
     if (!HasGMPermissions())
@@ -1804,8 +1879,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
             talentIds.push_back(talentInfo->TalentID);
     }
 
-    const auto& activeSpec = inspectedPlayer->m_specs[inspectedPlayer->m_talentActiveSpec];
-    SmsgInspectResultsUpdate managedPacket(inspectedPlayer, std::move(talentIds), std::vector<uint16_t>(activeSpec.getGlyphs().begin(), activeSpec.getGlyphs().end()), activeSpec.getSpecializationId());
+    SmsgInspectResultsUpdate managedPacket(inspectedPlayer);
     sendManagedPacket(managedPacket);
 #endif
 }

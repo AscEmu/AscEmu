@@ -367,6 +367,23 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         else
             srlPacket.targets.setDestination(_player->GetPosition());
     }
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+    if (!srlPacket.hasSrcLocation)
+    {
+        if (_player->getTransGuid())
+            srlPacket.targets.setSource({ _player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ() });
+        else
+            srlPacket.targets.setSource(_player->GetPosition());
+    }
+
+    if (!srlPacket.hasDestLocation)
+    {
+        if (_player->getTransGuid())
+            srlPacket.targets.setDestination({ _player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ() });
+        else
+            srlPacket.targets.setDestination(_player->GetPosition());
+    }
 #endif
 
     // Some spell cast packets include more data
@@ -2003,10 +2020,12 @@ void WorldSession::handleListInventoryOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    WoWGuid wowGuid;
-    wowGuid.init(srlPacket.guid);
+    handleListInventoryGuid(srlPacket.guid.getRawGuid());
+}
 
-    Creature* unit = _player->getWorldMapCreature(wowGuid.getRawGuid());
+void WorldSession::handleListInventoryGuid(uint64_t guid)
+{
+    Creature* unit = _player->getWorldMapCreature(guid);
     if (unit == nullptr)
         return;
 
@@ -2098,7 +2117,7 @@ void WorldSession::sendInventoryList(Creature* unit)
             break;
     }
 
-    SmsgListInventory managedPacket(unit->getGuid(), static_cast<uint32_t>(unit->GetSellItemCount()), unit->isArmorer(), std::move(items));
+    SmsgListInventory managedPacket(unit->getGuid(), static_cast<uint16_t>(unit->GetMapId()), static_cast<uint32_t>(unit->GetSellItemCount()), unit->isArmorer(), std::move(items));
     sendManagedPacket(managedPacket);
 
     sLogger.debug("Sent SMSG_LIST_INVENTORY");

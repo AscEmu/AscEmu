@@ -290,7 +290,10 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::spellEffectNotImplemented,          // 181 SPELL_EFFECT_NULL_181
     &Spell::spellEffectNotImplemented           // 182 SPELL_EFFECT_NULL_182
 #endif
-#if VERSION_STRING >= Mop
+#if VERSION_STRING == Mop
+    // TODO: mop
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     // TODO: mop
 #endif
 };
@@ -4902,6 +4905,8 @@ void Spell::SpellEffectActivateObject(uint8_t effectIndex) // Activate Object
     sEventMgr.AddEvent(m_gameObjTarget, &GameObject::setDynamicFlags, static_cast<uint32_t>(0), 0, static_cast<uint32_t>(getDuration()), 1, 0);
 #elif VERSION_STRING < Mop
     sEventMgr.AddEvent(m_gameObjTarget, &GameObject::setDynamicFlags, static_cast<uint16_t>(0), 0, static_cast<uint32_t>(getDuration()), 1, 0);
+#elif defined(AE_FOREVER)
+    sEventMgr.AddEvent(dynamic_cast<Object*>(m_gameObjTarget), &Object::setDynamicFlags, static_cast<uint32_t>(0), 0, static_cast<uint32_t>(getDuration()), 1, 0);
 #else
     sEventMgr.AddEvent(dynamic_cast<Object*>(m_gameObjTarget), &Object::setDynamicFlags, static_cast<uint16_t>(0), 0, static_cast<uint32_t>(getDuration()), 1, 0);
 #endif
@@ -6090,7 +6095,11 @@ void Spell::SpellEffectKillCredit(uint8_t effectIndex)
     CreatureProperties const* ci = sMySQLStore.getCreatureProperties(getSpellInfo()->getEffectMiscValue(effectIndex));
     sLogger.debug("SpellEffectKillCredit: spell {} credit {} playerTarget {} properties {}", getSpellInfo()->getId(), getSpellInfo()->getEffectMiscValue(effectIndex), m_playerTarget != nullptr, ci != nullptr);
 
-#if VERSION_STRING >= Mop
+#if VERSION_STRING == Mop
+    // effects targeting the caster run without a target pointer, the credit goes to the casting player
+    Player* player = m_playerTarget != nullptr ? m_playerTarget : p_caster;
+#elif defined(AE_FOREVER)
+// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     // effects targeting the caster run without a target pointer, the credit goes to the casting player
     Player* player = m_playerTarget != nullptr ? m_playerTarget : p_caster;
 #else

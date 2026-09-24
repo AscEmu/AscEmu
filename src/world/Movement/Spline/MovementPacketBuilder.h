@@ -18,9 +18,14 @@ namespace G3D
 namespace MovementMgr {
 
 class MoveSpline;
+struct Location;
 class PacketBuilder
 {
     static void WriteCommonMonsterMovePart(MoveSpline const& mov, ByteBuffer& data);
+#if defined(AE_FOREVER)
+    static void WriteForeverMovementSpline(MoveSpline const& moveSpline, ByteBuffer& data, Unit* unit);
+    static void WriteForeverMonsterMoveTail(ByteBuffer& data, bool stopUseFaceDirection, uint8_t stopSplineStyle);
+#endif
 public:
     static void WriteMonsterMove(MoveSpline const& mov, ByteBuffer& data);
     static void WriteStopMovement(G3D::Vector3 const& loc, uint32_t splineId, ByteBuffer& data);
@@ -38,7 +43,7 @@ public:
     // between the pre-Mop and Mop overloads via a runtime m_protocol.isMop() check inside a single
     // function shared by all versions, so both overloads must exist in every build.
     static void WriteMonsterMove(MoveSpline const& mov, ByteBuffer& data, Unit* unit);
-    static void WriteStopMovement(G3D::Vector3 const& loc, uint32_t splineId, ByteBuffer& data, Unit* unit);
+    static void WriteStopMovement(Location const& loc, uint32_t splineId, ByteBuffer& data, Unit* unit);
     static void WriteSplineSync(MoveSpline const& mov, ByteBuffer& data);
 };
 } // namespace MovementMgr
