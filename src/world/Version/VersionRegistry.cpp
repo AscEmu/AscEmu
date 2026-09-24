@@ -64,4 +64,9 @@ namespace Version
     {
         return m_layouts != nullptr ? *m_layouts : layoutsForExpansion(WoW::getServerExpansion());
     }
+
+    const ExpansionLayouts& layouts() noexcept
+    {
+        return sVersionRegistry.layouts();
+    }
 }

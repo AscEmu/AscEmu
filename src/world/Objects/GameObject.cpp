@@ -66,6 +66,9 @@
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
 #include "Server/PacketBroadcast.hpp"
+#include "Version/ObjectLayout.hpp"
+
+using Version::GameObjectField;
 
 // MIT
 
@@ -92,7 +95,7 @@ GameObject::GameObject(uint64_t guid)
     //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_GAMEOBJECT;
     m_objectTypeId = TYPEID_GAMEOBJECT;
-    m_valuesCount = getSizeOfStructure(WoWGameObject);
+    m_valuesCount = Version::layouts().gameObject.valueCount();
     //////////////////////////////////////////////////////////////////////////
 
 #if VERSION_STRING == Classic
@@ -114,8 +117,8 @@ GameObject::GameObject(uint64_t guid)
     //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
     m_uint32Values = _fields;
 
-    std::fill(m_uint32Values, &m_uint32Values[getSizeOfStructure(WoWGameObject)], 0);
-    m_updateMask.SetCount(getSizeOfStructure(WoWGameObject));
+    std::fill(m_uint32Values, &m_uint32Values[Version::layouts().gameObject.valueCount()], 0);
+    m_updateMask.SetCount(Version::layouts().gameObject.valueCount());
 
     setOType(TYPE_GAMEOBJECT | TYPE_OBJECT);
     setGuid(guid);
@@ -217,140 +220,180 @@ void GameObject::onDetachFromWorld()
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 
-uint64_t GameObject::getCreatedByGuid() const { return gameObjectData()->object_field_created_by.guid; }
-void GameObject::setCreatedByGuid(uint64_t guid) { write(gameObjectData()->object_field_created_by.guid, guid); }
+uint64_t GameObject::getCreatedByGuid() const { return getField<uint64_t>(GameObjectField::ObjectFieldCreatedBy); }
+void GameObject::setCreatedByGuid(uint64_t guid) { setField<uint64_t>(GameObjectField::ObjectFieldCreatedBy, guid); }
 
-uint32_t GameObject::getDisplayId() const { return gameObjectData()->display_id; }
+uint32_t GameObject::getDisplayId() const { return getField<uint32_t>(GameObjectField::DisplayId); }
 void GameObject::setDisplayId(uint32_t id)
 {
-    write(gameObjectData()->display_id, id);
+    setField<uint32_t>(GameObjectField::DisplayId, id);
     updateModel();
 }
 
-uint32_t GameObject::getFlags() const { return gameObjectData()->flags; }
-void GameObject::setFlags(uint32_t flags) { write(gameObjectData()->flags, flags); }
+uint32_t GameObject::getFlags() const { return getField<uint32_t>(GameObjectField::Flags); }
+void GameObject::setFlags(uint32_t flags) { setField<uint32_t>(GameObjectField::Flags, flags); }
 void GameObject::addFlags(uint32_t flags) { setFlags(getFlags() | flags); }
 void GameObject::removeFlags(uint32_t flags) { setFlags(getFlags() & ~flags); }
 bool GameObject::hasFlags(uint32_t flags) const { return (getFlags() & flags) != 0; }
 
-float GameObject::getParentRotation(uint8_t type) const { return gameObjectData()->rotation[type]; }
+float GameObject::getParentRotation(uint8_t type) const { return getField<float>(GameObjectField::Rotation, type); }
 void GameObject::setParentRotation(QuaternionData const& rotation)
 {
-    write(gameObjectData()->rotation[0], rotation.x);
-    write(gameObjectData()->rotation[1], rotation.y);
-    write(gameObjectData()->rotation[2], rotation.z);
-    write(gameObjectData()->rotation[3], rotation.w);
+    setField<float>(GameObjectField::Rotation, rotation.x, 0);
+    setField<float>(GameObjectField::Rotation, rotation.y, 1);
+    setField<float>(GameObjectField::Rotation, rotation.z, 2);
+    setField<float>(GameObjectField::Rotation, rotation.w, 3);
 }
 
 QuaternionData const& GameObject::getLocalRotation() const { return m_localRotation; }
 int64_t GameObject::getPackedLocalRotation() const { return m_packedRotation; }
 
-#if VERSION_STRING < WotLK
-uint32_t GameObject::getDynamicFlags() const { return gameObjectData()->dynamic; }
-void GameObject::setDynamicFlags(uint32_t dynamicFlags) { write(gameObjectData()->dynamic, dynamicFlags); }
-#elif VERSION_STRING < Mop
-uint16_t GameObject::getDynamicFlags() const { return gameObjectData()->dynamic.dynamic_field_parts.dyn_flag; }
-int16_t GameObject::getDynamicPathProgress() const { return gameObjectData()->dynamic.dynamic_field_parts.path_progress; }
-void GameObject::setDynamicFlags(uint16_t dynamicFlags) { write(gameObjectData()->dynamic.dynamic_field_parts.dyn_flag, dynamicFlags); }
-void GameObject::setDynamicPathProgress(int16_t pathProgress) { write(gameObjectData()->dynamic.dynamic_field_parts.path_progress, pathProgress); }
-#endif
+uint32_t GameObject::getDynamicFlags() const
+{
+    // a uint32 field before WotLK, the flag half of the dynamic field until Cata, the object data field since Mop
+    if (hasField(GameObjectField::DynamicDynFlag))
+        return getField<uint16_t>(GameObjectField::DynamicDynFlag);
 
-uint32_t GameObject::getFactionTemplate() const { return gameObjectData()->faction_template; }
-void GameObject::setFactionTemplate(uint32_t id) { write(gameObjectData()->faction_template, id); }
+    if (hasField(GameObjectField::Dynamic))
+        return getField<uint32_t>(GameObjectField::Dynamic);
 
-uint32_t GameObject::getLevel() const { return gameObjectData()->level; }
-void GameObject::setLevel(uint32_t level) { write(gameObjectData()->level, level); }
+    return Object::getDynamicFlags();
+}
+
+void GameObject::setDynamicFlags(uint32_t dynamicFlags)
+{
+    if (hasField(GameObjectField::DynamicDynFlag))
+    {
+        setField<uint16_t>(GameObjectField::DynamicDynFlag, static_cast<uint16_t>(dynamicFlags));
+        return;
+    }
+
+    if (hasField(GameObjectField::Dynamic))
+    {
+        setField<uint32_t>(GameObjectField::Dynamic, dynamicFlags);
+        return;
+    }
+
+    Object::setDynamicFlags(static_cast<uint16_t>(dynamicFlags));
+}
+
+int16_t GameObject::getDynamicPathProgress() const
+{
+    if (hasField(GameObjectField::DynamicPathProgress))
+        return getField<int16_t>(GameObjectField::DynamicPathProgress);
+
+    return Object::getDynamicPathProgress();
+}
+
+void GameObject::setDynamicPathProgress(int16_t pathProgress)
+{
+    if (hasField(GameObjectField::DynamicPathProgress))
+    {
+        setField<int16_t>(GameObjectField::DynamicPathProgress, pathProgress);
+        return;
+    }
+
+    Object::setDynamicPathProgress(pathProgress);
+}
+
+uint32_t GameObject::getFactionTemplate() const { return getField<uint32_t>(GameObjectField::FactionTemplate); }
+void GameObject::setFactionTemplate(uint32_t id) { setField<uint32_t>(GameObjectField::FactionTemplate, id); }
+
+uint32_t GameObject::getLevel() const { return getField<uint32_t>(GameObjectField::Level); }
+void GameObject::setLevel(uint32_t level) { setField<uint32_t>(GameObjectField::Level, level); }
 
 //bytes1
 uint8_t GameObject::getState() const
 {
-#if VERSION_STRING <= TBC
-    return static_cast<uint8_t>(gameObjectData()->state);
-#elif VERSION_STRING >= WotLK
-    return gameObjectData()->bytes_1.bytes_1_gameobject.state;
-#endif
+    // a uint32 field before WotLK, a byte of bytes_1 since
+    if (hasField(GameObjectField::Bytes1State))
+        return getField<uint8_t>(GameObjectField::Bytes1State);
+
+    return static_cast<uint8_t>(getField<uint32_t>(GameObjectField::State));
 }
 void GameObject::setState(uint8_t state)
 {
-#if VERSION_STRING <= TBC
-    write(gameObjectData()->state, static_cast<uint32_t>(state));
-#elif VERSION_STRING >= WotLK
-    write(gameObjectData()->bytes_1.bytes_1_gameobject.state, state);
-#endif
+    if (hasField(GameObjectField::Bytes1State))
+    {
+        setField<uint8_t>(GameObjectField::Bytes1State, state);
+        return;
+    }
+
+    setField<uint32_t>(GameObjectField::State, static_cast<uint32_t>(state));
 }
 
 uint8_t GameObject::getGoType() const
 {
-#if VERSION_STRING <= TBC
-    return static_cast<uint8_t>(gameObjectData()->type);
-#elif VERSION_STRING >= WotLK
-    return gameObjectData()->bytes_1.bytes_1_gameobject.type;
-#endif
+    if (hasField(GameObjectField::Bytes1Type))
+        return getField<uint8_t>(GameObjectField::Bytes1Type);
+
+    return static_cast<uint8_t>(getField<uint32_t>(GameObjectField::Type));
 }
 void GameObject::setGoType(uint8_t type)
 {
-#if VERSION_STRING <= TBC
-    write(gameObjectData()->type, static_cast<uint32_t>(type));
-#elif VERSION_STRING >= WotLK
-    write(gameObjectData()->bytes_1.bytes_1_gameobject.type, type);
-#endif
+    if (hasField(GameObjectField::Bytes1Type))
+    {
+        setField<uint8_t>(GameObjectField::Bytes1Type, type);
+        return;
+    }
+
+    setField<uint32_t>(GameObjectField::Type, static_cast<uint32_t>(type));
 }
 
-#if VERSION_STRING < Mop
 uint8_t GameObject::getArtKit() const
 {
-#if VERSION_STRING <= TBC
-    return static_cast<uint8_t>(gameObjectData()->art_kit);
-#elif VERSION_STRING >= WotLK
-    return gameObjectData()->bytes_1.bytes_1_gameobject.art_kit;
-#endif
+    // a uint32 field before WotLK, a byte of bytes_1 until Cata, a byte of bytes_2 since Mop
+    if (hasField(GameObjectField::Bytes2ArtKit))
+        return getField<uint8_t>(GameObjectField::Bytes2ArtKit);
+
+    if (hasField(GameObjectField::Bytes1ArtKit))
+        return getField<uint8_t>(GameObjectField::Bytes1ArtKit);
+
+    return static_cast<uint8_t>(getField<uint32_t>(GameObjectField::ArtKit));
 }
 void GameObject::setArtKit(uint8_t artkit)
 {
-#if VERSION_STRING <= TBC
-    write(gameObjectData()->art_kit, static_cast<uint32_t>(artkit));
-#elif VERSION_STRING >= WotLK
-    write(gameObjectData()->bytes_1.bytes_1_gameobject.art_kit, artkit);
-#endif
-}
-#else
-uint8_t GameObject::getArtKit() const
-{
-    return gameObjectData()->bytes_2.bytes_2_gameobject.art_kit;
-}
-void GameObject::setArtKit(uint8_t artkit)
-{
-    write(gameObjectData()->bytes_2.bytes_2_gameobject.art_kit, artkit);
-}
-#endif
+    if (hasField(GameObjectField::Bytes2ArtKit))
+    {
+        setField<uint8_t>(GameObjectField::Bytes2ArtKit, artkit);
+        return;
+    }
 
-#if VERSION_STRING < Mop
+    if (hasField(GameObjectField::Bytes1ArtKit))
+    {
+        setField<uint8_t>(GameObjectField::Bytes1ArtKit, artkit);
+        return;
+    }
+
+    setField<uint32_t>(GameObjectField::ArtKit, static_cast<uint32_t>(artkit));
+}
+
 uint8_t GameObject::getAnimationProgress() const
 {
-#if VERSION_STRING <= TBC
-    return static_cast<uint8_t>(gameObjectData()->animation_progress);
-#elif VERSION_STRING >= WotLK
-    return gameObjectData()->bytes_1.bytes_1_gameobject.animation_progress;
-#endif
+    if (hasField(GameObjectField::Bytes2AnimationProgress))
+        return getField<uint8_t>(GameObjectField::Bytes2AnimationProgress);
+
+    if (hasField(GameObjectField::Bytes1AnimationProgress))
+        return getField<uint8_t>(GameObjectField::Bytes1AnimationProgress);
+
+    return static_cast<uint8_t>(getField<uint32_t>(GameObjectField::AnimationProgress));
 }
 void GameObject::setAnimationProgress(uint8_t progress)
 {
-#if VERSION_STRING <= TBC
-    write(gameObjectData()->animation_progress, static_cast<uint32_t>(progress));
-#elif VERSION_STRING >= WotLK
-    write(gameObjectData()->bytes_1.bytes_1_gameobject.animation_progress, progress);
-#endif
+    if (hasField(GameObjectField::Bytes2AnimationProgress))
+    {
+        setField<uint8_t>(GameObjectField::Bytes2AnimationProgress, progress);
+        return;
+    }
+
+    if (hasField(GameObjectField::Bytes1AnimationProgress))
+    {
+        setField<uint8_t>(GameObjectField::Bytes1AnimationProgress, progress);
+        return;
+    }
+
+    setField<uint32_t>(GameObjectField::AnimationProgress, static_cast<uint32_t>(progress));
 }
-#else
-uint8_t GameObject::getAnimationProgress() const
-{
-    return gameObjectData()->bytes_2.bytes_2_gameobject.animation_progress;
-}
-void GameObject::setAnimationProgress(uint8_t progress)
-{
-    write(gameObjectData()->bytes_2.bytes_2_gameobject.animation_progress, progress);
-}
-#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Type helper
@@ -630,10 +673,10 @@ bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationV
 
     setParentRotation(parentRotation);
 #else
-    write(gameObjectData()->rotation[0], rotation.x);
-    write(gameObjectData()->rotation[1], rotation.y);
+    setField<float>(GameObjectField::Rotation, rotation.x, 0);
+    setField<float>(GameObjectField::Rotation, rotation.y, 1);
 
-    write(gameObjectData()->o, position.o);
+    setField<float>(GameObjectField::O, position.o);
 
     float rotationZ = rotation.z;
     float rotationW = rotation.w;
@@ -643,8 +686,8 @@ bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationV
         rotationW = cos(position.o / 2);
     }
 
-    write(gameObjectData()->rotation[2], rotationZ);
-    write(gameObjectData()->rotation[3], rotationW);
+    setField<float>(GameObjectField::Rotation, rotationZ, 2);
+    setField<float>(GameObjectField::Rotation, rotationW, 3);
 
 #endif
 
@@ -789,36 +832,36 @@ void GameObject::setCreateBits(UpdateMask* updateMask, Player* target) const
 {
     Object::setCreateBits(updateMask, target);
 
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, object_field_created_by.guid));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, object_field_created_by.guid) + 1);
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, display_id));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, flags));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::ObjectFieldCreatedBy));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::ObjectFieldCreatedBy) + 1);
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::DisplayId));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Flags));
 
     for (uint8_t i = 0; i < GAMEOBJECT_ROTATION_COUNT; ++i)
-        updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, rotation) + i);
+        updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Rotation) + i);
 
 #if VERSION_STRING < WotLK
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, state));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, x));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, y));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, z));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, o));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, dynamic));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, faction_template));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, type));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, level));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, art_kit));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, animation_progress));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::State));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::X));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Y));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Z));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::O));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Dynamic));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::FactionTemplate));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Type));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Level));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::ArtKit));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::AnimationProgress));
 #elif VERSION_STRING < Mop
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, dynamic));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, faction_template));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, level));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, bytes_1));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Dynamic));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::FactionTemplate));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Level));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Bytes1));
 #else
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, faction_template));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, level));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, bytes_1));
-    updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, bytes_2));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::FactionTemplate));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Level));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Bytes1));
+    updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Bytes2));
 #endif
 }
 
@@ -837,10 +880,10 @@ void GameObject::updatePackedRotation()
     m_packedRotation = z | (y << 21) | (x << 42);
 
 #if VERSION_STRING <= TBC
-    write(gameObjectData()->rotation[0], m_localRotation.x);
-    write(gameObjectData()->rotation[1], m_localRotation.y);
-    write(gameObjectData()->rotation[2], m_localRotation.z);
-    write(gameObjectData()->rotation[3], m_localRotation.w);
+    setField<float>(GameObjectField::Rotation, m_localRotation.x, 0);
+    setField<float>(GameObjectField::Rotation, m_localRotation.y, 1);
+    setField<float>(GameObjectField::Rotation, m_localRotation.z, 2);
+    setField<float>(GameObjectField::Rotation, m_localRotation.w, 3);
 #endif
 }
 

@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Loot/LootDefines.hpp"
 #include "Data/WoWItem.hpp"
 #include "Server/UpdateFieldInclude.h"
+#include "Version/LayoutLimits.hpp"
 
 class QueryBuffer;
 class Field;
@@ -46,7 +47,6 @@ public:
     virtual ~Item();
 
 private:
-    const WoWItem* itemData() const { return reinterpret_cast<WoWItem*>(wow_data); }
 public:
     void init(uint32_t high, uint32_t low);
     void create(uint32_t itemId, Player* owner);
@@ -105,10 +105,8 @@ public:
     uint32_t getMaxDurability() const;
     void setMaxDurability(uint32_t maxDurability);
 
-#if VERSION_STRING >= WotLK
     uint32_t getCreatePlayedTime() const;
     void setCreatePlayedTime(uint32_t time);
-#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Override Object functions
@@ -270,7 +268,7 @@ public:
 #endif
 
 protected:
-    uint32_t _fields[getSizeOfStructure(WoWItem)] = { 0 };  // this mem is wasted in case of container... but this will be fixed in future
+    uint32_t _fields[Version::kMaxItemValues] = { 0 };  // this mem is wasted in case of container... but this will be fixed in future
     Player* m_owner = nullptr;                              // let's not bother the manager with unneeded requests
 
 private:
