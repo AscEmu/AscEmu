@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWCorpse.hpp"
 #include "Management/Loot/Loot.hpp"
 #include "Server/UpdateFieldInclude.h"
+#include "Version/LayoutLimits.hpp"
 
 enum CORPSE_STATE
 {
@@ -62,7 +63,6 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
 private:
-    const WoWCorpse* corpseData() const { return reinterpret_cast<WoWCorpse*>(wow_data); }
 
 public:
     uint64_t getOwnerGuid() const;
@@ -122,5 +122,5 @@ protected:
     time_t m_time = 0;
     bool _loadedfromdb = false;
 
-    uint32_t _fields[getSizeOfStructure(WoWCorpse)];
+    uint32_t _fields[Version::kMaxCorpseValues];
 };

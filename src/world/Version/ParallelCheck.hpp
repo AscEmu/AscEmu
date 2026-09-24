@@ -30,14 +30,13 @@ namespace Version
         void compareSize(const char* structName, size_t actualSize, uint16_t tableSize);
 
         template <typename FieldId>
-        void compareField(const char* structName, const char* member, uint32_t actualOffset, size_t actualSize, const LayoutTable& table, FieldId id)
+        void compareField(const char* structName, const char* member, uint32_t actualOffset, size_t actualSize, size_t actualCount, size_t actualStride, const LayoutTable& table, FieldId id)
         {
-            const FieldDesc& desc = table.get(id);
-            compareDesc(structName, member, actualOffset, actualSize, desc.offset, desc.size);
+            compareDesc(structName, member, actualOffset, actualSize, actualCount, actualStride, table.get(id));
         }
 
     private:
-        void compareDesc(const char* structName, const char* member, uint32_t actualOffset, size_t actualSize, uint16_t tableOffset, uint16_t tableSize);
+        void compareDesc(const char* structName, const char* member, uint32_t actualOffset, size_t actualSize, size_t actualCount, size_t actualStride, const FieldDesc& desc);
     };
 
     /// generated: compares the layout tables of the compiled expansion with the structs of this binary

@@ -35,6 +35,9 @@
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
 #include "Utilities/Util.hpp"
+#include "Version/ObjectLayout.hpp"
+
+using Version::UnitField;
 
 // APGL End
 // MIT Start
@@ -632,7 +635,7 @@ uint32_t CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32_t weapon_damage_
 
     //type of this UNIT_FIELD_ATTACK_POWER_MODS is unknown, not even uint32_t disabled for now.
 
-    uint16_t offset;
+    uint32_t offset;
     Item* it = nullptr;
 
     if (ability)
@@ -662,24 +665,24 @@ uint32_t CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32_t weapon_damage_
 
     if (pAttacker->m_isDisarmed && pAttacker->isPlayer())
     {
-        offset = getOffsetForStructuredField(WoWUnit, minimum_damage);
+        offset = Version::layouts().unit.index(UnitField::MinimumDamage);
         it = static_cast< Player* >(pAttacker)->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
     }
     else if (weapon_damage_type == MELEE)
     {
-        offset = getOffsetForStructuredField(WoWUnit, minimum_damage);
+        offset = Version::layouts().unit.index(UnitField::MinimumDamage);
         min_damage = pAttacker->getMinDamage();
         max_damage = pAttacker->getMaxDamage();
     }
     else if (weapon_damage_type == OFFHAND)
     {
-        offset = getOffsetForStructuredField(WoWUnit, minimum_offhand_damage);
+        offset = Version::layouts().unit.index(UnitField::MinimumOffhandDamage);
         min_damage = pAttacker->getMinOffhandDamage();
         max_damage = pAttacker->getMaxOffhandDamage();
     }
     else  // weapon_damage_type == RANGED
     {
-        offset = getOffsetForStructuredField(WoWUnit, minimum_ranged_damage);
+        offset = Version::layouts().unit.index(UnitField::MinimumRangedDamage);
         min_damage = pAttacker->getMinRangedDamage();
         max_damage = pAttacker->getMaxRangedDamage();
     }
@@ -694,7 +697,7 @@ uint32_t CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32_t weapon_damage_
     float bonus;
     float wspeed;
 
-    if (offset == getOffsetForStructuredField(WoWUnit, minimum_ranged_damage))
+    if (offset == Version::layouts().unit.index(UnitField::MinimumRangedDamage))
     {
         //starting from base attack power then we apply mods on it
         //ap += pAttacker->getCalculatedRangedAttackPower();
@@ -830,7 +833,7 @@ uint32_t CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32_t weapon_damage_
             }
         }
 
-        if (offset == getOffsetForStructuredField(WoWUnit, minimum_damage))
+        if (offset == Version::layouts().unit.index(UnitField::MinimumDamage))
             bonus = (wspeed - pAttacker->getBaseAttackTime(MELEE)) / 14000.0f * ap;
         else
             bonus = (wspeed - pAttacker->getBaseAttackTime(OFFHAND)) / 14000.0f * ap;

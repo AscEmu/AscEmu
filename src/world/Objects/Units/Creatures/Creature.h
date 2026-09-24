@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Object.hpp"
 #include "Movement/MovementDefines.h"
 #include "Server/UpdateFieldInclude.h"
+#include "Version/LayoutLimits.hpp"
 
 namespace WDB::Structures
 {
@@ -387,7 +388,7 @@ public:
         uint32_t m_enslaveSpell = 0;
 
         bool m_PickPocketed = false;
-        uint32_t _fields[getSizeOfStructure(WoWUnit)];
+        uint32_t _fields[Version::kMaxUnitValues];
         uint32_t m_healthfromspell = 0;
 
         CreatureProperties const* creature_properties = nullptr;

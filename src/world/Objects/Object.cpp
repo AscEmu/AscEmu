@@ -58,6 +58,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/MathConstants.hpp"
 #include "Server/PacketBroadcast.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Version/ObjectLayout.hpp"
+
+using Version::CorpseField;
+using Version::GameObjectField;
+using Version::UnitField;
+
+using Version::ObjectField;
 
 using namespace AscEmu::Packets;
 
@@ -103,215 +110,45 @@ Object::~Object()
     }
 }
 
-bool Object::write(const uint8_t& member, uint8_t val, bool skipObjectUpdate/* = false*/)
-{
-    if (member == val)
-        return false;
-
-    const auto member_ptr = const_cast<uint8_t*>(&member);
-    *member_ptr = val;
-
-    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
-    distance -= distance % 4;
-    distance /= 4;
-
-    m_updateMask.SetBit(distance);
-
-    if (!skipObjectUpdate)
-        updateObject();
-
-    return true;
-}
-
-bool Object::write(const uint16_t& member, uint16_t val, bool skipObjectUpdate/* = false*/)
-{
-    if (member == val)
-        return false;
-
-    const auto nonconst_member = const_cast<uint16_t*>(&member);
-    *nonconst_member = val;
-
-    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
-    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
-    distance /= 4;
-
-    m_updateMask.SetBit(distance);
-    m_updateMask.SetBit(distance + 1);
-
-    if (!skipObjectUpdate)
-        updateObject();
-
-    return true;
-}
-
-bool Object::write(const float& member, float val, bool skipObjectUpdate/* = false*/)
-{
-    if (member == val)
-        return false;
-
-    const auto nonconst_member = const_cast<float*>(&member);
-    *nonconst_member = val;
-
-    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
-    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
-    distance /= 4;
-
-    m_updateMask.SetBit(distance);
-
-    if (!skipObjectUpdate)
-        updateObject();
-
-    return true;
-}
-
-bool Object::write(const int32_t& member, int32_t val, bool skipObjectUpdate/* = false*/)
-{
-    if (member == val)
-        return false;
-
-    const auto nonconst_member = const_cast<int32_t*>(&member);
-    *nonconst_member = val;
-
-    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
-    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
-    distance /= 4;
-
-    m_updateMask.SetBit(distance);
-
-    if (!skipObjectUpdate)
-        updateObject();
-
-    return true;
-}
-
-bool Object::write(const uint32_t& member, uint32_t val, bool skipObjectUpdate/* = false*/)
-{
-    if (member == val)
-        return false;
-
-    const auto nonconst_member = const_cast<uint32_t*>(&member);
-    *nonconst_member = val;
-
-    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
-    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
-    distance /= 4;
-
-    m_updateMask.SetBit(distance);
-
-    if (!skipObjectUpdate)
-        updateObject();
-
-    return true;
-}
-
-bool Object::write(const uint64_t& member, uint64_t val, bool skipObjectUpdate/* = false*/)
-{
-    if (member == val)
-        return false;
-
-    const auto nonconst_member = const_cast<uint64_t*>(&member);
-    *nonconst_member = val;
-
-    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
-    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
-    distance /= 4;
-
-    m_updateMask.SetBit(distance);
-    m_updateMask.SetBit(distance + 1);
-
-    if (!skipObjectUpdate)
-        updateObject();
-
-    return true;
-}
-
-bool Object::writeLow(const uint64_t& member, uint32_t val, bool skipObjectUpdate/* = false*/)
-{
-    if (member == val)
-        return false;
-
-    const auto nonconst_member = const_cast<uint64_t*>(&member);
-    *reinterpret_cast<uint32_t*>(*nonconst_member) = val;
-
-    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
-    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
-    distance /= 4;
-
-    m_updateMask.SetBit(distance);
-
-    if (!skipObjectUpdate)
-        updateObject();
-
-    return true;
-}
-
-bool Object::writeHigh(const uint64_t& member, uint32_t val, bool skipObjectUpdate/* = false*/)
-{
-    if (member == val)
-        return false;
-
-    const auto nonconst_member = const_cast<uint64_t*>(&member);
-    *(reinterpret_cast<uint32_t*>(*nonconst_member) + 1) = val;
-
-    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
-    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
-    distance /= 4;
-
-    m_updateMask.SetBit(distance + 1);
-
-    if (!skipObjectUpdate)
-        updateObject();
-
-    return true;
-}
-
-bool Object::write(const uint64_t& member, uint32_t low, uint32_t high, bool skipObjectUpdate/* = false*/)
-{
-    const auto nonconst_member = const_cast<uint64_t*>(&member);
-    const auto low_ptr = reinterpret_cast<uint32_t*>(*nonconst_member);
-    const auto high_ptr = low_ptr + 1;
-
-    if (*low_ptr == low && *high_ptr == high)
-        return false;
-
-    *low_ptr = low;
-    *high_ptr = high;
-
-    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
-    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
-    distance /= 4;
-
-    m_updateMask.SetBit(distance);
-    m_updateMask.SetBit(distance + 1);
-
-    if (!skipObjectUpdate)
-        updateObject();
-
-    return true;
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
-uint64_t Object::getGuid() const { return objectData()->guid.guid; }
+uint64_t Object::getGuid() const { return getField<uint64_t>(ObjectField::Guid); }
 
 void Object::setGuid(uint64_t guid)
 {
-    write(objectData()->guid.guid, guid);
+    setField<uint64_t>(ObjectField::Guid, guid);
     m_wowGuid.init(guid);
     obj_movement_info.guid = guid;
 }
 
 void Object::setGuid(uint32_t low, uint32_t high) { setGuid(static_cast<uint64_t>(high) << 32 | low); }
 
-uint32_t Object::getGuidLow() const { return objectData()->guid.parts.low; }
-void Object::setGuidLow(uint32_t low) { setGuid(low, objectData()->guid.parts.high); }
+uint32_t Object::getGuidLow() const { return getField<uint32_t>(ObjectField::GuidLow); }
+void Object::setGuidLow(uint32_t low) { setGuid(low, getField<uint32_t>(ObjectField::GuidHigh)); }
 
-uint32_t Object::getGuidHigh() const { return objectData()->guid.parts.high; }
-void Object::setGuidHigh(uint32_t high) { setGuid(objectData()->guid.parts.low, high); }
+uint32_t Object::getGuidHigh() const { return getField<uint32_t>(ObjectField::GuidHigh); }
+void Object::setGuidHigh(uint32_t high) { setGuid(getField<uint32_t>(ObjectField::GuidLow), high); }
 
-#if VERSION_STRING < Cata
-uint32_t Object::getOType() const { return objectData()->type; }
-void Object::setOType(uint32_t type) { write(objectData()->type, type); }
+uint32_t Object::getOType() const
+{
+    // a uint32 field before Cata, the low half of the type field since
+    if (hasField(ObjectField::FieldTypeType))
+        return getField<uint16_t>(ObjectField::FieldTypeType);
+
+    return getField<uint32_t>(ObjectField::Type);
+}
+
+void Object::setOType(uint32_t type)
+{
+    if (hasField(ObjectField::FieldTypeType))
+    {
+        setField<uint16_t>(ObjectField::FieldTypeType, static_cast<uint16_t>(type));
+        return;
+    }
+
+    setField<uint32_t>(ObjectField::Type, type);
+}
+
 void Object::setObjectType(uint8_t objectTypeId)
 {
     uint16_t object_type = TYPE_OBJECT;
@@ -342,58 +179,22 @@ void Object::setObjectType(uint8_t objectTypeId)
 
     m_objectType = object_type;
     m_objectTypeId = objectTypeId;
-    write(objectData()->type, static_cast<uint32_t>(m_objectType));
+    setOType(m_objectType);
 }
-#else
-uint16_t Object::getOType() const { return objectData()->field_type.parts.type; }
-void Object::setOType(uint16_t type) { write(objectData()->field_type.parts.type, type); }
-void Object::setObjectType(uint8_t objectTypeId)
-{
-    uint16_t object_type = TYPE_OBJECT;
-    switch (objectTypeId)
-    {
-    case TYPEID_CONTAINER:
-        object_type |= TYPE_CONTAINER;
-    case TYPEID_ITEM:
-        object_type |= TYPE_ITEM;
-        break;
-    case TYPEID_PLAYER:
-        object_type |= TYPE_PLAYER;
-    case TYPEID_UNIT:
-        object_type |= TYPE_UNIT;
-        break;
-    case TYPEID_GAMEOBJECT:
-        object_type |= TYPE_GAMEOBJECT;
-        break;
-    case TYPEID_DYNAMICOBJECT:
-        object_type |= TYPE_DYNAMICOBJECT;
-        break;
-    case TYPEID_CORPSE:
-        object_type |= TYPE_CORPSE;
-        break;
-    default:
-        break;
-    }
 
-    m_objectType = object_type;
-    m_objectTypeId = objectTypeId;
-    write(objectData()->field_type.parts.type, static_cast<uint16_t>(m_objectType));
-}
-#endif
+uint32_t Object::getEntry() const { return getField<uint32_t>(ObjectField::Entry); }
+void Object::setEntry(uint32_t entry) { setField<uint32_t>(ObjectField::Entry, entry); }
 
-uint32_t Object::getEntry() const { return objectData()->entry; }
-void Object::setEntry(uint32_t entry) { write(objectData()->entry, entry); }
-
-#if VERSION_STRING >= Mop
-uint16_t Object::getDynamicFlags() const { return objectData()->dynamic_field.dynamic_field_parts.dynamic_flags; }
+// the dynamic part of the object data field, exists since Mop
+uint16_t Object::getDynamicFlags() const { return getField<uint16_t>(ObjectField::DynamicFieldDynamicFlags); }
 int16_t Object::getDynamicPathProgress() const
 {
     if (!isGameObject())
         return 0;
 
-    return objectData()->dynamic_field.dynamic_field_parts.path_progress;
+    return getField<int16_t>(ObjectField::DynamicFieldPathProgress);
 }
-void Object::setDynamicFlags(uint16_t dynamicFlags) { write(objectData()->dynamic_field.dynamic_field_parts.dynamic_flags, dynamicFlags); }
+void Object::setDynamicFlags(uint16_t dynamicFlags) { setField<uint16_t>(ObjectField::DynamicFieldDynamicFlags, dynamicFlags); }
 void Object::addDynamicFlags(uint16_t dynamicFlags) { setDynamicFlags(static_cast<uint16_t>(getDynamicFlags() | dynamicFlags)); }
 void Object::removeDynamicFlags(uint16_t dynamicFlags) { setDynamicFlags(static_cast<uint16_t>(getDynamicFlags() & ~dynamicFlags)); }
 bool Object::hasDynamicFlags(uint16_t dynamicFlags) const { return (getDynamicFlags() & dynamicFlags) != 0; }
@@ -402,12 +203,11 @@ void Object::setDynamicPathProgress(int16_t pathProgress)
     if (!isGameObject())
         return;
 
-    write(objectData()->dynamic_field.dynamic_field_parts.path_progress, pathProgress);
+    setField<int16_t>(ObjectField::DynamicFieldPathProgress, pathProgress);
 }
-#endif
 
-float Object::getScale() const { return objectData()->scale_x; }
-void Object::setScale(float scaleX) { write(objectData()->scale_x, scaleX); }
+float Object::getScale() const { return getField<float>(ObjectField::ScaleX); }
+void Object::setScale(float scaleX) { setField<float>(ObjectField::ScaleX, scaleX); }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Object update
@@ -3529,19 +3329,19 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
     if (isGameObject() && !isTransporter())
     {
 #if VERSION_STRING < Mop
-        updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, dynamic));
+        updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Dynamic));
 #else
-        updateMask->SetBit(getOffsetForStructuredField(WoWObject, dynamic_field));
+        updateMask->SetBit(Version::layouts().object.index(ObjectField::DynamicField));
 #endif
 
         if (updateType != UPDATETYPE_CREATE_OBJECT && updateType != UPDATETYPE_CREATE_OBJECT2)
         {
 #if VERSION_STRING < WotLK
-            updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, animation_progress));
+            updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::AnimationProgress));
 #elif VERSION_STRING < Mop
-            updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, bytes_1.bytes_1_gameobject.animation_progress));
+            updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Bytes1AnimationProgress));
 #else
-            updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, bytes_2.bytes_2_gameobject.animation_progress));
+            updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Bytes2AnimationProgress));
 #endif
         }
     }
@@ -3581,13 +3381,13 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
                 {
                     auto* const creature = dynamic_cast<Creature*>(this);
 
-                    if (idx == getOffsetForStructuredField(WoWUnit, unit_flags))
+                    if (idx == Version::layouts().unit.index(UnitField::UnitFlags))
                     {
                         // Remove not selectable flag if GM mode is activated
                         if (target->isGMFlagSet())
                             bitValue &= ~UNIT_FLAG_NOT_SELECTABLE;
                     }
-                    else if (idx == getOffsetForStructuredField(WoWUnit, display_id))
+                    else if (idx == Version::layouts().unit.index(UnitField::DisplayId))
                     {
                         // Trigger npcs
                         if (creature->GetCreatureProperties()->isTriggerNpc)
@@ -3597,9 +3397,9 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
                         }
                     }
 #if VERSION_STRING < Mop
-                    else if (idx == getOffsetForStructuredField(WoWUnit, dynamic_flags))
+                    else if (idx == Version::layouts().unit.index(UnitField::DynamicFlags))
 #else
-                    else if (idx == getOffsetForStructuredField(WoWObject, dynamic_field))
+                    else if (idx == Version::layouts().object.index(ObjectField::DynamicField))
 #endif
                     {
 #if VERSION_STRING == Mop
@@ -3642,9 +3442,9 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
                     auto* const gameobject = dynamic_cast<GameObject*>(this);
 
 #if VERSION_STRING < Mop
-                    if (idx == getOffsetForStructuredField(WoWGameObject, dynamic))
+                    if (idx == Version::layouts().gameObject.index(GameObjectField::Dynamic))
 #else
-                    if (idx == getOffsetForStructuredField(WoWObject, dynamic_field))
+                    if (idx == Version::layouts().object.index(ObjectField::DynamicField))
 #endif
                     {
                         union
@@ -3769,7 +3569,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
                 {
                     auto* const corpse = dynamic_cast<Corpse*>(this);
 
-                    if (idx == getOffsetForStructuredField(WoWCorpse, dynamic_flags))
+                    if (idx == Version::layouts().corpse.index(CorpseField::DynamicFlags))
                     {
                         auto dynamicFlags = bitValue & ~(U_DYN_FLAG_LOOTABLE | U_DYN_FLAG_TAPPED_BY_PLAYER);
 

@@ -19,19 +19,19 @@ namespace Version
             mismatch(fmt::format("{}: sizeof is {} bytes, layout table says {}", structName, actualSize, tableSize));
     }
 
-    void CheckReport::compareDesc(const char* structName, const char* member, uint32_t actualOffset, size_t actualSize, uint16_t tableOffset, uint16_t tableSize)
+    void CheckReport::compareDesc(const char* structName, const char* member, uint32_t actualOffset, size_t actualSize, size_t actualCount, size_t actualStride, const FieldDesc& desc)
     {
         ++checks;
-        if (tableOffset == kNoField)
+        if (desc.offset == kNoField)
         {
             mismatch(fmt::format("{}::{}: exists at offset {} but the layout table has no entry", structName, member, actualOffset));
             return;
         }
 
-        if (actualOffset != tableOffset || actualSize != tableSize)
+        if (actualOffset != desc.offset || actualSize != desc.size || actualCount != desc.count || actualStride != desc.stride)
         {
-            mismatch(fmt::format("{}::{}: struct offset {} size {}, layout table offset {} size {}",
-                structName, member, actualOffset, actualSize, tableOffset, tableSize));
+            mismatch(fmt::format("{}::{}: struct offset {} size {} count {} stride {}, layout table offset {} size {} count {} stride {}",
+                structName, member, actualOffset, actualSize, actualCount, actualStride, desc.offset, desc.size, desc.count, desc.stride));
         }
     }
 

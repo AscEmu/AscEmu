@@ -1301,12 +1301,8 @@ struct classScriptOverride
 
 struct PlayerSkillFieldPosition
 {
-#if VERSION_STRING < Cata
+    // position in the skill fields, the accessors map it to the field layout of the active version
     uint16_t index = 0;
-#else
-    uint16_t field = 0;
-    uint8_t offset = 0;
-#endif
 };
 
 struct PlayerSkill

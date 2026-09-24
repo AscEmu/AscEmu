@@ -9,16 +9,19 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "Management/AchievementMgr.h"
 #include "Units/Players/Player.hpp"
+#include "Version/ObjectLayout.hpp"
+
+using Version::ContainerField;
 
 Container::Container(uint32_t high, uint32_t low) : Item(), m_Slot(nullptr)
 {
     m_objectType |= TYPE_ITEM | TYPE_CONTAINER;
     m_objectTypeId = TYPEID_CONTAINER;
 
-    m_valuesCount = getSizeOfStructure(WoWContainer);
+    m_valuesCount = Version::layouts().container.valueCount();
     m_uint32Values = __fields;
-    memset(m_uint32Values, 0, (getSizeOfStructure(WoWContainer)) * sizeof(uint32_t));
-    m_updateMask.SetCount(getSizeOfStructure(WoWContainer));
+    memset(m_uint32Values, 0, (Version::layouts().container.valueCount()) * sizeof(uint32_t));
+    m_updateMask.SetCount(Version::layouts().container.valueCount());
 
     setOType(TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
     setGuid(low, high);
@@ -324,8 +327,8 @@ bool Container::safeFullRemoveItemFromSlot(int16_t slot)
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 
-uint32_t Container::getSlotCount() const { return containerData()->slot_count; }
-void Container::setSlotCount(uint32_t count) { write(containerData()->slot_count, count); }
+uint32_t Container::getSlotCount() const { return getField<uint32_t>(ContainerField::SlotCount); }
+void Container::setSlotCount(uint32_t count) { setField<uint32_t>(ContainerField::SlotCount, count); }
 
-uint64_t Container::getSlot(uint16_t slot) const { return containerData()->item_slot[slot].guid; }
-void Container::setSlot(uint16_t slot, uint64_t guid) { write(containerData()->item_slot[slot].guid, guid); }
+uint64_t Container::getSlot(uint16_t slot) const { return getField<uint64_t>(ContainerField::ItemSlot, slot); }
+void Container::setSlot(uint16_t slot, uint64_t guid) { setField<uint64_t>(ContainerField::ItemSlot, guid, slot); }

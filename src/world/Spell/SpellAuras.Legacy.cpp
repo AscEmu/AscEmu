@@ -67,6 +67,10 @@
 #include "Utilities/Random.hpp"
 #include "Server/PacketBroadcast.hpp"
 #include "Server/Packets/SmsgCancelAutoRepeat.h"
+#include "Version/ObjectLayout.hpp"
+
+using Version::ObjectField;
+using Version::UnitField;
 
 using namespace AscEmu::Packets;
 
@@ -4893,9 +4897,9 @@ void Aura::SpellAuraEmphaty(AuraEffectModifier* /*aurEff*/, bool apply)
         dynflags |= U_DYN_FLAG_PLAYER_INFO;
 
 #if VERSION_STRING < Mop
-    m_target->BuildFieldUpdatePacket(caster, getOffsetForStructuredField(WoWUnit, dynamic_flags), dynflags);
+    m_target->BuildFieldUpdatePacket(caster, Version::layouts().unit.index(UnitField::DynamicFlags), dynflags);
 #else
-    m_target->BuildFieldUpdatePacket(caster, getOffsetForStructuredField(WoWObject, dynamic_field), dynflags);
+    m_target->BuildFieldUpdatePacket(caster, Version::layouts().object.index(ObjectField::DynamicField), dynflags);
 #endif
 }
 

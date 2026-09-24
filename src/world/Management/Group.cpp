@@ -52,6 +52,11 @@
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Random.hpp"
+#include "Version/ObjectLayout.hpp"
+
+using Version::ObjectField;
+using Version::PlayerField;
+using Version::UnitField;
 
 using namespace AscEmu::Packets;
 
@@ -936,9 +941,9 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
     UpdateOutOfRangePlayer(pPlayer, true);
 
     UpdateMask myMask;
-    myMask.SetCount(getSizeOfStructure(WoWPlayer));
+    myMask.SetCount(Version::layouts().player.valueCount());
     UpdateMask hisMask;
-    hisMask.SetCount(getSizeOfStructure(WoWPlayer));
+    hisMask.SetCount(Version::layouts().player.valueCount());
 
     std::lock_guard lock(m_groupLock);
 
@@ -980,13 +985,13 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
                     uint16_t questIdOffset = 5;
 #endif
 
-                    const uint32_t startBit = getOffsetForStructuredField(WoWPlayer, quests);
+                    const uint32_t startBit = Version::layouts().player.index(PlayerField::Quests);
 
                     for (uint8_t x = 0; x < WOWPLAYER_QUEST_COUNT; ++x)
                     {
                         if (plr->getQuestLogEntryForSlot(x))
                         {
-                            for (uint16_t j = startBit * x; j < startBit * x + questIdOffset; ++j)
+                            for (uint32_t j = startBit * x; j < startBit * x + questIdOffset; ++j)
                                 hisMask.SetBit(j);
 
                             u1 = true;
@@ -996,7 +1001,7 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
                         {
                             u2 = true;
 
-                            for (uint16_t j = startBit * x; j < startBit * x + questIdOffset; ++j)
+                            for (uint32_t j = startBit * x; j < startBit * x + questIdOffset; ++j)
                                 myMask.SetBit(j);
                         }
                     }
@@ -1305,9 +1310,9 @@ void Group::SendLootUpdates(Object* o)
         Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
 
 #if VERSION_STRING < Mop
-        o->BuildFieldUpdatePacket(&buf, getOffsetForStructuredField(WoWUnit, dynamic_flags), Flags);
+        o->BuildFieldUpdatePacket(&buf, Version::layouts().unit.index(UnitField::DynamicFlags), Flags);
 #else
-        o->BuildFieldUpdatePacket(&buf, getOffsetForStructuredField(WoWObject, dynamic_field), Flags);
+        o->BuildFieldUpdatePacket(&buf, Version::layouts().object.index(ObjectField::DynamicField), Flags);
 #endif
 
         Lock();

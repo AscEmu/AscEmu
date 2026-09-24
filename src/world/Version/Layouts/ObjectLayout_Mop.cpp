@@ -7,356 +7,410 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Version/ObjectLayout.hpp"
 
+#include <iterator>
+
 namespace Version::Tables
 {
-    static const FieldDesc mopObjectFields[] =
+    // WoWObject: 12 fields, 32 bytes
+    static const FieldEntry<ObjectField> mopObjectFields[] =
     {
-        {    0,   8 },  // Guid
-        { kNoField, 0 },  // Type - not in this version
-        {   20,   4 },  // Entry
-        {   28,   4 },  // ScaleX
-        { kNoField, 0 },  // PaddingObject - not in this version
-        {    8,   8 },  // Data
-        {   16,   4 },  // FieldType
-        {   24,   4 },  // DynamicField
+        { ObjectField::Guid,                     {    0,    8,   1,    0 } },
+        { ObjectField::GuidLow,                  {    0,    4,   1,    0 } },
+        { ObjectField::GuidHigh,                 {    4,    4,   1,    0 } },
+        { ObjectField::Data,                     {    8,    8,   1,    0 } },
+        { ObjectField::FieldType,                {   16,    4,   1,    0 } },
+        { ObjectField::FieldTypeType,            {   16,    2,   1,    0 } },
+        { ObjectField::FieldTypeGuildId,         {   18,    2,   1,    0 } },
+        { ObjectField::Entry,                    {   20,    4,   1,    0 } },
+        { ObjectField::DynamicField,             {   24,    4,   1,    0 } },
+        { ObjectField::DynamicFieldDynamicFlags, {   24,    2,   1,    0 } },
+        { ObjectField::DynamicFieldPathProgress, {   26,    2,   1,    0 } },
+        { ObjectField::ScaleX,                   {   28,    4,   1,    0 } },
     };
 
-    static const FieldDesc mopUnitFields[] =
+    // WoWUnit: 119 fields, 640 bytes
+    static const FieldEntry<UnitField> mopUnitFields[] =
     {
-        {   32,   8 },  // CharmGuid
-        {   40,   8 },  // SummonGuid
-        {   56,   8 },  // CharmedByGuid
-        {   64,   8 },  // SummonedByGuid
-        {   72,   8 },  // CreatedByGuid
-        {   88,   8 },  // TargetGuid
-        { kNoField, 0 },  // PersuadedGuid - not in this version
-        {  104,   8 },  // ChannelObjectGuid
-        {  132,   4 },  // Health
-        {  136,   4 },  // Power1
-        {  140,   4 },  // Power2
-        {  144,   4 },  // Power3
-        {  148,   4 },  // Power4
-        {  152,   4 },  // Power5
-        {  156,   4 },  // MaxHealth
-        {  160,   4 },  // MaxPower1
-        {  164,   4 },  // MaxPower2
-        {  168,   4 },  // MaxPower3
-        {  172,   4 },  // MaxPower4
-        {  176,   4 },  // MaxPower5
-        {  220,   4 },  // Level
-        {  228,   4 },  // FactionTemplate
-        {  120,   4 },  // FieldBytes0
-        {  232,  12 },  // VirtualItemSlotDisplay
-        { kNoField, 0 },  // VirtualItemInfo - not in this version
-        {  244,   4 },  // UnitFlags
-        { kNoField, 0 },  // Aura - not in this version
-        { kNoField, 0 },  // AuraFlags - not in this version
-        { kNoField, 0 },  // AuraLevels - not in this version
-        { kNoField, 0 },  // AuraApplications - not in this version
-        {  252,   4 },  // AuraState
-        {  256,  12 },  // BaseAttackTime
-        {  268,   4 },  // BoundingRadius
-        {  272,   4 },  // CombatReach
-        {  276,   4 },  // DisplayId
-        {  280,   4 },  // NativeDisplayId
-        {  284,   4 },  // MountDisplayId
-        {  288,   4 },  // MinimumDamage
-        {  292,   4 },  // MaximumDamage
-        {  296,   4 },  // MinimumOffhandDamage
-        {  300,   4 },  // MaximumOffhandDamage
-        {  304,   4 },  // FieldBytes1
-        {  308,   4 },  // PetNumber
-        {  312,   4 },  // PetNameTimestamp
-        {  316,   4 },  // PetExperience
-        {  320,   4 },  // PetNextLevelExperience
-        { kNoField, 0 },  // DynamicFlags - not in this version
-        {  112,   4 },  // ChannelSpell
-        {  324,   4 },  // ModCastSpeed
-        {  344,   4 },  // CreatedBySpellId
-        {  348,   8 },  // NpcFlags
-        {  356,   4 },  // NpcEmoteState
-        { kNoField, 0 },  // TrainingPoints - not in this version
-        {  360,  20 },  // Stat
-        {  420,  28 },  // Resistance
-        {  504,   4 },  // BaseMana
-        {  508,   4 },  // BaseHealth
-        {  512,   4 },  // FieldBytes2
-        {  516,   4 },  // AttackPower
-        { kNoField, 0 },  // AttackPowerMods - not in this version
-        {  528,   4 },  // AttackPowerMultiplier
-        {  532,   4 },  // RangedAttackPower
-        { kNoField, 0 },  // RangedAttackPowerMods - not in this version
-        {  544,   4 },  // RangedAttackPowerMultiplier
-        {  548,   4 },  // MinimumRangedDamage
-        {  552,   4 },  // MaximumRangedDamage
-        {  556,  28 },  // PowerCostModifier
-        {  584,  28 },  // PowerCostMultiplier
-        { kNoField, 0 },  // UnitPadding - not in this version
-        {  248,   4 },  // UnitFlags2
-        {  380,  20 },  // PositiveStat
-        {  400,  20 },  // NegativeStat
-        {  448,  28 },  // ResistanceBuffModPositive
-        {  476,  28 },  // ResistanceBuffModNegative
-        {  612,   4 },  // MaxHealthModifier
-        {   48,   8 },  // CritterGuid
-        { kNoField, 0 },  // Power6 - not in this version
-        { kNoField, 0 },  // Power7 - not in this version
-        { kNoField, 0 },  // MaxPower6 - not in this version
-        { kNoField, 0 },  // MaxPower7 - not in this version
-        {  180,  20 },  // PowerRegenFlatModifier
-        {  200,  20 },  // PowerRegenInterruptedFlatModifier
-        {  616,   4 },  // HoverHeight
-        {  328,   4 },  // ModCastHaste
-        {  520,   4 },  // AttackPowerModPos
-        {  524,   4 },  // AttackPowerModNeg
-        {  536,   4 },  // RangedAttackPowerModsPos
-        {  540,   4 },  // RangedAttackPowerModsNeg
-        {  624,   4 },  // MaxItemLevel
-        {   80,   8 },  // DemonCreatorGuid
-        {   96,   8 },  // BattlePetCompanionGuid
-        {  116,   4 },  // SummonedByHomeRealm
-        {  124,   4 },  // DisplayPower
-        {  128,   4 },  // OverrideDisplayPowerId
-        {  224,   4 },  // EffectiveLevel
-        {  332,   4 },  // ModHaste
-        {  336,   4 },  // ModRangedHaste
-        {  340,   4 },  // ModHasteRegen
-        {  620,   4 },  // MinItemLevel
-        {  628,   4 },  // WildBattlePetLevel
-        {  632,   4 },  // BattlePetCompanionNameTimestamp
-        {  636,   4 },  // InteractSpellId
+        { UnitField::CharmGuid,                         {   32,    8,   1,    0 } },
+        { UnitField::CharmGuidLow,                      {   32,    4,   1,    0 } },
+        { UnitField::CharmGuidHigh,                     {   36,    4,   1,    0 } },
+        { UnitField::SummonGuid,                        {   40,    8,   1,    0 } },
+        { UnitField::SummonGuidLow,                     {   40,    4,   1,    0 } },
+        { UnitField::SummonGuidHigh,                    {   44,    4,   1,    0 } },
+        { UnitField::CritterGuid,                       {   48,    8,   1,    0 } },
+        { UnitField::CritterGuidLow,                    {   48,    4,   1,    0 } },
+        { UnitField::CritterGuidHigh,                   {   52,    4,   1,    0 } },
+        { UnitField::CharmedByGuid,                     {   56,    8,   1,    0 } },
+        { UnitField::CharmedByGuidLow,                  {   56,    4,   1,    0 } },
+        { UnitField::CharmedByGuidHigh,                 {   60,    4,   1,    0 } },
+        { UnitField::SummonedByGuid,                    {   64,    8,   1,    0 } },
+        { UnitField::SummonedByGuidLow,                 {   64,    4,   1,    0 } },
+        { UnitField::SummonedByGuidHigh,                {   68,    4,   1,    0 } },
+        { UnitField::CreatedByGuid,                     {   72,    8,   1,    0 } },
+        { UnitField::CreatedByGuidLow,                  {   72,    4,   1,    0 } },
+        { UnitField::CreatedByGuidHigh,                 {   76,    4,   1,    0 } },
+        { UnitField::DemonCreatorGuid,                  {   80,    8,   1,    0 } },
+        { UnitField::DemonCreatorGuidLow,               {   80,    4,   1,    0 } },
+        { UnitField::DemonCreatorGuidHigh,              {   84,    4,   1,    0 } },
+        { UnitField::TargetGuid,                        {   88,    8,   1,    0 } },
+        { UnitField::TargetGuidLow,                     {   88,    4,   1,    0 } },
+        { UnitField::TargetGuidHigh,                    {   92,    4,   1,    0 } },
+        { UnitField::BattlePetCompanionGuid,            {   96,    8,   1,    0 } },
+        { UnitField::BattlePetCompanionGuidLow,         {   96,    4,   1,    0 } },
+        { UnitField::BattlePetCompanionGuidHigh,        {  100,    4,   1,    0 } },
+        { UnitField::ChannelObjectGuid,                 {  104,    8,   1,    0 } },
+        { UnitField::ChannelObjectGuidLow,              {  104,    4,   1,    0 } },
+        { UnitField::ChannelObjectGuidHigh,             {  108,    4,   1,    0 } },
+        { UnitField::ChannelSpell,                      {  112,    4,   1,    0 } },
+        { UnitField::SummonedByHomeRealm,               {  116,    4,   1,    0 } },
+        { UnitField::FieldBytes0,                       {  120,    4,   1,    0 } },
+        { UnitField::FieldBytes0Race,                   {  120,    1,   1,    0 } },
+        { UnitField::FieldBytes0UnitClass,              {  121,    1,   1,    0 } },
+        { UnitField::FieldBytes0ClassSpec,              {  122,    1,   1,    0 } },
+        { UnitField::FieldBytes0Gender,                 {  123,    1,   1,    0 } },
+        { UnitField::DisplayPower,                      {  124,    4,   1,    0 } },
+        { UnitField::OverrideDisplayPowerId,            {  128,    4,   1,    0 } },
+        { UnitField::Health,                            {  132,    4,   1,    0 } },
+        { UnitField::Power1,                            {  136,    4,   1,    0 } },
+        { UnitField::Power2,                            {  140,    4,   1,    0 } },
+        { UnitField::Power3,                            {  144,    4,   1,    0 } },
+        { UnitField::Power4,                            {  148,    4,   1,    0 } },
+        { UnitField::Power5,                            {  152,    4,   1,    0 } },
+        { UnitField::MaxHealth,                         {  156,    4,   1,    0 } },
+        { UnitField::MaxPower1,                         {  160,    4,   1,    0 } },
+        { UnitField::MaxPower2,                         {  164,    4,   1,    0 } },
+        { UnitField::MaxPower3,                         {  168,    4,   1,    0 } },
+        { UnitField::MaxPower4,                         {  172,    4,   1,    0 } },
+        { UnitField::MaxPower5,                         {  176,    4,   1,    0 } },
+        { UnitField::PowerRegenFlatModifier,            {  180,    4,   5,    4 } },
+        { UnitField::PowerRegenInterruptedFlatModifier, {  200,    4,   5,    4 } },
+        { UnitField::Level,                             {  220,    4,   1,    0 } },
+        { UnitField::EffectiveLevel,                    {  224,    4,   1,    0 } },
+        { UnitField::FactionTemplate,                   {  228,    4,   1,    0 } },
+        { UnitField::VirtualItemSlotDisplay,            {  232,    4,   3,    4 } },
+        { UnitField::UnitFlags,                         {  244,    4,   1,    0 } },
+        { UnitField::UnitFlags2,                        {  248,    4,   1,    0 } },
+        { UnitField::AuraState,                         {  252,    4,   1,    0 } },
+        { UnitField::BaseAttackTime,                    {  256,    4,   3,    4 } },
+        { UnitField::BoundingRadius,                    {  268,    4,   1,    0 } },
+        { UnitField::CombatReach,                       {  272,    4,   1,    0 } },
+        { UnitField::DisplayId,                         {  276,    4,   1,    0 } },
+        { UnitField::NativeDisplayId,                   {  280,    4,   1,    0 } },
+        { UnitField::MountDisplayId,                    {  284,    4,   1,    0 } },
+        { UnitField::MinimumDamage,                     {  288,    4,   1,    0 } },
+        { UnitField::MaximumDamage,                     {  292,    4,   1,    0 } },
+        { UnitField::MinimumOffhandDamage,              {  296,    4,   1,    0 } },
+        { UnitField::MaximumOffhandDamage,              {  300,    4,   1,    0 } },
+        { UnitField::FieldBytes1,                       {  304,    4,   1,    0 } },
+        { UnitField::FieldBytes1StandState,             {  304,    1,   1,    0 } },
+        { UnitField::FieldBytes1Unk1,                   {  305,    1,   1,    0 } },
+        { UnitField::FieldBytes1StandStateFlag,         {  306,    1,   1,    0 } },
+        { UnitField::FieldBytes1AnimationFlag,          {  307,    1,   1,    0 } },
+        { UnitField::PetNumber,                         {  308,    4,   1,    0 } },
+        { UnitField::PetNameTimestamp,                  {  312,    4,   1,    0 } },
+        { UnitField::PetExperience,                     {  316,    4,   1,    0 } },
+        { UnitField::PetNextLevelExperience,            {  320,    4,   1,    0 } },
+        { UnitField::ModCastSpeed,                      {  324,    4,   1,    0 } },
+        { UnitField::ModCastHaste,                      {  328,    4,   1,    0 } },
+        { UnitField::ModHaste,                          {  332,    4,   1,    0 } },
+        { UnitField::ModRangedHaste,                    {  336,    4,   1,    0 } },
+        { UnitField::ModHasteRegen,                     {  340,    4,   1,    0 } },
+        { UnitField::CreatedBySpellId,                  {  344,    4,   1,    0 } },
+        { UnitField::NpcFlags,                          {  348,    8,   1,    0 } },
+        { UnitField::NpcEmoteState,                     {  356,    4,   1,    0 } },
+        { UnitField::Stat,                              {  360,    4,   5,    4 } },
+        { UnitField::PositiveStat,                      {  380,    4,   5,    4 } },
+        { UnitField::NegativeStat,                      {  400,    4,   5,    4 } },
+        { UnitField::Resistance,                        {  420,    4,   7,    4 } },
+        { UnitField::ResistanceBuffModPositive,         {  448,    4,   7,    4 } },
+        { UnitField::ResistanceBuffModNegative,         {  476,    4,   7,    4 } },
+        { UnitField::BaseMana,                          {  504,    4,   1,    0 } },
+        { UnitField::BaseHealth,                        {  508,    4,   1,    0 } },
+        { UnitField::FieldBytes2,                       {  512,    4,   1,    0 } },
+        { UnitField::FieldBytes2SheathType,             {  512,    1,   1,    0 } },
+        { UnitField::FieldBytes2PvpFlag,                {  513,    1,   1,    0 } },
+        { UnitField::FieldBytes2PetFlag,                {  514,    1,   1,    0 } },
+        { UnitField::FieldBytes2ShapeShiftForm,         {  515,    1,   1,    0 } },
+        { UnitField::AttackPower,                       {  516,    4,   1,    0 } },
+        { UnitField::AttackPowerModPos,                 {  520,    4,   1,    0 } },
+        { UnitField::AttackPowerModNeg,                 {  524,    4,   1,    0 } },
+        { UnitField::AttackPowerMultiplier,             {  528,    4,   1,    0 } },
+        { UnitField::RangedAttackPower,                 {  532,    4,   1,    0 } },
+        { UnitField::RangedAttackPowerModsPos,          {  536,    4,   1,    0 } },
+        { UnitField::RangedAttackPowerModsNeg,          {  540,    4,   1,    0 } },
+        { UnitField::RangedAttackPowerMultiplier,       {  544,    4,   1,    0 } },
+        { UnitField::MinimumRangedDamage,               {  548,    4,   1,    0 } },
+        { UnitField::MaximumRangedDamage,               {  552,    4,   1,    0 } },
+        { UnitField::PowerCostModifier,                 {  556,    4,   7,    4 } },
+        { UnitField::PowerCostMultiplier,               {  584,    4,   7,    4 } },
+        { UnitField::MaxHealthModifier,                 {  612,    4,   1,    0 } },
+        { UnitField::HoverHeight,                       {  616,    4,   1,    0 } },
+        { UnitField::MinItemLevel,                      {  620,    4,   1,    0 } },
+        { UnitField::MaxItemLevel,                      {  624,    4,   1,    0 } },
+        { UnitField::WildBattlePetLevel,                {  628,    4,   1,    0 } },
+        { UnitField::BattlePetCompanionNameTimestamp,   {  632,    4,   1,    0 } },
+        { UnitField::InteractSpellId,                   {  636,    4,   1,    0 } },
     };
 
-    static const FieldDesc mopPlayerFields[] =
+    // WoWPlayer: 146 fields, 7948 bytes
+    static const FieldEntry<PlayerField> mopPlayerFields[] =
     {
-        {  640,   8 },  // DuelArbiter
-        {  648,   4 },  // PlayerFlags
-        { kNoField, 0 },  // GuildId - not in this version
-        {  652,   4 },  // GuildRank
-        {  664,   4 },  // PlayerBytes
-        {  668,   4 },  // PlayerBytes2
-        {  672,   4 },  // PlayerBytes3
-        {  676,   4 },  // DuelTeam
-        {  680,   4 },  // GuildTimestamp
-        {  684, 3000 },  // Quests
-        { 3684, 152 },  // VisibleItems
-        { 3860, 184 },  // InventorySlot
-        { 4044, 128 },  // PackSlot
-        { 4172, 224 },  // BankSlot
-        { 4396,  56 },  // BankBagSlot
-        { 4452,  96 },  // VendorBuyBackSlot
-        { kNoField, 0 },  // KeyRingSlot - not in this version
-        { 4548,   8 },  // FarsightGuid
-        { kNoField, 0 },  // FieldComboTarget - not in this version
-        { 4604,   4 },  // Xp
-        { 4608,   4 },  // NextLevelXp
-        { kNoField, 0 },  // SkillInfo - not in this version
-        { 6404,   4 },  // CharacterPoints1
-        { kNoField, 0 },  // CharacterPoints2 - not in this version
-        { 6412,   4 },  // TrackCreatures
-        { 6416,   4 },  // TrackResources
-        { 6436,   4 },  // BlockPct
-        { 6440,   4 },  // DodgePct
-        { 6444,   4 },  // ParryPct
-        { 6448,   4 },  // CritPct
-        { 6452,   4 },  // RangedCritPct
-        { 6508, 800 },  // ExploredZones
-        { 7308,   4 },  // RestStateXp
-        { 4596,   8 },  // FieldCoinage
-        { kNoField, 0 },  // PosStat - not in this version
-        { kNoField, 0 },  // NegStat - not in this version
-        { kNoField, 0 },  // ResistanceBuffModPositive - not in this version
-        { kNoField, 0 },  // ResistanceBuffModNegative - not in this version
-        { 7312,  28 },  // FieldModDamageDonePositive
-        { 7340,  28 },  // FieldModDamageDoneNegative
-        { 7368,  28 },  // FieldModDamageDonePct
-        { 7448,   4 },  // PlayerFieldBytes
-        { kNoField, 0 },  // AmmoId - not in this version
-        { 7452,   4 },  // SelfResurrectionSpell
-        { 7456,   4 },  // FieldPvpMedals
-        { 7460,  48 },  // FieldBuyBackPrice
-        { 7508,  48 },  // FieldBuyBackTimestamp
-        { kNoField, 0 },  // FieldSessionKills - not in this version
-        { kNoField, 0 },  // FieldYesterdayKills - not in this version
-        { kNoField, 0 },  // FieldLastWeekKills - not in this version
-        { kNoField, 0 },  // FieldThisWeekKills - not in this version
-        { kNoField, 0 },  // FieldThisWeekContribution - not in this version
-        { 7560,   4 },  // FieldLifetimeHonorableKills
-        { kNoField, 0 },  // FieldLifetimeDishonorableKills - not in this version
-        { kNoField, 0 },  // FieldYersterdayContribution - not in this version
-        { kNoField, 0 },  // FieldLastWeekContribution - not in this version
-        { kNoField, 0 },  // FieldLastWeekRank - not in this version
-        { kNoField, 0 },  // PlayerFieldBytes2 - not in this version
-        { 7564,   4 },  // FieldWatchedFactionIdx
-        { 7568, 108 },  // FieldCombatRating
-        { 3836,   4 },  // ChosenTitle
-        { kNoField, 0 },  // PlayerPadding0 - not in this version
-        { kNoField, 0 },  // VanityPetSlot - not in this version
-        { 4556,  40 },  // FieldKnownTitles
-        { 6420,   4 },  // Expertise
-        { 6424,   4 },  // OffhandExpertise
-        { 6456,   4 },  // OffhandCritPct
-        { 6460,  28 },  // SpellCritPct
-        { 6488,   4 },  // ShieldBlock
-        { 7396,   4 },  // FieldModHealingDone
-        { 7440,   4 },  // FieldModTargetResistance
-        { 7444,   4 },  // FieldModTargetPhysicalResistance
-        { 7556,   4 },  // FieldKills
-        { kNoField, 0 },  // FieldContributionToday - not in this version
-        { kNoField, 0 },  // FieldContributionYesterday - not in this version
-        { 7676,  96 },  // FieldArenaTeamInfo
-        { kNoField, 0 },  // FieldHonorCurrency - not in this version
-        { kNoField, 0 },  // FieldArenaCurrency - not in this version
-        { kNoField, 0 },  // FieldModManaRegen - not in this version
-        { kNoField, 0 },  // FieldModManaRegenInterrupt - not in this version
-        { 7772,   4 },  // FieldMaxLevel
-        { kNoField, 0 },  // FieldDailyQuests - not in this version
-        { 3840,   4 },  // Inebriation
-        { kNoField, 0 },  // CurrencytokenSlot - not in this version
-        { kNoField, 0 },  // FieldKnownCurrencies - not in this version
-        { 6492,   4 },  // ShieldBlockCritPct
-        { 7400,   4 },  // FieldModHealingPct
-        { 7404,   4 },  // FieldModHealingDonePct
-        { 7776,  16 },  // RuneRegen
-        { 7792,  16 },  // NoReagentCost
-        { 7808,  24 },  // FieldGlyphSlots
-        { 7832,  24 },  // FieldGlyphs
-        { 7856,   4 },  // GlyphsEnabled
-        { 7860,   4 },  // PetSpellPower
-        {  656,   4 },  // GuildDeleteDate
-        {  660,   4 },  // GuildLevel
-        { 4612, 1792 },  // FieldSkillInfo
-        { 6496,   4 },  // Mastery
-        { 7412,  12 },  // WeaponDmgMultiplier
-        { 7424,   4 },  // ModSpellPowerPct
-        { 7432,   4 },  // OverrideSpellPowerByApPct
-        { kNoField, 0 },  // BattlegroundRating - not in this version
-        { 7864,  32 },  // Researching
-        { kNoField, 0 },  // ResearchSite - not in this version
-        { 7896,   8 },  // ProfessionSkillLine
-        { 7904,   4 },  // UiHitMod
-        { 7908,   4 },  // UiHitSpellMod
-        { 7912,   4 },  // UiHomeRealmTimeOffset
-        { kNoField, 0 },  // ModHaste - not in this version
-        { kNoField, 0 },  // ModRangedHaste - not in this version
-        { 7916,   4 },  // ModPetHaste
-        { kNoField, 0 },  // ModHasteRegen - not in this version
-        { 3844,   4 },  // VirtualPlayerRealm
-        { 3848,   4 },  // CurrentSpecId
-        { 3852,   4 },  // TaxiMountAnimKitId
-        { 3856,   4 },  // CurrentBattlePetBreedQuality
-        { 6408,   4 },  // MaxTalentTiers
-        { 6428,   4 },  // RangedExpertise
-        { 6432,   4 },  // CombatRatingExpertise
-        { 6500,   4 },  // PvpPowerDamage
-        { 6504,   4 },  // PvpPowerHealing
-        { 7408,   4 },  // FieldModPeriodicHealingDonePct
-        { 7428,   4 },  // ModResiliencePct
-        { 7436,   4 },  // OverrideApBySpellPowerPct
-        { 7920,   8 },  // SummonedBattlePetGuid
-        { 7928,   4 },  // OverrideSpellId
-        { 7932,   4 },  // LfgBonusFactionId
-        { 7936,   4 },  // LootSpecId
-        { 7940,   4 },  // OverrideZonePvpType
-        { 7944,   4 },  // ItemLevelDelta
+        { PlayerField::DuelArbiter,                            {  640,    8,   1,    0 } },
+        { PlayerField::PlayerFlags,                            {  648,    4,   1,    0 } },
+        { PlayerField::GuildRank,                              {  652,    4,   1,    0 } },
+        { PlayerField::GuildDeleteDate,                        {  656,    4,   1,    0 } },
+        { PlayerField::GuildLevel,                             {  660,    4,   1,    0 } },
+        { PlayerField::PlayerBytes,                            {  664,    4,   1,    0 } },
+        { PlayerField::PlayerBytesSkinColor,                   {  664,    1,   1,    0 } },
+        { PlayerField::PlayerBytesFace,                        {  665,    1,   1,    0 } },
+        { PlayerField::PlayerBytesHairStyle,                   {  666,    1,   1,    0 } },
+        { PlayerField::PlayerBytesHornStyle,                   {  666,    1,   1,    0 } },
+        { PlayerField::PlayerBytesHairColor,                   {  667,    1,   1,    0 } },
+        { PlayerField::PlayerBytesHornColor,                   {  667,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2,                           {  668,    4,   1,    0 } },
+        { PlayerField::PlayerBytes2FacialHair,                 {  668,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2Piercings,                  {  668,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2Features,                   {  668,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2Markings,                   {  668,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2Hair,                       {  668,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2Earrings,                   {  668,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2Tusks,                      {  668,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2HornStyle,                  {  668,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2Ears,                       {  668,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2Unk1,                       {  669,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2BankSlots,                  {  670,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2RestState,                  {  671,    1,   1,    0 } },
+        { PlayerField::PlayerBytes3,                           {  672,    4,   1,    0 } },
+        { PlayerField::PlayerBytes3Gender,                     {  672,    1,   1,    0 } },
+        { PlayerField::PlayerBytes3DrunkValue,                 {  673,    1,   1,    0 } },
+        { PlayerField::PlayerBytes3PvpRank,                    {  674,    1,   1,    0 } },
+        { PlayerField::PlayerBytes3ArenaFaction,               {  675,    1,   1,    0 } },
+        { PlayerField::DuelTeam,                               {  676,    4,   1,    0 } },
+        { PlayerField::GuildTimestamp,                         {  680,    4,   1,    0 } },
+        { PlayerField::Quests,                                 {  684,   60,  50,   60 } },
+        { PlayerField::QuestsQuestId,                          {  684,    4,  50,   60 } },
+        { PlayerField::QuestsState,                            {  688,    4,  50,   60 } },
+        { PlayerField::QuestsRequiredMobOrGo,                  {  692,    8,  50,   60 } },
+        { PlayerField::QuestsExpireTime,                       {  700,    4,  50,   60 } },
+        { PlayerField::VisibleItems,                           { 3684,    8,  19,    8 } },
+        { PlayerField::VisibleItemsEntry,                      { 3684,    4,  19,    8 } },
+        { PlayerField::VisibleItemsEnchantment,                { 3688,    4,  19,    8 } },
+        { PlayerField::VisibleItemsEnchantmentPermEnchantment, { 3688,    2,  19,    8 } },
+        { PlayerField::VisibleItemsEnchantmentTempEnchantment, { 3690,    2,  19,    8 } },
+        { PlayerField::ChosenTitle,                            { 3836,    4,   1,    0 } },
+        { PlayerField::Inebriation,                            { 3840,    4,   1,    0 } },
+        { PlayerField::VirtualPlayerRealm,                     { 3844,    4,   1,    0 } },
+        { PlayerField::CurrentSpecId,                          { 3848,    4,   1,    0 } },
+        { PlayerField::TaxiMountAnimKitId,                     { 3852,    4,   1,    0 } },
+        { PlayerField::CurrentBattlePetBreedQuality,           { 3856,    4,   1,    0 } },
+        { PlayerField::InventorySlot,                          { 3860,    8,  23,    8 } },
+        { PlayerField::PackSlot,                               { 4044,    8,  16,    8 } },
+        { PlayerField::BankSlot,                               { 4172,    8,  28,    8 } },
+        { PlayerField::BankBagSlot,                            { 4396,    8,   7,    8 } },
+        { PlayerField::VendorBuyBackSlot,                      { 4452,    8,  12,    8 } },
+        { PlayerField::FarsightGuid,                           { 4548,    8,   1,    0 } },
+        { PlayerField::FieldKnownTitles,                       { 4556,    8,   5,    8 } },
+        { PlayerField::FieldCoinage,                           { 4596,    8,   1,    0 } },
+        { PlayerField::Xp,                                     { 4604,    4,   1,    0 } },
+        { PlayerField::NextLevelXp,                            { 4608,    4,   1,    0 } },
+        { PlayerField::FieldSkillInfo,                         { 4612, 1792,   1,    0 } },
+        { PlayerField::FieldSkillInfoSkillId,                  { 4612,    4, 448,    4 } },
+        { PlayerField::FieldSkillInfoSkillLine,                { 4612,    4,  64,    4 } },
+        { PlayerField::FieldSkillInfoSkillStep,                { 4868,    4,  64,    4 } },
+        { PlayerField::FieldSkillInfoSkillRank,                { 5124,    4,  64,    4 } },
+        { PlayerField::FieldSkillInfoSkillStartingRank,        { 5380,    4,  64,    4 } },
+        { PlayerField::FieldSkillInfoSkillMaxRank,             { 5636,    4,  64,    4 } },
+        { PlayerField::FieldSkillInfoSkillMod,                 { 5892,    4,  64,    4 } },
+        { PlayerField::FieldSkillInfoSkillTalent,              { 6148,    4,  64,    4 } },
+        { PlayerField::CharacterPoints1,                       { 6404,    4,   1,    0 } },
+        { PlayerField::MaxTalentTiers,                         { 6408,    4,   1,    0 } },
+        { PlayerField::TrackCreatures,                         { 6412,    4,   1,    0 } },
+        { PlayerField::TrackResources,                         { 6416,    4,   1,    0 } },
+        { PlayerField::Expertise,                              { 6420,    4,   1,    0 } },
+        { PlayerField::OffhandExpertise,                       { 6424,    4,   1,    0 } },
+        { PlayerField::RangedExpertise,                        { 6428,    4,   1,    0 } },
+        { PlayerField::CombatRatingExpertise,                  { 6432,    4,   1,    0 } },
+        { PlayerField::BlockPct,                               { 6436,    4,   1,    0 } },
+        { PlayerField::DodgePct,                               { 6440,    4,   1,    0 } },
+        { PlayerField::ParryPct,                               { 6444,    4,   1,    0 } },
+        { PlayerField::CritPct,                                { 6448,    4,   1,    0 } },
+        { PlayerField::RangedCritPct,                          { 6452,    4,   1,    0 } },
+        { PlayerField::OffhandCritPct,                         { 6456,    4,   1,    0 } },
+        { PlayerField::SpellCritPct,                           { 6460,    4,   7,    4 } },
+        { PlayerField::ShieldBlock,                            { 6488,    4,   1,    0 } },
+        { PlayerField::ShieldBlockCritPct,                     { 6492,    4,   1,    0 } },
+        { PlayerField::Mastery,                                { 6496,    4,   1,    0 } },
+        { PlayerField::PvpPowerDamage,                         { 6500,    4,   1,    0 } },
+        { PlayerField::PvpPowerHealing,                        { 6504,    4,   1,    0 } },
+        { PlayerField::ExploredZones,                          { 6508,    4, 200,    4 } },
+        { PlayerField::RestStateXp,                            { 7308,    4,   1,    0 } },
+        { PlayerField::FieldModDamageDonePositive,             { 7312,    4,   7,    4 } },
+        { PlayerField::FieldModDamageDoneNegative,             { 7340,    4,   7,    4 } },
+        { PlayerField::FieldModDamageDonePct,                  { 7368,    4,   7,    4 } },
+        { PlayerField::FieldModHealingDone,                    { 7396,    4,   1,    0 } },
+        { PlayerField::FieldModHealingPct,                     { 7400,    4,   1,    0 } },
+        { PlayerField::FieldModHealingDonePct,                 { 7404,    4,   1,    0 } },
+        { PlayerField::FieldModPeriodicHealingDonePct,         { 7408,    4,   1,    0 } },
+        { PlayerField::WeaponDmgMultiplier,                    { 7412,    4,   3,    4 } },
+        { PlayerField::ModSpellPowerPct,                       { 7424,    4,   1,    0 } },
+        { PlayerField::ModResiliencePct,                       { 7428,    4,   1,    0 } },
+        { PlayerField::OverrideSpellPowerByApPct,              { 7432,    4,   1,    0 } },
+        { PlayerField::OverrideApBySpellPowerPct,              { 7436,    4,   1,    0 } },
+        { PlayerField::FieldModTargetResistance,               { 7440,    4,   1,    0 } },
+        { PlayerField::FieldModTargetPhysicalResistance,       { 7444,    4,   1,    0 } },
+        { PlayerField::PlayerFieldBytes,                       { 7448,    4,   1,    0 } },
+        { PlayerField::PlayerFieldBytesMiscFlags,              { 7448,    1,   1,    0 } },
+        { PlayerField::PlayerFieldBytesRafLevel,               { 7449,    1,   1,    0 } },
+        { PlayerField::PlayerFieldBytesEnabledActionBars,      { 7450,    1,   1,    0 } },
+        { PlayerField::PlayerFieldBytesMaxPvpRank,             { 7451,    1,   1,    0 } },
+        { PlayerField::SelfResurrectionSpell,                  { 7452,    4,   1,    0 } },
+        { PlayerField::FieldPvpMedals,                         { 7456,    4,   1,    0 } },
+        { PlayerField::FieldBuyBackPrice,                      { 7460,    4,  12,    4 } },
+        { PlayerField::FieldBuyBackTimestamp,                  { 7508,    4,  12,    4 } },
+        { PlayerField::FieldKills,                             { 7556,    4,   1,    0 } },
+        { PlayerField::FieldKillsKillsToday,                   { 7556,    2,   1,    0 } },
+        { PlayerField::FieldKillsKillsYesterday,               { 7558,    2,   1,    0 } },
+        { PlayerField::FieldLifetimeHonorableKills,            { 7560,    4,   1,    0 } },
+        { PlayerField::FieldWatchedFactionIdx,                 { 7564,    4,   1,    0 } },
+        { PlayerField::FieldCombatRating,                      { 7568,    4,  27,    4 } },
+        { PlayerField::FieldArenaTeamInfo,                     { 7676,   32,   3,   32 } },
+        { PlayerField::FieldArenaTeamInfoTeamId,               { 7676,    4,   3,   32 } },
+        { PlayerField::FieldArenaTeamInfoType,                 { 7680,    4,   3,   32 } },
+        { PlayerField::FieldArenaTeamInfoMemberRank,           { 7684,    4,   3,   32 } },
+        { PlayerField::FieldArenaTeamInfoGamesWeek,            { 7688,    4,   3,   32 } },
+        { PlayerField::FieldArenaTeamInfoGamesSeason,          { 7692,    4,   3,   32 } },
+        { PlayerField::FieldArenaTeamInfoWinsSeason,           { 7696,    4,   3,   32 } },
+        { PlayerField::FieldArenaTeamInfoPersonalRating,       { 7700,    4,   3,   32 } },
+        { PlayerField::FieldArenaTeamInfoUnk,                  { 7704,    4,   3,   32 } },
+        { PlayerField::FieldMaxLevel,                          { 7772,    4,   1,    0 } },
+        { PlayerField::RuneRegen,                              { 7776,    4,   4,    4 } },
+        { PlayerField::NoReagentCost,                          { 7792,    4,   4,    4 } },
+        { PlayerField::FieldGlyphSlots,                        { 7808,    4,   6,    4 } },
+        { PlayerField::FieldGlyphs,                            { 7832,    4,   6,    4 } },
+        { PlayerField::GlyphsEnabled,                          { 7856,    4,   1,    0 } },
+        { PlayerField::PetSpellPower,                          { 7860,    4,   1,    0 } },
+        { PlayerField::Researching,                            { 7864,    4,   8,    4 } },
+        { PlayerField::ProfessionSkillLine,                    { 7896,    4,   2,    4 } },
+        { PlayerField::UiHitMod,                               { 7904,    4,   1,    0 } },
+        { PlayerField::UiHitSpellMod,                          { 7908,    4,   1,    0 } },
+        { PlayerField::UiHomeRealmTimeOffset,                  { 7912,    4,   1,    0 } },
+        { PlayerField::ModPetHaste,                            { 7916,    4,   1,    0 } },
+        { PlayerField::SummonedBattlePetGuid,                  { 7920,    8,   1,    0 } },
+        { PlayerField::OverrideSpellId,                        { 7928,    4,   1,    0 } },
+        { PlayerField::LfgBonusFactionId,                      { 7932,    4,   1,    0 } },
+        { PlayerField::LootSpecId,                             { 7936,    4,   1,    0 } },
+        { PlayerField::OverrideZonePvpType,                    { 7940,    4,   1,    0 } },
+        { PlayerField::ItemLevelDelta,                         { 7944,    4,   1,    0 } },
     };
 
-    static const FieldDesc mopItemFields[] =
+    // WoWItem: 26 fields, 276 bytes
+    static const FieldEntry<ItemField> mopItemFields[] =
     {
-        {   32,   8 },  // OwnerGuid
-        {   40,   8 },  // ContainerGuid
-        {   48,   8 },  // CreatorGuid
-        {   56,   8 },  // GiftCreatorGuid
-        {   64,   4 },  // StackCount
-        {   68,   4 },  // Duration
-        {   72,  20 },  // SpellCharges
-        {   92,   4 },  // Flags
-        {   96, 156 },  // Enchantment
-        {  252,   4 },  // PropertySeed
-        {  256,   4 },  // RandomPropertiesId
-        { kNoField, 0 },  // ItemTextId - not in this version
-        {  260,   4 },  // Durability
-        {  264,   4 },  // MaxDurability
-        {  268,   4 },  // CreatePlayedTime
-        { kNoField, 0 },  // ItemPadding0 - not in this version
-        {  272,   4 },  // ModifierMask
+        { ItemField::OwnerGuid,           {   32,    8,   1,    0 } },
+        { ItemField::OwnerGuidLow,        {   32,    4,   1,    0 } },
+        { ItemField::OwnerGuidHigh,       {   36,    4,   1,    0 } },
+        { ItemField::ContainerGuid,       {   40,    8,   1,    0 } },
+        { ItemField::ContainerGuidLow,    {   40,    4,   1,    0 } },
+        { ItemField::ContainerGuidHigh,   {   44,    4,   1,    0 } },
+        { ItemField::CreatorGuid,         {   48,    8,   1,    0 } },
+        { ItemField::CreatorGuidLow,      {   48,    4,   1,    0 } },
+        { ItemField::CreatorGuidHigh,     {   52,    4,   1,    0 } },
+        { ItemField::GiftCreatorGuid,     {   56,    8,   1,    0 } },
+        { ItemField::GiftCreatorGuidLow,  {   56,    4,   1,    0 } },
+        { ItemField::GiftCreatorGuidHigh, {   60,    4,   1,    0 } },
+        { ItemField::StackCount,          {   64,    4,   1,    0 } },
+        { ItemField::Duration,            {   68,    4,   1,    0 } },
+        { ItemField::SpellCharges,        {   72,    4,   5,    4 } },
+        { ItemField::Flags,               {   92,    4,   1,    0 } },
+        { ItemField::Enchantment,         {   96,   12,  13,   12 } },
+        { ItemField::EnchantmentId,       {   96,    4,  13,   12 } },
+        { ItemField::EnchantmentDuration, {  100,    4,  13,   12 } },
+        { ItemField::EnchantmentCharges,  {  104,    4,  13,   12 } },
+        { ItemField::PropertySeed,        {  252,    4,   1,    0 } },
+        { ItemField::RandomPropertiesId,  {  256,    4,   1,    0 } },
+        { ItemField::Durability,          {  260,    4,   1,    0 } },
+        { ItemField::MaxDurability,       {  264,    4,   1,    0 } },
+        { ItemField::CreatePlayedTime,    {  268,    4,   1,    0 } },
+        { ItemField::ModifierMask,        {  272,    4,   1,    0 } },
     };
 
-    static const FieldDesc mopContainerFields[] =
+    // WoWContainer: 4 fields, 568 bytes
+    static const FieldEntry<ContainerField> mopContainerFields[] =
     {
-        {  564,   4 },  // SlotCount
-        { kNoField, 0 },  // PaddingContainer - not in this version
-        {  276, 288 },  // ItemSlot
-        { kNoField, 0 },  // ContainerPadding0 - not in this version
+        { ContainerField::ItemSlot,     {  276,    8,  36,    8 } },
+        { ContainerField::ItemSlotLow,  {  276,    4,  36,    8 } },
+        { ContainerField::ItemSlotHigh, {  280,    4,  36,    8 } },
+        { ContainerField::SlotCount,    {  564,    4,   1,    0 } },
     };
 
-    static const FieldDesc mopGameObjectFields[] =
+    // WoWGameObject: 18 fields, 80 bytes
+    static const FieldEntry<GameObjectField> mopGameObjectFields[] =
     {
-        {   32,   8 },  // ObjectFieldCreatedBy
-        {   40,   4 },  // DisplayId
-        {   44,   4 },  // Flags
-        {   48,  16 },  // Rotation
-        { kNoField, 0 },  // State - not in this version
-        { kNoField, 0 },  // X - not in this version
-        { kNoField, 0 },  // Y - not in this version
-        { kNoField, 0 },  // Z - not in this version
-        { kNoField, 0 },  // O - not in this version
-        { kNoField, 0 },  // Dynamic - not in this version
-        {   64,   4 },  // FactionTemplate
-        { kNoField, 0 },  // Type - not in this version
-        {   68,   4 },  // Level
-        { kNoField, 0 },  // ArtKit - not in this version
-        { kNoField, 0 },  // AnimationProgress - not in this version
-        { kNoField, 0 },  // GameobjectPadding - not in this version
-        {   72,   4 },  // Bytes1
-        {   76,   4 },  // Bytes2
+        { GameObjectField::ObjectFieldCreatedBy,     {   32,    8,   1,    0 } },
+        { GameObjectField::ObjectFieldCreatedByLow,  {   32,    4,   1,    0 } },
+        { GameObjectField::ObjectFieldCreatedByHigh, {   36,    4,   1,    0 } },
+        { GameObjectField::DisplayId,                {   40,    4,   1,    0 } },
+        { GameObjectField::Flags,                    {   44,    4,   1,    0 } },
+        { GameObjectField::Rotation,                 {   48,    4,   4,    4 } },
+        { GameObjectField::FactionTemplate,          {   64,    4,   1,    0 } },
+        { GameObjectField::Level,                    {   68,    4,   1,    0 } },
+        { GameObjectField::Bytes1,                   {   72,    4,   1,    0 } },
+        { GameObjectField::Bytes1State,              {   72,    1,   1,    0 } },
+        { GameObjectField::Bytes1Type,               {   73,    1,   1,    0 } },
+        { GameObjectField::Bytes1Unk,                {   74,    1,   1,    0 } },
+        { GameObjectField::Bytes1Health,             {   75,    1,   1,    0 } },
+        { GameObjectField::Bytes2,                   {   76,    4,   1,    0 } },
+        { GameObjectField::Bytes2Transparency,       {   76,    1,   1,    0 } },
+        { GameObjectField::Bytes2ArtKit,             {   77,    1,   1,    0 } },
+        { GameObjectField::Bytes2Unk2,               {   78,    1,   1,    0 } },
+        { GameObjectField::Bytes2AnimationProgress,  {   79,    1,   1,    0 } },
     };
 
-    static const FieldDesc mopDynamicObjectFields[] =
+    // WoWDynamicObject: 6 fields, 56 bytes
+    static const FieldEntry<DynamicObjectField> mopDynamicObjectFields[] =
     {
-        {   32,   8 },  // CasterGuid
-        {   40,   4 },  // DynamicobjectBytes
-        {   44,   4 },  // SpellId
-        {   48,   4 },  // Radius
-        { kNoField, 0 },  // X - not in this version
-        { kNoField, 0 },  // Y - not in this version
-        { kNoField, 0 },  // Z - not in this version
-        { kNoField, 0 },  // O - not in this version
-        { kNoField, 0 },  // Padding - not in this version
-        {   52,   4 },  // CastTime
+        { DynamicObjectField::CasterGuid,            {   32,    8,   1,    0 } },
+        { DynamicObjectField::DynamicobjectBytes,    {   40,    4,   1,    0 } },
+        { DynamicObjectField::DynamicobjectBytesRaw, {   40,    4,   1,    0 } },
+        { DynamicObjectField::SpellId,               {   44,    4,   1,    0 } },
+        { DynamicObjectField::Radius,                {   48,    4,   1,    0 } },
+        { DynamicObjectField::CastTime,              {   52,    4,   1,    0 } },
     };
 
-    static const FieldDesc mopCorpseFields[] =
+    // WoWCorpse: 16 fields, 144 bytes
+    static const FieldEntry<CorpseField> mopCorpseFields[] =
     {
-        {   32,   8 },  // OwnerGuid
-        {   40,   8 },  // PartyGuid
-        { kNoField, 0 },  // O - not in this version
-        { kNoField, 0 },  // X - not in this version
-        { kNoField, 0 },  // Y - not in this version
-        { kNoField, 0 },  // Z - not in this version
-        {   48,   4 },  // DisplayId
-        {   52,  76 },  // Item
-        {  128,   4 },  // CorpseBytes1
-        {  132,   4 },  // CorpseBytes2
-        { kNoField, 0 },  // Guild - not in this version
-        {  136,   4 },  // CorpseFlags
-        {  140,   4 },  // DynamicFlags
-        { kNoField, 0 },  // CorpsePadding - not in this version
+        { CorpseField::OwnerGuid,              {   32,    8,   1,    0 } },
+        { CorpseField::PartyGuid,              {   40,    8,   1,    0 } },
+        { CorpseField::DisplayId,              {   48,    4,   1,    0 } },
+        { CorpseField::Item,                   {   52,    4,  19,    4 } },
+        { CorpseField::CorpseBytes1,           {  128,    4,   1,    0 } },
+        { CorpseField::CorpseBytes1Unk1,       {  128,    1,   1,    0 } },
+        { CorpseField::CorpseBytes1Race,       {  129,    1,   1,    0 } },
+        { CorpseField::CorpseBytes1Gender,     {  130,    1,   1,    0 } },
+        { CorpseField::CorpseBytes1SkinColor,  {  131,    1,   1,    0 } },
+        { CorpseField::CorpseBytes2,           {  132,    4,   1,    0 } },
+        { CorpseField::CorpseBytes2Face,       {  132,    1,   1,    0 } },
+        { CorpseField::CorpseBytes2HairStyle,  {  133,    1,   1,    0 } },
+        { CorpseField::CorpseBytes2HairColor,  {  134,    1,   1,    0 } },
+        { CorpseField::CorpseBytes2FacialHair, {  135,    1,   1,    0 } },
+        { CorpseField::CorpseFlags,            {  136,    4,   1,    0 } },
+        { CorpseField::DynamicFlags,           {  140,    4,   1,    0 } },
     };
 
-    static const FieldDesc mopAreaTriggerFields[] =
+    // WoWAreaTrigger: 7 fields, 56 bytes
+    static const FieldEntry<AreaTriggerField> mopAreaTriggerFields[] =
     {
-        {   44,   4 },  // SpellId
-        {   48,   4 },  // SpellVisualId
-        {   40,   4 },  // Duration
-        { kNoField, 0 },  // PosX - not in this version
-        { kNoField, 0 },  // PosY - not in this version
-        { kNoField, 0 },  // PosZ - not in this version
-        {   32,   8 },  // CasterGuid
-        {   52,   4 },  // Scale
+        { AreaTriggerField::CasterGuid,     {   32,    8,   1,    0 } },
+        { AreaTriggerField::CasterGuidLow,  {   32,    4,   1,    0 } },
+        { AreaTriggerField::CasterGuidHigh, {   36,    4,   1,    0 } },
+        { AreaTriggerField::Duration,       {   40,    4,   1,    0 } },
+        { AreaTriggerField::SpellId,        {   44,    4,   1,    0 } },
+        { AreaTriggerField::SpellVisualId,  {   48,    4,   1,    0 } },
+        { AreaTriggerField::Scale,          {   52,    4,   1,    0 } },
     };
 
-    const ExpansionLayouts mopLayouts
+    const ExpansionLayoutSources mopLayouts
     {
         { mopObjectFields, static_cast<uint16_t>(std::size(mopObjectFields)), 32 },  // object
         { mopUnitFields, static_cast<uint16_t>(std::size(mopUnitFields)), 640 },  // unit

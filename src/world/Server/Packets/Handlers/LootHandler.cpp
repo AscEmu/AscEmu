@@ -32,6 +32,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Spell.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/PacketBroadcast.hpp"
+#include "Version/ObjectLayout.hpp"
+
+using Version::ObjectField;
+using Version::UnitField;
 
 using namespace AscEmu::Packets;
 
@@ -513,16 +517,16 @@ void WorldSession::doLootRelease(WoWGuid lguid)
                     if (creature->isTaggedByPlayerOrItsGroup(plr))
                     {
 #if VERSION_STRING < Mop
-                        creature->BuildFieldUpdatePacket(plr, getOffsetForStructuredField(WoWUnit, dynamic_flags), 0);
+                        creature->BuildFieldUpdatePacket(plr, Version::layouts().unit.index(UnitField::DynamicFlags), 0);
 #else
-                        creature->BuildFieldUpdatePacket(plr, getOffsetForStructuredField(WoWObject, dynamic_field), 0);
+                        creature->BuildFieldUpdatePacket(plr, Version::layouts().object.index(ObjectField::DynamicField), 0);
 #endif
                     }
                 }
 
                 // Make our Creature Skinnable when possible
                 if (!creature->Skinned && sLootMgr.isSkinnable(creature->getEntry()))
-                    creature->BuildFieldUpdatePacket(_player, getOffsetForStructuredField(WoWUnit, unit_flags), UNIT_FLAG_SKINNABLE);
+                    creature->BuildFieldUpdatePacket(_player, Version::layouts().unit.index(UnitField::UnitFlags), UNIT_FLAG_SKINNABLE);
             }
             else
             {

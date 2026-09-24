@@ -103,6 +103,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/PacketBroadcast.hpp"
 
 #include <algorithm>
+#include "Version/ObjectLayout.hpp"
+
+using Version::UnitField;
 
 using namespace AscEmu::Packets;
 
@@ -412,38 +415,36 @@ void Unit::die(Unit* /*pAttacker*/, uint32_t /*damage*/, uint32_t /*spellid*/)
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 
-uint64_t Unit::getCharmGuid() const { return unitData()->charm_guid.guid; };
-void Unit::setCharmGuid(uint64_t guid) { write(unitData()->charm_guid.guid, guid); }
+uint64_t Unit::getCharmGuid() const { return getField<uint64_t>(UnitField::CharmGuid); };
+void Unit::setCharmGuid(uint64_t guid) { setField<uint64_t>(UnitField::CharmGuid, guid); }
 
-uint64_t Unit::getSummonGuid() const { return unitData()->summon_guid.guid; };
-void Unit::setSummonGuid(uint64_t guid) { write(unitData()->summon_guid.guid, guid); }
+uint64_t Unit::getSummonGuid() const { return getField<uint64_t>(UnitField::SummonGuid); };
+void Unit::setSummonGuid(uint64_t guid) { setField<uint64_t>(UnitField::SummonGuid, guid); }
 
-#if VERSION_STRING > TBC
-uint64_t Unit::getCritterGuid() const { return unitData()->critter_guid.guid; };
-void Unit::setCritterGuid(uint64_t guid) { write(unitData()->critter_guid.guid, guid); }
-#endif
+uint64_t Unit::getCritterGuid() const { return getField<uint64_t>(UnitField::CritterGuid); };
+void Unit::setCritterGuid(uint64_t guid) { setField<uint64_t>(UnitField::CritterGuid, guid); }
 
-uint64_t Unit::getCharmedByGuid() const { return unitData()->charmed_by_guid.guid; };
-void Unit::setCharmedByGuid(uint64_t guid) { write(unitData()->charmed_by_guid.guid, guid); }
+uint64_t Unit::getCharmedByGuid() const { return getField<uint64_t>(UnitField::CharmedByGuid); };
+void Unit::setCharmedByGuid(uint64_t guid) { setField<uint64_t>(UnitField::CharmedByGuid, guid); }
 
-uint64_t Unit::getSummonedByGuid() const { return unitData()->summoned_by_guid.guid; };
-void Unit::setSummonedByGuid(uint64_t guid) { write(unitData()->summoned_by_guid.guid, guid); }
+uint64_t Unit::getSummonedByGuid() const { return getField<uint64_t>(UnitField::SummonedByGuid); };
+void Unit::setSummonedByGuid(uint64_t guid) { setField<uint64_t>(UnitField::SummonedByGuid, guid); }
 
-uint64_t Unit::getCreatedByGuid() const { return unitData()->created_by_guid.guid; };
-void Unit::setCreatedByGuid(uint64_t guid) { write(unitData()->created_by_guid.guid, guid); }
+uint64_t Unit::getCreatedByGuid() const { return getField<uint64_t>(UnitField::CreatedByGuid); };
+void Unit::setCreatedByGuid(uint64_t guid) { setField<uint64_t>(UnitField::CreatedByGuid, guid); }
 
-uint64_t Unit::getTargetGuid() const { return unitData()->target_guid.guid; };
-void Unit::setTargetGuid(uint64_t guid) { write(unitData()->target_guid.guid, guid); }
+uint64_t Unit::getTargetGuid() const { return getField<uint64_t>(UnitField::TargetGuid); };
+void Unit::setTargetGuid(uint64_t guid) { setField<uint64_t>(UnitField::TargetGuid, guid); }
 
-uint64_t Unit::getChannelObjectGuid() const { return unitData()->channel_object_guid.guid; };
-void Unit::setChannelObjectGuid(uint64_t guid) { write(unitData()->channel_object_guid.guid, guid); }
+uint64_t Unit::getChannelObjectGuid() const { return getField<uint64_t>(UnitField::ChannelObjectGuid); };
+void Unit::setChannelObjectGuid(uint64_t guid) { setField<uint64_t>(UnitField::ChannelObjectGuid, guid); }
 
-uint32_t Unit::getChannelSpellId() const { return unitData()->channel_spell; };
-void Unit::setChannelSpellId(uint32_t spell_id) { write(unitData()->channel_spell, spell_id); }
+uint32_t Unit::getChannelSpellId() const { return getField<uint32_t>(UnitField::ChannelSpell); };
+void Unit::setChannelSpellId(uint32_t spell_id) { setField<uint32_t>(UnitField::ChannelSpell, spell_id); }
 
 //bytes_0 begin
-uint32_t Unit::getBytes0() const { return unitData()->field_bytes_0.raw; }
-void Unit::setBytes0(uint32_t bytes) { write(unitData()->field_bytes_0.raw, bytes); }
+uint32_t Unit::getBytes0() const { return getField<uint32_t>(UnitField::FieldBytes0); }
+void Unit::setBytes0(uint32_t bytes) { setField<uint32_t>(UnitField::FieldBytes0, bytes); }
 
 uint8_t Unit::getBytes0ByOffset(uint32_t offset) const
 {
@@ -485,20 +486,20 @@ void Unit::setBytes0ForOffset(uint32_t offset, uint8_t value)
     }
 }
 
-uint8_t Unit::getRace() const { return unitData()->field_bytes_0.s.race; }
-void Unit::setRace(uint8_t race) { write(unitData()->field_bytes_0.s.race, race); }
+uint8_t Unit::getRace() const { return getField<uint8_t>(UnitField::FieldBytes0Race); }
+void Unit::setRace(uint8_t race) { setField<uint8_t>(UnitField::FieldBytes0Race, race); }
 
-uint8_t Unit::getClass() const { return unitData()->field_bytes_0.s.unit_class; }
-void Unit::setClass(uint8_t class_) { write(unitData()->field_bytes_0.s.unit_class, class_); }
+uint8_t Unit::getClass() const { return getField<uint8_t>(UnitField::FieldBytes0UnitClass); }
+void Unit::setClass(uint8_t class_) { setField<uint8_t>(UnitField::FieldBytes0UnitClass, class_); }
 
-uint8_t Unit::getGender() const { return unitData()->field_bytes_0.s.gender; }
-void Unit::setGender(uint8_t gender) { write(unitData()->field_bytes_0.s.gender, gender); }
+uint8_t Unit::getGender() const { return getField<uint8_t>(UnitField::FieldBytes0Gender); }
+void Unit::setGender(uint8_t gender) { setField<uint8_t>(UnitField::FieldBytes0Gender, gender); }
 
 #if VERSION_STRING == Mop
-PowerType Unit::getPowerType() const { return static_cast<PowerType>(unitData()->display_power); }
+PowerType Unit::getPowerType() const { return static_cast<PowerType>(getField<uint32_t>(UnitField::DisplayPower)); }
 void Unit::setPowerType(uint8_t powerType)
 {
-    write(unitData()->display_power, static_cast<uint32_t>(powerType));
+    setField<uint32_t>(UnitField::DisplayPower, static_cast<uint32_t>(powerType));
 
     // Update power type also to group
     const auto plr = getPlayerOwnerOrSelf();
@@ -508,10 +509,10 @@ void Unit::setPowerType(uint8_t powerType)
     plr->addGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_POWER_TYPE : GROUP_UPDATE_FLAG_PET_POWER_TYPE);
 }
 #else
-PowerType Unit::getPowerType() const { return static_cast<PowerType>(unitData()->field_bytes_0.s.power_type); }
+PowerType Unit::getPowerType() const { return static_cast<PowerType>(getField<uint8_t>(UnitField::FieldBytes0PowerType)); }
 void Unit::setPowerType(uint8_t powerType)
 {
-    write(unitData()->field_bytes_0.s.power_type, powerType);
+    setField<uint8_t>(UnitField::FieldBytes0PowerType, powerType);
 
 #if VERSION_STRING == TBC
     // TODO Fix this later
@@ -529,13 +530,13 @@ void Unit::setPowerType(uint8_t powerType)
 #endif
 //bytes_0 end
 
-uint32_t Unit::getHealth() const { return unitData()->health; }
+uint32_t Unit::getHealth() const { return getField<uint32_t>(UnitField::Health); }
 void Unit::setHealth(uint32_t health)
 {
     const auto maxHealth = getMaxHealth();
     health = std::min(health, maxHealth);
 
-    write(unitData()->health, health);
+    setField<uint32_t>(UnitField::Health, health);
 
 #if VERSION_STRING == TBC
     // TODO Fix this later
@@ -574,20 +575,20 @@ uint32_t Unit::getPower(PowerType type) const
     switch (powerIndex)
     {
         case POWER_FIELD_INDEX_1:
-            return unitData()->power_1;
+            return getField<uint32_t>(UnitField::Power1);
         case POWER_FIELD_INDEX_2:
-            return unitData()->power_2;
+            return getField<uint32_t>(UnitField::Power2);
         case POWER_FIELD_INDEX_3:
-            return unitData()->power_3;
+            return getField<uint32_t>(UnitField::Power3);
         case POWER_FIELD_INDEX_4:
-            return unitData()->power_4;
+            return getField<uint32_t>(UnitField::Power4);
         case POWER_FIELD_INDEX_5:
-            return unitData()->power_5;
+            return getField<uint32_t>(UnitField::Power5);
 #if VERSION_STRING == WotLK
         case POWER_FIELD_INDEX_6:
-            return unitData()->power_6;
+            return getField<uint32_t>(UnitField::Power6);
         case POWER_FIELD_INDEX_7:
-            return unitData()->power_7;
+            return getField<uint32_t>(UnitField::Power7);
 #endif
         default:
             return 0;
@@ -614,26 +615,26 @@ void Unit::setPower(PowerType type, uint32_t value, [[maybe_unused]] bool sendPa
     switch (powerIndex)
     {
         case POWER_FIELD_INDEX_1:
-            write(unitData()->power_1, value, skipObjectUpdate);
+            setField<uint32_t>(UnitField::Power1, value, 0, 0, skipObjectUpdate);
             break;
         case POWER_FIELD_INDEX_2:
-            write(unitData()->power_2, value, skipObjectUpdate);
+            setField<uint32_t>(UnitField::Power2, value, 0, 0, skipObjectUpdate);
             break;
         case POWER_FIELD_INDEX_3:
-            write(unitData()->power_3, value, skipObjectUpdate);
+            setField<uint32_t>(UnitField::Power3, value, 0, 0, skipObjectUpdate);
             break;
         case POWER_FIELD_INDEX_4:
-            write(unitData()->power_4, value, skipObjectUpdate);
+            setField<uint32_t>(UnitField::Power4, value, 0, 0, skipObjectUpdate);
             break;
         case POWER_FIELD_INDEX_5:
-            write(unitData()->power_5, value, skipObjectUpdate);
+            setField<uint32_t>(UnitField::Power5, value, 0, 0, skipObjectUpdate);
             break;
 #if VERSION_STRING == WotLK
         case POWER_FIELD_INDEX_6:
-            write(unitData()->power_6, value, skipObjectUpdate);
+            setField<uint32_t>(UnitField::Power6, value, 0, 0, skipObjectUpdate);
             break;
         case POWER_FIELD_INDEX_7:
-            write(unitData()->power_7, value, skipObjectUpdate);
+            setField<uint32_t>(UnitField::Power7, value, 0, 0, skipObjectUpdate);
             break;
 #endif
         default:
@@ -671,10 +672,10 @@ void Unit::modPower(PowerType type, int32_t value)
     setPower(type, newPower);
 }
 
-uint32_t Unit::getMaxHealth() const { return unitData()->max_health; }
+uint32_t Unit::getMaxHealth() const { return getField<uint32_t>(UnitField::MaxHealth); }
 void Unit::setMaxHealth(uint32_t maxHealth)
 {
-    write(unitData()->max_health, maxHealth);
+    setField<uint32_t>(UnitField::MaxHealth, maxHealth);
 
 #if VERSION_STRING == TBC
     // TODO Fix this later
@@ -712,20 +713,20 @@ uint32_t Unit::getMaxPower(PowerType type) const
     switch (powerIndex)
     {
         case POWER_FIELD_INDEX_1:
-            return unitData()->max_power_1;
+            return getField<uint32_t>(UnitField::MaxPower1);
         case POWER_FIELD_INDEX_2:
-            return unitData()->max_power_2;
+            return getField<uint32_t>(UnitField::MaxPower2);
         case POWER_FIELD_INDEX_3:
-            return unitData()->max_power_3;
+            return getField<uint32_t>(UnitField::MaxPower3);
         case POWER_FIELD_INDEX_4:
-            return unitData()->max_power_4;
+            return getField<uint32_t>(UnitField::MaxPower4);
         case POWER_FIELD_INDEX_5:
-            return unitData()->max_power_5;
+            return getField<uint32_t>(UnitField::MaxPower5);
 #if VERSION_STRING == WotLK
         case POWER_FIELD_INDEX_6:
-            return unitData()->max_power_6;
+            return getField<uint32_t>(UnitField::MaxPower6);
         case POWER_FIELD_INDEX_7:
-            return unitData()->max_power_7;
+            return getField<uint32_t>(UnitField::MaxPower7);
 #endif
         default:
             return 0;
@@ -746,26 +747,26 @@ void Unit::setMaxPower(PowerType type, uint32_t value)
     switch (powerIndex)
     {
         case POWER_FIELD_INDEX_1:
-            write(unitData()->max_power_1, value);
+            setField<uint32_t>(UnitField::MaxPower1, value);
             break;
         case POWER_FIELD_INDEX_2:
-            write(unitData()->max_power_2, value);
+            setField<uint32_t>(UnitField::MaxPower2, value);
             break;
         case POWER_FIELD_INDEX_3:
-            write(unitData()->max_power_3, value);
+            setField<uint32_t>(UnitField::MaxPower3, value);
             break;
         case POWER_FIELD_INDEX_4:
-            write(unitData()->max_power_4, value);
+            setField<uint32_t>(UnitField::MaxPower4, value);
             break;
         case POWER_FIELD_INDEX_5:
-            write(unitData()->max_power_5, value);
+            setField<uint32_t>(UnitField::MaxPower5, value);
             break;
 #if VERSION_STRING == WotLK
         case POWER_FIELD_INDEX_6:
-            write(unitData()->max_power_6, value);
+            setField<uint32_t>(UnitField::MaxPower6, value);
             break;
         case POWER_FIELD_INDEX_7:
-            write(unitData()->max_power_7, value);
+            setField<uint32_t>(UnitField::MaxPower7, value);
             break;
 #endif
         default:
@@ -834,7 +835,7 @@ float Unit::getPowerRegeneration(PowerType type) const
         case POWER_FIELD_INDEX_6:
         case POWER_FIELD_INDEX_7:
 #endif
-            return unitData()->power_regen_flat_modifier[powerIndex - 1];
+            return getField<float>(UnitField::PowerRegenFlatModifier, powerIndex - 1);
         default:
             return 0.0f;
     }
@@ -882,7 +883,7 @@ void Unit::setPowerRegeneration(PowerType type, float value)
         case POWER_FIELD_INDEX_6:
         case POWER_FIELD_INDEX_7:
 #endif
-            write(unitData()->power_regen_flat_modifier[powerIndex - 1], value);
+            setField<float>(UnitField::PowerRegenFlatModifier, value, powerIndex - 1);
             break;
         default:
             break;
@@ -927,7 +928,7 @@ float Unit::getPowerRegenerationWhileInterrupted(PowerType type) const
         case POWER_FIELD_INDEX_6:
         case POWER_FIELD_INDEX_7:
 #endif
-            return unitData()->power_regen_interrupted_flat_modifier[powerIndex - 1];
+            return getField<float>(UnitField::PowerRegenInterruptedFlatModifier, powerIndex - 1);
         default:
             return 0.0f;
     }
@@ -975,7 +976,7 @@ void Unit::setPowerRegenerationWhileInterrupted(PowerType type, float value)
         case POWER_FIELD_INDEX_6:
         case POWER_FIELD_INDEX_7:
 #endif
-            write(unitData()->power_regen_interrupted_flat_modifier[powerIndex - 1], value);
+            setField<float>(UnitField::PowerRegenInterruptedFlatModifier, value, powerIndex - 1);
             break;
         default:
             break;
@@ -983,10 +984,10 @@ void Unit::setPowerRegenerationWhileInterrupted(PowerType type, float value)
 #endif
 }
 
-uint32_t Unit::getLevel() const { return unitData()->level; }
+uint32_t Unit::getLevel() const { return getField<uint32_t>(UnitField::Level); }
 void Unit::setLevel(uint32_t level)
 {
-    write(unitData()->level, level);
+    setField<uint32_t>(UnitField::Level, level);
     if (isPlayer())
         dynamic_cast<Player*>(this)->setNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
 
@@ -1005,7 +1006,7 @@ void Unit::setLevel(uint32_t level)
 #endif
 }
 
-uint32_t Unit::getFactionTemplate() const { return unitData()->faction_template; }
+uint32_t Unit::getFactionTemplate() const { return getField<uint32_t>(UnitField::FactionTemplate); }
 
 void Unit::setFactionTemplate(uint32_t id)
 {
@@ -1013,7 +1014,7 @@ void Unit::setFactionTemplate(uint32_t id)
     if (oldFaction == id)
         return;
 
-    write(unitData()->faction_template, id);
+    setField<uint32_t>(UnitField::FactionTemplate, id);
     setServersideFaction();
 
     if (!IsInWorld())
@@ -1033,11 +1034,9 @@ void Unit::setFaction(uint32_t factionId)
     setFactionTemplate(factionId);
 }
 
-#if VERSION_STRING >= WotLK
-uint32_t Unit::getVirtualItemSlotId(uint8_t slot) const { return unitData()->virtual_item_slot_display[slot]; }
-#else
-uint32_t Unit::getVirtualItemDisplayId(uint8_t slot) const { return unitData()->virtual_item_slot_display[slot]; }
-#endif
+// the same field holds the item entry since WotLK and the display id before
+uint32_t Unit::getVirtualItemSlotId(uint8_t slot) const { return getField<uint32_t>(UnitField::VirtualItemSlotDisplay, slot); }
+uint32_t Unit::getVirtualItemDisplayId(uint8_t slot) const { return getField<uint32_t>(UnitField::VirtualItemSlotDisplay, slot); }
 void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
 {
     const auto isProperOffhandWeapon = [](uint32_t itemClass, uint32_t itemSubClass) -> bool
@@ -1062,7 +1061,7 @@ void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
 
     if (item_id == 0)
     {
-        write(unitData()->virtual_item_slot_display[slot], 0U);
+        setField<uint32_t>(UnitField::VirtualItemSlotDisplay, 0U, slot);
 #if VERSION_STRING < WotLK
         setVirtualItemInfo(slot, 0);
 #endif
@@ -1089,7 +1088,7 @@ void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
     if (isCreature() && slot == OFFHAND)
         dynamic_cast<Creature*>(this)->toggleDualwield(isProperOffhandWeapon(itemDbc->Class, itemDbc->SubClass));
 
-    write(unitData()->virtual_item_slot_display[slot], item_id);
+    setField<uint32_t>(UnitField::VirtualItemSlotDisplay, item_id, slot);
 #else
     unit_virtual_item_info virtualItemInfo{};
 
@@ -1169,22 +1168,25 @@ void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
             dynamic_cast<Creature*>(this)->toggleDualwield(isProperOffhandWeapon(virtualItemInfo.fields.item_class, virtualItemInfo.fields.item_subclass));
     }
 
-    write(unitData()->virtual_item_slot_display[slot], displayId);
+    setField<uint32_t>(UnitField::VirtualItemSlotDisplay, displayId, slot);
     setVirtualItemInfo(slot, virtualItemInfo.raw);
 #endif
 }
 
-#if VERSION_STRING < WotLK
-uint64_t Unit::getVirtualItemInfo(uint8_t slot) const { return unitData()->virtual_item_info[slot].raw; }
-unit_virtual_item_info Unit::getVirtualItemInfoFields(uint8_t slot) const { return unitData()->virtual_item_info[slot]; }
-void Unit::setVirtualItemInfo(uint8_t slot, uint64_t item_info) { write(unitData()->virtual_item_info[slot].raw, item_info); }
-#endif
+uint64_t Unit::getVirtualItemInfo(uint8_t slot) const { return getField<uint64_t>(UnitField::VirtualItemInfo, slot); }
+unit_virtual_item_info Unit::getVirtualItemInfoFields(uint8_t slot) const
+{
+    unit_virtual_item_info info{};
+    info.raw = getField<uint64_t>(UnitField::VirtualItemInfo, slot);
+    return info;
+}
+void Unit::setVirtualItemInfo(uint8_t slot, uint64_t item_info) { setField<uint64_t>(UnitField::VirtualItemInfo, item_info, slot); }
 
-uint32_t Unit::getUnitFlags() const { return unitData()->unit_flags; }
+uint32_t Unit::getUnitFlags() const { return getField<uint32_t>(UnitField::UnitFlags); }
 void Unit::setUnitFlags(uint32_t unitFlags)
 {
     const uint32_t oldFlags = getUnitFlags();
-    write(unitData()->unit_flags, unitFlags);
+    setField<uint32_t>(UnitField::UnitFlags, unitFlags);
 
     constexpr uint32_t AwarenessRelevantFlags =
         UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_IGNORE_CREATURE_COMBAT |
@@ -1221,14 +1223,14 @@ bool Unit::canSwim()
 }
 
 #if VERSION_STRING > Classic
-uint32_t Unit::getUnitFlags2() const { return unitData()->unit_flags_2; }
+uint32_t Unit::getUnitFlags2() const { return getField<uint32_t>(UnitField::UnitFlags2); }
 void Unit::setUnitFlags2(uint32_t unitFlags2)
 {
 #if VERSION_STRING >= WotLK
     const uint32_t oldFlags = getUnitFlags2();
 #endif
 
-    write(unitData()->unit_flags_2, unitFlags2);
+    setField<uint32_t>(UnitField::UnitFlags2, unitFlags2);
 
 #if VERSION_STRING >= WotLK
     if (IsInWorld() && ((oldFlags ^ unitFlags2) & UNIT_FLAG2_FEIGN_DEATH) != 0)
@@ -1241,7 +1243,7 @@ bool Unit::hasUnitFlags2(uint32_t unitFlags2) const { return (getUnitFlags2() & 
 #endif
 
 #if VERSION_STRING < WotLK
-uint32_t Unit::getAura(uint8_t slot) const { return unitData()->aura[slot]; }
+uint32_t Unit::getAura(uint8_t slot) const { return getField<uint32_t>(UnitField::Aura, slot); }
 void Unit::setAura(Aura const* aur, bool apply)
 {
     if (aur == nullptr)
@@ -1252,10 +1254,10 @@ void Unit::setAura(Aura const* aur, bool apply)
         return;
 
     const auto spellId = apply ? aur->getSpellId() : 0;
-    write(unitData()->aura[slot], spellId);
+    setField<uint32_t>(UnitField::Aura, spellId, slot);
 }
 
-uint32_t Unit::getAuraFlags(uint8_t slot) const { return unitData()->aura_flags[slot]; }
+uint32_t Unit::getAuraFlags(uint8_t slot) const { return getField<uint32_t>(UnitField::AuraFlags, slot); }
 void Unit::setAuraFlags(Aura const* aur, bool apply)
 {
     if (aur == nullptr)
@@ -1276,10 +1278,10 @@ void Unit::setAuraFlags(Aura const* aur, bool apply)
     if (flags != 0)
         val |= (flags << byte);
 
-    write(unitData()->aura_flags[index], val);
+    setField<uint32_t>(UnitField::AuraFlags, val, index);
 }
 
-uint32_t Unit::getAuraLevel(uint8_t slot) const { return unitData()->aura_levels[slot]; }
+uint32_t Unit::getAuraLevel(uint8_t slot) const { return getField<uint32_t>(UnitField::AuraLevels, slot); }
 void Unit::setAuraLevel(Aura* aur)
 {
     if (aur == nullptr)
@@ -1298,10 +1300,10 @@ void Unit::setAuraLevel(Aura* aur)
     val &= ~(0xFF << byte);
     val |= (level << byte);
 
-    write(unitData()->aura_levels[index], val);
+    setField<uint32_t>(UnitField::AuraLevels, val, index);
 }
 
-uint32_t Unit::getAuraApplication(uint8_t slot) const { return unitData()->aura_applications[slot]; }
+uint32_t Unit::getAuraApplication(uint8_t slot) const { return getField<uint32_t>(UnitField::AuraApplications, slot); }
 void Unit::setAuraApplication(Aura const* aur)
 {
     if (aur == nullptr)
@@ -1322,17 +1324,17 @@ void Unit::setAuraApplication(Aura const* aur)
     val &= ~(0xFF << byte);
     val |= (count << byte);
 
-    write(unitData()->aura_applications[index], val);
+    setField<uint32_t>(UnitField::AuraApplications, val, index);
 }
 #endif
 
-uint32_t Unit::getAuraState() const { return unitData()->aura_state; }
-void Unit::setAuraState(uint32_t state) { write(unitData()->aura_state, state); }
+uint32_t Unit::getAuraState() const { return getField<uint32_t>(UnitField::AuraState); }
+void Unit::setAuraState(uint32_t state) { setField<uint32_t>(UnitField::AuraState, state); }
 void Unit::addAuraState(uint32_t state) { setAuraState(getAuraState() | state); }
 void Unit::removeAuraState(uint32_t state) { setAuraState(getAuraState() & ~state); }
 
-uint32_t Unit::getBaseAttackTime(uint8_t slot) const { return unitData()->base_attack_time[slot]; }
-void Unit::setBaseAttackTime(uint8_t slot, uint32_t time) { write(unitData()->base_attack_time[slot], time); }
+uint32_t Unit::getBaseAttackTime(uint8_t slot) const { return getField<uint32_t>(UnitField::BaseAttackTime, slot); }
+void Unit::setBaseAttackTime(uint8_t slot, uint32_t time) { setField<uint32_t>(UnitField::BaseAttackTime, time, slot); }
 void Unit::modBaseAttackTime(uint8_t slot, int32_t modTime)
 {
     int32_t newAttackTime = getBaseAttackTime(slot);
@@ -1344,16 +1346,16 @@ void Unit::modBaseAttackTime(uint8_t slot, int32_t modTime)
     setBaseAttackTime(slot, newAttackTime);
 }
 
-float Unit::getBoundingRadius() const { return unitData()->bounding_radius; }
-void Unit::setBoundingRadius(float radius) { write(unitData()->bounding_radius, radius); }
+float Unit::getBoundingRadius() const { return getField<float>(UnitField::BoundingRadius); }
+void Unit::setBoundingRadius(float radius) { setField<float>(UnitField::BoundingRadius, radius); }
 
-float Unit::getCombatReach() const { return unitData()->combat_reach; }
-void Unit::setCombatReach(float radius) { write(unitData()->combat_reach, radius); }
+float Unit::getCombatReach() const { return getField<float>(UnitField::CombatReach); }
+void Unit::setCombatReach(float radius) { setField<float>(UnitField::CombatReach, radius); }
 
-uint32_t Unit::getDisplayId() const { return unitData()->display_id; }
+uint32_t Unit::getDisplayId() const { return getField<uint32_t>(UnitField::DisplayId); }
 void Unit::setDisplayId(uint32_t id)
 {
-    write(unitData()->display_id, id);
+    setField<uint32_t>(UnitField::DisplayId, id);
 
 #if VERSION_STRING == TBC
     // TODO Fix this later
@@ -1371,30 +1373,30 @@ void Unit::setDisplayId(uint32_t id)
 }
 void Unit::resetDisplayId()
 {
-    write(unitData()->display_id, unitData()->native_display_id);
+    setField<uint32_t>(UnitField::DisplayId, getField<uint32_t>(UnitField::NativeDisplayId));
 }
 
-uint32_t Unit::getNativeDisplayId() const { return unitData()->native_display_id; }
-void Unit::setNativeDisplayId(uint32_t id) { write(unitData()->native_display_id, id); }
+uint32_t Unit::getNativeDisplayId() const { return getField<uint32_t>(UnitField::NativeDisplayId); }
+void Unit::setNativeDisplayId(uint32_t id) { setField<uint32_t>(UnitField::NativeDisplayId, id); }
 
-uint32_t Unit::getMountDisplayId() const { return unitData()->mount_display_id; }
-void Unit::setMountDisplayId(uint32_t id) { write(unitData()->mount_display_id, id); }
+uint32_t Unit::getMountDisplayId() const { return getField<uint32_t>(UnitField::MountDisplayId); }
+void Unit::setMountDisplayId(uint32_t id) { setField<uint32_t>(UnitField::MountDisplayId, id); }
 
-float Unit::getMinDamage() const { return unitData()->minimum_damage; }
-void Unit::setMinDamage(float damage) { write(unitData()->minimum_damage, damage); }
+float Unit::getMinDamage() const { return getField<float>(UnitField::MinimumDamage); }
+void Unit::setMinDamage(float damage) { setField<float>(UnitField::MinimumDamage, damage); }
 
-float Unit::getMaxDamage() const { return unitData()->maximum_damage; }
-void Unit::setMaxDamage(float damage) { write(unitData()->maximum_damage, damage); }
+float Unit::getMaxDamage() const { return getField<float>(UnitField::MaximumDamage); }
+void Unit::setMaxDamage(float damage) { setField<float>(UnitField::MaximumDamage, damage); }
 
-float Unit::getMinOffhandDamage() const { return unitData()->minimum_offhand_damage; }
-void Unit::setMinOffhandDamage(float damage) { write(unitData()->minimum_offhand_damage, damage); }
+float Unit::getMinOffhandDamage() const { return getField<float>(UnitField::MinimumOffhandDamage); }
+void Unit::setMinOffhandDamage(float damage) { setField<float>(UnitField::MinimumOffhandDamage, damage); }
 
-float Unit::getMaxOffhandDamage() const { return unitData()->maximum_offhand_damage; }
-void Unit::setMaxOffhandDamage(float damage) { write(unitData()->maximum_offhand_damage, damage); }
+float Unit::getMaxOffhandDamage() const { return getField<float>(UnitField::MaximumOffhandDamage); }
+void Unit::setMaxOffhandDamage(float damage) { setField<float>(UnitField::MaximumOffhandDamage, damage); }
 
 //bytes_1 begin
-uint32_t Unit::getBytes1() const { return unitData()->field_bytes_1.raw; }
-void Unit::setBytes1(uint32_t bytes) { write(unitData()->field_bytes_1.raw, bytes); }
+uint32_t Unit::getBytes1() const { return getField<uint32_t>(UnitField::FieldBytes1); }
+void Unit::setBytes1(uint32_t bytes) { setField<uint32_t>(UnitField::FieldBytes1, bytes); }
 
 uint8_t Unit::getBytes1ByOffset(uint32_t offset) const
 {
@@ -1403,25 +1405,19 @@ uint8_t Unit::getBytes1ByOffset(uint32_t offset) const
         case 0:
             return getStandState();
         case 1:
-#if VERSION_STRING < WotLK
-            return getPetLoyalty();
-#elif VERSION_STRING < Mop
-            return getPetTalentPoints();
-#else
-            return unitData()->field_bytes_1.s.unk1;
-#endif
+            if (hasField(UnitField::FieldBytes1PetLoyalty))
+                return getPetLoyalty();
+            if (hasField(UnitField::FieldBytes1PetTalentPoints))
+                return getPetTalentPoints();
+            return getField<uint8_t>(UnitField::FieldBytes1Unk1);
         case 2:
-#if VERSION_STRING == Classic
-            return getShapeShiftForm();
-#else
+            if (hasField(UnitField::FieldBytes1ShapeShiftForm))
+                return getShapeShiftForm();
             return getStandStateFlags();
-#endif
         case 3:
-#if VERSION_STRING == Classic
+            if (hasField(UnitField::FieldBytes1AnimationFlag))
+                return getAnimationFlags();
             return getStandStateFlags();
-#else
-            return getAnimationFlags();
-#endif
         default:
             sLogger.failure("Offset {} is not a valid offset value for byte_1 data (max 3). Returning 0", offset);
             return 0;
@@ -1436,27 +1432,24 @@ void Unit::setBytes1ForOffset(uint32_t offset, uint8_t value)
             setStandState(value);
             break;
         case 1:
-#if VERSION_STRING < WotLK
-            setPetLoyalty(value);
-#elif VERSION_STRING < Mop
-            setPetTalentPoints(value);
-#else
-            write(unitData()->field_bytes_1.s.unk1, value);
-#endif
+            if (hasField(UnitField::FieldBytes1PetLoyalty))
+                setPetLoyalty(value);
+            else if (hasField(UnitField::FieldBytes1PetTalentPoints))
+                setPetTalentPoints(value);
+            else
+                setField<uint8_t>(UnitField::FieldBytes1Unk1, value);
             break;
         case 2:
-#if VERSION_STRING == Classic
-            setShapeShiftForm(value);
-#else
-            setStandStateFlags(value);
-#endif
+            if (hasField(UnitField::FieldBytes1ShapeShiftForm))
+                setShapeShiftForm(value);
+            else
+                setStandStateFlags(value);
             break;
         case 3:
-#if VERSION_STRING == Classic
-            setStandStateFlags(value);
-#else
-            setAnimationFlags(value);
-#endif
+            if (hasField(UnitField::FieldBytes1AnimationFlag))
+                setAnimationFlags(value);
+            else
+                setStandStateFlags(value);
             break;
         default:
             sLogger.failure("Offset {} is not a valid offset value for byte_1 data (max 3)", offset);
@@ -1464,10 +1457,10 @@ void Unit::setBytes1ForOffset(uint32_t offset, uint8_t value)
     }
 }
 
-uint8_t Unit::getStandState() const { return unitData()->field_bytes_1.s.stand_state; }
+uint8_t Unit::getStandState() const { return getField<uint8_t>(UnitField::FieldBytes1StandState); }
 void Unit::setStandState(uint8_t standState)
 {
-    write(unitData()->field_bytes_1.s.stand_state, standState);
+    setField<uint8_t>(UnitField::FieldBytes1StandState, standState);
 
     if (isPlayer())
     {
@@ -1483,52 +1476,60 @@ void Unit::setStandState(uint8_t standState)
         removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_STAND_UP);
 }
 
-#if VERSION_STRING < WotLK
-uint8_t Unit::getPetLoyalty() const { return unitData()->field_bytes_1.s.pet_loyalty; }
-void Unit::setPetLoyalty(uint8_t loyalty) { write(unitData()->field_bytes_1.s.pet_loyalty, loyalty); }
-#elif VERSION_STRING < Mop
-uint8_t Unit::getPetTalentPoints() const { return unitData()->field_bytes_1.s.pet_talent_points; }
-void Unit::setPetTalentPoints(uint8_t talentPoints) { write(unitData()->field_bytes_1.s.pet_talent_points, talentPoints); }
-#endif
+// the second byte of bytes_1: pet loyalty before WotLK, pet talent points until Cata
+uint8_t Unit::getPetLoyalty() const { return getField<uint8_t>(UnitField::FieldBytes1PetLoyalty); }
+void Unit::setPetLoyalty(uint8_t loyalty) { setField<uint8_t>(UnitField::FieldBytes1PetLoyalty, loyalty); }
+uint8_t Unit::getPetTalentPoints() const { return getField<uint8_t>(UnitField::FieldBytes1PetTalentPoints); }
+void Unit::setPetTalentPoints(uint8_t talentPoints) { setField<uint8_t>(UnitField::FieldBytes1PetTalentPoints, talentPoints); }
 
-#if VERSION_STRING == Classic
-uint8_t Unit::getShapeShiftForm() const { return unitData()->field_bytes_1.s.shape_shift_form; }
-void Unit::setShapeShiftForm(uint8_t shapeShiftForm) { write(unitData()->field_bytes_1.s.shape_shift_form, shapeShiftForm); }
-#endif
 
-uint8_t Unit::getStandStateFlags() const { return unitData()->field_bytes_1.s.stand_state_flag; }
-void Unit::setStandStateFlags(uint8_t standStateFlags) { write(unitData()->field_bytes_1.s.stand_state_flag, standStateFlags); }
+uint8_t Unit::getStandStateFlags() const { return getField<uint8_t>(UnitField::FieldBytes1StandStateFlag); }
+void Unit::setStandStateFlags(uint8_t standStateFlags) { setField<uint8_t>(UnitField::FieldBytes1StandStateFlag, standStateFlags); }
 void Unit::addStandStateFlags(uint8_t standStateFlags) { setStandStateFlags(getStandStateFlags() | standStateFlags); }
 void Unit::removeStandStateFlags(uint8_t standStateFlags) { setStandStateFlags(getStandStateFlags() & ~standStateFlags); }
 
-#if VERSION_STRING != Classic
-uint8_t Unit::getAnimationFlags() const { return unitData()->field_bytes_1.s.animation_flag; }
-void Unit::setAnimationFlags(uint8_t animationFlags) { write(unitData()->field_bytes_1.s.animation_flag, animationFlags); }
-#endif
+uint8_t Unit::getAnimationFlags() const { return getField<uint8_t>(UnitField::FieldBytes1AnimationFlag); }
+void Unit::setAnimationFlags(uint8_t animationFlags) { setField<uint8_t>(UnitField::FieldBytes1AnimationFlag, animationFlags); }
 //bytes_1 end
 
-uint32_t Unit::getPetNumber() const { return unitData()->pet_number; }
-void Unit::setPetNumber(uint32_t number) { write(unitData()->pet_number, number); }
+uint32_t Unit::getPetNumber() const { return getField<uint32_t>(UnitField::PetNumber); }
+void Unit::setPetNumber(uint32_t number) { setField<uint32_t>(UnitField::PetNumber, number); }
 
-uint32_t Unit::getPetNameTimestamp() const { return unitData()->pet_name_timestamp; }
-void Unit::setPetNameTimestamp(uint32_t timestamp) { write(unitData()->pet_name_timestamp, timestamp); }
+uint32_t Unit::getPetNameTimestamp() const { return getField<uint32_t>(UnitField::PetNameTimestamp); }
+void Unit::setPetNameTimestamp(uint32_t timestamp) { setField<uint32_t>(UnitField::PetNameTimestamp, timestamp); }
 
-uint32_t Unit::getPetExperience() const { return unitData()->pet_experience; }
-void Unit::setPetExperience(uint32_t experience) { write(unitData()->pet_experience, experience); }
+uint32_t Unit::getPetExperience() const { return getField<uint32_t>(UnitField::PetExperience); }
+void Unit::setPetExperience(uint32_t experience) { setField<uint32_t>(UnitField::PetExperience, experience); }
 
-uint32_t Unit::getPetNextLevelExperience() const { return unitData()->pet_next_level_experience; }
-void Unit::setPetNextLevelExperience(uint32_t experience) { write(unitData()->pet_next_level_experience, experience); }
+uint32_t Unit::getPetNextLevelExperience() const { return getField<uint32_t>(UnitField::PetNextLevelExperience); }
+void Unit::setPetNextLevelExperience(uint32_t experience) { setField<uint32_t>(UnitField::PetNextLevelExperience, experience); }
 
-#if VERSION_STRING < Mop
-uint32_t Unit::getDynamicFlags() const { return unitData()->dynamic_flags; }
-void Unit::setDynamicFlags(uint32_t dynamicFlags) { write(unitData()->dynamic_flags, dynamicFlags); }
+uint32_t Unit::getDynamicFlags() const
+{
+    // own unit field before Mop, the dynamic part of the object data field since
+    if (hasField(UnitField::DynamicFlags))
+        return getField<uint32_t>(UnitField::DynamicFlags);
+
+    return Object::getDynamicFlags();
+}
+
+void Unit::setDynamicFlags(uint32_t dynamicFlags)
+{
+    if (hasField(UnitField::DynamicFlags))
+    {
+        setField<uint32_t>(UnitField::DynamicFlags, dynamicFlags);
+        return;
+    }
+
+    Object::setDynamicFlags(static_cast<uint16_t>(dynamicFlags));
+}
+
 void Unit::addDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() | dynamicFlags); }
 void Unit::removeDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() & ~dynamicFlags); }
 bool Unit::hasDynamicFlags(uint32_t dynamicFlags) const { return (getDynamicFlags() & dynamicFlags) != 0; }
-#endif
 
-float Unit::getModCastSpeed() const { return unitData()->mod_cast_speed; }
-void Unit::setModCastSpeed(float modifier) { write(unitData()->mod_cast_speed, modifier); }
+float Unit::getModCastSpeed() const { return getField<float>(UnitField::ModCastSpeed); }
+void Unit::setModCastSpeed(float modifier) { setField<float>(UnitField::ModCastSpeed, modifier); }
 void Unit::modModCastSpeed(float modifier)
 {
     float currentMod = getModCastSpeed();
@@ -1536,55 +1537,45 @@ void Unit::modModCastSpeed(float modifier)
     setModCastSpeed(currentMod);
 }
 
-uint32_t Unit::getCreatedBySpellId() const { return unitData()->created_by_spell_id; }
-void Unit::setCreatedBySpellId(uint32_t id) { write(unitData()->created_by_spell_id, id); }
+uint32_t Unit::getCreatedBySpellId() const { return getField<uint32_t>(UnitField::CreatedBySpellId); }
+void Unit::setCreatedBySpellId(uint32_t id) { setField<uint32_t>(UnitField::CreatedBySpellId, id); }
 
-#if VERSION_STRING < Mop
-uint32_t Unit::getNpcFlags() const { return unitData()->npc_flags; }
-void Unit::setNpcFlags(uint32_t npcFlags) { write(unitData()->npc_flags, npcFlags); }
-void Unit::addNpcFlags(uint32_t npcFlags) { setNpcFlags(getNpcFlags() | npcFlags); }
-void Unit::removeNpcFlags(uint32_t npcFlags) { setNpcFlags(getNpcFlags() & ~npcFlags); }
-#else
-uint64_t Unit::getNpcFlags() const { return unitData()->npc_flags; }
-void Unit::setNpcFlags(uint64_t npcFlags) { write(unitData()->npc_flags, npcFlags); }
+// a 32 bit field before Mop, 64 bit since; the field size caps the access
+uint64_t Unit::getNpcFlags() const { return getField<uint64_t>(UnitField::NpcFlags); }
+void Unit::setNpcFlags(uint64_t npcFlags) { setField<uint64_t>(UnitField::NpcFlags, npcFlags); }
 void Unit::addNpcFlags(uint64_t npcFlags) { setNpcFlags(getNpcFlags() | npcFlags); }
 void Unit::removeNpcFlags(uint64_t npcFlags) { setNpcFlags(getNpcFlags() & ~npcFlags); }
-#endif
 
-uint32_t Unit::getEmoteState() const { return unitData()->npc_emote_state; }
-void Unit::setEmoteState(uint32_t id) { write(unitData()->npc_emote_state, id); }
+uint32_t Unit::getEmoteState() const { return getField<uint32_t>(UnitField::NpcEmoteState); }
+void Unit::setEmoteState(uint32_t id) { setField<uint32_t>(UnitField::NpcEmoteState, id); }
 
-uint32_t Unit::getStat(uint8_t stat) const { return unitData()->stat[stat]; }
-void Unit::setStat(uint8_t stat, uint32_t value) { write(unitData()->stat[stat], value); }
+uint32_t Unit::getStat(uint8_t stat) const { return getField<uint32_t>(UnitField::Stat, stat); }
+void Unit::setStat(uint8_t stat, uint32_t value) { setField<uint32_t>(UnitField::Stat, value, stat); }
 
-#if VERSION_STRING > Classic
-uint32_t Unit::getPosStat(uint8_t stat) const { return unitData()->positive_stat[stat]; }
-void Unit::setPosStat(uint8_t stat, uint32_t value) { write(unitData()->positive_stat[stat], value); }
+uint32_t Unit::getPosStat(uint8_t stat) const { return getField<uint32_t>(UnitField::PositiveStat, stat); }
+void Unit::setPosStat(uint8_t stat, uint32_t value) { setField<uint32_t>(UnitField::PositiveStat, value, stat); }
 
-uint32_t Unit::getNegStat(uint8_t stat) const { return unitData()->negative_stat[stat]; }
-void Unit::setNegStat(uint8_t stat, uint32_t value) { write(unitData()->negative_stat[stat], value); }
-#endif
+uint32_t Unit::getNegStat(uint8_t stat) const { return getField<uint32_t>(UnitField::NegativeStat, stat); }
+void Unit::setNegStat(uint8_t stat, uint32_t value) { setField<uint32_t>(UnitField::NegativeStat, value, stat); }
 
-uint32_t Unit::getResistance(uint8_t type) const { return unitData()->resistance[type]; }
-void Unit::setResistance(uint8_t type, uint32_t value) { write(unitData()->resistance[type], value); }
+uint32_t Unit::getResistance(uint8_t type) const { return getField<uint32_t>(UnitField::Resistance, type); }
+void Unit::setResistance(uint8_t type, uint32_t value) { setField<uint32_t>(UnitField::Resistance, value, type); }
 
-#if VERSION_STRING > Classic
-uint32_t Unit::getResistanceBuffModPositive(uint8_t type) const { return unitData()->resistance_buff_mod_positive[type]; }
-void Unit::setResistanceBuffModPositive(uint8_t type, uint32_t value) { write(unitData()->resistance_buff_mod_positive[type], value); }
+uint32_t Unit::getResistanceBuffModPositive(uint8_t type) const { return getField<uint32_t>(UnitField::ResistanceBuffModPositive, type); }
+void Unit::setResistanceBuffModPositive(uint8_t type, uint32_t value) { setField<uint32_t>(UnitField::ResistanceBuffModPositive, value, type); }
 
-uint32_t Unit::getResistanceBuffModNegative(uint8_t type) const { return unitData()->resistance_buff_mod_negative[type]; }
-void Unit::setResistanceBuffModNegative(uint8_t type, uint32_t value) { write(unitData()->resistance_buff_mod_negative[type], value); }
-#endif
+uint32_t Unit::getResistanceBuffModNegative(uint8_t type) const { return getField<uint32_t>(UnitField::ResistanceBuffModNegative, type); }
+void Unit::setResistanceBuffModNegative(uint8_t type, uint32_t value) { setField<uint32_t>(UnitField::ResistanceBuffModNegative, value, type); }
 
-uint32_t Unit::getBaseMana() const { return unitData()->base_mana; }
-void Unit::setBaseMana(uint32_t baseMana) { write(unitData()->base_mana, baseMana); }
+uint32_t Unit::getBaseMana() const { return getField<uint32_t>(UnitField::BaseMana); }
+void Unit::setBaseMana(uint32_t baseMana) { setField<uint32_t>(UnitField::BaseMana, baseMana); }
 
-uint32_t Unit::getBaseHealth() const { return unitData()->base_health; }
-void Unit::setBaseHealth(uint32_t baseHealth) { write(unitData()->base_health, baseHealth); }
+uint32_t Unit::getBaseHealth() const { return getField<uint32_t>(UnitField::BaseHealth); }
+void Unit::setBaseHealth(uint32_t baseHealth) { setField<uint32_t>(UnitField::BaseHealth, baseHealth); }
 
 //byte_2 begin
-uint32_t Unit::getBytes2() const { return unitData()->field_bytes_2.raw; }
-void Unit::setBytes2(uint32_t bytes) { write(unitData()->field_bytes_2.raw, bytes); }
+uint32_t Unit::getBytes2() const { return getField<uint32_t>(UnitField::FieldBytes2); }
+void Unit::setBytes2(uint32_t bytes) { setField<uint32_t>(UnitField::FieldBytes2, bytes); }
 
 uint8_t Unit::getBytes2ByOffset(uint32_t offset) const
 {
@@ -1593,25 +1584,19 @@ uint8_t Unit::getBytes2ByOffset(uint32_t offset) const
         case 0:
             return getSheathType();
         case 1:
-#if VERSION_STRING == Classic
-            return unitData()->field_bytes_2.s.unk1;
-#elif VERSION_STRING == TBC
-            return getPositiveAuraLimit();
-#else
-            return getPvpFlags();
-#endif
+            if (hasField(UnitField::FieldBytes2PvpFlag))
+                return getPvpFlags();
+            if (hasField(UnitField::FieldBytes2PositiveAuraLimit))
+                return getPositiveAuraLimit();
+            return getField<uint8_t>(UnitField::FieldBytes2Unk1);
         case 2:
-#if VERSION_STRING == Classic
-            return unitData()->field_bytes_2.s.unk2;
-#else
-            return getPetFlags();
-#endif
+            if (hasField(UnitField::FieldBytes2PetFlag))
+                return getPetFlags();
+            return getField<uint8_t>(UnitField::FieldBytes2Unk2);
         case 3:
-#if VERSION_STRING == Classic
-            return unitData()->field_bytes_2.s.unk3;
-#else
-            return getShapeShiftForm();
-#endif
+            if (hasField(UnitField::FieldBytes2ShapeShiftForm))
+                return getShapeShiftForm();
+            return getField<uint8_t>(UnitField::FieldBytes2Unk3);
         default:
             sLogger.failure("Offset {} is not a valid offset value for byte_2 data (max 3). Returning 0", offset);
             return 0;
@@ -1626,27 +1611,24 @@ void Unit::setBytes2ForOffset(uint32_t offset, uint8_t value)
             setSheathType(value);
             break;
         case 1:
-#if VERSION_STRING == Classic
-            write(unitData()->field_bytes_2.s.unk1, value);
-#elif VERSION_STRING == TBC
-            setPositiveAuraLimit(value);
-#else
-            setPvpFlags(value);
-#endif
+            if (hasField(UnitField::FieldBytes2PvpFlag))
+                setPvpFlags(value);
+            else if (hasField(UnitField::FieldBytes2PositiveAuraLimit))
+                setPositiveAuraLimit(value);
+            else
+                setField<uint8_t>(UnitField::FieldBytes2Unk1, value);
             break;
         case 2:
-#if VERSION_STRING == Classic
-            write(unitData()->field_bytes_2.s.unk2, value);
-#else
-            setPetFlags(value);
-#endif
+            if (hasField(UnitField::FieldBytes2PetFlag))
+                setPetFlags(value);
+            else
+                setField<uint8_t>(UnitField::FieldBytes2Unk2, value);
             break;
         case 3:
-#if VERSION_STRING == Classic
-            write(unitData()->field_bytes_2.s.unk3, value);
-#else
-            setShapeShiftForm(value);
-#endif
+            if (hasField(UnitField::FieldBytes2ShapeShiftForm))
+                setShapeShiftForm(value);
+            else
+                setField<uint8_t>(UnitField::FieldBytes2Unk3, value);
             break;
         default:
             sLogger.failure("Offset {} is not a valid offset value for byte_2 data (max 3)", offset);
@@ -1654,17 +1636,17 @@ void Unit::setBytes2ForOffset(uint32_t offset, uint8_t value)
     }
 }
 
-uint8_t Unit::getSheathType() const { return unitData()->field_bytes_2.s.sheath_type; }
-void Unit::setSheathType(uint8_t sheathType) { write(unitData()->field_bytes_2.s.sheath_type, sheathType); }
+uint8_t Unit::getSheathType() const { return getField<uint8_t>(UnitField::FieldBytes2SheathType); }
+void Unit::setSheathType(uint8_t sheathType) { setField<uint8_t>(UnitField::FieldBytes2SheathType, sheathType); }
 
-#if VERSION_STRING == TBC
-uint8_t Unit::getPositiveAuraLimit() const { return unitData()->field_bytes_2.s.positive_aura_limit; }
-void Unit::setPositiveAuraLimit(uint8_t limit) { write(unitData()->field_bytes_2.s.positive_aura_limit, limit); }
-#elif VERSION_STRING >= WotLK
-uint8_t Unit::getPvpFlags() const { return unitData()->field_bytes_2.s.pvp_flag; }
+// the second byte of bytes_2: positive aura limit in TBC, pvp flags since WotLK
+uint8_t Unit::getPositiveAuraLimit() const { return getField<uint8_t>(UnitField::FieldBytes2PositiveAuraLimit); }
+void Unit::setPositiveAuraLimit(uint8_t limit) { setField<uint8_t>(UnitField::FieldBytes2PositiveAuraLimit, limit); }
+
+uint8_t Unit::getPvpFlags() const { return getField<uint8_t>(UnitField::FieldBytes2PvpFlag); }
 void Unit::setPvpFlags(uint8_t pvpFlags)
 {
-    write(unitData()->field_bytes_2.s.pvp_flag, pvpFlags);
+    setField<uint8_t>(UnitField::FieldBytes2PvpFlag, pvpFlags);
 
     // Update pvp flags also to group
     const auto plr = getPlayerOwnerOrSelf();
@@ -1683,33 +1665,49 @@ void Unit::removePvpFlags(uint8_t pvpFlags)
     auto flags = getPvpFlags();
     setPvpFlags(flags &= ~pvpFlags);
 }
-#endif
 
 #if VERSION_STRING >= TBC
-uint8_t Unit::getPetFlags() const { return unitData()->field_bytes_2.s.pet_flag; }
-void Unit::setPetFlags(uint8_t petFlags) { write(unitData()->field_bytes_2.s.pet_flag, petFlags); }
+uint8_t Unit::getPetFlags() const { return getField<uint8_t>(UnitField::FieldBytes2PetFlag); }
+void Unit::setPetFlags(uint8_t petFlags) { setField<uint8_t>(UnitField::FieldBytes2PetFlag, petFlags); }
 void Unit::addPetFlags(uint8_t petFlags) { setPetFlags(getPetFlags() | petFlags); }
 void Unit::removePetFlags(uint8_t petFlags) { setPetFlags(getPetFlags() & ~petFlags); }
 
-uint8_t Unit::getShapeShiftForm() const { return unitData()->field_bytes_2.s.shape_shift_form; }
-void Unit::setShapeShiftForm(uint8_t shapeShiftForm) { write(unitData()->field_bytes_2.s.shape_shift_form, shapeShiftForm); }
+uint8_t Unit::getShapeShiftForm() const
+{
+    // a byte of bytes_1 in classic, a byte of bytes_2 since TBC
+    if (hasField(UnitField::FieldBytes2ShapeShiftForm))
+        return getField<uint8_t>(UnitField::FieldBytes2ShapeShiftForm);
+
+    return getField<uint8_t>(UnitField::FieldBytes1ShapeShiftForm);
+}
+
+void Unit::setShapeShiftForm(uint8_t shapeShiftForm)
+{
+    if (hasField(UnitField::FieldBytes2ShapeShiftForm))
+    {
+        setField<uint8_t>(UnitField::FieldBytes2ShapeShiftForm, shapeShiftForm);
+        return;
+    }
+
+    setField<uint8_t>(UnitField::FieldBytes1ShapeShiftForm, shapeShiftForm);
+}
 #endif
 //bytes_2 end
 
-uint32_t Unit::getAttackPower() const { return unitData()->attack_power; }
-void Unit::setAttackPower(uint32_t value) { write(unitData()->attack_power, value); }
+uint32_t Unit::getAttackPower() const { return getField<uint32_t>(UnitField::AttackPower); }
+void Unit::setAttackPower(uint32_t value) { setField<uint32_t>(UnitField::AttackPower, value); }
 
-int32_t Unit::getRangedAttackPower() const { return unitData()->ranged_attack_power; }
-void Unit::setRangedAttackPower(int32_t power) { write(unitData()->ranged_attack_power, power); }
+int32_t Unit::getRangedAttackPower() const { return getField<int32_t>(UnitField::RangedAttackPower); }
+void Unit::setRangedAttackPower(int32_t power) { setField<int32_t>(UnitField::RangedAttackPower, power); }
 
-float Unit::getMinRangedDamage() const { return unitData()->minimum_ranged_damage; }
-void Unit::setMinRangedDamage(float damage) { write(unitData()->minimum_ranged_damage, damage); }
+float Unit::getMinRangedDamage() const { return getField<float>(UnitField::MinimumRangedDamage); }
+void Unit::setMinRangedDamage(float damage) { setField<float>(UnitField::MinimumRangedDamage, damage); }
 
-float Unit::getMaxRangedDamage() const { return unitData()->maximum_ranged_ddamage; }
-void Unit::setMaxRangedDamage(float damage) { write(unitData()->maximum_ranged_ddamage, damage); }
+float Unit::getMaxRangedDamage() const { return getField<float>(UnitField::MaximumRangedDamage); }
+void Unit::setMaxRangedDamage(float damage) { setField<float>(UnitField::MaximumRangedDamage, damage); }
 
-uint32_t Unit::getPowerCostModifier(uint16_t school) const { return unitData()->power_cost_modifier[school]; }
-void Unit::setPowerCostModifier(uint16_t school, uint32_t modifier) { write(unitData()->power_cost_modifier[school], modifier); }
+uint32_t Unit::getPowerCostModifier(uint16_t school) const { return getField<uint32_t>(UnitField::PowerCostModifier, school); }
+void Unit::setPowerCostModifier(uint16_t school, uint32_t modifier) { setField<uint32_t>(UnitField::PowerCostModifier, modifier, school); }
 void Unit::modPowerCostModifier(uint16_t school, int32_t modifier)
 {
     int32_t currentModifier = getPowerCostModifier(school);
@@ -1721,8 +1719,8 @@ void Unit::modPowerCostModifier(uint16_t school, int32_t modifier)
     setPowerCostModifier(school, currentModifier);
 }
 
-float Unit::getPowerCostMultiplier(uint16_t school) const { return unitData()->power_cost_multiplier[school]; }
-void Unit::setPowerCostMultiplier(uint16_t school, float multiplier) { write(unitData()->power_cost_multiplier[school], multiplier); }
+float Unit::getPowerCostMultiplier(uint16_t school) const { return getField<float>(UnitField::PowerCostMultiplier, school); }
+void Unit::setPowerCostMultiplier(uint16_t school, float multiplier) { setField<float>(UnitField::PowerCostMultiplier, multiplier, school); }
 void Unit::modPowerCostMultiplier(uint16_t school, float multiplier)
 {
     float currentMultiplier = getPowerCostMultiplier(school);
@@ -1732,36 +1730,38 @@ void Unit::modPowerCostMultiplier(uint16_t school, float multiplier)
 
 int32_t Unit::getAttackPowerMods() const
 {
-#if VERSION_STRING < Cata
-    return unitData()->attack_power_mods;
-#else
-    return unitData()->attack_power_mod_pos - unitData()->attack_power_mod_neg;
-#endif
+    // one signed field before Cata, a positive and a negative field since
+    if (hasField(UnitField::AttackPowerMods))
+        return getField<int32_t>(UnitField::AttackPowerMods);
+
+    return getField<uint32_t>(UnitField::AttackPowerModPos) - getField<uint32_t>(UnitField::AttackPowerModNeg);
 }
 
 void Unit::setAttackPowerMods(int32_t modifier)
 {
-#if VERSION_STRING < Cata
-    write(unitData()->attack_power_mods, modifier);
-#else
-    write(unitData()->attack_power_mod_neg, static_cast<uint32_t>(modifier < 0 ? modifier : 0));
-    write(unitData()->attack_power_mod_pos, static_cast<uint32_t>(modifier > 0 ? modifier : 0));
-#endif
+    if (hasField(UnitField::AttackPowerMods))
+    {
+        setField<int32_t>(UnitField::AttackPowerMods, modifier);
+        return;
+    }
+
+    setField<uint32_t>(UnitField::AttackPowerModNeg, static_cast<uint32_t>(modifier < 0 ? modifier : 0));
+    setField<uint32_t>(UnitField::AttackPowerModPos, static_cast<uint32_t>(modifier > 0 ? modifier : 0));
 }
 
 void Unit::modAttackPowerMods(int32_t modifier)
 {
-#if VERSION_STRING < Cata
+    // the split positive/negative fields since Cata are not modified here yet
+    if (!hasField(UnitField::AttackPowerMods))
+        return;
+
     int32_t currentModifier = getAttackPowerMods();
     currentModifier += modifier;
     setAttackPowerMods(currentModifier);
-#else
-    if (modifier == 0) { return; }
-#endif
 }
 
-float Unit::getAttackPowerMultiplier() const { return unitData()->attack_power_multiplier; }
-void Unit::setAttackPowerMultiplier(float multiplier) { write(unitData()->attack_power_multiplier, multiplier); }
+float Unit::getAttackPowerMultiplier() const { return getField<float>(UnitField::AttackPowerMultiplier); }
+void Unit::setAttackPowerMultiplier(float multiplier) { setField<float>(UnitField::AttackPowerMultiplier, multiplier); }
 void Unit::modAttackPowerMultiplier(float multiplier)
 {
     float currentMultiplier = getAttackPowerMultiplier();
@@ -1771,36 +1771,38 @@ void Unit::modAttackPowerMultiplier(float multiplier)
 
 int32_t Unit::getRangedAttackPowerMods() const
 {
-#if VERSION_STRING < Cata
-    return unitData()->ranged_attack_power_mods;
-#else
-    return unitData()->ranged_attack_power_mods_pos - unitData()->ranged_attack_power_mods_neg;
-#endif
+    // one signed field before Cata, a positive and a negative field since
+    if (hasField(UnitField::RangedAttackPowerMods))
+        return getField<int32_t>(UnitField::RangedAttackPowerMods);
+
+    return getField<uint32_t>(UnitField::RangedAttackPowerModsPos) - getField<uint32_t>(UnitField::RangedAttackPowerModsNeg);
 }
 
 void Unit::setRangedAttackPowerMods(int32_t modifier)
 {
-#if VERSION_STRING < Cata
-    write(unitData()->ranged_attack_power_mods, modifier);
-#else
-    write(unitData()->ranged_attack_power_mods_neg, static_cast<uint32_t>(modifier < 0 ? modifier : 0));
-    write(unitData()->ranged_attack_power_mods_pos, static_cast<uint32_t>(modifier > 0 ? modifier : 0));
-#endif
+    if (hasField(UnitField::RangedAttackPowerMods))
+    {
+        setField<int32_t>(UnitField::RangedAttackPowerMods, modifier);
+        return;
+    }
+
+    setField<uint32_t>(UnitField::RangedAttackPowerModsNeg, static_cast<uint32_t>(modifier < 0 ? modifier : 0));
+    setField<uint32_t>(UnitField::RangedAttackPowerModsPos, static_cast<uint32_t>(modifier > 0 ? modifier : 0));
 }
 
 void Unit::modRangedAttackPowerMods(int32_t modifier)
 {
-#if VERSION_STRING < Cata
+    // the split positive/negative fields since Cata are not modified here yet
+    if (!hasField(UnitField::RangedAttackPowerMods))
+        return;
+
     int32_t currentModifier = getRangedAttackPowerMods();
     currentModifier += modifier;
     setRangedAttackPowerMods(currentModifier);
-#else
-    if (modifier == 0) { return; }
-#endif
 }
 
-float Unit::getRangedAttackPowerMultiplier() const { return unitData()->ranged_attack_power_multiplier; }
-void Unit::setRangedAttackPowerMultiplier(float multiplier) { write(unitData()->ranged_attack_power_multiplier, multiplier); }
+float Unit::getRangedAttackPowerMultiplier() const { return getField<float>(UnitField::RangedAttackPowerMultiplier); }
+void Unit::setRangedAttackPowerMultiplier(float multiplier) { setField<float>(UnitField::RangedAttackPowerMultiplier, multiplier); }
 void Unit::modRangedAttackPowerMultiplier(float multiplier)
 {
     float currentMultiplier = getRangedAttackPowerMultiplier();
@@ -1808,10 +1810,8 @@ void Unit::modRangedAttackPowerMultiplier(float multiplier)
     setRangedAttackPowerMultiplier(currentMultiplier);
 }
 
-#if VERSION_STRING >= WotLK
-float Unit::getHoverHeight() const { return unitData()->hover_height; }
-void Unit::setHoverHeight(float height) { write(unitData()->hover_height, height); }
-#endif
+float Unit::getHoverHeight() const { return getField<float>(UnitField::HoverHeight); }
+void Unit::setHoverHeight(float height) { setField<float>(UnitField::HoverHeight, height); }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Area & Position

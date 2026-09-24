@@ -46,6 +46,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Summons/SummonHandler.hpp"
 #include "Utilities/Random.hpp"
 #include "Server/WorldSession.h"
+#include "Version/ObjectLayout.hpp"
 
 uint8_t CreatureProperties::generateRandomDisplayIdAndReturnGender(uint32_t* displayId) const
 {
@@ -157,14 +158,14 @@ Creature::Creature(uint64_t guid)
 {
     //////////////////////////////////////////////////////////////////////////
     m_objectTypeId = TYPEID_UNIT;
-    m_valuesCount = getSizeOfStructure(WoWUnit);
+    m_valuesCount = Version::layouts().unit.valueCount();
     //////////////////////////////////////////////////////////////////////////
 
     //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
     m_uint32Values = _fields;
 
-    memset(m_uint32Values, 0, ((getSizeOfStructure(WoWUnit)) * sizeof(uint32_t)));
-    m_updateMask.SetCount(getSizeOfStructure(WoWUnit));
+    memset(m_uint32Values, 0, ((Version::layouts().unit.valueCount()) * sizeof(uint32_t)));
+    m_updateMask.SetCount(Version::layouts().unit.valueCount());
 
     setOType(TYPE_UNIT | TYPE_OBJECT);
     setGuid(guid);
