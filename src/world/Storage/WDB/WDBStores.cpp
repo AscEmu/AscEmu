@@ -42,8 +42,6 @@ std::vector<NameGenData> _namegenData[3];
 
 std::map<uint32_t, WDB::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::GameObjectDisplayInfoEntry> sGameObjectDisplayInfoStore;
-
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemSetEntry> sItemSetStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemRandomPropertiesEntry> sItemRandomPropertiesStore;
 
@@ -666,7 +664,22 @@ bool loadDBCs()
         }
     );
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGameObjectDisplayInfoStore, dbc_path, "GameObjectDisplayInfo.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::GameObjectDisplayInfoEntry>(
+        bad_dbc_files, sGameObjectDisplayInfoStore, dbc_path,
+        [](const auto& raw, WDB::Structures::GameObjectDisplayInfoEntry& entry) {
+            entry.id = raw.id;
+            entry.filename = raw.filename;
+
+            if constexpr (requires { raw.geoBoxMin; raw.geoBoxMax; })
+            {
+                for (std::size_t i = 0; i < 3; ++i)
+                {
+                    entry.geoBoxMin[i] = raw.geoBoxMin[i];
+                    entry.geoBoxMax[i] = raw.geoBoxMax[i];
+                }
+            }
+        }
+    );
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemSetStore, dbc_path, "ItemSet.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemRandomPropertiesStore, dbc_path, "ItemRandomProperties.dbc");

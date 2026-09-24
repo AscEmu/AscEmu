@@ -1330,3 +1330,9 @@ struct UnitSpeedInfo
     float m_currentSpeedRate[MAX_SPEED_TYPE];
     float m_basicSpeedRate[MAX_SPEED_TYPE];
 };
+
+enum MountFlags
+{
+    MOUNT_FLAG_CAN_PITCH = 0x4, // client checks MOVEMENTFLAG2_FULL_SPEED_PITCHING
+    MOUNT_FLAG_CAN_SWIM = 0x8, // client checks MOVEMENTFLAG_SWIMMING
+};

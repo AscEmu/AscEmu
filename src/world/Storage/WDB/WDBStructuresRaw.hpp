@@ -581,6 +581,24 @@ namespace WDB::Structures::Raw
         uint32_t friendFaction[4];
     };
 
+    struct GameObjectDisplayInfoEntryClassic
+    {
+        uint32_t id;
+        char const* filename;
+    };
+
+    struct GameObjectDisplayInfoEntryTbc
+    {
+        uint32_t id;
+        char const* filename;
+        float geoBoxMin[3];
+        float geoBoxMax[3];
+    };
+
+    using GameObjectDisplayInfoEntryWotlk = GameObjectDisplayInfoEntryTbc;
+    using GameObjectDisplayInfoEntryCata = GameObjectDisplayInfoEntryTbc;
+    using GameObjectDisplayInfoEntryMop = GameObjectDisplayInfoEntryTbc;
+
     struct GemPropertiesEntryTbcWotlkCataMop
     {
         uint32_t id;

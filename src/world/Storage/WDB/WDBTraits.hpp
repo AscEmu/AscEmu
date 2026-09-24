@@ -279,6 +279,18 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::GameObjectDisplayInfoEntry>
+        : DbcVersionLayouts<
+            Structures::Raw::GameObjectDisplayInfoEntryClassic,
+            Structures::Raw::GameObjectDisplayInfoEntryTbc,
+            Structures::Raw::GameObjectDisplayInfoEntryWotlk,
+            Structures::Raw::GameObjectDisplayInfoEntryCata,
+            Structures::Raw::GameObjectDisplayInfoEntryMop>
+    {
+        static constexpr char const* filename = "GameObjectDisplayInfo.dbc";
+    };
+
+    template <>
     struct DbcTraits<Structures::GemPropertiesEntry> : DbcVersionLayouts<
             UnsupportedVersion, // Classic
             Structures::Raw::GemPropertiesEntryTbcWotlkCataMop,

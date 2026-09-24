@@ -152,12 +152,6 @@ enum Targets
     TARGET_127                                  = 127,
 };
 
-enum MountFlags
-{
-    MOUNT_FLAG_CAN_PITCH    = 0x4, // client checks MOVEMENTFLAG2_FULL_SPEED_PITCHING
-    MOUNT_FLAG_CAN_SWIM     = 0x8, // client checks MOVEMENTFLAG_SWIMMING
-};
-
 struct DBCPosition3D
 {
     float X;
@@ -455,6 +449,21 @@ namespace WDB::Structures
         {
             return (factionFlags & FACTION_TEMPLATE_FLAG_CONTESTED_GUARD) != 0;
         }
+    };
+
+    struct GameObjectDisplayInfoEntry
+    {
+        uint32_t id = 0;
+        char const* filename = nullptr;
+        std::array<float, 3> geoBoxMin{};
+        std::array<float, 3> geoBoxMax{};
+
+        [[nodiscard]] float minX() const noexcept { return geoBoxMin[0]; }
+        [[nodiscard]] float minY() const noexcept { return geoBoxMin[1]; }
+        [[nodiscard]] float minZ() const noexcept { return geoBoxMin[2]; }
+        [[nodiscard]] float maxX() const noexcept { return geoBoxMax[0]; }
+        [[nodiscard]] float maxY() const noexcept { return geoBoxMax[1]; }
+        [[nodiscard]] float maxZ() const noexcept { return geoBoxMax[2]; }
     };
 
     struct GemPropertiesEntry
@@ -1085,21 +1094,6 @@ namespace WDB::Structures
         //uint32_t unk;                                             // 7
     };
 #endif
-
-    struct GameObjectDisplayInfoEntry
-    {
-        uint32_t Displayid;                                         // 0
-        char* filename;                                             // 1
-        //uint32_t unk1[10];                                        // 2-11
-#if VERSION_STRING > Classic
-        float minX;                                                 // 12
-        float minY;                                                 // 13
-        float minZ;                                                 // 14
-        float maxX;                                                 // 15
-        float maxY;                                                 // 16
-        float maxZ;                                                 // 17
-#endif
-    };
 
 #if VERSION_STRING >= WotLK
     struct GlyphPropertiesEntry
