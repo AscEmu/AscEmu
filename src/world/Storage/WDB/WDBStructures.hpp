@@ -473,6 +473,20 @@ namespace WDB::Structures
         uint32_t socketMask{0};
     };
 
+    inline constexpr std::size_t MAX_ITEM_SET_ITEMS = 10;
+    inline constexpr std::size_t MAX_ITEM_SET_SPELLS = 8;
+
+    struct ItemSetEntry
+    {
+        uint32_t id = 0;
+        char const* name = nullptr;
+        std::array<uint32_t, MAX_ITEM_SET_ITEMS> itemId{};
+        std::array<uint32_t, MAX_ITEM_SET_SPELLS> spellId{};
+        std::array<uint32_t, MAX_ITEM_SET_SPELLS> itemsCount{};
+        uint32_t requiredSkillId = 0;
+        uint32_t requiredSkillAmt = 0;
+    };
+
     struct MapDifficulty
     {
         uint32_t resetTime{0};
@@ -1311,19 +1325,6 @@ namespace WDB::Structures
         float FinalMultiplier;
     };
 #endif
-
-    struct ItemSetEntry
-    {
-        uint32_t id;                                                // 1
-        char* name[NAME_PATTERN];                                   // 1-16 name (lang)
-        //uint32_t localeflag;                                      // 17 constant
-        uint32_t itemid[10];                                        // 18-27 item set items
-        //uint32_t unk[7];                                          // 28-34 all 0
-        uint32_t SpellID[8];                                        // 35-42
-        uint32_t itemscount[8];                                     // 43-50
-        uint32_t RequiredSkillID;                                   // 51
-        uint32_t RequiredSkillAmt;                                  // 52
-    };
 
     struct LFGDungeonEntry
     {

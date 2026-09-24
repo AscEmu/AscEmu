@@ -6995,13 +6995,13 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
                 }
 
                 // apply spells from dbc for set
-                if (!itemSetEntry->RequiredSkillID || (getSkillLineCurrent(static_cast<uint16_t>(itemSetEntry->RequiredSkillID), true) >= itemSetEntry->RequiredSkillAmt))
+                if (!itemSetEntry->requiredSkillId || (getSkillLineCurrent(static_cast<uint16_t>(itemSetEntry->requiredSkillId), true) >= itemSetEntry->requiredSkillAmt))
                 {
                     for (uint8_t itemIndex = 0; itemIndex < 8; ++itemIndex)
                     {
-                        if (itemSet->itemscount == itemSetEntry->itemscount[itemIndex])
+                        if (itemSet->itemscount == itemSetEntry->itemsCount[itemIndex])
                         {
-                            const auto spellInfo = sSpellMgr.getSpellInfo(itemSetEntry->SpellID[itemIndex]);
+                            const auto spellInfo = sSpellMgr.getSpellInfo(itemSetEntry->spellId[itemIndex]);
                             Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
                             SpellCastTargets targets(getGuid());
                             spell->prepare(&targets);
@@ -7015,8 +7015,8 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
                 {
                     auto* itemSet = &(*itemSetListMember);
                     for (uint8_t itemIndex = 0; itemIndex < 8; ++itemIndex)
-                        if (itemSet->itemscount == itemSetEntry->itemscount[itemIndex])
-                            removeAllAurasById(itemSetEntry->SpellID[itemIndex], getGuid());
+                        if (itemSet->itemscount == itemSetEntry->itemsCount[itemIndex])
+                            removeAllAurasById(itemSetEntry->spellId[itemIndex], getGuid());
 
                     if (!(--itemSet->itemscount))
                         m_itemSets.erase(itemSetListMember);

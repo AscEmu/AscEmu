@@ -279,8 +279,7 @@ namespace WDB
     };
 
     template <>
-    struct DbcTraits<Structures::GameObjectDisplayInfoEntry>
-        : DbcVersionLayouts<
+    struct DbcTraits<Structures::GameObjectDisplayInfoEntry> : DbcVersionLayouts<
             Structures::Raw::GameObjectDisplayInfoEntryClassic,
             Structures::Raw::GameObjectDisplayInfoEntryTbc,
             Structures::Raw::GameObjectDisplayInfoEntryWotlk,
@@ -299,6 +298,17 @@ namespace WDB
             Structures::Raw::GemPropertiesEntryTbcWotlkCataMop>
     {
         static constexpr const char* filename = "GemProperties.dbc";
+    };
+
+    template <>
+    struct DbcTraits<Structures::ItemSetEntry> : DbcVersionLayouts<
+            Structures::Raw::ItemSetEntryClassic,
+            Structures::Raw::ItemSetEntryTbc,
+            Structures::Raw::ItemSetEntryWotlk,
+            Structures::Raw::ItemSetEntryCata,
+            Structures::Raw::ItemSetEntryMop>
+    {
+        static constexpr char const* filename = "ItemSet.dbc";
     };
 
     template <>

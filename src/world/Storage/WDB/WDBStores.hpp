@@ -47,9 +47,7 @@ namespace WDB::Structures
     struct LiquidTypeEntry;
     struct LFGDungeonEntry;
     struct ItemRandomPropertiesEntry;
-    struct ItemSetEntry;
-    struct GameObjectDisplayInfoEntry;
-    struct EmotesTextEntry;
+     struct EmotesTextEntry;
     struct AreaTableEntry;
     struct SpellDurationEntry;
     struct SpellCastTimesEntry;
@@ -163,8 +161,8 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::EmotesTextEntry> sEmotesTextSt
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::FactionEntry> sFactionStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::FactionTemplateEntry> sFactionTemplateStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::GameObjectDisplayInfoEntry> sGameObjectDisplayInfoStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemSetEntry> sItemSetStore;
 
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemSetEntry> sItemSetStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemRandomPropertiesEntry> sItemRandomPropertiesStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::LFGDungeonEntry> sLFGDungeonStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::LiquidTypeEntry> sLiquidTypeStore;

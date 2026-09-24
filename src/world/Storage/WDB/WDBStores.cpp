@@ -42,7 +42,6 @@ std::vector<NameGenData> _namegenData[3];
 
 std::map<uint32_t, WDB::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemSetEntry> sItemSetStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemRandomPropertiesEntry> sItemRandomPropertiesStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::LFGDungeonEntry> sLFGDungeonStore;
@@ -681,7 +680,36 @@ bool loadDBCs()
         }
     );
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemSetStore, dbc_path, "ItemSet.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::ItemSetEntry>(
+        bad_dbc_files, sItemSetStore, dbc_path,
+        [](const auto& raw, WDB::Structures::ItemSetEntry& entry) {
+            entry.id = raw.id;
+
+            if constexpr (std::is_array_v<decltype(raw.name)>)
+            {
+                entry.name = raw.name[0];
+            }
+            else
+            {
+                entry.name = raw.name;
+            }
+
+            for (std::size_t i = 0; i < WDB::Structures::MAX_ITEM_SET_ITEMS; ++i)
+            {
+                entry.itemId[i] = raw.itemId[i];
+            }
+
+            for (std::size_t i = 0; i < WDB::Structures::MAX_ITEM_SET_SPELLS; ++i)
+            {
+                entry.spellId[i] = raw.spellId[i];
+                entry.itemsCount[i] = raw.itemsCount[i];
+            }
+
+            entry.requiredSkillId = raw.requiredSkillId;
+            entry.requiredSkillAmt = raw.requiredSkillAmt;
+        }
+    );
+
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemRandomPropertiesStore, dbc_path, "ItemRandomProperties.dbc");
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sLFGDungeonStore, dbc_path, "LFGDungeons.dbc");

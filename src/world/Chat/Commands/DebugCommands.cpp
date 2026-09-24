@@ -60,14 +60,13 @@ bool ChatCommandHandler::HandleMoveDBCItemSetsToDB(const char* /*args*/, WorldSe
         {
             if (sMySQLStore.getItemProperties(i) == nullptr)
             {
-                std::string insertQuery = std::format("INSERT INTO `item_sets_dump` (`id`, `item1`, `item2`, `item3`, `item4`, `item5`, `item6`, `item7`, `item8`, `item9`, `item10`) VALUES ({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {});", item->id, item->itemid[0], item->itemid[1], item->itemid[2], item->itemid[3], item->itemid[4], item->itemid[5], item->itemid[6], item->itemid[7], item->itemid[8], item->itemid[9]);
+                std::string insertQuery = std::format("INSERT INTO `item_sets_dump` (`id`, `item1`, `item2`, `item3`, `item4`, `item5`, `item6`, `item7`, `item8`, `item9`, `item10`) VALUES ({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {});", item->id, item->itemId[0], item->itemId[1], item->itemId[2], item->itemId[3], item->itemId[4], item->itemId[5], item->itemId[6], item->itemId[7], item->itemId[8], item->itemId[9]);
                 WorldDatabase.query(insertQuery.c_str());
             }
         }
     }
 #endif
     return true;
-
 }
 
 bool ChatCommandHandler::HandleMoveDB2ItemsToDB(const char* /*args*/, WorldSession* /*session*/)
@@ -89,7 +88,6 @@ bool ChatCommandHandler::HandleMoveDB2ItemsToDB(const char* /*args*/, WorldSessi
     }
 #endif
     return true;
-
 }
 
 bool ChatCommandHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldSession* session)

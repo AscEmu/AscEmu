@@ -606,6 +606,43 @@ namespace WDB::Structures::Raw
         uint32_t socketMask;
     };
 
+    struct ItemSetEntryClassic
+    {
+        uint32_t id;
+        char const* name[namePatternClassic];
+        uint32_t itemId[10];
+        uint32_t spellId[8];
+        uint32_t itemsCount[8];
+        uint32_t requiredSkillId;
+        uint32_t requiredSkillAmt;
+    };
+
+    struct ItemSetEntryTbc
+    {
+        uint32_t id;
+        char const* name[namePatternTbcWotlk];
+        uint32_t itemId[10];
+        uint32_t spellId[8];
+        uint32_t itemsCount[8];
+        uint32_t requiredSkillId;
+        uint32_t requiredSkillAmt;
+    };
+
+    using ItemSetEntryWotlk = ItemSetEntryTbc;
+
+    struct ItemSetEntryCata
+    {
+        uint32_t id;
+        char const* name;
+        uint32_t itemId[10];
+        uint32_t spellId[8];
+        uint32_t itemsCount[8];
+        uint32_t requiredSkillId;
+        uint32_t requiredSkillAmt;
+    };
+
+    using ItemSetEntryMop = ItemSetEntryCata;
+
     struct MapDifficultyEntryWotlkCataMop
     {
         uint32_t mapId;
