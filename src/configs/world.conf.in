@@ -120,6 +120,19 @@
         ClientVersion = "2">
 
 ################################################################################
+# Internal Battle.net communication
+#
+# Forever builds use this channel automatically. Legacy builds ignore these
+# settings and use LogonComm. The backend itself is selected by CMake.
+################################################################################
+
+<BattleNetComm Host         = "127.0.0.1"
+               Port         = "1120"
+               RealmId      = "1"
+               RealmName    = "AscEmu"
+               SharedSecret = "ascemu-bnetcomm">
+
+################################################################################
 # Listen Config
 #
 #    Host

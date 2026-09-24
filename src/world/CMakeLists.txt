@@ -88,3 +88,25 @@ install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION .)
 
 # Enable this if you want to use clang-tidy for static analysis in MS Visual Studio. You need to have clang-tidy installed and available in your PATH.
 #enable_clang_tidy(world)
+
+# Client-profile topology. Forever uses the Battle.net World V2/version layer;
+# legacy builds remain on the classic WorldSocket/logonserver path.
+if (AE_USES_BATTLENET)
+    target_compile_definitions(${EXECUTABLE_NAME} PRIVATE
+        AE_BUILD_BATTLENET=1
+        AE_HAS_WORLD_V2_PROFILE=1
+        AE_WORLD_PROFILE_FOREVER=1
+    )
+
+    # Stage 2 provides version_client. Keep Stage 1 independently configurable,
+    # then pick the target up automatically once src/version/Forever is ported.
+    if (TARGET version_client)
+        target_link_libraries(${EXECUTABLE_NAME} PUBLIC version_client)
+    endif ()
+else ()
+    target_compile_definitions(${EXECUTABLE_NAME} PRIVATE
+        AE_BUILD_BATTLENET=0
+        AE_HAS_WORLD_V2_PROFILE=0
+        AE_WORLD_PROFILE_FOREVER=0
+    )
+endif ()

@@ -44,6 +44,7 @@ void Socket::writeCallback()
     else
     {
         decrementSendLock();
+        completeDelayedDisconnectIfReady();
     }
 }
 

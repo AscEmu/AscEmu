@@ -1,5 +1,13 @@
 # Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 
+# Forever uses a dedicated modern protocol/data layer. The Classic-MoP script
+# libraries (including Battlegrounds and SpellHandlers) must not be compiled
+# into a Forever build.
+if (ASCEMU_VERSION STREQUAL "Forever")
+    message(STATUS "ASCEMU_VERSION=Forever: all legacy script modules are disabled")
+    return()
+endif ()
+
 # all script libraries have SCRIPTLIB defined.
 add_compile_options(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
 

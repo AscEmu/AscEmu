@@ -33,6 +33,13 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     logonServer.realmCount = 1;
     logonServer.disablePings = false;
 
+    // world.conf - Battle.net connection settings. The selected client profile decides whether these are used.
+    battleNetComm.host = "127.0.0.1";
+    battleNetComm.port = 1120;
+    battleNetComm.realmId = 1;
+    battleNetComm.realmName = "AscEmu";
+    battleNetComm.sharedSecret = "ascemu-bnetcomm";
+
     // world.conf - Listen Config
     listen.listenPort = 8129;
 
@@ -276,6 +283,13 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     Config.MainConfig.tryGetInt("LogonServer", "RealmCount", &logonServer.realmCount);
     Config.MainConfig.tryGetBool("LogonServer", "DisablePings", &logonServer.disablePings);
     Config.MainConfig.tryGetString("LogonServer", "RemotePassword", &logonServer.remotePassword);
+
+    // world.conf - Battle.net connection settings. The selected client profile decides at compile time whether these are used.
+    Config.MainConfig.tryGetString("BattleNetComm", "Host", &battleNetComm.host);
+    Config.MainConfig.tryGetInt("BattleNetComm", "Port", &battleNetComm.port);
+    Config.MainConfig.tryGetInt("BattleNetComm", "RealmId", &battleNetComm.realmId);
+    Config.MainConfig.tryGetString("BattleNetComm", "RealmName", &battleNetComm.realmName);
+    Config.MainConfig.tryGetString("BattleNetComm", "SharedSecret", &battleNetComm.sharedSecret);
 
     // world.conf - Realm Section
 

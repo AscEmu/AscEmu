@@ -5,42 +5,54 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-/*! \brief VERSION_STRING is defined by cmake option (dropdown)*/
+/*! \brief
+ * AE_CLIENT_PROFILE selects the external client protocol. Keep modern profile
+ * tokens separate from their namespace names so the preprocessor cannot
+ * replace AscEmu::Version::Forever tokens in C++ source.
+ */
 #define Classic 5875
 #define TBC 8606
 #define WotLK 12340
 #define Cata 15595
 #define Mop 18414
+#define AE_PROFILE_FOREVER 69893
 
-#define VERSION_STRING @ASCEMU_VERSION@
+#define AE_CLIENT_PROFILE @ASCEMU_VERSION_TOKEN@
 
-#if VERSION_STRING == Classic
+#if AE_CLIENT_PROFILE == Classic
     #define AE_CLASSIC
     #define VERSION 1, 12, 1
-#elif VERSION_STRING == TBC
+    #define VERSION_STRING Classic
+    #define BUILD_VERSION 5875
+#elif AE_CLIENT_PROFILE == TBC
     #define AE_TBC
     #define VERSION 2, 4, 3
-#elif VERSION_STRING == WotLK
+    #define VERSION_STRING TBC
+    #define BUILD_VERSION 8606
+#elif AE_CLIENT_PROFILE == WotLK
     #define AE_WOTLK
     #define VERSION 3, 3, 5
-#elif VERSION_STRING == Cata
+    #define VERSION_STRING WotLK
+    #define BUILD_VERSION 12340
+#elif AE_CLIENT_PROFILE == Cata
     #define AE_CATA
     #define VERSION 4, 3, 4
-#elif VERSION_STRING == Mop
+    #define VERSION_STRING Cata
+    #define BUILD_VERSION 15595
+#elif AE_CLIENT_PROFILE == Mop
     #define AE_MOP
     #define VERSION 5, 4, 8
-#endif
-
-#if VERSION_STRING == Classic
-    #define BUILD_VERSION 5875
-#elif VERSION_STRING == TBC
-    #define BUILD_VERSION 8606
-#elif VERSION_STRING == WotLK
-    #define BUILD_VERSION 12340
-#elif VERSION_STRING == Cata
-    #define BUILD_VERSION 15595
-#elif VERSION_STRING == Mop
+    #define VERSION_STRING Mop
     #define BUILD_VERSION 18414
+#elif AE_CLIENT_PROFILE == AE_PROFILE_FOREVER
+    #define AE_FOREVER
+    #define AE_MODERN_CLIENT
+    #define AE_BATTLENET
+    #define VERSION 1, 60, 1
+    #define VERSION_STRING AE_PROFILE_FOREVER
+    #define BUILD_VERSION 69893
+#else
+    #error Unsupported ASCEMU_VERSION
 #endif
 
 #if VERSION_STRING >= Classic
@@ -60,7 +72,7 @@ This file is released under the MIT license. See README-MIT for more information
     #define FT_VEHICLES
 #endif
 
-#if VERSION_STRING >= Cata
+#if VERSION_STRING >= Cata && !defined(AE_MODERN_CLIENT)
     #define FT_TRANSMOG
     #define FT_LFR
 #endif
