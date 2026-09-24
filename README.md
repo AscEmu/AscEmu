@@ -33,11 +33,11 @@ Our world database follows the same multiversion approach. This makes it possibl
 
 |     Description    | Classic | TBC | WotLK | Cata | MoP | Forever |
 | :----------------: | :-----: | :-: | :---: | :--: | :-: | :-----: |
-|   Authentication   |    ✔️   |  ✔️ |   ✔️  |  ✔️  |  ✔️ |    🚧   |
-|    World socket    |    ✔️   |  ✔️ |   ✔️  |  ✔️  |  ✔️ |    🚧   |
-|   Character list   |    ✔️   |  ✔️ |   ✔️  |  ✔️  |  ✔️ |    🚧   |
-| Character creation |    ✔️   |  ✔️ |   ✔️  |  ✔️  |  ✔️ |    🚧   |
-|   Log into world   |    ✔️   |  ✔️ |   ✔️  |  ✔️  |  ✔️ |    🚧   |
+|   Authentication   |    ✔️   |  ✔️ |   ✔️  |  ✔️  |  ✔️ |    ✔️   |
+|    World socket    |    ✔️   |  ✔️ |   ✔️  |  ✔️  |  ✔️ |    ✔️   |
+|   Character list   |    ✔️   |  ✔️ |   ✔️  |  ✔️  |  ✔️ |    ✔️   |
+| Character creation |    ✔️   |  ✔️ |   ✔️  |  ✔️  |  ✔️ |    ✔️   |
+|   Log into world   |    ✔️   |  ✔️ |   ✔️  |  ✔️  |  ✔️ |    ✔️   |
 |   Object updates   |    ✔️   |  ✔️ |   ✔️  |  ✔️  |  ✔️ |    🚧   |
 |      Movement      |    ✔️   |  ✔️ |   ✔️  |  ✔️  |  ✔️ |    🚧   |
 |      Gameplay      |    ✔️   |  ✔️ |   ✔️  |  ✔️  |  ✔️ |    ❌    |
@@ -45,7 +45,11 @@ Our world database follows the same multiversion approach. This makes it possibl
 > [!NOTE]
 > **Forever support is experimental and under active development.**
 >
-> The Forever implementation targets the modern Battle.net and World protocols and is being developed independently from the legacy authentication and packet handling used by older AscEmu versions.
+> The current implementation targets **World of Warcraft Forever 1.60.1 build 69893** (`ClientVersion = 12`).
+>
+> Authentication, the World V2 connection, character handling and entering the world are working. Object updates, movement, visibility, DB2/WDC5 data and gameplay integration are still being validated and should be considered work in progress.
+>
+> Forever uses the modern Battle.net and World protocols and follows a separate protocol path from the legacy authentication and packet handling used by older AscEmu versions.
 
 ### Forever development status
 
@@ -55,7 +59,7 @@ The following parts of the Forever client flow are currently implemented or unde
 * ✔️ Battle.net authentication flow
 * ✔️ Realm list
 * ✔️ Realm selection and World connection
-* ✔️ Modern World socket protocol
+* ✔️ Modern World V2 socket protocol
 * ✔️ World authentication
 * ✔️ Character enumeration
 * ✔️ Character appearance and customization data
@@ -66,15 +70,21 @@ The following parts of the Forever client flow are currently implemented or unde
 * ✔️ Core player values such as health, level and experience
 * 🚧 Dynamic object update handling
 * 🚧 Update manager integration
-* 🚧 Movement packet handling
+* 🚧 Creature and GameObject update support
+* 🚧 Visibility and surrounding object creation
+* 🚧 Player movement packet handling
+* 🚧 Creature spline movement
+* 🚧 Random, waypoint and chase movement
+* 🚧 Walk/run movement synchronization
 * 🚧 Runtime movement synchronization
 * 🚧 Complete PlayerData / UnitData / ActivePlayerData coverage
 * 🚧 DB2/WDC5 data loading and version-specific structures
-* 🚧 Creature and GameObject update support
-* 🚧 Visibility and surrounding object creation
+* 🚧 Item and inventory support
+* 🚧 NPC interaction
 * ❌ Complete skill system
 * ❌ Complete spell system
-* ❌ Chat
+* ❌ Complete chat support
+* ❌ Full script support
 * ❌ Full gameplay support
 
 Legend:
@@ -83,7 +93,7 @@ Legend:
 * 🚧 Experimental / work in progress
 * ❌ Not implemented yet
 
-Forever should currently be considered a **protocol and core-development target**, not a playable server version.
+Forever should currently be considered a **protocol and core-development target**, not a complete playable server version.
 
 The current goal is to establish a clean version-specific foundation for modern clients instead of introducing compatibility hacks into the legacy core. Once the fundamental authentication, world protocol, object update, movement and data systems are stable, gameplay systems can be enabled incrementally.
 
