@@ -4898,13 +4898,7 @@ void Spell::SpellEffectActivateObject(uint8_t effectIndex) // Activate Object
 
     m_gameObjTarget->setDynamicFlags(GO_DYN_FLAG_INTERACTABLE);
 
-#if VERSION_STRING < WotLK
     sEventMgr.AddEvent(m_gameObjTarget, &GameObject::setDynamicFlags, static_cast<uint32_t>(0), 0, static_cast<uint32_t>(getDuration()), 1, 0);
-#elif VERSION_STRING < Mop
-    sEventMgr.AddEvent(m_gameObjTarget, &GameObject::setDynamicFlags, static_cast<uint16_t>(0), 0, static_cast<uint32_t>(getDuration()), 1, 0);
-#else
-    sEventMgr.AddEvent(dynamic_cast<Object*>(m_gameObjTarget), &Object::setDynamicFlags, static_cast<uint16_t>(0), 0, static_cast<uint32_t>(getDuration()), 1, 0);
-#endif
 }
 
 void Spell::SpellEffectBuildingDamage(uint8_t effectIndex)

@@ -9178,11 +9178,7 @@ void Player::updateNearbyQuestGameObjects()
             // Update dynamic flags for gameobjects with quests or item loot
             if (gameobject->isQuestGiver() || !gobProperties->itemMap.empty() || !gobProperties->goMap.empty())
             {
-#if VERSION_STRING < Mop
-                gameobject->forceBuildUpdateValueForField(Version::layouts().gameObject.index(GameObjectField::Dynamic), this);
-#else
-                gameobject->forceBuildUpdateValueForField(Version::layouts().object.index(ObjectField::DynamicField), this);
-#endif
+                gameobject->forceBuildUpdateValueForField(Version::gameObjectDynamicFlagsIndex(), this);
             }
         }
     }
@@ -10330,11 +10326,7 @@ void Player::tagUnit(Object* object)
 {
     if (object->isCreatureOrPlayer())
     {
-#if VERSION_STRING < Mop
-        object->forceBuildUpdateValueForField(Version::layouts().unit.index(UnitField::DynamicFlags), this);
-#else
-        object->forceBuildUpdateValueForField(Version::layouts().object.index(ObjectField::DynamicField), this);
-#endif
+        object->forceBuildUpdateValueForField(Version::unitDynamicFlagsIndex(), this);
     }
 }
 
@@ -11282,11 +11274,7 @@ void Player::sendLootUpdate(Object* object)
         flags |= U_DYN_FLAG_LOOTABLE;
         flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
 
-#if VERSION_STRING < Mop
-        object->BuildFieldUpdatePacket(&buffer, Version::layouts().unit.index(UnitField::DynamicFlags), flags);
-#else
-        object->BuildFieldUpdatePacket(&buffer, Version::layouts().object.index(ObjectField::DynamicField), flags);
-#endif
+        object->BuildFieldUpdatePacket(&buffer, Version::unitDynamicFlagsIndex(), flags);
 
         getUpdateMgr().pushUpdateData(&buffer, 1);
     }

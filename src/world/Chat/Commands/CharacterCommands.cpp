@@ -827,11 +827,7 @@ bool ChatCommandHandler::HandleCharAddCopperCommand(const char* args, WorldSessi
     uint32_t silver = (uint32_t)std::floor(Util::int32abs<float>(total) / 100.0f) % 100;
     uint32_t copper = Util::int32abs<uint32_t>(total) % 100;
 
-#if VERSION_STRING < Cata
-    uint32_t newgold = player_target->getCoinage() + total;
-#else
     uint64_t newgold = player_target->getCoinage() + total;
-#endif
 
     if (newgold == 0)
     {
@@ -887,11 +883,7 @@ bool ChatCommandHandler::HandleCharAddSilverCommand(const char* args, WorldSessi
     uint32_t gold = (uint32_t)std::floor(Util::int32abs<float>(total) / 10000.0f);
     uint32_t silver = (uint32_t)std::floor(Util::int32abs<float>(total) / 100.0f) % 100;
 
-#if VERSION_STRING < Cata
-    uint32_t newgold = player_target->getCoinage() + total;
-#else
     uint64_t newgold = player_target->getCoinage() + total;
-#endif
 
     if (newgold == 0)
     {
@@ -946,11 +938,7 @@ bool ChatCommandHandler::HandleCharAddGoldCommand(const char* args, WorldSession
 
     uint32_t gold = (uint32_t)std::floor(Util::int32abs<float>(total) / 10000.0f);
 
-#if VERSION_STRING < Cata
-    uint32_t newgold = player_target->getCoinage() + total;
-#else
     uint64_t newgold = player_target->getCoinage() + total;
-#endif
 
     if (newgold == 0)
     {

@@ -3328,11 +3328,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
 
     if (isGameObject() && !isTransporter())
     {
-#if VERSION_STRING < Mop
-        updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Dynamic));
-#else
-        updateMask->SetBit(Version::layouts().object.index(ObjectField::DynamicField));
-#endif
+        updateMask->SetBit(Version::gameObjectDynamicFlagsIndex());
 
         if (updateType != UPDATETYPE_CREATE_OBJECT && updateType != UPDATETYPE_CREATE_OBJECT2)
         {
@@ -3396,11 +3392,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
                                 bitValue = creature->GetCreatureProperties()->getVisibleModelForTriggerNpc();
                         }
                     }
-#if VERSION_STRING < Mop
-                    else if (idx == Version::layouts().unit.index(UnitField::DynamicFlags))
-#else
-                    else if (idx == Version::layouts().object.index(ObjectField::DynamicField))
-#endif
+                    else if (idx == Version::unitDynamicFlagsIndex())
                     {
 #if VERSION_STRING == Mop
                         // On Mop, U_DYN_FLAG_LOOTABLE is a persistent flag (set once on
@@ -3441,11 +3433,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
                 {
                     auto* const gameobject = dynamic_cast<GameObject*>(this);
 
-#if VERSION_STRING < Mop
-                    if (idx == Version::layouts().gameObject.index(GameObjectField::Dynamic))
-#else
-                    if (idx == Version::layouts().object.index(ObjectField::DynamicField))
-#endif
+                    if (idx == Version::gameObjectDynamicFlagsIndex())
                     {
                         union
                         {
