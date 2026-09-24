@@ -4896,11 +4896,7 @@ void Aura::SpellAuraEmphaty(AuraEffectModifier* /*aurEff*/, bool apply)
     if (apply)
         dynflags |= U_DYN_FLAG_PLAYER_INFO;
 
-#if VERSION_STRING < Mop
-    m_target->BuildFieldUpdatePacket(caster, Version::layouts().unit.index(UnitField::DynamicFlags), dynflags);
-#else
-    m_target->BuildFieldUpdatePacket(caster, Version::layouts().object.index(ObjectField::DynamicField), dynflags);
-#endif
+    m_target->BuildFieldUpdatePacket(caster, Version::unitDynamicFlagsIndex(), dynflags);
 }
 
 void Aura::SpellAuraModOffhandDamagePCT(AuraEffectModifier* aurEff, bool apply)

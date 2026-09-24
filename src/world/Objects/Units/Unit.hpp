@@ -440,12 +440,10 @@ public:
     void addPvpFlags(uint8_t pvpFlags);
     void removePvpFlags(uint8_t pvpFlags);
 
-#if VERSION_STRING >= TBC
     uint8_t getPetFlags() const;
     void setPetFlags(uint8_t petFlags);
     void addPetFlags(uint8_t petFlags);
     void removePetFlags(uint8_t petFlags);
-#endif
 
     //bytes_1 in classic
     uint8_t getShapeShiftForm() const;

@@ -516,11 +516,7 @@ void WorldSession::doLootRelease(WoWGuid lguid)
                     Player* plr = players->ToPlayer();
                     if (creature->isTaggedByPlayerOrItsGroup(plr))
                     {
-#if VERSION_STRING < Mop
-                        creature->BuildFieldUpdatePacket(plr, Version::layouts().unit.index(UnitField::DynamicFlags), 0);
-#else
-                        creature->BuildFieldUpdatePacket(plr, Version::layouts().object.index(ObjectField::DynamicField), 0);
-#endif
+                        creature->BuildFieldUpdatePacket(plr, Version::unitDynamicFlagsIndex(), 0);
                     }
                 }
 

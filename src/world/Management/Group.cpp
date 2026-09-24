@@ -1309,11 +1309,7 @@ void Group::SendLootUpdates(Object* o)
         Flags |= U_DYN_FLAG_LOOTABLE;
         Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
 
-#if VERSION_STRING < Mop
-        o->BuildFieldUpdatePacket(&buf, Version::layouts().unit.index(UnitField::DynamicFlags), Flags);
-#else
-        o->BuildFieldUpdatePacket(&buf, Version::layouts().object.index(ObjectField::DynamicField), Flags);
-#endif
+        o->BuildFieldUpdatePacket(&buf, Version::unitDynamicFlagsIndex(), Flags);
 
         Lock();
 

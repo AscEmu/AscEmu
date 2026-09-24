@@ -1666,7 +1666,6 @@ void Unit::removePvpFlags(uint8_t pvpFlags)
     setPvpFlags(flags &= ~pvpFlags);
 }
 
-#if VERSION_STRING >= TBC
 uint8_t Unit::getPetFlags() const { return getField<uint8_t>(UnitField::FieldBytes2PetFlag); }
 void Unit::setPetFlags(uint8_t petFlags) { setField<uint8_t>(UnitField::FieldBytes2PetFlag, petFlags); }
 void Unit::addPetFlags(uint8_t petFlags) { setPetFlags(getPetFlags() | petFlags); }
@@ -1691,7 +1690,6 @@ void Unit::setShapeShiftForm(uint8_t shapeShiftForm)
 
     setField<uint8_t>(UnitField::FieldBytes1ShapeShiftForm, shapeShiftForm);
 }
-#endif
 //bytes_2 end
 
 uint32_t Unit::getAttackPower() const { return getField<uint32_t>(UnitField::AttackPower); }

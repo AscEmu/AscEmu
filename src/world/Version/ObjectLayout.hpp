@@ -164,4 +164,15 @@ namespace Version
     template <> [[nodiscard]] inline const LayoutTable& layoutFor<DynamicObjectField>() noexcept { return layouts().dynamicObject; }
     template <> [[nodiscard]] inline const LayoutTable& layoutFor<CorpseField>() noexcept { return layouts().corpse; }
     template <> [[nodiscard]] inline const LayoutTable& layoutFor<AreaTriggerField>() noexcept { return layouts().areaTrigger; }
+
+    // Value index of the dynamic flags: an own unit or game object field before Mop, the object data field since
+    [[nodiscard]] inline uint32_t unitDynamicFlagsIndex() noexcept
+    {
+        return layouts().unit.has(UnitField::DynamicFlags) ? layouts().unit.index(UnitField::DynamicFlags) : layouts().object.index(ObjectField::DynamicField);
+    }
+
+    [[nodiscard]] inline uint32_t gameObjectDynamicFlagsIndex() noexcept
+    {
+        return layouts().gameObject.has(GameObjectField::Dynamic) ? layouts().gameObject.index(GameObjectField::Dynamic) : layouts().object.index(ObjectField::DynamicField);
+    }
 }
