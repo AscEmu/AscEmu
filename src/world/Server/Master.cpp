@@ -25,7 +25,6 @@
 #include "BuildInfo.hpp"
 #include "ConfigMgr.hpp"
 #include "DatabaseDefinition.hpp"
-#include "Version/ParallelCheck.hpp"
 #include "Version/VersionRegistry.hpp"
 #include "World.h"
 #include "WorldConf.h"
@@ -63,12 +62,6 @@
 #include "Utilities/Benchmark.hpp"
 #include "Utilities/Util.hpp"
 #include "Threading/ThreadPool.hpp"
-#include "Data/WoWDynamicObject.hpp"
-#include "Data/WoWGameObject.hpp"
-#include "Data/WoWItem.hpp"
-#include "Data/WoWObject.hpp"
-#include "Data/WoWPlayer.hpp"
-#include "Data/WoWUnit.hpp"
 
 #include <atomic>
 #include <chrono>
@@ -123,26 +116,10 @@ namespace
         sLogger.info("Server Expansion: ID {} ({})", static_cast<uint32_t>(serverExpansion), getExpansionName(serverExpansion));
         sLogger.info("Build Expansion:  ID {} ({})", static_cast<uint32_t>(compileExpansion), getExpansionName(compileExpansion));
 
-        const uint32_t expectedWoWObjectSize = (serverExpansion < Expansion::_Cata) ? 6 : 8;
-
-        if (serverExpansion == Expansion::_Mop)
-        {
-            sLogger.info("Size of WoWObject: {} / {}", static_cast<uint32_t>(sizeof(WoWObject) / sizeof(uint32_t)), expectedWoWObjectSize);
-            sLogger.info("Size of WoWUnit: {} / 160", static_cast<uint32_t>(sizeof(WoWUnit) / sizeof(uint32_t)));
-            sLogger.info("Size of WoWPlayer: {} / 1987", static_cast<uint32_t>(sizeof(WoWPlayer) / sizeof(uint32_t)));
-            sLogger.info("Size of WoWGameObject: {} / 20", static_cast<uint32_t>(sizeof(WoWGameObject) / sizeof(uint32_t)));
-            sLogger.info("Size of WoWDynamicObject: {} / 14", static_cast<uint32_t>(sizeof(WoWDynamicObject) / sizeof(uint32_t)));
-            sLogger.info("Size of WoWItem: {} / 69", static_cast<uint32_t>(sizeof(WoWItem) / sizeof(uint32_t)));
-        }
-        else
-        {
-            sLogger.info("Size of WoWObject: {} / {}", static_cast<uint32_t>(sizeof(WoWObject) / sizeof(uint32_t)), expectedWoWObjectSize);
-            sLogger.info("Size of WoWUnit: {}", static_cast<uint32_t>(sizeof(WoWUnit) / sizeof(uint32_t)));
-            sLogger.info("Size of WoWPlayer: {}", static_cast<uint32_t>(sizeof(WoWPlayer) / sizeof(uint32_t)));
-            sLogger.info("Size of WoWGameObject: {}", static_cast<uint32_t>(sizeof(WoWGameObject) / sizeof(uint32_t)));
-            sLogger.info("Size of WoWDynamicObject: {}", static_cast<uint32_t>(sizeof(WoWDynamicObject) / sizeof(uint32_t)));
-            sLogger.info("Size of WoWItem: {}", static_cast<uint32_t>(sizeof(WoWItem) / sizeof(uint32_t)));
-        }
+        const Version::ExpansionLayouts& layouts = Version::layouts();
+        sLogger.info("Object values: object {}, unit {}, player {}, item {}, container {}, gameobject {}, dynamicobject {}, corpse {}",
+            layouts.object.valueCount(), layouts.unit.valueCount(), layouts.player.valueCount(), layouts.item.valueCount(),
+            layouts.container.valueCount(), layouts.gameObject.valueCount(), layouts.dynamicObject.valueCount(), layouts.corpse.valueCount());
     }
 
     void startRemoteConsole(AscEmu::Threading::AEThreadPool& threadPool)
@@ -497,7 +474,6 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     }
 
     sVersionRegistry.initialize();
-    Version::runParallelChecks();
     WorldSession::registerOpcodeHandler();
 
     if (!sWorld.setInitialWorldSettings())

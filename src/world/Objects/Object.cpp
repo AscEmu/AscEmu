@@ -29,7 +29,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
-#include "Data/WoWObject.hpp"
 #include "Management/Group.h"
 #include "Management/ObjectMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"

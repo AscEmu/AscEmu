@@ -9,8 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemProperties.hpp"
 #include "Objects/Object.hpp"
 #include "Management/Loot/LootDefines.hpp"
-#include "Data/WoWItem.hpp"
-#include "Server/UpdateFieldInclude.h"
 #include "Version/LayoutLimits.hpp"
 
 class QueryBuffer;
@@ -39,7 +37,6 @@ struct EnchantmentInstance
 
 typedef std::map<EnchantmentSlot, EnchantmentInstance> EnchantmentMap;
 
-struct WoWItem;
 class SERVER_DECL Item : public Object
 {
 public:

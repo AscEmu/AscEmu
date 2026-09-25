@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Data/Flags.hpp"
 #include "Management/ObjectMgr.hpp"
-#include "Data/WoWCorpse.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Map/Management/ObjectFactory.hpp"
@@ -146,7 +145,7 @@ void Corpse::saveToDB()
     ss << getGuid() << " " << getOType() << " " << getEntry() << " " << getScale() << " ";
     ss << getOwnerGuid() << " " << getDisplayId() << " ";
 
-    for (uint8_t i = 0; i < WOWCORPSE_ITEM_COUNT; ++i)
+    for (uint8_t i = 0; i < Version::fieldCount(CorpseField::Item); ++i)
         ss << getItem(i) << " ";
 
     ss << getBytes1() << " " << getBytes2() << " " << getFlags() << " " << getDynamicFlags() << " ";

@@ -33,7 +33,6 @@ namespace WDB::Structures
     struct FactionTemplateEntry;
 }
 
-struct WoWObject;
 class SpellInfo;
 struct FactionDBC;
 struct AuraEffectModifier;

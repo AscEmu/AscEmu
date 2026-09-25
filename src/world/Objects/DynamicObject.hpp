@@ -7,8 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Object.hpp"
 #include "Units/Unit.hpp"
-#include "Data/WoWDynamicObject.hpp"
-#include "Server/UpdateFieldInclude.h"
 #include "Version/LayoutLimits.hpp"
 
 enum DynamicObjectType
@@ -19,7 +17,6 @@ enum DynamicObjectType
 };
 
 class SpellInfo;
-struct WoWDynamicObject;
 
 class SERVER_DECL DynamicObject : public Object
 {

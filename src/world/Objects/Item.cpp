@@ -61,7 +61,7 @@ Item::Item() : m_loot(nullptr)
     //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
     m_uint32Values = _fields;
 
-    memset(m_uint32Values, 0, sizeof(WoWItem));
+    memset(m_uint32Values, 0, Version::layouts().item.valueCount() * sizeof(uint32_t));
     m_updateMask.SetCount(Version::layouts().item.valueCount());
 }
 
@@ -170,13 +170,13 @@ void Item::setDuration(uint32_t seconds) { setField<uint32_t>(ItemField::Duratio
 int32_t Item::getSpellCharges(uint8_t index) const { return getField<int32_t>(ItemField::SpellCharges, index); }
 void Item::setSpellCharges(uint8_t index, int32_t count)
 {
-    if (index < WOWITEM_SPELL_CHARGES_COUNT)
+    if (index < Version::fieldCount(ItemField::SpellCharges))
         setField<int32_t>(ItemField::SpellCharges, count, index);
 }
 
 void Item::modSpellCharges(uint8_t index, int32_t mod)
 {
-    if (index < WOWITEM_SPELL_CHARGES_COUNT)
+    if (index < Version::fieldCount(ItemField::SpellCharges))
     {
         int32_t newSpellCharges = getSpellCharges(index);
         newSpellCharges += mod;

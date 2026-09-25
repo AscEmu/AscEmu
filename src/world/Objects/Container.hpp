@@ -6,10 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Objects/Item.hpp"
-#include "Data/WoWContainer.hpp"
 #include "Version/LayoutLimits.hpp"
 
-struct WoWContainer;
 
 class SERVER_DECL Container : public Item
 {
