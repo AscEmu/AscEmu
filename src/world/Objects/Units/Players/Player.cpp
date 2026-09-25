@@ -10,7 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "TradeData.hpp"
 #include "Chat/ChatDefines.hpp"
-#include "Data/WoWPlayer.hpp"
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Macros/CorpseMacros.hpp"
@@ -1134,6 +1133,14 @@ namespace
     constexpr uint32_t skillHalfOffset(uint32_t index) { return (index & 1) * 2; }
 }
 
+uint32_t Player::getSkillFieldPositionCount() const
+{
+    if (hasField(PlayerField::FieldSkillInfoSkillLine))
+        return Version::fieldCount(PlayerField::FieldSkillInfoSkillLine) * 2;
+
+    return Version::fieldCount(PlayerField::SkillInfo);
+}
+
 uint16_t Player::getSkillInfoId(uint32_t index) const
 {
     if (hasField(PlayerField::FieldSkillInfoSkillLine))
@@ -1321,14 +1328,14 @@ void Player::setShieldBlockCritPercentage(float value) { setField<float>(PlayerF
 
 uint32_t Player::getExploredZone(uint32_t idx) const
 {
-    if (idx < WOWPLAYER_EXPLORED_ZONES_COUNT)
+    if (idx < Version::fieldCount(PlayerField::ExploredZones))
         return getField<uint32_t>(PlayerField::ExploredZones, idx);
     return 0;
 }
 
 void Player::setExploredZone(uint32_t idx, uint32_t data)
 {
-    if (idx < WOWPLAYER_EXPLORED_ZONES_COUNT)
+    if (idx < Version::fieldCount(PlayerField::ExploredZones))
         setField<uint32_t>(PlayerField::ExploredZones, data, idx);
 }
 
@@ -3725,7 +3732,7 @@ void Player::setInitialPlayerData()
     }
 
 #if VERSION_STRING >= WotLK
-    for (uint8_t i = 0; i < WOWPLAYER_NO_REAGENT_COST_COUNT; ++i)
+    for (uint8_t i = 0; i < Version::fieldCount(PlayerField::NoReagentCost); ++i)
     {
         setNoReagentCost(i, 0);
     }
@@ -4938,7 +4945,7 @@ void Player::addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t ma
         // Find a skill field position for skill
         auto foundPosition = false;
         PlayerSkillFieldPosition fieldPosition;
-        for (uint16_t i = 0; i < WOWPLAYER_SKILL_INFO_COUNT; ++i)
+        for (uint16_t i = 0; i < getSkillFieldPositionCount(); ++i)
         {
             if (getSkillInfoId(i) == 0)
             {
@@ -5379,7 +5386,7 @@ void Player::updateGlyphs()
     }
 #elif VERSION_STRING == Mop
     uint16_t slot = 0;
-    for (uint32_t i = 0; i < sGlyphSlotStore.getNumRows() && slot < WOWPLAYER_GLYPH_SLOT_COUNT; ++i)
+    for (uint32_t i = 0; i < sGlyphSlotStore.getNumRows() && slot < Version::fieldCount(PlayerField::FieldGlyphSlots); ++i)
     {
         const auto glyphSlot = sGlyphSlotStore.lookupEntry(i);
         if (glyphSlot != nullptr)
@@ -14469,7 +14476,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
 
     // exploration data
     ss << "'";
-    for (uint8_t i = 0; i < WOWPLAYER_EXPLORED_ZONES_COUNT; ++i)
+    for (uint8_t i = 0; i < Version::fieldCount(PlayerField::ExploredZones); ++i)
         ss << getExploredZone(i) << ",";
     ss << "', ";
 
@@ -15002,7 +15009,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
         m_cheats.hasTaxiCheat = true;
 
     // Process exploration data.
-    loadFieldsFromString(field[10].asCString(), Version::layouts().player.index(PlayerField::ExploredZones), WOWPLAYER_EXPLORED_ZONES_COUNT); //10
+    loadFieldsFromString(field[10].asCString(), Version::layouts().player.index(PlayerField::ExploredZones), Version::fieldCount(PlayerField::ExploredZones)); //10
 
     loadSkills(results[PlayerQuery::Skills].result.get());
 

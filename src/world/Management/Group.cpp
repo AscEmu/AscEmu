@@ -987,7 +987,7 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
 
                     const uint32_t startBit = Version::layouts().player.index(PlayerField::Quests);
 
-                    for (uint8_t x = 0; x < WOWPLAYER_QUEST_COUNT; ++x)
+                    for (uint8_t x = 0; x < Version::fieldCount(PlayerField::Quests); ++x)
                     {
                         if (plr->getQuestLogEntryForSlot(x))
                         {

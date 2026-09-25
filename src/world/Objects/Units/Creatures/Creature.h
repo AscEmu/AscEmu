@@ -10,7 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Unit.hpp"
 #include "Objects/Object.hpp"
 #include "Movement/MovementDefines.h"
-#include "Server/UpdateFieldInclude.h"
 #include "Version/LayoutLimits.hpp"
 
 namespace WDB::Structures

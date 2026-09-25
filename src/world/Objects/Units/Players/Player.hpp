@@ -10,10 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Stats.h"
 #include "Management/QuestDefines.hpp"
 #include "Management/ObjectUpdates/UpdateManager.hpp"
-#include "Data/WoWPlayer.hpp"
 #include "AEVersion.hpp"
 #include "Logging/Log.hpp"
-#include "Server/UpdateFieldInclude.h"
 #include "Objects/ItemDefines.hpp"
 
 // todo include header for now struct InstancePlayerBind definition
@@ -104,7 +102,6 @@ typedef std::unordered_map<uint32_t, time_t> InstanceTimeMap;
 // 3. move stuff out of this class
 // 4. Check out the members (there are duplicats)
 // 5. Get rid of legacy files (Player.Legacy.cpp) - done!?
-struct WoWPlayer;
 
 class SERVER_DECL Player : public Unit
 {
@@ -284,6 +281,9 @@ public:
 
     uint32_t getNextLevelXp() const;
     void setNextLevelXp(uint32_t xp);
+
+    // number of skill positions in the player fields
+    uint32_t getSkillFieldPositionCount() const;
 
     uint16_t getSkillInfoId(uint32_t index) const;
     uint16_t getSkillInfoStep(uint32_t index) const;

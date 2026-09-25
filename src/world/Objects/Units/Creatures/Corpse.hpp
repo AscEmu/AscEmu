@@ -6,9 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Objects/Object.hpp"
-#include "Data/WoWCorpse.hpp"
 #include "Management/Loot/Loot.hpp"
-#include "Server/UpdateFieldInclude.h"
 #include "Version/LayoutLimits.hpp"
 
 enum CORPSE_STATE
@@ -28,7 +26,6 @@ enum CorpseFlags
     CORPSE_FLAG_LOOT = 32
 };
 
-struct WoWCorpse;
 class Player;
 
 class SERVER_DECL Corpse : public Object

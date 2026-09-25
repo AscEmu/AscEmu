@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Object.hpp"
 #include "UnitDefines.hpp"
 #include "Macros/UnitMacros.hpp"
-#include "Data/WoWUnit.hpp"
 #include "ThreatHandler.h"
 #include "CombatHandler.hpp"
 #include "Management/Loot/Loot.hpp"
@@ -144,7 +143,6 @@ using AuraEffectList = std::list<AuraEffectModifier const*>;
 using AuraEffectListArray = std::array<AuraEffectList, TOTAL_SPELL_AURAS>;
 using VisualAuraArray = std::array<uint32_t/*spellId*/, AuraSlots::NEGATIVE_VISUAL_SLOT_END>;
 
-struct WoWUnit;
 
 class SERVER_DECL Unit : public Object
 {

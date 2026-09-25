@@ -22,7 +22,6 @@
 #include "GameObject.h"
 #include "Server/ClientProtocol.hpp"
 #include "GameObjectModel.h"
-#include "Data/WoWGameObject.hpp"
 
 #include "Management/GameEvent.hpp"
 #include "Storage/MySQLDataStore.hpp"
@@ -837,7 +836,7 @@ void GameObject::setCreateBits(UpdateMask* updateMask, Player* target) const
     updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::DisplayId));
     updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Flags));
 
-    for (uint8_t i = 0; i < GAMEOBJECT_ROTATION_COUNT; ++i)
+    for (uint8_t i = 0; i < Version::fieldCount(GameObjectField::Rotation); ++i)
         updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Rotation) + i);
 
 #if VERSION_STRING < WotLK

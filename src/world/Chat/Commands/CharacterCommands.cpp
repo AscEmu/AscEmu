@@ -28,6 +28,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Strings.hpp"
+#include "Version/ObjectLayout.hpp"
+
+using Version::PlayerField;
 
 //.character clearcooldowns
 bool ChatCommandHandler::HandleCharClearCooldownsCommand(const char* /*args*/, WorldSession* m_session)
@@ -1297,7 +1300,7 @@ bool ChatCommandHandler::HandleCharSetAllExploredCommand(const char* /*args*/, W
     greenSystemMessage(player_target->getSession(), "{} set all zones as explored for you.", m_session->GetPlayer()->getName());
     sGMLog.writefromsession(m_session, "Set all zones as explored for player {}.", player_target->getName());
 
-    for (uint8_t i = 0; i < WOWPLAYER_EXPLORED_ZONES_COUNT; ++i)
+    for (uint8_t i = 0; i < Version::fieldCount(PlayerField::ExploredZones); ++i)
     {
         player_target->setExploredZone(i, 0xFFFFFFFF);
     }

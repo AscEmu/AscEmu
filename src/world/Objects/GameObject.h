@@ -22,11 +22,9 @@
 #define GAMEOBJECT_H
 
 #include "Object.hpp"
-#include "Data/WoWGameObject.hpp"
 #include "GameObjectDefines.hpp"
 #include "Management/Loot/Loot.hpp"
 #include "Management/Loot/LootDefines.hpp"
-#include "Server/UpdateFieldInclude.h"
 #include "Version/LayoutLimits.hpp"
 
 namespace MySQLStructure

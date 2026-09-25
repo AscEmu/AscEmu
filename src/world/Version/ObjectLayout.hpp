@@ -3,11 +3,12 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-//\NOTE:    Version specific layouts of the WoW data structs. Code addresses a field by its version
-//          neutral id (ObjectFields.hpp), the layout table of the active server expansion resolves
-//          it to the byte offset and size inside the object values. The per version tables live in
-//          Version/Layouts/ObjectLayout_<Version>.cpp as a list of the fields that exist in that
-//          version, in struct order. The dense tables used at runtime are built from them once.
+//\NOTE:    Version specific layouts of the object values (the update fields of the client). Code
+//          addresses a field by its version neutral id (ObjectFields.hpp), the layout table of the
+//          active server expansion resolves it to the byte offset and size inside the object values.
+//          The per version tables live in Version/Layouts/ObjectLayout_<Version>.cpp as a list of the
+//          fields that exist in that version, in client order. They are the source of the layouts,
+//          a new client version is a new table file. The dense tables used at runtime are built once.
 
 #pragma once
 
@@ -164,6 +165,10 @@ namespace Version
     template <> [[nodiscard]] inline const LayoutTable& layoutFor<DynamicObjectField>() noexcept { return layouts().dynamicObject; }
     template <> [[nodiscard]] inline const LayoutTable& layoutFor<CorpseField>() noexcept { return layouts().corpse; }
     template <> [[nodiscard]] inline const LayoutTable& layoutFor<AreaTriggerField>() noexcept { return layouts().areaTrigger; }
+
+    /// element count of an array field in the bound layouts, 0 when the field does not exist in the server version
+    template <typename FieldId>
+    [[nodiscard]] inline uint16_t fieldCount(FieldId id) noexcept { return layoutFor<FieldId>().count(id); }
 
     // Value index of the dynamic flags: an own unit or game object field before Mop, the object data field since
     [[nodiscard]] inline uint32_t unitDynamicFlagsIndex() noexcept

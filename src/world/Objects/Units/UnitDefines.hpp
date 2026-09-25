@@ -5,6 +5,22 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+// the virtual item info field of classic and tbc units, one per weapon slot
+union unit_virtual_item_info
+{
+    struct parts
+    {
+        uint8_t item_class;
+        uint8_t item_subclass;
+        int8_t unk0;
+        uint8_t material;
+        uint8_t inventory_type;
+        uint8_t sheath;
+    } fields;
+
+    uint64_t raw;
+};
+
 #include "AEVersion.hpp"
 #include "Utilities/LocationVector.hpp"
 #include <string_view>
