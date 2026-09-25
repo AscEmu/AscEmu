@@ -90,9 +90,9 @@ bool WorldSocket::dispatchForeverOpcode(uint32_t rawOpcode, const uint8_t* paylo
         const auto details = payloadSize <= 64U ? " bytes=" + bytesToHex(payload, payloadSize) : "";
 
         if (opcode == Opcode::CMSG_PING)
-            sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSocket::Forever: {} received size={}{}.", name, payloadSize, details);
+            sLogger.debugOpcode("WorldSocket::Forever: {} received size={}{}.", name, payloadSize, details);
         else
-            sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSocket::Forever: {} received size={}{}.", name, payloadSize, details);
+            sLogger.debugOpcode("WorldSocket::Forever: {} received size={}{}.", name, payloadSize, details);
     }
 
     return OpcodeHandlerRegistry::instance().handleOpcode(*this, packet);

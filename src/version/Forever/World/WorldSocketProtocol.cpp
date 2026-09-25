@@ -901,7 +901,7 @@ bool WorldSocket::processForeverAuthPacket()
         }
         else if (m_foreverPacketOpcode == WorldProtocol::CMSG_PING)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSocket::Forever: RX header opcode=0x{:08X}, payload={} byte(s), auth-tag={}.", m_foreverPacketOpcode, m_foreverPacketRemaining, nonZeroAuthTag ? "non-zero" : "zero");
+            sLogger.debugOpcode("WorldSocket::Forever: RX header opcode=0x{:08X}, payload={} byte(s), auth-tag={}.", m_foreverPacketOpcode, m_foreverPacketRemaining, nonZeroAuthTag ? "non-zero" : "zero");
         }
     }
 
@@ -940,7 +940,7 @@ bool WorldSocket::processForeverAuthPacket()
     }
     else if (opcode == WorldProtocol::CMSG_PING)
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSocket::Forever: RX opcode=0x{:08X}, payload={} byte(s), hex=[{}]", opcode, payload.size(), AscEmu::Version::Forever::bytesToHex(payload.data(), payload.size()));
+        sLogger.debugOpcode("WorldSocket::Forever: RX opcode=0x{:08X}, payload={} byte(s), hex=[{}]", opcode, payload.size(), AscEmu::Version::Forever::bytesToHex(payload.data(), payload.size()));
     }
 
     if (opcode == WorldProtocol::CMSG_PING)
@@ -958,7 +958,7 @@ bool WorldSocket::processForeverAuthPacket()
         std::array<uint8_t, sizeof(uint32_t)> pong{};
         std::memcpy(pong.data(), &serial, sizeof(serial));
 
-        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSocket::Forever: CMSG_PING serial={} latency={} raw={} -> SMSG_PONG.", serial, latency, rawPing);
+        sLogger.debugOpcode("WorldSocket::Forever: CMSG_PING serial={} latency={} raw={} -> SMSG_PONG.", serial, latency, rawPing);
 
         if (!sendForeverWorldPacket(WorldProtocol::SMSG_PONG, pong.data(), static_cast<uint32_t>(pong.size())))
         {
@@ -1061,7 +1061,7 @@ bool WorldSocket::processForeverAuthSession(uint32_t opcode, const std::vector<u
 
     size_t offset = 0;
 
-    const uint64_t dosResponse = readUInt64LE(payload.data() + offset);
+    (void)readUInt64LE(payload.data() + offset);
     offset += sizeof(uint64_t);
 
     const uint32_t regionId = readUInt32LE(payload.data() + offset);
@@ -1085,8 +1085,7 @@ bool WorldSocket::processForeverAuthSession(uint32_t opcode, const std::vector<u
     std::memcpy(digest.data(), payload.data() + offset, digest.size());
     offset += digest.size();
 
-    const bool useIPv6 = (payload[offset] & 0x01u) != 0;
-    ++offset;
+    ++offset; // useIPv6 flag; currently not needed server-side.
 
     const uint32_t ticketSize = readUInt32LE(payload.data() + offset);
     offset += sizeof(uint32_t);
@@ -1195,7 +1194,7 @@ bool WorldSocket::processForeverAuthContinuedSession(uint32_t opcode, const std:
     }
 
     size_t offset = 0;
-    const uint64_t dosResponse = readUInt64LE(payload.data() + offset);
+    (void)readUInt64LE(payload.data() + offset);
     offset += sizeof(uint64_t);
 
     std::array<uint8_t, 32> localChallenge{};

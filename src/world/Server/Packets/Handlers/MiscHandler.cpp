@@ -362,7 +362,7 @@ void WorldSession::handleForeverLogoutCancel()
         _player->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
     }
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSession::Forever: logout cancelled; SMSG_LOGOUT_CANCEL_ACK not sent until its 69913 opcode/payload is verified.");
+    sLogger.debugOpcode("WorldSession::Forever: logout cancelled; SMSG_LOGOUT_CANCEL_ACK not sent until its 69913 opcode/payload is verified.");
 }
 #endif
 

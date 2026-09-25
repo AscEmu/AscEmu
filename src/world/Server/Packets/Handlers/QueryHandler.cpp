@@ -80,7 +80,7 @@ void WorldSession::handleRealmNameQueryOpcode(WorldPacket& recvData)
     CmsgRealmNameQuery srlPacket;
     if (!parsePacket(recvData, srlPacket))
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Failed to deserialize CMSG_REALM_NAME_QUERY.");
+        sLogger.debugOpcode("Failed to deserialize CMSG_REALM_NAME_QUERY.");
         Disconnect();
         return;
     }

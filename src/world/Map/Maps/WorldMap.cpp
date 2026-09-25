@@ -1040,7 +1040,7 @@ void WorldMap::hookVisibilityEvents()
 {
     visibilitySystem_->onGridActivated([this](int gid)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Grid Activated {} ", gid);
+            sLogger.debugMapCell("Grid Activated {} ", gid);
 
             // Apply persistent map/zone/area activation rules to grids that become
             // active through normal runtime subscriptions.
@@ -1055,12 +1055,12 @@ void WorldMap::hookVisibilityEvents()
 
     visibilitySystem_->onGridDeactivated([this](int gid)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Grid Deactivated {}", gid);
+            sLogger.debugMapCell("Grid Deactivated {}", gid);
         });
 
     visibilitySystem_->onGridUnload([this](int gid)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Grid Unloaded {} ", gid);
+            sLogger.debugMapCell("Grid Unloaded {} ", gid);
 
             // Spawns
             spawnMgr_->onGridUnload(gid);

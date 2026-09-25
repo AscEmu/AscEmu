@@ -104,7 +104,7 @@ bool WorldSocket::processForeverGlueState(AscEmu::Version::Forever::Packets::Pac
     return true;
 }
 
-bool WorldSocket::handleForeverIgnoredGlueOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverIgnoredGlueOpcode(AscEmu::Version::Forever::Packets::Packet&)
 {
     using namespace AscEmu::Version::Forever;
 
@@ -112,7 +112,7 @@ bool WorldSocket::handleForeverIgnoredGlueOpcode(AscEmu::Version::Forever::Packe
     return true;
 }
 
-bool WorldSocket::handleForeverQuickJoinOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverQuickJoinOpcode(AscEmu::Version::Forever::Packets::Packet&)
 {
     using namespace AscEmu::Version::Forever;
     return true;
@@ -164,11 +164,9 @@ bool WorldSocket::sendForeverSecondEnumCompletion()
 {
     using namespace AscEmu::Version::Forever;
 
-    const uint64_t counterBefore = m_foreverCryptoSendCounter;
-
     // Exact static ordering from the official Forever 1.60.1.69893 capture
     // following CMSG 0x0044013A. Keep the corrected pre-enum bootstrap from
-    // Midnight, but use the capture-derived 69893 payloads in this completion
+    // the previous bootstrap, but use the capture-derived 69893 payloads in this completion
     // block so the two changes can be tested independently.
     for (uint32_t i = 0; i < 2; ++i)
     {

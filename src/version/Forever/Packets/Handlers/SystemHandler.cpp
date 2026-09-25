@@ -52,7 +52,7 @@ bool WorldSocket::handleForeverPingOpcode(AscEmu::Version::Forever::Packets::Pac
     std::array<uint8_t, sizeof(uint32_t)> pong{};
     std::memcpy(pong.data(), &serial, sizeof(serial));
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSocket::Forever: CMSG_PING serial={} latency={} -> SMSG_PONG; session heartbeat refreshed.", serial, latency);
+    sLogger.debugOpcode("WorldSocket::Forever: CMSG_PING serial={} latency={} -> SMSG_PONG; session heartbeat refreshed.", serial, latency);
 
     return sendForeverPacket(Opcode::SMSG_PONG, pong.data(), static_cast<uint32_t>(pong.size()));
 }
@@ -70,7 +70,7 @@ bool WorldSocket::handleForeverLogoutRequestOpcode(AscEmu::Version::Forever::Pac
 
     const bool idleLogout = packet.readBit();
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSocket::Forever: CMSG_LOGOUT_REQUEST idleLogout={}.", idleLogout ? 1 : 0);
+    sLogger.debugOpcode("WorldSocket::Forever: CMSG_LOGOUT_REQUEST idleLogout={}.", idleLogout ? 1 : 0);
 
     m_session->handleForeverLogoutRequest(idleLogout);
     return true;
@@ -84,7 +84,7 @@ bool WorldSocket::handleForeverLogoutCancelOpcode(AscEmu::Version::Forever::Pack
     if (packet.remaining() != 0)
         sLogger.warning("WorldSocket::Forever: CMSG_LOGOUT_CANCEL expected empty payload, got {} byte(s).", packet.remaining());
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSocket::Forever: CMSG_LOGOUT_CANCEL.");
+    sLogger.debugOpcode("WorldSocket::Forever: CMSG_LOGOUT_CANCEL.");
     m_session->handleForeverLogoutCancel();
     return true;
 }
@@ -102,23 +102,13 @@ bool WorldSocket::handleForeverUnknown003E002DOpcode(AscEmu::Version::Forever::P
 
     if (modernGuid.getModernHighType() != ModernHighGuid::Player)
     {
-        sLogger.warning(
-            "WorldSocket::Forever: CMSG_UNKNOWN_PLAYER_GUID_003E002D has unexpected modern high type={} realm={} entry={} counter={}.",
-            static_cast<uint32_t>(modernGuid.getModernHighType()),
-            modernGuid.getModernRealmId(),
-            modernGuid.getModernEntry(),
-            modernGuid.getModernCounter());
+        sLogger.warning("WorldSocket::Forever: CMSG_UNKNOWN_PLAYER_GUID_003E002D has unexpected modern high type={} realm={} entry={} counter={}.", static_cast<uint32_t>(modernGuid.getModernHighType()), modernGuid.getModernRealmId(), modernGuid.getModernEntry(), modernGuid.getModernCounter());
         return true;
     }
 
     // Observed with a packed Player GUID while interacting/selecting in the world.
     // The exact semantic meaning is intentionally left unassigned until verified.
-    sLogger.debugFlag(
-        AscEmu::Logging::LF_OPCODE,
-        "WorldSocket::Forever: CMSG_UNKNOWN_PLAYER_GUID_003E002D realm={} low={} counter={}.",
-        modernGuid.getModernRealmId(),
-        modernGuid.getModernLow(),
-        modernGuid.getModernCounter());
+    sLogger.debugOpcode("WorldSocket::Forever: CMSG_UNKNOWN_PLAYER_GUID_003E002D realm={} low={} counter={}.", modernGuid.getModernRealmId(), modernGuid.getModernLow(), modernGuid.getModernCounter());
     return true;
 }
 
@@ -137,7 +127,7 @@ bool WorldSocket::handleForeverSocialContractAcceptOpcode(AscEmu::Version::Forev
     if (packet.remaining() != 0)
         sLogger.warning("WorldSocket::Forever: CMSG_SOCIAL_CONTRACT_ACCEPT expected empty payload.");
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSocket::Forever: CMSG_SOCIAL_CONTRACT_ACCEPT.");
+    sLogger.debugOpcode("WorldSocket::Forever: CMSG_SOCIAL_CONTRACT_ACCEPT.");
     return true;
 }
 
@@ -178,7 +168,7 @@ bool WorldSocket::handleForeverQueryCreatureOpcode(AscEmu::Version::Forever::Pac
 
     if (creature == nullptr)
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSocket::Forever: CMSG_QUERY_CREATURE entry={} not found.", creatureId);
+        sLogger.debugOpcode("WorldSocket::Forever: CMSG_QUERY_CREATURE entry={} not found.", creatureId);
         return sendForeverPacket(Opcode::SMSG_QUERY_CREATURE_RESPONSE, response.contents(), static_cast<uint32_t>(response.size()));
     }
 
@@ -283,7 +273,7 @@ bool WorldSocket::handleForeverQueryCreatureOpcode(AscEmu::Version::Forever::Pac
                 response << static_cast<int32_t>(questItem);
     }
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSocket::Forever: CMSG_QUERY_CREATURE entry={} served.", creatureId);
+    sLogger.debugOpcode("WorldSocket::Forever: CMSG_QUERY_CREATURE entry={} served.", creatureId);
 
     return sendForeverPacket(Opcode::SMSG_QUERY_CREATURE_RESPONSE, response.contents(), static_cast<uint32_t>(response.size()));
 }
@@ -333,17 +323,17 @@ bool WorldSocket::handleForeverQueryGameObjectOpcode(AscEmu::Version::Forever::P
         stats << name << std::string{} << std::string{} << std::string{};
         stats << gameObject->category_name << gameObject->cast_bar_text << gameObject->Unkstr;
 
-        const uint32_t data[35] = {
-            gameObject->raw.parameter_0, gameObject->raw.parameter_1, gameObject->raw.parameter_2, gameObject->raw.parameter_3, gameObject->raw.parameter_4,
-            gameObject->raw.parameter_5, gameObject->raw.parameter_6, gameObject->raw.parameter_7, gameObject->raw.parameter_8, gameObject->raw.parameter_9,
-            gameObject->raw.parameter_10, gameObject->raw.parameter_11, gameObject->raw.parameter_12, gameObject->raw.parameter_13, gameObject->raw.parameter_14,
-            gameObject->raw.parameter_15, gameObject->raw.parameter_16, gameObject->raw.parameter_17, gameObject->raw.parameter_18, gameObject->raw.parameter_19,
-            gameObject->raw.parameter_20, gameObject->raw.parameter_21, gameObject->raw.parameter_22, gameObject->raw.parameter_23, gameObject->raw.parameter_24,
-            gameObject->raw.parameter_25, gameObject->raw.parameter_26, gameObject->raw.parameter_27, gameObject->raw.parameter_28, gameObject->raw.parameter_29,
-            gameObject->raw.parameter_30, gameObject->raw.parameter_31, gameObject->raw.parameter_32, 0, 0
+        const auto toWireInt32 = [](auto value) { return static_cast<int32_t>(value); };
+        const int32_t data[35] = {
+            toWireInt32(gameObject->raw.parameter_0), toWireInt32(gameObject->raw.parameter_1), toWireInt32(gameObject->raw.parameter_2), toWireInt32(gameObject->raw.parameter_3), toWireInt32(gameObject->raw.parameter_4),
+            toWireInt32(gameObject->raw.parameter_5), toWireInt32(gameObject->raw.parameter_6), toWireInt32(gameObject->raw.parameter_7), toWireInt32(gameObject->raw.parameter_8), toWireInt32(gameObject->raw.parameter_9),
+            toWireInt32(gameObject->raw.parameter_10), toWireInt32(gameObject->raw.parameter_11), toWireInt32(gameObject->raw.parameter_12), toWireInt32(gameObject->raw.parameter_13), toWireInt32(gameObject->raw.parameter_14),
+            toWireInt32(gameObject->raw.parameter_15), toWireInt32(gameObject->raw.parameter_16), toWireInt32(gameObject->raw.parameter_17), toWireInt32(gameObject->raw.parameter_18), toWireInt32(gameObject->raw.parameter_19),
+            toWireInt32(gameObject->raw.parameter_20), toWireInt32(gameObject->raw.parameter_21), toWireInt32(gameObject->raw.parameter_22), toWireInt32(gameObject->raw.parameter_23), toWireInt32(gameObject->raw.parameter_24),
+            toWireInt32(gameObject->raw.parameter_25), toWireInt32(gameObject->raw.parameter_26), toWireInt32(gameObject->raw.parameter_27), toWireInt32(gameObject->raw.parameter_28), toWireInt32(gameObject->raw.parameter_29),
+            toWireInt32(gameObject->raw.parameter_30), toWireInt32(gameObject->raw.parameter_31), toWireInt32(gameObject->raw.parameter_32), 0, 0
         };
-        for (uint32_t value : data)
-            stats << static_cast<int32_t>(value);
+        for (int32_t value : data) stats << value;
 
         stats << gameObject->size;
 
@@ -363,7 +353,7 @@ bool WorldSocket::handleForeverQueryGameObjectOpcode(AscEmu::Version::Forever::P
     if (stats.size() != 0)
         response.append(stats.contents(), stats.size());
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSocket::Forever: CMSG_QUERY_GAME_OBJECT entry={} guidEntry={} counter={} found={} stats={} byte(s).", gameObjectEntry, modernGuid.getModernEntry(), modernGuid.getModernCounter(), gameObject != nullptr ? 1 : 0, stats.size());
+    sLogger.debugOpcode("WorldSocket::Forever: CMSG_QUERY_GAME_OBJECT entry={} guidEntry={} counter={} found={} stats={} byte(s).", gameObjectEntry, modernGuid.getModernEntry(), modernGuid.getModernCounter(), gameObject != nullptr ? 1 : 0, stats.size());
     return sendForeverPacket(Opcode::SMSG_QUERY_GAME_OBJECT_RESPONSE, response.contents(), static_cast<uint32_t>(response.size()));
 }
 
@@ -437,7 +427,7 @@ bool WorldSocket::handleForeverListInventoryOpcode(AscEmu::Version::Forever::Pac
 
     const uint64_t legacyGuid = modernGuid.toLegacyRaw();
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSocket::Forever: CMSG_LIST_INVENTORY entry={} counter={}.", modernGuid.getModernEntry(), modernGuid.getModernCounter());
+    sLogger.debugOpcode("WorldSocket::Forever: CMSG_LIST_INVENTORY entry={} counter={}.", modernGuid.getModernEntry(), modernGuid.getModernCounter());
 
     m_session->handleListInventoryGuid(legacyGuid);
     return true;

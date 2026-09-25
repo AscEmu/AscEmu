@@ -549,8 +549,7 @@ bool WorldSocket::processHeader()
         m_opcode = MSG_VERIFY_CONNECTIVITY;
         m_handshakeReceived = true;
 
-        sLogger.debug("WorldSocket::processHeader(): Received handshake header. Raw: {:02X} {:02X}, size: {}",
-            header[0], header[1], m_size);
+        sLogger.debug("WorldSocket::processHeader(): Received handshake header. Raw: {:02X} {:02X}, size: {}", header[0], header[1], m_size);
 
         return true;
     }
@@ -568,8 +567,7 @@ bool WorldSocket::processHeader()
 
         if (!header.isMopPayloadValid())
         {
-            sLogger.failure("WorldSocket::processHeader(): Received broken MoP packet from client. Size: {}, Opcode: {}",
-                header.getMopPayloadSize(), header.getRawMopOpcode());
+            sLogger.failure("WorldSocket::processHeader(): Received broken MoP packet from client. Size: {}, Opcode: {}", header.getMopPayloadSize(), header.getRawMopOpcode());
 
             disconnect();
             return false;
@@ -587,8 +585,7 @@ bool WorldSocket::processHeader()
         }
 
         if (m_opcode == 0)
-            sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WorldSocket::processHeader(): Unmapped MoP opcode 0x{:04X} (payload size {}) - falling back to MSG_NULL_ACTION.",
-                header.getMopOpcode(), header.getMopPayloadSize());
+            sLogger.debugOpcode("WorldSocket::processHeader(): Unmapped MoP opcode 0x{:04X} (payload size {}) - falling back to MSG_NULL_ACTION.", header.getMopOpcode(), header.getMopPayloadSize());
 
         return true;
     }

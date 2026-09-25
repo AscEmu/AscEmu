@@ -59,8 +59,6 @@ bool WorldSocket::sendForeverEmptyCharacterList()
 {
     using namespace AscEmu::Version::Forever;
 
-    const uint64_t counterBefore = m_foreverCryptoSendCounter;
-
     if (!sendForeverPacket(Opcode::SMSG_ENUM_CHARACTERS_RESULT, CharacterSelectBootstrap::EmptyCharacterList.data(), static_cast<uint32_t>(CharacterSelectBootstrap::EmptyCharacterList.size())))
     {
         sLogger.failure("WorldSocket::Forever: failed to send SMSG_ENUM_CHARACTERS_RESULT.");
