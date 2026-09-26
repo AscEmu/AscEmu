@@ -16,6 +16,8 @@ namespace Version
             case WoW::Expansion::_WotLK:   return &Tables::wotlkOpcodes;
             case WoW::Expansion::_Cata:    return &Tables::cataOpcodes;
             case WoW::Expansion::_Mop:     return &Tables::mopOpcodes;
+            case WoW::Expansion::_WoD:     return &Tables::wodOpcodes;
+            case WoW::Expansion::_Legion:  return &Tables::legionOpcodes;
             default:                       return nullptr;
         }
     }
