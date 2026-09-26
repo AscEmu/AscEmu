@@ -44,6 +44,12 @@ protected:
 
     // DB2/system/glue handlers.
     bool handleForeverDbQueryBulkOpcode(WorldPacket& packet);
+    bool handleForeverDbQueryRecord(uint32_t tableHash, uint32_t recordId);
+    bool handleForeverBroadcastTextDbQuery(uint32_t recordId);
+    bool handleForeverGenericDb2Query(uint32_t tableHash, uint32_t recordId);
+    bool buildForeverGossipBroadcastTextRecord(ByteBuffer& buffer, uint32_t wireId, uint32_t gossipTextId);
+    bool sendForeverDb2Reply(uint32_t tableHash, uint32_t recordId, const uint8_t* data, size_t dataSize);
+    bool sendForeverDb2MissingReply(uint32_t tableHash, uint32_t recordId);
     bool handleForeverHotfixRequestOpcode(WorldPacket& packet);
     bool handleForeverQueryCreatureOpcode(WorldPacket& packet);
     bool handleForeverQueryGameObjectOpcode(WorldPacket& packet);

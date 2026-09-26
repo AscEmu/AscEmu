@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "Management/Gossip/GossipDefines.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "version/Forever/World/BroadcastTextId.hpp"
 #include "WoWGuid.hpp"
 
 #include <cstdint>
@@ -122,19 +123,30 @@ namespace AscEmu::Packets
                     packet.writeString(title);
                 }
 
-                // Forever 70009 retail behaviour for this Classic-style client:
-                // the server-side npc_gossip_texts id is carried as RandomTextID.
-                // The client then resolves that id through BroadcastText.db2 via
-                // CMSG_DB_QUERY_BULK. Custom AscEmu ids are served dynamically
-                // by the Forever DB2 handler when no physical DB2 record exists.
-                packet.writeBit(textId != 0); // RandomTextID present
-                packet.writeBit(false);       // BroadcastTextID absent
-                packet.flushBits();
+                // Forever uses a 32-bit BroadcastText reference. AscEmu reserves
+                // the upper 6 bits as a source namespace and keeps the lower
+                // 26 bits as the original source id. Native Blizzard ids use
+                // namespace 0 and are sent unchanged. Normal AscEmu gossip
+                // text ids use the Gossip namespace.
+                uint32_t foreverRandomTextId = 0;
 
                 if (textId != 0)
-                    packet << static_cast<int32_t>(textId);
+                {
+                    using namespace AscEmu::Version::Forever;
 
-                return true;
+                    if (BroadcastTextId::isValidSourceId(textId))
+                    {
+                        foreverRandomTextId = BroadcastTextId::encode(
+                            BroadcastTextId::Type::Gossip, textId);
+                    }
+                }
+
+                packet.writeBit(foreverRandomTextId != 0); // RandomTextID present
+                packet.writeBit(false);                    // BroadcastTextID absent
+                packet.flushBits();
+
+                if (foreverRandomTextId != 0)
+                    packet << static_cast<int32_t>(foreverRandomTextId);
 
                 return true;
             }

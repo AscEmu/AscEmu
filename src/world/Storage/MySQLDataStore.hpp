@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 
+
 class QueryResult;
 class SpellInfo;
 struct SplineChainLink;
@@ -112,7 +113,7 @@ public:
 
     typedef std::map<uint32_t, std::unique_ptr<std::list<SpellInfo const*>>> SpellOverrideIdMap;
 
-    typedef std::map<uint32_t, uint32_t> NpcGossipTextIdMap;
+    typedef std::map<uint32_t, MySQLStructure::NpcGossipProperties> NpcGossipPropertiesMap;
 
     typedef std::unordered_map<uint32_t, MySQLStructure::PetLevelAbilities> PetLevelAbilitiesContainer;
 
@@ -237,7 +238,8 @@ public:
     CreateInfo_ClassLevelStats const* getPlayerClassLevelStats(uint32_t level, uint8_t player_class);
     uint32_t getPlayerXPForLevel(uint32_t level);
 
-    uint32_t getGossipTextIdForNpc(uint32_t entry);
+    MySQLStructure::NpcGossipProperties const* getNpcGossipProperties(uint32_t entry) const;
+    uint32_t getGossipTextIdForNpc(uint32_t entry) const;
 
     MySQLStructure::PetLevelAbilities const* getPetLevelAbilities(uint32_t level);
     PetLevelAbilitiesContainer const* getPetAbilitiesStore() { return &_petLevelAbilitiesStore; }
@@ -454,7 +456,7 @@ public:
 
     SpellOverrideIdMap _spellOverrideIdStore;
 
-    NpcGossipTextIdMap _npcGossipTextIdStore;
+    NpcGossipPropertiesMap _npcGossipPropertiesStore;
 
     PetLevelAbilitiesContainer _petLevelAbilitiesStore;
 

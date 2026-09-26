@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <unordered_map>
 
 class SocketHandler;
 class WorldSession;

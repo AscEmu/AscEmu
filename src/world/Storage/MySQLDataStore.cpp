@@ -3316,8 +3316,11 @@ void MySQLDataStore::loadSpellOverrideTable()
 void MySQLDataStore::loadNpcGossipTextIdTable()
 {
     auto startTime = Util::TimeNow();
-    //                                                    0         1
-    auto npc_gossip_properties_result = WorldDatabase.query("SELECT creatureid, textid FROM npc_gossip_properties");
+
+    _npcGossipPropertiesStore.clear();
+    //                                                    0           1
+    auto npc_gossip_properties_result = WorldDatabase.query(
+        "SELECT creatureid, textid FROM npc_gossip_properties");
     if (npc_gossip_properties_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `npc_gossip_properties` is empty!");
@@ -3330,18 +3333,19 @@ void MySQLDataStore::loadNpcGossipTextIdTable()
     do
     {
         Field* fields = npc_gossip_properties_result->fetch();
-        uint32_t entry = fields[0].asUint32();
-        auto creature_properties = sMySQLStore.getCreatureProperties(entry);
-        if (creature_properties == nullptr)
+        const uint32_t entry = fields[0].asUint32();
+
+        if (sMySQLStore.getCreatureProperties(entry) == nullptr)
         {
             sLogger.debugDbTables("Table `npc_gossip_properties` includes invalid creatureid {}! <skipped>", entry);
             continue;
         }
 
-        uint32_t text = fields[1].asUint32();
+        MySQLStructure::NpcGossipProperties properties{};
+        properties.creatureId = entry;
+        properties.textId = fields[1].asUint32();
 
-        _npcGossipTextIdStore[entry] = text;
-
+        _npcGossipPropertiesStore[entry] = properties;
         ++npc_gossip_properties_count;
 
     } while (npc_gossip_properties_result->nextRow());
@@ -3349,9 +3353,21 @@ void MySQLDataStore::loadNpcGossipTextIdTable()
     sLogger.info("MySQLDataLoads : Loaded {} rows from `npc_gossip_properties` table in {} ms!", npc_gossip_properties_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
-uint32_t MySQLDataStore::getGossipTextIdForNpc(uint32_t entry)
+MySQLStructure::NpcGossipProperties const* MySQLDataStore::getNpcGossipProperties(uint32_t entry) const
 {
-    return _npcGossipTextIdStore[entry];
+    const auto itr = _npcGossipPropertiesStore.find(entry);
+    if (itr == _npcGossipPropertiesStore.end())
+        return nullptr;
+
+    return &itr->second;
+}
+
+uint32_t MySQLDataStore::getGossipTextIdForNpc(uint32_t entry) const
+{
+    if (const auto* properties = getNpcGossipProperties(entry))
+        return properties->textId;
+
+    return 0;
 }
 
 void MySQLDataStore::loadPetLevelAbilitiesTable()

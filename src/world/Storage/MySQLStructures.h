@@ -468,8 +468,12 @@ namespace MySQLStructure
     //loot_pickpocketing
     //loot_skinning
 
-    //\brief No structure!
     //npc_gossip_properties
+    struct NpcGossipProperties
+    {
+        uint32_t creatureId;
+        uint32_t textId;
+    };
 
     //npc_gossip_texts
     struct NpcGossipText_Emote
