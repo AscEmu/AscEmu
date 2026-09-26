@@ -38,6 +38,6 @@ namespace AscEmu::Version::Forever::Packets
     // Forever 69913 uses the modern retail MovementInfo wire layout.  Keep the
     // decoder version-local instead of forcing this data through the legacy
     // MovementCodec/MoP descriptor tables.
-    bool readMovementStatus(ByteBuffer& packet, MovementStatus& status);
+    bool readMovementStatus(ByteBuffer& packet, MovementStatus& status, std::size_t expectedTrailingBytes = 0);
     MovementInfo toLegacyMovementInfo(MovementStatus const& status);
 }

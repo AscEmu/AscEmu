@@ -20,6 +20,16 @@ namespace AscEmu::Version::Forever::Packets
             return true;
         }
 
+        void alignAfterBits(ByteBuffer& packet, uint8_t bitsAlreadyRead)
+        {
+            const uint8_t remainder = static_cast<uint8_t>(bitsAlreadyRead % 8U);
+            if (remainder == 0)
+                return;
+
+            for (uint8_t i = remainder; i < 8U; ++i)
+                packet.readBit();
+        }
+
         bool readTransport(ByteBuffer& packet, MovementStatus& status)
         {
             if (!readModernGuid(packet, status.transportGuid))
@@ -34,6 +44,7 @@ namespace AscEmu::Version::Forever::Packets
 
             const bool hasPrevTime = packet.readBit();
             const bool hasVehicleId = packet.readBit();
+            alignAfterBits(packet, 2);
 
             if (hasPrevTime)
                 packet >> status.transportPrevTime;
@@ -44,7 +55,7 @@ namespace AscEmu::Version::Forever::Packets
         }
     }
 
-    bool readMovementStatus(ByteBuffer& packet, MovementStatus& status)
+    bool readMovementStatus(ByteBuffer& packet, MovementStatus& status, std::size_t expectedTrailingBytes)
     {
         if (!readModernGuid(packet, status.moverGuid))
             return false;
@@ -81,6 +92,7 @@ namespace AscEmu::Version::Forever::Packets
         const bool hasInertia = packet.readBit();
         const bool hasAdvancedFlying = packet.readBit();
         const bool hasDriveStatus = packet.readBit();
+        alignAfterBits(packet, 9);
 
         if (hasStandingOnGameObject)
         {
@@ -97,6 +109,7 @@ namespace AscEmu::Version::Forever::Packets
             packet >> status.fallTime;
             packet >> status.fallVelocity;
             status.hasFallDirection = packet.readBit();
+            alignAfterBits(packet, 1);
             if (status.hasFallDirection)
             {
                 packet >> status.fallSinAngle;
@@ -129,9 +142,10 @@ namespace AscEmu::Version::Forever::Packets
             packet >> speed >> movementAngle;
             packet.readBit(); // accelerating
             packet.readBit(); // drifting
+            alignAfterBits(packet, 2);
         }
 
-        return !packet.hadReadFailure() && packet.rpos() == packet.size();
+        return !packet.hadReadFailure() && packet.remaining() == expectedTrailingBytes;
     }
 
     MovementInfo toLegacyMovementInfo(MovementStatus const& status)

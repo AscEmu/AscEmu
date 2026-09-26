@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "version/Forever/Packets/MovementPackets.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -252,13 +253,33 @@ void WorldSession::handleMoveSplineDoneOpcode(WorldPacket& recvData)
 {
     sLogger.debugOpcode("Received CMSG_MOVE_SPLINE_DONE.");
 
-    WoWGuid guid;
-    recvData >> guid;
+    if (getClientProtocol().isForever())
+    {
+        AscEmu::Version::Forever::Packets::MovementStatus status;
+        if (!AscEmu::Version::Forever::Packets::readMovementStatus(recvData, status, sizeof(uint32_t)))
+        {
+            sLogger.warning("WorldSession::Forever: malformed CMSG_MOVE_SPLINE_DONE payload size={} consumed={}.", recvData.size(), recvData.rpos());
+            return;
+        }
 
-    MovementInfo movementInfo;  // used only for proper packet read
-    movementInfo.read(recvData, getClientProtocol());
+        uint32_t splineId = 0;
+        recvData >> splineId;
+        if (recvData.hadReadFailure() || recvData.remaining() != 0)
+        {
+            sLogger.warning("WorldSession::Forever: malformed CMSG_MOVE_SPLINE_DONE tail payload size={} consumed={}.", recvData.size(), recvData.rpos());
+            return;
+        }
+    }
+    else
+    {
+        WoWGuid guid;
+        recvData >> guid;
 
-    recvData.readSkip<uint32_t>();   // spline id
+        MovementInfo movementInfo;  // used only for proper packet read
+        movementInfo.read(recvData, getClientProtocol());
+
+        recvData.readSkip<uint32_t>();   // spline id
+    }
 
     uint32_t curDest = GetPlayer()->m_taxi->getTaxiDestination();
     if (curDest)
