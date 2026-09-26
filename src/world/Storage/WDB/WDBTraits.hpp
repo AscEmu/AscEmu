@@ -10,11 +10,52 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace WDB
 {
+    template <std::size_t N>
+    struct FixedString
+    {
+        char value[N]{};
+
+        constexpr FixedString(char const (&str)[N])
+        {
+            std::copy_n(str, N, value);
+        }
+
+        constexpr std::string_view view() const noexcept { return {value, N - 1}; }
+    };
+
+    template <FixedString Stem>
+    struct StandardDbcFile
+    {
+        static constexpr auto dbcName = []() {
+            char buf[Stem.view().size() + 5]{};
+            std::copy_n(Stem.value, Stem.view().size(), buf);
+            std::copy_n(".dbc", 5, buf + Stem.view().size());
+            return FixedString(buf);
+        }();
+
+        static constexpr auto db2Name = []() {
+            char buf[Stem.view().size() + 5]{};
+            std::copy_n(Stem.value, Stem.view().size(), buf);
+            std::copy_n(".db2", 5, buf + Stem.view().size());
+            return FixedString(buf);
+        }();
+
+        [[nodiscard]] static constexpr std::string_view getFilename(WoW::Expansion expansion) noexcept
+        {
+            if (expansion >= WoW::Expansion::_WoD)
+                return db2Name.view();
+            return dbcName.view();
+        }
+    };
+
     struct UnsupportedVersion {};
 
     template <typename T> struct DbcTraits;
 
-    template <typename ClassicLayout, typename TbcLayout, typename WotlkLayout, typename CataLayout, typename MopLayout>
+    template <typename ClassicLayout, typename TbcLayout, typename WotlkLayout, typename CataLayout, typename MopLayout,
+              typename WodLayout = UnsupportedVersion,
+              typename LegionLayout = UnsupportedVersion>
+
     struct DbcVersionLayouts
     {
         using classic = ClassicLayout;
@@ -22,347 +63,348 @@ namespace WDB
         using wotlk = WotlkLayout;
         using cata = CataLayout;
         using mop = MopLayout;
+        using wod = WodLayout;
+        using legion = LegionLayout;
     };
 
     template <>
-    struct DbcTraits<Structures::AreaGroupEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::AreaGroupEntry> :
+        DbcVersionLayouts<
             UnsupportedVersion,
             UnsupportedVersion,
             Structures::Raw::AreaGroupEntryWotlkCataMop,
             Structures::Raw::AreaGroupEntryWotlkCataMop,
-            Structures::Raw::AreaGroupEntryWotlkCataMop>
-    {
-        static constexpr const char* filename = "AreaGroup.dbc";
-    };
+            Structures::Raw::AreaGroupEntryWotlkCataMop>,
+        StandardDbcFile<"AreaGroup">
+    {};
 
     template <>
-    struct DbcTraits<Structures::AreaTableEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::AreaTableEntry> :
+        DbcVersionLayouts<
             Structures::Raw::AreaTableEntryClassic,
             Structures::Raw::AreaTableEntryTbc,
             Structures::Raw::AreaTableEntryWotlk,
             Structures::Raw::AreaTableEntryCata,
-            Structures::Raw::AreaTableEntryMop>
-    {
-        static constexpr const char* filename = "AreaTable.dbc";
-    };
+            Structures::Raw::AreaTableEntryMop>,
+        StandardDbcFile<"AreaTable">
+    {};
 
     template <>
-    struct DbcTraits<Structures::AreaTriggerEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::AreaTriggerEntry> :
+        DbcVersionLayouts<
             Structures::Raw::AreaTriggerEntryClassic,
             Structures::Raw::AreaTriggerEntryTbc,
             Structures::Raw::AreaTriggerEntryWotlk,
             Structures::Raw::AreaTriggerEntryCata,
-            Structures::Raw::AreaTriggerEntryMop>
-    {
-        static constexpr char const* filename = "AreaTrigger.dbc";
-    };
+            Structures::Raw::AreaTriggerEntryMop>,
+        StandardDbcFile<"AreaTrigger">
+    {};
 
     template <>
-    struct DbcTraits<Structures::AuctionHouseEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::AuctionHouseEntry> :
+        DbcVersionLayouts<
             Structures::Raw::AuctionHouseEntryClassic,
             Structures::Raw::AuctionHouseEntryTbc,
             Structures::Raw::AuctionHouseEntryWotlk,
             Structures::Raw::AuctionHouseEntryCata,
-            Structures::Raw::AuctionHouseEntryMop>
-    {
-        static constexpr char const* filename = "AuctionHouse.dbc";
-    };
+            Structures::Raw::AuctionHouseEntryMop>,
+        StandardDbcFile<"AuctionHouse">
+    {};
 
     template <>
-    struct DbcTraits<Structures::BankBagSlotPricesEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::BankBagSlotPricesEntry> :
+        DbcVersionLayouts<
             Structures::Raw::BankBagSlotPricesEntryClassic,
             Structures::Raw::BankBagSlotPricesEntryTbc,
             Structures::Raw::BankBagSlotPricesEntryWotlk,
             Structures::Raw::BankBagSlotPricesEntryCata,
-            Structures::Raw::BankBagSlotPricesEntryMop>
-    {
-        static constexpr char const* filename = "BankBagSlotPrices.dbc";
-    };
+            Structures::Raw::BankBagSlotPricesEntryMop>,
+        StandardDbcFile<"BankBagSlotPrices">
+    {};
 
     template <>
-    struct DbcTraits<Structures::BannedAddOnsEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::BannedAddOnsEntry> :
+        DbcVersionLayouts<
             UnsupportedVersion, // Classic
             UnsupportedVersion, // TBC
             UnsupportedVersion, // WotLK
             Structures::Raw::BannedAddOnsEntryCata,
-            Structures::Raw::BannedAddOnsEntryMop>
-    {
-        static constexpr char const* filename = "BannedAddOns.dbc";
-    };
+            Structures::Raw::BannedAddOnsEntryMop>,
+        StandardDbcFile<"BannedAddOns">
+    {};
 
     template <>
-    struct DbcTraits<Structures::BarberShopStyleEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::BarberShopStyleEntry> :
+        DbcVersionLayouts<
             UnsupportedVersion, // Classic
             UnsupportedVersion, // TBC
             Structures::Raw::BarberShopStyleEntryWotlkCataMop,
             Structures::Raw::BarberShopStyleEntryWotlkCataMop,
-            Structures::Raw::BarberShopStyleEntryWotlkCataMop>
-    {
-        static constexpr const char* filename = "BarberShopStyle.dbc";
-    };
+            Structures::Raw::BarberShopStyleEntryWotlkCataMop>,
+        StandardDbcFile<"BarberShopStyle">
+    {};
 
     template <>
     struct DbcTraits<Structures::ChatChannelsEntry>
         : DbcVersionLayouts<
-            Structures::Raw::ChatChannelsEntryClassic,
-            Structures::Raw::ChatChannelsEntryTbc,
-            Structures::Raw::ChatChannelsEntryWotlk,
-            Structures::Raw::ChatChannelsEntryCata,
-            Structures::Raw::ChatChannelsEntryMop>
-    {
-        static constexpr char const* filename = "ChatChannels.dbc";
-    };
+              Structures::Raw::ChatChannelsEntryClassic,
+              Structures::Raw::ChatChannelsEntryTbc,
+              Structures::Raw::ChatChannelsEntryWotlk,
+              Structures::Raw::ChatChannelsEntryCata,
+              Structures::Raw::ChatChannelsEntryMop>,
+          StandardDbcFile<"ChatChannels">
+    {};
 
     template <>
-    struct DbcTraits<Structures::CharStartOutfitEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::CharStartOutfitEntry> :
+        DbcVersionLayouts<
             Structures::Raw::CharStartOutfitEntryClassic,
             Structures::Raw::CharStartOutfitEntryTbc,
             Structures::Raw::CharStartOutfitEntryWotlk,
             Structures::Raw::CharStartOutfitEntryCata,
-            Structures::Raw::CharStartOutfitEntryMop>
-    {
-        static constexpr char const* filename = "CharStartOutfit.dbc";
-    };
+            Structures::Raw::CharStartOutfitEntryMop>,
+        StandardDbcFile<"CharStartOutfit">
+    {};
 
     template <>
-    struct DbcTraits<Structures::CharTitlesEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::CharTitlesEntry> :
+        DbcVersionLayouts<
             UnsupportedVersion, // Classic
-            Structures::Raw::CharTitlesEntryTbcWotlk, // TBC
-            Structures::Raw::CharTitlesEntryTbcWotlk, // WotLK
-            Structures::Raw::CharTitlesEntryCataMop, // Cata
-            Structures::Raw::CharTitlesEntryCataMop> // MoP
-    {
-        static constexpr const char* filename = "CharTitles.dbc";
-    };
+            Structures::Raw::CharTitlesEntryTbcWotlk,
+            Structures::Raw::CharTitlesEntryTbcWotlk,
+            Structures::Raw::CharTitlesEntryCataMop,
+            Structures::Raw::CharTitlesEntryCataMop>,
+        StandardDbcFile<"CharTitles">
+    {};
 
     template <>
-    struct DbcTraits<Structures::ChrClassesEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::ChrClassesEntry> :
+        DbcVersionLayouts<
             Structures::Raw::ChrClassesEntryClassic,
             Structures::Raw::ChrClassesEntryTbc,
             Structures::Raw::ChrClassesEntryWotlk,
             Structures::Raw::ChrClassesEntryCata,
-            Structures::Raw::ChrClassesEntryMop>
-    {
-        static constexpr const char* filename = "ChrClasses.dbc";
-    };
+            Structures::Raw::ChrClassesEntryMop>,
+        StandardDbcFile<"ChrClasses">
+    {};
 
     template <>
-    struct DbcTraits<Structures::ChrPowerTypesEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::ChrPowerTypesEntry> :
+        DbcVersionLayouts<
             UnsupportedVersion,
             UnsupportedVersion,
             UnsupportedVersion,
             Structures::Raw::ChrPowerTypesEntryCata,
-            Structures::Raw::ChrPowerTypesEntryMop>
-    {
-        static constexpr char const* filename = "ChrClassesXPowerTypes.dbc";
-    };
+            Structures::Raw::ChrPowerTypesEntryMop>,
+        StandardDbcFile<"ChrClassesXPowerTypes">
+    {};
 
     template <>
-    struct DbcTraits<Structures::ChrRacesEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::ChrRacesEntry> :
+        DbcVersionLayouts<
             Structures::Raw::ChrRacesEntryClassic,
             Structures::Raw::ChrRacesEntryTbc,
             Structures::Raw::ChrRacesEntryWotlk,
             Structures::Raw::ChrRacesEntryCata,
-            Structures::Raw::ChrRacesEntryMop>
-    {
-        static constexpr const char* filename = "ChrRaces.dbc";
-    };
+            Structures::Raw::ChrRacesEntryMop>,
+        StandardDbcFile<"ChrRaces">
+    {};
 
     template <>
-    struct DbcTraits<Structures::CreatureDisplayInfoEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::CreatureDisplayInfoEntry> :
+        DbcVersionLayouts<
             Structures::Raw::CreatureDisplayInfoEntryClassic,
             Structures::Raw::CreatureDisplayInfoEntryTbc,
             Structures::Raw::CreatureDisplayInfoEntryWotlk,
             Structures::Raw::CreatureDisplayInfoEntryCata,
-            Structures::Raw::CreatureDisplayInfoEntryMop>
-    {
-        static constexpr char const* filename = "CreatureDisplayInfo.dbc";
-    };
+            Structures::Raw::CreatureDisplayInfoEntryMop>,
+        StandardDbcFile<"CreatureDisplayInfo">
+    {};
 
     template <>
-    struct DbcTraits<Structures::CreatureDisplayInfoExtraEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::CreatureDisplayInfoExtraEntry> :
+        DbcVersionLayouts<
             Structures::Raw::CreatureDisplayInfoExtraEntryClassic,
             Structures::Raw::CreatureDisplayInfoExtraEntryTbc,
             Structures::Raw::CreatureDisplayInfoExtraEntryWotlk,
             Structures::Raw::CreatureDisplayInfoExtraEntryCata,
-            Structures::Raw::CreatureDisplayInfoExtraEntryMop>
-    {
-        static constexpr char const* filename = "CreatureDisplayInfoExtra.dbc";
-    };
+            Structures::Raw::CreatureDisplayInfoExtraEntryMop>,
+        StandardDbcFile<"CreatureDisplayInfoExtra">
+    {};
 
     template <>
-    struct DbcTraits<Structures::CreatureFamilyEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::CreatureFamilyEntry> :
+        DbcVersionLayouts<
             Structures::Raw::CreatureFamilyEntryClassic,
             Structures::Raw::CreatureFamilyEntryTbc,
             Structures::Raw::CreatureFamilyEntryWotlk,
             Structures::Raw::CreatureFamilyEntryCata,
-            Structures::Raw::CreatureFamilyEntryMop>
-    {
-        static constexpr char const* filename = "CreatureFamily.dbc";
-    };
+            Structures::Raw::CreatureFamilyEntryMop>,
+        StandardDbcFile<"CreatureFamily">
+    {};
 
     template <>
-    struct DbcTraits<Structures::CreatureModelDataEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::CreatureModelDataEntry> :
+        DbcVersionLayouts<
             Structures::Raw::CreatureModelDataEntryClassic,
             Structures::Raw::CreatureModelDataEntryTbc,
             Structures::Raw::CreatureModelDataEntryWotlk,
             Structures::Raw::CreatureModelDataEntryCata,
-            Structures::Raw::CreatureModelDataEntryMop>
-    {
-        static constexpr char const* filename = "CreatureModelData.dbc";
-    };
+            Structures::Raw::CreatureModelDataEntryMop>,
+        StandardDbcFile<"CreatureModelData">
+    {};
 
     template <>
-    struct DbcTraits<Structures::CreatureSpellDataEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::CreatureSpellDataEntry> :
+        DbcVersionLayouts<
             Structures::Raw::CreatureSpellDataEntryClassic,
             Structures::Raw::CreatureSpellDataEntryTbc,
             Structures::Raw::CreatureSpellDataEntryWotlk,
             Structures::Raw::CreatureSpellDataEntryCata,
-            Structures::Raw::CreatureSpellDataEntryMop>
-    {
-        static constexpr char const* filename = "CreatureSpellData.dbc";
-    };
+            Structures::Raw::CreatureSpellDataEntryMop>,
+        StandardDbcFile<"CreatureSpellData">
+    {};
 
     template <>
-    struct DbcTraits<Structures::FactionEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::FactionEntry> :
+        DbcVersionLayouts<
             Structures::Raw::FactionEntryClassic,
             Structures::Raw::FactionEntryTbc,
             Structures::Raw::FactionEntryWotlk,
             Structures::Raw::FactionEntryCata,
-            Structures::Raw::FactionEntryMop>
-    {
-        static constexpr const char* filename = "Faction.dbc";
-    };
+            Structures::Raw::FactionEntryMop>,
+        StandardDbcFile<"Faction">
+    {};
 
     template <>
-    struct DbcTraits<Structures::DurabilityCostsEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::DurabilityCostsEntry> :
+        DbcVersionLayouts<
             Structures::Raw::DurabilityCostsEntryClassic,
             Structures::Raw::DurabilityCostsEntryTbc,
             Structures::Raw::DurabilityCostsEntryWotlk,
             Structures::Raw::DurabilityCostsEntryCata,
-            Structures::Raw::DurabilityCostsEntryMop>
-    {
-        static constexpr char const* filename = "DurabilityCosts.dbc";
-    };
+            Structures::Raw::DurabilityCostsEntryMop>,
+        StandardDbcFile<"DurabilityCosts">
+    {};
 
     template <>
-    struct DbcTraits<Structures::DurabilityQualityEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::DurabilityQualityEntry> :
+        DbcVersionLayouts<
             Structures::Raw::DurabilityQualityEntryClassic,
             Structures::Raw::DurabilityQualityEntryTbc,
             Structures::Raw::DurabilityQualityEntryWotlk,
             Structures::Raw::DurabilityQualityEntryCata,
-            Structures::Raw::DurabilityQualityEntryMop>
-    {
-        static constexpr char const* filename = "DurabilityQuality.dbc";
-    };
+            Structures::Raw::DurabilityQualityEntryMop>,
+        StandardDbcFile<"DurabilityQuality">
+    {};
 
     template <>
-    struct DbcTraits<Structures::EmotesTextEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::EmotesTextEntry> :
+        DbcVersionLayouts<
             Structures::Raw::EmotesTextEntryClassic,
             Structures::Raw::EmotesTextEntryTbc,
             Structures::Raw::EmotesTextEntryWotlk,
             Structures::Raw::EmotesTextEntryCata,
-            Structures::Raw::EmotesTextEntryMop>
-    {
-        static constexpr char const* filename = "EmotesText.dbc";
-    };
+            Structures::Raw::EmotesTextEntryMop>,
+        StandardDbcFile<"EmotesText">
+    {};
 
     template <>
-    struct DbcTraits<Structures::FactionTemplateEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::FactionTemplateEntry> :
+        DbcVersionLayouts<
             Structures::Raw::FactionTemplateEntryAll,
             Structures::Raw::FactionTemplateEntryAll,
             Structures::Raw::FactionTemplateEntryAll,
             Structures::Raw::FactionTemplateEntryAll,
-            Structures::Raw::FactionTemplateEntryAll>
-    {
-        static constexpr const char* filename = "FactionTemplate.dbc";
-    };
+            Structures::Raw::FactionTemplateEntryAll>,
+        StandardDbcFile<"FactionTemplate">
+    {};
 
     template <>
-    struct DbcTraits<Structures::GameObjectDisplayInfoEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::GameObjectDisplayInfoEntry> :
+        DbcVersionLayouts<
             Structures::Raw::GameObjectDisplayInfoEntryClassic,
             Structures::Raw::GameObjectDisplayInfoEntryTbc,
             Structures::Raw::GameObjectDisplayInfoEntryWotlk,
             Structures::Raw::GameObjectDisplayInfoEntryCata,
-            Structures::Raw::GameObjectDisplayInfoEntryMop>
-    {
-        static constexpr char const* filename = "GameObjectDisplayInfo.dbc";
-    };
+            Structures::Raw::GameObjectDisplayInfoEntryMop>,
+        StandardDbcFile<"GameObjectDisplayInfo">
+    {};
 
     template <>
-    struct DbcTraits<Structures::GemPropertiesEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::GemPropertiesEntry> :
+        DbcVersionLayouts<
             UnsupportedVersion, // Classic
             Structures::Raw::GemPropertiesEntryTbcWotlkCataMop,
             Structures::Raw::GemPropertiesEntryTbcWotlkCataMop,
             Structures::Raw::GemPropertiesEntryTbcWotlkCataMop,
-            Structures::Raw::GemPropertiesEntryTbcWotlkCataMop>
-    {
-        static constexpr const char* filename = "GemProperties.dbc";
-    };
+            Structures::Raw::GemPropertiesEntryTbcWotlkCataMop>,
+        StandardDbcFile<"GemProperties">
+    {};
 
     template <>
-    struct DbcTraits<Structures::ItemSetEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::ItemSetEntry> :
+        DbcVersionLayouts<
             Structures::Raw::ItemSetEntryClassic,
             Structures::Raw::ItemSetEntryTbc,
             Structures::Raw::ItemSetEntryWotlk,
             Structures::Raw::ItemSetEntryCata,
-            Structures::Raw::ItemSetEntryMop>
-    {
-        static constexpr char const* filename = "ItemSet.dbc";
-    };
+            Structures::Raw::ItemSetEntryMop>,
+        StandardDbcFile<"ItemSet">
+    {};
 
     template <>
-    struct DbcTraits<Structures::MapDifficultyEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::MapDifficultyEntry> :
+        DbcVersionLayouts<
             UnsupportedVersion, // Classic
             UnsupportedVersion, // TBC
             Structures::Raw::MapDifficultyEntryWotlkCataMop,
             Structures::Raw::MapDifficultyEntryWotlkCataMop,
-            Structures::Raw::MapDifficultyEntryWotlkCataMop>
-    {
-        static constexpr const char* filename = "MapDifficulty.dbc";
-    };
+            Structures::Raw::MapDifficultyEntryWotlkCataMop>,
+        StandardDbcFile<"MapDifficulty">
+    {};
 
     template <>
-    struct DbcTraits<Structures::MapEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::MapEntry> :
+        DbcVersionLayouts<
             Structures::Raw::MapEntryClassic,
             Structures::Raw::MapEntryTbc,
             Structures::Raw::MapEntryWotlk,
             Structures::Raw::MapEntryCataMop,
-            Structures::Raw::MapEntryCataMop>
-    {
-        static constexpr const char* filename = "Map.dbc";
-    };
+            Structures::Raw::MapEntryCataMop>,
+        StandardDbcFile<"Map">
+    {};
 
     template <>
-    struct DbcTraits<Structures::StableSlotPricesEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::StableSlotPricesEntry> :
+        DbcVersionLayouts<
             Structures::Raw::StableSlotPricesEntryClassicTbcWotlk,
             Structures::Raw::StableSlotPricesEntryClassicTbcWotlk,
             Structures::Raw::StableSlotPricesEntryClassicTbcWotlk,
             UnsupportedVersion, // Cata
-            UnsupportedVersion> // MoP
-    {
-        static constexpr const char* filename = "StableSlotPrices.dbc";
-    };
+            UnsupportedVersion>, // MoP
+        StandardDbcFile<"StableSlotPrices">
+    {};
 
     template <>
-    struct DbcTraits<Structures::TotemCategoryEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::TotemCategoryEntry> :
+        DbcVersionLayouts<
             UnsupportedVersion, // Classic
             Structures::Raw::TotemCategoryEntryTbcWotlkCataMop,
             Structures::Raw::TotemCategoryEntryTbcWotlkCataMop,
             Structures::Raw::TotemCategoryEntryTbcWotlkCataMop,
-            Structures::Raw::TotemCategoryEntryTbcWotlkCataMop>
-    {
-        static constexpr const char* filename = "TotemCategory.dbc";
-    };
+            Structures::Raw::TotemCategoryEntryTbcWotlkCataMop>,
+        StandardDbcFile<"TotemCategory">
+    {};
 
     template <>
-    struct DbcTraits<Structures::WorldMapAreaEntry> : DbcVersionLayouts<
+    struct DbcTraits<Structures::WorldMapAreaEntry> :
+        DbcVersionLayouts<
             UnsupportedVersion, // Classic
             Structures::Raw::WorldMapAreaEntryTbcWotlkCataMop,
             Structures::Raw::WorldMapAreaEntryTbcWotlkCataMop,
             Structures::Raw::WorldMapAreaEntryTbcWotlkCataMop,
-            Structures::Raw::WorldMapAreaEntryTbcWotlkCataMop>
-    {
-        static constexpr const char* filename = "WorldMapArea.dbc";
-    };
+            Structures::Raw::WorldMapAreaEntryTbcWotlkCataMop>,
+        StandardDbcFile<"WorldMapArea">
+    {};
 }

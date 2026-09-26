@@ -41,10 +41,9 @@ namespace WDB
 
         std::unique_ptr<char[]> autoProduceData(const char* _dbcFormat, uint32_t& _recordCount, std::unique_ptr<char*[]>& _indexTable);
         std::unique_ptr<char[]> autoProduceStrings(const char* _dbcFormat, char* _dataTable);
-        static int getVersionIdForAEVersion();
-        static bool hasFormat(std::string _dbcFile);
-        static std::string getFormat(std::string _dbcFile);
-        static uint32_t getFormatRecordSize(const char* _dbcFormat, int32_t* _indexPos = NULL);
+        [[nodiscard]] static bool hasFormat(std::string_view dbcFile);
+        [[nodiscard]] static std::string_view getFormat(std::string_view dbcFile);
+        static uint32_t getFormatRecordSize(const char* _dbcFormat, int32_t* _indexPos = nullptr);
 
         WDB::WDBRecord getRecord(size_t record_id) const;
         uint32_t getNumRows() const;

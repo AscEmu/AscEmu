@@ -12,9 +12,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WDBTraits.hpp"
 #include "Logging/Logger.hpp"
 
+#include <algorithm>
 #include <cstring>
 #include <filesystem>
 #include <iostream>
+#include <memory>
 
 namespace WDB
 {
@@ -116,11 +118,10 @@ namespace WDB
     {
         if (WDB::WDBLoader::hasFormat(_dbcFilename))
         {
-            std::string format = WDB::WDBLoader::getFormat(_dbcFilename);
+            std::string_view format = WDB::WDBLoader::getFormat(_dbcFilename);
             auto writable = std::make_unique<char[]>(format.size() + 1);
             std::copy(format.begin(), format.end(), writable.get());
             writable[format.size()] = '\0'; // don't forget the terminating 0
-
 
             _storage.setFormat(std::move(writable));
         }
@@ -186,48 +187,68 @@ namespace WDB
     }
 
     template <typename RuntimeEntry, typename MapperF>
-    void loadUnifiedWDBStore(WDB::StoreProblemList& errors,
-                             WDB::WDBStore<RuntimeEntry>& storage,
-                             const std::string& dbcPath, MapperF&& mapFields)
+    void loadUnifiedWDBStore(StoreProblemList& errors,
+                             WDBStore<RuntimeEntry>& storage,
+                             const std::string& dbcPath,
+                             MapperF&& mapFields)
     {
         using Traits = DbcTraits<RuntimeEntry>;
-        std::string const filename = Traits::filename;
 
-        std::string dbcFilePath = dbcPath + filename;
-        for (auto const& locales : fullLocaleNameList) {
-            if (std::filesystem::is_directory(dbcPath + locales.name + "/")) {
-                dbcFilePath = dbcPath + locales.name + "/" + filename;
-                break;
+        const WoW::Expansion activeExpansion = WoW::getServerExpansion();
+        auto const expansionId = static_cast<uint32_t>(activeExpansion);
+        auto const expansionName = WoW::getExpansionName(activeExpansion);
+
+        const std::string_view filenameView = Traits::getFilename(activeExpansion);
+        const std::string filename(filenameView);
+
+        namespace DbcFs = std::filesystem;
+        DbcFs::path baseDbcDir(dbcPath);
+        DbcFs::path dbcFilePath = baseDbcDir / filenameView;
+
+        if (!DbcFs::exists(dbcFilePath))
+        {
+            for (auto const& locale : fullLocaleNameList)
+            {
+                DbcFs::path localeDir = baseDbcDir / locale.name;
+                if (DbcFs::is_directory(localeDir))
+                {
+                    DbcFs::path fileLocale = localeDir / filenameView;
+                    if (DbcFs::exists(fileLocale))
+                    {
+                        dbcFilePath = fileLocale;
+                        break;
+                    }
+                }
             }
         }
 
-        auto const currentExpansion = WoW::getServerExpansion();
-        auto const expansionId = static_cast<uint32_t>(currentExpansion);
-        auto const expansionName = WoW::getExpansionName(currentExpansion);
-
-        auto loadRows = [&]<typename T0>(T0/*identity*/) {
+        auto loadRows = [&]<typename T0>(T0/*identity*/)
+        {
             using RawT = T0::type;
-            if constexpr (!std::is_same_v<RawT, WDB::UnsupportedVersion>) {
-                WDB::WDBContainer<RawT> rawStore;
+            if constexpr (!std::is_same_v<RawT, UnsupportedVersion>)
+            {
+                WDBContainer<RawT> rawStore;
+
+                std::string const formatKey = DbcFs::path(filenameView).replace_extension(".dbc").string();
 
                 // Check if format string exists
-                if (!WDB::WDBLoader::hasFormat(filename)) {
+                if (!WDBLoader::hasFormat(formatKey)) {
                     std::ostringstream stream;
-                    stream << "WDBLoader:: no format found for " << filename
+                    stream << "WDBLoader:: no format found for " << formatKey
                         << " on expansion " << expansionName << " (ID: " << expansionId << ")\n";
                     errors.push_back(stream.str());
                     std::cout << stream.str() << "\n";
                     return;
                 }
 
-                std::string format = WDB::WDBLoader::getFormat(filename);
+                std::string_view format = WDBLoader::getFormat(formatKey);
                 auto writable = std::make_unique<char[]>(format.size() + 1);
-                std::copy(format.begin(), format.end(), writable.get());
-                writable[format.size()] = '\0';
+                auto [_, out] = std::ranges::copy(format, writable.get());
+                *out = '\0';
                 rawStore.setFormat(std::move(writable));
 
                 // Check format record size vs struct size
-                size_t const expectedSize = WDB::WDBLoader::getFormatRecordSize(rawStore.getFormat());
+                size_t const expectedSize = WDBLoader::getFormatRecordSize(rawStore.getFormat());
                 size_t const actualSize = sizeof(RawT);
 
                 if (expectedSize != actualSize)
@@ -244,9 +265,13 @@ namespace WDB
                 // Increment global file counter
                 ++g_dbc_file_count;
 
+                const std::string filePathString = dbcFilePath.string();
+
                 // Load DBC file and validate
-                if (!rawStore.load(dbcFilePath.c_str())) {
-                    if (std::filesystem::exists(dbcFilePath)) {
+                if (!rawStore.load(filePathString.c_str()))
+                {
+                    if (DbcFs::exists(dbcFilePath))
+                    {
                         std::ostringstream stream;
                         stream << dbcFilePath << " exists, and has " << rawStore.getFieldCount()
                             << " field(s) (expected " << format.size()
@@ -254,16 +279,21 @@ namespace WDB
                         errors.push_back(stream.str());
                         std::cout << stream.str() << "\n";
                     }
-                    else {
-                        std::cout << dbcFilePath << " does not exist\n";
-                        errors.push_back(dbcFilePath);
+                    else
+                    {
+                        std::cout << filePathString << " does not exist\n";
+                        errors.push_back(filePathString);
                     }
                     return;
                 }
 
                 uint32_t const numRows = rawStore.getNumRows();
-                for (uint32_t i = 0; i < numRows; ++i) {
-                    if (auto const* raw = rawStore.lookupEntry(i)) {
+                storage.reserve(storage.size() + numRows);
+
+                for (uint32_t i = 0; i < numRows; ++i)
+                {
+                    if (auto const* raw = rawStore.lookupEntry(i))
+                    {
                         RuntimeEntry entry;
                         mapFields(*raw, entry);
                         if constexpr (requires { raw->id; })
@@ -284,13 +314,15 @@ namespace WDB
             }
         };
 
-        switch (WoW::getServerExpansion())
+        switch (activeExpansion)
         {
             case WoW::Expansion::_Classic: loadRows(std::type_identity<typename Traits::classic>{}); break;
-            case WoW::Expansion::_TBC:     loadRows(std::type_identity<typename Traits::tbc>{});     break;
-            case WoW::Expansion::_WotLK:   loadRows(std::type_identity<typename Traits::wotlk>{});   break;
-            case WoW::Expansion::_Cata:    loadRows(std::type_identity<typename Traits::cata>{});    break;
-            case WoW::Expansion::_Mop:     loadRows(std::type_identity<typename Traits::mop>{});     break;
+            case WoW::Expansion::_TBC: loadRows(std::type_identity<typename Traits::tbc>{}); break;
+            case WoW::Expansion::_WotLK: loadRows(std::type_identity<typename Traits::wotlk>{}); break;
+            case WoW::Expansion::_Cata: loadRows(std::type_identity<typename Traits::cata>{}); break;
+            case WoW::Expansion::_Mop: loadRows(std::type_identity<typename Traits::mop>{}); break;
+            case WoW::Expansion::_WoD: loadRows(std::type_identity<typename Traits::wod>{}); break;
+            case WoW::Expansion::_Legion: loadRows(std::type_identity<typename Traits::legion>{}); break;
             default:
                 errors.push_back("WDBStore: Attempted to load DBC for an unknown or unsupported expansion.");
                 break;

@@ -46,52 +46,47 @@ namespace WDB
         return 0;
     }
 
-    int WDBLoader::getVersionIdForAEVersion()
+    // Helper function to find the format entry for a given DBC file, considering both .dbc and .db2 extensions
+    static auto findFormatEntry(std::string_view dbcFile)
     {
-        switch (VERSION_STRING)
+        // Directly check for the .dbc file first
+        if (auto it = dbcFieldDefines.find(dbcFile); it != dbcFieldDefines.end())
         {
-            case Classic:
-                return 0;
-            case TBC:
-                return 1;
-            case WotLK:
-                return 2;
-            case Cata:
-                return 3;
-            case Mop:
-                return 4;
-            default:
-                return 0;
-        }
-    }
-
-    bool WDBLoader::hasFormat(std::string _dbcFile)
-    {
-        std::string fileName = _dbcFile;
-        fileName.replace(fileName.size() - 1, 1, "c");
-
-        for (auto formats : dbcFieldDefines)
-            if (formats.first == _dbcFile || formats.first == fileName)
-                return true;
-
-        return false;
-    }
-
-    std::string WDBLoader::getFormat(std::string _dbcFile)
-    {
-        std::string fileName = _dbcFile;
-        fileName.replace(fileName.size() - 1, 1, "c");
-
-        for (auto formats : dbcFieldDefines)
-        {
-            if (formats.first == _dbcFile || formats.first == fileName)
-            {
-                std::string format = formats.second.format[getVersionIdForAEVersion()];
-                return format;
-            }
+            return it;
         }
 
-        return "";
+        // If not found, check for the .db2 extension and convert it to .dbc
+        if (dbcFile.ends_with(".db2"))
+        {
+            std::string dbcKey(dbcFile.substr(0, dbcFile.size() - 4));
+            dbcKey += ".dbc";
+            return dbcFieldDefines.find(dbcKey);
+        }
+
+        return dbcFieldDefines.end();
+    }
+
+    bool WDBLoader::hasFormat(std::string_view dbcFile)
+    {
+        return findFormatEntry(dbcFile) != dbcFieldDefines.end();
+    }
+
+    std::string_view WDBLoader::getFormat(std::string_view dbcFile)
+    {
+        auto it = findFormatEntry(dbcFile);
+
+        if (it == dbcFieldDefines.end())
+        {
+            return {};
+        }
+
+        auto const expansionIndex = static_cast<std::size_t>(WoW::getServerExpansion());
+        if (expansionIndex < std::size(it->second.format))
+        {
+            return it->second.format[expansionIndex];
+        }
+
+        return {};
     }
 
     uint32_t WDBLoader::getFormatRecordSize(const char* _dbcFormat, int32_t* _indexPos /* = NULL */)
