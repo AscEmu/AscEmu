@@ -40,8 +40,10 @@ else ()
     set(ASCEMU_VERSION_TOKEN "${ASCEMU_VERSION}")
 endif ()
 
-# Modern profiles intentionally do not build the legacy script stack. Force the
-# cache value too so the generated build configuration is unambiguous in IDEs.
+# Forever keeps the legacy script stack disabled, but the standalone
+# GossipScripts module is enabled explicitly in src/scripts/CMakeLists.txt.
+# Do not enable BUILD_ASCEMUSCRIPTS here, otherwise all legacy modules would
+# be pulled into the modern profile.
 if (AE_IS_FOREVER)
     set(BUILD_ASCEMUSCRIPTS OFF CACHE BOOL
         "Build legacy AscEmu script modules" FORCE)
@@ -53,7 +55,8 @@ if (AE_USES_BATTLENET)
     message(STATUS "ASCEMU_VERSION=${ASCEMU_VERSION}: Battle.net topology enabled")
     message(STATUS "  - logonserver: disabled")
     message(STATUS "  - bnetserver: enabled")
-    message(STATUS "  - legacy scripts: disabled")
+    message(STATUS "  - legacy script stack: disabled")
+    message(STATUS "  - GossipScripts: enabled")
 
     # Stage 1 already owns the topology. The version directory is added as soon
     # as the Forever implementation is present (Stage 2) without another CMake

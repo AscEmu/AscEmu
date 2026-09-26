@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "Management/Gossip/GossipDefines.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "WoWGuid.hpp"
 
 #include <cstdint>
 #include <map>
@@ -22,22 +23,24 @@ namespace AscEmu::Packets
         uint32_t id;
         uint32_t textId;
         uint32_t locale;
+        uint16_t mapId;
 
         std::map<uint32_t, GossipItem> gossipItemList;
         std::map<uint32_t, GossipQuestItem> gossipQuestList;
 
-        SmsgGossipMessage() : SmsgGossipMessage(0, 0, 0, 0, {}, {})
+        SmsgGossipMessage() : SmsgGossipMessage(0, 0, 0, 0, {}, {}, 0)
         {
         }
 
-        SmsgGossipMessage(uint64_t guid, uint32_t id, uint32_t textId, uint32_t locale, std::map<uint32_t, GossipItem> gossipItemList, std::map<uint32_t, GossipQuestItem> gossipQuestList) :
+        SmsgGossipMessage(uint64_t guid, uint32_t id, uint32_t textId, uint32_t locale, std::map<uint32_t, GossipItem> gossipItemList, std::map<uint32_t, GossipQuestItem> gossipQuestList, uint16_t mapId = 0) :
             ManagedPacket(SMSG_GOSSIP_MESSAGE, 0),
             guid(guid),
             id(id),
             textId(textId),
             locale(locale),
-            gossipItemList(gossipItemList),
-            gossipQuestList(gossipQuestList)
+            mapId(mapId),
+            gossipItemList(std::move(gossipItemList)),
+            gossipQuestList(std::move(gossipQuestList))
         {
         }
 
@@ -49,6 +52,93 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                // Forever 1.60.1.70009 follows the modern GossipMessage layout:
+                // GUID, GossipID, LfgDungeonsID, FriendshipFactionID,
+                // GossipOptions[], GossipText[] (quest entries), then the two
+                // optional text references RandomTextID/BroadcastTextID.
+                const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(
+                    guid.getRawGuid(), m_protocol.realmId, mapId, 0);
+                const auto packedGuid = modernGuid.packModern();
+                packet.append(packedGuid.data(), packedGuid.size());
+
+                packet << static_cast<int32_t>(id); // GossipID
+                packet << static_cast<int32_t>(0);  // LfgDungeonsID
+                packet << static_cast<int32_t>(0);  // FriendshipFactionID
+                packet << static_cast<uint32_t>(gossipItemList.size());
+                packet << static_cast<uint32_t>(gossipQuestList.size());
+
+                int32_t orderIndex = 0;
+                for (const auto& [optionId, item] : gossipItemList)
+                {
+                    std::string optionText;
+                    if (!item.text.empty())
+                        optionText = item.text;
+                    else
+                        optionText = sMySQLStore.getLocaleGossipMenuOptionOrElse(item.textId, locale);
+
+                    // ClientGossipOptions
+                    packet << static_cast<int32_t>(optionId);
+                    packet << static_cast<uint32_t>(item.icon); // OptionNPC
+                    packet << static_cast<int8_t>(0);           // OptionFlags
+                    packet << static_cast<uint64_t>(item.boxMoney);
+                    packet << static_cast<uint32_t>(0);         // OptionLanguage
+                    packet << static_cast<uint32_t>(0);         // Treasure.Items count
+                    packet << static_cast<int32_t>(0);          // GossipOptionFlags
+                    packet << orderIndex++;
+
+                    packet.writeBits(static_cast<uint32_t>(optionText.size()), 12);
+                    packet.writeBits(static_cast<uint32_t>(item.boxMessage.size()), 12);
+                    packet.writeBits(0U, 2);                    // GossipOptionStatus
+                    packet.writeBit(false);                     // SpellID absent
+                    packet.writeBit(false);                     // OverrideIconID absent
+                    packet.writeBits(0U, 8);                    // FailureDescription length
+                    packet.flushBits();
+
+                    packet.writeString(optionText);
+                    packet.writeString(item.boxMessage);
+                }
+
+                for (const auto& [questId, quest] : gossipQuestList)
+                {
+                    const std::string title = sMySQLStore.getLocaleGossipTitleOrElse(questId, locale);
+
+                    packet << static_cast<int32_t>(questId);
+                    packet << static_cast<int32_t>(0);           // ContentTuningID
+                    packet << static_cast<int32_t>(quest.icon);  // QuestType
+                    packet << static_cast<int32_t>(0);           // QuestInfoID
+                    packet << static_cast<int32_t>(quest.flags); // QuestFlags[0]
+                    packet << static_cast<int32_t>(0);           // QuestFlags[1]
+                    packet << static_cast<int32_t>(0);           // QuestFlags[2]
+                    packet << static_cast<int32_t>(0);           // QuestFlags[3]
+
+                    packet.writeBit(quest.repeatable != 0);
+                    packet.writeBit(false);                      // ResetByScheduler
+                    packet.writeBit(false);                      // Important
+                    packet.writeBit(false);                      // Meta
+                    packet.writeBits(static_cast<uint32_t>(title.size()), 9);
+                    packet.flushBits();
+                    packet.writeString(title);
+                }
+
+                // Forever 70009 retail behaviour for this Classic-style client:
+                // the server-side npc_gossip_texts id is carried as RandomTextID.
+                // The client then resolves that id through BroadcastText.db2 via
+                // CMSG_DB_QUERY_BULK. Custom AscEmu ids are served dynamically
+                // by the Forever DB2 handler when no physical DB2 record exists.
+                packet.writeBit(textId != 0); // RandomTextID present
+                packet.writeBit(false);       // BroadcastTextID absent
+                packet.flushBits();
+
+                if (textId != 0)
+                    packet << static_cast<int32_t>(textId);
+
+                return true;
+
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << guid.getRawGuid() << id << textId;

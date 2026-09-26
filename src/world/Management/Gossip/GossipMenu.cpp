@@ -46,13 +46,13 @@ void GossipMenu::removeQuest(uint32_t questId)
 
 void GossipMenu::sendGossipPacket(Player* player) const
 {
-    SmsgGossipMessage managedPacket(m_senderGuid, m_gossipId, m_textId, m_sessionLanguage, _gossipItemMap, _gossipQuestMap);
+    SmsgGossipMessage managedPacket(m_senderGuid, m_gossipId, m_textId, m_sessionLanguage, _gossipItemMap, _gossipQuestMap, static_cast<uint16_t>(player->GetMapId()));
     player->getSession()->sendManagedPacket(managedPacket);
 }
 
 void GossipMenu::sendSimpleMenu(uint64_t guid, uint32_t textId, Player* player)
 {
-    SmsgGossipMessage managedPacket(guid, 0, textId, 0, {}, {});
+    SmsgGossipMessage managedPacket(guid, 0, textId, 0, {}, {}, static_cast<uint16_t>(player->GetMapId()));
     player->getSession()->sendManagedPacket(managedPacket);
 }
 
@@ -62,7 +62,7 @@ void GossipMenu::sendQuickMenu(uint64_t guid, uint32_t textId, Player* player, u
     const GossipItem tempItem(itemIcon, itemText, 0, extra, requiredMoney, moneyText);
     tempItemList.insert(std::make_pair(itemId, tempItem));
 
-    SmsgGossipMessage managedPacket(guid, 0, textId, 0, tempItemList, {});
+    SmsgGossipMessage managedPacket(guid, 0, textId, 0, tempItemList, {}, static_cast<uint16_t>(player->GetMapId()));
     player->getSession()->sendManagedPacket(managedPacket);
 }
 

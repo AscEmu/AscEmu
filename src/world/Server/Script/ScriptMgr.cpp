@@ -421,12 +421,13 @@ struct ScriptingEngine_dl
 void ScriptMgr::LoadScripts()
 {
 #if defined(AE_MODERN_CLIENT)
-    // Forever: legacy Classic-MoP script libraries are intentionally
-    // disabled until dedicated modern-client script modules are implemented.
-    sLogger.info("ScriptMgr : Legacy external scripts are disabled for this client profile.");
-    return;
+    // Forever currently enables only GossipScripts from the legacy external
+    // script set. Keep every other legacy module excluded even if an old DLL
+    // happens to still exist in the script directory.
+    sLogger.info("ScriptMgr : Loading Forever external script libraries (GossipScripts only)...");
 #else
     sLogger.info("ScriptMgr : Loading External Script Libraries...");
+#endif
 
     std::string modulePath = PREFIX;
     modulePath += '/';
@@ -438,6 +439,14 @@ void ScriptMgr::LoadScripts()
     auto directoryContentMap = Util::getDirectoryContent(modulePath);
     for (const auto content : directoryContentMap)
     {
+#if defined(AE_MODERN_CLIENT)
+        // Windows: GossipScripts.dll
+        // Linux:   libGossipScripts.so
+        // macOS:   libGossipScripts.dylib
+        if (content.second.find("GossipScripts") == std::string::npos)
+            continue;
+#endif
+
         std::stringstream loadMessageStream;
         auto fileName = modulePath + content.second;
         auto dynLib = std::make_unique<AscEmu::Platform::DynamicLibrary>(fileName.c_str());
@@ -523,7 +532,6 @@ void ScriptMgr::LoadScripts()
 
         sLogger.info("ScriptMgr : Done loading scripting engine(s)...");
     }
-#endif
 }
 
 void ScriptMgr::UnloadScripts()
