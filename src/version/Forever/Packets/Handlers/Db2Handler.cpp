@@ -12,6 +12,7 @@ class Creature;
 namespace
 {
     constexpr uint32_t BroadcastTextTableHash = 0x021826BBU;
+    constexpr uint32_t TactKeyTableHash = 0xDF2F53CFU;
 
     // The status field is three bits wide. In the verified 70009 retail
     // BroadcastText reply a valid record is encoded as value 1 (wire byte 0x20
@@ -34,20 +35,38 @@ bool WorldSocket::handleForeverDbQueryBulkOpcode(WorldPacket& request)
 
     if (request.rpos() + static_cast<size_t>(queryCount) * sizeof(uint32_t) > request.size())
     {
-        sLogger.warning(
-            "WorldSocket::Forever: malformed CMSG_DB_QUERY_BULK table=0x{:08X}, count={}, remaining={}.",
-            tableHash, queryCount, request.remaining());
+        sLogger.warning("WorldSocket::Forever: malformed CMSG_DB_QUERY_BULK table=0x{:08X}, count={}, remaining={}.", tableHash, queryCount, request.remaining());
         return true;
     }
+
+    uint32_t tactKeyServed = 0;
+    uint32_t tactKeyMissing = 0;
 
     for (uint32_t i = 0; i < queryCount; ++i)
     {
         uint32_t recordId = 0;
         request >> recordId;
 
+        if (tableHash == TactKeyTableHash)
+        {
+            bool found = false;
+            if (!handleForeverTactKeyDbQuery(recordId, found))
+                return false;
+
+            if (found)
+                ++tactKeyServed;
+            else
+                ++tactKeyMissing;
+
+            continue;
+        }
+
         if (!handleForeverDbQueryRecord(tableHash, recordId))
             return false;
     }
+
+    if (tableHash == TactKeyTableHash)
+        sLogger.info("WorldSocket::Forever: TactKey query records={} served={} missing={}.", queryCount, tactKeyServed, tactKeyMissing);
 
     ++m_foreverDbQueryBulkCount;
 
@@ -68,6 +87,9 @@ bool WorldSocket::handleForeverDbQueryRecord(uint32_t tableHash, uint32_t record
         case BroadcastTextTableHash:
             return handleForeverBroadcastTextDbQuery(recordId);
 
+        case TactKeyTableHash:
+            { bool found = false; return handleForeverTactKeyDbQuery(recordId, found); }
+
         default:
             return handleForeverGenericDb2Query(tableHash, recordId);
     }
@@ -87,21 +109,13 @@ bool WorldSocket::handleForeverBroadcastTextDbQuery(uint32_t recordId)
             Db2::RecordView record;
             if (!Db2::getRecord(BroadcastTextTableHash, recordId, record))
             {
-                sLogger.info(
-                    "WorldSocket::Forever: BroadcastText NATIVE MISSING id={}.",
-                    recordId);
+                sLogger.info("WorldSocket::Forever: BroadcastText NATIVE MISSING id={}.", recordId);
                 return sendForeverDb2MissingReply(BroadcastTextTableHash, recordId);
             }
 
-            sLogger.info(
-                "WorldSocket::Forever: BroadcastText NATIVE id={}, table={}, layout=0x{:08X}.",
-                recordId, record.tableName, record.layoutHash);
+            sLogger.info("WorldSocket::Forever: BroadcastText NATIVE id={}, table={}, layout=0x{:08X}.", recordId, record.tableName, record.layoutHash);
 
-            return sendForeverDb2Reply(
-                BroadcastTextTableHash,
-                recordId,
-                record.data.data(),
-                record.data.size());
+            return sendForeverDb2Reply(BroadcastTextTableHash, recordId, record.data.data(), record.data.size());
         }
 
         case BroadcastTextId::Type::Gossip:
@@ -109,38 +123,38 @@ bool WorldSocket::handleForeverBroadcastTextDbQuery(uint32_t recordId)
             ByteBuffer syntheticRecord;
             if (!buildForeverGossipBroadcastTextRecord(syntheticRecord, recordId, sourceId))
             {
-                sLogger.info(
-                    "WorldSocket::Forever: BroadcastText GOSSIP MISSING wireId={} sourceId={}.",
-                    recordId, sourceId);
+                sLogger.info("WorldSocket::Forever: BroadcastText GOSSIP MISSING wireId={} sourceId={}.", recordId, sourceId);
                 return sendForeverDb2MissingReply(BroadcastTextTableHash, recordId);
             }
 
-            sLogger.info(
-                "WorldSocket::Forever: BroadcastText GOSSIP wireId={} sourceId={} recordSize={}.",
-                recordId, sourceId, syntheticRecord.size());
+            sLogger.info("WorldSocket::Forever: BroadcastText GOSSIP wireId={} sourceId={} recordSize={}.", recordId, sourceId, syntheticRecord.size());
 
-            return sendForeverDb2Reply(
-                BroadcastTextTableHash,
-                recordId,
-                syntheticRecord.contents(),
-                syntheticRecord.size());
+            return sendForeverDb2Reply(BroadcastTextTableHash, recordId, syntheticRecord.contents(), syntheticRecord.size());
         }
 
         case BroadcastTextId::Type::CreatureText:
         case BroadcastTextId::Type::QuestText:
         case BroadcastTextId::Type::ScriptText:
         case BroadcastTextId::Type::GameObjectText:
-            sLogger.info(
-                "WorldSocket::Forever: BroadcastText unsupported namespace={} wireId={} sourceId={}.",
-                static_cast<uint32_t>(type), recordId, sourceId);
+            sLogger.info("WorldSocket::Forever: BroadcastText unsupported namespace={} wireId={} sourceId={}.", static_cast<uint32_t>(type), recordId, sourceId);
             return sendForeverDb2MissingReply(BroadcastTextTableHash, recordId);
 
         default:
-            sLogger.warning(
-                "WorldSocket::Forever: BroadcastText unknown namespace={} wireId={} sourceId={}.",
-                static_cast<uint32_t>(type), recordId, sourceId);
+            sLogger.warning("WorldSocket::Forever: BroadcastText unknown namespace={} wireId={} sourceId={}.", static_cast<uint32_t>(type), recordId, sourceId);
             return sendForeverDb2MissingReply(BroadcastTextTableHash, recordId);
     }
+}
+
+bool WorldSocket::handleForeverTactKeyDbQuery(uint32_t recordId, bool& found)
+{
+    using namespace AscEmu::Version::Forever;
+
+    Db2::RecordView record;
+    found = Db2::getRecord(TactKeyTableHash, recordId, record);
+    if (!found)
+        return sendForeverDb2MissingReply(TactKeyTableHash, recordId);
+
+    return sendForeverDb2Reply(TactKeyTableHash, recordId, record.data.data(), record.data.size());
 }
 
 bool WorldSocket::handleForeverGenericDb2Query(uint32_t tableHash, uint32_t recordId)
@@ -151,11 +165,7 @@ bool WorldSocket::handleForeverGenericDb2Query(uint32_t tableHash, uint32_t reco
     if (!Db2::getRecord(tableHash, recordId, record))
         return sendForeverDb2MissingReply(tableHash, recordId);
 
-    return sendForeverDb2Reply(
-        tableHash,
-        recordId,
-        record.data.data(),
-        record.data.size());
+    return sendForeverDb2Reply(tableHash, recordId, record.data.data(), record.data.size());
 }
 
 bool WorldSocket::buildForeverGossipBroadcastTextRecord(ByteBuffer& buffer, uint32_t wireId, uint32_t gossipTextId)
@@ -195,11 +205,7 @@ bool WorldSocket::buildForeverGossipBroadcastTextRecord(ByteBuffer& buffer, uint
     return true;
 }
 
-bool WorldSocket::sendForeverDb2Reply(
-    uint32_t tableHash,
-    uint32_t recordId,
-    const uint8_t* data,
-    size_t dataSize)
+bool WorldSocket::sendForeverDb2Reply(uint32_t tableHash, uint32_t recordId, const uint8_t* data, size_t dataSize)
 {
     ByteBuffer response;
     response << tableHash << recordId << static_cast<uint32_t>(std::time(nullptr));
@@ -210,10 +216,7 @@ bool WorldSocket::sendForeverDb2Reply(
     if (dataSize != 0)
         response.append(data, dataSize);
 
-    return sendForeverPacket(
-        SMSG_DB_REPLY,
-        response.contents(),
-        static_cast<uint32_t>(response.size()));
+    return sendForeverPacket(SMSG_DB_REPLY, response.contents(), static_cast<uint32_t>(response.size()));
 }
 
 bool WorldSocket::sendForeverDb2MissingReply(uint32_t tableHash, uint32_t recordId)
@@ -224,10 +227,7 @@ bool WorldSocket::sendForeverDb2MissingReply(uint32_t tableHash, uint32_t record
     response.flushBits();
     response << uint32_t(0);
 
-    return sendForeverPacket(
-        SMSG_DB_REPLY,
-        response.contents(),
-        static_cast<uint32_t>(response.size()));
+    return sendForeverPacket(SMSG_DB_REPLY, response.contents(), static_cast<uint32_t>(response.size()));
 }
 
 bool WorldSocket::handleForeverHotfixRequestOpcode(WorldPacket& /*packet*/)
