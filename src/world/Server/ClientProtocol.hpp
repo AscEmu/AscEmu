@@ -22,7 +22,7 @@ namespace WoW::Build {
     inline constexpr uint32_t WOTLK_BUILD = 12340;
     inline constexpr uint32_t CATA_BUILD = 15595;
     inline constexpr uint32_t MOP_BUILD = 18414;
-    inline constexpr uint32_t FOREVER_BUILD = 69893;
+    inline constexpr uint32_t FOREVER_BUILD = 70009;
 }
 
 namespace WoW {
@@ -223,13 +223,13 @@ namespace WoW {
     /// Legacy wrapper: Build number used for database build filters
     [[nodiscard]] inline uint32_t getConfigBuild() noexcept { return getServerBuild(); }
 
-    /// Returns the array index for opcode/version tables (0 = Classic ... 4 = MoP), or -1 if unsupported
+    /// Returns the array index for opcode/version tables. Expansion enum values map 1:1 to table slots
+    /// (0 = Classic, 1 = TBC, 2 = WotLK, 3 = Cata, 4 = MoP, 5 = WoD, 6 = Legion,
+    ///  7 = BfA, 8 = Shadowlands, 9 = Dragonflight, 10 = TWW, 11 = Midnight, 12 = Forever).
     [[nodiscard]] constexpr int32_t getOpcodeTableIndex(Expansion const expansion) noexcept
     {
-        if (expansion == Expansion::Unknown || expansion > Expansion::_Mop)
-        {
+        if (!isValidExpansion(expansion))
             return -1;
-        }
 
         return static_cast<int32_t>(expansion);
     }

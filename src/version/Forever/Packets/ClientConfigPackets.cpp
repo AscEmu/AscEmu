@@ -1,4 +1,5 @@
 #include "version/Forever/Packets/ClientConfigPackets.hpp"
+#include "Network/ByteBuffer.hpp"
 
 #include <algorithm>
 #include <bit>
@@ -12,7 +13,7 @@ namespace AscEmu::Version::Forever::Packets
 {
     namespace
     {
-        bool skipPackedGuid(Packet& packet)
+        bool skipPackedGuid(ByteBuffer& packet)
         {
             if (packet.remaining() < sizeof(uint16_t))
                 return false;
@@ -83,7 +84,7 @@ namespace AscEmu::Version::Forever::Packets
         }
     }
 
-    bool parseUpdateAccountData(Packet& packet, UpdateAccountDataRequest& request)
+    bool parseUpdateAccountData(ByteBuffer& packet, UpdateAccountDataRequest& request)
     {
         if (packet.remaining() < sizeof(uint64_t) + sizeof(uint32_t) + sizeof(uint16_t) + sizeof(int32_t) + sizeof(uint32_t))
             return false;

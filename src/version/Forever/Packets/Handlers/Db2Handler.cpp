@@ -1,13 +1,11 @@
-#include "version/Forever/Opcodes.hpp"
-#include "version/Forever/Packets/Packet.hpp"
 #include "version/Forever/World/Db2Registry.hpp"
-#include "version/Forever/World/ProtocolUtils.hpp"
+#include "world/Server/Opcodes.hpp"
 #include "world/Server/WorldSocket.hpp"
 #include "Logging/Logger.hpp"
 
 #include <ctime>
 
-bool WorldSocket::handleForeverDbQueryBulkOpcode(AscEmu::Version::Forever::Packets::Packet& request)
+bool WorldSocket::handleForeverDbQueryBulkOpcode(WorldPacket& request)
 {
     using namespace AscEmu::Version::Forever;
 
@@ -55,7 +53,7 @@ bool WorldSocket::handleForeverDbQueryBulkOpcode(AscEmu::Version::Forever::Packe
             response << uint32_t(0);
         }
 
-        if (!sendForeverPacket(Opcode::SMSG_DB_REPLY, response.contents(), static_cast<uint32_t>(response.size())))
+        if (!sendForeverPacket(SMSG_DB_REPLY, response.contents(), static_cast<uint32_t>(response.size())))
             return false;
     }
 
@@ -74,7 +72,7 @@ bool WorldSocket::handleForeverDbQueryBulkOpcode(AscEmu::Version::Forever::Packe
     return true;
 }
 
-bool WorldSocket::handleForeverHotfixRequestOpcode(AscEmu::Version::Forever::Packets::Packet& /*packet*/)
+bool WorldSocket::handleForeverHotfixRequestOpcode(WorldPacket& /*packet*/)
 {
     using namespace AscEmu::Version::Forever;
 

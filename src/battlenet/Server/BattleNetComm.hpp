@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Network/Socket.hpp"
+#include "BattleNetCommDefines.hpp"
 
 #include <array>
 #include <cstdint>
@@ -39,13 +40,20 @@ namespace AscEmu::Battlenet
     public:
         static BattleNetCommManager& getInstance();
 
-        void registerRealm(uint32_t realmId, BattleNetCommServerSocket* socket);
+        void registerRealm(uint32_t realmId, AscEmu::BattlenetComm::RealmRuleset ruleset, BattleNetCommServerSocket* socket);
         void unregisterSocket(BattleNetCommServerSocket* socket);
         bool sendPendingSession(const PendingWorldSession& session);
+        [[nodiscard]] AscEmu::BattlenetComm::RealmRuleset getRealmRuleset(uint32_t realmId) const;
 
     private:
-        std::mutex m_mutex;
-        std::unordered_map<uint32_t, BattleNetCommServerSocket*> m_realms;
+        struct RegisteredRealm
+        {
+            BattleNetCommServerSocket* socket = nullptr;
+            AscEmu::BattlenetComm::RealmRuleset ruleset = AscEmu::BattlenetComm::RealmRuleset::PvE;
+        };
+
+        mutable std::mutex m_mutex;
+        std::unordered_map<uint32_t, RegisteredRealm> m_realms;
     };
 
     class BattleNetCommServerSocket final : public Socket

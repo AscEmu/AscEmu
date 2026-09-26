@@ -1,9 +1,6 @@
-#include "version/Forever/Opcodes.hpp"
-#include "version/Forever/OpcodeTable.hpp"
-#include "version/Forever/Packets/Packet.hpp"
 #include "version/Forever/Packets/MovementPackets.hpp"
+#include "world/Server/OpcodeTable.hpp"
 #include "version/Forever/World/CharacterSelectBootstrap.hpp"
-#include "version/Forever/World/ProtocolUtils.hpp"
 #include "world/Server/WorldSocket.hpp"
 #include "world/Server/WorldSession.h"
 #include "world/Server/World.h"
@@ -22,7 +19,7 @@
 #include <ctime>
 #include <cstring>
 
-bool WorldSocket::handleForeverPingOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverPingOpcode(WorldPacket& packet)
 {
     using namespace AscEmu::Version::Forever;
 
@@ -54,10 +51,10 @@ bool WorldSocket::handleForeverPingOpcode(AscEmu::Version::Forever::Packets::Pac
 
     sLogger.debugOpcode("WorldSocket::Forever: CMSG_PING serial={} latency={} -> SMSG_PONG; session heartbeat refreshed.", serial, latency);
 
-    return sendForeverPacket(Opcode::SMSG_PONG, pong.data(), static_cast<uint32_t>(pong.size()));
+    return sendForeverPacket(SMSG_PONG, pong.data(), static_cast<uint32_t>(pong.size()));
 }
 
-bool WorldSocket::handleForeverLogoutRequestOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverLogoutRequestOpcode(WorldPacket& packet)
 {
     if (m_session == nullptr)
         return false;
@@ -76,7 +73,7 @@ bool WorldSocket::handleForeverLogoutRequestOpcode(AscEmu::Version::Forever::Pac
     return true;
 }
 
-bool WorldSocket::handleForeverLogoutCancelOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverLogoutCancelOpcode(WorldPacket& packet)
 {
     if (m_session == nullptr)
         return false;
@@ -89,7 +86,7 @@ bool WorldSocket::handleForeverLogoutCancelOpcode(AscEmu::Version::Forever::Pack
     return true;
 }
 
-bool WorldSocket::handleForeverUnknown003E002DOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverUnknown003E002DOpcode(WorldPacket& packet)
 {
     WoWGuid modernGuid;
     std::size_t consumed = 0;
@@ -112,17 +109,17 @@ bool WorldSocket::handleForeverUnknown003E002DOpcode(AscEmu::Version::Forever::P
     return true;
 }
 
-bool WorldSocket::handleForeverSocialContractOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverSocialContractOpcode(WorldPacket& packet)
 {
     using namespace AscEmu::Version::Forever;
 
     if (packet.remaining() != 0)
         sLogger.warning("WorldSocket::Forever: CMSG_SOCIAL_CONTRACT_REQUEST expected empty payload.");
 
-    return sendForeverPacket(Opcode::SMSG_SOCIAL_CONTRACT_REQUEST_RESPONSE, CharacterSelectBootstrap::SocialContract460325.data(), static_cast<uint32_t>(CharacterSelectBootstrap::SocialContract460325.size()));
+    return sendForeverPacket(SMSG_SOCIAL_CONTRACT_REQUEST_RESPONSE, CharacterSelectBootstrap::SocialContract460325.data(), static_cast<uint32_t>(CharacterSelectBootstrap::SocialContract460325.size()));
 }
 
-bool WorldSocket::handleForeverSocialContractAcceptOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverSocialContractAcceptOpcode(WorldPacket& packet)
 {
     if (packet.remaining() != 0)
         sLogger.warning("WorldSocket::Forever: CMSG_SOCIAL_CONTRACT_ACCEPT expected empty payload.");
@@ -131,7 +128,7 @@ bool WorldSocket::handleForeverSocialContractAcceptOpcode(AscEmu::Version::Forev
     return true;
 }
 
-bool WorldSocket::handleForeverServerTimeOffsetOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverServerTimeOffsetOpcode(WorldPacket& packet)
 {
     using namespace AscEmu::Version::Forever;
 
@@ -142,11 +139,11 @@ bool WorldSocket::handleForeverServerTimeOffsetOpcode(AscEmu::Version::Forever::
     std::array<uint8_t, sizeof(now)> response{};
     std::memcpy(response.data(), &now, sizeof(now));
 
-    return sendForeverPacket(Opcode::SMSG_SERVER_TIME_OFFSET, response.data(), static_cast<uint32_t>(response.size()));
+    return sendForeverPacket(SMSG_SERVER_TIME_OFFSET, response.data(), static_cast<uint32_t>(response.size()));
 }
 
 
-bool WorldSocket::handleForeverQueryCreatureOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverQueryCreatureOpcode(WorldPacket& packet)
 {
     using namespace AscEmu::Version::Forever;
 
@@ -169,7 +166,7 @@ bool WorldSocket::handleForeverQueryCreatureOpcode(AscEmu::Version::Forever::Pac
     if (creature == nullptr)
     {
         sLogger.debugOpcode("WorldSocket::Forever: CMSG_QUERY_CREATURE entry={} not found.", creatureId);
-        return sendForeverPacket(Opcode::SMSG_QUERY_CREATURE_RESPONSE, response.contents(), static_cast<uint32_t>(response.size()));
+        return sendForeverPacket(SMSG_CREATURE_QUERY_RESPONSE, response.contents(), static_cast<uint32_t>(response.size()));
     }
 
     // Forever 69893/69913 uses the modern CreatureQuery response shape. This
@@ -275,10 +272,10 @@ bool WorldSocket::handleForeverQueryCreatureOpcode(AscEmu::Version::Forever::Pac
 
     sLogger.debugOpcode("WorldSocket::Forever: CMSG_QUERY_CREATURE entry={} served.", creatureId);
 
-    return sendForeverPacket(Opcode::SMSG_QUERY_CREATURE_RESPONSE, response.contents(), static_cast<uint32_t>(response.size()));
+    return sendForeverPacket(SMSG_CREATURE_QUERY_RESPONSE, response.contents(), static_cast<uint32_t>(response.size()));
 }
 
-bool WorldSocket::handleForeverQueryGameObjectOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverQueryGameObjectOpcode(WorldPacket& packet)
 {
     if (packet.remaining() < sizeof(uint32_t) + 2U)
     {
@@ -354,34 +351,10 @@ bool WorldSocket::handleForeverQueryGameObjectOpcode(AscEmu::Version::Forever::P
         response.append(stats.contents(), stats.size());
 
     sLogger.debugOpcode("WorldSocket::Forever: CMSG_QUERY_GAME_OBJECT entry={} guidEntry={} counter={} found={} stats={} byte(s).", gameObjectEntry, modernGuid.getModernEntry(), modernGuid.getModernCounter(), gameObject != nullptr ? 1 : 0, stats.size());
-    return sendForeverPacket(Opcode::SMSG_QUERY_GAME_OBJECT_RESPONSE, response.contents(), static_cast<uint32_t>(response.size()));
+    return sendForeverPacket(SMSG_GAMEOBJECT_QUERY_RESPONSE, response.contents(), static_cast<uint32_t>(response.size()));
 }
 
-bool WorldSocket::handleForeverUnknownNpcInteract003F0029Opcode(AscEmu::Version::Forever::Packets::Packet& packet)
-{
-    WoWGuid modernGuid;
-    std::size_t consumed = 0;
-
-    if (!WoWGuid::unpackModern(packet.contents(), packet.size(), modernGuid, consumed) || consumed != packet.size())
-    {
-        sLogger.warning("WorldSocket::Forever: malformed UNKNOWN_NPC_INTERACT_003F0029 payload={} byte(s), consumed={}.", packet.size(), consumed);
-        return true;
-    }
-
-    if (modernGuid.getModernHighType() != ModernHighGuid::Creature && modernGuid.getModernHighType() != ModernHighGuid::Vehicle)
-    {
-        sLogger.warning("WorldSocket::Forever: UNKNOWN_NPC_INTERACT_003F0029 target has unexpected modern high type={} entry={} counter={}.", static_cast<uint32_t>(modernGuid.getModernHighType()), modernGuid.getModernEntry(), modernGuid.getModernCounter());
-        return true;
-    }
-
-    // Observed as 0x003F0029 with a modern packed creature GUID near NPC interaction.
-    // The exact semantic meaning is intentionally left unassigned until verified.
-    sLogger.info("WorldSocket::Forever: UNKNOWN_NPC_INTERACT_003F0029 entry={} counter={} modernLow=0x{:016X} modernHigh=0x{:016X}.", modernGuid.getModernEntry(), modernGuid.getModernCounter(), modernGuid.getModernLow(), modernGuid.getModernHigh());
-
-    return true;
-}
-
-bool WorldSocket::handleCloseInteraction(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleCloseInteraction(WorldPacket& packet)
 {
     WoWGuid modernGuid;
     std::size_t consumed = 0;
@@ -402,38 +375,7 @@ bool WorldSocket::handleCloseInteraction(AscEmu::Version::Forever::Packets::Pack
     return true;
 }
 
-bool WorldSocket::handleForeverListInventoryOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
-{
-    WoWGuid modernGuid;
-    std::size_t consumed = 0;
-
-    if (!WoWGuid::unpackModern(packet.contents(), packet.size(), modernGuid, consumed) || consumed != packet.size())
-    {
-        sLogger.warning("WorldSocket::Forever: malformed CMSG_LIST_INVENTORY payload={} byte(s), consumed={}.", packet.size(), consumed);
-        return true;
-    }
-
-    if (modernGuid.getModernHighType() != ModernHighGuid::Creature && modernGuid.getModernHighType() != ModernHighGuid::Vehicle)
-    {
-        sLogger.warning("WorldSocket::Forever: CMSG_LIST_INVENTORY target has unexpected modern high type={} entry={} counter={}.", static_cast<uint32_t>(modernGuid.getModernHighType()), modernGuid.getModernEntry(), modernGuid.getModernCounter());
-        return true;
-    }
-
-    if (m_session == nullptr)
-    {
-        sLogger.warning("WorldSocket::Forever: CMSG_LIST_INVENTORY received without an attached WorldSession.");
-        return false;
-    }
-
-    const uint64_t legacyGuid = modernGuid.toLegacyRaw();
-
-    sLogger.debugOpcode("WorldSocket::Forever: CMSG_LIST_INVENTORY entry={} counter={}.", modernGuid.getModernEntry(), modernGuid.getModernCounter());
-
-    m_session->handleListInventoryGuid(legacyGuid);
-    return true;
-}
-
-bool WorldSocket::handleForeverSetSelectionOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverSetSelectionOpcode(WorldPacket& packet)
 {
     if (m_session == nullptr || m_session->GetPlayer() == nullptr)
         return false;
@@ -457,7 +399,7 @@ bool WorldSocket::handleForeverSetSelectionOpcode(AscEmu::Version::Forever::Pack
     return true;
 }
 
-bool WorldSocket::handleMovementOpcodes(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleMovementOpcodes(WorldPacket& packet)
 {
     using namespace AscEmu::Version::Forever;
     using namespace AscEmu::Version::Forever::Packets;
@@ -476,20 +418,20 @@ bool WorldSocket::handleMovementOpcodes(AscEmu::Version::Forever::Packets::Packe
     MovementStatus status;
     if (!readMovementStatus(packet, status))
     {
-        sLogger.warning("WorldSocket::Forever: malformed {} movement payload size={} consumed={}.", sOpcodeTable.getNameForInternalId(packet.getOpcode()), packet.size(), packet.rpos());
+        sLogger.warning("WorldSocket::Forever: malformed {} movement payload size={} consumed={}.", sOpcodeTables.getNameForInternalId(packet.getOpcode(), WoW::Expansion::Forever), packet.size(), packet.rpos());
         return true;
     }
 
     const uint64_t moverGuid = status.moverGuid.toLegacyRaw();
     if (moverGuid == 0 || moverGuid != mover->getGuid())
     {
-        sLogger.warning("WorldSocket::Forever: {} rejected mover=0x{:016X}; controlled mover=0x{:016X}.", sOpcodeTable.getNameForInternalId(packet.getOpcode()), moverGuid, mover->getGuid());
+        sLogger.warning("WorldSocket::Forever: {} rejected mover=0x{:016X}; controlled mover=0x{:016X}.", sOpcodeTables.getNameForInternalId(packet.getOpcode(), WoW::Expansion::Forever), moverGuid, mover->getGuid());
         return true;
     }
 
     if (!isValidMapCoord(status.position.x, status.position.y, status.position.z, status.position.o))
     {
-        sLogger.warning("WorldSocket::Forever: {} rejected invalid position x={} y={} z={} o={}.", sOpcodeTable.getNameForInternalId(packet.getOpcode()), status.position.x, status.position.y, status.position.z, status.position.o);
+        sLogger.warning("WorldSocket::Forever: {} rejected invalid position x={} y={} z={} o={}.", sOpcodeTables.getNameForInternalId(packet.getOpcode(), WoW::Expansion::Forever), status.position.x, status.position.y, status.position.z, status.position.o);
         return true;
     }
 
@@ -503,14 +445,14 @@ bool WorldSocket::handleMovementOpcodes(AscEmu::Version::Forever::Packets::Packe
     uint16_t legacyMovementOpcode = 0;
     switch (packet.getOpcode())
     {
-        case Opcode::CMSG_MOVE_START_FORWARD:      legacyMovementOpcode = MSG_MOVE_START_FORWARD; break;
-        case Opcode::CMSG_MOVE_START_BACKWARD:     legacyMovementOpcode = MSG_MOVE_START_BACKWARD; break;
-        case Opcode::CMSG_MOVE_START_STRAFE_LEFT:  legacyMovementOpcode = MSG_MOVE_START_STRAFE_LEFT; break;
-        case Opcode::CMSG_MOVE_START_STRAFE_RIGHT: legacyMovementOpcode = MSG_MOVE_START_STRAFE_RIGHT; break;
-        case Opcode::CMSG_MOVE_STOP_STRAFE:        legacyMovementOpcode = MSG_MOVE_STOP_STRAFE; break;
-        case Opcode::CMSG_MOVE_JUMP:               legacyMovementOpcode = MSG_MOVE_JUMP; break;
-        case Opcode::CMSG_MOVE_FALL_LAND:          legacyMovementOpcode = MSG_MOVE_FALL_LAND; break;
-        case Opcode::CMSG_MOVE_STOP:               legacyMovementOpcode = MSG_MOVE_STOP; break;
+        case MSG_MOVE_START_FORWARD:      legacyMovementOpcode = MSG_MOVE_START_FORWARD; break;
+        case MSG_MOVE_START_BACKWARD:     legacyMovementOpcode = MSG_MOVE_START_BACKWARD; break;
+        case MSG_MOVE_START_STRAFE_LEFT:  legacyMovementOpcode = MSG_MOVE_START_STRAFE_LEFT; break;
+        case MSG_MOVE_START_STRAFE_RIGHT: legacyMovementOpcode = MSG_MOVE_START_STRAFE_RIGHT; break;
+        case MSG_MOVE_STOP_STRAFE:        legacyMovementOpcode = MSG_MOVE_STOP_STRAFE; break;
+        case MSG_MOVE_JUMP:               legacyMovementOpcode = MSG_MOVE_JUMP; break;
+        case MSG_MOVE_FALL_LAND:          legacyMovementOpcode = MSG_MOVE_FALL_LAND; break;
+        case MSG_MOVE_STOP:               legacyMovementOpcode = MSG_MOVE_STOP; break;
         default: break;
     }
 
@@ -522,7 +464,7 @@ bool WorldSocket::handleMovementOpcodes(AscEmu::Version::Forever::Packets::Packe
         m_session->updatePlayerMovementVars(legacyMovementOpcode);
     }
 
-    if (mover->getStandState() != STANDSTATE_STAND && packet.getOpcode() == Opcode::CMSG_MOVE_START_FORWARD)
+    if (mover->getStandState() != STANDSTATE_STAND && packet.getOpcode() == MSG_MOVE_START_FORWARD)
         mover->setStandState(STANDSTATE_STAND);
 
     if (mover->getEmoteState())
@@ -533,7 +475,7 @@ bool WorldSocket::handleMovementOpcodes(AscEmu::Version::Forever::Packets::Packe
     mover->obj_movement_info = movementInfo;
     mover->SetPosition(status.position.x, status.position.y, status.position.z, status.position.o);
 
-    if (packet.getOpcode() == Opcode::CMSG_MOVE_FALL_LAND)
+    if (packet.getOpcode() == MSG_MOVE_FALL_LAND)
         mover->handleFall(movementInfo);
     else if ((movementInfo.flags & MOVEFLAG_FALLING) == 0)
         mover->m_zAxisPosition = movementInfo.position.z;

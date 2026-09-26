@@ -49,6 +49,10 @@ namespace AscEmu::Packets
             if (trainer == nullptr)
                 return 0;
 
+            if (m_protocol.isForever())
+                return 32 + uiMessage.size()
+                    + (sObjectMgr.getTrainerSpellSetById(trainer->spellset_id)->size() * 33);
+
             if (m_protocol.isMop())
                 return 8 + 4 + 1 + uiMessage.size()
                     + (sObjectMgr.getTrainerSpellSetById(trainer->spellset_id)->size() * (1 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 1));
@@ -65,6 +69,58 @@ namespace AscEmu::Packets
             const auto trainer = creature->GetTrainer();
             if (trainer == nullptr)
                 return false;
+
+            if (m_protocol.isForever())
+            {
+                const WoWGuid guid = WoWGuid::createModernFromLegacy(
+                    creature->getGuid(), m_protocol.realmId, static_cast<uint16_t>(creature->GetMapId()), 0);
+                const auto packedGuid = guid.packModern();
+                packet.append(packedGuid.data(), packedGuid.size());
+
+                packet << static_cast<uint8_t>(trainer->TrainerType);
+                packet << static_cast<uint32_t>(trainer->spellset_id);
+                const size_t countPos = packet.wpos();
+                packet << uint32_t(0);
+
+                uint32_t count = 0;
+                for (const auto& trainerSpell : *sObjectMgr.getTrainerSpellSetById(trainer->spellset_id))
+                {
+                    const SpellInfo* spellInfo = trainerSpell.castRealSpell != nullptr ? trainerSpell.castSpell : trainerSpell.learnSpell;
+                    if (spellInfo == nullptr)
+                        continue;
+
+                    if (!player->isSpellFitByClassAndRace(spellInfo->getId()))
+                        continue;
+
+                    if (trainerSpell.isStatic == 0)
+                    {
+                        if (trainer->can_train_max_level && trainerSpell.requiredLevel > trainer->can_train_max_level)
+                            continue;
+                        if (trainer->can_train_min_skill_value && trainerSpell.requiredSkillLineValue < trainer->can_train_min_skill_value)
+                            continue;
+                        if (trainer->can_train_max_skill_value && trainerSpell.requiredSkillLineValue > trainer->can_train_max_skill_value)
+                            continue;
+                    }
+
+                    packet << static_cast<int32_t>(spellInfo->getId());
+                    packet << static_cast<uint32_t>(trainerSpell.cost);
+                    packet << static_cast<uint32_t>(trainerSpell.requiredSkillLine);
+                    packet << static_cast<uint32_t>(trainerSpell.requiredSkillLineValue);
+                    for (uint8_t i = 0; i < 3; ++i)
+                        packet << static_cast<int32_t>(trainerSpell.requiredSpell[i]);
+                    packet << static_cast<uint32_t>(player->getSession()->trainerGetSpellStatus(&trainerSpell));
+                    packet << static_cast<uint8_t>(trainerSpell.requiredLevel);
+                    ++count;
+                }
+
+                packet.put<uint32_t>(countPos, count);
+                packet.writeBits(static_cast<uint32_t>(uiMessage.size()), 11);
+                packet.flushBits();
+                packet.writeString(uiMessage);
+
+                sLogger.info("SendTrainerList : {} TrainerSpells in list", count);
+                return true;
+            }
 
             if (m_protocol.isMop())
             {

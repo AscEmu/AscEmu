@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "BuildInfo.hpp"
+#include "world/Server/Opcodes.hpp"
 #include "Server/ClientProtocol.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Server/WorldSession.h"
@@ -46,6 +47,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/SmsgLoginVerifyWorld.h"
+#include "Server/Packets/SmsgLoginSetTimeSpeed.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Server/Script/ScriptMgr.hpp"
@@ -54,7 +56,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Util.hpp"
 
 #if defined(AE_FOREVER)
-#include "version/Forever/Opcodes.hpp"
 #include "version/Forever/World/InWorldBootstrap.hpp"
 #include "version/Forever/World/ObjectUpdate.hpp"
 #include "version/Forever/World/PostAuthBootstrap.hpp"
@@ -1142,45 +1143,33 @@ void WorldSession::fullLoginForever(Player* player)
     for (uint32_t i = 0; i < 20U; ++i)
         accountDataTimes << int64_t(0);
 
-    if (!instanceSocket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_ACCOUNT_DATA_TIMES, accountDataTimes.contents(), static_cast<uint32_t>(accountDataTimes.size())))
+    if (!instanceSocket->sendForeverPacket(SMSG_ACCOUNT_DATA_TIMES, accountDataTimes.contents(), static_cast<uint32_t>(accountDataTimes.size())))
     {
         sLogger.failure("WorldSession::Forever: failed to send in-world SMSG_ACCOUNT_DATA_TIMES for {} ({}).", player->getName(), player->getGuidLow());
         Disconnect();
         return;
     }
 
-    if (!instanceSocket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_FEATURE_SYSTEM_STATUS, AscEmu::Version::Forever::InWorldBootstrap::FeatureSystemStatus460063.data(), static_cast<uint32_t>(AscEmu::Version::Forever::InWorldBootstrap::FeatureSystemStatus460063.size())))
+    if (!instanceSocket->sendForeverPacket(SMSG_FEATURE_SYSTEM_STATUS, AscEmu::Version::Forever::InWorldBootstrap::FeatureSystemStatus460063.data(), static_cast<uint32_t>(AscEmu::Version::Forever::InWorldBootstrap::FeatureSystemStatus460063.size())))
     {
         sLogger.failure("WorldSession::Forever: failed to send in-world SMSG_FEATURE_SYSTEM_STATUS for {} ({}).", player->getName(), player->getGuidLow());
         Disconnect();
         return;
     }
 
-    if (!instanceSocket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_SET_TIME_ZONE_INFORMATION, AscEmu::Version::Forever::PostAuthBootstrap::TimeZone460123.data(), static_cast<uint32_t>(AscEmu::Version::Forever::PostAuthBootstrap::TimeZone460123.size())))
+    if (!instanceSocket->sendForeverPacket(SMSG_SET_TIME_ZONE_INFORMATION, AscEmu::Version::Forever::PostAuthBootstrap::TimeZone460123.data(), static_cast<uint32_t>(AscEmu::Version::Forever::PostAuthBootstrap::TimeZone460123.size())))
     {
         sLogger.failure("WorldSession::Forever: failed to send in-world SMSG_SET_TIME_ZONE_INFORMATION for {} ({}).", player->getName(), player->getGuidLow());
         Disconnect();
         return;
     }
 
-    ByteBuffer loginVerifyWorld;
-    loginVerifyWorld << uint32_t(player->GetMapId()) << float(player->GetPositionX()) << float(player->GetPositionY()) << float(player->GetPositionZ()) << float(player->GetOrientation()) << uint32_t(0);
-    if (!instanceSocket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_LOGIN_VERIFY_WORLD, loginVerifyWorld.contents(), static_cast<uint32_t>(loginVerifyWorld.size())))
-    {
-        sLogger.failure("WorldSession::Forever: failed to send SMSG_LOGIN_VERIFY_WORLD for {} ({}).", player->getName(), player->getGuidLow());
-        Disconnect();
-        return;
-    }
+    SmsgLoginVerifyWorld loginVerifyWorld(player);
+    instanceSocket->sendManagedPacket(loginVerifyWorld);
 
     const uint32_t gameTime = Util::getGameTime();
-    ByteBuffer loginSetTimeSpeed;
-    loginSetTimeSpeed << gameTime << gameTime << float(0.016666667f) << int32_t(0) << int32_t(0);
-    if (!instanceSocket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_LOGIN_SET_TIME_SPEED, loginSetTimeSpeed.contents(), static_cast<uint32_t>(loginSetTimeSpeed.size())))
-    {
-        sLogger.failure("WorldSession::Forever: failed to send SMSG_LOGIN_SET_TIME_SPEED for {} ({}).", player->getName(), player->getGuidLow());
-        Disconnect();
-        return;
-    }
+    SmsgLoginSetTimeSpeed loginSetTimeSpeed(gameTime, 0.016666667f);
+    instanceSocket->sendManagedPacket(loginSetTimeSpeed);
 
     // Build the Forever 69913 self CreateObject2 entirely from structured fields
     // and explicit build defaults. Unknown wire regions remain deliberately named.
@@ -1204,7 +1193,7 @@ void WorldSession::fullLoginForever(Player* player)
         return;
     }
 
-    if (!instanceSocket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_UPDATE_OBJECT, selfCreatePacket.data(), static_cast<uint32_t>(selfCreatePacket.size())))
+    if (!instanceSocket->sendForeverPacket(SMSG_UPDATE_OBJECT, selfCreatePacket.data(), static_cast<uint32_t>(selfCreatePacket.size())))
     {
         sLogger.failure("WorldSession::Forever: failed to send 69913 self CreateObject2 for {} ({}).", player->getName(), player->getGuidLow());
         Disconnect();

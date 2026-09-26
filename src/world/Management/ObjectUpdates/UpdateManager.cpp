@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include <cstdint>
+#include "world/Server/Opcodes.hpp"
 #include <vector>
 #include <span>
 
@@ -14,7 +15,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/World.h"
 #if defined(AE_FOREVER)
-#include "version/Forever/Opcodes.hpp"
 #include "version/Forever/World/ObjectUpdate.hpp"
 #include "Server/WorldSocket.hpp"
 #endif
@@ -203,7 +203,7 @@ void UpdateManager::internalProcessPendingUpdates()
         {
             WorldSocket* const socket = m_owner->getSession()->GetForeverInstanceSocket();
             if (socket && socket->isConnected())
-                socket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_UPDATE_OBJECT, packet.data(), static_cast<uint32_t>(packet.size()));
+                socket->sendForeverPacket(SMSG_UPDATE_OBJECT, packet.data(), static_cast<uint32_t>(packet.size()));
         }
 
         m_creationBuffer.clear();

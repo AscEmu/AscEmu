@@ -3511,8 +3511,11 @@ void Player::sendInitialLogonPackets()
     for (auto tutorial : m_tutorials)
         tutorials.push_back(tutorial);
 
-    SmsgTutorialFlags tutorialPacket(tutorials);
-    m_session->sendManagedPacket(tutorialPacket);
+    if (!m_session->getClientProtocol().isForever())
+    {
+        SmsgTutorialFlags tutorialPacket(tutorials);
+        m_session->sendManagedPacket(tutorialPacket);
+    }
 
     sendTalentsInfo();
 
@@ -3543,8 +3546,11 @@ void Player::sendInitialLogonPackets()
     getSession()->sendManagedPacket(equipmentSetPacket);
 #endif
 
-    SmsgLoginSetTimeSpeed timeSpeedPacket(Util::getGameTime(), 0.0166666669777748f);
-    m_session->sendManagedPacket(timeSpeedPacket);
+    if (!m_session->getClientProtocol().isForever())
+    {
+        SmsgLoginSetTimeSpeed timeSpeedPacket(Util::getGameTime(), 0.0166666669777748f);
+        m_session->sendManagedPacket(timeSpeedPacket);
+    }
 
     updateSpeed();
 
@@ -10576,6 +10582,9 @@ void Player::sendSpellModifierPacket(uint8_t spellType, std::vector<std::pair<ui
 
 void Player::sendLoginVerifyWorldPacket()
 {
+    if (m_session == nullptr || m_session->getClientProtocol().isForever())
+        return;
+
     SmsgLoginVerifyWorld managedPacket(this);
     m_session->sendManagedPacket(managedPacket);
 }

@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define WotLK 12340
 #define Cata 15595
 #define Mop 18414
-#define AE_PROFILE_FOREVER 69893
+#define AE_PROFILE_FOREVER 70009
 
 // TODO: Remove when Forever player level stats are loaded from modern DB2 data.
 #define AE_FOREVER_USE_TEMP_LEVELSTATS
@@ -53,7 +53,7 @@ This file is released under the MIT license. See README-MIT for more information
     #define AE_BATTLENET
     #define VERSION 1, 60, 1
     #define VERSION_STRING AE_PROFILE_FOREVER
-    #define BUILD_VERSION 69893
+    #define BUILD_VERSION 70009
 #else
     #error Unsupported ASCEMU_VERSION
 #endif

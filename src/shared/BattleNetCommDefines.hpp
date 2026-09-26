@@ -23,7 +23,17 @@ namespace AscEmu::BattlenetComm
     // multi-gigabyte payload.
     constexpr std::array<uint8_t, 4> FrameMagic{ 'A', 'E', 'B', 'C' };
     constexpr uint16_t FrameVersion = 1;
-    constexpr uint32_t ProtocolVersion = 2;
+    enum class RealmRuleset : uint8_t
+    {
+        PvE = 0,
+        PvP = 1,
+        Roleplay = 2,
+        Hardcore = 3
+    };
+
+    [[nodiscard]] constexpr bool isValidRealmRuleset(uint8_t value) { return value <= static_cast<uint8_t>(RealmRuleset::Hardcore); }
+
+    constexpr uint32_t ProtocolVersion = 3;
     constexpr size_t FrameHeaderSize = 12;
     constexpr uint32_t MaxPacketSize = 64 * 1024;
 

@@ -20,7 +20,7 @@ namespace AscEmu::Packets
         }
 
         CmsgListInventory(uint64_t guid) :
-            ManagedPacket(CMSG_LIST_INVENTORY, 8),
+            ManagedPacket(CMSG_LIST_INVENTORY, 0),
             guid(guid)
         {
         }
@@ -28,6 +28,18 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                WoWGuid modernGuid;
+                std::size_t consumed = 0;
+                if (!WoWGuid::unpackModern(packet.contents() + packet.rpos(), packet.remaining(), modernGuid, consumed))
+                    return false;
+
+                packet.rpos(packet.rpos() + consumed);
+                guid.init(modernGuid.toLegacyRaw());
+                return packet.remaining() == 0;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 uint64_t unpackedGuid;

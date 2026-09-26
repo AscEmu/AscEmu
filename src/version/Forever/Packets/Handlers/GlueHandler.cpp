@@ -1,9 +1,5 @@
-#include "version/Forever/Opcodes.hpp"
-#include "version/Forever/OpcodeTable.hpp"
-#include "version/Forever/Packets/Packet.hpp"
 #include "version/Forever/World/CharacterSelectBootstrap.hpp"
-#include "version/Forever/World/Protocol.hpp"
-#include "version/Forever/World/ProtocolUtils.hpp"
+#include "world/Server/Opcodes.hpp"
 #include "world/Server/WorldSocket.hpp"
 #include "Logging/Logger.hpp"
 
@@ -11,7 +7,7 @@
 #include <ctime>
 
 
-bool WorldSocket::processForeverGlueState(AscEmu::Version::Forever::Packets::Packet& packet, bool& consumed)
+bool WorldSocket::processForeverGlueState(WorldPacket& packet, bool& consumed)
 {
     using namespace AscEmu::Version::Forever;
     consumed = false;
@@ -19,16 +15,16 @@ bool WorldSocket::processForeverGlueState(AscEmu::Version::Forever::Packets::Pac
     if (!m_foreverSecondEnumPending)
         return true;
 
-    const Opcode opcode = packet.getOpcode();
+    const uint32_t opcode = packet.getOpcode();
 
     if (!m_foreverSecondEnumGateSent)
     {
-        static constexpr std::array<Opcode, 4> RequiredPrefix =
+        static constexpr std::array<uint32_t, 4> RequiredPrefix =
         {
-            Opcode::CMSG_BATTLE_PAY_GET_PURCHASE_LIST,
-            Opcode::CMSG_BATTLE_PAY_GET_PURCHASE_LIST,
-            Opcode::CMSG_BATTLE_PAY_GET_PRODUCT_LIST,
-            Opcode::CMSG_UPDATE_VAS_PURCHASE_STATES
+            CMSG_BATTLE_PAY_GET_PURCHASE_LIST,
+            CMSG_BATTLE_PAY_GET_PURCHASE_LIST,
+            CMSG_BATTLE_PAY_GET_PRODUCT_LIST,
+            CMSG_UPDATE_VAS_PURCHASE_STATES
         };
 
         if (m_foreverSecondEnumStep < RequiredPrefix.size() && opcode == RequiredPrefix[m_foreverSecondEnumStep])
@@ -45,17 +41,17 @@ bool WorldSocket::processForeverGlueState(AscEmu::Version::Forever::Packets::Pac
 
         if (m_foreverSecondEnumStep == RequiredPrefix.size())
         {
-            if (opcode == Opcode::CMSG_SOCIAL_CONTRACT_REQUEST)
+            if (opcode == CMSG_SOCIAL_CONTRACT_REQUEST)
             {
                 m_foreverSecondEnumSocialContractSeen = true;
                 consumed = true;
                 return true;
             }
 
-            if (opcode == Opcode::CMSG_BATTLE_PAY_GET_PURCHASE_LIST)
+            if (opcode == CMSG_BATTLE_PAY_GET_PURCHASE_LIST)
             {
                 consumed = true;
-                if (!sendForeverPacket(Opcode::SMSG_CHARACTER_SELECT_GATE, CharacterSelectBootstrap::CharacterSelectGate460382.data(), static_cast<uint32_t>(CharacterSelectBootstrap::CharacterSelectGate460382.size())))
+                if (!sendForeverPacket(SMSG_CHARACTER_SELECT_GATE, CharacterSelectBootstrap::CharacterSelectGate460382.data(), static_cast<uint32_t>(CharacterSelectBootstrap::CharacterSelectGate460382.size())))
                     return false;
 
                 m_foreverSecondEnumGateSent = true;
@@ -64,7 +60,7 @@ bool WorldSocket::processForeverGlueState(AscEmu::Version::Forever::Packets::Pac
         }
     }
 
-    if (opcode == Opcode::CMSG_CHARACTER_SELECT_GATE_ACK)
+    if (opcode == CMSG_CHARACTER_SELECT_GATE_ACK)
     {
         consumed = true;
 
@@ -104,7 +100,7 @@ bool WorldSocket::processForeverGlueState(AscEmu::Version::Forever::Packets::Pac
     return true;
 }
 
-bool WorldSocket::handleForeverIgnoredGlueOpcode(AscEmu::Version::Forever::Packets::Packet&)
+bool WorldSocket::handleForeverIgnoredGlueOpcode(WorldPacket&)
 {
     using namespace AscEmu::Version::Forever;
 
@@ -112,13 +108,13 @@ bool WorldSocket::handleForeverIgnoredGlueOpcode(AscEmu::Version::Forever::Packe
     return true;
 }
 
-bool WorldSocket::handleForeverQuickJoinOpcode(AscEmu::Version::Forever::Packets::Packet&)
+bool WorldSocket::handleForeverQuickJoinOpcode(WorldPacket&)
 {
     using namespace AscEmu::Version::Forever;
     return true;
 }
 
-bool WorldSocket::handleForeverLastCatalogFetchOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverLastCatalogFetchOpcode(WorldPacket& packet)
 {
     if (packet.remaining() != 0)
         sLogger.warning("WorldSocket::Forever: CMSG_GET_LAST_CATALOG_FETCH expected empty payload.");
@@ -136,7 +132,7 @@ bool WorldSocket::sendForeverHotfixBootstrap()
     {
         ByteBuffer cacheVersion;
         cacheVersion << uint32_t(0);
-        if (!sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_CACHE_VERSION, cacheVersion.contents(), static_cast<uint32_t>(cacheVersion.size())))
+        if (!sendForeverPacket(SMSG_CACHE_VERSION, cacheVersion.contents(), static_cast<uint32_t>(cacheVersion.size())))
             return false;
     }
 
@@ -151,7 +147,7 @@ bool WorldSocket::sendForeverHotfixBootstrap()
         availableHotfixes << int32_t(virtualRealmAddress);
         availableHotfixes << uint32_t(0);
 
-        if (!sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_AVAILABLE_HOTFIXES, availableHotfixes.contents(), static_cast<uint32_t>(availableHotfixes.size())))
+        if (!sendForeverPacket(SMSG_AVAILABLE_HOTFIXES, availableHotfixes.contents(), static_cast<uint32_t>(availableHotfixes.size())))
             return false;
 
     }
@@ -170,20 +166,20 @@ bool WorldSocket::sendForeverSecondEnumCompletion()
     // block so the two changes can be tested independently.
     for (uint32_t i = 0; i < 2; ++i)
     {
-        if (!sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_CHARACTER_ENUM_PRELUDE, CharacterSelectBootstrap::EnumPrelude46021D.data(), static_cast<uint32_t>(CharacterSelectBootstrap::EnumPrelude46021D.size())))
+        if (!sendForeverPacket(SMSG_CHARACTER_ENUM_PRELUDE, CharacterSelectBootstrap::EnumPrelude46021D.data(), static_cast<uint32_t>(CharacterSelectBootstrap::EnumPrelude46021D.size())))
             return false;
     }
 
-    if (!sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_CHARACTER_ENUM_PRELUDE_EXTENDED, CharacterSelectBootstrap::EnumPreludeExtended46021C.data(), static_cast<uint32_t>(CharacterSelectBootstrap::EnumPreludeExtended46021C.size())))
+    if (!sendForeverPacket(SMSG_CHARACTER_ENUM_PRELUDE_EXTENDED, CharacterSelectBootstrap::EnumPreludeExtended46021C.data(), static_cast<uint32_t>(CharacterSelectBootstrap::EnumPreludeExtended46021C.size())))
         return false;
 
-    if (!sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_CHARACTER_ENUM_PRELUDE, CharacterSelectBootstrap::EnumPrelude46021D.data(), static_cast<uint32_t>(CharacterSelectBootstrap::EnumPrelude46021D.size())))
+    if (!sendForeverPacket(SMSG_CHARACTER_ENUM_PRELUDE, CharacterSelectBootstrap::EnumPrelude46021D.data(), static_cast<uint32_t>(CharacterSelectBootstrap::EnumPrelude46021D.size())))
         return false;
 
-    if (!sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_UNDELETE_COOLDOWN_STATUS_RESPONSE, CharacterSelectBootstrap::UndeleteCooldown460276.data(), static_cast<uint32_t>(CharacterSelectBootstrap::UndeleteCooldown460276.size())))
+    if (!sendForeverPacket(SMSG_UNDELETE_COOLDOWN_STATUS_RESPONSE, CharacterSelectBootstrap::UndeleteCooldown460276.data(), static_cast<uint32_t>(CharacterSelectBootstrap::UndeleteCooldown460276.size())))
         return false;
 
-    if (!sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_CHARACTER_SELECT_STATUS, CharacterSelectBootstrap::CharacterSelectStatus46029D.data(), static_cast<uint32_t>(CharacterSelectBootstrap::CharacterSelectStatus46029D.size())))
+    if (!sendForeverPacket(SMSG_CHARACTER_SELECT_STATUS, CharacterSelectBootstrap::CharacterSelectStatus46029D.data(), static_cast<uint32_t>(CharacterSelectBootstrap::CharacterSelectStatus46029D.size())))
         return false;
 
     // The official capture contained 0x00460325 because that session first
@@ -191,11 +187,11 @@ bool WorldSocket::sendForeverSecondEnumCompletion()
     // contract response when this account/session skipped that request.
     if (m_foreverSecondEnumSocialContractSeen)
     {
-        if (!sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_SOCIAL_CONTRACT_REQUEST_RESPONSE, CharacterSelectBootstrap::SocialContract460325.data(), static_cast<uint32_t>(CharacterSelectBootstrap::SocialContract460325.size())))
+        if (!sendForeverPacket(SMSG_SOCIAL_CONTRACT_REQUEST_RESPONSE, CharacterSelectBootstrap::SocialContract460325.data(), static_cast<uint32_t>(CharacterSelectBootstrap::SocialContract460325.size())))
             return false;
     }
 
-    if (!sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_ENUM_CHARACTERS_RESULT, CharacterSelectBootstrap::EmptyCharacterList.data(), static_cast<uint32_t>(CharacterSelectBootstrap::EmptyCharacterList.size())))
+    if (!sendForeverPacket(SMSG_ENUM_CHARACTERS_RESULT, CharacterSelectBootstrap::EmptyCharacterList.data(), static_cast<uint32_t>(CharacterSelectBootstrap::EmptyCharacterList.size())))
         return false;
 
     // Capture-derived 69893 AccountDataTimes payload. Only the observed Unix
@@ -204,12 +200,12 @@ bool WorldSocket::sendForeverSecondEnumCompletion()
     const auto now = static_cast<uint32_t>(std::time(nullptr));
     std::memcpy(postEnumState.data() + 2, &now, sizeof(now));
 
-    if (!sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_ACCOUNT_DATA_TIMES, postEnumState.data(), static_cast<uint32_t>(postEnumState.size())))
+    if (!sendForeverPacket(SMSG_ACCOUNT_DATA_TIMES, postEnumState.data(), static_cast<uint32_t>(postEnumState.size())))
         return false;
 
     // Use the exact 69893 collection payload here rather than the Midnight
     // semantic empty serializer. The pre-enum bootstrap remains Midnight-style.
-    if (!sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_ACCOUNT_ITEM_COLLECTION_DATA, CharacterSelectBootstrap::AccountItemCollection460362.data(), static_cast<uint32_t>(CharacterSelectBootstrap::AccountItemCollection460362.size())))
+    if (!sendForeverPacket(SMSG_ACCOUNT_ITEM_COLLECTION_DATA, CharacterSelectBootstrap::AccountItemCollection460362.data(), static_cast<uint32_t>(CharacterSelectBootstrap::AccountItemCollection460362.size())))
         return false;
 
     return true;

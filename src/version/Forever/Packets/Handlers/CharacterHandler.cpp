@@ -1,8 +1,6 @@
 #include "version/Forever/Packets/CharacterPackets.hpp"
+#include "world/Server/Opcodes.hpp"
 #include "shared/WoWGuid.hpp"
-#include "version/Forever/Packets/Packet.hpp"
-#include "version/Forever/World/ProtocolUtils.hpp"
-#include "version/Forever/Opcodes.hpp"
 #include "version/Forever/World/CharacterSelectBootstrap.hpp"
 #include "world/Server/WorldSocket.hpp"
 #include "world/Server/WorldSession.h"
@@ -11,13 +9,14 @@
 #include "world/Objects/Units/Players/PlayerDefines.hpp"
 #include "world/Management/ObjectMgr.hpp"
 #include "Logging/Logger.hpp"
+#include "Utilities/Util.hpp"
 
 #include <cstdint>
 #include <cstring>
 #include <limits>
 
 
-bool WorldSocket::handleForeverCharEnumOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverCharEnumOpcode(WorldPacket& packet)
 {
     if (packet.remaining() != 0)
         sLogger.warning("WorldSocket::Forever: CMSG_ENUM_CHARACTERS expected empty payload, got {} byte(s).", packet.remaining());
@@ -59,7 +58,7 @@ bool WorldSocket::handleForeverCharEnumOpcode(AscEmu::Version::Forever::Packets:
     return true;
 }
 
-bool WorldSocket::handleForeverCheckCharacterNameOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverCheckCharacterNameOpcode(WorldPacket& packet)
 {
     using namespace AscEmu::Version::Forever;
     using namespace AscEmu::Version::Forever::Packets;
@@ -80,10 +79,10 @@ bool WorldSocket::handleForeverCheckCharacterNameOpcode(AscEmu::Version::Forever
     response << request.sequenceIndex << result;
 
 
-    return sendForeverPacket(Opcode::SMSG_CHECK_CHARACTER_NAME_AVAILABILITY_RESULT, response.contents(), static_cast<uint32_t>(response.size()));
+    return sendForeverPacket(SMSG_CHECK_CHARACTER_NAME_AVAILABILITY_RESULT, response.contents(), static_cast<uint32_t>(response.size()));
 }
 
-bool WorldSocket::handleForeverPlayerLoginOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverPlayerLoginOpcode(WorldPacket& packet)
 {
     using namespace AscEmu::Version::Forever;
 
@@ -91,13 +90,13 @@ bool WorldSocket::handleForeverPlayerLoginOpcode(AscEmu::Version::Forever::Packe
     size_t consumed = 0;
     if (!WoWGuid::unpackModern(packet.contents(), packet.size(), guid, consumed) || guid.getModernHighType() != ModernHighGuid::Player || guid.getModernRealmId() != m_foreverRealmId || guid.getModernLow() == 0 || guid.getModernLow() > std::numeric_limits<uint32_t>::max())
     {
-        sLogger.warning("WorldSocket::Forever: malformed CMSG_PLAYER_LOGIN size={} bytes=[{}].", packet.size(), bytesToHex(packet.contents(), packet.size()));
+        sLogger.warning("WorldSocket::Forever: malformed CMSG_PLAYER_LOGIN size={} bytes=[{}].", packet.size(), Util::ByteArrayToHexString(packet.contents(), packet.size()));
         return true;
     }
 
     if (packet.size() != consumed + sizeof(float) + sizeof(uint8_t))
     {
-        sLogger.warning("WorldSocket::Forever: CMSG_PLAYER_LOGIN unexpected layout guidBytes={} totalBytes={} bytes=[{}].", consumed, packet.size(), bytesToHex(packet.contents(), packet.size()));
+        sLogger.warning("WorldSocket::Forever: CMSG_PLAYER_LOGIN unexpected layout guidBytes={} totalBytes={} bytes=[{}].", consumed, packet.size(), Util::ByteArrayToHexString(packet.contents(), packet.size()));
         return true;
     }
 
@@ -116,23 +115,23 @@ bool WorldSocket::handleForeverPlayerLoginOpcode(AscEmu::Version::Forever::Packe
     return beginForeverInstanceLogin(guidLow);
 }
 
-bool WorldSocket::handleForeverCharCreateOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverCharCreateOpcode(WorldPacket& packet)
 {
     return handleForeverCreateCharacter(packet.contents(), static_cast<uint32_t>(packet.size()));
 }
 
-bool WorldSocket::handleForeverCharDeleteOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverCharDeleteOpcode(WorldPacket& packet)
 {
     using namespace AscEmu::Version::Forever;
 
     WoWGuid guid;
     if (!WoWGuid::unpackModern(packet.contents(), packet.size(), guid) || guid.getModernHighType() != ModernHighGuid::Player || guid.getModernRealmId() != m_foreverRealmId || guid.getModernLow() == 0 || guid.getModernLow() > UINT32_MAX)
     {
-        sLogger.warning("WorldSocket::Forever: malformed CMSG_CHAR_DELETE payload size={} bytes=[{}].", packet.size(), bytesToHex(packet.contents(), packet.size()));
+        sLogger.warning("WorldSocket::Forever: malformed CMSG_CHAR_DELETE payload size={} bytes=[{}].", packet.size(), Util::ByteArrayToHexString(packet.contents(), packet.size()));
 
         ByteBuffer response;
         response << AscEmu::Version::Forever::Packets::toDeleteCharacterResult(E_CHAR_DELETE_FAILED);
-        return sendForeverPacket(Opcode::SMSG_DELETE_CHAR, response.contents(), static_cast<uint32_t>(response.size()));
+        return sendForeverPacket(SMSG_CHAR_DELETE, response.contents(), static_cast<uint32_t>(response.size()));
     }
 
     const uint64_t guidLow = guid.getModernLow();
@@ -157,20 +156,20 @@ bool WorldSocket::handleForeverCharDeleteOpcode(AscEmu::Version::Forever::Packet
     response << result;
 
 
-    return sendForeverPacket(Opcode::SMSG_DELETE_CHAR, response.contents(), static_cast<uint32_t>(response.size()));
+    return sendForeverPacket(SMSG_CHAR_DELETE, response.contents(), static_cast<uint32_t>(response.size()));
 }
 
-bool WorldSocket::handleForeverUndeleteCooldownOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverUndeleteCooldownOpcode(WorldPacket& packet)
 {
     using namespace AscEmu::Version::Forever;
     if (packet.remaining() != 0)
         sLogger.warning("WorldSocket::Forever: CMSG_GET_UNDELETE_CHARACTER_COOLDOWN_STATUS expected empty payload.");
 
-    return sendForeverPacket(Opcode::SMSG_UNDELETE_COOLDOWN_STATUS_RESPONSE, CharacterSelectBootstrap::UndeleteCooldown460276.data(), static_cast<uint32_t>(CharacterSelectBootstrap::UndeleteCooldown460276.size()));
+    return sendForeverPacket(SMSG_UNDELETE_COOLDOWN_STATUS_RESPONSE, CharacterSelectBootstrap::UndeleteCooldown460276.data(), static_cast<uint32_t>(CharacterSelectBootstrap::UndeleteCooldown460276.size()));
 }
 
 
-bool WorldSocket::handleForeverCharacterListAckOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverCharacterListAckOpcode(WorldPacket& packet)
 {
     using namespace AscEmu::Version::Forever;
 

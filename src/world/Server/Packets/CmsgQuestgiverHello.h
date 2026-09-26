@@ -45,6 +45,17 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                WoWGuid modernGuid;
+                std::size_t consumed = 0;
+                if (!WoWGuid::unpackModern(packet.contents() + packet.rpos(), packet.remaining(), modernGuid, consumed))
+                    return false;
+                packet.rpos(packet.rpos() + consumed);
+                questGiverGuid.init(modernGuid.toLegacyRaw());
+                return packet.remaining() == 0;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 uint64_t unpackedGuid;

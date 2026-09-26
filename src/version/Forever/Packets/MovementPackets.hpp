@@ -1,7 +1,7 @@
 #pragma once
 
-#include "version/Forever/Packets/Packet.hpp"
 #include "Objects/MovementInfo.hpp"
+#include "Network/ByteBuffer.hpp"
 #include "shared/WoWGuid.hpp"
 
 #include <cstdint>
@@ -38,6 +38,6 @@ namespace AscEmu::Version::Forever::Packets
     // Forever 69913 uses the modern retail MovementInfo wire layout.  Keep the
     // decoder version-local instead of forcing this data through the legacy
     // MovementCodec/MoP descriptor tables.
-    bool readMovementStatus(Packet& packet, MovementStatus& status);
+    bool readMovementStatus(ByteBuffer& packet, MovementStatus& status);
     MovementInfo toLegacyMovementInfo(MovementStatus const& status);
 }

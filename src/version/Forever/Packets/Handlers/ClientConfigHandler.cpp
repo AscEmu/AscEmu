@@ -1,12 +1,12 @@
 #include "version/Forever/Packets/ClientConfigPackets.hpp"
-#include "version/Forever/World/ProtocolUtils.hpp"
+#include "world/Server/Opcodes.hpp"
 #include "world/Server/WorldSocket.hpp"
 #include "world/Server/WorldSession.h"
 #include "world/Server/DatabaseDefinition.hpp"
 #include "Logging/Logger.hpp"
 #include <array>
 
-bool WorldSocket::handleForeverUpdateAccountDataOpcode(AscEmu::Version::Forever::Packets::Packet& packet)
+bool WorldSocket::handleForeverUpdateAccountDataOpcode(WorldPacket& packet)
 {
     using namespace AscEmu::Version::Forever;
     using namespace AscEmu::Version::Forever::Packets;
@@ -51,7 +51,7 @@ bool WorldSocket::handleForeverUpdateAccountDataOpcode(AscEmu::Version::Forever:
         0x00, 0x00, 0x00, 0x00
     };
 
-    if (!sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_UPDATE_ACCOUNT_DATA_COMPLETE, complete.data(), static_cast<uint32_t>(complete.size())))
+    if (!sendForeverPacket(SMSG_UPDATE_ACCOUNT_DATA_COMPLETE, complete.data(), static_cast<uint32_t>(complete.size())))
         return false;
 
 

@@ -37,16 +37,20 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
-            return 4 + 4 + 4 + 4 + 4;
+            return m_protocol.isForever() ? 24 : 20;
         }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion != WoW::Expansion::_Mop)
+            if (m_protocol.isForever())
+            {
+                packet << mapId << location.x << location.y << location.z << location.o << uint32_t(0);
+            }
+            else if (m_protocol.expansion != WoW::Expansion::_Mop)
             {
                 packet << mapId << location.x << location.y << location.z << location.o;
             }
-            else if (m_protocol.expansion == WoW::Expansion::_Mop)
+            else
             {
                 packet << location.x << location.o << location.y << mapId << location.z;
             }

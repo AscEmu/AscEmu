@@ -44,11 +44,33 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
+            if (m_protocol.isForever())
+                return 76;
+
             return 4 + 4 + 4 + (4 * 6) + (4 * 5);
         }
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                packet << static_cast<int32_t>(level);
+                packet << static_cast<int32_t>(hp);
+                packet << static_cast<int32_t>(mana);
+
+                for (uint8_t i = 1; i < 10; ++i)
+                    packet << int32_t(0);
+
+                packet << static_cast<int32_t>(stat0);
+                packet << static_cast<int32_t>(stat1);
+                packet << static_cast<int32_t>(stat2);
+                packet << static_cast<int32_t>(stat3);
+                packet << static_cast<int32_t>(stat4);
+                packet << int32_t(0); // NumNewTalents
+                packet << int32_t(0); // NumNewPvpTalentSlots
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << level << hp << mana;

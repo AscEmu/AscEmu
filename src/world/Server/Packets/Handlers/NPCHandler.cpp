@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Data/Flags.hpp"
+#include "world/Server/Opcodes.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/AuctionHouse.h"
 #include "Storage/WDB/WDBStores.hpp"
@@ -52,6 +53,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellInfo.hpp"
 #include "Storage/WorldStrings.h"
 #include "Storage/WDB/WDBStructures.hpp"
+#if defined(AE_FOREVER)
+#include "Server/WorldSocket.hpp"
+#endif
 
 using namespace AscEmu::Packets;
 
@@ -172,9 +176,15 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_TRAINER_BUY_SPELL: {} (guidLowPart).", srlPacket.guid.getCounter());
+    handleForeverTrainerBuySpellData(srlPacket.guid.getRawGuid(), srlPacket.trainerId, srlPacket.spellId);
+}
 
-    const auto creature = _player->getWorldMapCreature(srlPacket.guid.getRawGuid());
+void WorldSession::handleForeverTrainerBuySpellData(uint64_t guid, uint32_t trainerId, uint32_t spellId)
+{
+    WoWGuid trainerGuid(guid);
+    sLogger.debugOpcode("Received CMSG_TRAINER_BUY_SPELL: {} (guidLowPart), trainerId={}, spellId={}.", trainerGuid.getCounter(), trainerId, spellId);
+
+    const auto creature = _player->getWorldMapCreature(guid);
     if (creature == nullptr)
         return;
 
@@ -182,13 +192,21 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
     if (trainer == nullptr)
         return;
 
+    // Modern clients send the trainer id used by the list. AscEmu's trainer
+    // database uses spellset_id for the same purpose.
+    if (trainerId != 0 && trainerId != trainer->spellset_id)
+    {
+        sLogger.warning("CMSG_TRAINER_BUY_SPELL trainer id mismatch: client={} server={} creature={}.", trainerId, trainer->spellset_id, trainerGuid.getCounter());
+        return;
+    }
+
     TrainerSpell const* trainerSpell = nullptr;
 
     auto its = sObjectMgr.getTrainerSpellSetById(trainer->spellset_id);
 
     for (auto& itr : *its)
     {
-        if ((itr.castSpell && itr.castSpell->getId() == srlPacket.spellId) || (itr.learnSpell && itr.learnSpell->getId() == srlPacket.spellId))
+        if ((itr.castSpell && itr.castSpell->getId() == spellId) || (itr.learnSpell && itr.learnSpell->getId() == spellId))
         {
             trainerSpell = &itr;
             break;
@@ -206,39 +224,25 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
     if (spellStatus == TRAINER_SPELL_RED || spellStatus == TRAINER_SPELL_GRAY)
         return;
 
-    // teach the spell
     _player->modCoinage(-static_cast<int32_t>(trainerSpell->cost));
     creature->playSpellVisual(179, 0);
 
     if (trainerSpell->castSpell != nullptr)
-    {
         _player->castSpell(_player, trainerSpell->castSpell->getId(), true);
-    }
     else
     {
         _player->playSpellVisual(362, 1);
-
         if (trainerSpell->learnSpell != nullptr)
             _player->addSpell(trainerSpell->learnSpell->getId());
     }
 
     if (trainerSpell->deleteSpell)
-    {
-        if (trainerSpell->learnSpell)
-            _player->removeSpell(trainerSpell->deleteSpell, true);
-        else if (trainerSpell->castSpell)
-            _player->removeSpell(trainerSpell->deleteSpell, true);
-        else
-            _player->removeSpell(trainerSpell->deleteSpell, true);
-    }
+        _player->removeSpell(trainerSpell->deleteSpell, true);
 
-    // Mop has no SMSG_TRAINER_BUY_SUCCEEDED equivalent - the client infers
-    // success from the resulting spell-learn/gold updates alone.
-    if (!srlPacket.getClientProtocol().isMop())
-    {
-        SmsgTrainerBuySucceeded managedPacket(srlPacket.guid.getRawGuid(), srlPacket.spellId);
-        sendManagedPacket(managedPacket);
-    }
+#if !defined(AE_FOREVER)
+    SmsgTrainerBuySucceeded managedPacket(trainerGuid.getRawGuid(), spellId);
+    sendManagedPacket(managedPacket);
+#endif
 }
 
 void WorldSession::handleCharterShowListOpcode(WorldPacket& recvPacket)
@@ -272,12 +276,17 @@ void WorldSession::handleGossipHelloOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_GOSSIP_HELLO: {} (guidLowPart).", srlPacket.guid.getCounter());
+    handleForeverGossipHelloGuid(srlPacket.guid.getRawGuid());
+}
 
-    const auto creature = _player->getWorldMapCreature(srlPacket.guid.getRawGuid());
+void WorldSession::handleForeverGossipHelloGuid(uint64_t guid)
+{
+    WoWGuid gossipGuid(guid);
+    sLogger.debugOpcode("Received CMSG_GOSSIP_HELLO: {} (guidLowPart).", gossipGuid.getCounter());
+
+    const auto creature = _player->getWorldMapCreature(guid);
     if (creature != nullptr)
     {
-        // makes npc stop when for example on its waypoint path // aaron02
         creature->pauseMovement(30000);
         creature->SetSpawnLocation(creature->GetPosition());
 
@@ -291,25 +300,29 @@ void WorldSession::handleGossipHelloOpcode(WorldPacket& recvPacket)
     }
 }
 
-
 void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
 {
     CmsgGossipSelectOption srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_GOSSIP_SELECT_OPTION: {} (gossipId), {} (option), {} (guidLow).",
-        srlPacket.gossip_id, srlPacket.option, srlPacket.guid.getLowGuid());
+    handleForeverGossipSelectOptionData(srlPacket.guid.getRawGuid(), srlPacket.gossip_id, srlPacket.option, srlPacket.input);
+}
 
+void WorldSession::handleForeverGossipSelectOptionData(uint64_t guid, uint32_t gossipId, uint32_t option, const std::string& input)
+{
+    WoWGuid gossipGuid(guid);
+    sLogger.debugOpcode("Received CMSG_GOSSIP_SELECT_OPTION: {} (gossipId), {} (option), {} (guidLow).",
+        gossipId, option, gossipGuid.getLowGuid());
 
     GossipScript* script = nullptr;
     Object* object = nullptr;
 
-    switch (srlPacket.guid.getHighType())
+    switch (gossipGuid.getHighType())
     {
         case HighGuid::Item:
         {
-            if (const auto item = _player->getItemInterface()->GetItemByGUID(srlPacket.guid))
+            if (const auto item = _player->getItemInterface()->GetItemByGUID(gossipGuid))
             {
                 script = GossipScript::getInterface(item);
                 object = item;
@@ -317,7 +330,7 @@ void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
         } break;
         case HighGuid::Unit:
         {
-            if (const auto creature = dynamic_cast<Creature*>(_player->getWorldMapObject(srlPacket.guid.getRawGuid())))
+            if (const auto creature = dynamic_cast<Creature*>(_player->getWorldMapObject(guid)))
             {
                 script = GossipScript::getInterface(creature);
                 object = creature;
@@ -325,7 +338,7 @@ void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
         } break;
         case HighGuid::GameObject:
         {
-            if (const auto gameObject = dynamic_cast<GameObject*>(_player->getWorldMapObject(srlPacket.guid.getRawGuid())))
+            if (const auto gameObject = dynamic_cast<GameObject*>(_player->getWorldMapObject(guid)))
             {
                 script = GossipScript::getInterface(gameObject);
                 object = gameObject;
@@ -336,12 +349,7 @@ void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
     }
 
     if (script && object)
-    {
-        if (srlPacket.input.length() > 0)
-            script->onSelectOption(object, _player, srlPacket.option, srlPacket.input.c_str(), srlPacket.gossip_id);
-        else
-            script->onSelectOption(object, _player, srlPacket.option, nullptr, srlPacket.gossip_id);
-    }
+        script->onSelectOption(object, _player, option, input.empty() ? nullptr : input.c_str(), gossipId);
 }
 
 void WorldSession::handleBinderActivateOpcode(WorldPacket& recvPacket)
@@ -465,6 +473,8 @@ void WorldSession::sendTrainerList(Creature* creature)
         uiMessage = _player->getSession()->localizedWorldSrv(ServerString::SS_WHAT_CAN_I_TEACH_YOU);
     else
         uiMessage = trainer->UIMessage;
+
+
 
     SmsgTrainerList managedPacket(creature, _player, uiMessage);
     sendManagedPacket(managedPacket);

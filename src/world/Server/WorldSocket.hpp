@@ -18,16 +18,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 class SocketHandler;
 class WorldSession;
+class OpcodeHandlerRegistry;
 
-
-#if AE_WORLD_PROFILE_FOREVER
-namespace AscEmu::Version::Forever
-{
-    enum class Opcode : uint16_t;
-    class OpcodeHandlerRegistry;
-    namespace Packets { class Packet; }
-}
-#endif
 
 class SERVER_DECL WorldSocket : public Socket
 {

@@ -19,6 +19,7 @@
  */
 
 #include "WorldSession.h"
+#include "world/Server/Opcodes.hpp"
 
 #include "DatabaseDefinition.hpp"
 #include "Threading/ThreadSafeQueue.hpp"
@@ -49,7 +50,6 @@
 #include <cstdarg>
 #include "OpcodeHandlerRegistry.hpp"
 #if defined(AE_FOREVER)
-#include "version/Forever/Opcodes.hpp"
 #endif
 
 using namespace AscEmu::Packets;
@@ -269,7 +269,7 @@ bool WorldSession::sendForeverLogoutResponse(uint32_t reason, bool instantLogout
     payload.writeBit(instantLogout);
     payload.flushBits();
 
-    return socket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_LOGOUT_RESPONSE, payload.contents(), static_cast<uint32_t>(payload.size()));
+    return socket->sendForeverPacket(SMSG_LOGOUT_RESPONSE, payload.contents(), static_cast<uint32_t>(payload.size()));
 }
 
 bool WorldSession::sendForeverLogoutComplete()
@@ -282,7 +282,7 @@ bool WorldSession::sendForeverLogoutComplete()
     payload.writeBit(false); // verified 69913 payload = 00
     payload.flushBits();
 
-    return socket->sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_LOGOUT_COMPLETE, payload.contents(), static_cast<uint32_t>(payload.size()));
+    return socket->sendForeverPacket(SMSG_LOGOUT_COMPLETE, payload.contents(), static_cast<uint32_t>(payload.size()));
 }
 #endif
 
@@ -1002,12 +1002,12 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_BANKER_ACTIVATE, &WorldSession::handleBankerActivateOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_BUY_BANK_SLOT, &WorldSession::handleBuyBankSlotOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_TRAINER_LIST, &WorldSession::handleTrainerListOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_TRAINER_BUY_SPELL, &WorldSession::handleTrainerBuySpellOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_TRAINER_BUY_SPELL, &WorldSession::handleTrainerBuySpellOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_PETITION_SHOWLIST, &WorldSession::handleCharterShowListOpcode, true, true, true, true, true);
     registry.registerOpcode(MSG_AUCTION_HELLO, &WorldSession::handleAuctionHelloOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_AUCTION_HELLO, &WorldSession::handleAuctionHelloRequestOpcode, false, false, false, false, true);
-    registry.registerOpcode(CMSG_GOSSIP_HELLO, &WorldSession::handleGossipHelloOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_GOSSIP_SELECT_OPTION, &WorldSession::handleGossipSelectOptionOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_GOSSIP_HELLO, &WorldSession::handleGossipHelloOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_GOSSIP_SELECT_OPTION, &WorldSession::handleGossipSelectOptionOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_SPIRIT_HEALER_ACTIVATE, &WorldSession::handleSpiritHealerActivateOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_NPC_TEXT_QUERY, &WorldSession::handleNpcTextQueryOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_BINDER_ACTIVATE, &WorldSession::handleBinderActivateOpcode, true, true, true, true, true);
@@ -1023,7 +1023,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_SELL_ITEM, &WorldSession::handleSellItemOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_BUY_ITEM_IN_SLOT, &WorldSession::handleBuyItemInSlotOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_BUY_ITEM, &WorldSession::handleBuyItemOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_LIST_INVENTORY, &WorldSession::handleListInventoryOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LIST_INVENTORY, &WorldSession::handleListInventoryOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_AUTOSTORE_BAG_ITEM, &WorldSession::handleAutoStoreBagItemOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_SET_AMMO, &WorldSession::handleAmmoSetOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_BUY_BACK_ITEM, &WorldSession::handleBuyBackOpcode, true, true, true, true, true);
@@ -1079,12 +1079,12 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_SET_TRADE_GOLD, &WorldSession::handleSetTradeGold, true, true, true, true, true);
 
     // Quest System
-    registry.registerOpcode(CMSG_QUEST_GIVER_STATUS_MULTIPLE_QUERY, &WorldSession::handleInrangeQuestgiverQuery, false, true, true, true, true);
-    registry.registerOpcode(CMSG_QUESTGIVER_STATUS_QUERY, &WorldSession::handleQuestgiverStatusQueryOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_QUESTGIVER_HELLO, &WorldSession::handleQuestgiverHelloOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_QUESTGIVER_ACCEPT_QUEST, &WorldSession::handleQuestgiverAcceptQuestOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_QUEST_GIVER_STATUS_MULTIPLE_QUERY, &WorldSession::handleInrangeQuestgiverQuery, false, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_QUESTGIVER_STATUS_QUERY, &WorldSession::handleQuestgiverStatusQueryOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_QUESTGIVER_HELLO, &WorldSession::handleQuestgiverHelloOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_QUESTGIVER_ACCEPT_QUEST, &WorldSession::handleQuestgiverAcceptQuestOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_QUESTGIVER_CANCEL, &WorldSession::handleQuestgiverCancelOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_QUESTGIVER_CHOOSE_REWARD, &WorldSession::handleQuestgiverChooseRewardOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_QUESTGIVER_CHOOSE_REWARD, &WorldSession::handleQuestgiverChooseRewardOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_QUESTGIVER_REQUEST_REWARD, &WorldSession::handleQuestgiverRequestRewardOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_QUEST_QUERY, &WorldSession::handleQuestQueryOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_QUESTGIVER_QUERY_QUEST, &WorldSession::handleQuestGiverQueryQuestOpcode, true, true, true, true, true);
@@ -1307,7 +1307,7 @@ void WorldSession::registerOpcodeHandler()
     // new since cata
     registry.registerOpcode<STATUS_AUTHED>(CMSG_OBJECT_UPDATE_FAILED, &WorldSession::handleObjectUpdateFailedOpcode, false, false, false, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_LOADING_SCREEN_NOTIFY, &WorldSession::handleLoadScreenOpcode, false, false, false, true, true);
-    registry.registerOpcode<STATUS_AUTHED>(CMSG_TIME_SYNC_RESPONSE, &WorldSession::handleTimeSyncRespOpcode, true, true, true, true, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_TIME_SYNC_RESPONSE, &WorldSession::handleTimeSyncRespOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_MOVE_SET_CAN_FLY, &WorldSession::handleMovementOpcodes, false, false, false, true, false);
     registry.registerOpcode(CMSG_FORCE_PITCH_RATE_CHANGE_ACK, &WorldSession::handleAcknowledgementOpcodes, false, false, false, true, false);
     registry.registerOpcode(CMSG_MESSAGECHAT_SAY, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
@@ -1379,4 +1379,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_UNREGISTER_ALL_ADDON_PREFIXES, &WorldSession::handleUnregisterAddonPrefixesOpcode, false, false, false, true, true);
 
     registry.registerOpcode(SMSG_CLEAR_TARGET, &WorldSession::handleClearTargetOpcode, false, false, false, true, true);
+
+#if AE_WORLD_PROFILE_FOREVER
+    registry.initializeForeverSocketHandlers();
+#endif
 }

@@ -26,16 +26,14 @@ namespace AscEmu::Battlenet
         return instance;
     }
 
-    void BattleNetCommManager::registerRealm(uint32_t realmId, BattleNetCommServerSocket* socket)
+    void BattleNetCommManager::registerRealm(uint32_t realmId, AscEmu::BattlenetComm::RealmRuleset ruleset, BattleNetCommServerSocket* socket)
     {
         BattleNetCommServerSocket* previous = nullptr;
         {
             std::lock_guard lock(m_mutex);
             const auto itr = m_realms.find(realmId);
-            if (itr != m_realms.end() && itr->second != socket)
-                previous = itr->second;
-
-            m_realms[realmId] = socket;
+            if (itr != m_realms.end() && itr->second.socket != socket) previous = itr->second.socket;
+            m_realms[realmId] = { socket, ruleset };
         }
 
         if (previous != nullptr && previous->isConnected())
@@ -48,17 +46,22 @@ namespace AscEmu::Battlenet
     void BattleNetCommManager::unregisterSocket(BattleNetCommServerSocket* socket)
     {
         std::lock_guard lock(m_mutex);
-        std::erase_if(m_realms, [socket](const auto& entry) { return entry.second == socket; });
+        std::erase_if(m_realms, [socket](const auto& entry) { return entry.second.socket == socket; });
     }
 
     bool BattleNetCommManager::sendPendingSession(const PendingWorldSession& session)
     {
         std::lock_guard lock(m_mutex);
         const auto itr = m_realms.find(session.realmId);
-        if (itr == m_realms.end() || itr->second == nullptr || !itr->second->isConnected())
-            return false;
+        if (itr == m_realms.end() || itr->second.socket == nullptr || !itr->second.socket->isConnected()) return false;
+        return itr->second.socket->sendPendingSession(session);
+    }
 
-        return itr->second->sendPendingSession(session);
+    AscEmu::BattlenetComm::RealmRuleset BattleNetCommManager::getRealmRuleset(uint32_t realmId) const
+    {
+        std::lock_guard lock(m_mutex);
+        const auto itr = m_realms.find(realmId);
+        return itr != m_realms.end() ? itr->second.ruleset : AscEmu::BattlenetComm::RealmRuleset::PvE;
     }
 
     BattleNetCommServerSocket::BattleNetCommServerSocket(SOCKET fd)
@@ -199,11 +202,13 @@ namespace AscEmu::Battlenet
         uint32_t protocolVersion = 0;
         uint32_t realmId = 0;
         std::string realmName;
+        uint8_t rulesetValue = 0;
         std::string sharedSecret;
 
         packet >> protocolVersion;
         packet >> realmId;
         packet >> realmName;
+        packet >> rulesetValue;
         packet >> sharedSecret;
 
         if (packet.hadReadFailure() || packet.rpos() != packet.size())
@@ -219,6 +224,7 @@ namespace AscEmu::Battlenet
             sLogger.failure("BattleNetComm: realm {} uses unsupported protocol version {}", realmId, protocolVersion);
             result = 1;
         }
+        else if (!AscEmu::BattlenetComm::isValidRealmRuleset(rulesetValue)) { sLogger.failure("BattleNetComm: realm {} sent invalid ruleset {}", realmId, rulesetValue); result = 4; }
         else if (sharedSecret != bnetConfig.battleNetComm.sharedSecret)
         {
             sLogger.failure("BattleNetComm: realm {} authentication failed from {}:{}", realmId, getRemoteIp(), getRemotePort());
@@ -243,8 +249,9 @@ namespace AscEmu::Battlenet
 
         m_realmId = realmId;
         m_authenticated = true;
-        sBattleNetCommManager.registerRealm(realmId, this);
-        sLogger.info("BattleNetComm: registered realm {} ('{}') from {}:{}", realmId, realmName, getRemoteIp(), getRemotePort());
+        const auto ruleset = static_cast<AscEmu::BattlenetComm::RealmRuleset>(rulesetValue);
+        sBattleNetCommManager.registerRealm(realmId, ruleset, this);
+        sLogger.info("BattleNetComm: registered realm {} ('{}') ruleset={} from {}:{}", realmId, realmName, rulesetValue, getRemoteIp(), getRemotePort());
     }
 
     bool BattleNetCommServerSocket::sendPendingSession(const PendingWorldSession& session)

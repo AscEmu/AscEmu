@@ -76,14 +76,14 @@ namespace AscEmu::Version::Forever
     };
 
     inline constexpr std::array<BuildAuthKeyEntry, 1> BuildAuthKeys =
-    {{
+    { {
         {
             69893U,
             {
                 0x80, 0xC6, 0x71, 0x02, 0xCF, 0x12, 0x90, 0x83,
                 0x03, 0x28, 0xCB, 0x37, 0x90, 0x11, 0x6A, 0x3D
             }
-        }
+        },
     }};
 
     inline std::optional<std::array<uint8_t, 16>> getBuildAuthKey(uint32_t build)

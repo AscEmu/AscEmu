@@ -1,8 +1,8 @@
 #pragma once
 
-#include "version/Forever/Packets/Packet.hpp"
 
 #include <cstdint>
+#include "Network/ByteBuffer.hpp"
 #include <string>
 #include <vector>
 
@@ -24,5 +24,5 @@ namespace AscEmu::Version::Forever::Packets
         std::vector<CharacterOrderEntry> characterOrder;
     };
 
-    bool parseUpdateAccountData(Packet& packet, UpdateAccountDataRequest& request);
+    bool parseUpdateAccountData(ByteBuffer& packet, UpdateAccountDataRequest& request);
 }

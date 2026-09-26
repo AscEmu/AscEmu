@@ -1,17 +1,17 @@
+#include "Utilities/Util.hpp"
 /*
 Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
 #include "world/Server/WorldSocket.hpp"
+#include "world/Server/Opcodes.hpp"
 
 #include "Logging/Logger.hpp"
 #include "version/Forever/BuildProfile.hpp"
 #include "shared/WoWGuid.hpp"
-#include "version/Forever/Opcodes.hpp"
 #include "version/Forever/Packets/CharacterPackets.hpp"
 #include "version/Forever/World/CharacterSelectBootstrap.hpp"
-#include "version/Forever/World/ProtocolUtils.hpp"
 #include "world/Server/WorldSession.h"
 #include "world/Server/DatabaseDefinition.hpp"
 #include "world/Objects/Units/Players/PlayerDefines.hpp"
@@ -59,14 +59,14 @@ bool WorldSocket::sendForeverEmptyCharacterList()
 {
     using namespace AscEmu::Version::Forever;
 
-    if (!sendForeverPacket(Opcode::SMSG_ENUM_CHARACTERS_RESULT, CharacterSelectBootstrap::EmptyCharacterList.data(), static_cast<uint32_t>(CharacterSelectBootstrap::EmptyCharacterList.size())))
+    if (!sendForeverPacket(SMSG_ENUM_CHARACTERS_RESULT, CharacterSelectBootstrap::EmptyCharacterList.data(), static_cast<uint32_t>(CharacterSelectBootstrap::EmptyCharacterList.size())))
     {
         sLogger.failure("WorldSocket::Forever: failed to send SMSG_ENUM_CHARACTERS_RESULT.");
         return false;
     }
 
     ByteBuffer collection = buildForeverEmptyAccountItemCollectionData();
-    if (!sendForeverPacket(Opcode::SMSG_ACCOUNT_ITEM_COLLECTION_DATA, collection.contents(), static_cast<uint32_t>(collection.size())))
+    if (!sendForeverPacket(SMSG_ACCOUNT_ITEM_COLLECTION_DATA, collection.contents(), static_cast<uint32_t>(collection.size())))
     {
         sLogger.failure("WorldSocket::Forever: failed to send SMSG_ACCOUNT_ITEM_COLLECTION_DATA.");
         return false;
@@ -85,7 +85,7 @@ bool WorldSocket::handleForeverCreateCharacter(const uint8_t* payload, uint32_t 
         ByteBuffer wire = AscEmu::Version::Forever::Packets::buildCreateCharacterResponse(foreverResult, m_foreverRealmId, guid);
 
 
-        return sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_CREATE_CHAR, wire.contents(), static_cast<uint32_t>(wire.size()));
+        return sendForeverPacket(SMSG_CHAR_CREATE, wire.contents(), static_cast<uint32_t>(wire.size()));
     };
 
     if (m_session == nullptr)
@@ -97,7 +97,7 @@ bool WorldSocket::handleForeverCreateCharacter(const uint8_t* payload, uint32_t 
     AscEmu::Version::Forever::Packets::CreateCharacterRequest request;
     if (!AscEmu::Version::Forever::Packets::parseCreateCharacter(payload, payloadSize, request))
     {
-        sLogger.warning("WorldSocket::Forever: malformed CMSG_CREATE_CHARACTER payload={} byte(s), hex=[{}].", payloadSize, AscEmu::Version::Forever::bytesToHex(payload, payloadSize));
+        sLogger.warning("WorldSocket::Forever: malformed CMSG_CREATE_CHARACTER payload={} byte(s), hex=[{}].", payloadSize, Util::ByteArrayToHexString(payload, payloadSize));
         return sendResult(E_CHAR_CREATE_FAILED);
     }
 
@@ -368,7 +368,7 @@ bool WorldSocket::sendForeverCharacterEnumFromDatabase(bool includeCollection)
     const auto& raceClassAvailability = AscEmu::Version::Forever::Packets::getRaceClassAvailability();
     ByteBuffer wire = AscEmu::Version::Forever::Packets::buildCharacterEnumResponse(virtualRealmAddress, m_foreverRealmId, characters, raceClassAvailability);
 
-    if (!sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_ENUM_CHARACTERS_RESULT, wire.contents(), static_cast<uint32_t>(wire.size())))
+    if (!sendForeverPacket(SMSG_ENUM_CHARACTERS_RESULT, wire.contents(), static_cast<uint32_t>(wire.size())))
         return false;
 
     // Official Forever sends 0x00460019 immediately after a non-empty
@@ -388,13 +388,13 @@ bool WorldSocket::sendForeverCharacterEnumFromDatabase(bool includeCollection)
         characterListState << uint32_t(10);
     }
 
-    if (!sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_CHARACTER_LIST_STATE, characterListState.contents(), static_cast<uint32_t>(characterListState.size())))
+    if (!sendForeverPacket(SMSG_CHARACTER_LIST_STATE, characterListState.contents(), static_cast<uint32_t>(characterListState.size())))
         return false;
 
 
     if (includeCollection)
     {
-        if (!sendForeverPacket(AscEmu::Version::Forever::Opcode::SMSG_ACCOUNT_ITEM_COLLECTION_DATA, CharacterSelectBootstrap::AccountItemCollection460362.data(), static_cast<uint32_t>(CharacterSelectBootstrap::AccountItemCollection460362.size())))
+        if (!sendForeverPacket(SMSG_ACCOUNT_ITEM_COLLECTION_DATA, CharacterSelectBootstrap::AccountItemCollection460362.data(), static_cast<uint32_t>(CharacterSelectBootstrap::AccountItemCollection460362.size())))
             return false;
     }
 

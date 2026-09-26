@@ -36,7 +36,7 @@ public:
 
     // Internal ID Lookups
 
-    [[nodiscard]] uint32_t getInternalIdForHex(uint16_t const hex, int32_t const versionId) const
+    [[nodiscard]] uint32_t getInternalIdForHex(uint32_t const hex, int32_t const versionId) const
     {
         if (versionId < 0 || versionId >= MAX_VERSION_INDEX)
         {
@@ -68,29 +68,24 @@ public:
         return firstMatch;
     }
 
-    [[nodiscard]] uint32_t getInternalIdForHex(uint16_t const hex, WoW::Expansion const expansion) const
+    [[nodiscard]] uint32_t getInternalIdForHex(uint32_t const hex, WoW::Expansion const expansion) const
     {
         return getInternalIdForHex(hex, WoW::getOpcodeTableIndex(expansion));
     }
 
-    [[nodiscard]] uint32_t getInternalIdForHex(uint16_t const hex, WoW::ClientProtocol const& protocol) const
+    [[nodiscard]] uint32_t getInternalIdForHex(uint32_t const hex, WoW::ClientProtocol const& protocol) const
     {
         return getInternalIdForHex(hex, protocol.expansion);
     }
 
     // Opcode name lookups (hex -> name)
 
-    [[nodiscard]] std::string getNameForOpcode(uint16_t const hex, WoW::Expansion const expansion) const
+    [[nodiscard]] std::string getNameForOpcode(uint32_t const hex, WoW::Expansion const expansion) const
     {
         return getNameForInternalId(getInternalIdForHex(hex, expansion), expansion);
     }
 
-    [[nodiscard]] std::string getNameForOpcode(uint32_t const opcode, WoW::Expansion const expansion) const
-    {
-        return getNameForOpcode(static_cast<uint16_t>(opcode), expansion);
-    }
-
-    [[nodiscard]] std::string getNameForOpcode(uint16_t const hex, WoW::ClientProtocol const& protocol) const
+    [[nodiscard]] std::string getNameForOpcode(uint32_t const hex, WoW::ClientProtocol const& protocol) const
     {
         return getNameForOpcode(hex, protocol.expansion);
     }
@@ -115,7 +110,7 @@ public:
 
     // Hex value lookups (Internal ID -> hex)
 
-    [[nodiscard]] uint16_t getHexValueForExpansion(uint32_t const internalId, WoW::Expansion const expansion) const
+    [[nodiscard]] uint32_t getHexValueForExpansion(uint32_t const internalId, WoW::Expansion const expansion) const
     {
         const int32_t tableIndex = WoW::getOpcodeTableIndex(expansion);
         if (tableIndex >= 0 && tableIndex < MAX_VERSION_INDEX)
@@ -130,7 +125,7 @@ public:
         return 0;
     }
 
-    [[nodiscard]] uint16_t getHexValueForExpansion(uint32_t const internalId, WoW::ClientProtocol const& protocol) const
+    [[nodiscard]] uint32_t getHexValueForExpansion(uint32_t const internalId, WoW::ClientProtocol const& protocol) const
     {
         return getHexValueForExpansion(internalId, protocol.expansion);
     }
@@ -146,10 +141,10 @@ public:
 
     struct HexToId
     {
-        HexToId(uint16_t hex, uint32_t intId) :
+        HexToId(uint32_t hex, uint32_t intId) :
             hexValue(hex), internalId(intId) {}
 
-        uint16_t hexValue;
+        uint32_t hexValue;
         uint32_t internalId;
     };
 

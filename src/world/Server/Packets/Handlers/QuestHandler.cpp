@@ -780,7 +780,7 @@ void WorldSession::handleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket)
     const auto questStatus = sQuestMgr.CalcStatus(qst_giver, _player);
 #endif
 
-    SmsgQuestgiverStatus managedPacket(srlPacket.questGiverGuid.getRawGuid(), questStatus);
+    SmsgQuestgiverStatus managedPacket(srlPacket.questGiverGuid.getRawGuid(), questStatus, static_cast<uint16_t>(qst_giver->GetMapId()));
     sendManagedPacket(managedPacket);
 }
 

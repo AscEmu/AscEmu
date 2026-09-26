@@ -109,7 +109,7 @@
 #        3 = 15595 (Cata)       4 = 18414 (Mop)     5 = (WoD)
 #        6 = (Legion)           7 = (BfA)           8 = (Shadowlands)
 #        9 = (Dragonflight)    10 = (TWW)          11 = (Midnight)
-#       12 = 69893 (Forever)
+#       12 = 70009 (Forever)
 #
 
 <Realm1 Id            = "1"
@@ -127,10 +127,16 @@
 # settings and use LogonComm. The backend itself is selected by CMake.
 ################################################################################
 
+#    Ruleset
+#        Forever realm ruleset advertised to Battle.net.
+#        Supported values: PvE, PvP, Roleplay, Hardcore
+#        Default: PvE
+#
 <BattleNetComm Host         = "127.0.0.1"
                Port         = "1120"
                RealmId      = "1"
                RealmName    = "AscEmu"
+               Ruleset      = "PvE"
                SharedSecret = "ascemu-bnetcomm">
 
 ################################################################################

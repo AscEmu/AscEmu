@@ -292,6 +292,27 @@ namespace AscEmu::Battlenet
             return out.str();
         }
 
+        std::string makeCompactHex(const uint8_t* data, size_t size, size_t maxBytes = MAX_DIAGNOSTIC_DUMP_SIZE)
+        {
+            if (data == nullptr || size == 0)
+                return "<empty>";
+
+            const size_t dumpSize = std::min(size, maxBytes);
+            std::ostringstream out;
+            out << std::hex << std::uppercase << std::setfill('0');
+            for (size_t index = 0; index < dumpSize; ++index)
+            {
+                if (index != 0)
+                    out << ' ';
+                out << std::setw(2) << static_cast<unsigned>(data[index]);
+            }
+
+            if (dumpSize < size)
+                out << " ... (" << std::dec << (size - dumpSize) << " more byte(s))";
+
+            return out.str();
+        }
+
         std::vector<uint8_t> compressGameUtilitiesJson(const std::string& json)
         {
             // Blizzard's realm-list JSON blobs start with a little-endian uint32
@@ -360,6 +381,8 @@ namespace AscEmu::Battlenet
                    command.compare(0, semanticPrefix.size(), semanticPrefix) == 0;
         }
 
+        [[nodiscard]] constexpr bool usesForever1601Transport(uint32_t build) { return build == 69893u || build == 70009u; }
+
         struct ClientVersionParts
         {
             uint32_t major;
@@ -376,6 +399,7 @@ namespace AscEmu::Battlenet
                 case 69585u: return { 5u, 5u, 4u };
                 case 69814u: return { 12u, 1u, 0u };
                 case 69893u: return { 1u, 60u, 1u };
+                case 70009u: return { 1u, 60u, 1u };
                 default:     return { 0u, 0u, 0u };
             }
         }
@@ -392,25 +416,52 @@ namespace AscEmu::Battlenet
             uint32_t build = 0;
             uint32_t collectionId = 0;
             uint32_t superDistrictSetId = 0;
-            uint32_t normalAvailableSuperDistrictId = 0;
+
+            uint32_t pveAvailableSuperDistrictId = 0;
             uint32_t pvpAvailableSuperDistrictId = 0;
+            uint32_t roleplayAvailableSuperDistrictId = 0;
+            uint32_t hardcoreAvailableSuperDistrictId = 0;
+
             uint32_t currentCfgContentSetId = 0;
             bool contentSetIdKnown = false;
         };
 
+
         ForeverSuperDistrictProfile getForeverSuperDistrictProfile(uint32_t clientBuild)
         {
-            // Build 69893 client-side DB2 relationship discovered from the
-            // extracted Forever tables.  These values are diagnostic metadata
-            // only; they are NOT serialized as invented Battle.net fields.
+            // Build 70009 currently exposes four Forever rulesets:
             //
-            // SuperDistrictSetCollection 1 -> SuperDistrictSet 36
-            // SuperDistrictSet 36 includes AvailableSuperDistrict 2 (PvP) and
-            // 3 (Normal).  The exact ContentSet selector that activates this
-            // collection is still unknown, so keep the currently transmitted
-            // cfgContentSetID at 0 and log that fact explicitly.
-            if (clientBuild == 69893u)
-                return { 69893u, 1u, 36u, 3u, 2u, 0u, false };
+            //   PvE
+            //   PvP
+            //   Roleplay
+            //   Hardcore
+            //
+            // The SuperDistrict DB2 relationships stored here are diagnostic metadata
+            // only. These values must not be serialized as invented Battle.net fields.
+            //
+            // The previously verified relationship was:
+            //
+            //   SuperDistrictSetCollection 1 -> SuperDistrictSet 36
+            //   AvailableSuperDistrict 2 -> PvP
+            //   AvailableSuperDistrict 3 -> PvE / Normal
+            //
+            // Roleplay, Hardcore and the ContentSet selector for build 70009 still
+            // need to be verified from the extracted 70009 DB2 data. Keep them unset
+            // rather than guessing IDs.
+            if (clientBuild == 70009u)
+            {
+                return {
+                    .build = 70009u,
+                    .collectionId = 1u,
+                    .superDistrictSetId = 36u,
+                    .pveAvailableSuperDistrictId = 3u,
+                    .pvpAvailableSuperDistrictId = 2u,
+                    .roleplayAvailableSuperDistrictId = 0u,
+                    .hardcoreAvailableSuperDistrictId = 0u,
+                    .currentCfgContentSetId = 0u,
+                    .contentSetIdKnown = false,
+                };
+            }
 
             return {};
         }
@@ -668,7 +719,7 @@ namespace AscEmu::Battlenet
             //   region = 70, site = 1, realm = 2.
             const bool validRegion =
                 region == Protocol::WoW::EuropeRegion ||
-                (clientBuild == 69893u && region == 70u);
+                (usesForever1601Transport(clientBuild) && region == 70u);
 
             if (!validRegion || site != 1u || realmId == 0u)
                 return {};
@@ -683,7 +734,7 @@ namespace AscEmu::Battlenet
             // They are not AscEmu's local realms.id.  Route Forever joins to the
             // first enabled local realm instead of requiring realms.id == 2.
             std::unique_ptr<QueryResult> realmResult;
-            if (clientBuild == 69893u && region == 70u)
+            if (usesForever1601Transport(clientBuild) && region == 70u)
             {
                 realmResult = sBNetLogonSQL->query("SELECT id, status FROM realms WHERE status <> 0 ORDER BY id LIMIT 1");
             }
@@ -1784,6 +1835,18 @@ namespace AscEmu::Battlenet
             return false;
         }
 
+        std::ostringstream sessionKeyHex;
+
+        for (size_t i = 0; i < sessionKey.size(); ++i)
+        {
+            if (i != 0)
+                sessionKeyHex << ' ';
+
+            sessionKeyHex << std::format("{:02X}", sessionKey[i]);
+        }
+
+        sLogger.info("BNet: connection #{} Param_BnetSessionKey={}", m_connectionId, sessionKeyHex.str());
+
         // bgs.protocol.authentication.v2.client.LogonRecord
         std::vector<uint8_t> record;
         appendVarIntField(record, 1, battleNetAccountId);
@@ -1873,7 +1936,7 @@ namespace AscEmu::Battlenet
         {
             // Forever/Camelot 1.60.1.69893 uses "70-1-70" for the realm-list
             // command variant/subregion. Keep the legacy value for other builds.
-            const std::string_view subRegion = (m_clientBuild == 69893u)
+            const std::string_view subRegion = usesForever1601Transport(m_clientBuild)
                 ? std::string_view{ "70-1-70" }
                 : std::string_view{ "2-1-0" };
 
@@ -1911,7 +1974,17 @@ namespace AscEmu::Battlenet
         (void)commandName;
         std::ostringstream json;
 
-        if (m_clientBuild == 69893u)
+        if (m_clientBuild == 70009u)
+        {
+            sLogger.warning("BNet: Forever 70009 SuperDistrict mapping is not verified yet; Roleplay/Hardcore IDs must be captured before serialization.");
+            json
+            << "JSONSuperDistrictList:{\"superDistricts\":["
+                << "{\"superDistrictID\":2,\"disallowLogin\":false},"
+                << "{\"superDistrictID\":1,\"disallowLogin\":false},"
+                << "{\"superDistrictID\":5,\"disallowLogin\":false}"
+                << "]}";
+        }
+        else if (m_clientBuild == 69893u)
         {
             // Forever/Camelot 1.60.1.69893 sniff-based compatibility test.
             // The play-style selector expects SuperDistrict IDs here; realm
@@ -1983,9 +2056,9 @@ namespace AscEmu::Battlenet
     bool BNetSocket::handleLastCharPlayedRequest(uint32_t token, const std::string& commandName)
     {
         (void)commandName;
-        if (m_clientBuild == 69893u)
+        if (usesForever1601Transport(m_clientBuild))
         {
-            // Forever/Camelot 1.60.1.69893:
+            // Forever 1.60.1 transport. The 70009 PvE LastCharPlayed shape is provisionally inherited from the verified 69893 capture until a 70009 capture confirms the ruleset-specific values:
             //
             // The official beta service returns a non-empty LastCharPlayed
             // response even for an account without characters.  After Normal

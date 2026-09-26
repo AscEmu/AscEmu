@@ -2,7 +2,7 @@
 
 The Battle.net server is intentionally implemented with AscEmu-owned protocol names and documentation. Wire values are recorded from supported clients and kept in `Server/BNetProtocol.hpp`.
 
-The Battle.net transport/service layer is shared infrastructure. The active modern game profile is selected separately by the AscEmu build configuration; at present the only supported modern profile is Forever 1.60.1 build 69893. Legacy client families continue to use the legacy logon-server path.
+The Battle.net transport/service layer is shared infrastructure. The active modern game profile is selected separately by the AscEmu build configuration; at present the only supported modern profile is Forever 1.60.1 build 70009. Legacy client families continue to use the legacy logon-server path.
 
 ## Service status
 
@@ -129,7 +129,7 @@ Malformed RPC headers, invalid payloads and authentication/transport failures re
 
 ## Supported World V2 target
 
-The currently supported modern World V2 client profile is **World of Warcraft Forever 1.60.1 build 69893**.
+The currently supported modern World V2 client profile is **World of Warcraft Forever 1.60.1 build 70009**.
 
 Forever is intentionally maintained as its own protocol profile under `src/version/Forever`. Battle.net authentication and realm discovery are shared infrastructure, while World opcodes, packet layouts, authentication material and bootstrap data remain version-specific.
 
@@ -169,4 +169,4 @@ The observed authentication challenge payload is 65 bytes: a 32-byte DoS challen
 
 `SMSG_ENTER_ENCRYPTED_MODE` uses the Forever-specific verified signing/authentication path. Build-specific authentication keys and packet constants belong in the Forever profile and must not be shared with another client family.
 
-Only **build 69893** is currently supported. Captures from other Forever builds may be useful for protocol comparison, but matching packet layouts do not make those builds supported automatically. Unsupported builds must be rejected instead of silently falling back to the 69893 profile.
+Only **build 70009** is currently supported. Captures from other Forever builds may be useful for protocol comparison, but matching packet layouts do not make those builds supported automatically. Unsupported builds must be rejected instead of silently falling back to the 69893 profile.

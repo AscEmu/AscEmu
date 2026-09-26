@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 
+#include "WoWGuid.hpp"
+
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -16,26 +18,40 @@ namespace AscEmu::Packets
     public:
         uint64_t questgiverGuid;
         uint32_t status;
+        uint16_t mapId;
 
-        SmsgQuestgiverStatus() : SmsgQuestgiverStatus(0, 0)
+        SmsgQuestgiverStatus() : SmsgQuestgiverStatus(0, 0, 0)
         {
         }
 
-        SmsgQuestgiverStatus(uint64_t questgiverGuid, uint32_t status) :
+        SmsgQuestgiverStatus(uint64_t questgiverGuid, uint32_t status, uint16_t mapId = 0) :
             ManagedPacket(SMSG_QUESTGIVER_STATUS, 0),
             questgiverGuid(questgiverGuid),
-            status(status)
+            status(status),
+            mapId(mapId)
         {
         }
 
     protected:
         size_t expectedSize() const override
         {
+            if (m_protocol.isForever())
+                return 19;
+
             return m_protocol.expansion < WoW::Expansion::_Cata ? 9 : 12;
         }
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                const WoWGuid guid = WoWGuid::createModernFromLegacy(questgiverGuid, m_protocol.realmId, mapId, 0);
+                const auto packedGuid = guid.packModern();
+                packet.append(packedGuid.data(), packedGuid.size());
+                packet << static_cast<uint64_t>(status);
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet << questgiverGuid << static_cast<uint8_t>(status);

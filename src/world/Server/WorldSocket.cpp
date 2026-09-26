@@ -13,6 +13,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Packets/SmsgAuthChallenge.h"
 #include "Packets/SmsgAuthResponse.h"
 #include "OpcodeTable.hpp"
+#include "OpcodeHandlerRegistry.hpp"
+#include "Opcodes.hpp"
 #include "WorldSession.h"
 #include "Utilities/Random.hpp"
 #include "Packets/CmsgAuthSession.h"
@@ -1042,3 +1044,50 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
         fflush(mPacketLogFile);
     }
 }
+
+#if AE_WORLD_PROFILE_FOREVER
+bool WorldSocket::sendForeverPacket(uint32_t internalOpcode, const uint8_t* payload, uint32_t payloadSize)
+{
+    const uint32_t rawOpcode = sOpcodeTables.getHexValueForExpansion(internalOpcode, WoW::Expansion::Forever);
+    if (rawOpcode == 0)
+    {
+        sLogger.failure("WorldSocket::Forever: no Forever wire opcode registered for {}.",
+            sOpcodeTables.getNameForInternalId(internalOpcode, WoW::Expansion::Forever));
+        return false;
+    }
+
+    return sendForeverWorldPacket(rawOpcode, payload, payloadSize);
+}
+
+bool WorldSocket::dispatchForeverOpcode(uint32_t rawOpcode, const uint8_t* payload, size_t payloadSize)
+{
+    const uint32_t internalId = sOpcodeTables.getInternalIdForHex(rawOpcode, WoW::Expansion::Forever);
+    if (internalId == 0)
+    {
+        sLogger.info("WorldSocket::Forever: encrypted RX unknown opcode=0x{:08X}, payload={} byte(s), hex=[{}].",
+            rawOpcode, payloadSize, Util::ByteArrayToHexString(payload, static_cast<uint32_t>(payloadSize)));
+        return true;
+    }
+
+    WorldPacket packet(static_cast<WorldPacket::Opcode>(internalId), payloadSize);
+    if (payloadSize != 0)
+        packet.append(payload, payloadSize);
+
+    bool consumed = false;
+    if (!processForeverGlueState(packet, consumed))
+        return false;
+    if (consumed)
+        return true;
+
+    if (internalId != CMSG_DB_QUERY_BULK)
+    {
+        const auto name = sOpcodeTables.getNameForInternalId(internalId, WoW::Expansion::Forever);
+        const auto details = payloadSize <= 64U
+            ? " bytes=" + Util::ByteArrayToHexString(payload, static_cast<uint32_t>(payloadSize))
+            : "";
+        sLogger.debugOpcode("WorldSocket::Forever: {} received size={}{}.", name, payloadSize, details);
+    }
+
+    return OpcodeHandlerRegistry::instance().handleResolvedOpcode(*this, packet, rawOpcode, internalId);
+}
+#endif

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "WoWGuid.hpp"
 
 #include <cstdint>
 #include <utility>
@@ -15,6 +16,7 @@ struct QuestgiverInrangeStatus
 {
     uint64_t rawGuid;
     int32_t status;
+    uint16_t mapId = 0;
 };
 
 namespace AscEmu::Packets
@@ -40,6 +42,9 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
+            if (m_protocol.isForever())
+                return 4 + (19 * inrangeCount);
+
             if (m_protocol.isMop())
                 return 3 + (13 * inrangeCount);
 
@@ -49,6 +54,21 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                packet << inrangeCount;
+
+                for (const auto& questGiver : questgiverSet)
+                {
+                    const WoWGuid guid = WoWGuid::createModernFromLegacy(questGiver.rawGuid, m_protocol.realmId, questGiver.mapId, 0);
+                    const auto packedGuid = guid.packModern();
+                    packet.append(packedGuid.data(), packedGuid.size());
+                    packet << static_cast<uint64_t>(questGiver.status);
+                }
+
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 packet.writeBits(inrangeCount, 21);

@@ -1,13 +1,13 @@
 // Forever-only extension of WorldSocket.
-// Modern World-V2 transport stays on WorldSocket; opcode parsing/handlers live
-// in version/Forever/Packets and version/Forever/World, following the modern protocol layout.
+// Modern World-V2 transport stays on WorldSocket; all application opcodes are
+// resolved and dispatched through AscEmu's central opcode table/registry.
 
 public:
     uint32_t getForeverRealmId() const { return m_foreverRealmId; }
     uint32_t getForeverRegionId() const { return m_foreverRegionId; }
     uint32_t getForeverBattlegroupId() const { return m_foreverBattlegroupId; }
 
-    bool sendForeverPacket(AscEmu::Version::Forever::Opcode opcode, const uint8_t* payload, uint32_t payloadSize);
+    bool sendForeverPacket(uint32_t internalOpcode, const uint8_t* payload, uint32_t payloadSize);
     bool beginForeverInstanceLogin(uint32_t guidLow);
 
 protected:
@@ -26,40 +26,38 @@ protected:
 
     // Modern opcode dispatcher / glue coordinator.
     bool dispatchForeverOpcode(uint32_t rawOpcode, const uint8_t* payload, size_t payloadSize);
-    bool processForeverGlueState(AscEmu::Version::Forever::Packets::Packet& packet, bool& consumed);
+    bool processForeverGlueState(WorldPacket& packet, bool& consumed);
 
     // Movement handlers.
-    bool handleMovementOpcodes(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverUnknown003E002DOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
+    bool handleMovementOpcodes(WorldPacket& packet);
+    bool handleForeverUnknown003E002DOpcode(WorldPacket& packet);
 
     // Character handlers.
-    bool handleForeverCharEnumOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverCheckCharacterNameOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverCharCreateOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverPlayerLoginOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverCharDeleteOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverUndeleteCooldownOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverCharacterListAckOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverUpdateAccountDataOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
+    bool handleForeverCharEnumOpcode(WorldPacket& packet);
+    bool handleForeverCheckCharacterNameOpcode(WorldPacket& packet);
+    bool handleForeverCharCreateOpcode(WorldPacket& packet);
+    bool handleForeverPlayerLoginOpcode(WorldPacket& packet);
+    bool handleForeverCharDeleteOpcode(WorldPacket& packet);
+    bool handleForeverUndeleteCooldownOpcode(WorldPacket& packet);
+    bool handleForeverCharacterListAckOpcode(WorldPacket& packet);
+    bool handleForeverUpdateAccountDataOpcode(WorldPacket& packet);
 
     // DB2/system/glue handlers.
-    bool handleForeverDbQueryBulkOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverHotfixRequestOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverQueryCreatureOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverQueryGameObjectOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverUnknownNpcInteract003F0029Opcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleCloseInteraction(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverListInventoryOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverSetSelectionOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverPingOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverLogoutRequestOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverLogoutCancelOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverSocialContractOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverSocialContractAcceptOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverServerTimeOffsetOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverIgnoredGlueOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverQuickJoinOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
-    bool handleForeverLastCatalogFetchOpcode(AscEmu::Version::Forever::Packets::Packet& packet);
+    bool handleForeverDbQueryBulkOpcode(WorldPacket& packet);
+    bool handleForeverHotfixRequestOpcode(WorldPacket& packet);
+    bool handleForeverQueryCreatureOpcode(WorldPacket& packet);
+    bool handleForeverQueryGameObjectOpcode(WorldPacket& packet);
+    bool handleCloseInteraction(WorldPacket& packet);
+    bool handleForeverSetSelectionOpcode(WorldPacket& packet);
+    bool handleForeverPingOpcode(WorldPacket& packet);
+    bool handleForeverLogoutRequestOpcode(WorldPacket& packet);
+    bool handleForeverLogoutCancelOpcode(WorldPacket& packet);
+    bool handleForeverSocialContractOpcode(WorldPacket& packet);
+    bool handleForeverSocialContractAcceptOpcode(WorldPacket& packet);
+    bool handleForeverServerTimeOffsetOpcode(WorldPacket& packet);
+    bool handleForeverIgnoredGlueOpcode(WorldPacket& packet);
+    bool handleForeverQuickJoinOpcode(WorldPacket& packet);
+    bool handleForeverLastCatalogFetchOpcode(WorldPacket& packet);
 
     // Character/glue services.
     bool sendForeverEmptyCharacterList();
@@ -69,7 +67,7 @@ protected:
     bool sendForeverHotfixBootstrap();
 
 private:
-    friend class AscEmu::Version::Forever::OpcodeHandlerRegistry;
+    friend class ::OpcodeHandlerRegistry;
 
     enum class ForeverWorldState : uint8_t
     {

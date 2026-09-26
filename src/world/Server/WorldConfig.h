@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Platform/SymbolVisibility.hpp"
+#include "BattleNetCommDefines.hpp"
 
 #include <string>
 #include <cstdint>
@@ -101,6 +102,7 @@ public:
         int port;
         uint32_t realmId;
         std::string realmName;
+        AscEmu::BattlenetComm::RealmRuleset ruleset;
         std::string sharedSecret;
     } battleNetComm;
 

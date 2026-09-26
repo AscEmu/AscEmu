@@ -28,17 +28,28 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override { return 8; }
+        size_t expectedSize() const override
+        {
+            if (m_protocol.isForever() || m_protocol.expansion >= WoW::Expansion::_Mop)
+                return 20;
+
+            if (m_protocol.expansion > WoW::Expansion::_TBC)
+                return 12;
+
+            return 8;
+        }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            if (m_protocol.isForever())
+            {
+                packet << time << time << gameSpeed << int32_t(0) << int32_t(0);
+            }
+            else if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << time << gameSpeed;
                 if (m_protocol.expansion > WoW::Expansion::_TBC)
-                {
                     packet << uint32_t(0);
-                }
             }
             else
             {

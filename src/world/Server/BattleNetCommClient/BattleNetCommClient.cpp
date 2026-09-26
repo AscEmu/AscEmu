@@ -31,6 +31,7 @@ namespace AscEmu::BattlenetComm
         packet << ProtocolVersion;
         packet << worldConfig.battleNetComm.realmId;
         packet << worldConfig.battleNetComm.realmName;
+        packet << static_cast<uint8_t>(worldConfig.battleNetComm.ruleset);
         packet << worldConfig.battleNetComm.sharedSecret;
 
         if (!sendPacket(packet))
@@ -40,7 +41,7 @@ namespace AscEmu::BattlenetComm
             return;
         }
 
-        sLogger.info("BattleNetCommClient: connected to {}:{}; registering realm {} ('{}')", worldConfig.battleNetComm.host, worldConfig.battleNetComm.port, worldConfig.battleNetComm.realmId, worldConfig.battleNetComm.realmName);
+        sLogger.info("BattleNetCommClient: connected to {}:{}; registering realm {} ('{}') ruleset={}", worldConfig.battleNetComm.host, worldConfig.battleNetComm.port, worldConfig.battleNetComm.realmId, worldConfig.battleNetComm.realmName, static_cast<uint32_t>(worldConfig.battleNetComm.ruleset));
     }
 
     void BattleNetCommClientSocket::onDisconnect()

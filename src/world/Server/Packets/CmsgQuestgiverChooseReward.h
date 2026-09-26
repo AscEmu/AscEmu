@@ -40,6 +40,8 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
+            if (m_protocol.isForever())
+                return 16; // packed modern GUID + questId + empty QuestChoiceItem observed in 70009
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
                 return m_minimum_size;
             else if (m_protocol.isMop())
@@ -49,6 +51,30 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                WoWGuid modernGuid;
+                std::size_t consumed = 0;
+                if (!WoWGuid::unpackModern(packet.contents() + packet.rpos(), packet.remaining(), modernGuid, consumed))
+                    return false;
+                packet.rpos(packet.rpos() + consumed);
+                questgiverGuid.init(modernGuid.toLegacyRaw());
+
+                if (packet.remaining() < sizeof(uint32_t))
+                    return false;
+                packet >> questId;
+
+                // Build 70009 capture had no selectable reward: QuestChoiceItem = 11 zero bytes.
+                if (packet.remaining() != 11)
+                    return false;
+                for (std::size_t i = packet.rpos(); i < packet.size(); ++i)
+                    if (packet.contents()[i] != 0)
+                        return false;
+                packet.rpos(packet.size());
+                rewardSlot = 0;
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 uint64_t unpackedGuid;

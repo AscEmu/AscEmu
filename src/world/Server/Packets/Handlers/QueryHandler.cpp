@@ -186,6 +186,7 @@ void WorldSession::handleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/)
             {
                 temp.rawGuid = creature->getGuid();
                 temp.status = sQuestMgr.CalcStatus(creature, _player);
+                temp.mapId = static_cast<uint16_t>(creature->GetMapId());
                 questgiverSet.push_back(temp);
             }
         }

@@ -18,11 +18,11 @@ namespace AscEmu::Version::Forever
 
     // Verified Forever beta client profile. Protocol constants and opcodes stay
     // specific to Forever and must be filled only from Forever observations.
-    inline constexpr BuildProfile ActiveBuild{69893U, "Forever 1.60.1", true};
+    inline constexpr BuildProfile ActiveBuild{70009U, "Forever 1.60.1", true};
     inline constexpr uint32_t Build = ActiveBuild.build;
 
     inline constexpr bool supportsBuild(uint32_t build)
     {
-        return ActiveBuild.supported && build == ActiveBuild.build;
+        return ActiveBuild.supported && (build == 69893U || build == 70009U);
     }
 }

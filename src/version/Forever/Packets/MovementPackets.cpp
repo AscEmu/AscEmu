@@ -1,5 +1,5 @@
 #include "version/Forever/Packets/MovementPackets.hpp"
-#include "version/Forever/Packets/Packet.hpp"
+#include "Network/ByteBuffer.hpp"
 
 #include <limits>
 
@@ -7,7 +7,7 @@ namespace AscEmu::Version::Forever::Packets
 {
     namespace
     {
-        bool readModernGuid(Packet& packet, WoWGuid& guid)
+        bool readModernGuid(ByteBuffer& packet, WoWGuid& guid)
         {
             if (packet.rpos() >= packet.size())
                 return false;
@@ -20,7 +20,7 @@ namespace AscEmu::Version::Forever::Packets
             return true;
         }
 
-        bool readTransport(Packet& packet, MovementStatus& status)
+        bool readTransport(ByteBuffer& packet, MovementStatus& status)
         {
             if (!readModernGuid(packet, status.transportGuid))
                 return false;
@@ -44,7 +44,7 @@ namespace AscEmu::Version::Forever::Packets
         }
     }
 
-    bool readMovementStatus(Packet& packet, MovementStatus& status)
+    bool readMovementStatus(ByteBuffer& packet, MovementStatus& status)
     {
         if (!readModernGuid(packet, status.moverGuid))
             return false;
