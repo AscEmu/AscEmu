@@ -42,7 +42,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Charter.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
 #include "Server/DatabaseDefinition.hpp"
-#include "Server/OpcodeTable.hpp"
+#include "Version/VersionRegistry.hpp"
 #include "Server/World.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/SmsgLoginVerifyWorld.h"
@@ -128,7 +128,7 @@ void WorldSession::handleCharFactionOrRaceChange([[maybe_unused]] WorldPacket& r
         return;
     }
 
-    const auto opcode = sOpcodeTables.getInternalIdForHex(recvPacket.getOpcode(), getClientProtocol());
+    const auto opcode = Version::opcodeIdForHex(recvPacket.getOpcode(), getClientProtocol());
     const uint32_t used_loginFlag = ((opcode == CMSG_CHAR_RACE_CHANGE) ? LOGIN_CUSTOMIZE_RACE : LOGIN_CUSTOMIZE_FACTION);
     uint32_t newflags = 0;
 

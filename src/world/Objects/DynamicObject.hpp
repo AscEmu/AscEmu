@@ -7,8 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Object.hpp"
 #include "Units/Unit.hpp"
-#include "Data/WoWDynamicObject.hpp"
-#include "Server/UpdateFieldInclude.h"
+#include "Version/LayoutLimits.hpp"
 
 enum DynamicObjectType
 {
@@ -18,7 +17,6 @@ enum DynamicObjectType
 };
 
 class SpellInfo;
-struct WoWDynamicObject;
 
 class SERVER_DECL DynamicObject : public Object
 {
@@ -39,9 +37,6 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
-private:
-    const WoWDynamicObject* dynamicObjectData() const { return reinterpret_cast<WoWDynamicObject*>(wow_data); }
-
 public:
     uint64_t getCasterGuid() const;
     void setCasterGuid(uint64_t guid);
@@ -67,10 +62,8 @@ public:
     float getDynamicO() const;
     void setDynamicO(float o);
 
-#if VERSION_STRING > Classic
     uint32_t getCastTime() const;
     void setCastTime(uint32_t time);
-#endif
 
 protected:
     SpellInfo const* m_spellInfo = nullptr;
@@ -82,5 +75,5 @@ protected:
 
     uint32_t m_aliveDuration = 0;
 
-    uint32_t _fields[getSizeOfStructure(WoWDynamicObject)];
+    uint32_t _fields[Version::kMaxDynamicObjectValues];
 };

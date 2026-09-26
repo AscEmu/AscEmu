@@ -10,10 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Stats.h"
 #include "Management/QuestDefines.hpp"
 #include "Management/ObjectUpdates/UpdateManager.hpp"
-#include "Data/WoWPlayer.hpp"
 #include "AEVersion.hpp"
 #include "Logging/Log.hpp"
-#include "Server/UpdateFieldInclude.h"
 #include "Objects/ItemDefines.hpp"
 
 // todo include header for now struct InstancePlayerBind definition
@@ -24,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <mutex>
 
 #include "Utilities/CallBack.hpp"
+#include "Version/LayoutLimits.hpp"
 
 class QueryResult;
 
@@ -103,7 +102,6 @@ typedef std::unordered_map<uint32_t, time_t> InstanceTimeMap;
 // 3. move stuff out of this class
 // 4. Check out the members (there are duplicats)
 // 5. Get rid of legacy files (Player.Legacy.cpp) - done!?
-struct WoWPlayer;
 
 class SERVER_DECL Player : public Unit
 {
@@ -126,7 +124,6 @@ public:
     bool m_isReadyToBeRemoved = false;
 
 private:
-    const WoWPlayer* playerData() const { return reinterpret_cast<WoWPlayer*>(wow_data); }
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Data
@@ -145,10 +142,8 @@ public:
     uint32_t getGuildRank() const;
     void setGuildRank(uint32_t guildRank);
 
-#if VERSION_STRING >= Cata
     uint32_t getGuildLevel() const;
     void setGuildLevel(uint32_t guildLevel);
-#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // bytes begin
@@ -200,10 +195,8 @@ public:
     uint8_t getPvpRank() const;
     void setPvpRank(uint8_t rank);
 
-#if VERSION_STRING >= TBC
     uint8_t getArenaFaction() const;
     void setArenaFaction(uint8_t faction);
-#endif
     // bytes3 end
     //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -221,13 +214,8 @@ public:
     uint32_t getQuestLogStateForSlot(uint8_t slot) const;
     void setQuestLogStateBySlot(uint8_t slot, uint32_t state);
 
-#if VERSION_STRING > TBC
     uint64_t getQuestLogRequiredMobOrGoForSlot(uint8_t slot) const;
     void setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint64_t mobOrGoCount);
-#else
-    uint32_t getQuestLogRequiredMobOrGoForSlot(uint8_t slot) const;
-    void setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint32_t mobOrGoCount);
-#endif
 
     uint32_t getQuestLogExpireTimeForSlot(uint8_t slot) const;
     void setQuestLogExpireTimeBySlot(uint8_t slot, uint32_t expireTime);
@@ -238,13 +226,8 @@ public:
     // VisibleItem start
     uint32_t getVisibleItemEntry(uint32_t slot) const;
     void setVisibleItemEntry(uint32_t slot, uint32_t entry);
-#if VERSION_STRING > TBC
-    uint16_t getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const;
-    void setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint16_t enchantment);
-#else
     uint32_t getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const;
     void setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint32_t enchantment);
-#endif
     // VisibleItem end
     //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -263,38 +246,26 @@ public:
     uint64_t getVendorBuybackSlot(uint8_t slot) const;
     void setVendorBuybackSlot(uint8_t slot, uint64_t guid);
 
-#if VERSION_STRING < Cata
     uint64_t getKeyRingSlotItemGuid(uint8_t slot) const;
     void setKeyRingSlotItemGuid(uint8_t slot, uint64_t guid);
-#endif
 
-#if VERSION_STRING == TBC
     uint64_t getVanityPetSlotItemGuid(uint8_t slot) const;
     void setVanityPetSlotItemGuid(uint8_t slot, uint64_t guid);
-#endif
 
-#if VERSION_STRING == WotLK
     uint64_t getCurrencyTokenSlotItemGuid(uint8_t slot) const;
     void setCurrencyTokenSlotItemGuid(uint8_t slot, uint64_t guid);
-#endif
 
     uint64_t getFarsightGuid() const;
     void setFarsightGuid(uint64_t farsightGuid);
 
-#if VERSION_STRING > Classic
     uint64_t getKnownTitles(uint8_t index) const;
     void setKnownTitles(uint8_t index, uint64_t title);
-#endif
 
-#if VERSION_STRING > Classic
     uint32_t getChosenTitle() const;
     void setChosenTitle(uint32_t title);
-#endif
 
-#if VERSION_STRING == WotLK
     uint64_t getKnownCurrencies() const;
     void setKnownCurrencies(uint64_t currencies);
-#endif
 
 #if VERSION_STRING == Mop
     uint32_t getCurrentSpecId() const;
@@ -311,7 +282,9 @@ public:
     uint32_t getNextLevelXp() const;
     void setNextLevelXp(uint32_t xp);
 
-#if VERSION_STRING < Cata
+    // number of skill positions in the player fields
+    uint32_t getSkillFieldPositionCount() const;
+
     uint16_t getSkillInfoId(uint32_t index) const;
     uint16_t getSkillInfoStep(uint32_t index) const;
     uint16_t getSkillInfoCurrentValue(uint32_t index) const;
@@ -324,27 +297,11 @@ public:
     void setSkillInfoMaxValue(uint32_t index, uint16_t max);
     void setSkillInfoBonusTemporary(uint32_t index, uint16_t bonus);
     void setSkillInfoBonusPermanent(uint32_t index, uint16_t bonus);
-#else
-    uint16_t getSkillInfoId(uint32_t index, uint8_t offset) const;
-    uint16_t getSkillInfoStep(uint32_t index, uint8_t offset) const;
-    uint16_t getSkillInfoCurrentValue(uint32_t index, uint8_t offset) const;
-    uint16_t getSkillInfoMaxValue(uint32_t index, uint8_t offset) const;
-    uint16_t getSkillInfoBonusTemporary(uint32_t index, uint8_t offset) const;
-    uint16_t getSkillInfoBonusPermanent(uint32_t index, uint8_t offset) const;
     uint32_t getProfessionSkillLine(uint32_t index) const;
-    void setSkillInfoId(uint32_t index, uint8_t offset, uint16_t id);
-    void setSkillInfoStep(uint32_t index, uint8_t offset, uint16_t step);
-    void setSkillInfoCurrentValue(uint32_t index, uint8_t offset, uint16_t current);
-    void setSkillInfoMaxValue(uint32_t index, uint8_t offset, uint16_t max);
-    void setSkillInfoBonusTemporary(uint32_t index, uint8_t offset, uint16_t bonus);
-    void setSkillInfoBonusPermanent(uint32_t index, uint8_t offset, uint16_t bonus);
     void setProfessionSkillLine(uint32_t index, uint32_t value);
-#endif
 
     uint32_t getFreeTalentPoints() const;
-#if VERSION_STRING < Cata
     void setFreeTalentPoints(uint32_t points);
-#endif
 
     uint32_t getFreePrimaryProfessionPoints() const;
     void setFreePrimaryProfessionPoints(uint32_t points);
@@ -365,7 +322,6 @@ public:
     float getParryPercentage() const;
     void setParryPercentage(float value);
 
-#if VERSION_STRING >= TBC
     uint32_t getExpertise() const;
     void setExpertise(uint32_t value);
     void modExpertise(int32_t value);
@@ -373,7 +329,6 @@ public:
     uint32_t getOffHandExpertise() const;
     void setOffHandExpertise(uint32_t value);
     void modOffHandExpertise(int32_t value);
-#endif
 
     float getMeleeCritPercentage() const;
     void setMeleeCritPercentage(float value);
@@ -381,7 +336,6 @@ public:
     float getRangedCritPercentage() const;
     void setRangedCritPercentage(float value);
 
-#if VERSION_STRING >= TBC
     float getOffHandCritPercentage() const;
     void setOffHandCritPercentage(float value);
 
@@ -390,12 +344,9 @@ public:
 
     uint32_t getShieldBlock() const;
     void setShieldBlock(uint32_t value);
-#endif
 
-#if VERSION_STRING >= WotLK
     float getShieldBlockCritPercentage() const;
     void setShieldBlockCritPercentage(float value);
-#endif
 
     uint32_t getExploredZone(uint32_t idx) const;
     void setExploredZone(uint32_t idx, uint32_t data);
@@ -406,45 +357,33 @@ public:
     uint32_t getWatchedFaction() const;
     void setWatchedFaction(uint32_t factionId);
 
-#if VERSION_STRING == TBC
     float getManaRegeneration() const;
     void setManaRegeneration(float value);
 
     float getManaRegenerationWhileCasting() const;
     void setManaRegenerationWhileCasting(float value);
-#endif
 
     uint32_t getMaxLevel() const;
     void setMaxLevel(uint32_t level);
 
-#if VERSION_STRING >= WotLK
     float getRuneRegen(uint8_t rune) const;
     void setRuneRegen(uint8_t rune, float regen);
-#endif
 
     uint32_t getRestStateXp() const;
     void setRestStateXp(uint32_t xp);
 
     //\brief: the playerfield coinage is an uint64_t since cata
-#if VERSION_STRING < Cata
-    uint32_t getCoinage() const;
-    void setCoinage(uint32_t coinage);
-    bool hasEnoughCoinage(uint32_t coinage) const;
-    void modCoinage(int32_t coinage);
-#else
     uint64_t getCoinage() const;
     void setCoinage(uint64_t coinage);
     bool hasEnoughCoinage(uint64_t coinage) const;
     void modCoinage(int64_t coinage);
-#endif
 
-#if VERSION_STRING == Classic
+    // own player fields in classic, the unit fields since TBC
     uint32_t getResistanceBuffModPositive(uint8_t type) const;
     void setResistanceBuffModPositive(uint8_t type, uint32_t value);
 
     uint32_t getResistanceBuffModNegative(uint8_t type) const;
     void setResistanceBuffModNegative(uint8_t type, uint32_t value);
-#endif
 
     uint32_t getModDamageDonePositive(uint16_t school) const;
     void setModDamageDonePositive(uint16_t school, uint32_t value);
@@ -458,7 +397,6 @@ public:
     void setModDamageDonePct(float damagePct, uint8_t school);
     void modModDamageDonePct(float damagePct, uint8_t school);
 
-#if VERSION_STRING >= TBC
     uint32_t getModHealingDone() const;
     void setModHealingDone(uint32_t value);
     void modModHealingDone(int32_t value);
@@ -472,7 +410,6 @@ public:
     uint32_t getModTargetPhysicalResistance() const;
     void setModTargetPhysicalResistance(uint32_t value);
     void modModTargetPhysicalResistance(int32_t value);
-#endif
 
     // playerfieldbytes start
     uint32_t getPlayerFieldBytes() const;
@@ -487,10 +424,8 @@ public:
     void setEnabledActionBars(uint8_t actionBarId);
     // playerfieldbytes end
 
-#if VERSION_STRING < Cata
     uint32_t getAmmoId() const;
     void setAmmoId(uint32_t id);
-#endif
 
     uint32_t getBuybackPriceSlot(uint8_t slot) const;
     void setBuybackPriceSlot(uint8_t slot, uint32_t price);
@@ -498,20 +433,14 @@ public:
     uint32_t getBuybackTimestampSlot(uint8_t slot) const;
     void setBuybackTimestampSlot(uint8_t slot, uint32_t timestamp);
 
-#if VERSION_STRING > Classic
     uint32_t getFieldKills() const;
     void setFieldKills(uint32_t kills);
-#endif
 
-#if VERSION_STRING > Classic
-#if VERSION_STRING < Cata
     uint32_t getContributionToday() const;
     void setContributionToday(uint32_t contribution);
 
     uint32_t getContributionYesterday() const;
     void setContributionYesterday(uint32_t contribution);
-#endif
-#endif
 
     uint32_t getLifetimeHonorableKills() const;
     void setLifetimeHonorableKills(uint32_t kills);
@@ -530,7 +459,6 @@ public:
     void setCombatRating(uint8_t combatRating, uint32_t value);
     void modCombatRating(uint8_t combatRating, int32_t value);
 
-#if VERSION_STRING > Classic
     // field_arena_team_info start
     uint32_t getArenaTeamId(uint8_t teamSlot) const;
     void setArenaTeamId(uint8_t teamSlot, uint32_t teamId);
@@ -538,10 +466,7 @@ public:
     uint32_t getArenaTeamMemberRank(uint8_t teamSlot) const;
     void setArenaTeamMemberRank(uint8_t teamSlot, uint32_t rank);
     // field_arena_team_info end
-#endif
 
-#if VERSION_STRING > Classic
-#if VERSION_STRING < Cata
     uint32_t getHonorCurrency() const;
     void setHonorCurrency(uint32_t amount);
     void modHonorCurrency(int32_t value);
@@ -549,10 +474,7 @@ public:
     uint32_t getArenaCurrency() const;
     void setArenaCurrency(uint32_t amount);
     void modArenaCurrency(int32_t value);
-#endif
-#endif
 
-#if VERSION_STRING >= WotLK
     uint32_t getNoReagentCost(uint8_t index) const;
     void setNoReagentCost(uint8_t index, uint32_t value);
 
@@ -564,7 +486,6 @@ public:
 
     uint32_t getGlyphsEnabled() const;
     void setGlyphsEnabled(uint32_t glyphs);
-#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement/Position
@@ -2334,7 +2255,7 @@ protected:
     // Raid
     uint8_t m_targetIcon = 0;
 
-    uint32_t _fields[getSizeOfStructure(WoWPlayer)];
+    uint32_t _fields[Version::kMaxPlayerValues];
 
 public:
     std::map<uint32_t, Standing> m_forcedReactions;
@@ -2353,7 +2274,7 @@ public:
 
     uint32_t checkDamageLimits(uint32_t damage, uint32_t spellId);
 
-    void loadFieldsFromString(const char* string, uint16_t firstField, uint32_t fieldsNum);
+    void loadFieldsFromString(const char* string, uint32_t firstField, uint32_t fieldsNum);
 
     // Avenging Wrath
     void avengingWrath() { m_avengingWrath = true; }

@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ObjectDefines.hpp"
 #include "Server/UpdateMask.h"
+#include "Version/ObjectLayout.hpp"
 #include "Platform/SymbolVisibility.hpp"
 #include "Server/EventableObject.h"
 #include "Units/Creatures/CreatureDefines.hpp"
@@ -16,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/UnitDefines.hpp"
 #include "Map/Visibility/VisibilityTypes.hpp"
 
+#include <cstring>
 #include <set>
 #include <map>
 #include <mutex>
@@ -31,7 +33,6 @@ namespace WDB::Structures
     struct FactionTemplateEntry;
 }
 
-struct WoWObject;
 class SpellInfo;
 struct FactionDBC;
 struct AuraEffectModifier;
@@ -107,26 +108,89 @@ public:
     // Object values
 
 protected:
+    // the object values, one uint32 per update field; the layout tables map field ids to offsets
     union
     {
         uint8_t* wow_data_ptr;
-        WoWObject* wow_data;
         uint32_t* m_uint32Values = nullptr;
     };
 
-    const WoWObject* objectData() const { return wow_data; }
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Layout based field access. The field id enum selects the layout table of the server
+    // expansion, so the same code reads and writes the object values of every client version.
+    // A field that does not exist in the active version reads as zero and ignores writes.
+
+    /// value index of a field (or array element) inside the object values, kNoField when absent
+    template <typename FieldId>
+    [[nodiscard]] uint32_t fieldIndex(FieldId id, uint32_t arrayIndex = 0) const noexcept
+    {
+        return Version::layoutFor<FieldId>().index(id, arrayIndex);
+    }
+
+    template <typename FieldId>
+    [[nodiscard]] bool hasField(FieldId id) const noexcept
+    {
+        return Version::layoutFor<FieldId>().has(id);
+    }
+
+    /// reads a field, an array element (arrayIndex) or a part of it (byteOffset inside the element)
+    template <typename T, typename FieldId>
+    [[nodiscard]] T getField(FieldId id, uint32_t arrayIndex = 0, uint32_t byteOffset = 0) const noexcept
+    {
+        const Version::FieldDesc& desc = Version::layoutFor<FieldId>().get(id);
+        if (desc.offset == Version::kNoField)
+            return T{};
+
+        const uint32_t position = desc.offset + arrayIndex * desc.stride + byteOffset;
+        const uint32_t bytes = fieldBytes<T>(desc, byteOffset);
+        if (bytes == 0 || position + bytes > static_cast<uint32_t>(m_valuesCount) * sizeof(uint32_t))
+            return T{};
+
+        T value{};
+        std::memcpy(&value, wow_data_ptr + position, bytes);
+        return value;
+    }
+
+    /// writes a field, marks the touched values in the update mask, returns true when the value changed
+    template <typename T, typename FieldId>
+    bool setField(FieldId id, T value, uint32_t arrayIndex = 0, uint32_t byteOffset = 0, bool skipObjectUpdate = false)
+    {
+        const Version::FieldDesc& desc = Version::layoutFor<FieldId>().get(id);
+        if (desc.offset == Version::kNoField)
+            return false;
+
+        const uint32_t position = desc.offset + arrayIndex * desc.stride + byteOffset;
+        const uint32_t bytes = fieldBytes<T>(desc, byteOffset);
+        if (bytes == 0 || position + bytes > static_cast<uint32_t>(m_valuesCount) * sizeof(uint32_t))
+            return false;
+
+        T current{};
+        std::memcpy(&current, wow_data_ptr + position, bytes);
+        if (current == value)
+            return false;
+
+        std::memcpy(wow_data_ptr + position, &value, bytes);
+
+        for (uint32_t index = position / sizeof(uint32_t); index <= (position + bytes - 1) / sizeof(uint32_t); ++index)
+            m_updateMask.SetBit(index);
+
+        if (!skipObjectUpdate)
+            updateObject();
+
+        return true;
+    }
+
+private:
+    /// bytes a typed access covers: the type size, capped by what is left of the field behind byteOffset
+    template <typename T>
+    static constexpr uint32_t fieldBytes(const Version::FieldDesc& desc, uint32_t byteOffset) noexcept
+    {
+        const uint32_t remaining = desc.size > byteOffset ? desc.size - byteOffset : 0;
+        return remaining < sizeof(T) ? remaining : static_cast<uint32_t>(sizeof(T));
+    }
 
 public:
-    bool write(const uint8_t& member, uint8_t val, bool skipObjectUpdate = false);
-    bool write(const uint16_t& member, uint16_t val, bool skipObjectUpdate = false);
-    bool write(const float& member, float val, bool skipObjectUpdate = false);
-    bool write(const int32_t& member, int32_t val, bool skipObjectUpdate = false);
-    bool write(const uint32_t& member, uint32_t val, bool skipObjectUpdate = false);
-    bool write(const uint64_t& member, uint64_t val, bool skipObjectUpdate = false);
-    bool write(const uint64_t& member, uint32_t low, uint32_t high, bool skipObjectUpdate = false);
-    bool writeLow(const uint64_t& member, uint32_t val, bool skipObjectUpdate = false);
-    bool writeHigh(const uint64_t& member, uint32_t val, bool skipObjectUpdate = false);
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
     uint64_t getGuid() const;
@@ -140,20 +204,14 @@ public:
     void setGuidHigh(uint32_t high);
 
     //\todo choose one function!
-#if VERSION_STRING < Cata
     uint32_t getOType() const;
     void setOType(uint32_t type);
     void setObjectType(uint8_t objectTypeId);
-#else
-    uint16_t getOType() const;
-    void setOType(uint16_t type);
-    void setObjectType(uint8_t objectTypeId);
-#endif
 
     void setEntry(uint32_t entry);
     uint32_t getEntry() const;
 
-#if VERSION_STRING >= Mop
+    // dynamic flags of the object data field (since Mop), units and game objects layer their own fields on top
     uint16_t getDynamicFlags() const;
     int16_t getDynamicPathProgress() const;
     void setDynamicFlags(uint16_t dynamicFlags);
@@ -161,7 +219,6 @@ public:
     void removeDynamicFlags(uint16_t dynamicFlags);
     bool hasDynamicFlags(uint16_t dynamicFlags) const;
     void setDynamicPathProgress(int16_t pathProgress);
-#endif
 
     float getScale() const;
     void setScale(float scaleX);
@@ -734,7 +791,6 @@ public:
         Transporter* m_transport = nullptr;
 
     public:
-
         bool m_loadedFromDB = false;
 
         // Andy's crap

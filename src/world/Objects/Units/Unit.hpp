@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Object.hpp"
 #include "UnitDefines.hpp"
 #include "Macros/UnitMacros.hpp"
-#include "Data/WoWUnit.hpp"
 #include "ThreatHandler.h"
 #include "CombatHandler.hpp"
 #include "Management/Loot/Loot.hpp"
@@ -144,7 +143,6 @@ using AuraEffectList = std::list<AuraEffectModifier const*>;
 using AuraEffectListArray = std::array<AuraEffectList, TOTAL_SPELL_AURAS>;
 using VisualAuraArray = std::array<uint32_t/*spellId*/, AuraSlots::NEGATIVE_VISUAL_SLOT_END>;
 
-struct WoWUnit;
 
 class SERVER_DECL Unit : public Object
 {
@@ -170,7 +168,6 @@ public: //\todo Zyres: public fpr LuaEngine, sort out why
 private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
-    const WoWUnit* unitData() const { return reinterpret_cast<WoWUnit*>(wow_data); }
 
 public:
     uint64_t getCharmGuid() const;
@@ -179,10 +176,8 @@ public:
     uint64_t getSummonGuid() const;
     void setSummonGuid(uint64_t guid);
 
-#if VERSION_STRING > TBC
     uint64_t getCritterGuid() const;
     void setCritterGuid(uint64_t guid);
-#endif
 
     uint64_t getCharmedByGuid() const;
     void setCharmedByGuid(uint64_t guid);
@@ -262,20 +257,14 @@ public:
     // helper
     void setFaction(uint32_t factionId);
 
-#if VERSION_STRING >= WotLK
-    // Returns item entry in wotlk and above
+    // the same field: item entry since WotLK, item display id in classic and tbc
     uint32_t getVirtualItemSlotId(uint8_t slot) const;
-#else
-    // Returns item display id in classic and tbc
     uint32_t getVirtualItemDisplayId(uint8_t slot) const;
-#endif
     void setVirtualItemSlotId(uint8_t slot, uint32_t item_id);
 
-#if VERSION_STRING < WotLK
     uint64_t getVirtualItemInfo(uint8_t slot) const;
     unit_virtual_item_info getVirtualItemInfoFields(uint8_t slot) const;
     void setVirtualItemInfo(uint8_t slot, uint64_t item_info);
-#endif
 
     uint32_t getUnitFlags() const;
     void setUnitFlags(uint32_t unitFlags);
@@ -358,23 +347,19 @@ public:
     uint8_t getStandState() const;
     void setStandState(uint8_t standState);
 
-#if VERSION_STRING < WotLK
+    // pet loyalty before WotLK, pet talent points until Cata
     uint8_t getPetLoyalty() const;
     void setPetLoyalty(uint8_t loyalty);
-#elif VERSION_STRING < Mop
     uint8_t getPetTalentPoints() const;
     void setPetTalentPoints(uint8_t talentPoints);
-#endif
 
     uint8_t getStandStateFlags() const;
     void setStandStateFlags(uint8_t standStateFlags);
     void addStandStateFlags(uint8_t standStateFlags);
     void removeStandStateFlags(uint8_t standStateFlags);
 
-#if VERSION_STRING != Classic
     uint8_t getAnimationFlags() const;
     void setAnimationFlags(uint8_t animationFlags);
-#endif
     //bytes_1 end
 
     // Note; this is not same as serverside PetCache::number or Pet::m_petId, this is clientside pet number which is pet's low guid
@@ -390,13 +375,11 @@ public:
     uint32_t getPetNextLevelExperience() const;
     void setPetNextLevelExperience(uint32_t experience);
 
-#if VERSION_STRING < Mop
     uint32_t getDynamicFlags() const;
     void setDynamicFlags(uint32_t dynamicFlags);
     void addDynamicFlags(uint32_t dynamicFlags);
     void removeDynamicFlags(uint32_t dynamicFlags);
     bool hasDynamicFlags(uint32_t dynamicFlags) const;
-#endif
 
     float getModCastSpeed() const;
     void setModCastSpeed(float modifier);
@@ -405,17 +388,10 @@ public:
     uint32_t getCreatedBySpellId() const;
     void setCreatedBySpellId(uint32_t id);
 
-#if VERSION_STRING < Mop
-    uint32_t getNpcFlags() const;
-    void setNpcFlags(uint32_t npcFlags);
-    void addNpcFlags(uint32_t npcFlags);
-    void removeNpcFlags(uint32_t npcFlags);
-#else
     uint64_t getNpcFlags() const;
     void setNpcFlags(uint64_t npcFlags);
     void addNpcFlags(uint64_t npcFlags);
     void removeNpcFlags(uint64_t npcFlags);
-#endif
 
     uint32_t getEmoteState() const;
     void setEmoteState(uint32_t id);
@@ -423,24 +399,20 @@ public:
     uint32_t getStat(uint8_t stat) const;
     void setStat(uint8_t stat, uint32_t value);
 
-#if VERSION_STRING > Classic
     uint32_t getPosStat(uint8_t stat) const;
     void setPosStat(uint8_t stat, uint32_t value);
 
     uint32_t getNegStat(uint8_t stat) const;
     void setNegStat(uint8_t stat, uint32_t value);
-#endif
 
     uint32_t getResistance(uint8_t type) const;
     void setResistance(uint8_t type, uint32_t value);
 
-#if VERSION_STRING > Classic
     uint32_t getResistanceBuffModPositive(uint8_t type) const;
     void setResistanceBuffModPositive(uint8_t type, uint32_t value);
 
     uint32_t getResistanceBuffModNegative(uint8_t type) const;
     void setResistanceBuffModNegative(uint8_t type, uint32_t value);
-#endif
 
     uint32_t getBaseMana() const;
     void setBaseMana(uint32_t baseMana);
@@ -458,22 +430,18 @@ public:
     uint8_t getSheathType() const;
     void setSheathType(uint8_t sheathType);
 
-#if VERSION_STRING == TBC
+    // positive aura limit in TBC, pvp flags since WotLK
     uint8_t getPositiveAuraLimit() const;
     void setPositiveAuraLimit(uint8_t limit);
-#elif VERSION_STRING >= WotLK
     uint8_t getPvpFlags() const;
     void setPvpFlags(uint8_t pvpFlags);
     void addPvpFlags(uint8_t pvpFlags);
     void removePvpFlags(uint8_t pvpFlags);
-#endif
 
-#if VERSION_STRING >= TBC
     uint8_t getPetFlags() const;
     void setPetFlags(uint8_t petFlags);
     void addPetFlags(uint8_t petFlags);
     void removePetFlags(uint8_t petFlags);
-#endif
 
     //bytes_1 in classic
     uint8_t getShapeShiftForm() const;
@@ -517,10 +485,8 @@ public:
     void setRangedAttackPowerMultiplier(float multiplier);
     void modRangedAttackPowerMultiplier(float multiplier);
 
-#if VERSION_STRING >= WotLK
     float getHoverHeight() const;
     void setHoverHeight(float height);
-#endif
     //////////////////////////////////////////////////////////////////////////////////////////
     // Area/Map/Phase & Position
 public:

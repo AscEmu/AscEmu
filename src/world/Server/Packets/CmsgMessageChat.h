@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "Chat/ChatDefines.hpp"
-#include "Server/OpcodeTable.hpp"
+#include "Version/VersionRegistry.hpp"
 
 namespace AscEmu::Packets
 {
@@ -110,7 +110,7 @@ namespace AscEmu::Packets
             {
                 if (m_protocol.expansion == WoW::Expansion::_Cata)
                 {
-                    type = getMessageTypeForOpcode(static_cast<uint16_t>(sOpcodeTables.getInternalIdForHex(packet.getOpcode(), m_protocol)));
+                    type = getMessageTypeForOpcode(static_cast<uint16_t>(Version::opcodeIdForHex(packet.getOpcode(), m_protocol)));
                     if (type == 0xFF)
                         return false;
 
@@ -177,7 +177,7 @@ namespace AscEmu::Packets
                 }
                 else // Mop
                 {
-                    type = getMessageTypeForOpcode(static_cast<uint16_t>(sOpcodeTables.getInternalIdForHex(packet.getOpcode(), m_protocol)));
+                    type = getMessageTypeForOpcode(static_cast<uint16_t>(Version::opcodeIdForHex(packet.getOpcode(), m_protocol)));
                     if (type == 0xFF)
                         return false;
 

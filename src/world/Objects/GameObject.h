@@ -22,11 +22,10 @@
 #define GAMEOBJECT_H
 
 #include "Object.hpp"
-#include "Data/WoWGameObject.hpp"
 #include "GameObjectDefines.hpp"
 #include "Management/Loot/Loot.hpp"
 #include "Management/Loot/LootDefines.hpp"
-#include "Server/UpdateFieldInclude.h"
+#include "Version/LayoutLimits.hpp"
 
 namespace MySQLStructure
 {
@@ -125,7 +124,6 @@ private:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
-    WoWGameObject* gameObjectData() const { return reinterpret_cast<WoWGameObject*>(wow_data); }
 
 public:
     uint64_t getCreatedByGuid() const;
@@ -142,15 +140,10 @@ public:
 
     float getParentRotation(uint8_t type) const;
 
-#if VERSION_STRING < WotLK
     uint32_t getDynamicFlags() const;
     void setDynamicFlags(uint32_t dynamicFlags);
-#elif VERSION_STRING < Mop
-    uint16_t getDynamicFlags() const;
     int16_t getDynamicPathProgress() const;
-    void setDynamicFlags(uint16_t dynamicFlags);
     void setDynamicPathProgress(int16_t pathProgress);
-#endif
 
     uint32_t getFactionTemplate() const;
     void setFactionTemplate(uint32_t id);
@@ -239,7 +232,7 @@ public:
         GameObjectProperties const* gameobject_properties = nullptr;
 
         GameObjectAIScript* myScript = nullptr;
-        uint32_t _fields[getSizeOfStructure(WoWGameObject)];
+        uint32_t _fields[Version::kMaxGameObjectValues];
 
         uint32_t m_overrides = 0;             //See enum GAMEOBJECT_OVERRIDES!
 

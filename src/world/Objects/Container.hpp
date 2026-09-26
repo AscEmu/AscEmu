@@ -6,9 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Objects/Item.hpp"
-#include "Data/WoWContainer.hpp"
+#include "Version/LayoutLimits.hpp"
 
-struct WoWContainer;
 
 class SERVER_DECL Container : public Item
 {
@@ -37,9 +36,6 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
-private:
-    const WoWContainer* containerData() const { return reinterpret_cast<WoWContainer*>(wow_data); }
-
 public:
     uint32_t getSlotCount() const;
     void setSlotCount(uint32_t num);
@@ -49,5 +45,5 @@ public:
 
 protected:
     std::unique_ptr<std::unique_ptr<Item>[]> m_Slot;
-    uint32_t __fields[getSizeOfStructure(WoWContainer)] = {0};
+    uint32_t __fields[Version::kMaxContainerValues] = {0};
 };

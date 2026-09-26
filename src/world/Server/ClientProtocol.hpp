@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "AEVersion.hpp"
 #include "Platform/SymbolVisibility.hpp"
 
 #include <cstdint>
@@ -225,10 +226,10 @@ namespace WoW {
     /// Legacy wrapper: Build number used for database build filters
     [[nodiscard]] inline uint32_t getConfigBuild() noexcept { return getServerBuild(); }
 
-    /// Returns the array index for opcode/version tables (0 = Classic ... 4 = MoP), or -1 if unsupported
+    /// Returns the array index for opcode/version tables (0 = Classic ... 6 = Legion), or -1 if unsupported
     [[nodiscard]] constexpr int32_t getOpcodeTableIndex(Expansion const expansion) noexcept
     {
-        if (expansion == Expansion::Unknown || expansion > Expansion::_Mop)
+        if (expansion == Expansion::Unknown || expansion > Expansion::_Legion)
         {
             return -1;
         }

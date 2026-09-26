@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Data/Flags.hpp"
 #include "Management/ObjectMgr.hpp"
-#include "Data/WoWCorpse.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Map/Management/ObjectFactory.hpp"
@@ -18,6 +17,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Strings.hpp"
 #include "Utilities/Util.hpp"
 #include "Server/World.h"
+#include "Version/ObjectLayout.hpp"
+
+using Version::CorpseField;
 
 Corpse::Corpse(uint64_t guid)
 {
@@ -40,10 +42,10 @@ Corpse::Corpse(uint64_t guid)
     m_updateFlag = UPDATEFLAG_HAS_POSITION;
 #endif
 
-    m_valuesCount = getSizeOfStructure(WoWCorpse);
+    m_valuesCount = Version::layouts().corpse.valueCount();
     m_uint32Values = _fields;
-    memset(m_uint32Values, 0, (getSizeOfStructure(WoWCorpse)) * sizeof(uint32_t));
-    m_updateMask.SetCount(getSizeOfStructure(WoWCorpse));
+    memset(m_uint32Values, 0, (Version::layouts().corpse.valueCount()) * sizeof(uint32_t));
+    m_updateMask.SetCount(Version::layouts().corpse.valueCount());
 
     setOType(TYPE_CORPSE | TYPE_OBJECT);
     setGuid(guid);
@@ -143,7 +145,7 @@ void Corpse::saveToDB()
     ss << getGuid() << " " << getOType() << " " << getEntry() << " " << getScale() << " ";
     ss << getOwnerGuid() << " " << getDisplayId() << " ";
 
-    for (uint8_t i = 0; i < WOWCORPSE_ITEM_COUNT; ++i)
+    for (uint8_t i = 0; i < Version::fieldCount(CorpseField::Item); ++i)
         ss << getItem(i) << " ";
 
     ss << getBytes1() << " " << getBytes2() << " " << getFlags() << " " << getDynamicFlags() << " ";
@@ -224,52 +226,52 @@ time_t Corpse::getDeathClock() { return m_time; }
 
  //////////////////////////////////////////////////////////////////////////////////////////
  // WoWData
-uint64_t Corpse::getOwnerGuid() const { return corpseData()->owner_guid; }
-void Corpse::setOwnerGuid(uint64_t guid) { write(corpseData()->owner_guid, guid); }
+uint64_t Corpse::getOwnerGuid() const { return getField<uint64_t>(CorpseField::OwnerGuid); }
+void Corpse::setOwnerGuid(uint64_t guid) { setField<uint64_t>(CorpseField::OwnerGuid, guid); }
 
 // party
 
-uint32_t Corpse::getDisplayId() const { return corpseData()->display_id; }
-void Corpse::setDisplayId(uint32_t id) { write(corpseData()->display_id, id); }
+uint32_t Corpse::getDisplayId() const { return getField<uint32_t>(CorpseField::DisplayId); }
+void Corpse::setDisplayId(uint32_t id) { setField<uint32_t>(CorpseField::DisplayId, id); }
 
-uint32_t Corpse::getItem(uint8_t slot) const { return corpseData()->item[slot]; }
-void Corpse::setItem(uint8_t slot, uint32_t item) { write(corpseData()->item[slot], item); }
+uint32_t Corpse::getItem(uint8_t slot) const { return getField<uint32_t>(CorpseField::Item, slot); }
+void Corpse::setItem(uint8_t slot, uint32_t item) { setField<uint32_t>(CorpseField::Item, item, slot); }
 
 //bytes 1 start
-uint32_t Corpse::getBytes1() const { return corpseData()->corpse_bytes_1.raw; }
-void Corpse::setBytes1(uint32_t bytes) { write(corpseData()->corpse_bytes_1.raw, bytes); }
+uint32_t Corpse::getBytes1() const { return getField<uint32_t>(CorpseField::CorpseBytes1); }
+void Corpse::setBytes1(uint32_t bytes) { setField<uint32_t>(CorpseField::CorpseBytes1, bytes); }
 
 //unk1
 
-uint8_t Corpse::getRace() const { return corpseData()->corpse_bytes_1.s.race; }
-void Corpse::setRace(uint8_t race) { write(corpseData()->corpse_bytes_1.s.race, race); }
+uint8_t Corpse::getRace() const { return getField<uint8_t>(CorpseField::CorpseBytes1Race); }
+void Corpse::setRace(uint8_t race) { setField<uint8_t>(CorpseField::CorpseBytes1Race, race); }
 
-uint8_t Corpse::getGender() const { return corpseData()->corpse_bytes_1.s.gender; }
-void Corpse::setGender(uint8_t gender) { write(corpseData()->corpse_bytes_1.s.gender, gender); }
+uint8_t Corpse::getGender() const { return getField<uint8_t>(CorpseField::CorpseBytes1Gender); }
+void Corpse::setGender(uint8_t gender) { setField<uint8_t>(CorpseField::CorpseBytes1Gender, gender); }
 
-uint8_t Corpse::getSkinColor() const { return corpseData()->corpse_bytes_1.s.skin_color; }
-void Corpse::setSkinColor(uint8_t color) { write(corpseData()->corpse_bytes_1.s.skin_color, color); }
+uint8_t Corpse::getSkinColor() const { return getField<uint8_t>(CorpseField::CorpseBytes1SkinColor); }
+void Corpse::setSkinColor(uint8_t color) { setField<uint8_t>(CorpseField::CorpseBytes1SkinColor, color); }
 //bytes 1 end
 
 //bytes 2 start
-uint32_t Corpse::getBytes2() const { return corpseData()->corpse_bytes_2.raw; }
-void Corpse::setBytes2(uint32_t bytes) { write(corpseData()->corpse_bytes_2.raw, bytes); }
+uint32_t Corpse::getBytes2() const { return getField<uint32_t>(CorpseField::CorpseBytes2); }
+void Corpse::setBytes2(uint32_t bytes) { setField<uint32_t>(CorpseField::CorpseBytes2, bytes); }
 
-uint8_t Corpse::getFace() const { return corpseData()->corpse_bytes_2.s.face; }
-void Corpse::setFace(uint8_t face) { write(corpseData()->corpse_bytes_2.s.face, face); }
+uint8_t Corpse::getFace() const { return getField<uint8_t>(CorpseField::CorpseBytes2Face); }
+void Corpse::setFace(uint8_t face) { setField<uint8_t>(CorpseField::CorpseBytes2Face, face); }
 
-uint8_t Corpse::getHairStyle() const { return corpseData()->corpse_bytes_2.s.face; }
-void Corpse::setHairStyle(uint8_t style) { write(corpseData()->corpse_bytes_2.s.face, style); }
+uint8_t Corpse::getHairStyle() const { return getField<uint8_t>(CorpseField::CorpseBytes2Face); }
+void Corpse::setHairStyle(uint8_t style) { setField<uint8_t>(CorpseField::CorpseBytes2Face, style); }
 
-uint8_t Corpse::getHairColor() const { return corpseData()->corpse_bytes_2.s.face; }
-void Corpse::setHairColor(uint8_t color) { write(corpseData()->corpse_bytes_2.s.face, color); }
+uint8_t Corpse::getHairColor() const { return getField<uint8_t>(CorpseField::CorpseBytes2Face); }
+void Corpse::setHairColor(uint8_t color) { setField<uint8_t>(CorpseField::CorpseBytes2Face, color); }
 
-uint8_t Corpse::getFacialFeatures() const { return corpseData()->corpse_bytes_2.s.face; }
-void Corpse::setFacialFeatures(uint8_t feature) { write(corpseData()->corpse_bytes_2.s.face, feature); }
+uint8_t Corpse::getFacialFeatures() const { return getField<uint8_t>(CorpseField::CorpseBytes2Face); }
+void Corpse::setFacialFeatures(uint8_t feature) { setField<uint8_t>(CorpseField::CorpseBytes2Face, feature); }
 //bytes 2 end
 
-uint32_t Corpse::getFlags() const { return corpseData()->corpse_flags; }
-void Corpse::setFlags(uint32_t flags) { write(corpseData()->corpse_flags, flags); }
+uint32_t Corpse::getFlags() const { return getField<uint32_t>(CorpseField::CorpseFlags); }
+void Corpse::setFlags(uint32_t flags) { setField<uint32_t>(CorpseField::CorpseFlags, flags); }
 
-uint32_t Corpse::getDynamicFlags() const { return corpseData()->dynamic_flags; }
-void Corpse::setDynamicFlags(uint32_t flags) { write(corpseData()->dynamic_flags, flags); }
+uint32_t Corpse::getDynamicFlags() const { return getField<uint32_t>(CorpseField::DynamicFlags); }
+void Corpse::setDynamicFlags(uint32_t flags) { setField<uint32_t>(CorpseField::DynamicFlags, flags); }

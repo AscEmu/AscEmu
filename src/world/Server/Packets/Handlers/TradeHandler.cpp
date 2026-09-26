@@ -376,24 +376,14 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
     // Trade money
     if (targetTradeData->getTradeMoney() > 0)
     {
-#if VERSION_STRING < Cata
-        _player->modCoinage((int32_t)targetTradeData->getTradeMoney());
-        tradeTarget->modCoinage(-(int32_t)targetTradeData->getTradeMoney());
-#else
         _player->modCoinage((int64_t)targetTradeData->getTradeMoney());
         tradeTarget->modCoinage(-(int64_t)targetTradeData->getTradeMoney());
-#endif
     }
 
     if (tradeData->getTradeMoney() > 0)
     {
-#if VERSION_STRING < Cata
-        tradeTarget->modCoinage((int32_t)tradeData->getTradeMoney());
-        _player->modCoinage(-(int32_t)tradeData->getTradeMoney());
-#else
         tradeTarget->modCoinage((int64_t)tradeData->getTradeMoney());
         _player->modCoinage(-(int64_t)tradeData->getTradeMoney());
-#endif
     }
 
     // Cast spells

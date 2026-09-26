@@ -31,7 +31,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Packets/SmsgPlaySound.h"
 #include "Packets/SmsgAreaTriggerMessage.h"
 #include "Packets/SmsgZoneUnderAttack.h"
-#include "OpcodeTable.hpp"
+#include "Version/VersionRegistry.hpp"
 #include "Chat/ChatCommandHandler.hpp"
 #include "Management/GameEventMgr.hpp"
 #include "Objects/Units/Creatures/CreatureGroups.h"
@@ -164,8 +164,8 @@ void World::finalize()
     sLogger.info("MySQLDataStore : ~MySQLDataStore()");
     sMySQLStore.finalize();
 
-    sLogger.info("OpcodeTables : finalize()");
-    sOpcodeTables.finalize();
+    sLogger.info("Version::Registry : finalize()");
+    sVersionRegistry.finalize();
 
     broadcastMgr.reset();
 

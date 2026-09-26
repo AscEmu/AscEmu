@@ -10,7 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "TradeData.hpp"
 #include "Chat/ChatDefines.hpp"
-#include "Data/WoWPlayer.hpp"
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Macros/CorpseMacros.hpp"
@@ -205,6 +204,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include <algorithm>
 #include <sstream>
 #include <vector>
+#include "Version/ObjectLayout.hpp"
+
+using Version::GameObjectField;
+using Version::UnitField;
+
+using Version::ObjectField;
+using Version::PlayerField;
 
 using namespace AscEmu::Packets;
 
@@ -293,13 +299,13 @@ Player::Player(uint32_t guid) :
     //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_PLAYER;
     m_objectTypeId = TYPEID_PLAYER;
-    m_valuesCount = getSizeOfStructure(WoWPlayer);
+    m_valuesCount = Version::layouts().player.valueCount();
     //////////////////////////////////////////////////////////////////////////
 
     //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
     m_uint32Values = _fields;
-    memset(m_uint32Values, 0, (getSizeOfStructure(WoWPlayer)) * sizeof(uint32_t));
-    m_updateMask.SetCount(getSizeOfStructure(WoWPlayer));
+    memset(m_uint32Values, 0, (Version::layouts().player.valueCount()) * sizeof(uint32_t));
+    m_updateMask.SetCount(Version::layouts().player.valueCount());
 
     setObjectType(TYPEID_PLAYER);
     setGuidLow(guid);
@@ -882,14 +888,14 @@ void Player::onPreDetachFromWorld()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Data
-uint64_t Player::getDuelArbiter() const { return playerData()->duel_arbiter; }
-void Player::setDuelArbiter(uint64_t guid) { write(playerData()->duel_arbiter, guid); }
+uint64_t Player::getDuelArbiter() const { return getField<uint64_t>(PlayerField::DuelArbiter); }
+void Player::setDuelArbiter(uint64_t guid) { setField<uint64_t>(PlayerField::DuelArbiter, guid); }
 
-uint32_t Player::getPlayerFlags() const { return playerData()->player_flags; }
+uint32_t Player::getPlayerFlags() const { return getField<uint32_t>(PlayerField::PlayerFlags); }
 
 void Player::setPlayerFlags(uint32_t flags)
 {
-    write(playerData()->player_flags, flags);
+    setField<uint32_t>(PlayerField::PlayerFlags, flags);
 
 #if VERSION_STRING == TBC
     // TODO Fix this later
@@ -910,268 +916,348 @@ bool Player::hasPlayerFlags(uint32_t flags) const { return (getPlayerFlags() & f
 
 uint32_t Player::getGuildId() const
 {
-#if VERSION_STRING < Cata
-    return playerData()->guild_id;
-#else
-    return static_cast<uint32_t>(objectData()->data);
-#endif
+    // own player field before Cata, the low part of the object data field since
+    if (hasField(PlayerField::GuildId))
+        return getField<uint32_t>(PlayerField::GuildId);
+
+    return static_cast<uint32_t>(getField<uint64_t>(ObjectField::Data));
 }
 
 void Player::setGuildId(uint32_t guildId)
 {
 #if VERSION_STRING < Cata
-    write(playerData()->guild_id, guildId);
+    setField<uint32_t>(PlayerField::GuildId, guildId);
 #else
-    write(objectData()->data, WoWGuid(guildId, 0, HIGHGUID_TYPE_GUILD).getRawGuid());
+    setField<uint64_t>(ObjectField::Data, WoWGuid(guildId, 0, HIGHGUID_TYPE_GUILD).getRawGuid());
 
     if (guildId)
         addPlayerFlags(PLAYER_FLAG_GUILD_LVL_ENABLED);
     else
         removePlayerFlags(PLAYER_FLAG_GUILD_LVL_ENABLED);
 
-    write(objectData()->field_type.parts.guild_id, static_cast<uint16_t>(guildId != 0 ? 1 : 0));
+    setField<uint16_t>(ObjectField::FieldTypeGuildId, static_cast<uint16_t>(guildId != 0 ? 1 : 0));
 #endif
 }
 
-uint32_t Player::getGuildRank() const { return playerData()->guild_rank; }
-void Player::setGuildRank(uint32_t guildRank) { write(playerData()->guild_rank, guildRank); }
+uint32_t Player::getGuildRank() const { return getField<uint32_t>(PlayerField::GuildRank); }
+void Player::setGuildRank(uint32_t guildRank) { setField<uint32_t>(PlayerField::GuildRank, guildRank); }
 
-#if VERSION_STRING >= Cata
-uint32_t Player::getGuildLevel() const { return playerData()->guild_level; }
-void Player::setGuildLevel(uint32_t guildLevel) { write(playerData()->guild_level, guildLevel); }
-#endif
+uint32_t Player::getGuildLevel() const { return getField<uint32_t>(PlayerField::GuildLevel); }
+void Player::setGuildLevel(uint32_t guildLevel) { setField<uint32_t>(PlayerField::GuildLevel, guildLevel); }
 
 //bytes begin
-uint32_t Player::getPlayerBytes() const { return playerData()->player_bytes.raw; }
-void Player::setPlayerBytes(uint32_t bytes) { write(playerData()->player_bytes.raw, bytes); }
+uint32_t Player::getPlayerBytes() const { return getField<uint32_t>(PlayerField::PlayerBytes); }
+void Player::setPlayerBytes(uint32_t bytes) { setField<uint32_t>(PlayerField::PlayerBytes, bytes); }
 
-uint8_t Player::getSkinColor() const { return playerData()->player_bytes.s.skin_color; }
-void Player::setSkinColor(uint8_t color) { write(playerData()->player_bytes.s.skin_color, color); }
+uint8_t Player::getSkinColor() const { return getField<uint8_t>(PlayerField::PlayerBytesSkinColor); }
+void Player::setSkinColor(uint8_t color) { setField<uint8_t>(PlayerField::PlayerBytesSkinColor, color); }
 
-uint8_t Player::getFace() const { return playerData()->player_bytes.s.face; }
-void Player::setFace(uint8_t face) { write(playerData()->player_bytes.s.face, face); }
+uint8_t Player::getFace() const { return getField<uint8_t>(PlayerField::PlayerBytesFace); }
+void Player::setFace(uint8_t face) { setField<uint8_t>(PlayerField::PlayerBytesFace, face); }
 
-uint8_t Player::getHairStyle() const { return playerData()->player_bytes.s.hair_style; }
-void Player::setHairStyle(uint8_t style) { write(playerData()->player_bytes.s.hair_style, style); }
+uint8_t Player::getHairStyle() const { return getField<uint8_t>(PlayerField::PlayerBytesHairStyle); }
+void Player::setHairStyle(uint8_t style) { setField<uint8_t>(PlayerField::PlayerBytesHairStyle, style); }
 
-uint8_t Player::getHairColor() const { return playerData()->player_bytes.s.hair_color; }
-void Player::setHairColor(uint8_t color) { write(playerData()->player_bytes.s.hair_color, color); }
+uint8_t Player::getHairColor() const { return getField<uint8_t>(PlayerField::PlayerBytesHairColor); }
+void Player::setHairColor(uint8_t color) { setField<uint8_t>(PlayerField::PlayerBytesHairColor, color); }
 //bytes end
 
 //bytes2 begin
-uint32_t Player::getPlayerBytes2() const { return playerData()->player_bytes_2.raw; }
-void Player::setPlayerBytes2(uint32_t bytes2) { write(playerData()->player_bytes_2.raw, bytes2); }
+uint32_t Player::getPlayerBytes2() const { return getField<uint32_t>(PlayerField::PlayerBytes2); }
+void Player::setPlayerBytes2(uint32_t bytes2) { setField<uint32_t>(PlayerField::PlayerBytes2, bytes2); }
 
-uint8_t Player::getFacialFeatures() const { return playerData()->player_bytes_2.s.facial_hair; }
-void Player::setFacialFeatures(uint8_t feature) { write(playerData()->player_bytes_2.s.facial_hair, feature); }
+uint8_t Player::getFacialFeatures() const { return getField<uint8_t>(PlayerField::PlayerBytes2FacialHair); }
+void Player::setFacialFeatures(uint8_t feature) { setField<uint8_t>(PlayerField::PlayerBytes2FacialHair, feature); }
 
-uint8_t Player::getBankSlots() const { return playerData()->player_bytes_2.s.bank_slots; }
-void Player::setBankSlots(uint8_t slots) { write(playerData()->player_bytes_2.s.bank_slots, slots); }
+uint8_t Player::getBankSlots() const { return getField<uint8_t>(PlayerField::PlayerBytes2BankSlots); }
+void Player::setBankSlots(uint8_t slots) { setField<uint8_t>(PlayerField::PlayerBytes2BankSlots, slots); }
 
-uint8_t Player::getRestState() const { return playerData()->player_bytes_2.s.rest_state; }
-void Player::setRestState(uint8_t state) { write(playerData()->player_bytes_2.s.rest_state, state); }
+uint8_t Player::getRestState() const { return getField<uint8_t>(PlayerField::PlayerBytes2RestState); }
+void Player::setRestState(uint8_t state) { setField<uint8_t>(PlayerField::PlayerBytes2RestState, state); }
 //bytes2 end
 
 //bytes3 begin
-uint32_t Player::getPlayerBytes3() const { return playerData()->player_bytes_3.raw; }
-void Player::setPlayerBytes3(uint32_t bytes3) { write(playerData()->player_bytes_3.raw, bytes3); }
+uint32_t Player::getPlayerBytes3() const { return getField<uint32_t>(PlayerField::PlayerBytes3); }
+void Player::setPlayerBytes3(uint32_t bytes3) { setField<uint32_t>(PlayerField::PlayerBytes3, bytes3); }
 
-uint8_t Player::getPlayerGender() const { return playerData()->player_bytes_3.s.gender; }
-void Player::setPlayerGender(uint8_t gender) { write(playerData()->player_bytes_3.s.gender, gender); }
+uint8_t Player::getPlayerGender() const { return getField<uint8_t>(PlayerField::PlayerBytes3Gender); }
+void Player::setPlayerGender(uint8_t gender) { setField<uint8_t>(PlayerField::PlayerBytes3Gender, gender); }
 
-uint8_t Player::getDrunkValue() const { return playerData()->player_bytes_3.s.drunk_value; }
-void Player::setDrunkValue(uint8_t value) { write(playerData()->player_bytes_3.s.drunk_value, value); }
+uint8_t Player::getDrunkValue() const { return getField<uint8_t>(PlayerField::PlayerBytes3DrunkValue); }
+void Player::setDrunkValue(uint8_t value) { setField<uint8_t>(PlayerField::PlayerBytes3DrunkValue, value); }
 
-uint8_t Player::getPvpRank() const { return playerData()->player_bytes_3.s.pvp_rank; }
-void Player::setPvpRank(uint8_t rank) { write(playerData()->player_bytes_3.s.pvp_rank, rank); }
+uint8_t Player::getPvpRank() const { return getField<uint8_t>(PlayerField::PlayerBytes3PvpRank); }
+void Player::setPvpRank(uint8_t rank) { setField<uint8_t>(PlayerField::PlayerBytes3PvpRank, rank); }
 
-#if VERSION_STRING >= TBC
-uint8_t Player::getArenaFaction() const { return playerData()->player_bytes_3.s.arena_faction; }
-void Player::setArenaFaction(uint8_t faction) { write(playerData()->player_bytes_3.s.arena_faction, faction); }
-#endif
+uint8_t Player::getArenaFaction() const { return getField<uint8_t>(PlayerField::PlayerBytes3ArenaFaction); }
+void Player::setArenaFaction(uint8_t faction) { setField<uint8_t>(PlayerField::PlayerBytes3ArenaFaction, faction); }
 //bytes3 end
 
-uint32_t Player::getDuelTeam() const { return playerData()->duel_team; }
-void Player::setDuelTeam(uint32_t team) { write(playerData()->duel_team, team); }
+uint32_t Player::getDuelTeam() const { return getField<uint32_t>(PlayerField::DuelTeam); }
+void Player::setDuelTeam(uint32_t team) { setField<uint32_t>(PlayerField::DuelTeam, team); }
 
-uint32_t Player::getGuildTimestamp() const { return playerData()->guild_timestamp; }
-void Player::setGuildTimestamp(uint32_t timestamp) { write(playerData()->guild_timestamp, timestamp); }
+uint32_t Player::getGuildTimestamp() const { return getField<uint32_t>(PlayerField::GuildTimestamp); }
+void Player::setGuildTimestamp(uint32_t timestamp) { setField<uint32_t>(PlayerField::GuildTimestamp, timestamp); }
 
 //QuestLog start
-uint32_t Player::getQuestLogEntryForSlot(uint8_t slot) const { return playerData()->quests[slot].quest_id; }
-void Player::setQuestLogEntryBySlot(uint8_t slot, uint32_t questEntry) { write(playerData()->quests[slot].quest_id, questEntry); }
+uint32_t Player::getQuestLogEntryForSlot(uint8_t slot) const { return getField<uint32_t>(PlayerField::QuestsQuestId, slot); }
+void Player::setQuestLogEntryBySlot(uint8_t slot, uint32_t questEntry) { setField<uint32_t>(PlayerField::QuestsQuestId, questEntry, slot); }
 
-#if VERSION_STRING > Classic
-uint32_t Player::getQuestLogStateForSlot(uint8_t slot) const { return playerData()->quests[slot].state; }
-void Player::setQuestLogStateBySlot(uint8_t slot, uint32_t state) { write(playerData()->quests[slot].state, state); }
-#else
 uint32_t Player::getQuestLogStateForSlot(uint8_t slot) const
 {
-    //\todo: get last 1*8 bits as state
-    return playerData()->quests[slot].required_count_state;
+    if (hasField(PlayerField::QuestsState))
+        return getField<uint32_t>(PlayerField::QuestsState, slot);
+
+    //\todo: classic keeps the state in the last 8 bits of the required count field
+    return getField<uint32_t>(PlayerField::QuestsRequiredCountState, slot);
 }
 
 void Player::setQuestLogStateBySlot(uint8_t slot, uint32_t state)
 {
-    //\todo: write last 1*8 bits as state
-    write(playerData()->quests[slot].required_count_state, state);
-}
-#endif
+    if (hasField(PlayerField::QuestsState))
+    {
+        setField<uint32_t>(PlayerField::QuestsState, state, slot);
+        return;
+    }
 
-#if VERSION_STRING > TBC
-uint64_t Player::getQuestLogRequiredMobOrGoForSlot(uint8_t slot) const { return playerData()->quests[slot].required_mob_or_go; }
-void Player::setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint64_t mobOrGoCount) { write(playerData()->quests[slot].required_mob_or_go, mobOrGoCount); }
-#elif VERSION_STRING == TBC
-uint32_t Player::getQuestLogRequiredMobOrGoForSlot(uint8_t slot) const { return playerData()->quests[slot].required_mob_or_go; }
-void Player::setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint32_t mobOrGoCount) { write(playerData()->quests[slot].required_mob_or_go, mobOrGoCount); }
-#else
-uint32_t Player::getQuestLogRequiredMobOrGoForSlot(uint8_t slot) const
-{
-    //\todo: get first 4*6 bits as required count
-    return playerData()->quests[slot].required_count_state;
+    //\todo: classic keeps the state in the last 8 bits of the required count field
+    setField<uint32_t>(PlayerField::QuestsRequiredCountState, state, slot);
 }
-void Player::setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint32_t mobOrGoCount)
-{
-    //\todo: write first 4*6 bits as required count
-    write(playerData()->quests[slot].required_count_state, mobOrGoCount);
-}
-#endif
 
-uint32_t Player::getQuestLogExpireTimeForSlot(uint8_t slot) const { return playerData()->quests[slot].expire_time; }
-void Player::setQuestLogExpireTimeBySlot(uint8_t slot, uint32_t expireTime) { write(playerData()->quests[slot].expire_time, expireTime); }
+uint64_t Player::getQuestLogRequiredMobOrGoForSlot(uint8_t slot) const
+{
+    // own field since TBC (32 bit wide there), the first bits of the count/state field in classic
+    if (hasField(PlayerField::QuestsRequiredMobOrGo))
+        return getField<uint64_t>(PlayerField::QuestsRequiredMobOrGo, slot);
+
+    //\todo: classic keeps the required count in the first 4*6 bits of the count/state field
+    return getField<uint32_t>(PlayerField::QuestsRequiredCountState, slot);
+}
+
+void Player::setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint64_t mobOrGoCount)
+{
+    if (hasField(PlayerField::QuestsRequiredMobOrGo))
+    {
+        setField<uint64_t>(PlayerField::QuestsRequiredMobOrGo, mobOrGoCount, slot);
+        return;
+    }
+
+    //\todo: classic keeps the required count in the first 4*6 bits of the count/state field
+    setField<uint32_t>(PlayerField::QuestsRequiredCountState, static_cast<uint32_t>(mobOrGoCount), slot);
+}
+
+uint32_t Player::getQuestLogExpireTimeForSlot(uint8_t slot) const { return getField<uint32_t>(PlayerField::QuestsExpireTime, slot); }
+void Player::setQuestLogExpireTimeBySlot(uint8_t slot, uint32_t expireTime) { setField<uint32_t>(PlayerField::QuestsExpireTime, expireTime, slot); }
 //QuestLog end
 
 //VisibleItem start
-uint32_t Player::getVisibleItemEntry(uint32_t slot) const { return playerData()->visible_items[slot].entry; }
-void Player::setVisibleItemEntry(uint32_t slot, uint32_t entry) { write(playerData()->visible_items[slot].entry, entry); }
+uint32_t Player::getVisibleItemEntry(uint32_t slot) const { return getField<uint32_t>(PlayerField::VisibleItemsEntry, slot); }
+void Player::setVisibleItemEntry(uint32_t slot, uint32_t entry) { setField<uint32_t>(PlayerField::VisibleItemsEntry, entry, slot); }
 
-#if VERSION_STRING > TBC
-uint16_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const
+uint32_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const
 {
-    if (pos > TEMP_ENCHANTMENT_SLOT)
-        return 0;
+    // two uint16 slots (permanent, temporary) since WotLK, an array of uint32 per item before
+    if (hasField(PlayerField::VisibleItemsEnchantment))
+    {
+        if (pos > TEMP_ENCHANTMENT_SLOT)
+            return 0;
 
-    return playerData()->visible_items[slot].enchantment.raw[pos];
+        return getField<uint16_t>(PlayerField::VisibleItemsEnchantment, slot, pos * 2);
+    }
+
+    return getField<uint32_t>(PlayerField::VisibleItems, slot, pos * 4);
 }
 
-void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint16_t enchantment)
+void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint32_t enchantment)
 {
-    if (pos > TEMP_ENCHANTMENT_SLOT)
+    if (hasField(PlayerField::VisibleItemsEnchantment))
+    {
+        if (pos > TEMP_ENCHANTMENT_SLOT)
+            return;
+
+        setField<uint16_t>(PlayerField::VisibleItemsEnchantment, static_cast<uint16_t>(enchantment), slot, pos * 2);
         return;
+    }
 
-    write(playerData()->visible_items[slot].enchantment.raw[pos], enchantment);
+    setField<uint32_t>(PlayerField::VisibleItems, enchantment, slot, pos * 4);
 }
-#else
-uint32_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const { return playerData()->visible_items[slot].enchantment[pos]; }
-void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint32_t enchantment)  { write(playerData()->visible_items[slot].enchantment[pos], enchantment); }
-#endif
 //VisibleItem end
 
-uint64_t Player::getInventorySlotItemGuid(uint8_t slot) const { return playerData()->inventory_slot[slot]; }
-void Player::setInventorySlotItemGuid(uint8_t slot, uint64_t guid) { write(playerData()->inventory_slot[slot], guid); }
+uint64_t Player::getInventorySlotItemGuid(uint8_t slot) const { return getField<uint64_t>(PlayerField::InventorySlot, slot); }
+void Player::setInventorySlotItemGuid(uint8_t slot, uint64_t guid) { setField<uint64_t>(PlayerField::InventorySlot, guid, slot); }
 
-uint64_t Player::getPackSlotItemGuid(uint8_t slot) const { return playerData()->pack_slot[slot]; }
-void Player::setPackSlotItemGuid(uint8_t slot, uint64_t guid) { write(playerData()->pack_slot[slot], guid); }
+uint64_t Player::getPackSlotItemGuid(uint8_t slot) const { return getField<uint64_t>(PlayerField::PackSlot, slot); }
+void Player::setPackSlotItemGuid(uint8_t slot, uint64_t guid) { setField<uint64_t>(PlayerField::PackSlot, guid, slot); }
 
-uint64_t Player::getBankSlotItemGuid(uint8_t slot) const { return playerData()->bank_slot[slot]; }
-void Player::setBankSlotItemGuid(uint8_t slot, uint64_t guid) { write(playerData()->bank_slot[slot], guid); }
+uint64_t Player::getBankSlotItemGuid(uint8_t slot) const { return getField<uint64_t>(PlayerField::BankSlot, slot); }
+void Player::setBankSlotItemGuid(uint8_t slot, uint64_t guid) { setField<uint64_t>(PlayerField::BankSlot, guid, slot); }
 
-uint64_t Player::getBankBagSlotItemGuid(uint8_t slot) const { return playerData()->bank_bag_slot[slot]; }
-void Player::setBankBagSlotItemGuid(uint8_t slot, uint64_t guid) { write(playerData()->bank_bag_slot[slot], guid); }
+uint64_t Player::getBankBagSlotItemGuid(uint8_t slot) const { return getField<uint64_t>(PlayerField::BankBagSlot, slot); }
+void Player::setBankBagSlotItemGuid(uint8_t slot, uint64_t guid) { setField<uint64_t>(PlayerField::BankBagSlot, guid, slot); }
 
-uint64_t Player::getVendorBuybackSlot(uint8_t slot) const { return playerData()->vendor_buy_back_slot[slot]; }
-void Player::setVendorBuybackSlot(uint8_t slot, uint64_t guid) { write(playerData()->vendor_buy_back_slot[slot], guid); }
+uint64_t Player::getVendorBuybackSlot(uint8_t slot) const { return getField<uint64_t>(PlayerField::VendorBuyBackSlot, slot); }
+void Player::setVendorBuybackSlot(uint8_t slot, uint64_t guid) { setField<uint64_t>(PlayerField::VendorBuyBackSlot, guid, slot); }
 
-#if VERSION_STRING < Cata
-uint64_t Player::getKeyRingSlotItemGuid(uint8_t slot) const { return playerData()->key_ring_slot[slot]; }
-void Player::setKeyRingSlotItemGuid(uint8_t slot, uint64_t guid) { write(playerData()->key_ring_slot[slot], guid); }
-#endif
+uint64_t Player::getKeyRingSlotItemGuid(uint8_t slot) const { return getField<uint64_t>(PlayerField::KeyRingSlot, slot); }
+void Player::setKeyRingSlotItemGuid(uint8_t slot, uint64_t guid) { setField<uint64_t>(PlayerField::KeyRingSlot, guid, slot); }
 
-#if VERSION_STRING == TBC
-uint64_t Player::getVanityPetSlotItemGuid(uint8_t slot) const { return playerData()->vanity_pet_slot[slot]; }
-void Player::setVanityPetSlotItemGuid(uint8_t slot, uint64_t guid) { write(playerData()->vanity_pet_slot[slot], guid); }
-#endif
+uint64_t Player::getVanityPetSlotItemGuid(uint8_t slot) const { return getField<uint64_t>(PlayerField::VanityPetSlot, slot); }
+void Player::setVanityPetSlotItemGuid(uint8_t slot, uint64_t guid) { setField<uint64_t>(PlayerField::VanityPetSlot, guid, slot); }
 
-#if VERSION_STRING == WotLK
-uint64_t Player::getCurrencyTokenSlotItemGuid(uint8_t slot) const { return playerData()->currencytoken_slot[slot]; }
-void Player::setCurrencyTokenSlotItemGuid(uint8_t slot, uint64_t guid) { write(playerData()->currencytoken_slot[slot], guid); }
-#endif
+uint64_t Player::getCurrencyTokenSlotItemGuid(uint8_t slot) const { return getField<uint64_t>(PlayerField::CurrencytokenSlot, slot); }
+void Player::setCurrencyTokenSlotItemGuid(uint8_t slot, uint64_t guid) { setField<uint64_t>(PlayerField::CurrencytokenSlot, guid, slot); }
 
-uint64_t Player::getFarsightGuid() const { return playerData()->farsight_guid; }
-void Player::setFarsightGuid(uint64_t farsightGuid) { write(playerData()->farsight_guid, farsightGuid); }
+uint64_t Player::getFarsightGuid() const { return getField<uint64_t>(PlayerField::FarsightGuid); }
+void Player::setFarsightGuid(uint64_t farsightGuid) { setField<uint64_t>(PlayerField::FarsightGuid, farsightGuid); }
 
-#if VERSION_STRING > Classic
-uint64_t Player::getKnownTitles(uint8_t index) const { return playerData()->field_known_titles[index]; }
-void Player::setKnownTitles(uint8_t index, uint64_t title) { write(playerData()->field_known_titles[index], title); }
-#endif
+uint64_t Player::getKnownTitles(uint8_t index) const { return getField<uint64_t>(PlayerField::FieldKnownTitles, index); }
+void Player::setKnownTitles(uint8_t index, uint64_t title) { setField<uint64_t>(PlayerField::FieldKnownTitles, title, index); }
 
-#if VERSION_STRING > Classic
-uint32_t Player::getChosenTitle() const { return playerData()->chosen_title; }
-void Player::setChosenTitle(uint32_t title) { write(playerData()->chosen_title, title); }
-#endif
+uint32_t Player::getChosenTitle() const { return getField<uint32_t>(PlayerField::ChosenTitle); }
+void Player::setChosenTitle(uint32_t title) { setField<uint32_t>(PlayerField::ChosenTitle, title); }
 
-#if VERSION_STRING == WotLK
-uint64_t Player::getKnownCurrencies() const { return playerData()->field_known_currencies; }
-void Player::setKnownCurrencies(uint64_t currencies) { write(playerData()->field_known_currencies, currencies); }
-#endif
+uint64_t Player::getKnownCurrencies() const { return getField<uint64_t>(PlayerField::FieldKnownCurrencies); }
+void Player::setKnownCurrencies(uint64_t currencies) { setField<uint64_t>(PlayerField::FieldKnownCurrencies, currencies); }
 
-uint32_t Player::getXp() const { return playerData()->xp; }
-void Player::setXp(uint32_t xp) { write(playerData()->xp, xp); }
-void Player::addXP(uint32_t xp) { write(playerData()->xp, getXp() + xp); }
+uint32_t Player::getXp() const { return getField<uint32_t>(PlayerField::Xp); }
+void Player::setXp(uint32_t xp) { setField<uint32_t>(PlayerField::Xp, xp); }
+void Player::addXP(uint32_t xp) { setField<uint32_t>(PlayerField::Xp, getXp() + xp); }
 
-uint32_t Player::getNextLevelXp() const { return playerData()->next_level_xp; }
-void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
+uint32_t Player::getNextLevelXp() const { return getField<uint32_t>(PlayerField::NextLevelXp); }
+void Player::setNextLevelXp(uint32_t xp) { setField<uint32_t>(PlayerField::NextLevelXp, xp); }
 
-#if VERSION_STRING < Cata
-uint16_t Player::getSkillInfoId(uint32_t index) const { return playerData()->skill_info[index].id; }
-uint16_t Player::getSkillInfoStep(uint32_t index) const { return playerData()->skill_info[index].step; }
-uint16_t Player::getSkillInfoCurrentValue(uint32_t index) const { return playerData()->skill_info[index].current_value; }
-uint16_t Player::getSkillInfoMaxValue(uint32_t index) const { return playerData()->skill_info[index].max_value; }
-uint16_t Player::getSkillInfoBonusTemporary(uint32_t index) const { return playerData()->skill_info[index].bonus_temporary; }
-uint16_t Player::getSkillInfoBonusPermanent(uint32_t index) const { return playerData()->skill_info[index].bonus_permanent; }
-void Player::setSkillInfoId(uint32_t index, uint16_t id) { write(playerData()->skill_info[index].id, id); }
-void Player::setSkillInfoStep(uint32_t index, uint16_t step) { write(playerData()->skill_info[index].step, step); }
-void Player::setSkillInfoCurrentValue(uint32_t index, uint16_t current) { write(playerData()->skill_info[index].current_value, current); }
-void Player::setSkillInfoMaxValue(uint32_t index, uint16_t max) { write(playerData()->skill_info[index].max_value, max); }
-void Player::setSkillInfoBonusTemporary(uint32_t index, uint16_t bonus) { write(playerData()->skill_info[index].bonus_temporary, bonus); }
-void Player::setSkillInfoBonusPermanent(uint32_t index, uint16_t bonus) { write(playerData()->skill_info[index].bonus_permanent, bonus); }
-#else
-uint16_t Player::getSkillInfoId(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_line[index]) + offset); }
-uint16_t Player::getSkillInfoStep(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_step[index]) + offset); }
-uint16_t Player::getSkillInfoCurrentValue(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_rank[index]) + offset); }
-uint16_t Player::getSkillInfoMaxValue(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_max_rank[index]) + offset); }
-uint16_t Player::getSkillInfoBonusTemporary(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_mod[index]) + offset); }
-uint16_t Player::getSkillInfoBonusPermanent(uint32_t index, uint8_t offset) const { return *(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_talent[index]) + offset); }
-uint32_t Player::getProfessionSkillLine(uint32_t index) const { return playerData()->profession_skill_line[index]; }
-void Player::setSkillInfoId(uint32_t index, uint8_t offset, uint16_t id) { write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_line[index]) + offset), id); }
-void Player::setSkillInfoStep(uint32_t index, uint8_t offset, uint16_t step) { write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_step[index]) + offset), step); }
-void Player::setSkillInfoCurrentValue(uint32_t index, uint8_t offset, uint16_t current) { write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_rank[index]) + offset), current); }
-void Player::setSkillInfoMaxValue(uint32_t index, uint8_t offset, uint16_t max) { write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_max_rank[index]) + offset), max); }
-void Player::setSkillInfoBonusTemporary(uint32_t index, uint8_t offset, uint16_t bonus) { write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_mod[index]) + offset), bonus); }
-void Player::setSkillInfoBonusPermanent(uint32_t index, uint8_t offset, uint16_t bonus) { write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_talent[index]) + offset), bonus); }
-void Player::setProfessionSkillLine(uint32_t index, uint32_t value) { write(playerData()->profession_skill_line[index], value); }
-#endif
+// one skill position for every version: array elements of uint16 fields before Cata, two uint16
+// halves per uint32 array element since (position / 2 selects the element, position % 2 the half)
+namespace
+{
+    constexpr uint32_t skillHalfOffset(uint32_t index) { return (index & 1) * 2; }
+}
+
+uint32_t Player::getSkillFieldPositionCount() const
+{
+    if (hasField(PlayerField::FieldSkillInfoSkillLine))
+        return Version::fieldCount(PlayerField::FieldSkillInfoSkillLine) * 2;
+
+    return Version::fieldCount(PlayerField::SkillInfo);
+}
+
+uint16_t Player::getSkillInfoId(uint32_t index) const
+{
+    if (hasField(PlayerField::FieldSkillInfoSkillLine))
+        return getField<uint16_t>(PlayerField::FieldSkillInfoSkillLine, index / 2, skillHalfOffset(index));
+
+    return getField<uint16_t>(PlayerField::SkillInfoId, index);
+}
+
+uint16_t Player::getSkillInfoStep(uint32_t index) const
+{
+    if (hasField(PlayerField::FieldSkillInfoSkillStep))
+        return getField<uint16_t>(PlayerField::FieldSkillInfoSkillStep, index / 2, skillHalfOffset(index));
+
+    return getField<uint16_t>(PlayerField::SkillInfoStep, index);
+}
+
+uint16_t Player::getSkillInfoCurrentValue(uint32_t index) const
+{
+    if (hasField(PlayerField::FieldSkillInfoSkillRank))
+        return getField<uint16_t>(PlayerField::FieldSkillInfoSkillRank, index / 2, skillHalfOffset(index));
+
+    return getField<uint16_t>(PlayerField::SkillInfoCurrentValue, index);
+}
+
+uint16_t Player::getSkillInfoMaxValue(uint32_t index) const
+{
+    if (hasField(PlayerField::FieldSkillInfoSkillMaxRank))
+        return getField<uint16_t>(PlayerField::FieldSkillInfoSkillMaxRank, index / 2, skillHalfOffset(index));
+
+    return getField<uint16_t>(PlayerField::SkillInfoMaxValue, index);
+}
+
+uint16_t Player::getSkillInfoBonusTemporary(uint32_t index) const
+{
+    if (hasField(PlayerField::FieldSkillInfoSkillMod))
+        return getField<uint16_t>(PlayerField::FieldSkillInfoSkillMod, index / 2, skillHalfOffset(index));
+
+    return getField<uint16_t>(PlayerField::SkillInfoBonusTemporary, index);
+}
+
+uint16_t Player::getSkillInfoBonusPermanent(uint32_t index) const
+{
+    if (hasField(PlayerField::FieldSkillInfoSkillTalent))
+        return getField<uint16_t>(PlayerField::FieldSkillInfoSkillTalent, index / 2, skillHalfOffset(index));
+
+    return getField<uint16_t>(PlayerField::SkillInfoBonusPermanent, index);
+}
+
+void Player::setSkillInfoId(uint32_t index, uint16_t id)
+{
+    if (hasField(PlayerField::FieldSkillInfoSkillLine))
+        setField<uint16_t>(PlayerField::FieldSkillInfoSkillLine, id, index / 2, skillHalfOffset(index));
+    else
+        setField<uint16_t>(PlayerField::SkillInfoId, id, index);
+}
+
+void Player::setSkillInfoStep(uint32_t index, uint16_t step)
+{
+    if (hasField(PlayerField::FieldSkillInfoSkillStep))
+        setField<uint16_t>(PlayerField::FieldSkillInfoSkillStep, step, index / 2, skillHalfOffset(index));
+    else
+        setField<uint16_t>(PlayerField::SkillInfoStep, step, index);
+}
+
+void Player::setSkillInfoCurrentValue(uint32_t index, uint16_t current)
+{
+    if (hasField(PlayerField::FieldSkillInfoSkillRank))
+        setField<uint16_t>(PlayerField::FieldSkillInfoSkillRank, current, index / 2, skillHalfOffset(index));
+    else
+        setField<uint16_t>(PlayerField::SkillInfoCurrentValue, current, index);
+}
+
+void Player::setSkillInfoMaxValue(uint32_t index, uint16_t max)
+{
+    if (hasField(PlayerField::FieldSkillInfoSkillMaxRank))
+        setField<uint16_t>(PlayerField::FieldSkillInfoSkillMaxRank, max, index / 2, skillHalfOffset(index));
+    else
+        setField<uint16_t>(PlayerField::SkillInfoMaxValue, max, index);
+}
+
+void Player::setSkillInfoBonusTemporary(uint32_t index, uint16_t bonus)
+{
+    if (hasField(PlayerField::FieldSkillInfoSkillMod))
+        setField<uint16_t>(PlayerField::FieldSkillInfoSkillMod, bonus, index / 2, skillHalfOffset(index));
+    else
+        setField<uint16_t>(PlayerField::SkillInfoBonusTemporary, bonus, index);
+}
+
+void Player::setSkillInfoBonusPermanent(uint32_t index, uint16_t bonus)
+{
+    if (hasField(PlayerField::FieldSkillInfoSkillTalent))
+        setField<uint16_t>(PlayerField::FieldSkillInfoSkillTalent, bonus, index / 2, skillHalfOffset(index));
+    else
+        setField<uint16_t>(PlayerField::SkillInfoBonusPermanent, bonus, index);
+}
+
+uint32_t Player::getProfessionSkillLine(uint32_t index) const { return getField<uint32_t>(PlayerField::ProfessionSkillLine, index); }
+void Player::setProfessionSkillLine(uint32_t index, uint32_t value) { setField<uint32_t>(PlayerField::ProfessionSkillLine, value, index); }
 
 uint32_t Player::getFreeTalentPoints() const
 {
-#if VERSION_STRING < Cata
-    return playerData()->character_points_1;
-#else
+    // a character points field before Cata, kept in the active spec since
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+        return getField<uint32_t>(PlayerField::CharacterPoints1);
+
     return m_specs[m_talentActiveSpec].getTalentPoints();
-#endif
 }
 
-#if VERSION_STRING < Cata
-void Player::setFreeTalentPoints(uint32_t points) { write(playerData()->character_points_1, points); }
-#endif
+void Player::setFreeTalentPoints(uint32_t points) { setField<uint32_t>(PlayerField::CharacterPoints1, points); }
 
 uint32_t Player::getFreePrimaryProfessionPoints() const
 {
-#if VERSION_STRING < Cata
-    return playerData()->character_points_2;
-#else
-    return playerData()->character_points_1;
-#endif
+    // the second character points field before Cata, the first one since (talent points left the fields)
+    if (hasField(PlayerField::CharacterPoints2))
+        return getField<uint32_t>(PlayerField::CharacterPoints2);
+
+    return getField<uint32_t>(PlayerField::CharacterPoints1);
 }
 
 void Player::setFreePrimaryProfessionPoints(uint32_t points)
@@ -1179,11 +1265,13 @@ void Player::setFreePrimaryProfessionPoints(uint32_t points)
     if (points > worldConfig.player.maxProfessions)
         points = worldConfig.player.maxProfessions;
 
-#if VERSION_STRING < Cata
-    write(playerData()->character_points_2, points);
-#else
-    write(playerData()->character_points_1, points);
-#endif
+    if (hasField(PlayerField::CharacterPoints2))
+    {
+        setField<uint32_t>(PlayerField::CharacterPoints2, points);
+        return;
+    }
+
+    setField<uint32_t>(PlayerField::CharacterPoints1, points);
 }
 
 void Player::modFreePrimaryProfessionPoints(int32_t amount)
@@ -1197,248 +1285,241 @@ void Player::modFreePrimaryProfessionPoints(int32_t amount)
     setFreePrimaryProfessionPoints(value);
 }
 
-uint32_t Player::getTrackCreature() const { return playerData()->track_creatures; }
-void Player::setTrackCreature(uint32_t id) { write(playerData()->track_creatures, id); }
+uint32_t Player::getTrackCreature() const { return getField<uint32_t>(PlayerField::TrackCreatures); }
+void Player::setTrackCreature(uint32_t id) { setField<uint32_t>(PlayerField::TrackCreatures, id); }
 
-uint32_t Player::getTrackResource() const { return playerData()->track_resources; }
-void Player::setTrackResource(uint32_t id) { write(playerData()->track_resources, id); }
+uint32_t Player::getTrackResource() const { return getField<uint32_t>(PlayerField::TrackResources); }
+void Player::setTrackResource(uint32_t id) { setField<uint32_t>(PlayerField::TrackResources, id); }
 
-float Player::getBlockPercentage() const { return playerData()->block_pct; }
-void Player::setBlockPercentage(float value) { write(playerData()->block_pct, value); }
+float Player::getBlockPercentage() const { return getField<float>(PlayerField::BlockPct); }
+void Player::setBlockPercentage(float value) { setField<float>(PlayerField::BlockPct, value); }
 
-float Player::getDodgePercentage() const { return playerData()->dodge_pct; }
-void Player::setDodgePercentage(float value) { write(playerData()->dodge_pct, value); }
+float Player::getDodgePercentage() const { return getField<float>(PlayerField::DodgePct); }
+void Player::setDodgePercentage(float value) { setField<float>(PlayerField::DodgePct, value); }
 
-float Player::getParryPercentage() const { return playerData()->parry_pct; }
-void Player::setParryPercentage(float value) { write(playerData()->parry_pct, value); }
+float Player::getParryPercentage() const { return getField<float>(PlayerField::ParryPct); }
+void Player::setParryPercentage(float value) { setField<float>(PlayerField::ParryPct, value); }
 
-#if VERSION_STRING >= TBC
-uint32_t Player::getExpertise() const { return playerData()->expertise; }
-void Player::setExpertise(uint32_t value) { write(playerData()->expertise, value); }
+uint32_t Player::getExpertise() const { return getField<uint32_t>(PlayerField::Expertise); }
+void Player::setExpertise(uint32_t value) { setField<uint32_t>(PlayerField::Expertise, value); }
 void Player::modExpertise(int32_t value) { setExpertise(getExpertise() + value); }
 
-uint32_t Player::getOffHandExpertise() const { return playerData()->offhand_expertise; }
-void Player::setOffHandExpertise(uint32_t value) { write(playerData()->offhand_expertise, value); }
+uint32_t Player::getOffHandExpertise() const { return getField<uint32_t>(PlayerField::OffhandExpertise); }
+void Player::setOffHandExpertise(uint32_t value) { setField<uint32_t>(PlayerField::OffhandExpertise, value); }
 void Player::modOffHandExpertise(int32_t value) { setOffHandExpertise(getOffHandExpertise() + value); }
-#endif
 
-float Player::getMeleeCritPercentage() const { return playerData()->crit_pct; }
-void Player::setMeleeCritPercentage(float value) { write(playerData()->crit_pct, value); }
+float Player::getMeleeCritPercentage() const { return getField<float>(PlayerField::CritPct); }
+void Player::setMeleeCritPercentage(float value) { setField<float>(PlayerField::CritPct, value); }
 
-float Player::getRangedCritPercentage() const { return playerData()->ranged_crit_pct; }
-void Player::setRangedCritPercentage(float value) { write(playerData()->ranged_crit_pct, value); }
+float Player::getRangedCritPercentage() const { return getField<float>(PlayerField::RangedCritPct); }
+void Player::setRangedCritPercentage(float value) { setField<float>(PlayerField::RangedCritPct, value); }
 
-#if VERSION_STRING >= TBC
-float Player::getOffHandCritPercentage() const { return playerData()->offhand_crit_pct; }
-void Player::setOffHandCritPercentage(float value) { write(playerData()->offhand_crit_pct, value); }
+float Player::getOffHandCritPercentage() const { return getField<float>(PlayerField::OffhandCritPct); }
+void Player::setOffHandCritPercentage(float value) { setField<float>(PlayerField::OffhandCritPct, value); }
 
-float Player::getSpellCritPercentage(uint8_t school) const { return playerData()->spell_crit_pct[school]; }
-void Player::setSpellCritPercentage(uint8_t school, float value) { write(playerData()->spell_crit_pct[school], value); }
+float Player::getSpellCritPercentage(uint8_t school) const { return getField<float>(PlayerField::SpellCritPct, school); }
+void Player::setSpellCritPercentage(uint8_t school, float value) { setField<float>(PlayerField::SpellCritPct, value, school); }
 
-uint32_t Player::getShieldBlock() const { return playerData()->shield_block; }
-void Player::setShieldBlock(uint32_t value) { write(playerData()->shield_block, value); }
-#endif
+uint32_t Player::getShieldBlock() const { return getField<uint32_t>(PlayerField::ShieldBlock); }
+void Player::setShieldBlock(uint32_t value) { setField<uint32_t>(PlayerField::ShieldBlock, value); }
 
-#if VERSION_STRING >= WotLK
-float Player::getShieldBlockCritPercentage() const { return playerData()->shield_block_crit_pct; }
-void Player::setShieldBlockCritPercentage(float value) { write(playerData()->shield_block_crit_pct, value); }
-#endif
+float Player::getShieldBlockCritPercentage() const { return getField<float>(PlayerField::ShieldBlockCritPct); }
+void Player::setShieldBlockCritPercentage(float value) { setField<float>(PlayerField::ShieldBlockCritPct, value); }
 
 uint32_t Player::getExploredZone(uint32_t idx) const
 {
-    if (idx < WOWPLAYER_EXPLORED_ZONES_COUNT)
-        return playerData()->explored_zones[idx];
+    if (idx < Version::fieldCount(PlayerField::ExploredZones))
+        return getField<uint32_t>(PlayerField::ExploredZones, idx);
     return 0;
 }
 
 void Player::setExploredZone(uint32_t idx, uint32_t data)
 {
-    if (idx < WOWPLAYER_EXPLORED_ZONES_COUNT)
-        write(playerData()->explored_zones[idx], data);
+    if (idx < Version::fieldCount(PlayerField::ExploredZones))
+        setField<uint32_t>(PlayerField::ExploredZones, data, idx);
 }
 
-uint32_t Player::getSelfResurrectSpell() const { return playerData()->self_resurrection_spell; }
-void Player::setSelfResurrectSpell(uint32_t spell) { write(playerData()->self_resurrection_spell, spell); }
+uint32_t Player::getSelfResurrectSpell() const { return getField<uint32_t>(PlayerField::SelfResurrectionSpell); }
+void Player::setSelfResurrectSpell(uint32_t spell) { setField<uint32_t>(PlayerField::SelfResurrectionSpell, spell); }
 
-uint32_t Player::getWatchedFaction() const { return playerData()->field_watched_faction_idx; }
-void Player::setWatchedFaction(uint32_t factionId) { write(playerData()->field_watched_faction_idx, factionId); }
+uint32_t Player::getWatchedFaction() const { return getField<uint32_t>(PlayerField::FieldWatchedFactionIdx); }
+void Player::setWatchedFaction(uint32_t factionId) { setField<uint32_t>(PlayerField::FieldWatchedFactionIdx, factionId); }
 
-#if VERSION_STRING == TBC
-float Player::getManaRegeneration() const { return playerData()->field_mod_mana_regen; }
-void Player::setManaRegeneration(float value) { write(playerData()->field_mod_mana_regen, value); }
+float Player::getManaRegeneration() const { return getField<float>(PlayerField::FieldModManaRegen); }
+void Player::setManaRegeneration(float value) { setField<float>(PlayerField::FieldModManaRegen, value); }
 
-float Player::getManaRegenerationWhileCasting() const { return playerData()->field_mod_mana_regen_interrupt; }
-void Player::setManaRegenerationWhileCasting(float value) { write(playerData()->field_mod_mana_regen_interrupt, value); }
-#endif
+float Player::getManaRegenerationWhileCasting() const { return getField<float>(PlayerField::FieldModManaRegenInterrupt); }
+void Player::setManaRegenerationWhileCasting(float value) { setField<float>(PlayerField::FieldModManaRegenInterrupt, value); }
 
 uint32_t Player::getMaxLevel() const
 {
-#if VERSION_STRING > Classic
-    return playerData()->field_max_level;
-#else
+    if (hasField(PlayerField::FieldMaxLevel))
+        return getField<uint32_t>(PlayerField::FieldMaxLevel);
+
     return m_classicMaxLevel;
-#endif
 }
 
 void Player::setMaxLevel(uint32_t level)
 {
 #if VERSION_STRING > Classic
-    write(playerData()->field_max_level, level);
+    setField<uint32_t>(PlayerField::FieldMaxLevel, level);
 #else
     m_classicMaxLevel = level;
 #endif 
 }
 
-#if VERSION_STRING >= WotLK
-float Player::getRuneRegen(uint8_t rune) const { return playerData()->rune_regen[rune]; }
-void Player::setRuneRegen(uint8_t rune, float regen) { write(playerData()->rune_regen[rune], regen); }
-#endif
+float Player::getRuneRegen(uint8_t rune) const { return getField<float>(PlayerField::RuneRegen, rune); }
+void Player::setRuneRegen(uint8_t rune, float regen) { setField<float>(PlayerField::RuneRegen, regen, rune); }
 
-uint32_t Player::getRestStateXp() const { return playerData()->rest_state_xp; }
-void Player::setRestStateXp(uint32_t xp)  { write(playerData()->rest_state_xp, xp); }
+uint32_t Player::getRestStateXp() const { return getField<uint32_t>(PlayerField::RestStateXp); }
+void Player::setRestStateXp(uint32_t xp)  { setField<uint32_t>(PlayerField::RestStateXp, xp); }
 
-#if VERSION_STRING < Cata
-uint32_t Player::getCoinage() const { return playerData()->field_coinage; }
-void Player::setCoinage(uint32_t coinage) { write(playerData()->field_coinage, coinage); }
-bool Player::hasEnoughCoinage(uint32_t coinage) const { return getCoinage() >= coinage; }
-void Player::modCoinage(int32_t coinage)
-{
-    setCoinage(getCoinage() + coinage);
-}
-#else
-uint64_t Player::getCoinage() const { return playerData()->field_coinage; }
-void Player::setCoinage(uint64_t coinage) { write(playerData()->field_coinage, coinage); }
+// a 32 bit field before Cata, 64 bit since; the field size caps the access
+uint64_t Player::getCoinage() const { return getField<uint64_t>(PlayerField::FieldCoinage); }
+void Player::setCoinage(uint64_t coinage) { setField<uint64_t>(PlayerField::FieldCoinage, coinage); }
 bool Player::hasEnoughCoinage(uint64_t coinage) const { return getCoinage() >= coinage; }
 
 void Player::modCoinage(int64_t coinage)
 {
     setCoinage(getCoinage() + coinage);
 }
-#endif
 
-#if VERSION_STRING == Classic
-uint32_t Player::getResistanceBuffModPositive(uint8_t type) const { return playerData()->resistance_buff_mod_positive[type]; }
-void Player::setResistanceBuffModPositive(uint8_t type, uint32_t value) { write(playerData()->resistance_buff_mod_positive[type], value); }
+// own player fields in classic, the unit fields since TBC
+uint32_t Player::getResistanceBuffModPositive(uint8_t type) const
+{
+    if (hasField(PlayerField::ResistanceBuffModPositive))
+        return getField<uint32_t>(PlayerField::ResistanceBuffModPositive, type);
 
-uint32_t Player::getResistanceBuffModNegative(uint8_t type) const { return playerData()->resistance_buff_mod_negative[type]; }
-void Player::setResistanceBuffModNegative(uint8_t type, uint32_t value) { write(playerData()->resistance_buff_mod_negative[type], value); }
-#endif
+    return Unit::getResistanceBuffModPositive(type);
+}
 
-uint32_t Player::getModDamageDonePositive(uint16_t school) const { return playerData()->field_mod_damage_done_positive[school]; }
-void Player::setModDamageDonePositive(uint16_t school, uint32_t value) { write(playerData()->field_mod_damage_done_positive[school], value); }
+void Player::setResistanceBuffModPositive(uint8_t type, uint32_t value)
+{
+    if (hasField(PlayerField::ResistanceBuffModPositive))
+    {
+        setField<uint32_t>(PlayerField::ResistanceBuffModPositive, value, type);
+        return;
+    }
+
+    Unit::setResistanceBuffModPositive(type, value);
+}
+
+uint32_t Player::getResistanceBuffModNegative(uint8_t type) const
+{
+    if (hasField(PlayerField::ResistanceBuffModNegative))
+        return getField<uint32_t>(PlayerField::ResistanceBuffModNegative, type);
+
+    return Unit::getResistanceBuffModNegative(type);
+}
+
+void Player::setResistanceBuffModNegative(uint8_t type, uint32_t value)
+{
+    if (hasField(PlayerField::ResistanceBuffModNegative))
+    {
+        setField<uint32_t>(PlayerField::ResistanceBuffModNegative, value, type);
+        return;
+    }
+
+    Unit::setResistanceBuffModNegative(type, value);
+}
+
+uint32_t Player::getModDamageDonePositive(uint16_t school) const { return getField<uint32_t>(PlayerField::FieldModDamageDonePositive, school); }
+void Player::setModDamageDonePositive(uint16_t school, uint32_t value) { setField<uint32_t>(PlayerField::FieldModDamageDonePositive, value, school); }
 void Player::modModDamageDonePositive(uint16_t school, int32_t value) { setModDamageDonePositive(school, getModDamageDonePositive(school) + value); }
 
-uint32_t Player::getModDamageDoneNegative(uint16_t school) const { return playerData()->field_mod_damage_done_negative[school]; }
-void Player::setModDamageDoneNegative(uint16_t school, uint32_t value) { write(playerData()->field_mod_damage_done_negative[school], value); }
+uint32_t Player::getModDamageDoneNegative(uint16_t school) const { return getField<uint32_t>(PlayerField::FieldModDamageDoneNegative, school); }
+void Player::setModDamageDoneNegative(uint16_t school, uint32_t value) { setField<uint32_t>(PlayerField::FieldModDamageDoneNegative, value, school); }
 void Player::modModDamageDoneNegative(uint16_t school, int32_t value) { setModDamageDoneNegative(school, getModDamageDoneNegative(school) + value); }
 
-float Player::getModDamageDonePct(uint8_t school) const { return playerData()->field_mod_damage_done_pct[school]; }
-void Player::setModDamageDonePct(float damagePct, uint8_t school) { write(playerData()->field_mod_damage_done_pct[school], damagePct); }
+float Player::getModDamageDonePct(uint8_t school) const { return getField<float>(PlayerField::FieldModDamageDonePct, school); }
+void Player::setModDamageDonePct(float damagePct, uint8_t school) { setField<float>(PlayerField::FieldModDamageDonePct, damagePct, school); }
 void Player::modModDamageDonePct(float damagePct, uint8_t school) { setModDamageDonePct(getModDamageDonePct(school) + damagePct, school); }
 
-#if VERSION_STRING >= TBC
-uint32_t Player::getModHealingDone() const { return playerData()->field_mod_healing_done; }
-void Player::setModHealingDone(uint32_t value) { write(playerData()->field_mod_healing_done, value); }
+uint32_t Player::getModHealingDone() const { return getField<uint32_t>(PlayerField::FieldModHealingDone); }
+void Player::setModHealingDone(uint32_t value) { setField<uint32_t>(PlayerField::FieldModHealingDone, value); }
 void Player::modModHealingDone(int32_t value) { setModHealingDone(getModHealingDone() + value); }
 
-uint32_t Player::getModTargetResistance() const { return playerData()->field_mod_target_resistance; }
-void Player::setModTargetResistance(uint32_t value) { write(playerData()->field_mod_target_resistance, value); }
+uint32_t Player::getModTargetResistance() const { return getField<uint32_t>(PlayerField::FieldModTargetResistance); }
+void Player::setModTargetResistance(uint32_t value) { setField<uint32_t>(PlayerField::FieldModTargetResistance, value); }
 void Player::modModTargetResistance(int32_t value) { setModTargetResistance(getModTargetResistance() + value); }
 
-uint32_t Player::getModTargetPhysicalResistance() const { return playerData()->field_mod_target_physical_resistance; }
-void Player::setModTargetPhysicalResistance(uint32_t value) { write(playerData()->field_mod_target_physical_resistance, value); }
+uint32_t Player::getModTargetPhysicalResistance() const { return getField<uint32_t>(PlayerField::FieldModTargetPhysicalResistance); }
+void Player::setModTargetPhysicalResistance(uint32_t value) { setField<uint32_t>(PlayerField::FieldModTargetPhysicalResistance, value); }
 void Player::modModTargetPhysicalResistance(int32_t value) { setModTargetPhysicalResistance(getModTargetPhysicalResistance() + value); }
-#endif
 
-uint32_t Player::getPlayerFieldBytes() const { return playerData()->player_field_bytes.raw; }
-void Player::setPlayerFieldBytes(uint32_t bytes) { write(playerData()->player_field_bytes.raw, bytes); }
+uint32_t Player::getPlayerFieldBytes() const { return getField<uint32_t>(PlayerField::PlayerFieldBytes); }
+void Player::setPlayerFieldBytes(uint32_t bytes) { setField<uint32_t>(PlayerField::PlayerFieldBytes, bytes); }
 
-uint8_t Player::getPlayerFieldBytesMiscFlag() const { return playerData()->player_field_bytes.s.misc_flags; }
-void Player::setPlayerFieldBytesMiscFlag(uint8_t miscFlag) { write(playerData()->player_field_bytes.s.misc_flags, miscFlag); }
+uint8_t Player::getPlayerFieldBytesMiscFlag() const { return getField<uint8_t>(PlayerField::PlayerFieldBytesMiscFlags); }
+void Player::setPlayerFieldBytesMiscFlag(uint8_t miscFlag) { setField<uint8_t>(PlayerField::PlayerFieldBytesMiscFlags, miscFlag); }
 void Player::addPlayerFieldBytesMiscFlag(uint8_t miscFlag) { setPlayerFieldBytesMiscFlag(getPlayerFieldBytesMiscFlag() | miscFlag); }
 void Player::removePlayerFieldBytesMiscFlag(uint8_t miscFlag) { setPlayerFieldBytesMiscFlag(getPlayerFieldBytesMiscFlag() & ~miscFlag); }
 
-uint8_t Player::getEnabledActionBars() const { return playerData()->player_field_bytes.s.enabled_action_bars; }
-void Player::setEnabledActionBars(uint8_t actionBarId) { write(playerData()->player_field_bytes.s.enabled_action_bars, actionBarId); }
+uint8_t Player::getEnabledActionBars() const { return getField<uint8_t>(PlayerField::PlayerFieldBytesEnabledActionBars); }
+void Player::setEnabledActionBars(uint8_t actionBarId) { setField<uint8_t>(PlayerField::PlayerFieldBytesEnabledActionBars, actionBarId); }
 
-#if VERSION_STRING < Cata
-uint32_t Player::getAmmoId() const { return playerData()->ammo_id; }
-void Player::setAmmoId(uint32_t id) { write(playerData()->ammo_id, id); }
-#endif
+uint32_t Player::getAmmoId() const { return getField<uint32_t>(PlayerField::AmmoId); }
+void Player::setAmmoId(uint32_t id) { setField<uint32_t>(PlayerField::AmmoId, id); }
 
-uint32_t Player::getBuybackPriceSlot(uint8_t slot) const { return playerData()->field_buy_back_price[slot]; }
-void Player::setBuybackPriceSlot(uint8_t slot, uint32_t price) { write(playerData()->field_buy_back_price[slot], price); }
+uint32_t Player::getBuybackPriceSlot(uint8_t slot) const { return getField<uint32_t>(PlayerField::FieldBuyBackPrice, slot); }
+void Player::setBuybackPriceSlot(uint8_t slot, uint32_t price) { setField<uint32_t>(PlayerField::FieldBuyBackPrice, price, slot); }
 
-uint32_t Player::getBuybackTimestampSlot(uint8_t slot) const { return playerData()->field_buy_back_timestamp[slot]; }
-void Player::setBuybackTimestampSlot(uint8_t slot, uint32_t timestamp) { write(playerData()->field_buy_back_timestamp[slot], timestamp); }
+uint32_t Player::getBuybackTimestampSlot(uint8_t slot) const { return getField<uint32_t>(PlayerField::FieldBuyBackTimestamp, slot); }
+void Player::setBuybackTimestampSlot(uint8_t slot, uint32_t timestamp) { setField<uint32_t>(PlayerField::FieldBuyBackTimestamp, timestamp, slot); }
 
-#if VERSION_STRING > Classic
-uint32_t Player::getFieldKills() const { return playerData()->field_kills.raw; }
-void Player::setFieldKills(uint32_t kills) { write(playerData()->field_kills.raw, kills); }
-#endif
+uint32_t Player::getFieldKills() const { return getField<uint32_t>(PlayerField::FieldKills); }
+void Player::setFieldKills(uint32_t kills) { setField<uint32_t>(PlayerField::FieldKills, kills); }
 
-#if VERSION_STRING > Classic
-#if VERSION_STRING < Cata
-    uint32_t Player::getContributionToday() const { return playerData()->field_contribution_today; }
-    void Player::setContributionToday(uint32_t contribution) { write(playerData()->field_contribution_today, contribution); }
+    uint32_t Player::getContributionToday() const { return getField<uint32_t>(PlayerField::FieldContributionToday); }
+    void Player::setContributionToday(uint32_t contribution) { setField<uint32_t>(PlayerField::FieldContributionToday, contribution); }
 
-    uint32_t Player::getContributionYesterday() const { return playerData()->field_contribution_yesterday; }
-    void Player::setContributionYesterday(uint32_t contribution) { write(playerData()->field_contribution_yesterday, contribution); }
-#endif
-#endif
+    uint32_t Player::getContributionYesterday() const { return getField<uint32_t>(PlayerField::FieldContributionYesterday); }
+    void Player::setContributionYesterday(uint32_t contribution) { setField<uint32_t>(PlayerField::FieldContributionYesterday, contribution); }
 
-uint32_t Player::getLifetimeHonorableKills() const { return playerData()->field_lifetime_honorable_kills; }
-void Player::setLifetimeHonorableKills(uint32_t kills) { write(playerData()->field_lifetime_honorable_kills, kills); }
+uint32_t Player::getLifetimeHonorableKills() const { return getField<uint32_t>(PlayerField::FieldLifetimeHonorableKills); }
+void Player::setLifetimeHonorableKills(uint32_t kills) { setField<uint32_t>(PlayerField::FieldLifetimeHonorableKills, kills); }
 
-#if VERSION_STRING != Mop
-uint32_t Player::getPlayerFieldBytes2() const { return playerData()->player_field_bytes_2.raw; }
-void Player::setPlayerFieldBytes2(uint32_t bytes) { write(playerData()->player_field_bytes_2.raw, bytes); }
+uint32_t Player::getPlayerFieldBytes2() const { return getField<uint32_t>(PlayerField::PlayerFieldBytes2); }
+void Player::setPlayerFieldBytes2(uint32_t bytes) { setField<uint32_t>(PlayerField::PlayerFieldBytes2, bytes); }
 
-uint8_t Player::getAuraVision() const { return playerData()->player_field_bytes_2.s.aura_vision; }
-void Player::setAuraVision(uint8_t auraVision) { write(playerData()->player_field_bytes_2.s.aura_vision, auraVision); }
+uint8_t Player::getAuraVision() const { return getField<uint8_t>(PlayerField::PlayerFieldBytes2AuraVision); }
+void Player::setAuraVision(uint8_t auraVision) { setField<uint8_t>(PlayerField::PlayerFieldBytes2AuraVision, auraVision); }
 void Player::addAuraVision(uint8_t auraVision) { setAuraVision(getAuraVision() | auraVision); }
 void Player::removeAuraVision(uint8_t auraVision) { setAuraVision(getAuraVision() & ~auraVision); }
-#endif
 
-uint32_t Player::getCombatRating(uint8_t combatRating) const { return playerData()->field_combat_rating[combatRating]; }
-void Player::setCombatRating(uint8_t combatRating, uint32_t value) { write(playerData()->field_combat_rating[combatRating], value); }
+uint32_t Player::getCombatRating(uint8_t combatRating) const { return getField<uint32_t>(PlayerField::FieldCombatRating, combatRating); }
+void Player::setCombatRating(uint8_t combatRating, uint32_t value) { setField<uint32_t>(PlayerField::FieldCombatRating, value, combatRating); }
 void Player::modCombatRating(uint8_t combatRating, int32_t value) { setCombatRating(combatRating, getCombatRating(combatRating) + value); }
 
-#if VERSION_STRING > Classic
     // field_arena_team_info start
-uint32_t Player::getArenaTeamId(uint8_t teamSlot) const { return playerData()->field_arena_team_info[teamSlot].team_id; }
-void Player::setArenaTeamId(uint8_t teamSlot, uint32_t teamId) { write(playerData()->field_arena_team_info[teamSlot].team_id, teamId); }
+uint32_t Player::getArenaTeamId(uint8_t teamSlot) const { return getField<uint32_t>(PlayerField::FieldArenaTeamInfoTeamId, teamSlot); }
+void Player::setArenaTeamId(uint8_t teamSlot, uint32_t teamId) { setField<uint32_t>(PlayerField::FieldArenaTeamInfoTeamId, teamId, teamSlot); }
 
-uint32_t Player::getArenaTeamMemberRank(uint8_t teamSlot) const { return playerData()->field_arena_team_info[teamSlot].member_rank; }
-void Player::setArenaTeamMemberRank(uint8_t teamSlot, uint32_t rank) { write(playerData()->field_arena_team_info[teamSlot].member_rank, rank); }
+uint32_t Player::getArenaTeamMemberRank(uint8_t teamSlot) const { return getField<uint32_t>(PlayerField::FieldArenaTeamInfoMemberRank, teamSlot); }
+void Player::setArenaTeamMemberRank(uint8_t teamSlot, uint32_t rank) { setField<uint32_t>(PlayerField::FieldArenaTeamInfoMemberRank, rank, teamSlot); }
     // field_arena_team_info end
-#endif
 
 #if VERSION_STRING > Classic
-#if VERSION_STRING < Cata
-uint32_t Player::getHonorCurrency() const { return playerData()->field_honor_currency; }
-void Player::setHonorCurrency(uint32_t amount) { write(playerData()->field_honor_currency, amount); }
+uint32_t Player::getHonorCurrency() const { return getField<uint32_t>(PlayerField::FieldHonorCurrency); }
+void Player::setHonorCurrency(uint32_t amount) { setField<uint32_t>(PlayerField::FieldHonorCurrency, amount); }
 void Player::modHonorCurrency(int32_t value) { setArenaCurrency(getArenaCurrency() + value); }
 
-uint32_t Player::getArenaCurrency() const { return playerData()->field_arena_currency; }
-void Player::setArenaCurrency(uint32_t amount) { write(playerData()->field_arena_currency, amount); }
+uint32_t Player::getArenaCurrency() const { return getField<uint32_t>(PlayerField::FieldArenaCurrency); }
+void Player::setArenaCurrency(uint32_t amount) { setField<uint32_t>(PlayerField::FieldArenaCurrency, amount); }
 void Player::modArenaCurrency(int32_t value) { setArenaCurrency(getArenaCurrency() + value); }
 #endif
-#endif
 
-#if VERSION_STRING >= WotLK
-uint32_t Player::getNoReagentCost(uint8_t index) const { return playerData()->no_reagent_cost[index]; }
-void Player::setNoReagentCost(uint8_t index, uint32_t value) { write(playerData()->no_reagent_cost[index], value); }
+uint32_t Player::getNoReagentCost(uint8_t index) const { return getField<uint32_t>(PlayerField::NoReagentCost, index); }
+void Player::setNoReagentCost(uint8_t index, uint32_t value) { setField<uint32_t>(PlayerField::NoReagentCost, value, index); }
 
-uint32_t Player::getGlyphSlot(uint16_t slot) const { return playerData()->field_glyph_slots[slot]; }
-void Player::setGlyphSlot(uint16_t slot, uint32_t glyph) { write(playerData()->field_glyph_slots[slot], glyph); }
+uint32_t Player::getGlyphSlot(uint16_t slot) const { return getField<uint32_t>(PlayerField::FieldGlyphSlots, slot); }
+void Player::setGlyphSlot(uint16_t slot, uint32_t glyph) { setField<uint32_t>(PlayerField::FieldGlyphSlots, glyph, slot); }
 
-uint32_t Player::getGlyph(uint16_t slot) const { return playerData()->field_glyphs[slot]; }
-void Player::setGlyph(uint16_t slot, uint32_t glyph) { write(playerData()->field_glyphs[slot], glyph); }
+uint32_t Player::getGlyph(uint16_t slot) const { return getField<uint32_t>(PlayerField::FieldGlyphs, slot); }
+void Player::setGlyph(uint16_t slot, uint32_t glyph) { setField<uint32_t>(PlayerField::FieldGlyphs, glyph, slot); }
 
-uint32_t Player::getGlyphsEnabled() const { return playerData()->glyphs_enabled; }
-void Player::setGlyphsEnabled(uint32_t glyphs) { write(playerData()->glyphs_enabled, glyphs); }
-#endif
+uint32_t Player::getGlyphsEnabled() const { return getField<uint32_t>(PlayerField::GlyphsEnabled); }
+void Player::setGlyphsEnabled(uint32_t glyphs) { setField<uint32_t>(PlayerField::GlyphsEnabled, glyphs); }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -3250,94 +3331,94 @@ UpdateMask Player::m_visibleUpdateMask;
 void Player::initVisibleUpdateBits()
 {
 #if VERSION_STRING == Mop
-    Player::m_visibleUpdateMask.SetCount(getSizeOfStructure(WoWPlayer));
+    Player::m_visibleUpdateMask.SetCount(Version::layouts().player.valueCount());
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid) + 1);
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, data));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, data) + 1);
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, field_type.raw));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, entry));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, dynamic_field));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, scale_x));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().object.index(ObjectField::Guid));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().object.index(ObjectField::Guid) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().object.index(ObjectField::Data));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().object.index(ObjectField::Data) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().object.index(ObjectField::FieldType));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().object.index(ObjectField::Entry));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().object.index(ObjectField::DynamicField));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().object.index(ObjectField::ScaleX));
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, charm_guid));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, charm_guid) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::CharmGuid));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::CharmGuid) + 1);
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, summon_guid));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, summon_guid) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::SummonGuid));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::SummonGuid) + 1);
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, charmed_by_guid));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, charmed_by_guid) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::CharmedByGuid));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::CharmedByGuid) + 1);
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, target_guid));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, target_guid) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::TargetGuid));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::TargetGuid) + 1);
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::ChannelObjectGuid));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::ChannelObjectGuid) + 1);
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, health));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_1));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_2));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_3));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_4));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_5));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Health));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Power1));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Power2));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Power3));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Power4));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Power5));
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_health));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_1));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_2));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_3));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_4));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_5));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxHealth));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxPower1));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxPower2));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxPower3));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxPower4));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxPower5));
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, virtual_item_slot_display, 0));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, virtual_item_slot_display, 1));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, virtual_item_slot_display, 2));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemSlotDisplay, 0));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemSlotDisplay, 1));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemSlotDisplay, 2));
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, level));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, faction_template));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_0));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, unit_flags));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, unit_flags_2));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Level));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::FactionTemplate));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::FieldBytes0));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::UnitFlags));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::UnitFlags2));
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, base_attack_time, 0));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, base_attack_time, 1));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, bounding_radius));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, combat_reach));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, display_id));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, native_display_id));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, mount_display_id));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_1));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, pet_number));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, pet_name_timestamp));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid) + 1);
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_spell));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, mod_cast_speed));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, npc_flags));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, hover_height));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::BaseAttackTime, 0));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::BaseAttackTime, 1));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::BoundingRadius));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::CombatReach));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::DisplayId));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::NativeDisplayId));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MountDisplayId));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::FieldBytes1));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::PetNumber));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::PetNameTimestamp));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::ChannelObjectGuid));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::ChannelObjectGuid) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::ChannelSpell));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::ModCastSpeed));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::NpcFlags));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::HoverHeight));
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_flags));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes_2));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes_3));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_timestamp));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_team));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_arbiter));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_arbiter) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::PlayerFlags));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::PlayerBytes));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::PlayerBytes2));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::PlayerBytes3));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::GuildTimestamp));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::DuelTeam));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::DuelArbiter));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::DuelArbiter) + 1);
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_rank));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_level));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, base_mana));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_2));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, aura_state));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::GuildRank));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::GuildLevel));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::BaseMana));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::FieldBytes2));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::AuraState));
 
     for (uint16_t i = 0; i < EQUIPMENT_SLOT_END; ++i)
     {
         uint32_t offset = i * 2;
 
-        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + offset);
-        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + 1 + offset);
+        Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::VisibleItems) + offset);
+        Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::VisibleItems) + 1 + offset);
     }
 
 #if VERSION_STRING >= Mop
@@ -3345,115 +3426,115 @@ void Player::initVisibleUpdateBits()
 #else
     uint16_t questIdOffset = 5;
 #endif
-    for (uint16_t i = getOffsetForStructuredField(WoWPlayer, quests); i < getOffsetForStructuredField(WoWPlayer, visible_items); i += questIdOffset)
+    for (uint32_t i = Version::layouts().player.index(PlayerField::Quests); i < Version::layouts().player.index(PlayerField::VisibleItems); i += questIdOffset)
         Player::m_visibleUpdateMask.SetBit(i);
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, chosen_title));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::ChosenTitle));
 
 #else
-    Player::m_visibleUpdateMask.SetCount(getSizeOfStructure(WoWPlayer));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid) + 1);
+    Player::m_visibleUpdateMask.SetCount(Version::layouts().player.valueCount());
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().object.index(ObjectField::Guid));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().object.index(ObjectField::Guid) + 1);
 #if VERSION_STRING < Cata
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, type));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().object.index(ObjectField::Type));
 #else
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, field_type.raw));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().object.index(ObjectField::FieldType));
 #endif
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, entry));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, scale_x));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().object.index(ObjectField::Entry));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().object.index(ObjectField::ScaleX));
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, summon_guid));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, summon_guid) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::SummonGuid));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::SummonGuid) + 1);
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, target_guid));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, target_guid) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::TargetGuid));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::TargetGuid) + 1);
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, health));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_1));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_2));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_3));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_4));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_5));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Health));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Power1));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Power2));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Power3));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Power4));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Power5));
 #if VERSION_STRING == WotLK
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_6));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, power_7));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Power6));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Power7));
 #endif
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_health));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_1));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_2));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_3));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_4));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_5));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxHealth));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxPower1));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxPower2));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxPower3));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxPower4));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxPower5));
 #if VERSION_STRING == WotLK
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_6));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, max_power_7));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxPower6));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxPower7));
 #endif
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, virtual_item_slot_display, 0));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, virtual_item_slot_display, 1));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, virtual_item_slot_display, 2));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemSlotDisplay, 0));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemSlotDisplay, 1));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemSlotDisplay, 2));
 
 #if VERSION_STRING <= TBC
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, virtual_item_info, 0));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, virtual_item_info, 0) + 1);
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, virtual_item_info, 1));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, virtual_item_info, 1) + 1);
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, virtual_item_info, 2));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, virtual_item_info, 2) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemInfo, 0));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemInfo, 0) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemInfo, 1));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemInfo, 1) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemInfo, 2));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemInfo, 2) + 1);
 #endif
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, level));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, faction_template));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_0));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, unit_flags));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Level));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::FactionTemplate));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::FieldBytes0));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::UnitFlags));
 #if VERSION_STRING != Classic
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, unit_flags_2));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::UnitFlags2));
 #endif
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, base_attack_time, 0));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, base_attack_time, 1) + 1);
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, bounding_radius));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, combat_reach));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, display_id));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, native_display_id));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, mount_display_id));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_1));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, pet_number));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, pet_name_timestamp));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_object_guid) + 1);
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, channel_spell));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, dynamic_flags));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, npc_flags));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::BaseAttackTime, 0));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::BaseAttackTime, 1) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::BoundingRadius));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::CombatReach));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::DisplayId));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::NativeDisplayId));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MountDisplayId));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::FieldBytes1));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::PetNumber));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::PetNameTimestamp));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::ChannelObjectGuid));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::ChannelObjectGuid) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::ChannelSpell));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::DynamicFlags));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::NpcFlags));
 #if VERSION_STRING > TBC
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, hover_height));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::HoverHeight));
 #endif
 
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_flags));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes_2));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, player_bytes_3));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_timestamp));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_team));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_arbiter));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, duel_arbiter) + 1);
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::PlayerFlags));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::PlayerBytes));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::PlayerBytes2));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::PlayerBytes3));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::GuildTimestamp));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::DuelTeam));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::DuelArbiter));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::DuelArbiter) + 1);
 #if VERSION_STRING < Cata
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_id));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::GuildId));
 #endif
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, guild_rank));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, base_mana));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_2));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, aura_state));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::GuildRank));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::BaseMana));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::FieldBytes2));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::AuraState));
 
 #if VERSION_STRING == TBC
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWGameObject, display_id));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWGameObject, flags));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWGameObject, state));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWGameObject, level));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWGameObject, art_kit));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWGameObject, animation_progress));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().gameObject.index(GameObjectField::DisplayId));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().gameObject.index(GameObjectField::Flags));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().gameObject.index(GameObjectField::State));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().gameObject.index(GameObjectField::Level));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().gameObject.index(GameObjectField::ArtKit));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().gameObject.index(GameObjectField::AnimationProgress));
 #endif
 
     for (uint16_t i = 0; i < EQUIPMENT_SLOT_END; ++i)
@@ -3464,8 +3545,8 @@ void Player::initVisibleUpdateBits()
         uint32_t offset = i * 16;
 #endif
         // visible_items includes creator guid, so add + 2 since we are not sending that as update field
-        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + 2 + offset);
-        Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, visible_items) + 2 + 1 + offset);
+        Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::VisibleItems) + 2 + offset);
+        Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::VisibleItems) + 2 + 1 + offset);
     }
 
 #if VERSION_STRING == Classic
@@ -3478,11 +3559,11 @@ void Player::initVisibleUpdateBits()
     uint16_t questIdOffset = 5;
 #endif
 
-    for (uint16_t i = getOffsetForStructuredField(WoWPlayer, quests); i < getOffsetForStructuredField(WoWPlayer, visible_items); i += questIdOffset)
+    for (uint32_t i = Version::layouts().player.index(PlayerField::Quests); i < Version::layouts().player.index(PlayerField::VisibleItems); i += questIdOffset)
         Player::m_visibleUpdateMask.SetBit(i);
 
 #if VERSION_STRING != Classic
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWPlayer, chosen_title));
+    Player::m_visibleUpdateMask.SetBit(Version::layouts().player.index(PlayerField::ChosenTitle));
 #endif
 #endif
 }
@@ -3651,7 +3732,7 @@ void Player::setInitialPlayerData()
     }
 
 #if VERSION_STRING >= WotLK
-    for (uint8_t i = 0; i < WOWPLAYER_NO_REAGENT_COST_COUNT; ++i)
+    for (uint8_t i = 0; i < Version::fieldCount(PlayerField::NoReagentCost); ++i)
     {
         setNoReagentCost(i, 0);
     }
@@ -4864,26 +4945,14 @@ void Player::addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t ma
         // Find a skill field position for skill
         auto foundPosition = false;
         PlayerSkillFieldPosition fieldPosition;
-        for (uint16_t i = 0; i < WOWPLAYER_SKILL_INFO_COUNT; ++i)
+        for (uint16_t i = 0; i < getSkillFieldPositionCount(); ++i)
         {
-#if VERSION_STRING >= Cata
-            const uint16_t field = i / 2;
-            const uint8_t offset = i & 1;
-            if (getSkillInfoId(field, offset) == 0)
-            {
-                fieldPosition.field = field;
-                fieldPosition.offset = offset;
-                foundPosition = true;
-                break;
-            }
-#else
             if (getSkillInfoId(i) == 0)
             {
                 fieldPosition.index = i;
                 foundPosition = true;
                 break;
             }
-#endif
         }
 
         if (!foundPosition)
@@ -4904,21 +4973,12 @@ void Player::addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t ma
         m_skills.insert(std::make_pair(skillLine, newSkill));
 
         // Update skill fields
-#if VERSION_STRING < Cata
         // field 0
         setSkillInfoId(fieldPosition.index, skillLine);
         setSkillInfoStep(fieldPosition.index, skillStep);
         // field 1
         setSkillInfoCurrentValue(fieldPosition.index, newSkill.CurrentValue);
         setSkillInfoMaxValue(fieldPosition.index, newSkill.MaximumValue);
-#else
-        // field 0
-        setSkillInfoId(fieldPosition.field, fieldPosition.offset, skillLine);
-        setSkillInfoStep(fieldPosition.field, fieldPosition.offset, skillStep);
-        // field 1
-        setSkillInfoCurrentValue(fieldPosition.field, fieldPosition.offset, newSkill.CurrentValue);
-        setSkillInfoMaxValue(fieldPosition.field, fieldPosition.offset, newSkill.MaximumValue);
-#endif
         // field 2
         _updateSkillBonusFields(fieldPosition, 0, 0);
 
@@ -5119,20 +5179,12 @@ void Player::removeSkillLine(uint16_t skillLine)
     }
 
     // Update skill fields
-#if VERSION_STRING < Cata
     // field 0
     setSkillInfoId(fieldPosition.index, 0);
     setSkillInfoStep(fieldPosition.index, 0);
     // field 1
     setSkillInfoCurrentValue(fieldPosition.index, 0);
     setSkillInfoMaxValue(fieldPosition.index, 0);
-#else
-    // field 0
-    setSkillInfoStep(fieldPosition.field, fieldPosition.offset, 0);
-    // field 1
-    setSkillInfoCurrentValue(fieldPosition.field, fieldPosition.offset, 0);
-    setSkillInfoMaxValue(fieldPosition.field, fieldPosition.offset, 0);
-#endif
     // field 2
     _updateSkillBonusFields(fieldPosition, 0, 0);
 
@@ -5334,7 +5386,7 @@ void Player::updateGlyphs()
     }
 #elif VERSION_STRING == Mop
     uint16_t slot = 0;
-    for (uint32_t i = 0; i < sGlyphSlotStore.getNumRows() && slot < WOWPLAYER_GLYPH_SLOT_COUNT; ++i)
+    for (uint32_t i = 0; i < sGlyphSlotStore.getNumRows() && slot < Version::fieldCount(PlayerField::FieldGlyphSlots); ++i)
     {
         const auto glyphSlot = sGlyphSlotStore.lookupEntry(i);
         if (glyphSlot != nullptr)
@@ -5827,32 +5879,18 @@ void Player::_verifySkillValues(WDB::Structures::SkillLineEntry const* skillEntr
 
 void Player::_updateSkillFieldOnValueChange(const PlayerSkillFieldPosition fieldPosition, uint16_t skillStep, uint16_t currentValue, uint16_t maxValue)
 {
-#if VERSION_STRING < Cata
     // field 0
     setSkillInfoStep(fieldPosition.index, skillStep);
     // field 1
     setSkillInfoCurrentValue(fieldPosition.index, currentValue);
     setSkillInfoMaxValue(fieldPosition.index, maxValue);
-#else
-    // field 0
-    setSkillInfoStep(fieldPosition.field, fieldPosition.offset, skillStep);
-    // field 1
-    setSkillInfoCurrentValue(fieldPosition.field, fieldPosition.offset, currentValue);
-    setSkillInfoMaxValue(fieldPosition.field, fieldPosition.offset, maxValue);
-#endif
 }
 
 void Player::_updateSkillBonusFields(const PlayerSkillFieldPosition fieldPosition, uint16_t tempBonus, uint16_t permBonus)
 {
-#if VERSION_STRING < Cata
     // field 2
     setSkillInfoBonusTemporary(fieldPosition.index, tempBonus);
     setSkillInfoBonusPermanent(fieldPosition.index, permBonus);
-#else
-    // field 2
-    setSkillInfoBonusTemporary(fieldPosition.field, fieldPosition.offset, tempBonus);
-    setSkillInfoBonusPermanent(fieldPosition.field, fieldPosition.offset, permBonus);
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -5864,7 +5902,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     if (talentInfo == nullptr)
         return;
 
-    uint32_t maxTalentRow = playerData()->max_talent_tiers;
+    uint32_t maxTalentRow = getField<uint32_t>(PlayerField::MaxTalentTiers);
 
     if (talentInfo->playerClass != getClass())
         return;
@@ -6050,8 +6088,8 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
 }
 
 #if VERSION_STRING == Mop
-uint32_t Player::getCurrentSpecId() const { return playerData()->current_spec_id; }
-void Player::setCurrentSpecId(uint32_t specializationId) { write(playerData()->current_spec_id, specializationId); }
+uint32_t Player::getCurrentSpecId() const { return getField<uint32_t>(PlayerField::CurrentSpecId); }
+void Player::setCurrentSpecId(uint32_t specializationId) { setField<uint32_t>(PlayerField::CurrentSpecId, specializationId); }
 
 void Player::setPrimaryTalentSpecialization(uint32_t specializationTabId)
 {
@@ -9147,11 +9185,7 @@ void Player::updateNearbyQuestGameObjects()
             // Update dynamic flags for gameobjects with quests or item loot
             if (gameobject->isQuestGiver() || !gobProperties->itemMap.empty() || !gobProperties->goMap.empty())
             {
-#if VERSION_STRING < Mop
-                gameobject->forceBuildUpdateValueForField(getOffsetForStructuredField(WoWGameObject, dynamic), this);
-#else
-                gameobject->forceBuildUpdateValueForField(getOffsetForStructuredField(WoWObject, dynamic_field), this);
-#endif
+                gameobject->forceBuildUpdateValueForField(Version::gameObjectDynamicFlagsIndex(), this);
             }
         }
     }
@@ -10033,24 +10067,30 @@ void Player::setVisibleItemFields(uint32_t slot, Item* item)
     if (item)
     {
         setVisibleItemEntry(slot, item->getVisibleEntry());
-#if VERSION_STRING > TBC
-        setVisibleItemEnchantment(slot, PERM_ENCHANTMENT_SLOT, static_cast<uint16_t>(item->getEnchantmentId(PERM_ENCHANTMENT_SLOT)));
-        setVisibleItemEnchantment(slot, TEMP_ENCHANTMENT_SLOT, static_cast<uint16_t>(item->getEnchantmentId(TEMP_ENCHANTMENT_SLOT)));
-#else
-        for (uint8_t i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
-            setVisibleItemEnchantment(slot, i, static_cast<uint16_t>(item->getEnchantmentId(i)));
-#endif
+        if (hasField(PlayerField::VisibleItemsEnchantment))
+        {
+            setVisibleItemEnchantment(slot, PERM_ENCHANTMENT_SLOT, item->getEnchantmentId(PERM_ENCHANTMENT_SLOT));
+            setVisibleItemEnchantment(slot, TEMP_ENCHANTMENT_SLOT, item->getEnchantmentId(TEMP_ENCHANTMENT_SLOT));
+        }
+        else
+        {
+            for (uint8_t i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
+                setVisibleItemEnchantment(slot, i, item->getEnchantmentId(i));
+        }
     }
     else
     {
         setVisibleItemEntry(slot, 0);
-#if VERSION_STRING > TBC
-        setVisibleItemEnchantment(slot, PERM_ENCHANTMENT_SLOT, 0);
-        setVisibleItemEnchantment(slot, TEMP_ENCHANTMENT_SLOT, 0);
-#else
-        for (uint8_t i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
-            setVisibleItemEnchantment(slot, i, 0);
-#endif
+        if (hasField(PlayerField::VisibleItemsEnchantment))
+        {
+            setVisibleItemEnchantment(slot, PERM_ENCHANTMENT_SLOT, 0);
+            setVisibleItemEnchantment(slot, TEMP_ENCHANTMENT_SLOT, 0);
+        }
+        else
+        {
+            for (uint8_t i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
+                setVisibleItemEnchantment(slot, i, 0);
+        }
     }
 }
 
@@ -10293,11 +10333,7 @@ void Player::tagUnit(Object* object)
 {
     if (object->isCreatureOrPlayer())
     {
-#if VERSION_STRING < Mop
-        object->forceBuildUpdateValueForField(getOffsetForStructuredField(WoWUnit, dynamic_flags), this);
-#else
-        object->forceBuildUpdateValueForField(getOffsetForStructuredField(WoWObject, dynamic_field), this);
-#endif
+        object->forceBuildUpdateValueForField(Version::unitDynamicFlagsIndex(), this);
     }
 }
 
@@ -11245,11 +11281,7 @@ void Player::sendLootUpdate(Object* object)
         flags |= U_DYN_FLAG_LOOTABLE;
         flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
 
-#if VERSION_STRING < Mop
-        object->BuildFieldUpdatePacket(&buffer, getOffsetForStructuredField(WoWUnit, dynamic_flags), flags);
-#else
-        object->BuildFieldUpdatePacket(&buffer, getOffsetForStructuredField(WoWObject, dynamic_field), flags);
-#endif
+        object->BuildFieldUpdatePacket(&buffer, Version::unitDynamicFlagsIndex(), flags);
 
         getUpdateMgr().pushUpdateData(&buffer, 1);
     }
@@ -13174,7 +13206,7 @@ uint32_t Player::getMaxPersonalRating()
 }
 
 // Fills fields from firstField to firstField+fieldsNum-1 with integers from the string
-void Player::loadFieldsFromString(const char* string, uint16_t /*firstField*/, uint32_t fieldsNum)
+void Player::loadFieldsFromString(const char* string, uint32_t /*firstField*/, uint32_t fieldsNum)
 {
     if (string == nullptr)
         return;
@@ -14444,7 +14476,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
 
     // exploration data
     ss << "'";
-    for (uint8_t i = 0; i < WOWPLAYER_EXPLORED_ZONES_COUNT; ++i)
+    for (uint8_t i = 0; i < Version::fieldCount(PlayerField::ExploredZones); ++i)
         ss << getExploredZone(i) << ",";
     ss << "', ";
 
@@ -14693,7 +14725,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
     if (saveData)
     {
         ss << "'";
-        for (uint32_t offset = getSizeOfStructure(WoWObject); offset < getSizeOfStructure(WoWPlayer); offset++)
+        for (uint32_t offset = Version::layouts().object.valueCount(); offset < Version::layouts().player.valueCount(); offset++)
             ss << uint32_t(m_uint32Values[offset]) << ";";
         ss << "'" << ", ";
     }
@@ -14977,7 +15009,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
         m_cheats.hasTaxiCheat = true;
 
     // Process exploration data.
-    loadFieldsFromString(field[10].asCString(), getOffsetForStructuredField(WoWPlayer, explored_zones), WOWPLAYER_EXPLORED_ZONES_COUNT); //10
+    loadFieldsFromString(field[10].asCString(), Version::layouts().player.index(PlayerField::ExploredZones), Version::fieldCount(PlayerField::ExploredZones)); //10
 
     loadSkills(results[PlayerQuery::Skills].result.get());
 

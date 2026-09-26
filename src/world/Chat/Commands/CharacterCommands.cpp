@@ -28,6 +28,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Strings.hpp"
+#include "Version/ObjectLayout.hpp"
+
+using Version::PlayerField;
 
 //.character clearcooldowns
 bool ChatCommandHandler::HandleCharClearCooldownsCommand(const char* /*args*/, WorldSession* m_session)
@@ -827,11 +830,7 @@ bool ChatCommandHandler::HandleCharAddCopperCommand(const char* args, WorldSessi
     uint32_t silver = (uint32_t)std::floor(Util::int32abs<float>(total) / 100.0f) % 100;
     uint32_t copper = Util::int32abs<uint32_t>(total) % 100;
 
-#if VERSION_STRING < Cata
-    uint32_t newgold = player_target->getCoinage() + total;
-#else
     uint64_t newgold = player_target->getCoinage() + total;
-#endif
 
     if (newgold == 0)
     {
@@ -887,11 +886,7 @@ bool ChatCommandHandler::HandleCharAddSilverCommand(const char* args, WorldSessi
     uint32_t gold = (uint32_t)std::floor(Util::int32abs<float>(total) / 10000.0f);
     uint32_t silver = (uint32_t)std::floor(Util::int32abs<float>(total) / 100.0f) % 100;
 
-#if VERSION_STRING < Cata
-    uint32_t newgold = player_target->getCoinage() + total;
-#else
     uint64_t newgold = player_target->getCoinage() + total;
-#endif
 
     if (newgold == 0)
     {
@@ -946,11 +941,7 @@ bool ChatCommandHandler::HandleCharAddGoldCommand(const char* args, WorldSession
 
     uint32_t gold = (uint32_t)std::floor(Util::int32abs<float>(total) / 10000.0f);
 
-#if VERSION_STRING < Cata
-    uint32_t newgold = player_target->getCoinage() + total;
-#else
     uint64_t newgold = player_target->getCoinage() + total;
-#endif
 
     if (newgold == 0)
     {
@@ -1309,7 +1300,7 @@ bool ChatCommandHandler::HandleCharSetAllExploredCommand(const char* /*args*/, W
     greenSystemMessage(player_target->getSession(), "{} set all zones as explored for you.", m_session->GetPlayer()->getName());
     sGMLog.writefromsession(m_session, "Set all zones as explored for player {}.", player_target->getName());
 
-    for (uint8_t i = 0; i < WOWPLAYER_EXPLORED_ZONES_COUNT; ++i)
+    for (uint8_t i = 0; i < Version::fieldCount(PlayerField::ExploredZones); ++i)
     {
         player_target->setExploredZone(i, 0xFFFFFFFF);
     }

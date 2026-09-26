@@ -36,6 +36,9 @@
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Random.hpp"
+#include "Version/ObjectLayout.hpp"
+
+using Version::PlayerField;
 
 using namespace AscEmu::Packets;
 
@@ -290,7 +293,7 @@ void ItemInterface::setOwnerInventoryItem(uint8_t slot, uint64_t guid)
         m_pOwner->setKeyRingSlotItemGuid(slot - INVENTORY_KEYRING_START, guid);
 #endif
 #if VERSION_STRING == TBC
-    else if (slot < (INVENTORY_KEYRING_END + WOWPLAYER_VANITY_PET_SLOT_COUNT))
+    else if (slot < (INVENTORY_KEYRING_END + Version::fieldCount(PlayerField::VanityPetSlot)))
         m_pOwner->setVanityPetSlotItemGuid(slot - INVENTORY_KEYRING_END, guid);
 #elif VERSION_STRING == WotLK
     else if (slot < CURRENCYTOKEN_SLOT_END)

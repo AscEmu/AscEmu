@@ -6,9 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Objects/Object.hpp"
-#include "Data/WoWCorpse.hpp"
 #include "Management/Loot/Loot.hpp"
-#include "Server/UpdateFieldInclude.h"
+#include "Version/LayoutLimits.hpp"
 
 enum CORPSE_STATE
 {
@@ -27,7 +26,6 @@ enum CorpseFlags
     CORPSE_FLAG_LOOT = 32
 };
 
-struct WoWCorpse;
 class Player;
 
 class SERVER_DECL Corpse : public Object
@@ -61,9 +59,6 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
-private:
-    const WoWCorpse* corpseData() const { return reinterpret_cast<WoWCorpse*>(wow_data); }
-
 public:
     uint64_t getOwnerGuid() const;
     void setOwnerGuid(uint64_t guid);
@@ -122,5 +117,5 @@ protected:
     time_t m_time = 0;
     bool _loadedfromdb = false;
 
-    uint32_t _fields[getSizeOfStructure(WoWCorpse)];
+    uint32_t _fields[Version::kMaxCorpseValues];
 };

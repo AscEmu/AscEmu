@@ -12,10 +12,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellAura.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
-#include "Data/WoWDynamicObject.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Objects/Units/Players/Player.hpp"
+#include "Version/ObjectLayout.hpp"
+
+using Version::DynamicObjectField;
 
 DynamicObject::DynamicObject(uint64_t guid)
 {
@@ -38,10 +40,10 @@ DynamicObject::DynamicObject(uint64_t guid)
     m_updateFlag = UPDATEFLAG_HAS_POSITION;
 #endif
 
-    m_valuesCount = getSizeOfStructure(WoWDynamicObject);
+    m_valuesCount = Version::layouts().dynamicObject.valueCount();
     m_uint32Values = _fields;
-    memset(m_uint32Values, 0, (getSizeOfStructure(WoWDynamicObject)) * sizeof(uint32_t));
-    m_updateMask.SetCount(getSizeOfStructure(WoWDynamicObject));
+    memset(m_uint32Values, 0, (Version::layouts().dynamicObject.valueCount()) * sizeof(uint32_t));
+    m_updateMask.SetCount(Version::layouts().dynamicObject.valueCount());
 
     setOType(TYPE_DYNAMICOBJECT | TYPE_OBJECT);
     setGuid(guid);
@@ -227,25 +229,39 @@ void DynamicObject::remove()
  //////////////////////////////////////////////////////////////////////////////////////////
  // WoWData
 
-uint64_t DynamicObject::getCasterGuid() const { return dynamicObjectData()->caster_guid; }
-void DynamicObject::setCasterGuid(uint64_t guid) { write(dynamicObjectData()->caster_guid, guid); }
+uint64_t DynamicObject::getCasterGuid() const { return getField<uint64_t>(DynamicObjectField::CasterGuid); }
+void DynamicObject::setCasterGuid(uint64_t guid) { setField<uint64_t>(DynamicObjectField::CasterGuid, guid); }
 
 //bytes start
-uint8_t DynamicObject::getDynamicType() const { return dynamicObjectData()->dynamicobject_bytes.s.type; }
-#if VERSION_STRING < Cata
-void DynamicObject::setDynamicType(uint8_t type) { write(dynamicObjectData()->dynamicobject_bytes.s.type, type); }
-#else
-void DynamicObject::setDynamicType(uint8_t type) { write(dynamicObjectData()->dynamicobject_bytes.s.type, static_cast<uint32_t>(type)); }
-#endif
+uint8_t DynamicObject::getDynamicType() const
+{
+    // since Cata the type sits in the top four bits of the bytes field, before that in its first byte
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+        return static_cast<uint8_t>(getField<uint32_t>(DynamicObjectField::DynamicobjectBytes) >> 28);
+
+    return getField<uint8_t>(DynamicObjectField::DynamicobjectBytesType);
+}
+
+void DynamicObject::setDynamicType(uint8_t type)
+{
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+    {
+        const uint32_t bytes = getField<uint32_t>(DynamicObjectField::DynamicobjectBytes);
+        setField<uint32_t>(DynamicObjectField::DynamicobjectBytes, (bytes & 0x0FFFFFFF) | (static_cast<uint32_t>(type & 0x0F) << 28));
+        return;
+    }
+
+    setField<uint8_t>(DynamicObjectField::DynamicobjectBytesType, type);
+}
 //bytes end
 
-uint32_t DynamicObject::getSpellId() const { return dynamicObjectData()->spell_id; }
-void DynamicObject::setSpellId(uint32_t id) { write(dynamicObjectData()->spell_id, id); }
+uint32_t DynamicObject::getSpellId() const { return getField<uint32_t>(DynamicObjectField::SpellId); }
+void DynamicObject::setSpellId(uint32_t id) { setField<uint32_t>(DynamicObjectField::SpellId, id); }
 
-float DynamicObject::getRadius() const { return dynamicObjectData()->radius; }
+float DynamicObject::getRadius() const { return getField<float>(DynamicObjectField::Radius); }
 void DynamicObject::setRadius(float radius)
 {
-    write(dynamicObjectData()->radius, radius);
+    setField<float>(DynamicObjectField::Radius, radius);
 
     if (IsInWorld() && getWorldMap())
         getWorldMap()->refreshDynamicObjectTargets(this);
@@ -256,39 +272,29 @@ float DynamicObject::getDynamicX() const { return m_position.x; }
 void DynamicObject::setDynamicX(float x)
 {
     m_position.x = x;
-#if VERSION_STRING <= TBC
-    write(dynamicObjectData()->x, x);
-#endif
+    setField<float>(DynamicObjectField::X, x);
 }
 
 float DynamicObject::getDynamicY() const { return m_position.y; }
 void DynamicObject::setDynamicY(float y)
 {
     m_position.y = y;
-#if VERSION_STRING <= TBC
-    write(dynamicObjectData()->y, y);
-#endif
+    setField<float>(DynamicObjectField::Y, y);
 }
 
 float DynamicObject::getDynamicZ() const { return m_position.z; }
 void DynamicObject::setDynamicZ(float z)
 {
     m_position.z = z;
-#if VERSION_STRING <= TBC
-    write(dynamicObjectData()->z, z);
-#endif
+    setField<float>(DynamicObjectField::Z, z);
 }
 
 float DynamicObject::getDynamicO() const { return m_position.o; }
 void DynamicObject::setDynamicO(float o)
 {
     m_position.o = o;
-#if VERSION_STRING <= TBC
-    write(dynamicObjectData()->o, o);
-#endif
+    setField<float>(DynamicObjectField::O, o);
 }
 
-#if VERSION_STRING > Classic
-uint32_t DynamicObject::getCastTime() const { return dynamicObjectData()->cast_time; }
-void DynamicObject::setCastTime(uint32_t time) { write(dynamicObjectData()->cast_time, time); }
-#endif
+uint32_t DynamicObject::getCastTime() const { return getField<uint32_t>(DynamicObjectField::CastTime); }
+void DynamicObject::setCastTime(uint32_t time) { setField<uint32_t>(DynamicObjectField::CastTime, time); }

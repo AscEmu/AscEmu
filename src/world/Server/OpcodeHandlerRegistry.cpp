@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "Logging/Severity.hpp"
 #include "OpcodeHandlerRegistry.hpp"
-#include "OpcodeTable.hpp"
+#include "Version/VersionRegistry.hpp"
 #include "Network/WorldPacket.hpp"
 #include "WorldSession.h"
 
@@ -20,8 +20,8 @@ bool OpcodeHandlerRegistry::handleOpcode(WorldSession& session, WorldPacket& pac
 
     // Get the internal ID from the opcode table of the client version of this session
     const auto protocol = session.getClientProtocol();
-    uint32_t internalId = sOpcodeTables.getInternalIdForHex(rawOpcode, protocol);
-    std::string opcodeName = sOpcodeTables.getNameForOpcode(rawOpcode, protocol);
+    uint32_t internalId = Version::opcodeIdForHex(rawOpcode, protocol);
+    std::string opcodeName = Version::opcodeNameForHex(rawOpcode, protocol);
 
     auto it = opcodeHandlers.find(internalId);
 
