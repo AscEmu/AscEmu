@@ -12,13 +12,13 @@ This file is released under the MIT license. See README-MIT for more information
 // Largest uint32 value count of each struct over all client versions, sizes the object value storage
 namespace Version
 {
-    inline constexpr uint16_t kMaxObjectValues = 8;
+    inline constexpr uint16_t kMaxObjectValues = 12;
     inline constexpr uint16_t kMaxUnitValues = 234;
-    inline constexpr uint16_t kMaxPlayerValues = 1987;
-    inline constexpr uint16_t kMaxItemValues = 74;
-    inline constexpr uint16_t kMaxContainerValues = 148;
-    inline constexpr uint16_t kMaxGameObjectValues = 26;
-    inline constexpr uint16_t kMaxDynamicObjectValues = 16;
-    inline constexpr uint16_t kMaxCorpseValues = 40;
-    inline constexpr uint16_t kMaxAreaTriggerValues = 14;
+    inline constexpr uint16_t kMaxPlayerValues = 4625;
+    inline constexpr uint16_t kMaxItemValues = 85;
+    inline constexpr uint16_t kMaxContainerValues = 230;
+    inline constexpr uint16_t kMaxGameObjectValues = 33;
+    inline constexpr uint16_t kMaxDynamicObjectValues = 21;
+    inline constexpr uint16_t kMaxCorpseValues = 46;
+    inline constexpr uint16_t kMaxAreaTriggerValues = 43;
 }

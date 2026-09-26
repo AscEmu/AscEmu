@@ -24,10 +24,10 @@ namespace Version
 
     namespace
     {
-        // dense tables of the five supported expansions, built once from the version tables
+        // dense tables of the supported expansions, built once from the version tables
         struct BuiltLayouts
         {
-            std::array<ExpansionLayouts, 5> perExpansion{};
+            std::array<ExpansionLayouts, 7> perExpansion{};
             ExpansionLayouts empty{};
 
             BuiltLayouts()
@@ -37,6 +37,8 @@ namespace Version
                 perExpansion[2].build(Tables::wotlkLayouts);
                 perExpansion[3].build(Tables::cataLayouts);
                 perExpansion[4].build(Tables::mopLayouts);
+                perExpansion[5].build(Tables::wodLayouts);
+                perExpansion[6].build(Tables::legionLayouts);
             }
         };
 

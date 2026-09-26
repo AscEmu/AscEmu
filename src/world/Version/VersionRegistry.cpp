@@ -24,6 +24,8 @@ namespace Version
             WoW::Expansion::_WotLK,
             WoW::Expansion::_Cata,
             WoW::Expansion::_Mop,
+            WoW::Expansion::_WoD,
+            WoW::Expansion::_Legion,
         };
 
         size_t opcodeCount = 0;
