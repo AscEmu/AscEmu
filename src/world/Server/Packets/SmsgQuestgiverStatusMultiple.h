@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "Server/World.h"
 #include "WoWGuid.hpp"
 
 #include <cstdint>
@@ -60,7 +61,7 @@ namespace AscEmu::Packets
 
                 for (const auto& questGiver : questgiverSet)
                 {
-                    const WoWGuid guid = WoWGuid::createModernFromLegacy(questGiver.rawGuid, m_protocol.realmId, questGiver.mapId, 0);
+                    const WoWGuid guid = WoWGuid::createModernFromLegacy(questGiver.rawGuid, worldConfig.battleNetComm.realmId, questGiver.mapId, 0);
                     const auto packedGuid = guid.packModern();
                     packet.append(packedGuid.data(), packedGuid.size());
                     packet << static_cast<uint64_t>(questGiver.status);

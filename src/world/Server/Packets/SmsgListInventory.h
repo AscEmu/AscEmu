@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "Server/World.h"
 #include <array>
 #include <cstdint>
 #include <vector>
@@ -55,7 +56,7 @@ namespace AscEmu::Packets
 
             if (m_protocol.isForever())
             {
-                const WoWGuid modernVendorGuid = WoWGuid::createModernFromLegacy(vendorGuid.getRawGuid(), m_protocol.realmId, vendorMapId, 0);
+                const WoWGuid modernVendorGuid = WoWGuid::createModernFromLegacy(vendorGuid.getRawGuid(), worldConfig.battleNetComm.realmId, vendorMapId, 0);
                 const std::vector<uint8_t> packedVendorGuid = modernVendorGuid.packModern();
                 if (packedVendorGuid.empty())
                     return false;

@@ -56,6 +56,7 @@ protected:
     bool handleForeverQueryGameObjectOpcode(WorldPacket& packet);
     bool handleCloseInteraction(WorldPacket& packet);
     bool handleForeverSetSelectionOpcode(WorldPacket& packet);
+    bool handleForeverCastSpellOpcode(WorldPacket& packet);
     bool handleForeverPingOpcode(WorldPacket& packet);
     bool handleForeverLogoutRequestOpcode(WorldPacket& packet);
     bool handleForeverLogoutCancelOpcode(WorldPacket& packet);

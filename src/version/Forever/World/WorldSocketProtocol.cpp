@@ -1111,6 +1111,12 @@ bool WorldSocket::processForeverAuthSession(uint32_t opcode, const std::vector<u
     m_foreverBattlegroupId = battlegroupId;
     m_foreverRealmId = realmId;
 
+    auto protocol = getClientProtocol();
+    protocol.regionId = m_foreverRegionId;
+    protocol.battlegroupId = m_foreverBattlegroupId;
+    protocol.realmId = m_foreverRealmId;
+    setClientProtocol(protocol);
+
     std::array<uint8_t, 32> localChallenge{};
     std::memcpy(localChallenge.data(), payload.data() + offset, localChallenge.size());
     offset += localChallenge.size();
@@ -1293,6 +1299,13 @@ bool WorldSocket::processForeverAuthContinuedSession(uint32_t opcode, const std:
     m_foreverRegionId = pending.regionId;
     m_foreverBattlegroupId = pending.battlegroupId;
     m_foreverRealmId = pending.realmId;
+
+    auto protocol = getClientProtocol();
+    protocol.regionId = m_foreverRegionId;
+    protocol.battlegroupId = m_foreverBattlegroupId;
+    protocol.realmId = m_foreverRealmId;
+    setClientProtocol(protocol);
+
     m_foreverSessionKey = pending.sessionKey;
     if (!deriveForeverEncryptionKeyFromSession(m_foreverSessionKey, localChallenge, m_foreverServerChallenge, m_foreverEncryptionKey))
         return false;

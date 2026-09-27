@@ -1660,12 +1660,56 @@ namespace WDB::Structures
 #endif
     };
 
+    struct RaceSet
+    {
+        std::array<uint64_t, 2> bits{};
+
+        bool empty() const { return bits[0] == 0 && bits[1] == 0; }
+
+        bool contains(uint32_t raceId) const
+        {
+            if (raceId == 0 || raceId > 128)
+                return false;
+
+            uint32_t const bit = raceId - 1;
+            return (bits[bit / 64] & (uint64_t{1} << (bit % 64))) != 0;
+        }
+
+        void add(uint32_t raceId)
+        {
+            if (raceId == 0 || raceId > 128)
+                return;
+
+            uint32_t const bit = raceId - 1;
+            bits[bit / 64] |= uint64_t{1} << (bit % 64);
+        }
+
+        void addLegacyMask(uint32_t mask) { bits[0] |= static_cast<uint64_t>(mask); }
+        void setLow64(uint32_t low, uint32_t high) { bits[0] = static_cast<uint64_t>(low) | (static_cast<uint64_t>(high) << 32); }
+    };
+
+    // Raw legacy DBC layout for SkillLineAbility.dbc.
+    // Separate from the runtime entry because runtime uses RaceSet.
+    struct LegacySkillLineAbilityEntry
+    {
+        uint32_t Id;
+        uint32_t skilline;
+        uint32_t spell;
+        uint32_t raceMask;
+        uint32_t classMask;
+        uint32_t minSkillLineRank;
+        uint32_t next;
+        uint32_t acquireMethod;
+        uint32_t grey;
+        uint32_t green;
+    };
+
     struct SkillLineAbilityEntry
     {
         uint32_t Id;                                                // 0
         uint32_t skilline;                                          // 1 skill id
         uint32_t spell;                                             // 2
-        uint32_t race_mask;                                         // 3
+        RaceSet races;                                              // runtime race restriction
         uint32_t class_mask;                                        // 4
         //uint32_t excludeRace;                                     // 5
         //uint32_t excludeClass;                                    // 6
@@ -3071,6 +3115,11 @@ namespace WDB::Structures
         uint32_t ResearchProject;                                   // 23 ResearchProject.dbc
         uint32_t SpellMiscId;                                       // 24 SpellMisc.dbc
 
+        SpellEntry()
+            : Id(0), Name(""), Rank(""), RuneCostID(0), AttackPowerCoefficient(0.0f), SpellScalingId(0), SpellAuraOptionsId(0), SpellAuraRestrictionsId(0), SpellCastingRequirementsId(0), SpellCategoriesId(0), SpellClassOptionsId(0), SpellCooldownsId(0), SpellEquippedItemsId(0), SpellInterruptsId(0), SpellLevelsId(0), SpellReagentsId(0), SpellShapeshiftId(0), SpellTargetRestrictionsId(0), SpellTotemsId(0), ResearchProject(0), SpellMiscId(0) {}
+        SpellEntry(SpellEntry const&) = default;
+        SpellEntry& operator=(SpellEntry const&) = default;
+
         // struct access functions
         SpellAuraOptionsEntry const* GetSpellAuraOptions() const;
         SpellAuraRestrictionsEntry const* GetSpellAuraRestrictions() const;
@@ -3131,8 +3180,6 @@ namespace WDB::Structures
         uint32_t GetTargets() const;
         uint32_t GetEffectApplyAuraNameByIndex(uint8_t index) const;
 
-    private:
-        SpellEntry(SpellEntry const&);
     };
 
 #pragma pack(pop)
@@ -3142,20 +3189,15 @@ namespace WDB::Structures
 
     struct SpellEffect
     {
-        SpellEffect()
-        {
-            effects[0] = nullptr;
-            effects[1] = nullptr;
-            effects[2] = nullptr;
-        }
+        SpellEffect() : effects{} {}
 
         SpellEffectEntry const* effects[32];
     };
 
     typedef std::map<uint32_t, SpellEffect> SpellEffectMap;
 
-    // SpellPower.dbc is keyed by its own row id on Mop; the spell it belongs to is the
-    // spellId column, so like SpellEffect it needs a spell id -> row helper map.
+    // SpellPower.db2 is keyed by its own row id on Forever; the spell it belongs to is the
+    // relationship parent, so like SpellEffect it needs a spell id -> row helper map.
     typedef std::map<uint32_t, SpellPowerEntry const*> SpellPowerMap;
 #endif
 }

@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "Chat/ChatDefines.hpp"
+#include "Server/World.h"
 
 #include <cstdint>
 #include <string>
@@ -42,12 +43,14 @@ namespace AscEmu::Packets
         uint32_t achievementId = 0;
         WoWGuid groupGuid;
         WoWGuid guildGuid;
+        uint16_t senderMapId = 0;
+        uint16_t receiverMapId = 0;
 
         SmsgMessageChat() : SmsgMessageChat(0, 0, 0, "", 0, "", 0, "", 0)
         {
         }
 
-        SmsgMessageChat(uint8_t type, uint32_t language, uint8_t flag, std::string message, uint64_t senderGuid = 0, std::string senderName = "", uint64_t receiverGuid = 0, std::string receiverName = "", uint32_t achievementId = 0, uint64_t groupGuid = 0, uint64_t guildGuid = 0) :
+        SmsgMessageChat(uint8_t type, uint32_t language, uint8_t flag, std::string message, uint64_t senderGuid = 0, std::string senderName = "", uint64_t receiverGuid = 0, std::string receiverName = "", uint32_t achievementId = 0, uint64_t groupGuid = 0, uint64_t guildGuid = 0, uint16_t senderMapId = 0, uint16_t receiverMapId = 0) :
             ManagedPacket(SMSG_MESSAGECHAT, 1 + 4 + 8 + 4 + 8 + (message.length() + 1) + 1),
             type(type),
             language(language),
@@ -59,7 +62,9 @@ namespace AscEmu::Packets
             receiverName(receiverName),
             achievementId(achievementId),
             groupGuid(groupGuid),
-            guildGuid(guildGuid)
+            guildGuid(guildGuid),
+            senderMapId(senderMapId),
+            receiverMapId(receiverMapId)
         {
         }
 
@@ -78,6 +83,84 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion == WoW::Expansion::Forever)
+            {
+                const auto toModernGuid = [this](WoWGuid const& guid, uint16_t mapId)
+                {
+                    if (!guid)
+                        return WoWGuid::createModernEmpty();
+
+                    // Player/item/guild GUIDs are realm-scoped. World objects must
+                    // use exactly the same realm + map identity as ObjectUpdate.
+                    switch (guid.getHighType())
+                    {
+                        case HighGuid::Unit:
+                        case HighGuid::Pet:
+                        case HighGuid::Vehicle:
+                        case HighGuid::GameObject:
+                        case HighGuid::DynamicObject:
+                        case HighGuid::AreaTrigger:
+                        case HighGuid::Corpse:
+                            return WoWGuid::createModernFromLegacy(guid.getRawGuid(), worldConfig.battleNetComm.realmId, mapId, 0);
+                        default:
+                            return WoWGuid::createModernFromLegacy(guid.getRawGuid(), m_protocol.realmId);
+                    }
+                };
+
+                const auto appendModernGuid = [&packet](WoWGuid const& guid)
+                {
+                    const auto packedGuid = guid.packModern();
+                    packet.append(packedGuid.data(), packedGuid.size());
+                };
+
+                const WoWGuid modernSenderGuid = toModernGuid(senderGuid, senderMapId);
+                const WoWGuid modernSenderGuildGuid = toModernGuid(guildGuid, 0);
+                const WoWGuid modernSenderWowAccount = WoWGuid::createModernEmpty();
+                const WoWGuid convertedReceiverGuid = toModernGuid(receiverGuid, receiverMapId);
+                const WoWGuid modernReceiverGuid = convertedReceiverGuid ? convertedReceiverGuid : modernSenderGuid;
+
+                const std::string channelName = type == CHAT_MSG_CHANNEL ? receiverName : std::string{};
+                const std::string targetName = type == CHAT_MSG_CHANNEL ? std::string{} : receiverName;
+                const uint32_t virtualRealmAddress = m_protocol.getVirtualRealmAddress();
+
+                // Forever 1.60.1.70009 SMSG_CHAT (0x004B0001).
+                packet << type;
+                packet << language;
+                appendModernGuid(modernSenderGuid);
+                appendModernGuid(modernSenderGuildGuid);
+                appendModernGuid(modernSenderWowAccount);
+                appendModernGuid(modernReceiverGuid);
+                packet << virtualRealmAddress; // target virtual realm address
+                packet << virtualRealmAddress; // sender virtual realm address
+                packet << static_cast<int32_t>(achievementId);
+                packet << static_cast<uint32_t>(flag);
+                packet << 0.0f;                    // display time
+                packet << static_cast<int32_t>(0); // spell id
+
+                packet.writeBits(senderName.size(), 11);
+                packet.writeBits(targetName.size(), 11);
+                packet.writeBits(0, 5); // addon prefix
+                packet.writeBits(channelName.size(), 7);
+                packet.writeBits(message.size(), 12);
+                packet.writeBit(false); // hide chat log
+                packet.writeBit(false); // fake sender name
+                packet.writeBit(false); // BroadcastTextID optional
+                packet.writeBit(false); // ChannelGUID optional
+                packet.writeBit(false); // EncounterEventID optional
+                packet.flushBits();
+
+                if (!senderName.empty())
+                    packet.writeString(senderName);
+                if (!targetName.empty())
+                    packet.writeString(targetName);
+                if (!channelName.empty())
+                    packet.writeString(channelName);
+                if (!message.empty())
+                    packet.writeString(message);
+
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 // same for all chat types

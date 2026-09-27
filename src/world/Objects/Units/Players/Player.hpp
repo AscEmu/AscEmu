@@ -1013,6 +1013,9 @@ public:
     void advanceAllSkills(uint16_t amount = 1);
     void advanceSkillLine(uint16_t skillLine, uint16_t amount = 1);
     void addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t maxValue, bool noSpellLearning = false, bool initializeProfession = false);
+#if defined(AE_FOREVER)
+    void addInitialForeverSkillLine(CreateInfo_SkillStruct const& skill);
+#endif
     bool hasSkillLine(uint16_t skillLine, bool strict = false) const;
     uint16_t getSkillLineCurrent(uint16_t skillLine, bool includeBonus = true) const;
     uint16_t getSkillLineMax(uint16_t skillLine) const;

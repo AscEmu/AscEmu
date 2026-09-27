@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "Server/World.h"
 #include "Logging/Logger.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Creatures/Creature.h"
@@ -72,8 +73,7 @@ namespace AscEmu::Packets
 
             if (m_protocol.isForever())
             {
-                const WoWGuid guid = WoWGuid::createModernFromLegacy(
-                    creature->getGuid(), m_protocol.realmId, static_cast<uint16_t>(creature->GetMapId()), 0);
+                const WoWGuid guid = WoWGuid::createModernFromLegacy(creature->getGuid(), worldConfig.battleNetComm.realmId, static_cast<uint16_t>(creature->GetMapId()), 0);
                 const auto packedGuid = guid.packModern();
                 packet.append(packedGuid.data(), packedGuid.size());
 

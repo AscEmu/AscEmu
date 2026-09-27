@@ -138,10 +138,17 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 
     if (messageLanguage != static_cast<uint32_t>(LANG_ADDON))
     {
-        if (messageLanguage <= languageSpellSkillStore.size())
+        if (messageLanguage <= 0xFFu)
         {
-            if (auto languageSkill = getLanguageSkillSpell(static_cast<uint8_t>(messageLanguage)).skillId)
-                player_can_speak_language = _player->hasSkillLine(static_cast<uint16_t>(languageSkill));
+            auto const languageInfo = getLanguageSkillSpell(static_cast<uint8_t>(messageLanguage));
+            if (languageInfo.skillId != 0)
+            {
+                player_can_speak_language = _player->hasSkillLine(static_cast<uint16_t>(languageInfo.skillId));
+#if defined(AE_FOREVER)
+                if (player_can_speak_language && languageInfo.spellId != 0)
+                    player_can_speak_language = _player->hasSpell(languageInfo.spellId);
+#endif
+            }
         }
 
         if (worldConfig.player.isInterfactionChatEnabled)

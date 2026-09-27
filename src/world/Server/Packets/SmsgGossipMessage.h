@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "Server/World.h"
 #include "Management/Gossip/GossipDefines.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "version/Forever/World/BroadcastTextId.hpp"
@@ -59,8 +60,7 @@ namespace AscEmu::Packets
                 // GUID, GossipID, LfgDungeonsID, FriendshipFactionID,
                 // GossipOptions[], GossipText[] (quest entries), then the two
                 // optional text references RandomTextID/BroadcastTextID.
-                const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(
-                    guid.getRawGuid(), m_protocol.realmId, mapId, 0);
+                const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(guid.getRawGuid(), worldConfig.battleNetComm.realmId, mapId, 0);
                 const auto packedGuid = modernGuid.packModern();
                 packet.append(packedGuid.data(), packedGuid.size());
 

@@ -55,9 +55,15 @@ namespace WoW {
     struct ClientProtocol
     {
         Expansion expansion{Expansion::Unknown};
+        uint32_t regionId{0};
+        uint32_t battlegroupId{0};
         uint32_t realmId{0};
 
         [[nodiscard]] WoW::Expansion getExpansion() const { return expansion; }
+        [[nodiscard]] uint32_t getVirtualRealmAddress() const noexcept
+        {
+            return ((regionId & 0xFFU) << 24U) | ((battlegroupId & 0xFFU) << 16U) | (realmId & 0xFFFFU);
+        }
 
         // index inside the version tables, the configured expansion when the client version is unknown
         [[nodiscard]] int32_t versionId() const noexcept;

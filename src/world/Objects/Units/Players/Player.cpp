@@ -4851,13 +4851,13 @@ bool Player::isSpellFitByClassAndRace(uint32_t spell_id) const
     if (spellSkillRange.empty())
         return true;
 
-    const auto raceMask = getRaceMask();
+    const auto raceId = getRace();
     const auto classMask = getClassMask();
 
     for (const auto& [_, skillEntry] : spellSkillRange)
     {
         // skip wrong race skills
-        if (skillEntry->race_mask > 0 && !(skillEntry->race_mask & raceMask))
+        if (!skillEntry->races.empty() && !skillEntry->races.contains(raceId))
             continue;
 
         // skip wrong class skills
@@ -5600,6 +5600,78 @@ uint16_t Player::getSkillLineMax(uint16_t skillLine) const
     return itr->second.MaximumValue;
 }
 
+#if defined(AE_FOREVER)
+void Player::addInitialForeverSkillLine(CreateInfo_SkillStruct const& skill)
+{
+    if (skill.skillid == 0)
+        return;
+
+    auto const* skillEntry = sSkillLineStore.lookupEntry(skill.skillid);
+    if (skillEntry == nullptr)
+        return;
+
+    if (m_skills.contains(skill.skillid))
+        return;
+
+    PlayerSkillFieldPosition fieldPosition{};
+    bool foundPosition = false;
+
+    for (uint16_t i = 0; i < WOWPLAYER_SKILL_INFO_COUNT; ++i)
+    {
+        uint16_t const field = i / 2;
+        uint8_t const offset = static_cast<uint8_t>(i & 1);
+
+        if (getSkillInfoId(field, offset) == 0)
+        {
+            fieldPosition.field = field;
+            fieldPosition.offset = offset;
+            foundPosition = true;
+            break;
+        }
+    }
+
+    if (!foundPosition)
+    {
+        sLogger.failure("Player::addInitialForeverSkillLine : Could not add skill line {} to player (guid {}), skill fields are full!", skill.skillid, getGuidLow());
+        return;
+    }
+
+    PlayerSkill playerSkill{};
+    playerSkill.Skill = skillEntry;
+    playerSkill.CurrentValue = skill.currentval;
+    playerSkill.MaximumValue = skill.maxRank;
+    playerSkill.TemporaryBonusValue = skill.tempBonus;
+    playerSkill.PermanentBonusValue = static_cast<int16_t>(skill.permBonus);
+    playerSkill.FieldPosition = fieldPosition;
+
+    m_skills.emplace(skill.skillid, playerSkill);
+
+    setSkillInfoId(fieldPosition.field, fieldPosition.offset, skill.skillid);
+    setSkillInfoStep(fieldPosition.field, fieldPosition.offset, skill.step);
+    setSkillInfoCurrentValue(fieldPosition.field, fieldPosition.offset, skill.currentval);
+    setSkillInfoMaxValue(fieldPosition.field, fieldPosition.offset, skill.maxRank);
+    setSkillInfoBonusTemporary(fieldPosition.field, fieldPosition.offset, static_cast<uint16_t>(skill.tempBonus));
+    setSkillInfoBonusPermanent(fieldPosition.field, fieldPosition.offset, skill.permBonus);
+
+    std::size_t const foreverSlot = static_cast<std::size_t>(fieldPosition.field) * 2U + fieldPosition.offset;
+    if (foreverSlot < m_foreverActivePlayerFields.skill.skillStartingRank.size())
+        m_foreverActivePlayerFields.skill.skillStartingRank[foreverSlot] = skill.startingRank;
+
+    if (skill.currentval == 0)
+        return;
+
+    if (skillEntry->type == SKILL_TYPE_PROFESSION)
+    {
+        if (getProfessionSkillLine(0) == 0 && getProfessionSkillLine(1) != skill.skillid)
+            setProfessionSkillLine(0, skill.skillid);
+        else if (getProfessionSkillLine(1) == 0 && getProfessionSkillLine(0) != skill.skillid)
+            setProfessionSkillLine(1, skill.skillid);
+    }
+
+    learnSkillSpells(skill.skillid, skill.currentval);
+}
+#endif
+
 void Player::learnInitialSkills()
 {
     for (const auto& skill : m_playerCreateInfo->skills)
@@ -5616,13 +5688,18 @@ void Player::learnInitialSkills()
         if (isClassDeathKnight() && skillLine->type == SKILL_TYPE_WEAPON && skillLine->id != SKILL_DUAL_WIELD)
             curVal = static_cast<uint16_t>((std::min(55U, getLevel()) - 1) * 5);
 
+#if defined(AE_FOREVER)
+        CreateInfo_SkillStruct initialSkill = skill;
+        initialSkill.currentval = curVal;
+        addInitialForeverSkillLine(initialSkill);
+#else
         addSkillLine(skill.skillid, curVal, 0);
+#endif
     }
 }
 
 void Player::learnSkillSpells(uint16_t skillLine, uint16_t currentValue)
 {
-    const auto raceMask = getRaceMask();
     const auto classMask = getClassMask();
 
     const auto skillRange = sSpellMgr.getSkillEntryRangeForSkill(skillLine);
@@ -5632,7 +5709,7 @@ void Player::learnSkillSpells(uint16_t skillLine, uint16_t currentValue)
             continue;
 
         // Check race mask
-        if (skillEntry->race_mask != 0 && !(skillEntry->race_mask & raceMask))
+        if (!skillEntry->races.empty() && !skillEntry->races.contains(getRace()))
             continue;
 
         // Check class mask
@@ -5826,7 +5903,7 @@ void Player::updateSkillMaximumValues()
         _verifySkillValues(itr.second.Skill, &itr.second.CurrentValue, &itr.second.MaximumValue, &skillStep, &valuesChanged);
 
         // Update skill fields
-#if VERSION_STRING < Cata
+#if VERSION_STRING < Cata || defined(AE_FOREVER)
         if (valuesChanged)
 #else
         if (valuesChanged && itr.second.Skill->type != SKILL_TYPE_WEAPON)
@@ -6226,13 +6303,13 @@ void Player::_addSpell(uint32_t spellId, uint16_t fromSkill/* = 0*/, bool learni
     if (fromSkill == 0)
     {
         const auto teachesProfession = spellInfo->hasEffect(SPELL_EFFECT_SKILL) || spellInfo->hasEffect(SPELL_EFFECT_TRADE_SKILL);
-        const auto raceMask = getRaceMask();
+        const auto raceId = getRace();
         const auto classMask = getClassMask();
 
         const auto spellSkillRange = sSpellMgr.getSkillEntryRangeForSpell(spellId);
         for (const auto& [_, skillEntry] : spellSkillRange)
         {
-            if (skillEntry->race_mask > 0 && !(skillEntry->race_mask & raceMask))
+            if (!skillEntry->races.empty() && !skillEntry->races.contains(raceId))
                 continue;
 
             if (skillEntry->class_mask > 0 && !(skillEntry->class_mask & classMask))
@@ -6401,7 +6478,7 @@ void Player::_verifySkillValues(WDB::Structures::SkillLineEntry const* skillEntr
     if (level_bound_skill)
     {
         newMaximum = static_cast<uint16_t>(5 * getLevel());
-#if VERSION_STRING >= Cata
+#if VERSION_STRING >= Cata && !defined(AE_FOREVER)
         // In cata all weapon skills are always maxed
         isCurrentValueMaxed = true;
 #endif

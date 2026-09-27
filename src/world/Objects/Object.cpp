@@ -527,11 +527,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
     // legacy UpdateMask-based object creation path.
     if (isCreature())
     {
-        const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(
-            m_wowGuid.getRawGuid(),
-            worldConfig.battleNetComm.realmId,
-            static_cast<uint16_t>(GetMapId()),
-            0);
+        const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(m_wowGuid.getRawGuid(), worldConfig.battleNetComm.realmId, static_cast<uint16_t>(GetMapId()), 0);
         const std::vector<uint8_t> packedGuid = modernGuid.packModern();
         if (packedGuid.empty())
             return 0;
@@ -550,11 +546,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     if (isGameObject())
     {
-        const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(
-            m_wowGuid.getRawGuid(),
-            worldConfig.battleNetComm.realmId,
-            static_cast<uint16_t>(GetMapId()),
-            0);
+        const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(m_wowGuid.getRawGuid(), worldConfig.battleNetComm.realmId, static_cast<uint16_t>(GetMapId()), 0);
         const std::vector<uint8_t> packedGuid = modernGuid.packModern();
         if (packedGuid.empty())
             return 0;
@@ -2490,11 +2482,7 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     // target may legitimately be nullptr for non-recipient-specific world updates.
     // Forever GUID identity must therefore not depend on a Player/Session.
-    const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(
-        m_wowGuid.getRawGuid(),
-        worldConfig.battleNetComm.realmId,
-        static_cast<uint16_t>(GetMapId()),
-        0);
+    const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(m_wowGuid.getRawGuid(), worldConfig.battleNetComm.realmId, static_cast<uint16_t>(GetMapId()), 0);
     const std::vector<uint8_t> packedGuid = modernGuid.packModern();
     const std::vector<uint8_t> block = AscEmu::Version::Forever::ObjectUpdate::buildValuesUpdateBlock(std::span<const uint8_t>(packedGuid.data(), packedGuid.size()), ownerVisible, m_foreverObjectFields, item ? &item->foreverItemFields() : nullptr, container ? &container->foreverContainerFields() : nullptr, unit ? &unit->foreverUnitFields() : nullptr, player ? &player->foreverPlayerFields() : nullptr, ownerVisible ? &player->foreverActivePlayerFields() : nullptr, gameObject ? &gameObject->foreverGameObjectFields() : nullptr, dynamicObject ? &dynamicObject->foreverDynamicObjectFields() : nullptr, corpse ? &corpse->foreverCorpseFields() : nullptr);
 

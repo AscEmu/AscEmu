@@ -60,6 +60,9 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
+            if (m_protocol.expansion == WoW::Expansion::Forever)
+                return sizeof(uint8_t) + sizeof(uint32_t) * 2 + sizeof(uint32_t) * spell_ids.size();
+
             size_t size = 0;
             size += sizeof(uint8_t); // unk1
             size += sizeof(uint16_t); // spell id count
@@ -71,7 +74,17 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion == WoW::Expansion::_Mop)
+            if (m_protocol.expansion == WoW::Expansion::Forever)
+            {
+                // Modern SEND_KNOWN_SPELLS: InitialLogin bit, known spell count, favorite spell count, then ids.
+                packet.writeBit(true);
+                packet.flushBits();
+                packet << uint32_t(spell_ids.size());
+                packet << uint32_t(0); // FavoriteSpells
+                for (uint32_t spell_id : spell_ids)
+                    packet << spell_id;
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
                 packet.writeBit(unk1);
                 packet.writeBits(static_cast<uint16_t>(spell_ids.size()), 22);

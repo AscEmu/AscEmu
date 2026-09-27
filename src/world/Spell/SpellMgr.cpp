@@ -395,7 +395,7 @@ WDB::Structures::SkillLineAbilityEntry const* SpellMgr::getFirstSkillEntryForSpe
     {
         if (forPlayer != nullptr)
         {
-            if (skillEntry->race_mask != 0 && !(skillEntry->race_mask & forPlayer->getRaceMask()))
+            if (!skillEntry->races.empty() && !skillEntry->races.contains(forPlayer->getRace()))
                 continue;
 
             if (skillEntry->class_mask != 0 && !(skillEntry->class_mask & forPlayer->getClassMask()))
@@ -545,7 +545,13 @@ SpellInfo const* SpellMgr::getEquivalentSpellRankFor(SpellInfo const* originalSp
 
 void SpellMgr::loadSpellInfoData()
 {
-    for (uint32_t i = 0; i < MAX_SPELL_ID; ++i)
+#if defined(AE_FOREVER)
+    uint32_t const spellStoreSize = sSpellStore.getNumRows();
+#else
+    uint32_t const spellStoreSize = MAX_SPELL_ID;
+#endif
+
+    for (uint32_t i = 0; i < spellStoreSize; ++i)
     {
         const auto dbcSpellEntry = sSpellStore.lookupEntry(i);
         if (dbcSpellEntry == nullptr)
@@ -1500,6 +1506,7 @@ static float_t applyCoefficientLevel20Penalty(float_t coeff, SpellInfo const* sp
     }
 
     return coeff;
+
 }
 
 static constexpr uint8_t COEFF_ADD_ONLY_THIS_RANK = 0x1;

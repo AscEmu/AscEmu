@@ -402,6 +402,8 @@ namespace WDB
             {
                 RecordRef ref;
                 ref.offset = section.fileOffset + record * m_header.recordSize;
+                ref.stringTableOffset = static_cast<uint32_t>(recordsEnd);
+                ref.stringTableSize = section.stringTableSize;
                 if (hasExternalIdTable)
                 {
                     ref.externalId = externalIds[record];
@@ -471,6 +473,50 @@ namespace WDB
             return {};
 
         return {data, m_header.recordSize};
+    }
+
+
+    std::string_view WDC5File::getString(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex) const
+    {
+        if (!checkIndex(recordIndex, field, arrayIndex))
+            return {};
+
+        RecordRef const& ref = m_records[recordIndex];
+        if (ref.stringTableSize == 0)
+            return {};
+
+        uint32_t const rawOffset = getUInt32(recordIndex, field, arrayIndex);
+        size_t const stringBegin = ref.stringTableOffset;
+        size_t const stringEnd = stringBegin + ref.stringTableSize;
+        if (stringEnd > m_fileData.size())
+            return {};
+
+        auto makeView = [&](size_t absoluteOffset) -> std::string_view
+        {
+            if (absoluteOffset < stringBegin || absoluteOffset >= stringEnd)
+                return {};
+
+            char const* begin = reinterpret_cast<char const*>(m_fileData.data() + absoluteOffset);
+            size_t const maxLength = stringEnd - absoluteOffset;
+            void const* terminator = std::memchr(begin, '\0', maxLength);
+            if (!terminator)
+                return {};
+
+            char const* end = static_cast<char const*>(terminator);
+            return std::string_view(begin, static_cast<size_t>(end - begin));
+        };
+
+        // WDC5 string fields can be represented either as an offset into the
+        // section string table or as a relative offset from the field itself,
+        // depending on the generated layout. Prefer the relative form when it
+        // resolves into this record's section and fall back to table-relative.
+        uint32_t const fieldByteOffset = getFieldByteOffset(field) + static_cast<uint32_t>(sizeof(uint32_t)) * arrayIndex;
+        size_t const relativeOffset = static_cast<size_t>(ref.offset) + fieldByteOffset + rawOffset;
+        if (std::string_view value = makeView(relativeOffset); !value.empty())
+            return value;
+
+        size_t const tableOffset = stringBegin + rawOffset;
+        return makeView(tableOffset);
     }
 
     uint8_t const* WDC5File::getRecordData(uint32_t recordIndex) const

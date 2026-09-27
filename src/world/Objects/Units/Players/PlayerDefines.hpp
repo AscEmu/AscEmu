@@ -1009,6 +1009,20 @@ constexpr ClassRaceCombination ClassRaceCombinations[] =
     {MONK, RACE_PANDAREN_ALLIANCE, Mop},
     {MONK, RACE_PANDAREN_HORDE, Mop},
 
+    // SKYBORNE ALLIANCE (Forever)
+    {WARRIOR, RACE_SKYBORNE_ALLIANCE, AE_PROFILE_FOREVER},
+    {HUNTER, RACE_SKYBORNE_ALLIANCE, AE_PROFILE_FOREVER},
+    {ROGUE, RACE_SKYBORNE_ALLIANCE, AE_PROFILE_FOREVER},
+    {MAGE, RACE_SKYBORNE_ALLIANCE, AE_PROFILE_FOREVER},
+    {DRUID, RACE_SKYBORNE_ALLIANCE, AE_PROFILE_FOREVER},
+
+    // SKYBORNE HORDE (Forever)
+    {WARRIOR, RACE_SKYBORNE_HORDE, AE_PROFILE_FOREVER},
+    {HUNTER, RACE_SKYBORNE_HORDE, AE_PROFILE_FOREVER},
+    {ROGUE, RACE_SKYBORNE_HORDE, AE_PROFILE_FOREVER},
+    {SHAMAN, RACE_SKYBORNE_HORDE, AE_PROFILE_FOREVER},
+    {DRUID, RACE_SKYBORNE_HORDE, AE_PROFILE_FOREVER},
+
     // DRUID
     {DRUID, RACE_NIGHTELF, Classic},
     {DRUID, RACE_TAUREN, Classic},
@@ -1041,10 +1055,12 @@ static inline uint8_t getSideByRace(uint8_t race)
         case RACE_DRAENEI:
         case RACE_WORGEN:
         case RACE_PANDAREN_ALLIANCE:
+        case RACE_SKYBORNE_ALLIANCE:
             return TEAM_ALLIANCE;
         case RACE_PANDAREN_NEUTRAL:
             return TEAM_NEUTRAL;
         case RACE_PANDAREN_HORDE:
+        case RACE_SKYBORNE_HORDE:
         default:
             return TEAM_HORDE;
     }
@@ -1096,8 +1112,13 @@ struct CreateInfo_ItemStruct
 
 struct CreateInfo_SkillStruct
 {
-    uint16_t skillid;
-    uint16_t currentval;
+    uint16_t skillid = 0;
+    uint16_t currentval = 0;
+    uint16_t step = 0;
+    uint16_t startingRank = 0;
+    uint16_t maxRank = 0;
+    int16_t tempBonus = 0;
+    uint16_t permBonus = 0;
 };
 
 struct CreateInfo_ActionBarStruct

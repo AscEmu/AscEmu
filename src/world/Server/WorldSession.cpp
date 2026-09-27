@@ -713,8 +713,8 @@ void WorldSession::SendPacket(WorldPacket* packet)
         return;
     }
 
-    if (_socket && _socket->isConnected())
-        _socket->sendPacket(packet);
+    if (WorldSocket* socket = getActiveSendSocket())
+        socket->sendPacket(packet);
 }
 
 void WorldSession::OutPacket(uint16_t opcode)
@@ -903,8 +903,8 @@ void WorldSession::registerOpcodeHandler()
     //registry.registerOpcode(SMSG_BARBER_SHOP_RESULT, &WorldSession::handleBarberShopResult, false, false, true, false, false);
 
     // Channels
-    registry.registerOpcode(CMSG_JOIN_CHANNEL, &WorldSession::handleChannelJoin, false, true, true, true, true);
-    registry.registerOpcode(CMSG_LEAVE_CHANNEL, &WorldSession::handleChannelLeave, true, true, true, true, true);
+    registry.registerOpcode(CMSG_JOIN_CHANNEL, &WorldSession::handleChannelJoin, false, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_LEAVE_CHANNEL, &WorldSession::handleChannelLeave, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_CHANNEL_LIST, &WorldSession::handleChannelList, true, true, true, true, true);
     registry.registerOpcode(CMSG_CHANNEL_PASSWORD, &WorldSession::handleChannelPassword, true, true, true, true, true);
     registry.registerOpcode(CMSG_CHANNEL_SET_OWNER, &WorldSession::handleChannelSetOwner, true, true, true, true, true);
@@ -1310,16 +1310,16 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode<STATUS_AUTHED>(CMSG_TIME_SYNC_RESPONSE, &WorldSession::handleTimeSyncRespOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_MOVE_SET_CAN_FLY, &WorldSession::handleMovementOpcodes, false, false, false, true, false);
     registry.registerOpcode(CMSG_FORCE_PITCH_RATE_CHANGE_ACK, &WorldSession::handleAcknowledgementOpcodes, false, false, false, true, false);
-    registry.registerOpcode(CMSG_MESSAGECHAT_SAY, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_YELL, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_CHANNEL, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_WHISPER, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_SAY, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_YELL, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_CHANNEL, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_WHISPER, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_MESSAGECHAT_GUILD, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_MESSAGECHAT_OFFICER, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_MESSAGECHAT_AFK, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_MESSAGECHAT_DND, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_MESSAGECHAT_EMOTE, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_PARTY, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_PARTY, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_MESSAGECHAT_RAID, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_MESSAGECHAT_RAID_WARNING, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_MESSAGECHAT_BATTLEGROUND, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);

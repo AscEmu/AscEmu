@@ -3,6 +3,7 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include <algorithm>
 #include <regex>
 
 #include "Storage/MySQLDataStore.hpp"
@@ -40,6 +41,11 @@ MySQLDataStore& MySQLDataStore::getInstance()
 void MySQLDataStore::finalize()
 {
     _professionDiscoveryStore.clear();
+}
+
+static bool matchesPlayerCreateRace(uint32_t race, uint32_t raceIndex)
+{
+    return race == 0 || race == raceIndex;
 }
 
 static std::vector<std::string> ascemuTables = { "achievement_reward", "ai_threattospellid", "areatriggers", "auctionhouse", "battlemasters", "creature_ai_scripts", "creature_difficulty", "creature_formations", "creature_group_spawn", "creature_initial_equip", "creature_movement_override", "creature_properties", "creature_properties_movement", "creature_quest_finisher", "creature_quest_starter", "creature_script_waypoints", "creature_spawns", "creature_timed_emotes", "creature_waypoints", "display_bounding_boxes", "event_scripts", "fishing", "gameevent_properties", "gameobject_properties", "gameobject_quest_finisher", "gameobject_quest_item_binding", "gameobject_quest_pickup_binding", "gameobject_quest_starter", "gameobject_spawns", "gameobject_spawns_extra", "gameobject_spawns_overrides", "gameobject_teleports", "gossip_menu", "gossip_menu_items", "gossip_menu_option", "graveyards", "guild_rewards", "guild_xp_for_level", "instance_encounters", "item_pages", "item_properties", "item_quest_association", "item_randomprop_groups", "item_randomsuffix_groups", "itemset_linked_itemsetbonus", "lfg_dungeon_rewards", "locales_achievement_reward", "locales_creature", "locales_gameobject", "locales_gossip_menu_option", "locales_item", "locales_item_pages", "locales_npc_gossip_texts", "locales_npc_script_text", "locales_points_of_interest", "locales_quest", "locales_worldbroadcast", "locales_worldmap_info", "locales_worldstring_table", "loot_creatures", "loot_fishing", "loot_gameobjects", "loot_items", "loot_pickpocketing", "loot_skinning", "npc_gossip_properties", "npc_gossip_texts", "npc_script_text", "npc_spellclick_spells", "pet_level_abilities", "petdefaultspells", "player_classlevelstats", "player_levelstats", "player_xp_for_level", "playercreateinfo", "playercreateinfo_bars", "playercreateinfo_items", "playercreateinfo_skills", "playercreateinfo_spell_cast", "playercreateinfo_spell_learn", "points_of_interest", "professiondiscoveries", "quest_poi", "quest_poi_points", "quest_properties", "recall", "reputation_creature_onkill", "reputation_faction_onkill", "reputation_instance_onkill", "spawn_group_id", "spell_area", "spell_coefficient_override", "spell_custom_override", "spell_disable", "spell_disable_trainers", "spell_effects_override", "spell_ranks", "spell_required", "spell_teleport_coords", "spelloverride", "spelltargetconstraints", "totemdisplayids", "trainer_properties", "trainer_properties_spellset", "transport_data", "vehicle_accessories", "vehicle_seat_addon", "vendor_restrictions", "vendors", "weather", "wordfilter_character_names", "wordfilter_chat", "world_db_version", "worldbroadcast", "worldmap_info", "worldstate_templates", "worldstring_tables", "zoneguards" };
@@ -2866,8 +2872,8 @@ void MySQLDataStore::loadPlayerCreateInfoSkills()
 {
     auto startTime = Util::TimeNow();
 
-    //                                                                      0         1         2       3
-    auto player_create_info_skills_result = WorldDatabase.query("SELECT raceMask, classMask, skillid, level FROM playercreateinfo_skills WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
+    //                                                                      0     1         2       3      4     5             6        7          8
+    auto player_create_info_skills_result = WorldDatabase.query("SELECT race, classMask, skillid, level, step, startingRank, maxRank, tempBonus, permBonus FROM playercreateinfo_skills WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
 
     if (player_create_info_skills_result == nullptr)
     {
@@ -2882,7 +2888,7 @@ void MySQLDataStore::loadPlayerCreateInfoSkills()
     {
         Field* fields = player_create_info_skills_result->fetch();
 
-        uint32_t raceMask = fields[0].asUint32();
+        uint32_t race = fields[0].asUint32();
         uint32_t classMask = fields[1].asUint32();
         auto skill_id = fields[2].asUint16();
 
@@ -2896,23 +2902,54 @@ void MySQLDataStore::loadPlayerCreateInfoSkills()
         CreateInfo_SkillStruct tsk{};
         tsk.skillid = skill_id;
         tsk.currentval = fields[3].asUint16();
+        tsk.step = fields[4].asUint16();
+        tsk.startingRank = fields[5].asUint16();
+        tsk.maxRank = fields[6].asUint16();
+        tsk.tempBonus = fields[7].asInt16();
+        tsk.permBonus = fields[8].asUint16();
 
-        for (uint32_t raceIndex = RACE_HUMAN; raceIndex < DBC_NUM_RACES; ++raceIndex)
+        auto addSkillToCreateInfo = [&](uint32_t raceIndex, uint32_t classIndex)
         {
-            if (raceMask == 0 || ((1 << (raceIndex - 1)) & raceMask))
+            if (raceIndex == 0 || raceIndex >= DBC_NUM_RACES || classIndex == 0 || classIndex >= MAX_PLAYER_CLASSES)
+                return;
+
+            auto& playerCreateInfo = _playerCreateInfoStoreNew[raceIndex][classIndex];
+            if (!playerCreateInfo)
+                return;
+
+            // A concrete race/class may be reached by an unrestricted legacy row and by a
+            // version-specific explicit row. Keep exactly one entry per skill id; the later
+            // (more specific/current-build) row wins.
+            auto existing = std::find_if(playerCreateInfo->skills.begin(), playerCreateInfo->skills.end(), [skill_id](CreateInfo_SkillStruct const& skill) { return skill.skillid == skill_id; });
+            if (existing != playerCreateInfo->skills.end())
+                *existing = tsk;
+            else
+                playerCreateInfo->skills.push_back(tsk);
+
+            ++player_create_info_skills_count;
+        };
+
+        auto applyToRace = [&](uint32_t raceIndex)
+        {
+            for (uint32_t classIndex = WARRIOR; classIndex < MAX_PLAYER_CLASSES; ++classIndex)
             {
-                for (uint32_t classIndex = WARRIOR; classIndex < MAX_PLAYER_CLASSES; ++classIndex)
-                {
-                    if (classMask == 0 || ((1 << (classIndex - 1)) & classMask))
-                    {
-                        if (auto& playerCreateInfo = _playerCreateInfoStoreNew[raceIndex][classIndex])
-                        {
-                            playerCreateInfo->skills.push_back(tsk);
-                            ++player_create_info_skills_count;
-                        }
-                    }
-                }
+                if (classMask == 0 || (classMask & (uint32_t{1} << (classIndex - 1))))
+                    addSkillToCreateInfo(raceIndex, classIndex);
             }
+        };
+
+        if (race == 0)
+        {
+            for (uint32_t raceIndex = RACE_HUMAN; raceIndex < DBC_NUM_RACES; ++raceIndex)
+                applyToRace(raceIndex);
+        }
+        else if (race < DBC_NUM_RACES)
+        {
+            applyToRace(race);
+        }
+        else
+        {
+            sLogger.failure("Table `playercreateinfo_skills` includes invalid race id {} for skill {}", race, skill_id);
         }
 
     } while (player_create_info_skills_result->nextRow());
@@ -2924,8 +2961,8 @@ void MySQLDataStore::loadPlayerCreateInfoSpellLearn()
 {
     auto startTime = Util::TimeNow();
 
-    //                                                                     0         1         2
-    auto player_create_info_spells_result = WorldDatabase.query("SELECT raceMask, classMask, spellid FROM playercreateinfo_spell_learn WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
+    //                                                                     0     1         2
+    auto player_create_info_spells_result = WorldDatabase.query("SELECT race, classMask, spellid FROM playercreateinfo_spell_learn WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
 
     if (player_create_info_spells_result == nullptr)
     {
@@ -2940,7 +2977,7 @@ void MySQLDataStore::loadPlayerCreateInfoSpellLearn()
     {
         Field* fields = player_create_info_spells_result->fetch();
 
-        uint32_t raceMask = fields[0].asUint32();
+        uint32_t race = fields[0].asUint32();
         uint32_t classMask = fields[1].asUint32();
         uint32_t spell_id = fields[2].asUint32();
 
@@ -2951,22 +2988,32 @@ void MySQLDataStore::loadPlayerCreateInfoSpellLearn()
             continue;
         }
 
-        for (uint32_t raceIndex = RACE_HUMAN; raceIndex < DBC_NUM_RACES; ++raceIndex)
+        auto addSpellForRace = [&](uint32_t raceIndex)
         {
-            if (raceMask == 0 || ((1 << (raceIndex - 1)) & raceMask))
+            if (raceIndex == 0 || raceIndex >= DBC_NUM_RACES)
+                return;
+
+            for (uint32_t classIndex = WARRIOR; classIndex < MAX_PLAYER_CLASSES; ++classIndex)
             {
-                for (uint32_t classIndex = WARRIOR; classIndex < MAX_PLAYER_CLASSES; ++classIndex)
+                if (classMask != 0 && ((1u << (classIndex - 1)) & classMask) == 0)
+                    continue;
+
+                if (auto& playerCreateInfo = _playerCreateInfoStoreNew[raceIndex][classIndex])
                 {
-                    if (classMask == 0 || ((1 << (classIndex - 1)) & classMask))
-                    {
-                        if (auto& playerCreateInfo = _playerCreateInfoStoreNew[raceIndex][classIndex])
-                        {
-                            playerCreateInfo->spell_list.insert(spell_id);
-                            ++player_create_info_spells_count;
-                        }
-                    }
+                    if (playerCreateInfo->spell_list.insert(spell_id).second)
+                        ++player_create_info_spells_count;
                 }
             }
+        };
+
+        if (race == 0)
+        {
+            for (uint32_t raceIndex = RACE_HUMAN; raceIndex < DBC_NUM_RACES; ++raceIndex)
+                addSpellForRace(raceIndex);
+        }
+        else
+        {
+            addSpellForRace(race);
         }
 
     } while (player_create_info_spells_result->nextRow());
@@ -2978,8 +3025,8 @@ void MySQLDataStore::loadPlayerCreateInfoSpellCast()
 {
     auto startTime = Util::TimeNow();
 
-    //                                                                      0         1         2
-    auto player_create_info_spells_result = WorldDatabase.query("SELECT raceMask, classMask, spellid FROM playercreateinfo_spell_cast WHERE build = %u", VERSION_STRING);
+    //                                                                      0     1         2
+    auto player_create_info_spells_result = WorldDatabase.query("SELECT race, classMask, spellid FROM playercreateinfo_spell_cast WHERE build = %u", VERSION_STRING);
 
     if (player_create_info_spells_result == nullptr)
     {
@@ -2994,7 +3041,7 @@ void MySQLDataStore::loadPlayerCreateInfoSpellCast()
     {
         Field* fields = player_create_info_spells_result->fetch();
 
-        uint32_t raceMask = fields[0].asUint32();
+        uint32_t race = fields[0].asUint32();
         uint32_t classMask = fields[1].asUint32();
         uint32_t spell_id = fields[2].asUint32();
 
@@ -3005,9 +3052,11 @@ void MySQLDataStore::loadPlayerCreateInfoSpellCast()
             continue;
         }
 
-        for (uint32_t raceIndex = RACE_HUMAN; raceIndex < DBC_NUM_RACES; ++raceIndex)
+        uint32_t const firstRace = race == 0 ? RACE_HUMAN : race;
+        uint32_t const lastRace = race == 0 ? DBC_NUM_RACES : race + 1;
+        for (uint32_t raceIndex = firstRace; raceIndex < lastRace && raceIndex < DBC_NUM_RACES; ++raceIndex)
         {
-            if (raceMask == 0 || ((1 << (raceIndex - 1)) & raceMask))
+            if (matchesPlayerCreateRace(race, raceIndex))
             {
                 for (uint32_t classIndex = WARRIOR; classIndex < MAX_PLAYER_CLASSES; ++classIndex)
                 {
@@ -3032,24 +3081,6 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
 {
     auto startTime = Util::TimeNow();
 
-#if VERSION_STRING == AE_PROFILE_FOREVER
-#ifndef AE_FOREVER_USE_TEMP_LEVELSTATS
-    #error "Forever still uses temporary player level stats. Implement modern DB2 player stats before removing AE_FOREVER_USE_TEMP_LEVELSTATS."
-#endif
-
-    uint32_t player_levelstats_count = 0;
-    if (auto& playerCreateInfo = _playerCreateInfoStoreNew[1][4])
-    {
-        CreateInfo_Levelstats lvl{};
-        lvl.strength = 21;
-        lvl.agility = 23;
-        lvl.stamina = 21;
-        lvl.intellect = 20;
-        lvl.spirit = 20;
-        playerCreateInfo->level_stats[1] = lvl;
-        ++player_levelstats_count;
-    }
-#else
     //                                                           0     1      2          3           4            5             6             7
     auto player_levelstats_result = WorldDatabase.query("SELECT race, class, level, BaseStrength, BaseAgility, BaseStamina, BaseIntellect, BaseSpirit FROM player_levelstats WHERE build = %u", VERSION_STRING);
 
@@ -3082,7 +3113,6 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
             ++player_levelstats_count;
         }
     } while (player_levelstats_result->nextRow());
-#endif
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `player_levelstats` table in {} ms!", player_levelstats_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 

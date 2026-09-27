@@ -522,12 +522,7 @@ namespace
         if (legacyGuid == 0)
             return WoWGuid::createModernEmpty();
 
-        return WoWGuid::createModernFromLegacy(
-            legacyGuid,
-            worldConfig.battleNetComm.realmId,
-            static_cast<uint16_t>(unit->GetMapId()),
-            0,
-            0);
+        return WoWGuid::createModernFromLegacy(legacyGuid, worldConfig.battleNetComm.realmId, static_cast<uint16_t>(unit->GetMapId()), 0, 0);
     }
 
     uint32_t GetForeverSplineFlags(MoveSplineFlag const& flags)

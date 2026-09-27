@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <span>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -50,6 +51,7 @@ namespace WDB
         [[nodiscard]] uint32_t getUInt32(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex = 0) const;
         [[nodiscard]] int32_t getInt32(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex = 0) const;
         [[nodiscard]] float getFloat(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex = 0) const;
+        [[nodiscard]] std::string_view getString(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex = 0) const;
         [[nodiscard]] uint32_t getParentId(uint32_t recordIndex) const noexcept;
         [[nodiscard]] uint32_t getSkippedEncryptedRecordCount() const noexcept { return m_skippedEncryptedRecords; }
         [[nodiscard]] bool findRecordIndex(uint32_t recordId, uint32_t& recordIndex) const noexcept;
@@ -110,6 +112,8 @@ namespace WDB
             uint32_t offset{0};
             uint32_t externalId{0};
             bool hasExternalId{false};
+            uint32_t stringTableOffset{0};
+            uint32_t stringTableSize{0};
         };
 
         template <typename T>

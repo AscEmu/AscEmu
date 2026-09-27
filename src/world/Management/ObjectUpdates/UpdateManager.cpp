@@ -77,11 +77,7 @@ void UpdateManager::pushDestroyGuid(const WoWGuid& guid)
 #if defined(AE_FOREVER)
     // Forever uses the same modern GUID identity for create, values, destroy and
     // out-of-range. Keep this independent of recipient/session lifetime.
-    const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(
-        guid.getRawGuid(),
-        worldConfig.battleNetComm.realmId,
-        static_cast<uint16_t>(m_owner->GetMapId()),
-        0);
+    const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(guid.getRawGuid(), worldConfig.battleNetComm.realmId, static_cast<uint16_t>(m_owner->GetMapId()), 0);
     const std::vector<uint8_t> packedGuid = modernGuid.packModern();
     m_destroyIds.append(packedGuid.data(), packedGuid.size());
     ++m_destroyIdCount;
@@ -108,11 +104,7 @@ void UpdateManager::pushOutOfRangeGuid(const WoWGuid& guid)
 #if defined(AE_FOREVER)
     // Use the same modern GUID identity as CREATE_OBJECT/VALUES. Do not depend
     // on a recipient/session here; the UpdateManager owner/map is stable.
-    const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(
-        guid.getRawGuid(),
-        worldConfig.battleNetComm.realmId,
-        static_cast<uint16_t>(m_owner->GetMapId()),
-        0);
+    const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(guid.getRawGuid(), worldConfig.battleNetComm.realmId, static_cast<uint16_t>(m_owner->GetMapId()), 0);
     const std::vector<uint8_t> packedGuid = modernGuid.packModern();
     m_outOfRangeIds.append(packedGuid.data(), packedGuid.size());
 #else

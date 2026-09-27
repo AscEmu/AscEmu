@@ -73,6 +73,92 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion == WoW::Expansion::Forever)
+            {
+                type = getMessageTypeForOpcode(static_cast<uint16_t>(packet.getOpcode()));
+                if (type == 0xFF)
+                    return false;
+
+                auto readModernGuid = [&packet](WoWGuid& guid)
+                {
+                    std::size_t consumed = 0;
+                    if (!WoWGuid::unpackModern(packet.contents() + packet.rpos(), packet.size() - packet.rpos(), guid, consumed))
+                        return false;
+
+                    packet.rpos(packet.rpos() + consumed);
+                    return true;
+                };
+
+                auto readCString = [&packet](uint32_t length)
+                {
+                    std::string value = packet.readString(length);
+                    if (!value.empty() && value.back() == '\0')
+                        value.pop_back();
+                    return value;
+                };
+
+                switch (type)
+                {
+                    case CHAT_MSG_SAY:
+                    case CHAT_MSG_YELL:
+                        packet >> language;
+                        if (language >= NUM_LANGUAGES)
+                            return false;
+
+                        message = packet.readString(packet.readBits(11));
+                        return !packet.hadReadFailure();
+
+                    case CHAT_MSG_PARTY:
+                        language = LANG_UNIVERSAL;
+                        message = packet.readString(packet.readBits(11));
+                        return !packet.hadReadFailure();
+
+                    case CHAT_MSG_CHANNEL:
+                    {
+                        packet >> language;
+                        if (language >= NUM_LANGUAGES)
+                            return false;
+
+                        WoWGuid channelGuid;
+                        if (!readModernGuid(channelGuid))
+                            return false;
+
+                        const uint32_t channelLength = packet.readBits(9);
+                        const uint32_t textLength = packet.readBits(11);
+
+                        destination = packet.readString(channelLength);
+                        message = packet.readString(textLength);
+                        return !packet.hadReadFailure();
+                    }
+
+                    case CHAT_MSG_WHISPER:
+                    {
+                        packet >> language;
+                        if (language >= NUM_LANGUAGES)
+                            return false;
+
+                        WoWGuid targetGuid;
+                        if (!readModernGuid(targetGuid))
+                            return false;
+
+                        uint32_t targetVirtualRealmAddress = 0;
+                        packet >> targetVirtualRealmAddress;
+
+                        const uint32_t targetLength = packet.readBits(9);
+                        const uint32_t realmLength = packet.readBits(9);
+                        const uint32_t textLength = packet.readBits(11);
+
+                        destination = readCString(targetLength);
+                        const std::string targetRealm = readCString(realmLength);
+                        message = readCString(textLength);
+                        return !packet.hadReadFailure();
+                    }
+
+                    default:
+                        return false;
+                }
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet >> type >> language;

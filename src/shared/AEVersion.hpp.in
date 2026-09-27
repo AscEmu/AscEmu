@@ -18,7 +18,6 @@ This file is released under the MIT license. See README-MIT for more information
 #define AE_PROFILE_FOREVER 70009
 
 // TODO: Remove when Forever player level stats are loaded from modern DB2 data.
-#define AE_FOREVER_USE_TEMP_LEVELSTATS
 
 #define AE_CLIENT_PROFILE @ASCEMU_VERSION_TOKEN@
 

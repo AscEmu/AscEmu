@@ -257,20 +257,33 @@ public:
         template <typename TPacket>
         bool parsePacket(WorldPacket& packet, TPacket& managedPacket)
         {
-            if (_socket == nullptr)
+            WorldSocket* socket = getActiveSendSocket();
+            if (socket == nullptr)
                 return false;
 
-            managedPacket.setClientProtocol(_socket->getClientProtocol());
+            managedPacket.setClientProtocol(socket->getClientProtocol());
             return managedPacket.deserialise(packet);
+        }
+
+        WorldSocket* getActiveSendSocket() const
+        {
+            if (_foreverInstanceSocket != nullptr && _foreverInstanceSocket->isConnected())
+                return _foreverInstanceSocket;
+
+            if (_socket != nullptr && _socket->isConnected())
+                return _socket;
+
+            return nullptr;
         }
 
         template <typename TPacket>
         std::unique_ptr<WorldPacket> buildPacket(TPacket& managedPacket)
         {
-            if (_socket == nullptr)
+            WorldSocket* socket = getActiveSendSocket();
+            if (socket == nullptr)
                 return nullptr;
 
-            managedPacket.setClientProtocol(_socket->getClientProtocol());
+            managedPacket.setClientProtocol(socket->getClientProtocol());
             return managedPacket.serialise();
         }
 

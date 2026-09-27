@@ -61,8 +61,7 @@ This file is released under the MIT license. See README-MIT for more information
 #elif VERSION_STRING == Mop
     #define MAX_NUM_MAPS 1161
 #elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
-    #define MAX_NUM_MAPS 1161
+    #define MAX_NUM_MAPS 3000 // correct value when known
 #endif
 
 #define CREATURE_SPAWNS_FIELDCOUNT 32

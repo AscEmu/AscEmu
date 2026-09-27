@@ -98,6 +98,9 @@ class SkillNameMgr
                 char* SkillName = skill_line->Name[0];
 #endif
 
+                if (SkillName == nullptr || *SkillName == '\0')
+                    continue;
+
                 SkillNames[SkillID] = std::make_unique<char[]>(strlen(SkillName) + 1);
                 //When the DBCFile gets cleaned up, so does the record data, so make a copy of it..
                 std::strcpy(SkillNames[SkillID].get(), SkillName);

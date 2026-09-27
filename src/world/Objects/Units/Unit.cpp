@@ -7127,7 +7127,10 @@ SmsgMessageChat Unit::createChatPacket(uint8_t type, uint32_t language, std::str
         }
     }
 
-    return SmsgMessageChat(type, language, 0, msg, getGuid(), senderName, targetGuid, targetName);
+    return SmsgMessageChat(
+        type, language, 0, msg, getGuid(), senderName, targetGuid, targetName, 0, 0, 0,
+        static_cast<uint16_t>(GetMapId()),
+        target != nullptr ? static_cast<uint16_t>(target->GetMapId()) : uint16_t(0));
 }
 
 void Unit::sendChatMessage(uint8_t type, uint32_t language, std::string msg, Unit* target/* = nullptr*/, uint32_t sessionLanguage/* = 0*/)
@@ -7174,7 +7177,7 @@ void Unit::sendChatMessageAlternateEntry(uint32_t entry, uint8_t type, uint32_t 
 {
     if (CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry))
     {
-        SmsgMessageChat sendPacket(type, lang, 0, msg, getGuid(), creatureProperties->Name);
+        SmsgMessageChat sendPacket(type, lang, 0, msg, getGuid(), creatureProperties->Name, 0, "", 0, 0, 0, static_cast<uint16_t>(GetMapId()));
         PacketBroadcast::sendToSet(*this, sendPacket, true);
     }
 }

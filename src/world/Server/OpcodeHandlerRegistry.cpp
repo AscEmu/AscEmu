@@ -134,6 +134,7 @@ void OpcodeHandlerRegistry::initializeForeverSocketHandlers()
     registerSocketOpcode(CMSG_UNKNOWN_PLAYER_GUID_003E002D, &WorldSocket::handleForeverUnknown003E002DOpcode);
     registerSocketOpcode(CMSG_CLOSE_INTERACTION, &WorldSocket::handleCloseInteraction);
     registerSocketOpcode(CMSG_SET_SELECTION, &WorldSocket::handleForeverSetSelectionOpcode);
+    registerSocketOpcode(CMSG_CAST_SPELL, &WorldSocket::handleForeverCastSpellOpcode);
 
     registerSocketOpcode(CMSG_MOVE_CHANGE_TRANSPORT, &WorldSocket::handleMovementOpcodes);
     registerSocketOpcode(MSG_MOVE_JUMP, &WorldSocket::handleMovementOpcodes);

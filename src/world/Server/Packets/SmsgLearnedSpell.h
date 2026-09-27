@@ -26,11 +26,33 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override { return 6; }
+        size_t expectedSize() const override
+        {
+            if (m_protocol.expansion == WoW::Expansion::Forever)
+                return 18;
+
+            return 6;
+        }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion == WoW::Expansion::_Mop)
+            if (m_protocol.expansion == WoW::Expansion::Forever)
+            {
+                // Modern LEARNED_SPELLS with one LearnedSpellInfo entry.
+                packet << uint32_t(1);   // ClientLearnedSpellData count
+                packet << uint32_t(0);   // SpecializationID
+                packet << int32_t(-1);   // MinActionBarSlot
+                packet << int32_t(spellId);
+                packet.writeBit(false);  // Favorite
+                packet.writeBit(false);  // EquipableSpellInvSlot present
+                packet.writeBit(false);  // Superceded present
+                packet.writeBit(false);  // TraitDefinitionID present
+                packet.flushBits();
+                packet.writeBit(false);  // SuppressMessaging
+                packet.writeBit(false);  // TraitGrantedByAura
+                packet.flushBits();
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
                 packet.writeBits(1, 22);
                 packet.writeBit(0);

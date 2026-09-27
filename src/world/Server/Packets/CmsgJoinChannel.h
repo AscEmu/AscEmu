@@ -34,6 +34,20 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion == WoW::Expansion::Forever)
+            {
+                packet >> dbcId;
+                packet.readBit(); // CreateVoiceSession
+                packet.readBit(); // Internal
+
+                const uint32_t channelLength = packet.readBits(7);
+                const uint32_t passwordLength = packet.readBits(7);
+
+                channelName = packet.readString(channelLength);
+                password = packet.readString(passwordLength);
+                return !packet.hadReadFailure();
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
                 packet >> dbcId >> unk >> channelName >> password;

@@ -878,10 +878,18 @@ void World::resetCharacterLoginBannState()
 
 bool World::loadDbcDb2Stores()
 {
+#if defined(AE_FOREVER)
+    sLogger.info("World : Loading DB2 files...");
+#else
     sLogger.info("World : Loading DBC files...");
+#endif
     if (!loadDBCs())
     {
+#if defined(AE_FOREVER)
+        sLogger.fatal("One or more required Forever DB2 files could not be loaded.", "Required client data is necessary for the server to function.", "The server will not start without it.", "");
+#else
         sLogger.fatal("One or more of the DBC files are missing.", "These are absolutely necessary for the server to function.", "The server will not start without them.", "");
+#endif
         return false;
     }
 

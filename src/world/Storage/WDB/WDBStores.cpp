@@ -27,11 +27,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include <algorithm>
 #include <concepts>
 #include <cstdint>
+#include <deque>
 #include <initializer_list>
 #include <iterator>
 #include <map>
 #include <string>
+#include <string_view>
 #include <type_traits>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -202,6 +205,17 @@ namespace {
 #if defined(AE_FOREVER)
     namespace ForeverFormat = WDB::Formats::Forever;
 
+    std::deque<std::string> foreverDb2StringPool;
+
+    char* keepForeverDb2String(std::string_view value)
+    {
+        if (value.empty())
+            return nullptr;
+
+        foreverDb2StringPool.emplace_back(value);
+        return foreverDb2StringPool.back().data();
+    }
+
     struct ForeverWDC5Load
     {
         WDB::WDC5File& file;
@@ -222,6 +236,19 @@ namespace {
         return false;
     }
 
+    bool loadForeverWDC5Optional(WDB::WDC5File& file, WDB::WDC5TableSchema const& format, std::string const& dbcPath)
+    {
+        std::string error;
+        if (file.load(dbcPath + format.filename, format, &error))
+        {
+            sLogger.info("Loaded optional {} DB2 table.", format.filename);
+            return true;
+        }
+
+        sLogger.warning("Optional Forever DB2 {} not loaded: {}", format.filename, error);
+        return false;
+    }
+
     bool loadForeverWDC5Group(std::initializer_list<ForeverWDC5Load> loads, WDB::StoreProblemList& errors, std::string const& dbcPath)
     {
         for (ForeverWDC5Load const& load : loads)
@@ -229,6 +256,637 @@ namespace {
                 return false;
 
         return true;
+    }
+
+
+    bool loadForeverGenericWDC5(WDB::WDC5File& file, char const* filename, WDB::StoreProblemList& errors, std::string const& dbcPath)
+    {
+        std::string error;
+        if (file.loadGeneric(dbcPath + filename, &error))
+        {
+            sLogger.info("Loaded {} DB2 table (fields={}, layout=0x{:08X}).", filename, file.getFieldCount(), file.getLayoutHash());
+            return true;
+        }
+
+        errors.push_back("Forever WDC5: " + error);
+        sLogger.failure("Failed to load {} DB2 table.", filename);
+        return false;
+    }
+
+    bool loadForeverGenericWDC5Optional(WDB::WDC5File& file, char const* filename, std::string const& dbcPath)
+    {
+        std::string error;
+        if (file.loadGeneric(dbcPath + filename, &error))
+        {
+            sLogger.info("Loaded optional {} DB2 table (fields={}, layout=0x{:08X}).", filename, file.getFieldCount(), file.getLayoutHash());
+            return true;
+        }
+
+        sLogger.warning("Optional Forever DB2 {} not loaded: {}", filename, error);
+        return false;
+    }
+
+    bool loadForeverModernSpellSkillStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
+    {
+        foreverDb2StringPool.clear();
+
+        WDB::WDC5File skillLine, skillLineAbility, spellName, spellAuraOptions, spellAuraRestrictions, spellCastTimes;
+        WDB::WDC5File spellCastingRequirements, spellCategories, spellClassOptions, spellCooldowns, spellDuration, spellEffect;
+        WDB::WDC5File spellEquippedItems, spellInterrupts, spellLevels, spellMisc, spellPower, spellRadius, spellRange;
+        WDB::WDC5File spellReagents, spellScaling, spellShapeshift, spellShapeshiftForm, spellTargetRestrictions, spellTotems;
+        WDB::WDC5File spellItemEnchantment;
+
+        bool ok = true;
+        auto load = [&](WDB::WDC5File& file, char const* name)
+        {
+            bool const loaded = loadForeverGenericWDC5(file, name, errors, dbcPath);
+            ok = loaded && ok;
+            return loaded;
+        };
+
+        bool const haveSkillLine = load(skillLine, "SkillLine.db2");
+        bool const haveSkillLineAbility = load(skillLineAbility, "SkillLineAbility.db2");
+        bool const haveSpellName = load(spellName, "SpellName.db2");
+        bool const haveAuraOptions = load(spellAuraOptions, "SpellAuraOptions.db2");
+        bool const haveAuraRestrictions = load(spellAuraRestrictions, "SpellAuraRestrictions.db2");
+        bool const haveCastTimes = load(spellCastTimes, "SpellCastTimes.db2");
+        bool const haveCastingRequirements = load(spellCastingRequirements, "SpellCastingRequirements.db2");
+        bool const haveCategories = load(spellCategories, "SpellCategories.db2");
+        bool const haveClassOptions = load(spellClassOptions, "SpellClassOptions.db2");
+        bool const haveCooldowns = load(spellCooldowns, "SpellCooldowns.db2");
+        bool const haveDuration = load(spellDuration, "SpellDuration.db2");
+        bool const haveEffect = load(spellEffect, "SpellEffect.db2");
+        bool const haveEquippedItems = load(spellEquippedItems, "SpellEquippedItems.db2");
+        bool const haveInterrupts = load(spellInterrupts, "SpellInterrupts.db2");
+        bool const haveLevels = load(spellLevels, "SpellLevels.db2");
+        bool const haveMisc = load(spellMisc, "SpellMisc.db2");
+        bool const havePower = load(spellPower, "SpellPower.db2");
+        bool const haveRadius = load(spellRadius, "SpellRadius.db2");
+        bool const haveRange = load(spellRange, "SpellRange.db2");
+        bool const haveReagents = load(spellReagents, "SpellReagents.db2");
+        bool const haveScaling = loadForeverGenericWDC5Optional(spellScaling, "SpellScaling.db2", dbcPath);
+        bool const haveShapeshift = load(spellShapeshift, "SpellShapeshift.db2");
+        bool const haveShapeshiftForm = load(spellShapeshiftForm, "SpellShapeshiftForm.db2");
+        bool const haveTargetRestrictions = load(spellTargetRestrictions, "SpellTargetRestrictions.db2");
+        bool const haveTotems = load(spellTotems, "SpellTotems.db2");
+        bool const haveItemEnchantment = load(spellItemEnchantment, "SpellItemEnchantment.db2");
+
+        auto verifyFields = [&](WDB::WDC5File const& file, char const* name, uint32_t expected)
+        {
+            if (file.getFieldCount() == expected)
+                return true;
+
+            errors.push_back(std::string("Forever DB2 ") + name + ": expected " + std::to_string(expected) + " fields, got " + std::to_string(file.getFieldCount()));
+            sLogger.failure("Forever DB2 {} has unexpected field count {} (expected {}).", name, file.getFieldCount(), expected);
+            ok = false;
+            return false;
+        };
+
+        if (haveSkillLine && verifyFields(skillLine, "SkillLine.db2", 15))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SkillLineEntry>> entries;
+            entries.reserve(skillLine.getRecordCount());
+            for (uint32_t row = 0; row < skillLine.getRecordCount(); ++row)
+            {
+                WDB::Structures::SkillLineEntry entry{};
+                entry.id = skillLine.getRecordId(row);
+                entry.Name[0] = keepForeverDb2String(skillLine.getString(row, 0));
+                entry.type = skillLine.getUInt8(row, 6);              // CategoryID
+                entry.spell_icon = skillLine.getUInt32(row, 7);      // SpellIconFileID
+                entry.linkable = skillLine.getUInt8(row, 8);         // CanLink
+                entries.emplace_back(entry.id, entry);
+            }
+            sSkillLineStore.assignEntries(entries);
+        }
+
+        if (haveSkillLineAbility && verifyFields(skillLineAbility, "SkillLineAbility.db2", 18))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SkillLineAbilityEntry>> entries;
+            entries.reserve(skillLineAbility.getRecordCount());
+            for (uint32_t row = 0; row < skillLineAbility.getRecordCount(); ++row)
+            {
+                WDB::Structures::SkillLineAbilityEntry entry{};
+                entry.Id = skillLineAbility.getRecordId(row);
+                entry.skilline = skillLineAbility.getUInt16(row, 3);
+                entry.spell = skillLineAbility.getUInt32(row, 4);
+                entry.minSkillLineRank = skillLineAbility.getUInt16(row, 5);
+                entry.class_mask = skillLineAbility.getUInt32(row, 6);
+                entry.next = skillLineAbility.getUInt32(row, 7);     // SupercedesSpell
+                entry.acquireMethod = skillLineAbility.getUInt32(row, 8);
+                entry.grey = skillLineAbility.getUInt16(row, 9);
+                entry.green = skillLineAbility.getUInt16(row, 10);
+                // 1.60.1 stores RaceMasks[2] in field 17. Convert once into the common runtime RaceSet.
+                entry.races.setLow64(skillLineAbility.getUInt32(row, 17, 0), skillLineAbility.getUInt32(row, 17, 1));
+                entries.emplace_back(entry.Id, entry);
+            }
+            sSkillLineAbilityStore.assignEntries(entries);
+        }
+
+        std::unordered_map<uint32_t, WDB::Structures::SpellEntry> spellEntries;
+        if (haveSpellName && verifyFields(spellName, "SpellName.db2", 1))
+        {
+            spellEntries.reserve(spellName.getRecordCount());
+            for (uint32_t row = 0; row < spellName.getRecordCount(); ++row)
+            {
+                WDB::Structures::SpellEntry entry{};
+                entry.Id = spellName.getRecordId(row);
+                char* const name = keepForeverDb2String(spellName.getString(row, 0));
+                entry.Name = name != nullptr ? name : "";
+                entry.Rank = "";
+                spellEntries.emplace(entry.Id, entry);
+            }
+        }
+
+        auto linkSpell = [&](uint32_t spellId, uint32_t rowId, auto member)
+        {
+            if (spellId == 0)
+                return;
+
+            auto itr = spellEntries.find(spellId);
+            if (itr != spellEntries.end())
+                itr->second.*member = rowId;
+        };
+
+        if (haveAuraOptions && verifyFields(spellAuraOptions, "SpellAuraOptions.db2", 7))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellAuraOptionsEntry>> entries;
+            entries.reserve(spellAuraOptions.getRecordCount());
+            for (uint32_t row = 0; row < spellAuraOptions.getRecordCount(); ++row)
+            {
+                WDB::Structures::SpellAuraOptionsEntry entry{};
+                entry.Id = spellAuraOptions.getRecordId(row);
+                entry.MaxStackAmount = spellAuraOptions.getUInt16(row, 1); // CumulativeAura
+                entry.procChance = spellAuraOptions.getUInt8(row, 3);
+                entry.procCharges = spellAuraOptions.getUInt32(row, 4);
+                entry.procFlags = spellAuraOptions.getUInt32(row, 6, 0);   // low 32 bits of ProcTypeMask
+                entries.emplace_back(entry.Id, entry);
+                linkSpell(spellAuraOptions.getParentId(row), entry.Id, &WDB::Structures::SpellEntry::SpellAuraOptionsId);
+            }
+            sSpellAuraOptionsStore.assignEntries(entries);
+        }
+
+        if (haveAuraRestrictions && verifyFields(spellAuraRestrictions, "SpellAuraRestrictions.db2", 13))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellAuraRestrictionsEntry>> entries;
+            entries.reserve(spellAuraRestrictions.getRecordCount());
+            for (uint32_t row = 0; row < spellAuraRestrictions.getRecordCount(); ++row)
+            {
+                uint32_t const id = spellAuraRestrictions.getRecordId(row);
+                WDB::Structures::SpellAuraRestrictionsEntry entry{};
+                entry.CasterAuraState = spellAuraRestrictions.getUInt32(row, 1);
+                entry.TargetAuraState = spellAuraRestrictions.getUInt32(row, 2);
+                entry.CasterAuraStateNot = spellAuraRestrictions.getUInt32(row, 3);
+                entry.TargetAuraStateNot = spellAuraRestrictions.getUInt32(row, 4);
+                entry.casterAuraSpell = spellAuraRestrictions.getUInt32(row, 5);
+                entry.targetAuraSpell = spellAuraRestrictions.getUInt32(row, 6);
+                entry.CasterAuraSpellNot = spellAuraRestrictions.getUInt32(row, 7);
+                entry.TargetAuraSpellNot = spellAuraRestrictions.getUInt32(row, 8);
+                entries.emplace_back(id, entry);
+                linkSpell(spellAuraRestrictions.getParentId(row), id, &WDB::Structures::SpellEntry::SpellAuraRestrictionsId);
+            }
+            sSpellAuraRestrictionsStore.assignEntries(entries);
+        }
+
+        if (haveCastTimes && verifyFields(spellCastTimes, "SpellCastTimes.db2", 2))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellCastTimesEntry>> entries;
+            entries.reserve(spellCastTimes.getRecordCount());
+            for (uint32_t row = 0; row < spellCastTimes.getRecordCount(); ++row)
+            {
+                WDB::Structures::SpellCastTimesEntry entry{};
+                entry.ID = spellCastTimes.getRecordId(row);
+                entry.CastTime = spellCastTimes.getUInt32(row, 0);       // Base
+                entry.CastTimePerLevel = 0.0f;                           // removed from modern DB2
+                entry.MinCastTime = spellCastTimes.getInt32(row, 1);    // Minimum
+                entries.emplace_back(entry.ID, entry);
+            }
+            sSpellCastTimesStore.assignEntries(entries);
+        }
+
+        if (haveCastingRequirements && verifyFields(spellCastingRequirements, "SpellCastingRequirements.db2", 7))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellCastingRequirementsEntry>> entries;
+            entries.reserve(spellCastingRequirements.getRecordCount());
+            for (uint32_t row = 0; row < spellCastingRequirements.getRecordCount(); ++row)
+            {
+                uint32_t const id = spellCastingRequirements.getRecordId(row);
+                WDB::Structures::SpellCastingRequirementsEntry entry{};
+                entry.FacingCasterFlags = spellCastingRequirements.getUInt32(row, 1);
+                entry.AreaGroupId = static_cast<int32_t>(spellCastingRequirements.getUInt16(row, 4)); // RequiredAreasID
+                entry.RequiresSpellFocus = spellCastingRequirements.getUInt16(row, 6);
+                entries.emplace_back(id, entry);
+                linkSpell(spellCastingRequirements.getUInt32(row, 0), id, &WDB::Structures::SpellEntry::SpellCastingRequirementsId);
+            }
+            sSpellCastingRequirementsStore.assignEntries(entries);
+        }
+
+        if (haveCategories && verifyFields(spellCategories, "SpellCategories.db2", 9))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellCategoriesEntry>> entries;
+            entries.reserve(spellCategories.getRecordCount());
+            for (uint32_t row = 0; row < spellCategories.getRecordCount(); ++row)
+            {
+                uint32_t const id = spellCategories.getRecordId(row);
+                WDB::Structures::SpellCategoriesEntry entry{};
+                entry.Category = spellCategories.getUInt16(row, 1);
+                entry.DmgClass = spellCategories.getUInt8(row, 2);       // modern DefenseType
+                entry.DispelType = spellCategories.getUInt8(row, 4);
+                entry.MechanicsType = spellCategories.getUInt8(row, 5);
+                entry.PreventionType = spellCategories.getUInt32(row, 6);
+                entry.StartRecoveryCategory = spellCategories.getUInt16(row, 7);
+                entries.emplace_back(id, entry);
+                linkSpell(spellCategories.getParentId(row), id, &WDB::Structures::SpellEntry::SpellCategoriesId);
+            }
+            sSpellCategoriesStore.assignEntries(entries);
+        }
+
+        if (haveClassOptions && verifyFields(spellClassOptions, "SpellClassOptions.db2", 4))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellClassOptionsEntry>> entries;
+            entries.reserve(spellClassOptions.getRecordCount());
+            for (uint32_t row = 0; row < spellClassOptions.getRecordCount(); ++row)
+            {
+                uint32_t const id = spellClassOptions.getRecordId(row);
+                WDB::Structures::SpellClassOptionsEntry entry{};
+                entry.SpellFamilyName = spellClassOptions.getUInt32(row, 2); // SpellClassSet
+                for (uint32_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                    entry.SpellFamilyFlags[i] = spellClassOptions.getUInt32(row, 3, i);
+                entries.emplace_back(id, entry);
+                linkSpell(spellClassOptions.getUInt32(row, 0), id, &WDB::Structures::SpellEntry::SpellClassOptionsId);
+            }
+            sSpellClassOptionsStore.assignEntries(entries);
+        }
+
+        if (haveCooldowns && verifyFields(spellCooldowns, "SpellCooldowns.db2", 5))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellCooldownsEntry>> entries;
+            entries.reserve(spellCooldowns.getRecordCount());
+            for (uint32_t row = 0; row < spellCooldowns.getRecordCount(); ++row)
+            {
+                uint32_t const id = spellCooldowns.getRecordId(row);
+                WDB::Structures::SpellCooldownsEntry entry{};
+                entry.CategoryRecoveryTime = spellCooldowns.getUInt32(row, 1);
+                entry.RecoveryTime = spellCooldowns.getUInt32(row, 2);
+                entry.StartRecoveryTime = spellCooldowns.getUInt32(row, 3);
+                entries.emplace_back(id, entry);
+                linkSpell(spellCooldowns.getParentId(row), id, &WDB::Structures::SpellEntry::SpellCooldownsId);
+            }
+            sSpellCooldownsStore.assignEntries(entries);
+        }
+
+        if (haveDuration && verifyFields(spellDuration, "SpellDuration.db2", 3))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellDurationEntry>> entries;
+            entries.reserve(spellDuration.getRecordCount());
+            for (uint32_t row = 0; row < spellDuration.getRecordCount(); ++row)
+            {
+                WDB::Structures::SpellDurationEntry entry{};
+                entry.ID = spellDuration.getRecordId(row);
+                entry.Duration1 = spellDuration.getInt32(row, 0); // Duration
+                entry.Duration2 = spellDuration.getInt32(row, 1); // MaxDuration
+                entry.Duration3 = spellDuration.getInt32(row, 2); // DurationPerResource
+                entries.emplace_back(entry.ID, entry);
+            }
+            sSpellDurationStore.assignEntries(entries);
+        }
+
+        if (haveEffect && verifyFields(spellEffect, "SpellEffect.db2", 29))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellEffectEntry>> entries;
+            entries.reserve(spellEffect.getRecordCount());
+            for (uint32_t row = 0; row < spellEffect.getRecordCount(); ++row)
+            {
+                WDB::Structures::SpellEffectEntry entry{};
+                entry.id = spellEffect.getRecordId(row);
+                entry.EffectApplyAuraName = spellEffect.getUInt16(row, 0);
+                entry.EffectIndex = spellEffect.getUInt32(row, 2);
+                entry.Effect = spellEffect.getUInt32(row, 3);
+                entry.EffectAmplitude = spellEffect.getUInt32(row, 6); // EffectAuraPeriod is the legacy periodic interval
+                entry.EffectSpellPowerCoefficient = spellEffect.getFloat(row, 7);
+                entry.EffectChainTarget = spellEffect.getUInt32(row, 9);
+                entry.EffectItemType = spellEffect.getUInt32(row, 10);
+                entry.EffectMechanic = spellEffect.getUInt32(row, 11);
+                entry.EffectPointsPerComboPoint = spellEffect.getFloat(row, 12); // modern EffectPointsPerResource
+                entry.EffectRealPointsPerLevel = spellEffect.getFloat(row, 14);
+                entry.EffectTriggerSpell = spellEffect.getUInt32(row, 15);
+                entry.EffectDamageMultiplier = spellEffect.getFloat(row, 18); // Coefficient
+                entry.EffectBasePoints = static_cast<int32_t>(spellEffect.getFloat(row, 22));
+                entry.EffectMiscValue = spellEffect.getInt32(row, 25, 0);
+                entry.EffectMiscValueB = spellEffect.getInt32(row, 25, 1);
+                entry.EffectRadiusIndex = spellEffect.getUInt32(row, 26, 0);
+                entry.EffectRadiusMaxIndex = spellEffect.getUInt32(row, 26, 1);
+                for (uint32_t i = 0; i < 4; ++i)
+                    entry.EffectSpellClassMask[i] = spellEffect.getUInt32(row, 27, i);
+                entry.EffectImplicitTargetA = spellEffect.getUInt16(row, 28, 0);
+                entry.EffectImplicitTargetB = spellEffect.getUInt16(row, 28, 1);
+                entry.EffectSpellId = spellEffect.getParentId(row);
+                entries.emplace_back(entry.id, entry);
+            }
+            sSpellEffectStore.assignEntries(entries);
+            sSpellEffectMap.clear();
+            for (uint32_t id = 0; id < sSpellEffectStore.getNumRows(); ++id)
+            {
+                auto const* effect = sSpellEffectStore.lookupEntry(id);
+                if (effect != nullptr && effect->EffectSpellId != 0 && effect->EffectIndex < 32)
+                    sSpellEffectMap[effect->EffectSpellId].effects[effect->EffectIndex] = effect;
+            }
+        }
+
+        if (haveEquippedItems && verifyFields(spellEquippedItems, "SpellEquippedItems.db2", 4))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellEquippedItemsEntry>> entries;
+            entries.reserve(spellEquippedItems.getRecordCount());
+            for (uint32_t row = 0; row < spellEquippedItems.getRecordCount(); ++row)
+            {
+                uint32_t const id = spellEquippedItems.getRecordId(row);
+                WDB::Structures::SpellEquippedItemsEntry entry{};
+                entry.EquippedItemClass = spellEquippedItems.getInt32(row, 1);
+                entry.EquippedItemInventoryTypeMask = spellEquippedItems.getInt32(row, 2);
+                entry.EquippedItemSubClassMask = spellEquippedItems.getInt32(row, 3);
+                entries.emplace_back(id, entry);
+                linkSpell(spellEquippedItems.getUInt32(row, 0), id, &WDB::Structures::SpellEntry::SpellEquippedItemsId);
+            }
+            sSpellEquippedItemsStore.assignEntries(entries);
+        }
+
+        if (haveInterrupts && verifyFields(spellInterrupts, "SpellInterrupts.db2", 4))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellInterruptsEntry>> entries;
+            entries.reserve(spellInterrupts.getRecordCount());
+            for (uint32_t row = 0; row < spellInterrupts.getRecordCount(); ++row)
+            {
+                uint32_t const id = spellInterrupts.getRecordId(row);
+                WDB::Structures::SpellInterruptsEntry entry{};
+                entry.InterruptFlags = spellInterrupts.getUInt32(row, 1);
+                entry.AuraInterruptFlags = spellInterrupts.getUInt32(row, 2, 0);
+                entry.ChannelInterruptFlags = spellInterrupts.getUInt32(row, 3, 0);
+                entries.emplace_back(id, entry);
+                linkSpell(spellInterrupts.getParentId(row), id, &WDB::Structures::SpellEntry::SpellInterruptsId);
+            }
+            sSpellInterruptsStore.assignEntries(entries);
+        }
+
+        if (haveLevels && verifyFields(spellLevels, "SpellLevels.db2", 5))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellLevelsEntry>> entries;
+            entries.reserve(spellLevels.getRecordCount());
+            for (uint32_t row = 0; row < spellLevels.getRecordCount(); ++row)
+            {
+                uint32_t const id = spellLevels.getRecordId(row);
+                WDB::Structures::SpellLevelsEntry entry{};
+                entry.maxLevel = spellLevels.getUInt16(row, 1);
+                entry.baseLevel = spellLevels.getUInt32(row, 3);
+                entry.spellLevel = spellLevels.getUInt32(row, 4);
+                entries.emplace_back(id, entry);
+                linkSpell(spellLevels.getParentId(row), id, &WDB::Structures::SpellEntry::SpellLevelsId);
+            }
+            sSpellLevelsStore.assignEntries(entries);
+        }
+
+        if (haveMisc && verifyFields(spellMisc, "SpellMisc.db2", 16))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellMiscEntry>> entries;
+            entries.reserve(spellMisc.getRecordCount());
+            for (uint32_t row = 0; row < spellMisc.getRecordCount(); ++row)
+            {
+                WDB::Structures::SpellMiscEntry entry{};
+                entry.Id = spellMisc.getRecordId(row);
+                entry.Attributes = spellMisc.getUInt32(row, 0, 0);
+                entry.AttributesEx = spellMisc.getUInt32(row, 0, 1);
+                entry.AttributesExB = spellMisc.getUInt32(row, 0, 2);
+                entry.AttributesExC = spellMisc.getUInt32(row, 0, 3);
+                entry.AttributesExD = spellMisc.getUInt32(row, 0, 4);
+                entry.AttributesExE = spellMisc.getUInt32(row, 0, 5);
+                entry.AttributesExF = spellMisc.getUInt32(row, 0, 6);
+                entry.AttributesExG = spellMisc.getUInt32(row, 0, 7);
+                entry.AttributesExH = spellMisc.getUInt32(row, 0, 8);
+                entry.AttributesExI = spellMisc.getUInt32(row, 0, 9);
+                entry.AttributesExJ = spellMisc.getUInt32(row, 0, 10);
+                entry.AttributesExK = spellMisc.getUInt32(row, 0, 11);
+                entry.AttributesExL = spellMisc.getUInt32(row, 0, 12);
+                entry.AttributesExM = spellMisc.getUInt32(row, 0, 13);
+                entry.SpellDifficultyId = spellMisc.getUInt16(row, 1);
+                entry.CastingTimeIndex = spellMisc.getUInt16(row, 2);
+                entry.DurationIndex = spellMisc.getUInt16(row, 3);
+                entry.rangeIndex = spellMisc.getUInt16(row, 5);
+                entry.School = spellMisc.getUInt8(row, 6);
+                entry.speed = spellMisc.getFloat(row, 7);
+                entry.spellIconID = spellMisc.getUInt32(row, 10);
+                entry.activeIconID = spellMisc.getUInt32(row, 11);
+                entries.emplace_back(entry.Id, entry);
+                linkSpell(spellMisc.getParentId(row), entry.Id, &WDB::Structures::SpellEntry::SpellMiscId);
+            }
+            sSpellMiscStore.assignEntries(entries);
+        }
+
+        if (havePower && verifyFields(spellPower, "SpellPower.db2", 14))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellPowerEntry>> entries;
+            entries.reserve(spellPower.getRecordCount());
+            for (uint32_t row = 0; row < spellPower.getRecordCount(); ++row)
+            {
+                WDB::Structures::SpellPowerEntry entry{};
+                uint32_t const id = spellPower.getRecordId(row);
+                entry.manaCost = spellPower.getUInt32(row, 1);
+                entry.manaCostPerlevel = spellPower.getUInt32(row, 2);
+                entry.manaPerSecond = spellPower.getUInt32(row, 3);
+                entry.ManaCostPercentageFloat = spellPower.getFloat(row, 6);
+                entry.ChannelCostPercentageFloat = spellPower.getFloat(row, 9); // PowerPctPerSecond
+                entry.powerType = static_cast<uint32_t>(static_cast<int32_t>(spellPower.getInt8(row, 10)));
+                entry.ShapeShiftSpellId = spellPower.getUInt32(row, 11); // RequiredAuraSpellID; used to prefer the unconditional power row
+                entry.spellId = spellPower.getParentId(row);
+                entries.emplace_back(id, entry);
+            }
+            sSpellPowerStore.assignEntries(entries);
+            sSpellPowerMap.clear();
+            for (uint32_t id = 0; id < sSpellPowerStore.getNumRows(); ++id)
+            {
+                auto const* power = sSpellPowerStore.lookupEntry(id);
+                if (power == nullptr || power->spellId == 0)
+                    continue;
+
+                auto itr = sSpellPowerMap.find(power->spellId);
+                if (itr == sSpellPowerMap.end() || (itr->second->ShapeShiftSpellId != 0 && power->ShapeShiftSpellId == 0))
+                    sSpellPowerMap[power->spellId] = power;
+            }
+        }
+
+        if (haveRadius && verifyFields(spellRadius, "SpellRadius.db2", 4))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellRadiusEntry>> entries;
+            entries.reserve(spellRadius.getRecordCount());
+            for (uint32_t row = 0; row < spellRadius.getRecordCount(); ++row)
+            {
+                WDB::Structures::SpellRadiusEntry entry{};
+                entry.ID = spellRadius.getRecordId(row);
+                entry.radius_min = spellRadius.getFloat(row, 0);       // Radius (legacy runtime primary radius)
+                entry.radius_per_level = spellRadius.getFloat(row, 1);
+                entry.radius_max = spellRadius.getFloat(row, 3);
+                entries.emplace_back(entry.ID, entry);
+            }
+            sSpellRadiusStore.assignEntries(entries);
+        }
+
+        if (haveRange && verifyFields(spellRange, "SpellRange.db2", 5))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellRangeEntry>> entries;
+            entries.reserve(spellRange.getRecordCount());
+            for (uint32_t row = 0; row < spellRange.getRecordCount(); ++row)
+            {
+                WDB::Structures::SpellRangeEntry entry{};
+                entry.ID = spellRange.getRecordId(row);
+                entry.range_type = spellRange.getUInt32(row, 2); // Flags
+                entry.minRange = spellRange.getFloat(row, 3, 0);
+                entry.minRangeFriendly = spellRange.getFloat(row, 3, 1);
+                entry.maxRange = spellRange.getFloat(row, 4, 0);
+                entry.maxRangeFriendly = spellRange.getFloat(row, 4, 1);
+                entries.emplace_back(entry.ID, entry);
+            }
+            sSpellRangeStore.assignEntries(entries);
+        }
+
+        if (haveReagents && verifyFields(spellReagents, "SpellReagents.db2", 5))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellReagentsEntry>> entries;
+            entries.reserve(spellReagents.getRecordCount());
+            for (uint32_t row = 0; row < spellReagents.getRecordCount(); ++row)
+            {
+                uint32_t const id = spellReagents.getRecordId(row);
+                WDB::Structures::SpellReagentsEntry entry{};
+                for (uint32_t i = 0; i < MAX_SPELL_REAGENTS; ++i)
+                {
+                    entry.Reagent[i] = spellReagents.getInt32(row, 1, i);
+                    entry.ReagentCount[i] = spellReagents.getUInt16(row, 2, i);
+                }
+                entries.emplace_back(id, entry);
+                linkSpell(spellReagents.getUInt32(row, 0), id, &WDB::Structures::SpellEntry::SpellReagentsId);
+            }
+            sSpellReagentsStore.assignEntries(entries);
+        }
+
+        // SpellScaling.db2 changed layout again in 1.60.1.70009 and the current WDC5
+        // metadata reader intentionally treats it as optional. Do not create zero-filled
+        // legacy rows: once the parser accepts the new layout, map the verified fields here.
+        if (haveScaling)
+            sLogger.warning("Forever SpellScaling.db2 loaded, but its 70009 field mapping is not implemented yet; scaling data is intentionally not linked.");
+
+        if (haveShapeshift && verifyFields(spellShapeshift, "SpellShapeshift.db2", 4))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellShapeshiftEntry>> entries;
+            entries.reserve(spellShapeshift.getRecordCount());
+            for (uint32_t row = 0; row < spellShapeshift.getRecordCount(); ++row)
+            {
+                uint32_t const id = spellShapeshift.getRecordId(row);
+                WDB::Structures::SpellShapeshiftEntry entry{};
+                entry.ShapeshiftsExcluded = spellShapeshift.getUInt32(row, 2, 0);
+                entry.Shapeshifts = spellShapeshift.getUInt32(row, 3, 0);
+                entries.emplace_back(id, entry);
+                linkSpell(spellShapeshift.getUInt32(row, 0), id, &WDB::Structures::SpellEntry::SpellShapeshiftId);
+            }
+            sSpellShapeshiftStore.assignEntries(entries);
+        }
+
+        if (haveTargetRestrictions && verifyFields(spellTargetRestrictions, "SpellTargetRestrictions.db2", 7))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellTargetRestrictionsEntry>> entries;
+            entries.reserve(spellTargetRestrictions.getRecordCount());
+            for (uint32_t row = 0; row < spellTargetRestrictions.getRecordCount(); ++row)
+            {
+                WDB::Structures::SpellTargetRestrictionsEntry entry{};
+                entry.Id = spellTargetRestrictions.getRecordId(row);
+                entry.MaxTargetRadius = 0.0f; // modern table stores cone/width instead of the old radius field
+                entry.MaxAffectedTargets = spellTargetRestrictions.getUInt8(row, 2);
+                entry.MaxTargetLevel = spellTargetRestrictions.getUInt32(row, 3);
+                entry.TargetCreatureType = spellTargetRestrictions.getUInt16(row, 4);
+                entry.Targets = spellTargetRestrictions.getUInt32(row, 5);
+                entries.emplace_back(entry.Id, entry);
+                linkSpell(spellTargetRestrictions.getParentId(row), entry.Id, &WDB::Structures::SpellEntry::SpellTargetRestrictionsId);
+            }
+            sSpellTargetRestrictionsStore.assignEntries(entries);
+        }
+
+        if (haveTotems && verifyFields(spellTotems, "SpellTotems.db2", 3))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellTotemsEntry>> entries;
+            entries.reserve(spellTotems.getRecordCount());
+            for (uint32_t row = 0; row < spellTotems.getRecordCount(); ++row)
+            {
+                uint32_t const id = spellTotems.getRecordId(row);
+                WDB::Structures::SpellTotemsEntry entry{};
+                for (uint32_t i = 0; i < MAX_SPELL_TOTEM_CATEGORIES; ++i)
+                    entry.TotemCategory[i] = spellTotems.getUInt16(row, 1, i);
+                for (uint32_t i = 0; i < MAX_SPELL_TOTEMS; ++i)
+                    entry.Totem[i] = spellTotems.getUInt32(row, 2, i);
+                entries.emplace_back(id, entry);
+                linkSpell(spellTotems.getUInt32(row, 0), id, &WDB::Structures::SpellEntry::SpellTotemsId);
+            }
+            sSpellTotemsStore.assignEntries(entries);
+        }
+
+        if (haveItemEnchantment && verifyFields(spellItemEnchantment, "SpellItemEnchantment.db2", 24))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellItemEnchantmentEntry>> entries;
+            entries.reserve(spellItemEnchantment.getRecordCount());
+            for (uint32_t row = 0; row < spellItemEnchantment.getRecordCount(); ++row)
+            {
+                WDB::Structures::SpellItemEnchantmentEntry entry{};
+                entry.Id = spellItemEnchantment.getRecordId(row);
+                entry.Name[0] = keepForeverDb2String(spellItemEnchantment.getString(row, 0));
+                for (uint32_t i = 0; i < MAX_ITEM_ENCHANTMENT_EFFECTS; ++i)
+                {
+                    entry.type[i] = spellItemEnchantment.getUInt32(row, 4, i);
+                    entry.min[i] = spellItemEnchantment.getUInt32(row, 5, i);
+                    entry.spell[i] = spellItemEnchantment.getUInt32(row, 6, i);
+                }
+                entry.visual = spellItemEnchantment.getUInt16(row, 22); // ItemVisual
+                entry.req_skill = spellItemEnchantment.getUInt32(row, 12);
+                entry.req_skill_value = spellItemEnchantment.getUInt32(row, 13);
+                entry.req_level = spellItemEnchantment.getUInt32(row, 14);
+                entries.emplace_back(entry.Id, entry);
+            }
+            sSpellItemEnchantmentStore.assignEntries(entries);
+        }
+
+        if (haveShapeshiftForm && verifyFields(spellShapeshiftForm, "SpellShapeshiftForm.db2", 10))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellShapeshiftFormEntry>> entries;
+            entries.reserve(spellShapeshiftForm.getRecordCount());
+            for (uint32_t row = 0; row < spellShapeshiftForm.getRecordCount(); ++row)
+            {
+                WDB::Structures::SpellShapeshiftFormEntry entry{};
+                entry.id = spellShapeshiftForm.getRecordId(row);
+                entry.modelId = spellShapeshiftForm.getUInt32(row, 1);
+                entry.modelId2 = entry.modelId;
+                entry.unit_type = spellShapeshiftForm.getUInt8(row, 2);
+                entry.Flags = spellShapeshiftForm.getUInt32(row, 3);
+                entry.AttackSpeed = spellShapeshiftForm.getUInt16(row, 6);
+                for (uint32_t i = 0; i < 8; ++i)
+                    entry.spells[i] = spellShapeshiftForm.getUInt32(row, 9, i);
+                entries.emplace_back(entry.id, entry);
+            }
+            sSpellShapeshiftFormStore.assignEntries(entries);
+        }
+
+        if (haveSpellName)
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellEntry>> entries;
+            entries.reserve(spellEntries.size());
+            for (auto const& [id, entry] : spellEntries)
+                entries.emplace_back(id, entry);
+            sSpellStore.assignEntries(entries);
+
+            sSpellCategoryStore.clear();
+            for (auto const& [spellId, spell] : spellEntries)
+            {
+                if (spell.SpellCategoriesId == 0)
+                    continue;
+                if (auto const* category = sSpellCategoriesStore.lookupEntry(spell.SpellCategoriesId); category != nullptr && category->Category != 0)
+                    sSpellCategoryStore[category->Category].insert(spellId);
+            }
+        }
+
+        sLogger.info("Forever DB2 spell/skill stores: {} skills, {} skill abilities, {} spells, {} effects.", sSkillLineStore.getNumRows(), sSkillLineAbilityStore.getNumRows(), sSpellStore.getNumRows(), sSpellEffectStore.getNumRows());
+        return ok;
     }
 
     bool loadForeverModernCharacterStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
@@ -426,14 +1084,27 @@ namespace {
         WDB::WDC5File visReq;
         WDB::WDC5File voice;
 
+        // Only DB2 tables that actually populate runtime stores below are required.
+        // Auxiliary Forever customization tables are loaded opportunistically until
+        // their layouts are needed by the core. This prevents unsupported WDC5 metadata
+        // variants in unused tables from blocking world startup.
         if (!loadForeverWDC5Group({
-            { customization, ForeverFormat::ChrCustomization }, { boneSet, ForeverFormat::ChrCustomizationBoneSet }, { category, ForeverFormat::ChrCustomizationCategory },
-            { choice, ForeverFormat::ChrCustomizationChoice }, { condModel, ForeverFormat::ChrCustomizationCondModel }, { conversion, ForeverFormat::ChrCustomizationConversion },
-            { displayInfo, ForeverFormat::ChrCustomizationDisplayInfo }, { element, ForeverFormat::ChrCustomizationElement }, { geoset, ForeverFormat::ChrCustomizationGeoset },
-            { glyphPet, ForeverFormat::ChrCustomizationGlyphPet }, { material, ForeverFormat::ChrCustomizationMaterial }, { option, ForeverFormat::ChrCustomizationOption },
-            { req, ForeverFormat::ChrCustomizationReq }, { reqChoice, ForeverFormat::ChrCustomizationReqChoice }, { skinnedModel, ForeverFormat::ChrCustomizationSkinnedModel },
-            { visReq, ForeverFormat::ChrCustomizationVisReq }, { voice, ForeverFormat::ChrCustomizationVoice } }, errors, dbcPath))
+            { category, ForeverFormat::ChrCustomizationCategory }, { choice, ForeverFormat::ChrCustomizationChoice },
+            { displayInfo, ForeverFormat::ChrCustomizationDisplayInfo }, { element, ForeverFormat::ChrCustomizationElement },
+            { option, ForeverFormat::ChrCustomizationOption }, { req, ForeverFormat::ChrCustomizationReq },
+            { reqChoice, ForeverFormat::ChrCustomizationReqChoice } }, errors, dbcPath))
             return false;
+
+        loadForeverWDC5Optional(customization, ForeverFormat::ChrCustomization, dbcPath);
+        loadForeverWDC5Optional(boneSet, ForeverFormat::ChrCustomizationBoneSet, dbcPath);
+        loadForeverWDC5Optional(condModel, ForeverFormat::ChrCustomizationCondModel, dbcPath);
+        loadForeverWDC5Optional(conversion, ForeverFormat::ChrCustomizationConversion, dbcPath);
+        loadForeverWDC5Optional(geoset, ForeverFormat::ChrCustomizationGeoset, dbcPath);
+        loadForeverWDC5Optional(glyphPet, ForeverFormat::ChrCustomizationGlyphPet, dbcPath);
+        loadForeverWDC5Optional(material, ForeverFormat::ChrCustomizationMaterial, dbcPath);
+        loadForeverWDC5Optional(skinnedModel, ForeverFormat::ChrCustomizationSkinnedModel, dbcPath);
+        loadForeverWDC5Optional(visReq, ForeverFormat::ChrCustomizationVisReq, dbcPath);
+        loadForeverWDC5Optional(voice, ForeverFormat::ChrCustomizationVoice, dbcPath);
 
         sChrCustomizationChoiceStore.clear();
         for (uint32_t row = 0; row < choice.getRecordCount(); ++row)
@@ -891,9 +1562,9 @@ bool loadDBCs()
     std::string dbc_path = sWorld.settings.server.dataDir + "dbc/";
 
 #if defined(AE_FOREVER)
-    // Load the modern Forever WDC5 character baseline into the existing
-    // AscEmu runtime stores. ChrClasses/ChrRaces replace their legacy DBC
-    // sources for Forever; the rest of the core can keep using the same API.
+    // Forever has no legacy DBC data path. All client data must come from DB2/WDC5.
+    // Keep populating the established AscEmu runtime stores so the rest of the core
+    // can remain format-agnostic.
     loadForeverModernCharacterStores(bad_dbc_files, dbc_path);
     loadForeverModernCreatureStores(bad_dbc_files, dbc_path);
     loadForeverModernCustomizationStores(bad_dbc_files, dbc_path);
@@ -901,10 +1572,23 @@ bool loadDBCs()
     loadForeverModernItemStores(bad_dbc_files, dbc_path);
     loadForeverModernMapStores(bad_dbc_files, dbc_path);
     loadForeverModernTerrainStores(bad_dbc_files, dbc_path);
-#endif
+    loadForeverModernSpellSkillStores(bad_dbc_files, dbc_path);
+
+    buildMapDifficultyMap();
+    buildAreaMapCollection();
+    buildPowerIndexByClass();
+
+    if (!bad_dbc_files.empty())
+    {
+        for (std::string const& problem : bad_dbc_files)
+            sLogger.failure("{}", problem);
+        return false;
+    }
+
+    return true;
+#else // !AE_FOREVER - legacy DBC/DB2 path
 
     // Load ChrClasses.dbc first to ensure the dbcLocaleId is set correctly before loading other DBC files that may depend on it
-#if !defined(AE_FOREVER)
     WDB::loadUnifiedWDBStore<WDB::Structures::ChrClassesEntry>(
         bad_dbc_files, sChrClassesStore, dbc_path,
         []<typename RawType>(const RawType& raw, WDB::Structures::ChrClassesEntry& entry) {
@@ -951,9 +1635,7 @@ bool loadDBCs()
             }
         }
     );
-#endif
 
-#if !defined(AE_FOREVER)
     WDB::loadUnifiedWDBStore<WDB::Structures::AreaTableEntry>(
         bad_dbc_files, sAreaStore, dbc_path,
         []<typename RawType>(const RawType& raw, WDB::Structures::AreaTableEntry& entry) {
@@ -995,7 +1677,6 @@ bool loadDBCs()
         }
     );
 
-#endif
 
     MapManagement::AreaManagement::AreaStorage::initialise(&sAreaStore);
 
@@ -1080,7 +1761,6 @@ bool loadDBCs()
         sCharStartOutfitMap[outfit.makeKey()] = &outfit;
     }
 
-#if !defined(AE_FOREVER)
     WDB::loadUnifiedWDBStore<WDB::Structures::ChrRacesEntry>(
         bad_dbc_files, sChrRacesStore, dbc_path,
         []<typename RawType>(const RawType& raw, WDB::Structures::ChrRacesEntry& entry) {
@@ -1129,9 +1809,7 @@ bool loadDBCs()
             }
         }
     );
-#endif
 
-#if !defined(AE_FOREVER)
     WDB::loadUnifiedWDBStore<WDB::Structures::CreatureDisplayInfoEntry>(
         bad_dbc_files, sCreatureDisplayInfoStore, dbc_path,
         []<typename RawType>(RawType const& raw, WDB::Structures::CreatureDisplayInfoEntry& entry)
@@ -1171,7 +1849,6 @@ bool loadDBCs()
             }
         });
 
-#endif
 
     WDB::loadUnifiedWDBStore<WDB::Structures::CreatureSpellDataEntry>(
         bad_dbc_files, sCreatureSpellDataStore, dbc_path,
@@ -1246,7 +1923,6 @@ bool loadDBCs()
             }
         });
 
-#if !defined(AE_FOREVER)
     WDB::loadUnifiedWDBStore<WDB::Structures::FactionEntry>(
         bad_dbc_files, sFactionStore, dbc_path,
         [](const auto& raw, WDB::Structures::FactionEntry& entry) {
@@ -1307,24 +1983,18 @@ bool loadDBCs()
         }
     );
 
-#endif
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGameObjectDisplayInfoStore, dbc_path, "GameObjectDisplayInfo.dbc");
 
-#if !defined(AE_FOREVER)
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemSetStore, dbc_path, "ItemSet.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemRandomPropertiesStore, dbc_path, "ItemRandomProperties.dbc");
-#endif
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sLFGDungeonStore, dbc_path, "LFGDungeons.dbc");
-#if !defined(AE_FOREVER)
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sLiquidTypeStore, dbc_path, "LiquidType.dbc");
-#endif
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sLockStore, dbc_path, "Lock.dbc");
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sMailTemplateStore, dbc_path, "MailTemplate.dbc");
 
-#if !defined(AE_FOREVER)
     WDB::loadUnifiedWDBStore<WDB::Structures::MapDifficultyEntry>(
         bad_dbc_files, sMapDifficultyStore, dbc_path,
         [](const auto& raw, WDB::Structures::MapDifficultyEntry& entry) {
@@ -1394,7 +2064,6 @@ bool loadDBCs()
         }
     );
 
-#endif
 
     for (auto const& entry : sMapDifficultyStore | std::views::values)
     {
@@ -1422,7 +2091,33 @@ bool loadDBCs()
         }
     }
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSkillLineAbilityStore, dbc_path, "SkillLineAbility.dbc");
+    {
+        WDB::WDBContainer<WDB::Structures::LegacySkillLineAbilityEntry> legacySkillLineAbilityStore;
+        WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, legacySkillLineAbilityStore, dbc_path, "SkillLineAbility.dbc");
+
+        std::vector<std::pair<uint32_t, WDB::Structures::SkillLineAbilityEntry>> entries;
+        entries.reserve(legacySkillLineAbilityStore.getNumRows());
+        for (uint32_t id = 0; id < legacySkillLineAbilityStore.getNumRows(); ++id)
+        {
+            auto const* raw = legacySkillLineAbilityStore.lookupEntry(id);
+            if (raw == nullptr)
+                continue;
+
+            WDB::Structures::SkillLineAbilityEntry entry{};
+            entry.Id = raw->Id;
+            entry.skilline = raw->skilline;
+            entry.spell = raw->spell;
+            entry.races.addLegacyMask(raw->raceMask);
+            entry.class_mask = raw->classMask;
+            entry.minSkillLineRank = raw->minSkillLineRank;
+            entry.next = raw->next;
+            entry.acquireMethod = raw->acquireMethod;
+            entry.grey = raw->grey;
+            entry.green = raw->green;
+            entries.emplace_back(entry.Id, entry);
+        }
+        sSkillLineAbilityStore.assignEntries(entries);
+    }
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSkillLineStore, dbc_path, "SkillLine.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellStore, dbc_path, "Spell.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellCastTimesStore, dbc_path, "SpellCastTimes.dbc");
@@ -1510,11 +2205,9 @@ bool loadDBCs()
     }
 #endif
 
-#if !defined(AE_FOREVER)
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTaxiNodesStore, dbc_path, "TaxiNodes.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTaxiPathStore, dbc_path, "TaxiPath.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTaxiPathNodeStore, dbc_path, "TaxiPathNode.dbc");
-#endif
     // note: Generate path data
     {
         sTaxiPathSetBySource.clear();
@@ -1563,9 +2256,7 @@ bool loadDBCs()
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTransportAnimationStore, dbc_path, "TransportAnimation.dbc");
 
-#if !defined(AE_FOREVER)
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sWMOAreaTableStore, dbc_path, "WMOAreaTable.dbc");
-#endif
     {
         sWMOAreaInfoByTripple.clear();
         for (uint32_t i = 0; i < sWMOAreaTableStore.getNumRows(); ++i)
@@ -1575,9 +2266,7 @@ bool loadDBCs()
         }
     }
 
-#if !defined(AE_FOREVER)
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sWorldMapOverlayStore, dbc_path, "WorldMapOverlay.dbc");
-#endif
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Load single version specific dbcs
@@ -1590,24 +2279,6 @@ bool loadDBCs()
 #endif
 
 #if VERSION_STRING == Mop
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellMiscStore, dbc_path, "SpellMisc.dbc");
-
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChrSpecializationStore, dbc_path, "ChrSpecialization.dbc");
-    {
-        for (uint32_t i = 0; i < sChrSpecializationStore.getNumRows(); ++i)
-        {
-            auto const specialization_info = sChrSpecializationStore.lookupEntry(i);
-            if (specialization_info == nullptr)
-                continue;
-
-            if (specialization_info->classId >= 12 || specialization_info->tabPage >= 4)
-                continue;
-
-            ClassSpecializationTabs[specialization_info->classId][specialization_info->tabPage] = specialization_info->Id;
-        }
-    }
-#elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellMiscStore, dbc_path, "SpellMisc.dbc");
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChrSpecializationStore, dbc_path, "ChrSpecialization.dbc");
@@ -1685,7 +2356,6 @@ bool loadDBCs()
         }
     );
 
-#if !defined(AE_FOREVER)
     WDB::loadUnifiedWDBStore<WDB::Structures::WorldMapAreaEntry>(
         bad_dbc_files, sWorldMapAreaStore, dbc_path,
         [](const auto& raw, WDB::Structures::WorldMapAreaEntry& entry) {
@@ -1694,7 +2364,6 @@ bool loadDBCs()
             entry.continentMapId = raw.continentMapId;
         }
     );
-#endif
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Load multi version specific dbcs available since TBC
@@ -1706,9 +2375,7 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtChanceToSpellCritBaseStore, dbc_path, "gtChanceToSpellCritBase.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtCombatRatingsStore, dbc_path, "gtCombatRatings.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtRegenMPPerSptStore, dbc_path, "gtRegenMPPerSpt.dbc"); // loaded but not used
-    #if !defined(AE_FOREVER)
         WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemRandomSuffixStore, dbc_path, "ItemRandomSuffix.dbc");
-    #endif
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSummonPropertiesStore, dbc_path, "SummonProperties.dbc");
 
     #if VERSION_STRING < Cata
@@ -1864,26 +2531,6 @@ bool loadDBCs()
                 itr->second = spellPower;
         }
     }
-    #elif defined(AE_FOREVER)
-    // Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
-    // note: SpellPower.dbc rows are not keyed by spell id on Mop, map them by their spellId column
-    {
-        for (uint32_t i = 0; i < sSpellPowerStore.getNumRows(); ++i)
-        {
-            WDB::Structures::SpellPowerEntry const* spellPower = sSpellPowerStore.lookupEntry(i);
-            if (spellPower == nullptr || spellPower->spellId == 0)
-                continue;
-
-            // A spell can own several rows (one per shapeshift form). Without a caster there is
-            // no form to match against, so keep the first row that does not require one - this
-            // is the row the reference picks for a caster without that shapeshift aura.
-            auto itr = sSpellPowerMap.find(spellPower->spellId);
-            if (itr == sSpellPowerMap.end())
-                sSpellPowerMap[spellPower->spellId] = spellPower;
-            else if (itr->second->ShapeShiftSpellId != 0 && spellPower->ShapeShiftSpellId == 0)
-                itr->second = spellPower;
-        }
-    }
     #endif
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellScalingStore, dbc_path, "SpellScaling.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellShapeshiftStore, dbc_path, "SpellShapeshift.dbc");
@@ -1904,6 +2551,7 @@ bool loadDBCs()
     buildPowerIndexByClass();
 
     return true;
+#endif // AE_FOREVER
 }
 
 #if VERSION_STRING >= Cata
