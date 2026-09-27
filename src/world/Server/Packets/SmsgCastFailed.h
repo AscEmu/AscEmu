@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ForeverSpellPacketUtils.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -19,6 +20,11 @@ namespace AscEmu::Packets
 
         uint32_t extra1;
         uint32_t extra2;
+        WoWGuid castId = WoWGuid::createModernEmpty();
+        uint32_t spellXSpellVisualId = 0;
+        uint32_t scriptVisualId = 0;
+        WoWGuid failedBy = WoWGuid::createModernEmpty();
+        uint16_t mapId = 0;
 
         SmsgCastFailed() : SmsgCastFailed(0, 0, 0, 0, 0)
         {
@@ -39,6 +45,19 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                ForeverSpellPacket::writePackedGuid(packet, castId);
+                packet << static_cast<int32_t>(spellId);
+                packet << static_cast<int32_t>(spellXSpellVisualId);
+                packet << static_cast<int32_t>(scriptVisualId);
+                packet << static_cast<int32_t>(errorMsg);
+                packet << static_cast<int32_t>(extra1);
+                packet << static_cast<int32_t>(extra2);
+                ForeverSpellPacket::writePackedGuid(packet, ForeverSpellPacket::toModernGuid(failedBy, m_protocol.realmId, mapId));
+                return true;
+            }
+
             if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
                 packet << spellId << errorMsg << multiCast;

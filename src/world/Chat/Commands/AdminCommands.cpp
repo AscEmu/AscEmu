@@ -35,7 +35,7 @@ bool ChatCommandHandler::HandleAdminCastAllCommand(const char* args, WorldSessio
         return true;
     }
 
-    for (uint8_t i = 0; i < 3; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (spell_entry->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
         {

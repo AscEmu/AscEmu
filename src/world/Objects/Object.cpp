@@ -2482,7 +2482,25 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     // target may legitimately be nullptr for non-recipient-specific world updates.
     // Forever GUID identity must therefore not depend on a Player/Session.
-    const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(m_wowGuid.getRawGuid(), worldConfig.battleNetComm.realmId, static_cast<uint16_t>(GetMapId()), 0);
+    WoWGuid modernGuid;
+    if (player != nullptr)
+    {
+        uint32_t realmId = worldConfig.battleNetComm.realmId;
+        if (player->getSession() != nullptr)
+        {
+            if (WorldSocket* const instanceSocket = player->getSession()->GetForeverInstanceSocket(); instanceSocket != nullptr)
+                realmId = instanceSocket->getForeverRealmId();
+        }
+
+        // Player GUIDs are realm-scoped, not map-scoped. Use the exact same
+        // identity as the self CREATE_OBJECT_2 path in CharacterHandler.
+        modernGuid = WoWGuid::createModernPlayer(realmId, player->getGuidLow());
+    }
+    else
+    {
+        modernGuid = WoWGuid::createModernFromLegacy(m_wowGuid.getRawGuid(), worldConfig.battleNetComm.realmId, static_cast<uint16_t>(GetMapId()), 0);
+    }
+
     const std::vector<uint8_t> packedGuid = modernGuid.packModern();
     const std::vector<uint8_t> block = AscEmu::Version::Forever::ObjectUpdate::buildValuesUpdateBlock(std::span<const uint8_t>(packedGuid.data(), packedGuid.size()), ownerVisible, m_foreverObjectFields, item ? &item->foreverItemFields() : nullptr, container ? &container->foreverContainerFields() : nullptr, unit ? &unit->foreverUnitFields() : nullptr, player ? &player->foreverPlayerFields() : nullptr, ownerVisible ? &player->foreverActivePlayerFields() : nullptr, gameObject ? &gameObject->foreverGameObjectFields() : nullptr, dynamicObject ? &dynamicObject->foreverDynamicObjectFields() : nullptr, corpse ? &corpse->foreverCorpseFields() : nullptr);
 

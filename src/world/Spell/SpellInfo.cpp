@@ -94,17 +94,19 @@ SpellInfo::SpellInfo()
         EffectMiscValueB[i] = 0;
         EffectTriggerSpell[i] = 0;
         EffectPointsPerComboPoint[i] = 0.0f;
-        for (uint8_t u = 0; u < MAX_SPELL_EFFECTS; ++u)
+        for (uint8_t u = 0; u < MAX_SPELL_CLASS_MASKS; ++u)
             EffectSpellClassMask[i][u] = 0;
 #if VERSION_STRING >= Cata
         EffectRadiusMaxIndex[i] = 0;
         EffectSpellId[i] = 0;
         EffectIndex[i] = 0;
 #endif
-        SpellFamilyFlags[i] = 0;
         EffectDamageMultiplier[i] = 0.0f;
         EffectSpellPowerCoefficient[i] = 0.0f;
     }
+
+    for (uint8_t i = 0; i < MAX_SPELL_CLASS_MASKS; ++i)
+        SpellFamilyFlags[i] = 0;
 
     for (uint8_t i = 0; i < 2; ++i)
         SpellVisual[i] = 0;
@@ -343,8 +345,8 @@ bool SpellInfo::isEffectIndexAffectingSpell(uint8_t effIndex, SpellInfo const* s
     if (std::ranges::all_of(spellInfo->getSpellFamilyFlags(), [](uint32_t mask) { return mask == 0; }))
         return false;
 
-    // It's not spell effect count, it's spell mask field count
-    for (uint8_t i = 0; i < 3; ++i)
+    // It's not spell effect count, it's spell class-mask field count.
+    for (uint8_t i = 0; i < MAX_SPELL_CLASS_MASKS; ++i)
     {
         // If any of the indexes contain same mask, the spells affect each other
         if (spellInfo->getSpellFamilyFlags(i) > 0 && !(EffectSpellClassMask[effIndex][i] & spellInfo->getSpellFamilyFlags(i)))
@@ -424,7 +426,7 @@ int32_t SpellInfo::getBasePowerCost(Unit* caster) const
 #endif
                     powerCost += static_cast<int32_t>(caster->getMaxPower(getPowerType()) * getManaCostPercentage() / 100);
                     break;
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
                 case POWER_TYPE_RUNES:
                 case POWER_TYPE_RUNIC_POWER:
                     // In 3.3.5a only obsolete spells use these and have a non-null getManaCostPercentage
@@ -1650,7 +1652,7 @@ float SpellInfo::getEffectPointsPerComboPoint(uint8_t idx) const
 
 uint32_t SpellInfo::getEffectSpellClassMask(uint8_t idx1, uint8_t idx2) const
 {
-    if (idx1 >= MAX_SPELL_EFFECTS || idx2 >= MAX_SPELL_EFFECTS)
+    if (idx1 >= MAX_SPELL_EFFECTS || idx2 >= MAX_SPELL_CLASS_MASKS)
     {
         sLogger.failure("Totem index id {} or effect index {} is invalid!", idx1, idx2);
         return 0;
@@ -1672,7 +1674,7 @@ uint32_t const* SpellInfo::getEffectSpellClassMask(uint8_t idx1) const
 
 uint32_t SpellInfo::getSpellFamilyFlags(uint8_t idx) const
 {
-    if (idx >= MAX_SPELL_EFFECTS)
+    if (idx >= MAX_SPELL_CLASS_MASKS)
     {
         sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
@@ -1949,7 +1951,7 @@ void SpellInfo::setEffectPointsPerComboPoint(float effectPoints, uint8_t idx)   
 
 void SpellInfo::setEffectSpellClassMask(uint32_t spellClass, uint8_t idx1, uint8_t idx2)        // used in HackFixes.cpp
 {
-    if (idx1 >= MAX_SPELL_EFFECTS || idx2 >= MAX_SPELL_EFFECTS)
+    if (idx1 >= MAX_SPELL_EFFECTS || idx2 >= MAX_SPELL_CLASS_MASKS)
     {
         sLogger.failure("Effect index id1 {} or id2 {} is invalid!", idx1, idx2);
         return;
@@ -1960,7 +1962,7 @@ void SpellInfo::setEffectSpellClassMask(uint32_t spellClass, uint8_t idx1, uint8
 
 void SpellInfo::setSpellFamilyFlags(uint32_t value, uint8_t idx)                                // used in HackFixes.cpp
 {
-    if (idx >= MAX_SPELL_EFFECTS)
+    if (idx >= MAX_SPELL_CLASS_MASKS)
     {
         sLogger.failure("Effect index id {} is invalid!", idx);
         return;

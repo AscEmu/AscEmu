@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSpellClick.h"
 #include "Server/Packets/CmsgRequestCategoryCooldowns.h"
 #include "Server/Packets/SmsgSetProjectilePosition.h"
+#include "Server/Packets/SmsgSpellPrepare.h"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
 #include "Storage/WDB/WDBStores.hpp"
@@ -149,12 +150,27 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     Spell* spell = sSpellMgr.newSpell(_player, spellInfo, false, nullptr);
     spell->extra_cast_number = srlPacket.castCount;
 
+    if (getClientProtocol().isForever())
+    {
+        spell->m_foreverClientCastId = srlPacket.clientCastId;
+        spell->m_foreverSpellXSpellVisualId = srlPacket.spellXSpellVisualId;
+        spell->m_foreverScriptVisualId = srlPacket.scriptVisualId;
+        spell->ensureForeverCastId();
+
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL,
+            "WorldSession::handleCastSpellOpcode [Forever]: spellId {} SpellXSpellVisualID {} ScriptVisualID {}",
+            srlPacket.spellId, srlPacket.spellXSpellVisualId, srlPacket.scriptVisualId);
+
+        SmsgSpellPrepare preparePacket(spell->m_foreverClientCastId, spell->m_foreverServerCastId);
+        sendManagedPacket(preparePacket);
+    }
+
 #if VERSION_STRING >= Cata
     spell->m_glyphslot = srlPacket.glyphSlot;
 #endif
 
     // Some spell cast packets include more data
-#if VERSION_STRING == Mop || defined(AE_FOREVER)
+#if VERSION_STRING == Mop
     if (!srlPacket.hasSrcLocation)
     {
         if (_player->getTransGuid())
@@ -201,6 +217,36 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
                 dist = 5.0f;
 
             spell->m_missileTravelTime = static_cast<uint32_t>((dist / spellInfo->getSpeed()) * 1000);
+        }
+    }
+#elif defined(AE_FOREVER)
+    // 1.60.1.70009 unit-target projectile casts (for example Fireball 133 and Shadow Bolt 686)
+    // carry a zero MissileTrajectoryRequest and retail sends a zero MissileTrajectoryResult in
+    // SMSG_SPELL_GO. The projectile is driven by SpellXSpellVisualID + the unit target and the
+    // modern 0x40000 cast flag, not by a synthetic server-side travel time.
+    //
+    // Only preserve an explicit client trajectory for destination-targeted casts. Do not create
+    // one for ordinary selected-unit projectile spells.
+    if (srlPacket.hasDestLocation && srlPacket.projectileSpeed > 0.0f)
+    {
+        if (!srlPacket.hasSrcLocation)
+        {
+            if (_player->getTransGuid())
+                srlPacket.targets.setSource({ _player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ() });
+            else
+                srlPacket.targets.setSource(_player->GetPosition());
+        }
+
+        LocationVector const spellDestination = srlPacket.targets.getDestination();
+        LocationVector const spellSource = srlPacket.targets.getSource();
+        float const deltaX = spellDestination.x - spellSource.x;
+        float const deltaY = spellDestination.y - spellSource.y;
+        float const horizontalSpeed = cosf(srlPacket.projectilePitch) * srlPacket.projectileSpeed;
+
+        if (fabsf(horizontalSpeed) > 0.0001f)
+        {
+            spell->m_missilePitch = srlPacket.projectilePitch;
+            spell->m_missileTravelTime = static_cast<uint32_t>((sqrtf(deltaX * deltaX + deltaY * deltaY) / fabsf(horizontalSpeed)) * 1000.0f);
         }
     }
 #else   // < Mop
@@ -259,19 +305,22 @@ void WorldSession::handleCancelCastOpcode(WorldPacket& recvPacket)
         recvPacket >> counter;
 
 #elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
-    uint8_t counter = 0;
+    if (getClientProtocol().isForever())
+    {
+        WoWGuid castId;
+        size_t consumed = 0;
+        if (!WoWGuid::unpackModern(recvPacket.contents(), recvPacket.size(), castId, consumed))
+            return;
 
-    bool hasCounter = !recvPacket.readBit();
-    bool hasSpellId = !recvPacket.readBit();
-
-    recvPacket.flushBits();
-
-    if (hasSpellId)
+        recvPacket.rpos(consumed);
         recvPacket >> spellId;
-
-    if (hasCounter)
-        recvPacket >> counter;
+        if (recvPacket.hadReadFailure())
+            return;
+    }
+    else
+    {
+        recvPacket >> spellId;
+    }
 
 #else
 #if VERSION_STRING > TBC
@@ -288,8 +337,23 @@ void WorldSession::handleCancelCastOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleCancelAuraOpcode(WorldPacket& recvPacket)
 {
-    uint32_t spellId;
+    uint32_t spellId = 0;
     recvPacket >> spellId;
+
+#if defined(AE_FOREVER)
+    if (getClientProtocol().isForever())
+    {
+        WoWGuid casterGuid;
+        size_t consumed = 0;
+        if (!WoWGuid::unpackModern(recvPacket.contents() + recvPacket.rpos(), recvPacket.remaining(), casterGuid, consumed))
+            return;
+
+        recvPacket.rpos(recvPacket.rpos() + consumed);
+    }
+#endif
+
+    if (recvPacket.hadReadFailure())
+        return;
 
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)

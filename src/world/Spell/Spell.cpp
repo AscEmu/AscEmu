@@ -72,6 +72,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Util.hpp"
 #include "Server/PacketBroadcast.hpp"
 
+#include <atomic>
+
 using namespace AscEmu::Packets;
 
 extern pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS];
@@ -218,7 +220,7 @@ Spell::Spell(Object* _caster, SpellInfo const* _spellInfo, bool _triggered, Aura
 
 Spell::~Spell()
 {
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
     // If this spell deals with rune power, send spell_go to update client
     // For instance, when Dk cast Empower Rune Weapon, if we don't send spell_go, the client won't update
     if (getSpellInfo()->getFirstSchoolFromSchoolMask() && getSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
@@ -343,10 +345,6 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     if (m_castTime < 0 || (p_caster != nullptr && p_caster->m_cheats.hasCastTimeCheat))
         m_castTime = 0;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::prepare : spell id {} castingTimeIndex {} manaCost {} manaCostPercentage {} triggeredSpell {} triggeredByAura {} -> m_castTime {}",
-        getSpellInfo()->getId(), getSpellInfo()->getCastingTimeIndex(), getSpellInfo()->getManaCost(), getSpellInfo()->getManaCostPercentage(),
-        m_triggeredSpell, m_triggeredByAura != nullptr, m_castTime);
-
     // Initialize power cost
     // Spells casted from items should not use any power
     m_powerCost = i_caster != nullptr ? 0 : calculatePowerCost();
@@ -354,6 +352,10 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     // Item spells or triggered spells should not require combo points
     if (m_triggeredSpell || i_caster != nullptr)
         m_requiresCP = false;
+
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::prepare : spell id {} castingTimeIndex {} manaCost {} manaCostPercentage {} triggeredSpell {} triggeredByAura {} -> m_castTime {}",
+        getSpellInfo()->getId(), getSpellInfo()->getCastingTimeIndex(), getSpellInfo()->getManaCost(), getSpellInfo()->getManaCostPercentage(),
+        m_triggeredSpell, m_triggeredByAura != nullptr, m_castTime);
 
     _loadInitialTargetPointers();
 
@@ -1742,7 +1744,8 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (!hasIgnoreShapeshiftAura)
 #endif
                 {
-                    SpellCastResult shapeError = checkShapeshift(getSpellInfo(), u_caster->getShapeShiftForm());
+                    const uint32_t foreverShapeForm = u_caster->getShapeShiftForm();
+                    SpellCastResult shapeError = checkShapeshift(getSpellInfo(), foreverShapeForm);
                     if (shapeError != SPELL_CAST_SUCCESS)
                         return shapeError;
 
@@ -3270,7 +3273,7 @@ SpellCastResult Spell::checkPower()
         return SPELL_FAILED_ERROR;
     }
 
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
     // Check runes for spells which have runes in power type
     if (getSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
     {
@@ -3629,7 +3632,10 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
 #if VERSION_STRING >= WotLK
             // Check for spells which remove the reagent cost for a spell
             // e.g. Glyph of Slow Fall or Glyph of Levitate
-            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            // SpellFamilyFlags and NoReagentCost are class-mask arrays, not spell-effect arrays.
+            // Legacy clients happened to use three entries for both, while Forever uses four
+            // class-mask words and up to 32 spell effects.
+            for (uint8_t i = 0; i < MAX_SPELL_CLASS_MASKS; ++i)
             {
                 if (getSpellInfo()->getSpellFamilyFlags(i) == 0)
                     continue;
@@ -4429,7 +4435,7 @@ SpellCastResult Spell::checkRange(const bool secondCheck)
     return SPELL_CAST_SUCCESS;
 }
 
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
 SpellCastResult Spell::checkRunes(bool takeRunes)
 {
     // Check only for players and for spells which have rune cost
@@ -4553,7 +4559,9 @@ SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_
     {
         // Check if spell even requires shapeshift
         if (!(spellInfo->getAttributesExB() & ATTRIBUTESEXB_NOT_NEED_SHAPESHIFT) && spellInfo->getRequiredShapeShift() != 0)
+        {
             return SPELL_FAILED_ONLY_SHAPESHIFT;
+        }
     }
     return SPELL_CAST_SUCCESS;
 }
@@ -4635,14 +4643,41 @@ void Spell::sendChannelUpdate(const uint32_t time, const uint32_t diff/* = 0*/)
     PacketBroadcast::sendToSet(*m_caster, sendPacket, true);
 }
 
+void Spell::ensureForeverCastId()
+{
+    if (m_foreverServerCastId)
+        return;
+
+    static std::atomic<uint64_t> nextCastCounter {1};
+    const uint16_t mapId = m_caster != nullptr ? static_cast<uint16_t>(m_caster->GetMapId()) : 0;
+    const uint32_t spellId = getSpellInfo() != nullptr ? getSpellInfo()->getId() : 0;
+    const uint64_t castCounter = nextCastCounter.fetch_add(1, std::memory_order_relaxed);
+
+    m_foreverServerCastId = WoWGuid::createModernWorldObject(
+        ModernHighGuid::Cast, 3, worldConfig.battleNetComm.realmId, mapId, 0, spellId, castCounter);
+}
+
+uint32_t Spell::getForeverSpellXSpellVisualId() const
+{
+    // For player initiated Forever casts the client supplies the modern SpellXSpellVisualID.
+    // Keep the old SpellInfo visual as a compatibility fallback for server/triggered casts
+    // until Forever has a verified Spell -> SpellXSpellVisual data source.
+    return m_foreverSpellXSpellVisualId != 0 ? m_foreverSpellXSpellVisualId : getSpellInfo()->getSpellVisual(0);
+}
+
+uint32_t Spell::getForeverScriptVisualId() const
+{
+    return m_foreverScriptVisualId != 0 ? m_foreverScriptVisualId : getSpellInfo()->getSpellVisual(1);
+}
+
 void Spell::sendSpellStart()
 {
     if (!m_caster || !m_caster->IsInWorld())
         return;
 
     // If spell has no visuals, it's not channeled and it's triggered, no need to send packet
-    if (!(getSpellInfo()->isChanneled() || getSpellInfo()->getSpeed() > 0.0f || getSpellInfo()->getSpellVisual(0) != 0 ||
-        getSpellInfo()->getSpellVisual(1) != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
+    if (!(getSpellInfo()->isChanneled() || getSpellInfo()->getSpeed() > 0.0f || getForeverSpellXSpellVisualId() != 0 ||
+        getForeverScriptVisualId() != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
         return;
 
     // Set cast flags
@@ -4676,6 +4711,12 @@ void Spell::sendSpellStart()
     SmsgSpellStart managedPacket(i_caster ? i_caster->GetNewGUID() : m_caster->GetNewGUID(),
         m_caster->GetNewGUID(), getSpellInfo()->getId(), castFlags, extra_cast_number, m_timer, m_castTime, m_targets);
 
+    ensureForeverCastId();
+    managedPacket.castId = m_foreverServerCastId;
+    managedPacket.mapId = static_cast<uint16_t>(m_caster->GetMapId());
+    managedPacket.spellXSpellVisualId = getForeverSpellXSpellVisualId();
+    managedPacket.scriptVisualId = getForeverScriptVisualId();
+
 #if VERSION_STRING >= WotLK
     if (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE && u_caster != nullptr)
     {
@@ -4692,8 +4733,8 @@ void Spell::sendSpellStart()
 
 void Spell::sendSpellGo()
 {
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : entered for spell id {} GetType {} isChanneled {} speed {} visual0 {} visual1 {} triggeredSpell {} triggeredByAura {}",
-        getSpellInfo()->getId(), GetType(), getSpellInfo()->isChanneled(), getSpellInfo()->getSpeed(), getSpellInfo()->getSpellVisual(0), getSpellInfo()->getSpellVisual(1),
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : entered for spell id {} GetType {} isChanneled {} speed {} spellXSpellVisualId {} scriptVisualId {} triggeredSpell {} triggeredByAura {}",
+        getSpellInfo()->getId(), GetType(), getSpellInfo()->isChanneled(), getSpellInfo()->getSpeed(), getForeverSpellXSpellVisualId(), getForeverScriptVisualId(),
         m_triggeredSpell, m_triggeredByAura != nullptr);
 
     if (!m_caster || !m_caster->IsInWorld())
@@ -4703,8 +4744,8 @@ void Spell::sendSpellGo()
     }
 
     // If spell has no visuals, it's not channeled and it's triggered, no need to send packet
-    if (!(getSpellInfo()->isChanneled() || getSpellInfo()->getSpeed() > 0.0f || getSpellInfo()->getSpellVisual(0) != 0 ||
-        getSpellInfo()->getSpellVisual(1) != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
+    if (!(getSpellInfo()->isChanneled() || getSpellInfo()->getSpeed() > 0.0f || getForeverSpellXSpellVisualId() != 0 ||
+        getForeverScriptVisualId() != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
     {
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : no-visual/triggered early-return hit, not sending packet");
         return;
@@ -4733,8 +4774,17 @@ void Spell::sendSpellGo()
 
     uint8_t currentRunes = 0;
 #if VERSION_STRING >= WotLK
+#if defined(AE_FOREVER)
+    // Forever 1.60.1.70009 marks ordinary visual missiles with 0x40000 while keeping
+    // MissileTrajectoryResult at zero for selected-unit casts. Retail Fireball (133) and
+    // Shadow Bolt (686) both use this form. Explicit destination trajectories still keep
+    // their computed result below through m_missileTravelTime.
+    if (getSpellInfo()->getSpeed() > 0.0f || m_missileTravelTime != 0)
+        castFlags |= SPELL_PACKET_FLAGS_UNK40000;
+#else
     if (m_missileTravelTime != 0)
         castFlags |= SPELL_PACKET_FLAGS_UPDATE_MISSILE;
+#endif
 
     // Rune update
     if (p_caster != nullptr && p_caster->isClassDeathKnight())
@@ -4756,6 +4806,12 @@ void Spell::sendSpellGo()
         getSpellInfo()->getId(), castFlags, extra_cast_number, m_timer, Util::getMSTime(),
         m_targets);
 
+    ensureForeverCastId();
+    managedPacket.castId = m_foreverServerCastId;
+    managedPacket.mapId = static_cast<uint16_t>(m_caster->GetMapId());
+    managedPacket.spellXSpellVisualId = getForeverSpellXSpellVisualId();
+    managedPacket.scriptVisualId = getForeverScriptVisualId();
+
 #if VERSION_STRING >= WotLK
     if (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE && u_caster != nullptr)
     {
@@ -4776,8 +4832,8 @@ void Spell::sendSpellGo()
     managedPacket.missilePitch = m_missilePitch;
     managedPacket.missileTravelTime = m_missileTravelTime;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : about to broadcast, castFlags {} hittedTargets {} missedTargets {}",
-        castFlags, managedPacket.hittedTargets.size(), managedPacket.missedTargets.size());
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : about to broadcast, castFlags {} hittedTargets {} missedTargets {} missileTravelTime {} missilePitch {}",
+        castFlags, managedPacket.hittedTargets.size(), managedPacket.missedTargets.size(), managedPacket.missileTravelTime, managedPacket.missilePitch);
 
     PacketBroadcast::sendToSet(*m_caster, managedPacket, true);
 
@@ -4914,7 +4970,22 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
             break;
     }
 
-    caster->sendCastFailedPacket(getSpellInfo()->getId(), result, castCount, parameter1, parameter2);
+    WoWGuid castId;
+    uint32_t spellXSpellVisualId = 0;
+    uint32_t scriptVisualId = 0;
+    uint16_t mapId = 0;
+
+    if (caster->getSession() != nullptr && caster->getSession()->getClientProtocol().isForever())
+    {
+        ensureForeverCastId();
+        castId = m_foreverClientCastId ? m_foreverClientCastId : m_foreverServerCastId;
+        spellXSpellVisualId = getForeverSpellXSpellVisualId();
+        scriptVisualId = getForeverScriptVisualId();
+        mapId = static_cast<uint16_t>(m_caster->GetMapId());
+    }
+
+    caster->sendCastFailedPacket(getSpellInfo()->getId(), result, castCount, parameter1, parameter2,
+        castId, spellXSpellVisualId, scriptVisualId, mapId);
 }
 
 void Spell::addProjectileDataToPacket(ProjectileData& data)
@@ -5062,7 +5133,7 @@ void Spell::takePower()
         u_caster->dealDamage(u_caster, getPowerCost(), getSpellInfo()->getId(), false);
         return;
     }
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
     else if (getSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
     {
         checkRunes(true);

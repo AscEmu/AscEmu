@@ -189,6 +189,14 @@ public:
     uint32_t getAttributesExH() const { return AttributesExH; }
     uint32_t getAttributesExI() const { return AttributesExI; }
     uint32_t getAttributesExJ() const { return AttributesExJ; }
+#if defined(AE_FOREVER)
+    uint32_t getAttributesExK() const { return AttributesExK; }
+    uint32_t getAttributesExL() const { return AttributesExL; }
+    uint32_t getAttributesExM() const { return AttributesExM; }
+    uint32_t getAttributesExN() const { return AttributesExN; }
+    uint32_t getAttributesExO() const { return AttributesExO; }
+    uint32_t getAttributesExP() const { return AttributesExP; }
+#endif
 
     inline bool hasAttribute(SpellAttributes attribute) const { return !!(Attributes & attribute); }
     inline bool hasAttribute(SpellAttributesEx attribute) const { return !!(AttributesEx & attribute); }
@@ -199,8 +207,8 @@ public:
     inline bool hasAttribute(SpellAttributesExF attribute) const { return !!(AttributesExF & attribute); }
     inline bool hasAttribute(SpellAttributesExG attribute) const { return !!(AttributesExG & attribute); }
 
-    uint32_t getRequiredShapeShift() const { return Shapeshifts; }
-    uint32_t getShapeshiftExclude() const { return ShapeshiftsExcluded; }
+    SpellExtendedMask getRequiredShapeShift() const { return Shapeshifts; }
+    SpellExtendedMask getShapeshiftExclude() const { return ShapeshiftsExcluded; }
     uint32_t getTargets() const { return Targets; }
     uint32_t getTargetCreatureType() const { return TargetCreatureType; }
     uint32_t getRequiresSpellFocus() const { return RequiresSpellFocus; }
@@ -217,9 +225,12 @@ public:
     uint32_t getRecoveryTime() const { return RecoveryTime; }
     uint32_t getCategoryRecoveryTime() const { return CategoryRecoveryTime; }
     uint32_t getInterruptFlags() const { return InterruptFlags; }
-    uint32_t getAuraInterruptFlags() const { return AuraInterruptFlags; }
-    uint32_t getChannelInterruptFlags() const { return ChannelInterruptFlags; }
+    SpellExtendedMask getAuraInterruptFlags() const { return AuraInterruptFlags; }
+    SpellExtendedMask getChannelInterruptFlags() const { return ChannelInterruptFlags; }
     uint32_t getProcFlags() const { return procFlags; }
+#if defined(AE_FOREVER)
+    uint64_t getProcTypeMask() const { return procTypeMask; }
+#endif
     uint32_t getProcChance() const { return procChance; }
     uint32_t getProcCharges() const { return procCharges; }
     uint32_t getMaxLevel() const { return maxLevel; }
@@ -262,6 +273,23 @@ public:
     float getEffectPointsPerComboPoint(uint8_t idx) const;
     uint32_t getEffectSpellClassMask(uint8_t idx1, uint8_t idx2) const;
     uint32_t const* getEffectSpellClassMask(uint8_t idx1) const;
+#if defined(AE_FOREVER)
+    uint32_t getEffectAttributes(uint8_t idx) const { return idx < MAX_SPELL_EFFECTS ? EffectAttributesModern[idx] : 0; }
+    float getEffectAmplitudeFloat(uint8_t idx) const { return idx < MAX_SPELL_EFFECTS ? EffectAmplitudeFloatModern[idx] : 0.0f; }
+    float getEffectBonusCoefficient(uint8_t idx) const { return idx < MAX_SPELL_EFFECTS ? EffectBonusCoefficientModern[idx] : 0.0f; }
+    float getEffectChainAmplitude(uint8_t idx) const { return idx < MAX_SPELL_EFFECTS ? EffectChainAmplitudeModern[idx] : 0.0f; }
+    float getEffectPosFacing(uint8_t idx) const { return idx < MAX_SPELL_EFFECTS ? EffectPosFacingModern[idx] : 0.0f; }
+    float getEffectPointsPerResource(uint8_t idx) const { return idx < MAX_SPELL_EFFECTS ? EffectPointsPerResourceModern[idx] : 0.0f; }
+    float getEffectBonusCoefficientFromAP(uint8_t idx) const { return idx < MAX_SPELL_EFFECTS ? EffectBonusCoefficientFromAPModern[idx] : 0.0f; }
+    float getEffectPvpMultiplier(uint8_t idx) const { return idx < MAX_SPELL_EFFECTS ? EffectPvpMultiplierModern[idx] : 0.0f; }
+    float getEffectCoefficient(uint8_t idx) const { return idx < MAX_SPELL_EFFECTS ? EffectCoefficientModern[idx] : 0.0f; }
+    float getEffectVariance(uint8_t idx) const { return idx < MAX_SPELL_EFFECTS ? EffectVarianceModern[idx] : 0.0f; }
+    float getEffectResourceCoefficient(uint8_t idx) const { return idx < MAX_SPELL_EFFECTS ? EffectResourceCoefficientModern[idx] : 0.0f; }
+    float getEffectGroupSizeBasePointsCoefficient(uint8_t idx) const { return idx < MAX_SPELL_EFFECTS ? EffectGroupSizeBasePointsCoefficientModern[idx] : 0.0f; }
+    float getEffectBasePointsFloat(uint8_t idx) const { return idx < MAX_SPELL_EFFECTS ? EffectBasePointsFloatModern[idx] : 0.0f; }
+    int32_t getEffectScalingClass(uint8_t idx) const { return idx < MAX_SPELL_EFFECTS ? EffectScalingClassModern[idx] : 0; }
+    uint32_t getEffectUnknownField24(uint8_t idx) const { return idx < MAX_SPELL_EFFECTS ? EffectUnknownField24Modern[idx] : 0; }
+#endif
 
     uint32_t getSpellVisual(uint8_t visualIndex) const { return SpellVisual[visualIndex]; }
     uint32_t getSpellIconID() const { return spellIconID; }
@@ -276,7 +304,7 @@ public:
     uint32_t getSpellFamilyName() const { return SpellFamilyName; }
 
     uint32_t getSpellFamilyFlags(uint8_t idx) const;
-    std::array<uint32_t, 3> const& getSpellFamilyFlags() const { return SpellFamilyFlags; }
+    std::array<uint32_t, MAX_SPELL_CLASS_MASKS> const& getSpellFamilyFlags() const { return SpellFamilyFlags; }
 
     uint32_t getMaxTargets() const { return MaxTargets; }
     uint32_t getDmgClass() const { return DmgClass; }
@@ -338,8 +366,16 @@ private:
     void setAttributesExH(uint32_t value) { AttributesExH = value; }
     void setAttributesExI(uint32_t value) { AttributesExI = value; }
     void setAttributesExJ(uint32_t value) { AttributesExJ = value; }
-    void setRequiredShapeShift(uint32_t value) { Shapeshifts = value; } // used in HackFixes.cpp
-    void setShapeshiftExclude(uint32_t value) { ShapeshiftsExcluded = value; }
+#if defined(AE_FOREVER)
+    void setAttributesExK(uint32_t value) { AttributesExK = value; }
+    void setAttributesExL(uint32_t value) { AttributesExL = value; }
+    void setAttributesExM(uint32_t value) { AttributesExM = value; }
+    void setAttributesExN(uint32_t value) { AttributesExN = value; }
+    void setAttributesExO(uint32_t value) { AttributesExO = value; }
+    void setAttributesExP(uint32_t value) { AttributesExP = value; }
+#endif
+    void setRequiredShapeShift(SpellExtendedMask value) { Shapeshifts = value; } // used in HackFixes.cpp
+    void setShapeshiftExclude(SpellExtendedMask value) { ShapeshiftsExcluded = value; }
     void setTargets(uint32_t value) { Targets = value; }
     void setTargetCreatureType(uint32_t value) { TargetCreatureType = value; }
     void setRequiresSpellFocus(uint32_t value) { RequiresSpellFocus = value; }
@@ -359,12 +395,15 @@ private:
     void setInterruptFlags(uint32_t value) { InterruptFlags = value; }
     void removeInterruptFlags(uint32_t value) { InterruptFlags |= ~value; } // used in HackFixes.cpp
 
-    void addAuraInterruptFlags(uint32_t value) { AuraInterruptFlags |= value; } // used in HackFixes.cpp
-    void setAuraInterruptFlags(uint32_t value) { AuraInterruptFlags = value; } // used in HackFixes.cpp
+    void addAuraInterruptFlags(SpellExtendedMask value) { AuraInterruptFlags |= value; } // used in HackFixes.cpp
+    void setAuraInterruptFlags(SpellExtendedMask value) { AuraInterruptFlags = value; } // used in HackFixes.cpp
 
-    void setChannelInterruptFlags(uint32_t value) { ChannelInterruptFlags = value; } // used in HackFixes.cpp
+    void setChannelInterruptFlags(SpellExtendedMask value) { ChannelInterruptFlags = value; } // used in HackFixes.cpp
 
     void setProcFlags(uint32_t value) { procFlags = value; } // used in HackFixes.cpp
+#if defined(AE_FOREVER)
+    void setProcTypeMask(uint64_t value) { procTypeMask = value; procFlags = static_cast<uint32_t>(value); }
+#endif
     void addProcFlags(uint32_t value) { procFlags |= value; } // used in HackFixes.cpp
 
     void setProcChance(uint32_t value) { procChance = value; } // used in HackFixes.cpp
@@ -408,6 +447,23 @@ private:
     void setEffectTriggerSpell(uint32_t spell, uint8_t idx);    // used in ObjectMgr.cpp
     void setEffectPointsPerComboPoint(float effectPoints, uint8_t idx); // used in HackFixes.cpp
     void setEffectSpellClassMask(uint32_t spellClass, uint8_t idx1, uint8_t idx2);  // used in HackFixes.cpp
+#if defined(AE_FOREVER)
+    void setEffectAttributes(uint32_t value, uint8_t idx) { if (idx < MAX_SPELL_EFFECTS) EffectAttributesModern[idx] = value; }
+    void setEffectAmplitudeFloat(float value, uint8_t idx) { if (idx < MAX_SPELL_EFFECTS) EffectAmplitudeFloatModern[idx] = value; }
+    void setEffectBonusCoefficient(float value, uint8_t idx) { if (idx < MAX_SPELL_EFFECTS) EffectBonusCoefficientModern[idx] = value; }
+    void setEffectChainAmplitude(float value, uint8_t idx) { if (idx < MAX_SPELL_EFFECTS) EffectChainAmplitudeModern[idx] = value; }
+    void setEffectPosFacing(float value, uint8_t idx) { if (idx < MAX_SPELL_EFFECTS) EffectPosFacingModern[idx] = value; }
+    void setEffectPointsPerResource(float value, uint8_t idx) { if (idx < MAX_SPELL_EFFECTS) EffectPointsPerResourceModern[idx] = value; }
+    void setEffectBonusCoefficientFromAP(float value, uint8_t idx) { if (idx < MAX_SPELL_EFFECTS) EffectBonusCoefficientFromAPModern[idx] = value; }
+    void setEffectPvpMultiplier(float value, uint8_t idx) { if (idx < MAX_SPELL_EFFECTS) EffectPvpMultiplierModern[idx] = value; }
+    void setEffectCoefficient(float value, uint8_t idx) { if (idx < MAX_SPELL_EFFECTS) EffectCoefficientModern[idx] = value; }
+    void setEffectVariance(float value, uint8_t idx) { if (idx < MAX_SPELL_EFFECTS) EffectVarianceModern[idx] = value; }
+    void setEffectResourceCoefficient(float value, uint8_t idx) { if (idx < MAX_SPELL_EFFECTS) EffectResourceCoefficientModern[idx] = value; }
+    void setEffectGroupSizeBasePointsCoefficient(float value, uint8_t idx) { if (idx < MAX_SPELL_EFFECTS) EffectGroupSizeBasePointsCoefficientModern[idx] = value; }
+    void setEffectBasePointsFloat(float value, uint8_t idx) { if (idx < MAX_SPELL_EFFECTS) EffectBasePointsFloatModern[idx] = value; }
+    void setEffectScalingClass(int32_t value, uint8_t idx) { if (idx < MAX_SPELL_EFFECTS) EffectScalingClassModern[idx] = value; }
+    void setEffectUnknownField24(uint32_t value, uint8_t idx) { if (idx < MAX_SPELL_EFFECTS) EffectUnknownField24Modern[idx] = value; }
+#endif
 
     void setSpellVisual(uint8_t visualIndex, uint32_t value) { SpellVisual[visualIndex] = value; }
     void setSpellIconID(uint32_t value) { spellIconID = value; }
@@ -475,9 +531,17 @@ private:
     uint32_t AttributesExH = 0;
     uint32_t AttributesExI = 0;
     uint32_t AttributesExJ = 0;
-    // Data from SpellShapeshift.dbc (in Cataclysm)
-    uint32_t Shapeshifts = 0;
-    uint32_t ShapeshiftsExcluded = 0;
+#if defined(AE_FOREVER)
+    uint32_t AttributesExK = 0;
+    uint32_t AttributesExL = 0;
+    uint32_t AttributesExM = 0;
+    uint32_t AttributesExN = 0;
+    uint32_t AttributesExO = 0;
+    uint32_t AttributesExP = 0;
+#endif
+    // Data from SpellShapeshift.dbc / SpellShapeshift.db2
+    SpellExtendedMask Shapeshifts = 0;
+    SpellExtendedMask ShapeshiftsExcluded = 0;
     // Data from SpellTargetRestrictions.dbc (in Cataclysm)
     uint32_t Targets = 0;
     uint32_t TargetCreatureType = 0;
@@ -500,10 +564,13 @@ private:
     uint32_t CategoryRecoveryTime = 0;
     // Data from SpellInterrupts.dbc (in Cataclysm)
     uint32_t InterruptFlags = 0;
-    uint32_t AuraInterruptFlags = 0;
-    uint32_t ChannelInterruptFlags = 0;
-    // Data from SpellAuraOptions.dbc (in Cataclysm)
+    SpellExtendedMask AuraInterruptFlags = 0;
+    SpellExtendedMask ChannelInterruptFlags = 0;
+    // Data from SpellAuraOptions.dbc / SpellAuraOptions.db2
     uint32_t procFlags = 0;
+#if defined(AE_FOREVER)
+    uint64_t procTypeMask = 0;
+#endif
     uint32_t procChance = 0;
     uint32_t procCharges = 0;
     // Data from SpellLevels.dbc (in Cataclysm)
@@ -550,7 +617,24 @@ private:
     int32_t EffectMiscValueB[MAX_SPELL_EFFECTS]; // can be: speed slot-type, summon
     uint32_t EffectTriggerSpell[MAX_SPELL_EFFECTS];
     float EffectPointsPerComboPoint[MAX_SPELL_EFFECTS];
-    uint32_t EffectSpellClassMask[MAX_SPELL_EFFECTS][3];
+    uint32_t EffectSpellClassMask[MAX_SPELL_EFFECTS][MAX_SPELL_CLASS_MASKS];
+#if defined(AE_FOREVER)
+    uint32_t EffectAttributesModern[MAX_SPELL_EFFECTS]{};
+    float EffectAmplitudeFloatModern[MAX_SPELL_EFFECTS]{};
+    float EffectBonusCoefficientModern[MAX_SPELL_EFFECTS]{};
+    float EffectChainAmplitudeModern[MAX_SPELL_EFFECTS]{};
+    float EffectPosFacingModern[MAX_SPELL_EFFECTS]{};
+    float EffectPointsPerResourceModern[MAX_SPELL_EFFECTS]{};
+    float EffectBonusCoefficientFromAPModern[MAX_SPELL_EFFECTS]{};
+    float EffectPvpMultiplierModern[MAX_SPELL_EFFECTS]{};
+    float EffectCoefficientModern[MAX_SPELL_EFFECTS]{};
+    float EffectVarianceModern[MAX_SPELL_EFFECTS]{};
+    float EffectResourceCoefficientModern[MAX_SPELL_EFFECTS]{};
+    float EffectGroupSizeBasePointsCoefficientModern[MAX_SPELL_EFFECTS]{};
+    float EffectBasePointsFloatModern[MAX_SPELL_EFFECTS]{};
+    int32_t EffectScalingClassModern[MAX_SPELL_EFFECTS]{};
+    uint32_t EffectUnknownField24Modern[MAX_SPELL_EFFECTS]{};
+#endif
 #if VERSION_STRING >= Cata
     uint32_t EffectRadiusMaxIndex[MAX_SPELL_EFFECTS];
     uint32_t EffectSpellId[MAX_SPELL_EFFECTS];
@@ -573,7 +657,7 @@ private:
     uint32_t MaxTargetLevel = 0;
     // Data from SpellClassOptions.dbc (in Cataclysm)
     uint32_t SpellFamilyName = 0;
-    std::array<uint32_t, 3> SpellFamilyFlags;
+    std::array<uint32_t, MAX_SPELL_CLASS_MASKS> SpellFamilyFlags;
     // Data from SpellTargetRestrictions.dbc (in Cataclysm)
     uint32_t MaxTargets = 0;
     // Data from SpellCategories.dbc (in Cataclysm)

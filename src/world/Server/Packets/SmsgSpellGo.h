@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ForeverSpellPacketUtils.hpp"
 #include "Spell/SpellCastTargets.hpp"
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/Definitions/SpellPacketFlags.hpp"
@@ -23,6 +24,11 @@ namespace AscEmu::Packets
         uint32_t spellId;
         uint32_t castFlags;
         uint8_t extraCastNumber;
+
+        WoWGuid castId = WoWGuid::createModernEmpty();
+        uint16_t mapId = 0;
+        uint32_t spellXSpellVisualId = 0;
+        uint32_t scriptVisualId = 0;
 
         uint32_t timer;
         uint32_t castTime;
@@ -59,6 +65,94 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                using namespace ForeverSpellPacket;
+
+                const WoWGuid modernCasterGuid = toModernGuid(casterGuid, m_protocol.realmId, mapId);
+                const WoWGuid modernCasterUnitGuid = toModernGuid(casterUnitGuid, m_protocol.realmId, mapId);
+                const WoWGuid modernCastId = castId ? castId : WoWGuid::createModernWorldObject(
+                    ModernHighGuid::Cast, 3, ::World::getInstance().settings.battleNetComm.realmId, mapId, 0, spellId, extraCastNumber);
+
+                uint32_t modernCastFlags = castFlags;
+                // Forever retail uses 0x40000 for the normal unit-target missile form. Keep
+                // UPDATE_MISSILE only as a legacy/internal compatibility input and translate it
+                // to the verified Forever flag on the wire.
+                if ((modernCastFlags & SPELL_PACKET_FLAGS_UPDATE_MISSILE) != 0)
+                {
+                    modernCastFlags &= ~static_cast<uint32_t>(SPELL_PACKET_FLAGS_UPDATE_MISSILE);
+                    modernCastFlags |= SPELL_PACKET_FLAGS_UNK40000;
+                }
+                if (!missedTargets.empty())
+                    modernCastFlags |= SPELL_PACKET_FLAGS_UNK200;
+
+                writePackedGuid(packet, modernCasterGuid);
+                writePackedGuid(packet, modernCasterUnitGuid);
+                writePackedGuid(packet, modernCastId);
+                writePackedGuid(packet, WoWGuid::createModernEmpty()); // OriginalCastID
+
+                packet << static_cast<int32_t>(spellId);
+                packet << static_cast<int32_t>(spellXSpellVisualId);
+                packet << static_cast<int32_t>(scriptVisualId);
+                packet << modernCastFlags;
+                packet << static_cast<uint32_t>(0); // CastFlagsEx
+                packet << static_cast<uint32_t>(0); // CastFlagsEx2
+                packet << static_cast<uint32_t>(castTime);
+
+                writeTargetData(packet, targets, m_protocol.realmId, mapId);
+
+                packet << static_cast<uint32_t>(missileTravelTime);
+                packet << missilePitch;
+                packet << static_cast<int32_t>(projectile.displayInfo);
+                packet << static_cast<uint8_t>(0);  // DestLocSpellCastIndex
+                packet << static_cast<int32_t>(0);  // CreatureImmunities.School
+                packet << static_cast<int32_t>(0);  // CreatureImmunities.Value
+                packet << static_cast<int32_t>(0);  // HealPrediction.Points
+                packet << static_cast<uint32_t>(0); // HealPrediction.Type
+                writePackedGuid(packet, WoWGuid::createModernEmpty()); // HealPrediction.BeaconGUID
+
+                const uint32_t hitCount = static_cast<uint32_t>(hittedTargets.size());
+                const uint32_t missCount = static_cast<uint32_t>(missedTargets.size());
+                const uint32_t remainingPowerCount = (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE) != 0 ? 1U : 0U;
+
+                packet.writeBits(hitCount, 16);
+                packet.writeBits(missCount, 16);
+                packet.writeBits(hitCount, 16); // HitStatus
+                packet.writeBits(missCount, 16); // MissStatus
+                packet.writeBits(remainingPowerCount, 9);
+                packet.writeBit(false);  // RemainingRunes - add with the DK packet pass
+                packet.writeBits(0, 16); // TargetPoints
+                packet.flushBits();
+
+                for (const auto& hitTarget : hittedTargets)
+                    writePackedGuid(packet, toModernGuid(WoWGuid(hitTarget.first), m_protocol.realmId, mapId));
+
+                for (const auto& missedTarget : missedTargets)
+                    writePackedGuid(packet, toModernGuid(WoWGuid(missedTarget.targetGuid), m_protocol.realmId, mapId));
+
+                for (uint32_t i = 0; i < hitCount; ++i)
+                    packet << static_cast<uint8_t>(0);
+
+                for (const auto& missedTarget : missedTargets)
+                {
+                    packet << static_cast<uint8_t>(missedTarget.hitResult);
+                    if (missedTarget.hitResult == SPELL_DID_HIT_REFLECT)
+                        packet << static_cast<uint8_t>(missedTarget.extendedHitResult);
+                }
+
+                if (remainingPowerCount != 0)
+                {
+                    packet << static_cast<int8_t>(powerType);
+                    packet << static_cast<int32_t>(powerValue);
+                }
+
+                // SpellGo derives from the combat-log server packet. The simple form has no
+                // optional advanced combat-log payload, so the trailing presence bit is zero.
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << casterGuid;

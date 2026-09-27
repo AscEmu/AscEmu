@@ -123,7 +123,7 @@ namespace WDB::Structures
     struct SpellMiscEntry;
     struct ChrSpecializationEntry;
 #elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+// Dedicated Forever runtime structures.
     struct SpellMiscEntry;
     struct ChrSpecializationEntry;
 #endif
@@ -135,7 +135,11 @@ using TaxiPathNodesByPath = std::vector<TaxiPathNodeList>;
 
 [[nodiscard]] constexpr float getRadius(WDB::Structures::SpellRadiusEntry const* radius) noexcept
 {
+#if defined(AE_FOREVER)
+    return radius ? radius->radius : 0.0f;
+#else
     return radius ? radius->radius_min : 0.0f;
+#endif
 }
 
 [[nodiscard]] constexpr uint32_t getCastTime(WDB::Structures::SpellCastTimesEntry const* time) noexcept
@@ -268,8 +272,10 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
 #endif
 
     inline SERVER_DECL WDB::WDBStore<WDB::Structures::BannedAddOnsEntry> sBannedAddOnsStore;
+#if !defined(AE_FOREVER)
     inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrPowerTypesEntry> sChrPowerTypesStore;
     inline std::array<std::array<uint8_t, TOTAL_PLAYER_POWER_TYPES>, MAX_PLAYER_CLASSES> powerIndexByClass;
+#endif
 
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseHPByClassEntry> sGtOCTBaseHPByClassStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseMPByClassEntry> sGtOCTBaseMPByClassStore;
@@ -323,7 +329,9 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
 
 #if VERSION_STRING >= Cata
     WDB::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32_t spellId, uint8_t effect);
+#if !defined(AE_FOREVER)
     uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerIndex);
+#endif
 #endif
 
 WDB::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty);

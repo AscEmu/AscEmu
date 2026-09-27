@@ -3853,7 +3853,7 @@ void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
                 m_playerTarget->removeSpell(17041, false); //Master Axesmith
                 break;
         }
-        for (uint8_t j = 0; j < 3; j++)
+        for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; j++)
             if (spellinfo->getEffect(j) == SPELL_EFFECT_WEAPON ||
                 spellinfo->getEffect(j) == SPELL_EFFECT_PROFICIENCY ||
                 spellinfo->getEffect(j) == SPELL_EFFECT_DUAL_WIELD)
@@ -5840,7 +5840,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
     }
 
     // rogue ambush etc
-    for (uint8_t x = 0; x < 3; x++)
+    for (uint8_t x = 0; x < MAX_SPELL_EFFECTS; x++)
         if (getSpellInfo()->getEffect(x) == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE)
         {
             add_damage = damage * (getSpellInfo()->getEffectBasePoints(x) + 1) / 100;
@@ -5975,7 +5975,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
                     uint32_t aurdur = (aur->getTimeLeft() > 120000 ? 120000 : aur->getTimeLeft());
                     auto aura = sSpellMgr.newAura(aursp, aurdur, u_caster, u_caster);
                     m_unitTarget->removeAllAurasByIdReturnCount(aursp->getId());
-                    for (uint8_t j = 0; j < 3; j++)
+                    for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; j++)
                     {
                         if (aura->getSpellInfo()->getEffect(j))
                         {
@@ -6136,7 +6136,7 @@ void Spell::SpellEffectTriggerSpellWithValue(uint8_t effectIndex)
 
     Spell* sp = sSpellMgr.newSpell(m_caster, TriggeredSpell, true, nullptr);
 
-    for (uint8_t x = 0; x < 3; x++)
+    for (uint8_t x = 0; x < MAX_SPELL_EFFECTS; x++)
     {
         if (effectIndex == x)
             sp->forced_basepoints->set(x, damage);  //prayer of mending should inherit heal bonus ?

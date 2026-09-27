@@ -75,8 +75,8 @@ bool SpellProc::checkClassMask(SpellInfo const* castingSpell) const
     if (std::ranges::all_of(castingSpell->getSpellFamilyFlags(), [](uint32_t mask) { return mask == 0; }))
         return false;
 
-    // Not spell effect count, it's spell mask field count
-    for (uint8_t i = 0; i < 3; ++i)
+    // Not spell effect count, it's spell class-mask field count.
+    for (uint8_t i = 0; i < MAX_SPELL_CLASS_MASKS; ++i)
     {
         if (castingSpell->getSpellFamilyFlags(i) > 0 && !(mProcClassMask[i] & castingSpell->getSpellFamilyFlags(i)))
             return false;
@@ -280,33 +280,21 @@ std::unique_ptr<SpellProc> SpellProcMgr::newSpellProc(Unit* owner, SpellInfo con
     result->m_createdByAura = createdByAura;
     result->mDeleted = false;
 
-    if (spellFamilyMask != nullptr)
-    {
-        result->mGroupRelation[0] = spellFamilyMask[0];
-        result->mGroupRelation[1] = spellFamilyMask[1];
-        result->mGroupRelation[2] = spellFamilyMask[2];
-    }
-    else
-    {
-        result->mGroupRelation[0] = 0;
-        result->mGroupRelation[1] = 0;
-        result->mGroupRelation[2] = 0;
-    }
+    for (uint8_t i = 0; i < MAX_SPELL_CLASS_MASKS; ++i)
+        result->mGroupRelation[i] = spellFamilyMask != nullptr ? spellFamilyMask[i] : 0;
 
     if (origSpellInfo != nullptr)
         result->mProcFamilyName = static_cast<SpellFamily>(origSpellInfo->getSpellFamilyName());
 
     if (procClassMask != nullptr)
     {
-        result->mProcClassMask[0] = procClassMask[0];
-        result->mProcClassMask[1] = procClassMask[1];
-        result->mProcClassMask[2] = procClassMask[2];
+        for (uint8_t i = 0; i < MAX_SPELL_CLASS_MASKS; ++i)
+            result->mProcClassMask[i] = procClassMask[i];
     }
     else
     {
-        result->mProcClassMask[0] = 0;
-        result->mProcClassMask[1] = 0;
-        result->mProcClassMask[2] = 0;
+        for (uint8_t i = 0; i < MAX_SPELL_CLASS_MASKS; ++i)
+            result->mProcClassMask[i] = 0;
     }
 
     if (sScriptMgr.getSpellScript(spellInfo->getId()) != nullptr)

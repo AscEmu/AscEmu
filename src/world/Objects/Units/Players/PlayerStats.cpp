@@ -194,7 +194,7 @@ void Player::updateRageRegeneration([[maybe_unused]]bool initialUpdate/* = false
     setPowerRegenerationWhileInterrupted(POWER_TYPE_RAGE, inCombat);
 }
 
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
 void Player::updateRunicPowerRegeneration(bool initialUpdate/* = false*/)
 {
     // Patch 2.2.0: "Any effect which triggers a change in your rate of power regeneration (Mana, Rage, Energy, Focus)

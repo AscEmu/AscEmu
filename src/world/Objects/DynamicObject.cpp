@@ -142,7 +142,7 @@ void DynamicObject::considerTarget(Unit* target)
         return;
 
     auto aura = sSpellMgr.newAura(m_spellInfo, m_aliveDuration, m_unitCaster, target, true);
-    for (uint8_t i = 0; i < 3; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (m_spellInfo->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
         {

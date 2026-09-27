@@ -1415,7 +1415,18 @@ namespace AscEmu::Version::Forever::ObjectUpdate
         ByteBuffer payload;
         payload << uint8_t(ownerVisible ? 1 : 0);
         payload << uint8_t(0); // fragment IDs did not change
-        payload << uint8_t(1); // CGObject fragment contents changed
+
+        // Capture-verified Forever VALUES update-field flags.
+        // Player blocks use 0x17; ordinary Unit/Creature blocks use 0x03.
+        // Keeping the old fallback for not-yet-verified object families avoids
+        // broadening this fix beyond the captures we actually have.
+        uint8_t updateFieldFlags = 1;
+        if (playerFields != nullptr)
+            updateFieldFlags = 0x17;
+        else if (unitFields != nullptr)
+            updateFieldFlags = 0x03;
+
+        payload << updateFieldFlags;
         payload << changedObjectTypeMask;
 
         if (changedObjectTypeMask & (uint32_t(1) << 0)) writeObjectDataUpdate(payload, objectFields);

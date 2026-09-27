@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "Spell/SpellCastTargets.hpp"
+#include "ForeverSpellPacketUtils.hpp"
 
 namespace AscEmu::Packets
 {
@@ -18,6 +19,10 @@ namespace AscEmu::Packets
         uint32_t spellId;
         uint8_t castCount;
         uint8_t castFlags;
+
+        WoWGuid clientCastId = WoWGuid::createModernEmpty();
+        uint32_t spellXSpellVisualId = 0;
+        uint32_t scriptVisualId = 0;
 
         SpellCastTargets targets;
 
@@ -48,6 +53,67 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                using namespace ForeverSpellPacket;
+
+                if (!readPackedGuid(packet, clientCastId))
+                    return false;
+
+                packet >> castFlags;
+
+                // Misc[3] - present in the 70009 SpellCastRequest even when all values are zero.
+                packet.readSkip<int32_t>();
+                packet.readSkip<int32_t>();
+                packet.readSkip<int32_t>();
+
+                packet >> spellId;
+                packet >> spellXSpellVisualId >> scriptVisualId;
+
+                if (!readTargetData(packet, targets))
+                    return false;
+
+                packet >> projectilePitch >> projectileSpeed;
+
+                WoWGuid craftingNpc;
+                if (!readPackedGuid(packet, craftingNpc))
+                    return false;
+
+                uint32_t extraCurrencyCostCount = 0;
+                uint32_t craftingReagentCount = 0;
+                uint32_t removedReagentCount = 0;
+                uint8_t craftingCastFlags = 0;
+                packet >> extraCurrencyCostCount >> craftingReagentCount >> removedReagentCount >> craftingCastFlags;
+
+                // The supplied 70009 gameplay captures use no crafting payload here. Keep the
+                // parser strict until those variable-length structures are captured and verified.
+                if (extraCurrencyCostCount != 0 || craftingReagentCount != 0 || removedReagentCount != 0)
+                    return false;
+
+                // Start of a new bit block. ByteBuffer does not expose a read-bit reset, so
+                // consume the verified 70009 zero-weight header as its raw MSB-first byte.
+                uint8_t optionalHeader = 0;
+                packet >> optionalHeader;
+                const bool hasReceiveTime = (optionalHeader & 0x80U) != 0;
+                hasMovementData = (optionalHeader & 0x40U) != 0;
+                const uint32_t weightCount = (optionalHeader >> 4U) & 0x03U;
+                const bool hasCraftingOrderId = (optionalHeader & 0x08U) != 0;
+
+                if (weightCount != 0 || hasMovementData)
+                    return false;
+
+                if (hasReceiveTime)
+                    packet.readSkip<uint32_t>();
+                if (hasCraftingOrderId)
+                    packet.readSkip<uint64_t>();
+
+                hasSrcLocation = (targets.getTargetMask() & TARGET_FLAG_SOURCE_LOCATION) != 0;
+                hasDestLocation = (targets.getTargetMask() & TARGET_FLAG_DEST_LOCATION) != 0;
+                castCount = static_cast<uint8_t>(clientCastId.getModernCounter() & 0xFFU);
+
+                return !packet.hadReadFailure();
+            }
+
             if (m_protocol.expansion != WoW::Expansion::_Mop)
             {
                 if (m_protocol.expansion <= WoW::Expansion::_TBC)

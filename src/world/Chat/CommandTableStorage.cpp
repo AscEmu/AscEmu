@@ -323,7 +323,7 @@ CommandTableStorage::CommandTableStorage()
         {"modify mana",                   "m", 1, wrap(&ChatCommandHandler::HandleModifyMana),                    "Mods mana points of selected target." },
         {"modify rage",                   "m", 1, wrap(&ChatCommandHandler::HandleModifyRage),                    "Mods rage points of selected target." },
         {"modify energy",                 "m", 1, wrap(&ChatCommandHandler::HandleModifyEnergy),                  "Mods energy points of selected target." },
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
         {"modify runicpower",             "m", 1, wrap(&ChatCommandHandler::HandleModifyRunicpower),              "Mods runic power points of selected target." },
 #endif
         {"modify strength",               "m", 1, wrap(&ChatCommandHandler::HandleModifyStrength),                "Mods strength value of the selected target." },

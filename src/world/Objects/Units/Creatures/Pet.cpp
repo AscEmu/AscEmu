@@ -1833,7 +1833,7 @@ void Pet::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32_t sp
         Spell* spl = getCurrentSpell(CURRENT_CHANNELED_SPELL);
         if (spl != nullptr)
         {
-            for (uint8_t i = 0; i < 3; i++)
+            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; i++)
             {
                 if (spl->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {

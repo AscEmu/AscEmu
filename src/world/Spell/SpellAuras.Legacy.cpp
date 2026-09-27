@@ -3798,7 +3798,7 @@ void Aura::SpellAuraAddClassTargetTrigger(AuraEffectModifier* aurEff, bool apply
 {
     if (apply)
     {
-        uint32_t groupRelation[3], procClassMask[3];
+        uint32_t groupRelation[MAX_SPELL_CLASS_MASKS]{}, procClassMask[MAX_SPELL_CLASS_MASKS]{};
 
         // Find spell of effect to be triggered
         SpellInfo const* sp = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex()));
@@ -3808,15 +3808,12 @@ void Aura::SpellAuraAddClassTargetTrigger(AuraEffectModifier* aurEff, bool apply
             return;
         }
 
-        // Initialize proc class mask
-        procClassMask[0] = getSpellInfo()->getEffectSpellClassMask(aurEff->getEffectIndex(), 0);
-        procClassMask[1] = getSpellInfo()->getEffectSpellClassMask(aurEff->getEffectIndex(), 1);
-        procClassMask[2] = getSpellInfo()->getEffectSpellClassMask(aurEff->getEffectIndex(), 2);
-
-        // Initialize mask
-        groupRelation[0] = sp->getEffectSpellClassMask(aurEff->getEffectIndex(), 0);
-        groupRelation[1] = sp->getEffectSpellClassMask(aurEff->getEffectIndex(), 1);
-        groupRelation[2] = sp->getEffectSpellClassMask(aurEff->getEffectIndex(), 2);
+        // Initialize class masks. Forever uses four 32-bit mask words.
+        for (uint8_t i = 0; i < MAX_SPELL_CLASS_MASKS; ++i)
+        {
+            procClassMask[i] = getSpellInfo()->getEffectSpellClassMask(aurEff->getEffectIndex(), i);
+            groupRelation[i] = sp->getEffectSpellClassMask(aurEff->getEffectIndex(), i);
+        }
 
         m_target->addProcTriggerSpell(sp->getId(), getSpellInfo()->getId(), m_casterGuid, getSpellInfo()->getEffectBasePoints(aurEff->getEffectIndex()) + 1, SpellProcFlags(getSpellInfo()->getProcFlags()), EXTRA_PROC_NULL, groupRelation, procClassMask, this);
 
@@ -4675,7 +4672,7 @@ void Aura::SpellAuraIncreaseSpellDamageByAttribute(AuraEffectModifier* aurEff, b
         val = -aurEff->getEffectExtraField();
 
     uint8_t stat = 3;
-    for (uint8_t i = 0; i < 3; i++)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; i++)
     {
         //bit hacky but it will work with all currently available spells
         if (m_spellInfo->getEffectApplyAuraName(i) == SPELL_AURA_INCREASE_SPELL_HEALING_PCT)

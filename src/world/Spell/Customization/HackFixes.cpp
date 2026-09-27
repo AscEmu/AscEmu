@@ -452,7 +452,7 @@ void SpellMgr::modifyAuraInterruptFlags(SpellInfo* sp)
     // HACK FIX: Break roots/fear on damage.. this needs to be fixed properly!
     if (!(sp->getAuraInterruptFlags() & AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN))
     {
-        for (uint8_t z = 0; z < 3; ++z)
+        for (uint8_t z = 0; z < MAX_SPELL_EFFECTS; ++z)
         {
             if (sp->getEffectApplyAuraName(z) == SPELL_AURA_MOD_FEAR || sp->getEffectApplyAuraName(z) == SPELL_AURA_MOD_ROOT)
             {
@@ -737,7 +737,7 @@ void SpellMgr::applyHackFixes()
                 break;
         }
 
-        for (uint8_t b = 0; b < 3; ++b)
+        for (uint8_t b = 0; b < MAX_SPELL_EFFECTS; ++b)
         {
             if (sp->getEffectTriggerSpell(b) != 0 && sSpellMgr.getSpellInfo(sp->getEffectTriggerSpell(b)) == NULL)
             {
@@ -2296,7 +2296,7 @@ void SpellMgr::applyHackFixes()
             // Major Domo - Damage Shield
             case 21075:
             {
-                for (uint8_t i = 0; i < 3; ++i)
+                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
                 {
                     if (sp->getEffectImplicitTargetA(i) > 0)
                         sp->setEffectImplicitTargetA(EFF_TARGET_ALL_FRIENDLY_IN_AREA, i);

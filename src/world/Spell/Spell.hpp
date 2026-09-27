@@ -89,7 +89,7 @@ private:
     SpellCastResult checkItems(uint32_t* parameter1, uint32_t* parameter2) const;
     SpellCastResult checkCasterState() const;
     SpellCastResult checkRange(const bool secondCheck);
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
     SpellCastResult checkRunes(bool takeRunes);
 #endif
     SpellCastResult checkShapeshift(SpellInfo const* spellInfo, const uint32_t shapeshiftForm) const;
@@ -698,6 +698,18 @@ public:
     uint32_t castedItemId;
     uint8_t extra_cast_number;
     uint32_t m_glyphslot;
+
+    // Forever modern cast correlation. ClientCastID comes from CMSG_CAST_SPELL;
+    // ServerCastID is generated once per Spell and reused by PREPARE/START/GO.
+    WoWGuid m_foreverClientCastId = WoWGuid::createModernEmpty();
+    WoWGuid m_foreverServerCastId = WoWGuid::createModernEmpty();
+    // Modern SpellCastVisual. Forever 1.60.1 sends SpellXSpellVisualID + ScriptVisualID
+    // in CMSG_CAST_SPELL and expects the same pair in START/GO/failure packets.
+    uint32_t m_foreverSpellXSpellVisualId = 0;
+    uint32_t m_foreverScriptVisualId = 0;
+    void ensureForeverCastId();
+    uint32_t getForeverSpellXSpellVisualId() const;
+    uint32_t getForeverScriptVisualId() const;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     ///bool DuelSpellNoMoreValid()

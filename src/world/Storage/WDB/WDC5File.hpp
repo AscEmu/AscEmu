@@ -8,7 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WDBFormat.hpp"
 
 #include <cstdint>
+#include <initializer_list>
 #include <span>
+#include <utility>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -31,6 +33,7 @@ namespace WDB
     public:
         bool load(std::string const& filename, WDC5TableSchema const& schema, std::string* error = nullptr);
         bool loadGeneric(std::string const& filename, std::string* error = nullptr);
+        bool loadGeneric(std::string const& filename, std::initializer_list<std::pair<uint32_t, uint8_t>> arrays, std::string* error = nullptr);
 
         [[nodiscard]] uint32_t getRecordCount() const noexcept { return static_cast<uint32_t>(m_records.size()); }
         [[nodiscard]] uint32_t getTableHash() const noexcept { return m_header.tableHash; }

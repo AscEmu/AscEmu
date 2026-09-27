@@ -39,10 +39,39 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override { return buttons.size() * 8 + 1; }
+        size_t expectedSize() const override
+        {
+            if (m_protocol.isForever())
+                return 360 * sizeof(uint64_t) + 1;
+
+            return buttons.size() * 8 + 1;
+        }
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                // Forever 1.60.1.70009: 360 packed uint64 action-button values
+                // followed by one reason byte. The high byte contains ActionButtonType
+                // and the lower 56 bits contain the action. AscEmu currently stores
+                // 180 slots, so the unsupported upper half is zero-filled.
+                constexpr size_t ForeverActionButtonCount = 360;
+                for (size_t i = 0; i < ForeverActionButtonCount; ++i)
+                {
+                    uint64_t packedAction = 0;
+                    if (i < buttons.size())
+                    {
+                        packedAction = static_cast<uint64_t>(buttons[i].action) & 0x00FFFFFFFFFFFFFFULL;
+                        packedAction |= (static_cast<uint64_t>(buttons[i].type) & 0xFFULL) << 56U;
+                    }
+
+                    packet << packedAction;
+                }
+
+                packet << action;
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // every button is sent as 8 bytes (action, type), split into bit and byte streams

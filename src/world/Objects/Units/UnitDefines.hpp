@@ -116,7 +116,15 @@ enum PowerFieldIndexes : uint8_t
     POWER_FIELD_INDEX_2 = 2,
     POWER_FIELD_INDEX_3 = 3,
     POWER_FIELD_INDEX_4 = 4,
-#if VERSION_STRING != WotLK
+#if defined(AE_FOREVER)
+    // Forever UnitData contains 10 Power/MaxPower array elements.
+    POWER_FIELD_INDEX_5 = 5,
+    POWER_FIELD_INDEX_6 = 6,
+    POWER_FIELD_INDEX_7 = 7,
+    POWER_FIELD_INDEX_8 = 8,
+    POWER_FIELD_INDEX_9 = 9,
+    POWER_FIELD_INDEX_10 = 10
+#elif VERSION_STRING != WotLK
     POWER_FIELD_INDEX_5 = 5
 #else
     POWER_FIELD_INDEX_5 = 5,

@@ -446,7 +446,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
 
     bool result = false;
 
-    for (uint8_t i = 0; i < 3; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (m_spellInfo->getEffect(i) == 0)
             continue;

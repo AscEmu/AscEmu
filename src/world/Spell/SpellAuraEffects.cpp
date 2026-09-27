@@ -1111,7 +1111,7 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
 
                     //this is so not good, maybe parent spell has more then dmg effect and we use it to calc our new dmg :(
                     aurEff->setEffectDamage(0);
-                    for (uint8_t i = 0; i < 3; ++i)
+                    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
                     {
                         const auto curVal = aurEff->getEffectDamage();
                         aurEff->setEffectDamage(curVal + (spell->calculateEffect(i) * parentsp->getEffectBasePoints(0) / 100));
@@ -1939,7 +1939,7 @@ void Aura::spellAuraEffectModPowerRegen(AuraEffectModifier* aurEff, bool /*apply
         case POWER_TYPE_ENERGY:
             getOwner()->updateEnergyRegeneration();
             break;
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
         case POWER_TYPE_RUNIC_POWER:
             if (getPlayerOwner() == nullptr)
                 break;

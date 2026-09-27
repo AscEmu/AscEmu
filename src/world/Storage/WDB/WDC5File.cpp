@@ -43,6 +43,11 @@ namespace WDB
 
     bool WDC5File::loadGeneric(std::string const& filename, std::string* error)
     {
+        return loadGeneric(filename, {}, error);
+    }
+
+    bool WDC5File::loadGeneric(std::string const& filename, std::initializer_list<std::pair<uint32_t, uint8_t>> arrays, std::string* error)
+    {
         std::ifstream stream(filename, std::ios::binary);
         if (!stream)
             return fail(error, "file does not exist: " + filename);
@@ -97,6 +102,12 @@ namespace WDB
         schema.layoutHash = layoutHash;
         schema.indexField = indexField;
         schema.fields.assign(fieldCount, WDC5FieldSchema{1});
+        for (auto const& [field, arraySize] : arrays)
+        {
+            if (field >= schema.fields.size() || arraySize == 0)
+                return fail(error, "invalid generic array schema for " + filename);
+            schema.fields[field].arraySize = arraySize;
+        }
         return load(filename, schema, error);
     }
 

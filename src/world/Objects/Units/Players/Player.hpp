@@ -900,14 +900,14 @@ public:
 
     // Not same as Unit::regeneratePowers
     void regeneratePlayerPowers(uint16_t diff);
-#if VERSION_STRING >= Cata
+#if VERSION_STRING >= Cata && !defined(AE_FOREVER)
     void resetHolyPowerTimer();
 #endif
 
     // PlayerStats.cpp
     void updateManaRegeneration(bool initialUpdate = false);
     void updateRageRegeneration(bool initialUpdate = false);
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
     void updateRunicPowerRegeneration(bool initialUpdate = false);
 #endif
     // Returns health regen value per 2 sec
@@ -915,7 +915,7 @@ public:
 
 private:
     // Regenerate timers
-#if VERSION_STRING >= Cata
+#if VERSION_STRING >= Cata && !defined(AE_FOREVER)
     uint16_t m_holyPowerRegenerateTimer = 0;
 #endif
 
@@ -1990,7 +1990,7 @@ public:
     void sendMountResultPacket(uint32_t result);
     void sendDismountResultPacket(uint32_t result);
 
-    void sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2 = 0);
+    void sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2 = 0, WoWGuid castId = WoWGuid(), uint32_t spellXSpellVisualId = 0, uint32_t scriptVisualId = 0, uint16_t mapId = 0);
     void sendLevelupInfoPacket(uint32_t level, uint32_t hp, uint32_t mana, uint32_t stat0, uint32_t stat1, uint32_t stat2, uint32_t stat3, uint32_t stat4);
     void sendItemPushResultPacket(bool created, bool recieved, bool sendtoset, uint8_t destbagslot, uint32_t destslot, uint32_t count, uint32_t entry, uint32_t suffix, uint32_t randomprop, uint32_t stack, WoWGuid itemGuid);
     void sendClientControlPacket(Unit* target, uint8_t allowMove);

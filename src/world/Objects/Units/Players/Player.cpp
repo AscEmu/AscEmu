@@ -652,7 +652,7 @@ void Player::onPreAttachToWorld()
     updateRageRegeneration(true);
     updateFocusRegeneration(true);
     updateEnergyRegeneration(true);
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
     updateRunicPowerRegeneration(true);
 #endif
 
@@ -752,7 +752,7 @@ void Player::onAttachToWorld()
             setMaxPower(POWER_TYPE_ENERGY, 100);
             setPower(POWER_TYPE_ENERGY, 100);
             break;
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
         case DEATHKNIGHT:
             setMaxPower(POWER_TYPE_RUNES, 8);
             setMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
@@ -3127,7 +3127,7 @@ void Player::applyLevelInfo(uint32_t newLevel)
         setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
         setPower(POWER_TYPE_FOCUS, getMaxPower(POWER_TYPE_FOCUS));
         setPower(POWER_TYPE_ENERGY, getMaxPower(POWER_TYPE_ENERGY));
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
         setPower(POWER_TYPE_RUNES, getMaxPower(POWER_TYPE_RUNES));
 #endif
 
@@ -4192,7 +4192,7 @@ void Player::setInitialPlayerData()
         {
             setMaxPower(POWER_TYPE_ENERGY, 100);
         } break;
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
         case DEATHKNIGHT:
         {
             setMaxPower(POWER_TYPE_RUNES, 8);
@@ -4201,7 +4201,7 @@ void Player::setInitialPlayerData()
 #endif
         default:
         {
-#if VERSION_STRING >= Cata
+#if VERSION_STRING >= Cata && !defined(AE_FOREVER)
             // Another switch case to set secondary powers
             switch (getClass())
             {
@@ -4312,7 +4312,7 @@ void Player::setInitialPlayerData()
     setPower(POWER_TYPE_RAGE, 0);
     setPower(POWER_TYPE_FOCUS, getMaxPower(POWER_TYPE_FOCUS));
     setPower(POWER_TYPE_ENERGY, getMaxPower(POWER_TYPE_ENERGY));
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
     setPower(POWER_TYPE_RUNES, getMaxPower(POWER_TYPE_RUNES));
     setPower(POWER_TYPE_RUNIC_POWER, 0);
 #endif
@@ -4330,7 +4330,7 @@ void Player::regeneratePlayerPowers(uint16_t diff)
     }
 #endif
 
-#if VERSION_STRING >= Cata
+#if VERSION_STRING >= Cata && !defined(AE_FOREVER)
     // Holy Power
     if (isClassPaladin())
     {
@@ -4374,7 +4374,7 @@ void Player::regeneratePlayerPowers(uint16_t diff)
     }
 }
 
-#if VERSION_STRING >= Cata
+#if VERSION_STRING >= Cata && !defined(AE_FOREVER)
 void Player::resetHolyPowerTimer()
 {
     m_holyPowerRegenerateTimer = 0;
@@ -5207,7 +5207,7 @@ bool Player::hasSpellWithAuraNameAndBasePoints(uint32_t auraName, uint32_t baseP
     {
         SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(spellId);
 
-        for (uint8_t effectIndex = 0; effectIndex < 3; ++effectIndex)
+        for (uint8_t effectIndex = 0; effectIndex < MAX_SPELL_EFFECTS; ++effectIndex)
         {
             if (spellInfo->getEffect(effectIndex) == SPELL_EFFECT_APPLY_AURA)
             {
@@ -7258,6 +7258,8 @@ void Player::setActionButton(uint8_t button, uint32_t action, uint8_t type, [[ma
     getActiveSpec().getActionButton(button).Misc = misc;
 #endif
     getActiveSpec().getActionButton(button).Type = type;
+
+    saveToDB(false);
 }
 
 void Player::sendActionBars([[maybe_unused]] uint8_t action)
@@ -8088,7 +8090,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
     {
         if (const auto spell = getCurrentSpell(CURRENT_CHANNELED_SPELL))
         {
-            for (uint8_t i = 0; i < 3; i++)
+            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; i++)
             {
                 if (spell->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
@@ -8199,7 +8201,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
 
     if (getClass() == WARRIOR)
         setPower(POWER_TYPE_RAGE, 0);
-#if VERSION_STRING == WotLK
+#if VERSION_STRING == WotLK && !defined(AE_FOREVER)
     else if (getClass() == DEATHKNIGHT)
         setPower(POWER_TYPE_RUNIC_POWER, 0);
 #endif
@@ -10678,9 +10680,14 @@ void Player::sendDismountResultPacket(uint32_t result)
     m_session->sendManagedPacket(managedPacket);
 }
 
-void Player::sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2 /*= 0*/)
+void Player::sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2,
+    WoWGuid castId, uint32_t spellXSpellVisualId, uint32_t scriptVisualId, uint16_t mapId)
 {
     SmsgCastFailed managedPacket(multiCast, spellId, errorMessage, extra1, extra2);
+    managedPacket.castId = castId;
+    managedPacket.spellXSpellVisualId = spellXSpellVisualId;
+    managedPacket.scriptVisualId = scriptVisualId;
+    managedPacket.mapId = mapId;
     m_session->sendManagedPacket(managedPacket);
 }
 
@@ -17591,7 +17598,7 @@ void Player::completeLoading()
                 continue; //do not load auras that only exist while pet exist. We should recast these when pet is created anyway
 
             auto aura = sSpellMgr.newAura(sp, loginaura.dur, this, this, false);
-            for (uint8_t x = 0; x < 3; x++)
+            for (uint8_t x = 0; x < MAX_SPELL_EFFECTS; x++)
             {
                 if (sp->getEffect(x) == SPELL_EFFECT_APPLY_AURA)
                 {
@@ -17943,7 +17950,7 @@ void Player::saveAuras(std::stringstream& ss)
         auto* const aur = getAuraWithAuraSlot(x);
         if (aur != nullptr && aur->getTimeLeft() > 3000)
         {
-            for (uint8_t i = 0; i < 3; ++i)
+            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
                 if (aur->getSpellInfo()->getEffect(i) == SPELL_EFFECT_APPLY_GROUP_AREA_AURA || aur->getSpellInfo()->getEffect(i) == SPELL_EFFECT_APPLY_RAID_AREA_AURA || aur->getSpellInfo()->getEffect(i) == SPELL_EFFECT_ADD_FARSIGHT)
                     continue;
 

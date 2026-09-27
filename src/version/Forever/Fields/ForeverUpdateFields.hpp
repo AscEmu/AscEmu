@@ -445,9 +445,11 @@ namespace AscEmu::Version::Forever::Fields
         // The verified 69913 differential updates line up
         // with the modern 230-bit grouping (for example bits 48/49/52/90 and
         // the 148..150 power island). Keep the complete array groups aligned.
-        static inline constexpr std::size_t PowerGroupBit = 139;
-        static inline constexpr std::size_t PowerFirstBit = 140;
-        static inline constexpr std::size_t MaxPowerFirstBit = 150;
+        // Capture-verified Forever differential UnitData power mask:
+        // block 4 mask 0x00300000 for Power[0] => group bit 148 + element bit 149.
+        static inline constexpr std::size_t PowerGroupBit = 148;
+        static inline constexpr std::size_t PowerFirstBit = 149;
+        static inline constexpr std::size_t MaxPowerFirstBit = 159;
         static inline constexpr std::size_t AttackRoundBaseTimeGroupBit = 184;
         static inline constexpr std::size_t AttackRoundBaseTimeFirstBit = 185;
         static inline constexpr std::size_t StatsGroupBit = 187;
@@ -463,7 +465,9 @@ namespace AscEmu::Version::Forever::Fields
         std::bitset<ChangeMaskSize> changes{};
 
         void markChanged(std::size_t bit) { changes.set(bit & ~std::size_t(31)); changes.set(bit); }
-        void markArrayChanged(std::size_t groupBit, std::size_t elementBit) { markChanged(groupBit); changes.set(elementBit); }
+        // Array groups already carry their own parent/group bit. Unlike scalar fields,
+        // capture-verified power updates do not set the 32-bit block root as an extra bit.
+        void markArrayChanged(std::size_t groupBit, std::size_t elementBit) { changes.set(groupBit); changes.set(elementBit); }
         void clearChanges() { changes.reset(); }
         bool hasChanges() const { return changes.any(); }
 

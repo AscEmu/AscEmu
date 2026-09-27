@@ -168,8 +168,8 @@ This file is released under the MIT license. See README-MIT for more information
 #elif VERSION_STRING == Mop
     #define PLAYER_ACTION_BUTTON_COUNT 132
 #elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
-    #define PLAYER_ACTION_BUTTON_COUNT 132
+// Forever 1.60.1.70009: SMSG_UPDATE_ACTION_BUTTONS contains 180 entries.
+    #define PLAYER_ACTION_BUTTON_COUNT 180
 #endif
 
 // \param -

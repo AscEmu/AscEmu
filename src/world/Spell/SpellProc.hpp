@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Platform/SymbolVisibility.hpp"
 #include "Definitions/ProcFlags.hpp"
 #include "Definitions/SpellFamily.hpp"
+#include "Storage/WDB/WDBDefines.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -169,14 +170,14 @@ private:
     uint64_t m_originalCasterGuidForProcSpell = 0;
 
     // Mask used to compare with casting spell's family mask
-    uint32_t mProcClassMask[3] = { 0, 0, 0 };
+    uint32_t mProcClassMask[MAX_SPELL_CLASS_MASKS] = {};
 
     // Must match with casting spell's family name if procClassMask is used
     // By default this is mOrigSpell's family name
     SpellFamily mProcFamilyName = SPELLFAMILY_GENERIC;
 
     // Mask used on spell effect
-    uint32_t mGroupRelation[3] = { 0, 0, 0 };
+    uint32_t mGroupRelation[MAX_SPELL_CLASS_MASKS] = {};
 
     std::shared_ptr<SpellForcedBasePoints> mOverrideEffectDamage;
 

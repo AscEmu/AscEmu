@@ -422,7 +422,9 @@ public:
     bool HandleModifyMana(const char* args, WorldSession* session);
     bool HandleModifyRage(const char* args, WorldSession* session);
     bool HandleModifyEnergy(const char* args, WorldSession* session);
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
     bool HandleModifyRunicpower(const char* args, WorldSession* session);
+#endif
     bool HandleModifyStrength(const char* args, WorldSession* session);
     bool HandleModifyAgility(const char* args, WorldSession* session);
     bool HandleModifyIntelligence(const char* args, WorldSession* session);

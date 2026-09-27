@@ -105,7 +105,7 @@ bool ChatCommandHandler::HandleModifyEnergy(const char* args, WorldSession* sess
     return false;
 }
 
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
 //.modify runicpower
 bool ChatCommandHandler::HandleModifyRunicpower(const char* args, WorldSession* session)
 {

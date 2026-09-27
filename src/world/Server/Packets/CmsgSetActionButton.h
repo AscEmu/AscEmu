@@ -13,7 +13,7 @@ namespace AscEmu::Packets
     class CmsgSetActionButton : public ManagedPacket
     {
     public:
-        uint8_t button;
+        uint16_t button;
         uint32_t misc;
         uint32_t type;
         uint32_t action;
@@ -22,7 +22,7 @@ namespace AscEmu::Packets
         {
         }
 
-        CmsgSetActionButton(uint8_t button, uint8_t misc, uint8_t type, uint16_t action) :
+        CmsgSetActionButton(uint16_t button, uint8_t misc, uint8_t type, uint16_t action) :
             ManagedPacket(CMSG_SET_ACTION_BUTTON, 0),
             button(button),
             misc(misc),
@@ -34,6 +34,17 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                uint64_t packedAction = 0;
+                packet >> packedAction >> button;
+
+                action = static_cast<uint32_t>(packedAction & 0x00FFFFFFFFFFFFFFULL);
+                type = static_cast<uint32_t>((packedAction >> 56U) & 0xFFU);
+                misc = 0;
+                return !packet.hadReadFailure();
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 uint16_t action16;

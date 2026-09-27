@@ -1205,11 +1205,27 @@ void Spell::SendInterrupted(uint8_t result)
         if (plr != nullptr && plr->isPlayer())
         {
             SmsgSpellFailure sendPacket(m_caster->GetNewGUID(), extra_cast_number, getSpellInfo()->getId(), result);
+            if (plr->getSession()->getClientProtocol().isForever())
+            {
+                ensureForeverCastId();
+                sendPacket.castId = m_foreverServerCastId;
+                sendPacket.spellXSpellVisualId = getForeverSpellXSpellVisualId();
+                sendPacket.scriptVisualId = getForeverScriptVisualId();
+                sendPacket.mapId = static_cast<uint16_t>(m_caster->GetMapId());
+            }
             plr->getSession()->sendManagedPacket(sendPacket);
         }
     }
 
     SmsgSpellFailedOther sendPacket(m_caster->GetNewGUID(), extra_cast_number, getSpellInfo()->getId(), result);
+    if (p_caster != nullptr && p_caster->getSession() != nullptr && p_caster->getSession()->getClientProtocol().isForever())
+    {
+        ensureForeverCastId();
+        sendPacket.castId = m_foreverServerCastId;
+        sendPacket.spellXSpellVisualId = getForeverSpellXSpellVisualId();
+        sendPacket.scriptVisualId = getForeverScriptVisualId();
+        sendPacket.mapId = static_cast<uint16_t>(m_caster->GetMapId());
+    }
     PacketBroadcast::sendToSet(*m_caster, sendPacket);
 }
 

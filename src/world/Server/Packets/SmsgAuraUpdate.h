@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ForeverAuraPacketUtils.hpp"
+#include <array>
 #include <cstdint>
 
 #include "Spell/SpellAuraDefines.hpp"
@@ -29,19 +31,24 @@ namespace AscEmu::Packets
             uint32_t duration = 0;
             uint32_t timeLeft = 0;
             int32_t effAmount[5] = {0}; // 3 spell effects up till cata, 5 in mop
+            uint32_t spellXSpellVisualId = 0;
+            uint32_t scriptVisualId = 0;
+            bool remove = false;
         };
 
         AuraUpdate aura_updates;
+        uint16_t mapId = 0;
 
-        SmsgAuraUpdate() : SmsgAuraUpdate(WoWGuid(), {}, false)
+        SmsgAuraUpdate() : SmsgAuraUpdate(WoWGuid(), {}, false, 0)
         {
         }
 
-        SmsgAuraUpdate(WoWGuid guid, AuraUpdate aura_updates, bool remove = false) :
+        SmsgAuraUpdate(WoWGuid guid, AuraUpdate aura_updates, bool remove = false, uint16_t mapId = 0) :
             ManagedPacket(SMSG_AURA_UPDATE, 30),
             guid(guid),
             remove(remove),
-            aura_updates(aura_updates)
+            aura_updates(aura_updates),
+            mapId(mapId)
         {
         }
 
@@ -50,6 +57,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                aura_updates.remove = remove;
+                std::array<AuraUpdate, 1> updates{aura_updates};
+                ForeverAuraPacket::writeAuraUpdate(packet, guid, updates, false, m_protocol.realmId, mapId);
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_TBC)
                 return false;
 

@@ -263,7 +263,7 @@ uint32_t WDB::Structures::SpellEntry::GetSpellEffectIdByIndex(uint8_t index) con
     return effect ? effect->Effect : 0;
 }
 
-uint32_t WDB::Structures::SpellEntry::GetAuraInterruptFlags() const
+SpellExtendedMask WDB::Structures::SpellEntry::GetAuraInterruptFlags() const
 {
     SpellInterruptsEntry const* interrupt = GetSpellInterrupts();
     return interrupt ? interrupt->AuraInterruptFlags : 0;
@@ -311,13 +311,13 @@ int32_t WDB::Structures::SpellEntry::GetEffectMiscValue(uint8_t index) const
     return effect ? effect->EffectMiscValue : 0;
 }
 
-uint32_t WDB::Structures::SpellEntry::GetStances() const
+SpellExtendedMask WDB::Structures::SpellEntry::GetStances() const
 {
     SpellShapeshiftEntry const* ss = GetSpellShapeshift();
     return ss ? ss->Shapeshifts : 0;
 }
 
-uint32_t WDB::Structures::SpellEntry::GetStancesNot() const
+SpellExtendedMask WDB::Structures::SpellEntry::GetStancesNot() const
 {
     SpellShapeshiftEntry const* ss = GetSpellShapeshift();
     return ss ? ss->ShapeshiftsExcluded : 0;
@@ -329,7 +329,7 @@ uint32_t WDB::Structures::SpellEntry::GetProcFlags() const
     return aura ? aura->procFlags : 0;
 }
 
-uint32_t WDB::Structures::SpellEntry::GetChannelInterruptFlags() const
+SpellExtendedMask WDB::Structures::SpellEntry::GetChannelInterruptFlags() const
 {
     SpellInterruptsEntry const* interrupt = GetSpellInterrupts();
     return interrupt ? interrupt->ChannelInterruptFlags : 0;

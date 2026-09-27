@@ -42,6 +42,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            // Forever opcode/layout is not verified yet. The managed-packet layer
+            // keeps this packet blocked while no Forever opcode is assigned.
+            if (m_protocol.isForever())
+            {
+                sLogger.debugSpell("SmsgCooldown, Unhandled for Forever until prooven");
+                return false;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << guid;

@@ -259,10 +259,11 @@ namespace {
     }
 
 
-    bool loadForeverGenericWDC5(WDB::WDC5File& file, char const* filename, WDB::StoreProblemList& errors, std::string const& dbcPath)
+    bool loadForeverGenericWDC5(WDB::WDC5File& file, char const* filename, WDB::StoreProblemList& errors, std::string const& dbcPath,
+        std::initializer_list<std::pair<uint32_t, uint8_t>> arrays = {})
     {
         std::string error;
-        if (file.loadGeneric(dbcPath + filename, &error))
+        if (file.loadGeneric(dbcPath + filename, arrays, &error))
         {
             sLogger.info("Loaded {} DB2 table (fields={}, layout=0x{:08X}).", filename, file.getFieldCount(), file.getLayoutHash());
             return true;
@@ -273,10 +274,11 @@ namespace {
         return false;
     }
 
-    bool loadForeverGenericWDC5Optional(WDB::WDC5File& file, char const* filename, std::string const& dbcPath)
+    bool loadForeverGenericWDC5Optional(WDB::WDC5File& file, char const* filename, std::string const& dbcPath,
+        std::initializer_list<std::pair<uint32_t, uint8_t>> arrays = {})
     {
         std::string error;
-        if (file.loadGeneric(dbcPath + filename, &error))
+        if (file.loadGeneric(dbcPath + filename, arrays, &error))
         {
             sLogger.info("Loaded optional {} DB2 table (fields={}, layout=0x{:08X}).", filename, file.getFieldCount(), file.getLayoutHash());
             return true;
@@ -304,32 +306,39 @@ namespace {
             return loaded;
         };
 
+        auto loadArrays = [&](WDB::WDC5File& file, char const* name, std::initializer_list<std::pair<uint32_t, uint8_t>> arrays)
+        {
+            bool const loaded = loadForeverGenericWDC5(file, name, errors, dbcPath, arrays);
+            ok = loaded && ok;
+            return loaded;
+        };
+
         bool const haveSkillLine = load(skillLine, "SkillLine.db2");
-        bool const haveSkillLineAbility = load(skillLineAbility, "SkillLineAbility.db2");
+        bool const haveSkillLineAbility = loadArrays(skillLineAbility, "SkillLineAbility.db2", {{17, 2}});
         bool const haveSpellName = load(spellName, "SpellName.db2");
-        bool const haveAuraOptions = load(spellAuraOptions, "SpellAuraOptions.db2");
+        bool const haveAuraOptions = loadArrays(spellAuraOptions, "SpellAuraOptions.db2", {{6, 2}});
         bool const haveAuraRestrictions = load(spellAuraRestrictions, "SpellAuraRestrictions.db2");
         bool const haveCastTimes = load(spellCastTimes, "SpellCastTimes.db2");
         bool const haveCastingRequirements = load(spellCastingRequirements, "SpellCastingRequirements.db2");
         bool const haveCategories = load(spellCategories, "SpellCategories.db2");
-        bool const haveClassOptions = load(spellClassOptions, "SpellClassOptions.db2");
+        bool const haveClassOptions = loadArrays(spellClassOptions, "SpellClassOptions.db2", {{3, 4}});
         bool const haveCooldowns = load(spellCooldowns, "SpellCooldowns.db2");
         bool const haveDuration = load(spellDuration, "SpellDuration.db2");
-        bool const haveEffect = load(spellEffect, "SpellEffect.db2");
+        bool const haveEffect = loadArrays(spellEffect, "SpellEffect.db2", {{25, 2}, {26, 2}, {27, 4}, {28, 2}});
         bool const haveEquippedItems = load(spellEquippedItems, "SpellEquippedItems.db2");
-        bool const haveInterrupts = load(spellInterrupts, "SpellInterrupts.db2");
+        bool const haveInterrupts = loadArrays(spellInterrupts, "SpellInterrupts.db2", {{2, 2}, {3, 2}});
         bool const haveLevels = load(spellLevels, "SpellLevels.db2");
-        bool const haveMisc = load(spellMisc, "SpellMisc.db2");
+        bool const haveMisc = loadArrays(spellMisc, "SpellMisc.db2", {{0, 17}});
         bool const havePower = load(spellPower, "SpellPower.db2");
         bool const haveRadius = load(spellRadius, "SpellRadius.db2");
-        bool const haveRange = load(spellRange, "SpellRange.db2");
-        bool const haveReagents = load(spellReagents, "SpellReagents.db2");
+        bool const haveRange = loadArrays(spellRange, "SpellRange.db2", {{3, 2}, {4, 2}});
+        bool const haveReagents = loadArrays(spellReagents, "SpellReagents.db2", {{1, 8}, {2, 8}, {3, 8}, {4, 8}});
         bool const haveScaling = loadForeverGenericWDC5Optional(spellScaling, "SpellScaling.db2", dbcPath);
-        bool const haveShapeshift = load(spellShapeshift, "SpellShapeshift.db2");
-        bool const haveShapeshiftForm = load(spellShapeshiftForm, "SpellShapeshiftForm.db2");
+        bool const haveShapeshift = loadArrays(spellShapeshift, "SpellShapeshift.db2", {{2, 2}, {3, 2}});
+        bool const haveShapeshiftForm = loadArrays(spellShapeshiftForm, "SpellShapeshiftForm.db2", {{9, 8}});
         bool const haveTargetRestrictions = load(spellTargetRestrictions, "SpellTargetRestrictions.db2");
-        bool const haveTotems = load(spellTotems, "SpellTotems.db2");
-        bool const haveItemEnchantment = load(spellItemEnchantment, "SpellItemEnchantment.db2");
+        bool const haveTotems = loadArrays(spellTotems, "SpellTotems.db2", {{1, 2}, {2, 2}});
+        bool const haveItemEnchantment = loadArrays(spellItemEnchantment, "SpellItemEnchantment.db2", {{4, 3}, {5, 3}, {6, 3}, {8, 3}});
 
         auto verifyFields = [&](WDB::WDC5File const& file, char const* name, uint32_t expected)
         {
@@ -415,10 +424,16 @@ namespace {
             {
                 WDB::Structures::SpellAuraOptionsEntry entry{};
                 entry.Id = spellAuraOptions.getRecordId(row);
-                entry.MaxStackAmount = spellAuraOptions.getUInt16(row, 1); // CumulativeAura
+                entry.DifficultyId = spellAuraOptions.getUInt16(row, 0);
+                entry.MaxStackAmount = spellAuraOptions.getUInt16(row, 1);
+                entry.ProcCategoryRecovery = spellAuraOptions.getUInt32(row, 2);
                 entry.procChance = spellAuraOptions.getUInt8(row, 3);
                 entry.procCharges = spellAuraOptions.getUInt32(row, 4);
-                entry.procFlags = spellAuraOptions.getUInt32(row, 6, 0);   // low 32 bits of ProcTypeMask
+                entry.SpellProcsPerMinuteId = spellAuraOptions.getUInt16(row, 5);
+                entry.ProcTypeMask[0] = spellAuraOptions.getUInt32(row, 6, 0);
+                entry.ProcTypeMask[1] = spellAuraOptions.getUInt32(row, 6, 1);
+                entry.procTypeMask = static_cast<uint64_t>(entry.ProcTypeMask[0]) | (static_cast<uint64_t>(entry.ProcTypeMask[1]) << 32);
+                entry.procFlags = entry.ProcTypeMask[0];
                 entries.emplace_back(entry.Id, entry);
                 linkSpell(spellAuraOptions.getParentId(row), entry.Id, &WDB::Structures::SpellEntry::SpellAuraOptionsId);
             }
@@ -433,6 +448,7 @@ namespace {
             {
                 uint32_t const id = spellAuraRestrictions.getRecordId(row);
                 WDB::Structures::SpellAuraRestrictionsEntry entry{};
+                entry.DifficultyId = spellAuraRestrictions.getUInt16(row, 0);
                 entry.CasterAuraState = spellAuraRestrictions.getUInt32(row, 1);
                 entry.TargetAuraState = spellAuraRestrictions.getUInt32(row, 2);
                 entry.CasterAuraStateNot = spellAuraRestrictions.getUInt32(row, 3);
@@ -441,6 +457,10 @@ namespace {
                 entry.targetAuraSpell = spellAuraRestrictions.getUInt32(row, 6);
                 entry.CasterAuraSpellNot = spellAuraRestrictions.getUInt32(row, 7);
                 entry.TargetAuraSpellNot = spellAuraRestrictions.getUInt32(row, 8);
+                entry.CasterAuraType = spellAuraRestrictions.getUInt16(row, 9);
+                entry.TargetAuraType = spellAuraRestrictions.getUInt16(row, 10);
+                entry.CasterAuraTypeNot = spellAuraRestrictions.getUInt16(row, 11);
+                entry.TargetAuraTypeNot = spellAuraRestrictions.getUInt16(row, 12);
                 entries.emplace_back(id, entry);
                 linkSpell(spellAuraRestrictions.getParentId(row), id, &WDB::Structures::SpellEntry::SpellAuraRestrictionsId);
             }
@@ -472,7 +492,10 @@ namespace {
                 uint32_t const id = spellCastingRequirements.getRecordId(row);
                 WDB::Structures::SpellCastingRequirementsEntry entry{};
                 entry.FacingCasterFlags = spellCastingRequirements.getUInt32(row, 1);
-                entry.AreaGroupId = static_cast<int32_t>(spellCastingRequirements.getUInt16(row, 4)); // RequiredAreasID
+                entry.MinFactionId = spellCastingRequirements.getUInt16(row, 2);
+                entry.MinReputation = spellCastingRequirements.getInt32(row, 3);
+                entry.AreaGroupId = static_cast<int32_t>(spellCastingRequirements.getUInt16(row, 4));
+                entry.RequiredAuraVision = spellCastingRequirements.getUInt8(row, 5);
                 entry.RequiresSpellFocus = spellCastingRequirements.getUInt16(row, 6);
                 entries.emplace_back(id, entry);
                 linkSpell(spellCastingRequirements.getUInt32(row, 0), id, &WDB::Structures::SpellEntry::SpellCastingRequirementsId);
@@ -488,12 +511,15 @@ namespace {
             {
                 uint32_t const id = spellCategories.getRecordId(row);
                 WDB::Structures::SpellCategoriesEntry entry{};
+                entry.DifficultyId = spellCategories.getUInt16(row, 0);
                 entry.Category = spellCategories.getUInt16(row, 1);
-                entry.DmgClass = spellCategories.getUInt8(row, 2);       // modern DefenseType
+                entry.DmgClass = spellCategories.getUInt8(row, 2);
+                entry.DiminishType = spellCategories.getUInt32(row, 3);
                 entry.DispelType = spellCategories.getUInt8(row, 4);
                 entry.MechanicsType = spellCategories.getUInt8(row, 5);
                 entry.PreventionType = spellCategories.getUInt32(row, 6);
                 entry.StartRecoveryCategory = spellCategories.getUInt16(row, 7);
+                entry.ChargeCategory = spellCategories.getUInt16(row, 8);
                 entries.emplace_back(id, entry);
                 linkSpell(spellCategories.getParentId(row), id, &WDB::Structures::SpellEntry::SpellCategoriesId);
             }
@@ -508,8 +534,9 @@ namespace {
             {
                 uint32_t const id = spellClassOptions.getRecordId(row);
                 WDB::Structures::SpellClassOptionsEntry entry{};
-                entry.SpellFamilyName = spellClassOptions.getUInt32(row, 2); // SpellClassSet
-                for (uint32_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                entry.ModalNextSpell = spellClassOptions.getUInt32(row, 1);
+                entry.SpellFamilyName = spellClassOptions.getUInt32(row, 2);
+                for (uint32_t i = 0; i < MAX_SPELL_CLASS_MASKS; ++i)
                     entry.SpellFamilyFlags[i] = spellClassOptions.getUInt32(row, 3, i);
                 entries.emplace_back(id, entry);
                 linkSpell(spellClassOptions.getUInt32(row, 0), id, &WDB::Structures::SpellEntry::SpellClassOptionsId);
@@ -525,9 +552,11 @@ namespace {
             {
                 uint32_t const id = spellCooldowns.getRecordId(row);
                 WDB::Structures::SpellCooldownsEntry entry{};
+                entry.DifficultyId = spellCooldowns.getUInt16(row, 0);
                 entry.CategoryRecoveryTime = spellCooldowns.getUInt32(row, 1);
                 entry.RecoveryTime = spellCooldowns.getUInt32(row, 2);
                 entry.StartRecoveryTime = spellCooldowns.getUInt32(row, 3);
+                entry.AuraSpellId = spellCooldowns.getUInt32(row, 4);
                 entries.emplace_back(id, entry);
                 linkSpell(spellCooldowns.getParentId(row), id, &WDB::Structures::SpellEntry::SpellCooldownsId);
             }
@@ -559,18 +588,34 @@ namespace {
                 WDB::Structures::SpellEffectEntry entry{};
                 entry.id = spellEffect.getRecordId(row);
                 entry.EffectApplyAuraName = spellEffect.getUInt16(row, 0);
+                entry.DifficultyId = spellEffect.getUInt16(row, 1);
                 entry.EffectIndex = spellEffect.getUInt32(row, 2);
                 entry.Effect = spellEffect.getUInt32(row, 3);
-                entry.EffectAmplitude = spellEffect.getUInt32(row, 6); // EffectAuraPeriod is the legacy periodic interval
-                entry.EffectSpellPowerCoefficient = spellEffect.getFloat(row, 7);
+                entry.EffectAmplitudeFloat = spellEffect.getFloat(row, 4);
+                entry.EffectAttributes = spellEffect.getUInt32(row, 5);
+                entry.EffectAmplitude = spellEffect.getUInt32(row, 6); // EffectAuraPeriod
+                entry.EffectBonusCoefficient = spellEffect.getFloat(row, 7);
+                entry.EffectSpellPowerCoefficient = entry.EffectBonusCoefficient;
+                entry.EffectChainAmplitude = spellEffect.getFloat(row, 8);
                 entry.EffectChainTarget = spellEffect.getUInt32(row, 9);
                 entry.EffectItemType = spellEffect.getUInt32(row, 10);
                 entry.EffectMechanic = spellEffect.getUInt32(row, 11);
-                entry.EffectPointsPerComboPoint = spellEffect.getFloat(row, 12); // modern EffectPointsPerResource
+                entry.EffectPointsPerResource = spellEffect.getFloat(row, 12);
+                entry.EffectPointsPerComboPoint = entry.EffectPointsPerResource; // legacy compatibility
+                entry.EffectPosFacing = spellEffect.getFloat(row, 13);
                 entry.EffectRealPointsPerLevel = spellEffect.getFloat(row, 14);
                 entry.EffectTriggerSpell = spellEffect.getUInt32(row, 15);
-                entry.EffectDamageMultiplier = spellEffect.getFloat(row, 18); // Coefficient
-                entry.EffectBasePoints = static_cast<int32_t>(spellEffect.getFloat(row, 22));
+                entry.BonusCoefficientFromAP = spellEffect.getFloat(row, 16);
+                entry.PvpMultiplier = spellEffect.getFloat(row, 17);
+                entry.Coefficient = spellEffect.getFloat(row, 18);
+                entry.EffectDamageMultiplier = entry.Coefficient; // legacy compatibility
+                entry.Variance = spellEffect.getFloat(row, 19);
+                entry.ResourceCoefficient = spellEffect.getFloat(row, 20);
+                entry.GroupSizeBasePointsCoefficient = spellEffect.getFloat(row, 21);
+                entry.EffectBasePointsF = spellEffect.getFloat(row, 22);
+                entry.EffectBasePoints = static_cast<int32_t>(entry.EffectBasePointsF); // legacy compatibility
+                entry.ScalingClass = spellEffect.getInt32(row, 23);
+                entry.UnknownField24 = spellEffect.getUInt32(row, 24);
                 entry.EffectMiscValue = spellEffect.getInt32(row, 25, 0);
                 entry.EffectMiscValueB = spellEffect.getInt32(row, 25, 1);
                 entry.EffectRadiusIndex = spellEffect.getUInt32(row, 26, 0);
@@ -617,9 +662,14 @@ namespace {
             {
                 uint32_t const id = spellInterrupts.getRecordId(row);
                 WDB::Structures::SpellInterruptsEntry entry{};
+                entry.DifficultyId = spellInterrupts.getUInt16(row, 0);
                 entry.InterruptFlags = spellInterrupts.getUInt32(row, 1);
-                entry.AuraInterruptFlags = spellInterrupts.getUInt32(row, 2, 0);
-                entry.ChannelInterruptFlags = spellInterrupts.getUInt32(row, 3, 0);
+                entry.AuraInterruptFlagsRaw[0] = spellInterrupts.getUInt32(row, 2, 0);
+                entry.AuraInterruptFlagsRaw[1] = spellInterrupts.getUInt32(row, 2, 1);
+                entry.ChannelInterruptFlagsRaw[0] = spellInterrupts.getUInt32(row, 3, 0);
+                entry.ChannelInterruptFlagsRaw[1] = spellInterrupts.getUInt32(row, 3, 1);
+                entry.AuraInterruptFlags = static_cast<uint64_t>(entry.AuraInterruptFlagsRaw[0]) | (static_cast<uint64_t>(entry.AuraInterruptFlagsRaw[1]) << 32);
+                entry.ChannelInterruptFlags = static_cast<uint64_t>(entry.ChannelInterruptFlagsRaw[0]) | (static_cast<uint64_t>(entry.ChannelInterruptFlagsRaw[1]) << 32);
                 entries.emplace_back(id, entry);
                 linkSpell(spellInterrupts.getParentId(row), id, &WDB::Structures::SpellEntry::SpellInterruptsId);
             }
@@ -634,7 +684,9 @@ namespace {
             {
                 uint32_t const id = spellLevels.getRecordId(row);
                 WDB::Structures::SpellLevelsEntry entry{};
+                entry.DifficultyId = spellLevels.getUInt16(row, 0);
                 entry.maxLevel = spellLevels.getUInt16(row, 1);
+                entry.MaxPassiveAuraLevel = spellLevels.getUInt8(row, 2);
                 entry.baseLevel = spellLevels.getUInt32(row, 3);
                 entry.spellLevel = spellLevels.getUInt32(row, 4);
                 entries.emplace_back(id, entry);
@@ -650,7 +702,9 @@ namespace {
             for (uint32_t row = 0; row < spellMisc.getRecordCount(); ++row)
             {
                 WDB::Structures::SpellMiscEntry entry{};
+
                 entry.Id = spellMisc.getRecordId(row);
+
                 entry.Attributes = spellMisc.getUInt32(row, 0, 0);
                 entry.AttributesEx = spellMisc.getUInt32(row, 0, 1);
                 entry.AttributesExB = spellMisc.getUInt32(row, 0, 2);
@@ -665,15 +719,30 @@ namespace {
                 entry.AttributesExK = spellMisc.getUInt32(row, 0, 11);
                 entry.AttributesExL = spellMisc.getUInt32(row, 0, 12);
                 entry.AttributesExM = spellMisc.getUInt32(row, 0, 13);
+                entry.AttributesExN = spellMisc.getUInt32(row, 0, 14);
+                entry.AttributesExO = spellMisc.getUInt32(row, 0, 15);
+                entry.AttributesExP = spellMisc.getUInt32(row, 0, 16);
+
                 entry.SpellDifficultyId = spellMisc.getUInt16(row, 1);
                 entry.CastingTimeIndex = spellMisc.getUInt16(row, 2);
                 entry.DurationIndex = spellMisc.getUInt16(row, 3);
-                entry.rangeIndex = spellMisc.getUInt16(row, 5);
-                entry.School = spellMisc.getUInt8(row, 6);
-                entry.speed = spellMisc.getFloat(row, 7);
-                entry.spellIconID = spellMisc.getUInt32(row, 10);
-                entry.activeIconID = spellMisc.getUInt32(row, 11);
+                entry.PvPDurationIndex = spellMisc.getUInt16(row, 4);
+                entry.RangeIndex = spellMisc.getUInt16(row, 5);
+                entry.SchoolMask = spellMisc.getUInt8(row, 6);
+
+                entry.Speed = spellMisc.getFloat(row, 7);
+                entry.LaunchDelay = spellMisc.getFloat(row, 8);
+                entry.MinDuration = spellMisc.getFloat(row, 9);
+
+                entry.SpellIconFileDataId = spellMisc.getUInt32(row, 10);
+                entry.ActiveIconFileDataId = spellMisc.getUInt32(row, 11);
+                entry.ContentTuningId = spellMisc.getUInt32(row, 12);
+                entry.ShowFutureSpellPlayerConditionId = spellMisc.getUInt32(row, 13);
+                entry.SpellVisualScript = spellMisc.getUInt32(row, 14);
+                entry.ActiveSpellVisualScript = spellMisc.getUInt32(row, 15);
+
                 entries.emplace_back(entry.Id, entry);
+
                 linkSpell(spellMisc.getParentId(row), entry.Id, &WDB::Structures::SpellEntry::SpellMiscId);
             }
             sSpellMiscStore.assignEntries(entries);
@@ -687,14 +756,25 @@ namespace {
             {
                 WDB::Structures::SpellPowerEntry entry{};
                 uint32_t const id = spellPower.getRecordId(row);
-                entry.manaCost = spellPower.getUInt32(row, 1);
-                entry.manaCostPerlevel = spellPower.getUInt32(row, 2);
-                entry.manaPerSecond = spellPower.getUInt32(row, 3);
-                entry.ManaCostPercentageFloat = spellPower.getFloat(row, 6);
-                entry.ChannelCostPercentageFloat = spellPower.getFloat(row, 9); // PowerPctPerSecond
-                entry.powerType = static_cast<uint32_t>(static_cast<int32_t>(spellPower.getInt8(row, 10)));
-                entry.ShapeShiftSpellId = spellPower.getUInt32(row, 11); // RequiredAuraSpellID; used to prefer the unconditional power row
+                // Forever 1.60.1.70009, SpellPower.db2 layout 0x61AD223F:
+                // 0 ID, 1 OrderIndex, 2 ManaCost, 3 ManaCostPerLevel, 4 ManaPerSecond,
+                // 5 PowerDisplayID, 6 AltPowerBarID, 7 PowerCostPct, 8 PowerCostMaxPct,
+                // 9 OptionalCostPct, 10 PowerPctPerSecond, 11 PowerType,
+                // 12 RequiredAuraSpellID, 13 OptionalCost. SpellID is the relation/parent id.
                 entry.spellId = spellPower.getParentId(row);
+                entry.orderIndex = spellPower.getUInt8(row, 1);
+                entry.manaCost = spellPower.getUInt32(row, 2);
+                entry.manaCostPerlevel = spellPower.getUInt32(row, 3);
+                entry.manaPerSecond = spellPower.getUInt32(row, 4);
+                entry.powerDisplayId = spellPower.getUInt32(row, 5);
+                entry.altPowerBarId = spellPower.getUInt32(row, 6);
+                entry.ManaCostPercentageFloat = spellPower.getFloat(row, 7);
+                entry.ManaCostMaxPercentageFloat = spellPower.getFloat(row, 8);
+                entry.OptionalCostPercentageFloat = spellPower.getFloat(row, 9);
+                entry.PowerPercentagePerSecondFloat = spellPower.getFloat(row, 10);
+                entry.powerType = static_cast<uint32_t>(static_cast<int32_t>(spellPower.getInt8(row, 11)));
+                entry.requiredAuraSpellId = spellPower.getUInt32(row, 12);
+                entry.optionalCost = spellPower.getUInt32(row, 13);
                 entries.emplace_back(id, entry);
             }
             sSpellPowerStore.assignEntries(entries);
@@ -706,7 +786,7 @@ namespace {
                     continue;
 
                 auto itr = sSpellPowerMap.find(power->spellId);
-                if (itr == sSpellPowerMap.end() || (itr->second->ShapeShiftSpellId != 0 && power->ShapeShiftSpellId == 0))
+                if (itr == sSpellPowerMap.end() || (itr->second->requiredAuraSpellId != 0 && power->requiredAuraSpellId == 0))
                     sSpellPowerMap[power->spellId] = power;
             }
         }
@@ -719,8 +799,9 @@ namespace {
             {
                 WDB::Structures::SpellRadiusEntry entry{};
                 entry.ID = spellRadius.getRecordId(row);
-                entry.radius_min = spellRadius.getFloat(row, 0);       // Radius (legacy runtime primary radius)
+                entry.radius = spellRadius.getFloat(row, 0);
                 entry.radius_per_level = spellRadius.getFloat(row, 1);
+                entry.radius_min = spellRadius.getFloat(row, 2);
                 entry.radius_max = spellRadius.getFloat(row, 3);
                 entries.emplace_back(entry.ID, entry);
             }
@@ -735,6 +816,8 @@ namespace {
             {
                 WDB::Structures::SpellRangeEntry entry{};
                 entry.ID = spellRange.getRecordId(row);
+                entry.DisplayName = keepForeverDb2String(spellRange.getString(row, 0));
+                entry.DisplayNameShort = keepForeverDb2String(spellRange.getString(row, 1));
                 entry.range_type = spellRange.getUInt32(row, 2); // Flags
                 entry.minRange = spellRange.getFloat(row, 3, 0);
                 entry.minRangeFriendly = spellRange.getFloat(row, 3, 1);
@@ -753,22 +836,36 @@ namespace {
             {
                 uint32_t const id = spellReagents.getRecordId(row);
                 WDB::Structures::SpellReagentsEntry entry{};
+                entry.SpellId = spellReagents.getUInt32(row, 0);
                 for (uint32_t i = 0; i < MAX_SPELL_REAGENTS; ++i)
                 {
                     entry.Reagent[i] = spellReagents.getInt32(row, 1, i);
                     entry.ReagentCount[i] = spellReagents.getUInt16(row, 2, i);
+                    entry.ReagentReCraftCount[i] = spellReagents.getUInt16(row, 3, i);
+                    entry.ReagentSource[i] = spellReagents.getUInt8(row, 4, i);
                 }
                 entries.emplace_back(id, entry);
-                linkSpell(spellReagents.getUInt32(row, 0), id, &WDB::Structures::SpellEntry::SpellReagentsId);
+                linkSpell(entry.SpellId, id, &WDB::Structures::SpellEntry::SpellReagentsId);
             }
             sSpellReagentsStore.assignEntries(entries);
         }
 
-        // SpellScaling.db2 changed layout again in 1.60.1.70009 and the current WDC5
-        // metadata reader intentionally treats it as optional. Do not create zero-filled
-        // legacy rows: once the parser accepts the new layout, map the verified fields here.
-        if (haveScaling)
-            sLogger.warning("Forever SpellScaling.db2 loaded, but its 70009 field mapping is not implemented yet; scaling data is intentionally not linked.");
+        if (haveScaling && verifyFields(spellScaling, "SpellScaling.db2", 3))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::SpellScalingEntry>> entries;
+            entries.reserve(spellScaling.getRecordCount());
+            for (uint32_t row = 0; row < spellScaling.getRecordCount(); ++row)
+            {
+                uint32_t const id = spellScaling.getRecordId(row);
+                WDB::Structures::SpellScalingEntry entry{};
+                entry.SpellId = spellScaling.getUInt32(row, 0);
+                entry.MinScalingLevel = spellScaling.getUInt32(row, 1);
+                entry.MaxScalingLevel = spellScaling.getUInt32(row, 2);
+                entries.emplace_back(id, entry);
+                linkSpell(entry.SpellId, id, &WDB::Structures::SpellEntry::SpellScalingId);
+            }
+            sSpellScalingStore.assignEntries(entries);
+        }
 
         if (haveShapeshift && verifyFields(spellShapeshift, "SpellShapeshift.db2", 4))
         {
@@ -778,8 +875,13 @@ namespace {
             {
                 uint32_t const id = spellShapeshift.getRecordId(row);
                 WDB::Structures::SpellShapeshiftEntry entry{};
-                entry.ShapeshiftsExcluded = spellShapeshift.getUInt32(row, 2, 0);
-                entry.Shapeshifts = spellShapeshift.getUInt32(row, 3, 0);
+                entry.StanceBarOrder = spellShapeshift.getUInt8(row, 1);
+                entry.ShapeshiftsExcludedRaw[0] = spellShapeshift.getUInt32(row, 2, 0);
+                entry.ShapeshiftsExcludedRaw[1] = spellShapeshift.getUInt32(row, 2, 1);
+                entry.ShapeshiftsRaw[0] = spellShapeshift.getUInt32(row, 3, 0);
+                entry.ShapeshiftsRaw[1] = spellShapeshift.getUInt32(row, 3, 1);
+                entry.ShapeshiftsExcluded = static_cast<uint64_t>(entry.ShapeshiftsExcludedRaw[0]) | (static_cast<uint64_t>(entry.ShapeshiftsExcludedRaw[1]) << 32);
+                entry.Shapeshifts = static_cast<uint64_t>(entry.ShapeshiftsRaw[0]) | (static_cast<uint64_t>(entry.ShapeshiftsRaw[1]) << 32);
                 entries.emplace_back(id, entry);
                 linkSpell(spellShapeshift.getUInt32(row, 0), id, &WDB::Structures::SpellEntry::SpellShapeshiftId);
             }
@@ -794,11 +896,14 @@ namespace {
             {
                 WDB::Structures::SpellTargetRestrictionsEntry entry{};
                 entry.Id = spellTargetRestrictions.getRecordId(row);
-                entry.MaxTargetRadius = 0.0f; // modern table stores cone/width instead of the old radius field
+                entry.DifficultyId = spellTargetRestrictions.getUInt16(row, 0);
+                entry.ConeDegrees = spellTargetRestrictions.getFloat(row, 1);
+                entry.MaxTargetRadius = 0.0f; // legacy field, absent from Forever DB2
                 entry.MaxAffectedTargets = spellTargetRestrictions.getUInt8(row, 2);
                 entry.MaxTargetLevel = spellTargetRestrictions.getUInt32(row, 3);
                 entry.TargetCreatureType = spellTargetRestrictions.getUInt16(row, 4);
                 entry.Targets = spellTargetRestrictions.getUInt32(row, 5);
+                entry.Width = spellTargetRestrictions.getFloat(row, 6);
                 entries.emplace_back(entry.Id, entry);
                 linkSpell(spellTargetRestrictions.getParentId(row), entry.Id, &WDB::Structures::SpellEntry::SpellTargetRestrictionsId);
             }
@@ -832,16 +937,32 @@ namespace {
                 WDB::Structures::SpellItemEnchantmentEntry entry{};
                 entry.Id = spellItemEnchantment.getRecordId(row);
                 entry.Name[0] = keepForeverDb2String(spellItemEnchantment.getString(row, 0));
+                entry.HordeName = keepForeverDb2String(spellItemEnchantment.getString(row, 1));
+                entry.Duration = spellItemEnchantment.getUInt32(row, 2);
+                entry.Charges = spellItemEnchantment.getUInt32(row, 3);
                 for (uint32_t i = 0; i < MAX_ITEM_ENCHANTMENT_EFFECTS; ++i)
                 {
                     entry.type[i] = spellItemEnchantment.getUInt32(row, 4, i);
                     entry.min[i] = spellItemEnchantment.getUInt32(row, 5, i);
                     entry.spell[i] = spellItemEnchantment.getUInt32(row, 6, i);
+                    entry.EffectScalingPoints[i] = spellItemEnchantment.getFloat(row, 8, i);
                 }
-                entry.visual = spellItemEnchantment.getUInt16(row, 22); // ItemVisual
+                entry.Flags = spellItemEnchantment.getUInt32(row, 7);
+                entry.ScalingClass = spellItemEnchantment.getUInt32(row, 9);
+                entry.ScalingClassRestricted = spellItemEnchantment.getUInt32(row, 10);
+                entry.Unknown11 = spellItemEnchantment.getUInt32(row, 11);
                 entry.req_skill = spellItemEnchantment.getUInt32(row, 12);
                 entry.req_skill_value = spellItemEnchantment.getUInt32(row, 13);
                 entry.req_level = spellItemEnchantment.getUInt32(row, 14);
+                entry.MaxLevel = spellItemEnchantment.getUInt32(row, 15);
+                entry.IconFileDataId = spellItemEnchantment.getUInt32(row, 16);
+                entry.ItemLevelMin = spellItemEnchantment.getUInt32(row, 17);
+                entry.ItemLevelMax = spellItemEnchantment.getUInt32(row, 18);
+                entry.TransmogUseConditionId = spellItemEnchantment.getUInt32(row, 19);
+                entry.TransmogCost = spellItemEnchantment.getUInt32(row, 20);
+                entry.Unknown21 = spellItemEnchantment.getUInt32(row, 21);
+                entry.visual = spellItemEnchantment.getUInt16(row, 22);
+                entry.ItemLevel = spellItemEnchantment.getUInt16(row, 23);
                 entries.emplace_back(entry.Id, entry);
             }
             sSpellItemEnchantmentStore.assignEntries(entries);
@@ -855,11 +976,16 @@ namespace {
             {
                 WDB::Structures::SpellShapeshiftFormEntry entry{};
                 entry.id = spellShapeshiftForm.getRecordId(row);
+                entry.Name = keepForeverDb2String(spellShapeshiftForm.getString(row, 0));
                 entry.modelId = spellShapeshiftForm.getUInt32(row, 1);
                 entry.modelId2 = entry.modelId;
                 entry.unit_type = spellShapeshiftForm.getUInt8(row, 2);
                 entry.Flags = spellShapeshiftForm.getUInt32(row, 3);
+                entry.AttackIconFileId = spellShapeshiftForm.getUInt32(row, 4);
+                entry.BonusActionBar = spellShapeshiftForm.getUInt8(row, 5);
                 entry.AttackSpeed = spellShapeshiftForm.getUInt16(row, 6);
+                entry.DamageVariance = spellShapeshiftForm.getFloat(row, 7);
+                entry.MountTypeId = spellShapeshiftForm.getUInt16(row, 8);
                 for (uint32_t i = 0; i < 8; ++i)
                     entry.spells[i] = spellShapeshiftForm.getUInt32(row, 9, i);
                 entries.emplace_back(entry.id, entry);
@@ -1528,6 +1654,7 @@ namespace {
         }
     }
 
+#if !defined(AE_FOREVER)
     void buildPowerIndexByClass()
     {
         for (auto& classPowers : powerIndexByClass)
@@ -1551,6 +1678,7 @@ namespace {
             powerIndexByClass[powerEntry.classId][powerEntry.power] = index;
         }
     }
+#endif
 }
 
 bool loadDBCs()
@@ -1576,7 +1704,6 @@ bool loadDBCs()
 
     buildMapDifficultyMap();
     buildAreaMapCollection();
-    buildPowerIndexByClass();
 
     if (!bad_dbc_files.empty())
     {
@@ -2564,10 +2691,12 @@ WDB::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32_t spellId, u
     return itr->second.effects[effect];
 }
 
+#if !defined(AE_FOREVER)
 uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerType)
 {
     return powerIndexByClass[playerClass][powerType];
 }
+#endif
 #endif
 
 #if VERSION_STRING == Mop

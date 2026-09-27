@@ -773,7 +773,7 @@ void SpellMgr::loadSpellInfoData()
             }
         }
 #elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+// Forever 1.60.1.70009 spell DB2 layout.
 
         spellInfo->setId(spell_id);
         spellInfo->setAttributes(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->Attributes : 0);
@@ -787,18 +787,24 @@ void SpellMgr::loadSpellInfoData()
         spellInfo->setCastingTimeIndex(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->CastingTimeIndex : 0);
         spellInfo->setDurationIndex(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->DurationIndex : 0);
         spellInfo->setPowerType(static_cast<PowerType>(dbcSpellEntry->GetSpellPower() ? dbcSpellEntry->GetSpellPower()->powerType : 0));
-        spellInfo->setRangeIndex(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->rangeIndex : 0);
-        spellInfo->setSpeed(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->speed : 0);
-        spellInfo->setSpellVisual(0, dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->SpellVisual : 0);
-        spellInfo->setSpellVisual(1, dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->SpellVisual1 : 0);
-        spellInfo->setSpellIconID(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->spellIconID : 0);
-        spellInfo->setActiveIconID(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->activeIconID : 0);
-        spellInfo->setSchoolMask(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->School : 0);
+        spellInfo->setRangeIndex(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->RangeIndex : 0);
+        spellInfo->setSpeed(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->Speed : 0.0f);
+        // Forever SpellMisc.db2 no longer contains the legacy SpellVisual fields.
+        // Spell cast visuals are supplied by the modern SpellXSpellVisual path.
+        spellInfo->setSpellIconID(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->SpellIconFileDataId : 0);
+        spellInfo->setActiveIconID(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->ActiveIconFileDataId : 0);
+        spellInfo->setSchoolMask(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->SchoolMask : 0);
         spellInfo->setRuneCostID(dbcSpellEntry->RuneCostID);
         spellInfo->setSpellDifficultyID(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->SpellDifficultyId : 0);
         spellInfo->setAttributesExH(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExH : 0);
         spellInfo->setAttributesExI(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExI : 0);
         spellInfo->setAttributesExJ(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExJ : 0);
+        spellInfo->setAttributesExK(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExK : 0);
+        spellInfo->setAttributesExL(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExL : 0);
+        spellInfo->setAttributesExM(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExM : 0);
+        spellInfo->setAttributesExN(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExN : 0);
+        spellInfo->setAttributesExO(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExO : 0);
+        spellInfo->setAttributesExP(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExP : 0);
 
         spellInfo->setName(dbcSpellEntry->Name);
         spellInfo->setRank(dbcSpellEntry->Rank);
@@ -828,7 +834,7 @@ void SpellMgr::loadSpellInfoData()
             spellInfo->setMaxstack(dbcSpellEntry->GetSpellAuraOptions()->MaxStackAmount);
             spellInfo->setProcChance(dbcSpellEntry->GetSpellAuraOptions()->procChance);
             spellInfo->setProcCharges(dbcSpellEntry->GetSpellAuraOptions()->procCharges);
-            spellInfo->setProcFlags(dbcSpellEntry->GetSpellAuraOptions()->procFlags);
+            spellInfo->setProcTypeMask(dbcSpellEntry->GetSpellAuraOptions()->procTypeMask);
         }
 
         // Data from SpellAuraRestrictions.dbc
@@ -867,7 +873,7 @@ void SpellMgr::loadSpellInfoData()
         if (dbcSpellEntry->SpellClassOptionsId && dbcSpellEntry->GetSpellClassOptions() != nullptr)
         {
             spellInfo->setSpellFamilyName(dbcSpellEntry->GetSpellClassOptions()->SpellFamilyName);
-            for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
+            for (uint8_t j = 0; j < MAX_SPELL_CLASS_MASKS; ++j)
                 spellInfo->setSpellFamilyFlags(dbcSpellEntry->GetSpellClassOptions()->SpellFamilyFlags[j], j);
         }
 
@@ -910,7 +916,8 @@ void SpellMgr::loadSpellInfoData()
             spellInfo->setManaCostPerlevel(dbcSpellEntry->GetSpellPower()->manaCostPerlevel);
             spellInfo->setManaCostPercentage(static_cast<uint32_t>(dbcSpellEntry->GetSpellPower()->ManaCostPercentageFloat));
             spellInfo->setManaPerSecond(dbcSpellEntry->GetSpellPower()->manaPerSecond);
-            spellInfo->setManaPerSecondPerLevel(dbcSpellEntry->GetSpellPower()->manaPerSecondPerLevel);
+            // Forever SpellPower.db2 layout 0x61AD223F has no ManaPerSecondPerLevel field.
+            spellInfo->setManaPerSecondPerLevel(0);
         }
 
         // Data from SpellReagents.db2
@@ -973,13 +980,28 @@ void SpellMgr::loadSpellInfoData()
                 spellInfo->setEffectRadiusIndex(spell_effect_entry->EffectRadiusIndex, j);
                 spellInfo->setEffectRadiusMaxIndex(spell_effect_entry->EffectRadiusMaxIndex, j);
                 spellInfo->setEffectRealPointsPerLevel(spell_effect_entry->EffectRealPointsPerLevel, j);
-                for (uint8_t x = 0; x < 3; ++x)
+                for (uint8_t x = 0; x < MAX_SPELL_CLASS_MASKS; ++x)
                     spellInfo->setEffectSpellClassMask(spell_effect_entry->EffectSpellClassMask[x], j, x);
                 spellInfo->setEffectTriggerSpell(spell_effect_entry->EffectTriggerSpell, j);
                 spellInfo->setEffectImplicitTargetA(spell_effect_entry->EffectImplicitTargetA, j);
                 spellInfo->setEffectImplicitTargetB(spell_effect_entry->EffectImplicitTargetB, j);
                 spellInfo->setEffectSpellId(spell_effect_entry->EffectSpellId, j);
                 spellInfo->setEffectIndex(spell_effect_entry->EffectIndex, j);
+                spellInfo->setEffectAttributes(spell_effect_entry->EffectAttributes, j);
+                spellInfo->setEffectAmplitudeFloat(spell_effect_entry->EffectAmplitudeFloat, j);
+                spellInfo->setEffectBonusCoefficient(spell_effect_entry->EffectBonusCoefficient, j);
+                spellInfo->setEffectChainAmplitude(spell_effect_entry->EffectChainAmplitude, j);
+                spellInfo->setEffectPosFacing(spell_effect_entry->EffectPosFacing, j);
+                spellInfo->setEffectPointsPerResource(spell_effect_entry->EffectPointsPerResource, j);
+                spellInfo->setEffectBonusCoefficientFromAP(spell_effect_entry->BonusCoefficientFromAP, j);
+                spellInfo->setEffectPvpMultiplier(spell_effect_entry->PvpMultiplier, j);
+                spellInfo->setEffectCoefficient(spell_effect_entry->Coefficient, j);
+                spellInfo->setEffectVariance(spell_effect_entry->Variance, j);
+                spellInfo->setEffectResourceCoefficient(spell_effect_entry->ResourceCoefficient, j);
+                spellInfo->setEffectGroupSizeBasePointsCoefficient(spell_effect_entry->GroupSizeBasePointsCoefficient, j);
+                spellInfo->setEffectBasePointsFloat(spell_effect_entry->EffectBasePointsF, j);
+                spellInfo->setEffectScalingClass(spell_effect_entry->ScalingClass, j);
+                spellInfo->setEffectUnknownField24(spell_effect_entry->UnknownField24, j);
             }
         }
 #else

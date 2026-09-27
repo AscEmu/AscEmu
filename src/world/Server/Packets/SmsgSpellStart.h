@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ForeverSpellPacketUtils.hpp"
 #include "Spell/SpellCastTargets.hpp"
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/Definitions/SpellPacketFlags.hpp"
@@ -23,6 +24,11 @@ namespace AscEmu::Packets
         uint32_t spellId;
         uint32_t castFlags;
         uint8_t extraCastNumber;
+
+        WoWGuid castId = WoWGuid::createModernEmpty();
+        uint16_t mapId = 0;
+        uint32_t spellXSpellVisualId = 0;
+        uint32_t scriptVisualId = 0;
 
         uint32_t timer;
         uint32_t castTime;
@@ -50,6 +56,55 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                using namespace ForeverSpellPacket;
+
+                const WoWGuid modernCasterGuid = toModernGuid(casterGuid, m_protocol.realmId, mapId);
+                const WoWGuid modernCasterUnitGuid = toModernGuid(casterUnitGuid, m_protocol.realmId, mapId);
+                const WoWGuid modernCastId = castId ? castId : WoWGuid::createModernWorldObject(
+                    ModernHighGuid::Cast, 3, ::World::getInstance().settings.battleNetComm.realmId, mapId, 0, spellId, extraCastNumber);
+
+                uint32_t modernCastFlags = castFlags & ~static_cast<uint32_t>(SPELL_PACKET_FLAGS_POWER_UPDATE);
+                if ((castFlags & SPELL_PACKET_FLAGS_DEFAULT) != 0)
+                    modernCastFlags |= SPELL_PACKET_FLAGS_UNK40000;
+
+                writePackedGuid(packet, modernCasterGuid);
+                writePackedGuid(packet, modernCasterUnitGuid);
+                writePackedGuid(packet, modernCastId);
+                writePackedGuid(packet, WoWGuid::createModernEmpty()); // OriginalCastID
+
+                packet << static_cast<int32_t>(spellId);
+                packet << static_cast<int32_t>(spellXSpellVisualId);
+                packet << static_cast<int32_t>(scriptVisualId);
+                packet << modernCastFlags;
+                packet << static_cast<uint32_t>(0); // CastFlagsEx
+                packet << static_cast<uint32_t>(0); // CastFlagsEx2
+                packet << static_cast<uint32_t>(castTime);
+
+                writeTargetData(packet, targets, m_protocol.realmId, mapId);
+
+                packet << static_cast<uint32_t>(0); // MissileTrajectoryResult.TravelTime
+                packet << 0.0f;                     // MissileTrajectoryResult.Pitch
+                packet << static_cast<int32_t>(0);  // AmmoDisplayID
+                packet << static_cast<uint8_t>(0);  // DestLocSpellCastIndex
+                packet << static_cast<int32_t>(0);  // CreatureImmunities.School
+                packet << static_cast<int32_t>(0);  // CreatureImmunities.Value
+                packet << static_cast<int32_t>(0);  // HealPrediction.Points
+                packet << static_cast<uint32_t>(0); // HealPrediction.Type
+                writePackedGuid(packet, WoWGuid::createModernEmpty()); // HealPrediction.BeaconGUID
+
+                packet.writeBits(0, 16); // HitTargets
+                packet.writeBits(0, 16); // MissTargets
+                packet.writeBits(0, 16); // HitStatus
+                packet.writeBits(0, 16); // MissStatus
+                packet.writeBits(0, 9);  // RemainingPower
+                packet.writeBit(false);  // RemainingRunes
+                packet.writeBits(0, 16); // TargetPoints
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << casterGuid;
