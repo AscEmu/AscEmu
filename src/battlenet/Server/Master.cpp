@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "BNetConf.hpp"
 #include "BNetConfig.hpp"
+#include "BNetConsole.hpp"
 #include "BNetServerDefines.hpp"
 #include "BNetTlsContext.hpp"
 #include "BNetSocket.hpp"
@@ -222,6 +223,13 @@ namespace AscEmu::Battlenet
 
         sSocketMgr.SpawnWorkerThreads();
 
+        m_threadPool->addDedicatedThread(
+            "BNetConsole",
+            [](AscEmu::Threading::AEThread& thread)
+            {
+                BNetConsole::getInstance().run(thread);
+            });
+
 #ifdef WIN32
         m_threadPool->addDedicatedThread("BNetListenSocket", [socket = listener.get()](AscEmu::Threading::AEThread&) { static_cast<void>(socket->runThread()); });
 
@@ -243,6 +251,8 @@ namespace AscEmu::Battlenet
         }
 
         unhookSignals();
+
+        BNetConsole::getInstance().stop();
 
         battleNetCommListener->Close();
         webAuthListener->Close();

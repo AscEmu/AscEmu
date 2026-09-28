@@ -2,8 +2,8 @@
 
 set(EXECUTABLE_NAME bnetserver)
 
-file(GLOB SRC_SERVER_FILES Server/*.cpp Server/*.h Server/*.hpp)
-file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp *.rc)
+file(GLOB SRC_SERVER_FILES CONFIGURE_DEPENDS Server/*.cpp Server/*.h Server/*.hpp)
+file(GLOB SRC_LOCAL_DIR CONFIGURE_DEPENDS *.cpp *.h *.hpp *.rc)
 
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
