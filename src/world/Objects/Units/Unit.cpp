@@ -2344,11 +2344,73 @@ void Unit::setResistance(uint8_t type, uint32_t value)
 }
 
 #if VERSION_STRING > Classic
-uint32_t Unit::getResistanceBuffModPositive(uint8_t type) const { return unitData()->resistance_buff_mod_positive[type]; }
-void Unit::setResistanceBuffModPositive(uint8_t type, uint32_t value) { write(unitData()->resistance_buff_mod_positive[type], value); }
+uint32_t Unit::getResistanceBuffModPositive(uint8_t type) const
+{
+#if defined(AE_FOREVER)
+    if (type >= m_foreverUnitFields.bonusResistanceMods69913.size())
+        return 0;
 
-uint32_t Unit::getResistanceBuffModNegative(uint8_t type) const { return unitData()->resistance_buff_mod_negative[type]; }
-void Unit::setResistanceBuffModNegative(uint8_t type, uint32_t value) { write(unitData()->resistance_buff_mod_negative[type], value); }
+    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.bonusResistanceMods69913[type]));
+#else
+    return unitData()->resistance_buff_mod_positive[type];
+#endif
+}
+
+void Unit::setResistanceBuffModPositive(uint8_t type, uint32_t value)
+{
+#if defined(AE_FOREVER)
+    if (type >= m_foreverUnitFields.bonusResistanceMods69913.size())
+        return;
+
+    const int32_t negative = std::max<int32_t>(0, -m_foreverUnitFields.bonusResistanceMods69913[type]);
+    const int32_t bonus = static_cast<int32_t>(value) - negative;
+    if (m_foreverUnitFields.bonusResistanceMods69913[type] == bonus)
+        return;
+
+    m_foreverUnitFields.bonusResistanceMods69913[type] = bonus;
+    m_foreverUnitFields.markArrayChanged(AscEmu::Version::Forever::Fields::UnitData::ResistancesGroupBit,
+        AscEmu::Version::Forever::Fields::UnitData::BonusResistanceModsFirstBit + type);
+    updateObject();
+#else
+    write(unitData()->resistance_buff_mod_positive[type], value);
+#endif
+}
+
+uint32_t Unit::getResistanceBuffModNegative(uint8_t type) const
+{
+#if defined(AE_FOREVER)
+    if (type >= m_foreverUnitFields.bonusResistanceMods69913.size())
+        return 0;
+
+    return static_cast<uint32_t>(std::max<int32_t>(0, -m_foreverUnitFields.bonusResistanceMods69913[type]));
+#else
+    return unitData()->resistance_buff_mod_negative[type];
+#endif
+}
+
+void Unit::setResistanceBuffModNegative(uint8_t type, uint32_t value)
+{
+#if defined(AE_FOREVER)
+    if (type >= m_foreverUnitFields.bonusResistanceMods69913.size())
+        return;
+
+    // Legacy callers pass the negative modifier through an unsigned API. Preserve
+    // the signed bit pattern here, then expose Forever's single signed bonus field.
+    const int32_t signedValue = static_cast<int32_t>(value);
+    const int32_t negative = signedValue < 0 ? -signedValue : signedValue;
+    const int32_t positive = std::max<int32_t>(0, m_foreverUnitFields.bonusResistanceMods69913[type]);
+    const int32_t bonus = positive - negative;
+    if (m_foreverUnitFields.bonusResistanceMods69913[type] == bonus)
+        return;
+
+    m_foreverUnitFields.bonusResistanceMods69913[type] = bonus;
+    m_foreverUnitFields.markArrayChanged(AscEmu::Version::Forever::Fields::UnitData::ResistancesGroupBit,
+        AscEmu::Version::Forever::Fields::UnitData::BonusResistanceModsFirstBit + type);
+    updateObject();
+#else
+    write(unitData()->resistance_buff_mod_negative[type], value);
+#endif
+}
 #endif
 
 uint32_t Unit::getBaseMana() const

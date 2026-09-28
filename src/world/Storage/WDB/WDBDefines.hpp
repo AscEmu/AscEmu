@@ -7,15 +7,27 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
-#if defined(AE_FOREVER)
-static constexpr uint8_t MAX_SPELL_EFFECTS = 32;
+#if VERSION_STRING == AE_PROFILE_FOREVER
+static constexpr uint8_t MAX_SPELL_EFFECTS = 32; // DB2 currently uses EffectIndex 0..29
 static constexpr uint8_t MAX_SPELL_CLASS_MASKS = 4;
 using SpellExtendedMask = uint64_t;
+
+#elif VERSION_STRING == Mop
+static constexpr uint8_t MAX_SPELL_EFFECTS = 5;
+static constexpr uint8_t MAX_SPELL_CLASS_MASKS = 3;
+using SpellExtendedMask = uint32_t;
+
+#elif VERSION_STRING == Cata
+static constexpr uint8_t MAX_SPELL_EFFECTS = 5;
+static constexpr uint8_t MAX_SPELL_CLASS_MASKS = 3;
+using SpellExtendedMask = uint32_t;
+
 #else
 static constexpr uint8_t MAX_SPELL_EFFECTS = 3;
 static constexpr uint8_t MAX_SPELL_CLASS_MASKS = 3;
 using SpellExtendedMask = uint32_t;
 #endif
+
 static constexpr uint8_t MAX_SPELL_TOTEMS = 2;
 static constexpr uint8_t MAX_SPELL_REAGENTS = 8;
 static constexpr uint8_t MAX_SPELL_TOTEM_CATEGORIES = 2;
