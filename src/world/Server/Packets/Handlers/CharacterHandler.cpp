@@ -856,7 +856,7 @@ void WorldSession::fullLoginForever(Player* player)
     if (player == nullptr)
         return;
 
-    sLogger.info("WorldSession::Forever: finalizing server-side login state for {} ({}) without legacy network bootstrap.", player->getName(), player->getGuidLow());
+    sLogger.info("WorldSession::Forever: finalizing server-side login state for {} ({}) through visibility/UpdateManager bootstrap.", player->getName(), player->getGuidLow());
 
     SetPlayer(player);
     m_MoverWoWGuid.init(player->getGuid());
@@ -881,46 +881,10 @@ void WorldSession::fullLoginForever(Player* player)
             player->addCalculatedRestXp(timediff);
     }
 
-    player->setEnteringToWorld();
-
-    if (canEnterWorld && !player->getWorldMap())
-    {
-        const auto mapInfo = sMySQLStore.getWorldMapInfo(player->GetMapId());
-        if (mapInfo == nullptr || player->GetMapId() >= MAX_NUM_MAPS)
-        {
-            sLogger.failure("WorldSession::Forever: invalid login map {} for {} ({}).", player->GetMapId(), player->getName(), player->getGuidLow());
-            Disconnect();
-            return;
-        }
-
-        WorldMap* map = sMapMgr.findWorldMap(player->GetMapId(), player->GetInstanceID());
-        if (map == nullptr)
-        {
-            sLogger.failure("WorldSession::Forever: resolved login map unavailable for {} ({}) map={} instance={}.", player->getName(), player->getGuidLow(), player->GetMapId(), player->GetInstanceID());
-            Disconnect();
-            return;
-        }
-
-        if (!map->onPlayerEnter(player))
-        {
-            sLogger.failure("WorldSession::Forever: map attach rejected for {} ({}) map={} instance={}.", player->getName(), player->getGuidLow(), player->GetMapId(), player->GetInstanceID());
-            Disconnect();
-            return;
-        }
-    }
-    else if (!player->getWorldMap())
-    {
-        sLogger.failure("WorldSession::Forever: cannot enter world for {} ({}) map={} instance={}.", player->getName(), player->getGuidLow(), player->GetMapId(), player->GetInstanceID());
-        Disconnect();
-        return;
-    }
-
-    sHookInterface.OnFullLogin(player);
-    sObjectMgr.addPlayer(player);
-
-    if (Group* group = player->getGroup())
-        group->Update();
-
+    // Forever path A: restore the legacy ordering contract.
+    // Prepare canonical fields and send the login bootstrap before attaching to
+    // visibility. ObjectFactory/WorldMap will then queue the self CREATE through
+    // UpdateManager, which flushes CREATE/VALUES before delayed packets.
     WorldSocket* instanceSocket = GetForeverInstanceSocket();
     if (instanceSocket == nullptr || !instanceSocket->isConnected())
     {
@@ -1171,36 +1135,45 @@ void WorldSession::fullLoginForever(Player* player)
     SmsgLoginSetTimeSpeed loginSetTimeSpeed(gameTime, 0.016666667f);
     instanceSocket->sendManagedPacket(loginSetTimeSpeed);
 
-    // Build the Forever 69913 self CreateObject2 entirely from structured fields
-    // and explicit build defaults. Unknown wire regions remain deliberately named.
-    const std::vector<uint8_t> createFieldPayload =
-        AscEmu::Version::Forever::ObjectUpdate::buildSelfFieldPayload(player->foreverObjectFields(), player->foreverUnitFields(), player->foreverPlayerFields(), player->foreverActivePlayerFields());
+    player->setEnteringToWorld();
 
-    if (createFieldPayload.empty())
+    if (canEnterWorld && !player->getWorldMap())
     {
-        sLogger.failure("WorldSession::Forever: failed to build 69913 self field payload for {} ({}).", player->getName(), player->getGuidLow());
+        const auto mapInfo = sMySQLStore.getWorldMapInfo(player->GetMapId());
+        if (mapInfo == nullptr || player->GetMapId() >= MAX_NUM_MAPS)
+        {
+            sLogger.failure("WorldSession::Forever: invalid login map {} for {} ({}).", player->GetMapId(), player->getName(), player->getGuidLow());
+            Disconnect();
+            return;
+        }
+
+        WorldMap* map = sMapMgr.findWorldMap(player->GetMapId(), player->GetInstanceID());
+        if (map == nullptr)
+        {
+            sLogger.failure("WorldSession::Forever: resolved login map unavailable for {} ({}) map={} instance={}.", player->getName(), player->getGuidLow(), player->GetMapId(), player->GetInstanceID());
+            Disconnect();
+            return;
+        }
+
+        if (!map->onPlayerEnter(player))
+        {
+            sLogger.failure("WorldSession::Forever: map attach rejected for {} ({}) map={} instance={}.", player->getName(), player->getGuidLow(), player->GetMapId(), player->GetInstanceID());
+            Disconnect();
+            return;
+        }
+    }
+    else if (!player->getWorldMap())
+    {
+        sLogger.failure("WorldSession::Forever: cannot enter world for {} ({}) map={} instance={}.", player->getName(), player->getGuidLow(), player->GetMapId(), player->GetInstanceID());
         Disconnect();
         return;
     }
 
-    const std::vector<uint8_t> selfCreatePacket =
-        AscEmu::Version::Forever::ObjectUpdate::buildSelfCreatePacket(static_cast<uint16_t>(player->GetMapId()), packedPlayerGuid, player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation(), createFieldPayload);
+    sHookInterface.OnFullLogin(player);
+    sObjectMgr.addPlayer(player);
 
-    if (selfCreatePacket.empty())
-    {
-        sLogger.failure("WorldSession::Forever: failed to build 69913 self CreateObject2 for {} ({}).", player->getName(), player->getGuidLow());
-        Disconnect();
-        return;
-    }
-
-    if (!instanceSocket->sendForeverPacket(SMSG_UPDATE_OBJECT, selfCreatePacket.data(), static_cast<uint32_t>(selfCreatePacket.size())))
-    {
-        sLogger.failure("WorldSession::Forever: failed to send 69913 self CreateObject2 for {} ({}).", player->getName(), player->getGuidLow());
-        Disconnect();
-        return;
-    }
-
-
+    if (Group* group = player->getGroup())
+        group->Update();
 
     sLogger.info("WorldSession::Forever: player login complete for {} ({}) map={} instance={}.", player->getName(), player->getGuidLow(), player->GetMapId(), player->GetInstanceID());
 }

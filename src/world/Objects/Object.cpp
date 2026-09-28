@@ -525,6 +525,30 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 #if defined(AE_FOREVER)
     // Forever uses the modern structured CREATE_OBJECT grammar instead of the
     // legacy UpdateMask-based object creation path.
+    if (isPlayer())
+    {
+        Player* const player = static_cast<Player*>(this);
+        const bool ownerVisible = (target == player);
+        const bool partyMemberVisible = ownerVisible || (target->getGroup() != nullptr && target->getGroup()->HasMember(player));
+
+        const std::vector<uint8_t> packedGuid = WoWGuid::createModernPlayer(player->getForeverRealmId(), player->getGuidLow()).packModern();
+
+        if (packedGuid.empty())
+            return 0;
+
+        const std::vector<uint8_t> fieldPayload = AscEmu::Version::Forever::ObjectUpdate::buildPlayerFieldPayload(foreverObjectFields(), player->foreverUnitFields(), player->foreverPlayerFields(), ownerVisible ? &player->foreverActivePlayerFields() : nullptr, ownerVisible, partyMemberVisible);
+
+        if (fieldPayload.empty())
+            return 0;
+
+        const std::vector<uint8_t> block = AscEmu::Version::Forever::ObjectUpdate::buildPlayerCreateBlock(packedGuid, GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation(), fieldPayload, ownerVisible);
+
+        if (block.empty())
+            return 0;
+
+        data->append(block.data(), block.size());
+        return 1;
+    }
     if (isCreature())
     {
         const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(m_wowGuid.getRawGuid(), worldConfig.battleNetComm.realmId, static_cast<uint16_t>(GetMapId()), 0);
@@ -534,8 +558,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
         Unit* const unit = static_cast<Unit*>(this);
         Creature* const creature = static_cast<Creature*>(this);
-        const std::vector<uint8_t> block =
-            AscEmu::Version::Forever::ObjectUpdate::buildCreatureCreateBlock(packedGuid, GetPositionX(), GetPositionY(), GetPositionZ(), LocationVector::normalizeOrientation(GetOrientation()), static_cast<uint32_t>(Util::getMSTime()), foreverObjectFields(), unit->foreverUnitFields(), creature->isVendor() ? 1U : 0U);
+        const std::vector<uint8_t> block = AscEmu::Version::Forever::ObjectUpdate::buildCreatureCreateBlock(packedGuid, GetPositionX(), GetPositionY(), GetPositionZ(), LocationVector::normalizeOrientation(GetOrientation()), static_cast<uint32_t>(Util::getMSTime()), foreverObjectFields(), unit->foreverUnitFields(), creature->isVendor() ? 1U : 0U);
 
         if (block.empty())
             return 0;
@@ -552,8 +575,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
             return 0;
 
         GameObject* const gameObject = static_cast<GameObject*>(this);
-        const std::vector<uint8_t> block =
-            AscEmu::Version::Forever::ObjectUpdate::buildGameObjectCreateBlock(packedGuid, GetPositionX(), GetPositionY(), GetPositionZ(), LocationVector::normalizeOrientation(GetOrientation()), gameObject->getPackedLocalRotation(), foreverObjectFields(), gameObject->foreverGameObjectFields());
+        const std::vector<uint8_t> block = AscEmu::Version::Forever::ObjectUpdate::buildGameObjectCreateBlock(packedGuid, GetPositionX(), GetPositionY(), GetPositionZ(), LocationVector::normalizeOrientation(GetOrientation()), gameObject->getPackedLocalRotation(), foreverObjectFields(), gameObject->foreverGameObjectFields());
 
         if (block.empty())
             return 0;

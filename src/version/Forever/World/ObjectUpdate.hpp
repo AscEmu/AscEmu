@@ -31,6 +31,7 @@ namespace AscEmu::Version::Forever::ObjectUpdate
     bool writePlayerDataCreate(ByteBuffer& data, Fields::PlayerData const& fields, bool partyMemberVisible);
     bool writeActivePlayerDataCreate(ByteBuffer& data, Fields::ActivePlayerData const& fields);
 
+    std::vector<uint8_t> buildPlayerFieldPayload(Fields::ObjectData const& objectFields, Fields::UnitData const& unitFields, Fields::PlayerData const& playerFields, Fields::ActivePlayerData const* activePlayerFields, bool ownerVisible, bool partyMemberVisible);
     std::vector<uint8_t> buildSelfFieldPayload(Fields::ObjectData const& objectFields, Fields::UnitData const& unitFields, Fields::PlayerData const& playerFields, Fields::ActivePlayerData const& activePlayerFields);
 
 
@@ -47,5 +48,7 @@ namespace AscEmu::Version::Forever::ObjectUpdate
 
     std::vector<uint8_t> buildUpdateObjectPacket(uint16_t mapId, uint32_t updateCount, std::span<const uint8_t> updateBlocks, uint32_t destroyCount = 0, std::span<const uint8_t> destroyGuids = {}, uint32_t outOfRangeCount = 0, std::span<const uint8_t> outOfRangeGuids = {});
 
+    std::vector<uint8_t> buildPlayerCreateBlock(std::span<const uint8_t> packedGuid, float x, float y, float z, float orientation, std::span<const uint8_t> fieldPayload, bool ownerVisible);
+    std::vector<uint8_t> buildSelfCreateBlock(std::span<const uint8_t> packedGuid, float x, float y, float z, float orientation, std::span<const uint8_t> fieldPayload);
     std::vector<uint8_t> buildSelfCreatePacket(uint16_t mapId, std::span<const uint8_t> packedGuid, float x, float y, float z, float orientation, std::span<const uint8_t> fieldPayload);
 }

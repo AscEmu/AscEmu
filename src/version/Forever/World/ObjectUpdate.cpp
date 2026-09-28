@@ -22,6 +22,7 @@ namespace AscEmu::Version::Forever::ObjectUpdate
     {
         constexpr uint8_t UPDATE_TYPE_CREATE_OBJECT_2 = 2;
         constexpr uint8_t OBJECT_TYPE_UNIT = 5;
+        constexpr uint8_t OBJECT_TYPE_PLAYER = 6;
         constexpr uint8_t OBJECT_TYPE_ACTIVE_PLAYER = 7;
         constexpr uint8_t OBJECT_TYPE_GAMEOBJECT = 8;
 
@@ -69,6 +70,11 @@ namespace AscEmu::Version::Forever::ObjectUpdate
             data.append(packed.data(), packed.size());
         }
 
+        // Structural field-presence byte observed for 69913:
+        //   Unit          = 0x04
+        //   Player        = 0x06 (Unit + Player)
+        //   ActivePlayer  = 0x07 (Unit + Player + ActivePlayer)
+        constexpr uint8_t PLAYER_FIELD_FLAGS_69913 = 0x06U;
         constexpr uint8_t SELF_FIELD_FLAGS_69913 = 0x07U;
         constexpr uint8_t FRAGMENT_CGOBJECT_69913 = 0x03U;
         constexpr uint8_t FRAGMENT_PLAYER_HOUSE_INFO_69913 = 0x21U;
@@ -928,8 +934,6 @@ namespace AscEmu::Version::Forever::ObjectUpdate
         return true;
     }
 
-
-
     namespace
     {
         void writeStationaryUnitMovement(ByteBuffer& data, std::span<const uint8_t> packedGuid, float x, float y, float z, float orientation, uint32_t movementTimeMs)
@@ -1027,11 +1031,14 @@ namespace AscEmu::Version::Forever::ObjectUpdate
         return std::vector<uint8_t>(block.contents(), block.contents() + block.size());
     }
 
-    std::vector<uint8_t> buildSelfFieldPayload(Fields::ObjectData const& objectFields, Fields::UnitData const& unitFields, Fields::PlayerData const& playerFields, Fields::ActivePlayerData const& activePlayerFields)
+    std::vector<uint8_t> buildPlayerFieldPayload(Fields::ObjectData const& objectFields, Fields::UnitData const& unitFields, Fields::PlayerData const& playerFields, Fields::ActivePlayerData const* activePlayerFields, bool ownerVisible, bool partyMemberVisible)
     {
+        if (ownerVisible && activePlayerFields == nullptr)
+            return {};
+
         ByteBuffer payload;
 
-        payload << SELF_FIELD_FLAGS_69913;
+        payload << uint8_t(ownerVisible ? SELF_FIELD_FLAGS_69913 : PLAYER_FIELD_FLAGS_69913);
         payload << FRAGMENT_CGOBJECT_69913;
         payload << FRAGMENT_PLAYER_HOUSE_INFO_69913;
         payload << FRAGMENT_PLAYER_INITIATIVE_69913;
@@ -1042,11 +1049,22 @@ namespace AscEmu::Version::Forever::ObjectUpdate
         payload << uint8_t(1); // CGObject indirect fragment activation
 
         writeObjectDataCreate(payload, objectFields);
-        writeUnitDataCreate(payload, unitFields, true);
-        if (!writePlayerDataCreate(payload, playerFields, true))
+        writeUnitDataCreate(payload, unitFields, ownerVisible);
+        if (!writePlayerDataCreate(payload, playerFields, partyMemberVisible))
             return {};
 
-        const Fields::ActivePlayerData activePlayer = makeConservativeActivePlayerData(activePlayerFields);
+        if (!ownerVisible)
+        {
+            payload << uint8_t(1);
+            writeEmptyPlayerHouseInfoComponentCreate(payload);
+
+            payload << uint8_t(1);
+            writeEmptyPlayerInitiativeComponentCreate(payload);
+
+            return std::vector<uint8_t>(payload.contents(), payload.contents() + payload.size());
+        }
+
+        const Fields::ActivePlayerData activePlayer = makeConservativeActivePlayerData(*activePlayerFields);
 
         ByteBuffer activePlayerPayload;
         if (!writeActivePlayerDataCreate(activePlayerPayload, activePlayer))
@@ -1098,12 +1116,10 @@ namespace AscEmu::Version::Forever::ObjectUpdate
         return std::vector<uint8_t>(payload.contents(), payload.contents() + payload.size());
     }
 
-
-    namespace
+    std::vector<uint8_t> buildSelfFieldPayload(Fields::ObjectData const& objectFields, Fields::UnitData const& unitFields, Fields::PlayerData const& playerFields, Fields::ActivePlayerData const& activePlayerFields)
     {
+        return buildPlayerFieldPayload(objectFields, unitFields, playerFields, &activePlayerFields, true, true);
     }
-
-
 
     namespace
     {
@@ -1542,7 +1558,7 @@ namespace AscEmu::Version::Forever::ObjectUpdate
         return std::vector<uint8_t>(packet.contents(), packet.contents() + packet.size());
     }
 
-    std::vector<uint8_t> buildSelfCreatePacket(uint16_t mapId, std::span<const uint8_t> packedGuid, float x, float y, float z, float orientation, std::span<const uint8_t> fieldPayload)
+    std::vector<uint8_t> buildPlayerCreateBlock(std::span<const uint8_t> packedGuid, float x, float y, float z, float orientation, std::span<const uint8_t> fieldPayload, bool ownerVisible)
     {
         if (packedGuid.empty() || fieldPayload.empty())
             return {};
@@ -1569,9 +1585,9 @@ namespace AscEmu::Version::Forever::ObjectUpdate
         std::memcpy(movementTail.data() + entityPositionOffset + 8, &z, sizeof(float));
 
         ByteBuffer block;
-        block << uint8_t(UPDATE_TYPE_CREATE_OBJECT_2);
+        block << uint8_t(ownerVisible ? UPDATE_TYPE_CREATE_OBJECT_2 : 1);
         block.append(packedGuid.data(), packedGuid.size());
-        block << uint8_t(OBJECT_TYPE_ACTIVE_PLAYER);
+        block << uint8_t(ownerVisible ? OBJECT_TYPE_ACTIVE_PLAYER : OBJECT_TYPE_PLAYER);
         block << uint8_t(0x8C) << uint8_t(0x00) << uint8_t(0x80);
         block << uint32_t(0);
         block.append(packedGuid.data(), packedGuid.size());
@@ -1579,8 +1595,21 @@ namespace AscEmu::Version::Forever::ObjectUpdate
         block << uint32_t(fieldPayload.size());
         block.append(fieldPayload.data(), fieldPayload.size());
 
-        return buildUpdateObjectPacket(mapId, 1, std::span<const uint8_t>(block.contents(), block.size()));
+        return std::vector<uint8_t>(block.contents(), block.contents() + block.size());
     }
 
+    std::vector<uint8_t> buildSelfCreateBlock(std::span<const uint8_t> packedGuid, float x, float y, float z, float orientation, std::span<const uint8_t> fieldPayload)
+    {
+        return buildPlayerCreateBlock(packedGuid, x, y, z, orientation, fieldPayload, true);
+    }
 
+    std::vector<uint8_t> buildSelfCreatePacket(uint16_t mapId, std::span<const uint8_t> packedGuid, float x, float y, float z, float orientation, std::span<const uint8_t> fieldPayload)
+    {
+        const std::vector<uint8_t> block = buildSelfCreateBlock(packedGuid, x, y, z, orientation, fieldPayload);
+
+        if (block.empty())
+            return {};
+
+        return buildUpdateObjectPacket(mapId, 1, std::span<const uint8_t>(block.data(), block.size()));
+    }
 }
