@@ -62,8 +62,7 @@ namespace AscEmu::Packets
 
                 const WoWGuid modernCasterGuid = toModernGuid(casterGuid, m_protocol.realmId, mapId);
                 const WoWGuid modernCasterUnitGuid = toModernGuid(casterUnitGuid, m_protocol.realmId, mapId);
-                const WoWGuid modernCastId = castId ? castId : WoWGuid::createModernWorldObject(
-                    ModernHighGuid::Cast, 3, ::World::getInstance().settings.battleNetComm.realmId, mapId, 0, spellId, extraCastNumber);
+                const WoWGuid modernCastId = castId ? castId : WoWGuid::createModernWorldObject(ModernHighGuid::Cast, 3, ::World::getInstance().settings.battleNetComm.realmId, mapId, 0, spellId, extraCastNumber);
 
                 uint32_t modernCastFlags = castFlags & ~static_cast<uint32_t>(SPELL_PACKET_FLAGS_POWER_UPDATE);
                 if ((castFlags & SPELL_PACKET_FLAGS_DEFAULT) != 0)

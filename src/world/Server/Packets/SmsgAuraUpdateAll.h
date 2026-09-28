@@ -29,7 +29,7 @@ namespace AscEmu::Packets
             WoWGuid casterGuid;
             uint32_t duration = 0;
             uint32_t timeLeft = 0;
-            int32_t effAmount[5] = {0}; // 3 spell effects up till cata, 5 in mop
+            int32_t effAmount[MAX_SPELL_EFFECTS] = {0}; // 3 spell effects up till cata, 5 in mop
             uint32_t spellXSpellVisualId = 0;
             uint32_t scriptVisualId = 0;
             bool remove = false;

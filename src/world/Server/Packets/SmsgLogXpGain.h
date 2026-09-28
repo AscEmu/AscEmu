@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ForeverSpellPacketUtils.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -17,6 +18,7 @@ namespace AscEmu::Packets
         uint32_t normalXp;
         uint32_t restedXp;
         bool isQuestXp;
+        uint16_t mapId = 0;
 
         SmsgLogXpGain() : SmsgLogXpGain(0, 0, 0, false)
         {
@@ -36,6 +38,18 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion == WoW::Expansion::Forever)
+            {
+                WoWGuid victim = guid ? ForeverSpellPacket::toModernGuid(WoWGuid(guid), m_protocol.realmId, mapId) : WoWGuid::createModernEmpty();
+
+                ForeverSpellPacket::writePackedGuid(packet, victim);
+                packet << static_cast<int32_t>(normalXp); // Original
+                packet << static_cast<uint8_t>(isQuestXp ? 1 : 0); // Reason
+                packet << static_cast<int32_t>(isQuestXp ? 0 : normalXp); // Amount
+                packet << 1.0f; // GroupBonus
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 if (isQuestXp == false)

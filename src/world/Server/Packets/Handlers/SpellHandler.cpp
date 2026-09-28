@@ -157,9 +157,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
         spell->m_foreverScriptVisualId = srlPacket.scriptVisualId;
         spell->ensureForeverCastId();
 
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL,
-            "WorldSession::handleCastSpellOpcode [Forever]: spellId {} SpellXSpellVisualID {} ScriptVisualID {}",
-            srlPacket.spellId, srlPacket.spellXSpellVisualId, srlPacket.scriptVisualId);
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "WorldSession::handleCastSpellOpcode [Forever]: spellId {} SpellXSpellVisualID {} ScriptVisualID {}", srlPacket.spellId, srlPacket.spellXSpellVisualId, srlPacket.scriptVisualId);
 
         SmsgSpellPrepare preparePacket(spell->m_foreverClientCastId, spell->m_foreverServerCastId);
         sendManagedPacket(preparePacket);

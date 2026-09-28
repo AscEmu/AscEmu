@@ -353,9 +353,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     if (m_triggeredSpell || i_caster != nullptr)
         m_requiresCP = false;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::prepare : spell id {} castingTimeIndex {} manaCost {} manaCostPercentage {} triggeredSpell {} triggeredByAura {} -> m_castTime {}",
-        getSpellInfo()->getId(), getSpellInfo()->getCastingTimeIndex(), getSpellInfo()->getManaCost(), getSpellInfo()->getManaCostPercentage(),
-        m_triggeredSpell, m_triggeredByAura != nullptr, m_castTime);
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::prepare : spell id {} castingTimeIndex {} manaCost {} manaCostPercentage {} triggeredSpell {} triggeredByAura {} -> m_castTime {}", getSpellInfo()->getId(), getSpellInfo()->getCastingTimeIndex(), getSpellInfo()->getManaCost(), getSpellInfo()->getManaCostPercentage(), m_triggeredSpell, m_triggeredByAura != nullptr, m_castTime);
 
     _loadInitialTargetPointers();
 
@@ -1744,8 +1742,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (!hasIgnoreShapeshiftAura)
 #endif
                 {
-                    const uint32_t foreverShapeForm = u_caster->getShapeShiftForm();
-                    SpellCastResult shapeError = checkShapeshift(getSpellInfo(), foreverShapeForm);
+                    SpellCastResult shapeError = checkShapeshift(getSpellInfo(), u_caster->getShapeShiftForm());
                     if (shapeError != SPELL_CAST_SUCCESS)
                         return shapeError;
 
@@ -4559,9 +4556,7 @@ SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_
     {
         // Check if spell even requires shapeshift
         if (!(spellInfo->getAttributesExB() & ATTRIBUTESEXB_NOT_NEED_SHAPESHIFT) && spellInfo->getRequiredShapeShift() != 0)
-        {
             return SPELL_FAILED_ONLY_SHAPESHIFT;
-        }
     }
     return SPELL_CAST_SUCCESS;
 }
@@ -4653,8 +4648,7 @@ void Spell::ensureForeverCastId()
     const uint32_t spellId = getSpellInfo() != nullptr ? getSpellInfo()->getId() : 0;
     const uint64_t castCounter = nextCastCounter.fetch_add(1, std::memory_order_relaxed);
 
-    m_foreverServerCastId = WoWGuid::createModernWorldObject(
-        ModernHighGuid::Cast, 3, worldConfig.battleNetComm.realmId, mapId, 0, spellId, castCounter);
+    m_foreverServerCastId = WoWGuid::createModernWorldObject(ModernHighGuid::Cast, 3, worldConfig.battleNetComm.realmId, mapId, 0, spellId, castCounter);
 }
 
 uint32_t Spell::getForeverSpellXSpellVisualId() const
@@ -4733,9 +4727,7 @@ void Spell::sendSpellStart()
 
 void Spell::sendSpellGo()
 {
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : entered for spell id {} GetType {} isChanneled {} speed {} spellXSpellVisualId {} scriptVisualId {} triggeredSpell {} triggeredByAura {}",
-        getSpellInfo()->getId(), GetType(), getSpellInfo()->isChanneled(), getSpellInfo()->getSpeed(), getForeverSpellXSpellVisualId(), getForeverScriptVisualId(),
-        m_triggeredSpell, m_triggeredByAura != nullptr);
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : entered for spell id {} GetType {} isChanneled {} speed {} spellXSpellVisualId {} scriptVisualId {} triggeredSpell {} triggeredByAura {}", getSpellInfo()->getId(), GetType(), getSpellInfo()->isChanneled(), getSpellInfo()->getSpeed(), getForeverSpellXSpellVisualId(), getForeverScriptVisualId(), m_triggeredSpell, m_triggeredByAura != nullptr);
 
     if (!m_caster || !m_caster->IsInWorld())
     {
@@ -4744,8 +4736,7 @@ void Spell::sendSpellGo()
     }
 
     // If spell has no visuals, it's not channeled and it's triggered, no need to send packet
-    if (!(getSpellInfo()->isChanneled() || getSpellInfo()->getSpeed() > 0.0f || getForeverSpellXSpellVisualId() != 0 ||
-        getForeverScriptVisualId() != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
+    if (!(getSpellInfo()->isChanneled() || getSpellInfo()->getSpeed() > 0.0f || getForeverSpellXSpellVisualId() != 0 || getForeverScriptVisualId() != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
     {
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : no-visual/triggered early-return hit, not sending packet");
         return;
@@ -4832,8 +4823,7 @@ void Spell::sendSpellGo()
     managedPacket.missilePitch = m_missilePitch;
     managedPacket.missileTravelTime = m_missileTravelTime;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : about to broadcast, castFlags {} hittedTargets {} missedTargets {} missileTravelTime {} missilePitch {}",
-        castFlags, managedPacket.hittedTargets.size(), managedPacket.missedTargets.size(), managedPacket.missileTravelTime, managedPacket.missilePitch);
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : about to broadcast, castFlags {} hittedTargets {} missedTargets {} missileTravelTime {} missilePitch {}", castFlags, managedPacket.hittedTargets.size(), managedPacket.missedTargets.size(), managedPacket.missileTravelTime, managedPacket.missilePitch);
 
     PacketBroadcast::sendToSet(*m_caster, managedPacket, true);
 
@@ -4984,8 +4974,7 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
         mapId = static_cast<uint16_t>(m_caster->GetMapId());
     }
 
-    caster->sendCastFailedPacket(getSpellInfo()->getId(), result, castCount, parameter1, parameter2,
-        castId, spellXSpellVisualId, scriptVisualId, mapId);
+    caster->sendCastFailedPacket(getSpellInfo()->getId(), result, castCount, parameter1, parameter2, castId, spellXSpellVisualId, scriptVisualId, mapId);
 }
 
 void Spell::addProjectileDataToPacket(ProjectileData& data)

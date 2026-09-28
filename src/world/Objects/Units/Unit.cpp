@@ -769,7 +769,6 @@ uint32_t Unit::getHealth() const
 }
 void Unit::setHealth(uint32_t health)
 {
-    const uint32_t requestedHealth = health;
     const auto maxHealth = getMaxHealth();
     health = std::min(health, maxHealth);
 
@@ -848,13 +847,13 @@ void Unit::setPower(PowerType type, uint32_t value, [[maybe_unused]] bool sendPa
         return;
     }
 
-    const uint32_t requestedPower = value;
     const auto maxPower = getMaxPower(type);
     value = std::min(value, maxPower);
-    const auto powerIndex = getPowerIndexFromDBC(type);
 
     if (getPower(type) == value)
         return;
+
+    const auto powerIndex = getPowerIndexFromDBC(type);
 
 #if defined(AE_FOREVER)
     if (powerIndex < POWER_FIELD_INDEX_1)
@@ -7307,9 +7306,7 @@ void Unit::sendChatMessageAlternateEntry(uint32_t entry, uint8_t type, uint32_t 
 {
     if (CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry))
     {
-        SmsgMessageChat sendPacket(
-            type, lang, 0, msg, getGuid(), creatureProperties->Name, 0, "", 0, 0, 0,
-            static_cast<uint16_t>(GetMapId()));
+        SmsgMessageChat sendPacket(type, lang, 0, msg, getGuid(), creatureProperties->Name, 0, "", 0, 0, 0, static_cast<uint16_t>(GetMapId()));
         PacketBroadcast::sendToSet(*this, sendPacket, true);
     }
 }

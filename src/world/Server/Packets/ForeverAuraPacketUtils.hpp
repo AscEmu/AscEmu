@@ -51,14 +51,7 @@ namespace AscEmu::Packets::ForeverAuraPacket
     inline void writeAuraData(WorldPacket& packet, AuraUpdate const& aura, uint32_t protocolRealmId, uint16_t mapId)
     {
         // Modern AuraData (verified against 1.60.1.70009 SMSG_AURA_UPDATE).
-        const WoWGuid castId = WoWGuid::createModernWorldObject(
-            ModernHighGuid::Cast,
-            3,
-            ::World::getInstance().settings.battleNetComm.realmId,
-            mapId,
-            0,
-            aura.spellId,
-            aura.visualSlot);
+        const WoWGuid castId = WoWGuid::createModernWorldObject(ModernHighGuid::Cast, 3,::World::getInstance().settings.battleNetComm.realmId, mapId, 0, aura.spellId, aura.visualSlot);
 
         ForeverSpellPacket::writePackedGuid(packet, castId);
         packet << static_cast<int32_t>(aura.spellId);
@@ -104,8 +97,7 @@ namespace AscEmu::Packets::ForeverAuraPacket
     }
 
     template <typename AuraContainer>
-    inline void writeAuraUpdate(WorldPacket& packet, WoWGuid const& targetGuid, AuraContainer const& auras,
-        bool updateAll, uint32_t protocolRealmId, uint16_t mapId)
+    inline void writeAuraUpdate(WorldPacket& packet, WoWGuid const& targetGuid, AuraContainer const& auras, bool updateAll, uint32_t protocolRealmId, uint16_t mapId)
     {
         packet.writeBit(updateAll);
         packet.writeBits(static_cast<uint32_t>(auras.size()), 9);

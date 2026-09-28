@@ -71,8 +71,7 @@ namespace AscEmu::Packets
 
                 const WoWGuid modernCasterGuid = toModernGuid(casterGuid, m_protocol.realmId, mapId);
                 const WoWGuid modernCasterUnitGuid = toModernGuid(casterUnitGuid, m_protocol.realmId, mapId);
-                const WoWGuid modernCastId = castId ? castId : WoWGuid::createModernWorldObject(
-                    ModernHighGuid::Cast, 3, ::World::getInstance().settings.battleNetComm.realmId, mapId, 0, spellId, extraCastNumber);
+                const WoWGuid modernCastId = castId ? castId : WoWGuid::createModernWorldObject(ModernHighGuid::Cast, 3, ::World::getInstance().settings.battleNetComm.realmId, mapId, 0, spellId, extraCastNumber);
 
                 uint32_t modernCastFlags = castFlags;
                 // Forever retail uses 0x40000 for the normal unit-target missile form. Keep

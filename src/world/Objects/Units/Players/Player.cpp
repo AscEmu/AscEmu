@@ -1358,7 +1358,7 @@ void Player::setXp(uint32_t xp)
         return;
 
     m_foreverActivePlayerFields.xp = static_cast<int32_t>(xp);
-    m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit60_69913);
+    m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::XpBit);
     updateObject();
 #else
     write(playerData()->xp, xp);
@@ -1384,7 +1384,7 @@ void Player::setNextLevelXp(uint32_t xp)
         return;
 
     m_foreverActivePlayerFields.nextLevelXp = static_cast<int32_t>(xp);
-    m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit61_69913);
+    m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::NextLevelXpBit);
     updateObject();
 #else
     write(playerData()->next_level_xp, xp);
@@ -10680,8 +10680,7 @@ void Player::sendDismountResultPacket(uint32_t result)
     m_session->sendManagedPacket(managedPacket);
 }
 
-void Player::sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2,
-    WoWGuid castId, uint32_t spellXSpellVisualId, uint32_t scriptVisualId, uint16_t mapId)
+void Player::sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2, WoWGuid castId, uint32_t spellXSpellVisualId, uint32_t scriptVisualId, uint16_t mapId)
 {
     SmsgCastFailed managedPacket(multiCast, spellId, errorMessage, extra1, extra2);
     managedPacket.castId = castId;

@@ -414,6 +414,8 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t NativeXDisplayScaleBit = 60;
         static inline constexpr std::size_t MountDisplayIdBit = 61;
         static inline constexpr std::size_t CosmeticMountDisplayIdBit = 62;
+        // 70009 damage differential mapping is not fully verified yet.
+        // Keep the previously working scalar positions until a retail differential proves a group bit.
         static inline constexpr std::size_t MinDamageBit = 63;
         static inline constexpr std::size_t MaxDamageBit = 65;
         static inline constexpr std::size_t MinOffHandDamageBit = 66;
@@ -869,15 +871,20 @@ namespace AscEmu::Version::Forever::Fields
 
     struct ActivePlayerData
     {
-        static inline constexpr std::size_t ChangeMaskSize = 398;
+        // Forever 1.60.1.70009 VALUES uses 14 ActivePlayerData block-presence bits.
+        // This is required for the capture-verified XP differential (parent bit 32 + XP bit 60).
+        static inline constexpr std::size_t ChangeMaskSize = 14 * 32;
         // Runtime candidate bit positions retained from the old mapping.
         // These bit positions remain provisional until differential VALUES testing confirms them.
         static inline constexpr std::size_t UnknownChangeBit56_69913 = 56;
         static inline constexpr std::size_t UnknownChangeBit57_69913 = 57;
         static inline constexpr std::size_t UnknownChangeBit58_69913 = 58;
         static inline constexpr std::size_t UnknownChangeBit59_69913 = 59;
-        static inline constexpr std::size_t UnknownChangeBit60_69913 = 60;
-        static inline constexpr std::size_t UnknownChangeBit61_69913 = 61;
+        // Capture-verified Forever 1.60.1.70009 ActivePlayerData core scalars.
+        // Normal XP gains update bit 60; the retail level-up differential sends
+        // the reset XP immediately followed by the new NextLevelXP value.
+        static inline constexpr std::size_t XpBit = 60;
+        static inline constexpr std::size_t NextLevelXpBit = 61;
         static inline constexpr std::size_t UnknownChangeBit62_69913 = 62;
         static inline constexpr std::size_t UnknownChangeBit163_69913 = 163;
         static inline constexpr std::size_t UnknownChangeBit164_69913 = 164;

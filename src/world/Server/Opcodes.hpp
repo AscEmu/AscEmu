@@ -1822,7 +1822,6 @@ SMSG_CHARACTER_ENUM_PRELUDE,
 SMSG_CHARACTER_ENUM_PRELUDE_EXTENDED,
 SMSG_CHARACTER_SELECT_STATUS,
 SMSG_CHARACTER_SELECT_GATE,
-// Appended to preserve all existing internal opcode enum values.
 SMSG_SPELL_PREPARE,
 NUM_OPCODES
 };
@@ -2304,7 +2303,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {SMSG_PLAYED_TIME, {0x1F, "SMSG_PLAYED_TIME", OpcodeDevelopmentState::Unchecked, {0x1CD,/*Classic*/ 0x1CD,/*BC*/ 0x1CD,/*WotLK*/ 0x6037,/*Cata*/ 0x11E2/*Mop*/}}},
 {CMSG_QUERY_TIME, {0x1F, "CMSG_QUERY_TIME", OpcodeDevelopmentState::Unchecked, {0x1CE,/*Classic*/ 0x1CE,/*BC*/ 0x1CE,/*WotLK*/ 0x0A36,/*Cata*/ 0x0640/*Mop*/}}},
 {SMSG_QUERY_TIME_RESPONSE, {0x1F, "SMSG_QUERY_TIME_RESPONSE", OpcodeDevelopmentState::Unchecked, {0x1CF,/*Classic*/ 0x1CF,/*BC*/ 0x1CF,/*WotLK*/ 0x2124,/*Cata*/ 0x100F/*Mop*/}}},
-{SMSG_LOG_XPGAIN, {0x1F, "SMSG_LOG_XPGAIN", OpcodeDevelopmentState::Unchecked, {0x1D0,/*Classic*/ 0x1D0,/*BC*/ 0x1D0,/*WotLK*/ 0x4514,/*Cata*/ 0x1E9A/*Mop*/}}},
+{SMSG_LOG_XPGAIN, {0x1F, "SMSG_LOG_XPGAIN", OpcodeDevelopmentState::Unchecked, {0x1D0,/*Classic*/ 0x1D0,/*BC*/ 0x1D0,/*WotLK*/ 0x4514,/*Cata*/ 0x1E9A/*Mop*/, 0/*WoD*/, 0/*Legion*/, 0/*BfA*/, 0/*Shadowlands*/, 0/*Dragonflight*/, 0/*TWW*/, 0/*Midnight*/, 0x0046018F/*Forever*/}}},
 {SMSG_AURACASTLOG, {0x3, "SMSG_AURACASTLOG", OpcodeDevelopmentState::Unchecked, {0x1D1,/*Classic*/ 0x1D1,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x0000/*Mop*/}}},
 {CMSG_RECLAIM_CORPSE, {0x1F, "CMSG_RECLAIM_CORPSE", OpcodeDevelopmentState::Unchecked, {0x1D2,/*Classic*/ 0x1D2,/*BC*/ 0x1D2,/*WotLK*/ 0x4036,/*Cata*/ 0x03D3/*Mop*/}}},
 {CMSG_WRAP_ITEM, {0x1F, "CMSG_WRAP_ITEM", OpcodeDevelopmentState::Unchecked, {0x1D3,/*Classic*/ 0x1D3,/*BC*/ 0x1D3,/*WotLK*/ 0x4F06,/*Cata*/ 0x0000/*Mop*/}}},

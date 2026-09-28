@@ -101,8 +101,7 @@ namespace AscEmu::Packets
                         case HighGuid::DynamicObject:
                         case HighGuid::AreaTrigger:
                         case HighGuid::Corpse:
-                            return WoWGuid::createModernFromLegacy(
-                                guid.getRawGuid(), worldConfig.battleNetComm.realmId, mapId, 0);
+                            return WoWGuid::createModernFromLegacy(guid.getRawGuid(), worldConfig.battleNetComm.realmId, mapId, 0);
                         default:
                             return WoWGuid::createModernFromLegacy(guid.getRawGuid(), m_protocol.realmId);
                     }

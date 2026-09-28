@@ -1188,9 +1188,44 @@ namespace AscEmu::Version::Forever::ObjectUpdate
 
         void writeUnitDataUpdate(ByteBuffer& data, Fields::UnitData const& fields)
         {
-            writeStructuredChangeMask(data, fields.changes);
+            // Forever 1.60.1.70009 test mode: only serialize differential bits that
+            // are actually capture/runtime verified. CREATE data is unaffected.
+            //
+            // Verified UnitData bits:
+            //   38/39     - Health / MaxHealth
+            //   40/41     - Level / EffectiveLevel
+            //   48/49/52  - 69913 differential captures
+            //   148/149   - 70009 power group + Power[0]
+            //   217/218   - 70009 resistances group + Resistances[0]
+            //
+            // Everything else (max power/damage/stats/etc.) is deliberately
+            // suppressed until its exact 70009 bit is proven.
+            std::bitset<Fields::UnitData::ChangeMaskSize> verifiedChanges{};
+            auto keepChanged = [&](std::size_t bit)
+            {
+                if (fields.changes.test(bit))
+                    verifiedChanges.set(bit);
+            };
 
-            auto changed = [&](std::size_t bit) { return fields.changes.test(bit); };
+            // Parent/root bit for verified scalar fields in this block.
+            keepChanged(32);
+            keepChanged(Fields::UnitData::HealthBit);
+            keepChanged(Fields::UnitData::MaxHealthBit);
+            keepChanged(Fields::UnitData::LevelBit);
+            keepChanged(Fields::UnitData::EffectiveLevelBit);
+            keepChanged(Fields::UnitData::FlagsBit);
+            keepChanged(Fields::UnitData::Flags2Bit);
+            keepChanged(Fields::UnitData::AuraStateBit);
+
+            keepChanged(Fields::UnitData::PowerGroupBit);
+            keepChanged(Fields::UnitData::PowerFirstBit);
+
+            keepChanged(Fields::UnitData::ResistancesGroupBit);
+            keepChanged(Fields::UnitData::ResistancesFirstBit);
+
+            writeStructuredChangeMask(data, verifiedChanges);
+
+            auto changed = [&](std::size_t bit) { return verifiedChanges.test(bit); };
             if (changed(Fields::UnitData::DisplayIdBit)) data << fields.displayId;
             if (changed(Fields::UnitData::NpcFlagsBit)) data << fields.npcFlags;
             if (changed(Fields::UnitData::NpcFlags2Bit)) data << fields.npcFlags2;
@@ -1378,12 +1413,27 @@ namespace AscEmu::Version::Forever::ObjectUpdate
 
         void writeActivePlayerDataUpdate(ByteBuffer& data, Fields::ActivePlayerData const& fields)
         {
-            writeStructuredChangeMask(data, fields.changes);
-            auto changed = [&](std::size_t bit) { return fields.changes.test(bit); };
+            // Forever 1.60.1.70009 test mode: do not put provisional/guessed
+            // ActivePlayerData bits on the wire. XP and NextLevelXP are the only
+            // currently capture-verified scalar updates in this region.
+            std::bitset<Fields::ActivePlayerData::ChangeMaskSize> verifiedChanges{};
+            auto keepChanged = [&](std::size_t bit)
+            {
+                if (fields.changes.test(bit))
+                    verifiedChanges.set(bit);
+            };
+
+            // XP/NextLevelXP are scalar fields in the block rooted at bit 32.
+            keepChanged(32);
+            keepChanged(Fields::ActivePlayerData::XpBit);
+            keepChanged(Fields::ActivePlayerData::NextLevelXpBit);
+
+            writeStructuredChangeMask(data, verifiedChanges);
+            auto changed = [&](std::size_t bit) { return verifiedChanges.test(bit); };
             if (changed(Fields::ActivePlayerData::UnknownChangeBit56_69913)) writeModernGuid(data, fields.farsightObject);
             if (changed(Fields::ActivePlayerData::UnknownChangeBit58_69913)) data << fields.coinage;
-            if (changed(Fields::ActivePlayerData::UnknownChangeBit60_69913)) data << fields.xp;
-            if (changed(Fields::ActivePlayerData::UnknownChangeBit61_69913)) data << fields.nextLevelXp;
+            if (changed(Fields::ActivePlayerData::XpBit)) data << fields.xp;
+            if (changed(Fields::ActivePlayerData::NextLevelXpBit)) data << fields.nextLevelXp;
             if (changed(Fields::ActivePlayerData::UnknownChangeBit163_69913))
             {
                 for (std::size_t i = 0; i < fields.invSlots.size(); ++i)
