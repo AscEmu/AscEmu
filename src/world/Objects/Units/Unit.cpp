@@ -2368,9 +2368,8 @@ void Unit::setResistanceBuffModPositive(uint8_t type, uint32_t value)
         return;
 
     m_foreverUnitFields.bonusResistanceMods69913[type] = bonus;
-    m_foreverUnitFields.markArrayChanged(AscEmu::Version::Forever::Fields::UnitData::ResistancesGroupBit,
-        AscEmu::Version::Forever::Fields::UnitData::BonusResistanceModsFirstBit + type);
-    updateObject();
+    // The UnitData value is known, but its Forever 70009 differential change bit
+    // is not verified yet. Do not emit a guessed change-mask bit.
 #else
     write(unitData()->resistance_buff_mod_positive[type], value);
 #endif
@@ -2404,9 +2403,8 @@ void Unit::setResistanceBuffModNegative(uint8_t type, uint32_t value)
         return;
 
     m_foreverUnitFields.bonusResistanceMods69913[type] = bonus;
-    m_foreverUnitFields.markArrayChanged(AscEmu::Version::Forever::Fields::UnitData::ResistancesGroupBit,
-        AscEmu::Version::Forever::Fields::UnitData::BonusResistanceModsFirstBit + type);
-    updateObject();
+    // The UnitData value is known, but its Forever 70009 differential change bit
+    // is not verified yet. Do not emit a guessed change-mask bit.
 #else
     write(unitData()->resistance_buff_mod_negative[type], value);
 #endif

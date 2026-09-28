@@ -1257,10 +1257,10 @@ namespace AscEmu::Version::Forever::ObjectUpdate
             {
                 for (std::size_t i = 0; i < fields.resistances69913.size(); ++i)
                     if (changed(Fields::UnitData::ResistancesFirstBit + i)) data << fields.resistances69913[i];
-                for (std::size_t i = 0; i < fields.bonusResistanceMods69913.size(); ++i)
-                    if (changed(Fields::UnitData::BonusResistanceModsFirstBit + i)) data << fields.bonusResistanceMods69913[i];
-                for (std::size_t i = 0; i < fields.manaCostModifier69913.size(); ++i)
-                    if (changed(Fields::UnitData::ManaCostModifierFirstBit + i)) data << fields.manaCostModifier69913[i];
+
+                // bonusResistanceMods69913 and manaCostModifier69913 are valid
+                // UnitData CREATE fields, but their 70009 differential bits are
+                // not capture-verified yet. Do not serialize them from guessed bits.
             }
             data.flushBits();
         }

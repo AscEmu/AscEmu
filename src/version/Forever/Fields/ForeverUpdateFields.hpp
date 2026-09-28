@@ -452,15 +452,29 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t MaxPowerFirstBit = 159;
         static inline constexpr std::size_t AttackRoundBaseTimeGroupBit = 184;
         static inline constexpr std::size_t AttackRoundBaseTimeFirstBit = 185;
+
         static inline constexpr std::size_t StatsGroupBit = 187;
         static inline constexpr std::size_t StatsFirstBit = 188;
         static inline constexpr std::size_t StatPosBuffFirstBit = 193;
         static inline constexpr std::size_t StatNegBuffFirstBit = 198;
         static inline constexpr std::size_t StatSupportBuffFirstBit = 203;
-        static inline constexpr std::size_t ResistancesGroupBit = 208;
-        static inline constexpr std::size_t ResistancesFirstBit = 209;
-        static inline constexpr std::size_t BonusResistanceModsFirstBit = 216;
-        static inline constexpr std::size_t ManaCostModifierFirstBit = 223;
+
+        // Retail 70009 shows an additional 9-bit region here.
+        // Meaning not yet identified.
+        static inline constexpr std::size_t Unknown208Bit = 208;
+        static inline constexpr std::size_t Unknown209Bit = 209;
+        static inline constexpr std::size_t Unknown210Bit = 210;
+        static inline constexpr std::size_t Unknown211Bit = 211;
+        static inline constexpr std::size_t Unknown212Bit = 212;
+        static inline constexpr std::size_t Unknown213Bit = 213;
+        static inline constexpr std::size_t Unknown214Bit = 214;
+        static inline constexpr std::size_t Unknown215Bit = 215;
+        static inline constexpr std::size_t Unknown216Bit = 216;
+
+        // Capture-verified Forever 1.60.1.70009 Frost Armor differential:
+        // bit 217 = Resistances group, bit 218 = Resistances[0] (physical armor).
+        static inline constexpr std::size_t ResistancesGroupBit = 217;
+        static inline constexpr std::size_t ResistancesFirstBit = 218;
 
         std::bitset<ChangeMaskSize> changes{};
 
