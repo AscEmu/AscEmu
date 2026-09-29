@@ -1296,22 +1296,7 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.failure("handleObjectUpdateFailedOpcode : Object update failed for playerguid {}", srlPacket.guid.getCounter());
-
-    if (_player == nullptr)
-        return;
-
-    if (_player->getGuid() == srlPacket.guid)
-    {
-        // Do not disconnect during world enter: client may send this transiently before full load.
-        if (_player->isEnteringWorld())
-        {
-            sLogger.debug("handleObjectUpdateFailedOpcode : ignored for player entering world");
-            return;
-        }
-        LogoutPlayer(true);
-        return;
-    }
+    sLogger.warning("handleObjectUpdateFailedOpcode : Object update failed for playerguid {}", srlPacket.guid.getCounter());
 }
 
 void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)

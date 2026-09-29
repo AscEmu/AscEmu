@@ -217,6 +217,10 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
 
 void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 {
+    // guard against movement packets being sent before the player is fully in world, or if we are the global update owner (which means we are not the mover)
+    if (_player == nullptr || !_player->IsInWorld() || IsGlobalUpdateOwner())
+        return;
+
     if (_player->isTransferPending() || _player->isOnTaxi() || _player->justDied())
         return;
 
@@ -697,7 +701,6 @@ bool WorldSession::recoverFailedWorldport(const char* reason)
 
 void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
 {
-    _player->setTransferStatus(TRANSFER_NONE);
     if (_player->IsInWorld())
         return;
 
@@ -782,6 +785,7 @@ void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
         return;
     }
 
+    _player->setTransferStatus(TRANSFER_NONE);
     _player->clearTeleportTransport();
     _player->resetTimeSync();
     _player->sendTimeSync();

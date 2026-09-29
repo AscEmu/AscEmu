@@ -1905,8 +1905,13 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
     _Relocate(mapId, vec, true, changesWorld, instanceId);
 
     speedCheatReset();
-    refreshVisibilityAfterRelocation();
-    forceZoneUpdate();
+
+    if (!changesWorld)
+    {
+        speedCheatReset();
+        refreshVisibilityAfterRelocation();
+        forceZoneUpdate();
+    }
 
     return true;
 }
@@ -1919,6 +1924,8 @@ void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
     // Use the already resolved map and keep transport data during the transfer.
     const uint32_t mapId = mgr->getBaseMap()->getMapId();
     const uint32_t instanceId = mgr->getInstanceId();
+
+    const bool changesWorld = (mapId != m_mapId || instanceId != static_cast<uint32_t>(m_instanceId));
 
     if (mgr->getBaseMap()->isInstanceMap() &&
         !mgr->getBaseMap()->isBattlegroundOrArena())
@@ -1964,6 +1971,8 @@ void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
     // Do not remove transport passengers here or their transport data is lost.
     leaveCurrentWorldMapForTransfer();
 
+    resetMovementStateForTeleport();
+
     SetMapId(mapId);
     SetInstanceID(instanceId);
 
@@ -1981,9 +1990,14 @@ void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
     m_sentTeleportPosition = vec;
     SetPosition(vec);
 
-    refreshVisibilityAfterRelocation();
     speedCheatReset();
-    forceZoneUpdate();
+
+    // Rebuild visibility only on same-map teleports; cross-world updates wait for WorldportAck
+    if (!changesWorld)
+    {
+        refreshVisibilityAfterRelocation();
+        forceZoneUpdate();
+    }
 }
 
 void Player::setTransferStatus(uint8_t status) { m_transferStatus = status; }
@@ -13822,61 +13836,6 @@ void Player::processPendingUpdates()
     m_updateMgr.processPendingUpdates();
 }
 
-#if VERSION_STRING == Mop
-void Player::resendCreateAndActiveMoverForMoP()
-{
-    if (!m_session)
-        return;
-    if (!IsInWorld())
-    {
-        sLogger.info("WORLD: resend create+active mover skipped for {} (player not InWorld yet)", getName());
-        return;
-    }
-    constexpr uint32_t kMaxObjectUpdateFailedResends = 5u;
-    if (m_objectUpdateFailedResendCount >= kMaxObjectUpdateFailedResends)
-    {
-        sLogger.failure("WORLD: MoP player create rejected {} times by client for {}; stopping resend (client may need correct SMSG_UPDATE_OBJECT format)", kMaxObjectUpdateFailedResends, getName());
-        return;
-    }
-    const uint32_t now = Util::getMSTime();
-    // First resend is always allowed (m_lastObjectUpdateFailedResend==0); then throttle 1.5s
-    if (m_lastObjectUpdateFailedResend != 0 && (now - m_lastObjectUpdateFailedResend < 1500u))
-    {
-        sLogger.debug("resendCreateAndActiveMoverForMoP: throttled for {}", getName());
-        return;
-    }
-    m_lastObjectUpdateFailedResend = now;
-    ++m_objectUpdateFailedResendCount;
-
-    sLogger.info("WORLD: resending LOGIN_VERIFY_WORLD + SetActiveMover + create for {} (attempt {}/{})", getName(), m_objectUpdateFailedResendCount, kMaxObjectUpdateFailedResends);
-    // MoP: send in order client may expect - verify world first, then mover, then create (mirrors panda-core flow).
-    sendLoginVerifyWorldPacket();
-
-    SmsgSetActiveMover moverPacket(getGuid());
-    getSession()->sendManagedPacket(moverPacket);
-
-    ByteBuffer pbuf(10000);
-    const uint32_t count = buildCreateUpdateBlockForPlayer(&pbuf, this);
-    sLogger.info("WORLD: resend create block for {} size={} bytes (attempt {}/{})", getName(), pbuf.size(), m_objectUpdateFailedResendCount, kMaxObjectUpdateFailedResends);
-    getUpdateMgr().pushCreationData(&pbuf, count);
-    processPendingUpdates();
-
-    // MoP: client may be waiting for CUF profiles after create to finish loading.
-    SmsgLoadCufProfiles cufProfilesPacket;
-    getSession()->sendManagedPacket(cufProfilesPacket);
-
-    // MoP: schedule one delayed retry in 2s (after throttle) in case client missed the first resend; stop when cap reached.
-    if (m_objectUpdateFailedResendCount < kMaxObjectUpdateFailedResends)
-        sEventMgr.AddEvent(this, &Player::resendCreateAndActiveMoverForMoP, EVENT_PLAYER_MOP_PROCESS_QUEUE, 2000, 1, 0);
-}
-
-void Player::eventProcessQueuedPacketsMoP()
-{
-    if (m_session && IsInWorld())
-        m_session->processQueuedPackets(static_cast<uint32_t>(GetInstanceID()));
-}
-#endif
-
 void Player::eventTalentHearthOfWildChange(bool apply)
 {
     if (!m_hearthOfWildPct)
@@ -13907,7 +13866,6 @@ void Player::eventTalentHearthOfWildChange(bool apply)
         updateStats();
     }
 }
-
 
 void Player::_eventAttack(bool offhand)
 {
@@ -15622,8 +15580,22 @@ void Player::loadFromDBProc(QueryResultVector& results)
     m_achievementMgr->updateAllAchievementCriteria();
 #endif
 
-    m_session->fullLogin(this);
-    m_session->m_loggingInPlayer = nullptr;
+    // Handle the full login in the map thread to avoid race conditions with other players in the same map.
+    if (WorldMap* targetMap = sMapMgr.findWorldMap(GetMapId(), GetInstanceID()))
+    {
+        targetMap->queueMapTask([this]() {
+            if (m_session != nullptr)
+            {
+                m_session->fullLogin(this);
+                m_session->m_loggingInPlayer = nullptr;
+            }
+        });
+    }
+    else
+    {
+        m_session->fullLogin(this);
+        m_session->m_loggingInPlayer = nullptr;
+    }
 
     if (!isAlive())
     {
@@ -15698,7 +15670,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
             }
             m_taxi->clearTaxiDestinations();
         }
-        
+
         m_taxi->setNodeAfterTeleport(taxi_currentNode);
         // flight will started later
     }
@@ -16467,6 +16439,8 @@ void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending
     }
 
     leaveCurrentWorldMapForTransfer();
+
+    resetMovementStateForTeleport();
 
     SetMapId(mapid);
     SetInstanceID(instance_id);
@@ -17367,4 +17341,17 @@ Creature* Player::getCreatureWhenICanInteract(WoWGuid const& guid, uint32_t npcf
         return nullptr;
 
     return creature;
+}
+
+void Player::resetMovementStateForTeleport()
+{
+    obj_movement_info.setMovementFlags(MovementFlags(0));
+    obj_movement_info.setMovementFlags2(MovementFlags2(0));
+    obj_movement_info.fall_time = 0;
+    obj_movement_info.pitch_rate = 0.0f;
+    obj_movement_info.update_time = 0;
+    obj_movement_info.spline_elevation = 0.0f;
+    obj_movement_info.jump_info = {};
+    obj_movement_info.getMovementStatusInfo() = {};
+    m_zAxisPosition = 0.0f;
 }

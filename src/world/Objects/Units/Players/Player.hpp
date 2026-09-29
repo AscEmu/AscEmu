@@ -525,6 +525,8 @@ public:
     //\Todo: this function is not as "safe" as the one above, reduce it to one function.
     void safeTeleport(WorldMap* mgr, const LocationVector& vec);
 
+    void resetMovementStateForTeleport();
+
     void resetPossessionBeforeRelocation();
     void resetVisibilityBeforeRelocation();
     void refreshVisibilityAfterRelocation();
@@ -725,12 +727,6 @@ public:
     void sendDelayedPacket(WorldPacket* data, bool deleteDataOnSend);
 
     void processPendingUpdates();
-#if VERSION_STRING == Mop
-    /// MoP: resend player create + SMSG_MOVE_SET_ACTIVE_MOVER when client reports object update failed during world enter.
-    void resendCreateAndActiveMoverForMoP();
-    /// MoP: event callback to process session queue again after 150ms (catches 0x1061 that arrive after create send).
-    void eventProcessQueuedPacketsMoP();
-#endif
     bool compressAndSendUpdateBuffer(uint32_t size, const uint8_t* update_buffer);
     uint32_t buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target) override;
 

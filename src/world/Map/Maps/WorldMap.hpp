@@ -404,7 +404,7 @@ public:
     BaseMap* getBaseMap() const { return m_baseMap; }
 
     bool cellHasAreaID(uint32_t x, uint32_t y, uint16_t& AreaID);
-   
+
     void changeFarsightLocation(Player* plr, DynamicObject* farsight);
 
     // Packts

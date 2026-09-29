@@ -98,6 +98,8 @@ struct MovementInfo
 
     StatusInfo status_info;
     StatusInfo const& getMovementStatusInfo() const { return status_info; }
+    StatusInfo& getMovementStatusInfo() { return status_info; }
+
 
     WoWGuid const& getGuid() const { return guid; }
     WoWGuid const& getGuid2() const { return guid2; }
@@ -110,6 +112,7 @@ struct MovementInfo
 
     MovementFlags2 getMovementFlags2() const { return MovementFlags2(flags2); }
     void addMovementFlags2(MovementFlags2 _flags2) { flags2 |= _flags2; }
+    void setMovementFlags2(MovementFlags2 _flags2) { flags2 = _flags2; }
     bool hasMovementFlag2(MovementFlags2 _flags2) const { return (flags2 & _flags2) != 0; }
 
     void setUpdateTime(uint32_t time) { update_time = time; }

@@ -76,30 +76,30 @@ namespace visibility
     struct ObjectSlot
     {
         /// Handle Generation & Use-Flag
-        std::uint32_t               gen{ 1 };
-        bool                        inUse{ false };
+        std::uint32_t gen{1};
+        bool inUse{false};
 
         /// Meta / Position / Backref
-        ObjectMeta                  meta{};
-        LocationVector              pos{};
-        void*                       native{ nullptr };  // optional Back-Ref (no Ownership)
-        SubState                    sub{};              // subscription state
-        PubState                    pub{};              // broadcast state
-        InterestProfile             interest{};         // interest / publish profile
+        ObjectMeta meta{};
+        LocationVector pos{};
+        void* native{nullptr}; // optional Back-Ref (no Ownership)
+        SubState sub{}; // subscription state
+        PubState pub{}; // broadcast state
+        InterestProfile interest{}; // interest / publish profile
 
         /// Last position used for the more expensive visibility refresh.
-        bool                        lastObjectInterestRefreshValid{ false };
-        LocationVector              lastObjectInterestRefreshPos{};
+        bool lastObjectInterestRefreshValid{false};
+        LocationVector lastObjectInterestRefreshPos{};
 
         /// Scratch stamp used to dedupe visibility candidates.
-        mutable std::uint64_t       visibilityQueryStamp{ 0 };
+        mutable std::uint64_t visibilityQueryStamp{0};
 
         /// Indices used for O(1) removal from spatial buckets.
         inline static constexpr std::uint32_t InvalidSpatialBucketIndex = std::numeric_limits<std::uint32_t>::max();
-        std::uint32_t               cellBucketIndex{ InvalidSpatialBucketIndex };
-        std::uint32_t               gridOwnerBucketIndex{ InvalidSpatialBucketIndex };
+        std::uint32_t cellBucketIndex{InvalidSpatialBucketIndex};
+        std::uint32_t gridOwnerBucketIndex{InvalidSpatialBucketIndex};
 
-        mutable NearCache           nearCache;
+        mutable NearCache nearCache;
 
         ObjectSlot() = default;
 
@@ -159,6 +159,12 @@ namespace visibility
     //////////////////////////////////////////////////////////////////////////////////////////
     class ObjectPool
     {
+        mutable std::shared_mutex m_mutex{};
+        std::deque<ObjectSlot> m_slots{};
+        std::vector<std::uint32_t> m_next{};
+        std::uint32_t m_freeHead{0};
+        std::uint32_t m_liveCount{0};
+
     public:
         /// Create an empty object pool.
         ///
@@ -186,6 +192,8 @@ namespace visibility
         /// The pool grows automatically if no free slot is available.
         ObjectHandle allocate()
         {
+            std::unique_lock lock(m_mutex);
+
             if (m_freeHead == 0)
             {
                 const std::size_t currentCapacity = capacityUnlocked();
@@ -204,7 +212,7 @@ namespace visibility
 
             ++m_liveCount;
 
-            return { id, slot.gen };
+            return {id, slot.gen};
         }
 
         /// Release a previously allocated handle back to the pool.
@@ -212,6 +220,8 @@ namespace visibility
         /// Invalid, stale or already released handles are ignored.
         bool release(ObjectHandle h)
         {
+            std::unique_lock lock(m_mutex);
+
             if (h.id == 0 || h.id >= m_slots.size())
                 return false;
 
@@ -244,6 +254,8 @@ namespace visibility
         /// Try to obtain a mutable pointer to the slot for a valid handle.
         bool tryGet(ObjectHandle h, ObjectSlot*& out)
         {
+            std::shared_lock lock(m_mutex);
+
             if (h.id == 0 || h.id >= m_slots.size())
                 return false;
 
@@ -262,6 +274,8 @@ namespace visibility
         /// Try to obtain a const pointer to the slot for a valid handle.
         bool tryGet(ObjectHandle h, const ObjectSlot*& out) const
         {
+            std::shared_lock lock(m_mutex);
+
             if (h.id == 0 || h.id >= m_slots.size())
                 return false;
 
@@ -311,6 +325,7 @@ namespace visibility
         /// Caller must guarantee that the handle is valid.
         ObjectMeta& meta(ObjectHandle h)
         {
+            std::shared_lock lock(m_mutex);
             return m_slots[h.id].meta;
         }
 
@@ -319,6 +334,7 @@ namespace visibility
         /// Caller must guarantee that the handle is valid.
         const ObjectMeta& meta(ObjectHandle h) const
         {
+            std::shared_lock lock(m_mutex);
             return m_slots[h.id].meta;
         }
 
@@ -327,6 +343,7 @@ namespace visibility
         /// Caller must guarantee that the handle is valid.
         LocationVector& pos(ObjectHandle h)
         {
+            std::shared_lock lock(m_mutex);
             return m_slots[h.id].pos;
         }
 
@@ -335,6 +352,7 @@ namespace visibility
         /// Caller must guarantee that the handle is valid.
         const LocationVector& pos(ObjectHandle h) const
         {
+            std::shared_lock lock(m_mutex);
             return m_slots[h.id].pos;
         }
 
@@ -344,12 +362,14 @@ namespace visibility
         /// Number of currently allocated slots.
         std::uint32_t liveCount() const
         {
+            std::shared_lock lock(m_mutex);
             return m_liveCount;
         }
 
         /// Number of usable slots, excluding reserved slot 0.
         std::uint32_t capacity() const
         {
+            std::shared_lock lock(m_mutex);
             return static_cast<std::uint32_t>(capacityUnlocked());
         }
 
@@ -361,6 +381,8 @@ namespace visibility
         /// \param maxFreeRatio Shrink only if free slots exceed live slots by this ratio.
         void shrinkToFit(std::size_t minCapacity = 64, std::size_t maxFreeRatio = 4)
         {
+            std::unique_lock lock(m_mutex);
+
             const std::size_t usableCapacity = capacityUnlocked();
             if (usableCapacity <= minCapacity)
                 return;
@@ -452,13 +474,5 @@ namespace visibility
                 m_freeHead = id;
             }
         }
-
-    private:
-        std::deque<ObjectSlot>      m_slots{};
-        std::vector<std::uint32_t>  m_next{};
-        std::uint32_t               m_freeHead{ 0 };
-        std::uint32_t               m_liveCount{ 0 };
     };
-
-
 } /// namespace visibility
