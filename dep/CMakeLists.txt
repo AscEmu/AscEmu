@@ -7,9 +7,13 @@ else ()
     add_compile_options(-w)
 endif ()
 
-# add zlib and bzip2 for windows compile
+# add bzip2 for windows compile
 if (WIN32)
     add_subdirectory(bzip2)
+endif ()
+
+# zlib is also used by CascLib when the tools are built.
+if (WIN32 OR BUILD_TOOLS)
     add_subdirectory(zlib)
 endif ()
 
@@ -32,4 +36,5 @@ if (BUILD_TOOLS)
     # MPQArchive/MPQFile wrapper) and the separate dbcfile/loadlib libraries
     # are retired.
     add_subdirectory(mpqlib)
+    add_subdirectory(casclib)
 endif ()

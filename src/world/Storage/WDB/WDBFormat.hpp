@@ -1266,7 +1266,16 @@ namespace WDB
         // 1.60.1.69876/69893/69913/69977. AreaTable and LiquidType use
         // non-inline IDs; WMOAreaTable keeps its ID as field 1.
         inline const WDC5TableSchema AreaTable = makeSchemaWithArrays("AreaTable.db2", 0x9995B797, -1, 24, {{22, 2}, {23, 4}});
+
+        // Liquid tables used by the map extractor. IDs are non-inline in the
+        // modern/Forever layouts, so indexField stays -1 and WDC5File uses the
+        // section ID/copy tables. 1.60.1.69876 through 1.60.1.70009 use these
+        // layouts, while the extractor has a structural fallback for older
+        // compatible layouts.
+        inline const WDC5TableSchema LiquidMaterial = makeScalarSchema("LiquidMaterial.db2", 0x98E5D7AA, -1, 2);
+        inline const WDC5TableSchema LiquidObject = makeScalarSchema("LiquidObject.db2", 0xCB0D39E8, -1, 5);
         inline const WDC5TableSchema LiquidType = makeSchemaWithArrays("LiquidType.db2", 0xD1ECEEC9, -1, 21, {{1, 6}, {16, 6}, {17, 3}, {18, 38}, {19, 4}, {20, 4}});
+
         inline const WDC5TableSchema WMOAreaTable = makeScalarSchema("WMOAreaTable.db2", 0xC5A7B977, 1, 15);
     }
 }

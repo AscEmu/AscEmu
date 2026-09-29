@@ -517,10 +517,14 @@ namespace WDB
             return std::string_view(begin, static_cast<size_t>(end - begin));
         };
 
-        // WDC5 string fields can be represented either as an offset into the
-        // section string table or as a relative offset from the field itself,
-        // depending on the generated layout. Prefer the relative form when it
-        // resolves into this record's section and fall back to table-relative.
+        // WDC5 string fields can be represented either as a relative offset
+        // from the string field itself (the normal modern WDC form) or as an
+        // offset into the section string table. Try the relative form first.
+        //
+        // Trying table-relative first can still land on a perfectly valid
+        // NUL-terminated string, just the wrong one. That is exactly what
+        // happened with Forever Map.Directory, where map names turned into
+        // unrelated localized text.
         uint32_t const fieldByteOffset = getFieldByteOffset(field) + static_cast<uint32_t>(sizeof(uint32_t)) * arrayIndex;
         size_t const relativeOffset = static_cast<size_t>(ref.offset) + fieldByteOffset + rawOffset;
         if (std::string_view value = makeView(relativeOffset); !value.empty())

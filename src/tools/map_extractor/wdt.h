@@ -29,6 +29,25 @@
 
 #pragma pack(push, 1)
 
+class wdt_MPHD
+{
+    union
+    {
+        uint32_t fcc;
+        char fcc_txt[4];
+    };
+public:
+    uint32_t size;
+    uint32_t flags;
+    uint32_t lgtFileDataID;
+    uint32_t occFileDataID;
+    uint32_t fogsFileDataID;
+    uint32_t mpvFileDataID;
+    uint32_t texFileDataID;
+    uint32_t wdlFileDataID;
+    uint32_t pd4FileDataID;
+};
+
 class wdt_MAIN
 {
     union
@@ -44,6 +63,29 @@ public:
         uint32_t flag;
         uint32_t data1;
     } adt_list[64][64];
+};
+
+class wdt_MAID
+{
+    union
+    {
+        uint32_t fcc;
+        char fcc_txt[4];
+    };
+public:
+    uint32_t size;
+
+    struct adtFiles
+    {
+        uint32_t rootADT;
+        uint32_t obj0ADT;
+        uint32_t obj1ADT;
+        uint32_t tex0ADT;
+        uint32_t lodADT;
+        uint32_t mapTexture;
+        uint32_t mapTextureN;
+        uint32_t minimapTexture;
+    } adt_files[64][64];
 };
 
 #pragma pack(pop)

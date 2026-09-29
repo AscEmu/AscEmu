@@ -27,6 +27,11 @@
 
 #include "adt.h"
 #include "wdt.h"
+#include "ForeverCasc.hpp"
+#include "ForeverDb2Files.hpp"
+#include "RawChunkTree.hpp"
+#include "WDC5File.hpp"
+#include <CascLib.h>
 
 #include <algorithm>
 #include <array>
@@ -63,9 +68,14 @@ std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
 std::unique_ptr<mpqlib::MpqPatchChain> LocaleMpq;
 
 ClientVersion gClientVersion = ClientVersion::WrathOfTheLichKing;
+bool gForeverClient = false;
+std::unique_ptr<MapExtractor::Forever::CascStorage> ForeverCasc;
 
 bool IsLegacyMapFormat()
 {
+    if (gForeverClient)
+        return false;
+
     return gClientVersion == ClientVersion::Vanilla || gClientVersion == ClientVersion::BurningCrusade
         || gClientVersion == ClientVersion::WrathOfTheLichKing;
 }
@@ -84,6 +94,7 @@ namespace
     constexpr std::array<std::string_view, 4> kLegacyWdtTags = { "MVER", "MPHD", "MAIN", "MWMO" };
     constexpr std::array<std::string_view, 6> kModernAdtTags = { "MVER", "MH2O", "MCNK", "MCVT", "MCLQ", "MFBO" };
     constexpr std::array<std::string_view, 2> kModernWdtTags = { "MVER", "MAIN" };
+    constexpr std::array<std::string_view, 4> kForeverWdtTags = { "MVER", "MPHD", "MAIN", "MAID" };
 
     constexpr uint32_t kAdtWdtFormatVersion = 18;
 
@@ -98,7 +109,8 @@ namespace
         uint32_t ver;
     };
 
-    bool isValidVersionChunk(mpqlib::ChunkNode const* mver)
+    template <typename ChunkNodeT>
+    bool isValidVersionChunk(ChunkNodeT const* mver)
     {
         if (!mver)
             return false;
@@ -140,6 +152,21 @@ namespace
         return loadChunkTree(filename, IsLegacyMapFormat() ? std::span<const std::string_view>(kLegacyWdtTags) : std::span<const std::string_view>(kModernWdtTags), log);
     }
 
+    std::optional<MapExtractor::ChunkTree> loadForeverChunkTree(uint32_t fileDataId, std::span<const std::string_view> recognizedTags, char const* kind)
+    {
+        std::vector<uint8_t> data;
+        if (!ForeverCasc || !ForeverCasc->readFile(fileDataId, data))
+            return std::nullopt;
+
+        auto tree = MapExtractor::ChunkTree::load(std::move(data), recognizedTags);
+        if (!tree || !isValidVersionChunk(tree->find("MVER")))
+        {
+            printf("Invalid Forever %s FileDataID %u\n", kind, fileDataId);
+            return std::nullopt;
+        }
+        return tree;
+    }
+
     // Classic/TBC/WotLK WDTs additionally require MPHD/MWMO to be present -
     // carried over from the old WDT_file::prepareLoadedData() validation
     // chain. MPHD/MWMO carry no data this tool needs beyond their presence.
@@ -157,12 +184,12 @@ struct map_id
 
 struct LiquidMaterialEntry
 {
-    int8_t LVF;
+    uint8_t LVF{};
 };
 
 struct LiquidObjectEntry
 {
-    int16_t LiquidTypeID;
+    uint16_t LiquidTypeID{};
 };
 
 struct LiquidTypeEntry
@@ -668,12 +695,9 @@ bool IsDeepWaterIgnored(uint32_t mapId, uint32_t x, uint32_t y)
     return false;
 }
 
-bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int /*cell_y*/, int /*cell_x*/, uint32_t build, bool ignoreDeepWater)
+template <typename ChunkTreeT>
+bool ConvertADTTree(ChunkTreeT const& adt, std::string const& inputPath, std::string const& outputPath, int /*cell_y*/, int /*cell_x*/, uint32_t build, bool ignoreDeepWater)
 {
-    auto adt = loadAdtChunkTree(inputPath);
-    if (!adt)
-        return false;
-
     bool const legacy = IsLegacyMapFormat();
 
     map_fileheader map{};
@@ -701,7 +725,7 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
     bool hasFlightBox = false;
     bool foundAnyCell = false;
 
-    for (mpqlib::ChunkNode const* mcnkNode : adt->findAll("MCNK"))
+    for (auto const* mcnkNode : adt.findAll("MCNK"))
     {
         adt_MCNK const* mcnk = &mcnkNode->as<adt_MCNK>();
 
@@ -765,7 +789,7 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
             }
         }
 
-        if (mpqlib::ChunkNode const* chunk = mcnkNode->find("MCVT"))
+        if (auto const* chunk = mcnkNode->find("MCVT"))
         {
             adt_MCVT const* mcvt = &chunk->as<adt_MCVT>();
             for (int y = 0; y <= ADT_CELL_SIZE; y++)
@@ -794,7 +818,7 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
         // from TBC's MCLQ-only liquid format) have a stale sizeMCLQ in the
         // MCNK header that disagrees with the real, empty (header-only)
         // MCLQ chunk actually present on disk.
-        if (mpqlib::ChunkNode const* chunk = mcnkNode->find("MCLQ"))
+        if (auto const* chunk = mcnkNode->find("MCLQ"))
         {
             if (chunk->size() > 8) // more than just the [tag][size] header
             {
@@ -848,9 +872,42 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
             }
         }
 
-        // Hole data
-        holes[mcnk->iy][mcnk->ix] = static_cast<uint16_t>(mcnk->holes);
-        if (!hasHoles && mcnk->holes != 0)
+        // Hole data. AscEmu's MAP v1.3 format stores the historical 4x4
+        // uint16 hole mask. Modern ADTs can instead carry an 8x8 high-resolution
+        // mask in the old MCVT/MCNR offset bytes when MCNK flag 0x10000 is set.
+        // Collapse each 2x2 high-resolution block into one legacy output bit so
+        // the worldserver can keep consuming the existing .map format unchanged.
+        uint16_t outputHoles = static_cast<uint16_t>(mcnk->holes);
+        if (gForeverClient && (mcnk->flags & 0x10000U))
+        {
+            outputHoles = 0;
+            for (uint32_t outY = 0; outY < 4; ++outY)
+            {
+                for (uint32_t outX = 0; outX < 4; ++outX)
+                {
+                    bool hole = false;
+                    for (uint32_t dy = 0; dy < 2 && !hole; ++dy)
+                    {
+                        uint32_t const hiY = outY * 2 + dy;
+                        for (uint32_t dx = 0; dx < 2; ++dx)
+                        {
+                            uint32_t const hiX = outX * 2 + dx;
+                            if ((mcnk->union_5_3_0.HighResHoles[hiY] & (1U << hiX)) != 0)
+                            {
+                                hole = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (hole)
+                        outputHoles |= static_cast<uint16_t>(1U << (outY * 4 + outX));
+                }
+            }
+        }
+
+        holes[mcnk->iy][mcnk->ix] = outputHoles;
+        if (!hasHoles && outputHoles != 0)
             hasHoles = true;
     }
 
@@ -861,7 +918,7 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
     }
 
     // Liquid map for the grid, from the MH2O chunk (introduced in WotLK).
-    if (mpqlib::ChunkNode const* chunk = adt->find("MH2O"))
+    if (auto const* chunk = adt.find("MH2O"))
     {
         adt_MH2O const* h2o = &chunk->as<adt_MH2O>();
         for (int i = 0; i < ADT_CELLS_PER_GRID; i++)
@@ -975,7 +1032,7 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
         }
     }
 
-    if (mpqlib::ChunkNode const* chunk = adt->find("MFBO"))
+    if (auto const* chunk = adt.find("MFBO"))
     {
         adt_MFBO const* mfbo = &chunk->as<adt_MFBO>();
         memcpy(flight_box_max, &mfbo->max, sizeof(flight_box_max));
@@ -1319,6 +1376,26 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
 
     return true;
 }
+
+bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int cell_y, int cell_x, uint32_t build, bool ignoreDeepWater)
+{
+    auto adt = loadAdtChunkTree(inputPath);
+    if (!adt)
+        return false;
+    return ConvertADTTree(*adt, inputPath, outputPath, cell_y, cell_x, build, ignoreDeepWater);
+}
+
+bool ConvertForeverADT(uint32_t fileDataId, std::string const& displayName, std::string const& outputPath, int cell_y, int cell_x, uint32_t build, bool ignoreDeepWater)
+{
+    auto adt = loadForeverChunkTree(fileDataId, std::span<const std::string_view>(kModernAdtTags), "ADT");
+    if (!adt)
+    {
+        printf("Unable to load Forever ADT %s [FileDataID %u]\n", displayName.c_str(), fileDataId);
+        return false;
+    }
+    return ConvertADTTree(*adt, displayName, outputPath, cell_y, cell_x, build, ignoreDeepWater);
+}
+
 
 namespace
 {
@@ -1922,6 +1999,616 @@ void CloseMPQFiles()
     LocaleMpq.reset();
 }
 
+
+namespace
+{
+    constexpr uint32_t kForeverLocaleMask = CASC_LOCALE_NONE;
+
+    std::filesystem::path ForeverDb2Path(char const* fileName)
+    {
+        return std::filesystem::path(output_path) / "dbc" / fileName;
+    }
+
+    std::unordered_map<uint32_t, uint32_t> ForeverDb2FileIds;
+    bool ForeverDb2IndexBuilt = false;
+
+    MapExtractor::Forever::Db2FileEntry const* FindForeverDb2ByName(std::string_view fileName)
+    {
+        auto const it = std::find_if(
+            MapExtractor::Forever::Db2Files.begin(),
+            MapExtractor::Forever::Db2Files.end(),
+            [fileName](MapExtractor::Forever::Db2FileEntry const& entry)
+            {
+                return entry.fileName == fileName;
+            });
+
+        return it != MapExtractor::Forever::Db2Files.end() ? &*it : nullptr;
+    }
+
+    bool BuildForeverDb2Index()
+    {
+        if (ForeverDb2IndexBuilt)
+            return !ForeverDb2FileIds.empty();
+
+        ForeverDb2IndexBuilt = true;
+        ForeverDb2FileIds.clear();
+
+        if (!ForeverCasc)
+            return false;
+
+        std::unordered_map<uint32_t, MapExtractor::Forever::Db2FileEntry const*> knownHashes;
+        knownHashes.reserve(MapExtractor::Forever::Db2Files.size());
+        for (auto const& entry : MapExtractor::Forever::Db2Files)
+            knownHashes.emplace(entry.tableHash, &entry);
+
+        std::vector<uint32_t> const ids = ForeverCasc->enumerateFileDataIds();
+        printf("Forever DB2 discovery: CASC exposed %zu unique FileDataIDs.\n", ids.size());
+        printf("Forever DB2 discovery: looking for %zu known table hashes...\n",
+            MapExtractor::Forever::Db2Files.size());
+
+        size_t scanned = 0;
+        size_t wdcFiles = 0;
+        size_t matched = 0;
+        size_t remaining = knownHashes.size();
+
+        for (uint32_t const fileDataId : ids)
+        {
+            if (remaining == 0)
+            {
+                printf("Forever DB2 discovery: all known tables found; stopping scan early at %zu/%zu FileDataIDs.\n",
+                    scanned, ids.size());
+                break;
+            }
+
+            ++scanned;
+
+            if ((scanned % 25000) == 0)
+            {
+                printf("Forever DB2 discovery: scanned %zu/%zu FileDataIDs, WDC=%zu, matched=%zu/%zu...\n",
+                    scanned,
+                    ids.size(),
+                    wdcFiles,
+                    matched,
+                    MapExtractor::Forever::Db2Files.size());
+            }
+
+            uint32_t tableHash = 0;
+            uint32_t layoutHash = 0;
+            if (!ForeverCasc->readDb2Identity(fileDataId, tableHash, layoutHash, kForeverLocaleMask))
+                continue;
+
+            ++wdcFiles;
+
+            auto const known = knownHashes.find(tableHash);
+            if (known == knownHashes.end())
+                continue;
+
+            // We already resolved this table hash from another ROOT/content
+            // variant. Keep the first readable FileDataID.
+            if (ForeverDb2FileIds.contains(tableHash))
+                continue;
+
+            ForeverDb2FileIds.emplace(tableHash, fileDataId);
+            ++matched;
+            --remaining;
+
+            if ((matched % 100) == 0 || remaining == 0)
+            {
+                printf("Forever DB2 discovery: matched %zu/%zu known tables (%zu remaining).\n",
+                    matched,
+                    MapExtractor::Forever::Db2Files.size(),
+                    remaining);
+            }
+
+            if (layoutHash != known->second->referenceLayoutHash)
+            {
+                printf("  layout changed: %-36s FileDataID=%u layout=0x%08X reference=0x%08X\n",
+                    known->second->fileName.data(),
+                    fileDataId,
+                    layoutHash,
+                    known->second->referenceLayoutHash);
+            }
+        }
+
+        printf("Forever DB2 discovery: scanned %zu/%zu FileDataIDs, inspected %zu WDC files, matched %zu/%zu known tables.\n",
+            scanned,
+            ids.size(),
+            wdcFiles,
+            matched,
+            MapExtractor::Forever::Db2Files.size());
+
+        if (remaining != 0)
+            printf("Forever DB2 discovery: %zu known table hash(es) were not present in this client build.\n", remaining);
+
+        return !ForeverDb2FileIds.empty();
+    }
+
+    bool EnsureForeverDb2(char const* fileName)
+    {
+        std::filesystem::path const path = ForeverDb2Path(fileName);
+        if (fs::exists(path))
+            return true;
+
+        auto const* entry = FindForeverDb2ByName(fileName);
+        if (!entry)
+        {
+            printf("Forever DB2 registry has no entry for %s\n", fileName);
+            return false;
+        }
+
+        if (!BuildForeverDb2Index())
+            return false;
+
+        auto const id = ForeverDb2FileIds.find(entry->tableHash);
+        if (id == ForeverDb2FileIds.end())
+        {
+            printf("Missing Forever DB2 %s [TableHash 0x%08X]\n", fileName, entry->tableHash);
+            return false;
+        }
+
+        if (!ForeverCasc->extractFile(id->second, path, kForeverLocaleMask))
+        {
+            printf("Unable to extract Forever DB2 %s [FileDataID %u, TableHash 0x%08X]\n",
+                fileName, id->second, entry->tableHash);
+            return false;
+        }
+
+        return true;
+    }
+
+    void ExtractForeverDB2Files()
+    {
+        printf("Extracting Forever DB2 files for build %u...\n",
+            ForeverCasc ? ForeverCasc->build() : 0);
+
+        fs::path const output = fs::path(output_path) / "dbc";
+        fs::create_directories(output);
+
+        BuildForeverDb2Index();
+
+        uint32_t extracted = 0;
+        uint32_t missing = 0;
+        uint32_t existing = 0;
+
+        for (auto const& entry : MapExtractor::Forever::Db2Files)
+        {
+            fs::path const destination = output / entry.fileName;
+            if (fs::exists(destination))
+            {
+                ++existing;
+                continue;
+            }
+
+            auto const id = ForeverDb2FileIds.find(entry.tableHash);
+            if (id == ForeverDb2FileIds.end())
+            {
+                printf("  MISSING %-28s [TableHash 0x%08X]\n", entry.fileName.data(), entry.tableHash);
+                ++missing;
+                continue;
+            }
+
+            if (ForeverCasc->extractFile(id->second, destination, kForeverLocaleMask))
+            {
+                printf("  %-36s [FileDataID %u]\n", entry.fileName.data(), id->second);
+                ++extracted;
+            }
+            else
+            {
+                printf("  FAILED  %-28s [FileDataID %u]\n", entry.fileName.data(), id->second);
+                ++missing;
+            }
+        }
+
+        for (auto const& entry : MapExtractor::Forever::UnresolvedDb2Files)
+        {
+            fs::path const destination = output / entry.fileName;
+            if (fs::exists(destination))
+            {
+                ++existing;
+                continue;
+            }
+
+            if (ForeverCasc->extractFile(entry.fileDataId, destination, kForeverLocaleMask))
+            {
+                printf("  %-36s [unresolved FileDataID %u]\n", entry.fileName.data(), entry.fileDataId);
+                ++extracted;
+            }
+            else
+            {
+                printf("  MISSING %-28s [unresolved FileDataID %u]\n", entry.fileName.data(), entry.fileDataId);
+                ++missing;
+            }
+        }
+
+        printf("Forever DB2 extraction complete: %u extracted, %u already present, %u missing.\n\n",
+            extracted, existing, missing);
+    }
+
+    bool LoadForeverDb2WithFallback(
+        char const* fileName,
+        WDB::WDC5TableSchema const& preferredSchema,
+        std::initializer_list<std::pair<uint32_t, uint8_t>> fallbackArrays,
+        uint32_t minimumFields,
+        WDB::WDC5File& db2)
+    {
+        std::filesystem::path const path = ForeverDb2Path(fileName);
+        std::string error;
+
+        if (db2.load(path.string(), preferredSchema, &error))
+            return true;
+
+        // Layout hashes are deliberately validation, not version switches.
+        // Older/newer supported Forever builds may carry a different layout
+        // hash while preserving the fields needed by the map extractor.
+        std::string const preferredError = error;
+        if (!db2.loadGeneric(path.string(), fallbackArrays, &error))
+        {
+            printf("Unable to parse Forever %s: schema=%s; fallback=%s\n",
+                fileName, preferredError.c_str(), error.c_str());
+            return false;
+        }
+
+        if (db2.getFieldCount() < minimumFields)
+        {
+            printf("Unsupported Forever %s layout 0x%08X: only %u fields, need at least %u.\n",
+                fileName, db2.getLayoutHash(), db2.getFieldCount(), minimumFields);
+            return false;
+        }
+
+        printf("Forever %s: using compatible layout fallback 0x%08X (%u fields).\n",
+            fileName, db2.getLayoutHash(), db2.getFieldCount());
+        return true;
+    }
+
+    std::string GetForeverMapDisplayName(WDB::WDC5File const& db2, uint32_t row, uint32_t mapId)
+    {
+        std::string_view const directory = db2.getString(row, 0);
+
+        // Directory is useful for diagnostics only. Forever WDT/ADT access is
+        // FileDataID-based, so a malformed/unknown string layout must never
+        // make us lose an otherwise extractable map.
+        if (!directory.empty() && directory.size() < 64)
+            return std::string(directory);
+
+        return "Map_" + std::to_string(mapId);
+    }
+
+    bool ReadForeverMapTable(std::vector<map_id>& maps, std::vector<uint32_t>& wdtFileDataIds)
+    {
+        if (!EnsureForeverDb2("Map.db2"))
+            return false;
+
+        WDB::WDC5File db2;
+        if (!LoadForeverDb2WithFallback(
+                "Map.db2",
+                WDB::Formats::Forever::Map,
+                {{6, 2}, {25, 3}},
+                25,
+                db2))
+            return false;
+
+        // Forever 1.60.1 uses:
+        //   0  Directory
+        //   21 WdtFileDataID
+        // Layout D43AFAC3 is the known layout for 69876..70009. The fallback
+        // above permits another compatible layout, but WdtFileDataID must
+        // still be present at the semantic position used by this family.
+        constexpr uint32_t kDirectoryField = 0;
+        constexpr uint32_t kWdtFileDataIdField = 21;
+        if (db2.getFieldCount() <= kWdtFileDataIdField)
+        {
+            printf("Unsupported Forever Map.db2 layout 0x%08X: WdtFileDataID field is unavailable.\n",
+                db2.getLayoutHash());
+            return false;
+        }
+
+        maps.clear();
+        wdtFileDataIds.clear();
+        maps.reserve(db2.getRecordCount());
+        wdtFileDataIds.reserve(db2.getRecordCount());
+
+        for (uint32_t row = 0; row < db2.getRecordCount(); ++row)
+        {
+            uint32_t const wdtFileDataId = db2.getUInt32(row, kWdtFileDataIdField);
+            if (!wdtFileDataId)
+                continue;
+
+            map_id map{};
+            map.id = db2.getRecordId(row);
+
+            std::string const displayName = GetForeverMapDisplayName(db2, row, map.id);
+            size_t const copyLength = std::min(displayName.size(), sizeof(map.name) - 1);
+            std::memcpy(map.name, displayName.data(), copyLength);
+            map.name[copyLength] = '\0';
+
+            maps.push_back(map);
+            wdtFileDataIds.push_back(wdtFileDataId);
+        }
+
+        printf("Read Forever Map.db2: %zu maps with WDT FileDataIDs (layout 0x%08X).\n",
+            maps.size(), db2.getLayoutHash());
+        return !maps.empty();
+    }
+
+    bool ReadForeverLiquidTables()
+    {
+        if (!EnsureForeverDb2("LiquidMaterial.db2")
+            || !EnsureForeverDb2("LiquidObject.db2")
+            || !EnsureForeverDb2("LiquidType.db2"))
+            return false;
+
+        LiquidMaterials.clear();
+        LiquidObjects.clear();
+        LiquidTypes.clear();
+
+        // LiquidMaterial:
+        // modern/Forever semantic order = Flags, LVF (non-inline ID).
+        WDB::WDC5File material;
+        if (!LoadForeverDb2WithFallback(
+                "LiquidMaterial.db2",
+                WDB::Formats::Forever::LiquidMaterial,
+                {},
+                2,
+                material))
+            return false;
+
+        constexpr uint32_t kLiquidMaterialFlagsField = 0;
+        constexpr uint32_t kLiquidMaterialLvfField = 1;
+        for (uint32_t row = 0; row < material.getRecordCount(); ++row)
+        {
+            uint32_t const id = material.getRecordId(row);
+            (void)material.getUInt32(row, kLiquidMaterialFlagsField); // parsed intentionally; currently not needed by MAP v1.3
+            LiquidMaterials[id].LVF = material.getUInt8(row, kLiquidMaterialLvfField);
+        }
+
+        // LiquidObject:
+        // FlowDirection, FlowSpeed, LiquidTypeID, Fishable, Reflection.
+        WDB::WDC5File object;
+        if (!LoadForeverDb2WithFallback(
+                "LiquidObject.db2",
+                WDB::Formats::Forever::LiquidObject,
+                {},
+                3,
+                object))
+            return false;
+
+        constexpr uint32_t kLiquidObjectLiquidTypeField = 2;
+        for (uint32_t row = 0; row < object.getRecordCount(); ++row)
+            LiquidObjects[object.getRecordId(row)].LiquidTypeID = object.getUInt16(row, kLiquidObjectLiquidTypeField);
+
+        // LiquidType:
+        // field 3 = SoundBank, field 14 = MaterialID in the compatible
+        // modern/Forever layouts. Arrays are supplied to the generic fallback
+        // so packed offsets remain correct if the layout hash changes.
+        WDB::WDC5File type;
+        if (!LoadForeverDb2WithFallback(
+                "LiquidType.db2",
+                WDB::Formats::Forever::LiquidType,
+                {{1, 6}, {16, 6}, {17, 3}, {18, 38}, {19, 4}, {20, 4}},
+                15,
+                type))
+            return false;
+
+        constexpr uint32_t kLiquidTypeSoundBankField = 3;
+        constexpr uint32_t kLiquidTypeMaterialIdField = 14;
+        for (uint32_t row = 0; row < type.getRecordCount(); ++row)
+        {
+            LiquidTypeEntry& entry = LiquidTypes[type.getRecordId(row)];
+            entry.SoundBank = type.getUInt8(row, kLiquidTypeSoundBankField);
+            entry.MaterialID = type.getUInt8(row, kLiquidTypeMaterialIdField);
+        }
+
+        // Validate cross-table references without rejecting old layouts merely
+        // because they contain unused/unknown rows.
+        size_t missingMaterialRefs = 0;
+        for (auto const& [id, liquidType] : LiquidTypes)
+        {
+            (void)id;
+            if (!LiquidMaterials.contains(liquidType.MaterialID))
+                ++missingMaterialRefs;
+        }
+
+        size_t missingTypeRefs = 0;
+        for (auto const& [id, liquidObject] : LiquidObjects)
+        {
+            (void)id;
+            if (!LiquidTypes.contains(liquidObject.LiquidTypeID))
+                ++missingTypeRefs;
+        }
+
+        printf(
+            "Loaded Forever liquid tables: %zu materials (layout 0x%08X), "
+            "%zu objects (layout 0x%08X), %zu types (layout 0x%08X).\n",
+            LiquidMaterials.size(), material.getLayoutHash(),
+            LiquidObjects.size(), object.getLayoutHash(),
+            LiquidTypes.size(), type.getLayoutHash());
+
+        if (missingMaterialRefs || missingTypeRefs)
+        {
+            printf(
+                "Forever liquid validation: %zu LiquidType->Material and %zu "
+                "LiquidObject->LiquidType reference(s) are unresolved; continuing "
+                "for compatibility with partial/legacy data.\n",
+                missingMaterialRefs, missingTypeRefs);
+        }
+
+        return !LiquidMaterials.empty() && !LiquidObjects.empty() && !LiquidTypes.empty();
+    }
+
+    struct ForeverMapTileWorkItem
+    {
+        uint32_t fileDataId{};
+        uint32_t mapId{};
+        uint32_t y{};
+        uint32_t x{};
+        bool ignoreDeepWater{};
+        std::string displayName;
+        std::string outputFilename;
+    };
+
+    void ExtractForeverMaps(uint32_t build)
+    {
+        printf("Extracting Forever maps...\n");
+
+        std::vector<map_id> maps;
+        std::vector<uint32_t> wdtFileDataIds;
+        if (!ReadForeverMapTable(maps, wdtFileDataIds) || !ReadForeverLiquidTables())
+            return;
+
+        fs::path const mapsPath = fs::path(output_path) / "maps";
+        fs::create_directories(mapsPath);
+
+        std::vector<ForeverMapTileWorkItem> workItems;
+        for (size_t z = 0; z < maps.size(); ++z)
+        {
+            auto wdt = loadForeverChunkTree(wdtFileDataIds[z], std::span<const std::string_view>(kForeverWdtTags), "WDT");
+            if (!wdt)
+            {
+                printf("Skipping map %s (%u): WDT FileDataID %u unavailable.\n", maps[z].name, maps[z].id, wdtFileDataIds[z]);
+                continue;
+            }
+
+            MapExtractor::ChunkNode const* mphdNode = wdt->find("MPHD");
+            MapExtractor::ChunkNode const* mainNode = wdt->find("MAIN");
+            MapExtractor::ChunkNode const* maidNode = wdt->find("MAID");
+            if (!mphdNode || !mainNode)
+            {
+                printf("Skipping map %s (%u): WDT is missing MPHD/MAIN.\n", maps[z].name, maps[z].id);
+                continue;
+            }
+
+            wdt_MPHD const* mphd = nullptr;
+            wdt_MAIN const* main = nullptr;
+            wdt_MAID const* maid = nullptr;
+            try
+            {
+                mphd = &mphdNode->as<wdt_MPHD>();
+                main = &mainNode->as<wdt_MAIN>();
+                if (maidNode)
+                    maid = &maidNode->as<wdt_MAID>();
+            }
+            catch (std::exception const& e)
+            {
+                printf("Skipping map %s (%u): invalid WDT chunks (%s).\n", maps[z].name, maps[z].id, e.what());
+                continue;
+            }
+
+            bool const usesFileDataIds = (mphd->flags & 0x200U) != 0;
+            if (usesFileDataIds && !maid)
+            {
+                printf("Skipping map %s (%u): WDT uses FileDataIDs but has no MAID chunk.\n", maps[z].name, maps[z].id);
+                continue;
+            }
+
+            // Modern Forever WDTs use MAID/FileDataID based root ADTs. Keep
+            // this explicit instead of guessing path-based ADTs for a layout
+            // that advertises another storage model.
+            if (!usesFileDataIds)
+            {
+                printf("Skipping map %s (%u): this Forever WDT does not expose FileDataID-based root ADTs.\n",
+                    maps[z].name, maps[z].id);
+                continue;
+            }
+
+            for (uint32_t y = 0; y < WDT_MAP_SIZE; ++y)
+            {
+                for (uint32_t x = 0; x < WDT_MAP_SIZE; ++x)
+                {
+                    if ((main->adt_list[y][x].flag & 0x1U) == 0)
+                        continue;
+
+                    uint32_t const rootAdt = maid->adt_files[y][x].rootADT;
+                    if (!rootAdt)
+                    {
+                        printf("Map %s (%u) tile [%u,%u] is active in MAIN but has no root ADT FileDataID.\n",
+                            maps[z].name, maps[z].id, y, x);
+                        continue;
+                    }
+
+                    char outputFilename[1024];
+                    snprintf(outputFilename, sizeof(outputFilename), "%s/maps/%04u_%02u_%02u.map", output_path, maps[z].id, y, x);
+                    std::string displayName = std::string(maps[z].name) + "_" + std::to_string(x) + "_" + std::to_string(y) + ".adt";
+                    bool const ignoreDeepWater = IsDeepWaterIgnored(maps[z].id, y, x);
+                    workItems.push_back({ rootAdt, maps[z].id, y, x, ignoreDeepWater, std::move(displayName), outputFilename });
+                }
+            }
+        }
+
+        printf("Converting %zu Forever map tiles...\n", workItems.size());
+        std::atomic<size_t> completed{ 0 };
+        std::mutex progressMutex;
+        size_t const total = workItems.size();
+        size_t const reportInterval = std::max<size_t>(1, total / 100);
+
+        std::for_each(std::execution::par, workItems.begin(), workItems.end(), [build, &completed, &progressMutex, total, reportInterval](ForeverMapTileWorkItem const& item)
+        {
+            try
+            {
+                ConvertForeverADT(item.fileDataId, item.displayName, item.outputFilename, item.y, item.x, build, item.ignoreDeepWater);
+            }
+            catch (std::exception const& e)
+            {
+                printf("Error converting %s [FileDataID %u]: %s\n", item.displayName.c_str(), item.fileDataId, e.what());
+            }
+
+            size_t const done = completed.fetch_add(1, std::memory_order_relaxed) + 1;
+            if (total && (done % reportInterval == 0 || done == total))
+            {
+                std::lock_guard<std::mutex> lock(progressMutex);
+                printf("\rConverting Forever tiles: %zu/%zu (%u%%)          ", done, total,
+                    static_cast<unsigned>(done * 100 / total));
+                fflush(stdout);
+            }
+        });
+        if (total)
+            printf("\n");
+    }
+}
+
+void RunForeverExtraction(MapExtractor::Forever::ClientBuildInfo const& client)
+{
+    if (!MapExtractor::Forever::IsSupportedBuild(client.build))
+    {
+        printf("Unsupported Forever client build: %u. AscEmu currently supports builds %u through %u.\n",
+            client.build,
+            MapExtractor::Forever::MinSupportedBuild,
+            MapExtractor::Forever::MaxSupportedBuild);
+        return;
+    }
+
+    ForeverCasc = std::make_unique<MapExtractor::Forever::CascStorage>();
+    std::string error;
+    if (!ForeverCasc->open(client, CASC_LOCALE_ALL_WOW, error))
+    {
+        printf("Unable to open Forever CASC storage: %s\n", error.c_str());
+        ForeverCasc.reset();
+        return;
+    }
+
+    if (ForeverCasc->build() && !MapExtractor::Forever::IsSupportedBuild(ForeverCasc->build()))
+    {
+        printf("CASC selected build %u but AscEmu supports builds %u through %u. Aborting.\n",
+            ForeverCasc->build(),
+            MapExtractor::Forever::MinSupportedBuild,
+            MapExtractor::Forever::MaxSupportedBuild);
+        ForeverCasc.reset();
+        return;
+    }
+
+    printf("Detected Forever CASC product '%s', build %u.\n", ForeverCasc->product().c_str(), client.build);
+    ForeverDb2FileIds.clear();
+    ForeverDb2IndexBuilt = false;
+    gForeverClient = true;
+    CONF_use_minHeight = -2000.0f;
+
+    if (CONF_extract & EXTRACT_DBC)
+        ExtractForeverDB2Files();
+    if (CONF_extract & EXTRACT_MAP)
+        ExtractForeverMaps(client.build);
+
+    ForeverCasc.reset();
+}
+
 void RunLegacyExtraction()
 {
     int const langIndex = getFindLanguageIndex();
@@ -2042,29 +2729,43 @@ int main(int argc, char* arg[])
     strncpy(input_path, cwd.c_str(), MAX_PATH_LENGTH - 1);
     strncpy(output_path, cwd.c_str(), MAX_PATH_LENGTH - 1);
 
-    auto detected = mpqlib::detectClientVersion(input_path);
-    if (!detected)
-    {
-        printf("Fatal Error: No wow.exe found in %s!\n", input_path);
-        std::cin.get();
-        return 0;
-    }
-
-    gClientVersion = *detected;
-    printf("Detected client version build family: %u\n", static_cast<uint32_t>(gClientVersion));
-
-    if (!IsLegacyMapFormat())
-        CONF_extract |= EXTRACT_CAMERA;
-
-    CONF_use_minHeight = IsLegacyMapFormat() ? -500.0f : -2000.0f;
-    CONF_TargetBuild = gClientVersion == ClientVersion::MistsOfPandaria ? 18273 : 15595;
-
+    // Parse -i/-o/-e before probing the client. Detection must use the
+    // user-selected input directory for both MPQ and CASC clients.
     HandleArgs(argc, arg);
 
-    if (IsLegacyMapFormat())
-        RunLegacyExtraction();
+    std::string cascDetectError;
+    auto foreverClient = MapExtractor::Forever::detectClient(input_path, cascDetectError);
+    if (foreverClient && foreverClient->build >= 60000)
+    {
+        RunForeverExtraction(*foreverClient);
+    }
     else
-        RunModernExtraction();
+    {
+        auto detected = mpqlib::detectClientVersion(input_path);
+        if (!detected)
+        {
+            if (foreverClient)
+                printf("Fatal Error: CASC client build %u is not supported by this extractor.\n", foreverClient->build);
+            else
+                printf("Fatal Error: No supported WoW client found in %s! %s\n", input_path, cascDetectError.c_str());
+            std::cin.get();
+            return 0;
+        }
+
+        gClientVersion = *detected;
+        printf("Detected client version build family: %u\n", static_cast<uint32_t>(gClientVersion));
+
+        if (!IsLegacyMapFormat())
+            CONF_extract |= EXTRACT_CAMERA;
+
+        CONF_use_minHeight = IsLegacyMapFormat() ? -500.0f : -2000.0f;
+        CONF_TargetBuild = gClientVersion == ClientVersion::MistsOfPandaria ? 18273 : 15595;
+
+        if (IsLegacyMapFormat())
+            RunLegacyExtraction();
+        else
+            RunModernExtraction();
+    }
 
     printf("Finished - Press any key to close map_extractor.exe\n");
     std::cin.get();

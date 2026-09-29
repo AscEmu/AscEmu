@@ -3,7 +3,10 @@
 # set up our project name.
 set(EXECUTABLE_NAME map_extractor)
 
-file(GLOB SRC_MAPS_EXTRACTOR *.cpp *.h)
+file(GLOB SRC_MAPS_EXTRACTOR CONFIGURE_DEPENDS *.cpp *.h *.hpp)
+list(APPEND SRC_MAPS_EXTRACTOR
+    ${CMAKE_SOURCE_DIR}/src/world/Storage/WDB/WDC5File.cpp
+)
 
 # source group.
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
@@ -12,6 +15,7 @@ add_executable(${EXECUTABLE_NAME} ${SRC_MAPS_EXTRACTOR})
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/src/shared
+    ${CMAKE_SOURCE_DIR}/src/world/Storage/WDB
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -19,6 +23,7 @@ include_directories(
 target_link_libraries(${EXECUTABLE_NAME}
   PUBLIC
     mpqlib
+    casc_static
 )
 
 install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})
