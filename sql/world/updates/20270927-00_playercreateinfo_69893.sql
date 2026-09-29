@@ -2,7 +2,7 @@
 -- AscEmu Forever 1.60.1
 -- Player create master data
 -- Build range for range-based tables: min_build=69893, max_build=70009
--- playercreateinfo, playercreateinfo_bars and playercreateinfo_items use build=69893; level/stat exact-build rows remain build=70009.
+-- playercreateinfo, playercreateinfo_bars, playercreateinfo_items and playercreateinfo_spell_cast use min_build=69893, max_build=70009; level/stat exact-build rows remain build=70009.
 --
 -- Combined from:
 --   Human, Dwarf, Night Elf, Gnome, Skyborn Alliance,
@@ -15,7 +15,7 @@
 --   Skyborn Alliance/Horde use race=95/96 directly.
 -- =============================================================================
 
-INSERT INTO `ascemu_world`.`world_db_version` (`LastUpdate`) VALUES ('20270927-00_playercreateinfo_69893')
+INSERT INTO `ascemu_world`.`world_db_version` (`LastUpdate`) VALUES ('20270927-00_playercreateinfo_69893');
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
@@ -23,11 +23,23 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- -----------------------------------------------------------------------------
 -- Schema width updates required for modern build numbers
 -- -----------------------------------------------------------------------------
-ALTER TABLE `playercreateinfo` MODIFY COLUMN `build` INT UNSIGNED NOT NULL DEFAULT 18414;
-ALTER TABLE `playercreateinfo_bars` MODIFY COLUMN `build` INT UNSIGNED NOT NULL DEFAULT 18414;
+ALTER TABLE `playercreateinfo`
+    CHANGE COLUMN `build` `min_build` INT UNSIGNED NOT NULL DEFAULT 18414,
+    ADD COLUMN `max_build` INT UNSIGNED NOT NULL DEFAULT 18414 AFTER `min_build`;
+UPDATE `playercreateinfo` SET `max_build`=`min_build`;
+ALTER TABLE `playercreateinfo_bars`
+    CHANGE COLUMN `build` `min_build` INT UNSIGNED NOT NULL DEFAULT 18414,
+    ADD COLUMN `max_build` INT UNSIGNED NOT NULL DEFAULT 18414 AFTER `min_build`;
+UPDATE `playercreateinfo_bars` SET `max_build`=`min_build`;
 ALTER TABLE `playercreateinfo_bars` MODIFY COLUMN `button` SMALLINT UNSIGNED NOT NULL DEFAULT 0;
-ALTER TABLE `playercreateinfo_items` MODIFY COLUMN `build` INT UNSIGNED NOT NULL DEFAULT 12340;
-ALTER TABLE `playercreateinfo_spell_cast` MODIFY COLUMN `build` INT UNSIGNED NOT NULL DEFAULT 18414;
+ALTER TABLE `playercreateinfo_items`
+    CHANGE COLUMN `build` `min_build` INT UNSIGNED NOT NULL DEFAULT 12340,
+    ADD COLUMN `max_build` INT UNSIGNED NOT NULL DEFAULT 12340 AFTER `min_build`;
+UPDATE `playercreateinfo_items` SET `max_build`=`min_build`;
+ALTER TABLE `playercreateinfo_spell_cast`
+    CHANGE COLUMN `build` `min_build` INT UNSIGNED NOT NULL DEFAULT 18414,
+    ADD COLUMN `max_build` INT UNSIGNED NOT NULL DEFAULT 18414 AFTER `min_build`;
+UPDATE `playercreateinfo_spell_cast` SET `max_build`=`min_build`;
 ALTER TABLE `playercreateinfo_skills` MODIFY COLUMN `min_build` INT UNSIGNED NOT NULL DEFAULT 5875, MODIFY COLUMN `max_build` INT UNSIGNED NOT NULL DEFAULT 18414;
 ALTER TABLE `playercreateinfo_skills`
     ADD COLUMN `step` SMALLINT UNSIGNED NOT NULL DEFAULT 0 AFTER `level`,
@@ -120,31 +132,31 @@ DROP TEMPORARY TABLE `_ae_old_playercreateinfo_spell_learn`;
 CREATE TEMPORARY TABLE `_ae_old_playercreateinfo_spell_cast` AS SELECT * FROM `playercreateinfo_spell_cast`;
 
 ALTER TABLE `playercreateinfo_spell_cast`
-    ADD COLUMN `race` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `build`,
+    ADD COLUMN `race` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `max_build`,
     DROP PRIMARY KEY,
     DROP INDEX `unique_index`;
 
 DELETE FROM `playercreateinfo_spell_cast`;
 
 INSERT INTO `playercreateinfo_spell_cast`
-    (`build`,`race`,`raceMask`,`classMask`,`spellid`,`note`)
+    (`min_build`,`max_build`,`race`,`raceMask`,`classMask`,`spellid`,`note`)
 SELECT DISTINCT
-    p.`build`,0,0,p.`classMask`,p.`spellid`,p.`note`
+    p.`min_build`,p.`max_build`,0,0,p.`classMask`,p.`spellid`,p.`note`
 FROM `_ae_old_playercreateinfo_spell_cast` p
 WHERE p.`raceMask`=0;
 
 INSERT INTO `playercreateinfo_spell_cast`
-    (`build`,`race`,`raceMask`,`classMask`,`spellid`,`note`)
+    (`min_build`,`max_build`,`race`,`raceMask`,`classMask`,`spellid`,`note`)
 SELECT DISTINCT
-    p.`build`,r.`race`,0,p.`classMask`,p.`spellid`,p.`note`
+    p.`min_build`,p.`max_build`,r.`race`,0,p.`classMask`,p.`spellid`,p.`note`
 FROM `_ae_old_playercreateinfo_spell_cast` p
 JOIN `_ae_race_ids` r ON (CAST(p.`raceMask` AS UNSIGNED) & (CAST(1 AS UNSIGNED) << (r.`race` - 1))) <> 0
 WHERE p.`raceMask`<>0;
 
 ALTER TABLE `playercreateinfo_spell_cast`
     DROP COLUMN `raceMask`,
-    ADD PRIMARY KEY (`build`,`race`,`classMask`,`spellid`) USING BTREE,
-    ADD UNIQUE INDEX `unique_index` (`build`,`race`,`classMask`,`spellid`) USING BTREE;
+    ADD PRIMARY KEY (`min_build`,`max_build`,`race`,`classMask`,`spellid`) USING BTREE,
+    ADD UNIQUE INDEX `unique_index` (`min_build`,`max_build`,`race`,`classMask`,`spellid`) USING BTREE;
 
 DROP TEMPORARY TABLE `_ae_old_playercreateinfo_spell_cast`;
 DROP TEMPORARY TABLE `_ae_race_ids`;
@@ -161,17 +173,17 @@ DROP TEMPORARY TABLE `_ae_race_ids`;
 -- playercreateinfo_bars below contains only spell actions (type=0). Modern item-action entries use type 0x80000000 and do not fit the current uint8 DB/core type field.
 
 
--- Build columns must support 70009.
+-- Build-range columns must support 70009.
 
 -- Replace only the sniffed Human 70009 create-info rows.
-DELETE FROM `playercreateinfo` WHERE `build`=69893 AND `race`=1 AND `class` IN (1,2,3,4,5,8,9);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,1,1,0,12,-8949.950195,-132.492996,83.531197,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,1,2,0,12,-8949.950195,-132.492996,83.531197,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,1,3,0,12,-8949.950195,-132.492996,83.531197,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,1,4,0,12,-8949.950195,-132.492996,83.531197,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,1,5,0,12,-8949.950195,-132.492996,83.531197,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,1,8,0,12,-8949.950195,-132.492996,83.531197,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,1,9,0,12,-8949.950195,-132.492996,83.531197,0.0);
+DELETE FROM `playercreateinfo` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class` IN (1,2,3,4,5,8,9);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,1,1,0,12,-8949.950195,-132.492996,83.531197,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,1,2,0,12,-8949.950195,-132.492996,83.531197,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,1,3,0,12,-8949.950195,-132.492996,83.531197,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,1,4,0,12,-8949.950195,-132.492996,83.531197,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,1,5,0,12,-8949.950195,-132.492996,83.531197,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,1,8,0,12,-8949.950195,-132.492996,83.531197,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,1,9,0,12,-8949.950195,-132.492996,83.531197,0.0);
 
 -- Known spells. classMask values are grouped by the exact classes in which each spell was observed.
 DELETE FROM `playercreateinfo_spell_learn` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1;
@@ -249,74 +261,74 @@ INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`clas
 INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`classMask`,`spellid`,`note`) VALUES (69893,70009,1,415,1293712,'70009 Human: Warrior, Paladin, Hunter, Rogue, Priest, Mage, Warlock');
 
 -- Start action bars: spell actions only. Item actions are intentionally omitted until the Forever action type is widened from uint8 to uint32 in CreateInfo/DB loader.
-DELETE FROM `playercreateinfo_bars` WHERE `build`=69893 AND `race`=1 AND `class` IN (1,2,3,4,5,8,9);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,1,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,1,72,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,1,73,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,1,81,1259718,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,1,82,20600,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,1,84,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,1,96,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,1,108,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,1,180,20600,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,1,182,1259718,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,1,271,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,2,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,2,1,20154,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,2,2,635,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,2,8,1259718,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,2,9,20600,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,2,181,1259718,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,2,182,20600,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,2,196,635,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,2,199,20154,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,3,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,3,1,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,3,2,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,3,8,1259718,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,3,9,20600,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,3,181,1259718,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,3,182,20600,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,3,196,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,3,199,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,4,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,4,1,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,4,2,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,4,3,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,4,9,1259718,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,4,10,20600,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,4,180,20600,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,4,182,1259718,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,4,196,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,4,198,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,4,199,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,5,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,5,1,585,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,5,2,2050,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,5,8,1259718,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,5,9,20600,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,5,181,1259718,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,5,182,20600,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,5,196,2050,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,5,199,585,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,8,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,8,1,133,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,8,2,168,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,8,8,1259718,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,8,9,20600,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,8,181,1259718,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,8,182,20600,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,8,196,168,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,8,199,133,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,9,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,9,1,686,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,9,2,687,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,9,8,1259718,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,9,9,20600,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,9,181,1259718,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,9,182,20600,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,9,196,687,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,1,9,199,686,0,0);
+DELETE FROM `playercreateinfo_bars` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class` IN (1,2,3,4,5,8,9);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,1,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,1,72,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,1,73,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,1,81,1259718,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,1,82,20600,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,1,84,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,1,96,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,1,108,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,1,180,20600,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,1,182,1259718,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,1,271,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,2,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,2,1,20154,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,2,2,635,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,2,8,1259718,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,2,9,20600,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,2,181,1259718,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,2,182,20600,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,2,196,635,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,2,199,20154,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,3,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,3,1,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,3,2,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,3,8,1259718,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,3,9,20600,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,3,181,1259718,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,3,182,20600,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,3,196,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,3,199,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,4,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,4,1,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,4,2,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,4,3,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,4,9,1259718,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,4,10,20600,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,4,180,20600,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,4,182,1259718,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,4,196,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,4,198,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,4,199,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,5,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,5,1,585,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,5,2,2050,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,5,8,1259718,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,5,9,20600,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,5,181,1259718,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,5,182,20600,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,5,196,2050,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,5,199,585,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,8,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,8,1,133,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,8,2,168,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,8,8,1259718,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,8,9,20600,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,8,181,1259718,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,8,182,20600,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,8,196,168,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,8,199,133,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,9,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,9,1,686,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,9,2,687,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,9,8,1259718,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,9,9,20600,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,9,181,1259718,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,9,182,20600,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,9,196,687,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,1,9,199,686,0,0);
 
 -- Not inserted yet: playercreateinfo_items, playercreateinfo_skills, playercreateinfo_spell_cast, player_levelstats/player_classlevelstats.
 -- Those require decoding the initial object/update-field state; do not copy 18414 values as a substitute.
@@ -335,16 +347,16 @@ INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`t
 -- Action bars contain only entries whose modern action type is 0; item actions with type 0x80000000 are intentionally omitted.
 
 
--- Ensure build columns can store build 70009.
+-- Ensure build-range columns can store build 70009.
 
 -- Dwarf create info. race=3.
-DELETE FROM `playercreateinfo` WHERE `build`=69893 AND `race`=3 AND `class` IN (1,2,3,4,5,7);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,3,1,0,1,-6240.319824,331.032990,382.757996,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,3,2,0,1,-6240.319824,331.032990,382.757996,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,3,3,0,1,-6240.319824,331.032990,382.757996,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,3,4,0,1,-6240.319824,331.032990,382.757996,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,3,5,0,1,-6240.319824,331.032990,382.757996,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,3,7,0,1,-6240.319824,331.032990,382.757996,0.0);
+DELETE FROM `playercreateinfo` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=3 AND `class` IN (1,2,3,4,5,7);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,3,1,0,1,-6240.319824,331.032990,382.757996,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,3,2,0,1,-6240.319824,331.032990,382.757996,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,3,3,0,1,-6240.319824,331.032990,382.757996,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,3,4,0,1,-6240.319824,331.032990,382.757996,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,3,5,0,1,-6240.319824,331.032990,382.757996,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,3,7,0,1,-6240.319824,331.032990,382.757996,0.0);
 
 -- Known spells. classMask is grouped by exactly the classes in which the spell was observed.
 DELETE FROM `playercreateinfo_spell_learn` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=3;
@@ -421,61 +433,61 @@ INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`clas
 INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`classMask`,`spellid`,`note`) VALUES (69893,70009,3,95,1293712,'70009 Dwarf: Warrior, Paladin, Hunter, Rogue, Priest, Shaman');
 
 -- Start action bars: only modern action type 0 entries.
-DELETE FROM `playercreateinfo_bars` WHERE `build`=69893 AND `race`=3 AND `class` IN (1,2,3,4,5,7);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,1,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,1,72,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,1,73,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,1,84,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,1,96,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,1,108,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,1,271,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,2,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,2,1,20154,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,2,2,635,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,2,8,20594,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,2,9,2481,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,2,181,20594,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,2,182,2481,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,2,196,635,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,2,199,20154,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,3,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,3,1,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,3,2,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,3,8,20594,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,3,9,2481,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,3,181,20594,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,3,182,2481,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,3,196,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,3,199,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,4,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,4,1,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,4,2,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,4,3,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,4,9,20594,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,4,10,2481,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,4,180,2481,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,4,182,20594,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,4,196,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,4,198,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,4,199,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,5,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,5,1,585,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,5,2,2050,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,5,8,20594,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,5,9,2481,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,5,181,20594,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,5,182,2481,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,5,196,2050,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,5,199,585,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,7,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,7,1,403,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,7,2,331,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,7,8,20594,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,7,9,2481,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,7,181,20594,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,7,182,2481,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,7,196,331,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,3,7,199,403,0,0);
+DELETE FROM `playercreateinfo_bars` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=3 AND `class` IN (1,2,3,4,5,7);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,1,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,1,72,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,1,73,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,1,84,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,1,96,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,1,108,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,1,271,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,2,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,2,1,20154,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,2,2,635,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,2,8,20594,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,2,9,2481,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,2,181,20594,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,2,182,2481,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,2,196,635,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,2,199,20154,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,3,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,3,1,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,3,2,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,3,8,20594,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,3,9,2481,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,3,181,20594,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,3,182,2481,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,3,196,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,3,199,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,4,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,4,1,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,4,2,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,4,3,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,4,9,20594,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,4,10,2481,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,4,180,2481,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,4,182,20594,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,4,196,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,4,198,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,4,199,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,5,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,5,1,585,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,5,2,2050,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,5,8,20594,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,5,9,2481,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,5,181,20594,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,5,182,2481,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,5,196,2050,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,5,199,585,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,7,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,7,1,403,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,7,2,331,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,7,8,20594,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,7,9,2481,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,7,181,20594,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,7,182,2481,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,7,196,331,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,3,7,199,403,0,0);
 
 -- Not inserted yet: playercreateinfo_items, playercreateinfo_skills, playercreateinfo_spell_cast, player_levelstats/player_classlevelstats.
 -- Those require decoding the initial object/update-field state; no older-build values are copied as substitutes.
@@ -495,12 +507,12 @@ INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`t
 
 
 -- Night Elf create info. race=4.
-DELETE FROM `playercreateinfo` WHERE `build`=69893 AND `race`=4 AND `class` IN (1,3,4,5,11);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,4,1,1,141,10311.299805,831.463013,1326.410034,5.480330);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,4,3,1,141,10311.299805,831.463013,1326.410034,5.480330);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,4,4,1,141,10311.299805,831.463013,1326.410034,5.480330);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,4,5,1,141,10311.299805,831.463013,1326.410034,5.480330);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,4,11,1,141,10311.299805,831.463013,1326.410034,5.480330);
+DELETE FROM `playercreateinfo` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=4 AND `class` IN (1,3,4,5,11);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,4,1,1,141,10311.299805,831.463013,1326.410034,5.480330);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,4,3,1,141,10311.299805,831.463013,1326.410034,5.480330);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,4,4,1,141,10311.299805,831.463013,1326.410034,5.480330);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,4,5,1,141,10311.299805,831.463013,1326.410034,5.480330);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,4,11,1,141,10311.299805,831.463013,1326.410034,5.480330);
 
 -- Known spells. raceMask=8 = Night Elf.
 DELETE FROM `playercreateinfo_spell_learn` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=4;
@@ -574,60 +586,60 @@ INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`clas
 INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`classMask`,`spellid`,`note`) VALUES (69893,70009,4,1024,1306742,'70009 Night Elf: Druid');
 
 -- Start action bars: only modern action type 0 entries.
-DELETE FROM `playercreateinfo_bars` WHERE `build`=69893 AND `race`=4 AND `class` IN (1,3,4,5,11);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,1,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,1,72,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,1,73,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,1,81,1259799,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,1,82,20580,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,1,84,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,1,96,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,1,108,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,1,180,20580,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,1,182,1259799,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,1,271,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,3,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,3,1,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,3,2,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,3,8,1259799,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,3,9,20580,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,3,181,1259799,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,3,182,20580,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,3,196,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,3,199,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,4,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,4,1,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,4,2,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,4,3,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,4,9,1259799,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,4,10,20580,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,4,180,20580,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,4,182,1259799,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,4,196,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,4,198,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,4,199,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,5,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,5,1,585,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,5,2,2050,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,5,8,1259799,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,5,9,20580,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,5,181,1259799,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,5,182,20580,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,5,196,2050,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,5,199,585,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,11,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,11,1,5176,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,11,2,5185,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,11,8,1259799,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,11,9,20580,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,11,72,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,11,84,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,11,96,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,11,108,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,11,181,1259799,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,11,182,20580,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,11,196,5185,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,4,11,199,5176,0,0);
+DELETE FROM `playercreateinfo_bars` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=4 AND `class` IN (1,3,4,5,11);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,1,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,1,72,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,1,73,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,1,81,1259799,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,1,82,20580,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,1,84,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,1,96,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,1,108,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,1,180,20580,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,1,182,1259799,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,1,271,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,3,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,3,1,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,3,2,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,3,8,1259799,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,3,9,20580,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,3,181,1259799,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,3,182,20580,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,3,196,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,3,199,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,4,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,4,1,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,4,2,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,4,3,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,4,9,1259799,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,4,10,20580,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,4,180,20580,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,4,182,1259799,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,4,196,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,4,198,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,4,199,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,5,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,5,1,585,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,5,2,2050,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,5,8,1259799,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,5,9,20580,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,5,181,1259799,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,5,182,20580,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,5,196,2050,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,5,199,585,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,11,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,11,1,5176,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,11,2,5185,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,11,8,1259799,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,11,9,20580,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,11,72,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,11,84,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,11,96,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,11,108,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,11,181,1259799,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,11,182,20580,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,11,196,5185,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,4,11,199,5176,0,0);
 
 -- Not inserted yet: playercreateinfo_items, playercreateinfo_skills, playercreateinfo_spell_cast, player_levelstats/player_classlevelstats.
 -- These will be added only after the initial object/update-field state is decoded.
@@ -651,12 +663,12 @@ INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`t
 -- -----------------------------------------------------------------------------
 -- playercreateinfo
 -- -----------------------------------------------------------------------------
-DELETE FROM `playercreateinfo` WHERE `build`=69893 AND `race`=7 AND `class` IN (1,4,5,8,9);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,7,1,0,1,-6240.319824,331.032990,382.757996,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,7,4,0,1,-6240.319824,331.032990,382.757996,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,7,5,0,1,-6240.319824,331.032990,382.757996,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,7,8,0,1,-6240.319824,331.032990,382.757996,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,7,9,0,1,-6240.319824,331.032990,382.757996,0.0);
+DELETE FROM `playercreateinfo` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=7 AND `class` IN (1,4,5,8,9);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,7,1,0,1,-6240.319824,331.032990,382.757996,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,7,4,0,1,-6240.319824,331.032990,382.757996,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,7,5,0,1,-6240.319824,331.032990,382.757996,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,7,8,0,1,-6240.319824,331.032990,382.757996,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,7,9,0,1,-6240.319824,331.032990,382.757996,0.0);
 
 -- -----------------------------------------------------------------------------
 -- playercreateinfo_spell_learn
@@ -736,52 +748,52 @@ INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`clas
 -- Only action type 0 entries are emitted. Modern item action type 0x80000000 is
 -- not representable by the current legacy uint8 type field and is omitted.
 -- -----------------------------------------------------------------------------
-DELETE FROM `playercreateinfo_bars` WHERE `build`=69893 AND `race`=7 AND `class` IN (1,4,5,8,9);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,1,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,1,72,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,1,73,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,1,81,1259813,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,1,82,20589,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,1,84,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,1,96,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,1,108,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,1,180,20589,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,1,182,1259813,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,1,271,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,4,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,4,1,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,4,2,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,4,3,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,4,9,1259812,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,4,10,20589,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,4,180,20589,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,4,182,1259812,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,4,196,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,4,198,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,4,199,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,5,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,5,1,585,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,5,2,2050,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,5,196,2050,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,5,199,585,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,8,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,8,1,133,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,8,2,168,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,8,8,1259817,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,8,9,20589,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,8,181,1259817,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,8,182,20589,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,8,196,168,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,8,199,133,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,9,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,9,1,686,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,9,2,687,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,9,8,1259821,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,9,9,20589,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,9,181,1259821,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,9,182,20589,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,9,196,687,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,7,9,199,686,0,0);
+DELETE FROM `playercreateinfo_bars` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=7 AND `class` IN (1,4,5,8,9);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,1,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,1,72,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,1,73,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,1,81,1259813,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,1,82,20589,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,1,84,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,1,96,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,1,108,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,1,180,20589,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,1,182,1259813,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,1,271,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,4,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,4,1,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,4,2,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,4,3,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,4,9,1259812,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,4,10,20589,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,4,180,20589,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,4,182,1259812,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,4,196,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,4,198,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,4,199,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,5,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,5,1,585,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,5,2,2050,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,5,196,2050,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,5,199,585,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,8,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,8,1,133,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,8,2,168,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,8,8,1259817,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,8,9,20589,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,8,181,1259817,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,8,182,20589,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,8,196,168,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,8,199,133,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,9,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,9,1,686,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,9,2,687,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,9,8,1259821,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,9,9,20589,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,9,181,1259821,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,9,182,20589,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,9,196,687,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,7,9,199,686,0,0);
 
 -- -----------------------------------------------------------------------------
 -- Still intentionally NOT populated from these sniffs:
@@ -812,12 +824,12 @@ INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`t
 -- -----------------------------------------------------------------------------
 -- playercreateinfo
 -- -----------------------------------------------------------------------------
-DELETE FROM `playercreateinfo` WHERE `build`=69893 AND `race`=95 AND `class` IN (1,3,4,8,11);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,95,1,2991,0,4098.120117,1849.689941,975.554016,2.526940);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,95,3,2991,0,4098.120117,1849.689941,975.554016,2.526940);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,95,4,2991,0,4098.120117,1849.689941,975.554016,2.526940);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,95,8,2991,0,4098.120117,1849.689941,975.554016,2.526940);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,95,11,2991,0,4098.120117,1849.689941,975.554016,2.526940);
+DELETE FROM `playercreateinfo` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=95 AND `class` IN (1,3,4,8,11);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,95,1,2991,0,4098.120117,1849.689941,975.554016,2.526940);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,95,3,2991,0,4098.120117,1849.689941,975.554016,2.526940);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,95,4,2991,0,4098.120117,1849.689941,975.554016,2.526940);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,95,8,2991,0,4098.120117,1849.689941,975.554016,2.526940);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,95,11,2991,0,4098.120117,1849.689941,975.554016,2.526940);
 
 -- -----------------------------------------------------------------------------
 -- playercreateinfo_spell_learn
@@ -896,51 +908,51 @@ INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`clas
 -- -----------------------------------------------------------------------------
 -- playercreateinfo_bars
 -- -----------------------------------------------------------------------------
-DELETE FROM `playercreateinfo_bars` WHERE `build`=69893 AND `race`=95 AND `class` IN (1,3,4,8,11);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,1,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,1,72,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,1,73,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,1,81,1259705,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,1,82,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,1,180,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,1,182,1259705,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,1,271,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,3,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,3,1,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,3,2,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,3,8,1259705,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,3,9,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,3,181,1259705,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,3,182,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,3,196,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,3,199,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,4,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,4,1,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,4,2,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,4,9,1259705,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,4,10,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,4,180,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,4,182,1259705,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,4,196,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,4,199,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,8,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,8,1,133,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,8,2,168,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,8,8,1259705,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,8,9,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,8,181,1259705,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,8,182,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,8,196,168,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,8,199,133,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,11,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,11,1,5176,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,11,2,5185,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,11,8,1259705,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,11,9,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,11,181,1259705,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,11,182,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,11,196,5185,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,95,11,199,5176,0,0);
+DELETE FROM `playercreateinfo_bars` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=95 AND `class` IN (1,3,4,8,11);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,1,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,1,72,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,1,73,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,1,81,1259705,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,1,82,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,1,180,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,1,182,1259705,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,1,271,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,3,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,3,1,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,3,2,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,3,8,1259705,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,3,9,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,3,181,1259705,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,3,182,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,3,196,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,3,199,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,4,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,4,1,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,4,2,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,4,9,1259705,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,4,10,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,4,180,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,4,182,1259705,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,4,196,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,4,199,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,8,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,8,1,133,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,8,2,168,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,8,8,1259705,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,8,9,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,8,181,1259705,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,8,182,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,8,196,168,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,8,199,133,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,11,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,11,1,5176,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,11,2,5185,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,11,8,1259705,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,11,9,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,11,181,1259705,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,11,182,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,11,196,5185,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,95,11,199,5176,0,0);
 
 -- Modern item-action entries observed but intentionally omitted:
 -- Warrior: item 117 at buttons 83/183
@@ -978,13 +990,13 @@ INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`t
 -- playercreateinfo
 -- race=2 = Orc
 -- -----------------------------------------------------------------------------
-DELETE FROM `playercreateinfo` WHERE `build`=69893 AND `race`=2 AND `class` IN (1,3,4,7,8,9);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,2,1,1,14,-618.518005,-4251.669922,38.717999,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,2,3,1,14,-618.518005,-4251.669922,38.717999,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,2,4,1,14,-618.518005,-4251.669922,38.717999,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,2,7,1,14,-618.518005,-4251.669922,38.717999,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,2,8,1,14,-618.518005,-4251.669922,38.717999,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,2,9,1,14,-618.518005,-4251.669922,38.717999,0.0);
+DELETE FROM `playercreateinfo` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=2 AND `class` IN (1,3,4,7,8,9);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,2,1,1,14,-618.518005,-4251.669922,38.717999,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,2,3,1,14,-618.518005,-4251.669922,38.717999,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,2,4,1,14,-618.518005,-4251.669922,38.717999,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,2,7,1,14,-618.518005,-4251.669922,38.717999,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,2,8,1,14,-618.518005,-4251.669922,38.717999,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,2,9,1,14,-618.518005,-4251.669922,38.717999,0.0);
 
 -- -----------------------------------------------------------------------------
 -- playercreateinfo_spell_learn
@@ -1065,53 +1077,53 @@ INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`clas
 -- playercreateinfo_bars
 -- Only action type 0 entries are inserted.
 -- -----------------------------------------------------------------------------
-DELETE FROM `playercreateinfo_bars` WHERE `build`=69893 AND `race`=2 AND `class` IN (1,3,4,7,8,9);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,1,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,1,72,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,1,73,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,1,82,20572,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,1,84,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,1,96,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,1,108,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,1,180,20572,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,1,271,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,3,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,3,1,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,3,2,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,3,9,20572,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,3,182,20572,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,3,196,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,3,199,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,4,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,4,1,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,4,2,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,4,3,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,4,10,20572,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,4,180,20572,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,4,196,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,4,198,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,4,199,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,7,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,7,1,403,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,7,2,331,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,7,9,20572,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,7,182,20572,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,7,196,331,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,7,199,403,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,8,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,8,1,133,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,8,2,168,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,8,9,20572,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,8,182,20572,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,8,196,168,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,8,199,133,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,9,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,9,1,686,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,9,2,687,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,9,9,20572,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,9,182,20572,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,9,196,687,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,2,9,199,686,0,0);
+DELETE FROM `playercreateinfo_bars` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=2 AND `class` IN (1,3,4,7,8,9);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,1,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,1,72,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,1,73,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,1,82,20572,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,1,84,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,1,96,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,1,108,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,1,180,20572,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,1,271,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,3,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,3,1,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,3,2,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,3,9,20572,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,3,182,20572,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,3,196,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,3,199,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,4,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,4,1,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,4,2,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,4,3,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,4,10,20572,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,4,180,20572,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,4,196,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,4,198,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,4,199,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,7,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,7,1,403,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,7,2,331,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,7,9,20572,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,7,182,20572,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,7,196,331,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,7,199,403,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,8,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,8,1,133,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,8,2,168,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,8,9,20572,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,8,182,20572,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,8,196,168,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,8,199,133,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,9,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,9,1,686,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,9,2,687,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,9,9,20572,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,9,182,20572,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,9,196,687,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,2,9,199,686,0,0);
 
 -- Modern item-action bar entries observed but intentionally omitted:
 -- Warrior: button 83: item/action 117, type 0x80000000, button 183: item/action 117, type 0x80000000
@@ -1146,13 +1158,13 @@ INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`t
 
 
 -- playercreateinfo
-DELETE FROM `playercreateinfo` WHERE `build`=69893 AND `race`=5 AND `class` IN (1,2,4,5,8,9);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,5,1,0,85,1676.349976,1677.449951,121.669998,2.705260);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,5,2,0,85,1676.349976,1677.449951,121.669998,2.705260);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,5,4,0,85,1676.349976,1677.449951,121.669998,2.705260);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,5,5,0,85,1676.349976,1677.449951,121.669998,2.705260);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,5,8,0,85,1676.349976,1677.449951,121.669998,2.705260);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,5,9,0,85,1676.349976,1677.449951,121.669998,2.705260);
+DELETE FROM `playercreateinfo` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=5 AND `class` IN (1,2,4,5,8,9);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,5,1,0,85,1676.349976,1677.449951,121.669998,2.705260);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,5,2,0,85,1676.349976,1677.449951,121.669998,2.705260);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,5,4,0,85,1676.349976,1677.449951,121.669998,2.705260);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,5,5,0,85,1676.349976,1677.449951,121.669998,2.705260);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,5,8,0,85,1676.349976,1677.449951,121.669998,2.705260);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,5,9,0,85,1676.349976,1677.449951,121.669998,2.705260);
 
 -- playercreateinfo_spell_learn
 DELETE FROM `playercreateinfo_spell_learn` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=5;
@@ -1228,63 +1240,63 @@ INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`clas
 
 -- playercreateinfo_bars
 -- Only modern action type 0 is written to the current legacy schema.
-DELETE FROM `playercreateinfo_bars` WHERE `build`=69893 AND `race`=5 AND `class` IN (1,2,4,5,8,9);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,1,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,1,72,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,1,73,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,1,81,20577,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,1,82,7744,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,1,84,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,1,96,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,1,108,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,1,180,7744,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,1,182,20577,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,1,271,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,2,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,2,1,20154,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,2,7,20577,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,2,8,7744,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,2,9,5502,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,2,181,7744,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,2,182,5502,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,2,196,20577,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,2,199,20154,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,4,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,4,1,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,4,2,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,4,3,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,4,9,20577,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,4,10,7744,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,4,180,7744,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,4,182,20577,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,4,196,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,4,198,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,4,199,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,5,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,5,1,585,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,5,2,2050,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,5,8,20577,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,5,9,7744,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,5,181,20577,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,5,182,7744,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,5,196,2050,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,5,199,585,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,8,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,8,1,133,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,8,2,168,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,8,8,20577,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,8,9,7744,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,8,181,20577,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,8,182,7744,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,8,196,168,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,8,199,133,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,9,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,9,1,686,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,9,2,687,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,9,8,20577,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,9,9,7744,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,9,196,687,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,5,9,199,686,0,0);
+DELETE FROM `playercreateinfo_bars` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=5 AND `class` IN (1,2,4,5,8,9);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,1,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,1,72,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,1,73,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,1,81,20577,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,1,82,7744,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,1,84,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,1,96,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,1,108,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,1,180,7744,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,1,182,20577,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,1,271,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,2,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,2,1,20154,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,2,7,20577,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,2,8,7744,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,2,9,5502,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,2,181,7744,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,2,182,5502,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,2,196,20577,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,2,199,20154,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,4,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,4,1,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,4,2,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,4,3,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,4,9,20577,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,4,10,7744,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,4,180,7744,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,4,182,20577,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,4,196,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,4,198,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,4,199,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,5,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,5,1,585,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,5,2,2050,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,5,8,20577,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,5,9,7744,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,5,181,20577,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,5,182,7744,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,5,196,2050,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,5,199,585,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,8,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,8,1,133,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,8,2,168,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,8,8,20577,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,8,9,7744,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,8,181,20577,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,8,182,7744,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,8,196,168,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,8,199,133,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,9,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,9,1,686,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,9,2,687,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,9,8,20577,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,9,9,7744,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,9,196,687,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,5,9,199,686,0,0);
 
 -- Still intentionally not populated:
 -- playercreateinfo_items
@@ -1308,11 +1320,11 @@ INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`t
 
 
 
-DELETE FROM `playercreateinfo` WHERE `build`=69893 AND `race`=6 AND `class` IN (1,3,7,11);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,6,1,1,215,-2917.580078,-257.980011,52.996799,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,6,3,1,215,-2917.580078,-257.980011,52.996799,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,6,7,1,215,-2917.580078,-257.980011,52.996799,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,6,11,1,215,-2917.580078,-257.980011,52.996799,0.0);
+DELETE FROM `playercreateinfo` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=6 AND `class` IN (1,3,7,11);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,6,1,1,215,-2917.580078,-257.980011,52.996799,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,6,3,1,215,-2917.580078,-257.980011,52.996799,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,6,7,1,215,-2917.580078,-257.980011,52.996799,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,6,11,1,215,-2917.580078,-257.980011,52.996799,0.0);
 
 DELETE FROM `playercreateinfo_spell_learn` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=6;
 INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`classMask`,`spellid`,`note`) VALUES (69893,70009,6,4,75,'70009 Tauren: Hunter');
@@ -1376,49 +1388,49 @@ INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`clas
 INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`classMask`,`spellid`,`note`) VALUES (69893,70009,6,1093,1293712,'70009 Tauren: Warrior, Hunter, Shaman, Druid');
 INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`classMask`,`spellid`,`note`) VALUES (69893,70009,6,1024,1306742,'70009 Tauren: Druid');
 
-DELETE FROM `playercreateinfo_bars` WHERE `build`=69893 AND `race`=6 AND `class` IN (1,3,7,11);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,1,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,1,72,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,1,73,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,1,81,20549,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,1,82,20552,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,1,84,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,1,96,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,1,108,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,1,180,20552,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,1,182,20549,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,1,271,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,3,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,3,1,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,3,2,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,3,8,20549,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,3,9,20552,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,3,181,20549,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,3,182,20552,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,3,196,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,3,199,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,7,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,7,1,403,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,7,2,331,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,7,8,20549,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,7,9,20552,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,7,181,20549,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,7,182,20552,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,7,196,331,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,7,199,403,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,11,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,11,1,5176,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,11,2,5185,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,11,8,20549,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,11,9,20552,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,11,72,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,11,84,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,11,96,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,11,108,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,11,181,20549,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,11,182,20552,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,11,196,5185,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,6,11,199,5176,0,0);
+DELETE FROM `playercreateinfo_bars` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=6 AND `class` IN (1,3,7,11);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,1,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,1,72,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,1,73,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,1,81,20549,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,1,82,20552,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,1,84,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,1,96,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,1,108,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,1,180,20552,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,1,182,20549,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,1,271,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,3,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,3,1,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,3,2,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,3,8,20549,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,3,9,20552,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,3,181,20549,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,3,182,20552,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,3,196,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,3,199,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,7,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,7,1,403,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,7,2,331,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,7,8,20549,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,7,9,20552,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,7,181,20549,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,7,182,20552,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,7,196,331,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,7,199,403,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,11,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,11,1,5176,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,11,2,5185,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,11,8,20549,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,11,9,20552,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,11,72,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,11,84,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,11,96,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,11,108,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,11,181,20549,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,11,182,20552,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,11,196,5185,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,6,11,199,5176,0,0);
 
 -- Omitted modern item-action entries (type 0x80000000):
 -- Warrior: button 83: item/action 4540, type 0x80000000, button 183: item/action 4540, type 0x80000000
@@ -1446,14 +1458,14 @@ INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`t
 
 
 -- playercreateinfo
-DELETE FROM `playercreateinfo` WHERE `build`=69893 AND `race`=8 AND `class` IN (1,3,4,5,7,8,9);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,8,1,1,14,-618.518005,-4251.669922,38.717999,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,8,3,1,14,-618.518005,-4251.669922,38.717999,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,8,4,1,14,-618.518005,-4251.669922,38.717999,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,8,5,1,14,-618.518005,-4251.669922,38.717999,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,8,7,1,14,-618.518005,-4251.669922,38.717999,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,8,8,1,14,-618.518005,-4251.669922,38.717999,0.0);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,8,9,1,14,-618.518005,-4251.669922,38.717999,0.0);
+DELETE FROM `playercreateinfo` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class` IN (1,3,4,5,7,8,9);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,8,1,1,14,-618.518005,-4251.669922,38.717999,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,8,3,1,14,-618.518005,-4251.669922,38.717999,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,8,4,1,14,-618.518005,-4251.669922,38.717999,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,8,5,1,14,-618.518005,-4251.669922,38.717999,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,8,7,1,14,-618.518005,-4251.669922,38.717999,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,8,8,1,14,-618.518005,-4251.669922,38.717999,0.0);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,8,9,1,14,-618.518005,-4251.669922,38.717999,0.0);
 
 -- playercreateinfo_spell_learn
 DELETE FROM `playercreateinfo_spell_learn` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8;
@@ -1530,76 +1542,76 @@ INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`clas
 INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`classMask`,`spellid`,`note`) VALUES (69893,70009,8,477,1293712,'70009 Troll: Warrior, Hunter, Rogue, Priest, Shaman, Mage, Warlock');
 
 -- playercreateinfo_bars
-DELETE FROM `playercreateinfo_bars` WHERE `build`=69893 AND `race`=8 AND `class` IN (1,3,4,5,7,8,9);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,1,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,1,72,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,1,73,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,1,74,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,1,81,20554,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,1,82,1260270,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,1,84,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,1,96,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,1,108,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,1,180,1260270,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,1,182,20554,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,1,268,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,1,271,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,3,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,3,1,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,3,2,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,3,8,20554,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,3,9,1260270,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,3,181,20554,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,3,182,1260270,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,3,196,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,3,199,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,4,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,4,1,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,4,2,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,4,3,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,4,9,20554,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,4,10,1260270,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,4,180,1260270,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,4,182,20554,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,4,196,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,4,198,2764,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,4,199,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,5,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,5,1,585,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,5,2,2050,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,5,8,20554,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,5,9,1260270,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,5,181,20554,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,5,182,1260270,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,5,196,2050,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,5,199,585,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,7,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,7,1,403,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,7,2,331,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,7,8,20554,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,7,9,1260270,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,7,181,20554,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,7,182,1260270,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,7,196,331,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,7,199,403,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,8,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,8,1,133,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,8,2,168,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,8,8,20554,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,8,9,1260270,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,8,181,20554,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,8,182,1260270,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,8,196,168,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,8,199,133,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,9,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,9,1,686,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,9,2,687,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,9,8,20554,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,9,9,1260270,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,9,181,20554,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,9,182,1260270,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,9,196,687,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,8,9,199,686,0,0);
+DELETE FROM `playercreateinfo_bars` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class` IN (1,3,4,5,7,8,9);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,1,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,1,72,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,1,73,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,1,74,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,1,81,20554,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,1,82,1260270,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,1,84,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,1,96,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,1,108,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,1,180,1260270,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,1,182,20554,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,1,268,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,1,271,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,3,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,3,1,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,3,2,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,3,8,20554,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,3,9,1260270,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,3,181,20554,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,3,182,1260270,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,3,196,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,3,199,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,4,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,4,1,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,4,2,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,4,3,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,4,9,20554,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,4,10,1260270,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,4,180,1260270,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,4,182,20554,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,4,196,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,4,198,2764,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,4,199,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,5,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,5,1,585,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,5,2,2050,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,5,8,20554,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,5,9,1260270,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,5,181,20554,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,5,182,1260270,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,5,196,2050,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,5,199,585,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,7,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,7,1,403,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,7,2,331,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,7,8,20554,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,7,9,1260270,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,7,181,20554,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,7,182,1260270,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,7,196,331,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,7,199,403,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,8,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,8,1,133,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,8,2,168,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,8,8,20554,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,8,9,1260270,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,8,181,20554,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,8,182,1260270,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,8,196,168,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,8,199,133,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,9,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,9,1,686,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,9,2,687,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,9,8,20554,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,9,9,1260270,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,9,181,20554,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,9,182,1260270,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,9,196,687,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,8,9,199,686,0,0);
 
 -- Omitted modern item-action entries (type 0x80000000):
 -- Warrior: button 83: item/action 117, type 0x80000000, button 183: item/action 117, type 0x80000000
@@ -1633,12 +1645,12 @@ INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`t
 
 
 -- playercreateinfo
-DELETE FROM `playercreateinfo` WHERE `build`=69893 AND `race`=96 AND `class` IN (1,3,4,7,11);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,96,1,2991,0,4098.120117,1849.689941,975.554016,2.526942);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,96,3,2991,0,4098.120117,1849.689941,975.554016,2.526942);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,96,4,2991,0,4098.120117,1849.689941,975.554016,2.526942);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,96,7,2991,0,4098.120117,1849.689941,975.554016,2.526942);
-INSERT INTO `playercreateinfo` (`build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,96,11,2991,0,4098.120117,1849.689941,975.554016,2.526942);
+DELETE FROM `playercreateinfo` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=96 AND `class` IN (1,3,4,7,11);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,96,1,2991,0,4098.120117,1849.689941,975.554016,2.526942);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,96,3,2991,0,4098.120117,1849.689941,975.554016,2.526942);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,96,4,2991,0,4098.120117,1849.689941,975.554016,2.526942);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,96,7,2991,0,4098.120117,1849.689941,975.554016,2.526942);
+INSERT INTO `playercreateinfo` (`min_build`,`max_build`,`race`,`class`,`mapID`,`zoneID`,`positionX`,`positionY`,`positionZ`,`orientation`) VALUES (69893,70009,96,11,2991,0,4098.120117,1849.689941,975.554016,2.526942);
 
 -- playercreateinfo_spell_learn
 INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`classMask`,`spellid`,`note`) VALUES (69893,70009,96,4,75,'70009 Skyborn Horde race 96: Hunter');
@@ -1710,51 +1722,53 @@ INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`clas
 INSERT INTO `playercreateinfo_spell_learn` (`min_build`,`max_build`,`race`,`classMask`,`spellid`,`note`) VALUES (69893,70009,96,1024,1306742,'70009 Skyborn Horde race 96: Druid');
 
 -- playercreateinfo_bars
-DELETE FROM `playercreateinfo_bars` WHERE `build`=69893 AND `race`=96 AND `class` IN (1,3,4,7,11);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,1,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,1,72,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,1,73,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,1,81,1259686,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,1,82,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,1,180,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,1,182,1259686,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,1,271,78,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,3,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,3,1,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,3,2,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,3,8,1259686,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,3,9,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,3,181,1259686,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,3,182,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,3,196,75,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,3,199,2973,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,4,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,4,1,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,4,2,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,4,9,1259686,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,4,10,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,4,180,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,4,182,1259686,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,4,196,2098,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,4,199,1752,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,7,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,7,1,403,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,7,2,331,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,7,8,1259686,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,7,9,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,7,181,1259686,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,7,182,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,7,196,331,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,7,199,403,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,11,0,6603,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,11,1,5176,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,11,2,5185,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,11,8,1259686,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,11,9,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,11,181,1259686,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,11,182,1259416,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,11,196,5185,0,0);
-INSERT INTO `playercreateinfo_bars` (`build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,96,11,199,5176,0,0);
+DELETE FROM `playercreateinfo_bars` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=96 AND `class` IN (1,3,4,7,11);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,1,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,1,72,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,1,73,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,1,81,1259686,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,1,82,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,1,180,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,1,182,1259686,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,1,271,78,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,3,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,3,1,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,3,2,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,3,8,1259686,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,3,9,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,3,181,1259686,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,3,182,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,3,196,75,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,3,199,2973,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,4,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,4,1,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,4,2,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,4,9,1259686,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,4,10,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,4,180,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,4,182,1259686,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,4,196,2098,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,4,199,1752,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,7,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,7,1,403,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,7,2,331,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,7,8,1259686,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,7,9,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,7,181,1259686,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,7,182,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,7,196,331,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,7,199,403,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,11,0,6603,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,11,1,5176,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,11,2,5185,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,11,8,1259686,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,11,9,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,11,181,1259686,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,11,182,1259416,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,11,196,5185,0,0);
+INSERT INTO `playercreateinfo_bars` (`min_build`,`max_build`,`race`,`class`,`button`,`action`,`type`,`misc`) VALUES (69893,70009,96,11,199,5176,0,0);
+
+INSERT INTO `playercreateinfo_spell_cast` (`min_build`, `max_build`, `classMask`, `spellid`, `note`) VALUES (69893, 70009, 1, 2457, 'Warrior - Battle Stance');
 
 -- Omitted modern item-action entries (type 0x80000000):
 -- Warrior: button 83: item/action 117, type 0x80000000, button 183: item/action 117, type 0x80000000
@@ -1872,464 +1886,464 @@ INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`Base
 -- =============================================================================
 -- START ITEMS - DIRECTLY DECODED ONLY
 -- =============================================================================
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=1 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,1,38,3,1); -- Human Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,1,39,6,1); -- Human Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,1,40,7,1); -- Human Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,1,25,15,1); -- Human Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,1,2362,16,1); -- Human Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,1,117,35,4); -- Human Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,1,6948,36,1); -- Human Warrior
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class`=1;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,38,3,1); -- Human Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,39,6,1); -- Human Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,40,7,1); -- Human Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,25,15,1); -- Human Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,2362,16,1); -- Human Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,117,35,4); -- Human Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,6948,36,1); -- Human Warrior
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=1 AND `class`=2;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,2,45,3,1); -- Human Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,2,44,6,1); -- Human Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,2,43,7,1); -- Human Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,2,2361,15,1); -- Human Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,2,6948,35,1); -- Human Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,2,159,36,2); -- Human Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,2,2070,37,4); -- Human Paladin
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class`=2;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,45,3,1); -- Human Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,44,6,1); -- Human Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,43,7,1); -- Human Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,2361,15,1); -- Human Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,6948,35,1); -- Human Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,159,36,2); -- Human Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,2070,37,4); -- Human Paladin
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=1 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,3,148,3,1); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,3,147,6,1); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,3,129,7,1); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,3,2092,15,1); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,3,2504,17,1); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,3,159,35,2); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,3,117,36,4); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,3,6948,37,1); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,3,2512,255,200); -- Human Hunter
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class`=3;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,148,3,1); -- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,147,6,1); -- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,129,7,1); -- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,2092,15,1); -- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,2504,17,1); -- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,159,35,2); -- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,117,36,4); -- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,6948,37,1); -- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,2512,255,200); -- Human Hunter
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=1 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,4,49,3,1); -- Human Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,4,48,6,1); -- Human Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,4,47,7,1); -- Human Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,4,2092,15,1); -- Human Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,4,2947,17,1); -- Human Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,4,2070,35,4); -- Human Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,4,6948,36,1); -- Human Rogue
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class`=4;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,49,3,1); -- Human Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,48,6,1); -- Human Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,47,7,1); -- Human Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,2092,15,1); -- Human Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,2947,17,1); -- Human Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,2070,35,4); -- Human Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,6948,36,1); -- Human Rogue
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=1 AND `class`=5;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,5,53,3,1); -- Human Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,5,6098,4,1); -- Human Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,5,52,6,1); -- Human Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,5,51,7,1); -- Human Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,5,36,15,1); -- Human Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,5,159,35,2); -- Human Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,5,2070,36,4); -- Human Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,5,6948,37,1); -- Human Priest
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class`=5;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,53,3,1); -- Human Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,6098,4,1); -- Human Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,52,6,1); -- Human Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,51,7,1); -- Human Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,36,15,1); -- Human Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,159,35,2); -- Human Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,2070,36,4); -- Human Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,6948,37,1); -- Human Priest
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=1 AND `class`=8;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,8,6096,3,1); -- Human Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,8,56,4,1); -- Human Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,8,1395,6,1); -- Human Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,8,55,7,1); -- Human Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,8,35,15,1); -- Human Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,8,2070,35,4); -- Human Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,8,159,36,2); -- Human Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,8,6948,37,1); -- Human Mage
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class`=8;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,6096,3,1); -- Human Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,56,4,1); -- Human Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,1395,6,1); -- Human Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,55,7,1); -- Human Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,35,15,1); -- Human Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,2070,35,4); -- Human Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,159,36,2); -- Human Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,6948,37,1); -- Human Mage
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=1 AND `class`=9;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,9,6097,3,1); -- Human Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,9,57,4,1); -- Human Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,9,1396,6,1); -- Human Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,9,59,7,1); -- Human Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,9,2092,15,1); -- Human Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,9,4604,35,4); -- Human Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,9,159,36,2); -- Human Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,1,9,6948,37,1); -- Human Warlock
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class`=9;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,6097,3,1); -- Human Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,57,4,1); -- Human Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,1396,6,1); -- Human Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,59,7,1); -- Human Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,2092,15,1); -- Human Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,4604,35,4); -- Human Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,159,36,2); -- Human Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,6948,37,1); -- Human Warlock
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=2 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,1,6125,3,1); -- Orc Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,1,139,6,1); -- Orc Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,1,140,7,1); -- Orc Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,1,12282,15,1); -- Orc Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,1,6948,35,1); -- Orc Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,1,117,36,4); -- Orc Warrior
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=2 AND `class`=1;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,6125,3,1); -- Orc Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,139,6,1); -- Orc Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,140,7,1); -- Orc Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,12282,15,1); -- Orc Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,6948,35,1); -- Orc Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,117,36,4); -- Orc Warrior
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=2 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,3,127,3,1); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,3,6126,6,1); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,3,6127,7,1); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,3,37,15,1); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,3,2504,17,1); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,3,159,35,2); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,3,6948,36,1); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,3,117,37,4); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,3,2512,255,200); -- Orc Hunter
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=2 AND `class`=3;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,127,3,1); -- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,6126,6,1); -- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,6127,7,1); -- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,37,15,1); -- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,2504,17,1); -- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,159,35,2); -- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,6948,36,1); -- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,117,37,4); -- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,2512,255,200); -- Orc Hunter
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=2 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,4,2105,3,1); -- Orc Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,4,120,6,1); -- Orc Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,4,121,7,1); -- Orc Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,4,2092,15,1); -- Orc Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,4,3111,17,1); -- Orc Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,4,117,35,4); -- Orc Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,4,6948,36,1); -- Orc Rogue
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=2 AND `class`=4;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,2105,3,1); -- Orc Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,120,6,1); -- Orc Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,121,7,1); -- Orc Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,2092,15,1); -- Orc Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,3111,17,1); -- Orc Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,117,35,4); -- Orc Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,6948,36,1); -- Orc Rogue
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=2 AND `class`=8;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,8,6096,3,1); -- Orc Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,8,6140,4,1); -- Orc Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,8,1395,6,1); -- Orc Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,8,55,7,1); -- Orc Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,8,35,15,1); -- Orc Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,8,117,35,4); -- Orc Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,8,159,36,2); -- Orc Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,8,6948,37,1); -- Orc Mage
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=2 AND `class`=8;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,6096,3,1); -- Orc Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,6140,4,1); -- Orc Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,1395,6,1); -- Orc Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,55,7,1); -- Orc Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,35,15,1); -- Orc Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,117,35,4); -- Orc Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,159,36,2); -- Orc Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,6948,37,1); -- Orc Mage
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=2 AND `class`=9;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,9,6129,4,1); -- Orc Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,9,1396,6,1); -- Orc Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,9,59,7,1); -- Orc Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,9,2092,15,1); -- Orc Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,9,6948,35,1); -- Orc Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,9,117,36,4); -- Orc Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,9,159,37,2); -- Orc Warlock
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=2 AND `class`=9;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,6129,4,1); -- Orc Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,1396,6,1); -- Orc Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,59,7,1); -- Orc Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,2092,15,1); -- Orc Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,6948,35,1); -- Orc Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,117,36,4); -- Orc Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,159,37,2); -- Orc Warlock
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=3 AND `class`=2;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,2,6117,3,1); -- Dwarf Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,2,6118,6,1); -- Dwarf Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,2,43,7,1); -- Dwarf Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,2,2361,15,1); -- Dwarf Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,2,4540,35,4); -- Dwarf Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,2,159,36,2); -- Dwarf Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,2,6948,37,1); -- Dwarf Paladin
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=3 AND `class`=2;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,6117,3,1); -- Dwarf Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,6118,6,1); -- Dwarf Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,43,7,1); -- Dwarf Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,2361,15,1); -- Dwarf Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,4540,35,4); -- Dwarf Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,159,36,2); -- Dwarf Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,6948,37,1); -- Dwarf Paladin
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=3 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,3,148,3,1); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,3,147,6,1); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,3,129,7,1); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,3,37,15,1); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,3,2508,17,1); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,3,159,35,2); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,3,117,36,4); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,3,6948,37,1); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,3,2516,255,200); -- Dwarf Hunter
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=3 AND `class`=3;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,148,3,1); -- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,147,6,1); -- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,129,7,1); -- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,37,15,1); -- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,2508,17,1); -- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,159,35,2); -- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,117,36,4); -- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,6948,37,1); -- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,2516,255,200); -- Dwarf Hunter
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=3 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,4,49,3,1); -- Dwarf Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,4,48,6,1); -- Dwarf Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,4,47,7,1); -- Dwarf Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,4,2092,15,1); -- Dwarf Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,4,3111,17,1); -- Dwarf Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,4,4540,35,4); -- Dwarf Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,4,6948,36,1); -- Dwarf Rogue
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=3 AND `class`=4;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,49,3,1); -- Dwarf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,48,6,1); -- Dwarf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,47,7,1); -- Dwarf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,2092,15,1); -- Dwarf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,3111,17,1); -- Dwarf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,4540,35,4); -- Dwarf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,6948,36,1); -- Dwarf Rogue
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=3 AND `class`=5;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,5,53,3,1); -- Dwarf Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,5,6098,4,1); -- Dwarf Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,5,52,6,1); -- Dwarf Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,5,51,7,1); -- Dwarf Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,5,36,15,1); -- Dwarf Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,5,159,35,2); -- Dwarf Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,5,4540,36,4); -- Dwarf Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,5,6948,37,1); -- Dwarf Priest
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=3 AND `class`=5;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,53,3,1); -- Dwarf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,6098,4,1); -- Dwarf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,52,6,1); -- Dwarf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,51,7,1); -- Dwarf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,36,15,1); -- Dwarf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,159,35,2); -- Dwarf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,4540,36,4); -- Dwarf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,6948,37,1); -- Dwarf Priest
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=3 AND `class`=7;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,7,154,3,1); -- Dwarf Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,7,153,6,1); -- Dwarf Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,7,36,15,1); -- Dwarf Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,7,6948,35,1); -- Dwarf Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,7,159,36,2); -- Dwarf Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,7,4540,37,4); -- Dwarf Shaman
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=3 AND `class`=7;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,154,3,1); -- Dwarf Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,153,6,1); -- Dwarf Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,36,15,1); -- Dwarf Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,6948,35,1); -- Dwarf Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,159,36,2); -- Dwarf Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,4540,37,4); -- Dwarf Shaman
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=4 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,1,6120,3,1); -- Night Elf Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,1,6121,6,1); -- Night Elf Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,1,6122,7,1); -- Night Elf Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,1,25,15,1); -- Night Elf Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,1,2362,16,1); -- Night Elf Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,1,117,35,4); -- Night Elf Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,1,6948,36,1); -- Night Elf Warrior
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=4 AND `class`=1;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,6120,3,1); -- Night Elf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,6121,6,1); -- Night Elf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,6122,7,1); -- Night Elf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,25,15,1); -- Night Elf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,2362,16,1); -- Night Elf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,117,35,4); -- Night Elf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,6948,36,1); -- Night Elf Warrior
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=4 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,3,148,3,1); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,3,147,6,1); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,3,129,7,1); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,3,2092,15,1); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,3,2504,17,1); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,3,159,35,2); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,3,117,36,4); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,3,6948,37,1); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,3,2512,255,200); -- Night Elf Hunter
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=4 AND `class`=3;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,148,3,1); -- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,147,6,1); -- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,129,7,1); -- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,2092,15,1); -- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,2504,17,1); -- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,159,35,2); -- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,117,36,4); -- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,6948,37,1); -- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,2512,255,200); -- Night Elf Hunter
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=4 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,4,49,3,1); -- Night Elf Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,4,48,6,1); -- Night Elf Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,4,47,7,1); -- Night Elf Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,4,2092,15,1); -- Night Elf Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,4,2947,17,1); -- Night Elf Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,4,4540,35,4); -- Night Elf Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,4,6948,36,1); -- Night Elf Rogue
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=4 AND `class`=4;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,49,3,1); -- Night Elf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,48,6,1); -- Night Elf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,47,7,1); -- Night Elf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,2092,15,1); -- Night Elf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,2947,17,1); -- Night Elf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,4540,35,4); -- Night Elf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,6948,36,1); -- Night Elf Rogue
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=4 AND `class`=5;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,5,53,3,1); -- Night Elf Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,5,6119,4,1); -- Night Elf Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,5,52,6,1); -- Night Elf Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,5,51,7,1); -- Night Elf Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,5,36,15,1); -- Night Elf Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,5,2070,35,4); -- Night Elf Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,5,159,36,2); -- Night Elf Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,5,6948,37,1); -- Night Elf Priest
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=4 AND `class`=5;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,53,3,1); -- Night Elf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,6119,4,1); -- Night Elf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,52,6,1); -- Night Elf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,51,7,1); -- Night Elf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,36,15,1); -- Night Elf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,2070,35,4); -- Night Elf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,159,36,2); -- Night Elf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,6948,37,1); -- Night Elf Priest
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=5 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,1,6125,3,1); -- Undead Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,1,139,6,1); -- Undead Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,1,140,7,1); -- Undead Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,1,25,15,1); -- Undead Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,1,2362,16,1); -- Undead Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,1,4604,35,4); -- Undead Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,1,6948,36,1); -- Undead Warrior
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=5 AND `class`=1;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,6125,3,1); -- Undead Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,139,6,1); -- Undead Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,140,7,1); -- Undead Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,25,15,1); -- Undead Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,2362,16,1); -- Undead Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,4604,35,4); -- Undead Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,6948,36,1); -- Undead Warrior
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=5 AND `class`=2;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,2,6125,3,1); -- Undead Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,2,139,6,1); -- Undead Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,2,140,7,1); -- Undead Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,2,2361,15,1); -- Undead Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,2,4604,35,4); -- Undead Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,2,6948,36,1); -- Undead Paladin
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,2,159,37,2); -- Undead Paladin
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=5 AND `class`=2;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,6125,3,1); -- Undead Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,139,6,1); -- Undead Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,140,7,1); -- Undead Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,2361,15,1); -- Undead Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,4604,35,4); -- Undead Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,6948,36,1); -- Undead Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,159,37,2); -- Undead Paladin
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=5 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,4,2105,3,1); -- Undead Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,4,120,6,1); -- Undead Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,4,121,7,1); -- Undead Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,4,2092,15,1); -- Undead Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,4,2947,17,1); -- Undead Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,4,4604,35,4); -- Undead Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,4,6948,36,1); -- Undead Rogue
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=5 AND `class`=4;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,2105,3,1); -- Undead Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,120,6,1); -- Undead Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,121,7,1); -- Undead Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,2092,15,1); -- Undead Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,2947,17,1); -- Undead Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,4604,35,4); -- Undead Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,6948,36,1); -- Undead Rogue
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=5 AND `class`=5;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,5,53,3,1); -- Undead Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,5,6144,4,1); -- Undead Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,5,52,6,1); -- Undead Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,5,51,7,1); -- Undead Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,5,36,15,1); -- Undead Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,5,4604,35,4); -- Undead Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,5,159,36,2); -- Undead Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,5,6948,37,1); -- Undead Priest
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=5 AND `class`=5;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,53,3,1); -- Undead Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,6144,4,1); -- Undead Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,52,6,1); -- Undead Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,51,7,1); -- Undead Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,36,15,1); -- Undead Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,4604,35,4); -- Undead Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,159,36,2); -- Undead Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,6948,37,1); -- Undead Priest
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=5 AND `class`=8;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,8,6096,3,1); -- Undead Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,8,6140,4,1); -- Undead Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,8,1395,6,1); -- Undead Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,8,55,7,1); -- Undead Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,8,35,15,1); -- Undead Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,8,4604,35,4); -- Undead Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,8,159,36,2); -- Undead Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,8,6948,37,1); -- Undead Mage
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=5 AND `class`=8;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,6096,3,1); -- Undead Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,6140,4,1); -- Undead Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,1395,6,1); -- Undead Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,55,7,1); -- Undead Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,35,15,1); -- Undead Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,4604,35,4); -- Undead Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,159,36,2); -- Undead Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,6948,37,1); -- Undead Mage
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=6 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,1,6125,3,1); -- Tauren Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,1,139,6,1); -- Tauren Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,1,2361,15,1); -- Tauren Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,1,6948,35,1); -- Tauren Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,1,4540,36,4); -- Tauren Warrior
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=6 AND `class`=1;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,1,6125,3,1); -- Tauren Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,1,139,6,1); -- Tauren Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,1,2361,15,1); -- Tauren Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,1,6948,35,1); -- Tauren Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,1,4540,36,4); -- Tauren Warrior
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=6 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,3,127,3,1); -- Tauren Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,3,6126,6,1); -- Tauren Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,3,37,15,1); -- Tauren Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,3,2508,17,1); -- Tauren Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,3,6948,35,1); -- Tauren Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,3,159,36,2); -- Tauren Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,3,117,37,4); -- Tauren Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,3,2516,255,200); -- Tauren Hunter
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=6 AND `class`=3;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,127,3,1); -- Tauren Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,6126,6,1); -- Tauren Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,37,15,1); -- Tauren Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,2508,17,1); -- Tauren Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,6948,35,1); -- Tauren Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,159,36,2); -- Tauren Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,117,37,4); -- Tauren Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,2516,255,200); -- Tauren Hunter
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=6 AND `class`=7;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,7,154,3,1); -- Tauren Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,7,153,6,1); -- Tauren Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,7,36,15,1); -- Tauren Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,7,6948,35,1); -- Tauren Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,7,4604,36,4); -- Tauren Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,7,159,37,2); -- Tauren Shaman
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=6 AND `class`=7;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,154,3,1); -- Tauren Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,153,6,1); -- Tauren Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,36,15,1); -- Tauren Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,6948,35,1); -- Tauren Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,4604,36,4); -- Tauren Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,159,37,2); -- Tauren Shaman
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=6 AND `class`=11;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,11,6139,4,1); -- Tauren Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,11,6124,6,1); -- Tauren Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,11,35,15,1); -- Tauren Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,11,159,35,2); -- Tauren Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,11,4536,36,4); -- Tauren Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,6,11,6948,37,1); -- Tauren Druid
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=6 AND `class`=11;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,6139,4,1); -- Tauren Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,6124,6,1); -- Tauren Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,35,15,1); -- Tauren Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,159,35,2); -- Tauren Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,4536,36,4); -- Tauren Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,6948,37,1); -- Tauren Druid
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=7 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,1,38,3,1); -- Gnome Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,1,39,6,1); -- Gnome Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,1,40,7,1); -- Gnome Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,1,25,15,1); -- Gnome Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,1,2362,16,1); -- Gnome Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,1,117,35,4); -- Gnome Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,1,6948,36,1); -- Gnome Warrior
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=7 AND `class`=1;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,38,3,1); -- Gnome Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,39,6,1); -- Gnome Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,40,7,1); -- Gnome Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,25,15,1); -- Gnome Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,2362,16,1); -- Gnome Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,117,35,4); -- Gnome Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,6948,36,1); -- Gnome Warrior
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=7 AND `class`=8;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,8,6096,3,1); -- Gnome Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,8,56,4,1); -- Gnome Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,8,1395,6,1); -- Gnome Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,8,55,7,1); -- Gnome Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,8,35,15,1); -- Gnome Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,8,4536,35,4); -- Gnome Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,8,159,36,2); -- Gnome Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,8,6948,37,1); -- Gnome Mage
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=7 AND `class`=8;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,6096,3,1); -- Gnome Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,56,4,1); -- Gnome Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,1395,6,1); -- Gnome Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,55,7,1); -- Gnome Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,35,15,1); -- Gnome Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,4536,35,4); -- Gnome Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,159,36,2); -- Gnome Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,6948,37,1); -- Gnome Mage
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=7 AND `class`=9;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,9,6097,3,1); -- Gnome Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,9,57,4,1); -- Gnome Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,9,1396,6,1); -- Gnome Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,9,59,7,1); -- Gnome Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,9,2092,15,1); -- Gnome Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,9,159,35,2); -- Gnome Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,9,4604,36,4); -- Gnome Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,9,6948,37,1); -- Gnome Warlock
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=7 AND `class`=9;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,6097,3,1); -- Gnome Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,57,4,1); -- Gnome Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,1396,6,1); -- Gnome Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,59,7,1); -- Gnome Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,2092,15,1); -- Gnome Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,159,35,2); -- Gnome Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,4604,36,4); -- Gnome Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,6948,37,1); -- Gnome Warlock
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=8 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,1,6125,3,1); -- Troll Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,1,139,6,1); -- Troll Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,1,37,15,1); -- Troll Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,1,2362,16,1); -- Troll Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,1,3111,17,1); -- Troll Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,1,117,35,4); -- Troll Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,1,6948,36,1); -- Troll Warrior
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class`=1;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,6125,3,1); -- Troll Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,139,6,1); -- Troll Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,37,15,1); -- Troll Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,2362,16,1); -- Troll Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,3111,17,1); -- Troll Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,117,35,4); -- Troll Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,6948,36,1); -- Troll Warrior
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=8 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,3,127,3,1); -- Troll Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,3,6126,6,1); -- Troll Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,3,37,15,1); -- Troll Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,3,2504,17,1); -- Troll Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,3,4604,35,4); -- Troll Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,3,159,36,2); -- Troll Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,3,6948,37,1); -- Troll Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,3,2512,255,200); -- Troll Hunter
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class`=3;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,127,3,1); -- Troll Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,6126,6,1); -- Troll Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,37,15,1); -- Troll Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,2504,17,1); -- Troll Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,4604,35,4); -- Troll Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,159,36,2); -- Troll Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,6948,37,1); -- Troll Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,2512,255,200); -- Troll Hunter
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=8 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,4,6136,3,1); -- Troll Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,4,6137,6,1); -- Troll Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,4,6138,7,1); -- Troll Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,4,2092,15,1); -- Troll Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,4,3111,17,1); -- Troll Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,4,117,35,4); -- Troll Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,4,6948,36,1); -- Troll Rogue
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class`=4;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,6136,3,1); -- Troll Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,6137,6,1); -- Troll Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,6138,7,1); -- Troll Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,2092,15,1); -- Troll Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,3111,17,1); -- Troll Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,117,35,4); -- Troll Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,6948,36,1); -- Troll Rogue
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=8 AND `class`=5;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,5,53,3,1); -- Troll Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,5,6144,4,1); -- Troll Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,5,52,6,1); -- Troll Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,5,36,15,1); -- Troll Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,5,4540,35,4); -- Troll Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,5,159,36,2); -- Troll Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,5,6948,37,1); -- Troll Priest
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class`=5;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,53,3,1); -- Troll Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,6144,4,1); -- Troll Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,52,6,1); -- Troll Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,36,15,1); -- Troll Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,4540,35,4); -- Troll Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,159,36,2); -- Troll Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,6948,37,1); -- Troll Priest
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=8 AND `class`=7;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,7,6134,3,1); -- Troll Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,7,6135,6,1); -- Troll Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,7,36,15,1); -- Troll Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,7,117,35,4); -- Troll Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,7,159,36,2); -- Troll Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,7,6948,37,1); -- Troll Shaman
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class`=7;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,6134,3,1); -- Troll Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,6135,6,1); -- Troll Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,36,15,1); -- Troll Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,117,35,4); -- Troll Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,159,36,2); -- Troll Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,6948,37,1); -- Troll Shaman
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=8 AND `class`=8;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,8,6096,3,1); -- Troll Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,8,6140,4,1); -- Troll Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,8,1395,6,1); -- Troll Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,8,55,7,1); -- Troll Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,8,35,15,1); -- Troll Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,8,117,35,4); -- Troll Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,8,159,36,2); -- Troll Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,8,6948,37,1); -- Troll Mage
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class`=8;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,6096,3,1); -- Troll Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,6140,4,1); -- Troll Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,1395,6,1); -- Troll Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,55,7,1); -- Troll Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,35,15,1); -- Troll Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,117,35,4); -- Troll Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,159,36,2); -- Troll Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,6948,37,1); -- Troll Mage
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=8 AND `class`=9;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,9,6129,4,1); -- Troll Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,9,1396,6,1); -- Troll Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,9,59,7,1); -- Troll Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,9,2092,15,1); -- Troll Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,9,6948,35,1); -- Troll Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,9,117,36,4); -- Troll Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,8,9,159,37,2); -- Troll Warlock
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class`=9;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,6129,4,1); -- Troll Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,1396,6,1); -- Troll Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,59,7,1); -- Troll Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,2092,15,1); -- Troll Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,6948,35,1); -- Troll Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,117,36,4); -- Troll Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,159,37,2); -- Troll Warlock
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=95 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,1,271669,3,1); -- Skyborn Alliance Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,1,271672,6,1); -- Skyborn Alliance Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,1,271671,7,1); -- Skyborn Alliance Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,1,280399,15,1); -- Skyborn Alliance Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,1,876,16,1); -- Skyborn Alliance Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,1,117,35,4); -- Skyborn Alliance Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,1,6948,36,1); -- Skyborn Alliance Warrior
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=95 AND `class`=1;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,271669,3,1); -- Skyborn Alliance Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,271672,6,1); -- Skyborn Alliance Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,271671,7,1); -- Skyborn Alliance Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,280399,15,1); -- Skyborn Alliance Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,876,16,1); -- Skyborn Alliance Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,117,35,4); -- Skyborn Alliance Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,6948,36,1); -- Skyborn Alliance Warrior
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=95 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,3,271668,3,1); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,3,271666,6,1); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,3,271665,7,1); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,3,2092,15,1); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,3,2504,17,1); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,3,159,35,2); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,3,117,36,4); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,3,6948,37,1); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,3,2512,255,200); -- Skyborn Alliance Hunter
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=95 AND `class`=3;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,271668,3,1); -- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,271666,6,1); -- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,271665,7,1); -- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,2092,15,1); -- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,2504,17,1); -- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,159,35,2); -- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,117,36,4); -- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,6948,37,1); -- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,2512,255,200); -- Skyborn Alliance Hunter
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=95 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,4,271675,3,1); -- Skyborn Alliance Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,4,271674,6,1); -- Skyborn Alliance Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,4,271673,7,1); -- Skyborn Alliance Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,4,2092,15,1); -- Skyborn Alliance Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,4,2947,17,1); -- Skyborn Alliance Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,4,4540,35,4); -- Skyborn Alliance Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,4,6948,36,1); -- Skyborn Alliance Rogue
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=95 AND `class`=4;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,271675,3,1); -- Skyborn Alliance Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,271674,6,1); -- Skyborn Alliance Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,271673,7,1); -- Skyborn Alliance Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,2092,15,1); -- Skyborn Alliance Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,2947,17,1); -- Skyborn Alliance Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,4540,35,4); -- Skyborn Alliance Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,6948,36,1); -- Skyborn Alliance Rogue
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=95 AND `class`=8;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,8,271655,3,1); -- Skyborn Alliance Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,8,271658,6,1); -- Skyborn Alliance Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,8,271659,7,1); -- Skyborn Alliance Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,8,35,15,1); -- Skyborn Alliance Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,8,117,35,4); -- Skyborn Alliance Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,8,159,36,2); -- Skyborn Alliance Mage
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,8,6948,37,1); -- Skyborn Alliance Mage
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=95 AND `class`=8;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,271655,3,1); -- Skyborn Alliance Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,271658,6,1); -- Skyborn Alliance Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,271659,7,1); -- Skyborn Alliance Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,35,15,1); -- Skyborn Alliance Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,117,35,4); -- Skyborn Alliance Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,159,36,2); -- Skyborn Alliance Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,6948,37,1); -- Skyborn Alliance Mage
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=95 AND `class`=11;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,11,271668,3,1); -- Skyborn Alliance Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,11,271666,6,1); -- Skyborn Alliance Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,11,271665,7,1); -- Skyborn Alliance Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,11,3661,15,1); -- Skyborn Alliance Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,11,6948,35,1); -- Skyborn Alliance Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,11,159,36,2); -- Skyborn Alliance Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,95,11,4536,37,4); -- Skyborn Alliance Druid
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=95 AND `class`=11;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,271668,3,1); -- Skyborn Alliance Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,271666,6,1); -- Skyborn Alliance Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,271665,7,1); -- Skyborn Alliance Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,3661,15,1); -- Skyborn Alliance Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,6948,35,1); -- Skyborn Alliance Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,159,36,2); -- Skyborn Alliance Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,4536,37,4); -- Skyborn Alliance Druid
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=96 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,3,271668,3,1); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,3,271666,6,1); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,3,271665,7,1); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,3,2092,15,1); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,3,2504,17,1); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,3,159,35,2); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,3,117,36,4); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,3,6948,37,1); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,3,2512,255,200); -- Skyborn Horde Hunter
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=96 AND `class`=3;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,271668,3,1); -- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,271666,6,1); -- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,271665,7,1); -- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,2092,15,1); -- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,2504,17,1); -- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,159,35,2); -- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,117,36,4); -- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,6948,37,1); -- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,2512,255,200); -- Skyborn Horde Hunter
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=96 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,4,271675,3,1); -- Skyborn Horde Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,4,271674,6,1); -- Skyborn Horde Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,4,271673,7,1); -- Skyborn Horde Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,4,2092,15,1); -- Skyborn Horde Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,4,2947,17,1); -- Skyborn Horde Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,4,4540,35,4); -- Skyborn Horde Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,4,6948,36,1); -- Skyborn Horde Rogue
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=96 AND `class`=4;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,271675,3,1); -- Skyborn Horde Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,271674,6,1); -- Skyborn Horde Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,271673,7,1); -- Skyborn Horde Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,2092,15,1); -- Skyborn Horde Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,2947,17,1); -- Skyborn Horde Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,4540,35,4); -- Skyborn Horde Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,6948,36,1); -- Skyborn Horde Rogue
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=96 AND `class`=7;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,7,271663,3,1); -- Skyborn Horde Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,7,271662,6,1); -- Skyborn Horde Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,7,271661,7,1); -- Skyborn Horde Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,7,280400,15,1); -- Skyborn Horde Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,7,117,35,4); -- Skyborn Horde Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,7,159,36,2); -- Skyborn Horde Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,7,6948,37,1); -- Skyborn Horde Shaman
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=96 AND `class`=7;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,271663,3,1); -- Skyborn Horde Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,271662,6,1); -- Skyborn Horde Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,271661,7,1); -- Skyborn Horde Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,280400,15,1); -- Skyborn Horde Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,117,35,4); -- Skyborn Horde Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,159,36,2); -- Skyborn Horde Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,6948,37,1); -- Skyborn Horde Shaman
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=96 AND `class`=11;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,11,271668,3,1); -- Skyborn Horde Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,11,271666,6,1); -- Skyborn Horde Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,11,271665,7,1); -- Skyborn Horde Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,11,3661,15,1); -- Skyborn Horde Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,11,6948,35,1); -- Skyborn Horde Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,11,159,36,2); -- Skyborn Horde Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,11,4536,37,4); -- Skyborn Horde Druid
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=96 AND `class`=11;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,271668,3,1); -- Skyborn Horde Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,271666,6,1); -- Skyborn Horde Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,271665,7,1); -- Skyborn Horde Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,3661,15,1); -- Skyborn Horde Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,6948,35,1); -- Skyborn Horde Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,159,36,2); -- Skyborn Horde Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,4536,37,4); -- Skyborn Horde Druid
 
 -- Incomplete self-create states: no item rows generated, intentionally.
 
@@ -5469,66 +5483,66 @@ INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`
 -- DIRECT START ITEMS
 -- slotid is the actual ActivePlayerData invSlots index.
 -- =============================================================================
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=3 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,1,38,3,1); -- Dwarf Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,1,39,6,1); -- Dwarf Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,1,40,7,1); -- Dwarf Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,1,12282,15,1); -- Dwarf Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,1,6948,35,1); -- Dwarf Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,3,1,117,36,4); -- Dwarf Warrior
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=3 AND `class`=1;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,38,3,1); -- Dwarf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,39,6,1); -- Dwarf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,40,7,1); -- Dwarf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,12282,15,1); -- Dwarf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,6948,35,1); -- Dwarf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,117,36,4); -- Dwarf Warrior
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=4 AND `class`=11;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,11,6123,4,1); -- Night Elf Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,11,6124,6,1); -- Night Elf Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,11,3661,15,1); -- Night Elf Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,11,159,35,2); -- Night Elf Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,11,4536,36,4); -- Night Elf Druid
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,4,11,6948,37,1); -- Night Elf Druid
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=4 AND `class`=11;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,6123,4,1); -- Night Elf Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,6124,6,1); -- Night Elf Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,3661,15,1); -- Night Elf Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,159,35,2); -- Night Elf Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,4536,36,4); -- Night Elf Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,6948,37,1); -- Night Elf Druid
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=7 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,4,49,3,1); -- Gnome Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,4,48,6,1); -- Gnome Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,4,47,7,1); -- Gnome Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,4,2092,15,1); -- Gnome Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,4,2947,17,1); -- Gnome Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,4,117,35,4); -- Gnome Rogue
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,4,6948,36,1); -- Gnome Rogue
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=7 AND `class`=4;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,49,3,1); -- Gnome Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,48,6,1); -- Gnome Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,47,7,1); -- Gnome Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,2092,15,1); -- Gnome Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,2947,17,1); -- Gnome Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,117,35,4); -- Gnome Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,6948,36,1); -- Gnome Rogue
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=7 AND `class`=5;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,5,53,3,1); -- Gnome Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,5,6098,4,1); -- Gnome Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,5,52,6,1); -- Gnome Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,5,51,7,1); -- Gnome Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,5,36,15,1); -- Gnome Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,5,159,35,2); -- Gnome Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,5,6948,36,1); -- Gnome Priest
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,7,5,4540,37,4); -- Gnome Priest
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=7 AND `class`=5;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,53,3,1); -- Gnome Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,6098,4,1); -- Gnome Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,52,6,1); -- Gnome Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,51,7,1); -- Gnome Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,36,15,1); -- Gnome Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,159,35,2); -- Gnome Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,6948,36,1); -- Gnome Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,4540,37,4); -- Gnome Priest
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=2 AND `class`=7;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,7,154,3,1); -- Orc Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,7,153,6,1); -- Orc Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,7,36,15,1); -- Orc Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,7,6948,35,1); -- Orc Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,7,117,36,4); -- Orc Shaman
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,2,7,159,37,2); -- Orc Shaman
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=2 AND `class`=7;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,154,3,1); -- Orc Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,153,6,1); -- Orc Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,36,15,1); -- Orc Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,6948,35,1); -- Orc Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,117,36,4); -- Orc Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,159,37,2); -- Orc Shaman
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=5 AND `class`=9;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,9,6129,4,1); -- Undead Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,9,1396,6,1); -- Undead Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,9,59,7,1); -- Undead Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,9,2092,15,1); -- Undead Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,9,4604,35,4); -- Undead Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,9,159,36,2); -- Undead Warlock
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,5,9,6948,37,1); -- Undead Warlock
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=5 AND `class`=9;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,6129,4,1); -- Undead Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,1396,6,1); -- Undead Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,59,7,1); -- Undead Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,2092,15,1); -- Undead Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,4604,35,4); -- Undead Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,159,36,2); -- Undead Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,6948,37,1); -- Undead Warlock
 
-DELETE FROM `playercreateinfo_items` WHERE `build`=69893 AND `race`=96 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,1,271669,3,1); -- Skyborn Horde Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,1,271672,6,1); -- Skyborn Horde Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,1,271671,7,1); -- Skyborn Horde Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,1,280399,15,1); -- Skyborn Horde Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,1,876,16,1); -- Skyborn Horde Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,1,117,35,4); -- Skyborn Horde Warrior
-INSERT INTO `playercreateinfo_items` (`build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,96,1,6948,36,1); -- Skyborn Horde Warrior
+DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=96 AND `class`=1;
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,271669,3,1); -- Skyborn Horde Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,271672,6,1); -- Skyborn Horde Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,271671,7,1); -- Skyborn Horde Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,280399,15,1); -- Skyborn Horde Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,876,16,1); -- Skyborn Horde Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,117,35,4); -- Skyborn Horde Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,6948,36,1); -- Skyborn Horde Warrior
 
 -- =============================================================================
 -- DIRECT START SKILLS

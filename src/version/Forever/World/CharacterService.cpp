@@ -47,7 +47,7 @@ namespace
 
     bool isForeverRaceClassAvailableInDatabase(uint8_t race, uint8_t classId)
     {
-        auto result = WorldDatabase.query("SELECT 1 FROM playercreateinfo pi " "WHERE pi.race=%u AND pi.class=%u AND pi.build=(" "SELECT MAX(build) FROM playercreateinfo buildspecific " "WHERE buildspecific.race=pi.race " "AND buildspecific.class=pi.class " "AND buildspecific.build <= %u) LIMIT 1", static_cast<uint32_t>(race), static_cast<uint32_t>(classId), VERSION_STRING);
+        auto result = WorldDatabase.query("SELECT 1 FROM playercreateinfo " "WHERE race=%u AND class=%u " "AND min_build <= %u AND max_build >= %u LIMIT 1", static_cast<uint32_t>(race), static_cast<uint32_t>(classId), getAEVersion(), getAEVersion());
 
         return result != nullptr;
     }

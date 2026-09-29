@@ -2748,9 +2748,8 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
     auto startTime = Util::TimeNow();
 
     //                                                             1     2      3      4          5          6         7           8
-    auto player_create_info_result = WorldDatabase.query("SELECT race, class, mapID, zoneID, positionX, positionY, positionZ, orientation FROM playercreateinfo pi "
-
-        "WHERE build=(SELECT MAX(build) FROM playercreateinfo buildspecific WHERE pi.race = buildspecific.race AND pi.class = buildspecific.class AND build <= %u)", VERSION_STRING);
+    auto player_create_info_result = WorldDatabase.query("SELECT race, class, mapID, zoneID, positionX, positionY, positionZ, orientation FROM playercreateinfo "
+        "WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
     if (player_create_info_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `playercreateinfo` is empty!");
@@ -2788,7 +2787,7 @@ void MySQLDataStore::loadPlayerCreateInfoBars()
 {
 
     //                                                                 0     1      2        3      4     5
-    auto player_create_info_bars_result = WorldDatabase.query("SELECT race, class, button, action, type, misc FROM playercreateinfo_bars WHERE build = %u", VERSION_STRING);
+    auto player_create_info_bars_result = WorldDatabase.query("SELECT race, class, button, action, type, misc FROM playercreateinfo_bars WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
 
     if (player_create_info_bars_result == nullptr)
     {
@@ -2821,7 +2820,7 @@ void MySQLDataStore::loadPlayerCreateInfoItems()
     auto startTime = Util::TimeNow();
 
     //                                                                   0     1       2       3       4
-    auto player_create_info_items_result = WorldDatabase.query("SELECT race, class, protoid, slotid, amount FROM playercreateinfo_items WHERE build = %u", VERSION_STRING);
+    auto player_create_info_items_result = WorldDatabase.query("SELECT race, class, protoid, slotid, amount FROM playercreateinfo_items WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
 
     if (player_create_info_items_result == nullptr)
     {
@@ -3026,7 +3025,7 @@ void MySQLDataStore::loadPlayerCreateInfoSpellCast()
     auto startTime = Util::TimeNow();
 
     //                                                                      0     1         2
-    auto player_create_info_spells_result = WorldDatabase.query("SELECT race, classMask, spellid FROM playercreateinfo_spell_cast WHERE build = %u", VERSION_STRING);
+    auto player_create_info_spells_result = WorldDatabase.query("SELECT race, classMask, spellid FROM playercreateinfo_spell_cast WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
 
     if (player_create_info_spells_result == nullptr)
     {
