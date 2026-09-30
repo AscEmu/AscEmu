@@ -40,6 +40,7 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
+            if (m_protocol.isForever()) return 8; // two packed modern GUID masks + uint32 amount
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
                 return m_minimum_size;
             else if (m_protocol.isMop())
@@ -49,6 +50,16 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                auto readModernGuid = [&packet](WoWGuid& guid) { WoWGuid modernGuid; std::size_t consumed = 0; if (!WoWGuid::unpackModern(packet.contents() + packet.rpos(), packet.remaining(), modernGuid, consumed)) return false; packet.rpos(packet.rpos() + consumed); guid.init(modernGuid.toLegacyRaw()); return true; };
+                if (!readModernGuid(vendorGuid) || !readModernGuid(itemGuid) || packet.remaining() != sizeof(uint32_t)) return false;
+                uint32_t modernAmount = 0;
+                packet >> modernAmount;
+                amount = static_cast<int32_t>(modernAmount);
+                return !packet.hadReadFailure() && packet.remaining() == 0;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 uint64_t rawGuid;

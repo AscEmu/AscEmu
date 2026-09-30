@@ -567,6 +567,23 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
         return 1;
     }
 
+    if (isItem())
+    {
+        Item* const item = static_cast<Item*>(this);
+        const WoWGuid modernGuid = WoWGuid::createModernItem(worldConfig.battleNetComm.realmId, item->getGuidLow());
+        const std::vector<uint8_t> packedGuid = modernGuid.packModern();
+        if (packedGuid.empty())
+            return 0;
+
+        const std::vector<uint8_t> block = AscEmu::Version::Forever::ObjectUpdate::buildItemCreateBlock(packedGuid, foreverObjectFields(), item->foreverItemFields());
+
+        if (block.empty())
+            return 0;
+
+        data->append(block.data(), block.size());
+        return 1;
+    }
+
     if (isGameObject())
     {
         const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(m_wowGuid.getRawGuid(), worldConfig.battleNetComm.realmId, static_cast<uint16_t>(GetMapId()), 0);

@@ -63,27 +63,27 @@ uint32_t ItemProperties::getBuyPriceForItem(uint32_t count, uint32_t factionStan
 
 void ItemProperties::addStat(uint32_t type, int32_t value)
 {
-    if (type <= ITEM_MOD_EXTRA_ARMOR && generalStatsMap.size() < MAX_ITEM_PROTO_STATS)
+    // Modern clients use item-modifier ids beyond the legacy MAX_ITEM_MOD
+    // range. Keep the generic stat map id-based instead of silently dropping
+    // those records. Existing legacy resistance handling remains unchanged.
+    if (generalStatsMap.contains(type) || generalStatsMap.size() < MAX_ITEM_PROTO_STATS)
         generalStatsMap[type] = value;
-    
+
     if (type >= ITEM_MOD_HOLY_RESISTANCE && type <= ITEM_MOD_ARCANE_RESISTANCE)
         resistanceStatsMap[type] = value;
 }
 
 int32_t ItemProperties::getStat(uint32_t type) const
 {
-    if (type <= ITEM_MOD_EXTRA_ARMOR)
-    {
-        auto itr = generalStatsMap.find(type);
-        if (itr != generalStatsMap.end())
-            return itr->second;
-    }
+    auto itr = generalStatsMap.find(type);
+    if (itr != generalStatsMap.end())
+        return itr->second;
 
     if (type >= ITEM_MOD_HOLY_RESISTANCE && type <= ITEM_MOD_ARCANE_RESISTANCE)
     {
-        auto itr = resistanceStatsMap.find(type);
-        if (itr != resistanceStatsMap.end())
-            return itr->second;
+        auto resistanceItr = resistanceStatsMap.find(type);
+        if (resistanceItr != resistanceStatsMap.end())
+            return resistanceItr->second;
     }
 
     return 0;

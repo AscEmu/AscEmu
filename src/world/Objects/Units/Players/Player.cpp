@@ -3,6 +3,7 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Data/InventoryLayout.hpp"
 #include <zlib.h>
 
 #include "Player.hpp"
@@ -909,13 +910,6 @@ namespace
         return WoWGuid::createModernItem(worldConfig.battleNetComm.realmId, uint64_t(WoWGuid::getLowGuidFromRaw(legacyGuid)));
     }
 
-    constexpr std::size_t ForeverInventoryOffset = 0;
-    constexpr std::size_t ForeverPackOffset = ForeverInventoryOffset + WOWPLAYER_INVENTORY_SLOT_COUNT;
-    constexpr std::size_t ForeverBankOffset = ForeverPackOffset + WOWPLAYER_PACK_SLOT_COUNT;
-    constexpr std::size_t ForeverBankBagOffset = ForeverBankOffset + WOWPLAYER_BANK_SLOT_COUNT;
-    constexpr std::size_t ForeverBuybackOffset = ForeverBankBagOffset + WOWPLAYER_BANK_BAG_SLOT_COUNT;
-
-    static_assert(ForeverBuybackOffset + WOWPLAYER_BUY_BACK_COUNT <= 105);
 }
 #endif
 
@@ -1115,8 +1109,37 @@ void Player::setQuestLogExpireTimeBySlot(uint8_t slot, uint32_t expireTime) { wr
 //QuestLog end
 
 //VisibleItem start
-uint32_t Player::getVisibleItemEntry(uint32_t slot) const { return playerData()->visible_items[slot].entry; }
-void Player::setVisibleItemEntry(uint32_t slot, uint32_t entry) { write(playerData()->visible_items[slot].entry, entry); }
+uint32_t Player::getVisibleItemEntry(uint32_t slot) const
+{
+#if defined(AE_FOREVER)
+    if (slot >= m_foreverPlayerFields.unknownVisibleItemRecords0_69913.size())
+        return 0;
+
+    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverPlayerFields.unknownVisibleItemRecords0_69913[slot].itemId));
+#else
+    return playerData()->visible_items[slot].entry;
+#endif
+}
+
+void Player::setVisibleItemEntry(uint32_t slot, uint32_t entry)
+{
+#if defined(AE_FOREVER)
+    if (slot >= m_foreverPlayerFields.unknownVisibleItemRecords0_69913.size())
+        return;
+
+    auto& visibleItem = m_foreverPlayerFields.unknownVisibleItemRecords0_69913[slot];
+    if (visibleItem.itemId == static_cast<int32_t>(entry))
+        return;
+
+    visibleItem.itemId = static_cast<int32_t>(entry);
+    m_foreverPlayerFields.markArrayChanged(
+        AscEmu::Version::Forever::Fields::PlayerData::VisibleItemsGroupBit,
+        AscEmu::Version::Forever::Fields::PlayerData::VisibleItemsFirstBit + slot);
+    updateObject();
+#else
+    write(playerData()->visible_items[slot].entry, entry);
+#endif
+}
 
 #if VERSION_STRING > TBC
 uint16_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const
@@ -1124,7 +1147,16 @@ uint16_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const
     if (pos > TEMP_ENCHANTMENT_SLOT)
         return 0;
 
+#if defined(AE_FOREVER)
+    if (slot >= m_foreverPlayerFields.unknownVisibleItemRecords0_69913.size())
+        return 0;
+
+    // Forever VisibleItem stores the rendered enchant visual, not the legacy
+    // enchantment slot payload. The legacy getter has no exact equivalent.
+    return 0;
+#else
     return playerData()->visible_items[slot].enchantment.raw[pos];
+#endif
 }
 
 void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint16_t enchantment)
@@ -1132,7 +1164,20 @@ void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint16_t ench
     if (pos > TEMP_ENCHANTMENT_SLOT)
         return;
 
+#if defined(AE_FOREVER)
+    if (slot >= m_foreverPlayerFields.unknownVisibleItemRecords0_69913.size())
+        return;
+
+    // Keep the modern visible-item record dirty when equipment enchant state
+    // changes. itemVisual will be populated once the Forever enchant visual
+    // mapping is wired.
+    m_foreverPlayerFields.markArrayChanged(
+        AscEmu::Version::Forever::Fields::PlayerData::VisibleItemsGroupBit,
+        AscEmu::Version::Forever::Fields::PlayerData::VisibleItemsFirstBit + slot);
+    updateObject();
+#else
     write(playerData()->visible_items[slot].enchantment.raw[pos], enchantment);
+#endif
 }
 #else
 uint32_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const { return playerData()->visible_items[slot].enchantment[pos]; }
@@ -1143,10 +1188,14 @@ void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint32_t ench
 uint64_t Player::getInventorySlotItemGuid(uint8_t slot) const
 {
 #if defined(AE_FOREVER)
-    if (slot >= WOWPLAYER_INVENTORY_SLOT_COUNT)
+    if (slot >= InventoryLayout::InventorySlotCount)
         return 0;
 
-    return m_foreverActivePlayerFields.invSlots[ForeverInventoryOffset + slot].toLegacyRaw();
+    const std::size_t index = InventoryLayout::Forever::inventoryIndex(slot);
+    if (index >= m_foreverActivePlayerFields.invSlots.size())
+        return 0;
+
+    return m_foreverActivePlayerFields.invSlots[index].toLegacyRaw();
 #else
     return playerData()->inventory_slot[slot];
 #endif
@@ -1154,16 +1203,19 @@ uint64_t Player::getInventorySlotItemGuid(uint8_t slot) const
 void Player::setInventorySlotItemGuid(uint8_t slot, uint64_t guid)
 {
 #if defined(AE_FOREVER)
-    if (slot >= WOWPLAYER_INVENTORY_SLOT_COUNT)
+    if (slot >= InventoryLayout::InventorySlotCount)
         return;
 
-    const std::size_t index = ForeverInventoryOffset + slot;
+    const std::size_t index = InventoryLayout::Forever::inventoryIndex(slot);
+    if (index >= m_foreverActivePlayerFields.invSlots.size())
+        return;
+
     const WoWGuid modernGuid = makeForeverItemGuid(guid);
     if (m_foreverActivePlayerFields.invSlots[index].getModernHigh() == modernGuid.getModernHigh() && m_foreverActivePlayerFields.invSlots[index].getModernLow() == modernGuid.getModernLow())
         return;
 
     m_foreverActivePlayerFields.invSlots[index] = modernGuid;
-    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit163_69913, AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit164_69913 + index);
+    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::InventorySlotsGroupBit, AscEmu::Version::Forever::Fields::ActivePlayerData::InventorySlotsFirstBit + index);
     updateObject();
 #else
     write(playerData()->inventory_slot[slot], guid);
@@ -1173,10 +1225,14 @@ void Player::setInventorySlotItemGuid(uint8_t slot, uint64_t guid)
 uint64_t Player::getPackSlotItemGuid(uint8_t slot) const
 {
 #if defined(AE_FOREVER)
-    if (slot >= WOWPLAYER_PACK_SLOT_COUNT)
+    if (slot >= InventoryLayout::PackCount)
         return 0;
 
-    return m_foreverActivePlayerFields.invSlots[ForeverPackOffset + slot].toLegacyRaw();
+    const std::size_t index = InventoryLayout::Forever::packIndex(slot);
+    if (index >= m_foreverActivePlayerFields.invSlots.size())
+        return 0;
+
+    return m_foreverActivePlayerFields.invSlots[index].toLegacyRaw();
 #else
     return playerData()->pack_slot[slot];
 #endif
@@ -1184,16 +1240,19 @@ uint64_t Player::getPackSlotItemGuid(uint8_t slot) const
 void Player::setPackSlotItemGuid(uint8_t slot, uint64_t guid)
 {
 #if defined(AE_FOREVER)
-    if (slot >= WOWPLAYER_PACK_SLOT_COUNT)
+    if (slot >= InventoryLayout::PackCount)
         return;
 
-    const std::size_t index = ForeverPackOffset + slot;
+    const std::size_t index = InventoryLayout::Forever::packIndex(slot);
+    if (index >= m_foreverActivePlayerFields.invSlots.size())
+        return;
+
     const WoWGuid modernGuid = makeForeverItemGuid(guid);
     if (m_foreverActivePlayerFields.invSlots[index].getModernHigh() == modernGuid.getModernHigh() && m_foreverActivePlayerFields.invSlots[index].getModernLow() == modernGuid.getModernLow())
         return;
 
     m_foreverActivePlayerFields.invSlots[index] = modernGuid;
-    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit163_69913, AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit164_69913 + index);
+    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::InventorySlotsGroupBit, AscEmu::Version::Forever::Fields::ActivePlayerData::InventorySlotsFirstBit + index);
     updateObject();
 #else
     write(playerData()->pack_slot[slot], guid);
@@ -1203,10 +1262,10 @@ void Player::setPackSlotItemGuid(uint8_t slot, uint64_t guid)
 uint64_t Player::getBankSlotItemGuid(uint8_t slot) const
 {
 #if defined(AE_FOREVER)
-    if (slot >= WOWPLAYER_BANK_SLOT_COUNT)
-        return 0;
-
-    return m_foreverActivePlayerFields.invSlots[ForeverBankOffset + slot].toLegacyRaw();
+    // Normal bank item slots still exist in Forever, but their actual item
+    // contents are not represented by the modern ActivePlayerData::InvSlots block.
+    static_cast<void>(slot);
+    return 0;
 #else
     return playerData()->bank_slot[slot];
 #endif
@@ -1214,17 +1273,11 @@ uint64_t Player::getBankSlotItemGuid(uint8_t slot) const
 void Player::setBankSlotItemGuid(uint8_t slot, uint64_t guid)
 {
 #if defined(AE_FOREVER)
-    if (slot >= WOWPLAYER_BANK_SLOT_COUNT)
-        return;
-
-    const std::size_t index = ForeverBankOffset + slot;
-    const WoWGuid modernGuid = makeForeverItemGuid(guid);
-    if (m_foreverActivePlayerFields.invSlots[index].getModernHigh() == modernGuid.getModernHigh() && m_foreverActivePlayerFields.invSlots[index].getModernLow() == modernGuid.getModernLow())
-        return;
-
-    m_foreverActivePlayerFields.invSlots[index] = modernGuid;
-    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit163_69913, AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit164_69913 + index);
-    updateObject();
+    // Normal bank item slots still exist in Forever, but their actual item
+    // contents are not represented by the modern ActivePlayerData::InvSlots block.
+    static_cast<void>(slot);
+    static_cast<void>(guid);
+    return;
 #else
     write(playerData()->bank_slot[slot], guid);
 #endif
@@ -1233,10 +1286,14 @@ void Player::setBankSlotItemGuid(uint8_t slot, uint64_t guid)
 uint64_t Player::getBankBagSlotItemGuid(uint8_t slot) const
 {
 #if defined(AE_FOREVER)
-    if (slot >= WOWPLAYER_BANK_BAG_SLOT_COUNT)
+    if (slot >= InventoryLayout::BankBagCount)
         return 0;
 
-    return m_foreverActivePlayerFields.invSlots[ForeverBankBagOffset + slot].toLegacyRaw();
+    const std::size_t index = InventoryLayout::Forever::bankBagIndex(slot);
+    if (index >= m_foreverActivePlayerFields.invSlots.size())
+        return 0;
+
+    return m_foreverActivePlayerFields.invSlots[index].toLegacyRaw();
 #else
     return playerData()->bank_bag_slot[slot];
 #endif
@@ -1244,16 +1301,19 @@ uint64_t Player::getBankBagSlotItemGuid(uint8_t slot) const
 void Player::setBankBagSlotItemGuid(uint8_t slot, uint64_t guid)
 {
 #if defined(AE_FOREVER)
-    if (slot >= WOWPLAYER_BANK_BAG_SLOT_COUNT)
+    if (slot >= InventoryLayout::BankBagCount)
         return;
 
-    const std::size_t index = ForeverBankBagOffset + slot;
+    const std::size_t index = InventoryLayout::Forever::bankBagIndex(slot);
+    if (index >= m_foreverActivePlayerFields.invSlots.size())
+        return;
+
     const WoWGuid modernGuid = makeForeverItemGuid(guid);
     if (m_foreverActivePlayerFields.invSlots[index].getModernHigh() == modernGuid.getModernHigh() && m_foreverActivePlayerFields.invSlots[index].getModernLow() == modernGuid.getModernLow())
         return;
 
     m_foreverActivePlayerFields.invSlots[index] = modernGuid;
-    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit163_69913, AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit164_69913 + index);
+    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::InventorySlotsGroupBit, AscEmu::Version::Forever::Fields::ActivePlayerData::InventorySlotsFirstBit + index);
     updateObject();
 #else
     write(playerData()->bank_bag_slot[slot], guid);
@@ -1263,10 +1323,14 @@ void Player::setBankBagSlotItemGuid(uint8_t slot, uint64_t guid)
 uint64_t Player::getVendorBuybackSlot(uint8_t slot) const
 {
 #if defined(AE_FOREVER)
-    if (slot >= WOWPLAYER_BUY_BACK_COUNT)
+    if (slot >= InventoryLayout::BuybackCount)
         return 0;
 
-    return m_foreverActivePlayerFields.invSlots[ForeverBuybackOffset + slot].toLegacyRaw();
+    const std::size_t index = InventoryLayout::Forever::buybackIndex(slot);
+    if (index >= m_foreverActivePlayerFields.invSlots.size())
+        return 0;
+
+    return m_foreverActivePlayerFields.invSlots[index].toLegacyRaw();
 #else
     return playerData()->vendor_buy_back_slot[slot];
 #endif
@@ -1274,16 +1338,19 @@ uint64_t Player::getVendorBuybackSlot(uint8_t slot) const
 void Player::setVendorBuybackSlot(uint8_t slot, uint64_t guid)
 {
 #if defined(AE_FOREVER)
-    if (slot >= WOWPLAYER_BUY_BACK_COUNT)
+    if (slot >= InventoryLayout::BuybackCount)
         return;
 
-    const std::size_t index = ForeverBuybackOffset + slot;
+    const std::size_t index = InventoryLayout::Forever::buybackIndex(slot);
+    if (index >= m_foreverActivePlayerFields.invSlots.size())
+        return;
+
     const WoWGuid modernGuid = makeForeverItemGuid(guid);
     if (m_foreverActivePlayerFields.invSlots[index].getModernHigh() == modernGuid.getModernHigh() && m_foreverActivePlayerFields.invSlots[index].getModernLow() == modernGuid.getModernLow())
         return;
 
     m_foreverActivePlayerFields.invSlots[index] = modernGuid;
-    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit163_69913, AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit164_69913 + index);
+    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::InventorySlotsGroupBit, AscEmu::Version::Forever::Fields::ActivePlayerData::InventorySlotsFirstBit + index);
     updateObject();
 #else
     write(playerData()->vendor_buy_back_slot[slot], guid);
@@ -1698,7 +1765,7 @@ void Player::setCoinage(uint64_t coinage)
         return;
 
     m_foreverActivePlayerFields.coinage = coinage;
-    m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit58_69913);
+    m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::CoinageBit);
     updateObject();
 #else
     write(playerData()->field_coinage, coinage);
@@ -2975,7 +3042,7 @@ bool Player::create(CharCreate& charCreateContent)
                 //use safeadd only for equipmentset items... all other items will go to a free bag slot.
                 if (itemSlot < INVENTORY_SLOT_BAG_END && (itemProperties->Class == ITEM_CLASS_ARMOR || itemProperties->Class == ITEM_CLASS_WEAPON || itemProperties->Class == ITEM_CLASS_CONTAINER || itemProperties->Class == ITEM_CLASS_QUIVER))
                 {
-                    const auto [addResult, _] = getItemInterface()->SafeAddItem(std::move(item), INVENTORY_SLOT_NOT_SET, itemSlot);
+                    const auto [addResult, _] = getItemInterface()->SafeAddItem(std::move(item), InventoryLayout::SlotNotSet, itemSlot);
                     if (!addResult)
                     {
                         sLogger.debug("StartOutfit - Item with entry {} can not be added safe to slot {}!", itemId, static_cast<uint32_t>(itemSlot));
@@ -3004,7 +3071,7 @@ bool Player::create(CharCreate& charCreateContent)
                 item->setStackCount((*is).amount);
                 if ((*is).slot < INVENTORY_SLOT_BAG_END)
                 {
-                    getItemInterface()->SafeAddItem(std::move(item), INVENTORY_SLOT_NOT_SET, (*is).slot);
+                    getItemInterface()->SafeAddItem(std::move(item), InventoryLayout::SlotNotSet, (*is).slot);
                 }
                 else
                 {
@@ -7404,14 +7471,14 @@ void Player::unEquipOffHandIfRequired()
         return;
 
     // Unequip offhand and find a bag slot for it
-    auto offHandWeaponHolder = getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND, false);
+    auto offHandWeaponHolder = getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(InventoryLayout::SlotNotSet, EQUIPMENT_SLOT_OFFHAND, false);
     auto result = getItemInterface()->FindFreeInventorySlot(offHandWeapon->getItemProperties());
     if (!result.Result)
     {
         // Player has no free slots in inventory, send it by mail
         offHandWeapon->removeFromWorld();
         offHandWeapon->setOwner(nullptr);
-        offHandWeapon->saveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
+        offHandWeapon->saveToDB(InventoryLayout::SlotNotSet, 0, true, nullptr);
         sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, getGuid(), getGuid(), "There were troubles with your item.", "There were troubles storing your item into your inventory.", 0, 0, offHandWeapon->getGuidLow(), MAIL_STATIONERY_GM);
     }
     else
@@ -17414,7 +17481,7 @@ void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending
 #ifdef AE_TBC
 void Player::addItemsToWorld()
 {
-    for (uint8_t slotIndex = 0; slotIndex < INVENTORY_KEYRING_END; ++slotIndex)
+    for (uint8_t slotIndex = 0; slotIndex < InventoryLayout::KeyringEnd; ++slotIndex)
     {
         if (const auto inventoryItem = getItemInterface()->GetInventoryItem(slotIndex))
         {
@@ -17423,7 +17490,7 @@ void Player::addItemsToWorld()
             if (slotIndex < INVENTORY_SLOT_BAG_END)      // only equipment slots get mods.
                 applyItemMods(inventoryItem, slotIndex, true, false, true);
 
-            if (slotIndex >= CURRENCYTOKEN_SLOT_START && slotIndex < CURRENCYTOKEN_SLOT_END)
+            if (slotIndex >= InventoryLayout::CurrencyTokenStart && slotIndex < InventoryLayout::CurrencyTokenEnd)
                 updateKnownCurrencies(inventoryItem->getEntry(), true);
 
             if (inventoryItem->isContainer() && getItemInterface()->IsBagSlot(slotIndex))
@@ -17442,7 +17509,7 @@ void Player::addItemsToWorld()
 #else
 void Player::addItemsToWorld()
 {
-    for (uint8_t slotIndex = 0; slotIndex < CURRENCYTOKEN_SLOT_END; ++slotIndex)
+    for (uint8_t slotIndex = 0; slotIndex < InventoryLayout::CurrencyTokenEnd; ++slotIndex)
     {
         if (Item* inventoryItem = getItemInterface()->GetInventoryItem(slotIndex))
         {
@@ -17451,7 +17518,7 @@ void Player::addItemsToWorld()
             if (slotIndex < INVENTORY_SLOT_BAG_END)
                 applyItemMods(inventoryItem, slotIndex, true, false, true);
 
-            if (slotIndex >= CURRENCYTOKEN_SLOT_START)
+            if (slotIndex >= InventoryLayout::CurrencyTokenStart)
                 updateKnownCurrencies(inventoryItem->getEntry(), true);
 
             if (inventoryItem->isContainer() && getItemInterface()->IsBagSlot(slotIndex))
@@ -17471,7 +17538,7 @@ void Player::addItemsToWorld()
 
 void Player::removeItemsFromWorld()
 {
-    for (uint8_t slotIndex = 0; slotIndex < CURRENCYTOKEN_SLOT_END; ++slotIndex)
+    for (uint8_t slotIndex = 0; slotIndex < InventoryLayout::CurrencyTokenEnd; ++slotIndex)
     {
         if (Item* inventoryItem = getItemInterface()->GetInventoryItem((int8_t)slotIndex))
         {

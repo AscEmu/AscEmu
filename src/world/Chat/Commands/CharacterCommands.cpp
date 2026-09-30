@@ -3,6 +3,7 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Data/InventoryLayout.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Chat/ChatCommandHandler.hpp"
 #include "Management/HonorHandler.h"
@@ -1374,7 +1375,7 @@ bool ChatCommandHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/,
     if (player_target == nullptr)
         return true;
 
-    for (uint8_t i = 0; i < MAX_INVENTORY_SLOT; i++)
+    for (uint8_t i = 0; i < InventoryLayout::MaxSlot; i++)
     {
         auto player_item = player_target->getItemInterface()->GetInventoryItem(static_cast<uint16_t>(i));
         if (player_item != nullptr)

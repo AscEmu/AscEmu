@@ -34,6 +34,17 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                const WoWGuid modernVendor = WoWGuid::createModernFromLegacy(vendorGuid.getRawGuid(), m_protocol.realmId);
+                const WoWGuid modernItem = WoWGuid::createModernFromLegacy(itemGuid.getRawGuid(), m_protocol.realmId);
+                const auto packedVendor = modernVendor.packModern();
+                const auto packedItem = modernItem.packModern();
+                packet.append(packedVendor.data(), packedVendor.size());
+                packet << uint32_t(itemGuid ? 1 : 0) << int32_t(error);
+                if (itemGuid) packet.append(packedItem.data(), packedItem.size());
+                return true;
+            }
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << vendorGuid.getRawGuid() << itemGuid.getRawGuid() << error;

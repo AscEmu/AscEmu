@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "WoWUnit.hpp"
+#include "InventoryLayout.hpp"
 
 #include "WoWGuid.hpp"
 #include <array>
@@ -70,14 +71,7 @@ union player_bytes_2_union
 // Adjusted values.
 #if VERSION_STRING == Classic
 static inline constexpr uint8_t WOWPLAYER_QUEST_COUNT = 20;
-static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_COUNT = 19;
 static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT = 7;
-static inline constexpr uint8_t WOWPLAYER_INVENTORY_SLOT_COUNT = 23;
-static inline constexpr uint8_t WOWPLAYER_PACK_SLOT_COUNT = 16;
-static inline constexpr uint8_t WOWPLAYER_BANK_SLOT_COUNT = 24;
-static inline constexpr uint8_t WOWPLAYER_BANK_BAG_SLOT_COUNT = 6;
-static inline constexpr uint8_t WOWPLAYER_BUY_BACK_COUNT = 12;
-static inline constexpr uint8_t WOWPLAYER_KEYRING_SLOT_COUNT = 20;
 static inline constexpr uint8_t WOWPLAYER_SKILL_INFO_COUNT = 128;
 static inline constexpr uint8_t WOWPLAYER_EXPLORED_ZONES_COUNT = 64;
 static inline constexpr uint8_t WOWPLAYER_STAT_COUNT = 5;
@@ -158,14 +152,14 @@ struct WoWPlayer : WoWUnit
     uint32_t duel_team;
     uint32_t guild_timestamp;
     std::array<WoWPlayer_Quest, WOWPLAYER_QUEST_COUNT> quests;
-    std::array<WoWPlayer_VisibleItem, WOWPLAYER_VISIBLE_ITEM_COUNT> visible_items;
+    std::array<WoWPlayer_VisibleItem, InventoryLayout::Fields::VisibleItemCount> visible_items;
     // Current player fields say long - client memory dump says int.
-    std::array<uint64_t, WOWPLAYER_INVENTORY_SLOT_COUNT> inventory_slot;
-    std::array<uint64_t, WOWPLAYER_PACK_SLOT_COUNT> pack_slot;
-    std::array<uint64_t, WOWPLAYER_BANK_SLOT_COUNT> bank_slot;
-    std::array<uint64_t, WOWPLAYER_BANK_BAG_SLOT_COUNT> bank_bag_slot;
-    std::array<uint64_t, WOWPLAYER_BUY_BACK_COUNT> vendor_buy_back_slot;
-    std::array<uint64_t, WOWPLAYER_KEYRING_SLOT_COUNT> key_ring_slot;
+    std::array<uint64_t, InventoryLayout::Fields::InventorySlotCount> inventory_slot;
+    std::array<uint64_t, InventoryLayout::Fields::PackSlotCount> pack_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BankSlotCount> bank_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BankBagSlotCount> bank_bag_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BuybackCount> vendor_buy_back_slot;
+    std::array<uint64_t, InventoryLayout::Fields::KeyringSlotCount> key_ring_slot;
     uint64_t farsight_guid;
     uint64_t field_combo_target;
     uint32_t xp;
@@ -194,8 +188,8 @@ struct WoWPlayer : WoWUnit
     uint32_t ammo_id;
     uint32_t self_resurrection_spell;
     uint32_t field_pvp_medals;
-    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_price;
-    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_timestamp;
+    std::array<uint32_t, InventoryLayout::Fields::BuybackCount> field_buy_back_price;
+    std::array<uint32_t, InventoryLayout::Fields::BuybackCount> field_buy_back_timestamp;
     uint32_t field_session_kills;
     uint32_t field_yesterday_kills;
     uint32_t field_last_week_kills;
@@ -212,18 +206,11 @@ struct WoWPlayer : WoWUnit
 };
 #elif VERSION_STRING == TBC
 static inline constexpr uint8_t WOWPLAYER_QUEST_COUNT = 25;
-static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_COUNT = 19;
 static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT = 11;
-static inline constexpr uint8_t WOWPLAYER_INVENTORY_SLOT_COUNT = 23;
-static inline constexpr uint8_t WOWPLAYER_PACK_SLOT_COUNT = 16;
-static inline constexpr uint8_t WOWPLAYER_BANK_SLOT_COUNT = 28;
-static inline constexpr uint8_t WOWPLAYER_BANK_BAG_SLOT_COUNT = 7;
-static inline constexpr uint8_t WOWPLAYER_KEYRING_SLOT_COUNT = 32;
 static inline constexpr uint8_t WOWPLAYER_VANITY_PET_SLOT_COUNT = 18;
 static inline constexpr uint8_t WOWPLAYER_SKILL_INFO_COUNT = 128;
 static inline constexpr uint8_t WOWPLAYER_SPELL_SCHOOL_COUNT = 7;
 static inline constexpr uint8_t WOWPLAYER_EXPLORED_ZONES_COUNT = 128;
-static inline constexpr uint8_t WOWPLAYER_BUY_BACK_COUNT = 12;
 static inline constexpr uint8_t WOWPLAYER_COMBAT_RATING_COUNT = 24;
 static inline constexpr uint8_t WOWPLAYER_ARENA_TEAM_SLOTS = 3;
 static inline constexpr uint8_t WOWPLAYER_DAILY_QUESTS_COUNT = 25;
@@ -314,16 +301,16 @@ struct WoWPlayer : WoWUnit
     uint32_t duel_team;
     uint32_t guild_timestamp;
     std::array<WoWPlayer_Quest, WOWPLAYER_QUEST_COUNT> quests;
-    std::array<WoWPlayer_VisibleItem, WOWPLAYER_VISIBLE_ITEM_COUNT> visible_items;
+    std::array<WoWPlayer_VisibleItem, InventoryLayout::Fields::VisibleItemCount> visible_items;
     uint32_t chosen_title;
     uint32_t player_padding_0;
     // Current player fields say long - client memory dump says int.
-    std::array<uint64_t, WOWPLAYER_INVENTORY_SLOT_COUNT> inventory_slot;
-    std::array<uint64_t, WOWPLAYER_PACK_SLOT_COUNT> pack_slot;
-    std::array<uint64_t, WOWPLAYER_BANK_SLOT_COUNT> bank_slot;
-    std::array<uint64_t, WOWPLAYER_BANK_BAG_SLOT_COUNT> bank_bag_slot;
-    std::array<uint64_t, WOWPLAYER_BUY_BACK_COUNT> vendor_buy_back_slot;
-    std::array<uint64_t, WOWPLAYER_KEYRING_SLOT_COUNT> key_ring_slot;
+    std::array<uint64_t, InventoryLayout::Fields::InventorySlotCount> inventory_slot;
+    std::array<uint64_t, InventoryLayout::Fields::PackSlotCount> pack_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BankSlotCount> bank_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BankBagSlotCount> bank_bag_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BuybackCount> vendor_buy_back_slot;
+    std::array<uint64_t, InventoryLayout::Fields::KeyringSlotCount> key_ring_slot;
     std::array<uint64_t, WOWPLAYER_VANITY_PET_SLOT_COUNT> vanity_pet_slot;
     uint64_t farsight_guid;
     std::array<uint64_t, WOWPLAYER_KNOWN_TITLES_SIZE> field_known_titles;
@@ -357,8 +344,8 @@ struct WoWPlayer : WoWUnit
     uint32_t ammo_id;
     uint32_t self_resurrection_spell;
     uint32_t field_pvp_medals;
-    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_price;
-    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_timestamp;
+    std::array<uint32_t, InventoryLayout::Fields::BuybackCount> field_buy_back_price;
+    std::array<uint32_t, InventoryLayout::Fields::BuybackCount> field_buy_back_timestamp;
     union field_kills_union
     {
         struct parts
@@ -384,17 +371,9 @@ struct WoWPlayer : WoWUnit
 };
 #elif VERSION_STRING == WotLK
 static inline constexpr uint8_t WOWPLAYER_QUEST_COUNT = 25;
-static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_COUNT = 19;
 static inline constexpr uint8_t WOWPLAYER_EXPLORED_ZONES_COUNT = 128;
-static inline constexpr uint8_t WOWPLAYER_INVENTORY_SLOT_COUNT = 23;
-static inline constexpr uint8_t WOWPLAYER_PACK_SLOT_COUNT = 16;
-static inline constexpr uint8_t WOWPLAYER_BANK_SLOT_COUNT = 28;
-static inline constexpr uint8_t WOWPLAYER_BANK_BAG_SLOT_COUNT = 7;
-static inline constexpr uint8_t WOWPLAYER_KEYRING_SLOT_COUNT = 32;
-static inline constexpr uint8_t WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT = 32;
 static inline constexpr uint8_t WOWPLAYER_SKILL_INFO_COUNT = 128;
 static inline constexpr uint8_t WOWPLAYER_SPELL_SCHOOL_COUNT = 7;
-static inline constexpr uint8_t WOWPLAYER_BUY_BACK_COUNT = 12;
 static inline constexpr uint8_t WOWPLAYER_COMBAT_RATING_COUNT = 25;
 static inline constexpr uint8_t WOWPLAYER_ARENA_TEAM_SLOTS = 3;
 static inline constexpr uint8_t WOWPLAYER_DAILY_QUESTS_COUNT = 25;
@@ -493,17 +472,17 @@ struct WoWPlayer : WoWUnit
     uint32_t duel_team;
     uint32_t guild_timestamp;
     std::array<WoWPlayer_Quest, WOWPLAYER_QUEST_COUNT> quests;
-    std::array<WoWPlayer_VisibleItem, WOWPLAYER_VISIBLE_ITEM_COUNT> visible_items;
+    std::array<WoWPlayer_VisibleItem, InventoryLayout::Fields::VisibleItemCount> visible_items;
     uint32_t chosen_title;
     uint32_t inebriation;
     uint32_t player_padding_0;
-    std::array<uint64_t, WOWPLAYER_INVENTORY_SLOT_COUNT> inventory_slot;
-    std::array<uint64_t, WOWPLAYER_PACK_SLOT_COUNT> pack_slot;
-    std::array<uint64_t, WOWPLAYER_BANK_SLOT_COUNT> bank_slot;
-    std::array<uint64_t, WOWPLAYER_BANK_BAG_SLOT_COUNT> bank_bag_slot;
-    std::array<uint64_t, WOWPLAYER_BUY_BACK_COUNT> vendor_buy_back_slot;
-    std::array<uint64_t, WOWPLAYER_KEYRING_SLOT_COUNT> key_ring_slot;
-    std::array<uint64_t, WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT> currencytoken_slot;
+    std::array<uint64_t, InventoryLayout::Fields::InventorySlotCount> inventory_slot;
+    std::array<uint64_t, InventoryLayout::Fields::PackSlotCount> pack_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BankSlotCount> bank_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BankBagSlotCount> bank_bag_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BuybackCount> vendor_buy_back_slot;
+    std::array<uint64_t, InventoryLayout::Fields::KeyringSlotCount> key_ring_slot;
+    std::array<uint64_t, InventoryLayout::Fields::CurrencyTokenSlotCount> currencytoken_slot;
     uint64_t farsight_guid;
     std::array<uint64_t, WOWPLAYER_KNOWN_TITLES_SIZE> field_known_titles;
     uint64_t field_known_currencies;
@@ -540,8 +519,8 @@ struct WoWPlayer : WoWUnit
     uint32_t ammo_id;
     uint32_t self_resurrection_spell;
     uint32_t field_pvp_medals;
-    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_price;
-    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_timestamp;
+    std::array<uint32_t, InventoryLayout::Fields::BuybackCount> field_buy_back_price;
+    std::array<uint32_t, InventoryLayout::Fields::BuybackCount> field_buy_back_timestamp;
     union field_kills_union
     {
         struct parts
@@ -573,17 +552,9 @@ struct WoWPlayer : WoWUnit
 static inline constexpr uint8_t WOWPLAYER_EXPLORED_ZONES_COUNT = 156;
 static inline constexpr uint8_t WOWPLAYER_WEAPON_DMG_MULTIPLIER_COUNT = 3;
 static inline constexpr uint8_t WOWPLAYER_SPELL_SCHOOL_COUNT = 7;
-static inline constexpr uint8_t WOWPLAYER_BUY_BACK_COUNT = 12;
 static inline constexpr uint8_t WOWPLAYER_ARENA_TEAM_SLOTS = 3;
 static inline constexpr uint8_t WOWPLAYER_DAILY_QUESTS_COUNT = 25;
 static inline constexpr uint8_t WOWPLAYER_QUEST_COUNT = 50;
-static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_COUNT = 19;
-static inline constexpr uint8_t WOWPLAYER_INVENTORY_SLOT_COUNT = 23;
-static inline constexpr uint8_t WOWPLAYER_PACK_SLOT_COUNT = 16;
-static inline constexpr uint8_t WOWPLAYER_BANK_SLOT_COUNT = 28;
-static inline constexpr uint8_t WOWPLAYER_BANK_BAG_SLOT_COUNT = 7;
-static inline constexpr uint8_t WOWPLAYER_KEYRING_SLOT_COUNT = 32;
-static inline constexpr uint8_t WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT = 32;
 static inline constexpr uint8_t WOWPLAYER_COMBAT_RATING_COUNT = 26;
 static inline constexpr uint8_t WOWPLAYER_RUNE_REGEN_COUNT = 4;
 static inline constexpr uint8_t WOWPLAYER_NO_REAGENT_COST_COUNT = 3;
@@ -674,15 +645,15 @@ struct WoWPlayer : WoWUnit
     uint32_t duel_team;
     uint32_t guild_timestamp;
     std::array<WoWPlayer_Quest, WOWPLAYER_QUEST_COUNT> quests;
-    std::array<WoWPlayer_VisibleItem, WOWPLAYER_VISIBLE_ITEM_COUNT> visible_items;
+    std::array<WoWPlayer_VisibleItem, InventoryLayout::Fields::VisibleItemCount> visible_items;
     uint32_t chosen_title;
     uint32_t inebriation;
     uint32_t player_padding_0;
-    std::array<uint64_t, WOWPLAYER_INVENTORY_SLOT_COUNT> inventory_slot;
-    std::array<uint64_t, WOWPLAYER_PACK_SLOT_COUNT> pack_slot;
-    std::array<uint64_t, WOWPLAYER_BANK_SLOT_COUNT> bank_slot;
-    std::array<uint64_t, WOWPLAYER_BANK_BAG_SLOT_COUNT> bank_bag_slot;
-    std::array<uint64_t, WOWPLAYER_BUY_BACK_COUNT> vendor_buy_back_slot;
+    std::array<uint64_t, InventoryLayout::Fields::InventorySlotCount> inventory_slot;
+    std::array<uint64_t, InventoryLayout::Fields::PackSlotCount> pack_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BankSlotCount> bank_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BankBagSlotCount> bank_bag_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BuybackCount> vendor_buy_back_slot;
     uint64_t farsight_guid;
     std::array<uint64_t, WOWPLAYER_KNOWN_TITLES_SIZE> field_known_titles;
     uint32_t xp;
@@ -733,8 +704,8 @@ struct WoWPlayer : WoWUnit
     player_field_bytes_union player_field_bytes;
     uint32_t self_resurrection_spell;
     uint32_t field_pvp_medals;
-    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_price;
-    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_timestamp;
+    std::array<uint32_t, InventoryLayout::Fields::BuybackCount> field_buy_back_price;
+    std::array<uint32_t, InventoryLayout::Fields::BuybackCount> field_buy_back_timestamp;
     union field_kills_union
     {
         struct parts
@@ -773,18 +744,10 @@ struct WoWPlayer : WoWUnit
 static inline constexpr uint8_t WOWPLAYER_EXPLORED_ZONES_COUNT = 200;
 static inline constexpr uint8_t WOWPLAYER_WEAPON_DMG_MULTIPLIER_COUNT = 3;
 static inline constexpr uint8_t WOWPLAYER_SPELL_SCHOOL_COUNT = 7;
-static inline constexpr uint8_t WOWPLAYER_BUY_BACK_COUNT = 12;
 static inline constexpr uint8_t WOWPLAYER_ARENA_TEAM_SLOTS = 3;
 static inline constexpr uint8_t WOWPLAYER_DAILY_QUESTS_COUNT = 25;
 static inline constexpr uint8_t WOWPLAYER_QUEST_COUNT = 50;
 static inline constexpr uint8_t WOWPLAYER_QUEST_UNUSED_COUNT = 10;
-static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_COUNT = 19;
-static inline constexpr uint8_t WOWPLAYER_INVENTORY_SLOT_COUNT = 23;
-static inline constexpr uint8_t WOWPLAYER_PACK_SLOT_COUNT = 16;
-static inline constexpr uint8_t WOWPLAYER_BANK_SLOT_COUNT = 28;
-static inline constexpr uint8_t WOWPLAYER_BANK_BAG_SLOT_COUNT = 7;
-static inline constexpr uint8_t WOWPLAYER_KEYRING_SLOT_COUNT = 32;
-static inline constexpr uint8_t WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT = 32;
 static inline constexpr uint8_t WOWPLAYER_KNOWN_TITLES_SIZE = 5;
 static inline constexpr uint16_t WOWPLAYER_SKILL_INFO_COUNT = 448;
 static inline constexpr uint8_t WOWPLAYER_COMBAT_RATING_COUNT = 27;
@@ -868,18 +831,18 @@ struct WoWPlayer : WoWUnit
     uint32_t duel_team;
     uint32_t guild_timestamp;
     std::array<WoWPlayer_Quest, WOWPLAYER_QUEST_COUNT> quests;
-    std::array<WoWPlayer_VisibleItem, WOWPLAYER_VISIBLE_ITEM_COUNT> visible_items;
+    std::array<WoWPlayer_VisibleItem, InventoryLayout::Fields::VisibleItemCount> visible_items;
     uint32_t chosen_title;
     uint32_t inebriation;
     uint32_t virtual_player_realm;
     uint32_t current_spec_id;
     uint32_t taxi_mount_anim_kit_id;
     uint32_t current_battle_pet_breed_quality;
-    std::array<uint64_t, WOWPLAYER_INVENTORY_SLOT_COUNT> inventory_slot;
-    std::array<uint64_t, WOWPLAYER_PACK_SLOT_COUNT> pack_slot;
-    std::array<uint64_t, WOWPLAYER_BANK_SLOT_COUNT> bank_slot;
-    std::array<uint64_t, WOWPLAYER_BANK_BAG_SLOT_COUNT> bank_bag_slot;
-    std::array<uint64_t, WOWPLAYER_BUY_BACK_COUNT> vendor_buy_back_slot;
+    std::array<uint64_t, InventoryLayout::Fields::InventorySlotCount> inventory_slot;
+    std::array<uint64_t, InventoryLayout::Fields::PackSlotCount> pack_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BankSlotCount> bank_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BankBagSlotCount> bank_bag_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BuybackCount> vendor_buy_back_slot;
     uint64_t farsight_guid;
     std::array<uint64_t, WOWPLAYER_KNOWN_TITLES_SIZE> field_known_titles;
     uint64_t field_coinage;
@@ -940,8 +903,8 @@ struct WoWPlayer : WoWUnit
     player_field_bytes_union player_field_bytes;
     uint32_t self_resurrection_spell;
     uint32_t field_pvp_medals;
-    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_price;
-    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_timestamp;
+    std::array<uint32_t, InventoryLayout::Fields::BuybackCount> field_buy_back_price;
+    std::array<uint32_t, InventoryLayout::Fields::BuybackCount> field_buy_back_timestamp;
     union field_kills_union
     {
         struct parts
@@ -981,18 +944,10 @@ struct WoWPlayer : WoWUnit
 static inline constexpr uint8_t WOWPLAYER_EXPLORED_ZONES_COUNT = 200;
 static inline constexpr uint8_t WOWPLAYER_WEAPON_DMG_MULTIPLIER_COUNT = 3;
 static inline constexpr uint8_t WOWPLAYER_SPELL_SCHOOL_COUNT = 7;
-static inline constexpr uint8_t WOWPLAYER_BUY_BACK_COUNT = 12;
 static inline constexpr uint8_t WOWPLAYER_ARENA_TEAM_SLOTS = 3;
 static inline constexpr uint8_t WOWPLAYER_DAILY_QUESTS_COUNT = 25;
 static inline constexpr uint8_t WOWPLAYER_QUEST_COUNT = 50;
 static inline constexpr uint8_t WOWPLAYER_QUEST_UNUSED_COUNT = 10;
-static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_COUNT = 19;
-static inline constexpr uint8_t WOWPLAYER_INVENTORY_SLOT_COUNT = 23;
-static inline constexpr uint8_t WOWPLAYER_PACK_SLOT_COUNT = 16;
-static inline constexpr uint8_t WOWPLAYER_BANK_SLOT_COUNT = 28;
-static inline constexpr uint8_t WOWPLAYER_BANK_BAG_SLOT_COUNT = 7;
-static inline constexpr uint8_t WOWPLAYER_KEYRING_SLOT_COUNT = 32;
-static inline constexpr uint8_t WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT = 32;
 static inline constexpr uint8_t WOWPLAYER_KNOWN_TITLES_SIZE = 5;
 static inline constexpr uint16_t WOWPLAYER_SKILL_INFO_COUNT = 448;
 static inline constexpr uint8_t WOWPLAYER_COMBAT_RATING_COUNT = 27;
@@ -1076,18 +1031,18 @@ struct WoWPlayer : WoWUnit
     uint32_t duel_team;
     uint32_t guild_timestamp;
     std::array<WoWPlayer_Quest, WOWPLAYER_QUEST_COUNT> quests;
-    std::array<WoWPlayer_VisibleItem, WOWPLAYER_VISIBLE_ITEM_COUNT> visible_items;
+    std::array<WoWPlayer_VisibleItem, InventoryLayout::Fields::VisibleItemCount> visible_items;
     uint32_t chosen_title;
     uint32_t unknownU8_1_69913;
     uint32_t virtual_player_realm;
     uint32_t current_spec_id;
     uint32_t taxi_mount_anim_kit_id;
     uint32_t current_battle_pet_breed_quality;
-    std::array<uint64_t, WOWPLAYER_INVENTORY_SLOT_COUNT> inventory_slot;
-    std::array<uint64_t, WOWPLAYER_PACK_SLOT_COUNT> pack_slot;
-    std::array<uint64_t, WOWPLAYER_BANK_SLOT_COUNT> bank_slot;
-    std::array<uint64_t, WOWPLAYER_BANK_BAG_SLOT_COUNT> bank_bag_slot;
-    std::array<uint64_t, WOWPLAYER_BUY_BACK_COUNT> vendor_buy_back_slot;
+    std::array<uint64_t, InventoryLayout::Fields::InventorySlotCount> inventory_slot;
+    std::array<uint64_t, InventoryLayout::Fields::PackSlotCount> pack_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BankSlotCount> bank_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BankBagSlotCount> bank_bag_slot;
+    std::array<uint64_t, InventoryLayout::Fields::BuybackCount> vendor_buy_back_slot;
     uint64_t farsight_guid;
     std::array<uint64_t, WOWPLAYER_KNOWN_TITLES_SIZE> field_known_titles;
     uint64_t field_coinage;
@@ -1148,8 +1103,8 @@ struct WoWPlayer : WoWUnit
     player_field_bytes_union player_field_bytes;
     uint32_t self_resurrection_spell;
     uint32_t field_pvp_medals;
-    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_price;
-    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_timestamp;
+    std::array<uint32_t, InventoryLayout::Fields::BuybackCount> field_buy_back_price;
+    std::array<uint32_t, InventoryLayout::Fields::BuybackCount> field_buy_back_timestamp;
     union field_kills_union
     {
         struct parts

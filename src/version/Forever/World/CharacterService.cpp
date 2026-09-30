@@ -19,6 +19,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "world/Server/CharacterErrors.h"
 #include "world/Macros/GuildMacros.hpp"
 #include "world/Management/ObjectMgr.hpp"
+#include "world/Storage/MySQLDataStore.hpp"
+#include "world/Storage/WDB/WDBStores.hpp"
 #include "Utilities/Strings.hpp"
 
 #include <algorithm>
@@ -341,6 +343,40 @@ bool WorldSocket::sendForeverCharacterEnumFromDatabase(bool includeCollection)
         characters.emplace_back(std::move(character));
     }
     while (characters.size() < 10U && result->nextRow());
+
+    uint32_t visualItemCount = 0;
+    if (auto itemResult = CharacterDatabase.query("SELECT pi.ownerguid, pi.slot, pi.entry FROM playeritems pi INNER JOIN characters c ON c.guid=pi.ownerguid WHERE c.acct=%u AND pi.containerslot=-1 AND pi.slot BETWEEN 0 AND 18 ORDER BY pi.ownerguid, pi.slot", accountId))
+    {
+        do
+        {
+            Field* itemFields = itemResult->fetch();
+            const uint64_t guid = itemFields[0].asUint64();
+            const uint8_t slot = itemFields[1].asUint8();
+            const uint32_t itemEntry = itemFields[2].asUint32();
+
+            auto characterIt = std::find_if(characters.begin(), characters.end(), [guid](const auto& character) { return character.guid == guid; });
+            if (characterIt == characters.end() || slot >= characterIt->visualItems.size())
+                continue;
+
+            const auto itemProperties = sMySQLStore.getItemProperties(itemEntry);
+            if (itemProperties == nullptr)
+            {
+                sLogger.failure("WorldSocket::Forever: character enum item {} is missing from resolved item properties for build {}.", itemEntry, getAEVersion());
+                continue;
+            }
+
+            auto& visualItem = characterIt->visualItems[slot];
+            visualItem.itemId = itemEntry;
+            visualItem.subclass = static_cast<uint8_t>(itemProperties->SubClass);
+            visualItem.inventoryType = static_cast<uint8_t>(itemProperties->InventoryType);
+            visualItem.displayId = itemProperties->DisplayInfoID;
+            visualItem.sheatheCategory = static_cast<uint8_t>(itemProperties->SheathID);
+            ++visualItemCount;
+        }
+        while (itemResult->nextRow());
+    }
+
+    sLogger.info("WorldSocket::Forever: character enum loaded {} equipped visual items for account {}.", visualItemCount, accountId);
 
     ensureForeverCharacterCustomizationTable();
 

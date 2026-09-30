@@ -20,10 +20,10 @@
 
 #pragma once
 
+#include "Data/InventoryLayout.hpp"
 #include "EquipmentSetMgr.h"
 #include "Objects/ItemDefines.hpp"
 #include "Platform/SymbolVisibility.hpp"
-#include "Macros/ItemMacros.hpp"
 
 #include <cstdint>
 #include <list>
@@ -143,7 +143,7 @@ private:
 
         SlotResult m_result;
         Player* m_pOwner;
-        std::array<std::unique_ptr<Item>, MAX_INVENTORY_SLOT> m_pItems;
+        std::array<std::unique_ptr<Item>, InventoryLayout::MaxSlot> m_pItems;
         std::array<std::unique_ptr<Item>, MAX_BUYBACK_SLOT> m_pBuyBack;
 
         RefundableMap m_refundableitems;

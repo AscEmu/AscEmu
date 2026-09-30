@@ -16,6 +16,16 @@ namespace WDB::Structures
 {
     struct ItemExtendedCostEntry;
     struct ItemEntry;
+#if defined(AE_FOREVER)
+    struct ItemSparseEntry;
+    struct RandPropPointsEntry;
+    struct ArmorLocationEntry;
+    struct ItemArmorQualityEntry;
+    struct ItemArmorShieldEntry;
+    struct ItemArmorTotalEntry;
+    struct ItemEffectEntry;
+    struct ItemXItemEffectEntry;
+#endif
     struct VehicleSeatEntry;
     struct VehicleEntry;
     struct SummonPropertiesEntry;
@@ -231,6 +241,16 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::VehicleEntry> sVehicleStor
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::VehicleSeatEntry> sVehicleSeatStore; // todo: available for versions > WotLK
 
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemEntry> sItemStore; // todo: available for versions > Classic
+#if defined(AE_FOREVER)
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemSparseEntry> sItemSparseStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::RandPropPointsEntry> sRandPropPointsStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ArmorLocationEntry> sArmorLocationForeverStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemArmorQualityEntry> sItemArmorQualityForeverStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemArmorShieldEntry> sItemArmorShieldForeverStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemArmorTotalEntry> sItemArmorTotalForeverStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemEffectEntry> sItemEffectForeverStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemXItemEffectEntry> sItemXItemEffectForeverStore;
+#endif
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemExtendedCostEntry> sItemExtendedCostStore; // todo: available for versions > Classic
 
 #if VERSION_STRING < Cata

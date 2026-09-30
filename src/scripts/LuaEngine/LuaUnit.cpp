@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 
+#include "Data/InventoryLayout.hpp"
 #include "LuaUnit.hpp"
 #include "Server/ClientProtocol.hpp"
 #include "Map/Maps/BaseMap.hpp"
@@ -4073,7 +4074,7 @@ int LuaUnit::RepairAllPlayerItems(lua_State* L, Unit* ptr)
     uint16_t j;
     uint16_t i;
 
-    for (i = 0; i < MAX_INVENTORY_SLOT; i++)
+    for (i = 0; i < InventoryLayout::MaxSlot; i++)
     {
         pItem = plr->getItemInterface()->GetInventoryItem(i);
         if (pItem != nullptr)

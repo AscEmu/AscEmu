@@ -177,8 +177,7 @@ namespace WDB
             return fail(error, "invalid signature (expected WDC5) in " + filename);
         if (m_header.version != 5)
             return fail(error, "unsupported WDC version " + std::to_string(m_header.version) + " in " + filename);
-        if (m_header.flags & 0x1)
-            return fail(error, "sparse WDC5 tables are not supported yet: " + filename);
+        m_isSparse = (m_header.flags & 0x1) != 0;
         if (m_header.fieldCount != schema.fields.size() || m_header.totalFieldCount != schema.fields.size())
             return fail(error, "field count mismatch in " + filename);
         if (schema.layoutHash && m_header.layoutHash != schema.layoutHash)
@@ -314,6 +313,67 @@ namespace WDB
                 continue;
             }
 
+            if (m_isSparse)
+            {
+                if (section.catalogDataCount != section.recordCount)
+                    return fail(error, "sparse WDC5 catalog count does not match record count in " + filename);
+                if (section.idTableSize != section.recordCount * sizeof(uint32_t))
+                    return fail(error, "sparse WDC5 id table has unexpected size in " + filename);
+
+                size_t idOffset = section.catalogDataOffset;
+                size_t const idEnd = idOffset + section.idTableSize;
+                if (idEnd > m_fileData.size())
+                    return fail(error, "sparse WDC5 id table is outside file in " + filename);
+
+                std::vector<uint32_t> externalIds(section.recordCount);
+                for (uint32_t& id : externalIds)
+                {
+                    if (!readPod(m_fileData, idOffset, id))
+                        return fail(error, "truncated sparse WDC5 id table in " + filename);
+                }
+
+                size_t copyOffset = idEnd;
+                size_t const copyEnd = copyOffset + static_cast<size_t>(section.copyTableCount) * 8U;
+                if (copyEnd > m_fileData.size())
+                    return fail(error, "sparse WDC5 copy table is outside file in " + filename);
+                for (uint32_t i = 0; i < section.copyTableCount; ++i)
+                {
+                    uint32_t newId = 0;
+                    uint32_t sourceId = 0;
+                    if (!readPod(m_fileData, copyOffset, newId) || !readPod(m_fileData, copyOffset, sourceId))
+                        return fail(error, "truncated sparse WDC5 copy table in " + filename);
+                    copyRecords.emplace_back(newId, sourceId);
+                }
+
+                size_t mapOffset = copyEnd;
+                size_t const mapEnd = mapOffset + static_cast<size_t>(section.catalogDataCount) * 6U;
+                if (mapEnd > m_fileData.size())
+                    return fail(error, "sparse WDC5 offset map is outside file in " + filename);
+
+                for (uint32_t record = 0; record < section.recordCount; ++record)
+                {
+                    uint32_t recordOffset = 0;
+                    uint16_t recordSize = 0;
+                    if (!readPod(m_fileData, mapOffset, recordOffset) || !readPod(m_fileData, mapOffset, recordSize))
+                        return fail(error, "truncated sparse WDC5 offset map in " + filename);
+                    if (recordOffset == 0 || recordSize == 0
+                        || static_cast<size_t>(recordOffset) + recordSize > m_fileData.size())
+                    {
+                        return fail(error, "invalid sparse WDC5 record range in " + filename);
+                    }
+
+                    RecordRef ref;
+                    ref.offset = recordOffset;
+                    ref.size = recordSize;
+                    ref.externalId = externalIds[record];
+                    ref.hasExternalId = true;
+                    m_records.push_back(ref);
+                    m_parentIds.push_back(0);
+                }
+
+                continue;
+            }
+
             size_t const recordsEnd = static_cast<size_t>(section.fileOffset)
                 + static_cast<size_t>(section.recordCount) * m_header.recordSize;
             size_t const stringsEnd = recordsEnd + section.stringTableSize;
@@ -413,6 +473,7 @@ namespace WDB
             {
                 RecordRef ref;
                 ref.offset = section.fileOffset + record * m_header.recordSize;
+                ref.size = m_header.recordSize;
                 ref.stringTableOffset = static_cast<uint32_t>(recordsEnd);
                 ref.stringTableSize = section.stringTableSize;
                 if (hasExternalIdTable)
@@ -464,6 +525,48 @@ namespace WDB
                 return fail(error, "WDC5 copy table references unknown source record in " + filename);
         }
 
+        if (m_isSparse)
+        {
+            for (uint32_t field = 0; field < m_header.totalFieldCount; ++field)
+            {
+                if (m_columns[field].compression != WDC5CompressionType::None)
+                    return fail(error, "compressed sparse WDC5 fields are not supported yet in " + filename);
+                if (!m_schema.fields[field].isString && (m_columns[field].bitSize == 0 || (m_columns[field].bitSize % 8U) != 0))
+                    return fail(error, "non-byte-aligned sparse WDC5 field is not supported in " + filename);
+            }
+
+            m_sparseFieldOffsets.resize(m_records.size());
+            for (uint32_t recordIndex = 0; recordIndex < m_records.size(); ++recordIndex)
+            {
+                auto& offsets = m_sparseFieldOffsets[recordIndex];
+                offsets.resize(m_header.totalFieldCount);
+
+                uint32_t cursor = 0;
+                uint32_t const recordSize = getRecordSize(recordIndex);
+                uint8_t const* record = getRecordData(recordIndex);
+                for (uint32_t field = 0; field < m_header.totalFieldCount; ++field)
+                {
+                    offsets[field] = cursor;
+                    if (m_schema.fields[field].isString)
+                    {
+                        if (cursor >= recordSize)
+                            return fail(error, "truncated sparse WDC5 string field in " + filename);
+                        void const* end = std::memchr(record + cursor, '\0', recordSize - cursor);
+                        if (!end)
+                            return fail(error, "unterminated sparse WDC5 string field in " + filename);
+                        cursor = static_cast<uint32_t>(static_cast<uint8_t const*>(end) - record) + 1U;
+                    }
+                    else
+                    {
+                        uint32_t const fieldBytes = m_columns[field].bitSize / 8U;
+                        if (cursor + fieldBytes > recordSize)
+                            return fail(error, "truncated sparse WDC5 numeric field in " + filename);
+                        cursor += fieldBytes;
+                    }
+                }
+            }
+        }
+
         return true;
     }
 
@@ -480,10 +583,11 @@ namespace WDB
     std::span<uint8_t const> WDC5File::getRawRecord(uint32_t recordIndex) const noexcept
     {
         uint8_t const* data = getRecordData(recordIndex);
-        if (!data || m_header.recordSize == 0)
+        uint32_t const size = getRecordSize(recordIndex);
+        if (!data || size == 0)
             return {};
 
-        return {data, m_header.recordSize};
+        return {data, size};
     }
 
 
@@ -493,6 +597,25 @@ namespace WDB
             return {};
 
         RecordRef const& ref = m_records[recordIndex];
+        if (m_isSparse)
+        {
+            if (!m_schema.fields[field].isString || arrayIndex != 0
+                || recordIndex >= m_sparseFieldOffsets.size()
+                || field >= m_sparseFieldOffsets[recordIndex].size())
+                return {};
+
+            uint32_t const offset = m_sparseFieldOffsets[recordIndex][field];
+            if (offset >= ref.size)
+                return {};
+
+            char const* begin = reinterpret_cast<char const*>(m_fileData.data() + ref.offset + offset);
+            size_t const maxLength = ref.size - offset;
+            void const* terminator = std::memchr(begin, '\0', maxLength);
+            if (!terminator)
+                return {};
+            char const* end = static_cast<char const*>(terminator);
+            return std::string_view(begin, static_cast<size_t>(end - begin));
+        }
         if (ref.stringTableSize == 0)
             return {};
 
@@ -525,7 +648,7 @@ namespace WDB
         // NUL-terminated string, just the wrong one. That is exactly what
         // happened with Forever Map.Directory, where map names turned into
         // unrelated localized text.
-        uint32_t const fieldByteOffset = getFieldByteOffset(field) + static_cast<uint32_t>(sizeof(uint32_t)) * arrayIndex;
+        uint32_t const fieldByteOffset = getFieldByteOffset(recordIndex, field) + static_cast<uint32_t>(sizeof(uint32_t)) * arrayIndex;
         size_t const relativeOffset = static_cast<size_t>(ref.offset) + fieldByteOffset + rawOffset;
         if (std::string_view value = makeView(relativeOffset); !value.empty())
             return value;
@@ -539,6 +662,13 @@ namespace WDB
         if (recordIndex >= m_records.size())
             return nullptr;
         return m_fileData.data() + m_records[recordIndex].offset;
+    }
+
+    uint32_t WDC5File::getRecordSize(uint32_t recordIndex) const noexcept
+    {
+        if (recordIndex >= m_records.size())
+            return 0;
+        return m_records[recordIndex].size != 0 ? m_records[recordIndex].size : m_header.recordSize;
     }
 
     bool WDC5File::checkIndex(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex) const
@@ -567,8 +697,15 @@ namespace WDB
         return value;
     }
 
-    uint32_t WDC5File::getFieldByteOffset(uint32_t field) const
+    uint32_t WDC5File::getFieldByteOffset(uint32_t recordIndex, uint32_t field) const
     {
+        if (m_isSparse)
+        {
+            if (recordIndex >= m_sparseFieldOffsets.size() || field >= m_sparseFieldOffsets[recordIndex].size())
+                return 0;
+            return m_sparseFieldOffsets[recordIndex][field];
+        }
+
         ColumnMeta const& column = m_columns[field];
         switch (column.compression)
         {
@@ -615,10 +752,16 @@ namespace WDB
         {
             case WDC5CompressionType::None:
             {
-                uint32_t const byteOffset = getFieldByteOffset(field) + static_cast<uint32_t>(sizeof(T)) * arrayIndex;
-                if (byteOffset + sizeof(T) > m_header.recordSize)
+                uint32_t const arraySize = m_schema.fields[field].arraySize;
+                uint32_t elementSize = static_cast<uint32_t>(sizeof(T));
+                if (arraySize != 0 && (column.bitSize % arraySize) == 0 && ((column.bitSize / arraySize) % 8U) == 0)
+                    elementSize = (column.bitSize / arraySize) / 8U;
+
+                uint32_t const byteOffset = getFieldByteOffset(recordIndex, field) + elementSize * arrayIndex;
+                uint32_t const recordSize = getRecordSize(recordIndex);
+                if (byteOffset + elementSize > recordSize || elementSize > sizeof(raw))
                     return T{};
-                std::memcpy(&raw, record + byteOffset, std::min(sizeof(T), sizeof(raw)));
+                std::memcpy(&raw, record + byteOffset, std::min<size_t>(elementSize, sizeof(raw)));
                 break;
             }
             case WDC5CompressionType::Immediate:

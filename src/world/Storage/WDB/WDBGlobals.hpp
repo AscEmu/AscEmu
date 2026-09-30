@@ -15,6 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstring>
 #include <filesystem>
 #include <iostream>
+#include <utility>
+#include <vector>
 
 namespace WDB
 {
@@ -33,6 +35,19 @@ namespace WDB
         [[nodiscard]] std::size_t getNumRows() const noexcept
         {
             return this->size();
+        }
+
+        // Populate a sparse/id-keyed store from records decoded by a modern
+        // DB2/WDC reader. WDBContainer::assignEntries() keeps legacy dense
+        // maxId+1 semantics; WDBStore deliberately keeps only records that
+        // actually exist.
+        void assignEntries(std::vector<std::pair<uint32_t, T>> const& entries)
+        {
+            this->clear();
+            this->reserve(entries.size());
+
+            for (auto const& [id, entry] : entries)
+                this->insert_or_assign(id, entry);
         }
     };
 

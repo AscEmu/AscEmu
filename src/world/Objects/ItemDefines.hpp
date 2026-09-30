@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "AEVersion.hpp"
+#include "Data/InventoryLayout.hpp"
 
 #include <cstdint>
 
@@ -58,8 +59,8 @@ enum ItemEnchantmentType : uint8_t
 
 enum EquipmentSlots : uint8_t                                      // 19 slots
 {
-    EQUIPMENT_SLOT_START        = 0,
-    EQUIPMENT_SLOT_HEAD         = 0,
+    EQUIPMENT_SLOT_START        = InventoryLayout::EquipmentStart,
+    EQUIPMENT_SLOT_HEAD         = InventoryLayout::EquipmentStart,
     EQUIPMENT_SLOT_NECK         = 1,
     EQUIPMENT_SLOT_SHOULDERS    = 2,
     EQUIPMENT_SLOT_BODY         = 3,
@@ -78,106 +79,110 @@ enum EquipmentSlots : uint8_t                                      // 19 slots
     EQUIPMENT_SLOT_OFFHAND      = 16,
     EQUIPMENT_SLOT_RANGED       = 17,
     EQUIPMENT_SLOT_TABARD       = 18,
-    EQUIPMENT_SLOT_END          = 19
+    EQUIPMENT_SLOT_END          = InventoryLayout::EquipmentEnd
 };
 
 enum InventorySlots                                         // 4 slots
 {
-    INVENTORY_SLOT_BAG_START    = 19,
-    INVENTORY_SLOT_BAG_1        = 19,
-    INVENTORY_SLOT_BAG_2        = 20,
-    INVENTORY_SLOT_BAG_3        = 21,
-    INVENTORY_SLOT_BAG_4        = 22,
-    INVENTORY_SLOT_BAG_END      = 23
+    INVENTORY_SLOT_BAG_START    = InventoryLayout::BagStart,
+    INVENTORY_SLOT_BAG_1        = InventoryLayout::BagStart + 0,
+    INVENTORY_SLOT_BAG_2        = InventoryLayout::BagStart + 1,
+    INVENTORY_SLOT_BAG_3        = InventoryLayout::BagStart + 2,
+    INVENTORY_SLOT_BAG_4        = InventoryLayout::BagStart + 3,
+    INVENTORY_SLOT_BAG_END      = InventoryLayout::BagEnd
 };
 
 enum InventoryPackSlots                                     // 16 slots
 {
-    INVENTORY_SLOT_ITEM_START   = 23,
-    INVENTORY_SLOT_ITEM_1       = 23,
-    INVENTORY_SLOT_ITEM_2       = 24,
-    INVENTORY_SLOT_ITEM_3       = 25,
-    INVENTORY_SLOT_ITEM_4       = 26,
-    INVENTORY_SLOT_ITEM_5       = 27,
-    INVENTORY_SLOT_ITEM_6       = 28,
-    INVENTORY_SLOT_ITEM_7       = 29,
-    INVENTORY_SLOT_ITEM_8       = 30,
-    INVENTORY_SLOT_ITEM_9       = 31,
-    INVENTORY_SLOT_ITEM_10      = 32,
-    INVENTORY_SLOT_ITEM_11      = 33,
-    INVENTORY_SLOT_ITEM_12      = 34,
-    INVENTORY_SLOT_ITEM_13      = 35,
-    INVENTORY_SLOT_ITEM_14      = 36,
-    INVENTORY_SLOT_ITEM_15      = 37,
-    INVENTORY_SLOT_ITEM_16      = 38,
-    INVENTORY_SLOT_ITEM_END     = 39
+    INVENTORY_SLOT_ITEM_START   = InventoryLayout::PackStart,
+    INVENTORY_SLOT_ITEM_1       = InventoryLayout::PackStart + 0,
+    INVENTORY_SLOT_ITEM_2       = InventoryLayout::PackStart + 1,
+    INVENTORY_SLOT_ITEM_3       = InventoryLayout::PackStart + 2,
+    INVENTORY_SLOT_ITEM_4       = InventoryLayout::PackStart + 3,
+    INVENTORY_SLOT_ITEM_5       = InventoryLayout::PackStart + 4,
+    INVENTORY_SLOT_ITEM_6       = InventoryLayout::PackStart + 5,
+    INVENTORY_SLOT_ITEM_7       = InventoryLayout::PackStart + 6,
+    INVENTORY_SLOT_ITEM_8       = InventoryLayout::PackStart + 7,
+    INVENTORY_SLOT_ITEM_9       = InventoryLayout::PackStart + 8,
+    INVENTORY_SLOT_ITEM_10      = InventoryLayout::PackStart + 9,
+    INVENTORY_SLOT_ITEM_11      = InventoryLayout::PackStart + 10,
+    INVENTORY_SLOT_ITEM_12      = InventoryLayout::PackStart + 11,
+    INVENTORY_SLOT_ITEM_13      = InventoryLayout::PackStart + 12,
+    INVENTORY_SLOT_ITEM_14      = InventoryLayout::PackStart + 13,
+    INVENTORY_SLOT_ITEM_15      = InventoryLayout::PackStart + 14,
+    INVENTORY_SLOT_ITEM_16      = InventoryLayout::PackStart + 15,
+    INVENTORY_SLOT_ITEM_END     = InventoryLayout::PackEnd
 };
 
 enum BankItemSlots                                          // 28 slots
 {
-    BANK_SLOT_ITEM_START        = 39,
-    BANK_SLOT_ITEM_1            = 39,
-    BANK_SLOT_ITEM_2            = 40,
-    BANK_SLOT_ITEM_3            = 41,
-    BANK_SLOT_ITEM_4            = 42,
-    BANK_SLOT_ITEM_5            = 43,
-    BANK_SLOT_ITEM_6            = 44,
-    BANK_SLOT_ITEM_7            = 45,
-    BANK_SLOT_ITEM_8            = 46,
-    BANK_SLOT_ITEM_9            = 47,
-    BANK_SLOT_ITEM_10           = 48,
-    BANK_SLOT_ITEM_11           = 49,
-    BANK_SLOT_ITEM_12           = 50,
-    BANK_SLOT_ITEM_13           = 51,
-    BANK_SLOT_ITEM_14           = 52,
-    BANK_SLOT_ITEM_15           = 53,
-    BANK_SLOT_ITEM_16           = 54,
-    BANK_SLOT_ITEM_17           = 55,
-    BANK_SLOT_ITEM_18           = 56,
-    BANK_SLOT_ITEM_19           = 57,
-    BANK_SLOT_ITEM_20           = 58,
-    BANK_SLOT_ITEM_21           = 59,
-    BANK_SLOT_ITEM_22           = 60,
-    BANK_SLOT_ITEM_23           = 61,
-    BANK_SLOT_ITEM_24           = 62,
-    BANK_SLOT_ITEM_25           = 63,
-    BANK_SLOT_ITEM_26           = 64,
-    BANK_SLOT_ITEM_27           = 65,
-    BANK_SLOT_ITEM_28           = 66,
-    BANK_SLOT_ITEM_END          = 67
+    BANK_SLOT_ITEM_START        = InventoryLayout::BankStart,
+    BANK_SLOT_ITEM_1            = InventoryLayout::BankStart + 0,
+    BANK_SLOT_ITEM_2            = InventoryLayout::BankStart + 1,
+    BANK_SLOT_ITEM_3            = InventoryLayout::BankStart + 2,
+    BANK_SLOT_ITEM_4            = InventoryLayout::BankStart + 3,
+    BANK_SLOT_ITEM_5            = InventoryLayout::BankStart + 4,
+    BANK_SLOT_ITEM_6            = InventoryLayout::BankStart + 5,
+    BANK_SLOT_ITEM_7            = InventoryLayout::BankStart + 6,
+    BANK_SLOT_ITEM_8            = InventoryLayout::BankStart + 7,
+    BANK_SLOT_ITEM_9            = InventoryLayout::BankStart + 8,
+    BANK_SLOT_ITEM_10           = InventoryLayout::BankStart + 9,
+    BANK_SLOT_ITEM_11           = InventoryLayout::BankStart + 10,
+    BANK_SLOT_ITEM_12           = InventoryLayout::BankStart + 11,
+    BANK_SLOT_ITEM_13           = InventoryLayout::BankStart + 12,
+    BANK_SLOT_ITEM_14           = InventoryLayout::BankStart + 13,
+    BANK_SLOT_ITEM_15           = InventoryLayout::BankStart + 14,
+    BANK_SLOT_ITEM_16           = InventoryLayout::BankStart + 15,
+    BANK_SLOT_ITEM_17           = InventoryLayout::BankStart + 16,
+    BANK_SLOT_ITEM_18           = InventoryLayout::BankStart + 17,
+    BANK_SLOT_ITEM_19           = InventoryLayout::BankStart + 18,
+    BANK_SLOT_ITEM_20           = InventoryLayout::BankStart + 19,
+    BANK_SLOT_ITEM_21           = InventoryLayout::BankStart + 20,
+    BANK_SLOT_ITEM_22           = InventoryLayout::BankStart + 21,
+    BANK_SLOT_ITEM_23           = InventoryLayout::BankStart + 22,
+    BANK_SLOT_ITEM_24           = InventoryLayout::BankStart + 23,
+#if VERSION_STRING > Classic
+    BANK_SLOT_ITEM_25           = InventoryLayout::BankStart + 24,
+    BANK_SLOT_ITEM_26           = InventoryLayout::BankStart + 25,
+    BANK_SLOT_ITEM_27           = InventoryLayout::BankStart + 26,
+    BANK_SLOT_ITEM_28           = InventoryLayout::BankStart + 27,
+#endif
+    BANK_SLOT_ITEM_END          = InventoryLayout::BankEnd
 };
 
 enum BankBagSlots                                           // 7 slots
 {
-    BANK_SLOT_BAG_START         = 67,
-    BANK_SLOT_BAG_1             = 67,
-    BANK_SLOT_BAG_2             = 68,
-    BANK_SLOT_BAG_3             = 69,
-    BANK_SLOT_BAG_4             = 70,
-    BANK_SLOT_BAG_5             = 71,
-    BANK_SLOT_BAG_6             = 72,
-    BANK_SLOT_BAG_7             = 73,
-    BANK_SLOT_BAG_END           = 74
+    BANK_SLOT_BAG_START         = InventoryLayout::BankBagStart,
+    BANK_SLOT_BAG_1             = InventoryLayout::BankBagStart + 0,
+    BANK_SLOT_BAG_2             = InventoryLayout::BankBagStart + 1,
+    BANK_SLOT_BAG_3             = InventoryLayout::BankBagStart + 2,
+    BANK_SLOT_BAG_4             = InventoryLayout::BankBagStart + 3,
+    BANK_SLOT_BAG_5             = InventoryLayout::BankBagStart + 4,
+    BANK_SLOT_BAG_6             = InventoryLayout::BankBagStart + 5,
+#if VERSION_STRING > Classic
+    BANK_SLOT_BAG_7             = InventoryLayout::BankBagStart + 6,
+#endif
+    BANK_SLOT_BAG_END           = InventoryLayout::BankBagEnd
 };
 
 enum BuyBackSlots : uint8_t                                 // 12 slots
 {
     // stored in m_buybackitems
-    BUYBACK_SLOT_START          = 74,
-    BUYBACK_SLOT_1              = 74,
-    BUYBACK_SLOT_2              = 75,
-    BUYBACK_SLOT_3              = 76,
-    BUYBACK_SLOT_4              = 77,
-    BUYBACK_SLOT_5              = 78,
-    BUYBACK_SLOT_6              = 79,
-    BUYBACK_SLOT_7              = 80,
-    BUYBACK_SLOT_8              = 81,
-    BUYBACK_SLOT_9              = 82,
-    BUYBACK_SLOT_10             = 83,
-    BUYBACK_SLOT_11             = 84,
-    BUYBACK_SLOT_12             = 85,
-    BUYBACK_SLOT_END            = 86,
-    MAX_BUYBACK_SLOT            = BUYBACK_SLOT_END - BUYBACK_SLOT_START
+    BUYBACK_SLOT_START          = InventoryLayout::BuybackStart,
+    BUYBACK_SLOT_1              = InventoryLayout::BuybackStart + 0,
+    BUYBACK_SLOT_2              = InventoryLayout::BuybackStart + 1,
+    BUYBACK_SLOT_3              = InventoryLayout::BuybackStart + 2,
+    BUYBACK_SLOT_4              = InventoryLayout::BuybackStart + 3,
+    BUYBACK_SLOT_5              = InventoryLayout::BuybackStart + 4,
+    BUYBACK_SLOT_6              = InventoryLayout::BuybackStart + 5,
+    BUYBACK_SLOT_7              = InventoryLayout::BuybackStart + 6,
+    BUYBACK_SLOT_8              = InventoryLayout::BuybackStart + 7,
+    BUYBACK_SLOT_9              = InventoryLayout::BuybackStart + 8,
+    BUYBACK_SLOT_10             = InventoryLayout::BuybackStart + 9,
+    BUYBACK_SLOT_11             = InventoryLayout::BuybackStart + 10,
+    BUYBACK_SLOT_12             = InventoryLayout::BuybackStart + 11,
+    BUYBACK_SLOT_END            = InventoryLayout::BuybackEnd,
+    MAX_BUYBACK_SLOT            = InventoryLayout::BuybackCount
 };
 
 // sanity checking

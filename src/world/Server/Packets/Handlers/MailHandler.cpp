@@ -3,6 +3,7 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Data/InventoryLayout.hpp"
 #include "Server/Packets/SmsgSendMailResult.h"
 #include "Server/Packets/CmsgMailMarkAsRead.h"
 #include "Server/Packets/CmsgMailDelete.h"
@@ -411,7 +412,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
 
             pItem->removeFromWorld();
             pItem->setOwner(nullptr);
-            pItem->saveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
+            pItem->saveToDB(InventoryLayout::SlotNotSet, 0, true, nullptr);
             msg.items.push_back(pItem->getGuidLow());
 
             if (hasPermissions())

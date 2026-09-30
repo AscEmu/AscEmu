@@ -1176,7 +1176,7 @@ uint32_t Item::repairItemCost()
 Player* Item::getOwner() const { return m_owner; }
 void Item::setOwner(Player* owner)
 {
-    write(itemData()->owner_guid.guid, owner ? owner->getGuid() : 0UL);
+    setOwnerGuid(owner ? owner->getGuid() : 0UL);
     m_owner = owner;
 }
 

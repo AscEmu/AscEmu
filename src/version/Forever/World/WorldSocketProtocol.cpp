@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "version/Forever/World/PostAuthBootstrap.hpp"
 #include "version/Forever/World/CharacterSelectBootstrap.hpp"
 #include "world/Server/BattleNetCommClient/BattleNetCommClient.hpp"
+#include "world/Server/LogonCommClient/LogonCommHandler.h"
 #include "world/Server/World.h"
 #include "world/Server/WorldSession.h"
 #include "world/Server/DatabaseDefinition.hpp"
@@ -1440,7 +1441,7 @@ bool WorldSocket::processForeverEnterEncryptedModeAck(uint32_t opcode, const std
 
     m_session = sessionHolder.get();
     m_session->SetClientBuild(m_foreverClientBuild);
-    m_session->LoadSecurity("");
+    m_session->LoadSecurity(sLogonCommHandler.getPermissionStringForAccountId(m_foreverGameAccountId));
     m_session->SetAccountFlags(AF_FULL_FOREVER);
     m_session->m_lastPing = static_cast<uint32_t>(UNIXTIME);
     m_session->_latency = m_latency;

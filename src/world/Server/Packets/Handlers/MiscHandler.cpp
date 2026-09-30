@@ -3,6 +3,7 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Data/InventoryLayout.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Item.hpp"
 #include "Management/WeatherMgr.hpp"
@@ -830,7 +831,7 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
             if (lockEntry->locktype[lockCase] == 1 && lockEntry->lockmisc[lockCase] > 0)
             {
                 const int16_t slot2 = _player->getItemInterface()->GetInventorySlotById(lockEntry->lockmisc[lockCase]);
-                if (slot2 != ITEM_NO_SLOT_AVAILABLE && slot2 >= INVENTORY_SLOT_ITEM_START && slot2 < INVENTORY_SLOT_ITEM_END)
+                if (slot2 != InventoryLayout::NoSlotAvailable && slot2 >= INVENTORY_SLOT_ITEM_START && slot2 < INVENTORY_SLOT_ITEM_END)
                 {
                     removeLockItems[lockCase] = lockEntry->lockmisc[lockCase];
                 }

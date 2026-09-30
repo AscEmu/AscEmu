@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Data/InventoryLayout.hpp"
 #include "AEVersion.hpp"
-#include "Macros/ItemMacros.hpp"
 #include "Macros/PlayerMacros.hpp"
 #include "Management/Skill.hpp"
 #include "Platform/SymbolVisibility.hpp"
@@ -857,7 +857,7 @@ struct CharEnumData
     uint32_t customization_flag;
 
     CharEnum_Pet pet_data;
-    PlayerItem player_items[DBC_PLAYER_ITEMS];
+    PlayerItem player_items[InventoryLayout::CharacterItemCount];
 };
 
 

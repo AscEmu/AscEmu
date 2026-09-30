@@ -9,6 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWUnit.hpp"
 #include "version/Forever/Fields/ForeverUpdateFields.hpp"
 #include "Network/ByteBuffer.hpp"
+#include "Logging/Logger.hpp"
+#include "Utilities/Util.hpp"
 
 #include <string>
 #include <algorithm>
@@ -21,6 +23,7 @@ namespace AscEmu::Version::Forever::ObjectUpdate
     namespace
     {
         constexpr uint8_t UPDATE_TYPE_CREATE_OBJECT_2 = 2;
+        constexpr uint8_t OBJECT_TYPE_ITEM = 1;
         constexpr uint8_t OBJECT_TYPE_UNIT = 5;
         constexpr uint8_t OBJECT_TYPE_PLAYER = 6;
         constexpr uint8_t OBJECT_TYPE_ACTIVE_PLAYER = 7;
@@ -86,6 +89,10 @@ namespace AscEmu::Version::Forever::ObjectUpdate
         // with 0x12 the client started sending the interaction request.
         constexpr uint8_t FRAGMENT_VENDOR_69913 = 0x12U;
 
+        // Forever 1.60.1.70009 retail item creates use Tag_Item 0xC8:
+        //   01 03 C8 FF 01
+        // Owner-visible fields, CGObject, Tag_Item, end, indirect activation.
+        constexpr uint8_t FRAGMENT_TAG_ITEM_70009 = 0xC8U;
         constexpr uint8_t FRAGMENT_TAG_UNIT_69913 = 0xCCU;
         constexpr uint8_t FRAGMENT_TAG_PLAYER_69913 = 0xCDU;
         constexpr uint8_t FRAGMENT_TAG_GAMEOBJECT_69913 = 0xCEU;
@@ -149,6 +156,13 @@ namespace AscEmu::Version::Forever::ObjectUpdate
             data.writeBit(fields.hasTransmog);
             data.writeBit(fields.hasIllusion);
             data.flushBits();
+        }
+
+        void writeVisibleItemUpdate(ByteBuffer& data, Fields::VisibleItem const& fields)
+        {
+            // Forever 1.60.1.70124 VisibleItem differential uses a 12-bit nested mask.
+            // For AscEmu's current live equip path only ItemID is changed; send root + ItemID.
+            data.writeBits(0x009U, 12); data.flushBits(); data << fields.itemId;
         }
 
         void writePassiveSpellHistoryCreate(ByteBuffer& data, Fields::PassiveSpellHistory const& fields)
@@ -320,6 +334,74 @@ namespace AscEmu::Version::Forever::ObjectUpdate
     void writeObjectDataCreate(ByteBuffer& data, Fields::ObjectData const& fields)
     {
         data << fields.entryId << fields.dynamicFlags << fields.scale;
+    }
+
+    namespace
+    {
+        void writeItemEnchantmentCreate70009(ByteBuffer& data, Fields::ItemEnchantment const& enchantment)
+        {
+            data << enchantment.id
+                 << enchantment.duration
+                 << enchantment.charges
+                 << enchantment.inactive;
+        }
+
+        void writeItemDataCreate70009(ByteBuffer& data, Fields::ItemData const& fields, int32_t itemEntry)
+        {
+            // Captured Forever 1.60.1.70009 owner-visible ItemData create layout.
+            //
+            // Eight starter-item CREATE_OBJECT samples from the supplied retail
+            // sniff have the same 279-byte ItemData body when their packed
+            // owner GUIDs are 9 bytes. The typed field order below reproduces
+            // that structure while keeping the one still-unidentified scalar
+            // explicit instead of hiding it in padding.
+            writeModernGuid(data, fields.owner);
+            writeModernGuid(data, fields.containedIn);
+            writeModernGuid(data, fields.creator);
+            writeModernGuid(data, fields.giftCreator);
+
+            data << fields.stackCount
+                 << fields.expiration;
+
+            for (int32_t charge : fields.spellCharges)
+                data << charge;
+
+            data << fields.dynamicFlags;
+
+            for (Fields::ItemEnchantment const& enchantment : fields.enchantment)
+                writeItemEnchantmentCreate70009(data, enchantment);
+
+            // Three zero uint32 values are present between Enchantment[13] and
+            // Durability in every captured 70009 starter item. They correspond
+            // to empty modern variable item-data collections.
+            data << uint32_t(fields.modifiers.size())
+                 << uint32_t(fields.artifactPowers.size())
+                 << uint32_t(fields.gems.size());
+
+            data << fields.durability
+                 << fields.maxDurability
+                 << fields.createPlayedTime
+                 << fields.createTime
+                 << fields.artifactXp
+                 << fields.itemAppearanceModId
+                 << fields.zoneFlags
+                 << fields.debugItemLevel;
+
+            // ItemBonusKey is empty for the captured starter items. Keep the
+            // create-layout scalar explicit until a non-empty retail sample
+            // proves its concrete structure.
+            data << uint32_t(0);
+
+            // 70009 serializes ItemContext as a 32-bit value in ItemData create.
+            data << uint32_t(fields.context);
+
+            // The captured create body carries the ItemID again in the trailing
+            // item-instance record.
+            data << itemEntry;
+
+            // Empty trailing item-instance metadata in all captured starter items.
+            data << uint32_t(0) << uint32_t(0) << uint16_t(0);
+        }
     }
 
     void writeGameObjectDataCreate(ByteBuffer& data, Fields::GameObjectData const& fields)
@@ -1031,6 +1113,40 @@ namespace AscEmu::Version::Forever::ObjectUpdate
         return std::vector<uint8_t>(block.contents(), block.contents() + block.size());
     }
 
+    std::vector<uint8_t> buildItemCreateBlock(std::span<const uint8_t> packedGuid, Fields::ObjectData const& objectFields, Fields::ItemData const& itemFields)
+    {
+        if (packedGuid.empty())
+            return {};
+
+        ByteBuffer fieldPayload;
+
+        // Capture-verified 70009 ordinary Item fragment list:
+        //   01 03 C8 FF 01
+        fieldPayload << uint8_t(1)
+                     << uint8_t(FRAGMENT_CGOBJECT_69913)
+                     << uint8_t(FRAGMENT_TAG_ITEM_70009)
+                     << uint8_t(FRAGMENT_END_69913)
+                     << uint8_t(1);
+
+        writeObjectDataCreate(fieldPayload, objectFields);
+        writeItemDataCreate70009(fieldPayload, itemFields, objectFields.entryId);
+
+        ByteBuffer block;
+        block << uint8_t(1); // CREATE_OBJECT
+        block.append(packedGuid.data(), packedGuid.size());
+        block << uint8_t(OBJECT_TYPE_ITEM);
+
+        // Retail 70009 inventory-item creates carry a seven-byte zero movement
+        // header before the field payload length.
+        static constexpr std::array<uint8_t, 7> itemMovement70009{};
+        block.append(itemMovement70009.data(), itemMovement70009.size());
+
+        block << uint32_t(fieldPayload.size());
+        block.append(fieldPayload);
+
+        return std::vector<uint8_t>(block.contents(), block.contents() + block.size());
+    }
+
     std::vector<uint8_t> buildPlayerFieldPayload(Fields::ObjectData const& objectFields, Fields::UnitData const& unitFields, Fields::PlayerData const& playerFields, Fields::ActivePlayerData const* activePlayerFields, bool ownerVisible, bool partyMemberVisible)
     {
         if (ownerVisible && activePlayerFields == nullptr)
@@ -1318,7 +1434,7 @@ namespace AscEmu::Version::Forever::ObjectUpdate
 
         void writePlayerDataUpdate(ByteBuffer& data, Fields::PlayerData const& fields)
         {
-            writeStructuredChangeMask(data, fields.changes);
+            writeStructuredChangeMask(data, fields.changes); data.writeBit(0); data.flushBits();
             auto changed = [&](std::size_t bit) { return fields.changes.test(bit); };
             if (changed(Fields::PlayerData::DuelArbiterBit)) writeModernGuid(data, fields.unknownGuid0_69913);
             if (changed(Fields::PlayerData::PlayerFlagsBit)) data << fields.unknownU32_0_69913;
@@ -1333,6 +1449,16 @@ namespace AscEmu::Version::Forever::ObjectUpdate
                 if (firstNameLength) data.append(reinterpret_cast<uint8_t const*>(fields.firstName.data()), firstNameLength);
                 if (lastNameLength) data.append(reinterpret_cast<uint8_t const*>(fields.lastName.data()), lastNameLength);
             }
+
+            if (changed(Fields::PlayerData::VisibleItemsGroupBit))
+            {
+                for (std::size_t i = 0; i < fields.unknownVisibleItemRecords0_69913.size(); ++i)
+                {
+                    if (changed(Fields::PlayerData::VisibleItemsFirstBit + i))
+                        writeVisibleItemUpdate(data, fields.unknownVisibleItemRecords0_69913[i]);
+                }
+            }
+
             data.flushBits();
         }
 
@@ -1429,9 +1555,7 @@ namespace AscEmu::Version::Forever::ObjectUpdate
 
         void writeActivePlayerDataUpdate(ByteBuffer& data, Fields::ActivePlayerData const& fields)
         {
-            // Forever 1.60.1.70009 test mode: do not put provisional/guessed
-            // ActivePlayerData bits on the wire. XP and NextLevelXP are the only
-            // currently capture-verified scalar updates in this region.
+            // Forever live VALUES fields verified from retail captures. Keep unverified fields off the wire.
             std::bitset<Fields::ActivePlayerData::ChangeMaskSize> verifiedChanges{};
             auto keepChanged = [&](std::size_t bit)
             {
@@ -1441,20 +1565,22 @@ namespace AscEmu::Version::Forever::ObjectUpdate
 
             // XP/NextLevelXP are scalar fields in the block rooted at bit 32.
             keepChanged(32);
+            keepChanged(Fields::ActivePlayerData::CoinageBit);
             keepChanged(Fields::ActivePlayerData::XpBit);
             keepChanged(Fields::ActivePlayerData::NextLevelXpBit);
+            keepChanged(Fields::ActivePlayerData::InventorySlotsGroupBit);
+            for (std::size_t i = 0; i < fields.invSlots.size(); ++i) keepChanged(Fields::ActivePlayerData::InventorySlotsFirstBit + i);
 
             writeStructuredChangeMask(data, verifiedChanges);
+            data.flushBits();
             auto changed = [&](std::size_t bit) { return verifiedChanges.test(bit); };
             if (changed(Fields::ActivePlayerData::UnknownChangeBit56_69913)) writeModernGuid(data, fields.farsightObject);
-            if (changed(Fields::ActivePlayerData::UnknownChangeBit58_69913)) data << fields.coinage;
+            if (changed(Fields::ActivePlayerData::CoinageBit)) data << fields.coinage;
             if (changed(Fields::ActivePlayerData::XpBit)) data << fields.xp;
             if (changed(Fields::ActivePlayerData::NextLevelXpBit)) data << fields.nextLevelXp;
-            if (changed(Fields::ActivePlayerData::UnknownChangeBit163_69913))
+            if (changed(Fields::ActivePlayerData::InventorySlotsGroupBit))
             {
-                for (std::size_t i = 0; i < fields.invSlots.size(); ++i)
-                    if (changed(Fields::ActivePlayerData::UnknownChangeBit164_69913 + i))
-                        writeModernGuid(data, fields.invSlots[i]);
+                for (std::size_t i = 0; i < fields.invSlots.size(); ++i) if (changed(Fields::ActivePlayerData::InventorySlotsFirstBit + i)) writeModernGuid(data, fields.invSlots[i]);
             }
             data.flushBits();
         }

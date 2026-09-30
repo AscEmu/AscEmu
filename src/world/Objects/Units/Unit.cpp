@@ -3,6 +3,7 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Data/InventoryLayout.hpp"
 #include "Unit.hpp"
 
 #include "Creatures/Corpse.hpp"
@@ -12012,7 +12013,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
         float_t s = 1.0f;
 
         // Weapon speed (normal)
-        const auto weapon = (static_cast<Player*>(this)->getItemInterface())->GetInventoryItem(INVENTORY_SLOT_NOT_SET, (dmg.weaponType == OFFHAND ? EQUIPMENT_SLOT_OFFHAND : EQUIPMENT_SLOT_MAINHAND));
+        const auto weapon = (static_cast<Player*>(this)->getItemInterface())->GetInventoryItem(InventoryLayout::SlotNotSet, (dmg.weaponType == OFFHAND ? EQUIPMENT_SLOT_OFFHAND : EQUIPMENT_SLOT_MAINHAND));
         if (weapon == nullptr)
         {
             if (dmg.weaponType == OFFHAND)

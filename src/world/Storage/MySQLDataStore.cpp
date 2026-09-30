@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatDefines.hpp"
 #include "Logging/Log.hpp"
 #include "Logging/Logger.hpp"
+#include "Management/ItemGeneration/ItemGenerator.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestProperties.hpp"
 #include "Movement/MovementDefines.h"
@@ -235,18 +236,145 @@ void MySQLDataStore::loadItemPropertiesTable()
 
     uint32_t item_count = 0;
 
-    auto item_result = getWorldDBQuery("SELECT * FROM item_properties base "
-        "WHERE build=(SELECT MAX(build) FROM item_properties spec WHERE base.entry = spec.entry AND build <= %u)", VERSION_STRING);
+    // Reloads must rebuild the effective item store from its sources. Legacy
+    // expansions continue to use item_properties as before. Forever first
+    // seeds the store from the client DB2 data and then applies SQL rows as
+    // optional overrides/custom items below.
+    _itemPropertiesStore.clear();
+
+#if defined(AE_FOREVER)
+    uint32_t generatedItemCount = 0;
+    _itemPropertiesStore.reserve(sItemSparseStore.size());
+
+    for (auto const& [entry, sparse] : sItemSparseStore)
+    {
+        auto const* item = sItemStore.lookupEntry(entry);
+        if (item == nullptr)
+            continue;
+
+        ItemProperties properties{};
+        properties.ItemId = entry;
+        properties.Class = item->Class;
+        properties.SubClass = static_cast<uint16_t>(item->SubClass);
+        properties.unknown_bc = 0;
+        properties.Name = sparse.Name;
+        properties.DisplayInfoID = item->DisplayId;
+        properties.Quality = static_cast<uint32_t>(static_cast<uint8_t>(sparse.OverallQualityID));
+        properties.Flags = sparse.Flags[0];
+        properties.Flags2 = sparse.Flags[1];
+        properties.BuyPrice = sparse.BuyPrice;
+        properties.SellPrice = sparse.SellPrice;
+        properties.InventoryType = static_cast<uint32_t>(static_cast<uint8_t>(sparse.InventoryType));
+        properties.AllowableClass = static_cast<int32_t>(sparse.AllowableClass);
+
+        // ItemProperties still has the legacy 32-bit race mask. Do not
+        // accidentally exclude modern races when the client record uses the
+        // high 32 bits; until that structure is widened, an unrestricted mask
+        // is safer than truncating a valid Forever restriction.
+        properties.AllowableRace = sparse.AllowableRace[1] == 0
+            ? static_cast<int32_t>(sparse.AllowableRace[0])
+            : -1;
+
+        properties.ItemLevel = sparse.ItemLevel;
+        properties.RequiredLevel = sparse.RequiredLevel > 0 ? static_cast<uint32_t>(sparse.RequiredLevel) : 0;
+        properties.RequiredSkill = sparse.RequiredSkill;
+        properties.RequiredSkillRank = sparse.RequiredSkillRank;
+        properties.RequiredSpell = sparse.RequiredAbility;
+        properties.RequiredPlayerRank1 = sparse.RequiredPVPRank > 0 ? static_cast<uint32_t>(sparse.RequiredPVPRank) : 0;
+        properties.RequiredPlayerRank2 = sparse.RequiredPVPMedal;
+        properties.RequiredFaction = sparse.MinFactionID;
+        properties.RequiredFactionStanding = sparse.MinReputation > 0 ? static_cast<uint32_t>(sparse.MinReputation) : 0;
+        properties.Unique = sparse.MaxCount > 0 ? static_cast<uint32_t>(sparse.MaxCount) : 0;
+        properties.MaxCount = sparse.Stackable > 0 ? static_cast<uint32_t>(sparse.Stackable) : 1;
+        properties.ContainerSlots = sparse.ContainerSlots;
+        properties.ScalingStatsEntry = 0;
+        properties.ScalingStatsFlag = 0;
+        properties.Armor = 0;
+        properties.Delay = sparse.ItemDelay;
+        properties.AmmoType = sparse.AmmunitionType;
+        properties.Range = sparse.ItemRange;
+        properties.Bonding = sparse.Bonding;
+        properties.Description = sparse.Description;
+        properties.PageId = sparse.PageID;
+        properties.PageLanguage = sparse.LanguageID;
+        properties.PageMaterial = sparse.PageMaterialID;
+        properties.QuestId = sparse.StartQuestID;
+        properties.LockId = sparse.LockID;
+        properties.LockMaterial = sparse.Material;
+        properties.SheathID = item->Sheath;
+        properties.RandomPropId = 0;
+        properties.RandomSuffixId = 0;
+        properties.Block = 0;
+        properties.ItemSet = sparse.ItemSet;
+        properties.MaxDurability = 0;
+        properties.ZoneNameID = sparse.ZoneBound[0];
+        properties.MapID = 0;
+        properties.BagFamily = sparse.BagFamily;
+        properties.TotemCategory = sparse.TotemCategoryID;
+
+        for (uint8_t i = 0; i < MAX_ITEM_PROTO_SOCKETS; ++i)
+        {
+            properties.Sockets[i].SocketColor = sparse.SocketType[i];
+            properties.Sockets[i].Unk = 0;
+        }
+
+        properties.SocketBonus = 0;
+        properties.GemProperties = sparse.GemProperties;
+        properties.DisenchantReqSkill = -1;
+        properties.ArmorDamageModifier = 0.0f;
+        properties.ExistingDuration = sparse.DurationInInventory;
+        properties.ItemLimitCategory = sparse.LimitCategory;
+        properties.HolidayId = sparse.RequiredHoliday;
+        properties.FoodType = 0;
+        properties.ForcedPetId = -1;
+
+        properties.lowercase_name = properties.Name;
+        AscEmu::Util::Strings::toLowerCase(properties.lowercase_name);
+
+        if (auto generated = AscEmu::Items::generateItemData(entry))
+        {
+            properties.Armor = generated->armor;
+            properties.MaxDurability = generated->maxDurability;
+            for (auto const& stat : generated->stats) properties.addStat(static_cast<uint32_t>(stat.type), stat.value);
+            for (size_t i = 0; i < generated->effects.size() && i < MAX_ITEM_PROTO_SPELLS; ++i)
+            {
+                auto const& effect = generated->effects[i];
+                properties.Spells[i].Id = effect.spellId;
+                properties.Spells[i].Trigger = effect.trigger;
+                properties.Spells[i].Charges = effect.charges;
+                properties.Spells[i].Cooldown = effect.cooldown;
+                properties.Spells[i].Category = effect.category;
+                properties.Spells[i].CategoryCooldown = effect.categoryCooldown;
+            }
+        }
+
+        _itemPropertiesStore.emplace(entry, std::move(properties));
+        ++generatedItemCount;
+    }
+
+    sLogger.info(
+        "MySQLDataLoads : Generated {} Forever item properties from Item.db2/ItemSparse.db2 before SQL overrides.",
+        generatedItemCount);
+#endif
+
+    auto item_result = getWorldDBQuery(
+        "SELECT `entry`, `min_build`, `class`, `subclass`, `field4`, `name1`, `displayid`, `quality`, `flags`, `flags2`, `buyprice`, `sellprice`, `inventorytype`, `allowableclass`, `allowablerace`, `itemlevel`, `requiredlevel`, `RequiredSkill`, `RequiredSkillRank`, `RequiredSpell`, `RequiredPlayerRank1`, `RequiredPlayerRank2`, `RequiredFaction`, `RequiredFactionStanding`, `Unique`, `maxcount`, `ContainerSlots`, `ScaledStatsDistributionId`, `ScaledStatsDistributionFlags`, `dmg_min1`, `dmg_max1`, `dmg_type1`, `dmg_min2`, `dmg_max2`, `dmg_type2`, `armor`, `delay`, `ammo_type`, `range`, `bonding`, `description`, `page_id`, `page_language`, `page_material`, `quest_id`, `lock_id`, `lock_material`, `sheathID`, `randomprop`, `randomsuffix`, `block`, `itemset`, `MaxDurability`, `ZoneNameID`, `mapid`, `bagfamily`, `TotemCategory`, `socket_color_1`, `unk201_3`, `socket_color_2`, `unk201_5`, `socket_color_3`, `unk201_7`, `socket_bonus`, `GemProperties`, `ReqDisenchantSkill`, `ArmorDamageModifier`, `existingduration`, `ItemLimitCategoryId`, `HolidayId`, `food_type` "
+        "FROM item_properties WHERE min_build <= %u AND max_build >= %u",
+        getAEVersion(), getAEVersion());
 
     if (item_result == nullptr)
     {
+#if defined(AE_FOREVER)
+        sLogger.info("MySQLDataLoads : Table `item_properties` is empty; using {} generated Forever items.", _itemPropertiesStore.size());
+#else
         sLogger.info("MySQLDataLoads : Table `item_properties` is empty!");
+#endif
         return;
     }
 
     sLogger.info("MySQLDataLoads : Table `item_properties` has {} columns", item_result->getFieldCount());
 
-    _itemPropertiesStore.rehash(item_result->getRowCount());
+    _itemPropertiesStore.reserve(_itemPropertiesStore.size() + item_result->getRowCount());
 
     do
     {
@@ -453,6 +581,41 @@ void MySQLDataStore::loadItemPropertiesTable()
         itemProperties.HolidayId = fields[69].asUint32();
         itemProperties.FoodType = fields[70].asUint32();
 #endif
+#if defined(AE_FOREVER)
+        // A SQL item_properties row is an override layer for a client item. If
+        // it changes item level or quality, resolve the DB2 stat allocation
+        // again before item_properties_stats applies any explicit fixed stats.
+        if (auto const* sparse = sItemSparseStore.lookupEntry(entry))
+        {
+            AscEmu::Items::GenerationOverrides overrides;
+            if (itemProperties.ItemLevel != sparse->ItemLevel)
+                overrides.itemLevel = itemProperties.ItemLevel;
+
+            uint32_t const sparseQuality = static_cast<uint32_t>(static_cast<uint8_t>(sparse->OverallQualityID));
+            if (itemProperties.Quality != sparseQuality)
+                overrides.quality = itemProperties.Quality;
+
+            if (auto generated = AscEmu::Items::generateItemData(entry, overrides))
+            {
+                itemProperties.Armor = generated->armor;
+                itemProperties.MaxDurability = generated->maxDurability;
+                itemProperties.generalStatsMap.clear();
+                itemProperties.resistanceStatsMap.clear();
+                for (auto const& stat : generated->stats) itemProperties.addStat(static_cast<uint32_t>(stat.type), stat.value);
+                for (auto& spell : itemProperties.Spells) spell = {};
+                for (size_t i = 0; i < generated->effects.size() && i < MAX_ITEM_PROTO_SPELLS; ++i)
+                {
+                    auto const& effect = generated->effects[i];
+                    itemProperties.Spells[i].Id = effect.spellId;
+                    itemProperties.Spells[i].Trigger = effect.trigger;
+                    itemProperties.Spells[i].Charges = effect.charges;
+                    itemProperties.Spells[i].Cooldown = effect.cooldown;
+                    itemProperties.Spells[i].Category = effect.category;
+                    itemProperties.Spells[i].CategoryCooldown = effect.categoryCooldown;
+                }
+            }
+        }
+#endif
         //lowercase
         std::string lower_case_name = itemProperties.Name;
         AscEmu::Util::Strings::toLowerCase(lower_case_name);
@@ -587,18 +750,18 @@ void MySQLDataStore::loadItemPropertiesTable()
     sLogger.info("MySQLDataLoads : Loaded {} item_properties in {} ms!", item_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
+
 void MySQLDataStore::loadItemPropertiesSpellsTable()
 {
     auto startTime = Util::TimeNow();
 
     uint32_t spell_count = 0;
 
-    auto item_result = getWorldDBQuery("SELECT * FROM item_properties_spells base "
-        "WHERE build=(SELECT MAX(build) FROM item_properties_spells spec WHERE base.entry = spec.entry AND build <= %u)", VERSION_STRING);
+    auto item_result = getWorldDBQuery("SELECT * FROM item_properties_spells WHERE build = %u", VERSION_STRING);
 
     if (item_result == nullptr)
     {
-        sLogger.info("MySQLDataLoads : Table `item_properties_spells` is empty!");
+        sLogger.info("MySQLDataLoads : No `item_properties_spells` found for build {}.", VERSION_STRING);
         return;
     }
 
@@ -614,12 +777,13 @@ void MySQLDataStore::loadItemPropertiesSpellsTable()
     };
 
     std::map<uint32_t, std::unordered_map<uint32_t, LoadItemSpell>> tempSpellStore;
+
     do
     {
         Field* fields = item_result->fetch();
 
-        uint32_t entry = fields[0].asUint32();
-        uint32_t spellid = fields[2].asUint32();
+        const uint32_t entry = fields[0].asUint32();
+        const uint32_t spellid = fields[2].asUint32();
 
         LoadItemSpell spellData;
         spellData.trigger = fields[3].asUint32();
@@ -635,13 +799,16 @@ void MySQLDataStore::loadItemPropertiesSpellsTable()
 
     sLogger.info("MySQLDataLoads : Loaded {} item_properties_spells in {} ms!", spell_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
-
     startTime = Util::TimeNow();
     uint32_t assignedCount = 0;
 
     for (const auto& [entry, bySpellId] : tempSpellStore)
     {
-        ItemProperties& ip = _itemPropertiesStore[entry];
+        const auto itemItr = _itemPropertiesStore.find(entry);
+        if (itemItr == _itemPropertiesStore.end())
+            continue;
+
+        ItemProperties& ip = itemItr->second;
 
         size_t i = 0;
         for (const auto& [spellId, data] : bySpellId)
@@ -670,12 +837,11 @@ void MySQLDataStore::loadItemPropertiesStatsTable()
 
     uint32_t stat_count = 0;
 
-    auto item_result = getWorldDBQuery("SELECT * FROM item_properties_stats base "
-        "WHERE build=(SELECT MAX(build) FROM item_properties_stats spec WHERE base.entry = spec.entry AND build <= %u)", VERSION_STRING);
+    auto item_result = getWorldDBQuery("SELECT * FROM item_properties_stats WHERE build = %u", VERSION_STRING);
 
     if (item_result == nullptr)
     {
-        sLogger.info("MySQLDataLoads : Table `item_properties_stats` is empty!");
+        sLogger.info("MySQLDataLoads : No `item_properties_stats` found for build {}.", VERSION_STRING);
         return;
     }
 
@@ -686,9 +852,9 @@ void MySQLDataStore::loadItemPropertiesStatsTable()
     {
         Field* fields = item_result->fetch();
 
-        uint32_t entry = fields[0].asUint32();
-        uint32_t type = fields[2].asUint32();
-        int32_t value = fields[3].asInt32();
+        const uint32_t entry = fields[0].asUint32();
+        const uint32_t type = fields[2].asUint32();
+        const int32_t value = fields[3].asInt32();
 
         tempStatsStore[entry][type] = value;
 
@@ -702,18 +868,18 @@ void MySQLDataStore::loadItemPropertiesStatsTable()
 
     for (const auto& statEntry : tempStatsStore)
     {
-        uint32_t entry = statEntry.first;
+        const uint32_t entry = statEntry.first;
         const auto& typeMap = statEntry.second;
 
-        ItemProperties& itemProperties = _itemPropertiesStore[entry];
+        const auto itemItr = _itemPropertiesStore.find(entry);
+        if (itemItr == _itemPropertiesStore.end())
+            continue;
 
-        for (const auto& kv : typeMap)
+        ItemProperties& itemProperties = itemItr->second;
+
+        for (const auto& [type, value] : typeMap)
         {
-            uint32_t type = kv.first;
-            int32_t value = kv.second;
-
             itemProperties.addStat(type, value);
-
             ++assignedCount;
         }
     }
@@ -2839,16 +3005,17 @@ void MySQLDataStore::loadPlayerCreateInfoItems()
         uint8_t _class = fields[1].asUint8();
         uint32_t item_id = fields[2].asUint32();
 
-#if VERSION_STRING < Cata
-        auto player_item = sMySQLStore.getItemProperties(item_id);
-#else
-        WDB::Structures::ItemEntry const* player_item = sItemStore.lookupEntry(item_id);
-#endif
+        const auto player_item = sMySQLStore.getItemProperties(item_id);
         if (player_item == nullptr)
         {
-            sLogger.failure("Table `old_playercreateinfo_items` includes invalid item {}", item_id);
+            sLogger.failure("Table `playercreateinfo_items` includes item {} missing from `item_properties` for build {}.", item_id, getAEVersion());
             continue;
         }
+
+#if defined(AE_FOREVER)
+        if (sItemStore.lookupEntry(item_id) == nullptr)
+            sLogger.warning("Table `playercreateinfo_items` item {} exists in `item_properties` but is missing from Forever Item.db2.", item_id);
+#endif
 
         if (auto& playerCreateInfo = _playerCreateInfoStoreNew[_race][_class])
         {

@@ -29,6 +29,8 @@ namespace AscEmu::Packets
 
         uint32_t itemEntry;
         uint32_t purchasedAmount;
+        uint32_t vendorSlot = 0;
+        int32_t newQuantity = -1;
 
         // BuyBack / BuyItemInSlot (post-Cata) specific fields
         uint32_t slotNumber = 0;
@@ -42,12 +44,14 @@ namespace AscEmu::Packets
         }
 
         // Vendor purchase (handleBuyItemOpcode)
-        SmsgBuyItem(uint64_t sellerGuid, uint32_t time, uint32_t itemEntry, uint32_t purchasedAmount) :
+        SmsgBuyItem(uint64_t sellerGuid, uint32_t time, uint32_t itemEntry, uint32_t purchasedAmount, uint32_t vendorSlot = 0, int32_t newQuantity = -1) :
             ManagedPacket(SMSG_BUY_ITEM, 1),
             sellerGuid(sellerGuid),
             time(time),
             itemEntry(itemEntry),
-            purchasedAmount(purchasedAmount)
+            purchasedAmount(purchasedAmount),
+            vendorSlot(vendorSlot),
+            newQuantity(newQuantity)
         {
         }
 
@@ -73,6 +77,14 @@ namespace AscEmu::Packets
         {
             if (variant == Variant::Vendor)
             {
+                if (m_protocol.isForever())
+                {
+                    const WoWGuid modernVendor = WoWGuid::createModernFromLegacy(sellerGuid, m_protocol.realmId);
+                    const auto packedVendor = modernVendor.packModern();
+                    packet.append(packedVendor.data(), packedVendor.size());
+                    packet << vendorSlot << newQuantity << purchasedAmount;
+                    return true;
+                }
                 if (m_protocol.expansion < WoW::Expansion::_Mop)
                 {
                     packet << sellerGuid;

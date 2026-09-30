@@ -19,6 +19,7 @@
  *
  */
 
+#include "Data/InventoryLayout.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "MMapFactory.h"
@@ -6351,7 +6352,7 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
     // Possibly its mean -1 all player equipped items and -2 all items
     if (slot < 0)
     {
-        for (k = 0; k < MAX_INVENTORY_SLOT; k++)
+        for (k = 0; k < InventoryLayout::MaxSlot; k++)
         {
             pItem = p_caster->getItemInterface()->GetInventoryItem(static_cast<uint16_t>(k));
             if (pItem != nullptr)
@@ -6444,7 +6445,7 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
     // Possibly its mean -1 all player equipped items and -2 all items
     if (slot < 0)
     {
-        for (k = 0; k < MAX_INVENTORY_SLOT; ++k)
+        for (k = 0; k < InventoryLayout::MaxSlot; ++k)
         {
             pItem = p_caster->getItemInterface()->GetInventoryItem(static_cast<uint16_t>(k));
             if (pItem != nullptr)

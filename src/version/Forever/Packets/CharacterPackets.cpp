@@ -225,12 +225,12 @@ namespace AscEmu::Version::Forever::Packets
             packet << uint8_t(0); // CantLoginReason
             packet << uint32_t(0) << uint32_t(0) << uint32_t(0); // Pet
 
-            for (uint8_t slot = 0; slot < 19U; ++slot)
+            for (const CharacterVisualItem& visualItem : character.visualItems)
             {
-                packet << uint32_t(0) << uint32_t(0);
-                packet << uint8_t(0) << uint8_t(0);
-                packet << uint32_t(0) << uint32_t(0);
-                packet << int32_t(0) << uint8_t(0);
+                packet << visualItem.itemId << visualItem.transmogrifiedItemId;
+                packet << visualItem.subclass << visualItem.inventoryType;
+                packet << visualItem.displayId << visualItem.displayEnchantId;
+                packet << visualItem.secondaryItemModifiedAppearanceId << visualItem.sheatheCategory;
             }
 
             packet << CharacterSaveVersion69913;

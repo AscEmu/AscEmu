@@ -3,6 +3,7 @@
 #include "Network/ByteBuffer.hpp"
 #include "world/Server/CharacterErrors.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <string>
@@ -16,6 +17,18 @@ namespace AscEmu::Version::Forever::Packets
         uint32_t choiceId{0};
     };
 
+
+    struct CharacterVisualItem
+    {
+        uint32_t itemId{0};
+        uint32_t transmogrifiedItemId{0};
+        uint8_t subclass{0};
+        uint8_t inventoryType{0};
+        uint32_t displayId{0};
+        uint32_t displayEnchantId{0};
+        int32_t secondaryItemModifiedAppearanceId{0};
+        uint8_t sheatheCategory{0};
+    };
 
     struct CharacterEnumEntry
     {
@@ -31,6 +44,7 @@ namespace AscEmu::Version::Forever::Packets
         float z{0.0f};
         int32_t mapId{0};
         int32_t zoneId{0};
+        std::array<CharacterVisualItem, 19> visualItems{};
         std::vector<CharacterCustomizationChoice> customizations;
     };
 

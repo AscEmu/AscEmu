@@ -3,6 +3,7 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Data/InventoryLayout.hpp"
 #include "Objects/Container.hpp"
 #include "Server/World.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -95,7 +96,7 @@ void Container::loadFromDB(Field* fields)
 
 void Container::saveToDB(int8_t slot, bool first, QueryBuffer* buf)
 {
-    Item::saveToDB(INVENTORY_SLOT_NOT_SET, slot, first, buf);
+    Item::saveToDB(InventoryLayout::SlotNotSet, slot, first, buf);
 
     for (uint8_t i = 0; i < m_itemProperties->ContainerSlots; ++i)
     {
@@ -203,7 +204,7 @@ int8_t Container::findFreeSlot()
             return i;
 
     sLogger.debug("Container::findFreeSlot: no slot available");
-    return ITEM_NO_SLOT_AVAILABLE;
+    return InventoryLayout::NoSlotAvailable;
 }
 
 bool Container::hasItems() const

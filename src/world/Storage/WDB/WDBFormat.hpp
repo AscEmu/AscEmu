@@ -1186,6 +1186,7 @@ namespace WDB
     struct WDC5FieldSchema
     {
         uint8_t arraySize{1};
+        bool isString{false};
     };
 
     struct WDC5TableSchema
@@ -1200,7 +1201,7 @@ namespace WDB
     {
         inline WDC5TableSchema makeScalarSchema(char const* filename, uint32_t layoutHash, int32_t indexField, uint32_t fieldCount)
         {
-            return {filename, layoutHash, indexField, std::vector<WDC5FieldSchema>(fieldCount, WDC5FieldSchema{1})};
+            return {filename, layoutHash, indexField, std::vector<WDC5FieldSchema>(fieldCount, WDC5FieldSchema{1, false})};
         }
 
         inline WDC5TableSchema makeSchemaWithArrays(char const* filename, uint32_t layoutHash, int32_t indexField,
@@ -1209,6 +1210,19 @@ namespace WDB
             auto schema = makeScalarSchema(filename, layoutHash, indexField, fieldCount);
             for (auto const& [field, arraySize] : arrays)
                 schema.fields[field].arraySize = arraySize;
+            return schema;
+        }
+
+        inline WDC5TableSchema makeSparseSchema(char const* filename, uint32_t layoutHash, int32_t indexField,
+            uint32_t fieldCount, std::initializer_list<std::pair<uint32_t, uint8_t>> arrays,
+            std::initializer_list<uint32_t> stringFields)
+        {
+            auto schema = makeSchemaWithArrays(filename, layoutHash, indexField, fieldCount, arrays);
+            for (uint32_t const field : stringFields)
+            {
+                if (field < schema.fields.size())
+                    schema.fields[field].isString = true;
+            }
             return schema;
         }
 
@@ -1254,8 +1268,20 @@ namespace WDB
         inline const WDC5TableSchema TaxiPathNode = makeSchemaWithArrays("TaxiPathNode.db2", 0xFE362E70, 1, 9, {{0, 3}});
 
         // Items
+        inline const WDC5TableSchema Item = makeScalarSchema("Item.db2", 0x9A2A4834, -1, 16);
+        inline const WDC5TableSchema ItemSparse = makeSparseSchema("ItemSparse.db2", 0x6FCC3191, -1, 68, {{14, 10}, {15, 10}, {16, 10}, {21, 2}, {27, 5}, {42, 2}, {55, 3}}, {0, 1, 2, 3, 4});
+        inline const WDC5TableSchema ItemAppearance = makeScalarSchema("ItemAppearance.db2", 0x481C4281, -1, 5);
+        inline const WDC5TableSchema ItemExtendedCost = makeSchemaWithArrays("ItemExtendedCost.db2", 0x22331DAB, -1, 11, {{7, 5}, {8, 5}, {9, 5}, {10, 5}});
+        inline const WDC5TableSchema ItemModifiedAppearance = makeScalarSchema("ItemModifiedAppearance.db2", 0x03A6C979, 0, 7);
         inline const WDC5TableSchema ItemSet = makeSchemaWithArrays("ItemSet.db2", 0xF79068A4, -1, 5, {{4, 17}});
         inline const WDC5TableSchema ItemSetSpell = makeScalarSchema("ItemSetSpell.db2", 0x2666A73F, -1, 4);
+        inline const WDC5TableSchema RandPropPoints = makeSchemaWithArrays("RandPropPoints.db2", 0x4FD22743, -1, 10, {{4, 5}, {5, 5}, {6, 5}, {7, 5}, {8, 5}, {9, 5}});
+        inline const WDC5TableSchema ArmorLocation = makeScalarSchema("ArmorLocation.db2", 0xFB67352F, -1, 5);
+        inline const WDC5TableSchema ItemArmorQuality = makeSchemaWithArrays("ItemArmorQuality.db2", 0x2935AA9D, -1, 1, {{0, 7}});
+        inline const WDC5TableSchema ItemArmorShield = makeSchemaWithArrays("ItemArmorShield.db2", 0x7E6C94F9, -1, 2, {{0, 7}});
+        inline const WDC5TableSchema ItemArmorTotal = makeScalarSchema("ItemArmorTotal.db2", 0xEB155D51, -1, 5);
+        inline const WDC5TableSchema ItemEffect = makeScalarSchema("ItemEffect.db2", 0x4CA77678, -1, 9);
+        inline const WDC5TableSchema ItemXItemEffect = makeScalarSchema("ItemXItemEffect.db2", 0x96F083AD, -1, 1);
 
         // Maps / terrain
         inline const WDC5TableSchema Map = makeSchemaWithArrays("Map.db2", 0xD43AFAC3, -1, 26, {{6, 2}, {25, 3}});

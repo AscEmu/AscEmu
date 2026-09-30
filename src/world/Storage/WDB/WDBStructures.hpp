@@ -1335,6 +1335,145 @@ namespace WDB::Structures
         uint32_t Sheath;                                            // 3
     };
 
+#if defined(AE_FOREVER)
+    // Runtime view of the Forever ItemSparse.db2 layout 0x6FCC3191.
+    // The table stores stat types and budget percentages, not the final
+    // item-stat values. Final values are resolved by the item generator.
+    struct ItemSparseEntry
+    {
+        uint32_t ID{0};
+        std::string Description;
+        std::string Name;
+
+        uint32_t ExpansionID{0};
+        float DmgVariance{0.0f};
+        uint32_t LimitCategory{0};
+        uint32_t DurationInInventory{0};
+        float QualityModifier{0.0f};
+        uint32_t BagFamily{0};
+        uint32_t StartQuestID{0};
+        uint32_t LanguageID{0};
+        float ItemRange{0.0f};
+        float StatPercentageOfSocket[10]{};
+        int32_t StatPercentEditor[10]{};
+        int32_t StatModifierBonusStat[10]{};
+        int32_t Stackable{0};
+        int32_t MaxCount{0};
+        int32_t MinReputation{0};
+        uint32_t RequiredAbility{0};
+        uint32_t AllowableRace[2]{};
+        uint32_t SellPrice{0};
+        uint32_t BuyPrice{0};
+        uint32_t VendorStackCount{0};
+        float PriceVariance{0.0f};
+        float PriceRandomValue{0.0f};
+        uint32_t Flags[5]{};
+        uint32_t OppositeFactionItemID{0};
+        uint32_t ModifiedCraftingReagentItemID{0};
+        uint32_t ContentTuningID{0};
+        uint32_t PlayerLevelToItemLevelCurveID{0};
+        uint32_t ItemLevelOffsetCurveID{0};
+        int32_t ItemLevelOffsetItemLevel{0};
+        uint32_t ItemSquishEraID{0};
+        uint16_t ItemNameDescriptionID{0};
+        uint16_t RequiredTransmogHoliday{0};
+        uint16_t RequiredHoliday{0};
+        uint16_t GemProperties{0};
+        uint16_t SocketMatchEnchantmentID{0};
+        uint16_t TotemCategoryID{0};
+        uint16_t InstanceBound{0};
+        uint16_t ZoneBound[2]{};
+        uint16_t ItemSet{0};
+        uint16_t LockID{0};
+        uint16_t PageID{0};
+        uint16_t ItemDelay{0};
+        uint16_t MinFactionID{0};
+        uint16_t RequiredSkillRank{0};
+        uint16_t RequiredSkill{0};
+        uint16_t ItemLevel{0};
+        int16_t AllowableClass{0};
+        uint8_t ArtifactID{0};
+        uint8_t SpellWeight{0};
+        uint8_t SpellWeightCategory{0};
+        uint8_t SocketType[3]{};
+        uint8_t SheatheType{0};
+        uint8_t Material{0};
+        uint8_t PageMaterialID{0};
+        uint8_t Bonding{0};
+        uint8_t DamageType{0};
+        uint8_t ContainerSlots{0};
+        uint8_t RequiredPVPMedal{0};
+        int8_t RequiredPVPRank{0};
+        int8_t RequiredLevel{0};
+        int8_t InventoryType{0};
+        int8_t OverallQualityID{0};
+        uint8_t AmmunitionType{0};
+    };
+
+    struct RandPropPointsEntry
+    {
+        uint32_t ID{0}; // item level
+        float DamageReplaceStatF{0.0f};
+        float DamageSecondaryF{0.0f};
+        int32_t DamageReplaceStat{0};
+        int32_t DamageSecondary{0};
+        float EpicF[5]{};
+        float SuperiorF[5]{};
+        float GoodF[5]{};
+        uint32_t Epic[5]{};
+        uint32_t Superior[5]{};
+        uint32_t Good[5]{};
+    };
+
+    struct ArmorLocationEntry
+    {
+        uint32_t ID{0};
+        float ArmorModifier[4]{};
+        float Modifier{0.0f};
+    };
+
+    struct ItemArmorQualityEntry
+    {
+        uint32_t ID{0};
+        float Quality[7]{};
+    };
+
+    struct ItemArmorShieldEntry
+    {
+        uint32_t ID{0};
+        float Quality[7]{};
+        uint32_t ItemLevel{0};
+    };
+
+    struct ItemArmorTotalEntry
+    {
+        uint32_t ID{0};
+        uint32_t ItemLevel{0};
+        float Armor[4]{};
+    };
+
+    struct ItemEffectEntry
+    {
+        uint32_t ID{0};
+        int32_t LegacySlotIndex{0};
+        int32_t TriggerType{0};
+        int32_t Charges{0};
+        int32_t Cooldown{0};
+        int32_t CategoryCooldown{0};
+        uint32_t Category{0};
+        uint32_t SpellID{0};
+        uint32_t ChrSpecializationID{0};
+        uint32_t PlayerConditionID{0};
+    };
+
+    struct ItemXItemEffectEntry
+    {
+        uint32_t ID{0};
+        uint32_t ItemEffectID{0};
+        uint32_t ItemID{0};
+    };
+#endif
+
 #if VERSION_STRING >= Cata
     struct ItemCurrencyCostEntry
     {

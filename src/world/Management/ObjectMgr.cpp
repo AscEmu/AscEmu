@@ -2437,7 +2437,10 @@ std::unique_ptr<Item> ObjectMgr::createItem(uint32_t _entry, Player* _playerOwne
 {
     ItemProperties const* itemProperties = sMySQLStore.getItemProperties(_entry);
     if (itemProperties == nullptr)
+    {
+        sLogger.failure("ObjectMgr::createItem: Can't create item {} because item properties are missing.", _entry);
         return nullptr;
+    }
 
     if (itemProperties->InventoryType == INVTYPE_BAG)
     {

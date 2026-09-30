@@ -113,6 +113,7 @@ namespace WDB
         struct RecordRef
         {
             uint32_t offset{0};
+            uint32_t size{0};
             uint32_t externalId{0};
             bool hasExternalId{false};
             uint32_t stringTableOffset{0};
@@ -123,7 +124,8 @@ namespace WDB
         [[nodiscard]] T readValue(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex) const;
 
         [[nodiscard]] uint64_t readPacked(uint8_t const* record, uint32_t bitOffset, uint32_t bitWidth) const;
-        [[nodiscard]] uint32_t getFieldByteOffset(uint32_t field) const;
+        [[nodiscard]] uint32_t getFieldByteOffset(uint32_t recordIndex, uint32_t field) const;
+        [[nodiscard]] uint32_t getRecordSize(uint32_t recordIndex) const noexcept;
         [[nodiscard]] uint8_t const* getRecordData(uint32_t recordIndex) const;
         [[nodiscard]] bool checkIndex(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex) const;
 
@@ -138,7 +140,9 @@ namespace WDB
         std::vector<std::vector<uint32_t>> m_palletArrayValues;
         std::vector<std::unordered_map<uint32_t, uint32_t>> m_commonValues;
         std::vector<RecordRef> m_records;
+        std::vector<std::vector<uint32_t>> m_sparseFieldOffsets;
         std::vector<uint32_t> m_parentIds;
+        bool m_isSparse{false};
         std::unordered_map<uint32_t, uint32_t> m_recordIndexById;
         uint32_t m_skippedEncryptedRecords{0};
     };

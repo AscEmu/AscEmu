@@ -3,6 +3,7 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Data/InventoryLayout.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/AchievementMgr.h"
 #include "Management/Charter.hpp"
@@ -922,9 +923,9 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
             int8_t DstSlot = srlPacket.destSlot;
             int8_t DstInvSlot = srlPacket.destInventorySlot;
 
-            if (srlPacket.destSlot == ITEM_NO_SLOT_AVAILABLE)
+            if (srlPacket.destSlot == InventoryLayout::NoSlotAvailable)
             {
-                if (srlPacket.destInventorySlot != ITEM_NO_SLOT_AVAILABLE)
+                if (srlPacket.destInventorySlot != InventoryLayout::NoSlotAvailable)
                 {
                     Container* container = _player->getItemInterface()->GetContainer(srlPacket.destInventorySlot);
                     if (container != nullptr)
@@ -941,7 +942,7 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
                     }
                 }
 
-                if (DstSlot == ITEM_NO_SLOT_AVAILABLE)
+                if (DstSlot == InventoryLayout::NoSlotAvailable)
                 {
                     _player->getItemInterface()->buildInventoryChangeError(inventoryItem1, item2Holder.get(), INV_ERR_COULDNT_SPLIT_ITEMS);
                     item2Holder->deleteFromDB();
@@ -1016,9 +1017,9 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
 
     int8_t error;
 
-    if ((error = _player->getItemInterface()->CanEquipItemInSlot2(INVENTORY_SLOT_NOT_SET, srlPacket.destSlot, srcItem, skip_combat, false)) != 0)
+    if ((error = _player->getItemInterface()->CanEquipItemInSlot2(InventoryLayout::SlotNotSet, srlPacket.destSlot, srcItem, skip_combat, false)) != 0)
     {
-        if (srlPacket.destSlot < INVENTORY_KEYRING_END)
+        if (srlPacket.destSlot < InventoryLayout::KeyringEnd)
         {
             _player->getItemInterface()->buildInventoryChangeError(srcItem, dstItem, error);
             return;
@@ -1027,9 +1028,9 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
 
     if (dstItem != nullptr)
     {
-        if ((error = _player->getItemInterface()->CanEquipItemInSlot2(INVENTORY_SLOT_NOT_SET, srlPacket.srcSlot, dstItem, skip_combat)) != 0)
+        if ((error = _player->getItemInterface()->CanEquipItemInSlot2(InventoryLayout::SlotNotSet, srlPacket.srcSlot, dstItem, skip_combat)) != 0)
         {
-            if (srlPacket.srcSlot < INVENTORY_KEYRING_END)
+            if (srlPacket.srcSlot < InventoryLayout::KeyringEnd)
             {
                 const uint32_t reqLevel = dstItem->getItemProperties()->RequiredLevel;
 
@@ -1194,7 +1195,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
     }
 
     int8_t Slot = _player->getItemInterface()->GetItemSlotByType(eitem->getItemProperties()->InventoryType);
-    if (Slot == ITEM_NO_SLOT_AVAILABLE)
+    if (Slot == InventoryLayout::NoSlotAvailable)
     {
         _player->getItemInterface()->buildInventoryChangeError(eitem, nullptr, INV_ERR_ITEM_CANT_BE_EQUIPPED);
         return;
@@ -1206,7 +1207,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
     if ((Slot == EQUIPMENT_SLOT_MAINHAND || Slot == EQUIPMENT_SLOT_OFFHAND) 
         && !_player->canDualWield2H())
     {
-        Item* mainhandweapon = _player->getItemInterface()->GetInventoryItem(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_MAINHAND);
+        Item* mainhandweapon = _player->getItemInterface()->GetInventoryItem(InventoryLayout::SlotNotSet, EQUIPMENT_SLOT_MAINHAND);
         if (mainhandweapon != nullptr && mainhandweapon->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)
         {
             if (Slot == EQUIPMENT_SLOT_OFFHAND && (eitem->getItemProperties()->InventoryType == INVTYPE_WEAPON
@@ -1223,7 +1224,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
             }
         }
 
-        error = _player->getItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET,
+        error = _player->getItemInterface()->CanEquipItemInSlot(InventoryLayout::SlotNotSet,
             Slot, eitem->getItemProperties(), true, true);
         if (error)
         {
@@ -1234,7 +1235,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
         if (eitem->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)
         {
             // see if we have a weapon equipped in the offhand, if so we need to remove it
-            Item* offhandweapon = _player->getItemInterface()->GetInventoryItem(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND);
+            Item* offhandweapon = _player->getItemInterface()->GetInventoryItem(InventoryLayout::SlotNotSet, EQUIPMENT_SLOT_OFFHAND);
             if (offhandweapon != nullptr)
             {
                 // we need to de-equip this
@@ -1246,7 +1247,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
                     return;
                 }
 
-                auto offhandWeaponHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET,
+                auto offhandWeaponHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(InventoryLayout::SlotNotSet,
                     EQUIPMENT_SLOT_OFFHAND, false);
                 if (offhandWeaponHolder == nullptr)
                     return; // should never happen
@@ -1263,7 +1264,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
         else
         {
             // can't equip a non-two-handed weapon with a two-handed weapon
-            mainhandweapon = _player->getItemInterface()->GetInventoryItem(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_MAINHAND);
+            mainhandweapon = _player->getItemInterface()->GetInventoryItem(InventoryLayout::SlotNotSet, EQUIPMENT_SLOT_MAINHAND);
             if (mainhandweapon != nullptr && mainhandweapon->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)
             {
                 // we need to de-equip this
@@ -1275,7 +1276,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
                     return;
                 }
 
-                auto mainhandWeaponHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET,
+                auto mainhandWeaponHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(InventoryLayout::SlotNotSet,
                     EQUIPMENT_SLOT_MAINHAND, false);
                 if (mainhandWeaponHolder == nullptr)
                     return; // should never happen
@@ -1292,7 +1293,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        error = _player->getItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET,
+        error = _player->getItemInterface()->CanEquipItemInSlot(InventoryLayout::SlotNotSet,
             Slot, eitem->getItemProperties(), false, false);
         if (error)
         {
@@ -1303,7 +1304,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
 
     if (Slot <= INVENTORY_SLOT_BAG_END)
     {
-        error = _player->getItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET,
+        error = _player->getItemInterface()->CanEquipItemInSlot(InventoryLayout::SlotNotSet,
             Slot, eitem->getItemProperties(), false, false);
         if (error)
         {
@@ -1312,14 +1313,14 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
         }
     }
 
-    if (srlPacket.srcInventorySlot == INVENTORY_SLOT_NOT_SET)
+    if (srlPacket.srcInventorySlot == InventoryLayout::SlotNotSet)
     {
         _player->getItemInterface()->SwapItemSlots(srlPacket.srcSlot, Slot);
     }
     else
     {
         auto eItemHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srlPacket.srcInventorySlot, srlPacket.srcSlot, false);
-        auto oitem = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, Slot, false);
+        auto oitem = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(InventoryLayout::SlotNotSet, Slot, false);
         if (oitem != nullptr)
         {
             const auto [result, _] = _player->getItemInterface()->SafeAddItem(std::move(oitem), srlPacket.srcInventorySlot, srlPacket.srcSlot);
@@ -1331,7 +1332,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
         }
         if (eItemHolder != nullptr)
         {
-            const auto [result, _] = _player->getItemInterface()->SafeAddItem(std::move(eItemHolder), INVENTORY_SLOT_NOT_SET, Slot);
+            const auto [result, _] = _player->getItemInterface()->SafeAddItem(std::move(eItemHolder), InventoryLayout::SlotNotSet, Slot);
             if (!result)
             {
                 // TODO: if add fails, should item be sent in mail? now it's destroyed
@@ -1392,7 +1393,7 @@ void WorldSession::handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket)
 
     // Need to check if the item even goes into that slot
     // Item system is a mess too, so it needs rewrite, but hopefully this will do for now
-    int8_t error = _player->getItemInterface()->CanEquipItemInSlot2(INVENTORY_SLOT_NOT_SET, srlPacket.destSlot, item);
+    int8_t error = _player->getItemInterface()->CanEquipItemInSlot2(InventoryLayout::SlotNotSet, srlPacket.destSlot, item);
     if (error)
     {
         _player->getItemInterface()->buildInventoryChangeError(item, nullptr, error);
@@ -1406,8 +1407,8 @@ void WorldSession::handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket)
         if (invType == INVTYPE_WEAPON || invType == INVTYPE_WEAPONMAINHAND ||
             invType == INVTYPE_WEAPONOFFHAND || invType == INVTYPE_2HWEAPON)
         {
-            Item* mainHand = _player->getItemInterface()->GetInventoryItem(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_MAINHAND);
-            Item* offHand = _player->getItemInterface()->GetInventoryItem(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND);
+            Item* mainHand = _player->getItemInterface()->GetInventoryItem(InventoryLayout::SlotNotSet, EQUIPMENT_SLOT_MAINHAND);
+            Item* offHand = _player->getItemInterface()->GetInventoryItem(InventoryLayout::SlotNotSet, EQUIPMENT_SLOT_OFFHAND);
 
             if (mainHand != nullptr && offHand != nullptr && !_player->canDualWield2H())
             {
@@ -1419,7 +1420,7 @@ void WorldSession::handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket)
                     _player->getItemInterface()->buildInventoryChangeError(offHand, nullptr, INV_ERR_BAG_FULL);
                     return;
                 }
-                auto offHandHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET,
+                auto offHandHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(InventoryLayout::SlotNotSet,
                     EQUIPMENT_SLOT_OFFHAND, false);
                 // TODO: if add fails, should item be sent in mail? now it's destroyed
                 _player->getItemInterface()->AddItemToFreeSlot(std::move(offHandHolder));
@@ -1699,7 +1700,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
     uint8_t amount = srlPacket.amount;
 
     uint8_t error;
-    int8_t bagslot = INVENTORY_SLOT_NOT_SET;
+    int8_t bagslot = InventoryLayout::SlotNotSet;
 
     if (amount < 1)
         amount = 1;
@@ -1736,7 +1737,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
     uint32_t count_per_stack = ci.amount * amount;
 
     // if slot is different than -1, check for validation, else continue for auto storing.
-    if (slot != INVENTORY_SLOT_NOT_SET)
+    if (slot != InventoryLayout::SlotNotSet)
     {
         if (!(srlPacket.bagGuid >> 32))//buy to backpack
         {
@@ -1754,7 +1755,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
                 return;
             bagslot = static_cast<int8_t>(_player->getItemInterface()->GetBagSlotByGuid(srlPacket.bagGuid));
 
-            if (bagslot == INVENTORY_SLOT_NOT_SET || static_cast<uint32_t>(slot) > c->getItemProperties()->ContainerSlots)
+            if (bagslot == InventoryLayout::SlotNotSet || static_cast<uint32_t>(slot) > c->getItemProperties()->ContainerSlots)
             {
                 _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
                 return;
@@ -1791,7 +1792,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (slot == INVENTORY_SLOT_NOT_SET)
+    if (slot == InventoryLayout::SlotNotSet)
     {
         _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_BAG_FULL);
         return;
@@ -1954,18 +1955,18 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
         itemHolder->m_isDirty = true;
         itemHolder->setStackCount(srlPacket.amount * creature_item.amount);
 
-        if (slotResult.ContainerSlot == ITEM_NO_SLOT_AVAILABLE)
+        if (slotResult.ContainerSlot == InventoryLayout::NoSlotAvailable)
         {
             auto* item = itemHolder.get();
             // TODO: if add fails, should item be sent in mail? now it's destroyed
-            const auto [addItemResult, _] = _player->getItemInterface()->SafeAddItem(std::move(itemHolder), INVENTORY_SLOT_NOT_SET, slotResult.Slot);
+            const auto [addItemResult, _] = _player->getItemInterface()->SafeAddItem(std::move(itemHolder), InventoryLayout::SlotNotSet, slotResult.Slot);
             if (addItemResult == ADD_ITEM_RESULT_OK)
             {
                 if (item->isEligibleForRefund() && item_extended_cost != nullptr)
                 {
                     item->getOwner()->getItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->costid);
                 }
-                _player->sendItemPushResultPacket(false, true, false, static_cast<uint8_t>(INVENTORY_SLOT_NOT_SET),
+                _player->sendItemPushResultPacket(false, true, false, static_cast<uint8_t>(InventoryLayout::SlotNotSet),
                     slotResult.Result, srlPacket.amount * creature_item.amount, item->getEntry(), item->getPropertySeed(),
                     item->getRandomPropertiesId(), _player->getItemInterface()->GetItemCount(item->getEntry()), item->getGuid());
             }
@@ -2002,8 +2003,8 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
 
     _player->getItemInterface()->BuyItem(it, srlPacket.amount, creature);
 
-    SmsgBuyItem managedPacket(srlPacket.sourceGuid.getRawGuid(), Util::getMSTime(), srlPacket.itemEntry,
-        srlPacket.amount * creature_item.amount);
+    const int32_t vendorQuantity = creature_item.max_amount > 0 ? static_cast<int32_t>(creature_item.available_amount - srlPacket.amount * creature_item.amount) : -1;
+    SmsgBuyItem managedPacket(srlPacket.sourceGuid.getRawGuid(), Util::getMSTime(), srlPacket.itemEntry, srlPacket.amount * creature_item.amount, srlPacket.vendorSlot, vendorQuantity);
     sendManagedPacket(managedPacket);
 
     if (creature_item.max_amount)
@@ -2146,11 +2147,11 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
         }
         //check for destination now before swaping.
         //destination is backpack
-        if (srlPacket.dstContainerSlot == INVENTORY_SLOT_NOT_SET)
+        if (srlPacket.dstContainerSlot == InventoryLayout::SlotNotSet)
         {
             //check for space
             NewSlot = _player->getItemInterface()->FindFreeBackPackSlot();
-            if (NewSlot == ITEM_NO_SLOT_AVAILABLE)
+            if (NewSlot == InventoryLayout::NoSlotAvailable)
             {
                 _player->getItemInterface()->buildInventoryChangeError(srcitem, nullptr, INV_ERR_BAG_FULL);
                 return;
@@ -2162,7 +2163,7 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
                     srlPacket.srcSlot, false);
                 if (srcItemHolder)
                 {
-                    const auto [result, _] = _player->getItemInterface()->SafeAddItem(std::move(srcItemHolder), INVENTORY_SLOT_NOT_SET, NewSlot);
+                    const auto [result, _] = _player->getItemInterface()->SafeAddItem(std::move(srcItemHolder), InventoryLayout::SlotNotSet, NewSlot);
                     if (!result)
                     {
                         // TODO: if add fails, should item be sent in mail? now it's destroyed
@@ -2178,7 +2179,7 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
                 srlPacket.dstContainerSlot, srcitem);
             if (error != 0)
             {
-                if (srlPacket.dstContainerSlot < INVENTORY_KEYRING_END)
+                if (srlPacket.dstContainerSlot < InventoryLayout::KeyringEnd)
                 {
                     _player->getItemInterface()->buildInventoryChangeError(srcitem, nullptr, error);
                     return;
@@ -2192,7 +2193,7 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
                 if (dstitem->isContainer())
                 {
                     NewSlot = dynamic_cast<Container*>(dstitem)->findFreeSlot();
-                    if (NewSlot == ITEM_NO_SLOT_AVAILABLE)
+                    if (NewSlot == InventoryLayout::NoSlotAvailable)
                     {
                         _player->getItemInterface()->buildInventoryChangeError(srcitem, nullptr, INV_ERR_BAG_FULL);
                         return;
@@ -2274,7 +2275,7 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.itemGuid)
     {
         int32_t totalcost = 0;
-        for (uint32_t i = 0; i < MAX_INVENTORY_SLOT; i++)
+        for (uint32_t i = 0; i < InventoryLayout::MaxSlot; i++)
         {
             Item* pItem = _player->getItemInterface()->GetInventoryItem(static_cast<int16_t>(i));
             if (pItem != nullptr)

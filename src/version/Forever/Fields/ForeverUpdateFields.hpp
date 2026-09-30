@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #endif
 
 #include "WoWGuid.hpp"
+#include "Data/InventoryLayout.hpp"
 
 #include <array>
 #include <bitset>
@@ -737,8 +738,8 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t PartyTypeFirstBit = 51;
         static inline constexpr std::size_t QuestLogGroupBit = 53;
         static inline constexpr std::size_t QuestLogFirstBit = 54;
-        static inline constexpr std::size_t VisibleItemsGroupBit = 229;
-        static inline constexpr std::size_t VisibleItemsFirstBit = 230;
+        static inline constexpr std::size_t VisibleItemsGroupBit = 233;
+        static inline constexpr std::size_t VisibleItemsFirstBit = 234;
         static inline constexpr std::size_t AvgItemLevelGroupBit = 249;
         static inline constexpr std::size_t AvgItemLevelFirstBit = 250;
         static inline constexpr std::size_t ForcedReactionsGroupBit = 256;
@@ -776,7 +777,7 @@ namespace AscEmu::Version::Forever::Fields
         std::bitset<ChangeMaskSize> changes{};
 
         void markChanged(std::size_t bit) { changes.set(bit & ~std::size_t(31)); changes.set(bit); }
-        void markArrayChanged(std::size_t groupBit, std::size_t elementBit) { markChanged(groupBit); changes.set(elementBit); }
+        void markArrayChanged(std::size_t groupBit, std::size_t elementBit) { changes.set(groupBit); changes.set(elementBit); }
         void clearChanges() { changes.reset(); }
         bool hasChanges() const { return changes.any(); }
 
@@ -878,7 +879,7 @@ namespace AscEmu::Version::Forever::Fields
         // These bit positions remain provisional until differential VALUES testing confirms them.
         static inline constexpr std::size_t UnknownChangeBit56_69913 = 56;
         static inline constexpr std::size_t UnknownChangeBit57_69913 = 57;
-        static inline constexpr std::size_t UnknownChangeBit58_69913 = 58;
+        static inline constexpr std::size_t CoinageBit = 58;
         static inline constexpr std::size_t UnknownChangeBit59_69913 = 59;
         // Capture-verified Forever 1.60.1.70009 ActivePlayerData core scalars.
         // Normal XP gains update bit 60; the retail level-up differential sends
@@ -886,13 +887,14 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t XpBit = 60;
         static inline constexpr std::size_t NextLevelXpBit = 61;
         static inline constexpr std::size_t UnknownChangeBit62_69913 = 62;
-        static inline constexpr std::size_t UnknownChangeBit163_69913 = 163;
-        static inline constexpr std::size_t UnknownChangeBit164_69913 = 164;
+        static inline constexpr std::size_t AppearanceCollectionBit = 134;
+        static inline constexpr std::size_t InventorySlotsGroupBit = 168;
+        static inline constexpr std::size_t InventorySlotsFirstBit = 169;
 
         std::bitset<ChangeMaskSize> changes{};
 
         void markChanged(std::size_t bit) { changes.set(bit & ~std::size_t(31)); changes.set(bit); }
-        void markArrayChanged(std::size_t groupBit, std::size_t elementBit) { markChanged(groupBit); changes.set(elementBit); }
+        void markArrayChanged(std::size_t groupBit, std::size_t elementBit) { changes.set(groupBit); changes.set(elementBit); }
         void clearChanges() { changes.reset(); }
         bool hasChanges() const { return changes.any(); }
 
@@ -904,7 +906,7 @@ namespace AscEmu::Version::Forever::Fields
         // by wire-verified names/unknown blocks.
         // -----------------------------------------------------------------
 
-        std::array<WoWGuid, 105> invSlots{};
+        std::array<WoWGuid, InventoryLayout::Forever::InvSlotCount> invSlots{};
         WoWGuid farsightObject;
         WoWGuid summonedBattlePetGuid;
 

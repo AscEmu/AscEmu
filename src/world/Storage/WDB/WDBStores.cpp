@@ -1400,10 +1400,332 @@ namespace {
 
     bool loadForeverModernItemStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
     {
+        WDB::WDC5File item;
+        WDB::WDC5File itemSparse;
+        WDB::WDC5File itemAppearance;
+        WDB::WDC5File itemExtendedCost;
+        WDB::WDC5File itemModifiedAppearance;
         WDB::WDC5File itemSet;
         WDB::WDC5File itemSetSpell;
-        if (!loadForeverWDC5Group({ { itemSet, ForeverFormat::ItemSet }, { itemSetSpell, ForeverFormat::ItemSetSpell } }, errors, dbcPath))
+        if (!loadForeverWDC5Group({
+                { item, ForeverFormat::Item },
+                { itemSparse, ForeverFormat::ItemSparse },
+                { itemAppearance, ForeverFormat::ItemAppearance },
+                { itemExtendedCost, ForeverFormat::ItemExtendedCost },
+                { itemModifiedAppearance, ForeverFormat::ItemModifiedAppearance },
+                { itemSet, ForeverFormat::ItemSet },
+                { itemSetSpell, ForeverFormat::ItemSetSpell }
+            }, errors, dbcPath))
             return false;
+
+        std::unordered_map<uint32_t, uint32_t> displayInfoByAppearanceId;
+        displayInfoByAppearanceId.reserve(itemAppearance.getRecordCount());
+
+        for (uint32_t row = 0; row < itemAppearance.getRecordCount(); ++row)
+        {
+            uint32_t const appearanceId = itemAppearance.getRecordId(row);
+            uint32_t const displayInfoId = itemAppearance.getUInt32(row, 1);
+            displayInfoByAppearanceId.emplace(appearanceId, displayInfoId);
+        }
+
+        std::unordered_map<uint32_t, uint32_t> displayInfoByItemId;
+        displayInfoByItemId.reserve(itemModifiedAppearance.getRecordCount());
+
+        for (uint32_t row = 0; row < itemModifiedAppearance.getRecordCount(); ++row)
+        {
+            uint32_t const itemId = itemModifiedAppearance.getUInt32(row, 1);
+            uint32_t const appearanceModifierId = itemModifiedAppearance.getUInt32(row, 2);
+            uint32_t const appearanceId = itemModifiedAppearance.getUInt32(row, 3);
+
+            // ItemEntry exposes a single legacy DisplayId. Prefer the base,
+            // unmodified appearance for that compatibility value.
+            if (appearanceModifierId != 0)
+                continue;
+
+            auto const appearanceItr = displayInfoByAppearanceId.find(appearanceId);
+            if (appearanceItr == displayInfoByAppearanceId.end())
+                continue;
+
+            displayInfoByItemId.try_emplace(itemId, appearanceItr->second);
+        }
+
+        std::vector<std::pair<uint32_t, WDB::Structures::ItemEntry>> itemEntries;
+        itemEntries.reserve(item.getRecordCount());
+
+        for (uint32_t row = 0; row < item.getRecordCount(); ++row)
+        {
+            WDB::Structures::ItemEntry entry{};
+            entry.ID = item.getRecordId(row);
+            entry.Class = item.getUInt32(row, 0);
+            entry.SubClass = item.getUInt8(row, 1);
+            entry.Material = item.getUInt8(row, 2);
+            entry.InventoryType = item.getUInt8(row, 3);
+            entry.Sheath = item.getUInt8(row, 4);
+            entry.SoundOverrideSubclass = item.getInt8(row, 6);
+
+            auto const displayItr = displayInfoByItemId.find(entry.ID);
+            entry.DisplayId = displayItr != displayInfoByItemId.end() ? displayItr->second : 0;
+
+            itemEntries.emplace_back(entry.ID, entry);
+        }
+
+        sItemStore.assignEntries(itemEntries);
+        sLogger.info(
+            "Forever item DB2 store: {} items, {} default display IDs resolved from ItemModifiedAppearance/ItemAppearance.",
+            itemEntries.size(),
+            displayInfoByItemId.size());
+
+        std::vector<std::pair<uint32_t, WDB::Structures::ItemSparseEntry>> sparseEntries;
+        sparseEntries.reserve(itemSparse.getRecordCount());
+        for (uint32_t row = 0; row < itemSparse.getRecordCount(); ++row)
+        {
+            WDB::Structures::ItemSparseEntry entry{};
+            entry.ID = itemSparse.getRecordId(row);
+            entry.Description = std::string(itemSparse.getString(row, 0));
+            entry.Name = std::string(itemSparse.getString(row, 4));
+            entry.ExpansionID = itemSparse.getUInt32(row, 5);
+            entry.DmgVariance = itemSparse.getFloat(row, 6);
+            entry.LimitCategory = itemSparse.getUInt32(row, 7);
+            entry.DurationInInventory = itemSparse.getUInt32(row, 8);
+            entry.QualityModifier = itemSparse.getFloat(row, 9);
+            entry.BagFamily = itemSparse.getUInt32(row, 10);
+            entry.StartQuestID = itemSparse.getUInt32(row, 11);
+            entry.LanguageID = itemSparse.getUInt32(row, 12);
+            entry.ItemRange = itemSparse.getFloat(row, 13);
+
+            for (uint32_t i = 0; i < 10; ++i)
+            {
+                entry.StatPercentageOfSocket[i] = itemSparse.getFloat(row, 14, i);
+                entry.StatPercentEditor[i] = itemSparse.getInt32(row, 15, i);
+                entry.StatModifierBonusStat[i] = itemSparse.getInt32(row, 16, i);
+            }
+
+            entry.Stackable = itemSparse.getInt32(row, 17);
+            entry.MaxCount = itemSparse.getInt32(row, 18);
+            entry.MinReputation = itemSparse.getInt32(row, 19);
+            entry.RequiredAbility = itemSparse.getUInt32(row, 20);
+            for (uint32_t i = 0; i < 2; ++i)
+                entry.AllowableRace[i] = itemSparse.getUInt32(row, 21, i);
+            entry.SellPrice = itemSparse.getUInt32(row, 22);
+            entry.BuyPrice = itemSparse.getUInt32(row, 23);
+            entry.VendorStackCount = itemSparse.getUInt32(row, 24);
+            entry.PriceVariance = itemSparse.getFloat(row, 25);
+            entry.PriceRandomValue = itemSparse.getFloat(row, 26);
+            for (uint32_t i = 0; i < 5; ++i)
+                entry.Flags[i] = itemSparse.getUInt32(row, 27, i);
+            entry.OppositeFactionItemID = itemSparse.getUInt32(row, 28);
+            entry.ModifiedCraftingReagentItemID = itemSparse.getUInt32(row, 29);
+            entry.ContentTuningID = itemSparse.getUInt32(row, 30);
+            entry.PlayerLevelToItemLevelCurveID = itemSparse.getUInt32(row, 31);
+            entry.ItemLevelOffsetCurveID = itemSparse.getUInt32(row, 32);
+            entry.ItemLevelOffsetItemLevel = itemSparse.getInt32(row, 33);
+            entry.ItemSquishEraID = itemSparse.getUInt32(row, 34);
+            entry.ItemNameDescriptionID = itemSparse.getUInt16(row, 35);
+            entry.RequiredTransmogHoliday = itemSparse.getUInt16(row, 36);
+            entry.RequiredHoliday = itemSparse.getUInt16(row, 37);
+            entry.GemProperties = itemSparse.getUInt16(row, 38);
+            entry.SocketMatchEnchantmentID = itemSparse.getUInt16(row, 39);
+            entry.TotemCategoryID = itemSparse.getUInt16(row, 40);
+            entry.InstanceBound = itemSparse.getUInt16(row, 41);
+            for (uint32_t i = 0; i < 2; ++i)
+                entry.ZoneBound[i] = itemSparse.getUInt16(row, 42, i);
+            entry.ItemSet = itemSparse.getUInt16(row, 43);
+            entry.LockID = itemSparse.getUInt16(row, 44);
+            entry.PageID = itemSparse.getUInt16(row, 45);
+            entry.ItemDelay = itemSparse.getUInt16(row, 46);
+            entry.MinFactionID = itemSparse.getUInt16(row, 47);
+            entry.RequiredSkillRank = itemSparse.getUInt16(row, 48);
+            entry.RequiredSkill = itemSparse.getUInt16(row, 49);
+            entry.ItemLevel = itemSparse.getUInt16(row, 50);
+            entry.AllowableClass = itemSparse.getInt16(row, 51);
+            entry.ArtifactID = itemSparse.getUInt8(row, 52);
+            entry.SpellWeight = itemSparse.getUInt8(row, 53);
+            entry.SpellWeightCategory = itemSparse.getUInt8(row, 54);
+            for (uint32_t i = 0; i < 3; ++i)
+                entry.SocketType[i] = itemSparse.getUInt8(row, 55, i);
+            entry.SheatheType = itemSparse.getUInt8(row, 56);
+            entry.Material = itemSparse.getUInt8(row, 57);
+            entry.PageMaterialID = itemSparse.getUInt8(row, 58);
+            entry.Bonding = itemSparse.getUInt8(row, 59);
+            entry.DamageType = itemSparse.getUInt8(row, 60);
+            entry.ContainerSlots = itemSparse.getUInt8(row, 61);
+            entry.RequiredPVPMedal = itemSparse.getUInt8(row, 62);
+            entry.RequiredPVPRank = itemSparse.getInt8(row, 63);
+            entry.RequiredLevel = itemSparse.getInt8(row, 64);
+            entry.InventoryType = itemSparse.getInt8(row, 65);
+            entry.OverallQualityID = itemSparse.getInt8(row, 66);
+            entry.AmmunitionType = itemSparse.getUInt8(row, 67);
+
+            sparseEntries.emplace_back(entry.ID, std::move(entry));
+        }
+        sItemSparseStore.assignEntries(sparseEntries);
+        sLogger.info("Forever ItemSparse DB2 store: {} entries loaded.", sparseEntries.size());
+
+        WDB::WDC5File randPropPoints;
+        if (loadForeverWDC5Optional(randPropPoints, ForeverFormat::RandPropPoints, dbcPath))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::RandPropPointsEntry>> randPropEntries;
+            randPropEntries.reserve(randPropPoints.getRecordCount());
+            for (uint32_t row = 0; row < randPropPoints.getRecordCount(); ++row)
+            {
+                WDB::Structures::RandPropPointsEntry entry{};
+                entry.ID = randPropPoints.getRecordId(row);
+                entry.DamageReplaceStatF = randPropPoints.getFloat(row, 0);
+                entry.DamageSecondaryF = randPropPoints.getFloat(row, 1);
+                entry.DamageReplaceStat = randPropPoints.getInt32(row, 2);
+                entry.DamageSecondary = randPropPoints.getInt32(row, 3);
+                for (uint32_t i = 0; i < 5; ++i)
+                {
+                    entry.EpicF[i] = randPropPoints.getFloat(row, 4, i);
+                    entry.SuperiorF[i] = randPropPoints.getFloat(row, 5, i);
+                    entry.GoodF[i] = randPropPoints.getFloat(row, 6, i);
+                    entry.Epic[i] = randPropPoints.getUInt32(row, 7, i);
+                    entry.Superior[i] = randPropPoints.getUInt32(row, 8, i);
+                    entry.Good[i] = randPropPoints.getUInt32(row, 9, i);
+                }
+                randPropEntries.emplace_back(entry.ID, entry);
+            }
+            sRandPropPointsStore.assignEntries(randPropEntries);
+            sLogger.info("Forever RandPropPoints DB2 store: {} entries loaded.", randPropEntries.size());
+        }
+
+        WDB::WDC5File armorLocation;
+        if (loadForeverWDC5Optional(armorLocation, ForeverFormat::ArmorLocation, dbcPath))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::ArmorLocationEntry>> entries;
+            entries.reserve(armorLocation.getRecordCount());
+            for (uint32_t row = 0; row < armorLocation.getRecordCount(); ++row)
+            {
+                WDB::Structures::ArmorLocationEntry entry{};
+                entry.ID = armorLocation.getRecordId(row);
+                for (uint32_t i = 0; i < 4; ++i)
+                    entry.ArmorModifier[i] = armorLocation.getFloat(row, i);
+                entry.Modifier = armorLocation.getFloat(row, 4);
+                entries.emplace_back(entry.ID, entry);
+            }
+            sArmorLocationForeverStore.assignEntries(entries);
+            sLogger.info("Forever ArmorLocation DB2 store: {} entries loaded.", entries.size());
+        }
+
+        WDB::WDC5File itemArmorQuality;
+        if (loadForeverWDC5Optional(itemArmorQuality, ForeverFormat::ItemArmorQuality, dbcPath))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::ItemArmorQualityEntry>> entries;
+            entries.reserve(itemArmorQuality.getRecordCount());
+            for (uint32_t row = 0; row < itemArmorQuality.getRecordCount(); ++row)
+            {
+                WDB::Structures::ItemArmorQualityEntry entry{};
+                entry.ID = itemArmorQuality.getRecordId(row);
+                for (uint32_t i = 0; i < 7; ++i)
+                    entry.Quality[i] = itemArmorQuality.getFloat(row, 0, i);
+                entries.emplace_back(entry.ID, entry);
+            }
+            sItemArmorQualityForeverStore.assignEntries(entries);
+            sLogger.info("Forever ItemArmorQuality DB2 store: {} entries loaded.", entries.size());
+        }
+
+        WDB::WDC5File itemArmorShield;
+        if (loadForeverWDC5Optional(itemArmorShield, ForeverFormat::ItemArmorShield, dbcPath))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::ItemArmorShieldEntry>> entries;
+            entries.reserve(itemArmorShield.getRecordCount());
+            for (uint32_t row = 0; row < itemArmorShield.getRecordCount(); ++row)
+            {
+                WDB::Structures::ItemArmorShieldEntry entry{};
+                entry.ID = itemArmorShield.getRecordId(row);
+                for (uint32_t i = 0; i < 7; ++i)
+                    entry.Quality[i] = itemArmorShield.getFloat(row, 0, i);
+                entry.ItemLevel = itemArmorShield.getUInt32(row, 1);
+                entries.emplace_back(entry.ID, entry);
+            }
+            sItemArmorShieldForeverStore.assignEntries(entries);
+            sLogger.info("Forever ItemArmorShield DB2 store: {} entries loaded.", entries.size());
+        }
+
+        WDB::WDC5File itemArmorTotal;
+        if (loadForeverWDC5Optional(itemArmorTotal, ForeverFormat::ItemArmorTotal, dbcPath))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::ItemArmorTotalEntry>> entries;
+            entries.reserve(itemArmorTotal.getRecordCount());
+            for (uint32_t row = 0; row < itemArmorTotal.getRecordCount(); ++row)
+            {
+                WDB::Structures::ItemArmorTotalEntry entry{};
+                entry.ID = itemArmorTotal.getRecordId(row);
+                entry.ItemLevel = itemArmorTotal.getUInt32(row, 0);
+                for (uint32_t i = 0; i < 4; ++i)
+                    entry.Armor[i] = itemArmorTotal.getFloat(row, i + 1);
+                entries.emplace_back(entry.ID, entry);
+            }
+            sItemArmorTotalForeverStore.assignEntries(entries);
+            sLogger.info("Forever ItemArmorTotal DB2 store: {} entries loaded.", entries.size());
+        }
+
+        WDB::WDC5File itemEffect;
+        if (loadForeverWDC5Optional(itemEffect, ForeverFormat::ItemEffect, dbcPath))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::ItemEffectEntry>> entries;
+            entries.reserve(itemEffect.getRecordCount());
+            for (uint32_t row = 0; row < itemEffect.getRecordCount(); ++row)
+            {
+                WDB::Structures::ItemEffectEntry entry{};
+                entry.ID = itemEffect.getRecordId(row);
+                entry.LegacySlotIndex = itemEffect.getInt32(row, 0);
+                entry.TriggerType = itemEffect.getInt32(row, 1);
+                entry.Charges = itemEffect.getInt32(row, 2);
+                entry.Cooldown = itemEffect.getInt32(row, 3);
+                entry.CategoryCooldown = itemEffect.getInt32(row, 4);
+                entry.Category = itemEffect.getUInt32(row, 5);
+                entry.SpellID = itemEffect.getUInt32(row, 6);
+                entry.ChrSpecializationID = itemEffect.getUInt32(row, 7);
+                entry.PlayerConditionID = itemEffect.getUInt32(row, 8);
+                entries.emplace_back(entry.ID, entry);
+            }
+            sItemEffectForeverStore.assignEntries(entries);
+            sLogger.info("Forever ItemEffect DB2 store: {} entries loaded.", entries.size());
+        }
+
+        WDB::WDC5File itemXItemEffect;
+        if (loadForeverWDC5Optional(itemXItemEffect, ForeverFormat::ItemXItemEffect, dbcPath))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::ItemXItemEffectEntry>> entries;
+            entries.reserve(itemXItemEffect.getRecordCount());
+            for (uint32_t row = 0; row < itemXItemEffect.getRecordCount(); ++row)
+            {
+                WDB::Structures::ItemXItemEffectEntry entry{};
+                entry.ID = itemXItemEffect.getRecordId(row);
+                entry.ItemEffectID = itemXItemEffect.getUInt32(row, 0);
+                entry.ItemID = itemXItemEffect.getParentId(row);
+                entries.emplace_back(entry.ID, entry);
+            }
+            sItemXItemEffectForeverStore.assignEntries(entries);
+            sLogger.info("Forever ItemXItemEffect DB2 store: {} entries loaded.", entries.size());
+        }
+
+        std::vector<std::pair<uint32_t, WDB::Structures::ItemExtendedCostEntry>> extendedCostEntries;
+        extendedCostEntries.reserve(itemExtendedCost.getRecordCount());
+
+        for (uint32_t row = 0; row < itemExtendedCost.getRecordCount(); ++row)
+        {
+            WDB::Structures::ItemExtendedCostEntry entry{};
+            entry.costid = itemExtendedCost.getRecordId(row);
+            entry.honor_points = 0;
+            entry.arena_points = 0;
+            entry.personalrating = itemExtendedCost.getUInt16(row, 1);
+            entry.arena_slot = itemExtendedCost.getUInt8(row, 2);
+
+            for (uint32_t i = 0; i < 5; ++i)
+            {
+                entry.item[i] = itemExtendedCost.getUInt32(row, 7, i);
+                entry.count[i] = itemExtendedCost.getUInt16(row, 8, i);
+                entry.reqcur[i] = itemExtendedCost.getUInt16(row, 9, i);
+                entry.reqcurrcount[i] = itemExtendedCost.getUInt32(row, 10, i);
+            }
+
+            extendedCostEntries.emplace_back(entry.costid, entry);
+        }
+
+        sItemExtendedCostStore.assignEntries(extendedCostEntries);
+        sLogger.info("Forever item extended cost DB2 store: {} entries.", extendedCostEntries.size());
 
         std::vector<std::pair<uint32_t, WDB::Structures::ItemSetEntry>> entries;
         entries.reserve(itemSet.getRecordCount());

@@ -3,6 +3,7 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Data/InventoryLayout.hpp"
 #include "Logging/Logger.hpp"
 #include "Server/Packets/CmsgAuctionListOwnerItems.h"
 #include "Server/Packets/CmsgAuctionListItems.h"
@@ -196,7 +197,7 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
 
         item->setOwner(nullptr);
         item->m_isDirty = true;
-        item->saveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
+        item->saveToDB(InventoryLayout::SlotNotSet, 0, true, nullptr);
 
         auto auction = std::make_unique<Auction>();
         auction->buyoutPrice = srlPacket.buyoutPrice;
