@@ -85,17 +85,6 @@ namespace AscEmu::Version::Forever::UpdateFields
         return true;
     }
 
-    constexpr std::string_view verificationName(FieldVerification verification)
-    {
-        switch (verification)
-        {
-            case FieldVerification::Verified: return "VERIFIED";
-            case FieldVerification::StructureOnly: return "STRUCTURE";
-            case FieldVerification::ReferenceOnly: return "REFERENCE";
-            default: return "UNKNOWN";
-        }
-    }
-
     template <std::size_t N>
     constexpr std::size_t countCreateFieldsByVerification(std::array<CreateFieldMetadata, N> const& fields, FieldVerification verification)
     {
@@ -182,13 +171,6 @@ namespace AscEmu::Version::Forever::UpdateFields
             data << owner.*Member;
         }
 
-        template <typename Owner, typename Callback>
-        static void trace(Owner const& owner, auto const& changed, Callback&& callback)
-        {
-            if constexpr (ParentBit != NoParentBit)
-                if (!changed(ParentBit)) return;
-            if (changed(Bit)) callback(Name.view(), ReferenceName.view(), Verification, "scalar", Bit, -1, owner.*Member);
-        }
     };
 
     template <auto Member, std::size_t Bit, std::size_t ParentBit = NoParentBit, FieldVerification Verification = FieldVerification::Unknown, FixedString Name = "unknown", FixedString ReferenceName = "">
@@ -211,13 +193,6 @@ namespace AscEmu::Version::Forever::UpdateFields
             if (changed(Bit)) writeModernGuid(data, owner.*Member);
         }
 
-        template <typename Owner, typename Callback>
-        static void trace(Owner const& owner, auto const& changed, Callback&& callback)
-        {
-            if constexpr (ParentBit != NoParentBit)
-                if (!changed(ParentBit)) return;
-            if (changed(Bit)) callback(Name.view(), ReferenceName.view(), Verification, "guid", Bit, -1, (owner.*Member).getRawGuid());
-        }
     };
 
     template <auto Member, std::size_t GroupBit, std::size_t FirstBit, FieldVerification Verification = FieldVerification::Unknown, FixedString Name = "unknown", FixedString ReferenceName = "">
@@ -242,14 +217,6 @@ namespace AscEmu::Version::Forever::UpdateFields
                 if (changed(FirstBit + i)) data << values[i];
         }
 
-        template <typename Owner, typename Callback>
-        static void trace(Owner const& owner, auto const& changed, Callback&& callback)
-        {
-            if (!changed(GroupBit)) return;
-            auto const& values = owner.*Member;
-            for (std::size_t i = 0; i < values.size(); ++i)
-                if (changed(FirstBit + i)) callback(Name.view(), ReferenceName.view(), Verification, "scalar-array", FirstBit + i, static_cast<int32_t>(i), values[i]);
-        }
     };
 
     template <auto Member, std::size_t Bit, std::size_t ParentBit = NoParentBit, FieldVerification Verification = FieldVerification::Unknown, FixedString Name = "unknown", FixedString ReferenceName = "">
@@ -275,13 +242,6 @@ namespace AscEmu::Version::Forever::UpdateFields
                 data << value;
         }
 
-        template <typename Owner, typename Callback>
-        static void trace(Owner const& owner, auto const& changed, Callback&& callback)
-        {
-            if constexpr (ParentBit != NoParentBit)
-                if (!changed(ParentBit)) return;
-            if (changed(Bit)) callback(Name.view(), ReferenceName.view(), Verification, "scalar-vector-size", Bit, -1, static_cast<uint32_t>((owner.*Member).size()));
-        }
     };
 
     template <auto Member, std::size_t Bit, std::size_t ParentBit = NoParentBit, FieldVerification Verification = FieldVerification::Unknown, FixedString Name = "unknown", FixedString ReferenceName = "">
@@ -305,13 +265,6 @@ namespace AscEmu::Version::Forever::UpdateFields
                 data << value;
         }
 
-        template <typename Owner, typename Callback>
-        static void trace(Owner const& owner, auto const& changed, Callback&& callback)
-        {
-            if constexpr (ParentBit != NoParentBit)
-                if (!changed(ParentBit)) return;
-            if (changed(Bit)) callback(Name.view(), ReferenceName.view(), Verification, "whole-array-size", Bit, -1, static_cast<uint32_t>((owner.*Member).size()));
-        }
     };
 
     template <auto Member, std::size_t GroupBit, std::size_t FirstBit, FieldVerification Verification = FieldVerification::Unknown, FixedString Name = "unknown", FixedString ReferenceName = "">
@@ -336,14 +289,6 @@ namespace AscEmu::Version::Forever::UpdateFields
                 if (changed(FirstBit + i)) writeModernGuid(data, values[i]);
         }
 
-        template <typename Owner, typename Callback>
-        static void trace(Owner const& owner, auto const& changed, Callback&& callback)
-        {
-            if (!changed(GroupBit)) return;
-            auto const& values = owner.*Member;
-            for (std::size_t i = 0; i < values.size(); ++i)
-                if (changed(FirstBit + i)) callback(Name.view(), ReferenceName.view(), Verification, "guid-array", FirstBit + i, static_cast<int32_t>(i), values[i].getRawGuid());
-        }
     };
 
     template <std::size_t MaskSize, typename... FieldDescriptors>
@@ -367,13 +312,6 @@ namespace AscEmu::Version::Forever::UpdateFields
             (FieldDescriptors::write(data, owner, changed), ...);
         }
 
-        template <typename Owner, typename Callback>
-        static void traceChangedFields(Owner const& owner, Callback&& callback)
-        {
-            const auto changes = filterChanges(owner);
-            const auto changed = [&changes](std::size_t bit) { return changes.test(bit); };
-            (FieldDescriptors::trace(owner, changed, callback), ...);
-        }
     };
 
     template <std::size_t MaskSize, typename... FieldDescriptors>
@@ -387,12 +325,6 @@ namespace AscEmu::Version::Forever::UpdateFields
             (FieldDescriptors::write(data, owner, changed), ...);
         }
 
-        template <typename Owner, typename Callback>
-        static void traceChangedFields(Owner const& owner, Callback&& callback)
-        {
-            const auto changed = [&owner](std::size_t bit) { return owner.changes.test(bit); };
-            (FieldDescriptors::trace(owner, changed, callback), ...);
-        }
     };
 
     template <typename... FieldDescriptors>

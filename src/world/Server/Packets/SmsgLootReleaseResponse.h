@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "WoWGuid.hpp"
+#include "ForeverLootPacketUtils.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -16,23 +17,37 @@ namespace AscEmu::Packets
     public:
         uint64_t guid;
         uint8_t response;
+        uint16_t mapId;
+        WoWGuid lootObjectGuid;
+        WoWGuid ownerGuid;
 
-        SmsgLootReleaseResponse() : SmsgLootReleaseResponse(0, 0)
+        SmsgLootReleaseResponse() : SmsgLootReleaseResponse(0, 0, 0, WoWGuid(), WoWGuid())
         {
         }
 
-        SmsgLootReleaseResponse(uint64_t guid, uint8_t response) :
+        SmsgLootReleaseResponse(uint64_t guid, uint8_t response, uint16_t mapId = 0, WoWGuid lootObjectGuid = WoWGuid(), WoWGuid ownerGuid = WoWGuid()) :
             ManagedPacket(SMSG_LOOT_RELEASE_RESPONSE, 0),
             guid(guid),
-            response(response)
+            response(response),
+            mapId(mapId),
+            lootObjectGuid(lootObjectGuid),
+            ownerGuid(ownerGuid)
         {
         }
 
     protected:
-        size_t expectedSize() const override { return m_protocol.isMop() ? size_t(18) : size_t(9); }
+        size_t expectedSize() const override { return m_protocol.isForever() ? size_t(20) : (m_protocol.isMop() ? size_t(18) : size_t(9)); }
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                ForeverLootPacket::writeGuid(packet, lootObjectGuid);
+                const WoWGuid owner = ownerGuid.isModernEmpty() ? ForeverLootPacket::makeOwnerGuid(guid, m_protocol.realmId, mapId) : ownerGuid;
+                ForeverLootPacket::writeGuid(packet, owner);
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // Mop writes the released guid twice (as two interleaved packed-guid fields) and

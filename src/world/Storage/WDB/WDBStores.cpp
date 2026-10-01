@@ -1890,7 +1890,7 @@ namespace {
         sItemSetStore.assignEntries(entries);
 
         // These two client tables no longer exist in the Forever beta / modern
-        // Trinity DB2 set. Keep the legacy stores available to old AscEmu code,
+        // Forever DB2 set. Keep the legacy stores available to old AscEmu code,
         // but intentionally empty instead of reporting missing .dbc files.
         sItemRandomPropertiesStore.clear();
         sItemRandomSuffixStore.clear();

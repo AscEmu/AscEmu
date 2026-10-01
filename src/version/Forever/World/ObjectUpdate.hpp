@@ -48,7 +48,6 @@ namespace AscEmu::Version::Forever::ObjectUpdate
 
 
     std::vector<uint8_t> buildValuesUpdateBlock(std::span<const uint8_t> packedGuid, bool ownerVisible, Fields::ObjectData const& objectFields, Fields::ItemData const* itemFields = nullptr, Fields::ContainerData const* containerFields = nullptr, Fields::UnitData const* unitFields = nullptr, Fields::PlayerData const* playerFields = nullptr, Fields::ActivePlayerData const* activePlayerFields = nullptr, Fields::GameObjectData const* gameObjectFields = nullptr, Fields::DynamicObjectData const* dynamicObjectFields = nullptr, Fields::CorpseData const* corpseFields = nullptr);
-    bool consumeDeathUpdateWireDumpRequest();
 
     std::vector<uint8_t> buildUpdateObjectPacket(uint16_t mapId, uint32_t updateCount, std::span<const uint8_t> updateBlocks, uint32_t destroyCount = 0, std::span<const uint8_t> destroyGuids = {}, uint32_t outOfRangeCount = 0, std::span<const uint8_t> outOfRangeGuids = {});
 

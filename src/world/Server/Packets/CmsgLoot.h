@@ -15,6 +15,7 @@ namespace AscEmu::Packets
     {
     public:
         uint64_t guid;
+        WoWGuid foreverGuid;
 
         CmsgLoot() : CmsgLoot(0)
         {
@@ -52,6 +53,7 @@ namespace AscEmu::Packets
                 if (!ForeverSpellPacket::readPackedGuid(packet, modernGuid)) 
                     return false;
 
+                foreverGuid = modernGuid;
                 guid = modernGuid.toLegacyRaw(); 
                 return guid != 0 && packet.remaining() == 0; 
             }

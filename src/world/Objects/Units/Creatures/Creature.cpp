@@ -2708,12 +2708,9 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
         // Generate Gold
         loot.generateGold(sMySQLStore.getCreatureProperties(getEntry()), getAIInterface()->getDifficultyType());
 
-#if defined(AE_FOREVER)
-        sLogger.info("[ForeverDebug][LootDeath][Creature] entry={} guid={} lootItems={} gold={} empty={} health={} unitFlags=0x{:08X} dynamicFlagsBefore=0x{:08X}", getEntry(), GetNewGUID().getRawGuid(), loot.items.size(), loot.gold, loot.empty(), getHealth(), getUnitFlags(), getDynamicFlags());
-#endif
 
 #if VERSION_STRING == Mop
-        // Verified against the real 5.4.8 protocol (Skyfire-Mop's Unit::Kill): unlike the
+        // In the MoP protocol, unlike the
         // TAGGED_BY_OTHER/TAPPED_BY_PLAYER bits, U_DYN_FLAG_LOOTABLE is not recomputed per
         // viewer on every broadcast - it is a persistent flag set once here (if this kill
         // actually produced loot) and cleared once by the loot-release handler once
@@ -2721,15 +2718,9 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
         if (!loot.empty())
             setDynamicFlags(getDynamicFlags() | U_DYN_FLAG_LOOTABLE);
 #elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
-        // Verified against the real 5.4.8 protocol (Skyfire-Mop's Unit::Kill): unlike the
-        // TAGGED_BY_OTHER/TAPPED_BY_PLAYER bits, U_DYN_FLAG_LOOTABLE is not recomputed per
-        // viewer on every broadcast - it is a persistent flag set once here (if this kill
-        // actually produced loot) and cleared once by the loot-release handler once
-        // everything has been taken (see handleLootReleaseOpcode in LootHandler.cpp).
+        // Forever 70124: a lootable corpse advertises U_DYN_FLAG_LOOTABLE (0x0004).
         if (!loot.empty())
             setDynamicFlags(getDynamicFlags() | U_DYN_FLAG_LOOTABLE);
-        sLogger.info("[ForeverDebug][LootDeath][Creature] entry={} guid={} dynamicFlagsAfter=0x{:08X} objectChanges=0x{:X} unitChanges={}", getEntry(), GetNewGUID().getRawGuid(), getDynamicFlags(), m_foreverObjectFields.changes.to_ulong(), foreverUnitFields().changes.count());
 #endif
 
         // Master Looting Ninja Checker

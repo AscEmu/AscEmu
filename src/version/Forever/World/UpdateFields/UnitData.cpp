@@ -7,11 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/UnitData.hpp"
 #include "ChangeMask.hpp"
 #include "WireHelpers.hpp"
-#include "Trace.hpp"
 #include "Nested/VisibleItem.hpp"
-#include "Logging/Logger.hpp"
 
-#include <array>
 
 namespace AscEmu::Version::Forever::UpdateFields
 {
@@ -154,14 +151,6 @@ namespace AscEmu::Version::Forever::UpdateFields
 
     void writeUnitDataUpdate(ByteBuffer& data, Fields::UnitData const& fields)
     {
-        const auto filtered = Definitions::UnitDataUpdate::filterChanges(fields);
-        if (fields.changes.test(Fields::UnitData::HealthBit) || fields.changes.test(Fields::UnitData::FlagsBit) || fields.changes.test(Fields::UnitData::Flags2Bit) || fields.changes.test(Fields::UnitData::AuraStateBit))
-        {
-            uint32_t rawBlocksMask = 0; uint32_t filteredBlocksMask = 0; std::array<uint32_t, 8> rawBlocks{}; std::array<uint32_t, 8> filteredBlocks{};
-            for (std::size_t block = 0; block < rawBlocks.size(); ++block) { rawBlocks[block] = getChangeBlock(fields.changes, block); filteredBlocks[block] = getChangeBlock(filtered, block); if (rawBlocks[block] != 0) rawBlocksMask |= uint32_t(1) << block; if (filteredBlocks[block] != 0) filteredBlocksMask |= uint32_t(1) << block; }
-            sLogger.info("[ForeverDebug][UF][UnitData] rawBlocksMask=0x{:02X} raw=[{:08X},{:08X},{:08X},{:08X},{:08X},{:08X},{:08X},{:08X}] filteredBlocksMask=0x{:02X} filtered=[{:08X},{:08X},{:08X},{:08X},{:08X},{:08X},{:08X},{:08X}] health={} maxHealth={} flags=0x{:08X} flags2=0x{:08X} auraState=0x{:08X}", rawBlocksMask, rawBlocks[0], rawBlocks[1], rawBlocks[2], rawBlocks[3], rawBlocks[4], rawBlocks[5], rawBlocks[6], rawBlocks[7], filteredBlocksMask, filteredBlocks[0], filteredBlocks[1], filteredBlocks[2], filteredBlocks[3], filteredBlocks[4], filteredBlocks[5], filteredBlocks[6], filteredBlocks[7], fields.health, fields.maxHealth, fields.unitFlags, fields.unitFlags2, fields.auraState);
-        }
-        traceChangedFields<Definitions::UnitDataUpdate>("UnitData", fields);
         Definitions::UnitDataUpdate::writeUpdate(data, fields);
     }
 }

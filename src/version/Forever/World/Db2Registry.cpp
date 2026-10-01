@@ -173,7 +173,7 @@ namespace AscEmu::Version::Forever::Db2
 
                 m_tactKeySqlLoaded = true;
 
-                // Trinity loads TactKey.db2 records from its hotfix `tact_key`
+                // TactKey.db2 records are also available through the hotfix `tact_key`
                 // table into the same logical DB2 store. Keep the Forever DB2
                 // query path generic and layer SQL records over the client DB2
                 // here. For duplicate IDs the newest row not newer than the

@@ -1751,8 +1751,11 @@ private:
 public:
     const uint64_t& getLootGuid() const;
     void setLootGuid(const uint64_t& guid);
+    const WoWGuid& getForeverLootObjectGuid() const { return m_foreverLootObjectGuid; }
+    void setForeverLootObjectGuid(WoWGuid const& guid) { m_foreverLootObjectGuid = guid; }
+    const WoWGuid& getForeverLootOwnerGuid() const { return m_foreverLootOwnerGuid; }
 
-    void sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId);
+    void sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId, WoWGuid const& foreverOwnerGuid = WoWGuid());
     void sendLootUpdate(Object* object);
 
     void sendLooter(Creature* creature);
@@ -1764,6 +1767,8 @@ public:
 
 private:
     uint64_t m_lootGuid = 0;
+    WoWGuid m_foreverLootObjectGuid;
+    WoWGuid m_foreverLootOwnerGuid;
     uint64_t m_currentLoot = 0;
     bool m_lootableOnCorpse = false;
 

@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ItemData.hpp"
 #include "Definitions/ItemData.hpp"
-#include "Trace.hpp"
 #include "WireHelpers.hpp"
 
 namespace AscEmu::Version::Forever::UpdateFields
@@ -80,7 +79,6 @@ namespace AscEmu::Version::Forever::UpdateFields
 
     void writeItemDataUpdate(ByteBuffer& data, Fields::ItemData const& fields)
     {
-        traceChangedFields<Definitions::ItemDataUpdate>("ItemData", fields);
         Definitions::ItemDataUpdate::writeUpdate(data, fields);
     }
 }

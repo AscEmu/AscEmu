@@ -16,6 +16,7 @@ namespace AscEmu::Packets
     {
     public:
         uint8_t slot;
+        WoWGuid lootObject;
 
         CmsgAutostoreLootItem() : CmsgAutostoreLootItem(0)
         {
@@ -31,11 +32,35 @@ namespace AscEmu::Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             if (m_protocol.isForever())
-            { 
+            {
+                if (packet.remaining() < sizeof(uint32_t))
+                    return false;
+
+                uint32_t count = 0;
+                packet >> count;
+                if (count == 0 || count > 100)
+                    return false;
+
+                for (uint32_t i = 0; i < count; ++i)
+                {
+                    WoWGuid requestLootObject;
+                    std::size_t consumed = 0;
+                    if (!WoWGuid::unpackModern(packet.contents() + packet.rpos(), packet.remaining(), requestLootObject, consumed))
+                        return false;
+                    packet.rpos(packet.rpos() + consumed);
+
+                    uint8_t itemSlot = 0;
+                    packet >> itemSlot;
+                    if (i == 0)
+                    {
+                        lootObject = requestLootObject;
+                        slot = itemSlot;
+                    }
+                }
+
                 if (packet.remaining() != 1)
                     return false;
-                
-                packet >> slot;
+                packet.readBit(); // IsSoftInteract
                 return true;
             }
 

@@ -21,11 +21,6 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
             data << visual.spellXSpellVisualId << visual.scriptVisualId;
         }
 
-        template <typename Owner, typename Callback>
-        static void trace(Owner const&, auto const& changed, Callback&& callback)
-        {
-            if (changed(Bit)) callback("unknownSpellVisual", "SpellVisual", FieldVerification::ReferenceOnly, "compound", Bit, -1, uint32_t(2));
-        }
     };
 
     using DynamicObjectDataUpdate = UnfilteredUpdateDefinition<Fields::DynamicObjectData::ChangeMaskSize,

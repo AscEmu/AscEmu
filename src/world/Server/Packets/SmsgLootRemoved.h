@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ForeverLootPacketUtils.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -14,25 +15,41 @@ namespace AscEmu::Packets
     {
     public:
         uint8_t slot;
-        // guid of the looted object, only the Mop client needs it to find the loot window
+        // Guid of the looted object. Modern loot-removal packets use it to identify the active loot window.
         WoWGuid guid;
+        uint16_t mapId = 0;
+        WoWGuid lootObjectGuid;
+        WoWGuid ownerGuid;
 
         SmsgLootRemoved() : SmsgLootRemoved(0)
         {
         }
 
-        SmsgLootRemoved(uint8_t slot, WoWGuid guid = WoWGuid()) :
+        SmsgLootRemoved(uint8_t slot, WoWGuid guid = WoWGuid(), uint16_t mapId = 0, WoWGuid lootObjectGuid = WoWGuid(), WoWGuid ownerGuid = WoWGuid()) :
             ManagedPacket(SMSG_LOOT_REMOVED, 1),
             slot(slot),
-            guid(guid)
+            guid(guid),
+            mapId(mapId),
+            lootObjectGuid(lootObjectGuid),
+            ownerGuid(ownerGuid)
         {
         }
 
     protected:
-        size_t expectedSize() const override { return m_protocol.isMop() ? size_t(19) : m_minimum_size; }
+        size_t expectedSize() const override { return m_protocol.isForever() ? size_t(24) : (m_protocol.isMop() ? size_t(19) : m_minimum_size); }
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                const uint64_t legacyGuid = guid.getRawGuid();
+                const WoWGuid owner = ownerGuid.isModernEmpty() ? ForeverLootPacket::makeOwnerGuid(legacyGuid, m_protocol.realmId, mapId) : ownerGuid;
+                ForeverLootPacket::writeGuid(packet, owner);
+                ForeverLootPacket::writeGuid(packet, lootObjectGuid);
+                packet << slot;
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << slot;

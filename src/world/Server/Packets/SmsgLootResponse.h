@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ForeverLootPacketUtils.hpp"
 
 #include <cstdint>
 #include <vector>
@@ -40,6 +41,9 @@ namespace AscEmu::Packets
         uint64_t guid = 0;
         uint8_t lootType = 0;
         uint32_t gold = 0;
+        uint16_t mapId = 0;
+        WoWGuid lootObjectGuid;
+        WoWGuid ownerGuid;
         std::vector<LootSlotEntry> slots;
         std::vector<LootCurrencyEntry> currencies;
 
@@ -48,13 +52,13 @@ namespace AscEmu::Packets
         // though nothing gets written for them. Defaults to slots.size() when that quirk doesn't apply.
         uint32_t reportedItemCount = 0;
 
-        SmsgLootResponse() : SmsgLootResponse(0, 0, 0, {}, {}, 0)
+        SmsgLootResponse() : SmsgLootResponse(0, 0, 0, {}, {}, 0, 0, WoWGuid(), WoWGuid())
         {
         }
 
-        SmsgLootResponse(uint64_t guid, uint8_t lootType, uint32_t gold, std::vector<LootSlotEntry> slots, std::vector<LootCurrencyEntry> currencies, uint32_t reportedItemCount) :
+        SmsgLootResponse(uint64_t guid, uint8_t lootType, uint32_t gold, std::vector<LootSlotEntry> slots, std::vector<LootCurrencyEntry> currencies, uint32_t reportedItemCount, uint16_t mapId, WoWGuid lootObjectGuid = WoWGuid(), WoWGuid ownerGuid = WoWGuid()) :
             ManagedPacket(SMSG_LOOT_RESPONSE, 0),
-            guid(guid), lootType(lootType), gold(gold), slots(std::move(slots)), currencies(std::move(currencies)), reportedItemCount(reportedItemCount)
+            guid(guid), lootType(lootType), gold(gold), mapId(mapId), lootObjectGuid(lootObjectGuid), ownerGuid(ownerGuid), slots(std::move(slots)), currencies(std::move(currencies)), reportedItemCount(reportedItemCount)
         {
         }
 
@@ -66,6 +70,38 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                const WoWGuid owner = ownerGuid.isModernEmpty() ? ForeverLootPacket::makeOwnerGuid(guid, m_protocol.realmId, mapId) : ownerGuid;
+                ForeverLootPacket::writeGuid(packet, owner);
+                ForeverLootPacket::writeGuid(packet, lootObjectGuid);
+                packet << uint8_t(17); // Forever 70124 successful corpse-loot header
+                packet << uint8_t(14);
+                packet << uint8_t(0);
+                packet << uint8_t(0);
+                packet << uint32_t(gold);
+                packet << uint32_t(slots.size());
+                packet << uint32_t(0); // Currency rows are not proven for Forever yet
+
+                for (const auto& slot : slots)
+                {
+                    packet.writeBits(0U, 2); // Item
+                    packet.writeBits(4U, 3); // Forever 70124 normal-loot UI type
+                    packet.writeBit(false); // CanTradeToTapList
+                    packet.flushBits();
+                    packet << uint32_t(slot.count);
+                    packet << uint8_t(0);
+                    packet << uint8_t(slot.slotIndex);
+                    ForeverLootPacket::writeItemInstance(packet, slot.itemId);
+                }
+
+                packet.writeBit(true);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // AscEmu has no separate "loot session" guid; the container guid is reused for both

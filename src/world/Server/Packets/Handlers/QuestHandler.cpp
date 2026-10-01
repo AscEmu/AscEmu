@@ -807,8 +807,6 @@ void WorldSession::handleQuestPOIQueryOpcode([[maybe_unused]] WorldPacket& recvP
             entry.questId = questId;
             if (const auto finisherEntries = sQuestMgr.getQuestFinisherEntries(questId))
                 entry.finisherEntries = *finisherEntries;
-
-            sLogger.info("[ForeverDebug][QuestCompletionNPC] quest={} finishers={}", questId, entry.finisherEntries.size());
             completionQuests.push_back(std::move(entry));
         }
 

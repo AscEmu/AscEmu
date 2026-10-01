@@ -10,10 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Nested/QuestLog.hpp"
 #include "Nested/VisibleItem.hpp"
 #include "WireHelpers.hpp"
-#include "Trace.hpp"
 
 #include "Network/ByteBuffer.hpp"
-#include "Logging/Logger.hpp"
 
 #include <algorithm>
 
@@ -216,25 +214,11 @@ namespace AscEmu::Version::Forever::UpdateFields
 
         const auto changed = [&changes](std::size_t bit) { return changes.test(bit); };
 
-        const auto traceMetadata = [](Definitions::PlayerFieldMetadata const& metadata, int32_t index, int64_t value)
-        {
-            traceManualField("PlayerData", metadata.bit, index, metadata.name, metadata.verification, metadata.referenceName, metadata.wireType, value);
-        };
-
-        if (changed(Fields::PlayerData::DuelArbiterBit)) traceMetadata(Definitions::PlayerDuelArbiter, -1, static_cast<int64_t>(fields.unknownGuid0.getRawGuid()));
-        if (changed(Fields::PlayerData::PlayerFlagsBit)) traceMetadata(Definitions::PlayerFlags, -1, static_cast<int64_t>(fields.unknownU32_0));
-        if (changed(Fields::PlayerData::QuestLogQuestIdToIndexBit)) traceMetadata(Definitions::PlayerQuestLogQuestIdToIndex, -1, static_cast<int64_t>(fields.questLogQuestIdToIndexChanges.size()));
-        if (changed(Fields::PlayerData::CurrentSpecBit)) traceMetadata(Definitions::PlayerCurrentSpec, -1, static_cast<int64_t>(fields.unknownU32_6));
-        if (changed(Fields::PlayerData::NameBit)) traceMetadata(Definitions::PlayerName, -1, static_cast<int64_t>(fields.firstName.size() + fields.lastName.size()));
-        if (changed(Fields::PlayerData::QuestLogGroupBit)) traceMetadata(Definitions::PlayerQuestLogGroup, -1, 0);
-        if (changed(Fields::PlayerData::VisibleItemsGroupBit)) traceMetadata(Definitions::PlayerVisibleItemsGroup, -1, 0);
-
         if (changed(Fields::PlayerData::DuelArbiterBit)) writeModernGuid(data, fields.unknownGuid0);
         if (changed(Fields::PlayerData::PlayerFlagsBit)) data << fields.unknownU32_0;
         if (changed(Fields::PlayerData::QuestLogQuestIdToIndexBit))
         {
             Nested::writeQuestLogQuestIdToIndexUpdate(data, fields);
-            sLogger.info("[ForeverDebug][QuestLog] serialize questIdToIndex changes={}", fields.questLogQuestIdToIndexChanges.size());
         }
         if (changed(Fields::PlayerData::CurrentSpecBit)) data << fields.unknownU32_6;
         if (changed(Fields::PlayerData::NameBit))
@@ -256,7 +240,6 @@ namespace AscEmu::Version::Forever::UpdateFields
                 if (fields.questLogQuestIdChanged.test(i))
                 {
                     Nested::writeQuestLogQuestIdUpdate(data, fields.unknownPartyRecords0[i]);
-                    sLogger.info("[ForeverDebug][QuestLog] serialize sniff-exact QuestID slot={} questId={}", i, fields.unknownPartyRecords0[i].questId);
                 }
                 else
                 {

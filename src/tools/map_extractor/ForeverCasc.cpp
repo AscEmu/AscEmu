@@ -115,7 +115,7 @@ namespace MapExtractor::Forever
 
         CASC_OPEN_STORAGE_ARGS args{};
         args.Size = sizeof(args);
-        // Match the proven Trinity-style local CASC opening semantics:
+        // Use the proven local CASC opening semantics:
         // open from the WoW install root, select the product, and do not
         // pre-filter ROOT entries by locale.
         std::string const path = info.storageRoot.string();
@@ -222,7 +222,7 @@ namespace MapExtractor::Forever
 
         HANDLE file = nullptr;
 
-        // Same semantics as Trinity's proven
+        // Keep the same proven
         // OpenFile(fileDataId, CASC_LOCALE_NONE, false, true):
         // CASC_OPEN_BY_FILEID | CASC_OVERCOME_ENCRYPTED.
         if (!CascOpenFile(

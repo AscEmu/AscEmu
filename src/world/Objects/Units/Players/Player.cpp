@@ -168,6 +168,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgUpdateActionButtons.h"
 #include "Server/Packets/SmsgLootList.h"
 #include "Server/Packets/SmsgLootResponse.h"
+#include "Server/Packets/ForeverLootPacketUtils.hpp"
+#include "version/Forever/World/ObjectUpdate.hpp"
 #include "Server/Packets/SmsgInitializeFactions.h"
 #include "Server/Packets/SmsgInstanceSaveCreated.h"
 #include "Server/Packets/SmsgRaidInstanceInfo.h"
@@ -11985,10 +11987,10 @@ void Player::initTaxiNodesForLevel()
 /////////////////////////////////////////////////////////////////////////////////////////
 // Loot
 const uint64_t& Player::getLootGuid() const { return m_lootGuid; }
-void Player::setLootGuid(const uint64_t& guid) { m_lootGuid = guid; }
+void Player::setLootGuid(const uint64_t& guid) { m_lootGuid = guid; if (guid == 0) { m_foreverLootObjectGuid = WoWGuid(); m_foreverLootOwnerGuid = WoWGuid(); } }
 
 //\note: Types 1 corpse/go; 2 skinning/herbalism/minning; 3 fishing
-void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
+void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId, WoWGuid const& foreverOwnerGuid)
 {
     if (!IsInWorld())
         return;
@@ -12134,6 +12136,17 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     }
 
     m_lootGuid = guid;
+    if (m_session != nullptr && m_session->getClientProtocol().isForever())
+    {
+        const auto protocol = m_session->getClientProtocol();
+        m_foreverLootOwnerGuid = foreverOwnerGuid.isModernEmpty() ? ForeverLootPacket::makeOwnerGuid(guid, protocol.realmId, static_cast<uint16_t>(mapId)) : foreverOwnerGuid;
+        m_foreverLootObjectGuid = ForeverLootPacket::makeLootObjectGuid(guid, protocol.realmId, static_cast<uint16_t>(mapId), ForeverLootPacket::nextLootObjectCounter());
+    }
+    else
+    {
+        m_foreverLootOwnerGuid = WoWGuid();
+        m_foreverLootObjectGuid = WoWGuid();
+    }
 
     std::vector<LootSlotEntry> lootSlots;
     uint32_t maxItemsCount = 0;
@@ -12305,7 +12318,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     }
 #endif
 
-    SmsgLootResponse lootResponsePacket(guid, loot_type, pLoot->gold, std::move(lootSlots), std::move(lootCurrencies), maxItemsCount);
+    SmsgLootResponse lootResponsePacket(guid, loot_type, pLoot->gold, std::move(lootSlots), std::move(lootCurrencies), maxItemsCount, static_cast<uint16_t>(mapId), m_foreverLootObjectGuid, m_foreverLootOwnerGuid);
     m_session->sendManagedPacket(lootResponsePacket);
 
     addUnitFlags(UNIT_FLAG_LOOTING);
@@ -12313,31 +12326,42 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
 
 void Player::sendLootUpdate(Object* object)
 {
-    if (!seesGuid(object->GetNewGUID()))
+    if (!seesGuid(object->GetNewGUID()) || !object->isCreatureOrPlayer())
         return;
 
 #if defined(AE_FOREVER)
-    // Forever loot visibility is carried by ObjectData dirty fields and the dedicated Forever values writer.
+    auto objectFields = object->foreverObjectFields();
+    objectFields.dynamicFlags = object->getDynamicFlags() | U_DYN_FLAG_LOOTABLE;
+    objectFields.clearChanges();
+    objectFields.markChanged(AscEmu::Version::Forever::Fields::ObjectData::DynamicFlagsBit);
+
+    const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(object->GetNewGUID().getRawGuid(), worldConfig.battleNetComm.realmId, static_cast<uint16_t>(object->GetMapId()), 0);
+    const std::vector<uint8_t> packedGuid = modernGuid.packModern();
+    Unit const* unit = object->ToUnit();
+    const std::vector<uint8_t> block = AscEmu::Version::Forever::ObjectUpdate::buildValuesUpdateBlock(std::span<const uint8_t>(packedGuid.data(), packedGuid.size()), false, objectFields, nullptr, nullptr, unit ? &unit->foreverUnitFields() : nullptr);
+    if (block.empty())
+        return;
+
+    ByteBuffer buffer(block.size());
+    buffer.append(block.data(), block.size());
+    getUpdateMgr().pushUpdateData(&buffer, 1);
     return;
 #else
-    if (object->isCreatureOrPlayer())
-    {
-        // Build the actual update.
-        ByteBuffer buffer(500);
+    // Build the actual update.
+    ByteBuffer buffer(500);
 
-        uint32_t flags = dynamic_cast<Unit*>(object)->getDynamicFlags();
+    uint32_t flags = dynamic_cast<Unit*>(object)->getDynamicFlags();
 
-        flags |= U_DYN_FLAG_LOOTABLE;
-        flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
+    flags |= U_DYN_FLAG_LOOTABLE;
+    flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
 
 #if VERSION_STRING < Mop
-        object->BuildFieldUpdatePacket(&buffer, getOffsetForStructuredField(WoWUnit, dynamic_flags), flags);
+    object->BuildFieldUpdatePacket(&buffer, getOffsetForStructuredField(WoWUnit, dynamic_flags), flags);
 #else
-        object->BuildFieldUpdatePacket(&buffer, getOffsetForStructuredField(WoWObject, dynamic_field), flags);
+    object->BuildFieldUpdatePacket(&buffer, getOffsetForStructuredField(WoWObject, dynamic_field), flags);
 #endif
 
-        getUpdateMgr().pushUpdateData(&buffer, 1);
-    }
+    getUpdateMgr().pushUpdateData(&buffer, 1);
 #endif
 }
 
@@ -12380,7 +12404,7 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
         //freeforall is 1 if everyone's supposed to get the quest item.
         if (item->is_ffa || _loot->getPlayerQuestItems().size() == 1)
         {
-            SmsgLootRemoved managedPacket(slot, getLootGuid());
+            SmsgLootRemoved managedPacket(slot, getLootGuid(), static_cast<uint16_t>(GetMapId()), m_foreverLootObjectGuid, m_foreverLootOwnerGuid);
             getSession()->sendManagedPacket(managedPacket);
         }
         else
@@ -12394,7 +12418,7 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
         {
             //freeforall case, notify only one player of the removal
             ffaItem->is_looted = true;
-            SmsgLootRemoved managedPacket(slot, getLootGuid());
+            SmsgLootRemoved managedPacket(slot, getLootGuid(), static_cast<uint16_t>(GetMapId()), m_foreverLootObjectGuid, m_foreverLootOwnerGuid);
             getSession()->sendManagedPacket(managedPacket);
         }
         else

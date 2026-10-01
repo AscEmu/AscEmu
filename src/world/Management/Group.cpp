@@ -1306,9 +1306,7 @@ void Group::SendLootUpdates(Object* o)
         uint32_t Flags = dynamic_cast<Unit*>(o)->getDynamicFlags();
 
         Flags |= U_DYN_FLAG_LOOTABLE;
-#if !defined(AE_FOREVER)
         Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
-#endif
 
 #if VERSION_STRING < Mop
         o->BuildFieldUpdatePacket(&buf, getOffsetForStructuredField(WoWUnit, dynamic_flags), Flags);

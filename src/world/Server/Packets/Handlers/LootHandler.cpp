@@ -83,6 +83,9 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
+    if (getClientProtocol().isForever() && srlPacket.lootObject != _player->getForeverLootObjectGuid())
+        return;
+
     _player->interruptSpell();
 
     GameObject* lootGameObject = nullptr;
@@ -378,7 +381,7 @@ void WorldSession::handleLootOpcode(WorldPacket& recvPacket)
             }
         }
     }
-    _player->sendLoot(srlPacket.guid, LOOT_CORPSE, _player->GetMapId());
+    _player->sendLoot(srlPacket.guid, LOOT_CORPSE, _player->GetMapId(), srlPacket.foreverGuid);
 }
 
 void WorldSession::handleLootReleaseOpcode(WorldPacket& recvPacket)
@@ -397,7 +400,7 @@ void WorldSession::doLootRelease(WoWGuid lguid)
     Player* player = GetPlayer();
     Loot* loot = nullptr;
 
-    SmsgLootReleaseResponse managedPacket(lguid.getRawGuid(), 1);
+    SmsgLootReleaseResponse managedPacket(lguid.getRawGuid(), 1, static_cast<uint16_t>(player->GetMapId()), player->getForeverLootObjectGuid(), player->getForeverLootOwnerGuid());
     sendManagedPacket(managedPacket);
 
     _player->setLootGuid(0);
@@ -528,6 +531,8 @@ void WorldSession::doLootRelease(WoWGuid lguid)
 #if !defined(AE_FOREVER)
                 if (!creature->Skinned && sLootMgr.isSkinnable(creature->getEntry()))
                     creature->BuildFieldUpdatePacket(_player, getOffsetForStructuredField(WoWUnit, unit_flags), UNIT_FLAG_SKINNABLE);
+#else
+                creature->addDynamicFlags(U_DYN_FLAG_CAN_SKIN);
 #endif
             }
             else

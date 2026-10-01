@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ActivePlayerData.hpp"
 #include "Definitions/ActivePlayerData.hpp"
-#include "Trace.hpp"
 #include "WireHelpers.hpp"
 #include "Network/ByteBuffer.hpp"
 
@@ -398,7 +397,6 @@ namespace AscEmu::Version::Forever::UpdateFields
 
     void writeActivePlayerDataUpdate(ByteBuffer& data, Fields::ActivePlayerData const& fields)
     {
-        traceChangedFields<Definitions::ActivePlayerDataUpdate>("ActivePlayerData", fields);
         Definitions::ActivePlayerDataUpdate::writeUpdate(data, fields);
     }
 }

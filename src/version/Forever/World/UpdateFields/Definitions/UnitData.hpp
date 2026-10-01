@@ -167,8 +167,8 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
     static_assert(countCreateFieldsByVerification(UnitDataCreateFields, FieldVerification::Unknown) == 0);
 
     // Only Forever-verified differential fields are permitted here. Verification metadata is
-    // intentionally part of the descriptor so debug traces cannot accidentally present a
-    // modern reference-schema label as confirmed Forever semantics.
+    // intentionally remains part of the descriptor so reference labels cannot be treated as
+    // confirmed Forever semantics.
     using UnitDataUpdate = UpdateDefinition<Fields::UnitData::ChangeMaskSize,
         ScalarField<&Fields::UnitData::displayPower, Fields::UnitData::DisplayPowerBit, 32, FieldVerification::Verified, "displayPower">,
         ScalarField<&Fields::UnitData::health, Fields::UnitData::HealthBit, 32, FieldVerification::Verified, "health">,
