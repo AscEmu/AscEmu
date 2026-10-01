@@ -57,6 +57,7 @@ void Socket::writeCallback()
 
     m_bytesSent += bytesWritten;
     writeBuffer.Remove(bytesWritten);
+    completeDelayedDisconnectIfReady();
 }
 
 void Socket::setupReadEvent()
@@ -119,6 +120,7 @@ void Socket::writeCallback()
 
     m_bytesSent += bytesWritten;
     writeBuffer.Remove(bytesWritten);
+    completeDelayedDisconnectIfReady();
 }
 
 void Socket::setupReadEvent()

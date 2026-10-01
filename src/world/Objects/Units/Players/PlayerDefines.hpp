@@ -1038,7 +1038,7 @@ enum FactionFlags
 };
 
 #pragma pack(push,1)
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
 struct ActionButton
 {
     uint32_t Action = 0;
@@ -1455,7 +1455,7 @@ enum GlyphSlotMask
     GS_MASK_LEVEL_25 = GS_MASK_1 | GS_MASK_2 | GS_MASK_3,
     GS_MASK_LEVEL_50 = GS_MASK_4 | GS_MASK_5 | GS_MASK_6,
     GS_MASK_LEVEL_75 = GS_MASK_7 | GS_MASK_8 | GS_MASK_9
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
     GS_MASK_1 = 0x001,
     GS_MASK_2 = 0x002,
     GS_MASK_3 = 0x004,

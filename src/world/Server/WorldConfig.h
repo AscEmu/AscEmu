@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Platform/SymbolVisibility.hpp"
+#include "BattleNetCommDefines.hpp"
 
 #include <string>
 #include <cstdint>
@@ -94,6 +95,17 @@ public:
         std::string remotePassword;
     } logonServer;
 
+    // world.conf - internal Battle.net <-> world control channel
+    struct BattleNetCommSettings
+    {
+        std::string host;
+        int port;
+        uint32_t realmId;
+        std::string realmName;
+        AscEmu::BattlenetComm::RealmRuleset ruleset;
+        std::string sharedSecret;
+    } battleNetComm;
+
     // world.conf - Listen Config
     struct ListenSettings
     {
@@ -144,7 +156,7 @@ public:
         bool requireGmForCommands;
         bool saveExtendedCharData;
         std::string dataDir;
-        uint32_t clientVersion; // Realm1.ClientVersion, expansion index (0 = Classic ... 4 = Mop)
+        uint32_t clientVersion; // Realm1.ClientVersion, expansion index (0 = Classic ... 12 = Forever)
     } server;
 
     uint32_t getPlayerLimit() const;

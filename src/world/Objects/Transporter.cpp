@@ -74,7 +74,7 @@ Transporter::Transporter(uint64_t guid) : GameObject(guid), _passengerTeleportIt
 #if VERSION_STRING == Cata
     m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
 #endif
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
 #endif
 }

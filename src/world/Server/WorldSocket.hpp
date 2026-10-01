@@ -11,7 +11,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ClientProtocol.hpp"
 #include "Threading/ThreadSafeQueue.hpp"
 
+#include <array>
+#include <cstdint>
+#include <memory>
 #include <string>
+#include <vector>
 
 class SocketHandler;
 class WorldSession;
@@ -66,6 +70,12 @@ protected:
     void sendAuthChallengePacket();
     void sendVerifyConnectPacket();
 
+    // Version-specific socket adapters. Legacy uses the no-op stub; Battle.net
+    // profiles provide their world transport from src/version.
+    bool initializeVersionedConnection();
+    bool processVersionedRead();
+    bool sendVersionedPacket(WorldPacket* packet);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // packet receiving CLIENT->SERVER (after onRead from Socket class)
 public:
@@ -83,6 +93,9 @@ protected:
     void handleAuthSession(std::unique_ptr<WorldPacket> recvPacket);
     void handlePing(std::unique_ptr<WorldPacket> recvPacket);
     void handleMsgVerifyConnection(std::unique_ptr<WorldPacket> recvPacket);
+
+    // creates the session of an authenticated account, shared by all login paths
+    void completeAuthentication(uint32_t accountId, const std::string& accountName, std::string gmFlags, uint8_t accountFlags, const std::string& lang, uint32_t muted);
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -125,4 +138,10 @@ private:
     bool m_nagleEanbled{false};
 
     WorldSession* m_session{nullptr};
+
+#if AE_WORLD_PROFILE_FOREVER
+#include "version/Forever/World/WorldSocketForever.inc"
+#elif AE_WORLD_PROFILE_WOD || AE_WORLD_PROFILE_LEGION
+#include "version/Shared/World/WorldSocketRc4.inc"
+#endif
 };

@@ -726,7 +726,7 @@ enum SpellCastResult : uint8_t
     SPELL_FAILED_EXCEEDED_WEEKLY_USAGE          = 0xC9, // You can only cast %s %d times a week
     SPELL_FAILED_NOT_IN_LFG_DUNGEON             = 0xCA, // You can't do that in an LFG Dungeon
     SPELL_FAILED_UNKNOWN                        = 0xCB, // Unknown reason
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
     SPELL_FAILED_SUCCESS                        = 0x00,
     SPELL_FAILED_AFFECTING_COMBAT               = 0x01, // You are in combat
     SPELL_FAILED_ALREADY_AT_FULL_HEALTH         = 0x02, // You are already at full Health

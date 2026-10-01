@@ -1455,7 +1455,7 @@ namespace WDB::Structures
         uint32_t level;                                             // 1
 #if VERSION_STRING == Cata
         uint32_t multiplier[20];
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
         uint32_t multiplier[47];
 #else
         uint32_t shoulderBudget;                                    // 2
@@ -1575,7 +1575,7 @@ namespace WDB::Structures
     // SpellAuraOptions.dbc
     struct SpellAuraOptionsEntry
     {
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     uint32_t Id;                                                // 0
 #endif
     uint32_t MaxStackAmount;                                    // 1
@@ -1737,7 +1737,7 @@ namespace WDB::Structures
     struct SpellPowerEntry
     {
     //uint32_t Id;                                              // 0
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     uint32_t spellId;
     //uint32_t RaidDifficulty;
     uint32_t powerType;
@@ -1751,7 +1751,7 @@ namespace WDB::Structures
     uint32_t manaPerSecondPerLevel;                             // 5
     //uint32_t PowerDisplayId;                                  // 6
     float ManaCostPercentageFloat;                              // 7
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     float ChannelCostPercentageFloat;
     uint32_t ShapeShiftSpellId;
 #endif
@@ -1818,7 +1818,7 @@ namespace WDB::Structures
         uint32_t Totem[MAX_SPELL_TOTEMS];                           // 3 4
     };
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     struct SpellMiscEntry
     {
         uint32_t Id;                                                // 0
@@ -1875,7 +1875,7 @@ namespace WDB::Structures
         uint32_t bloodRuneCost;                                     // 1
         uint32_t frostRuneCost;                                     // 2
         uint32_t unholyRuneCost;                                    // 3
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
         uint32_t deathRuneCost;
 #endif
         uint32_t runePowerGain;                                     // 4
@@ -1990,7 +1990,7 @@ namespace WDB::Structures
         //uint32_t unk3;                                            // 19
         //uint32_t unk4;                                            // 20
         //uint32_t unk5;                                            // 21
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
         uint32_t playerClass;
         uint32_t overrideSpellId;
 #endif
@@ -2015,7 +2015,7 @@ namespace WDB::Structures
 #endif
     };
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     struct ChrSpecializationEntry
     {
         uint32_t Id;                                                // 0
@@ -2753,7 +2753,7 @@ namespace WDB::Structures
     };
     typedef std::map<uint32_t, SpellEffect> SpellEffectMap;
 #endif
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
 
     struct SpellEntry
     {

@@ -5,7 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Helper.hpp"
 
+#include <algorithm>
+#include <cctype>
+#include <cstring>
 #include <stdexcept>
+#include <string>
 
 namespace cp
 {
@@ -27,6 +31,35 @@ namespace cp
             (static_cast<uint32_t>(_data[_off + 1]) << 8) |
             (static_cast<uint32_t>(_data[_off + 2]) << 16) |
             (static_cast<uint32_t>(_data[_off + 3]) << 24);
+    }
+
+    uint32_t getBuildNumber(std::span<const uint8_t> _data)
+    {
+        // <Version>6.2.4.21742</Version>: the digits behind the last dot
+        static constexpr char marker[] = "<Version>";
+        constexpr size_t markerLength = sizeof(marker) - 1;
+
+        for (size_t i = 0; i + markerLength < _data.size(); ++i)
+        {
+            if (std::memcmp(_data.data() + i, marker, markerLength) != 0)
+                continue;
+
+            size_t end = i + markerLength;
+            while (end < _data.size() && end - i < 64 && _data[end] != '<')
+                ++end;
+
+            std::string version(reinterpret_cast<const char*>(_data.data() + i + markerLength), end - i - markerLength);
+            // the manifest pads the version with blanks and a line break
+            std::erase_if(version, [](unsigned char c) { return std::isspace(c) != 0; });
+            const auto dot = version.rfind('.');
+            const std::string build = dot == std::string::npos ? version : version.substr(dot + 1);
+            if (build.empty() || build.size() > 6 || !std::all_of(build.begin(), build.end(), [](unsigned char c) { return std::isdigit(c) != 0; }))
+                continue;
+
+            return static_cast<uint32_t>(std::stoul(build));
+        }
+
+        return 0;
     }
 
     BinaryType getBinaryType(std::span<const uint8_t> _data)

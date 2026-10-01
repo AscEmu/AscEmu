@@ -738,7 +738,7 @@ void WorldSession::fullLogin(Player* player)
         sendManagedPacket(timeZonePacket);
     }
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     SmsgHotfixNotifyBlob hotfixPacket;
     sendManagedPacket(hotfixPacket);
 #endif

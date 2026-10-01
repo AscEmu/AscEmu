@@ -155,6 +155,6 @@ namespace BattlegroundDef
 #define BATTLEGROUND_NUM_TYPES 33
 #elif VERSION_STRING == Cata
 #define BATTLEGROUND_NUM_TYPES 657
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
 #define BATTLEGROUND_NUM_TYPES 758
 #endif

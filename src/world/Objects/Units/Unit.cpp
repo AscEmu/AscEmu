@@ -495,7 +495,7 @@ void Unit::setClass(uint8_t class_) { setField<uint8_t>(UnitField::FieldBytes0Un
 uint8_t Unit::getGender() const { return getField<uint8_t>(UnitField::FieldBytes0Gender); }
 void Unit::setGender(uint8_t gender) { setField<uint8_t>(UnitField::FieldBytes0Gender, gender); }
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
 PowerType Unit::getPowerType() const { return static_cast<PowerType>(getField<uint32_t>(UnitField::DisplayPower)); }
 void Unit::setPowerType(uint8_t powerType)
 {
@@ -9628,7 +9628,7 @@ static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
     0.0136512559131f    // 85
 };
 #endif
-#ifdef AE_MOP
+#if VERSION_STRING >= Mop
 static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
 {
     0.0f,               // 0

@@ -45,6 +45,7 @@ namespace AscEmu::Network::IocpCompletion
             socket->decrementSendLock();
 
         socket->burstEnd();
+        socket->completeDelayedDisconnectIfReady();
     }
 
     inline void handleShutdown(Socket* /*socket*/, uint32_t /*len*/)

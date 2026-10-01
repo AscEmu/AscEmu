@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Patcher.hpp"
 #include "Helper.hpp"
 
+#include <algorithm>
 #include <fstream>
 #include <stdexcept>
 
@@ -97,6 +98,29 @@ namespace cp
                 return i;
         }
         return std::nullopt;
+    }
+
+    size_t Patcher::patchAll(std::span<const uint8_t> _replacement, std::span<const uint8_t> _pattern, bool _wildcards)
+    {
+        if (!m_initialized || _pattern.empty() || m_data.size() < _pattern.size() || m_data.size() < _replacement.size())
+            return 0;
+
+        size_t patched = 0;
+        for (size_t i = 0; i + _pattern.size() <= m_data.size(); ++i)
+        {
+            bool match = true;
+            for (size_t j = 0; j < _pattern.size() && match; ++j)
+                match = (_wildcards && _pattern[j] == 0x00) || m_data[i + j] == _pattern[j];
+
+            if (!match || i + _replacement.size() > m_data.size())
+                continue;
+
+            std::copy(_replacement.begin(), _replacement.end(), m_data.begin() + static_cast<std::ptrdiff_t>(i));
+            ++patched;
+            i += _pattern.size() - 1;
+        }
+
+        return patched;
     }
 
     void Patcher::patch(std::span<const uint8_t> _replacement, std::span<const uint8_t> _pattern)

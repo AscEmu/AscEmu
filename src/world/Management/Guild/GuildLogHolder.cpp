@@ -56,7 +56,7 @@ void GuildLogHolder::writeLogHolderPacket(WorldPacket& data) const
 
     data.flushBits();
     data.append(buffer);
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
     ByteBuffer buffer;
     data.writeBits(mLog.size(), 21);
     for (GuildLog::const_iterator itr = mLog.begin(); itr != mLog.end(); ++itr)

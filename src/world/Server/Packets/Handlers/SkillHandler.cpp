@@ -98,7 +98,7 @@ void WorldSession::handleLearnPreviewTalentsOpcode([[maybe_unused]] WorldPacket&
 
 void WorldSession::handleSetPrimaryTalentTreeOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     CmsgSetPrimaryTalentTree srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;

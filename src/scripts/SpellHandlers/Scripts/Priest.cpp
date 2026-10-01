@@ -469,7 +469,7 @@ public:
             auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur, aur->getCasterGuid());
             if (spellProc != nullptr)
                 spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
             // Should proc only when this aura deals damage
             const auto& spellFamilyMask = aur->getSpellInfo()->getSpellFamilyFlags();
             uint32_t procMask[3] = { spellFamilyMask[0], spellFamilyMask[1], spellFamilyMask[2] };

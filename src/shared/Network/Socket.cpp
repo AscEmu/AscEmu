@@ -123,6 +123,33 @@ void Socket::disconnect()
         deleteSocket();
 }
 
+void Socket::delayedDisconnect()
+{
+    if (!m_isConnected)
+        return;
+
+    m_delayedDisconnectRequested = true;
+    completeDelayedDisconnectIfReady();
+}
+
+void Socket::completeDelayedDisconnectIfReady()
+{
+    if (!m_delayedDisconnectRequested.load() || !m_isConnected.load())
+        return;
+
+    bool writeQueueEmpty = false;
+    {
+        std::lock_guard lock{ m_writeMutex };
+        writeQueueEmpty = writeBuffer.GetSize() == 0;
+    }
+
+    if (!writeQueueEmpty)
+        return;
+
+    m_delayedDisconnectRequested = false;
+    disconnect();
+}
+
 void Socket::deleteSocket()
 {
     if (m_isDeleted)

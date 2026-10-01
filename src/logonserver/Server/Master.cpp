@@ -31,7 +31,7 @@ using std::chrono::milliseconds;
 std::unique_ptr<Database> sLogonSQL;
 std::atomic<bool> mrunning(true);
 
-static const char* REQUIRED_LOGON_DB_VERSION = "20250119-00_logon_db_version";
+static constexpr char REQUIRED_LOGON_DB_VERSION[] = "20260924-00_battlenet_accounts";
 
 MasterLogon& MasterLogon::getInstance()
 {

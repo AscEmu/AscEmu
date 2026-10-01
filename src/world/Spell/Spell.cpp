@@ -4490,7 +4490,7 @@ SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_
     const auto talentInfo = sTalentStore.lookupEntry(spellInfo->getId());
     if (talentInfo != nullptr)
     {
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
         for (uint8_t i = 0; i < 1; ++i)
         {
             if (talentInfo->SpellId != 0)
@@ -4640,7 +4640,7 @@ void Spell::sendSpellStart()
 
     // Set cast flags
     uint32_t castFlags = SPELL_PACKET_FLAGS_NONE;
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     // Only mark trajectory when the cast actually has one - unconditionally setting this flag
     // makes the Mop client wait on a missile that never arrives, leaving the cast bar/action
     // button stuck and suppressing the GCD/cooldown display even though the spell resolves fine.
@@ -4698,7 +4698,7 @@ void Spell::sendSpellGo()
 
     // Set cast flags
     uint32_t castFlags = 0;
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     // Real Mop protocol always sets this bit on SMSG_SPELL_GO regardless of whether the spell
     // was cast from an item - without it the client never plays the missile/impact visual.
     castFlags |= SPELL_PACKET_FLAGS_ITEM_CASTER;

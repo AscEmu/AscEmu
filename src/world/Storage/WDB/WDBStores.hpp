@@ -117,7 +117,7 @@ namespace WDB::Structures
     struct ItemReforgeEntry;
 #endif
 
-#ifdef AE_MOP
+#if VERSION_STRING >= Mop
     struct SpellMiscEntry;
     struct ChrSpecializationEntry;
 #endif
@@ -287,7 +287,7 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemReforgeEntry> sItemReforgeStore;
 #endif
 
-#ifdef AE_MOP
+#if VERSION_STRING >= Mop
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
 
@@ -313,7 +313,7 @@ uint32_t const* getTalentTabPages(uint8_t playerClass);
 uint32_t getTalentInspectBitPosInTab(uint32_t talentId);
 uint32_t getTalentTabInspectBitSize(uint32_t talentTabId);
 
-#ifdef AE_MOP
+#if VERSION_STRING >= Mop
 uint32_t const* getClassSpecializations(uint8_t playerClass);
 #endif
 

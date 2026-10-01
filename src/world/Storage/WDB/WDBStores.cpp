@@ -68,7 +68,7 @@ static uint32_t InspectTalentTabPages[12][3];
 // bit position of the first rank of a talent inside its tab and the bit size of a tab (talent inspect before WotLK)
 static std::map<uint32_t, uint32_t> InspectTalentTabPos;
 static std::map<uint32_t, uint32_t> InspectTalentTabSize;
-#ifdef AE_MOP
+#if VERSION_STRING >= Mop
 static uint32_t ClassSpecializationTabs[12][4];
 #endif
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TaxiNodesEntry> sTaxiNodesStore;
@@ -178,7 +178,7 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentTreePrimarySpells> sTalentT
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemReforgeEntry> sItemReforgeStore;
 #endif
 
-#ifdef AE_MOP
+#if VERSION_STRING >= Mop
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
 WDB::Structures::SpellPowerMap sSpellPowerMap;
@@ -960,7 +960,7 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemReforgeStore, dbc_path, "ItemReforge.dbc");
 #endif
 
-#ifdef AE_MOP
+#if VERSION_STRING >= Mop
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellMiscStore, dbc_path, "SpellMisc.dbc");
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChrSpecializationStore, dbc_path, "ChrSpecialization.dbc");
@@ -1194,7 +1194,7 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellInterruptsStore, dbc_path, "SpellInterrupts.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellLevelsStore, dbc_path, "SpellLevels.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellPowerStore, dbc_path, "SpellPower.dbc");
-    #if VERSION_STRING == Mop
+    #if VERSION_STRING >= Mop
     // note: SpellPower.dbc rows are not keyed by spell id on Mop, map them by their spellId column
     {
         for (uint32_t i = 0; i < sSpellPowerStore.getNumRows(); ++i)
@@ -1251,7 +1251,7 @@ uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerType)
 }
 #endif
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
 WDB::Structures::SpellPowerEntry const* getSpellPowerEntry(uint32_t spellId)
 {
     WDB::Structures::SpellPowerMap::const_iterator itr = sSpellPowerMap.find(spellId);
@@ -1337,7 +1337,7 @@ uint32_t getTalentTabInspectBitSize(uint32_t talentTabId)
     return itr != InspectTalentTabSize.end() ? itr->second : 0;
 }
 
-#ifdef AE_MOP
+#if VERSION_STRING >= Mop
 uint32_t const* getClassSpecializations(uint8_t playerClass)
 {
     return ClassSpecializationTabs[playerClass];

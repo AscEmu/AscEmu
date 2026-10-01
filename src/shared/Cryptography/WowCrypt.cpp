@@ -42,7 +42,10 @@ void WowCrypt::initForClientVersion(uint8_t version, uint8_t* sessionKey)
         case 1: initTbcCrypt(sessionKey); return;
         case 2:
         case 3: initWotlkCrypt(sessionKey); return;
-        case 4: initMopCrypt(sessionKey); return;
+        // WoD and Legion keep the Mop seeds
+        case 4:
+        case 5:
+        case 6: initMopCrypt(sessionKey); return;
 
         default: m_isInitialized = false; return;
     }

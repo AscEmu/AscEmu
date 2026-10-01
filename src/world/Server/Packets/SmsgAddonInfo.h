@@ -200,6 +200,52 @@ namespace AscEmu::Packets
 
                 return true;
             }
+            else if (m_protocol.isWoD())
+            {
+                packet << uint32_t(addonList->size());
+                packet << uint32_t(bannedAddons ? static_cast<uint32_t>(bannedAddons->size()) : 0);
+
+                for (auto& itr : *addonList)
+                {
+                    // the client's enabled flag is kept in usePublicKeyOrCRC
+                    const bool infoProvided = itr.usePublicKeyOrCRC;
+                    const bool keyProvided = itr.crc != STANDARD_ADDON_CRC;
+
+                    packet << itr.state;
+                    packet.writeBit(infoProvided);
+                    packet.writeBit(keyProvided);
+                    packet.writeBit(0);                         // url provided
+                    packet.flushBits();
+
+                    if (infoProvided)
+                    {
+                        packet << uint8_t(1);                   // key version
+                        packet << uint32_t(0);                  // revision
+                    }
+
+                    if (keyProvided)
+                    {
+                        sLogger.debug("AddOn: {}: CRC checksum mismatch: got 0x{:x} - expected 0x{:x} - sending pubkey to accountID {}",
+                            itr.name, itr.crc, STANDARD_ADDON_CRC, accountId);
+
+                        packet.append(PublicKey, sizeof(PublicKey));
+                    }
+                }
+
+                if (bannedAddons)
+                {
+                    for (auto itr = bannedAddons->begin(); itr != bannedAddons->end(); ++itr)
+                    {
+                        packet << uint32_t(itr->id);
+                        packet.append(itr->nameMD5, sizeof(itr->nameMD5));
+                        packet.append(itr->versionMD5, sizeof(itr->versionMD5));
+                        packet << uint32_t(itr->timestamp);
+                        packet << uint32_t(1);                  // flags
+                    }
+                }
+
+                return true;
+            }
 
             return false;
         }

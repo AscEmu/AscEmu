@@ -23,7 +23,7 @@ namespace WoW::Build {
     inline constexpr uint32_t WOTLK_BUILD = 12340;
     inline constexpr uint32_t CATA_BUILD = 15595;
     inline constexpr uint32_t MOP_BUILD = 18414;
-    inline constexpr uint32_t WOD_BUILD = 20779;
+    inline constexpr uint32_t WOD_BUILD = 21742;
     inline constexpr uint32_t LEGION_BUILD = 26972;
 }
 
@@ -56,8 +56,15 @@ namespace WoW {
     struct ClientProtocol
     {
         Expansion expansion{Expansion::Unknown};
+        uint32_t regionId{0};
+        uint32_t battlegroupId{0};
+        uint32_t realmId{0};
 
         [[nodiscard]] WoW::Expansion getExpansion() const { return expansion; }
+        [[nodiscard]] uint32_t getVirtualRealmAddress() const noexcept
+        {
+            return ((regionId & 0xFFU) << 24U) | ((battlegroupId & 0xFFU) << 16U) | (realmId & 0xFFFFU);
+        }
 
         // index inside the version tables, the configured expansion when the client version is unknown
         [[nodiscard]] int32_t versionId() const noexcept;
@@ -67,6 +74,8 @@ namespace WoW {
         [[nodiscard]] bool isWotlk() const { return expansion == WoW::Expansion::_WotLK; }
         [[nodiscard]] bool isCata() const { return expansion == WoW::Expansion::_Cata; }
         [[nodiscard]] bool isMop() const { return expansion == WoW::Expansion::_Mop; }
+        [[nodiscard]] bool isWoD() const { return expansion == WoW::Expansion::_WoD; }
+        [[nodiscard]] bool isLegion() const { return expansion == WoW::Expansion::_Legion; }
         [[nodiscard]] bool isLegacy() const { return isClassic() || isTbc(); }
     };
 
@@ -158,6 +167,16 @@ namespace WoW {
         }
     }
 
+    /// Build of the game data (dbc, maps, database rows) the server loads for an expansion.
+    /// WoD and Legion run on the Mop data until their own data is available.
+    [[nodiscard]] constexpr uint32_t getDataBuildForExpansion(Expansion const expansion) noexcept
+    {
+        if (expansion == Expansion::_WoD || expansion == Expansion::_Legion)
+            return Build::MOP_BUILD;
+
+        return getBuildForExpansion(expansion);
+    }
+
     [[nodiscard]] constexpr Expansion getExpansionFromBuild(uint32_t const build) noexcept
     {
         switch (build)
@@ -224,7 +243,7 @@ namespace WoW {
     }
 
     /// Legacy wrapper: Build number used for database build filters
-    [[nodiscard]] inline uint32_t getConfigBuild() noexcept { return getServerBuild(); }
+    [[nodiscard]] inline uint32_t getConfigBuild() noexcept { return getDataBuildForExpansion(getServerExpansion()); }
 
     /// Returns the array index for opcode/version tables (0 = Classic ... 6 = Legion), or -1 if unsupported
     [[nodiscard]] constexpr int32_t getOpcodeTableIndex(Expansion const expansion) noexcept

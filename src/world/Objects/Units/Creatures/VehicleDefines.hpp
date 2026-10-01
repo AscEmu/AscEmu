@@ -19,7 +19,7 @@ enum class VehiclePower : uint32_t
     OOZE                = 121,
     BLOOD               = 141,
     WRATH               = 142,
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     ARCANE_ENERGY       = 143,
     LIFE_ENERGY         = 144,
     SUN_ENERGY          = 145,

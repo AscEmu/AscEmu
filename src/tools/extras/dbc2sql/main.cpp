@@ -88,8 +88,9 @@ namespace
         if (it == dbcFieldDefines.end())
             return {};
 
-        for (std::string const& candidate : it->second.format)
+        for (std::string_view const candidateFormat : it->second.format)
         {
+            const std::string candidate{ candidateFormat };
             if (candidate.empty() || candidate.size() != realFieldCount)
                 continue;
 

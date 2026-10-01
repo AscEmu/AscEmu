@@ -97,7 +97,7 @@ void GuildBankEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& 
     {
         content << uint8_t(mDestTabId);
     }
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
 void GuildBankEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const
 {
     WoWGuid logGuid(mPlayerGuid, 0, HIGHGUID_TYPE_PLAYER);

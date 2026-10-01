@@ -709,7 +709,7 @@ void WorldSession::registerOpcodeHandler()
     OpcodeHandlerRegistry& registry = OpcodeHandlerRegistry::instance();
 
     // Login
-    registry.registerOpcode<STATUS_AUTHED>(CMSG_ENUM_CHARACTERS, &WorldSession::handleCharEnumOpcode, true, true, true, true, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_ENUM_CHARACTERS, &WorldSession::handleCharEnumOpcode, true, true, true, true, true, true, false);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_CHAR_CREATE, &WorldSession::handleCharCreateOpcode, true, true, true, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_CHAR_DELETE, &WorldSession::handleCharDeleteOpcode, true, true, true, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_CHAR_RENAME, &WorldSession::handleCharRenameOpcode, true, true, true, true, true);

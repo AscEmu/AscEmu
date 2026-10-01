@@ -267,7 +267,7 @@ public:
     uint64_t getKnownCurrencies() const;
     void setKnownCurrencies(uint64_t currencies);
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     uint32_t getCurrentSpecId() const;
     void setCurrentSpecId(uint32_t specializationId);
 
@@ -746,7 +746,7 @@ private:
     UpdateManager m_updateMgr;
 
     bool m_enteringWorld = false;
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     uint32_t m_lastObjectUpdateFailedResend = 0;  // throttle for MoP resend create
     uint32_t m_objectUpdateFailedResendCount = 0; // cap resends to avoid infinite loop when client rejects player create
 #endif

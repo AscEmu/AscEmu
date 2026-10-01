@@ -895,7 +895,7 @@ public:
         // Patch 4.3.3 comment
         // Weapon damage starts at 3% and goes up to 15% if target has five stacks of debuff
         float_t dmgPercent = 3.f;
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
         // Weapon damage starts at 2.4% and goes up to 12% if target has five stacks of debuff
         float_t dmgPercent = 2.4f;
 #endif

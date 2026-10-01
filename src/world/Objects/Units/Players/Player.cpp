@@ -812,7 +812,7 @@ void Player::onAttachToWorld()
 
     summonTemporarilyUnsummonedPet();
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     SmsgBattlePetJournal battlePetJournalPacket;
     getSession()->sendManagedPacket(battlePetJournalPacket);
 
@@ -3111,7 +3111,7 @@ void Player::sendInitialLogonPackets()
 
     sendTalentsInfo();
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     SmsgWorldServerInfo worldServerInfoPacket;
     getSession()->sendManagedPacket(worldServerInfoPacket);
 #endif
@@ -3125,7 +3125,7 @@ void Player::sendInitialLogonPackets()
 
     sendSmsgInitialFactions();
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     SmsgLoadEquipmentSet equipmentSetPacket;
     getSession()->sendManagedPacket(equipmentSetPacket);
 #endif
@@ -3142,7 +3142,7 @@ void Player::sendInitialLogonPackets()
     sendSmsgSetupCurrency();
 #endif
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     SmsgSetActiveMover moverPacket(getGuid());
     getSession()->sendManagedPacket(moverPacket);
 #endif
@@ -3344,7 +3344,7 @@ UpdateMask Player::m_visibleUpdateMask;
 
 void Player::initVisibleUpdateBits()
 {
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     Player::m_visibleUpdateMask.SetCount(Version::layouts().player.valueCount());
 
     Player::m_visibleUpdateMask.SetBit(Version::layouts().object.index(ObjectField::Guid));
@@ -5287,7 +5287,7 @@ void Player::setInitialPlayerProfessions()
     // Since cata player must have profession skills initialized even if the player does not have them
 #if VERSION_STRING == Cata
     for (uint16_t skillId = SKILL_FROST; skillId != SKILL_PET_HYDRA; ++skillId)
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
     for (uint16_t skillId = SKILL_SWORDS; skillId != SKILL_DIREHORN; ++skillId)
 #endif
     {
@@ -5398,7 +5398,7 @@ void Player::updateGlyphs()
         if (glyphSlot->Slot > 0)
             setGlyphSlot(static_cast<uint16_t>(glyphSlot->Slot - 1), glyphSlot->Id);
     }
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
     uint16_t slot = 0;
     for (uint32_t i = 0; i < sGlyphSlotStore.getNumRows() && slot < Version::fieldCount(PlayerField::FieldGlyphSlots); ++i)
     {
@@ -5438,7 +5438,7 @@ void Player::updateGlyphs()
         slotMask |= GS_MASK_LEVEL_50;
     if (level >= 75)
         slotMask |= GS_MASK_LEVEL_75;
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
     const auto level = getLevel();
     if (level >= 25)
         slotMask |= GS_MASK_LEVEL_25;
@@ -5911,7 +5911,7 @@ void Player::_updateSkillBonusFields(const PlayerSkillFieldPosition fieldPositio
 // Talents
 void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
 {
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     auto talentInfo = sTalentStore.lookupEntry(talentId);
     if (talentInfo == nullptr)
         return;
@@ -6101,7 +6101,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
 #endif
 }
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
 uint32_t Player::getCurrentSpecId() const { return getField<uint32_t>(PlayerField::CurrentSpecId); }
 void Player::setCurrentSpecId(uint32_t specializationId) { setField<uint32_t>(PlayerField::CurrentSpecId, specializationId); }
 
@@ -13572,7 +13572,7 @@ void Player::modifyCurrency(uint32_t id, int32_t count, bool printLog/* = true*/
     const uint32_t precision = (currency->Flags & CURRENCY_FLAG_USES_PRECISION) ? CURRENCY_PRECISION : 1;
 
     // Mop sends SETUP for a new currency, plus UPDATE if printLog. Cata always just sends UPDATE.
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     if (isNewEntry)
     {
         AscEmu::Packets::CurrencyRecord record;
@@ -15763,7 +15763,7 @@ float Player::getDodgeChance()
 
     uint32_t agi = getStat(STAT_AGILITY);
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     // Mop only: gtChanceToMeleeCritBase.dbc gained per-level rows (same layout as
     // gtChanceToMeleeCrit.dbc), and the agility scaling value became a divisor
     // ("agility points needed per 1%"), not a multiplier. Cata's DBC still has
@@ -15871,7 +15871,7 @@ void Player::updateChances()
     setParryPercentage(tmp);
 
     // Critical
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     auto baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
     if (baseCrit == nullptr)
         baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
@@ -15918,7 +15918,7 @@ void Player::updateChances()
     float rcr = tmp + calcRating(CR_CRIT_RANGED) + ranged_bonus;
     setRangedCritPercentage(std::min(rcr, 95.0f));
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     auto SpellCritBase = sGtChanceToSpellCritBaseStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
     if (SpellCritBase == nullptr)
         SpellCritBase = sGtChanceToSpellCritBaseStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);

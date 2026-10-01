@@ -1865,7 +1865,7 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
 
     session->sendManagedPacket(managedPacket);
 }
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
 void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent, bool withTabInfo) const
 {
     GuildMember const* member = getMember(session->GetPlayer()->getGuid());
@@ -2359,7 +2359,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlo
 
         sLogger.debugOpcode("SMSG_GUILD_BANK_LIST");
     }
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
     if (GuildBankTab const* guildBankTab = getBankTab(tabId))
     {
         std::vector<GuildBankListItemSlot> items;

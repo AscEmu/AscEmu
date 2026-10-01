@@ -152,6 +152,11 @@ WorldSocket::~WorldSocket()
 // virtual functions (Socket)
 void WorldSocket::onRead()
 {
+    // Give a selected version-specific transport first chance to consume the
+    // socket. Legacy framing below stays version-agnostic.
+    if (processVersionedRead())
+        return;
+
     for (;;)
     {
         if (m_remaining == 0 && !processHeader())
@@ -178,6 +183,9 @@ void WorldSocket::onConnect()
 {
     sWorld.increaseAcceptedConnections();
     m_latency = Util::getMSTime();
+
+    if (initializeVersionedConnection())
+        return;
 
     if (m_protocolSetByLogonComm)
     {
@@ -409,6 +417,9 @@ void WorldSocket::sendPacket(WorldPacket* packet)
     if (!packet)
         return;
 
+    if (sendVersionedPacket(packet))
+        return;
+
     outPacket(packet->getOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : nullptr));
 }
 
@@ -426,6 +437,7 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
         return;
 
     SmsgAuthResponse response(AuthOkay, ARST_ACCOUNT_DATA);
+    response.realmName = worldConfig.battleNetComm.realmName;
     sendManagedPacket(response);
 
     m_session->sendAddonInfo();
@@ -611,7 +623,8 @@ void WorldSocket::handlePing(std::unique_ptr<WorldPacket> recvPacket)
         return;
     }
 
-    if (m_protocol.expansion <= WoW::Expansion::_Cata)
+    // Mop alone sends the latency first
+    if (m_protocol.expansion <= WoW::Expansion::_Cata || (m_protocol.expansion >= WoW::Expansion::_WoD && m_protocol.expansion <= WoW::Expansion::_Legion))
     {
         *recvPacket >> ping;
         *recvPacket >> m_latency;
@@ -760,6 +773,11 @@ void WorldSocket::informationRetreiveCallback(WorldPacket& recvData, uint32_t re
         return;
     }
 
+    completeAuthentication(AccountID, AccountName, GMFlags, AccountFlags, lang, muted);
+}
+
+void WorldSocket::completeAuthentication(uint32_t AccountID, const std::string& AccountName, std::string GMFlags, uint8_t AccountFlags, const std::string& lang, uint32_t muted)
+{
     // disconnect current player and login this one(blizzlike)
     WorldSession* oldSession = sWorld.getSessionByAccountId(AccountID);
     if (oldSession)

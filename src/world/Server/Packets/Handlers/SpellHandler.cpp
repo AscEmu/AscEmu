@@ -154,7 +154,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
 #endif
 
     // Some spell cast packets include more data
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     if (!srlPacket.hasSrcLocation)
     {
         if (_player->getTransGuid())
@@ -236,7 +236,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
 void WorldSession::handleCancelCastOpcode(WorldPacket& recvPacket)
 {
     uint32_t spellId = 0;
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     uint8_t counter = 0;
 
     bool hasCounter = !recvPacket.readBit();

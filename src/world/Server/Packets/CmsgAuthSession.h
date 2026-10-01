@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include <array>
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -21,6 +22,14 @@ namespace AscEmu::Packets
         uint8_t authDigest[20]{0};
         ByteBuffer addonInfoBuffer;
 
+        // 6.2.4 and 7.3.5 clients: realm, challenge and HMAC-SHA256 digest, the account comes from the realm join ticket
+        uint32_t regionId = 0;
+        uint32_t battlegroupId = 0;
+        uint32_t realmId = 0;
+        std::array<uint8_t, 16> localChallenge{};
+        std::array<uint8_t, 24> sessionDigest{};
+        std::string realmJoinTicket;
+
         std::string errorMsg;
 
         CmsgAuthSession() : ManagedPacket(CMSG_AUTH_SESSION, 2)
@@ -31,6 +40,75 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                packet.read<uint64_t>();                // dos response
+
+                uint16_t build;
+                packet >> build;
+                clientBuild = static_cast<uint32_t>(build);
+
+                packet.read<int8_t>();                  // build type
+                packet >> regionId;
+                packet >> battlegroupId;
+                packet >> realmId;
+                packet.read(localChallenge.data(), localChallenge.size());
+                packet.read(sessionDigest.data(), sessionDigest.size());
+                packet.readBit();                       // use ipv6
+
+                uint32_t ticketSize;
+                packet >> ticketSize;
+                if (ticketSize == 0 || packet.rpos() + ticketSize > packet.size())
+                {
+                    errorMsg = "Realm join ticket size overflow packet size!";
+                    return false;
+                }
+                realmJoinTicket = packet.readString(ticketSize);
+
+                return true;
+            }
+
+            if (m_protocol.isWoD())
+            {
+                uint16_t build;
+                packet >> build;
+                clientBuild = static_cast<uint32_t>(build);
+
+                packet.read<int8_t>();                  // build type
+                packet >> regionId;
+                packet >> battlegroupId;
+                packet >> realmId;
+                packet.read(localChallenge.data(), localChallenge.size());
+                packet.read(sessionDigest.data(), sessionDigest.size());
+                packet.read<uint64_t>();                // dos response
+
+                packet >> addonSize;
+                if (addonSize)
+                {
+                    if (packet.rpos() + addonSize > packet.size())
+                    {
+                        errorMsg = "Addon size overflow packet size!";
+                        return false;
+                    }
+                    addonInfoBuffer.resize(addonSize);
+                    packet.read(static_cast<uint8_t*>(addonInfoBuffer.contents()), addonSize);
+                }
+
+                uint32_t ticketSize;
+                packet >> ticketSize;
+                if (ticketSize == 0 || packet.rpos() + ticketSize > packet.size())
+                {
+                    errorMsg = "Realm join ticket size overflow packet size!";
+                    return false;
+                }
+                realmJoinTicket = packet.readString(ticketSize);
+
+                if (packet.rpos() < packet.size())
+                    packet.readBit();                   // use ipv6
+
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 packet.read<uint32_t>();

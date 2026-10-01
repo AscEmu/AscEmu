@@ -103,7 +103,7 @@ std::vector<LanguageSkillSpell> languageSpellSkillStore =
     ,{ LANG_GOBLIN_BINARY,       0,                                   0 }
     ,{ LANG_WORGEN,              SKILL_LANG_GILNEAN,              69270 }
     ,{ LANG_GOBLIN,              SKILL_LANG_GOBLIN,               69269 }
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     ,{ LANG_PANDAREN_NEUTRAL,    SKILL_LANG_PANDAREN_NEUTRAL,    108127 }
     ,{ LANG_PANDAREN_ALLIANCE,   SKILL_LANG_PANDAREN_ALLIANCE,   108130 }
     ,{ LANG_PANDAREN_HORDE,      SKILL_LANG_PANDAREN_HORDE,      108131 }

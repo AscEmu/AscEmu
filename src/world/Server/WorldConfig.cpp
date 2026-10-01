@@ -33,6 +33,14 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     logonServer.realmCount = 1;
     logonServer.disablePings = false;
 
+    // world.conf - Battle.net connection settings. The selected client profile decides whether these are used.
+    battleNetComm.host = "127.0.0.1";
+    battleNetComm.port = 1120;
+    battleNetComm.realmId = 1;
+    battleNetComm.realmName = "AscEmu";
+    battleNetComm.ruleset = AscEmu::BattlenetComm::RealmRuleset::PvE;
+    battleNetComm.sharedSecret = "ascemu-bnetcomm";
+
     // world.conf - Listen Config
     listen.listenPort = 8129;
 
@@ -276,6 +284,20 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     Config.MainConfig.tryGetInt("LogonServer", "RealmCount", &logonServer.realmCount);
     Config.MainConfig.tryGetBool("LogonServer", "DisablePings", &logonServer.disablePings);
     Config.MainConfig.tryGetString("LogonServer", "RemotePassword", &logonServer.remotePassword);
+
+    // world.conf - Battle.net connection settings. The selected client profile decides at compile time whether these are used.
+    Config.MainConfig.tryGetString("BattleNetComm", "Host", &battleNetComm.host);
+    Config.MainConfig.tryGetInt("BattleNetComm", "Port", &battleNetComm.port);
+    Config.MainConfig.tryGetInt("BattleNetComm", "RealmId", &battleNetComm.realmId);
+    Config.MainConfig.tryGetString("BattleNetComm", "RealmName", &battleNetComm.realmName);
+    std::string battleNetRuleset = "PvE";
+    Config.MainConfig.tryGetString("BattleNetComm", "Ruleset", &battleNetRuleset);
+    if (battleNetRuleset == "PvP" || battleNetRuleset == "PVP" || battleNetRuleset == "pvp") battleNetComm.ruleset = AscEmu::BattlenetComm::RealmRuleset::PvP;
+    else if (battleNetRuleset == "Roleplay" || battleNetRuleset == "RP" || battleNetRuleset == "roleplay" || battleNetRuleset == "rp") battleNetComm.ruleset = AscEmu::BattlenetComm::RealmRuleset::Roleplay;
+    else if (battleNetRuleset == "Hardcore" || battleNetRuleset == "HC" || battleNetRuleset == "hardcore" || battleNetRuleset == "hc") battleNetComm.ruleset = AscEmu::BattlenetComm::RealmRuleset::Hardcore;
+    else if (battleNetRuleset == "PvE" || battleNetRuleset == "PVE" || battleNetRuleset == "pve") battleNetComm.ruleset = AscEmu::BattlenetComm::RealmRuleset::PvE;
+    else { sLogger.warning("Unknown BattleNetComm Ruleset '{}'; using PvE.", battleNetRuleset); battleNetComm.ruleset = AscEmu::BattlenetComm::RealmRuleset::PvE; }
+    Config.MainConfig.tryGetString("BattleNetComm", "SharedSecret", &battleNetComm.sharedSecret);
 
     // world.conf - Realm Section
 

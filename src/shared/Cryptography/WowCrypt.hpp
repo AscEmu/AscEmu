@@ -28,7 +28,7 @@ private:
     bool m_isInitialized;
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// WotLK
+// WotLK, Cata, Mop, WoD and Legion world packets: RC4 keyed by HMAC-SHA1 of the 40 byte session key
 public:
     void initWotlkCrypt(uint8_t* key);
     void initMopCrypt(uint8_t* key);

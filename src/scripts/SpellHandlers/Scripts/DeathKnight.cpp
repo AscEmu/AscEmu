@@ -190,7 +190,7 @@ public:
             // Assume 1.3% -Appled
             aurEff->setEffectExtra2Field(13);
         }
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
         // Assume same as cata
         aurEff->setEffectExtra2Field(13);
 #endif

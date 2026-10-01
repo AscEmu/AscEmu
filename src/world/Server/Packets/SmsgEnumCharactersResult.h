@@ -321,8 +321,95 @@ namespace AscEmu::Packets
                     packet.flushBits();
                 }
             }
+            else if (m_protocol.isWoD())
+            {
+                // 6.x guids are 128 bit: type and realm in the high part, the counter in the low part
+                constexpr uint64_t highTypePlayer = 2;
+                constexpr uint64_t highTypeGuild = 28;
+                const uint64_t realmPart = static_cast<uint64_t>(m_protocol.realmId & 0xFFFF) << 42;
+
+                packet.writeBit(1);                             // success
+                packet.writeBit(0);                             // list of deleted characters
+                packet.flushBits();
+                packet << uint32_t(enum_data.size());
+                packet << uint32_t(0);                          // faction change restrictions
+
+                uint8_t listPosition = 0;
+                for (auto const& data : enum_data)
+                {
+                    writePackedGuid128(packet, (highTypePlayer << 58) | realmPart, WoWGuid::getLowGuidFromRaw(data.guid));
+
+                    packet << uint8_t(listPosition++);
+                    packet << data.race << data.Class << data.gender;
+                    packet << uint8_t(data.bytes & 0xFF);               // skin
+                    packet << uint8_t((data.bytes >> 8) & 0xFF);        // face
+                    packet << uint8_t((data.bytes >> 16) & 0xFF);       // hair style
+                    packet << uint8_t((data.bytes >> 24) & 0xFF);       // hair color
+                    packet << uint8_t(data.bytes2 & 0xFF);              // facial hair
+                    packet << data.level;
+                    packet << int32_t(data.zoneId);
+                    packet << int32_t(data.mapId);
+                    packet << data.x << data.y << data.z;
+
+                    if (data.guildId != 0)
+                        writePackedGuid128(packet, (highTypeGuild << 58) | realmPart, data.guildId);
+                    else
+                        writePackedGuid128(packet, 0, 0);
+
+                    packet << uint32_t(data.char_flags);
+                    packet << uint32_t(data.customization_flag);
+                    packet << uint32_t(0);                      // flags 3
+                    packet << uint32_t(data.pet_data.display_id);
+                    packet << uint32_t(data.pet_data.level);
+                    packet << uint32_t(data.pet_data.family);
+
+                    packet << uint32_t(0);                      // profession 1
+                    packet << uint32_t(0);                      // profession 2
+
+                    for (uint8_t i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
+                    {
+                        packet << uint32_t(data.player_items[i].displayId);
+                        packet << uint32_t(data.player_items[i].enchantmentId);
+                        packet << uint8_t(data.player_items[i].inventoryType);
+                    }
+
+                    packet << uint32_t(0);                      // last played time
+                    packet.writeBits(static_cast<uint32_t>(data.name.length()), 6);
+                    packet.writeBit(data.loginFlags & 0x20);    // first login
+                    packet.writeBit(0);                         // boost in progress
+                    packet.writeBits(0, 5);
+                    packet.flushBits();
+
+                    packet.append(data.name.c_str(), data.name.length());
+                }
+            }
 
             return true;
+        }
+
+        // 128 bit guid: one mask byte per half, then the non zero bytes of the low and the high part
+        static void writePackedGuid128(WorldPacket& packet, uint64_t high, uint64_t low)
+        {
+            uint8_t masks[2] = { 0, 0 };
+            uint8_t bytes[16];
+            size_t count = 0;
+
+            const uint64_t parts[2] = { low, high };
+            for (size_t part = 0; part < 2; ++part)
+            {
+                for (uint8_t i = 0; i < 8; ++i)
+                {
+                    const uint8_t value = static_cast<uint8_t>((parts[part] >> (i * 8)) & 0xFF);
+                    if (value != 0)
+                    {
+                        masks[part] |= static_cast<uint8_t>(1 << i);
+                        bytes[count++] = value;
+                    }
+                }
+            }
+
+            packet << masks[0] << masks[1];
+            packet.append(bytes, count);
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

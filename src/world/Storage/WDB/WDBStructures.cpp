@@ -63,7 +63,7 @@ WDB::Structures::SpellPowerEntry const* WDB::Structures::SpellEntry::GetSpellPow
 {
 #if VERSION_STRING == Cata
     return SpellPowerId ? sSpellPowerStore.lookupEntry(SpellPowerId) : nullptr;
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
     // Verified against the 5.4.8 data layout: Spell.dbc has no SpellPowerId on Mop,
     // SpellPower.dbc rows carry the spell they belong to in their spellId column. Looking the
     // row up by the spell id returned the power data of an unrelated spell - for login
@@ -100,7 +100,7 @@ WDB::Structures::SpellTotemsEntry const* WDB::Structures::SpellEntry::GetSpellTo
     return SpellTotemsId ? sSpellTotemsStore.lookupEntry(SpellTotemsId) : nullptr;
 }
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
 WDB::Structures::SpellMiscEntry const* WDB::Structures::SpellEntry::GetSpellMisc() const
 {
     return SpellMiscId ? sSpellMiscStore.lookupEntry(SpellMiscId) : nullptr;

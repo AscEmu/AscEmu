@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include <array>
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -14,6 +15,10 @@ namespace AscEmu::Packets
     {
     public:
         uint32_t seed;
+
+        // 6.2.4 and 7.3.5 clients: server challenge and the two encryption seeds of the instance connection
+        std::array<uint8_t, 16> challenge{};
+        std::array<uint8_t, 32> dosChallenge{};
 
         SmsgAuthChallenge() : SmsgAuthChallenge(0)
         {
@@ -54,6 +59,12 @@ namespace AscEmu::Packets
                     packet << uint32_t(0);
 
                 packet << uint8_t(1) << seed;
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_WoD && m_protocol.expansion <= WoW::Expansion::_Legion)
+            {
+                packet.append(dosChallenge.data(), dosChallenge.size());
+                packet.append(challenge.data(), challenge.size());
+                packet << uint8_t(1);                   // dos zero bits
             }
             return true;
         }

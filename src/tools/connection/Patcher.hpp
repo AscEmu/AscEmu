@@ -37,6 +37,12 @@ namespace cp
         // pattern: 0x00 bytes act as wildcards
         void patch(std::span<const uint8_t> _replacement, std::span<const uint8_t> _pattern);
 
+        // replaces every occurrence of the pattern; 0x00 bytes of the pattern are wildcards when _wildcards is set.
+        // Returns the number of patched places.
+        size_t patchAll(std::span<const uint8_t> _replacement, std::span<const uint8_t> _pattern, bool _wildcards);
+
+        const std::vector<uint8_t>& data() const noexcept { return m_data; }
+
         void finish() noexcept { m_success = true; }
 
     private:

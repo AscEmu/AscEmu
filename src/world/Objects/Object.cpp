@@ -2058,7 +2058,7 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
     buf << (((uint32_t)(1)) << (Index % 32));
     buf << Value;
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     // Mop closes every values-update block with a dynamic-values section; for anything
     // that isn't an item or a player this is a single zero byte meaning "no dynamic
     // fields". buildValuesUpdate() already writes this trailer for the normal per-tick update path;
@@ -2084,7 +2084,7 @@ void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Va
     *buf << (((uint32_t)(1)) << (Index % 32));
     *buf << Value;
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     // See the other BuildFieldUpdatePacket() overload above for why this is required.
     *buf << static_cast<uint8_t>(0);
 #endif
@@ -2973,7 +2973,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 }
 #endif
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
 void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* /*target*/)
 {
     WoWGuid Guid = getGuid();
@@ -3394,7 +3394,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
                     }
                     else if (idx == Version::unitDynamicFlagsIndex())
                     {
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
                         // On Mop, U_DYN_FLAG_LOOTABLE is a persistent flag (set once on
                         // Creature::die() when the kill produced loot, cleared once by the
                         // loot-release handler once everything is taken - see Creature::die()
@@ -3420,7 +3420,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
                                 dynamicFlags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
                         }
 
-#if VERSION_STRING != Mop
+#if VERSION_STRING < Mop
                         // Loot
                         if (!creature->loot.isLooted() && creature->HasLootForPlayer(target))
                             dynamicFlags |= U_DYN_FLAG_LOOTABLE;
@@ -3575,7 +3575,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
         }
     }
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     *data << static_cast<uint8_t>(0);
 #endif
 }

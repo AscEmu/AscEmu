@@ -32,6 +32,10 @@ This file is released under the MIT license. See README-MIT for more information
     #define DBC_NUM_RACES 24
 #elif VERSION_STRING == Mop
     #define DBC_NUM_RACES 27
+#elif VERSION_STRING == WoD
+    #define DBC_NUM_RACES 27
+#elif VERSION_STRING == Legion
+    #define DBC_NUM_RACES 31
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -59,6 +63,10 @@ This file is released under the MIT license. See README-MIT for more information
     #define DBC_TAXI_MASK_SIZE 114
 #elif VERSION_STRING == Mop
     #define DBC_TAXI_MASK_SIZE 255
+#elif VERSION_STRING == WoD
+    #define DBC_TAXI_MASK_SIZE 217
+#elif VERSION_STRING == Legion
+    #define DBC_TAXI_MASK_SIZE 258
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -132,7 +140,7 @@ This file is released under the MIT license. See README-MIT for more information
     #define DBC_PLAYER_SKILL_MAX 450
 #elif VERSION_STRING == Cata
     #define DBC_PLAYER_SKILL_MAX 525
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
     #define DBC_PLAYER_SKILL_MAX 600
 #endif
 
@@ -160,6 +168,10 @@ This file is released under the MIT license. See README-MIT for more information
 #elif VERSION_STRING == Cata
     #define PLAYER_ACTION_BUTTON_COUNT 144
 #elif VERSION_STRING == Mop
+    #define PLAYER_ACTION_BUTTON_COUNT 132
+#elif VERSION_STRING == WoD
+    #define PLAYER_ACTION_BUTTON_COUNT 132
+#elif VERSION_STRING == Legion
     #define PLAYER_ACTION_BUTTON_COUNT 132
 #endif
 
@@ -190,6 +202,11 @@ This file is released under the MIT license. See README-MIT for more information
 #elif VERSION_STRING == Cata
     #define GLYPHS_COUNT 9
 #elif VERSION_STRING == Mop
+    #define GLYPHS_COUNT 6
+#elif VERSION_STRING == WoD
+    #define GLYPHS_COUNT 6
+#elif VERSION_STRING == Legion
+    // 7.x has no glyph slots anymore (a glyph list per specialization); keeps the 6.x slot count until glyphs are ported
     #define GLYPHS_COUNT 6
 #endif
 

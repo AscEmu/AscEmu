@@ -502,7 +502,7 @@ void Creature::setDeathState(DeathState s)
 
         setTargetGuid(0);
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
         // Verified against the 5.4.8 client protocol: on death only the NPC
         // interaction flags (gossip/vendor/trainer/etc.) are cleared here, not the
         // general unit flags field - clearing UNIT_FIELD_FLAGS here left the Mop
@@ -2588,7 +2588,7 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
         }
     }
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     // Broadcast "combat stopped" for the dying creature itself. Pass nullptr, not
     // "this" - reporting the creature as its own attack victim (attacker == victim)
     // is not a valid combat state and can make the Mop client's object/index lookups
@@ -2688,7 +2688,7 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
         // Generate Gold
         loot.generateGold(sMySQLStore.getCreatureProperties(getEntry()), getAIInterface()->getDifficultyType());
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
         // Verified against the real 5.4.8 protocol (Skyfire-Mop's Unit::Kill): unlike the
         // TAGGED_BY_OTHER/TAPPED_BY_PLAYER bits, U_DYN_FLAG_LOOTABLE is not recomputed per
         // viewer on every broadcast - it is a persistent flag set once here (if this kill

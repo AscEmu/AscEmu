@@ -24,6 +24,8 @@ public:
 
     bool connect(const char* address, uint32_t port);
     void disconnect();
+    void delayedDisconnect();
+    void completeDelayedDisconnectIfReady();
     void accept(sockaddr_in* address);
 
     virtual void onRead() {}
@@ -66,6 +68,7 @@ protected:
 
     std::atomic<bool> m_isConnected;
     std::atomic<bool> m_isDeleted;
+    std::atomic<bool> m_delayedDisconnectRequested{ false };
 
     sockaddr_in m_remoteAddress;
 

@@ -34,6 +34,6 @@ This file is released under the MIT license. See README-MIT for more information
     #define MAX_DUNGEONS 295    // Wrath of the Lich King
 #elif VERSION_STRING == Cata
     #define MAX_DUNGEONS 449    // Cataclysm
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
     #define MAX_DUNGEONS 449    //  Mists of Pandaria (untested)
 #endif

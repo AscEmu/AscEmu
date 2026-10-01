@@ -106,7 +106,7 @@
 #        requires a restart.
 #        Default: 2 (WotLK)
 #        0 = 5875 (Classic)     1 = 8606 (TBC)      2 = 12340 (WotLK)
-#        3 = 15595 (Cata)       4 = 18414 (Mop)     5 = 20779 (WoD)
+#        3 = 15595 (Cata)       4 = 18414 (Mop)     5 = 21742 (WoD)
 #        6 = 26972 (Legion)     7 = (BfA)           8 = (Shadowlands)
 #        9 = (Dragonflight)    10 = (TWW)          11 = (Midnight)
 #
@@ -118,6 +118,25 @@
         TimeZone      = "1"
         Lock          = "0"
         ClientVersion = "2">
+
+################################################################################
+# Internal Battle.net communication
+#
+# Forever builds use this channel automatically. Legacy builds ignore these
+# settings and use LogonComm. The backend itself is selected by CMake.
+################################################################################
+
+#    Ruleset
+#        Forever realm ruleset advertised to Battle.net.
+#        Supported values: PvE, PvP, Roleplay, Hardcore
+#        Default: PvE
+#
+<BattleNetComm Host         = "127.0.0.1"
+               Port         = "1120"
+               RealmId      = "1"
+               RealmName    = "AscEmu"
+               Ruleset      = "PvE"
+               SharedSecret = "ascemu-bnetcomm">
 
 ################################################################################
 # Listen Config

@@ -1388,7 +1388,7 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
         }
 
         m_target->addStandStateFlags(UNIT_STAND_FLAGS_CREEP);
-#if VERSION_STRING != Mop
+#if VERSION_STRING < Mop
         if (m_target->isPlayer())
             if (const auto player = dynamic_cast<Player*>(m_target))
                 player->addAuraVision(AURA_VISION_STEALTH);
@@ -1520,7 +1520,7 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
 
                 if (p_target != nullptr)
                 {
-#if VERSION_STRING != Mop
+#if VERSION_STRING < Mop
                     p_target->removeAuraVision(AURA_VISION_STEALTH);
 #endif
                     p_target->sendSpellCooldownEventPacket(m_spellInfo->getId());
@@ -1624,7 +1624,7 @@ void Aura::SpellAuraModInvisibility(AuraEffectModifier* aurEff, bool apply)
         m_target->modInvisibilityLevel(InvisibilityFlag(aurEff->getEffectMiscValue()), aurEff->getEffectDamage());
         if (m_target->isPlayer())
         {
-#if VERSION_STRING != Mop
+#if VERSION_STRING < Mop
             if (getSpellId() == 32612)
                 if (const auto player = dynamic_cast<Player*>(m_target))
                     player->addAuraVision(AURA_VISION_INVISIBILITY);   //Mage Invis self visual
@@ -1638,7 +1638,7 @@ void Aura::SpellAuraModInvisibility(AuraEffectModifier* aurEff, bool apply)
         m_target->modInvisibilityLevel(InvisibilityFlag(aurEff->getEffectMiscValue()), -aurEff->getEffectDamage());
         if (m_target->isPlayer())
         {
-#if VERSION_STRING != Mop
+#if VERSION_STRING < Mop
             if (getSpellId() == 32612)
                 if (const auto player = dynamic_cast<Player*>(m_target))
                     player->removeAuraVision(AURA_VISION_INVISIBILITY);

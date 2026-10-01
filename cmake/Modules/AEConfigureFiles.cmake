@@ -30,3 +30,5 @@ endif ()
 # generate Configs
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/configs/logon.conf.in ${CMAKE_SOURCE_DIR}/configs/logon.conf)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/configs/world.conf.in ${CMAKE_SOURCE_DIR}/configs/world.conf)
+# Battle.net server of the WoD, Legion and Forever profiles
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/configs/bnetserver.conf.in ${CMAKE_SOURCE_DIR}/configs/bnetserver.conf)

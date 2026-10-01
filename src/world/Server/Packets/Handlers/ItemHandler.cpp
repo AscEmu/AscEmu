@@ -351,7 +351,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING >= WotLK
     spell->m_glyphslot = srlPacket.glyphIndex;
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     if (!srlPacket.hasSrcLocation)
     {
         if (_player->getTransGuid())

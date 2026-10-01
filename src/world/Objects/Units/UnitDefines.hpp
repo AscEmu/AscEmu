@@ -1051,7 +1051,7 @@ enum UnitFieldFlags2 : uint32_t
 };
 #endif
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
 enum UnitDynamicFlags
 {
     // Mop 5.4.8 shifted every bit of this field one position left compared to

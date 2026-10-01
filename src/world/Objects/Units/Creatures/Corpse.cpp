@@ -38,7 +38,7 @@ Corpse::Corpse(uint64_t guid)
 #if VERSION_STRING == Cata
     m_updateFlag = UPDATEFLAG_POSITION;
 #endif
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     m_updateFlag = UPDATEFLAG_HAS_POSITION;
 #endif
 

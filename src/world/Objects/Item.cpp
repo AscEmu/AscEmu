@@ -54,7 +54,7 @@ Item::Item() : m_loot(nullptr)
 #if VERSION_STRING == Cata
     m_updateFlag = UPDATEFLAG_NONE;
 #endif
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     m_updateFlag = UPDATEFLAG_NONE;
 #endif
 

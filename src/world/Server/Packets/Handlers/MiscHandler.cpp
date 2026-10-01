@@ -301,7 +301,7 @@ void WorldSession::handleTutorialReset(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
 {
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     sLogger.debug("handleLogoutRequestOpcode called (MoP)");
     bool instantLogout = _player->m_isResting || _player->isOnTaxi() ||
         (hasPermissions() && worldConfig.player.enableInstantLogoutForAccessType > 0);
@@ -1198,7 +1198,7 @@ void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handlePlayerLogoutOpcode([[maybe_unused]] WorldPacket& recvPacket)
 {
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     // MoP client sends 0x1349 (CMSG_LOGOUT_REQUEST); if it is mapped as CMSG_PLAYER_LOGOUT (internal 75), handle as logout request
     sLogger.debug("handlePlayerLogoutOpcode called (MoP) - delegating to handleLogoutRequestOpcode");
     handleLogoutRequestOpcode(recvPacket);

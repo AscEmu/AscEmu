@@ -127,7 +127,7 @@ void Player::updateManaRegeneration([[maybe_unused]]bool initialUpdate/* = false
     const auto manaRegenCombat = std::ceil((baseCombatRegen + (regenerateValue * manaWhileInCombatPct / 100.0f)) * worldConfig.getFloatRate(RATE_POWER1));
     setPowerRegeneration(POWER_TYPE_MANA, manaRegen);
     setPowerRegenerationWhileInterrupted(POWER_TYPE_MANA, manaRegenCombat);
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
     // In MOP base combat mana regen is 2% of player's total mana
     float_t baseCombatRegen = getMaxPower(POWER_TYPE_MANA) * 0.02f;
 

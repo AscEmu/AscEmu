@@ -531,7 +531,7 @@ void SpellMgr::loadSpellInfoData()
         }));
         const auto& spellInfo = spellItr->second;
 
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
 
         spellInfo->setId(spell_id);
         spellInfo->setAttributes(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->Attributes : 0);

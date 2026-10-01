@@ -1,0 +1,92 @@
+################################################################################
+# AscEmu Battle.net Server Configuration File
+################################################################################
+
+################################################################################
+# Listen
+#
+# Battle.net port of the client (1119), TLS with the certificate below.
+# WoD (6.2.4) and Legion clients log in with the plain password web login,
+# Forever with the SRP web login; both through WebAuth below.
+################################################################################
+
+<Listen Host = "0.0.0.0"
+        Port = "1119">
+
+# WebAuth ExternalAddress:
+#   Host name or address the clients open the web login at
+#   (https://<ExternalAddress>:<Port>/bnetserver/login/). It has to be reachable
+#   from the client and covered by the TLS certificate.
+<WebAuth Host = "0.0.0.0"
+         Port = "8081"
+         ExternalAddress = "bnet.ascemu.local">
+
+################################################################################
+# Logon database
+#
+# Use the same database credentials as logon.conf.
+################################################################################
+
+<LogonDatabase Hostname = "127.0.0.1"
+               Username = "root"
+               Password = ""
+               Name = "ascemu_logon"
+               Port = "3306"
+               Connections = "2"
+               LegacyAuth = "0">
+
+################################################################################
+# Character database
+#
+# Required for JSONRealmCharacterCountList in the Battle.net realm list.
+# Use the same credentials/database as CharacterDatabase in world.conf.
+################################################################################
+
+<CharacterDatabase Hostname = "127.0.0.1"
+                   Username = "root"
+                   Password = "root"
+                   Name = "ascemu_char"
+                   Port = "3306"
+                   Connections = "2"
+                   LegacyAuth = "0">
+
+################################################################################
+# World server
+#
+# Address advertised to the WoW client after a successful RealmJoin.
+# Use an externally reachable address here when clients connect remotely.
+################################################################################
+
+<World Host = "127.0.0.1"
+       Port = "8129">
+
+################################################################################
+# Internal BattleNetComm
+#
+# Persistent private control channel used by world.exe to register the realm
+# and receive short-lived pending World authentication sessions.
+################################################################################
+
+<BattleNetComm Host = "127.0.0.1"
+               Port = "1120"
+               SharedSecret = "ascemu-bnetcomm">
+
+################################################################################
+# TLS
+#
+# CertificatesFile:
+#   PEM certificate chain (.pem/.crt) or PKCS#12 archive (.pfx/.p12).
+#
+# PrivateKeyFile:
+#   Required for PEM certificates.
+#   Leave empty for PFX/P12 because the private key is stored in the archive.
+#
+# PrivateKeyPassword:
+#   Password for an encrypted PEM private key or the PFX/P12 archive.
+################################################################################
+
+<TLS CertificatesFile = "certs/bnetserver.pfx"
+     PrivateKeyFile = ""
+     PrivateKeyPassword = "ascemu">
+
+<Logger MinimumMessageType = "2">

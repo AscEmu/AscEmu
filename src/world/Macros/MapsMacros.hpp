@@ -30,6 +30,10 @@ This file is released under the MIT license. See README-MIT for more information
     #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637))               // Cataclysm
 #elif VERSION_STRING == Mop
     #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860)) //  Mists of Pandaria (untested)
+#elif VERSION_STRING == WoD
+    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860) && (a != 870) && (a != 1116)) // Warlords of Draenor (untested)
+#elif VERSION_STRING == Legion
+    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860) && (a != 870) && (a != 1116) && (a != 1220) && (a != 1669)) // Legion (untested)
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -42,8 +46,8 @@ This file is released under the MIT license. See README-MIT for more information
 // Wrath of the Lich King = 800
 // Cataclysm = 975
 // Mists of Pandaria = 1161 - untested
-// Warlords of Draenor = untested
-// Legion = untested
+// Warlords of Draenor = 1600 - untested, upper bound until Map.dbc of 21742 is extracted
+// Legion = 2000 - untested, upper bound until Map.db2 of 26972 is extracted
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -57,6 +61,10 @@ This file is released under the MIT license. See README-MIT for more information
     #define MAX_NUM_MAPS 975
 #elif VERSION_STRING == Mop
     #define MAX_NUM_MAPS 1161
+#elif VERSION_STRING == WoD
+    #define MAX_NUM_MAPS 1600
+#elif VERSION_STRING == Legion
+    #define MAX_NUM_MAPS 2000
 #endif
 
 #define CREATURE_SPAWNS_FIELDCOUNT 32

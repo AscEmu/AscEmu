@@ -16,7 +16,7 @@ enum PowerType : int16_t
     POWER_TYPE_ENERGY           = 3,
 #if VERSION_STRING < Cata
     POWER_TYPE_HAPPINESS        = 4,
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
     POWER_TYPE_LIGHT_FORCE      = 4, // MoP: A part of the Force that should be used by monks (removed in MoP Beta)
 #else
     POWER_TYPE_UNK4             = 4,

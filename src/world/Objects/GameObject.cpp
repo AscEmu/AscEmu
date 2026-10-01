@@ -109,7 +109,7 @@ GameObject::GameObject(uint64_t guid)
 #if VERSION_STRING == Cata
     m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
 #endif
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
     m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
 #endif
 
@@ -739,7 +739,7 @@ bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationV
             #if VERSION_STRING == Cata
                     m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
             #endif
-            #if VERSION_STRING == Mop
+            #if VERSION_STRING >= Mop
                     m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
             #endif
 
@@ -2078,7 +2078,7 @@ void GameObject_Transport::_internalUpdateOnState(unsigned long timeDiff)
     switch (m_lootState)
     {
         case GO_NOT_READY:
-#if VERSION_STRING == Mop
+#if VERSION_STRING >= Mop
         {
             (void)timeDiff;
             // Minimal fix: continuously wrap elapsed time into the animation's period so

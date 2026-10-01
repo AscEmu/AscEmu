@@ -77,7 +77,7 @@ void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& cont
     content.writeByteSeq(guid1[2]);
     content.writeByteSeq(guid1[6]);
     content.writeByteSeq(guid1[1]);
-#elif VERSION_STRING == Mop
+#elif VERSION_STRING >= Mop
 void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const
 {
     WoWGuid guid1(mPlayerGuid1, 0, HIGHGUID_TYPE_PLAYER);
