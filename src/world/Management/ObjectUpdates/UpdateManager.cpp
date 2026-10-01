@@ -212,6 +212,7 @@ void UpdateManager::internalProcessPendingUpdates()
     }
 #endif
 
+#if !defined(AE_FOREVER)
     ByteBuffer buffer(calculateBufferSize());
 
     if (m_creationBuffer.size() > 0 || m_outOfRangeIdCount > 0)
@@ -289,6 +290,7 @@ void UpdateManager::internalProcessPendingUpdates()
 
     m_processPending = false;
     internalSendDelayedPackets();
+#endif
 }
 
 void UpdateManager::internalSendDelayedPackets()

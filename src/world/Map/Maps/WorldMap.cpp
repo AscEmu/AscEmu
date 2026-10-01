@@ -2573,7 +2573,11 @@ void WorldMap::updateObjects()
             Player* pOwner = static_cast<Item*>(pObj)->getOwner();
             if (pOwner != nullptr)
             {
+                #if defined(AE_FOREVER)
+                count = pObj->buildForeverValuesUpdateBlock(&update, pOwner);
+#else
                 count = pObj->BuildValuesUpdateBlockForPlayer(&update, pOwner);
+#endif
                 // send update to owner
                 if (count)
                 {
@@ -2590,7 +2594,11 @@ void WorldMap::updateObjects()
                 if (pObj->isPlayer())
                 {
                     // need to be different! ;)
+                    #if defined(AE_FOREVER)
+                    count = pObj->buildForeverValuesUpdateBlock(&update, static_cast<Player*>(pObj));
+#else
                     count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(pObj));
+#endif
                     if (count)
                     {
                         static_cast<Player*>(pObj)->getUpdateMgr().pushUpdateData(&update, count);
@@ -2599,7 +2607,11 @@ void WorldMap::updateObjects()
                 }
 
                 // build the update
+                #if defined(AE_FOREVER)
+                count = pObj->buildForeverValuesUpdateBlock(&update, static_cast<Player*>(nullptr));
+#else
                 count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(nullptr));
+#endif
                 update.clear();
 
                 if (count)
@@ -2629,7 +2641,11 @@ void WorldMap::updateObjects()
                         // Build the recipient-specific values. Remote visibility sources use
                         // the same player recipient as normal visibility, so field filtering
                         // remains player-correct.
+                        #if defined(AE_FOREVER)
+                        const uint32_t recipientCount = pObj->buildForeverValuesUpdateBlock(&update, lplr);
+#else
                         const uint32_t recipientCount = pObj->BuildValuesUpdateBlockForPlayer(&update, lplr);
+#endif
                         if (recipientCount)
                             lplr->getUpdateMgr().pushUpdateData(&update, recipientCount);
                         update.clear();

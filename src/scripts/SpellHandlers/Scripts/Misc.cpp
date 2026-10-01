@@ -34,8 +34,10 @@ public:
 #if VERSION_STRING >= TBC
             aur->getOwner()->addUnitFlags2(UNIT_FLAG2_FEIGN_DEATH);
 #endif
+#if !defined(AE_FOREVER)
             if (_withDynamicFlag)
                 aur->getOwner()->addDynamicFlags(U_DYN_FLAG_DEAD);
+#endif
             if (_preventChatEmotes)
                 aur->getOwner()->addUnitFlags(UNIT_FLAG_FEIGN_DEATH);
         }
@@ -44,8 +46,10 @@ public:
 #if VERSION_STRING >= TBC
             aur->getOwner()->removeUnitFlags2(UNIT_FLAG2_FEIGN_DEATH);
 #endif
+#if !defined(AE_FOREVER)
             if (_withDynamicFlag)
                 aur->getOwner()->removeDynamicFlags(U_DYN_FLAG_DEAD);
+#endif
             if (_preventChatEmotes)
                 aur->getOwner()->removeUnitFlags(UNIT_FLAG_FEIGN_DEATH);
         }

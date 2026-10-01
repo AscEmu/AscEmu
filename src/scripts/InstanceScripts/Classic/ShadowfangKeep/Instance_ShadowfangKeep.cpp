@@ -366,7 +366,9 @@ public:
                     pCreature->setStandState(STANDSTATE_DEAD);
                     pCreature->setDeathState(CORPSE);
                     pCreature->setControlled(true, UNIT_STATE_ROOTED);
+#if !defined(AE_FOREVER)
                     pCreature->addDynamicFlags(U_DYN_FLAG_DEAD);
+#endif
                     pCreature->SendScriptTextChatMessage(ShadowfangKeep::SAY_VINCENT_DEATH);
                 }
             }break;
@@ -446,7 +448,9 @@ public:
                         pVincent->setStandState(STANDSTATE_DEAD);
                         pVincent->setDeathState(CORPSE);
                         pVincent->setControlled(true, UNIT_STATE_ROOTED);
+#if !defined(AE_FOREVER)
                         pVincent->addDynamicFlags(U_DYN_FLAG_DEAD);
+#endif
                     }
                 }break;
                 case 8:

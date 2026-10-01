@@ -935,6 +935,7 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
     // tell the other players about us
     UpdateOutOfRangePlayer(pPlayer, true);
 
+#if !defined(AE_FOREVER)
     UpdateMask myMask;
     myMask.SetCount(getSizeOfStructure(WoWPlayer));
     UpdateMask hisMask;
@@ -975,9 +976,6 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
 #elif VERSION_STRING == TBC
                     uint16_t questIdOffset = 4;
 #elif VERSION_STRING == Mop
-                    uint16_t questIdOffset = 15;
-#elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
                     uint16_t questIdOffset = 15;
 #else
                     uint16_t questIdOffset = 5;
@@ -1021,6 +1019,8 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
             }
         }
     }
+#endif
+
 }
 
 bool Group::isRaid() const
@@ -1295,6 +1295,7 @@ void Group::SetRaidDifficulty(uint8_t diff)
     Unlock();
 }
 
+#if !defined(AE_FOREVER)
 void Group::SendLootUpdates(Object* o)
 {
     if (o->isCreatureOrPlayer())
@@ -1305,7 +1306,9 @@ void Group::SendLootUpdates(Object* o)
         uint32_t Flags = dynamic_cast<Unit*>(o)->getDynamicFlags();
 
         Flags |= U_DYN_FLAG_LOOTABLE;
+#if !defined(AE_FOREVER)
         Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
+#endif
 
 #if VERSION_STRING < Mop
         o->BuildFieldUpdatePacket(&buf, getOffsetForStructuredField(WoWUnit, dynamic_flags), Flags);
@@ -1357,6 +1360,7 @@ void Group::SendLootUpdates(Object* o)
         Unlock();
     }
 }
+#endif
 
 void Group::sendGroupLoot(Loot* loot, Object* object, Player* /*plr*/, uint32_t mapId)
 {

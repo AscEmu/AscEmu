@@ -512,17 +512,23 @@ void WorldSession::doLootRelease(WoWGuid lguid)
                     Player* plr = players->ToPlayer();
                     if (creature->isTaggedByPlayerOrItsGroup(plr))
                     {
+#if defined(AE_FOREVER)
+                        creature->removeDynamicFlags(U_DYN_FLAG_LOOTABLE);
+#else
 #if VERSION_STRING < Mop
                         creature->BuildFieldUpdatePacket(plr, getOffsetForStructuredField(WoWUnit, dynamic_flags), 0);
 #else
                         creature->BuildFieldUpdatePacket(plr, getOffsetForStructuredField(WoWObject, dynamic_field), 0);
 #endif
+#endif
                     }
                 }
 
                 // Make our Creature Skinnable when possible
+#if !defined(AE_FOREVER)
                 if (!creature->Skinned && sLootMgr.isSkinnable(creature->getEntry()))
                     creature->BuildFieldUpdatePacket(_player, getOffsetForStructuredField(WoWUnit, unit_flags), UNIT_FLAG_SKINNABLE);
+#endif
             }
             else
             {

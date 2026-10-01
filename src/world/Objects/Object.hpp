@@ -364,11 +364,15 @@ public:
         // typeFlags
         bool IsType(TYPE type_mask) const { return (type_mask & m_objectType) != 0; }
 
+#if defined(AE_FOREVER)
+        uint32_t buildForeverValuesUpdateBlock(ByteBuffer* buf, Player* target);
+#else
         uint32_t BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, Player* target);
         uint32_t BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask);
 
         void BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Value);
         void BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Value);
+#endif
 
         void updatePositionData();
 
@@ -690,6 +694,7 @@ public:
         virtual void setCreateBits(UpdateMask* updateMask, Player* target) const;
 
         // Create updates that player will see
+#if !defined(AE_FOREVER)
 #if VERSION_STRING < WotLK
         void buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* target);
 #else
@@ -697,6 +702,7 @@ public:
 #endif
 
         void buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask* updateMask, Player* target);
+#endif
 
         // WoWGuid class
         WoWGuid m_wowGuid;

@@ -826,7 +826,9 @@ public:
     /// MoP: event callback to process session queue again after 150ms (catches 0x1061 that arrive after create send).
     void eventProcessQueuedPacketsMoP();
 #endif
+#if !defined(AE_FOREVER)
     bool compressAndSendUpdateBuffer(uint32_t size, const uint8_t* update_buffer);
+#endif
     uint32_t buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target) override;
 
     static void initVisibleUpdateBits();
@@ -2061,7 +2063,9 @@ private:
     uint32_t m_timeSyncServer = 0;
 
 public:
+#if !defined(AE_FOREVER)
     void buildFlagUpdateForNonGroupSet(uint32_t index, uint32_t flag);
+#endif
 
     void modifyBonuses(uint32_t type, int32_t val, bool apply);
     void calcExpertise();

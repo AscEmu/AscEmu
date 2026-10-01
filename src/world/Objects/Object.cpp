@@ -604,8 +604,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
     // Do not let unsupported Forever object types fall through into the legacy
     // create grammar. Each modern object type gets an explicit serializer.
     return 0;
-#endif
-
+#else
     uint8_t updateType = UPDATETYPE_CREATE_OBJECT;
 #if VERSION_STRING <= TBC
     uint8_t updateFlags = static_cast<uint8_t>(m_updateFlag);
@@ -721,6 +720,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     // Update count
     return 1;
+#endif
 }
 
 void Object::prepareInitialCreateForPlayer(Player* /*target*/)
@@ -739,8 +739,13 @@ void Object::forceBuildUpdateValueForField(uint32_t field, Player* target)
     m_updateMask.SetBit(field);
 
     ByteBuffer buffer(500);
-    BuildValuesUpdateBlockForPlayer(&buffer, target);
-    target->getUpdateMgr().pushUpdateData(&buffer, 1);
+#if defined(AE_FOREVER)
+    const uint32_t count = buildForeverValuesUpdateBlock(&buffer, target);
+#else
+    const uint32_t count = BuildValuesUpdateBlockForPlayer(&buffer, target);
+#endif
+    if (count != 0)
+        target->getUpdateMgr().pushUpdateData(&buffer, count);
 }
 
 void Object::forceBuildUpdateValueForFields(uint32_t const* fields, Player* target)
@@ -752,8 +757,13 @@ void Object::forceBuildUpdateValueForFields(uint32_t const* fields, Player* targ
         m_updateMask.SetBit(fields[i]);
 
     ByteBuffer buffer(500);
-    BuildValuesUpdateBlockForPlayer(&buffer, target);
-    target->getUpdateMgr().pushUpdateData(&buffer, 1);
+#if defined(AE_FOREVER)
+    const uint32_t count = buildForeverValuesUpdateBlock(&buffer, target);
+#else
+    const uint32_t count = BuildValuesUpdateBlockForPlayer(&buffer, target);
+#endif
+    if (count != 0)
+        target->getUpdateMgr().pushUpdateData(&buffer, count);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2422,6 +2432,7 @@ void Object::_Create(uint32_t mapid, float x, float y, float z, float ang)
     m_lastMapUpdatePosition.changeCoords({ x, y, z, ang });
 }
 
+#if !defined(AE_FOREVER)
 void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Value)
 {
     ByteBuffer buf(500);
@@ -2438,14 +2449,6 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
     buf << Value;
 
 #if VERSION_STRING == Mop
-    // Mop closes every values-update block with a dynamic-values section; for anything
-    // that isn't an item or a player this is a single zero byte meaning "no dynamic
-    // fields". buildValuesUpdate() already writes this trailer for the normal per-tick update path;
-    // without it here the block is one byte short, which desyncs the client's parse of every
-    // block that follows it in the same SMSG_UPDATE_OBJECT packet.
-    buf << static_cast<uint8_t>(0);
-#elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     // Mop closes every values-update block with a dynamic-values section; for anything
     // that isn't an item or a player this is a single zero byte meaning "no dynamic
     // fields". buildValuesUpdate() already writes this trailer for the normal per-tick update path;
@@ -2474,12 +2477,10 @@ void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Va
 #if VERSION_STRING == Mop
     // See the other BuildFieldUpdatePacket() overload above for why this is required.
     *buf << static_cast<uint8_t>(0);
-#elif defined(AE_FOREVER)
-// Forever runtime values are emitted by BuildValuesUpdateBlockForPlayer().
-    // This legacy field-update helper is intentionally unused for Forever.
-    *buf << static_cast<uint8_t>(0);
 #endif
 }
+
+#endif
 
 void Object::ClearUpdateMask()
 {
@@ -2507,9 +2508,9 @@ void Object::ClearUpdateMask()
     m_objectUpdated = false;
 }
 
-uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
-{
 #if defined(AE_FOREVER)
+uint32_t Object::buildForeverValuesUpdateBlock(ByteBuffer* data, Player* target)
+{
     Unit const* unit = ToUnit();
     Player const* player = ToPlayer();
     Item const* item = (m_objectTypeId == TYPEID_ITEM || m_objectTypeId == TYPEID_CONTAINER) ? static_cast<Item const*>(this) : nullptr;
@@ -2548,7 +2549,10 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     data->append(block.data(), block.size());
     return 1;
+}
 #else
+uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+{
     UpdateMask updateMask;
     updateMask.SetCount(m_valuesCount);
     setUpdateBits(&updateMask, target);
@@ -2572,16 +2576,11 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* targe
     }
 
     return 0;
-#endif
+
 }
 
 uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask)
 {
-#if defined(AE_FOREVER)
-    (void)buf;
-    (void)mask;
-    return 0;
-#else
     // returns: update count
     // update type == update
     if (m_wowGuid.getNewGuidLen() > 0)
@@ -2597,8 +2596,9 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* ma
 
     sLogger.failure("Object::BuildValuesUpdateBlockForPlayer tried to add data for invalid guid!");
     return 0;
-#endif
+
 }
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Build the Movement Data portion of the update packet Fills the data with this object's movement/speed info
@@ -3798,351 +3798,9 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             *data << uint64_t(static_cast<GameObject*>(this)->getPackedLocalRotation());
     }
 }
-#elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
-void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* /*target*/)
-{
-    WoWGuid Guid = getGuid();
-
-    data->writeBit(false);
-    data->writeBit(false);        // hasAnimKits
-    data->writeBit(updateFlags & UPDATEFLAG_LIVING);          // hasLiving
-    data->writeBit(false);
-    data->writeBit(false);
-    data->writeBits(0, 22);
-    data->writeBit(updateFlags & UPDATEFLAG_VEHICLE);         // hasVehicle
-    data->writeBit(false);
-    data->writeBit(false);
-    data->writeBit(updateFlags & UPDATEFLAG_TRANSPORT);        // hasTransport
-    data->writeBit(updateFlags & UPDATEFLAG_ROTATION);         // hasGobjectRotation
-    data->writeBit(false);
-    data->writeBit(updateFlags & UPDATEFLAG_SELF);            // self
-    data->writeBit(updateFlags & UPDATEFLAG_HAS_TARGET);       // hasTarget
-    data->writeBit(false);
-    data->writeBit(false);
-    data->writeBit(false);
-    data->writeBit(false);                                          // hasAreaTriggerData (player: false)
-    data->writeBit(updateFlags & UPDATEFLAG_POSITION);          // hasTransportPosition (GO)
-    data->writeBit(false);
-    data->writeBit(updateFlags & UPDATEFLAG_HAS_POSITION);      // hasStacionaryPostion
-
-    bool hasTransport = false;
-    bool isSplineEnabled = false;
-    bool hasPitch = false;
-    bool hasFallData = false;
-    bool hasFallDirection = false;
-    bool hasElevation = false;
-    [[maybe_unused]] bool hasOrientation = !IsType(TYPE_ITEM);
-    bool hasTimeStamp = false;
-    bool hasTransportTime2 = false;
-    bool hasTransportTime3 = false;
-
-    if (IsType(TYPE_UNIT))
-    {
-        hasTransport = !obj_movement_info.transport_guid.isEmpty();
-        isSplineEnabled = false; // unit->IsSplineEnabled();
-
-        if (getObjectTypeId() == TYPEID_PLAYER)
-        {
-            hasPitch = obj_movement_info.getMovementStatusInfo().hasPitch;
-            hasFallData = obj_movement_info.getMovementStatusInfo().hasFallData;
-            hasFallDirection = obj_movement_info.getMovementStatusInfo().hasFallDirection;
-            hasElevation = obj_movement_info.getMovementStatusInfo().hasSplineElevation;
-            hasTransportTime2 = obj_movement_info.getMovementStatusInfo().hasTransportTime2;
-            hasTransportTime3 = obj_movement_info.getMovementStatusInfo().hasTransportTime3;
-        }
-        else
-        {
-            hasPitch = obj_movement_info.hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) ||
-                obj_movement_info.hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING);
-            hasFallData = obj_movement_info.hasMovementFlag2(MOVEFLAG2_INTERPOLATED_TURN);
-            hasFallDirection = obj_movement_info.hasMovementFlag(MOVEFLAG_FALLING);
-            hasElevation = obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION);
-        }
-        hasTimeStamp = (obj_movement_info.update_time != 0);
-    }
-
-    if (updateFlags & UPDATEFLAG_LIVING)
-    {
-        Unit* unit = (Unit*)this;
-
-        data->writeBit(Guid[2]);
-        data->writeBit(false);
-        data->writeBit(!hasPitch);
-        data->writeBit(hasTransport);
-        data->writeBit(false);
-
-        if (hasTransport)
-        {
-            WoWGuid tGuid = obj_movement_info.transport_guid;
-
-            data->writeBit(tGuid[4]);
-            data->writeBit(tGuid[2]);
-            data->writeBit(hasTransportTime3);
-            data->writeBit(tGuid[0]);
-            data->writeBit(tGuid[1]);
-            data->writeBit(tGuid[3]);
-            data->writeBit(tGuid[6]);
-            data->writeBit(tGuid[7]);
-            data->writeBit(hasTransportTime2);
-            data->writeBit(tGuid[5]);
-        }
-
-        data->writeBit(!hasTimeStamp);
-        data->writeBit(Guid[6]);
-        data->writeBit(Guid[4]);
-        data->writeBit(Guid[3]);
-
-        data->writeBit(G3D::fuzzyEq(GetOrientation(), 0.0f));
-
-        data->writeBit(true);   // movement counter
-        data->writeBit(Guid[5]);
-        data->writeBits(0, 22);
-        data->writeBit(!obj_movement_info.getMovementFlags());
-        data->writeBits(0, 19);
-        data->writeBit(hasFallData);
-
-        if (obj_movement_info.getMovementFlags())
-            data->writeBits(obj_movement_info.getMovementFlags(), 30);
-
-        data->writeBit(!hasElevation);
-        data->writeBit(isSplineEnabled);
-        data->writeBit(false);
-        data->writeBit(Guid[0]);
-        data->writeBit(Guid[7]);
-        data->writeBit(Guid[1]);
-
-        if (isSplineEnabled)
-        {
-            MovementMgr::PacketBuilder::WriteCreateBits(*unit->movespline, *data);
-        }
-
-        data->writeBit(!obj_movement_info.getMovementFlags2());
-
-        if (hasFallData)
-            data->writeBit(hasFallDirection);
-
-        if (obj_movement_info.getMovementFlags2())
-            data->writeBits(uint32_t(obj_movement_info.getMovementFlags2()), 13);
-    }
-
-    if (updateFlags & UPDATEFLAG_POSITION)
-    {
-        WoWGuid transGuid = obj_movement_info.transport_guid;
-
-        data->writeBit(transGuid[4]);
-        data->writeBit(transGuid[1]);
-        data->writeBit(transGuid[0]);
-        data->writeBit(hasTransportTime2);
-        data->writeBit(transGuid[6]);
-        data->writeBit(transGuid[5]);
-        data->writeBit(transGuid[3]);
-        data->writeBit(transGuid[2]);
-        data->writeBit(transGuid[7]);
-        data->writeBit(hasTransportTime3);
-    }
-
-    if (updateFlags & UPDATEFLAG_HAS_TARGET)
-    {
-        WoWGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
-
-        data->writeBit(victimGuid[4]);
-        data->writeBit(victimGuid[6]);
-        data->writeBit(victimGuid[5]);
-        data->writeBit(victimGuid[2]);
-        data->writeBit(victimGuid[0]);
-        data->writeBit(victimGuid[1]);
-        data->writeBit(victimGuid[3]);
-        data->writeBit(victimGuid[7]);
-    }
-
-    data->flushBits();
-
-    if (updateFlags & UPDATEFLAG_LIVING)
-    {
-        Unit* unit = (Unit*)this;
-        ;
-        if (hasTransport)
-        {
-            WoWGuid tGuid = obj_movement_info.transport_guid;
-
-            data->writeByteSeq(tGuid[7]);
-            *data << float(GetTransOffsetX());
-
-            if (hasTransportTime3)
-                *data << uint32_t(obj_movement_info.fall_time);
-
-            *data << float(GetTransOffsetO());
-            *data << float(GetTransOffsetY());
-            data->writeByteSeq(tGuid[4]);
-            data->writeByteSeq(tGuid[1]);
-            data->writeByteSeq(tGuid[3]);
-            *data << float(GetTransOffsetZ());
-            data->writeByteSeq(tGuid[5]);
-
-            if (hasTransportTime2)
-                *data << uint32_t(obj_movement_info.transport_time2);
-
-            data->writeByteSeq(tGuid[0]);
-            *data << int8_t(obj_movement_info.transport_seat);
-            data->writeByteSeq(tGuid[6]);
-            data->writeByteSeq(tGuid[2]);
-            *data << uint32_t(obj_movement_info.transport_time);
-        }
-
-        data->writeByteSeq(Guid[4]);
-
-        if (isSplineEnabled)
-        {
-            MovementMgr::PacketBuilder::WriteCreateData(*unit->movespline, *data);
-        }
-
-        *data << float(unit->getSpeedRate(TYPE_FLY, true));
-
-        //todo movementcounter
-
-        data->writeByteSeq(Guid[2]);
-
-        if (hasFallData)
-        {
-            if (hasFallDirection)
-            {
-                *data << float(obj_movement_info.jump_info.xyspeed);
-                *data << float(obj_movement_info.jump_info.cosAngle);
-                *data << float(obj_movement_info.jump_info.sinAngle);
-            }
-
-            *data << uint32_t(obj_movement_info.fall_time);
-            *data << float(obj_movement_info.jump_info.velocity);
-        }
-
-        data->writeByteSeq(Guid[1]);
-        *data << float(unit->getSpeedRate(TYPE_TURN_RATE, true));
-
-        if (obj_movement_info.update_time)
-            *data << uint32_t(obj_movement_info.update_time);
-
-        *data << unit->getSpeedRate(TYPE_RUN_BACK, true);
-
-        if (hasElevation)
-            *data << float(obj_movement_info.spline_elevation);
-
-        data->writeByteSeq(Guid[7]);
-        *data << float(unit->getSpeedRate(TYPE_PITCH_RATE, true));
-        *data << float(GetPositionX());
-
-        if (hasPitch)
-            *data << float(obj_movement_info.pitch_rate);
-
-        if (!G3D::fuzzyEq(GetOrientation(), 0.0f))
-            *data << float(LocationVector::normalizeOrientation(GetOrientation()));
-
-        *data << float(unit->getSpeedRate(TYPE_WALK, true));
-        *data << float(GetPositionY());
-        *data << float(unit->getSpeedRate(TYPE_FLY_BACK, true));
-        data->writeByteSeq(Guid[3]);
-        data->writeByteSeq(Guid[5]);
-        data->writeByteSeq(Guid[6]);
-        data->writeByteSeq(Guid[0]);
-        *data << unit->getSpeedRate(TYPE_SWIM_BACK, true);
-        *data << float(unit->getSpeedRate(TYPE_RUN, true));
-        *data << float(unit->getSpeedRate(TYPE_SWIM, true));
-        *data << float(GetPositionZ());
-    }
-
-    if (updateFlags & UPDATEFLAG_POSITION)
-    {
-        WoWGuid transGuid = obj_movement_info.transport_guid;;
-
-        if (obj_movement_info.transport_time2 && obj_movement_info.transport_guid)
-            *data << static_cast<uint32_t>(obj_movement_info.transport_time2);
-
-        *data << float(GetTransOffsetY());
-        *data << int8_t(GetTransSeat());
-        *data << float(GetTransOffsetX());
-        data->writeByteSeq(transGuid[2]);
-        data->writeByteSeq(transGuid[4]);
-        data->writeByteSeq(transGuid[1]);
-
-        if (obj_movement_info.transport_time3 && obj_movement_info.transport_guid)
-            *data << obj_movement_info.transport_time3;
-
-        *data << uint32_t(GetTransTime());
-
-        *data << float(GetTransOffsetO());
-        *data << float(GetTransOffsetZ());
-
-        data->writeByteSeq(transGuid[6]);
-        data->writeByteSeq(transGuid[0]);
-        data->writeByteSeq(transGuid[5]);
-        data->writeByteSeq(transGuid[3]);
-        data->writeByteSeq(transGuid[7]);
-    }
-
-    if (updateFlags & UPDATEFLAG_HAS_TARGET)
-    {
-        WoWGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
-
-        data->writeByteSeq(victimGuid[7]);
-        data->writeByteSeq(victimGuid[1]);
-        data->writeByteSeq(victimGuid[5]);
-        data->writeByteSeq(victimGuid[2]);
-        data->writeByteSeq(victimGuid[6]);
-        data->writeByteSeq(victimGuid[3]);
-        data->writeByteSeq(victimGuid[0]);
-        data->writeByteSeq(victimGuid[4]);
-    }
-
-    if (updateFlags & UPDATEFLAG_VEHICLE)
-    {
-        uint32_t vehicleid = 0;
-
-        if (isCreature())
-        {
-            vehicleid = static_cast<Creature*>(this)->GetCreatureProperties()->vehicleid;
-        }
-        else
-        {
-            if (isPlayer())
-                vehicleid = static_cast<Player*>(this)->getMountVehicleId();
-        }
-
-        *data << uint32_t(vehicleid);
-        *data << float(GetOrientation());
-    }
-
-    if (updateFlags & UPDATEFLAG_HAS_POSITION)
-    {
-        *data << float(GetPositionY());
-        *data << float(GetPositionZ());
-        *data << float(LocationVector::normalizeOrientation(GetOrientation()));
-        *data << float(GetPositionX());
-    }
-
-    if (updateFlags & UPDATEFLAG_TRANSPORT)
-    {
-        // static_cast<Transporter*> unconditionally "succeeds" (it never checks the
-        // runtime type), so this used to read garbage through a mismatched vtable for
-        // any transport-flagged object that isn't actually a GAMEOBJECT_TYPE_MO_TRANSPORT
-        // instance (e.g. a GAMEOBJECT_TYPE_TRANSPORT elevator). It also called
-        // getAnimationProgress(), an unrelated 0-255 byte field, not the millisecond-scale
-        // PathProgress the client needs to track the transport's actual path timing -
-        // this desync is what let a transport move without properly carrying its riders.
-        GameObject const* go = static_cast<GameObject*>(this);
-        if (go && go->ToTransport())
-            *data << uint32_t(go->getGOValue()->PathProgress);
-        else
-            *data << uint32_t(Util::getMSTime());
-    }
-
-    if (updateFlags & UPDATEFLAG_ROTATION)
-    {
-        if (isGameObject())
-            *data << uint64_t(static_cast<GameObject*>(this)->getPackedLocalRotation());
-    }
-}
 #endif
 
+#if !defined(AE_FOREVER)
 void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask* updateMask, Player* target)
 {
     if (!updateMask)
@@ -4240,20 +3898,6 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
                         // corpse instead of looting it. Only the tag/tap bits are viewer-relative
                         // and need recomputing here.
                         auto dynamicFlags = bitValue & ~(U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_TAPPED_BY_PLAYER);
-#elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
-                        // On Mop, U_DYN_FLAG_LOOTABLE is a persistent flag (set once on
-                        // Creature::die() when the kill produced loot, cleared once by the
-                        // loot-release handler once everything is taken - see Creature::die()
-                        // and handleLootReleaseOpcode in LootHandler.cpp) instead of something
-                        // re-derived on every broadcast. Stripping and re-adding it here from
-                        // HasLootForPlayer()/loot.isLooted() fights that persistent state: as
-                        // soon as one recompute call finds no unlooted content left for THIS
-                        // viewer (e.g. gold already collected by another group member), it wipes
-                        // the bit for every viewer and the Mop client falls back to attacking the
-                        // corpse instead of looting it. Only the tag/tap bits are viewer-relative
-                        // and need recomputing here.
-                        auto dynamicFlags = bitValue & ~(U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_TAPPED_BY_PLAYER);
 #else
                         auto dynamicFlags = bitValue & ~(U_DYN_FLAG_LOOTABLE | U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_TAPPED_BY_PLAYER);
 #endif
@@ -4267,7 +3911,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
                                 dynamicFlags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
                         }
 
-#if VERSION_STRING != Mop && !defined(AE_FOREVER)
+#if VERSION_STRING != Mop
                         // Loot
                         if (!creature->loot.isLooted() && creature->HasLootForPlayer(target))
                             dynamicFlags |= U_DYN_FLAG_LOOTABLE;
@@ -4428,11 +4072,9 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
 
 #if VERSION_STRING == Mop
     *data << static_cast<uint8_t>(0);
-#elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
-    *data << static_cast<uint8_t>(0);
 #endif
 }
+#endif
 // MIT End
 
 bool Object::SetPosition(const LocationVector & v, [[maybe_unused]]bool allowPorting /* = false */)

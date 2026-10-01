@@ -918,7 +918,7 @@ namespace
 uint64_t Player::getDuelArbiter() const
 {
 #if defined(AE_FOREVER)
-    return m_foreverPlayerFields.unknownGuid0_69913.toLegacyRaw();
+    return m_foreverPlayerFields.unknownGuid0.toLegacyRaw();
 #else
     return playerData()->duel_arbiter;
 #endif
@@ -927,11 +927,11 @@ void Player::setDuelArbiter(uint64_t guid)
 {
 #if defined(AE_FOREVER)
     const WoWGuid modernGuid = makeForeverPlayerReferenceGuid(this, guid);
-    if (m_foreverPlayerFields.unknownGuid0_69913.getModernHigh() == modernGuid.getModernHigh() && m_foreverPlayerFields.unknownGuid0_69913.getModernLow() == modernGuid.getModernLow())
+    if (m_foreverPlayerFields.unknownGuid0.getModernHigh() == modernGuid.getModernHigh() && m_foreverPlayerFields.unknownGuid0.getModernLow() == modernGuid.getModernLow())
         return;
 
-    m_foreverPlayerFields.unknownGuid0_69913 = modernGuid;
-    m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::UnknownChangeBit9_69913);
+    m_foreverPlayerFields.unknownGuid0 = modernGuid;
+    m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::UnknownChangeBit9);
     updateObject();
 #else
     write(playerData()->duel_arbiter, guid);
@@ -941,7 +941,7 @@ void Player::setDuelArbiter(uint64_t guid)
 uint32_t Player::getPlayerFlags() const
 {
 #if defined(AE_FOREVER)
-    return m_foreverPlayerFields.unknownU32_0_69913;
+    return m_foreverPlayerFields.unknownU32_0;
 #else
     return playerData()->player_flags;
 #endif
@@ -950,10 +950,10 @@ uint32_t Player::getPlayerFlags() const
 void Player::setPlayerFlags(uint32_t flags)
 {
 #if defined(AE_FOREVER)
-    if (m_foreverPlayerFields.unknownU32_0_69913 != flags)
+    if (m_foreverPlayerFields.unknownU32_0 != flags)
     {
-        m_foreverPlayerFields.unknownU32_0_69913 = flags;
-        m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::UnknownChangeBit14_69913);
+        m_foreverPlayerFields.unknownU32_0 = flags;
+        m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::UnknownChangeBit14);
         updateObject();
     }
 #else
@@ -1072,7 +1072,7 @@ uint32_t Player::getQuestLogEntryForSlot(uint8_t slot) const
 #if defined(AE_FOREVER)
     if (slot >= MAX_QUEST_LOG_SIZE)
         return 0;
-    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverPlayerFields.unknownPartyRecords0_69913[slot].questId));
+    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverPlayerFields.unknownPartyRecords0[slot].questId));
 #else
     return playerData()->quests[slot].quest_id;
 #endif
@@ -1084,7 +1084,7 @@ void Player::setQuestLogEntryBySlot(uint8_t slot, uint32_t questEntry)
     if (slot >= MAX_QUEST_LOG_SIZE)
         return;
 
-    auto& questLog = m_foreverPlayerFields.unknownPartyRecords0_69913[slot];
+    auto& questLog = m_foreverPlayerFields.unknownPartyRecords0[slot];
     if (questLog.questId == static_cast<int32_t>(questEntry))
         return;
 
@@ -1096,11 +1096,11 @@ void Player::setQuestLogEntryBySlot(uint8_t slot, uint32_t questEntry)
     // removing the quest deletes the old QuestID entry.
     m_foreverPlayerFields.questLogQuestIdToIndexChanges.push_back({oldQuestId, 2, 0});
     if (oldQuestId > 0)
-        m_foreverPlayerFields.unknownPartyMap0_69913.erase(oldQuestId);
+        m_foreverPlayerFields.unknownPartyMap0.erase(oldQuestId);
 
     if (questEntry != 0)
     {
-        m_foreverPlayerFields.unknownPartyMap0_69913[static_cast<int32_t>(questEntry)] = static_cast<int32_t>(slot);
+        m_foreverPlayerFields.unknownPartyMap0[static_cast<int32_t>(questEntry)] = static_cast<int32_t>(slot);
         m_foreverPlayerFields.questLogQuestIdToIndexChanges.push_back({static_cast<int32_t>(questEntry), 1, static_cast<int32_t>(slot)});
     }
 
@@ -1119,7 +1119,7 @@ uint32_t Player::getQuestLogStateForSlot(uint8_t slot) const
 #if defined(AE_FOREVER)
     if (slot >= MAX_QUEST_LOG_SIZE)
         return 0;
-    return m_foreverPlayerFields.unknownPartyRecords0_69913[slot].stateFlags;
+    return m_foreverPlayerFields.unknownPartyRecords0[slot].stateFlags;
 #else
     return playerData()->quests[slot].state;
 #endif
@@ -1131,7 +1131,7 @@ void Player::setQuestLogStateBySlot(uint8_t slot, uint32_t state)
     if (slot >= MAX_QUEST_LOG_SIZE)
         return;
 
-    auto& questLog = m_foreverPlayerFields.unknownPartyRecords0_69913[slot];
+    auto& questLog = m_foreverPlayerFields.unknownPartyRecords0[slot];
     const uint16_t stateFlags = static_cast<uint16_t>(state & 0xFFFFU);
     if (questLog.stateFlags == stateFlags)
         return;
@@ -1165,7 +1165,7 @@ uint64_t Player::getQuestLogRequiredMobOrGoForSlot(uint8_t slot) const
         return 0;
 
     uint64_t packed = 0;
-    const auto& progress = m_foreverPlayerFields.unknownPartyRecords0_69913[slot].objectiveProgress;
+    const auto& progress = m_foreverPlayerFields.unknownPartyRecords0[slot].objectiveProgress;
     for (uint8_t i = 0; i < 4; ++i)
         packed |= static_cast<uint64_t>(static_cast<uint16_t>(std::max<int16_t>(0, progress[i]))) << (i * 16U);
     return packed;
@@ -1180,7 +1180,7 @@ void Player::setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint64_t mobOrGoCoun
     if (slot >= MAX_QUEST_LOG_SIZE)
         return;
 
-    auto& questLog = m_foreverPlayerFields.unknownPartyRecords0_69913[slot];
+    auto& questLog = m_foreverPlayerFields.unknownPartyRecords0[slot];
     bool changed = false;
     for (uint8_t i = 0; i < 4; ++i)
     {
@@ -1222,7 +1222,7 @@ uint32_t Player::getQuestLogExpireTimeForSlot(uint8_t slot) const
 #if defined(AE_FOREVER)
     if (slot >= MAX_QUEST_LOG_SIZE)
         return 0;
-    return static_cast<uint32_t>(std::max<int64_t>(0, m_foreverPlayerFields.unknownPartyRecords0_69913[slot].endTime));
+    return static_cast<uint32_t>(std::max<int64_t>(0, m_foreverPlayerFields.unknownPartyRecords0[slot].endTime));
 #else
     return playerData()->quests[slot].expire_time;
 #endif
@@ -1234,7 +1234,7 @@ void Player::setQuestLogExpireTimeBySlot(uint8_t slot, uint32_t expireTime)
     if (slot >= MAX_QUEST_LOG_SIZE)
         return;
 
-    auto& questLog = m_foreverPlayerFields.unknownPartyRecords0_69913[slot];
+    auto& questLog = m_foreverPlayerFields.unknownPartyRecords0[slot];
     if (questLog.endTime == static_cast<int64_t>(expireTime))
         return;
 
@@ -1251,10 +1251,10 @@ void Player::setQuestLogExpireTimeBySlot(uint8_t slot, uint32_t expireTime)
 uint32_t Player::getVisibleItemEntry(uint32_t slot) const
 {
 #if defined(AE_FOREVER)
-    if (slot >= m_foreverPlayerFields.unknownVisibleItemRecords0_69913.size())
+    if (slot >= m_foreverPlayerFields.unknownVisibleItemRecords0.size())
         return 0;
 
-    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverPlayerFields.unknownVisibleItemRecords0_69913[slot].itemId));
+    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverPlayerFields.unknownVisibleItemRecords0[slot].itemId));
 #else
     return playerData()->visible_items[slot].entry;
 #endif
@@ -1263,10 +1263,10 @@ uint32_t Player::getVisibleItemEntry(uint32_t slot) const
 void Player::setVisibleItemEntry(uint32_t slot, uint32_t entry)
 {
 #if defined(AE_FOREVER)
-    if (slot >= m_foreverPlayerFields.unknownVisibleItemRecords0_69913.size())
+    if (slot >= m_foreverPlayerFields.unknownVisibleItemRecords0.size())
         return;
 
-    auto& visibleItem = m_foreverPlayerFields.unknownVisibleItemRecords0_69913[slot];
+    auto& visibleItem = m_foreverPlayerFields.unknownVisibleItemRecords0[slot];
     if (visibleItem.itemId == static_cast<int32_t>(entry))
         return;
 
@@ -1287,7 +1287,7 @@ uint16_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const
         return 0;
 
 #if defined(AE_FOREVER)
-    if (slot >= m_foreverPlayerFields.unknownVisibleItemRecords0_69913.size())
+    if (slot >= m_foreverPlayerFields.unknownVisibleItemRecords0.size())
         return 0;
 
     // Forever VisibleItem stores the rendered enchant visual, not the legacy
@@ -1304,7 +1304,7 @@ void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint16_t ench
         return;
 
 #if defined(AE_FOREVER)
-    if (slot >= m_foreverPlayerFields.unknownVisibleItemRecords0_69913.size())
+    if (slot >= m_foreverPlayerFields.unknownVisibleItemRecords0.size())
         return;
 
     // Keep the modern visible-item record dirty when equipment enchant state
@@ -1527,7 +1527,7 @@ void Player::setFarsightGuid(uint64_t farsightGuid)
         return;
 
     m_foreverActivePlayerFields.farsightObject = modernGuid;
-    m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit56_69913);
+    m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit56);
     updateObject();
 #else
     write(playerData()->farsight_guid, farsightGuid);
@@ -3262,7 +3262,7 @@ void Player::setName(utf8_string name)
     {
         m_foreverPlayerFields.firstName = std::move(firstName);
         m_foreverPlayerFields.lastName = std::move(lastName);
-        m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::UnknownChangeBit36_69913);
+        m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::UnknownChangeBit36);
         updateObject();
     }
 #endif
@@ -3900,6 +3900,7 @@ void Player::sendDelayedPacket(WorldPacket* data, bool deleteDataOnSend)
         delete data;
 }
 
+#if !defined(AE_FOREVER)
 bool Player::compressAndSendUpdateBuffer(uint32_t size, const uint8_t* update_buffer)
 {
     uint32_t destsize = size + size / 10 + 16;
@@ -3960,6 +3961,7 @@ bool Player::compressAndSendUpdateBuffer(uint32_t size, const uint8_t* update_bu
 
     return true;
 }
+#endif
 
 uint32_t Player::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
@@ -7023,7 +7025,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
 uint32_t Player::getCurrentSpecId() const
 {
 #if defined(AE_FOREVER)
-    return m_foreverPlayerFields.unknownU32_6_69913;
+    return m_foreverPlayerFields.unknownU32_6;
 #else
     return playerData()->current_spec_id;
 #endif
@@ -7031,11 +7033,11 @@ uint32_t Player::getCurrentSpecId() const
 void Player::setCurrentSpecId(uint32_t specializationId)
 {
 #if defined(AE_FOREVER)
-    if (m_foreverPlayerFields.unknownU32_6_69913 == specializationId)
+    if (m_foreverPlayerFields.unknownU32_6 == specializationId)
         return;
 
-    m_foreverPlayerFields.unknownU32_6_69913 = specializationId;
-    m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::UnknownChangeBit29_69913);
+    m_foreverPlayerFields.unknownU32_6 = specializationId;
+    m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::UnknownChangeBit29);
     updateObject();
 #else
     write(playerData()->current_spec_id, specializationId);
@@ -7068,7 +7070,7 @@ void Player::setPrimaryTalentSpecialization(uint32_t specializationTabId)
 uint32_t Player::getCurrentSpecId() const
 {
 #if defined(AE_FOREVER)
-    return m_foreverPlayerFields.unknownU32_6_69913;
+    return m_foreverPlayerFields.unknownU32_6;
 #else
     return playerData()->current_spec_id;
 #endif
@@ -7076,11 +7078,11 @@ uint32_t Player::getCurrentSpecId() const
 void Player::setCurrentSpecId(uint32_t specializationId)
 {
 #if defined(AE_FOREVER)
-    if (m_foreverPlayerFields.unknownU32_6_69913 == specializationId)
+    if (m_foreverPlayerFields.unknownU32_6 == specializationId)
         return;
 
-    m_foreverPlayerFields.unknownU32_6_69913 = specializationId;
-    m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::UnknownChangeBit29_69913);
+    m_foreverPlayerFields.unknownU32_6 = specializationId;
+    m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::UnknownChangeBit29);
     updateObject();
 #else
     write(playerData()->current_spec_id, specializationId);
@@ -12314,6 +12316,10 @@ void Player::sendLootUpdate(Object* object)
     if (!seesGuid(object->GetNewGUID()))
         return;
 
+#if defined(AE_FOREVER)
+    // Forever loot visibility is carried by ObjectData dirty fields and the dedicated Forever values writer.
+    return;
+#else
     if (object->isCreatureOrPlayer())
     {
         // Build the actual update.
@@ -12332,6 +12338,7 @@ void Player::sendLootUpdate(Object* object)
 
         getUpdateMgr().pushUpdateData(&buffer, 1);
     }
+#endif
 }
 
 void Player::sendLooter(Creature* creature)
@@ -17787,6 +17794,7 @@ float Player::calcRating(PlayerCombatRating index)
     return (rating / combatRatingsEntry->val);
 }
 
+#if !defined(AE_FOREVER)
 void Player::buildFlagUpdateForNonGroupSet(uint32_t index, uint32_t flag)
 {
     for (const auto& inRangeObject : getInRangeObjectsSet())
@@ -17801,6 +17809,7 @@ void Player::buildFlagUpdateForNonGroupSet(uint32_t index, uint32_t flag)
         }
     }
 }
+#endif
 
 void Player::completeLoading()
 {

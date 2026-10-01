@@ -696,7 +696,7 @@ void WorldSession::fullLogin(Player* player)
     //////////////////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // update/set attack speed - mostly 0 on login
+    // update/set attack unknownFloatAfterSkill19 - mostly 0 on login
     player->updateAttackSpeed();
     //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -919,9 +919,9 @@ void WorldSession::fullLoginForever(Player* player)
         unitFields.level = static_cast<int32_t>(player->getLevel());
         unitFields.effectiveLevel = static_cast<int32_t>(player->getLevel());
         unitFields.factionTemplate = static_cast<int32_t>(player->getFactionTemplate());
-        unitFields.unitFlags69913 = player->getUnitFlags();
-        unitFields.unitFlags2_69913 = player->getUnitFlags2();
-        unitFields.unitFlags3_69913 = 0x00000020U; // Stable across sampled 69913 player self-creates.
+        unitFields.unitFlags = player->getUnitFlags();
+        unitFields.unitFlags2 = player->getUnitFlags2();
+        unitFields.unitFlags3 = 0x00000020U; // Stable across sampled 69913 player self-creates.
         unitFields.boundingRadius = player->getBoundingRadius();
         unitFields.combatReach = player->getCombatReach();
 
@@ -944,52 +944,52 @@ void WorldSession::fullLoginForever(Player* player)
 
         unitFields.mountDisplayId = static_cast<int32_t>(player->getMountDisplayId());
         unitFields.currentAreaId = player->getAreaId();
-        unitFields.minDamage69913 = player->getMinDamage();
-        unitFields.maxDamage69913 = player->getMaxDamage();
+        unitFields.minDamage = player->getMinDamage();
+        unitFields.maxDamage = player->getMaxDamage();
 
         // Owner-visible combat fields now have capture-verified semantics.
         // The new Rogue retail capture reports AP=26, RangedAP=27 and
         // Min/MaxRangedDamage=4.857143/6.857143 (UI rounds to 4-7).
-        unitFields.attackPower69913 = static_cast<int32_t>(player->getAttackPower());
-        unitFields.attackPowerMultiplier69913 = player->getAttackPowerMultiplier();
-        unitFields.rangedAttackPower69913 = player->getRangedAttackPower();
-        unitFields.rangedAttackPowerMultiplier69913 = player->getRangedAttackPowerMultiplier();
-        unitFields.minRangedDamage69913 = player->getMinRangedDamage();
-        unitFields.maxRangedDamage69913 = player->getMaxRangedDamage();
+        unitFields.attackPower = static_cast<int32_t>(player->getAttackPower());
+        unitFields.attackPowerMultiplier = player->getAttackPowerMultiplier();
+        unitFields.rangedAttackPower = player->getRangedAttackPower();
+        unitFields.rangedAttackPowerMultiplier = player->getRangedAttackPowerMultiplier();
+        unitFields.minRangedDamage = player->getMinRangedDamage();
+        unitFields.maxRangedDamage = player->getMaxRangedDamage();
 
-        // Forever 69913 UnitData protocol defaults verified from the working
+        // Forever UnitData protocol defaults verified from the working
         // self-create capture. These are sentinel/default values, not copied
         // character stats.
         unitFields.spellEmpowerStage = -1;
         unitFields.creatureType = 7;               // Player units are humanoid.
         unitFields.effectiveLevel = 0;              // No effective-level override.
         unitFields.petNextLevelExperience = 0x7FFFFFFF;
-        unitFields.glideEventSpeedDivisor69913 = 1.0f;
-        unitFields.maxHealthModifier69913 = 0.0f;
+        unitFields.glideEventSpeedDivisor = 1.0f;
+        unitFields.maxHealthModifier = 0.0f;
 
-        // Forever 69913 inserts an owner-visible extension immediately before
+        // Forever inserts an owner-visible extension immediately before
         // NameplateAttachToGUID. The capture contains a 15-byte unresolved prefix,
         // two valid 7-byte ModernGUID encodings, and a final unresolved 3-byte
         // suffix. Model the GUIDs explicitly while preserving the unknown bytes.
-        unitFields.ownerExtension69913.prefix = {
+        unitFields.ownerExtension.prefix = {
             0x80, 0x3F, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00
         };
 
-        static constexpr std::array<uint8_t, 7> ownerGuidA69913 = {
+        static constexpr std::array<uint8_t, 7> ownerGuidA = {
             0x0F, 0x80, 0xD0, 0x0C, 0x04, 0x9B, 0x74
         };
-        static constexpr std::array<uint8_t, 7> ownerGuidB69913 = {
+        static constexpr std::array<uint8_t, 7> ownerGuidB = {
             0x0F, 0x80, 0x8E, 0xF0, 0x50, 0x42, 0x78
         };
-        unitFields.ownerExtension69913.suffix = { 0xDA, 0x52, 0xAD };
+        unitFields.ownerExtension.suffix = { 0xDA, 0x52, 0xAD };
 
         if (!WoWGuid::unpackModern(
-                ownerGuidA69913.data(), ownerGuidA69913.size(), unitFields.ownerExtension69913.guidA) ||
+                ownerGuidA.data(), ownerGuidA.size(), unitFields.ownerExtension.guidA) ||
             !WoWGuid::unpackModern(
-                ownerGuidB69913.data(), ownerGuidB69913.size(), unitFields.ownerExtension69913.guidB))
+                ownerGuidB.data(), ownerGuidB.size(), unitFields.ownerExtension.guidB))
         {
             sLogger.failure("WorldSession::Forever: invalid built-in 69913 owner extension GUID defaults.");
             Disconnect();
@@ -997,9 +997,9 @@ void WorldSession::fullLoginForever(Player* player)
         }
 
         for (uint8_t i = 0; i < 5U; ++i)
-            unitFields.stats69913[i] = static_cast<int32_t>(player->getStat(i));
+            unitFields.stats[i] = static_cast<int32_t>(player->getStat(i));
         for (uint8_t i = 0; i < 7U; ++i)
-            unitFields.resistances69913[i] = static_cast<int32_t>(player->getResistance(i));
+            unitFields.resistances[i] = static_cast<int32_t>(player->getResistance(i));
 
         {
             std::string foreverDbName(player->getName());
@@ -1021,29 +1021,29 @@ void WorldSession::fullLoginForever(Player* player)
             if (playerFields.lastName.size() > 63U)
                 playerFields.lastName.resize(63U);
         }
-        playerFields.unknownU8_0_69913 = player->getGender();
-        playerFields.unknownU32_0_69913 = player->getPlayerFlags();
-        playerFields.unknownU32_6_69913 = player->getCurrentSpecId();
-        playerFields.unknownU32_5_69913 = ((instanceSocket->getForeverRegionId() & 0xFFU) << 24U) | ((instanceSocket->getForeverBattlegroupId() & 0xFFU) << 16U) | (instanceSocket->getForeverRealmId() & 0xFFFFU);
+        playerFields.unknownU8_0 = player->getGender();
+        playerFields.unknownU32_0 = player->getPlayerFlags();
+        playerFields.unknownU32_6 = player->getCurrentSpecId();
+        playerFields.unknownU32_5 = ((instanceSocket->getForeverRegionId() & 0xFFU) << 24U) | ((instanceSocket->getForeverBattlegroupId() & 0xFFU) << 16U) | (instanceSocket->getForeverRealmId() & 0xFFFFU);
 
 
-        // Forever 69913: keep the currently wire-compatible defaults for
+        // Forever: keep the currently wire-compatible defaults for
         // unproven PlayerData wire slots. The field meanings are intentionally
         // not asserted here; targeted VALUES tests will identify them.
-        playerFields.unknownCtrOptions0_69913.conditionalFlags.clear();
-        playerFields.unknownCtrOptions0_69913.conditionalFlags.emplace_back(4U);
-        playerFields.unknownCtrOptions0_69913.factionGroup = 3U;
-        playerFields.unknownCtrOptions0_69913.chromieTimeExpansionMask = 0U;
+        playerFields.unknownCtrOptions0.conditionalFlags.clear();
+        playerFields.unknownCtrOptions0.conditionalFlags.emplace_back(4U);
+        playerFields.unknownCtrOptions0.factionGroup = 3U;
+        playerFields.unknownCtrOptions0.chromieTimeExpansionMask = 0U;
 
         // Wire-compatible default for this unproven 32-bit wire slot.
-        playerFields.unknownI32_12_69913 = -1;
+        playerFields.unknownI32_12 = -1;
 
         // Wire-compatible defaults for this unproven five-scalar record.
-        playerFields.unknownCustomTabard0_69913.emblemStyle = -1;
-        playerFields.unknownCustomTabard0_69913.emblemColor = -1;
-        playerFields.unknownCustomTabard0_69913.borderStyle = -1;
-        playerFields.unknownCustomTabard0_69913.borderColor = -1;
-        playerFields.unknownCustomTabard0_69913.backgroundColor = -1;
+        playerFields.unknownCustomTabard0.emblemStyle = -1;
+        playerFields.unknownCustomTabard0.emblemColor = -1;
+        playerFields.unknownCustomTabard0.borderStyle = -1;
+        playerFields.unknownCustomTabard0.borderColor = -1;
+        playerFields.unknownCustomTabard0.backgroundColor = -1;
 
         activeFields.xp = static_cast<int32_t>(player->getXp());
         activeFields.nextLevelXp = static_cast<int32_t>(player->getNextLevelXp());
@@ -1053,12 +1053,13 @@ void WorldSession::fullLoginForever(Player* player)
         // owner-only ActivePlayerData create carries the current character-sheet values.
         player->updateChances();
 
-        // Forever 69913 post-SkillInfo scalar/combat-stat cluster.
-        // Fields without a canonical AscEmu source remain at protocol zero until
-        // their gameplay source is implemented.
-        activeFields.trackCreatureMask = player->getTrackCreature();
-        activeFields.mainhandExpertise = static_cast<float>(player->getExpertise());
-        activeFields.offhandExpertise = static_cast<float>(player->getOffHandExpertise());
+        // Forever post-SkillInfo 26x32-bit cluster. The target slots are intentionally
+        // neutral because their modern semantic labels are not Forever-proven. These assignments
+        // preserve the previously working candidate values without asserting slot meaning.
+        // Slots without a candidate AscEmu source remain at protocol zero.
+        activeFields.unknownU32AfterSkill2 = player->getTrackCreature();
+        activeFields.unknownFloatAfterSkill3 = static_cast<float>(player->getExpertise());
+        activeFields.unknownFloatAfterSkill4 = static_cast<float>(player->getOffHandExpertise());
         activeFields.blockPercentage = player->getBlockPercentage();
         activeFields.dodgePercentage = player->getDodgePercentage();
         activeFields.parryPercentage = player->getParryPercentage();

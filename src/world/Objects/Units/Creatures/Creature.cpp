@@ -936,7 +936,9 @@ void Creature::OnRespawn()
         {
             m_limbostate = true;
             setDeathState(ALIVE); // we are not actually dead, we just appear dead
+#if !defined(AE_FOREVER)
             setDynamicFlags(U_DYN_FLAG_DEAD);
+#endif
         }
         else if (spawnTemplate.death_state == CREATURE_STATE_DEAD)
         {
@@ -2205,7 +2207,9 @@ bool Creature::LoadFromDB(MySQLStructure::CreatureSpawn* spawn, WorldMap* map, b
     if (spawn->death_state == CREATURE_STATE_APPEAR_DEAD)
     {
         m_limbostate = true;
+#if !defined(AE_FOREVER)
         setDynamicFlags(U_DYN_FLAG_DEAD);
+#endif
     }
     else if (spawn->death_state == CREATURE_STATE_DEAD)
     {
@@ -2648,7 +2652,9 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
         }
     }
 
+#if !defined(AE_FOREVER)
     addUnitFlags(UNIT_FLAG_DEAD);
+#endif
 
     Player* looter = nullptr;
     if (getTaggerGuid())
@@ -2702,6 +2708,10 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
         // Generate Gold
         loot.generateGold(sMySQLStore.getCreatureProperties(getEntry()), getAIInterface()->getDifficultyType());
 
+#if defined(AE_FOREVER)
+        sLogger.info("[ForeverDebug][LootDeath][Creature] entry={} guid={} lootItems={} gold={} empty={} health={} unitFlags=0x{:08X} dynamicFlagsBefore=0x{:08X}", getEntry(), GetNewGUID().getRawGuid(), loot.items.size(), loot.gold, loot.empty(), getHealth(), getUnitFlags(), getDynamicFlags());
+#endif
+
 #if VERSION_STRING == Mop
         // Verified against the real 5.4.8 protocol (Skyfire-Mop's Unit::Kill): unlike the
         // TAGGED_BY_OTHER/TAPPED_BY_PLAYER bits, U_DYN_FLAG_LOOTABLE is not recomputed per
@@ -2719,6 +2729,7 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
         // everything has been taken (see handleLootReleaseOpcode in LootHandler.cpp).
         if (!loot.empty())
             setDynamicFlags(getDynamicFlags() | U_DYN_FLAG_LOOTABLE);
+        sLogger.info("[ForeverDebug][LootDeath][Creature] entry={} guid={} dynamicFlagsAfter=0x{:08X} objectChanges=0x{:X} unitChanges={}", getEntry(), GetNewGUID().getRawGuid(), getDynamicFlags(), m_foreverObjectFields.changes.to_ulong(), foreverUnitFields().changes.count());
 #endif
 
         // Master Looting Ninja Checker

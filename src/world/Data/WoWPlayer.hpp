@@ -1033,7 +1033,7 @@ struct WoWPlayer : WoWUnit
     std::array<WoWPlayer_Quest, WOWPLAYER_QUEST_COUNT> quests;
     std::array<WoWPlayer_VisibleItem, InventoryLayout::Fields::VisibleItemCount> visible_items;
     uint32_t chosen_title;
-    uint32_t unknownU8_1_69913;
+    uint32_t unknownU8_1;
     uint32_t virtual_player_realm;
     uint32_t current_spec_id;
     uint32_t taxi_mount_anim_kit_id;

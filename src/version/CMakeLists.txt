@@ -5,6 +5,9 @@ if (NOT ASCEMU_VERSION STREQUAL "Forever")
     message(FATAL_ERROR "src/version is currently available only for ASCEMU_VERSION=Forever")
 endif ()
 
+
+# Forever UpdateFields use compile-time C++ definitions; no external generator is required.
+
 file(GLOB_RECURSE FOREVER_VERSION_SRCS CONFIGURE_DEPENDS
     Forever/*.cpp
     Forever/*.h

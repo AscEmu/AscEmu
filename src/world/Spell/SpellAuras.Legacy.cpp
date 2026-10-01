@@ -2790,7 +2790,9 @@ void Aura::SpellAuraFeignDeath(AuraEffectModifier* /*aurEff*/, bool apply)
             p_target->addUnitFlags2(UNIT_FLAG2_FEIGN_DEATH);
 #endif
             p_target->addUnitFlags(UNIT_FLAG_FEIGN_DEATH);
+#if !defined(AE_FOREVER)
             p_target->addDynamicFlags(U_DYN_FLAG_DEAD);
+#endif
 
             //now get rid of mobs agro. pTarget->m_combatStatusHandler.AttackersForgetHate() - this works only for already attacking mobs
             for (const auto& itr : p_target->getInRangeObjectsSet())
@@ -2837,7 +2839,9 @@ void Aura::SpellAuraFeignDeath(AuraEffectModifier* /*aurEff*/, bool apply)
             p_target->removeUnitFlags2(UNIT_FLAG2_FEIGN_DEATH);
 #endif
             p_target->removeUnitFlags(UNIT_FLAG_FEIGN_DEATH);
+#if !defined(AE_FOREVER)
             p_target->removeDynamicFlags(U_DYN_FLAG_DEAD);
+#endif
             p_target->sendStopMirrorTimerPacket(MIRROR_TYPE_FIRE);
         }
     }
@@ -4887,12 +4891,18 @@ void Aura::SpellAuraEmphaty(AuraEffectModifier* /*aurEff*/, bool apply)
     // Show extra info about beast
     uint32_t dynflags = m_target->getDynamicFlags();
     if (apply)
+#if defined(AE_FOREVER)
+        dynflags |= U_DYN_FLAG_SPECIALINFO;
+#else
         dynflags |= U_DYN_FLAG_PLAYER_INFO;
+#endif
 
+#if !defined(AE_FOREVER)
 #if VERSION_STRING < Mop
     m_target->BuildFieldUpdatePacket(caster, getOffsetForStructuredField(WoWUnit, dynamic_flags), dynflags);
 #else
     m_target->BuildFieldUpdatePacket(caster, getOffsetForStructuredField(WoWObject, dynamic_field), dynflags);
+#endif
 #endif
 }
 

@@ -1616,7 +1616,7 @@ void Unit::setVirtualItemInfo(uint8_t slot, uint64_t item_info) { write(unitData
 uint32_t Unit::getUnitFlags() const
 {
 #if defined(AE_FOREVER)
-    return m_foreverUnitFields.unitFlags69913;
+    return m_foreverUnitFields.unitFlags;
 #else
     return unitData()->unit_flags;
 #endif
@@ -1625,9 +1625,9 @@ void Unit::setUnitFlags(uint32_t unitFlags)
 {
     const uint32_t oldFlags = getUnitFlags();
 #if defined(AE_FOREVER)
-    if (m_foreverUnitFields.unitFlags69913 != unitFlags)
+    if (m_foreverUnitFields.unitFlags != unitFlags)
     {
-        m_foreverUnitFields.unitFlags69913 = unitFlags;
+        m_foreverUnitFields.unitFlags = unitFlags;
         m_foreverUnitFields.markChanged(AscEmu::Version::Forever::Fields::UnitData::FlagsBit);
         updateObject();
     }
@@ -1673,7 +1673,7 @@ bool Unit::canSwim()
 uint32_t Unit::getUnitFlags2() const
 {
 #if defined(AE_FOREVER)
-    return m_foreverUnitFields.unitFlags2_69913;
+    return m_foreverUnitFields.unitFlags2;
 #else
     return unitData()->unit_flags_2;
 #endif
@@ -1685,9 +1685,9 @@ void Unit::setUnitFlags2(uint32_t unitFlags2)
 #endif
 
 #if defined(AE_FOREVER)
-    if (m_foreverUnitFields.unitFlags2_69913 != unitFlags2)
+    if (m_foreverUnitFields.unitFlags2 != unitFlags2)
     {
-        m_foreverUnitFields.unitFlags2_69913 = unitFlags2;
+        m_foreverUnitFields.unitFlags2 = unitFlags2;
         m_foreverUnitFields.markChanged(AscEmu::Version::Forever::Fields::UnitData::Flags2Bit);
         updateObject();
     }
@@ -1794,7 +1794,7 @@ void Unit::setAuraApplication(Aura const* aur)
 uint32_t Unit::getAuraState() const
 {
 #if defined(AE_FOREVER)
-    return m_foreverUnitFields.auraState69913;
+    return m_foreverUnitFields.auraState;
 #else
     return unitData()->aura_state;
 #endif
@@ -1804,10 +1804,10 @@ void Unit::setAuraState(uint32_t state)
 {
     write(unitData()->aura_state, state);
 #if defined(AE_FOREVER)
-    if (m_foreverUnitFields.auraState69913 == state)
+    if (m_foreverUnitFields.auraState == state)
         return;
 
-    m_foreverUnitFields.auraState69913 = state;
+    m_foreverUnitFields.auraState = state;
     m_foreverUnitFields.markChanged(AscEmu::Version::Forever::Fields::UnitData::AuraStateBit);
     updateObject();
 #endif
@@ -1997,7 +1997,7 @@ void Unit::setMountDisplayId(uint32_t id)
 float Unit::getMinDamage() const
 {
 #if defined(AE_FOREVER)
-    return static_cast<float>(m_foreverUnitFields.minDamage69913);
+    return static_cast<float>(m_foreverUnitFields.minDamage);
 #else
     return unitData()->minimum_damage;
 #endif
@@ -2005,10 +2005,10 @@ float Unit::getMinDamage() const
 void Unit::setMinDamage(float damage)
 {
 #if defined(AE_FOREVER)
-    if (m_foreverUnitFields.minDamage69913 == static_cast<decltype(m_foreverUnitFields.minDamage69913)>(damage))
+    if (m_foreverUnitFields.minDamage == static_cast<decltype(m_foreverUnitFields.minDamage)>(damage))
         return;
 
-    m_foreverUnitFields.minDamage69913 = static_cast<decltype(m_foreverUnitFields.minDamage69913)>(damage);
+    m_foreverUnitFields.minDamage = static_cast<decltype(m_foreverUnitFields.minDamage)>(damage);
     m_foreverUnitFields.markChanged(AscEmu::Version::Forever::Fields::UnitData::MinDamageBit);
     updateObject();
 #else
@@ -2019,7 +2019,7 @@ void Unit::setMinDamage(float damage)
 float Unit::getMaxDamage() const
 {
 #if defined(AE_FOREVER)
-    return static_cast<float>(m_foreverUnitFields.maxDamage69913);
+    return static_cast<float>(m_foreverUnitFields.maxDamage);
 #else
     return unitData()->maximum_damage;
 #endif
@@ -2027,10 +2027,10 @@ float Unit::getMaxDamage() const
 void Unit::setMaxDamage(float damage)
 {
 #if defined(AE_FOREVER)
-    if (m_foreverUnitFields.maxDamage69913 == static_cast<decltype(m_foreverUnitFields.maxDamage69913)>(damage))
+    if (m_foreverUnitFields.maxDamage == static_cast<decltype(m_foreverUnitFields.maxDamage)>(damage))
         return;
 
-    m_foreverUnitFields.maxDamage69913 = static_cast<decltype(m_foreverUnitFields.maxDamage69913)>(damage);
+    m_foreverUnitFields.maxDamage = static_cast<decltype(m_foreverUnitFields.maxDamage)>(damage);
     m_foreverUnitFields.markChanged(AscEmu::Version::Forever::Fields::UnitData::MaxDamageBit);
     updateObject();
 #else
@@ -2041,7 +2041,7 @@ void Unit::setMaxDamage(float damage)
 float Unit::getMinOffhandDamage() const
 {
 #if defined(AE_FOREVER)
-    return static_cast<float>(m_foreverUnitFields.minOffHandDamage69913);
+    return static_cast<float>(m_foreverUnitFields.minOffHandDamage);
 #else
     return unitData()->minimum_offhand_damage;
 #endif
@@ -2049,10 +2049,10 @@ float Unit::getMinOffhandDamage() const
 void Unit::setMinOffhandDamage(float damage)
 {
 #if defined(AE_FOREVER)
-    if (m_foreverUnitFields.minOffHandDamage69913 == static_cast<decltype(m_foreverUnitFields.minOffHandDamage69913)>(damage))
+    if (m_foreverUnitFields.minOffHandDamage == static_cast<decltype(m_foreverUnitFields.minOffHandDamage)>(damage))
         return;
 
-    m_foreverUnitFields.minOffHandDamage69913 = static_cast<decltype(m_foreverUnitFields.minOffHandDamage69913)>(damage);
+    m_foreverUnitFields.minOffHandDamage = static_cast<decltype(m_foreverUnitFields.minOffHandDamage)>(damage);
     m_foreverUnitFields.markChanged(AscEmu::Version::Forever::Fields::UnitData::MinOffHandDamageBit);
     updateObject();
 #else
@@ -2063,7 +2063,7 @@ void Unit::setMinOffhandDamage(float damage)
 float Unit::getMaxOffhandDamage() const
 {
 #if defined(AE_FOREVER)
-    return static_cast<float>(m_foreverUnitFields.maxOffHandDamage69913);
+    return static_cast<float>(m_foreverUnitFields.maxOffHandDamage);
 #else
     return unitData()->maximum_offhand_damage;
 #endif
@@ -2071,10 +2071,10 @@ float Unit::getMaxOffhandDamage() const
 void Unit::setMaxOffhandDamage(float damage)
 {
 #if defined(AE_FOREVER)
-    if (m_foreverUnitFields.maxOffHandDamage69913 == static_cast<decltype(m_foreverUnitFields.maxOffHandDamage69913)>(damage))
+    if (m_foreverUnitFields.maxOffHandDamage == static_cast<decltype(m_foreverUnitFields.maxOffHandDamage)>(damage))
         return;
 
-    m_foreverUnitFields.maxOffHandDamage69913 = static_cast<decltype(m_foreverUnitFields.maxOffHandDamage69913)>(damage);
+    m_foreverUnitFields.maxOffHandDamage = static_cast<decltype(m_foreverUnitFields.maxOffHandDamage)>(damage);
     m_foreverUnitFields.markChanged(AscEmu::Version::Forever::Fields::UnitData::MaxOffHandDamageBit);
     updateObject();
 #else
@@ -2159,7 +2159,7 @@ void Unit::setStandState(uint8_t standState)
 {
     write(unitData()->field_bytes_1.s.stand_state, standState);
 #if defined(AE_FOREVER)
-    // 1.60.1.69913 create payload: StandState is the first byte after the
+    // Forever create payload: StandState is the first byte after the
     // owner-only weapon damage fields. Keep the modern create state mirrored
     // until its standalone value-update ChangeMask bit is capture-verified.
     m_foreverUnitFields.standState = standState;
@@ -2356,7 +2356,7 @@ void Unit::setEmoteState(uint32_t id) { write(unitData()->npc_emote_state, id); 
 uint32_t Unit::getStat(uint8_t stat) const
 {
 #if defined(AE_FOREVER)
-    return stat < m_foreverUnitFields.stats69913.size() ? static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.stats69913[stat])) : 0;
+    return stat < m_foreverUnitFields.stats.size() ? static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.stats[stat])) : 0;
 #else
     return unitData()->stat[stat];
 #endif
@@ -2364,10 +2364,10 @@ uint32_t Unit::getStat(uint8_t stat) const
 void Unit::setStat(uint8_t stat, uint32_t value)
 {
 #if defined(AE_FOREVER)
-    if (stat >= m_foreverUnitFields.stats69913.size() || m_foreverUnitFields.stats69913[stat] == static_cast<int32_t>(value))
+    if (stat >= m_foreverUnitFields.stats.size() || m_foreverUnitFields.stats[stat] == static_cast<int32_t>(value))
         return;
 
-    m_foreverUnitFields.stats69913[stat] = static_cast<int32_t>(value);
+    m_foreverUnitFields.stats[stat] = static_cast<int32_t>(value);
     m_foreverUnitFields.markArrayChanged(AscEmu::Version::Forever::Fields::UnitData::StatsGroupBit, AscEmu::Version::Forever::Fields::UnitData::StatsFirstBit + stat);
     updateObject();
 #else
@@ -2379,7 +2379,7 @@ void Unit::setStat(uint8_t stat, uint32_t value)
 uint32_t Unit::getPosStat(uint8_t stat) const
 {
 #if defined(AE_FOREVER)
-    return stat < m_foreverUnitFields.statPosBuff69913.size() ? static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.statPosBuff69913[stat])) : 0;
+    return stat < m_foreverUnitFields.statPosBuff.size() ? static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.statPosBuff[stat])) : 0;
 #else
     return unitData()->positive_stat[stat];
 #endif
@@ -2387,10 +2387,10 @@ uint32_t Unit::getPosStat(uint8_t stat) const
 void Unit::setPosStat(uint8_t stat, uint32_t value)
 {
 #if defined(AE_FOREVER)
-    if (stat >= m_foreverUnitFields.statPosBuff69913.size() || m_foreverUnitFields.statPosBuff69913[stat] == static_cast<int32_t>(value))
+    if (stat >= m_foreverUnitFields.statPosBuff.size() || m_foreverUnitFields.statPosBuff[stat] == static_cast<int32_t>(value))
         return;
 
-    m_foreverUnitFields.statPosBuff69913[stat] = static_cast<int32_t>(value);
+    m_foreverUnitFields.statPosBuff[stat] = static_cast<int32_t>(value);
     m_foreverUnitFields.markArrayChanged(AscEmu::Version::Forever::Fields::UnitData::StatsGroupBit, AscEmu::Version::Forever::Fields::UnitData::StatPosBuffFirstBit + stat);
     updateObject();
 #else
@@ -2401,7 +2401,7 @@ void Unit::setPosStat(uint8_t stat, uint32_t value)
 uint32_t Unit::getNegStat(uint8_t stat) const
 {
 #if defined(AE_FOREVER)
-    return stat < m_foreverUnitFields.statNegBuff69913.size() ? static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.statNegBuff69913[stat])) : 0;
+    return stat < m_foreverUnitFields.statNegBuff.size() ? static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.statNegBuff[stat])) : 0;
 #else
     return unitData()->negative_stat[stat];
 #endif
@@ -2409,10 +2409,10 @@ uint32_t Unit::getNegStat(uint8_t stat) const
 void Unit::setNegStat(uint8_t stat, uint32_t value)
 {
 #if defined(AE_FOREVER)
-    if (stat >= m_foreverUnitFields.statNegBuff69913.size() || m_foreverUnitFields.statNegBuff69913[stat] == static_cast<int32_t>(value))
+    if (stat >= m_foreverUnitFields.statNegBuff.size() || m_foreverUnitFields.statNegBuff[stat] == static_cast<int32_t>(value))
         return;
 
-    m_foreverUnitFields.statNegBuff69913[stat] = static_cast<int32_t>(value);
+    m_foreverUnitFields.statNegBuff[stat] = static_cast<int32_t>(value);
     m_foreverUnitFields.markArrayChanged(AscEmu::Version::Forever::Fields::UnitData::StatsGroupBit, AscEmu::Version::Forever::Fields::UnitData::StatNegBuffFirstBit + stat);
     updateObject();
 #else
@@ -2424,7 +2424,7 @@ void Unit::setNegStat(uint8_t stat, uint32_t value)
 uint32_t Unit::getResistance(uint8_t type) const
 {
 #if defined(AE_FOREVER)
-    return type < m_foreverUnitFields.resistances69913.size() ? static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.resistances69913[type])) : 0;
+    return type < m_foreverUnitFields.resistances.size() ? static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.resistances[type])) : 0;
 #else
     return unitData()->resistance[type];
 #endif
@@ -2432,10 +2432,10 @@ uint32_t Unit::getResistance(uint8_t type) const
 void Unit::setResistance(uint8_t type, uint32_t value)
 {
 #if defined(AE_FOREVER)
-    if (type >= m_foreverUnitFields.resistances69913.size() || m_foreverUnitFields.resistances69913[type] == static_cast<int32_t>(value))
+    if (type >= m_foreverUnitFields.resistances.size() || m_foreverUnitFields.resistances[type] == static_cast<int32_t>(value))
         return;
 
-    m_foreverUnitFields.resistances69913[type] = static_cast<int32_t>(value);
+    m_foreverUnitFields.resistances[type] = static_cast<int32_t>(value);
     m_foreverUnitFields.markArrayChanged(AscEmu::Version::Forever::Fields::UnitData::ResistancesGroupBit, AscEmu::Version::Forever::Fields::UnitData::ResistancesFirstBit + type);
     updateObject();
 #else
@@ -2447,10 +2447,10 @@ void Unit::setResistance(uint8_t type, uint32_t value)
 uint32_t Unit::getResistanceBuffModPositive(uint8_t type) const
 {
 #if defined(AE_FOREVER)
-    if (type >= m_foreverUnitFields.bonusResistanceMods69913.size())
+    if (type >= m_foreverUnitFields.bonusResistanceMods.size())
         return 0;
 
-    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.bonusResistanceMods69913[type]));
+    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.bonusResistanceMods[type]));
 #else
     return unitData()->resistance_buff_mod_positive[type];
 #endif
@@ -2459,15 +2459,15 @@ uint32_t Unit::getResistanceBuffModPositive(uint8_t type) const
 void Unit::setResistanceBuffModPositive(uint8_t type, uint32_t value)
 {
 #if defined(AE_FOREVER)
-    if (type >= m_foreverUnitFields.bonusResistanceMods69913.size())
+    if (type >= m_foreverUnitFields.bonusResistanceMods.size())
         return;
 
-    const int32_t negative = std::max<int32_t>(0, -m_foreverUnitFields.bonusResistanceMods69913[type]);
+    const int32_t negative = std::max<int32_t>(0, -m_foreverUnitFields.bonusResistanceMods[type]);
     const int32_t bonus = static_cast<int32_t>(value) - negative;
-    if (m_foreverUnitFields.bonusResistanceMods69913[type] == bonus)
+    if (m_foreverUnitFields.bonusResistanceMods[type] == bonus)
         return;
 
-    m_foreverUnitFields.bonusResistanceMods69913[type] = bonus;
+    m_foreverUnitFields.bonusResistanceMods[type] = bonus;
     // The UnitData value is known, but its Forever 70009 differential change bit
     // is not verified yet. Do not emit a guessed change-mask bit.
 #else
@@ -2478,10 +2478,10 @@ void Unit::setResistanceBuffModPositive(uint8_t type, uint32_t value)
 uint32_t Unit::getResistanceBuffModNegative(uint8_t type) const
 {
 #if defined(AE_FOREVER)
-    if (type >= m_foreverUnitFields.bonusResistanceMods69913.size())
+    if (type >= m_foreverUnitFields.bonusResistanceMods.size())
         return 0;
 
-    return static_cast<uint32_t>(std::max<int32_t>(0, -m_foreverUnitFields.bonusResistanceMods69913[type]));
+    return static_cast<uint32_t>(std::max<int32_t>(0, -m_foreverUnitFields.bonusResistanceMods[type]));
 #else
     return unitData()->resistance_buff_mod_negative[type];
 #endif
@@ -2490,19 +2490,19 @@ uint32_t Unit::getResistanceBuffModNegative(uint8_t type) const
 void Unit::setResistanceBuffModNegative(uint8_t type, uint32_t value)
 {
 #if defined(AE_FOREVER)
-    if (type >= m_foreverUnitFields.bonusResistanceMods69913.size())
+    if (type >= m_foreverUnitFields.bonusResistanceMods.size())
         return;
 
     // Legacy callers pass the negative modifier through an unsigned API. Preserve
     // the signed bit pattern here, then expose Forever's single signed bonus field.
     const int32_t signedValue = static_cast<int32_t>(value);
     const int32_t negative = signedValue < 0 ? -signedValue : signedValue;
-    const int32_t positive = std::max<int32_t>(0, m_foreverUnitFields.bonusResistanceMods69913[type]);
+    const int32_t positive = std::max<int32_t>(0, m_foreverUnitFields.bonusResistanceMods[type]);
     const int32_t bonus = positive - negative;
-    if (m_foreverUnitFields.bonusResistanceMods69913[type] == bonus)
+    if (m_foreverUnitFields.bonusResistanceMods[type] == bonus)
         return;
 
-    m_foreverUnitFields.bonusResistanceMods69913[type] = bonus;
+    m_foreverUnitFields.bonusResistanceMods[type] = bonus;
     // The UnitData value is known, but its Forever 70009 differential change bit
     // is not verified yet. Do not emit a guessed change-mask bit.
 #else
@@ -2695,7 +2695,7 @@ void Unit::setAttackPower(uint32_t value)
 {
     write(unitData()->attack_power, value);
 #if defined(AE_FOREVER)
-    m_foreverUnitFields.attackPower69913 = static_cast<int32_t>(value);
+    m_foreverUnitFields.attackPower = static_cast<int32_t>(value);
 #endif
 }
 
@@ -2704,7 +2704,7 @@ void Unit::setRangedAttackPower(int32_t power)
 {
     write(unitData()->ranged_attack_power, power);
 #if defined(AE_FOREVER)
-    m_foreverUnitFields.rangedAttackPower69913 = power;
+    m_foreverUnitFields.rangedAttackPower = power;
 #endif
 }
 
@@ -2713,7 +2713,7 @@ void Unit::setMinRangedDamage(float damage)
 {
     write(unitData()->minimum_ranged_damage, damage);
 #if defined(AE_FOREVER)
-    m_foreverUnitFields.minRangedDamage69913 = damage;
+    m_foreverUnitFields.minRangedDamage = damage;
 #endif
 }
 
@@ -2722,7 +2722,7 @@ void Unit::setMaxRangedDamage(float damage)
 {
     write(unitData()->maximum_ranged_ddamage, damage);
 #if defined(AE_FOREVER)
-    m_foreverUnitFields.maxRangedDamage69913 = damage;
+    m_foreverUnitFields.maxRangedDamage = damage;
 #endif
 }
 
@@ -2783,7 +2783,7 @@ void Unit::setAttackPowerMultiplier(float multiplier)
 {
     write(unitData()->attack_power_multiplier, multiplier);
 #if defined(AE_FOREVER)
-    m_foreverUnitFields.attackPowerMultiplier69913 = multiplier;
+    m_foreverUnitFields.attackPowerMultiplier = multiplier;
 #endif
 }
 void Unit::modAttackPowerMultiplier(float multiplier)
@@ -2828,7 +2828,7 @@ void Unit::setRangedAttackPowerMultiplier(float multiplier)
 {
     write(unitData()->ranged_attack_power_multiplier, multiplier);
 #if defined(AE_FOREVER)
-    m_foreverUnitFields.rangedAttackPowerMultiplier69913 = multiplier;
+    m_foreverUnitFields.rangedAttackPowerMultiplier = multiplier;
 #endif
 }
 void Unit::modRangedAttackPowerMultiplier(float multiplier)
@@ -8687,14 +8687,27 @@ void Unit::setTaggerGuid(Unit const* tagger)
     {
         this->m_taggerGuid = tagger->getGuid();
         m_taggedBySummon = tagger->isSummon();
+#if defined(AE_FOREVER)
+        if (!m_taggedBySummon)
+        {
+            m_foreverObjectFields.markChanged(AscEmu::Version::Forever::Fields::ObjectData::DynamicFlagsBit);
+            updateObject();
+        }
+#else
         if (!m_taggedBySummon)
             addDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER);
+#endif
     }
     else
     {
         this->m_taggerGuid = 0;
         m_taggedBySummon = false;
+#if defined(AE_FOREVER)
+        m_foreverObjectFields.markChanged(AscEmu::Version::Forever::Fields::ObjectData::DynamicFlagsBit);
+        updateObject();
+#else
         removeDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER);
+#endif
     }
 }
 
@@ -8705,13 +8718,9 @@ uint64_t Unit::getTaggerGuid() const
 
 bool Unit::isTagged() const
 {
-    // U_DYN_FLAG_TAGGED_BY_OTHER is only ever computed transiently per-viewer while
-    // building an outgoing update packet (see Object::buildValuesUpdate's per-target
-    // creature recompute) - it is never written back into this object's own stored
-    // dynamic-flags field, so hasDynamicFlags() here was always false for a normal
-    // (non-summon) tag and made isLootable()/isTagged() effectively unreachable.
-    // Check the actual stored tagger guid directly instead, matching the reference's
-    // hasLootRecipient() (m_lootRecipient || m_lootRecipientGroup).
+    // Tag ownership is represented by the tagger GUID. Forever only dirties
+    // ObjectData::DynamicFlags when this changes; it does not assign an unverified
+    // DynamicFlags bit to the tag itself.
     return m_taggerGuid != 0;
 }
 

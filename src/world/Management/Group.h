@@ -262,7 +262,9 @@ public:
     InstanceDifficulty::Difficulties getDifficulty(bool isRaid) const;
     void SetDungeonDifficulty(uint8_t diff);
     void SetRaidDifficulty(uint8_t diff);
+#if !defined(AE_FOREVER)
     void SendLootUpdates(Object* o);
+#endif
     void sendLooter(Creature* creature, Player* pLooter);
 
     void updateLooterGuid(Object* pLootedObject);
