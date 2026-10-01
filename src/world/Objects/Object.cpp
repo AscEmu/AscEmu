@@ -5245,7 +5245,7 @@ DynamicObject* Object::getWorldMapDynamicObject(const uint64_t & guid) const
 
 void Object::SendAIReaction(uint32_t reaction)
 {
-    SmsgAiReaction sendPacket(getGuid(), reaction);
+    SmsgAiReaction sendPacket(getGuid(), reaction, GetMapId());
     PacketBroadcast::sendToSet(*this, sendPacket);
 }
 

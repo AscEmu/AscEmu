@@ -30,6 +30,15 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            { 
+                if (packet.remaining() != 1)
+                    return false;
+                
+                packet >> slot;
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // Mop supports AoE looting (multiple corpses at once), so the client sends a list of

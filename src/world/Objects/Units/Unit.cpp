@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Unit.hpp"
 
 #include "Creatures/Corpse.hpp"
+#include "Creatures/Creature.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/HonorHandler.h"
@@ -15,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Server/Packets/SmsgAuraUpdate.h"
 #include "Server/Packets/SmsgAuraUpdateAll.h"
+#include "Server/Packets/SmsgQuestgiverStatus.h"
 #include "Server/Packets/SmsgClearExtraAuraInfo.h"
 #include "Server/Packets/SmsgEmote.h"
 #include "Server/Packets/SmsgSpellEnergizeLog.h"
@@ -423,6 +425,24 @@ namespace
 
         return WoWGuid::createModernFromLegacy(legacyGuid, worldConfig.battleNetComm.realmId, static_cast<uint16_t>(owner->GetMapId()), 0, 0);
     }
+
+    void sendForeverQuestGiverStatusToNearbyPlayers(Creature* creature)
+    {
+        if (creature == nullptr || !creature->IsInWorld())
+            return;
+
+        for (Object* inrangeObject : creature->getInRangeObjectsSet())
+        {
+            Player* player = inrangeObject != nullptr ? inrangeObject->ToPlayer() : nullptr;
+            WorldSession* session = player != nullptr ? player->getSession() : nullptr;
+            if (session == nullptr || !session->getClientProtocol().isForever())
+                continue;
+
+            const uint32_t status = creature->isQuestGiver() ? sQuestMgr.CalcStatus(creature, player) : QuestStatus::NotAvailable;
+            SmsgQuestgiverStatus questStatus(creature->getGuid(), status, static_cast<uint16_t>(creature->GetMapId()));
+            session->sendManagedPacket(questStatus);
+        }
+    }
 }
 #endif
 
@@ -815,14 +835,20 @@ uint32_t Unit::getPower(PowerType type) const
     const auto powerIndex = getPowerIndexFromDBC(type);
 
 #if defined(AE_FOREVER)
-    if (powerIndex < POWER_FIELD_INDEX_1)
-        return 0;
-
-    const std::size_t index = static_cast<std::size_t>(powerIndex - POWER_FIELD_INDEX_1);
-    if (index >= m_foreverUnitFields.power.size())
-        return 0;
-
-    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.power[index]));
+    switch (powerIndex)
+    {
+        case POWER_FIELD_INDEX_1:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.power[0]));
+        case POWER_FIELD_INDEX_2:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.power[1]));
+        case POWER_FIELD_INDEX_3:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.power[2]));
+        case POWER_FIELD_INDEX_4:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.power[3]));
+        case POWER_FIELD_INDEX_5:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.power[4]));
+        case POWER_FIELD_INDEX_6:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.power[5]));
+        case POWER_FIELD_INDEX_7:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.power[6]));
+        case POWER_FIELD_INDEX_8:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.power[7]));
+        case POWER_FIELD_INDEX_9:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.power[8]));
+        case POWER_FIELD_INDEX_10: return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.power[9]));
+        default: return 0;
+    }
 #else
     switch (powerIndex)
     {
@@ -857,15 +883,26 @@ void Unit::setPower(PowerType type, uint32_t value, [[maybe_unused]] bool sendPa
     const auto powerIndex = getPowerIndexFromDBC(type);
 
 #if defined(AE_FOREVER)
-    if (powerIndex < POWER_FIELD_INDEX_1)
-        return;
+    std::size_t index = 0;
 
-    const std::size_t index = static_cast<std::size_t>(powerIndex - POWER_FIELD_INDEX_1);
-    if (index >= m_foreverUnitFields.power.size())
-        return;
+    switch (powerIndex)
+    {
+        case POWER_FIELD_INDEX_1:  index = 0; break;
+        case POWER_FIELD_INDEX_2:  index = 1; break;
+        case POWER_FIELD_INDEX_3:  index = 2; break;
+        case POWER_FIELD_INDEX_4:  index = 3; break;
+        case POWER_FIELD_INDEX_5:  index = 4; break;
+        case POWER_FIELD_INDEX_6:  index = 5; break;
+        case POWER_FIELD_INDEX_7:  index = 6; break;
+        case POWER_FIELD_INDEX_8:  index = 7; break;
+        case POWER_FIELD_INDEX_9:  index = 8; break;
+        case POWER_FIELD_INDEX_10: index = 9; break;
+        default: return;
+    }
 
     m_foreverUnitFields.power[index] = static_cast<int32_t>(value);
     m_foreverUnitFields.markArrayChanged(AscEmu::Version::Forever::Fields::UnitData::PowerGroupBit, AscEmu::Version::Forever::Fields::UnitData::PowerFirstBit + index);
+
     if (!skipObjectUpdate)
         updateObject();
 #else
@@ -961,14 +998,20 @@ uint32_t Unit::getMaxPower(PowerType type) const
     const auto powerIndex = getPowerIndexFromDBC(type);
 
 #if defined(AE_FOREVER)
-    if (powerIndex < POWER_FIELD_INDEX_1)
-        return 0;
-
-    const std::size_t index = static_cast<std::size_t>(powerIndex - POWER_FIELD_INDEX_1);
-    if (index >= m_foreverUnitFields.maxPower.size())
-        return 0;
-
-    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.maxPower[index]));
+    switch (powerIndex)
+    {
+        case POWER_FIELD_INDEX_1:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.maxPower[0]));
+        case POWER_FIELD_INDEX_2:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.maxPower[1]));
+        case POWER_FIELD_INDEX_3:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.maxPower[2]));
+        case POWER_FIELD_INDEX_4:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.maxPower[3]));
+        case POWER_FIELD_INDEX_5:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.maxPower[4]));
+        case POWER_FIELD_INDEX_6:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.maxPower[5]));
+        case POWER_FIELD_INDEX_7:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.maxPower[6]));
+        case POWER_FIELD_INDEX_8:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.maxPower[7]));
+        case POWER_FIELD_INDEX_9:  return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.maxPower[8]));
+        case POWER_FIELD_INDEX_10: return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverUnitFields.maxPower[9]));
+        default: return 0;
+    }
 #else
     switch (powerIndex)
     {
@@ -997,12 +1040,22 @@ void Unit::setMaxPower(PowerType type, uint32_t value)
     const auto powerIndex = getPowerIndexFromDBC(type);
 
 #if defined(AE_FOREVER)
-    if (powerIndex < POWER_FIELD_INDEX_1)
-        return;
+    std::size_t index = 0;
 
-    const std::size_t index = static_cast<std::size_t>(powerIndex - POWER_FIELD_INDEX_1);
-    if (index >= m_foreverUnitFields.maxPower.size())
-        return;
+    switch (powerIndex)
+    {
+        case POWER_FIELD_INDEX_1:  index = 0; break;
+        case POWER_FIELD_INDEX_2:  index = 1; break;
+        case POWER_FIELD_INDEX_3:  index = 2; break;
+        case POWER_FIELD_INDEX_4:  index = 3; break;
+        case POWER_FIELD_INDEX_5:  index = 4; break;
+        case POWER_FIELD_INDEX_6:  index = 5; break;
+        case POWER_FIELD_INDEX_7:  index = 6; break;
+        case POWER_FIELD_INDEX_8:  index = 7; break;
+        case POWER_FIELD_INDEX_9:  index = 8; break;
+        case POWER_FIELD_INDEX_10: index = 9; break;
+        default: return;
+    }
 
     if (m_foreverUnitFields.maxPower[index] == static_cast<int32_t>(value))
         return;
@@ -1047,7 +1100,27 @@ void Unit::modMaxPower(PowerType type, int32_t value)
 
 float Unit::getPowerRegeneration(PowerType type) const
 {
-#if VERSION_STRING < WotLK
+#if VERSION_STRING == AE_PROFILE_FOREVER
+    if (type == POWER_TYPE_HEALTH)
+        return 0.0f;
+
+    const auto powerIndex = getPowerIndexFromDBC(type);
+
+    switch (powerIndex)
+    {
+        case POWER_FIELD_INDEX_1:  return m_foreverUnitFields.powerRegenFlatModifier[0];
+        case POWER_FIELD_INDEX_2:  return m_foreverUnitFields.powerRegenFlatModifier[1];
+        case POWER_FIELD_INDEX_3:  return m_foreverUnitFields.powerRegenFlatModifier[2];
+        case POWER_FIELD_INDEX_4:  return m_foreverUnitFields.powerRegenFlatModifier[3];
+        case POWER_FIELD_INDEX_5:  return m_foreverUnitFields.powerRegenFlatModifier[4];
+        case POWER_FIELD_INDEX_6:  return m_foreverUnitFields.powerRegenFlatModifier[5];
+        case POWER_FIELD_INDEX_7:  return m_foreverUnitFields.powerRegenFlatModifier[6];
+        case POWER_FIELD_INDEX_8:  return m_foreverUnitFields.powerRegenFlatModifier[7];
+        case POWER_FIELD_INDEX_9:  return m_foreverUnitFields.powerRegenFlatModifier[8];
+        case POWER_FIELD_INDEX_10: return m_foreverUnitFields.powerRegenFlatModifier[9];
+        default: return 0.0f;
+    }
+#elif VERSION_STRING < WotLK
     switch (type)
     {
         case POWER_TYPE_MANA:
@@ -1071,16 +1144,6 @@ float Unit::getPowerRegeneration(PowerType type) const
         return 0.0f;
 
     const auto powerIndex = getPowerIndexFromDBC(type);
-#if defined(AE_FOREVER)
-    if (powerIndex < POWER_FIELD_INDEX_1)
-        return 0.0f;
-
-    const std::size_t index = static_cast<std::size_t>(powerIndex - POWER_FIELD_INDEX_1);
-    if (index >= m_foreverUnitFields.powerRegenFlatModifier.size())
-        return 0.0f;
-
-    return m_foreverUnitFields.powerRegenFlatModifier[index];
-#else
     switch (powerIndex)
     {
         case POWER_FIELD_INDEX_1:
@@ -1097,12 +1160,31 @@ float Unit::getPowerRegeneration(PowerType type) const
             return 0.0f;
     }
 #endif
-#endif
 }
 
 void Unit::setPowerRegeneration(PowerType type, float value)
 {
-#if VERSION_STRING < WotLK
+#if VERSION_STRING == AE_PROFILE_FOREVER
+    if (type == POWER_TYPE_HEALTH)
+        return;
+
+    const auto powerIndex = getPowerIndexFromDBC(type);
+
+    switch (powerIndex)
+    {
+        case POWER_FIELD_INDEX_1:  m_foreverUnitFields.powerRegenFlatModifier[0] = value; break;
+        case POWER_FIELD_INDEX_2:  m_foreverUnitFields.powerRegenFlatModifier[1] = value; break;
+        case POWER_FIELD_INDEX_3:  m_foreverUnitFields.powerRegenFlatModifier[2] = value; break;
+        case POWER_FIELD_INDEX_4:  m_foreverUnitFields.powerRegenFlatModifier[3] = value; break;
+        case POWER_FIELD_INDEX_5:  m_foreverUnitFields.powerRegenFlatModifier[4] = value; break;
+        case POWER_FIELD_INDEX_6:  m_foreverUnitFields.powerRegenFlatModifier[5] = value; break;
+        case POWER_FIELD_INDEX_7:  m_foreverUnitFields.powerRegenFlatModifier[6] = value; break;
+        case POWER_FIELD_INDEX_8:  m_foreverUnitFields.powerRegenFlatModifier[7] = value; break;
+        case POWER_FIELD_INDEX_9:  m_foreverUnitFields.powerRegenFlatModifier[8] = value; break;
+        case POWER_FIELD_INDEX_10: m_foreverUnitFields.powerRegenFlatModifier[9] = value; break;
+        default: break;
+    }
+#elif VERSION_STRING < WotLK
     switch (type)
     {
         case POWER_TYPE_MANA:
@@ -1130,16 +1212,6 @@ void Unit::setPowerRegeneration(PowerType type, float value)
         return;
 
     const auto powerIndex = getPowerIndexFromDBC(type);
-#if defined(AE_FOREVER)
-    if (powerIndex < POWER_FIELD_INDEX_1)
-        return;
-
-    const std::size_t index = static_cast<std::size_t>(powerIndex - POWER_FIELD_INDEX_1);
-    if (index >= m_foreverUnitFields.powerRegenFlatModifier.size())
-        return;
-
-    m_foreverUnitFields.powerRegenFlatModifier[index] = value;
-#else
     switch (powerIndex)
     {
         case POWER_FIELD_INDEX_1:
@@ -1157,12 +1229,31 @@ void Unit::setPowerRegeneration(PowerType type, float value)
             break;
     }
 #endif
-#endif
 }
 
 float Unit::getPowerRegenerationWhileInterrupted(PowerType type) const
 {
-#if VERSION_STRING < WotLK
+#if VERSION_STRING == AE_PROFILE_FOREVER
+    if (type == POWER_TYPE_HEALTH)
+        return 0.0f;
+
+    const auto powerIndex = getPowerIndexFromDBC(type);
+    
+    switch (powerIndex)
+    {
+        case POWER_FIELD_INDEX_1:  return m_foreverUnitFields.powerRegenInterruptedFlatModifier[0];
+        case POWER_FIELD_INDEX_2:  return m_foreverUnitFields.powerRegenInterruptedFlatModifier[1];
+        case POWER_FIELD_INDEX_3:  return m_foreverUnitFields.powerRegenInterruptedFlatModifier[2];
+        case POWER_FIELD_INDEX_4:  return m_foreverUnitFields.powerRegenInterruptedFlatModifier[3];
+        case POWER_FIELD_INDEX_5:  return m_foreverUnitFields.powerRegenInterruptedFlatModifier[4];
+        case POWER_FIELD_INDEX_6:  return m_foreverUnitFields.powerRegenInterruptedFlatModifier[5];
+        case POWER_FIELD_INDEX_7:  return m_foreverUnitFields.powerRegenInterruptedFlatModifier[6];
+        case POWER_FIELD_INDEX_8:  return m_foreverUnitFields.powerRegenInterruptedFlatModifier[7];
+        case POWER_FIELD_INDEX_9:  return m_foreverUnitFields.powerRegenInterruptedFlatModifier[8];
+        case POWER_FIELD_INDEX_10: return m_foreverUnitFields.powerRegenInterruptedFlatModifier[9];
+        default: return 0.0f;
+    }
+#elif VERSION_STRING < WotLK
     switch (type)
     {
         case POWER_TYPE_MANA:
@@ -1186,16 +1277,6 @@ float Unit::getPowerRegenerationWhileInterrupted(PowerType type) const
         return 0.0f;
 
     const auto powerIndex = getPowerIndexFromDBC(type);
-#if defined(AE_FOREVER)
-    if (powerIndex < POWER_FIELD_INDEX_1)
-        return 0.0f;
-
-    const std::size_t index = static_cast<std::size_t>(powerIndex - POWER_FIELD_INDEX_1);
-    if (index >= m_foreverUnitFields.powerRegenInterruptedFlatModifier.size())
-        return 0.0f;
-
-    return m_foreverUnitFields.powerRegenInterruptedFlatModifier[index];
-#else
     switch (powerIndex)
     {
         case POWER_FIELD_INDEX_1:
@@ -1212,12 +1293,31 @@ float Unit::getPowerRegenerationWhileInterrupted(PowerType type) const
             return 0.0f;
     }
 #endif
-#endif
 }
 
 void Unit::setPowerRegenerationWhileInterrupted(PowerType type, float value)
 {
-#if VERSION_STRING < WotLK
+#if defined(AE_FOREVER)
+    if (type == POWER_TYPE_HEALTH)
+        return;
+
+    const auto powerIndex = getPowerIndexFromDBC(type);
+
+    switch (powerIndex)
+    {
+        case POWER_FIELD_INDEX_1:  m_foreverUnitFields.powerRegenInterruptedFlatModifier[0] = value; break;
+        case POWER_FIELD_INDEX_2:  m_foreverUnitFields.powerRegenInterruptedFlatModifier[1] = value; break;
+        case POWER_FIELD_INDEX_3:  m_foreverUnitFields.powerRegenInterruptedFlatModifier[2] = value; break;
+        case POWER_FIELD_INDEX_4:  m_foreverUnitFields.powerRegenInterruptedFlatModifier[3] = value; break;
+        case POWER_FIELD_INDEX_5:  m_foreverUnitFields.powerRegenInterruptedFlatModifier[4] = value; break;
+        case POWER_FIELD_INDEX_6:  m_foreverUnitFields.powerRegenInterruptedFlatModifier[5] = value; break;
+        case POWER_FIELD_INDEX_7:  m_foreverUnitFields.powerRegenInterruptedFlatModifier[6] = value; break;
+        case POWER_FIELD_INDEX_8:  m_foreverUnitFields.powerRegenInterruptedFlatModifier[7] = value; break;
+        case POWER_FIELD_INDEX_9:  m_foreverUnitFields.powerRegenInterruptedFlatModifier[8] = value; break;
+        case POWER_FIELD_INDEX_10: m_foreverUnitFields.powerRegenInterruptedFlatModifier[9] = value; break;
+        default: break;
+    }
+#elif VERSION_STRING < WotLK
     switch (type)
     {
         case POWER_TYPE_MANA:
@@ -1245,16 +1345,6 @@ void Unit::setPowerRegenerationWhileInterrupted(PowerType type, float value)
         return;
 
     const auto powerIndex = getPowerIndexFromDBC(type);
-#if defined(AE_FOREVER)
-    if (powerIndex < POWER_FIELD_INDEX_1)
-        return;
-
-    const std::size_t index = static_cast<std::size_t>(powerIndex - POWER_FIELD_INDEX_1);
-    if (index >= m_foreverUnitFields.powerRegenInterruptedFlatModifier.size())
-        return;
-
-    m_foreverUnitFields.powerRegenInterruptedFlatModifier[index] = value;
-#else
     switch (powerIndex)
     {
         case POWER_FIELD_INDEX_1:
@@ -1271,7 +1361,6 @@ void Unit::setPowerRegenerationWhileInterrupted(PowerType type, float value)
         default:
             break;
     }
-#endif
 #endif
 }
 
@@ -1346,6 +1435,11 @@ void Unit::setFactionTemplate(uint32_t id)
 
     if (WorldMap* map = getWorldMap())
         map->queueUnitAwareness(this, UnitAwarenessSignal::ReactionChanged);
+
+#if defined(AE_FOREVER)
+    if (Creature* creature = ToCreature(); creature != nullptr && ((creature->getNpcFlags() & UNIT_NPC_FLAG_QUESTGIVER) != 0))
+        sendForeverQuestGiverStatusToNearbyPlayers(creature);
+#endif
 }
 
 void Unit::setFaction(uint32_t factionId)
@@ -2187,7 +2281,7 @@ void Unit::setPetNextLevelExperience(uint32_t experience)
 #endif
 }
 
-#if VERSION_STRING < Mop
+#if VERSION_STRING < Mop && !defined(AE_FOREVER)
 uint32_t Unit::getDynamicFlags() const { return unitData()->dynamic_flags; }
 void Unit::setDynamicFlags(uint32_t dynamicFlags) { write(unitData()->dynamic_flags, dynamicFlags); }
 void Unit::addDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() | dynamicFlags); }
@@ -2238,11 +2332,17 @@ uint64_t Unit::getNpcFlags() const
 
 void Unit::setNpcFlags(uint64_t npcFlags)
 {
+#if defined(AE_FOREVER)
+    const uint64_t previousNpcFlags = getNpcFlags();
+#endif
     write(unitData()->npc_flags, npcFlags);
 #if defined(AE_FOREVER)
     m_foreverUnitFields.npcFlags = static_cast<uint32_t>(npcFlags);
     m_foreverUnitFields.npcFlags2 = static_cast<uint32_t>(npcFlags >> 32);
     // Standalone 69913 ChangeMask bits for these two fields are not capture-verified.
+
+    if (IsInWorld() && ((previousNpcFlags | npcFlags) & UNIT_NPC_FLAG_QUESTGIVER) != 0)
+        sendForeverQuestGiverStatusToNearbyPlayers(ToCreature());
 #endif
 }
 
@@ -4730,8 +4830,7 @@ void Unit::sendSpellOrDamageImmune(uint64_t casterGuid, Unit* target, uint32_t s
 #if VERSION_STRING > TBC
 void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& victimGuid, HitStatus hitStatus, uint32_t damage, [[maybe_unused]]uint32_t overKill, DamageInfo damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, [[maybe_unused]]uint32_t rageGain)
 {
-    SmsgAttackerstateupdate managedPacket(attackerGuid, victimGuid, hitStatus, damage, overKill,
-        damageInfo, absorbedDamage, visualState, blockedDamage, rageGain);
+    SmsgAttackerstateupdate managedPacket(attackerGuid, victimGuid, hitStatus, damage, overKill, damageInfo, absorbedDamage, visualState, blockedDamage, rageGain, GetMapId());
     PacketBroadcast::sendToSet(*this, managedPacket, true);
 }
 #else // Classic
@@ -4739,8 +4838,7 @@ void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& v
 {
     sLogger.debugOpcode("Status {}, damage {}", uint32_t(hitStatus), damage);
 
-    SmsgAttackerstateupdate managedPacket(attackerGuid, victimGuid, hitStatus, damage, overKill,
-        damageInfo, absorbedDamage, visualState, blockedDamage, rageGain);
+    SmsgAttackerstateupdate managedPacket(attackerGuid, victimGuid, hitStatus, damage, overKill, damageInfo, absorbedDamage, visualState, blockedDamage, rageGain, GetMapId());
     PacketBroadcast::sendToSet(*this, managedPacket, true);
 }
 #endif
@@ -6049,6 +6147,17 @@ void Unit::queueInitialVisiblePacketsForPlayer(Player* target)
     }
 #endif
 
+    if (WorldSession* session = target->getSession(); session != nullptr && session->getClientProtocol().isForever())
+    {
+        if (Creature* creature = ToCreature(); creature != nullptr && creature->isQuestGiver())
+        {
+            const uint32_t status = sQuestMgr.CalcStatus(creature, target);
+            SmsgQuestgiverStatus questStatus(creature->getGuid(), status, static_cast<uint16_t>(creature->GetMapId()));
+            if (auto packet = session->buildPacket(questStatus))
+                target->getUpdateMgr().queueDelayedPacket(std::move(packet));
+        }
+    }
+
     sendMovementFlagsToPlayer(target);
 }
 
@@ -7141,20 +7250,18 @@ uint8_t Unit::getPowerPct(PowerType powerType) const
 
 void Unit::sendPowerUpdate([[maybe_unused]] bool self)
 {
-#if VERSION_STRING >= WotLK
+#if VERSION_STRING >= WotLK || defined(AE_FOREVER)
     // Save current power so the same amount is sent to player and everyone else
     const auto powerAmount = getPower(getPowerType());
 
-    SmsgPowerUpdate sendPacket(GetNewGUID(), static_cast<uint8_t>(getPowerType()), powerAmount);
+    SmsgPowerUpdate sendPacket(GetNewGUID(), static_cast<uint8_t>(getPowerType()), powerAmount, GetMapId());
     PacketBroadcast::sendToSet(*this, sendPacket, self);
 #endif
 }
 
 uint8_t Unit::getPowerIndexFromDBC(PowerType type) const
 {
-#if VERSION_STRING <= WotLK || defined(AE_FOREVER)
-    // Classic/TBC/WotLK and Forever use PowerType directly as the
-    // 1-based power field index. Forever PowerType.db2 IDs are contiguous.
+#if VERSION_STRING <= WotLK && !defined(AE_FOREVER)
     return static_cast<uint8_t>(type + 1);
 #else
     if (!isPlayer())
@@ -8027,13 +8134,13 @@ uint32_t Unit::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool initialCh
 
 void Unit::smsg_AttackStop(Unit* pVictim)
 {
-    SmsgAttackStop sendPacket(GetNewGUID(), pVictim ? pVictim->GetNewGUID() : WoWGuid(), pVictim != nullptr && pVictim->isDead());
+    SmsgAttackStop sendPacket(GetNewGUID(), pVictim ? pVictim->GetNewGUID() : WoWGuid(), pVictim != nullptr && pVictim->isDead(), GetMapId());
     PacketBroadcast::sendToSet(*this, sendPacket, true);
 }
 
 void Unit::smsg_AttackStart(Unit* pVictim)
 {
-    SmsgAttackStart sendPacket(getGuid(), pVictim->getGuid());
+    SmsgAttackStart sendPacket(getGuid(), pVictim->getGuid(), GetMapId());
     PacketBroadcast::sendToSet(*this, sendPacket, false);
 
     sLogger.debugOpcode("WORLD: Sent SMSG_ATTACK_START");
@@ -9901,10 +10008,20 @@ void Unit::removeReflect(uint32_t spellId, bool apply)
 void Unit::castOnMeleeSpell()
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(getOnMeleeSpell());
+    if (spellInfo == nullptr)
+    {
+        setOnMeleeSpell(0);
+        return;
+    }
 
     if (Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr))
     {
         spell->extra_cast_number = getOnMeleeSpellEcn();
+        spell->m_foreverClientCastId = getOnMeleeSpellClientCastId();
+        spell->m_foreverServerCastId = getOnMeleeSpellServerCastId();
+        spell->m_foreverSpellXSpellVisualId = getOnMeleeSpellXSpellVisualId();
+        spell->m_foreverScriptVisualId = getOnMeleeSpellScriptVisualId();
+
         SpellCastTargets targets(getTargetGuid());
         spell->prepare(&targets);
         setOnMeleeSpell(0);
@@ -10762,7 +10879,18 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
 #endif
         if (weapon_damage_type != RANGED && !backAttack)                // block chance
         {
-            block = static_cast<Player*>(pVictim)->getBlockPercentage(); //shield check already done in Update chances
+            Player* victimPlayer = static_cast<Player*>(pVictim);
+            block = victimPlayer->getBlockPercentage(); //shield check already done in Update chances
+#if defined(AE_FOREVER)
+            // Forever can enter combat before the legacy cached avoidance fields have
+            // been refreshed after the modern inventory bridge populated equipment.
+            // Re-evaluate block from the currently equipped shield so a valid shield
+            // always gets its base block roll. Defense contributes 0 in Forever.
+            if (const Item* shield = victimPlayer->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND); shield != nullptr && shield->getItemProperties()->InventoryType == INVTYPE_SHIELD)
+                block = victimPlayer->getBlockChance();
+            else
+                block = 0.0f;
+#endif
 
             if (pVictim->m_stunned <= 0)                                // dodge chance
             {

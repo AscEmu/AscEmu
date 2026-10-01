@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ForeverSpellPacketUtils.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -16,16 +17,18 @@ namespace AscEmu::Packets
         WoWGuid attackerGuid;
         WoWGuid victimGuid;
         bool victimIsDead;
+        uint16_t mapId = 0;
 
-        SmsgAttackStop() : SmsgAttackStop(WoWGuid(), WoWGuid(), false)
+        SmsgAttackStop() : SmsgAttackStop(WoWGuid(), WoWGuid(), false, 0)
         {
         }
 
-        SmsgAttackStop(WoWGuid attackerGuid, WoWGuid victimGuid, bool victimIsDead) :
+        SmsgAttackStop(WoWGuid attackerGuid, WoWGuid victimGuid, bool victimIsDead, uint16_t mapId) :
             ManagedPacket(SMSG_ATTACK_STOP, 0),
             attackerGuid(attackerGuid),
             victimGuid(victimGuid),
-            victimIsDead(victimIsDead)
+            victimIsDead(victimIsDead),
+            mapId(mapId)
         {
         }
 
@@ -34,6 +37,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                ForeverSpellPacket::writePackedGuid(packet, ForeverSpellPacket::toModernGuid(attackerGuid, m_protocol.realmId, mapId));
+                ForeverSpellPacket::writePackedGuid(packet, ForeverSpellPacket::toModernGuid(victimGuid, m_protocol.realmId, mapId));
+                packet << uint8_t(victimIsDead ? 1 : 0);
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << attackerGuid;

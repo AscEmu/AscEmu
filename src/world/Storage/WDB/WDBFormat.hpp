@@ -1230,6 +1230,7 @@ namespace WDB
         inline const WDC5TableSchema ChrModel = makeSchemaWithArrays("ChrModel.db2", 0x03FAB755, 2, 17, {{0, 3}, {1, 3}});
         inline const WDC5TableSchema ChrRaceXChrModel = makeScalarSchema("ChrRaceXChrModel.db2", 0xA203BC29, -1, 4);
         inline const WDC5TableSchema ChrClasses = makeScalarSchema("ChrClasses.db2", 0xAFC9B0C2, 29, 43);
+        inline const WDC5TableSchema ChrClassesXPowerTypes = makeScalarSchema("ChrClassesXPowerTypes.db2", 0x70DA1F8C, -1, 1);
         inline const WDC5TableSchema ChrRaces = makeSchemaWithArrays("ChrRaces.db2", 0x4F44C796, -1, 51, {{23, 3}, {24, 3}, {30, 3}, {32, 3}, {33, 3}});
         inline const WDC5TableSchema Faction = makeScalarSchema("Faction.db2", 0x6D443C38, -1, 21);
         inline const WDC5TableSchema FactionTemplate = makeSchemaWithArrays("FactionTemplate.db2", 0x22B6DC22, -1, 7, {{5, 8}, {6, 8}});

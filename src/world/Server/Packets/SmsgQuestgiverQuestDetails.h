@@ -7,18 +7,32 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "QuestPacketCommon.h"
+#include "Server/World.h"
+#include "WoWGuid.hpp"
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace AscEmu::Packets
 {
+    struct QuestObjectiveSimpleEntry
+    {
+        int32_t id = 0;
+        int32_t type = 0;
+        int32_t objectId = 0;
+        int32_t amount = 0;
+    };
+
     // Populated by QuestMgr, which owns the locale/DB lookups (sMySQLStore.getLocalizedQuest,
     // getItemProperties) and the XP/money reward formulas (GenerateQuestXP/GenerateRewardMoney).
     struct QuestgiverQuestDetailsInput
     {
         uint64_t questGiverGuid = 0;
         uint64_t questSharerGuid = 0; // pre-Cata, >TBC only: qst_giver->isPlayer() ? guid : 0. Cata always sends 0.
+        uint16_t mapId = 0;
+        uint32_t questGiverCreatureId = 0;
+        uint32_t questStartItemId = 0;
         uint32_t questId = 0;
         std::string title;
         std::string details;
@@ -30,6 +44,10 @@ namespace AscEmu::Packets
         uint32_t countRewardItem = 0;    // pre-Cata reward-item count header
         uint32_t countRequiredItem = 0;  // Cata reward-item count header (yes, Cata reads count_required_item here)
         QuestRewardItemEntry rewardItems[4];
+        uint32_t rewardCurrencyId[4] = {};
+        uint32_t rewardCurrencyCount[4] = {};
+        uint32_t rewardRepFaction[5] = {};
+        int32_t rewardRepValue[5] = {};
         uint32_t rewardMoney = 0;
         uint32_t xp = 0;         // Cata only - pre-Cata deliberately sends 0 here, not the real XP
         uint32_t bonusHonor = 0; // pre-Cata, >TBC only
@@ -40,6 +58,7 @@ namespace AscEmu::Packets
         uint32_t bonusArenaPoints = 0;
         uint32_t detailEmoteCount = 0; // pre-Cata, >TBC only: how many of detailEmotes to send
         QuestEmoteEntry detailEmotes[4];
+        std::vector<QuestObjectiveSimpleEntry> objectiveEntries;
     };
 
     class SmsgQuestgiverQuestDetails : public ManagedPacket
@@ -65,6 +84,137 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                // Forever 1.60.1.70009/70124 uses the modern QuestGiverQuestDetails layout.
+                // The field order below is verified against the captured quest 33 packet
+                // (Wolves Across the Border) instead of reusing the incompatible Cata layout.
+                const WoWGuid questGiverGuid = WoWGuid::createModernFromLegacy(input.questGiverGuid, worldConfig.battleNetComm.realmId, input.mapId, 0);
+                const WoWGuid informUnit = WoWGuid::createModernFromLegacy(input.questSharerGuid, worldConfig.battleNetComm.realmId, input.mapId, 0);
+                const auto packedQuestGiverGuid = questGiverGuid.packModern();
+                const auto packedInformUnit = informUnit.packModern();
+                packet.append(packedQuestGiverGuid.data(), packedQuestGiverGuid.size());
+                packet.append(packedInformUnit.data(), packedInformUnit.size());
+
+                packet << static_cast<int32_t>(input.questId);
+                packet << int32_t(0); // QuestPackageID
+                packet << int32_t(0); // PortraitGiver
+                packet << int32_t(0); // PortraitGiverMount
+                packet << int32_t(0); // PortraitGiverModelSceneID
+                packet << int32_t(0); // PortraitTurnIn
+
+                packet << static_cast<uint32_t>(input.questFlags); // QuestFlags[0]
+                packet << uint32_t(0);                             // QuestFlags[1]
+                packet << uint32_t(0);                             // QuestFlags[2]
+                packet << uint32_t(0);                             // QuestFlags[3]
+                packet << static_cast<int32_t>(input.suggestedPlayers);
+                packet << uint32_t(0); // LearnSpells count
+
+                // QuestRewards.Items[4]
+                for (const auto& item : input.rewardItems)
+                {
+                    packet << static_cast<int32_t>(item.itemId);
+                    packet << static_cast<int32_t>(item.count);
+                    packet.writeBit(false); // ContextFlags absent
+                    packet.flushBits();
+                }
+
+                // QuestRewards.Currencies[4]
+                for (uint8_t i = 0; i < 4; ++i)
+                {
+                    packet << static_cast<int32_t>(input.rewardCurrencyId[i]);
+                    packet << static_cast<int32_t>(input.rewardCurrencyCount[i]);
+                    packet << int32_t(0); // BonusQty
+                    packet.writeBit(false); // ContextFlags absent
+                    packet.flushBits();
+                }
+
+                packet << static_cast<int32_t>(input.countRewardChoiceItem);
+
+                // QuestRewards.ChoiceItems[6]. AscEmu does not model item modifiers or
+                // bonus lists here, so send a valid empty ItemInstance around the item id.
+                for (const auto& item : input.rewardChoiceItems)
+                {
+                    packet.writeBits(0U, 2); // LootItemType
+                    packet.writeBit(false);  // ContextFlags absent
+                    packet << static_cast<int32_t>(item.itemId);
+                    packet.writeBits(0U, 7); // ItemModList count
+                    packet.flushBits();
+                    packet.writeBit(false);  // ItemBonus absent
+                    packet.flushBits();
+                    packet << static_cast<int32_t>(item.count);
+                }
+
+                packet << static_cast<int32_t>(input.countRewardItem);
+                packet << static_cast<int32_t>(input.rewardMoney);
+                packet << static_cast<int32_t>(input.xp);
+                packet << int64_t(0); // ArtifactXP
+                packet << int32_t(0); // ArtifactCategoryID
+                packet << static_cast<int32_t>(input.bonusHonor);
+                packet << static_cast<int32_t>(input.rewardTitleId);
+                packet << int32_t(1); // FactionFlags; sniff-verified 70124 quest reward block
+
+                for (uint8_t i = 0; i < 5; ++i)
+                {
+                    packet << static_cast<int32_t>(input.rewardRepFaction[i]);
+                    packet << static_cast<int32_t>(input.rewardRepValue[i]);
+                    packet << int32_t(0); // FactionOverride
+                    packet << int32_t(7); // FactionCapIn; 70124 sends Exalted cap for all five slots
+                }
+
+                packet << static_cast<int32_t>(input.rewardSpell);
+                packet << int32_t(0);
+                packet << int32_t(0); // SpellCompletionDisplayID[3]
+                packet << static_cast<int32_t>(input.effectOnPlayer); // SpellCompletionID
+                packet << int32_t(0); // SkillLineID
+                packet << int32_t(0); // NumSkillUps
+                packet << uint32_t(0); // TreasurePickerID count
+                packet.writeBit(false); // IsBoostSpell
+                packet.flushBits();
+
+                packet << static_cast<uint32_t>(input.detailEmoteCount);
+                packet << static_cast<uint32_t>(input.objectiveEntries.size()); // Objectives count
+                packet << static_cast<int32_t>(input.questStartItemId);
+                packet << int32_t(0);  // QuestInfoID
+                packet << int32_t(0);  // QuestSessionBonus
+                packet << static_cast<int32_t>(input.questGiverCreatureId);
+                packet << uint32_t(0); // ConditionalDescriptionText count
+
+                for (uint32_t i = 0; i < input.detailEmoteCount && i < 4; ++i)
+                {
+                    packet << static_cast<int32_t>(input.detailEmotes[i].emote);
+                    packet << static_cast<uint32_t>(input.detailEmotes[i].delay);
+                }
+
+                for (const auto& objective : input.objectiveEntries)
+                {
+                    packet << objective.id;
+                    packet << objective.type;
+                    packet << objective.objectId;
+                    packet << objective.amount;
+                }
+
+                packet.writeBits(static_cast<uint32_t>(input.title.size()), 9);
+                packet.writeBits(static_cast<uint32_t>(input.details.size()), 12);
+                packet.writeBits(static_cast<uint32_t>(input.objectives.size()), 12);
+                packet.writeBits(0U, 10); // PortraitGiverText
+                packet.writeBits(0U, 8);  // PortraitGiverName
+                packet.writeBits(0U, 10); // PortraitTurnInText
+                packet.writeBits(0U, 8);  // PortraitTurnInName
+                packet.writeBit(false); // AutoLaunched
+                packet.writeBit(false); // FromContentPush
+                packet.writeBit(false); // ReplayQuest
+                packet.writeBit(false); // ResetByScheduler
+                packet.writeBit(false); // StartCheat
+                packet.writeBit(false); // DisplayPopup
+                packet.flushBits();
+
+                packet.writeString(input.title);
+                packet.writeString(input.details);
+                packet.writeString(input.objectives);
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // Fields AscEmu's QuestProperties doesn't model (currency rewards, reward package id,

@@ -29,6 +29,12 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                packet << uint32_t(0) << state;
+                return true;
+            }
+
             packet << state;
             return true;
         }

@@ -844,12 +844,12 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_REPOP_REQUEST, &WorldSession::handleRepopRequestOpcode, true, true, true, true, true);
 
     // Loot
-    registry.registerOpcode(CMSG_AUTOSTORE_LOOT_ITEM, &WorldSession::handleAutostoreLootItemOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_AUTOSTORE_LOOT_ITEM, &WorldSession::handleAutostoreLootItemOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     // Cata only - no Mop opcode value yet.
     registry.registerOpcode(CMSG_LOOT_CURRENCY, &WorldSession::handleLootCurrencyOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_LOOT_MONEY, &WorldSession::handleLootMoneyOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_LOOT, &WorldSession::handleLootOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_LOOT_RELEASE, &WorldSession::handleLootReleaseOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LOOT, &WorldSession::handleLootOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_LOOT_RELEASE, &WorldSession::handleLootReleaseOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_LOOT_ROLL, &WorldSession::handleLootRollOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_LOOT_MASTER_GIVE, &WorldSession::handleLootMasterGiveOpcode, true, true, true, true, true);
 
@@ -1059,8 +1059,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_REQUEST_CATEGORY_COOLDOWNS, &WorldSession::handleRequestCategoryCooldownsOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_UPDATE_PROJECTILE_POSITION, &WorldSession::handleUpdateProjectilePosition, false, false, true, true, false);
     // Combat / Duel
-    registry.registerOpcode(CMSG_ATTACKSWING, &WorldSession::handleAttackSwingOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_ATTACK_STOP, &WorldSession::handleAttackStopOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_ATTACKSWING, &WorldSession::handleAttackSwingOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_ATTACK_STOP, &WorldSession::handleAttackStopOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_DUEL_ACCEPTED, &WorldSession::handleDuelAccepted, true, true, true, true, false);
     registry.registerOpcode(CMSG_DUEL_CANCELLED, &WorldSession::handleDuelCancelled, true, true, true, true, false);
     registry.registerOpcode(CMSG_DUEL_PROPOSED, &WorldSession::handleDuelProposed, false, false, false, false, true);
@@ -1086,15 +1086,16 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_QUESTGIVER_CANCEL, &WorldSession::handleQuestgiverCancelOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_QUESTGIVER_CHOOSE_REWARD, &WorldSession::handleQuestgiverChooseRewardOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_QUESTGIVER_REQUEST_REWARD, &WorldSession::handleQuestgiverRequestRewardOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_QUEST_QUERY, &WorldSession::handleQuestQueryOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_QUEST_QUERY, &WorldSession::handleQuestQueryOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_QUESTGIVER_QUERY_QUEST, &WorldSession::handleQuestGiverQueryQuestOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_QUESTGIVER_COMPLETE_QUEST, &WorldSession::handleQuestgiverCompleteQuestOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_QUESTLOG_REMOVE_QUEST, &WorldSession::handleQuestlogRemoveQuestOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_QUESTGIVER_COMPLETE_QUEST, &WorldSession::handleQuestgiverCompleteQuestOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_QUESTLOG_REMOVE_QUEST, &WorldSession::handleQuestlogRemoveQuestOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_RECLAIM_CORPSE, &WorldSession::handleCorpseReclaimOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_RESURRECT_RESPONSE, &WorldSession::handleResurrectResponse, true, true, true, true, true);
     registry.registerOpcode(CMSG_PUSHQUESTTOPARTY, &WorldSession::handlePushQuestToPartyOpcode, true, true, true, true, true);
     registry.registerOpcode(MSG_QUEST_PUSH_RESULT, &WorldSession::handleQuestPushResultOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_QUEST_POI_QUERY, &WorldSession::handleQuestPOIQueryOpcode, false, false, true, true, true);
+    registry.registerOpcode(CMSG_QUEST_POI_QUERY, &WorldSession::handleQuestPOIQueryOpcode, false, false, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_UI_MAP_QUEST_LINES_REQUEST, &WorldSession::handleUiMapQuestLinesRequestOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_QUEST_NPC_QUERY, &WorldSession::handleQuestNpcQueryOpcode, false, false, false, false, true);
 
     // Auction System

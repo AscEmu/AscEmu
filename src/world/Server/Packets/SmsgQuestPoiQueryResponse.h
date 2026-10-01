@@ -32,10 +32,82 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override { return 4 + (4 + 4) * questCount; }
+        size_t expectedSize() const override
+        {
+            if (m_protocol.isForever())
+                return 8 + 8 * questCount;
+
+            return 4 + (4 + 4) * questCount;
+        }
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                // Verified with build 70124. The response starts with the result count
+                // twice, followed by QuestPOIData. Each blob uses the modern fixed
+                // fields, int16 XYZ points and one AlwaysAllowMergingBlobs bit.
+                packet << static_cast<int32_t>(questCount);
+                packet << static_cast<int32_t>(questCount);
+
+                for (uint32_t i = 0; i < questCount; ++i)
+                {
+                    const uint32_t questId = i < questIds.size() ? questIds[i] : 0;
+                    QuestProperties const* q = sMySQLStore.getQuestProperties(questId);
+                    QuestPOIVector const* poi = q != nullptr ? sQuestMgr.getQuestPOIMap(questId) : nullptr;
+
+                    packet << static_cast<int32_t>(questId);
+                    packet << static_cast<int32_t>(poi != nullptr ? poi->size() : 0);
+
+                    if (poi == nullptr)
+                        continue;
+
+                    for (QuestPOI const& blob : *poi)
+                    {
+                        int32_t questObjectiveId = static_cast<int32_t>(blob.QuestObjectiveId);
+                        int32_t questObjectId = 0;
+
+                        const auto objectives = sQuestMgr.buildForeverQuestObjectives(q, 0);
+                        for (ForeverQuestObjectiveData const& objective : objectives)
+                        {
+                            if (objective.storageIndex != blob.ObjectiveIndex)
+                                continue;
+
+                            if (questObjectiveId == 0)
+                                questObjectiveId = static_cast<int32_t>(objective.id);
+                            questObjectId = objective.objectId;
+                            break;
+                        }
+
+                        packet << static_cast<int32_t>(blob.PoiId);              // BlobIndex
+                        packet << static_cast<int32_t>(blob.ObjectiveIndex);     // ObjectiveIndex
+                        packet << questObjectiveId;                              // QuestObjectiveID
+                        packet << questObjectId;                                 // QuestObjectID
+                        packet << static_cast<int32_t>(blob.MapId);              // MapID
+                        packet << static_cast<int32_t>(blob.MapAreaId);          // UiMapID
+                        packet << static_cast<int32_t>(blob.Unk3);               // Priority
+                        packet << static_cast<int32_t>(blob.Unk4);               // Flags
+                        packet << int32_t(0);                                    // WorldEffectID
+                        packet << static_cast<int32_t>(blob.PlayerConditionId);   // PlayerConditionID
+                        packet << static_cast<int32_t>(blob.NavigationPlayerConditionId); // NavigationPlayerConditionID
+                        packet << int32_t(0);                                    // SpawnTrackingID
+                        packet << static_cast<int32_t>(blob.points.size());
+
+                        for (QuestPOIPoint const& point : blob.points)
+                        {
+                            packet << static_cast<int16_t>(point.x);
+                            packet << static_cast<int16_t>(point.y);
+                            packet << static_cast<int16_t>(point.z);
+                        }
+
+                        packet.writeBit(false);                                  // AlwaysAllowMergingBlobs
+                        packet.flushBits();
+                    }
+                }
+
+                return true;
+            }
+
             if (!m_protocol.isMop())
             {
                 packet << questCount;

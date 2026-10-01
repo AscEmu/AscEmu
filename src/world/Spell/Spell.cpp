@@ -589,7 +589,7 @@ void Spell::castMe(const bool doReCheck)
                 u_caster->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_CAST);
             }
 
-            u_caster->setOnMeleeSpell(getSpellInfo()->getId(), extra_cast_number);
+            u_caster->setOnMeleeSpell(getSpellInfo()->getId(), extra_cast_number, m_foreverClientCastId, m_foreverServerCastId, m_foreverSpellXSpellVisualId, m_foreverScriptVisualId);
         }
 
         finish();
@@ -4736,7 +4736,7 @@ void Spell::sendSpellGo()
     }
 
     // If spell has no visuals, it's not channeled and it's triggered, no need to send packet
-    if (!(getSpellInfo()->isChanneled() || getSpellInfo()->getSpeed() > 0.0f || getForeverSpellXSpellVisualId() != 0 || getForeverScriptVisualId() != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
+    if (!(getSpellInfo()->isChanneled() || getSpellInfo()->getSpeed() > 0.0f || getForeverSpellXSpellVisualId() != 0 || getForeverScriptVisualId() != 0 || getSpellInfo()->isOnNextMeleeAttack() || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
     {
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : no-visual/triggered early-return hit, not sending packet");
         return;

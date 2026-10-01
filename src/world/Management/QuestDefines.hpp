@@ -7,7 +7,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AEVersion.hpp"
 
+#include <cstdint>
+
+#if defined(AE_FOREVER)
+#define MAX_QUEST_LOG_SIZE 40
+#else
 #define MAX_QUEST_LOG_SIZE 25
+#endif
 
 namespace QuestStatus
 {
@@ -50,6 +56,46 @@ namespace QuestStatus
         Finished = 0x400,                    // Quest has been finished.                        | "Yellow Question  ? Mark" with minimap dot
 #endif
     };
+}
+
+namespace QuestGiverStatus
+{
+    enum class Forever : uint64_t
+    {
+        None                            = 0x000000000000ULL,
+        Future                          = 0x000000000002ULL,
+        TrivialRepeatableTurnIn         = 0x000000000020ULL,
+        Trivial                         = 0x000000000040ULL,
+        TrivialRepeatable               = 0x000000000100ULL,
+        Reward                          = 0x000000002000ULL,
+        RepeatableReward                = 0x000000004000ULL,
+        RepeatableTurnIn                = 0x000000100000ULL,
+        Quest                           = 0x000000400000ULL,
+        RepeatableQuest                 = 0x000001000000ULL,
+        RewardCompleteNoPOI             = 0x000200000000ULL,
+        RewardCompletePOI               = 0x000400000000ULL,
+        RepeatableRewardCompleteNoPOI   = 0x000800000000ULL,
+        RepeatableRewardCompletePOI     = 0x001000000000ULL
+    };
+
+    inline constexpr Forever encodeForever(uint32_t status)
+    {
+        switch (status)
+        {
+            case QuestStatus::NotAvailable:                 return Forever::None;
+            case QuestStatus::AvailableButLevelTooLow:      return Forever::Future;
+            case QuestStatus::AvailableChat:                return Forever::Trivial;
+            case QuestStatus::RepeatableFinishedLowLevel:   return Forever::TrivialRepeatableTurnIn;
+            case QuestStatus::RepeatableLowLevel:           return Forever::TrivialRepeatable;
+            case QuestStatus::NotFinished:                  return Forever::Reward;
+            case QuestStatus::RepeatableFinished:           return Forever::RepeatableRewardCompletePOI;
+            case QuestStatus::Repeatable:                   return Forever::RepeatableQuest;
+            case QuestStatus::Available:                    return Forever::Quest;
+            case QuestStatus::Finished2:                    return Forever::RewardCompleteNoPOI;
+            case QuestStatus::Finished:                     return Forever::RewardCompletePOI;
+            default:                                        return Forever::None;
+        }
+    }
 }
 
 enum QUESTGIVER_QUEST_TYPE

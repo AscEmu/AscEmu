@@ -58,6 +58,19 @@ namespace AscEmu::Packets
                 packet.readByteSeq(guid[0]);
                 return true;
             }
+            else if (m_protocol.isForever())
+            {
+                if (packet.remaining() < sizeof(uint32_t))
+                    return false;
+
+                packet >> questId;
+
+                // Forever QueryQuestInfo contains the quest id followed by the
+                // packed quest-giver guid. The response does not use that guid,
+                // so leave the already sniff-verified tail opaque for now.
+                packet.rpos(packet.size());
+                return true;
+            }
 
             return false;
         }

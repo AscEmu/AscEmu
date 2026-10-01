@@ -12,6 +12,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WDBStructures.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 
+#include <unordered_map>
+#include <vector>
+
 namespace WDB::Structures
 {
     struct ItemExtendedCostEntry;
@@ -292,8 +295,8 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
 #endif
 
     inline SERVER_DECL WDB::WDBStore<WDB::Structures::BannedAddOnsEntry> sBannedAddOnsStore;
-#if !defined(AE_FOREVER)
     inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrPowerTypesEntry> sChrPowerTypesStore;
+#if !defined(AE_FOREVER)
     inline std::array<std::array<uint8_t, TOTAL_PLAYER_POWER_TYPES>, MAX_PLAYER_CLASSES> powerIndexByClass;
 #endif
 
@@ -349,9 +352,37 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
 
 #if VERSION_STRING >= Cata
     WDB::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32_t spellId, uint8_t effect);
-#if !defined(AE_FOREVER)
+#endif
+#if VERSION_STRING >= Cata || defined(AE_FOREVER)
     uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerIndex);
 #endif
+
+
+#if defined(AE_FOREVER)
+struct ForeverQuestPOIPointData
+{
+    int16_t x = 0;
+    int16_t y = 0;
+    int16_t z = 0;
+};
+
+struct ForeverQuestPOIBlobData
+{
+    uint32_t id = 0;
+    uint16_t mapId = 0;
+    uint32_t uiMapId = 0;
+    uint32_t flags = 0;
+    uint8_t numPoints = 0;
+    uint32_t questId = 0;
+    int32_t objectiveIndex = 0;
+    uint32_t objectiveId = 0;
+    uint32_t playerConditionId = 0;
+    uint32_t navigationPlayerConditionId = 0;
+    std::vector<ForeverQuestPOIPointData> points;
+};
+
+using ForeverQuestPOIStore = std::unordered_map<uint32_t, std::vector<ForeverQuestPOIBlobData>>;
+extern SERVER_DECL ForeverQuestPOIStore sForeverQuestPOIStore;
 #endif
 
 WDB::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty);

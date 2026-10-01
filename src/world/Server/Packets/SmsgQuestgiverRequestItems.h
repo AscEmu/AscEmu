@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "QuestPacketCommon.h"
+#include "Server/World.h"
+#include "WoWGuid.hpp"
 
 #include <cstdint>
 #include <string>
@@ -18,6 +20,8 @@ namespace AscEmu::Packets
     struct QuestgiverRequestItemsInput
     {
         uint64_t questGiverGuid = 0;
+        uint16_t mapId = 0;
+        uint32_t questGiverCreatureId = 0;
         uint32_t questId = 0;
         std::string title;
         std::string requestItemsText;
@@ -53,7 +57,60 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isMop())
+            if (m_protocol.isForever())
+            {
+                // Forever 1.60.1 uses the modern QuestGiverRequestItems layout.
+                // Keep collect objectives limited to the item requirements AscEmu currently models.
+                const WoWGuid questGiverGuid = WoWGuid::createModernFromLegacy(input.questGiverGuid, worldConfig.battleNetComm.realmId, input.mapId, 0);
+                const auto packedQuestGiverGuid = questGiverGuid.packModern();
+
+                uint32_t collectCount = 0;
+                for (const auto& item : input.requiredItems)
+                    if (item.itemId != 0)
+                        ++collectCount;
+
+                packet << static_cast<int32_t>(collectCount);
+                packet << int32_t(0); // Currency count
+                packet.append(packedQuestGiverGuid.data(), packedQuestGiverGuid.size());
+
+                packet << static_cast<uint32_t>(input.questFlags); // QuestFlags[0]
+                packet << uint32_t(0);                             // QuestFlags[1]
+                packet << uint32_t(0);                             // QuestFlags[2]
+                packet << uint32_t(0);                             // QuestFlags[3]
+                packet << static_cast<int32_t>(input.isNotFinished ? 0xFD : 0x5F); // StatusFlags; 70124 sniff: active incomplete quest = 0xFD
+                packet << static_cast<int32_t>(input.questGiverCreatureId);
+                packet << static_cast<int32_t>(input.questId);
+                packet << int32_t(0); // CompEmoteDelay
+                packet << static_cast<int32_t>(input.statusEmote);
+                packet << static_cast<int32_t>(input.suggestedPlayers);
+                packet << static_cast<int32_t>(input.requiredMoney);
+                packet << int32_t(0); // QuestInfoID
+
+                for (const auto& item : input.requiredItems)
+                {
+                    if (!item.itemId)
+                        continue;
+
+                    packet << static_cast<int32_t>(item.itemId);
+                    packet << static_cast<int32_t>(item.count);
+                    packet << uint32_t(0); // Objective flags
+                }
+
+                packet.writeBit(true);  // AutoLaunched; verified 70124 request-items packet
+                packet.writeBit(false); // ResetByScheduler
+                packet.flushBits();
+
+                packet << static_cast<int32_t>(input.questGiverCreatureId);
+                packet << uint32_t(0); // ConditionalCompletionText count
+                packet.writeBits(static_cast<uint32_t>(input.title.size()), 9);
+                packet.writeBits(static_cast<uint32_t>(input.requestItemsText.size()), 12);
+                packet.flushBits();
+                packet.writeString(input.title);
+                packet.writeString(input.requestItemsText);
+
+                return true;
+            }
+            else if (m_protocol.isMop())
             {
                 // Fields AscEmu's QuestProperties doesn't model (currency objectives, ender NPC/GO entry,
                 // the offer-reward emote delay used here, Flags2) are written as 0.

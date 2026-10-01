@@ -1626,6 +1626,7 @@ public:
     void addQuestKill(uint32_t questId, uint8_t reqId, uint32_t delay = 0);
 
     void updateNearbyQuestGameObjects();
+    void sendForeverNearbyQuestGiverStatuses();
 
     std::set<uint32_t> getFinishedQuests() const;
 

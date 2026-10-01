@@ -15,7 +15,7 @@
 --   Skyborn Alliance/Horde use race=95/96 directly.
 -- =============================================================================
 
-INSERT INTO `ascemu_world`.`world_db_version` (`LastUpdate`) VALUES ('20270927-00_playercreateinfo_69893');
+INSERT INTO `ascemu_world`.`world_db_version` (`LastUpdate`) VALUES ('20260927-00_playercreateinfo_69893');
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;

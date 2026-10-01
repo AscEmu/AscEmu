@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgQuestgiverAcceptQuest.h"
 #include "Server/Packets/CmsgQuestQuery.h"
 #include "Server/Packets/CmsgQuestPoiQuery.h"
+#include "Server/Packets/CmsgUiMapQuestLinesRequest.h"
 #include "Server/Packets/CmsgQuestNpcQuery.h"
 #include "Server/Packets/SmsgQuestNpcQueryResponse.h"
 #include "Server/Packets/CmsgQuestgiverHello.h"
@@ -21,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgQuestgiverChooseReward.h"
 #include "Server/Packets/CmsgPushquesttoparty.h"
 #include "Server/Packets/SmsgQuestPoiQueryResponse.h"
+#include "Server/Packets/SmsgUiMapQuestLinesResponse.h"
 #include "Server/Packets/SmsgQuestgiverOfferReward.h"
 #include "Server/Packets/SmsgQuestgiverQuestDetails.h"
 #include "Server/Packets/SmsgQuestgiverRequestItems.h"
@@ -339,6 +341,169 @@ std::unique_ptr<WorldPacket> WorldSession::buildQuestQueryResponse(QuestProperti
 
     return data;
 }
+#elif defined(AE_FOREVER)
+std::unique_ptr<WorldPacket> WorldSession::buildQuestQueryResponse(QuestProperties const* qst)
+{
+    auto data = std::make_unique<WorldPacket>(SMSG_QUEST_QUERY_RESPONSE, 1024);
+    MySQLStructure::LocalesQuest const* lci = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
+
+    const std::string logTitle = lci ? lci->title : qst->title;
+    const std::string logDescription = lci ? lci->objectives : qst->objectives;
+    const std::string questDescription = lci ? lci->details : qst->details;
+    const std::string areaDescription = lci ? lci->endText : qst->endtext;
+    const std::string portraitGiverText;
+    const std::string portraitGiverName;
+    const std::string portraitTurnInText;
+    const std::string portraitTurnInName;
+    const std::string questCompletionLog = qst->completiontext;
+    const auto objectives = sQuestMgr.buildForeverQuestObjectives(qst, language);
+    const bool hiddenReward = qst->HasFlag(QUEST_FLAGS_HIDDEN_REWARDS);
+
+    *data << uint32_t(qst->id);
+    data->writeBit(true); // Allow
+    data->flushBits();
+
+    *data << int32_t(qst->id);                                                  // QuestID
+    *data << int32_t(2);                                                        // QuestType / normal quest
+    *data << int32_t(1);                                                        // QuestPackageID
+    *data << int32_t(0);                                                        // ContentTuningID
+
+    // Verified from the 70124 retail response for quest 783: two 32-bit values
+    // are located here before QuestSortID. The first matches the quest level;
+    // the second was zero in the capture and remains unknown.
+    *data << int32_t(qst->questlevel);
+    *data << int32_t(0);
+
+    *data << int32_t(qst->quest_sort > 0 ? -static_cast<int32_t>(qst->quest_sort) : static_cast<int32_t>(qst->zone_id)); // QuestSortID / ZoneOrSort
+    *data << int32_t(0);                                                        // QuestInfoID
+    *data << int32_t(qst->suggestedplayers);                                    // SuggestedGroupNum
+    *data << int32_t(qst->next_quest_id);                                       // RewardNextQuest
+    *data << int32_t(qst->RewXPId);                                             // RewardXPDifficulty
+    *data << float(1.0f);                                                       // RewardXPMultiplier
+    *data << int32_t(hiddenReward ? 0 : sQuestMgr.GenerateRewardMoney(_player, qst));
+    *data << int32_t(0);                                                        // RewardMoneyDifficulty
+    *data << float(1.0f);                                                       // RewardMoneyMultiplier
+    *data << int32_t(qst->rew_money_at_max_level);                              // RewardBonusMoney
+    *data << uint32_t(0);                                                       // RewardDisplaySpell count
+    *data << int32_t(qst->reward_spell);                                        // RewardSpell
+    *data << int32_t(qst->bonushonor);                                          // RewardHonor
+    *data << float(0.0f);                                                       // RewardKillHonor
+    *data << int32_t(0);                                                        // RewardFavor
+    *data << int32_t(0);                                                        // RewardArtifactXPDifficulty
+    *data << float(1.0f);                                                       // RewardArtifactXPMultiplier
+    *data << int32_t(0);                                                        // RewardArtifactCategoryID
+    *data << int32_t(qst->srcitem);                                             // StartItem
+    *data << uint32_t(qst->quest_flags);                                        // Flags
+    *data << uint32_t(0);                                                       // FlagsEx
+    *data << uint32_t(0);                                                       // FlagsEx2
+    *data << uint32_t(0);                                                       // FlagsEx3
+
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        *data << int32_t(hiddenReward ? 0 : qst->reward_item[i]);
+        *data << int32_t(hiddenReward ? 0 : qst->reward_itemcount[i]);
+        *data << int32_t(0);                                                    // ItemDrop
+        *data << int32_t(0);                                                    // ItemDropQuantity
+    }
+
+    for (uint8_t i = 0; i < 6; ++i)
+    {
+        *data << int32_t(hiddenReward ? 0 : qst->reward_choiceitem[i]);
+        *data << int32_t(hiddenReward ? 0 : qst->reward_choiceitemcount[i]);
+        *data << int32_t(0);                                                    // DisplayID
+    }
+
+    *data << int32_t(qst->point_mapid);                                         // POIContinent
+    *data << float(qst->point_x);
+    *data << float(qst->point_y);
+    *data << int32_t(qst->point_opt);
+    *data << int32_t(qst->rewardtitleid);
+    *data << int32_t(qst->bonusarenapoints);
+    *data << int32_t(0);                                                        // RewardSkillLineID
+    *data << int32_t(0);                                                        // RewardNumSkillUps
+    *data << int32_t(0);                                                        // PortraitGiver
+    *data << int32_t(0);                                                        // PortraitGiverMount
+    *data << int32_t(0);                                                        // PortraitGiverModelSceneID
+    *data << int32_t(0);                                                        // PortraitTurnIn
+
+    for (uint8_t i = 0; i < 5; ++i)
+    {
+        *data << int32_t(qst->reward_repfaction[i]);
+        *data << int32_t(qst->reward_repvalue[i]);
+        *data << int32_t(0);                                                    // RewardFactionOverride
+        *data << int32_t(0);                                                    // RewardFactionCapIn
+    }
+
+    *data << int32_t(0);                                                        // RewardFactionFlags
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        *data << int32_t(qst->reward_currency_id[i]);
+        *data << int32_t(qst->reward_currency_count[i]);
+    }
+
+    *data << int32_t(890);                                                      // AcceptedSoundKitID, verified in 70124 capture
+    *data << int32_t(878);                                                      // CompleteSoundKitID, verified in 70124 capture
+    *data << int32_t(0);                                                        // AreaGroupID
+    *data << int64_t(qst->time);                                                // TimeAllowed
+    *data << uint32_t(objectives.size());
+
+    const uint64_t allowableRaces = qst->required_races != 0 ? static_cast<uint64_t>(qst->required_races) : UINT64_MAX;
+    *data << allowableRaces;
+    *data << uint32_t(0);                                                       // TreasurePickerID count
+    *data << uint32_t(0);                                                       // NonDisplayableTreasurePickerIDs count
+    *data << int32_t(-2);                                                       // Expansion; verified Classic/Forever capture value
+    *data << int32_t(0);                                                        // ManagedWorldStateID
+    *data << int32_t(0);                                                        // QuestSessionBonus
+    *data << int32_t(0);                                                        // QuestGiverCreatureID
+    *data << uint32_t(0);                                                       // ConditionalQuestDescription count
+    *data << uint32_t(0);                                                       // ConditionalQuestCompletionLog count
+    *data << uint32_t(0);                                                       // RewardHouseRoomIDs count
+    *data << uint32_t(0);                                                       // RewardHouseDecorIDs count
+
+    for (const auto& objective : objectives)
+    {
+        *data << uint32_t(objective.id);
+        *data << int32_t(objective.type);
+        *data << int8_t(objective.storageIndex);
+        *data << int32_t(objective.objectId);
+        *data << int32_t(objective.amount);
+        *data << int32_t(0);                                                    // ConditionalAmount
+        *data << uint32_t(objective.flags);                             // Flags
+        *data << uint32_t(objective.flags2);                            // Flags2
+        *data << float(0.0f);                                                   // ProgressBarWeight
+        *data << uint32_t(0);                                                   // VisualEffects count
+        *data << int32_t(0);                                                    // ParentObjectiveID
+        data->writeBits(objective.description.size(), 8);
+        data->writeBit(true);                                                   // Visible
+        data->flushBits();
+        data->writeString(objective.description);
+    }
+
+    data->writeBits(logTitle.size(), 9);
+    data->writeBits(logDescription.size(), 12);
+    data->writeBits(questDescription.size(), 12);
+    data->writeBits(areaDescription.size(), 9);
+    data->writeBits(portraitGiverText.size(), 10);
+    data->writeBits(portraitGiverName.size(), 8);
+    data->writeBits(portraitTurnInText.size(), 10);
+    data->writeBits(portraitTurnInName.size(), 8);
+    data->writeBits(questCompletionLog.size(), 11);
+    data->writeBit(false);                                                      // ResetByScheduler
+    data->writeBit(false);                                                      // ReadyForTranslation
+    data->flushBits();
+
+    data->writeString(logTitle);
+    data->writeString(logDescription);
+    data->writeString(questDescription);
+    data->writeString(areaDescription);
+    data->writeString(portraitGiverText);
+    data->writeString(portraitGiverName);
+    data->writeString(portraitTurnInText);
+    data->writeString(portraitTurnInName);
+    data->writeString(questCompletionLog);
+
+    return data;
+}
 #else
 namespace
 {
@@ -629,9 +794,42 @@ void WorldSession::handleQuestPOIQueryOpcode([[maybe_unused]] WorldPacket& recvP
         srlPacket.questCount = MAX_QUEST_LOG_SIZE;
     }
 
+    if (getClientProtocol().isForever())
+    {
+        std::vector<QuestNpcQueryEntry> completionQuests;
+        for (uint32_t i = 0; i < srlPacket.questCount && i < srlPacket.questIds.size(); ++i)
+        {
+            const uint32_t questId = srlPacket.questIds[i];
+            if (questId == 0 || sMySQLStore.getQuestProperties(questId) == nullptr || !_player->hasQuestInQuestLog(questId))
+                continue;
+
+            QuestNpcQueryEntry entry;
+            entry.questId = questId;
+            if (const auto finisherEntries = sQuestMgr.getQuestFinisherEntries(questId))
+                entry.finisherEntries = *finisherEntries;
+
+            sLogger.info("[ForeverDebug][QuestCompletionNPC] quest={} finishers={}", questId, entry.finisherEntries.size());
+            completionQuests.push_back(std::move(entry));
+        }
+
+        SmsgQuestNpcQueryResponse completionResponse(std::move(completionQuests));
+        sendManagedPacket(completionResponse);
+    }
+
     SmsgQuestPoiQueryResponse managedPacket(srlPacket.questCount, srlPacket.questIds);
     sendManagedPacket(managedPacket);
 #endif
+}
+
+void WorldSession::handleUiMapQuestLinesRequestOpcode(WorldPacket& recvPacket)
+{
+    CmsgUiMapQuestLinesRequest request;
+    if (!parsePacket(recvPacket, request))
+        return;
+
+    // 70124 retail capture for Elwynn UiMapID 1429 returns three empty arrays.
+    SmsgUiMapQuestLinesResponse response(request.uiMapId);
+    sendManagedPacket(response);
 }
 
 void WorldSession::handleQuestNpcQueryOpcode([[maybe_unused]] WorldPacket& recvPacket)
@@ -888,7 +1086,8 @@ void WorldSession::handleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    if (srlPacket.questLogSlot >= 25)
+    const uint8_t maxQuestLogSlots = getClientProtocol().isForever() ? 40 : 25;
+    if (srlPacket.questLogSlot >= maxQuestLogSlots)
         return;
 
     QuestLogEntry* qEntry = _player->getQuestLogBySlotId(srlPacket.questLogSlot);
@@ -1002,11 +1201,11 @@ void WorldSession::handleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (status == QuestStatus::Finished)
+    if (status == QuestStatus::Finished || status == QuestStatus::Finished2)
     {
         SmsgQuestgiverOfferReward rewardPacket(sQuestMgr.buildOfferRewardInput(qst, qst_giver, _player, language));
         sendManagedPacket(rewardPacket);
-        sLogger.debug("Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
+        sLogger.debug("Sent SMSG_QUESTGIVER_OFFER_REWARD.");
     }
 }
 
@@ -1082,11 +1281,10 @@ void WorldSession::handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
         sLogger.debug("Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     }
 
-    if (status == QuestStatus::Finished)
+    if (status == QuestStatus::Finished || status == QuestStatus::Finished2)
     {
         SmsgQuestgiverOfferReward rewardPacket(sQuestMgr.buildOfferRewardInput(qst, qst_giver, _player, language));
         sendManagedPacket(rewardPacket);
-        sLogger.debug("Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     }
 
     sHookInterface.OnQuestFinished(_player, qst, qst_giver);
@@ -1166,11 +1364,17 @@ void WorldSession::handleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 
     if (qst->next_quest_id)
     {
-        WorldPacket data(12);
-        data.initialize(CMSG_QUESTGIVER_QUERY_QUEST);
-        data << srlPacket.questgiverGuid.getRawGuid();
-        data << qst->next_quest_id;
-        handleQuestGiverQueryQuestOpcode(data);
+        // Modern clients continue the chain from SMSG_QUESTGIVER_QUEST_COMPLETE
+        // (UseQuestReward/LaunchQuest). Do not synthesize the legacy query packet:
+        // its raw uint64 GUID layout is not valid for Forever.
+        if (!getClientProtocol().isForever())
+        {
+            WorldPacket data(12);
+            data.initialize(CMSG_QUESTGIVER_QUERY_QUEST);
+            data << srlPacket.questgiverGuid.getRawGuid();
+            data << qst->next_quest_id;
+            handleQuestGiverQueryQuestOpcode(data);
+        }
     }
 }
 

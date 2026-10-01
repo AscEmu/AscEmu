@@ -19,6 +19,6 @@ UPDATE `item_properties`
 SET `max_build` = `min_build`;
 
 INSERT INTO `world_db_version` (`LastUpdate`)
-VALUES ('20270929-00_item_properties_build_range');
+VALUES ('20260929-00_item_properties_build_range');
 
 SET FOREIGN_KEY_CHECKS = 1;

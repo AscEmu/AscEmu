@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "QuestPacketCommon.h"
+#include "Server/World.h"
+#include "WoWGuid.hpp"
 
 #include <cstdint>
 #include <string>
@@ -19,6 +21,8 @@ namespace AscEmu::Packets
     struct QuestgiverOfferRewardInput
     {
         uint64_t questGiverGuid = 0;
+        uint16_t mapId = 0;
+        uint32_t questGiverCreatureId = 0;
         uint32_t questId = 0;
         std::string title;
         std::string completionText;
@@ -31,6 +35,10 @@ namespace AscEmu::Packets
         uint32_t countRewardItem = 0;    // pre-Cata reward-item count header
         uint32_t countRequiredItem = 0;  // Cata reward-item count header (yes, Cata reads count_required_item here)
         QuestRewardItemEntry rewardItems[4];
+        uint32_t rewardCurrencyId[4] = {};
+        uint32_t rewardCurrencyCount[4] = {};
+        uint32_t rewardRepFaction[5] = {};
+        int32_t rewardRepValue[5] = {};
         uint32_t xp = 0;
         uint32_t bonusHonor = 0;
         uint32_t rewardSpell = 0;
@@ -65,6 +73,124 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                // Forever 1.60.1.70124 uses the modern QuestGiverOfferRewardMessage layout.
+                // Opcode 0x00660014 is sniff-verified for quest 783. The QuestRewards block
+                // intentionally matches the already working Forever QuestDetails serializer.
+                const WoWGuid questGiverGuid = WoWGuid::createModernFromLegacy(input.questGiverGuid, worldConfig.battleNetComm.realmId, input.mapId, 0);
+                const auto packedQuestGiverGuid = questGiverGuid.packModern();
+
+                // QuestRewards.Items[4]
+                for (const auto& item : input.rewardItems)
+                {
+                    packet << static_cast<int32_t>(item.itemId);
+                    packet << static_cast<int32_t>(item.count);
+                    packet.writeBit(false); // ContextFlags absent
+                    packet.flushBits();
+                }
+
+                // QuestRewards.Currencies[4] - not modelled by this legacy input yet.
+                for (uint8_t i = 0; i < 4; ++i)
+                {
+                    packet << static_cast<int32_t>(input.rewardCurrencyId[i]); // CurrencyID
+                    packet << static_cast<int32_t>(input.rewardCurrencyCount[i]); // CurrencyQty
+                    packet << int32_t(0); // BonusQty
+                    packet.writeBit(false); // ContextFlags absent
+                    packet.flushBits();
+                }
+
+                packet << static_cast<int32_t>(input.countRewardChoiceItem);
+
+                // QuestRewards.ChoiceItems[6]
+                for (const auto& item : input.rewardChoiceItems)
+                {
+                    packet.writeBits(0U, 2); // LootItemType
+                    packet.writeBit(false);  // ContextFlags absent
+                    packet << static_cast<int32_t>(item.itemId);
+                    packet.writeBits(0U, 7); // ItemModList count
+                    packet.flushBits();
+                    packet.writeBit(false);  // ItemBonus absent
+                    packet.flushBits();
+                    packet << static_cast<int32_t>(item.count);
+                }
+
+                packet << static_cast<int32_t>(input.countRewardItem);
+                packet << static_cast<int32_t>(input.rewardMoney);
+                packet << static_cast<int32_t>(input.xp);
+                packet << int64_t(0); // ArtifactXP
+                packet << int32_t(0); // ArtifactCategoryID
+                packet << static_cast<int32_t>(input.bonusHonor);
+                packet << static_cast<int32_t>(input.rewardTitleId);
+                packet << int32_t(1); // FactionFlags; sniff-verified 70124 quest reward block
+
+                for (uint8_t i = 0; i < 5; ++i)
+                {
+                    packet << static_cast<int32_t>(input.rewardRepFaction[i]);
+                    packet << static_cast<int32_t>(input.rewardRepValue[i]);
+                    packet << int32_t(0); // FactionOverride
+                    packet << int32_t(7); // FactionCapIn; 70124 sends Exalted cap for all five slots
+                }
+
+                // SpellCompletionDisplayID[3]
+                packet << static_cast<int32_t>(input.rewardSpell);
+                packet << int32_t(0);
+                packet << int32_t(0);
+                packet << static_cast<int32_t>(input.effectOnPlayer); // SpellCompletionID
+                packet << int32_t(0); // SkillLineID
+                packet << int32_t(0); // NumSkillUps
+                packet << uint32_t(0); // TreasurePickerID count
+                packet.writeBit(false); // IsBoostSpell
+                packet.flushBits();
+
+                // QuestGiverOfferReward
+                packet << static_cast<int32_t>(input.completionEmotes.size());
+                packet.append(packedQuestGiverGuid.data(), packedQuestGiverGuid.size());
+
+                packet << static_cast<uint32_t>(input.questFlags); // QuestFlags[0]
+                packet << uint32_t(0);                             // QuestFlags[1]
+                packet << uint32_t(0);                             // QuestFlags[2]
+                packet << uint32_t(0);                             // QuestFlags[3]
+
+                packet << static_cast<int32_t>(input.questGiverCreatureId);
+                packet << static_cast<int32_t>(input.questId);
+                packet << static_cast<int32_t>(input.suggestedPlayers);
+                packet << int32_t(0); // QuestInfoID
+
+                for (const auto& emote : input.completionEmotes)
+                {
+                    packet << static_cast<int32_t>(emote.emote);
+                    packet << static_cast<uint32_t>(emote.delay);
+                }
+
+                packet.writeBit(false); // AutoLaunched
+                packet.writeBit(false); // Unused
+                packet.writeBit(false); // ResetByScheduler
+                packet.flushBits();
+
+                // QuestGiverOfferRewardMessage
+                packet << int32_t(0); // QuestPackageID
+                packet << int32_t(0); // PortraitGiver
+                packet << int32_t(0); // PortraitGiverMount
+                packet << int32_t(0); // PortraitGiverModelSceneID
+                packet << int32_t(0); // PortraitTurnIn
+                packet << static_cast<int32_t>(input.questGiverCreatureId);
+                packet << uint32_t(0); // ConditionalRewardText count
+
+                packet.writeBits(static_cast<uint32_t>(input.title.size()), 9);
+                packet.writeBits(static_cast<uint32_t>(input.completionText.size()), 12);
+                packet.writeBits(0U, 10); // PortraitGiverText
+                packet.writeBits(0U, 8);  // PortraitGiverName
+                packet.writeBits(0U, 10); // PortraitTurnInText
+                packet.writeBits(0U, 8);  // PortraitTurnInName
+                packet.flushBits();
+
+                packet.writeString(input.title);
+                packet.writeString(input.completionText);
+
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // Fields AscEmu's QuestProperties doesn't model (currency rewards, reward package id,

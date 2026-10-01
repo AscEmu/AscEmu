@@ -16,7 +16,7 @@ namespace AscEmu::Packets
         uint32_t questCount;
         std::vector<uint32_t> questIds;
 
-        CmsgQuestPoiQuery() : CmsgQuestPoiQuery(0, { 0 })
+        CmsgQuestPoiQuery() : CmsgQuestPoiQuery(0, {})
         {
         }
 
@@ -30,7 +30,14 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            questIds.clear();
+
+            if (m_protocol.isForever())
+            {
+                packet >> questCount;
+                questIds.reserve(questCount);
+            }
+            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet >> questCount;
             }

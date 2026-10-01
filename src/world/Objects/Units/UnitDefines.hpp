@@ -1060,7 +1060,7 @@ enum UnitDynamicFlags
     U_DYN_FLAG_TAPPED_BY_ALL_THREAT  = 0x0100,
 };
 #elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+// Forever 1.60.1.70124 capture-verified: bit 1 marks a lootable creature.
 enum UnitDynamicFlags
 {
     // Mop 5.4.8 shifted every bit of this field one position left compared to

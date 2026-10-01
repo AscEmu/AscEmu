@@ -19,8 +19,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/PowerType.hpp"
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
-#if VERSION_STRING >= Cata
+#if VERSION_STRING >= Cata || defined(AE_FOREVER)
     #include "Objects/Units/Players/PlayerDefines.hpp"
+#endif
+#if VERSION_STRING >= Cata
     #include "Spell/SpellAura.hpp"
 #endif
 
@@ -72,6 +74,10 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellItemEnchantmentEntry> sSpell
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRadiusEntry> sSpellRadiusStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRangeEntry> sSpellRangeStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellShapeshiftFormEntry> sSpellShapeshiftFormStore;
+
+#if defined(AE_FOREVER)
+static std::array<std::array<uint8_t, TOTAL_PLAYER_POWER_TYPES>, MAX_PLAYER_CLASSES> powerIndexByClass;
+#endif
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentEntry> sTalentStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentTabEntry> sTalentTabStore;
@@ -138,6 +144,9 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::HolidaysEntry> sHolidaysStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::QuestXP> sQuestXPStore;
+#if defined(AE_FOREVER)
+SERVER_DECL ForeverQuestPOIStore sForeverQuestPOIStore;
+#endif
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ScalingStatDistributionEntry> sScalingStatDistributionStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ScalingStatValuesEntry> sScalingStatValuesStore;
@@ -286,6 +295,96 @@ namespace {
 
         sLogger.warning("Optional Forever DB2 {} not loaded: {}", filename, error);
         return false;
+    }
+
+    bool loadForeverModernQuestStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
+    {
+        WDB::WDC5File questXP;
+        if (!loadForeverGenericWDC5(questXP, "QuestXP.db2", errors, dbcPath, {{0, 10}}))
+            return false;
+
+        if (questXP.getFieldCount() != 1)
+        {
+            errors.push_back("Forever DB2 QuestXP.db2: expected 1 field, got " + std::to_string(questXP.getFieldCount()));
+            sLogger.failure("Forever DB2 QuestXP.db2 has unexpected field count {} (expected 1).", questXP.getFieldCount());
+            return false;
+        }
+
+        std::vector<std::pair<uint32_t, WDB::Structures::QuestXP>> entries;
+        entries.reserve(questXP.getRecordCount());
+        for (uint32_t row = 0; row < questXP.getRecordCount(); ++row)
+        {
+            WDB::Structures::QuestXP entry{};
+            entry.questLevel = questXP.getRecordId(row);
+            for (uint8_t i = 0; i < 10; ++i)
+                entry.xpIndex[i] = questXP.getUInt16(row, 0, i);
+            entries.emplace_back(entry.questLevel, entry);
+        }
+
+        sQuestXPStore.assignEntries(entries);
+        sLogger.info("Forever QuestXP DB2 store: {} levels loaded.", sQuestXPStore.getNumRows());
+
+        sForeverQuestPOIStore.clear();
+        WDB::WDC5File questPOIBlob;
+        WDB::WDC5File questPOIPoint;
+        const bool haveQuestPOIBlob = loadForeverGenericWDC5Optional(questPOIBlob, "QuestPOIBlob.db2", dbcPath);
+        const bool haveQuestPOIPoint = loadForeverGenericWDC5Optional(questPOIPoint, "QuestPOIPoint.db2", dbcPath);
+        if (haveQuestPOIBlob && haveQuestPOIPoint)
+        {
+            if (questPOIBlob.getLayoutHash() != 0xFDC814CF || questPOIBlob.getFieldCount() != 10)
+                sLogger.warning("Forever QuestPOIBlob.db2 layout differs from verified 70124 layout: fields={} layout=0x{:08X}; skipping POI DB2 data.", questPOIBlob.getFieldCount(), questPOIBlob.getLayoutHash());
+            else if (questPOIPoint.getLayoutHash() != 0x5CBBEFE7 || questPOIPoint.getFieldCount() != 4)
+                sLogger.warning("Forever QuestPOIPoint.db2 layout differs from verified 70124 layout: fields={} layout=0x{:08X}; skipping POI DB2 data.", questPOIPoint.getFieldCount(), questPOIPoint.getLayoutHash());
+            else
+            {
+                std::unordered_map<uint32_t, std::pair<uint32_t, size_t>> blobsById;
+                for (uint32_t row = 0; row < questPOIBlob.getRecordCount(); ++row)
+                {
+                    ForeverQuestPOIBlobData blob;
+                    blob.id = questPOIBlob.getUInt32(row, 0);
+                    blob.mapId = questPOIBlob.getUInt16(row, 1);
+                    blob.uiMapId = questPOIBlob.getUInt32(row, 2);
+                    blob.flags = questPOIBlob.getUInt32(row, 3);
+                    blob.numPoints = questPOIBlob.getUInt8(row, 4);
+                    blob.questId = questPOIBlob.getUInt32(row, 5);
+                    blob.objectiveIndex = questPOIBlob.getInt32(row, 6);
+                    blob.objectiveId = questPOIBlob.getUInt32(row, 7);
+                    blob.playerConditionId = questPOIBlob.getUInt32(row, 8);
+                    blob.navigationPlayerConditionId = questPOIBlob.getUInt32(row, 9);
+                    const uint32_t blobId = blob.id;
+                    const uint32_t questId = blob.questId;
+                    auto& questBlobs = sForeverQuestPOIStore[questId];
+                    const size_t blobIndex = questBlobs.size();
+                    questBlobs.emplace_back(std::move(blob));
+                    blobsById[blobId] = {questId, blobIndex};
+                }
+
+                for (uint32_t row = 0; row < questPOIPoint.getRecordCount(); ++row)
+                {
+                    const uint32_t blobId = questPOIPoint.getParentId(row);
+                    const auto itr = blobsById.find(blobId);
+                    if (itr == blobsById.end())
+                        continue;
+
+                    ForeverQuestPOIPointData point;
+                    point.x = questPOIPoint.getInt16(row, 1);
+                    point.y = questPOIPoint.getInt16(row, 2);
+                    point.z = questPOIPoint.getInt16(row, 3);
+                    sForeverQuestPOIStore[itr->second.first][itr->second.second].points.push_back(point);
+                }
+
+                uint32_t blobCount = 0;
+                uint32_t pointCount = 0;
+                for (auto const& [questId, blobs] : sForeverQuestPOIStore)
+                {
+                    blobCount += static_cast<uint32_t>(blobs.size());
+                    for (ForeverQuestPOIBlobData const& blob : blobs)
+                        pointCount += static_cast<uint32_t>(blob.points.size());
+                }
+                sLogger.info("Forever Quest POI DB2 store: {} quests, {} blobs, {} points loaded.", sForeverQuestPOIStore.size(), blobCount, pointCount);
+            }
+        }
+        return true;
     }
 
     bool loadForeverModernSpellSkillStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
@@ -1015,6 +1114,8 @@ namespace {
         return ok;
     }
 
+    void buildPowerIndexByClass();
+
     bool loadForeverModernCharacterStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
     {
         WDB::WDC5File chrModel;
@@ -1045,11 +1146,12 @@ namespace {
         }
 
         WDB::WDC5File chrClasses;
+        WDB::WDC5File chrClassesXPowerTypes;
         WDB::WDC5File chrRaces;
         WDB::WDC5File faction;
         WDB::WDC5File factionTemplate;
 
-        if (!loadForeverWDC5Group({ { chrClasses, ForeverFormat::ChrClasses }, { chrRaces, ForeverFormat::ChrRaces }, { faction, ForeverFormat::Faction }, { factionTemplate, ForeverFormat::FactionTemplate } }, errors, dbcPath))
+        if (!loadForeverWDC5Group({ { chrClasses, ForeverFormat::ChrClasses }, { chrClassesXPowerTypes, ForeverFormat::ChrClassesXPowerTypes }, { chrRaces, ForeverFormat::ChrRaces }, { faction, ForeverFormat::Faction }, { factionTemplate, ForeverFormat::FactionTemplate } }, errors, dbcPath))
             return false;
 
         // Populate the existing AscEmu runtime stores. This deliberately keeps
@@ -1068,6 +1170,18 @@ namespace {
             entry.rapPerAgi = chrClasses.getUInt8(row, 33);
             sChrClassesStore[entry.classId] = std::move(entry);
         }
+
+        sChrPowerTypesStore.clear();
+        for (uint32_t row = 0; row < chrClassesXPowerTypes.getRecordCount(); ++row)
+        {
+            WDB::Structures::ChrPowerTypesEntry entry;
+            entry.entry = chrClassesXPowerTypes.getRecordId(row);
+            entry.classId = chrClassesXPowerTypes.getParentId(row);
+            entry.power = chrClassesXPowerTypes.getUInt8(row, 0);
+            sChrPowerTypesStore[entry.entry] = entry;
+        }
+        buildPowerIndexByClass();
+        sLogger.info("Forever ChrClassesXPowerTypes DB2 store: {} entries loaded, warrior rage index {}.", sChrPowerTypesStore.getNumRows(), powerIndexByClass[WARRIOR][POWER_TYPE_RAGE]);
 
         sChrRacesStore.clear();
         for (uint32_t row = 0; row < chrRaces.getRecordCount(); ++row)
@@ -1976,12 +2090,17 @@ namespace {
         }
     }
 
-#if !defined(AE_FOREVER)
     void buildPowerIndexByClass()
     {
+#if defined(AE_FOREVER)
+        constexpr uint8_t invalidPowerIndex = 0;
+#else
+        constexpr uint8_t invalidPowerIndex = TOTAL_PLAYER_POWER_TYPES;
+#endif
+
         for (auto& classPowers : powerIndexByClass)
         {
-            classPowers.fill(TOTAL_PLAYER_POWER_TYPES);
+            classPowers.fill(invalidPowerIndex);
         }
 
         for (auto const& powerEntry : sChrPowerTypesStore | std::views::values)
@@ -1993,14 +2112,13 @@ namespace {
             uint8_t index = 1;
             for (uint8_t power = POWER_TYPE_MANA; power < TOTAL_PLAYER_POWER_TYPES; ++power)
             {
-                if (powerIndexByClass[powerEntry.classId][power] != TOTAL_PLAYER_POWER_TYPES)
+                if (powerIndexByClass[powerEntry.classId][power] != invalidPowerIndex)
                     ++index;
             }
 
             powerIndexByClass[powerEntry.classId][powerEntry.power] = index;
         }
     }
-#endif
 }
 
 bool loadDBCs()
@@ -2022,6 +2140,7 @@ bool loadDBCs()
     loadForeverModernItemStores(bad_dbc_files, dbc_path);
     loadForeverModernMapStores(bad_dbc_files, dbc_path);
     loadForeverModernTerrainStores(bad_dbc_files, dbc_path);
+    loadForeverModernQuestStores(bad_dbc_files, dbc_path);
     loadForeverModernSpellSkillStores(bad_dbc_files, dbc_path);
 
     buildMapDifficultyMap();
@@ -3013,9 +3132,16 @@ WDB::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32_t spellId, u
     return itr->second.effects[effect];
 }
 
-#if !defined(AE_FOREVER)
+#if VERSION_STRING >= Cata || defined(AE_FOREVER)
 uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerType)
 {
+    if (playerClass >= MAX_PLAYER_CLASSES || powerType >= TOTAL_PLAYER_POWER_TYPES)
+#if defined(AE_FOREVER)
+        return 0;
+#else
+        return TOTAL_PLAYER_POWER_TYPES;
+#endif
+
     return powerIndexByClass[playerClass][powerType];
 }
 #endif

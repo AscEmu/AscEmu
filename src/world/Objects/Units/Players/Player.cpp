@@ -136,6 +136,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgSendUnlearnSpells.h"
 #include "Server/Packets/SmsgSetFactionStanding.h"
 #include "Server/Packets/SmsgSetFactionVisible.h"
+#include "Server/Packets/SmsgQuestgiverStatusMultiple.h"
 #include "Server/Packets/SmsgPhaseShiftChange.h"
 #include "Server/Packets/SmsgTriggerMovie.h"
 #include "Server/Packets/SmsgTriggerCinematic.h"
@@ -746,6 +747,7 @@ void Player::onAttachToWorld()
         switch (getClass())
         {
         case WARRIOR:
+            setPowerType(POWER_TYPE_RAGE);
             setMaxPower(POWER_TYPE_RAGE, 1000);
             setPower(POWER_TYPE_RAGE, 0);
             break;
@@ -1065,12 +1067,82 @@ uint32_t Player::getGuildTimestamp() const { return playerData()->guild_timestam
 void Player::setGuildTimestamp(uint32_t timestamp) { write(playerData()->guild_timestamp, timestamp); }
 
 //QuestLog start
-uint32_t Player::getQuestLogEntryForSlot(uint8_t slot) const { return playerData()->quests[slot].quest_id; }
-void Player::setQuestLogEntryBySlot(uint8_t slot, uint32_t questEntry) { write(playerData()->quests[slot].quest_id, questEntry); }
+uint32_t Player::getQuestLogEntryForSlot(uint8_t slot) const
+{
+#if defined(AE_FOREVER)
+    if (slot >= MAX_QUEST_LOG_SIZE)
+        return 0;
+    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverPlayerFields.unknownPartyRecords0_69913[slot].questId));
+#else
+    return playerData()->quests[slot].quest_id;
+#endif
+}
+
+void Player::setQuestLogEntryBySlot(uint8_t slot, uint32_t questEntry)
+{
+#if defined(AE_FOREVER)
+    if (slot >= MAX_QUEST_LOG_SIZE)
+        return;
+
+    auto& questLog = m_foreverPlayerFields.unknownPartyRecords0_69913[slot];
+    if (questLog.questId == static_cast<int32_t>(questEntry))
+        return;
+
+    const int32_t oldQuestId = questLog.questId;
+    questLog.questId = static_cast<int32_t>(questEntry);
+
+    // Retail 70124 MapUpdateField behavior captured around quest 783:
+    // accepting into an empty slot deletes key 0 and adds QuestID -> slot;
+    // removing the quest deletes the old QuestID entry.
+    m_foreverPlayerFields.questLogQuestIdToIndexChanges.push_back({oldQuestId, 2, 0});
+    if (oldQuestId > 0)
+        m_foreverPlayerFields.unknownPartyMap0_69913.erase(oldQuestId);
+
+    if (questEntry != 0)
+    {
+        m_foreverPlayerFields.unknownPartyMap0_69913[static_cast<int32_t>(questEntry)] = static_cast<int32_t>(slot);
+        m_foreverPlayerFields.questLogQuestIdToIndexChanges.push_back({static_cast<int32_t>(questEntry), 1, static_cast<int32_t>(slot)});
+    }
+
+    m_foreverPlayerFields.questLogQuestIdChanged.set(slot);
+    m_foreverPlayerFields.markChanged(AscEmu::Version::Forever::Fields::PlayerData::QuestLogQuestIdToIndexBit);
+    m_foreverPlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::PlayerData::QuestLogGroupBit, AscEmu::Version::Forever::Fields::PlayerData::QuestLogFirstBit + slot);
+    updateObject();
+#else
+    write(playerData()->quests[slot].quest_id, questEntry);
+#endif
+}
 
 #if VERSION_STRING > Classic
-uint32_t Player::getQuestLogStateForSlot(uint8_t slot) const { return playerData()->quests[slot].state; }
-void Player::setQuestLogStateBySlot(uint8_t slot, uint32_t state) { write(playerData()->quests[slot].state, state); }
+uint32_t Player::getQuestLogStateForSlot(uint8_t slot) const
+{
+#if defined(AE_FOREVER)
+    if (slot >= MAX_QUEST_LOG_SIZE)
+        return 0;
+    return m_foreverPlayerFields.unknownPartyRecords0_69913[slot].stateFlags;
+#else
+    return playerData()->quests[slot].state;
+#endif
+}
+
+void Player::setQuestLogStateBySlot(uint8_t slot, uint32_t state)
+{
+#if defined(AE_FOREVER)
+    if (slot >= MAX_QUEST_LOG_SIZE)
+        return;
+
+    auto& questLog = m_foreverPlayerFields.unknownPartyRecords0_69913[slot];
+    const uint16_t stateFlags = static_cast<uint16_t>(state & 0xFFFFU);
+    if (questLog.stateFlags == stateFlags)
+        return;
+
+    questLog.stateFlags = stateFlags;
+    m_foreverPlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::PlayerData::QuestLogGroupBit, AscEmu::Version::Forever::Fields::PlayerData::QuestLogFirstBit + slot);
+    updateObject();
+#else
+    write(playerData()->quests[slot].state, state);
+#endif
+}
 #else
 uint32_t Player::getQuestLogStateForSlot(uint8_t slot) const
 {
@@ -1086,8 +1158,49 @@ void Player::setQuestLogStateBySlot(uint8_t slot, uint32_t state)
 #endif
 
 #if VERSION_STRING > TBC
-uint64_t Player::getQuestLogRequiredMobOrGoForSlot(uint8_t slot) const { return playerData()->quests[slot].required_mob_or_go; }
-void Player::setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint64_t mobOrGoCount) { write(playerData()->quests[slot].required_mob_or_go, mobOrGoCount); }
+uint64_t Player::getQuestLogRequiredMobOrGoForSlot(uint8_t slot) const
+{
+#if defined(AE_FOREVER)
+    if (slot >= MAX_QUEST_LOG_SIZE)
+        return 0;
+
+    uint64_t packed = 0;
+    const auto& progress = m_foreverPlayerFields.unknownPartyRecords0_69913[slot].objectiveProgress;
+    for (uint8_t i = 0; i < 4; ++i)
+        packed |= static_cast<uint64_t>(static_cast<uint16_t>(std::max<int16_t>(0, progress[i]))) << (i * 16U);
+    return packed;
+#else
+    return playerData()->quests[slot].required_mob_or_go;
+#endif
+}
+
+void Player::setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint64_t mobOrGoCount)
+{
+#if defined(AE_FOREVER)
+    if (slot >= MAX_QUEST_LOG_SIZE)
+        return;
+
+    auto& questLog = m_foreverPlayerFields.unknownPartyRecords0_69913[slot];
+    bool changed = false;
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        const auto progress = static_cast<int16_t>((mobOrGoCount >> (i * 16U)) & 0xFFFFU);
+        if (questLog.objectiveProgress[i] != progress)
+        {
+            questLog.objectiveProgress[i] = progress;
+            changed = true;
+        }
+    }
+
+    if (!changed)
+        return;
+
+    m_foreverPlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::PlayerData::QuestLogGroupBit, AscEmu::Version::Forever::Fields::PlayerData::QuestLogFirstBit + slot);
+    updateObject();
+#else
+    write(playerData()->quests[slot].required_mob_or_go, mobOrGoCount);
+#endif
+}
 #elif VERSION_STRING == TBC
 uint32_t Player::getQuestLogRequiredMobOrGoForSlot(uint8_t slot) const { return playerData()->quests[slot].required_mob_or_go; }
 void Player::setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint32_t mobOrGoCount) { write(playerData()->quests[slot].required_mob_or_go, mobOrGoCount); }
@@ -1104,8 +1217,34 @@ void Player::setQuestLogRequiredMobOrGoBySlot(uint8_t slot, uint32_t mobOrGoCoun
 }
 #endif
 
-uint32_t Player::getQuestLogExpireTimeForSlot(uint8_t slot) const { return playerData()->quests[slot].expire_time; }
-void Player::setQuestLogExpireTimeBySlot(uint8_t slot, uint32_t expireTime) { write(playerData()->quests[slot].expire_time, expireTime); }
+uint32_t Player::getQuestLogExpireTimeForSlot(uint8_t slot) const
+{
+#if defined(AE_FOREVER)
+    if (slot >= MAX_QUEST_LOG_SIZE)
+        return 0;
+    return static_cast<uint32_t>(std::max<int64_t>(0, m_foreverPlayerFields.unknownPartyRecords0_69913[slot].endTime));
+#else
+    return playerData()->quests[slot].expire_time;
+#endif
+}
+
+void Player::setQuestLogExpireTimeBySlot(uint8_t slot, uint32_t expireTime)
+{
+#if defined(AE_FOREVER)
+    if (slot >= MAX_QUEST_LOG_SIZE)
+        return;
+
+    auto& questLog = m_foreverPlayerFields.unknownPartyRecords0_69913[slot];
+    if (questLog.endTime == static_cast<int64_t>(expireTime))
+        return;
+
+    questLog.endTime = static_cast<int64_t>(expireTime);
+    m_foreverPlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::PlayerData::QuestLogGroupBit, AscEmu::Version::Forever::Fields::PlayerData::QuestLogFirstBit + slot);
+    updateObject();
+#else
+    write(playerData()->quests[slot].expire_time, expireTime);
+#endif
+}
 //QuestLog end
 
 //VisibleItem start
@@ -3246,6 +3385,9 @@ void Player::applyLevelInfo(uint32_t newLevel)
 
     sendTalentsInfo();
 
+    if (!m_firstLogin)
+        sendForeverNearbyQuestGiverStatuses();
+
     m_playedTime[0] = 0;
 }
 
@@ -4247,6 +4389,7 @@ void Player::setInitialPlayerData()
     {
         case WARRIOR:
         {
+            setPowerType(POWER_TYPE_RAGE);
             setMaxPower(POWER_TYPE_RAGE, 1000);
         } break;
 #if VERSION_STRING >= Cata
@@ -10048,6 +10191,35 @@ void Player::updateNearbyQuestGameObjects()
             }
         }
     }
+
+    sendForeverNearbyQuestGiverStatuses();
+}
+
+void Player::sendForeverNearbyQuestGiverStatuses()
+{
+    if (!IsInWorld() || m_session == nullptr || !m_session->getClientProtocol().isForever())
+        return;
+
+    std::vector<QuestgiverInrangeStatus> questgiverSet;
+    QuestgiverInrangeStatus statusEntry;
+
+    for (const auto& inrangeObject : getInRangeObjectsSet())
+    {
+        if (inrangeObject == nullptr || !inrangeObject->isCreature())
+            continue;
+
+        Creature* creature = inrangeObject->ToCreature();
+        if (creature == nullptr || !creature->isQuestGiver())
+            continue;
+
+        statusEntry.rawGuid = creature->getGuid();
+        statusEntry.status = sQuestMgr.CalcStatus(creature, this);
+        statusEntry.mapId = static_cast<uint16_t>(creature->GetMapId());
+        questgiverSet.push_back(statusEntry);
+    }
+
+    SmsgQuestgiverStatusMultiple responsePacket(static_cast<uint32_t>(questgiverSet.size()), questgiverSet);
+    m_session->sendManagedPacket(responsePacket);
 }
 
 std::set<uint32_t> Player::getFinishedQuests() const { return m_finishedQuests; }
@@ -12706,6 +12878,8 @@ void Player::onModStanding(WDB::Structures::FactionEntry const* factionEntry, Fa
 
     if (IsInWorld() && getWorldMap())
         getWorldMap()->queueUnitAwareness(this, UnitAwarenessSignal::ReactionChanged);
+
+    sendForeverNearbyQuestGiverStatuses();
 }
 
 uint32_t Player::getExaltedCount() const
@@ -14911,6 +15085,9 @@ void Player::_eventAttack(bool offhand)
     }
     else
     {
+        if (m_AttackMsgTimer != 0)
+            smsg_AttackStart(pVictim);
+
         m_AttackMsgTimer = 0;
 
         // Set to weapon time.

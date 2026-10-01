@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ForeverSpellPacketUtils.hpp"
 #include "Objects/DamageInfo.hpp"
 #include "Objects/Units/UnitDefines.hpp"
 #include <cstdint>
@@ -25,17 +26,18 @@ namespace AscEmu::Packets
         VisualState visualState;
         uint32_t blockedDamage;
         uint32_t rageGain;
+        uint16_t mapId;
 
         SmsgAttackerstateupdate() :
-            SmsgAttackerstateupdate(WoWGuid(), WoWGuid(), HitStatus(0), 0, 0, DamageInfo(), 0, VisualState::MISS, 0, 0)
+            SmsgAttackerstateupdate(WoWGuid(), WoWGuid(), HitStatus(0), 0, 0, DamageInfo(), 0, VisualState::MISS, 0, 0, 0)
         {
         }
 
         SmsgAttackerstateupdate(WoWGuid attackerGuid, WoWGuid victimGuid, HitStatus hitStatus, uint32_t damage, uint32_t overKill,
-            DamageInfo damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, uint32_t rageGain) :
+            DamageInfo damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, uint32_t rageGain, uint16_t mapId) :
             ManagedPacket(SMSG_ATTACKERSTATEUPDATE, 114),
             attackerGuid(attackerGuid), victimGuid(victimGuid), hitStatus(hitStatus), damage(damage), overKill(overKill),
-            damageInfo(damageInfo), absorbedDamage(absorbedDamage), visualState(visualState), blockedDamage(blockedDamage), rageGain(rageGain)
+            damageInfo(damageInfo), absorbedDamage(absorbedDamage), visualState(visualState), blockedDamage(blockedDamage), rageGain(rageGain), mapId(mapId)
         {
         }
 
@@ -44,74 +46,28 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                ByteBuffer buff;
+                const auto writeGuid = [&](WoWGuid const& legacyGuid) { const auto packedGuid = ForeverSpellPacket::toModernGuid(legacyGuid, m_protocol.realmId, mapId).packModern(); buff.append(packedGuid.data(), packedGuid.size()); };
+                buff << uint32_t(hitStatus); writeGuid(attackerGuid); writeGuid(victimGuid);
+                const int32_t originalDamage = damageInfo.fullDamage > 0 ? damageInfo.fullDamage : static_cast<int32_t>(damage);
+                buff << int32_t(damage) << originalDamage << int32_t(overKill > 0 ? overKill : -1) << uint8_t(1);
+                buff << int32_t(damageInfo.schoolMask) << float(damage) << int32_t(damage);
+                if (hitStatus & HITSTATUS_ABSORBED) buff << int32_t(absorbedDamage);
+                if (hitStatus & HITSTATUS_RESIST) buff << int32_t(damageInfo.resistedDamage);
+                buff << uint8_t(visualState) << uint32_t(0) << uint32_t(0);
+                if (hitStatus & HITSTATUS_BLOCK) buff << int32_t(blockedDamage);
+                if (hitStatus & HITSTATUS_RAGE_GAIN) buff << int32_t(rageGain);
+                if (hitStatus & HITSTATUS_UNK_00) { buff << uint32_t(0) << float(0) << float(0) << float(0) << float(0) << float(0) << float(0) << float(0) << float(0) << float(0) << float(0) << uint32_t(0); }
+                if (hitStatus & (HITSTATUS_BLOCK | HITSTATUS_UNK_04)) buff << float(0);
+                buff << float(0) << float(0) << int16_t(0) << uint32_t(0) << uint8_t(0) << uint8_t(0) << int8_t(0) << uint32_t(0) << int32_t(0) << int32_t(0) << int32_t(0) << uint8_t(0);
+                packet.writeBit(false); packet.flushBits(); packet << uint32_t(buff.size()); packet.append(buff);
+                return true;
+            }
             if (m_protocol.isMop())
             {
 #if VERSION_STRING == Mop
-                ByteBuffer buff;
-
-                buff << uint32_t(hitStatus);
-                buff << attackerGuid;
-                buff << victimGuid;
-
-                buff << uint32_t(damage);                                     // full damage
-                buff << uint32_t(overKill);                                   // overkill
-
-                buff << uint8_t(1);                                           // sub damage count
-
-                buff << uint32_t(damageInfo.schoolMask);                      // school of sub damage
-                buff << float(damage);                                       // sub damage
-                buff << uint32_t(damage);                                     // sub damage
-
-                if (hitStatus & HITSTATUS_ABSORBED)
-                    buff << uint32_t(absorbedDamage);
-
-                if (hitStatus & HITSTATUS_RESIST)
-                    buff << uint32_t(damageInfo.resistedDamage);
-
-                buff << uint8_t(visualState);
-                buff << uint32_t(0);                                         // unk, can be 0, 1000 or -1
-                buff << uint32_t(0);                                         // unk, probably GetMeleeSpell
-
-                if (hitStatus & HITSTATUS_BLOCK)
-                    buff << uint32_t(blockedDamage);
-
-                // HITSTATUS_RAGE_GAIN only exists in the post-TBC HitStatus enum.
-                if (hitStatus & HITSTATUS_RAGE_GAIN)
-                    buff << uint32_t(0);                                     // real client never reads this as rage amount
-
-                if (hitStatus & HITSTATUS_UNK_00)                            // debug information
-                {
-                    buff << uint32_t(0);
-                    buff << float(0);
-                    buff << float(0);
-                    buff << float(0);
-                    buff << float(0);
-                    buff << float(0);
-                    buff << float(0);
-                    buff << float(0);
-                    buff << float(0);
-
-                    for (uint8_t i = 0; i < 2; ++i)
-                    {
-                        buff << float(0);
-                        buff << float(0);
-                    }
-                    buff << uint32_t(0);
-                }
-
-                // HITSTATUS_UNK_04 only exists in the post-TBC HitStatus enum.
-                if (hitStatus & (HITSTATUS_BLOCK | HITSTATUS_UNK_04))
-                    buff << float(0);
-
-
-                packet.writeBit(0);                                          // hasSpellCastLogData
-                packet.flushBits();
-                packet << uint32_t(buff.size());
-                packet.append(buff);
-
-                return true;
-#elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
                 ByteBuffer buff;
 
                 buff << uint32_t(hitStatus);

@@ -22,8 +22,14 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override { return m_minimum_size; }
 
-        bool internalSerialise(WorldPacket& /*packet*/) override
+        bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                packet << uint8_t(0);
+                return true;
+            }
+
             if (m_protocol.isMop())
                 return false;
 

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ForeverSpellPacketUtils.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -16,16 +17,18 @@ namespace AscEmu::Packets
         WoWGuid guid;
         uint8_t powerType;
         uint32_t power;
+        uint16_t mapId;
 
-        SmsgPowerUpdate() : SmsgPowerUpdate(WoWGuid(), 0, 0)
+        SmsgPowerUpdate() : SmsgPowerUpdate(WoWGuid(), 0, 0, 0)
         {
         }
 
-        SmsgPowerUpdate(WoWGuid guid, uint8_t powerType, uint32_t power) :
+        SmsgPowerUpdate(WoWGuid guid, uint8_t powerType, uint32_t power, uint16_t mapId) :
             ManagedPacket(SMSG_POWER_UPDATE, 0),
             guid(guid),
             powerType(powerType),
-            power(power)
+            power(power),
+            mapId(mapId)
         {
         }
 
@@ -37,6 +40,13 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                ForeverSpellPacket::writePackedGuid(packet, ForeverSpellPacket::toModernGuid(guid, m_protocol.realmId, mapId));
+                packet << uint32_t(1) << powerType << power;
+                return true;
+            }
+
             if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
                 packet.writeBit(guid[4]);

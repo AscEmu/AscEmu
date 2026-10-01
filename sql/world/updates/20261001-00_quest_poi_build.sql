@@ -1,0 +1,6 @@
+-- Make quest POI data build-specific while preserving all existing rows as the generic fallback.
+ALTER TABLE `quest_poi` DROP PRIMARY KEY, ADD COLUMN `build` INT UNSIGNED NOT NULL DEFAULT 0 FIRST, MODIFY COLUMN `questId` INT UNSIGNED NOT NULL COMMENT 'Quest ID', MODIFY COLUMN `poiId` INT UNSIGNED NOT NULL COMMENT 'Refers to quest_poi_points', MODIFY COLUMN `objIndex` INT NOT NULL DEFAULT 0 COMMENT 'Objective ID', MODIFY COLUMN `mapId` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Map ID', MODIFY COLUMN `mapAreaId` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Zone/UI map ID', MODIFY COLUMN `floorId` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Area/Floor ID', MODIFY COLUMN `unk3` INT UNSIGNED NOT NULL DEFAULT 0, MODIFY COLUMN `unk4` INT UNSIGNED NOT NULL DEFAULT 0, ADD PRIMARY KEY (`build`, `questId`, `poiId`), ADD KEY `idx_quest_build` (`questId`, `build`);
+
+ALTER TABLE `quest_poi_points` ADD COLUMN `build` INT UNSIGNED NOT NULL DEFAULT 0 FIRST, MODIFY COLUMN `questId` INT UNSIGNED NOT NULL, MODIFY COLUMN `poiId` INT UNSIGNED NOT NULL DEFAULT 0, DROP INDEX `idx_poip`, ADD INDEX `idx_poip` (`build`, `questId`, `poiId`), ADD INDEX `idx_quest_build` (`questId`, `build`);
+
+INSERT INTO `ascemu_world`.`world_db_version` (`LastUpdate`) VALUES ('20261001-00_quest_poi_build');

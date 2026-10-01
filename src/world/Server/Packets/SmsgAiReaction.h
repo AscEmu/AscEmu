@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ForeverSpellPacketUtils.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -15,15 +16,17 @@ namespace AscEmu::Packets
     public:
         uint64_t unpackedGuid;
         uint32_t reaction;
+        uint16_t mapId;
 
-        SmsgAiReaction() : SmsgAiReaction(0, 0)
+        SmsgAiReaction() : SmsgAiReaction(0, 0, 0)
         {
         }
 
-        SmsgAiReaction(uint64_t unpackedGuid, uint32_t reaction) :
+        SmsgAiReaction(uint64_t unpackedGuid, uint32_t reaction, uint16_t mapId) :
             ManagedPacket(SMSG_AI_REACTION, 12),
             unpackedGuid(unpackedGuid),
-            reaction(reaction)
+            reaction(reaction),
+            mapId(mapId)
         {
         }
 
@@ -32,6 +35,13 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                ForeverSpellPacket::writePackedGuid(packet, ForeverSpellPacket::toModernGuid(WoWGuid(unpackedGuid), m_protocol.realmId, mapId));
+                packet << reaction;
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << unpackedGuid << reaction;

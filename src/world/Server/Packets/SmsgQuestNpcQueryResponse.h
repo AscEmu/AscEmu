@@ -38,15 +38,35 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
+            if (m_protocol.isForever())
+            {
+                size_t size = 4;
+                for (const auto& quest : quests)
+                    size += 8 + 4 * quest.finisherEntries.size();
+                return size;
+            }
+
             size_t size = 3;
             for (const auto& quest : quests)
                 size += 4 + 4 * quest.finisherEntries.size();
-
             return size;
         }
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                packet << static_cast<uint32_t>(quests.size());
+                for (const auto& quest : quests)
+                {
+                    packet << static_cast<int32_t>(quest.questId);
+                    packet << static_cast<uint32_t>(quest.finisherEntries.size());
+                    for (const auto entry : quest.finisherEntries)
+                        packet << entry;
+                }
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 packet.writeBits(quests.size(), 21);

@@ -1116,8 +1116,13 @@ void SpellMgr::loadSpellInfoData()
 #endif
         }
         spellInfo->setSpellPriority(dbcSpellEntry->spellPriority);
+#if defined(AE_FOREVER)
+        spellInfo->setName(dbcSpellEntry->Name != nullptr ? dbcSpellEntry->Name : "");
+        spellInfo->setRank(dbcSpellEntry->Rank != nullptr ? dbcSpellEntry->Rank : "");
+#else
         spellInfo->setName(dbcSpellEntry->Name[sWorld.getDbcLocaleLanguageId()]);
         spellInfo->setRank(dbcSpellEntry->Rank[sWorld.getDbcLocaleLanguageId()]);
+#endif
         spellInfo->setManaCostPercentage(dbcSpellEntry->ManaCostPercentage);
         spellInfo->setStartRecoveryCategory(dbcSpellEntry->StartRecoveryCategory);
         spellInfo->setStartRecoveryTime(dbcSpellEntry->StartRecoveryTime);

@@ -1049,6 +1049,10 @@ void WorldSession::fullLoginForever(Player* player)
         activeFields.nextLevelXp = static_cast<int32_t>(player->getNextLevelXp());
         activeFields.coinage = player->getCoinage();
 
+        // Recalculate combat chances after inventory/stats are available so the
+        // owner-only ActivePlayerData create carries the current character-sheet values.
+        player->updateChances();
+
         // Forever 69913 post-SkillInfo scalar/combat-stat cluster.
         // Fields without a canonical AscEmu source remain at protocol zero until
         // their gameplay source is implemented.

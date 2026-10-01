@@ -212,6 +212,31 @@ namespace AscEmu::Version::Forever::ObjectUpdate
             data << value.endTime << value.objectiveFlags << value.enabledObjectivesMask;
         }
 
+        void writeQuestLogQuestIdUpdate(ByteBuffer& data, Fields::QuestLog const& value)
+        {
+            // Verified directly from the 70124 retail UPDATE_OBJECT emitted after accepting quest 783:
+            // nested QuestLog mask bytes C0 00 00 01 80, followed by int32 QuestID.
+            // Keep CREATE serialization untouched; this is only the differential QuestID update.
+            data.writeBit(true);
+            data.writeBits(uint32_t(0x80000003), 32);
+            data.flushBits();
+            data << value.questId;
+        }
+
+        void writeQuestLogQuestIdToIndexUpdate(ByteBuffer& data, Fields::PlayerData const& fields)
+        {
+            // Verified 70124 MapUpdateField shape:
+            // uint8 ignoreChangesMask(0), uint16 changeCount,
+            // then int32 QuestID, uint8 state (1=changed, 2=deleted), and int32 index for changed entries.
+            data << uint8_t(0) << uint16_t(fields.questLogQuestIdToIndexChanges.size());
+            for (Fields::QuestLogQuestIdToIndexChange const& change : fields.questLogQuestIdToIndexChanges)
+            {
+                data << change.questId << change.state;
+                if (change.state != 2)
+                    data << change.index;
+            }
+        }
+
         void writeSkillInfoCreate(ByteBuffer& data, Fields::SkillInfo const& value)
         {
             for (std::size_t i = 0; i < value.skillLineId.size(); ++i)
@@ -1327,11 +1352,12 @@ namespace AscEmu::Version::Forever::ObjectUpdate
             //   38/39     - Health / MaxHealth
             //   40/41     - Level / EffectiveLevel
             //   48/49/52  - 69913 differential captures
-            //   148/149   - 70009 power group + Power[0]
+            //   36         - DisplayPower
+            //   148..168   - power group + Power[] + MaxPower[]
             //   217/218   - 70009 resistances group + Resistances[0]
             //
-            // Everything else (max power/damage/stats/etc.) is deliberately
-            // suppressed until its exact 70009 bit is proven.
+            // Everything else (damage/stats/etc.) is deliberately suppressed
+            // until its exact Forever differential bit is proven.
             std::bitset<Fields::UnitData::ChangeMaskSize> verifiedChanges{};
             auto keepChanged = [&](std::size_t bit)
             {
@@ -1349,8 +1375,12 @@ namespace AscEmu::Version::Forever::ObjectUpdate
             keepChanged(Fields::UnitData::Flags2Bit);
             keepChanged(Fields::UnitData::AuraStateBit);
 
+            keepChanged(Fields::UnitData::DisplayPowerBit);
             keepChanged(Fields::UnitData::PowerGroupBit);
-            keepChanged(Fields::UnitData::PowerFirstBit);
+            for (std::size_t i = 0; i < fields.power.size(); ++i)
+                keepChanged(Fields::UnitData::PowerFirstBit + i);
+            for (std::size_t i = 0; i < fields.maxPower.size(); ++i)
+                keepChanged(Fields::UnitData::MaxPowerFirstBit + i);
 
             keepChanged(Fields::UnitData::ResistancesGroupBit);
             keepChanged(Fields::UnitData::ResistancesFirstBit);
@@ -1434,10 +1464,15 @@ namespace AscEmu::Version::Forever::ObjectUpdate
 
         void writePlayerDataUpdate(ByteBuffer& data, Fields::PlayerData const& fields)
         {
+            // Retail 70124 quest-accept delta has IsQuestLogChangesMaskSkipped = 0.
             writeStructuredChangeMask(data, fields.changes); data.writeBit(0); data.flushBits();
             auto changed = [&](std::size_t bit) { return fields.changes.test(bit); };
             if (changed(Fields::PlayerData::DuelArbiterBit)) writeModernGuid(data, fields.unknownGuid0_69913);
             if (changed(Fields::PlayerData::PlayerFlagsBit)) data << fields.unknownU32_0_69913;
+            if (changed(Fields::PlayerData::QuestLogQuestIdToIndexBit))
+            {
+                writeQuestLogQuestIdToIndexUpdate(data, fields);
+            }
             if (changed(Fields::PlayerData::CurrentSpecBit)) data << fields.unknownU32_6_69913;
             if (changed(Fields::PlayerData::NameBit))
             {
@@ -1448,6 +1483,26 @@ namespace AscEmu::Version::Forever::ObjectUpdate
                      << uint8_t(0);
                 if (firstNameLength) data.append(reinterpret_cast<uint8_t const*>(fields.firstName.data()), firstNameLength);
                 if (lastNameLength) data.append(reinterpret_cast<uint8_t const*>(fields.lastName.data()), lastNameLength);
+            }
+
+            if (changed(Fields::PlayerData::QuestLogGroupBit))
+            {
+                for (std::size_t i = 0; i < fields.unknownPartyRecords0_69913.size(); ++i)
+                {
+                    if (!changed(Fields::PlayerData::QuestLogFirstBit + i))
+                        continue;
+
+                    if (fields.questLogQuestIdChanged.test(i))
+                    {
+                        writeQuestLogQuestIdUpdate(data, fields.unknownPartyRecords0_69913[i]);
+                    }
+                    else
+                    {
+                        // Non-QuestID nested updates are not yet capture-decoded.
+                        // Preserve the previous behavior for those paths instead of changing login/create layout.
+                        writeQuestLogCreate(data, fields.unknownPartyRecords0_69913[i]);
+                    }
+                }
             }
 
             if (changed(Fields::PlayerData::VisibleItemsGroupBit))

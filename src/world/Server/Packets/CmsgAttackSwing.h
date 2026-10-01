@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ForeverSpellPacketUtils.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -28,6 +29,17 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            { 
+                WoWGuid modernGuid;
+                
+                if (!ForeverSpellPacket::readPackedGuid(packet, modernGuid))
+                    return false;
+                
+                guid.init(modernGuid.toLegacyRaw());
+                return packet.remaining() == 0;
+            }
+
             if (!m_protocol.isMop())
             {
                 uint64_t unpacked_guid;

@@ -1145,6 +1145,9 @@ bool WorldMap::onPlayerEnter(Player* plr)
     // Let nearby creatures react even if nothing is moving yet.
     queueUnitAwareness(plr, UnitAwarenessSignal::EnteredWorld);
 
+    if (session->getClientProtocol().isForever())
+        sEventMgr.AddEvent(plr, &Player::sendForeverNearbyQuestGiverStatuses, EVENT_PLAYER_FOREVER_QUEST_STATUS, 1000, 1, 0);
+
     return true;
 }
 

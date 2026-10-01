@@ -60,6 +60,7 @@
 #include "Server/Packets/SmsgQuestupdateAddKill.h"
 #include "Storage/WorldStrings.h"
 
+#include <unordered_set>
 #include <algorithm>
 #include "Utilities/Strings.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
@@ -427,7 +428,8 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
         }
     }
 
-    SmsgQuestgiverQuestComplete managedPacket(qst->id, xp, GenerateRewardMoney(plr, qst), qst->bonushonor * 10, rewardtalents, qst->bonusarenapoints);
+    const bool hasNextQuest = qst->next_quest_id != 0;
+    SmsgQuestgiverQuestComplete managedPacket(qst->id, xp, GenerateRewardMoney(plr, qst), qst->bonushonor * 10, rewardtalents, qst->bonusarenapoints, hasNextQuest, false, hasNextQuest, false);
     plr->getSession()->sendManagedPacket(managedPacket);
 }
 
@@ -1516,6 +1518,8 @@ QuestgiverOfferRewardInput QuestMgr::buildOfferRewardInput(QuestProperties const
     MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
 
     input.questGiverGuid = qst_giver->getGuid();
+    input.mapId = static_cast<uint16_t>(qst_giver->GetMapId());
+    input.questGiverCreatureId = qst_giver->isCreature() ? qst_giver->getEntry() : 0;
     input.questId = qst->id;
     input.title = lq ? lq->title : qst->title;
     input.completionText = lq ? lq->completionText : qst->completiontext;
@@ -1545,6 +1549,18 @@ QuestgiverOfferRewardInput QuestMgr::buildOfferRewardInput(QuestProperties const
             input.rewardItems[i].displayId = ip->DisplayInfoID;
     }
 
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        input.rewardCurrencyId[i] = qst->reward_currency_id[i];
+        input.rewardCurrencyCount[i] = qst->reward_currency_count[i];
+    }
+
+    for (uint8_t i = 0; i < 5; ++i)
+    {
+        input.rewardRepFaction[i] = qst->reward_repfaction[i];
+        input.rewardRepValue[i] = qst->reward_repvalue[i];
+    }
+
     if (plr->getLevel() < plr->getMaxLevel())
         input.xp = Util::float2int32(GenerateQuestXP(plr, qst) * worldConfig.getFloatRate(RATE_QUESTXP));
 
@@ -1563,6 +1579,69 @@ QuestgiverOfferRewardInput QuestMgr::buildOfferRewardInput(QuestProperties const
     return input;
 }
 
+std::vector<ForeverQuestObjectiveData> QuestMgr::buildForeverQuestObjectives(QuestProperties const* qst, uint32_t language) const
+{
+    std::vector<ForeverQuestObjectiveData> objectives;
+    if (qst == nullptr)
+        return objectives;
+
+    MySQLStructure::LocalesQuest const* lq = language > 0 ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
+    uint8_t ordinal = 0;
+    const auto makeId = [qst](uint8_t index) -> uint32_t { return 0x70000000u | ((qst->id & 0x00FFFFFFu) << 4) | (index & 0x0Fu); };
+
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        if (qst->required_mob_or_go[i] == 0 && qst->required_spell[i] == 0)
+            continue;
+
+        ForeverQuestObjectiveData objective;
+        objective.id = makeId(ordinal);
+        objective.storageIndex = static_cast<int8_t>(ordinal++);
+        objective.amount = static_cast<int32_t>(qst->required_mob_or_go_count[i]);
+        objective.description = lq != nullptr ? lq->objectiveText[i] : qst->objectivetexts[i];
+
+        if (qst->required_mob_or_go[i] > 0)
+        {
+            objective.type = 0;
+            objective.objectId = qst->required_mob_or_go[i];
+        }
+        else if (qst->required_mob_or_go[i] < 0)
+        {
+            objective.type = 2;
+            objective.objectId = -qst->required_mob_or_go[i];
+        }
+        else if (qst->required_spell[i] != 0)
+        {
+            objective.type = 5;
+            objective.objectId = static_cast<int32_t>(qst->required_spell[i]);
+        }
+        else
+        {
+            continue;
+        }
+
+        objectives.push_back(std::move(objective));
+    }
+
+    for (uint8_t i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
+    {
+        if (qst->required_item[i] == 0)
+            continue;
+
+        ForeverQuestObjectiveData objective;
+        objective.id = makeId(ordinal);
+        objective.type = 1;
+        objective.storageIndex = static_cast<int8_t>(ordinal++);
+        objective.objectId = static_cast<int32_t>(qst->required_item[i]);
+        objective.amount = static_cast<int32_t>(qst->required_itemcount[i]);
+        if (ItemProperties const* item = sMySQLStore.getItemProperties(qst->required_item[i]))
+            objective.description = item->Name;
+        objectives.push_back(std::move(objective));
+    }
+
+    return objectives;
+}
+
 QuestgiverQuestDetailsInput QuestMgr::buildQuestDetailsInput(QuestProperties const* qst, Object* qst_giver, Player* plr, uint32_t language)
 {
     QuestgiverQuestDetailsInput input;
@@ -1571,6 +1650,9 @@ QuestgiverQuestDetailsInput QuestMgr::buildQuestDetailsInput(QuestProperties con
 
     input.questGiverGuid = qst_giver->getGuid();
     input.questSharerGuid = qst_giver->isPlayer() ? qst_giver->getGuid() : 0;
+    input.mapId = static_cast<uint16_t>(qst_giver->GetMapId());
+    input.questGiverCreatureId = qst_giver->isCreature() ? qst_giver->getEntry() : 0;
+    input.questStartItemId = qst->srcitem;
     input.questId = qst->id;
     input.title = lq ? lq->title : qst->title;
     input.details = lq ? lq->details : qst->details;
@@ -1597,8 +1679,21 @@ QuestgiverQuestDetailsInput QuestMgr::buildQuestDetailsInput(QuestProperties con
             input.rewardItems[i].displayId = ip->DisplayInfoID;
     }
 
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        input.rewardCurrencyId[i] = qst->reward_currency_id[i];
+        input.rewardCurrencyCount[i] = qst->reward_currency_count[i];
+    }
+
+    for (uint8_t i = 0; i < 5; ++i)
+    {
+        input.rewardRepFaction[i] = qst->reward_repfaction[i];
+        input.rewardRepValue[i] = qst->reward_repvalue[i];
+    }
+
     input.rewardMoney = GenerateRewardMoney(plr, qst);
-    input.xp = GenerateQuestXP(plr, qst); // Cata only, see struct comment
+    if (plr->getLevel() < plr->getMaxLevel())
+        input.xp = Util::float2int32(GenerateQuestXP(plr, qst) * worldConfig.getFloatRate(RATE_QUESTXP));
     input.bonusHonor = qst->bonushonor;
     input.rewardSpell = qst->reward_spell;
     input.effectOnPlayer = qst->effect_on_player;
@@ -1609,6 +1704,20 @@ QuestgiverQuestDetailsInput QuestMgr::buildQuestDetailsInput(QuestProperties con
     for (uint8_t i = 0; i < 4; ++i)
         input.detailEmotes[i] = { qst->detailemote[i], qst->detailemotedelay[i] };
 
+    if (plr->getSession()->getClientProtocol().isForever())
+    {
+        const auto objectives = buildForeverQuestObjectives(qst, language);
+        input.objectiveEntries.reserve(objectives.size());
+        for (ForeverQuestObjectiveData const& source : objectives)
+        {
+            QuestObjectiveSimpleEntry objective;
+            objective.id = static_cast<int32_t>(source.id);
+            objective.type = source.type;
+            objective.objectId = source.objectId;
+            objective.amount = source.amount;
+            input.objectiveEntries.push_back(objective);
+        }
+    }
     return input;
 }
 
@@ -1619,6 +1728,8 @@ QuestgiverRequestItemsInput QuestMgr::buildRequestItemsInput(QuestProperties con
     MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
 
     input.questGiverGuid = qst_giver->getGuid();
+    input.mapId = static_cast<uint16_t>(qst_giver->GetMapId());
+    input.questGiverCreatureId = qst_giver->isCreature() ? qst_giver->getEntry() : 0;
     input.questId = qst->id;
 
     if (lq != nullptr)
@@ -2129,23 +2240,52 @@ void QuestMgr::LoadExtraQuestStuff()
 
     m_QuestPOIMap.clear();
 
-    auto result = WorldDatabase.query("SELECT questId, poiId, objIndex, mapId, mapAreaId, floorId, unk3, unk4 FROM quest_poi");
+#if defined(AE_FOREVER)
+    for (auto const& [questId, db2Blobs] : sForeverQuestPOIStore)
+    {
+        QuestPOIVector& target = m_QuestPOIMap[questId];
+        target.reserve(db2Blobs.size());
+        uint32_t blobIndex = 0;
+        for (ForeverQuestPOIBlobData const& db2Blob : db2Blobs)
+        {
+            QuestPOI poi(blobIndex++, db2Blob.objectiveIndex, db2Blob.mapId, db2Blob.uiMapId, 0, 0, db2Blob.flags);
+            poi.QuestObjectiveId = db2Blob.objectiveId;
+            poi.PlayerConditionId = db2Blob.playerConditionId;
+            poi.NavigationPlayerConditionId = db2Blob.navigationPlayerConditionId;
+            poi.points.reserve(db2Blob.points.size());
+            for (ForeverQuestPOIPointData const& db2Point : db2Blob.points)
+                poi.points.emplace_back(db2Point.x, db2Point.y, db2Point.z);
+            target.push_back(std::move(poi));
+        }
+    }
+    sLogger.info("QuestMgr : seeded POI data for {} quests from Forever DB2.", sForeverQuestPOIStore.size());
+#endif
+
+    auto result = WorldDatabase.query("SELECT build, questId, poiId, objIndex, mapId, mapAreaId, floorId, unk3, unk4 FROM quest_poi base WHERE build=(SELECT MAX(build) FROM quest_poi buildspecific WHERE base.questId = buildspecific.questId AND buildspecific.build <= %u) ORDER BY questId, poiId", VERSION_STRING);
     if (result != NULL)
     {
         uint32_t count = 0;
+        std::unordered_set<uint32_t> sqlOverrideQuests;
 
         do
         {
             Field* fields = result->fetch();
 
-            uint32_t questId = fields[0].asUint32();
-            uint32_t poiId = fields[1].asUint32();
-            int32_t  objIndex = fields[2].asInt32();
-            uint32_t mapId = fields[3].asUint32();
-            uint32_t mapAreaId = fields[4].asUint32();
-            uint32_t floorId = fields[5].asUint32();
-            uint32_t unk3 = fields[6].asUint32();
-            uint32_t unk4 = fields[7].asUint32();
+            const uint32_t selectedBuild = fields[0].asUint32();
+            const uint32_t questId = fields[1].asUint32();
+#if defined(AE_FOREVER)
+            if (selectedBuild == 0 && sForeverQuestPOIStore.contains(questId))
+                continue;
+#endif
+            if (sqlOverrideQuests.insert(questId).second)
+                m_QuestPOIMap[questId].clear();
+            uint32_t poiId = fields[2].asUint32();
+            int32_t  objIndex = fields[3].asInt32();
+            uint32_t mapId = fields[4].asUint32();
+            uint32_t mapAreaId = fields[5].asUint32();
+            uint32_t floorId = fields[6].asUint32();
+            uint32_t unk3 = fields[7].asUint32();
+            uint32_t unk4 = fields[8].asUint32();
 
             QuestPOI POI(poiId, objIndex, mapId, mapAreaId, floorId, unk3, unk4);
             m_QuestPOIMap[questId].push_back(POI);
@@ -2156,7 +2296,7 @@ void QuestMgr::LoadExtraQuestStuff()
 
         sLogger.info("QuestMgr : Point Of Interest (POI) data loaded for {} quests.", count);
 
-        auto points = WorldDatabase.query("SELECT questId, poiId, x, y FROM quest_poi_points");
+        auto points = WorldDatabase.query("SELECT points.questId, points.poiId, points.x, points.y FROM quest_poi_points points WHERE points.build=(SELECT MAX(poi.build) FROM quest_poi poi WHERE poi.questId = points.questId AND poi.build <= %u) ORDER BY points.questId, points.poiId", VERSION_STRING);
         if (points != NULL)
         {
             count = 0;
@@ -2165,6 +2305,8 @@ void QuestMgr::LoadExtraQuestStuff()
                 Field* pointFields = points->fetch();
 
                 uint32_t questId = pointFields[0].asUint32();
+                if (!sqlOverrideQuests.contains(questId))
+                    continue;
                 uint32_t poiId = pointFields[1].asUint32();
                 int32_t  x = pointFields[2].asInt32();
                 int32_t  y = pointFields[3].asInt32();

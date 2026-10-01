@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ForeverSpellPacketUtils.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -15,15 +16,17 @@ namespace AscEmu::Packets
     public:
         uint64_t attackerGuid;
         uint64_t victimGuid;
+        uint16_t mapId = 0;
 
-        SmsgAttackStart() : SmsgAttackStart(0, 0)
+        SmsgAttackStart() : SmsgAttackStart(0, 0, 0)
         {
         }
 
-        SmsgAttackStart(uint64_t attackerGuid, uint64_t victimGuid) :
+        SmsgAttackStart(uint64_t attackerGuid, uint64_t victimGuid, uint16_t mapId) :
             ManagedPacket(SMSG_ATTACK_START, 0),
             attackerGuid(attackerGuid),
-            victimGuid(victimGuid)
+            victimGuid(victimGuid),
+            mapId(mapId)
         {
         }
 
@@ -32,6 +35,13 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                ForeverSpellPacket::writePackedGuid(packet, ForeverSpellPacket::toModernGuid(WoWGuid(attackerGuid), m_protocol.realmId, mapId));
+                ForeverSpellPacket::writePackedGuid(packet, ForeverSpellPacket::toModernGuid(WoWGuid(victimGuid), m_protocol.realmId, mapId));
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << attackerGuid << victimGuid;

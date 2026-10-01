@@ -950,6 +950,7 @@ protected:
         void handleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket);
         void handlePushQuestToPartyOpcode(WorldPacket& recvPacket);
         void handleQuestPOIQueryOpcode(WorldPacket& recvPacket);        //> TBC
+        void handleUiMapQuestLinesRequestOpcode(WorldPacket& recvPacket); // Forever
         void handleQuestNpcQueryOpcode(WorldPacket& recvPacket);        //>= Mop
 
         //////////////////////////////////////////////////////////////////////////////////////////

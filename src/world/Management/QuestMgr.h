@@ -26,6 +26,7 @@
 #include "Platform/SymbolVisibility.hpp"
 
 #include <memory>
+#include <string>
 #include <vector>
 #include <unordered_map>
 #include <list>
@@ -47,6 +48,19 @@ namespace AscEmu::Packets
     struct QuestgiverQuestListInput;
 }
 
+
+struct ForeverQuestObjectiveData
+{
+    uint32_t id = 0;
+    int32_t type = 0;
+    int8_t storageIndex = 0;
+    int32_t objectId = 0;
+    int32_t amount = 0;
+    uint32_t flags = 0;
+    uint32_t flags2 = 0;
+    std::string description;
+};
+
 struct QuestRelation
 {
     QuestProperties const* qst;
@@ -63,12 +77,14 @@ struct QuestPOIPoint
 {
     int32_t x;
     int32_t y;
+    int32_t z;
 
-    QuestPOIPoint() : x(0), y(0) {}
+    QuestPOIPoint() : x(0), y(0), z(0) {}
 
-    QuestPOIPoint(int32_t px, int32_t py) :
+    QuestPOIPoint(int32_t px, int32_t py, int32_t pz = 0) :
         x(px),
-        y(py) {}
+        y(py),
+        z(pz) {}
 };
 
 struct QuestPOI
@@ -80,10 +96,13 @@ struct QuestPOI
     uint32_t FloorId;
     uint32_t Unk3;
     uint32_t Unk4;
+    uint32_t QuestObjectiveId;
+    uint32_t PlayerConditionId;
+    uint32_t NavigationPlayerConditionId;
 
     std::vector<QuestPOIPoint> points;
 
-    QuestPOI() : PoiId(0), ObjectiveIndex(0), MapId(0), MapAreaId(0), FloorId(0), Unk3(0), Unk4(0) {}
+    QuestPOI() : PoiId(0), ObjectiveIndex(0), MapId(0), MapAreaId(0), FloorId(0), Unk3(0), Unk4(0), QuestObjectiveId(0), PlayerConditionId(0), NavigationPlayerConditionId(0) {}
 
     QuestPOI(uint32_t poiId, int32_t objIndex, uint32_t mapId, uint32_t mapAreaId, uint32_t floorId, uint32_t unk3, uint32_t unk4) :
     PoiId(poiId),
@@ -92,7 +111,10 @@ struct QuestPOI
     MapAreaId(mapAreaId),
     FloorId(floorId),
     Unk3(unk3),
-    Unk4(unk4) {}
+    Unk4(unk4),
+    QuestObjectiveId(0),
+    PlayerConditionId(0),
+    NavigationPlayerConditionId(0) {}
 };
 
 typedef std::vector<QuestPOI> QuestPOIVector;
@@ -138,6 +160,7 @@ public:
 
         AscEmu::Packets::QuestgiverOfferRewardInput buildOfferRewardInput(QuestProperties const* qst, Object* qst_giver, Player* plr, uint32_t language);
         AscEmu::Packets::QuestgiverQuestDetailsInput buildQuestDetailsInput(QuestProperties const* qst, Object* qst_giver, Player* plr, uint32_t language);
+        std::vector<ForeverQuestObjectiveData> buildForeverQuestObjectives(QuestProperties const* qst, uint32_t language) const;
         AscEmu::Packets::QuestgiverRequestItemsInput buildRequestItemsInput(QuestProperties const* qst, Object* qst_giver, uint32_t status, uint32_t language);
         AscEmu::Packets::QuestgiverQuestListInput buildQuestListInput(Object* qst_giver, Player* plr, uint32_t language);
         bool isRepeatableQuestFinished(Player* plr, QuestProperties const* qst);

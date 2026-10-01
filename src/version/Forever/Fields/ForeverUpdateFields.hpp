@@ -116,6 +116,13 @@ namespace AscEmu::Version::Forever::Fields
         std::array<int16_t, 24> objectiveProgress{};
     };
 
+    struct QuestLogQuestIdToIndexChange
+    {
+        int32_t questId = 0;
+        uint8_t state = 0;
+        int32_t index = 0;
+    };
+
     struct SkillInfo
     {
         std::array<uint16_t, 300> skillLineId{};
@@ -710,7 +717,7 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t ArenaFactionBit = 22;
         static inline constexpr std::size_t DuelTeamBit = 23;
         static inline constexpr std::size_t GuildTimeStampBit = 24;
-        static inline constexpr std::size_t QuestLogQuestIdToIndexBit = 25;
+        static inline constexpr std::size_t QuestLogQuestIdToIndexBit = 26;
         static inline constexpr std::size_t PlayerTitleBit = 26;
         static inline constexpr std::size_t FakeInebriationBit = 27;
         static inline constexpr std::size_t VirtualPlayerRealmBit = 28;
@@ -736,8 +743,8 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t NpcAsPlayerInfoBit = 49;
         static inline constexpr std::size_t PartyTypeGroupBit = 50;
         static inline constexpr std::size_t PartyTypeFirstBit = 51;
-        static inline constexpr std::size_t QuestLogGroupBit = 53;
-        static inline constexpr std::size_t QuestLogFirstBit = 54;
+        static inline constexpr std::size_t QuestLogGroupBit = 57;
+        static inline constexpr std::size_t QuestLogFirstBit = 58;
         static inline constexpr std::size_t VisibleItemsGroupBit = 233;
         static inline constexpr std::size_t VisibleItemsFirstBit = 234;
         static inline constexpr std::size_t AvgItemLevelGroupBit = 249;
@@ -778,7 +785,12 @@ namespace AscEmu::Version::Forever::Fields
 
         void markChanged(std::size_t bit) { changes.set(bit & ~std::size_t(31)); changes.set(bit); }
         void markArrayChanged(std::size_t groupBit, std::size_t elementBit) { changes.set(groupBit); changes.set(elementBit); }
-        void clearChanges() { changes.reset(); }
+        void clearChanges()
+        {
+            changes.reset();
+            questLogQuestIdToIndexChanges.clear();
+            questLogQuestIdChanged.reset();
+        }
         bool hasChanges() const { return changes.any(); }
 
         // Forever 1.60.1.69913 CREATE wire order.
@@ -816,6 +828,8 @@ namespace AscEmu::Version::Forever::Fields
 
         std::array<QuestLog, 175> unknownPartyRecords0_69913{};
         std::map<int32_t, int32_t> unknownPartyMap0_69913;
+        std::vector<QuestLogQuestIdToIndexChange> questLogQuestIdToIndexChanges;
+        std::bitset<175> questLogQuestIdChanged{};
         std::vector<QuestLog> unknownPartyDynamicRecords0_69913;
 
         std::array<VisibleItem, 19> unknownVisibleItemRecords0_69913{};
