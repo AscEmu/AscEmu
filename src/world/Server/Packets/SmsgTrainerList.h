@@ -102,14 +102,18 @@ namespace AscEmu::Packets
                             continue;
                     }
 
+                    const auto spellStatus = player->getSession()->trainerGetSpellStatus(&trainerSpell);
                     packet << static_cast<int32_t>(spellInfo->getId());
+                    packet << static_cast<uint32_t>(spellStatus);
                     packet << static_cast<uint32_t>(trainerSpell.cost);
-                    packet << static_cast<uint32_t>(trainerSpell.requiredSkillLine);
-                    packet << static_cast<uint32_t>(trainerSpell.requiredSkillLineValue);
-                    for (uint8_t i = 0; i < 3; ++i)
-                        packet << static_cast<int32_t>(trainerSpell.requiredSpell[i]);
-                    packet << static_cast<uint32_t>(player->getSession()->trainerGetSpellStatus(&trainerSpell));
-                    packet << static_cast<uint8_t>(trainerSpell.requiredLevel);
+                    packet << static_cast<uint32_t>(spellStatus == TRAINER_SPELL_GRAY ? 0 : trainerSpell.requiredLevel);
+
+                    // Forever 1.60.1.70124 trainer-list captures use a 33-byte spell record.
+                    // The remaining 17 bytes are zero for every captured class-trainer spell;
+                    // keep them zero until their semantics are proven by a capture with requirements.
+                    for (uint8_t i = 0; i < 4; ++i)
+                        packet << uint32_t(0);
+                    packet << uint8_t(0);
                     ++count;
                 }
 
