@@ -1234,18 +1234,25 @@ namespace {
             sChrRacesStore[entry.raceId] = std::move(entry);
         }
 
-        // Faction.db2 in the 1.60.1.69800 beta has one additional modern field
-        // compared with the current Forever metadata. The fields required by
-        // AscEmu during login are stable at the front of the record, so keep
-        // the unknown tail opaque for now instead of guessing its meaning.
+        // Forever Faction.db2 keeps the four reputation relation sets in modern
+        // array fields. Race masks are stored as two uint32 values per relation
+        // (a 64-bit mask); AscEmu currently consumes the low 32 bits through its
+        // established runtime race-mask API.
         sFactionStore.clear();
         for (uint32_t row = 0; row < faction.getRecordCount(); ++row)
         {
             WDB::Structures::FactionEntry entry;
             entry.id = faction.getRecordId(row);
-            entry.reputationIndex = faction.getInt32(row, 2);
-            entry.parentFactionId = faction.getUInt32(row, 3);
+            entry.reputationIndex = faction.getInt16(row, 2);
+            entry.parentFactionId = faction.getUInt16(row, 3);
             entry.expansion = faction.getUInt8(row, 4);
+            for (uint8_t i = 0; i < 4; ++i)
+            {
+                entry.reputationClassMask[i] = faction.getUInt16(row, 11, i);
+                entry.reputationFlags[i] = faction.getUInt16(row, 12, i);
+                entry.reputationBase[i] = faction.getInt32(row, 13, i);
+                entry.reputationRaceMask[i] = faction.getUInt32(row, 17 + i, 0);
+            }
             sFactionStore[entry.id] = std::move(entry);
         }
 

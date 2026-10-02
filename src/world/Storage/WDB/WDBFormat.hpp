@@ -1232,7 +1232,7 @@ namespace WDB
         inline const WDC5TableSchema ChrClasses = makeScalarSchema("ChrClasses.db2", 0xAFC9B0C2, 29, 43);
         inline const WDC5TableSchema ChrClassesXPowerTypes = makeScalarSchema("ChrClassesXPowerTypes.db2", 0x70DA1F8C, -1, 1);
         inline const WDC5TableSchema ChrRaces = makeSchemaWithArrays("ChrRaces.db2", 0x4F44C796, -1, 51, {{23, 3}, {24, 3}, {30, 3}, {32, 3}, {33, 3}});
-        inline const WDC5TableSchema Faction = makeScalarSchema("Faction.db2", 0x6D443C38, -1, 21);
+        inline const WDC5TableSchema Faction = makeSchemaWithArrays("Faction.db2", 0x6D443C38, -1, 21, {{11, 4}, {12, 4}, {13, 4}, {14, 4}, {15, 2}, {16, 2}, {17, 2}, {18, 2}, {19, 2}, {20, 2}});
         inline const WDC5TableSchema FactionTemplate = makeSchemaWithArrays("FactionTemplate.db2", 0x22B6DC22, -1, 7, {{5, 8}, {6, 8}});
 
         // Creature/model data. These Forever layouts use external/non-inline IDs,
