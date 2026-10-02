@@ -53,9 +53,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellInfo.hpp"
 #include "Storage/WorldStrings.h"
 #include "Storage/WDB/WDBStructures.hpp"
-#if defined(AE_FOREVER)
-#include "Server/WorldSocket.hpp"
-#endif
 
 using namespace AscEmu::Packets;
 
@@ -239,10 +236,14 @@ void WorldSession::handleForeverTrainerBuySpellData(uint64_t guid, uint32_t trai
     if (trainerSpell->deleteSpell)
         _player->removeSpell(trainerSpell->deleteSpell, true);
 
-#if !defined(AE_FOREVER)
-    SmsgTrainerBuySucceeded managedPacket(trainerGuid.getRawGuid(), spellId);
-    sendManagedPacket(managedPacket);
-#endif
+    // Forever 70124 does not send a separate trainer-buy-success packet.
+    // The successful purchase is represented by the trainer/player spell visuals
+    // followed by SMSG_LEARNED_SPELL, as observed in the retail sniff.
+    if (!getClientProtocol().isForever())
+    {
+        SmsgTrainerBuySucceeded managedPacket(trainerGuid.getRawGuid(), spellId);
+        sendManagedPacket(managedPacket);
+    }
 }
 
 void WorldSession::handleCharterShowListOpcode(WorldPacket& recvPacket)

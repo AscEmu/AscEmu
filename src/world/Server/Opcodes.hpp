@@ -2347,7 +2347,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {CMSG_PET_CAST_SPELL, {0x1F, "CMSG_PET_CAST_SPELL", OpcodeDevelopmentState::Unchecked, {0x1F0,/*Classic*/ 0x1F0,/*BC*/ 0x1F0,/*WotLK*/ 0x6337,/*Cata*/ 0x044D/*Mop*/}}},
 {MSG_SAVE_GUILD_EMBLEM, {0x1F, "MSG_SAVE_GUILD_EMBLEM", OpcodeDevelopmentState::Unchecked, {0x1F1,/*Classic*/ 0x1F1,/*BC*/ 0x1F1,/*WotLK*/ 0x2404,/*Cata*/ 0x0000/*Mop*/}}},
 {MSG_TABARDVENDOR_ACTIVATE, {0x1F, "MSG_TABARDVENDOR_ACTIVATE", OpcodeDevelopmentState::Unchecked, {0x1F2,/*Classic*/ 0x1F2,/*BC*/ 0x1F2,/*WotLK*/ 0x6926,/*Cata*/ 0x0A3E/*Mop*/}}},
-{SMSG_PLAY_SPELL_VISUAL, {0x1F, "SMSG_PLAY_SPELL_VISUAL", OpcodeDevelopmentState::Unchecked, {0x1F3,/*Classic*/ 0x1F3,/*BC*/ 0x1F3,/*WotLK*/ 0x55A5,/*Cata*/ 0x061E/*Mop*/}}},
+{SMSG_PLAY_SPELL_VISUAL, {0x1F, "SMSG_PLAY_SPELL_VISUAL", OpcodeDevelopmentState::Unchecked, {0x1F3,/*Classic*/ 0x1F3,/*BC*/ 0x1F3,/*WotLK*/ 0x55A5,/*Cata*/ 0x061E,/*Mop*/ 0/*WoD*/, 0/*Legion*/, 0/*BfA*/, 0/*Shadowlands*/, 0/*Dragonflight*/, 0/*TWW*/, 0/*Midnight*/, 0x0068003C/*Forever*/}}},
 {SMSG_PLAY_SPELL_VISUAL_KIT, {0x18, "SMSG_PLAY_SPELL_VISUAL_KIT", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x55A5,/*Cata*/ 0x11E3/*Mop*/}}},
 {CMSG_ZONEUPDATE, {0x1F, "CMSG_ZONEUPDATE", OpcodeDevelopmentState::Unchecked, {0x1F4,/*Classic*/ 0x1F4,/*BC*/ 0x1F4,/*WotLK*/ 0x4F37,/*Cata*/ 0x0000/*Mop*/}}},
 {SMSG_PARTYKILLLOG, {0x1F, "SMSG_PARTYKILLLOG", OpcodeDevelopmentState::Unchecked, {0x1F5,/*Classic*/ 0x1F5,/*BC*/ 0x1F5,/*WotLK*/ 0x4937,/*Cata*/ 0x048A0/*Mop*/}}},

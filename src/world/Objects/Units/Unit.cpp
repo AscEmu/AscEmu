@@ -4054,7 +4054,7 @@ void Unit::applyControlStatesIfNeeded()
 
 void Unit::playSpellVisual(uint32_t visual_id, uint32_t type)
 {
-    SmsgPlaySpellVisual sendPacket(getGuid(), visual_id, type);
+    SmsgPlaySpellVisual sendPacket(getGuid(), visual_id, type, static_cast<uint16_t>(GetMapId()));
     PacketBroadcast::sendToSet(*this, sendPacket, true);
 }
 

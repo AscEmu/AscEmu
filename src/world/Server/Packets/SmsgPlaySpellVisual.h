@@ -16,16 +16,18 @@ namespace AscEmu::Packets
         uint64_t rawGuid;
         uint32_t visualId;
         uint32_t type;
+        uint16_t mapId;
 
-        SmsgPlaySpellVisual() : SmsgPlaySpellVisual(0, 0, 0)
+        SmsgPlaySpellVisual() : SmsgPlaySpellVisual(0, 0, 0, 0)
         {
         }
 
-        SmsgPlaySpellVisual(uint64_t rawGuid, uint32_t visualId, uint32_t type) :
+        SmsgPlaySpellVisual(uint64_t rawGuid, uint32_t visualId, uint32_t type, uint16_t mapId = 0) :
             ManagedPacket(SMSG_PLAY_SPELL_VISUAL, 4 + 4 + 4 + 8),
             rawGuid(rawGuid),
             visualId(visualId),
-            type(type)
+            type(type),
+            mapId(mapId)
         {
         }
 
@@ -34,6 +36,17 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(rawGuid, m_protocol.realmId, mapId, 0);
+                const auto packedGuid = modernGuid.packModern();
+                packet.append(packedGuid.data(), packedGuid.size());
+                packet << visualId << type << uint32_t(0);
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet << rawGuid << visualId;
