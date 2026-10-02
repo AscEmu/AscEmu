@@ -24,12 +24,12 @@ if (BUILD_ASCEMUSCRIPTS AND BUILD_LUAENGINE)
     add_subdirectory(lualib/src)
 endif ()
 
-# CascLib for WoD/Legion CASC extraction
-set(CASC_BUILD_STATIC_LIB ON CACHE BOOL "" FORCE)
-set(CASC_BUILD_SHARED_LIB OFF CACHE BOOL "" FORCE)
-add_subdirectory(casclib)
-
 if (BUILD_TOOLS)
+    # CascLib for WoD/Legion CASC extraction
+    set(CASC_BUILD_STATIC_LIB ON CACHE BOOL "" FORCE)
+    set(CASC_BUILD_SHARED_LIB OFF CACHE BOOL "" FORCE)
+    add_subdirectory(casclib)
+
     # mpqlib is the shared MPQ-reading layer for every version's tools now,
     # and also carries DBCFile/FileLoader (Classic/TBC/WotLK) plus the
     # BinaryReader/ChunkReader helpers they and vmap4_extractor build on -
