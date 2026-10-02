@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "Spell/SpellCastTargets.hpp"
+#include "ForeverSpellPacketUtils.hpp"
 #include <G3D/Vector3.h>
 
 namespace AscEmu::Packets
@@ -31,6 +32,7 @@ namespace AscEmu::Packets
         SpellCastTargets targets;
 
         bool hasAdditionalData = false;
+        bool isForeverPacket = false;
 
         float projectilePitch = 0.0f;
         float projectileSpeed = 0.0f;
@@ -54,6 +56,79 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                isForeverPacket = true;
+                using namespace ForeverSpellPacket;
+
+                // Forever ItemLocation: default backpack/container selector followed by the
+                // ActivePlayerData invSlots index. These are retained for diagnostics only;
+                // the handler resolves the item by the verified modern item GUID below.
+                packet >> containerIndex >> inventorySlot;
+
+                WoWGuid modernItemGuid;
+                if (!readPackedGuid(packet, modernItemGuid))
+                    return false;
+                itemGuid.init(modernItemGuid.toLegacyRaw());
+
+                WoWGuid clientCastId;
+                if (!readPackedGuid(packet, clientCastId))
+                    return false;
+
+                packet >> castFlags;
+
+                // Misc[3] - same verified Forever SpellCastRequest body as CMSG_CAST_SPELL.
+                packet.readSkip<int32_t>();
+                packet.readSkip<int32_t>();
+                packet.readSkip<int32_t>();
+
+                packet >> spellId;
+
+                uint32_t spellXSpellVisualId = 0;
+                uint32_t scriptVisualId = 0;
+                packet >> spellXSpellVisualId >> scriptVisualId;
+
+                if (!readTargetData(packet, targets))
+                    return false;
+
+                packet >> projectilePitch >> projectileSpeed;
+
+                WoWGuid craftingNpc;
+                if (!readPackedGuid(packet, craftingNpc))
+                    return false;
+
+                uint32_t extraCurrencyCostCount = 0;
+                uint32_t craftingReagentCount = 0;
+                uint32_t removedReagentCount = 0;
+                uint8_t craftingCastFlags = 0;
+                packet >> extraCurrencyCostCount >> craftingReagentCount >> removedReagentCount >> craftingCastFlags;
+
+                // Captured 69893/70009 item-use packets carry no variable crafting arrays here.
+                if (extraCurrencyCostCount != 0 || craftingReagentCount != 0 || removedReagentCount != 0)
+                    return false;
+
+                uint8_t optionalHeader = 0;
+                packet >> optionalHeader;
+                const bool hasReceiveTime = (optionalHeader & 0x80U) != 0;
+                hasMovementData = (optionalHeader & 0x40U) != 0;
+                const uint32_t weightCount = (optionalHeader >> 4U) & 0x03U;
+                const bool hasCraftingOrderId = (optionalHeader & 0x08U) != 0;
+
+                if (weightCount != 0 || hasMovementData)
+                    return false;
+
+                if (hasReceiveTime)
+                    packet.readSkip<uint32_t>();
+                if (hasCraftingOrderId)
+                    packet.readSkip<uint64_t>();
+
+                hasSrcLocation = (targets.getTargetMask() & TARGET_FLAG_SOURCE_LOCATION) != 0;
+                hasDestLocation = (targets.getTargetMask() & TARGET_FLAG_DEST_LOCATION) != 0;
+                castCount = static_cast<uint8_t>(clientCastId.getModernCounter() & 0xFFU);
+
+                return !packet.hadReadFailure();
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 if (m_protocol.expansion == WoW::Expansion::_Classic)

@@ -77,10 +77,16 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    Item* tmpItem = _player->getItemInterface()->GetInventoryItem(srlPacket.containerIndex, srlPacket.inventorySlot);
-    if (tmpItem == nullptr)
+    Item* tmpItem = nullptr;
+    if (srlPacket.isForeverPacket)
     {
-        tmpItem = _player->getItemInterface()->GetInventoryItem(srlPacket.inventorySlot);
+        tmpItem = _player->getItemInterface()->GetItemByGUID(srlPacket.itemGuid.getRawGuid());
+    }
+    else
+    {
+        tmpItem = _player->getItemInterface()->GetInventoryItem(srlPacket.containerIndex, srlPacket.inventorySlot);
+        if (tmpItem == nullptr)
+            tmpItem = _player->getItemInterface()->GetInventoryItem(srlPacket.inventorySlot);
     }
 
     if (tmpItem == nullptr)

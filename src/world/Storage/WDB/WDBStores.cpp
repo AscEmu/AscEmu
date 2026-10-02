@@ -1785,7 +1785,7 @@ namespace {
                 entry.ID = itemEffect.getRecordId(row);
                 entry.LegacySlotIndex = itemEffect.getInt32(row, 0);
                 entry.TriggerType = itemEffect.getInt32(row, 1);
-                entry.Charges = itemEffect.getInt32(row, 2);
+                entry.Charges = static_cast<int32_t>(itemEffect.getInt16(row, 2));
                 entry.Cooldown = itemEffect.getInt32(row, 3);
                 entry.CategoryCooldown = itemEffect.getInt32(row, 4);
                 entry.Category = itemEffect.getUInt32(row, 5);

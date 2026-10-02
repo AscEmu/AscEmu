@@ -2002,7 +2002,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {CMSG_CHANNEL_MODERATE, {0x1F, "CMSG_CHANNEL_MODERATE", OpcodeDevelopmentState::Unchecked, {0x0A8,/*Classic*/ 0x0A8,/*BC*/ 0x0A8,/*WotLK*/ 0x2944,/*Cata*/ 0x0000/*Mop*/}}},
 {SMSG_UPDATE_OBJECT, {0x1F, "SMSG_UPDATE_OBJECT", OpcodeDevelopmentState::Unchecked, {0x0A9,/*Classic*/ 0x0A9,/*BC*/ 0x0A9,/*WotLK*/ 0x4715,/*Cata*/ 0x1792/*Mop*/, 0/*WoD*/, 0/*Legion*/, 0/*BfA*/, 0/*Shadowlands*/, 0/*Dragonflight*/, 0/*TWW*/, 0/*Midnight*/, 0x005D0000/*Forever*/}}},
 {SMSG_DESTROY_OBJECT, {0x1F, "SMSG_DESTROY_OBJECT", OpcodeDevelopmentState::Unchecked, {0x0AA,/*Classic*/ 0x0AA,/*BC*/ 0x0AA,/*WotLK*/ 0x4724,/*Cata*/ 0x14C2/*Mop*/}}},
-{CMSG_USE_ITEM, {0x1F, "CMSG_USE_ITEM", OpcodeDevelopmentState::Unchecked, {0x0AB,/*Classic*/ 0x0AB,/*BC*/ 0x0AB,/*WotLK*/ 0x2C06,/*Cata*/ 0x1CC1/*Mop*/}}},
+{CMSG_USE_ITEM, {0x1F, "CMSG_USE_ITEM", OpcodeDevelopmentState::Unchecked, {0x0AB,/*Classic*/ 0x0AB,/*BC*/ 0x0AB,/*WotLK*/ 0x2C06,/*Cata*/ 0x1CC1/*Mop*/, 0/*WoD*/, 0/*Legion*/, 0/*BfA*/, 0/*Shadowlands*/, 0/*Dragonflight*/, 0/*TWW*/, 0/*Midnight*/, 0x003E0171/*Forever*/}}},
 {CMSG_OPEN_ITEM, {0x1F, "CMSG_OPEN_ITEM", OpcodeDevelopmentState::Unchecked, {0x0AC,/*Classic*/ 0x0AC,/*BC*/ 0x0AC,/*WotLK*/ 0x6A34,/*Cata*/ 0x1D10/*Mop*/}}},
 {CMSG_READ_ITEM, {0x1F, "CMSG_READ_ITEM", OpcodeDevelopmentState::Unchecked, {0x0AD,/*Classic*/ 0x0AD,/*BC*/ 0x0AD,/*WotLK*/ 0x2F16,/*Cata*/ 0x0D00/*Mop*/}}},
 {SMSG_READ_ITEM_OK, {0x1F, "SMSG_READ_ITEM_OK", OpcodeDevelopmentState::Unchecked, {0x0AE,/*Classic*/ 0x0AE,/*BC*/ 0x0AE,/*WotLK*/ 0x2605,/*Cata*/ 0x0000/*Mop*/}}},
