@@ -147,7 +147,13 @@ namespace AscEmu::Network
                         &overlappedPtr,
                         1000))
                 {
-                    continue;
+                    // timeout: nothing was dequeued
+                    if (overlappedPtr == nullptr)
+                        continue;
+
+                    // a failed operation was dequeued (the peer reset or aborted the connection);
+                    // the handlers close the socket on a transfer of 0 bytes
+                    bytesTransferred = 0;
                 }
 
                 if (overlappedPtr == nullptr)
