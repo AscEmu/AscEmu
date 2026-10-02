@@ -32,6 +32,7 @@ namespace AscEmu::Version::Forever::ProtocolLayout
         inline constexpr uint8_t FragmentIdsChanged = 0;
         inline constexpr uint8_t ObjectContentsChangedMask = 0x01;
         inline constexpr uint8_t ItemContentsChangedMask = 0x03;
+        inline constexpr uint8_t ContainerContentsChangedMask = 0x07;
         inline constexpr uint8_t UnitContentsChangedMask = 0x03;
         inline constexpr uint8_t PlayerContentsChangedMask = 0x17;
     }

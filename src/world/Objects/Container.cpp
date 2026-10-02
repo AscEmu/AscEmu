@@ -320,6 +320,13 @@ bool Container::safeFullRemoveItemFromSlot(int16_t slot)
 
     item->deleteFromDB();
 
+    // Keep the removed item alive until the player's deferred item cleanup.
+    // The object may still be referenced by the WorldMap update queue from a
+    // stack/count update earlier in the same tick. Destroying it here would
+    // leave a dangling Object* that is later used by ClearUpdateMask().
+    if (m_owner != nullptr)
+        m_owner->addGarbageItem(std::move(item));
+
     return true;
 }
 

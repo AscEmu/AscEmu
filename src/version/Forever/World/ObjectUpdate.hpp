@@ -46,6 +46,9 @@ namespace AscEmu::Version::Forever::ObjectUpdate
     // Capture-verified Forever 1.60.1.70009 ordinary Item CREATE_OBJECT grammar.
     std::vector<uint8_t> buildItemCreateBlock(std::span<const uint8_t> packedGuid, Fields::ObjectData const& objectFields, Fields::ItemData const& itemFields);
 
+    // Container objects extend the ordinary item create payload with ContainerData.
+    std::vector<uint8_t> buildContainerCreateBlock(std::span<const uint8_t> packedGuid, Fields::ObjectData const& objectFields, Fields::ItemData const& itemFields, Fields::ContainerData const& containerFields);
+
 
     std::vector<uint8_t> buildValuesUpdateBlock(std::span<const uint8_t> packedGuid, bool ownerVisible, Fields::ObjectData const& objectFields, Fields::ItemData const* itemFields = nullptr, Fields::ContainerData const* containerFields = nullptr, Fields::UnitData const* unitFields = nullptr, Fields::PlayerData const* playerFields = nullptr, Fields::ActivePlayerData const* activePlayerFields = nullptr, Fields::GameObjectData const* gameObjectFields = nullptr, Fields::DynamicObjectData const* dynamicObjectFields = nullptr, Fields::CorpseData const* corpseFields = nullptr);
 

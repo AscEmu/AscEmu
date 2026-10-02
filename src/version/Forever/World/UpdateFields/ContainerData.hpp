@@ -10,5 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Version::Forever::UpdateFields
 {
+    void writeContainerDataCreate(ByteBuffer& data, Fields::ContainerData const& fields);
     void writeContainerDataUpdate(ByteBuffer& data, Fields::ContainerData const& fields);
 }

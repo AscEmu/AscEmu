@@ -567,6 +567,29 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
         return 1;
     }
 
+    if (m_objectTypeId == TYPEID_CONTAINER)
+    {
+        Container* const container = static_cast<Container*>(this);
+        const WoWGuid modernGuid = WoWGuid::createModernItem(worldConfig.battleNetComm.realmId, container->getGuidLow());
+        const std::vector<uint8_t> packedGuid = modernGuid.packModern();
+        if (packedGuid.empty())
+            return 0;
+
+        const std::vector<uint8_t> block = AscEmu::Version::Forever::ObjectUpdate::buildContainerCreateBlock(packedGuid, foreverObjectFields(), container->foreverItemFields(), container->foreverContainerFields());
+
+        if (block.empty())
+            return 0;
+
+        data->append(block.data(), block.size());
+
+        // Forever CREATE_OBJECT contains the complete initial ObjectData/ItemData/ContainerData state.
+        // Do not replay initialization dirtiness with the first real VALUES delta.
+        m_foreverObjectFields.clearChanges();
+        container->foreverItemFields().clearChanges();
+        container->foreverContainerFields().clearChanges();
+        return 1;
+    }
+
     if (isItem())
     {
         Item* const item = static_cast<Item*>(this);

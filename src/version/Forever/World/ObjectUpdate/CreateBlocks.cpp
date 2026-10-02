@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "version/Forever/Fields/ForeverUpdateFields.hpp"
 #include "version/Forever/World/UpdateFields/ObjectData.hpp"
 #include "version/Forever/World/UpdateFields/ItemData.hpp"
+#include "version/Forever/World/UpdateFields/ContainerData.hpp"
 #include "version/Forever/World/UpdateFields/GameObjectData.hpp"
 #include "version/Forever/World/UpdateFields/UnitData.hpp"
 #include "Network/ByteBuffer.hpp"
@@ -20,6 +21,7 @@ namespace AscEmu::Version::Forever::ObjectUpdate
     {
         constexpr uint8_t UPDATE_TYPE_CREATE_OBJECT_2 = 2;
         constexpr uint8_t OBJECT_TYPE_ITEM = 1;
+        constexpr uint8_t OBJECT_TYPE_CONTAINER = 2;
         constexpr uint8_t OBJECT_TYPE_UNIT = 5;
         constexpr uint8_t OBJECT_TYPE_PLAYER = 6;
         constexpr uint8_t OBJECT_TYPE_ACTIVE_PLAYER = 7;
@@ -83,6 +85,29 @@ namespace AscEmu::Version::Forever::ObjectUpdate
         block << uint8_t(1); // CREATE_OBJECT
         block.append(packedGuid.data(), packedGuid.size());
         block << uint8_t(OBJECT_TYPE_ITEM);
+        Detail::writeItemMovement(block);
+        block << uint32_t(fieldPayload.size());
+        block.append(fieldPayload);
+        return std::vector<uint8_t>(block.contents(), block.contents() + block.size());
+    }
+
+    std::vector<uint8_t> buildContainerCreateBlock(std::span<const uint8_t> packedGuid, Fields::ObjectData const& objectFields, Fields::ItemData const& itemFields, Fields::ContainerData const& containerFields)
+    {
+        if (packedGuid.empty())
+            return {};
+
+        ByteBuffer fieldPayload;
+        // Bags share the Item fragment and movement grammar; object type 2 adds
+        // ContainerData after the normal ObjectData + ItemData create payload.
+        Detail::writeItemCreateFragments(fieldPayload);
+        UpdateFields::writeObjectDataCreate(fieldPayload, objectFields);
+        UpdateFields::writeItemDataCreate(fieldPayload, itemFields, objectFields.entryId);
+        UpdateFields::writeContainerDataCreate(fieldPayload, containerFields);
+
+        ByteBuffer block;
+        block << uint8_t(1); // CREATE_OBJECT
+        block.append(packedGuid.data(), packedGuid.size());
+        block << uint8_t(OBJECT_TYPE_CONTAINER);
         Detail::writeItemMovement(block);
         block << uint32_t(fieldPayload.size());
         block.append(fieldPayload);
