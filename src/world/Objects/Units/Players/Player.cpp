@@ -12965,7 +12965,7 @@ uint32_t Player::getExaltedCount() const
 
 void Player::sendSmsgInitialFactions()
 {
-    SmsgInitializeFactions managedPacket(m_reputationByListId);
+    SmsgInitializeFactions managedPacket(m_reputationByListId, m_reputation);
     m_session->sendManagedPacket(managedPacket);
 }
 

@@ -2124,7 +2124,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {CMSG_SET_TRADE_GOLD, {0x1F, "CMSG_SET_TRADE_GOLD", OpcodeDevelopmentState::Unchecked, {0x11F,/*Classic*/ 0x11F,/*BC*/ 0x11F,/*WotLK*/ 0x3008,/*Cata*/ 0x14E3/*Mop*/}}},
 {SMSG_TRADE_STATUS, {0x1F, "SMSG_TRADE_STATUS", OpcodeDevelopmentState::Unchecked, {0x120,/*Classic*/ 0x120,/*BC*/ 0x120,/*WotLK*/ 0x5CA3,/*Cata*/ 0x1963/*Mop*/}}},
 {SMSG_TRADE_STATUS_EXTENDED, {0x1F, "SMSG_TRADE_STATUS_EXTENDED", OpcodeDevelopmentState::Unchecked, {0x121,/*Classic*/ 0x121,/*BC*/ 0x121,/*WotLK*/ 0x70A2,/*Cata*/ 0x181E/*Mop*/}}},
-{SMSG_INITIALIZE_FACTIONS, {0x1F, "SMSG_INITIALIZE_FACTIONS", OpcodeDevelopmentState::Unchecked, {0x122,/*Classic*/ 0x122,/*BC*/ 0x122,/*WotLK*/ 0x4634,/*Cata*/ 0x0AAA/*Mop*/}}},
+{SMSG_INITIALIZE_FACTIONS, {0x1F, "SMSG_INITIALIZE_FACTIONS", OpcodeDevelopmentState::Unchecked, {0x122,/*Classic*/ 0x122,/*BC*/ 0x122,/*WotLK*/ 0x4634,/*Cata*/ 0x0AAA,/*Mop*/ 0/*WoD*/, 0/*Legion*/, 0/*BfA*/, 0/*Shadowlands*/, 0/*Dragonflight*/, 0/*TWW*/, 0/*Midnight*/, 0x004601CE/*Forever*/}} },
 {SMSG_SET_FACTION_VISIBLE, {0x1F, "SMSG_SET_FACTION_VISIBLE", OpcodeDevelopmentState::Unchecked, {0x123,/*Classic*/ 0x123,/*BC*/ 0x123,/*WotLK*/ 0x2525,/*Cata*/ 0x1E8E/*Mop*/}}},
 {SMSG_SET_FACTION_STANDING, {0x1F, "SMSG_SET_FACTION_STANDING", OpcodeDevelopmentState::Unchecked, {0x124,/*Classic*/ 0x124,/*BC*/ 0x124,/*WotLK*/ 0x0126,/*Cata*/ 0x10AA/*Mop*/}}},
 {CMSG_SET_FACTION_ATWAR, {0x1F, "CMSG_SET_FACTION_ATWAR", OpcodeDevelopmentState::Unchecked, {0x125,/*Classic*/ 0x125,/*BC*/ 0x125,/*WotLK*/ 0x0706,/*Cata*/ 0x027B/*Mop*/}}},
