@@ -54,6 +54,7 @@ namespace AscEmu::Version::Forever::ObjectUpdate
         if (changedObjectTypeMask & (uint32_t(1) << ProtocolLayout::ObjectType::GameObject)) UpdateFields::writeGameObjectDataUpdate(fieldsPayload, *gameObjectFields);
         if (changedObjectTypeMask & (uint32_t(1) << ProtocolLayout::ObjectType::DynamicObject)) UpdateFields::writeDynamicObjectDataUpdate(fieldsPayload, *dynamicObjectFields);
         if (changedObjectTypeMask & (uint32_t(1) << ProtocolLayout::ObjectType::Corpse)) UpdateFields::writeCorpseDataUpdate(fieldsPayload, *corpseFields);
+
         return UpdateFields::buildValuesUpdateEnvelope(packedGuid, ownerVisible, presence, std::span<const uint8_t>(fieldsPayload.contents(), fieldsPayload.size()));
     }
 }

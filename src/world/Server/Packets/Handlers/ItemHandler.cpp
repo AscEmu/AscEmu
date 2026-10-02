@@ -973,8 +973,7 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_SWAP_INV_ITEM src slot: {} dst slot: {}.",
-        static_cast<uint32_t>(srlPacket.srcSlot), static_cast<uint32_t>(srlPacket.destSlot));
+    sLogger.debugOpcode("Received CMSG_SWAP_INV_ITEM src slot: {} dst slot: {}.", static_cast<uint32_t>(srlPacket.srcSlot), static_cast<uint32_t>(srlPacket.destSlot));
 
     // player trying to add item to the same slot
     if (srlPacket.destSlot == srlPacket.srcSlot)

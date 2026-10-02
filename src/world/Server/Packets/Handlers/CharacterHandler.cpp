@@ -345,6 +345,13 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
     }
 
     player->setSession(this);
+#if defined(AE_FOREVER)
+    if (getClientProtocol().isForever())
+    {
+        if (WorldSocket* instanceSocket = GetForeverInstanceSocket(); instanceSocket != nullptr)
+            player->setForeverRealmId(instanceSocket->getForeverRealmId());
+    }
+#endif
     m_bIsWLevelSet = false;
 
     sLogger.debug("Async loading player {}", static_cast<uint32_t>(playerGuid));

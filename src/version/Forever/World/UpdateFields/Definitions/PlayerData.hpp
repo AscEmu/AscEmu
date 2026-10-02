@@ -151,9 +151,8 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
 
     inline std::bitset<Fields::PlayerData::ChangeMaskSize> getPlayerDataAllowedChanges(Fields::PlayerData const& fields)
     {
-        // Preserve the currently live Forever differential mask exactly. This function is
-        // intentionally named "Allowed" rather than "Verified": some legacy live fields
-        // are still REFERENCE and are identified as such by metadata above.
+        // Keep the live Forever differential mask intact. Filtering individual PlayerData
+        // bits here can remove parent/group bits required by the wire update.
         return fields.changes;
     }
 }

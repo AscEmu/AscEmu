@@ -139,7 +139,11 @@ namespace
         if (legacyGuid == 0)
             return WoWGuid::createModernEmpty();
 
-        return WoWGuid::createModernFromLegacy(legacyGuid, worldConfig.battleNetComm.realmId, static_cast<uint16_t>(item->GetMapId()), 0, 0);
+        uint32_t realmId = worldConfig.battleNetComm.realmId;
+        if (Player const* owner = item->getOwner())
+            realmId = owner->getForeverRealmId();
+
+        return WoWGuid::createModernFromLegacy(legacyGuid, realmId, static_cast<uint16_t>(item->GetMapId()), 0, 0);
     }
 }
 #endif

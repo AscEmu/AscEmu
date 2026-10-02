@@ -16,6 +16,8 @@ namespace AscEmu::Packets
     public:
         int8_t destSlot;
         int8_t srcSlot;
+        uint8_t foreverWireDestSlot = 0;
+        uint8_t foreverWireSrcSlot = 0;
 
         CmsgSwapInvItem() : CmsgSwapInvItem(0, 0)
         {
@@ -59,12 +61,10 @@ namespace AscEmu::Packets
                 packet.readSkip<int8_t>(); // source container
                 packet.readSkip<int8_t>(); // source slot in InvUpdate
 
-                uint8_t wireDestSlot = 0;
-                uint8_t wireSrcSlot = 0;
-                packet >> wireDestSlot >> wireSrcSlot;
+                packet >> foreverWireDestSlot >> foreverWireSrcSlot;
 
-                const int16_t logicalDestSlot = InventoryLayout::Forever::logicalSlot(wireDestSlot);
-                const int16_t logicalSrcSlot = InventoryLayout::Forever::logicalSlot(wireSrcSlot);
+                const int16_t logicalDestSlot = InventoryLayout::Forever::logicalSlot(foreverWireDestSlot);
+                const int16_t logicalSrcSlot = InventoryLayout::Forever::logicalSlot(foreverWireSrcSlot);
                 if (logicalDestSlot == InventoryLayout::NoSlotAvailable || logicalSrcSlot == InventoryLayout::NoSlotAvailable) return false;
 
                 destSlot = static_cast<int8_t>(logicalDestSlot);

@@ -207,8 +207,9 @@ namespace AscEmu::Version::Forever::UpdateFields
     {
         const auto changes = Definitions::getPlayerDataAllowedChanges(fields);
 
-        // Retail 70124 quest-accept delta has IsQuestLogChangesMaskSkipped = 0.
-        writeChangeMask(data, changes);
+        // The PlayerData change mask and IsQuestLogChangesMaskSkipped share the same bit stream.
+        // Do not byte-align between them; the stream is aligned only after the skip bit.
+        writeChangeMask(data, changes, false);
         data.writeBit(0);
         data.flushBits();
 

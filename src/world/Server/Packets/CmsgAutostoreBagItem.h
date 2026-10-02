@@ -42,6 +42,12 @@ namespace AscEmu::Packets
                 packet >> srcSlot >> srcContainerSlot >> dstContainerSlot;
                 return true;
             }
+            else if (m_protocol.isForever())
+            {
+                uint8_t itemCount = 0;
+                packet >> itemCount >> dstContainerSlot >> srcContainerSlot >> srcSlot;
+                return itemCount == 0;
+            }
 
             return false;
         }
