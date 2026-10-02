@@ -31,7 +31,7 @@ namespace AscEmu::Packets
         {
             if (m_protocol.isForever())
             {
-                packet << uint32_t(0) << state;
+                packet << state << uint32_t(0);
                 return true;
             }
 

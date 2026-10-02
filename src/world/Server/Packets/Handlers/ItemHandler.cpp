@@ -1900,7 +1900,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (creature_item.max_amount > 0 && creature_item.available_amount < srlPacket.amount)
+    if (creature_item.max_amount > 0 && creature_item.available_amount < creature_item.amount)
     {
         _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_IS_CURRENTLY_SOLD_OUT);
         return;
@@ -1914,27 +1914,26 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
     }
 
     uint32_t itemMaxStack = _player->m_cheats.hasItemStackCheat ? 0x7fffffff : it->MaxCount;
-    if (itemMaxStack > 0 && srlPacket.amount * creature_item.amount > itemMaxStack)
+    if (itemMaxStack > 0 && creature_item.amount > itemMaxStack)
     {
         _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_CANT_STACK);
         return;
     }
 
-    if ((error = _player->getItemInterface()->CanReceiveItem(it, srlPacket.amount * creature_item.amount)) != 0)
+    if ((error = _player->getItemInterface()->CanReceiveItem(it, creature_item.amount)) != 0)
     {
         _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, error, srlPacket.itemEntry);
         return;
     }
 
-    if ((error = _player->getItemInterface()->CanAffordItem(it, srlPacket.amount, creature)) != 0)
+    if ((error = _player->getItemInterface()->CanAffordItem(it, creature_item.amount, creature)) != 0)
     {
         _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, error, srlPacket.itemEntry);
         return;
     }
 
     // Find free slot and break if inv full
-    auto addItem = _player->getItemInterface()->FindItemLessMax(srlPacket.itemEntry,
-        srlPacket.amount * creature_item.amount, false);
+    auto addItem = _player->getItemInterface()->FindItemLessMax(srlPacket.itemEntry, creature_item.amount, false);
 
     if (!addItem)
     {
@@ -1958,7 +1957,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
         }
 
         itemHolder->m_isDirty = true;
-        itemHolder->setStackCount(srlPacket.amount * creature_item.amount);
+        itemHolder->setStackCount(creature_item.amount);
 
         if (slotResult.ContainerSlot == InventoryLayout::NoSlotAvailable)
         {
@@ -1972,7 +1971,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
                     item->getOwner()->getItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->costid);
                 }
                 _player->sendItemPushResultPacket(false, true, false, static_cast<uint8_t>(InventoryLayout::SlotNotSet),
-                    slotResult.Result, srlPacket.amount * creature_item.amount, item->getEntry(), item->getPropertySeed(),
+                    slotResult.Result, creature_item.amount, item->getEntry(), item->getPropertySeed(),
                     item->getRandomPropertiesId(), _player->getItemInterface()->GetItemCount(item->getEntry()), item->getGuid());
             }
         }
@@ -1998,23 +1997,23 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        addItem->modStackCount(srlPacket.amount * creature_item.amount);
+        addItem->modStackCount(creature_item.amount);
         addItem->m_isDirty = true;
         _player->sendItemPushResultPacket(false, true, false,
             static_cast<uint8_t>(_player->getItemInterface()->GetBagSlotByGuid(addItem->getGuid())), 0,
-            srlPacket.amount * creature_item.amount, addItem->getEntry(), addItem->getPropertySeed(),
+            creature_item.amount, addItem->getEntry(), addItem->getPropertySeed(),
             addItem->getRandomPropertiesId(), _player->getItemInterface()->GetItemCount(addItem->getEntry()), addItem->getGuid());
     }
 
-    _player->getItemInterface()->BuyItem(it, srlPacket.amount, creature);
+    _player->getItemInterface()->BuyItem(it, creature_item.amount, creature);
 
-    const int32_t vendorQuantity = creature_item.max_amount > 0 ? static_cast<int32_t>(creature_item.available_amount - srlPacket.amount * creature_item.amount) : -1;
-    SmsgBuyItem managedPacket(srlPacket.sourceGuid.getRawGuid(), Util::getMSTime(), srlPacket.itemEntry, srlPacket.amount * creature_item.amount, srlPacket.vendorSlot, vendorQuantity);
+    const int32_t vendorQuantity = creature_item.max_amount > 0 ? static_cast<int32_t>(creature_item.available_amount - creature_item.amount) : -1;
+    SmsgBuyItem managedPacket(srlPacket.sourceGuid.getRawGuid(), Util::getMSTime(), srlPacket.itemEntry, creature_item.amount, srlPacket.vendorSlot, vendorQuantity);
     sendManagedPacket(managedPacket);
 
     if (creature_item.max_amount)
     {
-        creature->ModAvItemAmount(creature_item.itemid, creature_item.amount * srlPacket.amount);
+        creature->ModAvItemAmount(creature_item.itemid, creature_item.amount);
 
         sendInventoryList(creature);
     }
