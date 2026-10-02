@@ -581,6 +581,11 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
             return 0;
 
         data->append(block.data(), block.size());
+
+        // Forever CREATE_OBJECT contains the complete initial ObjectData/ItemData state.
+        // Do not replay initialization dirtiness with the first real VALUES delta.
+        m_foreverObjectFields.clearChanges();
+        item->foreverItemFields().clearChanges();
         return 1;
     }
 

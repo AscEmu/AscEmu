@@ -23,6 +23,7 @@ namespace AscEmu::Version::Forever::UpdateFields
     {
         if (presence.isPlayerObject) return ProtocolLayout::Values::PlayerContentsChangedMask;
         if (presence.isUnitObject) return ProtocolLayout::Values::UnitContentsChangedMask;
+        if (presence.itemData && !presence.containerData) return ProtocolLayout::Values::ItemContentsChangedMask;
         return ProtocolLayout::Values::ObjectContentsChangedMask;
     }
 
