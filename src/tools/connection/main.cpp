@@ -81,14 +81,57 @@ namespace
             constexpr std::string_view scheme = "http://";
 
             const auto cdns = findUniqueText(_data, "http://%s.patch.battle.net:1119/%s/cdns");
-            if (!cdns || *cdns < 2)
+            if (!cdns)
                 return std::nullopt;
 
-            const size_t start = textStart(_data, *cdns - 1);
-            if (!startsWith(_data, start, scheme) || *cdns - 1 - start != scheme.size() + _size)
+            // closing zeros between the two texts
+            size_t end = *cdns;
+            while (end > 0 && _data[end - 1] == 0)
+                --end;
+
+            if (end == 0 || end == *cdns)
+                return std::nullopt;
+
+            const size_t start = textStart(_data, end - 1);
+            if (!startsWith(_data, start, scheme) || end - start != scheme.size() + _size)
                 return std::nullopt;
 
             return start + scheme.size();
+        }
+
+        // 6.2.4 bundle file: the text that ends with the bundle file name
+        std::optional<size_t> certBundleFileName(const std::vector<uint8_t>& _data, size_t _size)
+        {
+            constexpr std::string_view suffix = "_bundle.txt";
+
+            const auto end = findUniqueText(_data, suffix);
+            if (!end)
+                return std::nullopt;
+
+            // the new name is written with its padding: only zeros may follow the old one in that range
+            const size_t start = textStart(_data, *end);
+            const size_t oldEnd = *end + suffix.size();
+            if (start + _size > _data.size() || oldEnd - start >= _size)
+                return std::nullopt;
+
+            for (size_t i = oldEnd; i < start + _size; ++i)
+            {
+                if (_data[i] != 0)
+                    return std::nullopt;
+            }
+
+            return start;
+        }
+
+        // code patch that is in place already: its bytes followed by the unchanged rest of the pattern
+        bool codePatchApplied(const std::vector<uint8_t>& _data, std::span<const uint8_t> _replacement, std::span<const uint8_t> _pattern)
+        {
+            if (_replacement.size() > _pattern.size())
+                return false;
+
+            std::vector<uint8_t> patched(_pattern.begin(), _pattern.end());
+            std::copy(_replacement.begin(), _replacement.end(), patched.begin());
+            return contains(_data, patched);
         }
 
         // bundle address: the text that ends with the fingerprint path
@@ -197,7 +240,7 @@ static int patchBattleNetClient(cp::Patcher& _patcher, uint32_t _build, const st
     };
 
     // the original SMSG_CONNECT_TO modulus is gone when another patcher worked on this client before
-    const bool wasPatchedBefore = legion && !contains(_patcher.data(), pattern::ConnectToModulus);
+    const bool wasPatchedBefore = !contains(_patcher.data(), pattern::ConnectToModulus);
     if (wasPatchedBefore)
         std::cout << "This client was patched before, changed values are located through their surroundings\n";
 
@@ -219,17 +262,26 @@ static int patchBattleNetClient(cp::Patcher& _patcher, uint32_t _build, const st
     std::filesystem::path bundlePath;
     if (!legion)
     {
-        apply("certificate bundle file name", paddedText(patch::CertBundleFileName, pattern::CertBundleFileName.size()), pattern::CertBundleFileName);
+        apply("certificate bundle file name", paddedText(patch::CertBundleFileName, pattern::CertBundleFileName.size()), pattern::CertBundleFileName,
+            wasPatchedBefore ? patchedBefore::certBundleFileName(_patcher.data(), pattern::CertBundleFileName.size()) : std::nullopt);
+
+        auto applyCode = [&](const char* _name, std::span<const uint8_t> _replacement, std::span<const uint8_t> _pattern)
+        {
+            if (wasPatchedBefore && patchedBefore::codePatchApplied(_patcher.data(), _replacement, _pattern))
+                std::cout << "patching " << _name << ": already applied\n";
+            else
+                apply(_name, _replacement, _pattern);
+        };
 
         if (_patcher.type() == cp::BinaryType::Pe64)
         {
-            apply("certificate bundle from local file", patch::windows::x64::CertBundleCascLocalFile, pattern::windows::x64::CertBundleCascLocalFile);
-            apply("certificate bundle signature check", patch::windows::x64::CertBundleSignatureCheck, pattern::windows::x64::CertBundleSignatureCheck);
+            applyCode("certificate bundle from local file", patch::windows::x64::CertBundleCascLocalFile, pattern::windows::x64::CertBundleCascLocalFile);
+            applyCode("certificate bundle signature check", patch::windows::x64::CertBundleSignatureCheck, pattern::windows::x64::CertBundleSignatureCheck);
         }
         else
         {
-            apply("certificate bundle from local file", patch::windows::x86::CertBundleCascLocalFile, pattern::windows::x86::CertBundleCascLocalFile);
-            apply("certificate bundle signature check", patch::windows::x86::CertBundleSignatureCheck, pattern::windows::x86::CertBundleSignatureCheck);
+            applyCode("certificate bundle from local file", patch::windows::x86::CertBundleCascLocalFile, pattern::windows::x86::CertBundleCascLocalFile);
+            applyCode("certificate bundle signature check", patch::windows::x86::CertBundleSignatureCheck, pattern::windows::x86::CertBundleSignatureCheck);
         }
 
         // the client opens the bundle relative to its own directory

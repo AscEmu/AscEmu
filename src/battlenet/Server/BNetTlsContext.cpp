@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "BNetTlsContext.hpp"
 
+#include "BNetCertificateGenerator.hpp"
 #include "BNetConfig.hpp"
 #include "Logging/Logger.hpp"
 
@@ -139,6 +140,34 @@ namespace AscEmu::Battlenet
 
             return true;
         }
+
+        // first start: without a certificate and a key the server creates its own
+        bool ensurePemCertificate(const std::string& certificateFile, const std::string& privateKeyFile)
+        {
+            if (certificateFile.empty() || privateKeyFile.empty())
+                return true;
+
+            std::error_code error;
+            const bool hasCertificate = std::filesystem::exists(certificateFile, error);
+            const bool hasPrivateKey = std::filesystem::exists(privateKeyFile, error);
+            if (hasCertificate && hasPrivateKey)
+                return true;
+
+            // one half of a pair is never replaced, clients may already be patched with it
+            if (hasCertificate || hasPrivateKey)
+            {
+                sLogger.failure("BNet TLS: '{}' is missing while '{}' exists; restore the file or remove both to get a new certificate", hasCertificate ? privateKeyFile : certificateFile, hasCertificate ? certificateFile : privateKeyFile);
+                return false;
+            }
+
+            sLogger.info("BNet TLS: no certificate found, creating '{}' and '{}'", certificateFile, privateKeyFile);
+            if (!generateServerCertificate(certificateFile, privateKeyFile))
+                return false;
+
+            sLogger.info("BNet TLS: new certificate created. Clients only trust this server after they were patched with it:");
+            sLogger.info("BNet TLS:   connection_patcher <client exe> \"{}\"", std::filesystem::absolute(certificateFile, error).string());
+            return true;
+        }
     }
 
     BNetTlsContext& BNetTlsContext::getInstance()
@@ -169,6 +198,12 @@ namespace AscEmu::Battlenet
         }
         else
         {
+            if (!ensurePemCertificate(bnetConfig.tls.certificatesFile, bnetConfig.tls.privateKeyFile))
+            {
+                finalize();
+                return false;
+            }
+
             loaded = loadPem(m_context, bnetConfig.tls.certificatesFile, bnetConfig.tls.privateKeyFile, bnetConfig.tls.privateKeyPassword);
         }
 

@@ -76,6 +76,11 @@
 #
 # CertificatesFile:
 #   PEM certificate chain (.pem/.crt) or PKCS#12 archive (.pfx/.p12).
+#   When neither the PEM certificate nor its private key exist, the server
+#   creates both on its first start. Clients only trust the server after they
+#   were patched with this file:
+#       connection_patcher <client exe> <CertificatesFile>
+#   A new certificate needs the clients to be patched again.
 #
 # PrivateKeyFile:
 #   Required for PEM certificates.
@@ -85,8 +90,8 @@
 #   Password for an encrypted PEM private key or the PFX/P12 archive.
 ################################################################################
 
-<TLS CertificatesFile = "certs/bnetserver.pfx"
-     PrivateKeyFile = ""
-     PrivateKeyPassword = "ascemu">
+<TLS CertificatesFile = "certs/bnetserver.cert.pem"
+     PrivateKeyFile = "certs/bnetserver.key.pem"
+     PrivateKeyPassword = "">
 
 <Logger MinimumMessageType = "2">
