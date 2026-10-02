@@ -89,6 +89,7 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
     // [FOREVER-VERIFIED] Retail 1.60.1.70124 sell differentials use one
     // Buyback group bit (353), price element bits 354..365 and timestamp
     // element bits 366..377. Values are serialized per slot: price, timestamp.
+    // The timestamp value itself is 64-bit on the wire.
     struct BuybackDataField
     {
         static constexpr UpdateFieldMetadata metadata() { return {FieldVerification::ReferenceOnly, "buybackData", "BuybackPrice/BuybackTimestamp"}; }

@@ -986,7 +986,7 @@ namespace AscEmu::Version::Forever::Fields
         // VALUES-proven from retail selling. CREATE placement remains inside the
         // still-opaque ActivePlayerData create region and is intentionally not renamed.
         std::array<uint32_t, InventoryLayout::BuybackCount> buybackPrice{};
-        std::array<uint32_t, InventoryLayout::BuybackCount> buybackTimestamp{};
+        std::array<int64_t, InventoryLayout::BuybackCount> buybackTimestamp{};
 
         SkillInfo skill{};
 

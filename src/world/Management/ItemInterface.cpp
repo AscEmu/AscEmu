@@ -3045,14 +3045,25 @@ void ItemInterface::AddBuyBackItem(std::unique_ptr<Item> it, uint32_t price)
             m_pBuyBack[0] = nullptr;
         }
 
+        std::array<uint32_t, MAX_BUYBACK_SLOT> buybackPrices{};
+        std::array<uint32_t, MAX_BUYBACK_SLOT> buybackTimestamps{};
+        for (uint8_t j = 0; j < MAX_BUYBACK_SLOT; ++j)
+        {
+            buybackPrices[j] = m_pOwner->getBuybackPriceSlot(j);
+            buybackTimestamps[j] = m_pOwner->getBuybackTimestampSlot(j);
+        }
+
+        for (uint8_t j = 0; j < MAX_BUYBACK_SLOT - 1; ++j)
+            m_pBuyBack[j] = std::move(m_pBuyBack[j + 1]);
+
+        m_pBuyBack[MAX_BUYBACK_SLOT - 1] = std::move(it);
+
         for (uint8_t j = 0; j < MAX_BUYBACK_SLOT - 1; ++j)
         {
-            m_pOwner->setVendorBuybackSlot(j, m_pOwner->getVendorBuybackSlot(j + 1));
-            m_pOwner->setBuybackPriceSlot(j, m_pOwner->getBuybackPriceSlot(j + 1));
-            m_pOwner->setBuybackTimestampSlot(j, m_pOwner->getBuybackTimestampSlot(j + 1));
-            m_pBuyBack[j] = std::move(m_pBuyBack[j + 1]);
+            m_pOwner->setVendorBuybackSlot(j, m_pBuyBack[j] != nullptr ? m_pBuyBack[j]->getGuid() : 0);
+            m_pOwner->setBuybackPriceSlot(j, buybackPrices[j + 1]);
+            m_pOwner->setBuybackTimestampSlot(j, buybackTimestamps[j + 1]);
         }
-        m_pBuyBack[MAX_BUYBACK_SLOT - 1] = std::move(it);
 
         m_pOwner->setVendorBuybackSlot(MAX_BUYBACK_SLOT - 1, m_pBuyBack[MAX_BUYBACK_SLOT - 1]->getGuid());
         m_pOwner->setBuybackPriceSlot(MAX_BUYBACK_SLOT - 1, price);
@@ -3060,15 +3071,12 @@ void ItemInterface::AddBuyBackItem(std::unique_ptr<Item> it, uint32_t price)
     }
     else
     {
-        for (uint8_t i = 0; i < MAX_BUYBACK_SLOT - 1; ++i) //at least 1 slot is empty
+        for (uint8_t i = 0; i < MAX_BUYBACK_SLOT; ++i) //at least 1 slot is empty
         {
             if (m_pOwner->getVendorBuybackSlot(i) == 0 || m_pBuyBack[i] == nullptr)
             {
-                sLogger.info("setting buybackslot {}", i);
                 m_pBuyBack[i] = std::move(it);
 
-                // TODO: there are actually 24 slots -Appled
-                // arcemu: m_pOwner->SetUInt64Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + (2 * j), m_pOwner->GetUInt64Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + ((j + 1) * 2)));
                 m_pOwner->setVendorBuybackSlot(i, m_pBuyBack[i]->getGuid());
                 m_pOwner->setBuybackPriceSlot(i, price);
                 m_pOwner->setBuybackTimestampSlot(i, static_cast<uint32_t>(UNIXTIME));
