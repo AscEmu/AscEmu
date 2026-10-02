@@ -25,9 +25,9 @@ Beside our multiversion-core we developed our world database with this attitude.
 
 Description       | Classic    | TBC        | WotLK      | Cata       | MoP        | WoD        | Legion
 :---------------: | :--------: | :--------: | :--------: | :--------: | :--------: | :--------: | :--------:
-Authentification  | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ✔️         | ❌
-Worldsocket       | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ✔️         | ❌
-Char Enum         | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ✔️         | ❌
+Authentification  | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ✔️         | ✔️
+Worldsocket       | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ✔️         | ✔️
+Char Enum         | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ✔️         | ✔️
 Log into world    | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ❌         | ❌
 
 ## Contributing & Issues

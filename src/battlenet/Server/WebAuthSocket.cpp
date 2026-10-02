@@ -115,57 +115,107 @@ namespace AscEmu::Battlenet
             return ticket;
         }
 
+        // position of the quote that closes the JSON string starting at _start, npos when it stays open
+        size_t jsonStringEnd(const std::string& body, size_t start)
+        {
+            for (size_t i = start; i < body.size(); ++i)
+            {
+                if (body[i] == '\\')
+                {
+                    ++i;
+                    continue;
+                }
+
+                if (body[i] == '"')
+                    return i;
+            }
+
+            return std::string::npos;
+        }
+
+        // Range of the raw "value" text in the object of the login form whose "input_id" is inputId.
+        // Clients write the two members in either order, so the whole object is read before it is judged.
+        bool findLoginInputValue(const std::string& body, const std::string& inputId, size_t& valueStart, size_t& valueEnd)
+        {
+            bool idMatches = false;
+            bool hasValue = false;
+            std::string pendingKey;
+
+            for (size_t i = 0; i < body.size(); ++i)
+            {
+                const char current = body[i];
+                if (current == '{')
+                {
+                    idMatches = false;
+                    hasValue = false;
+                    pendingKey.clear();
+                }
+                else if (current == '}')
+                {
+                    if (idMatches && hasValue)
+                        return true;
+
+                    idMatches = false;
+                    hasValue = false;
+                    pendingKey.clear();
+                }
+                else if (current == ',')
+                {
+                    pendingKey.clear();
+                }
+                else if (current == '"')
+                {
+                    const size_t textStart = i + 1;
+                    const size_t textEnd = jsonStringEnd(body, textStart);
+                    if (textEnd == std::string::npos)
+                        return false;
+
+                    size_t next = textEnd + 1;
+                    while (next < body.size() && (body[next] == ' ' || body[next] == '\t' || body[next] == '\r' || body[next] == '\n'))
+                        ++next;
+
+                    if (next < body.size() && body[next] == ':')
+                    {
+                        pendingKey = body.substr(textStart, textEnd - textStart);
+                    }
+                    else
+                    {
+                        if (pendingKey == "input_id")
+                        {
+                            idMatches = body.compare(textStart, textEnd - textStart, inputId) == 0;
+                        }
+                        else if (pendingKey == "value")
+                        {
+                            valueStart = textStart;
+                            valueEnd = textEnd;
+                            hasValue = true;
+                        }
+
+                        pendingKey.clear();
+                    }
+
+                    i = textEnd;
+                }
+            }
+
+            return false;
+        }
+
         std::string redactSensitiveLoginValues(std::string body)
         {
-            constexpr char passwordMarker[] = "\"input_id\":\"password\",\"value\":\"";
-
-            size_t searchOffset = 0;
-            while (true)
-            {
-                const size_t marker = body.find(passwordMarker, searchOffset);
-                if (marker == std::string::npos)
-                    break;
-
-                const size_t valueStart = marker + sizeof(passwordMarker) - 1;
-                const size_t valueEnd = body.find('"', valueStart);
-                if (valueEnd == std::string::npos)
-                    break;
-
+            size_t valueStart = 0;
+            size_t valueEnd = 0;
+            if (findLoginInputValue(body, "password", valueStart, valueEnd))
                 body.replace(valueStart, valueEnd - valueStart, "<redacted>");
-                searchOffset = valueStart + sizeof("<redacted>") - 1;
-            }
 
             return body;
         }
 
         std::string extractLoginInputValue(const std::string& body, const std::string& inputId)
         {
-            const std::string idMarker = "\"input_id\":\"" + inputId + "\"";
-            const size_t idPosition = body.find(idMarker);
-            if (idPosition == std::string::npos)
-                return {};
-
-            const size_t valueMarker = body.find("\"value\":\"", idPosition + idMarker.size());
-            if (valueMarker == std::string::npos)
-                return {};
-
-            const size_t valueStart = valueMarker + sizeof("\"value\":\"") - 1;
-            size_t valueEnd = valueStart;
-            while (valueEnd < body.size())
-            {
-                if (body[valueEnd] == '\\')
-                {
-                    valueEnd += 2;
-                    continue;
-                }
-
-                if (body[valueEnd] == '\"')
-                    break;
-
-                ++valueEnd;
-            }
-
-            if (valueEnd >= body.size())
+            size_t valueStart = 0;
+            size_t valueEnd = 0;
+            if (!findLoginInputValue(body, inputId, valueStart, valueEnd))
                 return {};
 
             return body.substr(valueStart, valueEnd - valueStart);

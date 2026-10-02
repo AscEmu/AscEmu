@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include <algorithm>
 #include <cstdint>
 #include <vector>
 
@@ -323,11 +324,6 @@ namespace AscEmu::Packets
             }
             else if (m_protocol.isWoD())
             {
-                // 6.x guids are 128 bit: type and realm in the high part, the counter in the low part
-                constexpr uint64_t highTypePlayer = 2;
-                constexpr uint64_t highTypeGuild = 28;
-                const uint64_t realmPart = static_cast<uint64_t>(m_protocol.realmId & 0xFFFF) << 42;
-
                 packet.writeBit(1);                             // success
                 packet.writeBit(0);                             // list of deleted characters
                 packet.flushBits();
@@ -336,55 +332,113 @@ namespace AscEmu::Packets
 
                 uint8_t listPosition = 0;
                 for (auto const& data : enum_data)
+                    writeCharacter128(packet, data, listPosition++);
+            }
+            else if (m_protocol.isLegion())
+            {
+                // races a new character can be created with, allied races are not offered
+                static constexpr int32_t unlockedRaces[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 22, 24, 25, 26 };
+
+                int32_t maxCharacterLevel = 1;
+                bool hasDemonHunter = false;
+                for (auto const& data : enum_data)
                 {
-                    writePackedGuid128(packet, (highTypePlayer << 58) | realmPart, WoWGuid::getLowGuidFromRaw(data.guid));
+                    maxCharacterLevel = std::max<int32_t>(maxCharacterLevel, data.level);
+                    hasDemonHunter = hasDemonHunter || data.Class == 12;
+                }
 
-                    packet << uint8_t(listPosition++);
-                    packet << data.race << data.Class << data.gender;
-                    packet << uint8_t(data.bytes & 0xFF);               // skin
-                    packet << uint8_t((data.bytes >> 8) & 0xFF);        // face
-                    packet << uint8_t((data.bytes >> 16) & 0xFF);       // hair style
-                    packet << uint8_t((data.bytes >> 24) & 0xFF);       // hair color
-                    packet << uint8_t(data.bytes2 & 0xFF);              // facial hair
-                    packet << data.level;
-                    packet << int32_t(data.zoneId);
-                    packet << int32_t(data.mapId);
-                    packet << data.x << data.y << data.z;
+                packet.writeBit(1);                             // success
+                packet.writeBit(0);                             // list of deleted characters
+                packet.writeBit(0);                             // demon hunter creation allowed
+                packet.writeBit(hasDemonHunter);                // has a demon hunter on this realm
+                packet.writeBit(0);
+                packet.writeBit(0);                             // has a mask of disabled classes
+                packet.writeBit(0);                             // allied race creation allowed
+                packet.flushBits();
+                packet << uint32_t(enum_data.size());
+                packet << maxCharacterLevel;
+                packet << uint32_t(sizeof(unlockedRaces) / sizeof(unlockedRaces[0]));
 
-                    if (data.guildId != 0)
-                        writePackedGuid128(packet, (highTypeGuild << 58) | realmPart, data.guildId);
-                    else
-                        writePackedGuid128(packet, 0, 0);
+                uint8_t listPosition = 0;
+                for (auto const& data : enum_data)
+                    writeCharacter128(packet, data, listPosition++);
 
-                    packet << uint32_t(data.char_flags);
-                    packet << uint32_t(data.customization_flag);
-                    packet << uint32_t(0);                      // flags 3
-                    packet << uint32_t(data.pet_data.display_id);
-                    packet << uint32_t(data.pet_data.level);
-                    packet << uint32_t(data.pet_data.family);
-
-                    packet << uint32_t(0);                      // profession 1
-                    packet << uint32_t(0);                      // profession 2
-
-                    for (uint8_t i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
-                    {
-                        packet << uint32_t(data.player_items[i].displayId);
-                        packet << uint32_t(data.player_items[i].enchantmentId);
-                        packet << uint8_t(data.player_items[i].inventoryType);
-                    }
-
-                    packet << uint32_t(0);                      // last played time
-                    packet.writeBits(static_cast<uint32_t>(data.name.length()), 6);
-                    packet.writeBit(data.loginFlags & 0x20);    // first login
-                    packet.writeBit(0);                         // boost in progress
-                    packet.writeBits(0, 5);
+                for (const int32_t race : unlockedRaces)
+                {
+                    packet << race;
+                    packet.writeBit(1);                         // has the expansion
+                    packet.writeBit(1);                         // has the achievement
+                    packet.writeBit(0);                         // has the heritage armor
                     packet.flushBits();
-
-                    packet.append(data.name.c_str(), data.name.length());
                 }
             }
 
             return true;
+        }
+
+        // character of the 6.x and 7.x lists; guids are 128 bit with type and realm in the high part
+        // and the counter in the low part
+        void writeCharacter128(WorldPacket& packet, CharEnumData const& data, uint8_t listPosition) const
+        {
+            constexpr uint64_t highTypePlayer = 2;
+            constexpr uint64_t highTypeGuild = 28;
+            const uint64_t realmPart = static_cast<uint64_t>(m_protocol.realmId & 0xFFFF) << 42;
+            const bool legion = m_protocol.isLegion();
+
+            writePackedGuid128(packet, (highTypePlayer << 58) | realmPart, WoWGuid::getLowGuidFromRaw(data.guid));
+
+            packet << listPosition;
+            packet << data.race << data.Class << data.gender;
+            packet << uint8_t(data.bytes & 0xFF);               // skin
+            packet << uint8_t((data.bytes >> 8) & 0xFF);        // face
+            packet << uint8_t((data.bytes >> 16) & 0xFF);       // hair style
+            packet << uint8_t((data.bytes >> 24) & 0xFF);       // hair color
+            packet << uint8_t(data.bytes2 & 0xFF);              // facial hair
+            if (legion)
+                packet << uint8_t(0) << uint8_t(0) << uint8_t(0);   // custom display (tattoos, horns, blindfolds)
+            packet << data.level;
+            packet << int32_t(data.zoneId);
+            packet << int32_t(data.mapId);
+            packet << data.x << data.y << data.z;
+
+            if (data.guildId != 0)
+                writePackedGuid128(packet, (highTypeGuild << 58) | realmPart, data.guildId);
+            else
+                writePackedGuid128(packet, 0, 0);
+
+            packet << uint32_t(data.char_flags);
+            packet << uint32_t(data.customization_flag);
+            packet << uint32_t(0);                              // flags 3
+            packet << uint32_t(data.pet_data.display_id);
+            packet << uint32_t(data.pet_data.level);
+            packet << uint32_t(data.pet_data.family);
+
+            packet << uint32_t(0);                              // profession 1
+            packet << uint32_t(0);                              // profession 2
+
+            for (uint8_t i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
+            {
+                packet << uint32_t(data.player_items[i].displayId);
+                packet << uint32_t(data.player_items[i].enchantmentId);
+                packet << uint8_t(data.player_items[i].inventoryType);
+            }
+
+            packet << uint32_t(0);                              // last played time
+            if (legion)
+            {
+                packet << uint16_t(0);                          // specialization
+                packet << uint32_t(0);
+                packet << uint32_t(WoW::Build::LEGION_BUILD);        // build of the last login
+                packet << uint32_t(0);                          // flags 4
+            }
+
+            packet.writeBits(static_cast<uint32_t>(data.name.length()), 6);
+            packet.writeBit(data.loginFlags & 0x20);            // first login
+            packet.writeBit(0);                                 // boost in progress
+            packet.writeBits(0, 5);
+            packet.flushBits();
+
+            packet.append(data.name.c_str(), data.name.length());
         }
 
         // 128 bit guid: one mask byte per half, then the non zero bytes of the low and the high part

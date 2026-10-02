@@ -48,6 +48,15 @@ namespace AscEmu::Packets
                     if (mask & (1 << i))
                         packet << uint32_t(0);
             }
+            else if (m_protocol.expansion >= WoW::Expansion::_WoD && m_protocol.expansion <= WoW::Expansion::_Legion)
+            {
+                // no character: empty 128 bit guid (both mask bytes clear)
+                packet << uint8_t(0) << uint8_t(0);
+                packet << time;
+
+                for (uint8_t i = 0; i < 8; ++i)
+                    packet << uint32_t(0);
+            }
             else // Mop
             {
                 packet.writeBit(1);

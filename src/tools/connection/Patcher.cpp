@@ -123,6 +123,15 @@ namespace cp
         return patched;
     }
 
+    bool Patcher::patchAt(size_t _offset, std::span<const uint8_t> _replacement)
+    {
+        if (!m_initialized || _offset > m_data.size() || _replacement.size() > m_data.size() - _offset)
+            return false;
+
+        std::copy(_replacement.begin(), _replacement.end(), m_data.begin() + static_cast<std::ptrdiff_t>(_offset));
+        return true;
+    }
+
     void Patcher::patch(std::span<const uint8_t> _replacement, std::span<const uint8_t> _pattern)
     {
         if (!m_initialized)

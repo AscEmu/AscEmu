@@ -41,6 +41,9 @@ namespace cp
         // Returns the number of patched places.
         size_t patchAll(std::span<const uint8_t> _replacement, std::span<const uint8_t> _pattern, bool _wildcards);
 
+        // writes the replacement at a known offset; false when it does not fit
+        bool patchAt(size_t _offset, std::span<const uint8_t> _replacement);
+
         const std::vector<uint8_t>& data() const noexcept { return m_data; }
 
         void finish() noexcept { m_success = true; }

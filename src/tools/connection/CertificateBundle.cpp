@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <string_view>
 
 namespace cp
 {
@@ -75,7 +76,8 @@ namespace cp
         if (!certificate)
             throw std::runtime_error("The server certificate is no PEM certificate: " + _serverCertificate.string());
 
-        // pinned value: SHA-256 of the PKCS#1 RSAPublicKey (modulus and exponent)
+        // pinned value: SHA-256 of the PKCS#1 RSAPublicKey (modulus and exponent) of the first certificate,
+        // the one the server presents
         EVP_PKEY* publicKey = X509_get0_pubkey(certificate.get());
         if (publicKey == nullptr || EVP_PKEY_get_base_id(publicKey) != EVP_PKEY_RSA)
             throw std::runtime_error("The server certificate needs an RSA key");
@@ -89,13 +91,17 @@ namespace cp
         OPENSSL_free(der);
         m_publicKeyHash = toHex(hash.data(), hash.size());
 
-        // the certificate itself, base64 without line breaks
-        const auto begin = pemText.find("-----BEGIN CERTIFICATE-----");
-        const auto end = pemText.find("-----END CERTIFICATE-----");
-        if (begin == std::string::npos || end == std::string::npos)
+        // trust anchor of the bundle: the root of the chain, which is the last certificate of the file
+        // (the certificate itself when it is self signed); base64 without line breaks
+        constexpr std::string_view beginMarker = "-----BEGIN CERTIFICATE-----";
+        constexpr std::string_view endMarker = "-----END CERTIFICATE-----";
+
+        const auto begin = pemText.rfind(beginMarker);
+        const auto end = pemText.rfind(endMarker);
+        if (begin == std::string::npos || end == std::string::npos || end < begin)
             throw std::runtime_error("The server certificate is no PEM certificate: " + _serverCertificate.string());
 
-        for (size_t i = begin + sizeof("-----BEGIN CERTIFICATE-----") - 1; i < end; ++i)
+        for (size_t i = begin + beginMarker.size(); i < end; ++i)
         {
             if (pemText[i] != '\r' && pemText[i] != '\n')
                 m_certificateBase64.push_back(pemText[i]);

@@ -21,7 +21,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstring>
 #include <iostream>
 #include <filesystem>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace
@@ -36,6 +38,107 @@ namespace
         std::vector<uint8_t> bytes(_size, 0);
         std::memcpy(bytes.data(), _text, std::min(std::strlen(_text), _size - 1));
         return bytes;
+    }
+
+    bool contains(const std::vector<uint8_t>& _data, std::span<const uint8_t> _bytes)
+    {
+        return std::search(_data.begin(), _data.end(), _bytes.begin(), _bytes.end()) != _data.end();
+    }
+
+    // offset of a text with its closing zero when the binary holds it exactly once
+    std::optional<size_t> findUniqueText(const std::vector<uint8_t>& _data, std::string_view _text)
+    {
+        const auto* begin = reinterpret_cast<const uint8_t*>(_text.data());
+        const auto* end = begin + _text.size() + 1;
+
+        const auto first = std::search(_data.begin(), _data.end(), begin, end);
+        if (first == _data.end() || std::search(first + 1, _data.end(), begin, end) != _data.end())
+            return std::nullopt;
+
+        return static_cast<size_t>(first - _data.begin());
+    }
+
+    // start of the zero terminated text that _offset lies in
+    size_t textStart(const std::vector<uint8_t>& _data, size_t _offset)
+    {
+        while (_offset > 0 && _data[_offset - 1] != 0)
+            --_offset;
+        return _offset;
+    }
+
+    bool startsWith(const std::vector<uint8_t>& _data, size_t _offset, std::string_view _text)
+    {
+        return _offset + _text.size() <= _data.size() && std::memcmp(_data.data() + _offset, _text.data(), _text.size()) == 0;
+    }
+
+    // A 7.3.5 client that was patched before no longer holds the original values. These functions find the
+    // places through unchanged neighbours instead: the offset to patch, or nothing when the surroundings differ.
+    namespace patchedBefore
+    {
+        // versions address: the text in front of the cdns address, behind its "http://"
+        std::optional<size_t> versionsFile(const std::vector<uint8_t>& _data, size_t _size)
+        {
+            constexpr std::string_view scheme = "http://";
+
+            const auto cdns = findUniqueText(_data, "http://%s.patch.battle.net:1119/%s/cdns");
+            if (!cdns || *cdns < 2)
+                return std::nullopt;
+
+            const size_t start = textStart(_data, *cdns - 1);
+            if (!startsWith(_data, start, scheme) || *cdns - 1 - start != scheme.size() + _size)
+                return std::nullopt;
+
+            return start + scheme.size();
+        }
+
+        // bundle address: the text that ends with the fingerprint path
+        std::optional<size_t> certBundleUrl(const std::vector<uint8_t>& _data, size_t _size)
+        {
+            constexpr std::string_view path = "/client/bgs-key-fingerprint";
+
+            const auto end = findUniqueText(_data, path);
+            if (!end)
+                return std::nullopt;
+
+            const size_t start = textStart(_data, *end);
+            if (!startsWith(_data, start, "http") || *end + path.size() - start != _size)
+                return std::nullopt;
+
+            return start;
+        }
+
+        // bundle signing key: the 256 bytes in front of the signature salt, behind two public exponents
+        std::optional<size_t> certSignatureModulus(const std::vector<uint8_t>& _data)
+        {
+            constexpr size_t modulusSize = 256;
+            constexpr uint8_t exponents[] = { 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00 };
+
+            const auto salt = findUniqueText(_data, "Blizzard Certificate Bundle");
+            if (!salt || *salt < modulusSize + sizeof(exponents))
+                return std::nullopt;
+
+            const size_t start = *salt - modulusSize;
+            if (std::memcmp(_data.data() + start - sizeof(exponents), exponents, sizeof(exponents)) != 0)
+                return std::nullopt;
+
+            return start;
+        }
+
+        // registry key of the launcher parameters: the text that ends with the launch options key
+        std::optional<size_t> launcherLoginParameters(const std::vector<uint8_t>& _data, size_t _size)
+        {
+            constexpr std::string_view key = R"(\Battle.net\Launch Options\)";
+
+            const auto end = findUniqueText(_data, key);
+            if (!end)
+                return std::nullopt;
+
+            const size_t start = textStart(_data, *end);
+            if (!startsWith(_data, start, R"(Software\)") || *end + key.size() + 1 - start != _size)
+                return std::nullopt;
+
+            return start;
+        }
     }
 }
 
@@ -64,7 +167,7 @@ static int patchBattleNetClient(cp::Patcher& _patcher, uint32_t _build, const st
     if (_serverCertificate.empty())
     {
         std::cout << "Usage: connection_patcher <Wow-64.exe> <bnetserver.cert.pem>\n";
-        std::cout << "The certificate is the one of the bnetserver (PEM), the client will trust exactly this key.\n";
+        std::cout << "The certificate file is the one of the bnetserver (PEM, with its chain), the client will trust exactly its key.\n";
         return 1;
     }
 
@@ -82,20 +185,36 @@ static int patchBattleNetClient(cp::Patcher& _patcher, uint32_t _build, const st
     // the 6.x patterns carry wildcards, the 7.x patterns are matched exactly
     const bool wildcards = !legion;
     bool complete = true;
-    auto apply = [&](const char* _name, std::span<const uint8_t> _replacement, std::span<const uint8_t> _pattern)
+    auto apply = [&](const char* _name, std::span<const uint8_t> _replacement, std::span<const uint8_t> _pattern, std::optional<size_t> _knownOffset = std::nullopt)
     {
-        const size_t count = _patcher.patchAll(_replacement, _pattern, wildcards);
+        size_t count = _patcher.patchAll(_replacement, _pattern, wildcards);
+        if (count == 0 && _knownOffset && _patcher.patchAt(*_knownOffset, _replacement))
+            count = 1;
+
         std::cout << "patching " << _name << ": " << count << " place(s)\n";
         if (count == 0)
             complete = false;
     };
 
-    apply("portal", patch::Portal, pattern::Portal);
-    apply("SMSG_CONNECT_TO modulus", patch::ConnectToModulus, pattern::ConnectToModulus);
+    // the original SMSG_CONNECT_TO modulus is gone when another patcher worked on this client before
+    const bool wasPatchedBefore = legion && !contains(_patcher.data(), pattern::ConnectToModulus);
+    if (wasPatchedBefore)
+        std::cout << "This client was patched before, changed values are located through their surroundings\n";
+
+    if (wasPatchedBefore && !contains(_patcher.data(), pattern::Portal))
+        std::cout << "patching portal: already removed\n";
+    else
+        apply("portal", patch::Portal, pattern::Portal);
+
+    if (wasPatchedBefore && contains(_patcher.data(), patch::ConnectToModulus))
+        std::cout << "patching SMSG_CONNECT_TO modulus: already set\n";
+    else
+        apply("SMSG_CONNECT_TO modulus", patch::ConnectToModulus, pattern::ConnectToModulus);
 
     char versions[pattern::VersionsFile.size()] = {};
     std::snprintf(versions, sizeof(versions), patch::VersionsFileFormat, _build);
-    apply("versions file", paddedText(versions, pattern::VersionsFile.size()), pattern::VersionsFile);
+    apply("versions file", paddedText(versions, pattern::VersionsFile.size()), pattern::VersionsFile,
+        wasPatchedBefore ? patchedBefore::versionsFile(_patcher.data(), pattern::VersionsFile.size()) : std::nullopt);
 
     std::filesystem::path bundlePath;
     if (!legion)
@@ -118,13 +237,16 @@ static int patchBattleNetClient(cp::Patcher& _patcher, uint32_t _build, const st
     }
     else
     {
-        apply("certificate bundle address", paddedText(patch::CertBundleUrl, pattern::CertBundleUrl.size()), pattern::CertBundleUrl);
+        apply("certificate bundle address", paddedText(patch::CertBundleUrl, pattern::CertBundleUrl.size()), pattern::CertBundleUrl,
+            wasPatchedBefore ? patchedBefore::certBundleUrl(_patcher.data(), pattern::CertBundleUrl.size()) : std::nullopt);
 
         const auto signingModulus = bundle.createSigningKey();
-        apply("certificate bundle signing key", signingModulus, pattern::CertSignatureModulus);
+        apply("certificate bundle signing key", signingModulus, pattern::CertSignatureModulus,
+            wasPatchedBefore ? patchedBefore::certSignatureModulus(_patcher.data()) : std::nullopt);
 
         const std::span<const uint8_t> launcherPattern(reinterpret_cast<const uint8_t*>(pattern::LauncherLoginParametersLocation), sizeof(pattern::LauncherLoginParametersLocation));
-        apply("launcher login parameters", paddedText(patch::LauncherLoginParametersLocation, sizeof(pattern::LauncherLoginParametersLocation)), launcherPattern);
+        apply("launcher login parameters", paddedText(patch::LauncherLoginParametersLocation, sizeof(pattern::LauncherLoginParametersLocation)), launcherPattern,
+            wasPatchedBefore ? patchedBefore::launcherLoginParameters(_patcher.data(), sizeof(pattern::LauncherLoginParametersLocation)) : std::nullopt);
 
         // the client keeps the bundle in the Battle.net cache shared by all users
         const char* programData = std::getenv("ProgramData");
