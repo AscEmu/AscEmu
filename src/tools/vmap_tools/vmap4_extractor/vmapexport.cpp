@@ -783,12 +783,9 @@ int main(int argc, char** argv)
 
     printf("Extract %s. Beginning work ....\n", versionString);
     // Create the working directory
-    if (mkdir(szWorkDirWmo
-#if defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__)
-                    , 0711
-#endif
-                    ))
-            success = (errno == EEXIST);
+    std::error_code ec;
+    std::filesystem::create_directories(szWorkDirWmo, ec);
+    success = !ec;
 
     if (IsLegacyVmapArchiveLayout())
     {

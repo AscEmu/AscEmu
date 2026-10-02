@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "fmt/format.h"
 #include <cstring>
 
-#ifdef WIN32
+#if defined(_WIN32) || defined(WIN32)
     #define CONFIG_USE_IOCP
     #include <windows.h>
 #else // unix

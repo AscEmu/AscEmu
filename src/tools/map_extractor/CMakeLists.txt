@@ -12,13 +12,15 @@ add_executable(${EXECUTABLE_NAME} ${SRC_MAPS_EXTRACTOR})
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/src/shared
+    ${CMAKE_SOURCE_DIR}/dep/casclib/src
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 # include library dependencies.
 target_link_libraries(${EXECUTABLE_NAME}
   PUBLIC
-    mpqlib
+    casc_static
+    mpqlib    
 )
 
 install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})

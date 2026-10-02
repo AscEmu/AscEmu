@@ -9,11 +9,74 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cctype>
 #include <cstdio>
 #include <cstring>
+#include <fstream>
 
 namespace mpqlib
 {
     namespace
     {
+        uint32_t gLastDetectedBuild = 0;
+
+        std::vector<std::string> splitPipe(const std::string& line)
+        {
+            std::vector<std::string> tokens;
+            std::stringstream ss(line);
+            std::string item;
+            while (std::getline(ss, item, '|'))
+                tokens.push_back(item);
+            return tokens;
+        }
+
+        uint32_t scanCascBuildNumber(std::filesystem::path const& clientRoot)
+        {
+            std::filesystem::path buildInfoPath = clientRoot / ".build.info";
+            std::ifstream file(buildInfoPath);
+            if (!file.is_open())
+                return 0;
+
+            std::string headerLine;
+            if (!std::getline(file, headerLine))
+                return 0;
+
+            auto headers = splitPipe(headerLine);
+            int versionIndex = -1;
+            for (size_t i = 0; i < headers.size(); ++i)
+            {
+                if (headers[i].rfind("Version", 0) == 0)
+                {
+                    versionIndex = static_cast<int>(i);
+                    break;
+                }
+            }
+
+            if (versionIndex == -1)
+                return 0;
+
+            std::string dataLine;
+            while (std::getline(file, dataLine))
+            {
+                if (dataLine.empty())
+                    continue;
+
+                auto values = splitPipe(dataLine);
+                if (static_cast<size_t>(versionIndex) >= values.size())
+                    continue;
+
+                std::string verStr = values[versionIndex];
+                size_t lastDot = verStr.find_last_of('.');
+                if (lastDot == std::string::npos || lastDot + 1 >= verStr.size())
+                    continue;
+
+                std::string buildStr = verStr.substr(lastDot + 1);
+                uint32_t build = 0;
+                auto [ptr, ec] = std::from_chars(buildStr.data(), buildStr.data() + buildStr.size(), build);
+                if (ec == std::errc())
+                    return build;
+            }
+
+            return 0;
+        }
+
         std::string findWowExeName(std::filesystem::path const& clientRoot)
         {
             std::error_code ec;
@@ -89,6 +152,11 @@ namespace mpqlib
         }
     }
 
+    uint32_t getDetectedBuildNumber()
+    {
+        return gLastDetectedBuild;
+    }
+
     std::optional<ClientVersion> clientVersionFromBuild(uint32_t build)
     {
         // The exact build number a real client reports (e.g. via
@@ -109,16 +177,32 @@ namespace mpqlib
             return ClientVersion::WrathOfTheLichKing;
         if (build < static_cast<uint32_t>(ClientVersion::MistsOfPandaria))
             return ClientVersion::Cataclysm;
+        if (build < static_cast<uint32_t>(ClientVersion::WarlordsOfDraenor))
+            return ClientVersion::MistsOfPandaria;
+        if (build < static_cast<uint32_t>(ClientVersion::Legion))
+            return ClientVersion::WarlordsOfDraenor;
 
-        return ClientVersion::MistsOfPandaria;
+        return ClientVersion::Legion;
     }
 
     std::optional<ClientVersion> detectClientVersion(std::filesystem::path const& clientRoot)
     {
+        // Check for CASC build first, since it has a .build.info file that can be read without opening Wow.exe.
+        // If that fails, fall back to scanning the Wow.exe for known build-number patterns.
+        uint32_t build = scanCascBuildNumber(clientRoot);
+        if (build > 0)
+        {
+            gLastDetectedBuild = build;
+            return clientVersionFromBuild(build);
+        }
+
+        // Fallback: Legacy MPQ (wow.exe scans) - this is slower and less reliable, but still works for older clients.
         std::string exeName = findWowExeName(clientRoot);
         if (exeName.empty())
             return std::nullopt;
 
-        return clientVersionFromBuild(scanBuildNumber(clientRoot / exeName));
+        build = scanBuildNumber(clientRoot / exeName);
+        gLastDetectedBuild = build;
+        return clientVersionFromBuild(build);
     }
 }

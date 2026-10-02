@@ -33,7 +33,31 @@ namespace mpqlib
         WrathOfTheLichKing = 12340,
         Cataclysm = 15595,
         MistsOfPandaria = 18414,
+        WarlordsOfDraenor = 21742,
+        Legion = 26972
     };
+
+    [[nodiscard]] constexpr std::string_view getClientVersionName(ClientVersion version) noexcept
+    {
+        switch (version)
+        {
+            case ClientVersion::Vanilla:            return "Classic (Vanilla)";
+            case ClientVersion::BurningCrusade:     return "The Burning Crusade";
+            case ClientVersion::WrathOfTheLichKing: return "Wrath of the Lich King";
+            case ClientVersion::Cataclysm:          return "Cataclysm";
+            case ClientVersion::MistsOfPandaria:    return "Mists of Pandaria";
+            case ClientVersion::WarlordsOfDraenor:  return "Warlords of Draenor";
+            case ClientVersion::Legion:             return "Legion";
+            default:                                return "Unknown";
+        }
+    }
+
+    [[nodiscard]] uint32_t getDetectedBuildNumber();
+
+    [[nodiscard]] constexpr bool isCascClient(ClientVersion version) noexcept
+    {
+        return version == ClientVersion::WarlordsOfDraenor || version == ClientVersion::Legion;
+    }
 
     // Classifies a raw build number - obtained by whatever means a caller
     // has available (an MPQ/component patch manifest, this project's own

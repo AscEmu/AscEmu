@@ -52,6 +52,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "CascExtractor.hpp"
+
 namespace fs = std::filesystem;
 using mpqlib::ClientVersion;
 
@@ -2051,20 +2053,34 @@ int main(int argc, char* arg[])
     }
 
     gClientVersion = *detected;
-    printf("Detected client version build family: %u\n", static_cast<uint32_t>(gClientVersion));
+    auto versionName = mpqlib::getClientVersionName(gClientVersion);
+    auto buildNumber = mpqlib::getDetectedBuildNumber();
 
-    if (!IsLegacyMapFormat())
-        CONF_extract |= EXTRACT_CAMERA;
+    printf("Detected client: %s (Build: %u)\n", std::string(versionName).c_str(), buildNumber);
 
-    CONF_use_minHeight = IsLegacyMapFormat() ? -500.0f : -2000.0f;
-    CONF_TargetBuild = gClientVersion == ClientVersion::MistsOfPandaria ? 18273 : 15595;
-
-    HandleArgs(argc, arg);
-
-    if (IsLegacyMapFormat())
-        RunLegacyExtraction();
+    if (mpqlib::isCascClient(gClientVersion))
+    {
+        if (!CascExtractor::run(fs::path(input_path), versionName, buildNumber))
+        {
+            printf("Error: CASC extraction failed!\n");
+            return 1;
+        }
+    }
     else
-        RunModernExtraction();
+    {
+        if (!IsLegacyMapFormat())
+            CONF_extract |= EXTRACT_CAMERA;
+
+        CONF_use_minHeight = IsLegacyMapFormat() ? -500.0f : -2000.0f;
+        CONF_TargetBuild = gClientVersion == ClientVersion::MistsOfPandaria ? 18273 : 15595;
+
+        HandleArgs(argc, arg);
+
+        if (IsLegacyMapFormat())
+            RunLegacyExtraction();
+        else
+            RunModernExtraction();
+    }
 
     printf("Finished - Press any key to close map_extractor.exe\n");
     std::cin.get();
