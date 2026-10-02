@@ -12609,10 +12609,12 @@ void Player::setFactionStanding(uint32_t faction, int32_t value)
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->id, reputation->second->standing, 0);
 #endif
 
-        onModStanding(factionEntry, reputation->second.get());
+        onModStanding(factionEntry, reputation->second.get(), reputation->second->calcStanding());
     }
     else
     {
+        const auto oldStanding = reputation->second->standing;
+
         if (hasReputationRankChangedFlat(reputation->second->standing, value))
         {
 #ifdef FT_ACHIEVEMENTS
@@ -12633,7 +12635,7 @@ void Player::setFactionStanding(uint32_t faction, int32_t value)
             reputation->second->standing = value;
         }
 
-        onModStanding(factionEntry, reputation->second.get());
+        onModStanding(factionEntry, reputation->second.get(), reputation->second->standing - oldStanding);
     }
 }
 
@@ -12687,7 +12689,7 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->id, itr->second->standing, 0);
 #endif
 
-        onModStanding(factionEntry, itr->second.get());
+        onModStanding(factionEntry, itr->second.get(), itr->second->calcStanding());
     }
     else
     {
@@ -12713,7 +12715,7 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
 #endif
         }
 
-        onModStanding(factionEntry, itr->second.get());
+        onModStanding(factionEntry, itr->second.get(), itr->second->standing - oldStanding);
     }
 }
 
@@ -12930,7 +12932,7 @@ bool Player::addNewFaction(WDB::Structures::FactionEntry const* factionEntry, in
     return false;
 }
 
-void Player::onModStanding(WDB::Structures::FactionEntry const* factionEntry, FactionReputation* reputation)
+void Player::onModStanding(WDB::Structures::FactionEntry const* factionEntry, FactionReputation* reputation, int32_t standingChange)
 {
     if (factionEntry == nullptr || reputation == nullptr)
         return;
@@ -12945,7 +12947,7 @@ void Player::onModStanding(WDB::Structures::FactionEntry const* factionEntry, Fa
 
     if (reputation->isVisible() && IsInWorld())
     {
-        SmsgSetFactionStanding managedPacket(factionEntry->reputationIndex, reputation->calcStanding());
+        SmsgSetFactionStanding managedPacket(factionEntry->reputationIndex, standingChange, reputation->calcStanding());
         getSession()->sendManagedPacket(managedPacket);
     }
 

@@ -1798,7 +1798,7 @@ public:
     
     void setFactionInactive(uint32_t faction, bool set);
     bool addNewFaction(WDB::Structures::FactionEntry const* factionEntry, int32_t standing, bool base);
-    void onModStanding(WDB::Structures::FactionEntry const* factionEntry, FactionReputation* reputation);
+    void onModStanding(WDB::Structures::FactionEntry const* factionEntry, FactionReputation* reputation, int32_t standingChange);
     uint32_t getExaltedCount() const;
 
     void sendSmsgInitialFactions();
