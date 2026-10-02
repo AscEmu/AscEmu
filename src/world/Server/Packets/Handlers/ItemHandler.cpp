@@ -1160,6 +1160,13 @@ void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
             return;
         }
 
+        if (srlPacket.count != 0 && srlPacket.count < srcItem->getStackCount())
+        {
+            srcItem->setStackCount(srcItem->getStackCount() - srlPacket.count);
+            srcItem->m_isDirty = true;
+            return;
+        }
+
         const uint8_t charterType = srcItem->getCharterTypeForEntry();
         if (charterType < NUM_CHARTER_TYPES)
         {

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
-#include "world/Data/InventoryLayout.hpp"
+#include "Data/InventoryLayout.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -14,15 +14,17 @@ namespace AscEmu::Packets
     class CmsgDestroyItem : public ManagedPacket
     {
     public:
+        uint32_t count;
         int8_t srcInventorySlot;
         int8_t srcSlot;
 
-        CmsgDestroyItem() : CmsgDestroyItem(0, 0)
+        CmsgDestroyItem() : CmsgDestroyItem(0, 0, 0)
         {
         }
 
-        CmsgDestroyItem(int8_t srcInventorySlot, int8_t srcSlot) :
-            ManagedPacket(CMSG_DESTROY_ITEM, 2),
+        CmsgDestroyItem(uint32_t count, int8_t srcInventorySlot, int8_t srcSlot) :
+            ManagedPacket(CMSG_DESTROY_ITEM, 6),
+            count(count),
             srcInventorySlot(srcInventorySlot),
             srcSlot(srcSlot)
         {
@@ -38,14 +40,12 @@ namespace AscEmu::Packets
             }
             else if (m_protocol.isMop())
             {
-                packet.readSkip<int32_t>();     // count, not used - whole stack is always destroyed
-                packet >> srcSlot >> srcInventorySlot;
+                packet >> count >> srcSlot >> srcInventorySlot;
                 return true;
             }
             else if (m_protocol.isForever())
             {
-                packet.readSkip<int32_t>();     // count, not used - whole stack is always destroyed
-                packet >> srcInventorySlot >> srcSlot;
+                packet >> count >> srcInventorySlot >> srcSlot;
 
                 if (srcInventorySlot == InventoryLayout::SlotNotSet)
                 {
