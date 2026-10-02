@@ -2350,8 +2350,28 @@ void Unit::addNpcFlags(uint64_t npcFlags) { setNpcFlags(getNpcFlags() | npcFlags
 void Unit::removeNpcFlags(uint64_t npcFlags) { setNpcFlags(getNpcFlags() & ~npcFlags); }
 #endif
 
-uint32_t Unit::getEmoteState() const { return unitData()->npc_emote_state; }
-void Unit::setEmoteState(uint32_t id) { write(unitData()->npc_emote_state, id); }
+uint32_t Unit::getEmoteState() const
+{
+#if defined(AE_FOREVER)
+    return static_cast<uint32_t>(m_foreverUnitFields.emoteState);
+#else
+    return unitData()->npc_emote_state;
+#endif
+}
+
+void Unit::setEmoteState(uint32_t id)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverUnitFields.emoteState == static_cast<int32_t>(id))
+        return;
+
+    m_foreverUnitFields.emoteState = static_cast<int32_t>(id);
+    m_foreverUnitFields.markChanged(AscEmu::Version::Forever::Fields::UnitData::EmoteStateBit);
+    updateObject();
+#else
+    write(unitData()->npc_emote_state, id);
+#endif
+}
 
 uint32_t Unit::getStat(uint8_t stat) const
 {

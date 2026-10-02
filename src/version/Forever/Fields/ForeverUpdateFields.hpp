@@ -936,6 +936,12 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t XpBit = 60;
         static inline constexpr std::size_t NextLevelXpBit = 61;
         static inline constexpr std::size_t UnknownChangeBit62 = 62;
+        // [FOREVER-VERIFIED] Forever 1.60.1.70124 retail sell differentials.
+        // One shared array group is followed by 12 price bits and 12 timestamp bits.
+        // Slot N updates bits 354+N and 366+N under parent/group bit 353.
+        static inline constexpr std::size_t BuybackDataGroupBit = 353;
+        static inline constexpr std::size_t BuybackPriceFirstBit = 354;
+        static inline constexpr std::size_t BuybackTimestampFirstBit = 366;
         static inline constexpr std::size_t AppearanceCollectionBit = 134;
         static inline constexpr std::size_t InventorySlotsGroupBit = 168;
         static inline constexpr std::size_t InventorySlotsFirstBit = 169;
@@ -976,6 +982,11 @@ namespace AscEmu::Version::Forever::Fields
         int32_t xp = 0;
         int32_t nextLevelXp = 0;
         int32_t unknownAfterNextLevelXp = 0;
+
+        // VALUES-proven from retail selling. CREATE placement remains inside the
+        // still-opaque ActivePlayerData create region and is intentionally not renamed.
+        std::array<uint32_t, InventoryLayout::BuybackCount> buybackPrice{};
+        std::array<uint32_t, InventoryLayout::BuybackCount> buybackTimestamp{};
 
         SkillInfo skill{};
 

@@ -1158,14 +1158,14 @@ uint32_t Item::repairItemCost()
     auto durability_costs = sDurabilityCostsStore.lookupEntry(m_itemProperties->ItemLevel);
     if (durability_costs == nullptr)
     {
-        sLogger.failure("Repair: Unknown item level ({})", fmt::ptr(durability_costs));
+        sLogger.failure("Repair: Unknown item level ({}) for item {}", m_itemProperties->ItemLevel, m_itemProperties->ItemId);
         return 0;
     }
 
     auto durability_quality = sDurabilityQualityStore.lookupEntry((m_itemProperties->Quality + 1) * 2);
     if (durability_quality == nullptr)
     {
-        sLogger.failure("Repair: Unknown item quality ({})", fmt::ptr(durability_quality));
+        sLogger.failure("Repair: Unknown item quality ({}) for item {}", m_itemProperties->Quality, m_itemProperties->ItemId);
         return 0;
     }
 

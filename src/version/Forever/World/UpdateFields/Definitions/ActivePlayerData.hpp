@@ -78,11 +78,57 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
 
     // These live VALUES fields have Forever capture support. Large CREATE-only opaque regions
     // intentionally remain outside this definition until identified from Forever captures.
-    using ActivePlayerDataUpdate = UpdateDefinition<Fields::ActivePlayerData::ChangeMaskSize,
+    using ActivePlayerDataCreateMappedUpdate = UpdateDefinition<Fields::ActivePlayerData::ChangeMaskSize,
         ScalarField<&Fields::ActivePlayerData::coinage, Fields::ActivePlayerData::CoinageBit, 32, FieldVerification::Verified, "coinage">,
         ScalarField<&Fields::ActivePlayerData::xp, Fields::ActivePlayerData::XpBit, 32, FieldVerification::Verified, "xp">,
         ScalarField<&Fields::ActivePlayerData::nextLevelXp, Fields::ActivePlayerData::NextLevelXpBit, 32, FieldVerification::Verified, "nextLevelXp">,
         GuidArrayField<&Fields::ActivePlayerData::invSlots, Fields::ActivePlayerData::InventorySlotsGroupBit, Fields::ActivePlayerData::InventorySlotsFirstBit, FieldVerification::Verified, "inventorySlots">>;
 
-    static_assert(updateFieldsMatchCreateMetadata(ActivePlayerDataCreateFields, ActivePlayerDataUpdate::Metadata));
+    static_assert(updateFieldsMatchCreateMetadata(ActivePlayerDataCreateFields, ActivePlayerDataCreateMappedUpdate::Metadata));
+
+    // [FOREVER-VERIFIED] Retail 1.60.1.70124 sell differentials use one
+    // Buyback group bit (353), price element bits 354..365 and timestamp
+    // element bits 366..377. Values are serialized per slot: price, timestamp.
+    struct BuybackDataField
+    {
+        static constexpr UpdateFieldMetadata metadata() { return {FieldVerification::ReferenceOnly, "buybackData", "BuybackPrice/BuybackTimestamp"}; }
+
+        template <typename Owner, std::size_t N>
+        static void copyKnownBits(Owner const& owner, std::bitset<N> const& source, std::bitset<N>& target)
+        {
+            if (source.test(Fields::ActivePlayerData::BuybackDataGroupBit))
+                target.set(Fields::ActivePlayerData::BuybackDataGroupBit);
+
+            for (std::size_t i = 0; i < owner.buybackPrice.size(); ++i)
+            {
+                if (source.test(Fields::ActivePlayerData::BuybackPriceFirstBit + i))
+                    target.set(Fields::ActivePlayerData::BuybackPriceFirstBit + i);
+                if (source.test(Fields::ActivePlayerData::BuybackTimestampFirstBit + i))
+                    target.set(Fields::ActivePlayerData::BuybackTimestampFirstBit + i);
+            }
+        }
+
+        template <typename Owner>
+        static void write(ByteBuffer& data, Owner const& owner, auto const& changed)
+        {
+            if (!changed(Fields::ActivePlayerData::BuybackDataGroupBit))
+                return;
+
+            for (std::size_t i = 0; i < owner.buybackPrice.size(); ++i)
+            {
+                if (changed(Fields::ActivePlayerData::BuybackPriceFirstBit + i))
+                    data << owner.buybackPrice[i];
+                if (changed(Fields::ActivePlayerData::BuybackTimestampFirstBit + i))
+                    data << owner.buybackTimestamp[i];
+            }
+        }
+    };
+
+    // Its CREATE location is deliberately not claimed while that create span remains opaque.
+    using ActivePlayerDataUpdate = UpdateDefinition<Fields::ActivePlayerData::ChangeMaskSize,
+        ScalarField<&Fields::ActivePlayerData::coinage, Fields::ActivePlayerData::CoinageBit, 32, FieldVerification::Verified, "coinage">,
+        ScalarField<&Fields::ActivePlayerData::xp, Fields::ActivePlayerData::XpBit, 32, FieldVerification::Verified, "xp">,
+        ScalarField<&Fields::ActivePlayerData::nextLevelXp, Fields::ActivePlayerData::NextLevelXpBit, 32, FieldVerification::Verified, "nextLevelXp">,
+        GuidArrayField<&Fields::ActivePlayerData::invSlots, Fields::ActivePlayerData::InventorySlotsGroupBit, Fields::ActivePlayerData::InventorySlotsFirstBit, FieldVerification::Verified, "inventorySlots">,
+        BuybackDataField>;
 }

@@ -297,6 +297,34 @@ namespace {
         return false;
     }
 
+    bool loadForeverModernEmoteStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
+    {
+        WDB::WDC5File emotesText;
+        if (!loadForeverGenericWDC5(emotesText, "EmotesText.db2", errors, dbcPath))
+            return false;
+
+        if (emotesText.getFieldCount() != 2)
+        {
+            errors.push_back("Forever DB2 EmotesText.db2: expected 2 fields, got " + std::to_string(emotesText.getFieldCount()));
+            sLogger.failure("Forever DB2 EmotesText.db2 has unexpected field count {} (expected 2).", emotesText.getFieldCount());
+            return false;
+        }
+
+        std::vector<std::pair<uint32_t, WDB::Structures::EmotesTextEntry>> entries;
+        entries.reserve(emotesText.getRecordCount());
+        for (uint32_t row = 0; row < emotesText.getRecordCount(); ++row)
+        {
+            WDB::Structures::EmotesTextEntry entry{};
+            entry.id = emotesText.getRecordId(row);
+            entry.textId[0] = emotesText.getUInt32(row, 1); // EmoteID; field 0 is Name
+            entries.emplace_back(entry.id, entry);
+        }
+
+        sEmotesTextStore.assignEntries(entries);
+        sLogger.info("Forever EmotesText DB2 store: {} entries loaded.", entries.size());
+        return true;
+    }
+
     bool loadForeverModernQuestStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
     {
         WDB::WDC5File questXP;
@@ -1675,6 +1703,41 @@ namespace {
         sItemSparseStore.assignEntries(sparseEntries);
         sLogger.info("Forever ItemSparse DB2 store: {} entries loaded.", sparseEntries.size());
 
+        WDB::WDC5File durabilityCosts;
+        if (loadForeverWDC5Optional(durabilityCosts, ForeverFormat::DurabilityCosts, dbcPath))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::DurabilityCostsEntry>> entries;
+            entries.reserve(durabilityCosts.getRecordCount());
+            for (uint32_t row = 0; row < durabilityCosts.getRecordCount(); ++row)
+            {
+                WDB::Structures::DurabilityCostsEntry entry{};
+                entry.itemLevel = durabilityCosts.getRecordId(row);
+                for (uint32_t i = 0; i < 21; ++i)
+                    entry.modifier[i] = durabilityCosts.getUInt32(row, 0, i);
+                for (uint32_t i = 0; i < 8; ++i)
+                    entry.modifier[21 + i] = durabilityCosts.getUInt32(row, 1, i);
+                entries.emplace_back(entry.itemLevel, entry);
+            }
+            sDurabilityCostsStore.assignEntries(entries);
+            sLogger.info("Forever DurabilityCosts DB2 store: {} item levels loaded.", entries.size());
+        }
+
+        WDB::WDC5File durabilityQuality;
+        if (loadForeverWDC5Optional(durabilityQuality, ForeverFormat::DurabilityQuality, dbcPath))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::DurabilityQualityEntry>> entries;
+            entries.reserve(durabilityQuality.getRecordCount());
+            for (uint32_t row = 0; row < durabilityQuality.getRecordCount(); ++row)
+            {
+                WDB::Structures::DurabilityQualityEntry entry{};
+                entry.id = durabilityQuality.getRecordId(row);
+                entry.qualityModifier = durabilityQuality.getFloat(row, 0);
+                entries.emplace_back(entry.id, entry);
+            }
+            sDurabilityQualityStore.assignEntries(entries);
+            sLogger.info("Forever DurabilityQuality DB2 store: {} entries loaded.", entries.size());
+        }
+
         WDB::WDC5File randPropPoints;
         if (loadForeverWDC5Optional(randPropPoints, ForeverFormat::RandPropPoints, dbcPath))
         {
@@ -2142,6 +2205,7 @@ bool loadDBCs()
     loadForeverModernTerrainStores(bad_dbc_files, dbc_path);
     loadForeverModernQuestStores(bad_dbc_files, dbc_path);
     loadForeverModernSpellSkillStores(bad_dbc_files, dbc_path);
+    loadForeverModernEmoteStores(bad_dbc_files, dbc_path);
 
     buildMapDifficultyMap();
     buildAreaMapCollection();

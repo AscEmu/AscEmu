@@ -32,6 +32,18 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                if (packet.remaining() != 18)
+                    return false;
+
+                uint16_t unknownPrefix = 0;
+                uint64_t rawGuid = 0;
+                packet >> unknownPrefix >> text_emote >> numEmote >> rawGuid;
+                guid.init(rawGuid);
+                return !packet.hadReadFailure() && packet.remaining() == 0;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 uint64_t rawGuid;

@@ -178,6 +178,7 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
         ScalarField<&Fields::UnitData::unitFlags, Fields::UnitData::FlagsBit, 32, FieldVerification::Verified, "unitFlags">,
         ScalarField<&Fields::UnitData::unitFlags2, Fields::UnitData::Flags2Bit, 32, FieldVerification::Verified, "unitFlags2">,
         ScalarField<&Fields::UnitData::auraState, Fields::UnitData::AuraStateBit, 32, FieldVerification::Verified, "auraState">,
+        ScalarField<&Fields::UnitData::emoteState, Fields::UnitData::EmoteStateBit, 32, FieldVerification::StructureOnly, "emoteState", "EmoteState">,
         ScalarArrayField<&Fields::UnitData::power, Fields::UnitData::PowerGroupBit, Fields::UnitData::PowerFirstBit, FieldVerification::Verified, "power">,
         ScalarArrayField<&Fields::UnitData::maxPower, Fields::UnitData::PowerGroupBit, Fields::UnitData::MaxPowerFirstBit, FieldVerification::Verified, "maxPower">,
         ScalarArrayField<&Fields::UnitData::resistances, Fields::UnitData::ResistancesGroupBit, Fields::UnitData::ResistancesFirstBit, FieldVerification::Verified, "resistances">>;

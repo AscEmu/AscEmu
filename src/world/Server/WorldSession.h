@@ -639,6 +639,7 @@ protected:
         void handleItemQuerySingleOpcode(WorldPacket& recvPacket);
         void handleBuyBackOpcode(WorldPacket& recvPacket);
         void handleSellItemOpcode(WorldPacket& recvPacket);
+        void handleSellAllJunkItemsOpcode(WorldPacket& recvPacket);
         void handleBuyItemInSlotOpcode(WorldPacket& recvPacket);
         void handleBuyItemOpcode(WorldPacket& recvPacket);
         void handleListInventoryOpcode(WorldPacket& recvPacket);

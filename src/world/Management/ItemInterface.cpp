@@ -3064,7 +3064,7 @@ void ItemInterface::AddBuyBackItem(std::unique_ptr<Item> it, uint32_t price)
         {
             if (m_pOwner->getVendorBuybackSlot(i) == 0 || m_pBuyBack[i] == nullptr)
             {
-                sLogger.info("setting buybackslot {}", i / 2);
+                sLogger.info("setting buybackslot {}", i);
                 m_pBuyBack[i] = std::move(it);
 
                 // TODO: there are actually 24 slots -Appled

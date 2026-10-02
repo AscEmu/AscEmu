@@ -510,6 +510,10 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
 #endif
         sQuestMgr.OnPlayerEmote(_player, srlPacket.text_emote, rawGuid);
     }
+    else
+    {
+        sLogger.failure("handleTextEmoteOpcode:: sEmotesTextStore is Empty");
+    }
 }
 
 void WorldSession::handleEmoteOpcode(WorldPacket& recvPacket)

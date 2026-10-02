@@ -1970,11 +1970,53 @@ uint32_t Player::getAmmoId() const { return playerData()->ammo_id; }
 void Player::setAmmoId(uint32_t id) { write(playerData()->ammo_id, id); }
 #endif
 
-uint32_t Player::getBuybackPriceSlot(uint8_t slot) const { return playerData()->field_buy_back_price[slot]; }
-void Player::setBuybackPriceSlot(uint8_t slot, uint32_t price) { write(playerData()->field_buy_back_price[slot], price); }
+uint32_t Player::getBuybackPriceSlot(uint8_t slot) const
+{
+#if defined(AE_FOREVER)
+    if (slot >= m_foreverActivePlayerFields.buybackPrice.size())
+        return 0;
+    return m_foreverActivePlayerFields.buybackPrice[slot];
+#else
+    return playerData()->field_buy_back_price[slot];
+#endif
+}
 
-uint32_t Player::getBuybackTimestampSlot(uint8_t slot) const { return playerData()->field_buy_back_timestamp[slot]; }
-void Player::setBuybackTimestampSlot(uint8_t slot, uint32_t timestamp) { write(playerData()->field_buy_back_timestamp[slot], timestamp); }
+void Player::setBuybackPriceSlot(uint8_t slot, uint32_t price)
+{
+#if defined(AE_FOREVER)
+    if (slot >= m_foreverActivePlayerFields.buybackPrice.size() || m_foreverActivePlayerFields.buybackPrice[slot] == price)
+        return;
+    m_foreverActivePlayerFields.buybackPrice[slot] = price;
+    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::BuybackDataGroupBit, AscEmu::Version::Forever::Fields::ActivePlayerData::BuybackPriceFirstBit + slot);
+    updateObject();
+#else
+    write(playerData()->field_buy_back_price[slot], price);
+#endif
+}
+
+uint32_t Player::getBuybackTimestampSlot(uint8_t slot) const
+{
+#if defined(AE_FOREVER)
+    if (slot >= m_foreverActivePlayerFields.buybackTimestamp.size())
+        return 0;
+    return m_foreverActivePlayerFields.buybackTimestamp[slot];
+#else
+    return playerData()->field_buy_back_timestamp[slot];
+#endif
+}
+
+void Player::setBuybackTimestampSlot(uint8_t slot, uint32_t timestamp)
+{
+#if defined(AE_FOREVER)
+    if (slot >= m_foreverActivePlayerFields.buybackTimestamp.size() || m_foreverActivePlayerFields.buybackTimestamp[slot] == timestamp)
+        return;
+    m_foreverActivePlayerFields.buybackTimestamp[slot] = timestamp;
+    m_foreverActivePlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::BuybackDataGroupBit, AscEmu::Version::Forever::Fields::ActivePlayerData::BuybackTimestampFirstBit + slot);
+    updateObject();
+#else
+    write(playerData()->field_buy_back_timestamp[slot], timestamp);
+#endif
+}
 
 #if VERSION_STRING > Classic
 uint32_t Player::getFieldKills() const { return playerData()->field_kills.raw; }

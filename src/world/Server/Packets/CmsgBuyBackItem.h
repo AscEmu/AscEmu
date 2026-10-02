@@ -15,6 +15,7 @@ namespace AscEmu::Packets
     public:
         uint64_t itemGuid;
         int32_t buybackSlot;
+        bool isForeverPacket = false;
 
         CmsgBuyBackItem() : CmsgBuyBackItem(0, 0)
         {
@@ -42,6 +43,8 @@ namespace AscEmu::Packets
                 return m_minimum_size;
             else if (m_protocol.isMop())
                 return 5; // int32 buybackSlot + packed guid mask byte
+            else if (m_protocol.isForever())
+                return 5; // packed modern vendor guid + uint32 buyback slot
             return 0;
         }
 
@@ -76,6 +79,23 @@ namespace AscEmu::Packets
                 packet.readByteSeq(vendorGuid[3]);
                 packet.readByteSeq(vendorGuid[4]);
                 return true;
+            }
+            else if (m_protocol.isForever())
+            {
+                WoWGuid modernVendorGuid;
+                std::size_t consumed = 0;
+                if (!WoWGuid::unpackModern(packet.contents() + packet.rpos(), packet.remaining(), modernVendorGuid, consumed))
+                    return false;
+                if (packet.remaining() < consumed + sizeof(uint32_t))
+                    return false;
+
+                packet.rpos(packet.rpos() + consumed);
+                itemGuid = modernVendorGuid.toLegacyRaw();
+                uint32_t rawBuybackSlot = 0;
+                packet >> rawBuybackSlot;
+                buybackSlot = static_cast<int32_t>(rawBuybackSlot);
+                isForeverPacket = true;
+                return packet.remaining() == 0;
             }
 
             return false;

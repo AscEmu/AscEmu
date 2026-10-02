@@ -59,6 +59,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgBuyItem.h"
 #include "Server/Packets/SmsgSellItem.h"
 #include "Server/Packets/CmsgSellItem.h"
+#include "Server/Packets/CmsgSellAllJunkItems.h"
 #include "Server/Packets/CmsgItemQuerySingle.h"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Server/Packets/SmsgBuyFailed.h"
@@ -1535,7 +1536,7 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
 
     sLogger.debugOpcode("Received CMSG_BUY_BACK_ITEM.");
 
-    srlPacket.buybackSlot -= 74;
+    srlPacket.buybackSlot -= srlPacket.isForeverPacket ? static_cast<int32_t>(InventoryLayout::Forever::BuybackOffset) : 74;
 
     if (Item* it = _player->getItemInterface()->GetBuyBack(srlPacket.buybackSlot))
     {
@@ -1696,6 +1697,75 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
 
     SmsgSellItem managedPacket(srlPacket.vendorGuid, srlPacket.itemGuid, 0);
     sendManagedPacket(managedPacket);
+}
+
+void WorldSession::handleSellAllJunkItemsOpcode(WorldPacket& recvPacket)
+{
+    CmsgSellAllJunkItems srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    Creature* unit = _player->getWorldMapCreature(srlPacket.vendorGuid.getRawGuid());
+    if (unit == nullptr)
+    {
+        sendSellItem(srlPacket.vendorGuid.getRawGuid(), 0, 3);
+        return;
+    }
+
+    std::vector<uint64_t> junkGuids;
+    std::vector<WoWGuid> soldGuids;
+    auto collectJunk = [&junkGuids](Item* item)
+    {
+        if (item == nullptr || item->getItemProperties() == nullptr)
+            return;
+        if (item->getItemProperties()->Quality != ITEM_QUALITY_POOR || item->getItemProperties()->SellPrice == 0 || item->m_wrappedItemId != 0)
+            return;
+        if (item->isContainer() && dynamic_cast<Container*>(item)->hasItems())
+            return;
+        junkGuids.push_back(item->getGuid());
+    };
+
+    for (uint16_t slot = InventoryLayout::PackStart; slot < InventoryLayout::PackEnd; ++slot)
+        collectJunk(_player->getItemInterface()->GetInventoryItem(static_cast<int16_t>(slot)));
+
+    for (uint16_t bagSlot = InventoryLayout::BagStart; bagSlot < InventoryLayout::BagEnd; ++bagSlot)
+    {
+        auto* bag = dynamic_cast<Container*>(_player->getItemInterface()->GetInventoryItem(static_cast<int16_t>(bagSlot)));
+        if (bag == nullptr)
+            continue;
+        for (uint32_t slot = 0; slot < bag->getItemProperties()->ContainerSlots; ++slot)
+            collectJunk(bag->getItem(static_cast<int16_t>(slot)));
+    }
+
+    for (uint64_t rawGuid : junkGuids)
+    {
+        Item* item = _player->getItemInterface()->GetItemByGUID(rawGuid);
+        if (item == nullptr)
+            continue;
+
+        ItemProperties const* properties = item->getItemProperties();
+        uint32_t quantity = item->getStackCount();
+        uint32_t price = item->getSellPrice(quantity);
+        if (worldConfig.player.isGoldCapEnabled && _player->getCoinage() + price > worldConfig.player.limitGoldAmount)
+        {
+            _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
+            break;
+        }
+
+        _player->modCoinage(price);
+        auto itemHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemByGuid(rawGuid, false);
+        if (!itemHolder)
+            continue;
+
+        const WoWGuid soldGuid = itemHolder->getGuid();
+        itemHolder->deleteFromDB();
+        _player->getItemInterface()->AddBuyBackItem(std::move(itemHolder), properties->SellPrice * quantity);
+        soldGuids.push_back(soldGuid);
+    }
+
+    SmsgSellItem managedPacket(srlPacket.vendorGuid, std::move(soldGuids), 0);
+    sendManagedPacket(managedPacket);
+    sLogger.debugOpcode("Received CMSG_SELL_ALL_JUNK_ITEMS.");
 }
 
 void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)

@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include <cstdint>
+#include <vector>
+#include <utility>
 
 namespace AscEmu::Packets
 {
@@ -15,9 +17,10 @@ namespace AscEmu::Packets
     public:
         WoWGuid vendorGuid;
         WoWGuid itemGuid;
+        std::vector<WoWGuid> itemGuids;
         uint8_t error;
         
-        SmsgSellItem() : SmsgSellItem(0, 0, 0)
+        SmsgSellItem() : SmsgSellItem(WoWGuid(), WoWGuid(), 0)
         {
         }
 
@@ -25,6 +28,17 @@ namespace AscEmu::Packets
             ManagedPacket(SMSG_SELL_ITEM, 8 + 8 + 1),
             vendorGuid(vendorGuid),
             itemGuid(itemGuid),
+            error(error)
+        {
+            if (itemGuid)
+                itemGuids.push_back(itemGuid);
+        }
+
+        SmsgSellItem(WoWGuid vendorGuid, std::vector<WoWGuid> itemGuids, uint8_t error) :
+            ManagedPacket(SMSG_SELL_ITEM, 17),
+            vendorGuid(vendorGuid),
+            itemGuid(itemGuids.empty() ? WoWGuid() : itemGuids.front()),
+            itemGuids(std::move(itemGuids)),
             error(error)
         {
         }
@@ -37,12 +51,15 @@ namespace AscEmu::Packets
             if (m_protocol.isForever())
             {
                 const WoWGuid modernVendor = WoWGuid::createModernFromLegacy(vendorGuid.getRawGuid(), m_protocol.realmId);
-                const WoWGuid modernItem = WoWGuid::createModernFromLegacy(itemGuid.getRawGuid(), m_protocol.realmId);
                 const auto packedVendor = modernVendor.packModern();
-                const auto packedItem = modernItem.packModern();
                 packet.append(packedVendor.data(), packedVendor.size());
-                packet << uint32_t(itemGuid ? 1 : 0) << int32_t(error);
-                if (itemGuid) packet.append(packedItem.data(), packedItem.size());
+                packet << uint32_t(itemGuids.size()) << int32_t(error);
+                for (WoWGuid const& guid : itemGuids)
+                {
+                    const WoWGuid modernItem = WoWGuid::createModernFromLegacy(guid.getRawGuid(), m_protocol.realmId);
+                    const auto packedItem = modernItem.packModern();
+                    packet.append(packedItem.data(), packedItem.size());
+                }
                 return true;
             }
             if (m_protocol.expansion <= WoW::Expansion::_Cata)

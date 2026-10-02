@@ -897,7 +897,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_SETSHEATHED, &WorldSession::handleSetSheathedOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_MESSAGECHAT, &WorldSession::handleMessageChatOpcode, false, true, true, false, false);
     registry.registerOpcode(CMSG_EMOTE, &WorldSession::handleEmoteOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_TEXT_EMOTE, &WorldSession::handleTextEmoteOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_TEXT_EMOTE, &WorldSession::handleTextEmoteOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_INSPECT, &WorldSession::handleInspectOpcode, true, true, true, true, true);
     // clearly wrong naming!
     //registry.registerOpcode(SMSG_BARBER_SHOP_RESULT, &WorldSession::handleBarberShopResult, false, false, true, false, false);
@@ -1021,15 +1021,16 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_AUTOEQUIP_ITEM_SLOT, &WorldSession::handleAutoEquipItemSlotOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_ITEM_QUERY_SINGLE, &WorldSession::handleItemQuerySingleOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_SELL_ITEM, &WorldSession::handleSellItemOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_SELL_ALL_JUNK_ITEMS, &WorldSession::handleSellAllJunkItemsOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_BUY_ITEM_IN_SLOT, &WorldSession::handleBuyItemInSlotOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_BUY_ITEM, &WorldSession::handleBuyItemOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_LIST_INVENTORY, &WorldSession::handleListInventoryOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_AUTOSTORE_BAG_ITEM, &WorldSession::handleAutoStoreBagItemOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_SET_AMMO, &WorldSession::handleAmmoSetOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_BUY_BACK_ITEM, &WorldSession::handleBuyBackOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BUY_BACK_ITEM, &WorldSession::handleBuyBackOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_SPLIT_ITEM, &WorldSession::handleSplitOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_READ_ITEM, &WorldSession::handleReadItemOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_REPAIR_ITEM, &WorldSession::handleRepairItemOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_REPAIR_ITEM, &WorldSession::handleRepairItemOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_AUTOBANK_ITEM, &WorldSession::handleAutoBankItemOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_AUTOSTORE_BANK_ITEM, &WorldSession::handleAutoStoreBankItemOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_CANCEL_TEMP_ENCHANTMENT, &WorldSession::handleCancelTemporaryEnchantmentOpcode, true, true, true, true, true);

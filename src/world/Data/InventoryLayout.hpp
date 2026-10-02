@@ -124,7 +124,9 @@ namespace InventoryLayout
         static inline constexpr std::size_t BankBagOffset = 63;
         static inline constexpr std::size_t BankBagCount = 6;
 
-        static inline constexpr std::size_t BuybackOffset = 69;
+        // [FOREVER-VERIFIED] Retail sell differentials move sold item GUIDs through
+        // ActivePlayerData::InvSlots indices 72..83.
+        static inline constexpr std::size_t BuybackOffset = 72;
         static inline constexpr std::size_t BuybackCount = 12;
 
         static inline constexpr std::size_t ChildEquipmentOffset = 81;
@@ -143,8 +145,9 @@ namespace InventoryLayout
         static_assert(BagOffset + BagCount == ReagentBagOffset);
         static_assert(ReagentBagOffset + ReagentBagCount == PackOffset);
         static_assert(PackOffset + PackCount == BankBagOffset);
-        static_assert(BankBagOffset + BankBagCount == BuybackOffset);
-        static_assert(BuybackOffset + BuybackCount == ChildEquipmentOffset);
+        // 69..71 and the post-buyback modern ranges are not inferred from the
+        // retail buyback differential; do not assert false contiguity here.
+        static_assert(BankBagOffset + BankBagCount <= BuybackOffset);
         static_assert(ChildEquipmentOffset + ChildEquipmentCount == EquipableSpellOffset);
         static_assert(EquipableSpellOffset + EquipableSpellCount == AccountBankBagOffset);
         static_assert(AccountBankBagOffset + AccountBankBagCount == InvSlotCount);

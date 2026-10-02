@@ -1283,6 +1283,8 @@ namespace WDB
         inline const WDC5TableSchema ItemArmorTotal = makeScalarSchema("ItemArmorTotal.db2", 0xEB155D51, -1, 5);
         inline const WDC5TableSchema ItemEffect = makeScalarSchema("ItemEffect.db2", 0x4CA77678, -1, 9);
         inline const WDC5TableSchema ItemXItemEffect = makeScalarSchema("ItemXItemEffect.db2", 0x96F083AD, -1, 1);
+        inline const WDC5TableSchema DurabilityCosts = makeSchemaWithArrays("DurabilityCosts.db2", 0x917714A1, -1, 2, {{0, 21}, {1, 8}});
+        inline const WDC5TableSchema DurabilityQuality = makeScalarSchema("DurabilityQuality.db2", 0x08763C54, -1, 1);
 
         // Maps / terrain
         inline const WDC5TableSchema Map = makeSchemaWithArrays("Map.db2", 0xD43AFAC3, -1, 26, {{6, 2}, {25, 3}});
