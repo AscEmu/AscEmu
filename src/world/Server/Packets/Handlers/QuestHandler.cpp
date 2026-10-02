@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgQuestQuery.h"
 #include "Server/Packets/CmsgQuestPoiQuery.h"
 #include "Server/Packets/CmsgUiMapQuestLinesRequest.h"
+#include "Server/Packets/CmsgUiMapClosed.h"
 #include "Server/Packets/CmsgQuestNpcQuery.h"
 #include "Server/Packets/SmsgQuestNpcQueryResponse.h"
 #include "Server/Packets/CmsgQuestgiverHello.h"
@@ -828,6 +829,12 @@ void WorldSession::handleUiMapQuestLinesRequestOpcode(WorldPacket& recvPacket)
     // 70124 retail capture for Elwynn UiMapID 1429 returns three empty arrays.
     SmsgUiMapQuestLinesResponse response(request.uiMapId);
     sendManagedPacket(response);
+}
+
+void WorldSession::handleUiMapClosedOpcode(WorldPacket& recvPacket)
+{
+    CmsgUiMapClosed request;
+    parsePacket(recvPacket, request);
 }
 
 void WorldSession::handleQuestNpcQueryOpcode([[maybe_unused]] WorldPacket& recvPacket)
