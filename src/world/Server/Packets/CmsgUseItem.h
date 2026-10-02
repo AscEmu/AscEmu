@@ -23,6 +23,9 @@ namespace AscEmu::Packets
         uint32_t spellId = 0;       // since 8606
         uint8_t castCount = 0;      // since 8606
 
+        uint32_t spellXSpellVisualId = 0; // Forever SpellCastVisual
+        uint32_t scriptVisualId = 0;      // Forever SpellCastVisual
+
         uint64_t itemGuidRaw = 0;   // just a helper
         WoWGuid itemGuid;           // since 12340
 
@@ -84,8 +87,6 @@ namespace AscEmu::Packets
 
                 packet >> spellId;
 
-                uint32_t spellXSpellVisualId = 0;
-                uint32_t scriptVisualId = 0;
                 packet >> spellXSpellVisualId >> scriptVisualId;
 
                 if (!readTargetData(packet, targets))

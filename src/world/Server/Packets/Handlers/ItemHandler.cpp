@@ -350,6 +350,11 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
 
     Spell* spell = sSpellMgr.newSpell(_player, spellInfo, false, nullptr);
     spell->extra_cast_number = srlPacket.castCount;
+    if (srlPacket.isForeverPacket)
+    {
+        spell->m_foreverSpellXSpellVisualId = srlPacket.spellXSpellVisualId;
+        spell->m_foreverScriptVisualId = srlPacket.scriptVisualId;
+    }
     spell->setItemCaster(tmpItem);
 
     if (spellToLearn != 0)
