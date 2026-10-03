@@ -3,6 +3,7 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include <limits>
 #include "Data/InventoryLayout.hpp"
 #include <zlib.h>
 
@@ -1247,6 +1248,28 @@ void Player::setQuestLogExpireTimeBySlot(uint8_t slot, uint32_t expireTime)
     write(playerData()->quests[slot].expire_time, expireTime);
 #endif
 }
+void Player::setQuestLogObjectiveProgressBySlot(uint8_t slot, uint8_t objectiveIndex, uint32_t progress)
+{
+#if defined(AE_FOREVER)
+    if (slot >= MAX_QUEST_LOG_SIZE || objectiveIndex >= m_foreverPlayerFields.unknownPartyRecords0[slot].objectiveProgress.size())
+        return;
+
+    auto& questLog = m_foreverPlayerFields.unknownPartyRecords0[slot];
+    const int16_t value = static_cast<int16_t>(std::min<uint32_t>(progress, static_cast<uint32_t>(std::numeric_limits<int16_t>::max())));
+    if (questLog.objectiveProgress[objectiveIndex] == value)
+        return;
+
+    questLog.objectiveProgress[objectiveIndex] = value;
+    m_foreverPlayerFields.questLogObjectiveProgressChanged[slot].set(objectiveIndex);
+    m_foreverPlayerFields.markArrayChanged(AscEmu::Version::Forever::Fields::PlayerData::QuestLogGroupBit, AscEmu::Version::Forever::Fields::PlayerData::QuestLogFirstBit + slot);
+    updateObject();
+#else
+    (void)slot;
+    (void)objectiveIndex;
+    (void)progress;
+#endif
+}
+
 //QuestLog end
 
 //VisibleItem start
@@ -10983,12 +11006,21 @@ void Player::sendLevelupInfoPacket(uint32_t level, uint32_t hp, uint32_t mana, u
 
 void Player::sendItemPushResultPacket(bool created, bool recieved, bool sendtoset, uint8_t destbagslot, uint32_t destslot, uint32_t count, uint32_t entry, uint32_t suffix, uint32_t randomprop, uint32_t stack, WoWGuid itemGuid)
 {
-    SmsgItemPushResult managedPacket(getGuid(), itemGuid, recieved, created, destbagslot, destslot, entry, suffix, randomprop, count, stack);
+    SmsgItemPushResult managedPacket(getGuid(), itemGuid, recieved, created, destbagslot, destslot, entry, suffix, randomprop, count, stack, static_cast<uint16_t>(GetMapId()), 0, 0, recieved, false, 1);
 
     if (sendtoset && isInGroup())
         PacketBroadcast::sendFromGroup(*getGroup(), managedPacket);
     else
         getSession()->sendManagedPacket(managedPacket);
+}
+
+void Player::sendQuestItemPushResultPacket(uint32_t entry, uint32_t count, uint32_t questCount)
+{
+    if (getSession() == nullptr || !getSession()->getClientProtocol().isForever())
+        return;
+
+    SmsgItemPushResult managedPacket(getGuid(), WoWGuid(), true, false, uint8_t(0xFF), uint32_t(-1), entry, 0, 0, count, questCount, static_cast<uint16_t>(GetMapId()), 0, 0, false, false, 3, true);
+    getSession()->sendManagedPacket(managedPacket);
 }
 
 void Player::sendClientControlPacket(Unit* target, uint8_t allowMove)
@@ -16709,9 +16741,9 @@ void Player::loadFromDBProc(QueryResultVector& results)
     // load properties
     loadTutorials();
     _loadPlayerCooldowns(results[PlayerQuery::Cooldowns].result.get());
-    _loadQuestLogEntry(results[PlayerQuery::Questlog].result.get());
     getItemInterface()->mLoadItemsFromDatabase(results[PlayerQuery::Items].result.get());
     getItemInterface()->m_EquipmentSets.loadFromDB(results[PlayerQuery::EquipmentSets].result.get());
+    _loadQuestLogEntry(results[PlayerQuery::Questlog].result.get());
 
 #if VERSION_STRING >= Cata
     m_cufProfiles->loadFromDB(results[PlayerQuery::CufProfiles].result.get());

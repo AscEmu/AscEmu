@@ -41,6 +41,8 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
+            if (m_protocol.isForever())
+                return 6; // packed modern GUID + uint32 questId + unknown bit
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
                 return m_minimum_size;
             else if (m_protocol.isMop())
@@ -50,6 +52,23 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                WoWGuid modernGuid;
+                std::size_t consumed = 0;
+                if (!WoWGuid::unpackModern(packet.contents() + packet.rpos(), packet.remaining(), modernGuid, consumed))
+                    return false;
+                packet.rpos(packet.rpos() + consumed);
+                guid.init(modernGuid.toLegacyRaw());
+
+                if (packet.remaining() < sizeof(uint32_t) + 1)
+                    return false;
+
+                packet >> questId;
+                unknown = packet.readBit() ? 1 : 0;
+                return !packet.hadReadFailure();
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 uint64_t unpackedGuid;

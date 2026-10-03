@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ForeverLootPacketUtils.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -25,13 +26,21 @@ namespace AscEmu::Packets
         int32_t randomProp;
         uint32_t count;
         uint32_t stackCount;
+        uint16_t mapId = 0;
+        int32_t proxyItemId = 0;
+        int32_t quantityInQuestLog = 0;
+        bool pushed = false;
+        bool fakeQuestItem = false;
+        uint8_t chatNotifyType = 1;
+        bool isPersonalLoot = false;
 
         SmsgItemPushResult() : SmsgItemPushResult(0, WoWGuid(), false, false, 0, 0, 0, 0, 0, 0, 0)
         {
         }
 
         SmsgItemPushResult(uint64_t guid, WoWGuid itemGuid, bool isReceived, bool isCreated, uint8_t bagSlot, uint32_t slot,
-            uint32_t entry, uint32_t suffix, int32_t randomProp, uint32_t count, uint32_t stackCount) :
+            uint32_t entry, uint32_t suffix, int32_t randomProp, uint32_t count, uint32_t stackCount, uint16_t mapId = 0,
+            int32_t proxyItemId = 0, int32_t quantityInQuestLog = 0, bool pushed = false, bool fakeQuestItem = false, uint8_t chatNotifyType = 1, bool isPersonalLoot = false) :
             ManagedPacket(SMSG_ITEM_PUSH_RESULT, 0),
             guid(guid),
             itemGuid(itemGuid),
@@ -43,18 +52,57 @@ namespace AscEmu::Packets
             suffix(suffix),
             randomProp(randomProp),
             count(count),
-            stackCount(stackCount)
+            stackCount(stackCount),
+            mapId(mapId),
+            proxyItemId(proxyItemId),
+            quantityInQuestLog(quantityInQuestLog),
+            pushed(pushed),
+            fakeQuestItem(fakeQuestItem),
+            chatNotifyType(chatNotifyType),
+            isPersonalLoot(isPersonalLoot)
         {
         }
 
     protected:
         size_t expectedSize() const override
         {
-            return 8 + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4 + 4;
+            return m_protocol.isForever() ? size_t(64) : (8 + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4 + 4);
         }
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                const WoWGuid playerGuid = WoWGuid::createModernFromLegacy(guid, m_protocol.realmId, mapId, 0);
+                const WoWGuid modernItemGuid = itemGuid.getRawGuid() != 0 ? WoWGuid::createModernFromLegacy(itemGuid.getRawGuid(), m_protocol.realmId, mapId, 0) : WoWGuid::createModernEmpty();
+
+                ForeverLootPacket::writeGuid(packet, playerGuid);
+                packet << uint8_t(bagSlot);
+                packet << int32_t(slot);
+                ForeverLootPacket::writeItemInstance(packet, entry);
+                packet << int32_t(proxyItemId);
+                packet << int32_t(count);
+                packet << int32_t(stackCount);
+                packet << int32_t(quantityInQuestLog);
+                packet << int32_t(0); // EncounterID
+                packet << int32_t(0); // BattlePetSpeciesID
+                packet << int32_t(0); // BattlePetBreedID
+                packet << uint8_t(0); // BattlePetBreedQuality
+                packet << int32_t(0); // BattlePetLevel
+                ForeverLootPacket::writeGuid(packet, modernItemGuid);
+                packet << uint32_t(0); // Toasts
+                packet.writeBit(pushed);
+                packet.writeBit(isCreated);
+                packet.writeBit(fakeQuestItem);
+                packet.writeBits(chatNotifyType & 0x7U, 3);
+                packet.writeBit(false); // IsBonusRoll
+                packet.writeBit(isPersonalLoot); // IsPersonalLoot
+                packet.writeBit(false); // CraftingData
+                packet.writeBit(false); // FirstCraftOperationID
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 const WoWGuid playerGuid(guid);

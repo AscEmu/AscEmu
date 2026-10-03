@@ -28,6 +28,25 @@ namespace AscEmu::Version::Forever::UpdateFields::Nested
         data << value.questId;
     }
 
+
+    void writeQuestLogObjectiveProgressUpdate(ByteBuffer& data, Fields::QuestLog const& value, std::bitset<24> const& changedObjectives)
+    {
+        // Verified against 70124 retail quest-progress updates. The nested QuestLog update mask
+        // uses bit 6 as the ObjectiveProgress array group and bits 7..30 for its 24 entries.
+        uint32_t mask = uint32_t(1) << 6U;
+        for (std::size_t i = 0; i < changedObjectives.size(); ++i)
+            if (changedObjectives.test(i))
+                mask |= uint32_t(1) << (7U + static_cast<uint32_t>(i));
+
+        data.writeBit(true);
+        data.writeBits(mask, 32);
+        data.flushBits();
+
+        for (std::size_t i = 0; i < changedObjectives.size(); ++i)
+            if (changedObjectives.test(i))
+                data << value.objectiveProgress[i];
+    }
+
     void writeQuestLogQuestIdToIndexUpdate(ByteBuffer& data, Fields::PlayerData const& fields)
     {
         // Verified 70124 MapUpdateField shape:

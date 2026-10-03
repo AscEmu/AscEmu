@@ -165,12 +165,12 @@ public:
         AscEmu::Packets::QuestgiverQuestListInput buildQuestListInput(Object* qst_giver, Player* plr, uint32_t language);
         bool isRepeatableQuestFinished(Player* plr, QuestProperties const* qst);
 
-        void SendQuestUpdateAddKill(Player* plr, uint32_t questid, uint32_t entry, uint32_t count, uint32_t tcount, uint64_t guid);
+        void SendQuestUpdateAddKill(Player* plr, uint32_t questid, uint32_t entry, uint32_t count, uint32_t tcount, uint64_t guid, uint16_t mapId = 0);
         void SendPushToPartyResponse(Player* plr, Player* pTarget, uint8_t response);
 
         bool OnGameObjectActivate(Player* plr, GameObject* go);
         void OnPlayerKill(Player* plr, Creature* victim, bool IsGroupKill);
-        void _OnPlayerKill(Player* plr, uint32_t entry, bool IsGroupKill);
+        void _OnPlayerKill(Player* plr, uint32_t entry, bool IsGroupKill, uint64_t guid = 0, uint16_t mapId = 0);
         void OnPlayerCast(Player* plr, uint32_t spellid, uint64_t & victimguid);
         void OnPlayerEmote(Player* plr, uint32_t emoteid, uint64_t & victimguid);
         void OnPlayerItemPickup(Player* plr, Item* item);

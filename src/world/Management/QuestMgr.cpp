@@ -433,9 +433,9 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
     plr->getSession()->sendManagedPacket(managedPacket);
 }
 
-void QuestMgr::SendQuestUpdateAddKill(Player* plr, uint32_t questid, uint32_t entry, uint32_t count, uint32_t tcount, uint64_t guid)
+void QuestMgr::SendQuestUpdateAddKill(Player* plr, uint32_t questid, uint32_t entry, uint32_t count, uint32_t tcount, uint64_t guid, uint16_t mapId)
 {
-    SmsgQuestupdateAddKill addPacket(questid, entry, count, tcount, guid);
+    SmsgQuestupdateAddKill addPacket(questid, entry, count, tcount, guid, mapId);
     plr->getSession()->sendManagedPacket(addPacket);
 }
 
@@ -465,7 +465,7 @@ bool QuestMgr::OnGameObjectActivate(Player* plr, GameObject* go)
                     // add another kill.
                     // (auto-dirty's it)
                     questLog->incrementMobCountForIndex(j);
-                    questLog->sendUpdateAddKill(j);
+                    questLog->sendUpdateAddKill(j, go->getGuid(), static_cast<uint16_t>(go->GetMapId()));
 
                     if (const auto questScript = questLog->getQuestScript())
                         questScript->OnGameObjectActivate(entry, plr, questLog);
@@ -487,7 +487,7 @@ bool QuestMgr::OnGameObjectActivate(Player* plr, GameObject* go)
 void QuestMgr::OnPlayerKill(Player* plr, Creature* victim, bool IsGroupKill)
 {
     uint32_t entry = victim->getEntry();
-    _OnPlayerKill(plr, entry, IsGroupKill);
+    _OnPlayerKill(plr, entry, IsGroupKill, victim->getGuid(), static_cast<uint16_t>(victim->GetMapId()));
 
     // Extra credit (yay we wont have to script this anymore) - Shauren
     for (uint8_t i = 0; i < 2; ++i)
@@ -497,12 +497,12 @@ void QuestMgr::OnPlayerKill(Player* plr, Creature* victim, bool IsGroupKill)
         if (extracredit != 0)
         {
             if (sMySQLStore.getCreatureProperties(extracredit))
-                _OnPlayerKill(plr, extracredit, IsGroupKill);
+                _OnPlayerKill(plr, extracredit, IsGroupKill, victim->getGuid(), static_cast<uint16_t>(victim->GetMapId()));
         }
     }
 }
 
-void QuestMgr::_OnPlayerKill(Player* plr, uint32_t entry, bool IsGroupKill)
+void QuestMgr::_OnPlayerKill(Player* plr, uint32_t entry, bool IsGroupKill, uint64_t guid, uint16_t mapId)
 {
     if (!plr)
         return;
@@ -526,7 +526,7 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32_t entry, bool IsGroupKill)
                     {
                         // add another kill.(auto-dirty's it)
                         questLog->incrementMobCountForIndex(j);
-                        questLog->sendUpdateAddKill(j);
+                        questLog->sendUpdateAddKill(j, guid, mapId);
 
                         if (const auto questScript = questLog->getQuestScript())
                             questScript->OnCreatureKill(entry, plr, questLog);
@@ -570,7 +570,7 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32_t entry, bool IsGroupKill)
                                         if (qst->required_mob_or_go[j] == static_cast<int32_t>(entry) && qst->required_mobtype[j] == QUEST_MOB_TYPE_CREATURE && questLog->m_mobcount[j] < qst->required_mob_or_go_count[j])
                                         {
                                             questLog->incrementMobCountForIndex(j);
-                                            questLog->sendUpdateAddKill(j);
+                                            questLog->sendUpdateAddKill(j, guid, mapId);
 
                                             if (const auto questScript = questLog->getQuestScript())
                                                 questScript->OnCreatureKill(entry, gplr, questLog);
@@ -620,7 +620,7 @@ void QuestMgr::OnPlayerCast(Player* plr, uint32_t spellid, uint64_t & victimguid
                     {
                         questLog->addAffectedUnit(victim);
                         questLog->incrementMobCountForIndex(j);
-                        questLog->sendUpdateAddKill(j);
+                        questLog->sendUpdateAddKill(j, victim->getGuid(), static_cast<uint16_t>(victim->GetMapId()));
                         questLog->updatePlayerFields();
 
                         if (questLog->canBeFinished())
@@ -664,11 +664,23 @@ void QuestMgr::OnPlayerItemPickup(Player* plr, Item* item)
                 if (questLog->getQuestProperties()->required_item[j] == entry)
                 {
                     uint32_t pcount = plr->getItemInterface()->GetItemCount(entry, true);
-
                     if (const auto questScript = questLog->getQuestScript())
                         questScript->OnPlayerItemPickup(entry, pcount, plr, questLog);
 
-                    if (pcount < questLog->getQuestProperties()->required_itemcount[j])
+                    if (plr->getSession() != nullptr && plr->getSession()->getClientProtocol().isForever())
+                    {
+                        const uint32_t objectiveCount = std::min(pcount, questLog->getQuestProperties()->required_itemcount[j]);
+                        questLog->updatePlayerFields();
+                        plr->sendQuestItemPushResultPacket(entry, 1, objectiveCount);
+                        if (pcount >= questLog->getQuestProperties()->required_itemcount[j])
+                        {
+                            if (questLog->canBeFinished())
+                                questLog->sendQuestComplete();
+                            else
+                                plr->updateNearbyQuestGameObjects();
+                        }
+                    }
+                    else if (pcount < questLog->getQuestProperties()->required_itemcount[j])
                     {
                         SmsgQuestupdateAddItem addPacket(questLog->getQuestProperties()->required_item[j], 1);
                         plr->getSession()->sendManagedPacket(addPacket);

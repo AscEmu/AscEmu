@@ -18,17 +18,19 @@ namespace AscEmu::Packets
         uint32_t count;
         uint32_t tCount;
         WoWGuid guid;
+        uint16_t mapId;
 
-        SmsgQuestupdateAddKill() : SmsgQuestupdateAddKill(0, 0, 0, 0, 0)
+        SmsgQuestupdateAddKill() : SmsgQuestupdateAddKill(0, 0, 0, 0, 0, 0)
         {}
 
-        SmsgQuestupdateAddKill(uint32_t questId, uint32_t mobEntry, uint32_t count, uint32_t tCount, WoWGuid guid) :
+        SmsgQuestupdateAddKill(uint32_t questId, uint32_t mobEntry, uint32_t count, uint32_t tCount, WoWGuid guid, uint16_t mapId = 0) :
             ManagedPacket(SMSG_QUESTUPDATE_ADD_KILL, 4 + 4 + 4 + 4 + 8),
             questId(questId),
             mobEntry(mobEntry),
             count(count),
             tCount(tCount),
-            guid(guid)
+            guid(guid),
+            mapId(mapId)
         {
         }
 
@@ -37,6 +39,17 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(guid.getRawGuid(), m_protocol.realmId, mapId, 0);
+                const auto packedGuid = modernGuid.packModern();
+                packet.append(packedGuid.data(), packedGuid.size());
+                const int32_t signedEntry = static_cast<int32_t>(mobEntry);
+                const uint16_t objectiveType = signedEntry < 0 ? uint16_t(2) : uint16_t(0);
+                packet << questId << mobEntry << uint16_t(count) << uint16_t(tCount) << objectiveType << uint16_t(0);
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << questId << mobEntry << count << tCount << guid;

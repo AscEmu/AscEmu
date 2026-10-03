@@ -242,6 +242,10 @@ namespace AscEmu::Version::Forever::UpdateFields
                 {
                     Nested::writeQuestLogQuestIdUpdate(data, fields.unknownPartyRecords0[i]);
                 }
+                else if (fields.questLogObjectiveProgressChanged[i].any())
+                {
+                    Nested::writeQuestLogObjectiveProgressUpdate(data, fields.unknownPartyRecords0[i], fields.questLogObjectiveProgressChanged[i]);
+                }
                 else
                 {
                     Nested::writeQuestLogCreate(data, fields.unknownPartyRecords0[i]);

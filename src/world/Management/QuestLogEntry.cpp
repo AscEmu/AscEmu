@@ -389,7 +389,40 @@ void QuestLogEntry::updatePlayerFields()
         state = QLS_Completed;
 
     m_player->setQuestLogStateBySlot(m_slot, state);
-    m_player->setQuestLogRequiredMobOrGoBySlot(m_slot, mobOrGoCount);
+
+    if (m_player->getSession() != nullptr && m_player->getSession()->getClientProtocol().isForever())
+    {
+        const auto objectives = sQuestMgr.buildForeverQuestObjectives(m_questProperties, 0);
+        for (ForeverQuestObjectiveData const& objective : objectives)
+        {
+            uint32_t progress = 0;
+            if (objective.type == 1)
+            {
+                progress = m_player->getItemInterface()->GetItemCount(static_cast<uint32_t>(objective.objectId), true);
+            }
+            else
+            {
+                for (uint8_t i = 0; i < 4; ++i)
+                {
+                    const bool sameCreature = objective.type == 0 && m_questProperties->required_mob_or_go[i] == objective.objectId;
+                    const bool sameGameObject = objective.type == 2 && m_questProperties->required_mob_or_go[i] == -objective.objectId;
+                    const bool sameSpell = objective.type == 5 && m_questProperties->required_spell[i] != 0 && static_cast<int32_t>(m_questProperties->required_spell[i]) == objective.objectId;
+                    if (sameCreature || sameGameObject || sameSpell)
+                    {
+                        progress = m_mobcount[i];
+                        break;
+                    }
+                }
+            }
+
+            if (objective.storageIndex >= 0)
+                m_player->setQuestLogObjectiveProgressBySlot(m_slot, static_cast<uint8_t>(objective.storageIndex), progress);
+        }
+    }
+    else
+    {
+        m_player->setQuestLogRequiredMobOrGoBySlot(m_slot, mobOrGoCount);
+    }
 
     if (m_questProperties->time != 0 && m_state != QUEST_FAILED)
     {
@@ -414,7 +447,7 @@ void QuestLogEntry::sendQuestComplete()
         questScript->OnQuestComplete(m_player, this);
 }
 
-void QuestLogEntry::sendUpdateAddKill(uint8_t index)
+void QuestLogEntry::sendUpdateAddKill(uint8_t index, uint64_t guid, uint16_t mapId)
 {
     if (index >= 4)
     {
@@ -422,8 +455,8 @@ void QuestLogEntry::sendUpdateAddKill(uint8_t index)
         return;
     }
 
-    sQuestMgr.SendQuestUpdateAddKill(m_player, m_questProperties->id, m_questProperties->required_mob_or_go[index], 
-        m_mobcount[index], m_questProperties->required_mob_or_go_count[index], 0);
+    sQuestMgr.SendQuestUpdateAddKill(m_player, m_questProperties->id, m_questProperties->required_mob_or_go[index],
+        m_mobcount[index], m_questProperties->required_mob_or_go_count[index], guid, mapId);
 }
 
 QuestScript* QuestLogEntry::getQuestScript() const

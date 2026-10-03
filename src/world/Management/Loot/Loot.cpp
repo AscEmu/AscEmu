@@ -306,7 +306,7 @@ void Loot::moneyRemoved()
         if (const auto* player = sObjectMgr.getPlayer(playerGuid))
         {
             // Modern loot-removal packets identify the active loot window by the looted object.
-            SmsgLootClearMoney managedPacket(player->getLootGuid());
+            SmsgLootClearMoney managedPacket(player->getLootGuid(), static_cast<uint16_t>(player->GetMapId()), player->getForeverLootObjectGuid());
             player->getSession()->sendManagedPacket(managedPacket);
         }
         else

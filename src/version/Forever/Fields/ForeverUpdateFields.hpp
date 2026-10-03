@@ -822,6 +822,8 @@ namespace AscEmu::Version::Forever::Fields
             changes.reset();
             questLogQuestIdToIndexChanges.clear();
             questLogQuestIdChanged.reset();
+            for (auto& objectiveChanges : questLogObjectiveProgressChanged)
+                objectiveChanges.reset();
         }
         bool hasChanges() const { return changes.any(); }
 
@@ -862,6 +864,7 @@ namespace AscEmu::Version::Forever::Fields
         std::map<int32_t, int32_t> unknownPartyMap0;
         std::vector<QuestLogQuestIdToIndexChange> questLogQuestIdToIndexChanges;
         std::bitset<175> questLogQuestIdChanged{};
+        std::array<std::bitset<24>, 175> questLogObjectiveProgressChanged{};
         std::vector<QuestLog> unknownPartyDynamicRecords0;
 
         std::array<VisibleItem, 19> unknownVisibleItemRecords0{};

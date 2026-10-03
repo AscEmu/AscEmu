@@ -27,10 +27,18 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override { return 5; }
+        size_t expectedSize() const override { return m_protocol.isForever() ? size_t(17) : size_t(5); }
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                packet << uint64_t(money) << uint64_t(0);
+                packet.writeBit(playersNear != 0);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // playersNear here means "at most one nearby player" (matches the ctor default of 1

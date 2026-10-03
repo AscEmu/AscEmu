@@ -66,7 +66,7 @@ public:
 
     void updatePlayerFields();
     void sendQuestComplete();
-    void sendUpdateAddKill(uint8_t index);
+    void sendUpdateAddKill(uint8_t index, uint64_t guid = 0, uint16_t mapId = 0);
 
     QuestScript* getQuestScript() const;
 

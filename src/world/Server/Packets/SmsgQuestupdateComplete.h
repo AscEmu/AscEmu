@@ -31,6 +31,12 @@ namespace AscEmu::Packets
         {
             packet << questId;
 
+            if (m_protocol.isForever())
+            {
+                packet.writeBit(false);
+                packet.flushBits();
+            }
+
             return true;
         }
 
