@@ -30,7 +30,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion == WoW::Expansion::Forever)
+            if (m_protocol.expansion == WoW::Expansion::_Forever)
             {
                 packet >> code;
                 const uint32_t nameLength = packet.readBits(7);

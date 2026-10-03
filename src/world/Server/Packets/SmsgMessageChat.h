@@ -83,7 +83,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion == WoW::Expansion::Forever)
+            if (m_protocol.expansion == WoW::Expansion::_Forever)
             {
                 const auto toModernGuid = [this](WoWGuid const& guid, uint16_t mapId)
                 {

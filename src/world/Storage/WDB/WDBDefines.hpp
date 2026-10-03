@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
-#if VERSION_STRING == AE_PROFILE_FOREVER
+#if VERSION_STRING == Camelot
 static constexpr uint8_t MAX_SPELL_EFFECTS = 32; // DB2 currently uses EffectIndex 0..29
 static constexpr uint8_t MAX_SPELL_CLASS_MASKS = 4;
 using SpellExtendedMask = uint64_t;

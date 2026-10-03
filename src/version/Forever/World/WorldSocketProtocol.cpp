@@ -69,7 +69,7 @@ namespace
 
     uint32_t foreverWireOpcode(uint32_t internalOpcode)
     {
-        return sOpcodeTables.getHexValueForExpansion(internalOpcode, WoW::Expansion::Forever);
+        return sOpcodeTables.getHexValueForExpansion(internalOpcode, WoW::Expansion::_Forever);
     }
 
     bool isForeverMovementOpcode(uint32_t opcode)
@@ -115,7 +115,7 @@ namespace
 
     bool isForeverMovementWireOpcode(uint32_t rawOpcode)
     {
-        return isForeverMovementOpcode(sOpcodeTables.getInternalIdForHex(rawOpcode, WoW::Expansion::Forever));
+        return isForeverMovementOpcode(sOpcodeTables.getInternalIdForHex(rawOpcode, WoW::Expansion::_Forever));
     }
     struct ForeverPendingInstanceLogin
     {
@@ -691,7 +691,7 @@ bool WorldSocket::initializeVersionedConnection()
     m_protocolSetByLogonComm = false;
 
     WoW::ClientProtocol protocol;
-    protocol.expansion = WoW::Expansion::Forever;
+    protocol.expansion = WoW::Expansion::_Forever;
     protocol.realmId = worldConfig.battleNetComm.realmId;
     setClientProtocol(protocol);
 
@@ -1160,55 +1160,62 @@ bool WorldSocket::processForeverAuthSession(uint32_t opcode, const std::vector<u
     m_foreverGameAccountId = pending.gameAccountId;
     m_foreverGameAccountName = pending.gameAccountName;
 
-    // Build 70009 is protocol-supported, but no verified build-auth key is
-    // registered for it yet. Stop after observing CMSG_AUTH_SESSION rather than
-    // attempting authentication with a guessed key. Do not consume the pending
-    // one-shot session in this state.
-    if (pending.clientBuild == 70009U)
-    {
-        sLogger.info("WorldSocket::Forever: AUTHKEY_SCAN build={} account={} game_account={} pending_region={} pending_realm={} packet_region={} packet_realm={}", pending.clientBuild, pending.accountId, pending.gameAccountId, pending.region, pending.realmId, regionId, realmId);
-        sLogger.info("WorldSocket::Forever: AUTHKEY_SCAN world_auth_key_data={}", foreverBytesToHex(pending.worldAuthKeyData.data(), pending.worldAuthKeyData.size()));
-        sLogger.info("WorldSocket::Forever: AUTHKEY_SCAN local_challenge={}", foreverBytesToHex(localChallenge.data(), localChallenge.size()));
-        sLogger.info("WorldSocket::Forever: AUTHKEY_SCAN server_challenge={}", foreverBytesToHex(m_foreverServerChallenge.data(), m_foreverServerChallenge.size()));
-        sLogger.info("WorldSocket::Forever: AUTHKEY_SCAN client_digest={}", foreverBytesToHex(digest.data(), digest.size()));
-        sLogger.info("WorldSocket::Forever: AUTHKEY_SCAN realm_join_ticket_bytes={} join_secret={}", realmJoinTicket.size(), foreverBytesToHex(pending.joinSecret.data(), pending.joinSecret.size()));
-        
-        m_foreverWorldState = ForeverWorldState::AuthSessionObserved;
-        sLogger.info("WorldSocket::Forever: CMSG_AUTH_SESSION observed for build {}; authentication is intentionally stopped because no verified build-auth key is registered.", pending.clientBuild);
-        return true;
-    }
-
-    const auto buildAuthKey = AscEmu::Version::Forever::getBuildAuthKey(pending.clientBuild);
+    const auto buildAuthKey = AscEmu::Version::Forever::getBuildAuthKey(pending.clientBuild, pending.clientPlatform, pending.clientArch, pending.clientType);
     if (!buildAuthKey.has_value())
     {
-        sLogger.failure("WorldSocket::Forever: no build-auth key registered for build {}.", pending.clientBuild);
-        disconnect();
-        m_foreverWorldState = ForeverWorldState::Disabled;
-        return false;
-    }
+        if (worldConfig.battleNetComm.skipBuildAuthKeyCheck)
+        {
+            sLogger.warning("WorldSocket::Forever: missing build-auth key for build {} variant {}-{}-{}; digest check skipped (BattleNetComm.SkipBuildAuthKeyCheck).", pending.clientBuild, pending.clientPlatform, pending.clientArch, pending.clientType);
+        }
+        else if (worldConfig.battleNetComm.authKeyScanDebug)
+        {
+            // Optional development path for discovering a missing build-auth
+            // key. This records the material needed to verify a newly
+            // discovered key without consuming the one-shot pending session.
+            sLogger.info("WorldSocket::Forever: AUTHKEY_SCAN build={} variant={}-{}-{} account={} game_account={} pending_region={} pending_realm={} packet_region={} packet_realm={}", pending.clientBuild, pending.clientPlatform, pending.clientArch, pending.clientType, pending.accountId, pending.gameAccountId, pending.region, pending.realmId, regionId, realmId);
+            sLogger.info("WorldSocket::Forever: AUTHKEY_SCAN world_auth_key_data={}", foreverBytesToHex(pending.worldAuthKeyData.data(), pending.worldAuthKeyData.size()));
+            sLogger.info("WorldSocket::Forever: AUTHKEY_SCAN local_challenge={}", foreverBytesToHex(localChallenge.data(), localChallenge.size()));
+            sLogger.info("WorldSocket::Forever: AUTHKEY_SCAN server_challenge={}", foreverBytesToHex(m_foreverServerChallenge.data(), m_foreverServerChallenge.size()));
+            sLogger.info("WorldSocket::Forever: AUTHKEY_SCAN client_digest={}", foreverBytesToHex(digest.data(), digest.size()));
+            sLogger.info("WorldSocket::Forever: AUTHKEY_SCAN realm_join_ticket_bytes={} join_secret={}", realmJoinTicket.size(), foreverBytesToHex(pending.joinSecret.data(), pending.joinSecret.size()));
 
-    std::array<uint8_t, 64> calculatedDigest{};
-    if (!calculateForeverAuthDigest(pending.worldAuthKeyData, buildAuthKey.value(), localChallenge, m_foreverServerChallenge, calculatedDigest))
+            m_foreverWorldState = ForeverWorldState::AuthSessionObserved;
+            sLogger.info("WorldSocket::Forever: CMSG_AUTH_SESSION observed for build {} variant {}-{}-{}; authentication is intentionally stopped because no verified build-auth key is registered.", pending.clientBuild, pending.clientPlatform, pending.clientArch, pending.clientType);
+            return true;
+        }
+        else
+        {
+            sLogger.failure("WorldSocket::Forever: no build-auth key registered for build {} variant {}-{}-{}.", pending.clientBuild, pending.clientPlatform, pending.clientArch, pending.clientType);
+            disconnect();
+            m_foreverWorldState = ForeverWorldState::Disabled;
+            return false;
+        }
+    }
+    else
     {
-        sLogger.failure("WorldSocket::Forever: failed to calculate auth digest for build {}.", pending.clientBuild);
-        disconnect();
-        m_foreverWorldState = ForeverWorldState::Disabled;
-        return false;
+        std::array<uint8_t, 64> calculatedDigest{};
+        if (!calculateForeverAuthDigest(pending.worldAuthKeyData, buildAuthKey.value(), localChallenge, m_foreverServerChallenge, calculatedDigest))
+        {
+            sLogger.failure("WorldSocket::Forever: failed to calculate auth digest for build {} variant {}-{}-{}.", pending.clientBuild, pending.clientPlatform, pending.clientArch, pending.clientType);
+            disconnect();
+            m_foreverWorldState = ForeverWorldState::Disabled;
+            return false;
+        }
+
+        if (!foreverDigestMatches(calculatedDigest, digest))
+        {
+            sLogger.failure("WorldSocket::Forever: CMSG_AUTH_SESSION digest mismatch for account={} build={} variant={}-{}-{}.", pending.accountId, pending.clientBuild, pending.clientPlatform, pending.clientArch, pending.clientType);
+            disconnect();
+            m_foreverWorldState = ForeverWorldState::Disabled;
+            return false;
+        }
     }
 
-    if (!foreverDigestMatches(calculatedDigest, digest))
-    {
-        sLogger.failure("WorldSocket::Forever: CMSG_AUTH_SESSION digest mismatch for account={} build={}.", pending.accountId, pending.clientBuild);
-        disconnect();
-        m_foreverWorldState = ForeverWorldState::Disabled;
-        return false;
-    }
-
-
-    // Authentication succeeded. Keep session secrets out of normal logs.
+    // Authentication was accepted. Keep session secrets out of normal logs.
 
     // The pending ticket is one-shot. Consume it only after the digest was
-    // verified successfully so failed auth attempts cannot burn valid state.
+    // accepted (verified, or explicitly skipped for a missing build key) so
+    // failed auth attempts cannot burn valid state.
     AscEmu::BattlenetComm::PendingWorldSession consumed;
     if (!AscEmu::BattlenetComm::sBattleNetCommClient.getPendingSession(realmJoinTicket, consumed, true))
     {
@@ -1716,7 +1723,7 @@ bool WorldSocket::sendVersionedPacket(WorldPacket* packet)
 
     if (m_foreverWorldState == ForeverWorldState::Encrypted)
     {
-        const uint32_t rawOpcode = sOpcodeTables.getHexValueForExpansion(packet->getOpcode(), WoW::Expansion::Forever);
+        const uint32_t rawOpcode = sOpcodeTables.getHexValueForExpansion(packet->getOpcode(), WoW::Expansion::_Forever);
         if (rawOpcode == 0)
         {
             sLogger.debug("WorldSocket::Forever: blocked unmapped managed packet opcode={} payload={}.", packet->getOpcode(), packet->size());

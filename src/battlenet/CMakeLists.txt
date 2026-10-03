@@ -14,6 +14,7 @@ add_executable(${EXECUTABLE_NAME}
 
 target_include_directories(${EXECUTABLE_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/shared
     ${OPENSSL_INCLUDE_DIR}
 )

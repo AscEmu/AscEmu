@@ -33,7 +33,7 @@ namespace AscEmu::BattlenetComm
 
     [[nodiscard]] constexpr bool isValidRealmRuleset(uint8_t value) { return value <= static_cast<uint8_t>(RealmRuleset::Hardcore); }
 
-    constexpr uint32_t ProtocolVersion = 3;
+    constexpr uint32_t ProtocolVersion = 4;
     constexpr size_t FrameHeaderSize = 12;
     constexpr uint32_t MaxPacketSize = 64 * 1024;
 

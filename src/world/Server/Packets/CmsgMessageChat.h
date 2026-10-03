@@ -73,7 +73,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion == WoW::Expansion::Forever)
+            if (m_protocol.expansion == WoW::Expansion::_Forever)
             {
                 type = getMessageTypeForOpcode(static_cast<uint16_t>(packet.getOpcode()));
                 if (type == 0xFF)

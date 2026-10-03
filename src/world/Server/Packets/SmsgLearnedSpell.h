@@ -28,7 +28,7 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
-            if (m_protocol.expansion == WoW::Expansion::Forever)
+            if (m_protocol.expansion == WoW::Expansion::_Forever)
                 return 18;
 
             return 6;
@@ -36,7 +36,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion == WoW::Expansion::Forever)
+            if (m_protocol.expansion == WoW::Expansion::_Forever)
             {
                 // Modern LEARNED_SPELLS with one LearnedSpellInfo entry.
                 packet << uint32_t(1);   // ClientLearnedSpellData count

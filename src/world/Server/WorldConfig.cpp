@@ -40,6 +40,8 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     battleNetComm.realmName = "AscEmu";
     battleNetComm.ruleset = AscEmu::BattlenetComm::RealmRuleset::PvE;
     battleNetComm.sharedSecret = "ascemu-bnetcomm";
+    battleNetComm.skipBuildAuthKeyCheck = false;
+    battleNetComm.authKeyScanDebug = false;
 
     // world.conf - Listen Config
     listen.listenPort = 8129;
@@ -298,6 +300,8 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     else if (battleNetRuleset == "PvE" || battleNetRuleset == "PVE" || battleNetRuleset == "pve") battleNetComm.ruleset = AscEmu::BattlenetComm::RealmRuleset::PvE;
     else { sLogger.warning("Unknown BattleNetComm Ruleset '{}'; using PvE.", battleNetRuleset); battleNetComm.ruleset = AscEmu::BattlenetComm::RealmRuleset::PvE; }
     Config.MainConfig.tryGetString("BattleNetComm", "SharedSecret", &battleNetComm.sharedSecret);
+    Config.MainConfig.tryGetBool("BattleNetComm", "SkipBuildAuthKeyCheck", &battleNetComm.skipBuildAuthKeyCheck);
+    Config.MainConfig.tryGetBool("BattleNetComm", "AuthKeyScanDebug", &battleNetComm.authKeyScanDebug);
 
     // world.conf - Realm Section
 

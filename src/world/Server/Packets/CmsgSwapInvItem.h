@@ -48,7 +48,7 @@ namespace AscEmu::Packets
                 packet >> srcSlot >> destSlot;
                 return true;
             }
-            else if (m_protocol.expansion == WoW::Expansion::Forever)
+            else if (m_protocol.expansion == WoW::Expansion::_Forever)
             {
                 // Forever 1.60.1.70124: InvUpdate count (2 bits), two
                 // container/slot entries, then destination/source slots.

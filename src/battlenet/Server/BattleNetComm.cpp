@@ -265,6 +265,9 @@ namespace AscEmu::Battlenet
         packet << session.expiresAt;
         packet << session.gameAccountName;
         packet << session.realmJoinTicket;
+        packet << session.clientPlatform;
+        packet << session.clientArch;
+        packet << session.clientType;
 
         packet << static_cast<uint32_t>(session.worldAuthKeyData.size());
         packet.append(session.worldAuthKeyData.data(), session.worldAuthKeyData.size());

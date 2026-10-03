@@ -1048,11 +1048,11 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
 #if AE_WORLD_PROFILE_FOREVER
 bool WorldSocket::sendForeverPacket(uint32_t internalOpcode, const uint8_t* payload, uint32_t payloadSize)
 {
-    const uint32_t rawOpcode = sOpcodeTables.getHexValueForExpansion(internalOpcode, WoW::Expansion::Forever);
+    const uint32_t rawOpcode = sOpcodeTables.getHexValueForExpansion(internalOpcode, WoW::Expansion::_Forever);
     if (rawOpcode == 0)
     {
         sLogger.failure("WorldSocket::Forever: no Forever wire opcode registered for {}.",
-            sOpcodeTables.getNameForInternalId(internalOpcode, WoW::Expansion::Forever));
+            sOpcodeTables.getNameForInternalId(internalOpcode, WoW::Expansion::_Forever));
         return false;
     }
 
@@ -1061,7 +1061,7 @@ bool WorldSocket::sendForeverPacket(uint32_t internalOpcode, const uint8_t* payl
 
 bool WorldSocket::dispatchForeverOpcode(uint32_t rawOpcode, const uint8_t* payload, size_t payloadSize)
 {
-    const uint32_t internalId = sOpcodeTables.getInternalIdForHex(rawOpcode, WoW::Expansion::Forever);
+    const uint32_t internalId = sOpcodeTables.getInternalIdForHex(rawOpcode, WoW::Expansion::_Forever);
     if (internalId == 0)
     {
         sLogger.info("WorldSocket::Forever: encrypted RX unknown opcode=0x{:08X}, payload={} byte(s), hex=[{}].",
@@ -1081,7 +1081,7 @@ bool WorldSocket::dispatchForeverOpcode(uint32_t rawOpcode, const uint8_t* paylo
 
     if (internalId != CMSG_DB_QUERY_BULK)
     {
-        const auto name = sOpcodeTables.getNameForInternalId(internalId, WoW::Expansion::Forever);
+        const auto name = sOpcodeTables.getNameForInternalId(internalId, WoW::Expansion::_Forever);
         const auto details = payloadSize <= 64U
             ? " bytes=" + Util::ByteArrayToHexString(payload, static_cast<uint32_t>(payloadSize))
             : "";

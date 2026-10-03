@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <string_view>
 
@@ -13,16 +14,29 @@ namespace AscEmu::Version::Forever
     {
         uint32_t build;
         std::string_view name;
-        bool supported;
     };
 
-    // Verified Forever beta client profile. Protocol constants and opcodes stay
-    // specific to Forever and must be filled only from Forever observations.
-    inline constexpr BuildProfile ActiveBuild{70009U, "Forever 1.60.1", true};
+    // Registered Forever builds share the current 1.60.1 transport. Build
+    // authentication is independent and remains variant-specific in Auth.hpp.
+    inline constexpr std::array<BuildProfile, 4> BuildProfiles =
+    {{
+        { 69893U, "Forever 1.60.1" },
+        { 70009U, "Forever 1.60.1" },
+        { 70124U, "Forever 1.60.1" },
+        { 70205U, "Forever 1.60.1" },
+    }};
+
+    inline constexpr BuildProfile ActiveBuild{ 70009U, "Forever 1.60.1" };
     inline constexpr uint32_t Build = ActiveBuild.build;
 
     inline constexpr bool supportsBuild(uint32_t build)
     {
-        return ActiveBuild.supported && (build == 69893U || build == 70009U);
+        for (const auto& profile : BuildProfiles)
+        {
+            if (profile.build == build)
+                return true;
+        }
+
+        return false;
     }
 }

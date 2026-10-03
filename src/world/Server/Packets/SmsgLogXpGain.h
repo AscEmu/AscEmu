@@ -38,7 +38,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion == WoW::Expansion::Forever)
+            if (m_protocol.expansion == WoW::Expansion::_Forever)
             {
                 WoWGuid victim = guid ? ForeverSpellPacket::toModernGuid(WoWGuid(guid), m_protocol.realmId, mapId) : WoWGuid::createModernEmpty();
 

@@ -2077,7 +2077,7 @@ void Player::setLifetimeHonorableKills(uint32_t kills)
 #endif
 }
 
-#if VERSION_STRING != Mop && VERSION_STRING != AE_PROFILE_FOREVER
+#if VERSION_STRING != Mop && VERSION_STRING != Camelot
 uint32_t Player::getPlayerFieldBytes2() const { return playerData()->player_field_bytes_2.raw; }
 void Player::setPlayerFieldBytes2(uint32_t bytes) { write(playerData()->player_field_bytes_2.raw, bytes); }
 
@@ -3089,7 +3089,7 @@ bool Player::create(CharCreate& charCreateContent)
         return false;
     }
 
-#if VERSION_STRING == AE_PROFILE_FOREVER
+#if VERSION_STRING == Camelot
     if ((charCreateContent._race == RACE_SKYBORNE_ALLIANCE || charCreateContent._race == RACE_SKYBORNE_HORDE) && !(m_session->_accountFlags & ACCOUNT_FLAG_FOREVER))
     {
         m_session->Disconnect();

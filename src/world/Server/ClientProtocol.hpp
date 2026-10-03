@@ -40,7 +40,7 @@ namespace WoW {
         DF,
         TWW,
         MN,
-        Forever,
+        _Forever,
         Unknown = 255
     };
 
@@ -73,7 +73,7 @@ namespace WoW {
         [[nodiscard]] bool isWotlk() const { return expansion == WoW::Expansion::_WotLK; }
         [[nodiscard]] bool isCata() const { return expansion == WoW::Expansion::_Cata; }
         [[nodiscard]] bool isMop() const { return expansion == WoW::Expansion::_Mop; }
-        [[nodiscard]] bool isForever() const { return expansion == WoW::Expansion::Forever; }
+        [[nodiscard]] bool isForever() const { return expansion == WoW::Expansion::_Forever; }
         [[nodiscard]] bool isLegacy() const { return !isForever(); }
     };
 
@@ -129,7 +129,7 @@ namespace WoW {
 #elif defined(AE_MOP)
     inline constexpr Expansion COMPILED_EXPANSION = Expansion::_Mop;
 #elif defined(AE_FOREVER)
-    inline constexpr Expansion COMPILED_EXPANSION = Expansion::Forever;
+    inline constexpr Expansion COMPILED_EXPANSION = Expansion::_Forever;
 #else
     inline constexpr Expansion COMPILED_EXPANSION = Expansion::_WotLK; // Fallback
 #endif
@@ -139,7 +139,7 @@ namespace WoW {
     /// Checks whether the expansion is valid in the enum definition
     [[nodiscard]] constexpr bool isValidExpansion(Expansion const expansion) noexcept
     {
-        return expansion != Expansion::Unknown && expansion <= Expansion::Forever;
+        return expansion != Expansion::Unknown && expansion <= Expansion::_Forever;
     }
 
     /// Checks whether THIS compiled server binary can run this expansion
@@ -157,7 +157,7 @@ namespace WoW {
             case Expansion::_WotLK:   return Build::WOTLK_BUILD;
             case Expansion::_Cata:    return Build::CATA_BUILD;
             case Expansion::_Mop:     return Build::MOP_BUILD;
-            case Expansion::Forever:  return Build::FOREVER_BUILD;
+            case Expansion::_Forever:  return Build::FOREVER_BUILD;
             default:                  return 0;
         }
     }
@@ -171,7 +171,7 @@ namespace WoW {
             case Build::WOTLK_BUILD:   return Expansion::_WotLK;
             case Build::CATA_BUILD:    return Expansion::_Cata;
             case Build::MOP_BUILD:     return Expansion::_Mop;
-            case Build::FOREVER_BUILD: return Expansion::Forever;
+            case Build::FOREVER_BUILD: return Expansion::_Forever;
             default:                   return Expansion::Unknown;
         }
     }
@@ -214,14 +214,14 @@ namespace WoW {
     /// Converts world.conf integer setting (0 = Classic ... 12 = Forever) to enum
     [[nodiscard]] constexpr Expansion expansionFromVersionId(uint32_t const versionId) noexcept
     {
-        if (versionId > static_cast<uint32_t>(Expansion::Forever))
+        if (versionId > static_cast<uint32_t>(Expansion::_Forever))
             return Expansion::Unknown;
 
         return static_cast<Expansion>(versionId);
     }
 
     /// Determines if a data table or resource is required for the active server expansion
-    [[nodiscard]] inline bool isDataLoadRequired(Expansion const minExpansion, Expansion const maxExpansion = Expansion::Forever) noexcept
+    [[nodiscard]] inline bool isDataLoadRequired(Expansion const minExpansion, Expansion const maxExpansion = Expansion::_Forever) noexcept
     {
         return isServerExpansionBetween(minExpansion, maxExpansion);
     }
@@ -274,7 +274,7 @@ namespace WoW {
             case Expansion::DF: return "Dragonflight";
             case Expansion::TWW: return "The War Within";
             case Expansion::MN: return "Midnight";
-            case Expansion::Forever: return "Forever";
+            case Expansion::_Forever: return "Forever";
             case Expansion::Unknown:
             default: return "Unknown expansion";
         }
@@ -297,7 +297,7 @@ namespace WoW {
             case Expansion::DF:       return "Dragonflight";
             case Expansion::TWW:      return "TWW";
             case Expansion::MN:       return "Midnight";
-            case Expansion::Forever:  return "Forever";
+            case Expansion::_Forever:  return "Forever";
             case Expansion::Unknown:
             default:                  return "Unknown";
         }

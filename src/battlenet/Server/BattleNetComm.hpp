@@ -31,6 +31,9 @@ namespace AscEmu::Battlenet
         uint64_t expiresAt = 0;
         std::string gameAccountName;
         std::string realmJoinTicket;
+        std::string clientPlatform;
+        std::string clientArch;
+        std::string clientType;
         std::array<uint8_t, 64> worldAuthKeyData{};
         std::array<uint8_t, 32> joinSecret{};
     };

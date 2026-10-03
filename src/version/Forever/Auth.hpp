@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <array>
 #include <cstdint>
 #include <optional>
+#include <string_view>
 
 namespace AscEmu::Version::Forever
 {
@@ -19,7 +20,6 @@ namespace AscEmu::Version::Forever
         0x4E, 0xD9, 0x0C, 0x23, 0x9B, 0xCD, 0x0E, 0xDC,
         0xD2, 0xE8, 0x04, 0x3A, 0x68, 0x64, 0xC7, 0xB0
     };
-
 
     inline constexpr std::array<uint8_t, 32> SessionKeySeed =
     {
@@ -72,6 +72,9 @@ namespace AscEmu::Version::Forever
     struct BuildAuthKeyEntry
     {
         uint32_t build;
+        std::string_view platform;
+        std::string_view arch;
+        std::string_view type;
         std::array<uint8_t, 16> key;
     };
 
@@ -79,6 +82,9 @@ namespace AscEmu::Version::Forever
     { {
         {
             69893U,
+            "Win",
+            "x64",
+            "WoW",
             {
                 0x80, 0xC6, 0x71, 0x02, 0xCF, 0x12, 0x90, 0x83,
                 0x03, 0x28, 0xCB, 0x37, 0x90, 0x11, 0x6A, 0x3D
@@ -86,11 +92,11 @@ namespace AscEmu::Version::Forever
         },
     }};
 
-    inline std::optional<std::array<uint8_t, 16>> getBuildAuthKey(uint32_t build)
+    inline std::optional<std::array<uint8_t, 16>> getBuildAuthKey(uint32_t build, std::string_view platform, std::string_view arch, std::string_view type)
     {
         for (const auto& entry : BuildAuthKeys)
         {
-            if (entry.build == build)
+            if (entry.build == build && entry.platform == platform && entry.arch == arch && entry.type == type)
                 return entry.key;
         }
 

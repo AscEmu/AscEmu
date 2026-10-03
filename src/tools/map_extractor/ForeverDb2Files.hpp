@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 namespace MapExtractor::Forever
 {
     inline constexpr uint32_t MinSupportedBuild = 69585;
-    inline constexpr uint32_t MaxSupportedBuild = 70009;
+    inline constexpr uint32_t MaxSupportedBuild = 70205;
 
     inline constexpr bool IsSupportedBuild(uint32_t build)
     {

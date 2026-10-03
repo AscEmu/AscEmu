@@ -15,9 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define WotLK 12340
 #define Cata 15595
 #define Mop 18414
-#define AE_PROFILE_FOREVER 70009
-
-// TODO: Remove when Forever player level stats are loaded from modern DB2 data.
+#define Camelot 70009
 
 #define AE_CLIENT_PROFILE @ASCEMU_VERSION_TOKEN@
 
@@ -46,12 +44,12 @@ This file is released under the MIT license. See README-MIT for more information
     #define VERSION 5, 4, 8
     #define VERSION_STRING Mop
     #define BUILD_VERSION 18414
-#elif AE_CLIENT_PROFILE == AE_PROFILE_FOREVER
+#elif AE_CLIENT_PROFILE == Camelot
     #define AE_FOREVER
     #define AE_MODERN_CLIENT
     #define AE_BATTLENET
     #define VERSION 1, 60, 1
-    #define VERSION_STRING AE_PROFILE_FOREVER
+    #define VERSION_STRING Camelot
     #define BUILD_VERSION 70009
 #else
     #error Unsupported ASCEMU_VERSION

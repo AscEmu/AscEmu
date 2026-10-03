@@ -463,7 +463,7 @@ bool TaxiMgr::isTaxiNodeUnlockedFor(uint32_t taxiNodeId, uint8_t level) const
 
 void TaxiMgr::initialize()
 {
-#if VERSION_STRING > WotLK && VERSION_STRING < AE_PROFILE_FOREVER
+#if VERSION_STRING > WotLK && VERSION_STRING < Camelot
     loadTaxiNodeLevelData();
 #endif
 

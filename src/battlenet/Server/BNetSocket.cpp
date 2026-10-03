@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Master.hpp"
 #include "Database/Database.hpp"
 #include "Logging/Logger.hpp"
+#include "version/Forever/BuildProfile.hpp"
 
 #include <openssl/err.h>
 #include <openssl/rand.h>
@@ -108,6 +109,79 @@ namespace AscEmu::Battlenet
                 ++cursor;
 
             return cursor < text.size() && text[cursor] == ']';
+        }
+
+        std::string fourCCToString(uint32_t value)
+        {
+            std::string result;
+            for (int shift = 24; shift >= 0; shift -= 8)
+            {
+                const char c = static_cast<char>((value >> shift) & 0xFFu);
+                if (c != '\0')
+                    result.push_back(c);
+            }
+            return result;
+        }
+
+        bool extractJsonFourCCField(std::string_view text, std::string_view field, std::string& value)
+        {
+            const std::string key = "\"" + std::string(field) + "\"";
+            size_t cursor = text.find(key);
+            if (cursor == std::string_view::npos)
+                return false;
+
+            cursor = text.find(':', cursor + key.size());
+            if (cursor == std::string_view::npos)
+                return false;
+            ++cursor;
+
+            while (cursor < text.size() && std::isspace(static_cast<unsigned char>(text[cursor])) != 0)
+                ++cursor;
+
+            if (cursor >= text.size())
+                return false;
+
+            if (text[cursor] == '\"')
+            {
+                const size_t endQuote = text.find('\"', cursor + 1);
+                if (endQuote == std::string_view::npos)
+                    return false;
+                value.assign(text.substr(cursor + 1, endQuote - cursor - 1));
+                return !value.empty();
+            }
+
+            if (!std::isdigit(static_cast<unsigned char>(text[cursor])))
+                return false;
+
+            uint64_t numeric = 0;
+            while (cursor < text.size() && std::isdigit(static_cast<unsigned char>(text[cursor])) != 0)
+            {
+                numeric = numeric * 10u + static_cast<uint64_t>(text[cursor] - '0');
+                if (numeric > UINT32_MAX)
+                    return false;
+                ++cursor;
+            }
+
+            value = fourCCToString(static_cast<uint32_t>(numeric));
+            return !value.empty();
+        }
+
+        void extractRealmListClientVariant(const uint8_t* payload, size_t payloadSize, std::string& platform, std::string& arch, std::string& type)
+        {
+            if (payload == nullptr || payloadSize == 0)
+                return;
+
+            const std::string_view payloadText(reinterpret_cast<const char*>(payload), payloadSize);
+            constexpr std::string_view marker = "JSONRealmListTicketClientInformation:";
+            const size_t markerPos = payloadText.find(marker);
+            const std::string_view text = markerPos != std::string_view::npos ? payloadText.substr(markerPos + marker.size()) : payloadText;
+            std::string parsed;
+            if (extractJsonFourCCField(text, "platformType", parsed))
+                platform = std::move(parsed);
+            if (extractJsonFourCCField(text, "clientArch", parsed))
+                arch = std::move(parsed);
+            if (extractJsonFourCCField(text, "type", parsed))
+                type = std::move(parsed);
         }
 
         void appendVarInt(std::vector<uint8_t>& output, uint64_t value)
@@ -381,7 +455,7 @@ namespace AscEmu::Battlenet
                    command.compare(0, semanticPrefix.size(), semanticPrefix) == 0;
         }
 
-        [[nodiscard]] constexpr bool usesForever1601Transport(uint32_t build) { return build == 69893u || build == 70009u; }
+        [[nodiscard]] constexpr bool usesForever1601Transport(uint32_t build) { return AscEmu::Version::Forever::supportsBuild(build); }
 
         struct ClientVersionParts
         {
@@ -392,14 +466,15 @@ namespace AscEmu::Battlenet
 
         ClientVersionParts getClientVersionParts(uint32_t build)
         {
+            if (AscEmu::Version::Forever::supportsBuild(build))
+                return { 1u, 60u, 1u };
+
             switch (build)
             {
                 case 69722u: return { 1u, 15u, 9u };
                 case 69795u: return { 2u, 5u, 6u };
                 case 69585u: return { 5u, 5u, 4u };
                 case 69814u: return { 12u, 1u, 0u };
-                case 69893u: return { 1u, 60u, 1u };
-                case 70009u: return { 1u, 60u, 1u };
                 default:     return { 0u, 0u, 0u };
             }
         }
@@ -411,8 +486,16 @@ namespace AscEmu::Battlenet
                    static_cast<uint32_t>(realmId);
         }
 
+        enum class ForeverRulesetProfile : uint8_t
+        {
+            None,
+            Legacy69893,
+            Modern70009Plus,
+        };
+
         struct ForeverSuperDistrictProfile
         {
+            ForeverRulesetProfile rulesetProfile = ForeverRulesetProfile::None;
             uint32_t build = 0;
             uint32_t collectionId = 0;
             uint32_t superDistrictSetId = 0;
@@ -426,57 +509,46 @@ namespace AscEmu::Battlenet
             bool contentSetIdKnown = false;
         };
 
-
-        ForeverSuperDistrictProfile getForeverSuperDistrictProfile(uint32_t clientBuild)
+        [[nodiscard]] ForeverSuperDistrictProfile getForeverSuperDistrictProfile(uint32_t clientBuild)
         {
-            // Build 70009 currently exposes four Forever rulesets:
-            //
-            //   PvE
-            //   PvP
-            //   Roleplay
-            //   Hardcore
-            //
-            // The SuperDistrict DB2 relationships stored here are diagnostic metadata
-            // only. These values must not be serialized as invented Battle.net fields.
-            //
-            // The previously verified relationship was:
-            //
-            //   SuperDistrictSetCollection 1 -> SuperDistrictSet 36
-            //   AvailableSuperDistrict 2 -> PvP
-            //   AvailableSuperDistrict 3 -> PvE / Normal
-            //
-            // Roleplay, Hardcore and the ContentSet selector for build 70009 still
-            // need to be verified from the extracted 70009 DB2 data. Keep them unset
-            // rather than guessing IDs.
-            if (clientBuild == 70009u)
+            if (!AscEmu::Version::Forever::supportsBuild(clientBuild))
+                return {};
+
+            // Build 69893 keeps its separately verified ruleset behavior.
+            if (clientBuild == 69893u)
             {
                 return {
-                    .build = 70009u,
-                    .collectionId = 1u,
-                    .superDistrictSetId = 36u,
-                    .pveAvailableSuperDistrictId = 3u,
-                    .pvpAvailableSuperDistrictId = 2u,
-                    .roleplayAvailableSuperDistrictId = 0u,
-                    .hardcoreAvailableSuperDistrictId = 0u,
-                    .currentCfgContentSetId = 0u,
-                    .contentSetIdKnown = false,
+                    .rulesetProfile = ForeverRulesetProfile::Legacy69893,
+                    .build = clientBuild,
                 };
             }
 
-            return {};
+            // Build 70009 introduced the newer PvE/PvP/Roleplay/Hardcore selector.
+            // The DB2 relationships below are diagnostic metadata only and are not
+            // serialized as invented Battle.net fields. Builds 70124 and 70205 use
+            // this profile until a build-specific sniff proves a different layout.
+            // Verified: collection 1 -> set 36, AvailableSuperDistrict 2 -> PvP,
+            // AvailableSuperDistrict 3 -> PvE/Normal. Roleplay, Hardcore and the
+            // ContentSet selector are still unknown.
+            return {
+                .rulesetProfile = ForeverRulesetProfile::Modern70009Plus,
+                .build = clientBuild,
+                .collectionId = 1u,
+                .superDistrictSetId = 36u,
+                .pveAvailableSuperDistrictId = 3u,
+                .pvpAvailableSuperDistrictId = 2u,
+                .roleplayAvailableSuperDistrictId = 0u,
+                .hardcoreAvailableSuperDistrictId = 0u,
+                .currentCfgContentSetId = 0u,
+                .contentSetIdKnown = false,
+            };
         }
 
-        uint32_t getRealmCfgTimezonesId(uint32_t clientBuild)
+        [[nodiscard]] constexpr uint32_t getRealmCfgTimezonesId()
         {
-            // Forever 1.60.1.69893 test value.
-            //
-            // The official Camelot capture confirmed the sub-region "70-1-70",
-            // but it did not expose cfgTimezonesID in clear text.  Keep this
-            // isolated by build while testing the client-side SuperDistrict
-            // mapping used by the play-style picker.
-            if (clientBuild == 69893u)
-                return 1u;
-
+            // The official 69893 Forever capture confirmed sub-region "70-1-70" but
+            // did not expose cfgTimezonesID in clear text. All currently supported
+            // Forever paths use the existing test value 1 until a capture proves otherwise.
             return 1u;
         }
 
@@ -705,7 +777,7 @@ namespace AscEmu::Battlenet
             return false;
         }
 
-        std::vector<uint8_t> makeRealmJoinResponse(uint32_t clientBuild, const std::string& gameAccountName, uint32_t realmAddress, const std::string& worldHost, uint32_t worldPort, std::string& realmJoinTicket, std::array<uint8_t, 32>& joinSecret, uint32_t& localRealmId)
+        std::vector<uint8_t> makeRealmJoinResponse(uint32_t clientBuild, const std::string& gameAccountName, const std::string& clientPlatform, const std::string& clientArch, uint32_t realmAddress, const std::string& worldHost, uint32_t worldPort, std::string& realmJoinTicket, std::array<uint8_t, 32>& joinSecret, uint32_t& localRealmId)
         {
             if (gameAccountName.empty() || worldHost.empty() || worldPort == 0u || worldPort > 65535u)
                 return {};
@@ -773,8 +845,8 @@ namespace AscEmu::Battlenet
             std::ostringstream joinTicketJson;
             joinTicketJson
                 << "{\"gameAccount\":\"" << jsonEscape(gameAccountName) << "\","
-                << "\"platform\":\"Win\","
-                << "\"clientArch\":\"x64\","
+                << "\"platform\":\"" << jsonEscape(clientPlatform) << "\","
+                << "\"clientArch\":\"" << jsonEscape(clientArch) << "\","
                 << "\"type\":\"wow_classic\"}";
             realmJoinTicket = joinTicketJson.str();
 
@@ -845,7 +917,7 @@ namespace AscEmu::Battlenet
                 realmJson
                     << "{\"update\":{" 
                     << "\"wowRealmAddress\":" << address << ','
-                    << "\"cfgTimezonesID\":" << getRealmCfgTimezonesId(clientBuild) << ','
+                    << "\"cfgTimezonesID\":" << getRealmCfgTimezonesId() << ','
                     << "\"populationState\":" << (online ? 1u : 0u) << ','
                     << "\"cfgCategoriesID\":1,"
                     << "\"version\":{" 
@@ -859,7 +931,7 @@ namespace AscEmu::Battlenet
                     << "\"name\":\"" << jsonEscape(name) << "\","
                     << "\"cfgConfigsID\":1,"
                     << "\"cfgLanguagesID\":1,"
-                    << "\"cfgContentSetID\":" << (foreverProfile.build != 0u ? foreverProfile.currentCfgContentSetId : 0u) << ','
+                    << "\"cfgContentSetID\":" << foreverProfile.currentCfgContentSetId << ','
                     << "\"useBleepChance\":0.0"
                     << "},\"deleting\":false}";
             }
@@ -1974,21 +2046,11 @@ namespace AscEmu::Battlenet
         (void)commandName;
         std::ostringstream json;
 
-        if (m_clientBuild == 70009u)
+        const ForeverSuperDistrictProfile foreverProfile = getForeverSuperDistrictProfile(m_clientBuild);
+        if (foreverProfile.rulesetProfile != ForeverRulesetProfile::None)
         {
-            sLogger.warning("BNet: Forever 70009 SuperDistrict mapping is not verified yet; Roleplay/Hardcore IDs must be captured before serialization.");
-            json
-            << "JSONSuperDistrictList:{\"superDistricts\":["
-                << "{\"superDistrictID\":2,\"disallowLogin\":false},"
-                << "{\"superDistrictID\":1,\"disallowLogin\":false},"
-                << "{\"superDistrictID\":5,\"disallowLogin\":false}"
-                << "]}";
-        }
-        else if (m_clientBuild == 69893u)
-        {
-            // Forever/Camelot 1.60.1.69893 sniff-based compatibility test.
-            // The play-style selector expects SuperDistrict IDs here; realm
-            // address/cfg metadata is carried later by RealmList entries.
+            // Both verified profile families currently use the same wire response.
+            // Keep their metadata separate in getForeverSuperDistrictProfile().
             json
                 << "JSONSuperDistrictList:{\"superDistricts\":["
                 << "{\"superDistrictID\":2,\"disallowLogin\":false},"
@@ -2037,7 +2099,7 @@ namespace AscEmu::Battlenet
                 json
                     << "{\"wowRealmAddress\":" << address << ','
                     << "\"useBleepChance\":0.0,"
-                    << "\"cfgTimezonesID\":" << getRealmCfgTimezonesId(m_clientBuild) << '}';
+                    << "\"cfgTimezonesID\":" << getRealmCfgTimezonesId() << '}';
 
             }
 
@@ -2155,7 +2217,7 @@ namespace AscEmu::Battlenet
         std::string realmJoinTicket;
         std::array<uint8_t, 32> joinSecret{};
         uint32_t localRealmId = 0u;
-        const std::vector<uint8_t> response = makeRealmJoinResponse(m_clientBuild, m_selectedGameAccountName, realmAddress, bnetConfig.world.host, bnetConfig.world.port, realmJoinTicket, joinSecret, localRealmId);
+        const std::vector<uint8_t> response = makeRealmJoinResponse(m_clientBuild, m_selectedGameAccountName, m_clientPlatform, m_clientArch, realmAddress, bnetConfig.world.host, bnetConfig.world.port, realmJoinTicket, joinSecret, localRealmId);
 
         bool sessionQueued = false;
         if (!response.empty())
@@ -2169,6 +2231,9 @@ namespace AscEmu::Battlenet
             pending.expiresAt = static_cast<uint64_t>(UNIXTIME) + 60u;
             pending.gameAccountName = m_selectedGameAccountName;
             pending.realmJoinTicket = realmJoinTicket;
+            pending.clientPlatform = m_clientPlatform;
+            pending.clientArch = m_clientArch;
+            pending.clientType = m_clientType;
             std::copy(m_realmListClientSecret.begin(), m_realmListClientSecret.end(), pending.worldAuthKeyData.begin());
             std::copy(joinSecret.begin(), joinSecret.end(), pending.worldAuthKeyData.begin() + m_realmListClientSecret.size());
             pending.joinSecret = joinSecret;
@@ -2244,6 +2309,9 @@ namespace AscEmu::Battlenet
             sLogger.failure("BNet: connection #{} RealmListTicket request did not contain a valid 32-byte client secret", m_connectionId);
             return sendRpcResponse(token, std::vector<uint8_t>{});
         }
+
+        extractRealmListClientVariant(payload, payloadSize, m_clientPlatform, m_clientArch, m_clientType);
+        sLogger.debug("BNet: connection #{} client variant platform={} arch={} type={} build={}", m_connectionId, m_clientPlatform, m_clientArch, m_clientType, m_clientBuild);
 
         const std::vector<uint8_t> response = makeGameUtilitiesBlobAttribute("Param_RealmListTicket", "AuthRealmListTicket");
 

@@ -418,20 +418,20 @@ bool WorldSocket::handleMovementOpcodes(WorldPacket& packet)
     MovementStatus status;
     if (!readMovementStatus(packet, status))
     {
-        sLogger.warning("WorldSocket::Forever: malformed {} movement payload size={} consumed={}.", sOpcodeTables.getNameForInternalId(packet.getOpcode(), WoW::Expansion::Forever), packet.size(), packet.rpos());
+        sLogger.warning("WorldSocket::Forever: malformed {} movement payload size={} consumed={}.", sOpcodeTables.getNameForInternalId(packet.getOpcode(), WoW::Expansion::_Forever), packet.size(), packet.rpos());
         return true;
     }
 
     const uint64_t moverGuid = status.moverGuid.toLegacyRaw();
     if (moverGuid == 0 || moverGuid != mover->getGuid())
     {
-        sLogger.warning("WorldSocket::Forever: {} rejected mover=0x{:016X}; controlled mover=0x{:016X}.", sOpcodeTables.getNameForInternalId(packet.getOpcode(), WoW::Expansion::Forever), moverGuid, mover->getGuid());
+        sLogger.warning("WorldSocket::Forever: {} rejected mover=0x{:016X}; controlled mover=0x{:016X}.", sOpcodeTables.getNameForInternalId(packet.getOpcode(), WoW::Expansion::_Forever), moverGuid, mover->getGuid());
         return true;
     }
 
     if (!isValidMapCoord(status.position.x, status.position.y, status.position.z, status.position.o))
     {
-        sLogger.warning("WorldSocket::Forever: {} rejected invalid position x={} y={} z={} o={}.", sOpcodeTables.getNameForInternalId(packet.getOpcode(), WoW::Expansion::Forever), status.position.x, status.position.y, status.position.z, status.position.o);
+        sLogger.warning("WorldSocket::Forever: {} rejected invalid position x={} y={} z={} o={}.", sOpcodeTables.getNameForInternalId(packet.getOpcode(), WoW::Expansion::_Forever), status.position.x, status.position.y, status.position.z, status.position.o);
         return true;
     }
 

@@ -59,7 +59,7 @@ bool OpcodeHandlerRegistry::handleResolvedOpcode(WorldSession& session, WorldPac
 
 bool OpcodeHandlerRegistry::handleResolvedOpcode(WorldSocket& socket, WorldPacket& packet, uint32_t rawOpcode, uint32_t internalId)
 {
-    const auto expansion = WoW::Expansion::Forever;
+    const auto expansion = WoW::Expansion::_Forever;
     const std::string opcodeName = internalId != 0
         ? sOpcodeTables.getNameForInternalId(internalId, expansion)
         : sOpcodeTables.getNameForOpcode(rawOpcode, expansion);
@@ -72,7 +72,7 @@ bool OpcodeHandlerRegistry::handleResolvedOpcode(WorldSocket& socket, WorldPacke
     }
 
     const auto& entry = it->second;
-    constexpr int32_t tableIndex = WoW::getOpcodeTableIndex(WoW::Expansion::Forever);
+    constexpr int32_t tableIndex = WoW::getOpcodeTableIndex(WoW::Expansion::_Forever);
 
     if (entry.socketVersions[tableIndex] && entry.socketHandler)
     {

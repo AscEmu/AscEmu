@@ -847,7 +847,7 @@ bool World::setInitialWorldSettings()
 
     sGuildMgr.loadGuildDataFromDB();
 
-#if VERSION_STRING >= Cata && VERSION_STRING < AE_PROFILE_FOREVER
+#if VERSION_STRING >= Cata && VERSION_STRING < Camelot
     sGuildMgr.loadGuildXpForLevelFromDB();
     sGuildMgr.loadGuildRewardsFromDB();
 

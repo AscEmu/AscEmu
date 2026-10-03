@@ -108,7 +108,7 @@ public:
             return (socket.*handler)(packet);
         };
         entry.socketState = State;
-        entry.socketVersions[WoW::getOpcodeTableIndex(WoW::Expansion::Forever)] = forever;
+        entry.socketVersions[WoW::getOpcodeTableIndex(WoW::Expansion::_Forever)] = forever;
     }
 
     // Registers the Forever-specific socket handlers in this same central registry.

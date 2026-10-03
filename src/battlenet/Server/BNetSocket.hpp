@@ -76,6 +76,9 @@ namespace AscEmu::Battlenet
         uint32_t m_battleNetAccountId = 0;
         uint32_t m_selectedGameAccountId = 0;
         uint32_t m_clientBuild = 0;
+        std::string m_clientPlatform = "Win";
+        std::string m_clientArch = "x64";
+        std::string m_clientType = "WoW";
         std::string m_selectedGameAccountName;
         std::vector<LinkedGameAccount> m_linkedGameAccounts;
         std::array<uint8_t, 32> m_realmListClientSecret{};

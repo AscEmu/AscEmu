@@ -104,6 +104,8 @@ public:
         std::string realmName;
         AscEmu::BattlenetComm::RealmRuleset ruleset;
         std::string sharedSecret;
+        bool skipBuildAuthKeyCheck;
+        bool authKeyScanDebug;
     } battleNetComm;
 
     // world.conf - Listen Config

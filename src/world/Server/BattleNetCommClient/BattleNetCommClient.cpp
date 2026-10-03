@@ -194,6 +194,9 @@ namespace AscEmu::BattlenetComm
         packet >> session.expiresAt;
         packet >> session.gameAccountName;
         packet >> session.realmJoinTicket;
+        packet >> session.clientPlatform;
+        packet >> session.clientArch;
+        packet >> session.clientType;
 
         if (packet.hadReadFailure())
         {

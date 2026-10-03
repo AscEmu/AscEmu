@@ -1100,7 +1100,7 @@ void Unit::modMaxPower(PowerType type, int32_t value)
 
 float Unit::getPowerRegeneration(PowerType type) const
 {
-#if VERSION_STRING == AE_PROFILE_FOREVER
+#if VERSION_STRING == Camelot
     if (type == POWER_TYPE_HEALTH)
         return 0.0f;
 
@@ -1164,7 +1164,7 @@ float Unit::getPowerRegeneration(PowerType type) const
 
 void Unit::setPowerRegeneration(PowerType type, float value)
 {
-#if VERSION_STRING == AE_PROFILE_FOREVER
+#if VERSION_STRING == Camelot
     if (type == POWER_TYPE_HEALTH)
         return;
 
@@ -1233,7 +1233,7 @@ void Unit::setPowerRegeneration(PowerType type, float value)
 
 float Unit::getPowerRegenerationWhileInterrupted(PowerType type) const
 {
-#if VERSION_STRING == AE_PROFILE_FOREVER
+#if VERSION_STRING == Camelot
     if (type == POWER_TYPE_HEALTH)
         return 0.0f;
 

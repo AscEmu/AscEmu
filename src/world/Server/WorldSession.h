@@ -139,7 +139,7 @@ public:
             case Mop:
                 _accountFlags = AF_FULL_MOP;
                 break;
-            case AE_PROFILE_FOREVER:
+            case Camelot:
                 _accountFlags = AF_FULL_FOREVER;
                 break;
         }

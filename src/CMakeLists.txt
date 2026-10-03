@@ -35,7 +35,7 @@ set(BUILD_BATTLENET ${AE_USES_BATTLENET} CACHE INTERNAL
 # Human-readable profile names must not be emitted as C/C++ macros. Forever is
 # also a C++ namespace in the version layer, so use a dedicated numeric token.
 if (AE_IS_FOREVER)
-    set(ASCEMU_VERSION_TOKEN "AE_PROFILE_FOREVER")
+    set(ASCEMU_VERSION_TOKEN "Camelot")
 else ()
     set(ASCEMU_VERSION_TOKEN "${ASCEMU_VERSION}")
 endif ()

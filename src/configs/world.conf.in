@@ -109,7 +109,7 @@
 #        3 = 15595 (Cata)       4 = 18414 (Mop)     5 = (WoD)
 #        6 = (Legion)           7 = (BfA)           8 = (Shadowlands)
 #        9 = (Dragonflight)    10 = (TWW)          11 = (Midnight)
-#       12 = 70009 (Forever)
+#       12 = Forever (registered builds 69893, 70009, 70124, 70205)
 #
 
 <Realm1 Id            = "1"
@@ -132,12 +132,28 @@
 #        Supported values: PvE, PvP, Roleplay, Hardcore
 #        Default: PvE
 #
-<BattleNetComm Host         = "127.0.0.1"
-               Port         = "1120"
-               RealmId      = "1"
-               RealmName    = "AscEmu"
-               Ruleset      = "PvE"
-               SharedSecret = "ascemu-bnetcomm">
+#    SkipBuildAuthKeyCheck
+#        Accept a registered Forever build when no auth key exists for the
+#        exact platform/architecture/type variant. The auth-session digest is
+#        not verified in that case. Known auth keys are always verified.
+#        Development only.
+#        Default: 0
+#
+#    AuthKeyScanDebug
+#        When a registered Forever build has no auth key and strict auth is
+#        enabled, log the AUTHKEY_SCAN material and stop authentication after
+#        observing CMSG_AUTH_SESSION. This is a development/debug option and
+#        is not tied to a specific client build.
+#        Default: 0
+#
+<BattleNetComm Host                  = "127.0.0.1"
+               Port                  = "1120"
+               RealmId               = "1"
+               RealmName             = "AscEmu"
+               Ruleset               = "PvE"
+               SharedSecret          = "ascemu-bnetcomm"
+               SkipBuildAuthKeyCheck = "0"
+               AuthKeyScanDebug       = "0">
 
 ################################################################################
 # Listen Config
