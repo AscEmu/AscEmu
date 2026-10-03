@@ -13,6 +13,8 @@ environment:
   - ASC_VERSION: WotLK
   - ASC_VERSION: Cata
   - ASC_VERSION: Mop
+  - ASC_VERSION: WoD
+  - ASC_VERSION: Legion
 
 matrix:
   fast_finish: true # Abort all other Matrix builds if one fails
