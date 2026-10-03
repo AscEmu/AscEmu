@@ -39,6 +39,19 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // victim, type, amount, resisted, absorbed, log data
+                packet << WoWGuid(guid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << type;
+                packet << int32_t(damage);
+                packet << int32_t(0);
+                packet << int32_t(0);
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_WotLK)
                 packet << guid << type << damage << unk;
             else       //                            Absorbed     Resisted

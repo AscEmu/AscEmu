@@ -41,6 +41,21 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // caster, its realm, pet number, spell, name, use timer, sickness
+                packet << WoWGuid(casterGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << uint32_t(m_protocol.getVirtualRealmAddress());
+                packet << uint32_t(0);
+                packet << int32_t(spellId);
+                packet.writeBits(static_cast<uint32_t>(casterName.length()), 11);
+                packet.writeBit(overrideTimer == 0);
+                packet.writeBit(isSicknessAffected != 0);
+                packet.flushBits();
+                packet.writeString(casterName);
+                return true;
+            }
+
             packet << casterGuid << stringSize << spellId << casterName;
             if (m_protocol.expansion == WoW::Expansion::_Cata)
             {

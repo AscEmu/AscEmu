@@ -107,7 +107,17 @@ void WorldSession::handleMoveTimeSkippedOpcode(WorldPacket& recvPacket)
 {
     uint64_t guid;
     uint32_t timeSkipped;
-    recvPacket >> guid;
+
+    if (getClientProtocol().isLegion())
+    {
+        WoWGuid128 moverGuid;
+        recvPacket >> moverGuid;
+        guid = WoWGuid::fromGuid128(moverGuid).getRawGuid();
+    }
+    else
+    {
+        recvPacket >> guid;
+    }
     recvPacket >> timeSkipped;
 
     Unit* mover = _player->m_controledUnit;
@@ -115,6 +125,16 @@ void WorldSession::handleMoveTimeSkippedOpcode(WorldPacket& recvPacket)
         return;
 
     mover->obj_movement_info.update_time += timeSkipped;
+
+    if (getClientProtocol().isLegion())
+    {
+        // the 128 bit guid of the mover is the same for every client of this version
+        WorldPacket data(MSG_MOVE_TIME_SKIPPED, 20);
+        data << mover->GetNewGUID().toGuid128(getClientProtocol().realmId, mover->GetMapId());
+        data << timeSkipped;
+        mover->sendMessageToSet(&data, false);
+        return;
+    }
 
     WorldPacket data(MSG_MOVE_TIME_SKIPPED, 16);
     data << WoWGuid(mover->getGuid());

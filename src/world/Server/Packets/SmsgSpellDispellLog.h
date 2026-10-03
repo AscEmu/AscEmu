@@ -42,6 +42,29 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // steal, break, target, caster, spell, then every dispelled spell: harmful, rolled, needed
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.flushBits();
+                packet << WoWGuid(targetGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << WoWGuid(casterGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << spellId;
+                packet << displellCount;
+
+                for (const auto dispelledSpellId : dispellSpells)
+                {
+                    packet << dispelledSpellId;
+                    packet.writeBit(false);
+                    packet.writeBit(false);
+                    packet.writeBit(false);
+                    packet.flushBits();
+                }
+
+                return true;
+            }
+
             packet << casterGuid << targetGuid << spellId << unk1 << displellCount;
 
             for (const auto stealedSpellId: dispellSpells)

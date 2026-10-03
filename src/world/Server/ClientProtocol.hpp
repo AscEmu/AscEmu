@@ -167,6 +167,16 @@ namespace WoW {
         }
     }
 
+    /// Expansion of the game data (dbc, maps, database rows) the server loads for an expansion.
+    /// WoD and Legion run on the Mop data until their own data is available.
+    [[nodiscard]] constexpr Expansion getDataExpansion(Expansion const expansion) noexcept
+    {
+        if (expansion == Expansion::_WoD || expansion == Expansion::_Legion)
+            return Expansion::_Mop;
+
+        return expansion;
+    }
+
     /// Build of the game data (dbc, maps, database rows) the server loads for an expansion.
     /// WoD and Legion run on the Mop data until their own data is available.
     [[nodiscard]] constexpr uint32_t getDataBuildForExpansion(Expansion const expansion) noexcept
@@ -241,6 +251,9 @@ namespace WoW {
     {
         return isServerExpansionBetween(minExpansion, maxExpansion);
     }
+
+    /// Expansion whose dbc files and layouts the server loads
+    [[nodiscard]] inline Expansion getServerDataExpansion() noexcept { return getDataExpansion(getServerExpansion()); }
 
     /// Legacy wrapper: Build number used for database build filters
     [[nodiscard]] inline uint32_t getConfigBuild() noexcept { return getDataBuildForExpansion(getServerExpansion()); }

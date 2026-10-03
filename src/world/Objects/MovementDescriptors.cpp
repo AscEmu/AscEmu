@@ -10371,6 +10371,225 @@ namespace
         MovementStep{ MovementOp::GuidByte0 },
         MovementStep{ MovementOp::End }
     };
+
+    // 7.3.5: every movement opcode of the client and the movement update for other clients share one layout
+    static constexpr std::array LegionMovementInfoDescriptor
+    {
+        MovementStep{ MovementOp::Guid128 },
+        MovementStep{ MovementOp::Timestamp },
+        MovementStep{ MovementOp::PosX },
+        MovementStep{ MovementOp::PosY },
+        MovementStep{ MovementOp::PosZ },
+        MovementStep{ MovementOp::Orientation },
+        MovementStep{ MovementOp::Pitch },
+        MovementStep{ MovementOp::SplineElevation },
+        MovementStep{ MovementOp::RemovedForcesCount },
+        MovementStep{ MovementOp::Count },                      // move index
+        MovementStep{ MovementOp::RemovedForces },
+        MovementStep{ MovementOp::Flags },
+        MovementStep{ MovementOp::Flags2 },
+        MovementStep{ MovementOp::HasTransport },
+        MovementStep{ MovementOp::HasFallData },
+        MovementStep{ MovementOp::HasSpline },
+        MovementStep{ MovementOp::SkipBit },                    // height change failed
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::SkipBit },                    // remote time valid
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::AlignBits },
+        MovementStep{ MovementOp::TGuid128, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosX, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosY, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosZ, Cond::HasTransport },
+        MovementStep{ MovementOp::TOrientation, Cond::HasTransport },
+        MovementStep{ MovementOp::TSeat, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime2, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime3, Cond::HasTransport },
+        MovementStep{ MovementOp::AlignBits, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime2, Cond::HasTransportTime2 },
+        MovementStep{ MovementOp::TTime3, Cond::HasTransportTime3 },
+        MovementStep{ MovementOp::FallTime, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpVelocity, Cond::HasFallData },
+        MovementStep{ MovementOp::HasFallDirection, Cond::HasFallData },
+        MovementStep{ MovementOp::AlignBits, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpSin, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpCos, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpXYSpeed, Cond::HasFallDirection },
+        MovementStep{ MovementOp::End }
+    };
+
+    // movement info and the speed: other clients are told the new speed of a player
+    static constexpr std::array LegionUpdateSpeedDescriptor
+    {
+        MovementStep{ MovementOp::Guid128 },
+        MovementStep{ MovementOp::Timestamp },
+        MovementStep{ MovementOp::PosX },
+        MovementStep{ MovementOp::PosY },
+        MovementStep{ MovementOp::PosZ },
+        MovementStep{ MovementOp::Orientation },
+        MovementStep{ MovementOp::Pitch },
+        MovementStep{ MovementOp::SplineElevation },
+        MovementStep{ MovementOp::RemovedForcesCount },
+        MovementStep{ MovementOp::Count },                      // move index
+        MovementStep{ MovementOp::RemovedForces },
+        MovementStep{ MovementOp::Flags },
+        MovementStep{ MovementOp::Flags2 },
+        MovementStep{ MovementOp::HasTransport },
+        MovementStep{ MovementOp::HasFallData },
+        MovementStep{ MovementOp::HasSpline },
+        MovementStep{ MovementOp::SkipBit },                    // height change failed
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::SkipBit },                    // remote time valid
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::AlignBits },
+        MovementStep{ MovementOp::TGuid128, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosX, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosY, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosZ, Cond::HasTransport },
+        MovementStep{ MovementOp::TOrientation, Cond::HasTransport },
+        MovementStep{ MovementOp::TSeat, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime2, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime3, Cond::HasTransport },
+        MovementStep{ MovementOp::AlignBits, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime2, Cond::HasTransportTime2 },
+        MovementStep{ MovementOp::TTime3, Cond::HasTransportTime3 },
+        MovementStep{ MovementOp::FallTime, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpVelocity, Cond::HasFallData },
+        MovementStep{ MovementOp::HasFallDirection, Cond::HasFallData },
+        MovementStep{ MovementOp::AlignBits, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpSin, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpCos, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpXYSpeed, Cond::HasFallDirection },
+        MovementStep{ MovementOp::NewSpeed },
+        MovementStep{ MovementOp::End }
+    };
+
+    // movement info and the sequence the client acknowledges
+    static constexpr std::array LegionAckDescriptor
+    {
+        MovementStep{ MovementOp::Guid128 },
+        MovementStep{ MovementOp::Timestamp },
+        MovementStep{ MovementOp::PosX },
+        MovementStep{ MovementOp::PosY },
+        MovementStep{ MovementOp::PosZ },
+        MovementStep{ MovementOp::Orientation },
+        MovementStep{ MovementOp::Pitch },
+        MovementStep{ MovementOp::SplineElevation },
+        MovementStep{ MovementOp::RemovedForcesCount },
+        MovementStep{ MovementOp::Count },                      // move index
+        MovementStep{ MovementOp::RemovedForces },
+        MovementStep{ MovementOp::Flags },
+        MovementStep{ MovementOp::Flags2 },
+        MovementStep{ MovementOp::HasTransport },
+        MovementStep{ MovementOp::HasFallData },
+        MovementStep{ MovementOp::HasSpline },
+        MovementStep{ MovementOp::SkipBit },                    // height change failed
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::SkipBit },                    // remote time valid
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::AlignBits },
+        MovementStep{ MovementOp::TGuid128, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosX, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosY, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosZ, Cond::HasTransport },
+        MovementStep{ MovementOp::TOrientation, Cond::HasTransport },
+        MovementStep{ MovementOp::TSeat, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime2, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime3, Cond::HasTransport },
+        MovementStep{ MovementOp::AlignBits, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime2, Cond::HasTransportTime2 },
+        MovementStep{ MovementOp::TTime3, Cond::HasTransportTime3 },
+        MovementStep{ MovementOp::FallTime, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpVelocity, Cond::HasFallData },
+        MovementStep{ MovementOp::HasFallDirection, Cond::HasFallData },
+        MovementStep{ MovementOp::AlignBits, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpSin, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpCos, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpXYSpeed, Cond::HasFallDirection },
+        MovementStep{ MovementOp::Count },
+        MovementStep{ MovementOp::End }
+    };
+
+    static constexpr std::array LegionSpeedAckDescriptor
+    {
+        MovementStep{ MovementOp::Guid128 },
+        MovementStep{ MovementOp::Timestamp },
+        MovementStep{ MovementOp::PosX },
+        MovementStep{ MovementOp::PosY },
+        MovementStep{ MovementOp::PosZ },
+        MovementStep{ MovementOp::Orientation },
+        MovementStep{ MovementOp::Pitch },
+        MovementStep{ MovementOp::SplineElevation },
+        MovementStep{ MovementOp::RemovedForcesCount },
+        MovementStep{ MovementOp::Count },                      // move index
+        MovementStep{ MovementOp::RemovedForces },
+        MovementStep{ MovementOp::Flags },
+        MovementStep{ MovementOp::Flags2 },
+        MovementStep{ MovementOp::HasTransport },
+        MovementStep{ MovementOp::HasFallData },
+        MovementStep{ MovementOp::HasSpline },
+        MovementStep{ MovementOp::SkipBit },                    // height change failed
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::SkipBit },                    // remote time valid
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::AlignBits },
+        MovementStep{ MovementOp::TGuid128, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosX, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosY, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosZ, Cond::HasTransport },
+        MovementStep{ MovementOp::TOrientation, Cond::HasTransport },
+        MovementStep{ MovementOp::TSeat, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime2, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime3, Cond::HasTransport },
+        MovementStep{ MovementOp::AlignBits, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime2, Cond::HasTransportTime2 },
+        MovementStep{ MovementOp::TTime3, Cond::HasTransportTime3 },
+        MovementStep{ MovementOp::FallTime, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpVelocity, Cond::HasFallData },
+        MovementStep{ MovementOp::HasFallDirection, Cond::HasFallData },
+        MovementStep{ MovementOp::AlignBits, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpSin, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpCos, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpXYSpeed, Cond::HasFallDirection },
+        MovementStep{ MovementOp::Count },
+        MovementStep{ MovementOp::NewSpeed },
+        MovementStep{ MovementOp::End }
+    };
+
+    // mover, sequence, speed: the moving player is told its new speed
+    static constexpr std::array LegionSetSpeedDescriptor
+    {
+        MovementStep{ MovementOp::Guid128 },
+        MovementStep{ MovementOp::Count },
+        MovementStep{ MovementOp::NewSpeed },
+        MovementStep{ MovementOp::End }
+    };
+
+    // mover, speed: units moved by the server
+    static constexpr std::array LegionSplineSetSpeedDescriptor
+    {
+        MovementStep{ MovementOp::Guid128 },
+        MovementStep{ MovementOp::NewSpeed },
+        MovementStep{ MovementOp::End }
+    };
+
+    // mover, sequence: the moving player is told a changed movement flag
+    static constexpr std::array LegionSetFlagDescriptor
+    {
+        MovementStep{ MovementOp::Guid128 },
+        MovementStep{ MovementOp::Count },
+        MovementStep{ MovementOp::End }
+    };
+
+    // mover: units moved by the server
+    static constexpr std::array LegionSplineSetFlagDescriptor
+    {
+        MovementStep{ MovementOp::Guid128 },
+        MovementStep{ MovementOp::End }
+    };
 }
 
 std::span<MovementStep const> const UnknownDescriptor = kUnknownDescriptorStorage;
@@ -11061,6 +11280,138 @@ std::span<MovementStep const> getMopMovementDescriptor(uint16_t opcode, bool rea
             return MopMSG_MOVE_TELEPORTDescriptor;
         case SMSG_MOVE_UPDATE_TELEPORT:
             return MopSMSG_MOVE_UPDATE_TELEPORTDescriptor;
+        default:
+            return UnknownDescriptor;
+    }
+}
+
+std::span<MovementStep const> getLegionMovementDescriptor(uint16_t opcode, bool read)
+{
+    uint32_t internalId = 0;
+    if (read)
+        internalId = Version::opcodeIdForHex(opcode, WoW::Expansion::_Legion);
+    else
+        internalId = static_cast<uint32_t>(opcode);
+
+    switch (internalId)
+    {
+        case MSG_MOVE_HEARTBEAT:
+        case MSG_MOVE_JUMP:
+        case MSG_MOVE_START_ASCEND:
+        case MSG_MOVE_STOP_ASCEND:
+        case MSG_MOVE_START_DESCEND:
+        case MSG_MOVE_START_FORWARD:
+        case MSG_MOVE_START_BACKWARD:
+        case MSG_MOVE_SET_FACING:
+        case MSG_MOVE_START_STRAFE_LEFT:
+        case MSG_MOVE_START_STRAFE_RIGHT:
+        case MSG_MOVE_STOP_STRAFE:
+        case MSG_MOVE_START_TURN_LEFT:
+        case MSG_MOVE_START_TURN_RIGHT:
+        case MSG_MOVE_STOP_TURN:
+        case MSG_MOVE_START_PITCH_UP:
+        case MSG_MOVE_START_PITCH_DOWN:
+        case MSG_MOVE_STOP_PITCH:
+        case MSG_MOVE_SET_RUN_MODE:
+        case MSG_MOVE_SET_WALK_MODE:
+        case MSG_MOVE_SET_PITCH:
+        case MSG_MOVE_START_SWIM:
+        case MSG_MOVE_STOP_SWIM:
+        case MSG_MOVE_FALL_LAND:
+        case MSG_MOVE_STOP:
+        case CMSG_MOVE_SET_FLY:
+        case CMSG_MOVE_CHNG_TRANSPORT:
+        case CMSG_MOVE_FALL_RESET:
+        case SMSG_PLAYER_MOVE:
+        case SMSG_MOVE_UPDATE_TELEPORT:
+            return LegionMovementInfoDescriptor;
+
+        case MSG_MOVE_SET_WALK_SPEED:
+        case MSG_MOVE_SET_RUN_SPEED:
+        case MSG_MOVE_SET_RUN_BACK_SPEED:
+        case MSG_MOVE_SET_SWIM_SPEED:
+        case MSG_MOVE_SET_SWIM_BACK_SPEED:
+        case MSG_MOVE_SET_TURN_RATE:
+        case MSG_MOVE_SET_FLIGHT_SPEED:
+        case MSG_MOVE_SET_FLIGHT_BACK_SPEED:
+        case MSG_MOVE_SET_PITCH_RATE:
+            return LegionUpdateSpeedDescriptor;
+
+        case SMSG_FORCE_WALK_SPEED_CHANGE:
+        case SMSG_FORCE_RUN_SPEED_CHANGE:
+        case SMSG_FORCE_RUN_BACK_SPEED_CHANGE:
+        case SMSG_FORCE_SWIM_SPEED_CHANGE:
+        case SMSG_FORCE_SWIM_BACK_SPEED_CHANGE:
+        case SMSG_FORCE_TURN_RATE_CHANGE:
+        case SMSG_FORCE_FLIGHT_SPEED_CHANGE:
+        case SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE:
+        case SMSG_FORCE_PITCH_RATE_CHANGE:
+            return LegionSetSpeedDescriptor;
+
+        case SMSG_SPLINE_SET_WALK_SPEED:
+        case SMSG_SPLINE_SET_RUN_SPEED:
+        case SMSG_SPLINE_SET_RUN_BACK_SPEED:
+        case SMSG_SPLINE_SET_SWIM_SPEED:
+        case SMSG_SPLINE_SET_SWIM_BACK_SPEED:
+        case SMSG_SPLINE_SET_TURN_RATE:
+        case SMSG_SPLINE_SET_FLIGHT_SPEED:
+        case SMSG_SPLINE_SET_FLIGHT_BACK_SPEED:
+        case SMSG_SPLINE_SET_PITCH_RATE:
+            return LegionSplineSetSpeedDescriptor;
+
+        case SMSG_MOVE_SET_CAN_FLY:
+        case SMSG_MOVE_UNSET_CAN_FLY:
+        case SMSG_MOVE_WATER_WALK:
+        case SMSG_MOVE_LAND_WALK:
+        case SMSG_MOVE_FEATHER_FALL:
+        case SMSG_MOVE_NORMAL_FALL:
+        case SMSG_MOVE_SET_HOVER:
+        case SMSG_MOVE_UNSET_HOVER:
+        case SMSG_FORCE_MOVE_ROOT:
+        case SMSG_FORCE_MOVE_UNROOT:
+        case SMSG_MOVE_GRAVITY_DISABLE:
+        case SMSG_MOVE_GRAVITY_ENABLE:
+            return LegionSetFlagDescriptor;
+
+        case SMSG_SPLINE_MOVE_SET_FLYING:
+        case SMSG_SPLINE_MOVE_UNSET_FLYING:
+        case SMSG_SPLINE_MOVE_WATER_WALK:
+        case SMSG_SPLINE_MOVE_LAND_WALK:
+        case SMSG_SPLINE_MOVE_FEATHER_FALL:
+        case SMSG_SPLINE_MOVE_NORMAL_FALL:
+        case SMSG_SPLINE_MOVE_SET_HOVER:
+        case SMSG_SPLINE_MOVE_UNSET_HOVER:
+        case SMSG_SPLINE_MOVE_ROOT:
+        case SMSG_SPLINE_MOVE_UNROOT:
+        case SMSG_SPLINE_MOVE_GRAVITY_DISABLE:
+        case SMSG_SPLINE_MOVE_GRAVITY_ENABLE:
+        case SMSG_SPLINE_MOVE_SET_RUN_MODE:
+        case SMSG_SPLINE_MOVE_SET_WALK_MODE:
+            return LegionSplineSetFlagDescriptor;
+
+        case CMSG_MOVE_SET_CAN_FLY_ACK:
+        case CMSG_MOVE_FEATHER_FALL_ACK:
+        case CMSG_MOVE_WATER_WALK_ACK:
+        case CMSG_FORCE_MOVE_ROOT_ACK:
+        case CMSG_FORCE_MOVE_UNROOT_ACK:
+        case CMSG_MOVE_KNOCK_BACK_ACK:
+        case CMSG_MOVE_HOVER_ACK:
+        case CMSG_MOVE_GRAVITY_DISABLE_ACK:
+        case CMSG_MOVE_GRAVITY_ENABLE_ACK:
+        case CMSG_MOVE_SET_COLLISION_HEIGHT_ACK:
+            return LegionAckDescriptor;
+
+        case CMSG_FORCE_WALK_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_RUN_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_SWIM_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_TURN_RATE_CHANGE_ACK:
+        case CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_PITCH_RATE_CHANGE_ACK:
+            return LegionSpeedAckDescriptor;
+
         default:
             return UnknownDescriptor;
     }

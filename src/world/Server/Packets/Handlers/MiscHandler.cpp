@@ -40,6 +40,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgRandomRoll.h"
 #include "Server/Packets/CmsgRealmSplit.h"
 #include "Server/Packets/SmsgRealmSplit.h"
+#include "Server/Packets/SmsgBattlePayGetPurchaseListResponse.h"
+#include "Server/Packets/SmsgUndeleteCooldownStatusResponse.h"
 #include "Server/Packets/CmsgSetTaxiBenchmarkMode.h"
 #include "Server/Packets/SmsgWorldStateUiTimerUpdate.h"
 #include "Server/Packets/CmsgGameobjReportUse.h"
@@ -522,6 +524,19 @@ void WorldSession::handleRandomRollOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleRealmSplitOpcode(WorldPacket& recvPacket)
 {
+    // 6.x and 7.x clients ask for the purchases of the in game shop with this id
+    const auto protocol = _socket->getClientProtocol();
+    if (protocol.isWoD())
+    {
+        return;
+    }
+    else if (protocol.isLegion())
+    {
+        SmsgBattlePayGetPurchaseListResponse managedPacket;
+        sendManagedPacket(managedPacket);
+        return;
+    }
+
     CmsgRealmSplit srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;
@@ -1264,6 +1279,20 @@ void WorldSession::handleLoadScreenOpcode([[maybe_unused]] WorldPacket& recvPack
     recvPacket >> mapId;
     recvPacket.readBit();
 #endif
+}
+
+void WorldSession::handleGetUndeleteCooldownStatusOpcode(WorldPacket& /*recvPacket*/)
+{
+    // deleted characters are not kept for a restore, the feature is never on cooldown
+    constexpr uint32_t maxCooldown = 30 * 24 * 60 * 60;
+
+    SmsgUndeleteCooldownStatusResponse managedPacket(false, maxCooldown, 0);
+    sendManagedPacket(managedPacket);
+}
+
+void WorldSession::handleNoResponseOpcode(WorldPacket& /*recvPacket*/)
+{
+    // notifications of the client the server has nothing to answer to
 }
 
 void WorldSession::handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/)
@@ -2123,7 +2152,7 @@ void WorldSession::sendClientCacheVersion([[maybe_unused]] uint32_t version)
 
 void WorldSession::sendAccountDataTimes(uint32_t mask)
 {
-    SmsgAccountDataTimes sendPacket(static_cast<uint32_t>(UNIXTIME), 1, mask, NUM_ACCOUNT_DATA_TYPES);
+    SmsgAccountDataTimes sendPacket(static_cast<uint32_t>(UNIXTIME), 1, mask, NUM_ACCOUNT_DATA_TYPES, _player != nullptr ? _player->getGuid() : 0);
     sendManagedPacket(sendPacket);
 }
 

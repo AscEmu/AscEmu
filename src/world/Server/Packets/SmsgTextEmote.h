@@ -42,6 +42,17 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // source, account of the source, emote, sound index, target; the names are resolved by the client
+                packet << WoWGuid(guid).toGuid128(m_protocol.realmId, 0);
+                packet << WoWGuid128();
+                packet << int32_t(textEmote);
+                packet << int32_t(numEmote);
+                packet << targetGuid.toGuid128(m_protocol.realmId, 0);
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << guid << textEmote << numEmote << nameLength;

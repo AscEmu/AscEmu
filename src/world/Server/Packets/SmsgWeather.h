@@ -32,8 +32,9 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion == WoW::Expansion::_Mop)
+            if (m_protocol.expansion == WoW::Expansion::_Mop || m_protocol.isLegion())
             {
+                // weather, intensity, abrupt change
                 packet << type << density;
                 packet.writeBit(0);
                 packet.flushBits();

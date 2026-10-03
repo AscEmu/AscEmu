@@ -23,6 +23,9 @@ namespace AscEmu::Packets
 
         WoW::ClientProtocol m_protocol{};
 
+        // map of the receiving player: the 128 bit guids of map bound objects carry it (6.x and 7.x clients)
+        uint32_t m_receiverMapId = 0;
+
         virtual bool internalSerialise(WorldPacket&) { return true; }
 
         virtual bool internalDeserialise(WorldPacket&) { return true; }
@@ -44,6 +47,11 @@ namespace AscEmu::Packets
         [[nodiscard]] WoW::ClientProtocol getClientProtocol() const
         {
             return m_protocol;
+        }
+
+        void setReceiverMapId(uint32_t mapId)
+        {
+            m_receiverMapId = mapId;
         }
 
         virtual std::unique_ptr<WorldPacket> serialise()

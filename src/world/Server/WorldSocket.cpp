@@ -289,6 +289,18 @@ void WorldSocket::outPacket(uint32_t opcode, size_t len, const void* data)
         return;
     }
 
+#if AE_WORLD_PROFILE_WOD || AE_WORLD_PROFILE_LEGION
+    // connections with their own framing and encryption take every packet through it
+    {
+        WorldPacket packet(static_cast<WorldPacket::Opcode>(opcode), len);
+        if (len)
+            packet.append(static_cast<const uint8_t*>(data), len);
+
+        if (sendVersionedPacket(&packet))
+            return;
+    }
+#endif
+
     uint8_t res = _outPacket(opcode, len, data);
     if (res == OUTPACKET_RESULT_SUCCESS)
         return;

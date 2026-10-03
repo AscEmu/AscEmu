@@ -110,6 +110,26 @@ namespace AscEmu::Packets
                 mi.guid = guid;
                 mi.writeMovementInfo(packet, MSG_MOVE_TELEPORT, m_protocol.expansion);
             }
+            else if (m_protocol.isLegion())
+            {
+                // SMSG_MOVE_TELEPORT: mover, sequence, position, facing, preload world, transport and vehicle
+                const bool hasTransportData = !mi.transport_guid.isEmpty();
+
+                packet << guid.toGuid128(m_protocol.realmId, mi.mapId);
+                packet << uint32_t(mi.counter);
+                packet << lv.x;
+                packet << lv.y;
+                packet << lv.z;
+                packet << lv.o;
+                packet << uint8_t(0);                   // preload world
+
+                packet.writeBit(hasTransportData);
+                packet.writeBit(false);                 // vehicle
+                packet.flushBits();
+
+                if (hasTransportData)
+                    packet << mi.transport_guid.toGuid128(m_protocol.realmId, mi.mapId);
+            }
             else
             {
                 return false;

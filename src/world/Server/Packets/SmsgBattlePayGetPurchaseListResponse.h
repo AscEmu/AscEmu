@@ -6,16 +6,23 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include <cstdint>
 
-//\NOTE: This gets replaced in Mop by SMSG_ATTACKSWING_ERROR
 namespace AscEmu::Packets
 {
-    class SmsgAttackSwingNotInRange : public ManagedPacket
+    // purchases of the in game shop; the server has no shop, the list is empty
+    class SmsgBattlePayGetPurchaseListResponse : public ManagedPacket
     {
     public:
+        uint32_t result;
 
-        SmsgAttackSwingNotInRange() :
-            ManagedPacket(SMSG_ATTACKSWING_NOTINRANGE, 0)
+        SmsgBattlePayGetPurchaseListResponse() : SmsgBattlePayGetPurchaseListResponse(0)
+        {
+        }
+
+        explicit SmsgBattlePayGetPurchaseListResponse(uint32_t result) :
+            ManagedPacket(SMSG_BATTLE_PAY_GET_PURCHASE_LIST_RESPONSE, 4 + 4),
+            result(result)
         {
         }
 
@@ -26,17 +33,12 @@ namespace AscEmu::Packets
         {
             if (m_protocol.isLegion())
             {
-                // one packet for every swing error: cannot attack, bad facing, not in range, dead target
-                packet.initialize(SMSG_ATTACK_SWING_ERROR, 1);
-                packet.writeBits(2, 2);
-                packet.flushBits();
+                packet << result;
+                packet << uint32_t(0);                  // purchases
                 return true;
             }
 
-            if (m_protocol.isMop())
-                return false;
-
-            return true;
+            return false;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

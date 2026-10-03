@@ -44,6 +44,18 @@ namespace AscEmu::Packets
                 mopInfo.writeMovementInfo(packet, SMSG_MOVE_UPDATE_TELEPORT, m_protocol.expansion);
                 return true;
             }
+            else if (m_protocol.isLegion())
+            {
+                // movement info, movement forces, then one bit per speed that changed
+                MovementInfo info = mi;
+                info.guid = guid;
+                info.writeMovementInfo(packet, SMSG_MOVE_UPDATE_TELEPORT, m_protocol.expansion);
+
+                packet << uint32_t(0);                  // movement forces
+                packet.writeBits(0, 9);                 // no speed changes
+                packet.flushBits();
+                return true;
+            }
             else if (m_protocol.isCata())
             {
                 bool hasTransportData = !mi.transport_guid.isEmpty();

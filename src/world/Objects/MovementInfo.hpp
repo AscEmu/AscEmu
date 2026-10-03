@@ -18,6 +18,9 @@ struct MovementInfo
     //note: not present in versions before MoP
     WoWGuid guid2 = 0;
 
+    // map of the mover: the 128 bit guids of 6.x and 7.x clients carry the map of map bound movers
+    uint32_t mapId = 0;
+
     uint32_t flags = 0;
     //note: uint8_t for tbc
     uint16_t flags2 = 0;

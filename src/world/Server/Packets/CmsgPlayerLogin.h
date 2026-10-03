@@ -28,6 +28,16 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                WoWGuid128 clientGuid;
+                float farClip;
+                packet >> clientGuid >> farClip;
+
+                guid = WoWGuid::fromGuid128(clientGuid);
+                return !packet.hadReadFailure();
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 uint64_t unpackedGuid;

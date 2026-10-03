@@ -48,6 +48,15 @@ namespace AscEmu::Packets
                 return true;
             }
 
+            if (m_protocol.isLegion())
+            {
+                // variable, value, hidden
+                packet << worldState1 << value1;
+                packet.writeBit(0);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
                 packet.writeBit(0);

@@ -29,6 +29,9 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+                packet << uint32_t(0);              // animation kit
+
             packet << state;
             return true;
         }

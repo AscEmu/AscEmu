@@ -41,6 +41,30 @@ namespace AscEmu::Packets
             if (m_protocol.expansion < WoW::Expansion::_WotLK)
                 return false;
 
+            if (m_protocol.isLegion())
+            {
+                // unit, highest threat, then every threat as 64 bit value
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << unitGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+
+                size_t countPos = packet.wpos();
+                packet << uint32_t(0);
+
+                uint32_t count = 0;
+                for (const auto& ref : threadList)
+                {
+                    if (!ref->isAvailable())
+                        continue;
+
+                    packet << WoWGuid(ref->getVictim()->getGuid()).toGuid128(m_protocol.realmId, m_receiverMapId);
+                    packet << int64_t(ref->getThreat() * 100);
+                    ++count;
+                }
+
+                packet.put<uint32_t>(countPos, count);
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet.appendPackGuid(guid.getRawGuid());

@@ -40,6 +40,36 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // result, both items, bag slot, then the data of the result: the level (1, 87), the containers of a
+                // bind confirmation (81) or the limit category (84, 85, 89)
+                packet << int8_t(error);
+                packet << srcGuid.toGuid128(m_protocol.realmId, 0);
+                packet << destGuid.toGuid128(m_protocol.realmId, 0);
+                packet << uint8_t(0);
+
+                switch (error)
+                {
+                    case 1:
+                    case 87:
+                    case 84:
+                    case 85:
+                    case 89:
+                        packet << int32_t(sendExtraData ? extraData : 0);
+                        break;
+                    case 81:
+                        packet << WoWGuid128();
+                        packet << int32_t(0);
+                        packet << WoWGuid128();
+                        break;
+                    default:
+                        break;
+                }
+
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 if (error == 0)

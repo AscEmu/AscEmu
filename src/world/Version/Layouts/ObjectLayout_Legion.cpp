@@ -11,10 +11,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace Version::Tables
 {
-    // WoWObject: 11 fields, 48 bytes
+    // WoWObject: 13 fields, 48 bytes
     static const FieldEntry<ObjectField> legionObjectFields[] =
     {
         { ObjectField::Guid,                     {    0,   16,   1,    0 } },
+        { ObjectField::GuidLow,                  {    0,    4,   1,    0 } },
+        { ObjectField::GuidHigh,                 {    4,    4,   1,    0 } },
         { ObjectField::Data,                     {   16,   16,   1,    0 } },
         { ObjectField::FieldType,                {   32,    4,   1,    0 } },
         { ObjectField::Type,                     {   32,    4,   1,    0 } },
@@ -27,21 +29,39 @@ namespace Version::Tables
         { ObjectField::ScaleX,                   {   44,    4,   1,    0 } },
     };
 
-    // WoWUnit: 101 fields, 852 bytes
+    // WoWUnit: 119 fields, 852 bytes
     static const FieldEntry<UnitField> legionUnitFields[] =
     {
         { UnitField::CharmGuid,                         {   48,   16,   1,    0 } },
+        { UnitField::CharmGuidLow,                      {   48,    4,   1,    0 } },
+        { UnitField::CharmGuidHigh,                     {   52,    4,   1,    0 } },
         { UnitField::SummonGuid,                        {   64,   16,   1,    0 } },
+        { UnitField::SummonGuidLow,                     {   64,    4,   1,    0 } },
+        { UnitField::SummonGuidHigh,                    {   68,    4,   1,    0 } },
         { UnitField::CritterGuid,                       {   80,   16,   1,    0 } },
+        { UnitField::CritterGuidLow,                    {   80,    4,   1,    0 } },
+        { UnitField::CritterGuidHigh,                   {   84,    4,   1,    0 } },
         { UnitField::CharmedByGuid,                     {   96,   16,   1,    0 } },
+        { UnitField::CharmedByGuidLow,                  {   96,    4,   1,    0 } },
+        { UnitField::CharmedByGuidHigh,                 {  100,    4,   1,    0 } },
         { UnitField::SummonedByGuid,                    {  112,   16,   1,    0 } },
+        { UnitField::SummonedByGuidLow,                 {  112,    4,   1,    0 } },
+        { UnitField::SummonedByGuidHigh,                {  116,    4,   1,    0 } },
         { UnitField::CreatedByGuid,                     {  128,   16,   1,    0 } },
+        { UnitField::CreatedByGuidLow,                  {  128,    4,   1,    0 } },
+        { UnitField::CreatedByGuidHigh,                 {  132,    4,   1,    0 } },
         { UnitField::DemonCreatorGuid,                  {  144,   16,   1,    0 } },
+        { UnitField::DemonCreatorGuidLow,               {  144,    4,   1,    0 } },
+        { UnitField::DemonCreatorGuidHigh,              {  148,    4,   1,    0 } },
         { UnitField::TargetGuid,                        {  160,   16,   1,    0 } },
-        { UnitField::MaxHealth,                         {  160,    4,   1,    0 } },
-        { UnitField::MaxPower1,                         {  164,    4,   1,    0 } },
-        { UnitField::MaxPower2,                         {  168,    4,   1,    0 } },
+        { UnitField::TargetGuidLow,                     {  160,    4,   1,    0 } },
+        { UnitField::TargetGuidHigh,                    {  164,    4,   1,    0 } },
+        { UnitField::MaxHealth,                         {  256,    8,   1,    0 } },
+        { UnitField::MaxPower1,                         {  264,    4,   1,    0 } },
+        { UnitField::MaxPower2,                         {  268,    4,   1,    0 } },
         { UnitField::BattlePetCompanionGuid,            {  176,   16,   1,    0 } },
+        { UnitField::BattlePetCompanionGuidLow,         {  176,    4,   1,    0 } },
+        { UnitField::BattlePetCompanionGuidHigh,        {  180,    4,   1,    0 } },
         { UnitField::ChannelSpell,                      {  200,    4,   1,    0 } },
         { UnitField::SummonedByHomeRealm,               {  208,    4,   1,    0 } },
         { UnitField::FieldBytes0,                       {  212,    4,   1,    0 } },
@@ -63,11 +83,11 @@ namespace Version::Tables
         { UnitField::MaxPower5,                         {  280,    4,   1,    0 } },
         { UnitField::MaxPower6,                         {  284,    4,   1,    0 } },
         { UnitField::PowerRegenFlatModifier,            {  288,    4,   6,    4 } },
-        { UnitField::PetNumber,                         {  300,    4,   1,    0 } },
-        { UnitField::PetNameTimestamp,                  {  304,    4,   1,    0 } },
-        { UnitField::PetExperience,                     {  308,    4,   1,    0 } },
+        { UnitField::PetNumber,                         {  456,    4,   1,    0 } },
+        { UnitField::PetNameTimestamp,                  {  460,    4,   1,    0 } },
+        { UnitField::PetExperience,                     {  464,    4,   1,    0 } },
         { UnitField::PowerRegenInterruptedFlatModifier, {  312,    4,   6,    4 } },
-        { UnitField::DynamicFlags,                      {  316,    4,   1,    0 } },
+        { UnitField::DynamicFlags,                      {   40,    4,   1,    0 } },
         { UnitField::Level,                             {  336,    4,   1,    0 } },
         { UnitField::EffectiveLevel,                    {  340,    4,   1,    0 } },
         { UnitField::FactionTemplate,                   {  360,    4,   1,    0 } },
@@ -133,7 +153,7 @@ namespace Version::Tables
         { UnitField::InteractSpellId,                   {  788,    4,   1,    0 } },
     };
 
-    // WoWPlayer: 125 fields, 18500 bytes
+    // WoWPlayer: 123 fields, 18500 bytes
     static const FieldEntry<PlayerField> legionPlayerFields[] =
     {
         { PlayerField::DuelArbiter,                            {  852,   16,   1,    0 } },
@@ -149,23 +169,22 @@ namespace Version::Tables
         { PlayerField::PlayerBytesHairColor,                   {  923,    1,   1,    0 } },
         { PlayerField::PlayerBytesHornColor,                   {  923,    1,   1,    0 } },
         { PlayerField::PlayerBytes2,                           {  924,    4,   1,    0 } },
-        { PlayerField::PlayerBytes2Earrings,                   {  924,    1,   1,    0 } },
-        { PlayerField::PlayerBytes2Ears,                       {  924,    1,   1,    0 } },
-        { PlayerField::PlayerBytes2FacialHair,                 {  924,    1,   1,    0 } },
-        { PlayerField::PlayerBytes2Features,                   {  924,    1,   1,    0 } },
-        { PlayerField::PlayerBytes2Hair,                       {  924,    1,   1,    0 } },
-        { PlayerField::PlayerBytes2HornStyle,                  {  924,    1,   1,    0 } },
-        { PlayerField::PlayerBytes2Markings,                   {  924,    1,   1,    0 } },
-        { PlayerField::PlayerBytes2Piercings,                  {  924,    1,   1,    0 } },
-        { PlayerField::PlayerBytes2Tusks,                      {  924,    1,   1,    0 } },
-        { PlayerField::PlayerBytes2Unk1,                       {  925,    1,   1,    0 } },
-        { PlayerField::PlayerBytes2BankSlots,                  {  926,    1,   1,    0 } },
-        { PlayerField::PlayerBytes2RestState,                  {  927,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2Earrings,                   {  927,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2Ears,                       {  927,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2FacialHair,                 {  927,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2Features,                   {  927,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2Hair,                       {  927,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2HornStyle,                  {  927,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2Markings,                   {  927,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2Piercings,                  {  927,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2Tusks,                      {  927,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2BankSlots,                  {  929,    1,   1,    0 } },
+        { PlayerField::PlayerBytes2RestState,                  { 10748,    1,   1,    0 } },
         { PlayerField::PlayerBytes3,                           {  932,    4,   1,    0 } },
-        { PlayerField::PlayerBytes3Gender,                     {  932,    1,   1,    0 } },
-        { PlayerField::PlayerBytes3DrunkValue,                 {  933,    1,   1,    0 } },
-        { PlayerField::PlayerBytes3PvpRank,                    {  934,    1,   1,    0 } },
-        { PlayerField::PlayerBytes3ArenaFaction,               {  935,    1,   1,    0 } },
+        { PlayerField::PlayerBytes3Gender,                     {  930,    1,   1,    0 } },
+        { PlayerField::PlayerBytes3DrunkValue,                 {  931,    1,   1,    0 } },
+        { PlayerField::PlayerBytes3PvpRank,                    {  932,    1,   1,    0 } },
+        { PlayerField::PlayerBytes3ArenaFaction,               {  933,    1,   1,    0 } },
         { PlayerField::DuelTeam,                               {  936,    4,   1,    0 } },
         { PlayerField::GuildTimestamp,                         {  940,    4,   1,    0 } },
         { PlayerField::VisibleItems,                           { 4144,    8,  19,    8 } },
@@ -220,7 +239,7 @@ namespace Version::Tables
         { PlayerField::PvpPowerDamage,                         { 9460,    4,   1,    0 } },
         { PlayerField::PvpPowerHealing,                        { 9464,    4,   1,    0 } },
         { PlayerField::ExploredZones,                          { 9468,    4, 320,    4 } },
-        { PlayerField::RestStateXp,                            { 10748,   16,   1,    0 } },
+        { PlayerField::RestStateXp,                            { 10752,    4,   1,    0 } },
         { PlayerField::FieldModDamageDonePositive,             { 10764,    4,   7,    4 } },
         { PlayerField::FieldModDamageDoneNegative,             { 10792,    4,   7,    4 } },
         { PlayerField::FieldModDamageDonePct,                  { 10820,    4,   7,    4 } },
@@ -236,10 +255,9 @@ namespace Version::Tables
         { PlayerField::FieldModTargetResistance,               { 10904,    4,   1,    0 } },
         { PlayerField::FieldModTargetPhysicalResistance,       { 10908,    4,   1,    0 } },
         { PlayerField::PlayerFieldBytes,                       { 10916,    4,   1,    0 } },
-        { PlayerField::PlayerFieldBytesMiscFlags,              { 10916,    1,   1,    0 } },
-        { PlayerField::PlayerFieldBytesRafLevel,               { 10917,    1,   1,    0 } },
-        { PlayerField::PlayerFieldBytesEnabledActionBars,      { 10918,    1,   1,    0 } },
-        { PlayerField::PlayerFieldBytesMaxPvpRank,             { 10919,    1,   1,    0 } },
+        { PlayerField::PlayerFieldBytesRafLevel,               { 10916,    1,   1,    0 } },
+        { PlayerField::PlayerFieldBytesEnabledActionBars,      { 10917,    1,   1,    0 } },
+        { PlayerField::PlayerFieldBytesMaxPvpRank,             { 10918,    1,   1,    0 } },
         { PlayerField::FieldPvpMedals,                         { 10920,    4,   1,    0 } },
         { PlayerField::PlayerFieldBytes2,                      { 10920,    4,   1,    0 } },
         { PlayerField::FieldBuyBackPrice,                      { 10924,    4,  12,    4 } },
@@ -263,13 +281,21 @@ namespace Version::Tables
         { PlayerField::OverrideZonePvpType,                    { 11440,    4,   1,    0 } },
     };
 
-    // WoWItem: 18 fields, 340 bytes
+    // WoWItem: 26 fields, 340 bytes
     static const FieldEntry<ItemField> legionItemFields[] =
     {
         { ItemField::OwnerGuid,           {   48,   16,   1,    0 } },
+        { ItemField::OwnerGuidLow,        {   48,    4,   1,    0 } },
+        { ItemField::OwnerGuidHigh,       {   52,    4,   1,    0 } },
         { ItemField::ContainerGuid,       {   64,   16,   1,    0 } },
+        { ItemField::ContainerGuidLow,    {   64,    4,   1,    0 } },
+        { ItemField::ContainerGuidHigh,   {   68,    4,   1,    0 } },
         { ItemField::CreatorGuid,         {   80,   16,   1,    0 } },
+        { ItemField::CreatorGuidLow,      {   80,    4,   1,    0 } },
+        { ItemField::CreatorGuidHigh,     {   84,    4,   1,    0 } },
         { ItemField::GiftCreatorGuid,     {   96,   16,   1,    0 } },
+        { ItemField::GiftCreatorGuidLow,  {   96,    4,   1,    0 } },
+        { ItemField::GiftCreatorGuidHigh, {  100,    4,   1,    0 } },
         { ItemField::StackCount,          {  112,    4,   1,    0 } },
         { ItemField::Duration,            {  116,    4,   1,    0 } },
         { ItemField::SpellCharges,        {  120,    4,   5,    4 } },
@@ -286,18 +312,22 @@ namespace Version::Tables
         { ItemField::ModifierMask,        {  320,    4,   1,    0 } },
     };
 
-    // WoWContainer: 2 fields, 920 bytes
+    // WoWContainer: 4 fields, 920 bytes
     static const FieldEntry<ContainerField> legionContainerFields[] =
     {
         { ContainerField::ItemSlot,  {  340,   16,  36,   16 } },
+        { ContainerField::ItemSlotLow,{  340,    4,  36,   16 } },
+        { ContainerField::ItemSlotHigh,{  344,    4,  36,   16 } },
         { ContainerField::SlotCount, {  916,    4,   1,    0 } },
     };
 
-    // WoWGameObject: 12 fields, 132 bytes
+    // WoWGameObject: 14 fields, 132 bytes
     static const FieldEntry<GameObjectField> legionGameObjectFields[] =
     {
         { GameObjectField::ObjectFieldCreatedBy, {   48,   16,   1,    0 } },
-        { GameObjectField::DisplayId,            {   64,   16,   1,    0 } },
+        { GameObjectField::ObjectFieldCreatedByLow,{   48,    4,   1,    0 } },
+        { GameObjectField::ObjectFieldCreatedByHigh,{   52,    4,   1,    0 } },
+        { GameObjectField::DisplayId,            {   64,    4,   1,    0 } },
         { GameObjectField::Flags,                {   68,    4,   1,    0 } },
         { GameObjectField::Rotation,             {   72,    4,   4,    4 } },
         { GameObjectField::FactionTemplate,      {   88,    4,   1,    0 } },
@@ -306,8 +336,8 @@ namespace Version::Tables
         { GameObjectField::Bytes1Type,           {   97,    1,   1,    0 } },
         { GameObjectField::Bytes1Unk,            {   98,    1,   1,    0 } },
         { GameObjectField::Bytes1Health,         {   99,    1,   1,    0 } },
-        { GameObjectField::Dynamic,              {  112,    4,   1,    0 } },
-        { GameObjectField::Level,                {  120,   20,   1,    0 } },
+        { GameObjectField::Dynamic,              {   40,    4,   1,    0 } },
+        { GameObjectField::Level,                {   92,    4,   1,    0 } },
     };
 
     // WoWDynamicObject: 6 fields, 84 bytes
@@ -326,7 +356,7 @@ namespace Version::Tables
     {
         { CorpseField::OwnerGuid,              {   48,   16,   1,    0 } },
         { CorpseField::PartyGuid,              {   64,   16,   1,    0 } },
-        { CorpseField::DisplayId,              {   80,   16,   1,    0 } },
+        { CorpseField::DisplayId,              {   80,    4,   1,    0 } },
         { CorpseField::Item,                   {   84,    4,  19,    4 } },
         { CorpseField::CorpseBytes1,           {  160,    4,   1,    0 } },
         { CorpseField::CorpseBytes1Unk1,       {  160,    1,   1,    0 } },
@@ -342,11 +372,12 @@ namespace Version::Tables
         { CorpseField::DynamicFlags,           {  172,    4,   1,    0 } },
     };
 
-    // WoWAreaTrigger: 4 fields, 172 bytes
+    // WoWAreaTrigger: 5 fields, 172 bytes
     static const FieldEntry<AreaTriggerField> legionAreaTriggerFields[] =
     {
-        { AreaTriggerField::PosY,       {   80,   16,   1,    0 } },
         { AreaTriggerField::CasterGuid, {  104,   16,   1,    0 } },
+        { AreaTriggerField::CasterGuidLow,{  104,    4,   1,    0 } },
+        { AreaTriggerField::CasterGuidHigh,{  108,    4,   1,    0 } },
         { AreaTriggerField::Duration,   {  120,    4,   1,    0 } },
         { AreaTriggerField::SpellId,    {  136,    4,   1,    0 } },
     };

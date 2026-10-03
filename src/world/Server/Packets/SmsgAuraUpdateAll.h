@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "AuraDataLegion.h"
 #include "Spell/SpellAuraDefines.hpp"
 
 #include <cstdint>
@@ -56,6 +57,21 @@ namespace AscEmu::Packets
         {
             if (m_protocol.expansion < WoW::Expansion::_TBC)
                 return false;
+
+            if (m_protocol.isLegion())
+            {
+                // 7.x sends the full update as SMSG_AURA_UPDATE with the update all bit
+                packet.initialize(SMSG_AURA_UPDATE, 16 + aura_updates.size() * 40);
+                packet.writeBit(true);
+                packet.writeBits(static_cast<uint32_t>(aura_updates.size()), 9);
+                packet.flushBits();
+
+                for (const auto& auras : aura_updates)
+                    writeAuraSlotLegion(packet, auras, false, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
+
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                return true;
+            }
 
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {

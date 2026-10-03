@@ -251,6 +251,9 @@ public:
             return managedPacket.deserialise(packet);
         }
 
+        // map of the player of this session, 0 without a player
+        uint32_t getPlayerMapId() const;
+
         template <typename TPacket>
         std::unique_ptr<WorldPacket> buildPacket(TPacket& managedPacket)
         {
@@ -258,6 +261,7 @@ public:
                 return nullptr;
 
             managedPacket.setClientProtocol(_socket->getClientProtocol());
+            managedPacket.setReceiverMapId(getPlayerMapId());
             return managedPacket.serialise();
         }
 
@@ -771,6 +775,8 @@ protected:
 
         void handleLoadScreenOpcode(WorldPacket& recvPacket);               //>= Cata
         void handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/);        //>= Cata
+        void handleGetUndeleteCooldownStatusOpcode(WorldPacket& /*recvPacket*/);    //>= WoD
+        void handleNoResponseOpcode(WorldPacket& /*recvPacket*/);
         void handleTimeSyncRespOpcode(WorldPacket& recvPacket);
         void handleObjectUpdateFailedOpcode(WorldPacket& recvPacket);       //>= Cata
         
@@ -788,6 +794,8 @@ protected:
         // HotfixHandler.cpp
         void handleRequestHotfix(WorldPacket& recvPacket);                  //>= Cata
         void sendItemDb2Reply(uint32_t entry);                              //>= Cata
+        void writeItemRecordLegion(uint32_t entry, ByteBuffer& record);
+        void writeItemSparseRecordLegion(uint32_t entry, ByteBuffer& record);
         void sendItemSparseDb2Reply(uint32_t entry);                        //>= Cata
         void sendBroadcastDb2Reply(uint32_t entry);                         //>= Mop
 

@@ -42,6 +42,31 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // every currency: type, quantity, weekly quantity, weekly cap, tracked quantity, max quantity, flags
+                packet << uint32_t(records.size());
+                for (auto const& record : records)
+                {
+                    packet << uint32_t(record.id);
+                    packet << uint32_t(record.quantity);
+                    packet.writeBit(record.weeklyQuantity != 0);
+                    packet.writeBit(record.weekCap != 0);
+                    packet.writeBit(record.trackedQuantity != 0);
+                    packet.writeBit(false);
+                    packet.writeBits(record.flags, 5);
+                    packet.flushBits();
+
+                    if (record.weeklyQuantity != 0)
+                        packet << uint32_t(record.weeklyQuantity);
+                    if (record.weekCap != 0)
+                        packet << uint32_t(record.weekCap);
+                    if (record.trackedQuantity != 0)
+                        packet << uint32_t(record.trackedQuantity);
+                }
+                return true;
+            }
+
             if (m_protocol.isCata())
             {
                 packet.writeBits(static_cast<uint32_t>(records.size()), 23);

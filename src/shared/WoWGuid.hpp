@@ -63,6 +63,78 @@ enum class HighGuid : uint64_t
     LowGuidMask     = 0x00FFFFFF,
 };
 
+// Guid types of the 128 bit guids, used by clients from 6.0 on (the values are the same in 6.x and 7.x).
+enum class HighGuid128 : uint8_t
+{
+    Null            = 0,
+    Uniq            = 1,
+    Player          = 2,
+    Item            = 3,
+    Transport       = 6,
+    Creature        = 8,
+    Vehicle         = 9,
+    Pet             = 10,
+    GameObject      = 11,
+    DynamicObject   = 12,
+    AreaTrigger     = 13,
+    Corpse          = 14,
+    Party           = 27,
+    Guild           = 28,
+    WowAccount      = 29,
+    BNetAccount     = 30,
+    Cast            = 47
+};
+
+// 128 bit guid of 6.x and 7.x clients.
+// high part: type (6 bit) | realm (16 bit, 13 bit for map bound types) | map (13 bit) | entry (23 bit) | sub type (6 bit)
+// low part:  server (24 bit) | counter (40 bit)
+// The server keeps its 64 bit guids; WoWGuid::toGuid128() and WoWGuid::fromGuid128() translate at the packet boundary.
+struct WoWGuid128
+{
+    uint64_t low = 0;
+    uint64_t high = 0;
+
+    constexpr WoWGuid128() noexcept = default;
+    constexpr WoWGuid128(uint64_t _high, uint64_t _low) noexcept : low(_low), high(_high) {}
+
+    // types without realm and map: accounts, groups
+    static constexpr WoWGuid128 global(HighGuid128 type, uint64_t counter) noexcept
+    {
+        return { uint64_t(type) << 58, counter };
+    }
+
+    // types bound to a realm: players, items, guilds, transports
+    static constexpr WoWGuid128 realmSpecific(HighGuid128 type, uint32_t realmId, uint64_t counter) noexcept
+    {
+        return { (uint64_t(type) << 58) | (uint64_t(realmId & 0xFFFF) << 42), counter };
+    }
+
+    // types bound to a map: creatures, pets, vehicles, gameobjects, dynamic objects, area triggers, corpses
+    static constexpr WoWGuid128 mapSpecific(HighGuid128 type, uint32_t realmId, uint32_t mapId, uint32_t entry, uint64_t counter, uint8_t subType = 0, uint32_t serverId = 0) noexcept
+    {
+        return { (uint64_t(type) << 58) | (uint64_t(realmId & 0x1FFF) << 42) | (uint64_t(mapId & 0x1FFF) << 29) | (uint64_t(entry & 0x7FFFFF) << 6) | uint64_t(subType & 0x3F),
+            (uint64_t(serverId & 0xFFFFFF) << 40) | (counter & UINT64_C(0xFFFFFFFFFF)) };
+    }
+
+    // a spell cast: bound to the map of the caster, the spell is the entry
+    static constexpr WoWGuid128 cast(uint32_t realmId, uint32_t mapId, uint32_t spellId, uint64_t counter) noexcept
+    {
+        return mapSpecific(HighGuid128::Cast, realmId, mapId, spellId, counter);
+    }
+
+    constexpr bool isEmpty() const noexcept { return low == 0 && high == 0; }
+
+    constexpr HighGuid128 getHighType() const noexcept { return static_cast<HighGuid128>((high >> 58) & 0x3F); }
+    constexpr uint32_t getRealmId() const noexcept { return static_cast<uint32_t>((high >> 42) & 0x1FFF); }
+    constexpr uint32_t getMapId() const noexcept { return static_cast<uint32_t>((high >> 29) & 0x1FFF); }
+    constexpr uint32_t getEntry() const noexcept { return static_cast<uint32_t>((high >> 6) & 0x7FFFFF); }
+    constexpr uint8_t getSubType() const noexcept { return static_cast<uint8_t>(high & 0x3F); }
+    constexpr uint64_t getCounter() const noexcept { return low & UINT64_C(0xFFFFFFFFFF); }
+
+    constexpr bool operator==(WoWGuid128 const& other) const noexcept { return low == other.low && high == other.high; }
+    constexpr bool operator!=(WoWGuid128 const& other) const noexcept { return !(*this == other); }
+};
+
 class SERVER_DECL WoWGuid
 {
 public:
@@ -202,6 +274,66 @@ public:
     }
 
     uint64_t getRawGuid() const noexcept { return _raw.value; }
+
+    // This guid for a 6.x or 7.x client. Map bound types carry the map the receiving player is on.
+    WoWGuid128 toGuid128(uint32_t realmId, uint32_t mapId) const noexcept
+    {
+        if (isEmpty())
+            return {};
+
+        // the type mask keeps the upper 12 bits, the types are compared the same way
+        constexpr auto masked = [](uint32_t type) constexpr { return type & static_cast<uint32_t>(HIGHGUID_TYPE_MASK); };
+
+        switch (masked(getHighGuid()))
+        {
+            case masked(HIGHGUID_TYPE_PLAYER):          return WoWGuid128::realmSpecific(HighGuid128::Player, realmId, getLowGuid());
+            case masked(HIGHGUID_TYPE_ITEM):
+            case masked(HIGHGUID_TYPE_CONTAINER):       return WoWGuid128::realmSpecific(HighGuid128::Item, realmId, getLowGuid());
+            case masked(HIGHGUID_TYPE_GUILD):           return WoWGuid128::realmSpecific(HighGuid128::Guild, realmId, getLowGuid());
+            case masked(HIGHGUID_TYPE_TRANSPORTER):
+            case masked(HIGHGUID_TYPE_TRANSPORT):       return WoWGuid128::realmSpecific(HighGuid128::Transport, realmId, getLowGuid());
+            case masked(HIGHGUID_TYPE_GROUP):           return WoWGuid128::global(HighGuid128::Party, getLowGuid());
+            case masked(HIGHGUID_TYPE_UNIT):            return WoWGuid128::mapSpecific(HighGuid128::Creature, realmId, mapId, getEntry(), getCounter());
+            case masked(HIGHGUID_TYPE_VEHICLE):         return WoWGuid128::mapSpecific(HighGuid128::Vehicle, realmId, mapId, getEntry(), getCounter());
+            case masked(HIGHGUID_TYPE_PET):             return WoWGuid128::mapSpecific(HighGuid128::Pet, realmId, mapId, getEntry(), getCounter());
+            case masked(HIGHGUID_TYPE_GAMEOBJECT):      return WoWGuid128::mapSpecific(HighGuid128::GameObject, realmId, mapId, getEntry(), getCounter());
+            case masked(HIGHGUID_TYPE_AREATRIGGER):     return WoWGuid128::mapSpecific(HighGuid128::AreaTrigger, realmId, mapId, getEntry(), getCounter());
+            case masked(HIGHGUID_TYPE_DYNAMICOBJECT):   return WoWGuid128::mapSpecific(HighGuid128::DynamicObject, realmId, mapId, 0, getLowGuid());
+            case masked(HIGHGUID_TYPE_CORPSE):          return WoWGuid128::mapSpecific(HighGuid128::Corpse, realmId, mapId, 0, getLowGuid());
+            default:
+                break;
+        }
+
+        // no counterpart in the client (waypoints, instances, battlegrounds)
+        return {};
+    }
+
+    // The server guid for a guid a 6.x or 7.x client sent. Item guids come back as items, a container has
+    // to be looked up by its counter.
+    static WoWGuid fromGuid128(WoWGuid128 const& guid) noexcept
+    {
+        const uint32_t counter = static_cast<uint32_t>(guid.getCounter());
+
+        switch (guid.getHighType())
+        {
+            case HighGuid128::Player:           return WoWGuid(static_cast<uint64_t>(counter));
+            case HighGuid128::Item:             return WoWGuid((uint64_t(HIGHGUID_TYPE_ITEM) << 32) | counter);
+            case HighGuid128::Guild:            return WoWGuid((uint64_t(HIGHGUID_TYPE_GUILD) << 32) | counter);
+            case HighGuid128::Transport:        return WoWGuid((uint64_t(HIGHGUID_TYPE_TRANSPORTER) << 32) | counter);
+            case HighGuid128::Party:            return WoWGuid((uint64_t(HIGHGUID_TYPE_GROUP) << 32) | counter);
+            case HighGuid128::Creature:         return WoWGuid(counter & LOWGUID_ENTRY_MASK, guid.getEntry(), HIGHGUID_TYPE_UNIT);
+            case HighGuid128::Vehicle:          return WoWGuid(counter & LOWGUID_ENTRY_MASK, guid.getEntry(), HIGHGUID_TYPE_VEHICLE);
+            case HighGuid128::Pet:              return WoWGuid(counter & LOWGUID_ENTRY_MASK, guid.getEntry(), HIGHGUID_TYPE_PET);
+            case HighGuid128::GameObject:       return WoWGuid(counter & LOWGUID_ENTRY_MASK, guid.getEntry(), HIGHGUID_TYPE_GAMEOBJECT);
+            case HighGuid128::AreaTrigger:      return WoWGuid(counter & LOWGUID_ENTRY_MASK, guid.getEntry(), HIGHGUID_TYPE_AREATRIGGER);
+            case HighGuid128::DynamicObject:    return WoWGuid((uint64_t(HIGHGUID_TYPE_DYNAMICOBJECT) << 32) | counter);
+            case HighGuid128::Corpse:           return WoWGuid((uint64_t(HIGHGUID_TYPE_CORPSE) << 32) | counter);
+            default:
+                break;
+        }
+
+        return WoWGuid();
+    }
 
     const uint8_t* getNewGuid() const noexcept { return m_guidfields; }
     uint8_t getNewGuidLen() const noexcept { return BitCount8(guidmask); }

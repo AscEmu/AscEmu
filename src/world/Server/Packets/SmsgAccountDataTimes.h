@@ -17,17 +17,19 @@ namespace AscEmu::Packets
         uint8_t unknown1;
         uint32_t mask;
         uint8_t dataCount;
+        uint64_t playerGuid;                        // character of the per character cache (6.x and 7.x), 0 for the account cache
 
         SmsgAccountDataTimes() : SmsgAccountDataTimes(0, 0, 0, 0)
         {
         }
 
-        SmsgAccountDataTimes(uint32_t time, uint8_t unknown1, uint32_t mask, uint8_t dataCount) :
+        SmsgAccountDataTimes(uint32_t time, uint8_t unknown1, uint32_t mask, uint8_t dataCount, uint64_t playerGuid = 0) :
             ManagedPacket(SMSG_ACCOUNT_DATA_TIMES, dataCount > 8 ? 32 * 4 : 4 + 1 + 4 + dataCount * 4),
             time(time),
             unknown1(unknown1),
             mask(mask),
-            dataCount(dataCount)
+            dataCount(dataCount),
+            playerGuid(playerGuid)
         {
         }
 
@@ -50,8 +52,7 @@ namespace AscEmu::Packets
             }
             else if (m_protocol.expansion >= WoW::Expansion::_WoD && m_protocol.expansion <= WoW::Expansion::_Legion)
             {
-                // no character: empty 128 bit guid (both mask bytes clear)
-                packet << uint8_t(0) << uint8_t(0);
+                packet << WoWGuid(playerGuid).toGuid128(m_protocol.realmId, 0);
                 packet << time;
 
                 for (uint8_t i = 0; i < 8; ++i)

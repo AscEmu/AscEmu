@@ -27,7 +27,13 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isCata())
+            if (m_protocol.isLegion())
+            {
+                // movers of the login are players, their guid carries no map
+                packet << guid.toGuid128(m_protocol.realmId, 0);
+                return true;
+            }
+            else if (m_protocol.isCata())
             {
                 packet.writeBit(guid[5]);
                 packet.writeBit(guid[7]);

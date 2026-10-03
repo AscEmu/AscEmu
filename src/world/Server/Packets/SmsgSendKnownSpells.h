@@ -71,7 +71,16 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion == WoW::Expansion::_Mop)
+            if (m_protocol.isLegion())
+            {
+                packet.writeBit(unk1);                  // initial login
+                packet.flushBits();
+                packet << uint32_t(spell_ids.size());
+                packet << uint32_t(0);                  // favorite spells
+                for (uint32_t spell_id : spell_ids)
+                    packet << spell_id;
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
                 packet.writeBit(unk1);
                 packet.writeBits(static_cast<uint16_t>(spell_ids.size()), 22);

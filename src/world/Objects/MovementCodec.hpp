@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MovementDefines.hpp"
 #include "MovementDescriptors.hpp"
 #include "Logging/Logger.hpp"
+#include "Server/World.h"
 #include "Version/VersionRegistry.hpp"
 
 template <WoW::Expansion Version>
@@ -193,7 +194,7 @@ private:
 
             case MovementOp::Flags:
             {
-                if constexpr (Version == WoW::Expansion::_Cata || Version == WoW::Expansion::_Mop)
+                if constexpr (Version == WoW::Expansion::_Cata || Version == WoW::Expansion::_Mop || Version == WoW::Expansion::_Legion)
                 {
                     movementInfo.flags = buffer.readBits(30);
                 }
@@ -361,6 +362,35 @@ private:
                     //buffer.readSkip<uint32_t>();
                     sLogger.debugMove("MovementCodec::executeReadStep: {} : SkipUInt32 is {}.", ::Version::opcodeNameForHex(opcode, Version), uint);
                 } break;
+
+            case MovementOp::Guid128:
+                {
+                    // the map of map bound movers is kept for the answer
+                    WoWGuid128 moverGuid;
+                    buffer >> moverGuid;
+                    movementInfo.guid = WoWGuid::fromGuid128(moverGuid);
+                    movementInfo.mapId = moverGuid.getMapId();
+                } break;
+
+            case MovementOp::TGuid128:
+                {
+                    WoWGuid128 transportGuid;
+                    buffer >> transportGuid;
+                    movementInfo.transport_guid = WoWGuid::fromGuid128(transportGuid);
+                } break;
+
+            case MovementOp::RemovedForcesCount: buffer >> movementInfo.forcesCount; break;
+
+            case MovementOp::RemovedForces:
+                {
+                    for (uint32_t i = 0; i < movementInfo.forcesCount && !buffer.hadReadFailure(); ++i)
+                    {
+                        WoWGuid128 forceGuid;
+                        buffer >> forceGuid;
+                    }
+                } break;
+
+            case MovementOp::AlignBits: buffer.resetBitPos(); break;
             default:
                 break;
         }
@@ -394,7 +424,7 @@ private:
 
             case MovementOp::Flags:
             {
-                if constexpr (Version == WoW::Expansion::_Cata || Version == WoW::Expansion::_Mop)
+                if constexpr (Version == WoW::Expansion::_Cata || Version == WoW::Expansion::_Mop || Version == WoW::Expansion::_Legion)
                     data.writeBits(movementInfo.flags, 30);
                 else
                     data << movementInfo.flags;
@@ -493,6 +523,12 @@ private:
             case MovementOp::WriteUInt8_1: data << static_cast<uint8_t>(1); break;
             case MovementOp::WriteFloat1: data << static_cast<float>(1.0f); break;
             case MovementOp::FlushBits: data.flushBits(); break;
+
+            case MovementOp::Guid128: data << movementInfo.guid.toGuid128(worldConfig.battleNetComm.realmId, movementInfo.mapId); break;
+            case MovementOp::TGuid128: data << movementInfo.transport_guid.toGuid128(worldConfig.battleNetComm.realmId, movementInfo.mapId); break;
+            case MovementOp::RemovedForcesCount: data << static_cast<uint32_t>(0); break;
+            case MovementOp::RemovedForces: break;
+            case MovementOp::AlignBits: data.flushBits(); break;
             default:
                 break;
         }
@@ -508,6 +544,8 @@ private:
             return getWotlkMovementDescriptor(opcode, read);
         else if constexpr (Version == WoW::Expansion::_Cata)
             return getCataMovementDescriptor(opcode, read);
+        else if constexpr (Version == WoW::Expansion::_Legion)
+            return getLegionMovementDescriptor(opcode, read);
         else
             return getMopMovementDescriptor(opcode, read);
     }

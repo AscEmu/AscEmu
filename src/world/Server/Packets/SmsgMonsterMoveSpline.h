@@ -76,6 +76,25 @@ namespace AscEmu::Packets
                 }
             }
 
+#if VERSION_STRING == Legion
+            if (m_protocol.isLegion())
+            {
+                if (mode == Mode::Launch)
+                {
+                    if (moveSpline == nullptr)
+                        return false;
+
+                    MovementMgr::PacketBuilder::WriteMonsterMoveLegion(*moveSpline, packet, unit, m_protocol.realmId);
+                }
+                else
+                {
+                    MovementMgr::PacketBuilder::WriteStopMovementLegion(stopLocation, splineId, packet, unit, m_protocol.realmId);
+                }
+
+                return true;
+            }
+#endif
+
             if (mode == Mode::Launch)
             {
                 if (moveSpline == nullptr)

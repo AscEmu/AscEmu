@@ -48,6 +48,32 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // flags, count, then every contact with its realms, status and note
+                packet << socialFlag;
+                packet.writeBits(listCount, 8);
+
+                for (const auto& listMember : contactMemberList)
+                {
+                    packet << WoWGuid(listMember.guid).toGuid128(m_protocol.realmId, 0);
+                    packet << WoWGuid128();                                 // account of the contact
+                    packet << uint32_t(m_protocol.getVirtualRealmAddress());
+                    packet << uint32_t(m_protocol.getVirtualRealmAddress());
+                    packet << listMember.flag;
+                    packet << uint8_t(listMember.isOnline);
+                    packet << listMember.zoneId;
+                    packet << listMember.level;
+                    packet << listMember.playerClass;
+                    packet.writeBits(static_cast<uint32_t>(listMember.note.length()), 10);
+                    packet.flushBits();
+                    packet.writeString(listMember.note);
+                }
+
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.expansion == WoW::Expansion::_Classic)
             {
                 packet << static_cast<uint8_t>(listCount);

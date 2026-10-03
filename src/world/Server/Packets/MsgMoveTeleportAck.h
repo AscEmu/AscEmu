@@ -55,9 +55,9 @@ namespace AscEmu::Packets
                 packet << uint32_t(0);
                 mi.writeMovementInfo(packet, 0, m_protocol.expansion, false);
             }
-            else if (m_protocol.isMop())
+            else if (m_protocol.isMop() || m_protocol.isLegion())
             {
-                // the Mop client is teleported with SMSG_MOVE_TELEPORT, this opcode only exists as CMSG_MOVE_TELEPORT_ACK
+                // these clients are teleported with SMSG_MOVE_TELEPORT, this opcode only exists as CMSG_MOVE_TELEPORT_ACK
                 return false;
             }
             return true;
@@ -118,6 +118,13 @@ namespace AscEmu::Packets
                 packet.readByteSeq(mopGuid[3]);
 
                 guid = mopGuid;
+            }
+            else if (m_protocol.isLegion())
+            {
+                // mover, sequence of the teleport, movement time of the client
+                WoWGuid128 moverGuid;
+                packet >> moverGuid >> flags >> time;
+                guid = WoWGuid::fromGuid128(moverGuid);
             }
             else
             {

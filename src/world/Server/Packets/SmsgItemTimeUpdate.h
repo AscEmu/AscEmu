@@ -30,6 +30,13 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                packet << WoWGuid(itemGuid).toGuid128(m_protocol.realmId, 0);
+                packet << duration;
+                return true;
+            }
+
             if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
                 WoWGuid guid = itemGuid;

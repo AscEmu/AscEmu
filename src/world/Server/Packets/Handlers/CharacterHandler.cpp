@@ -29,6 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/Packets/SmsgLearnedDanceMoves.h"
 #include "Server/Packets/SmsgFeatureSystemStatus.h"
+#include "Server/Packets/SmsgInitialSetup.h"
 #include "Server/Packets/CmsgSetPlayerDeclinedNames.h"
 #include "Server/Packets/SmsgSetPlayerDeclinedNamesResult.h"
 #include "Server/Packets/SmsgEnumCharactersResult.h"
@@ -650,6 +651,10 @@ void WorldSession::fullLogin(Player* player)
     // send feature packet... mostly unknown content.
     SmsgFeatureSystemStatus featurePacket(2, 0);
     sendManagedPacket(featurePacket);
+
+    // 7.x clients: the expansion of the server (Legion = 6)
+    SmsgInitialSetup initialSetupPacket(6, 0);
+    sendManagedPacket(initialSetupPacket);
     //////////////////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////////////

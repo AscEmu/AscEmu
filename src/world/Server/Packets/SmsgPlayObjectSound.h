@@ -17,6 +17,11 @@ namespace AscEmu::Packets
         uint32_t soundId;
         uint64_t objectGuid;
 
+        // 6.x and 7.x clients: the position of the sound
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
+
         SmsgPlayObjectSound() : SmsgPlayObjectSound(0, 0)
         {
         }
@@ -36,6 +41,16 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // sound, source, target, position
+                packet << soundId;
+                packet << WoWGuid(objectGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << WoWGuid(objectGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << x << y << z;
+                return true;
+            }
+
             packet << soundId << objectGuid;
             return true;
         }

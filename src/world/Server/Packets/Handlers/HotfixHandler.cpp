@@ -23,6 +23,47 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
         return;
 
     auto const protocol = _socket->getClientProtocol();
+    if (protocol.isLegion())
+    {
+        // 7.3.5 keeps the item data on the server: Item and ItemSparse records come from the item properties,
+        // every other table is reported as not available
+        for (const uint32_t recordId : srlPacket.entries)
+        {
+            ByteBuffer record;
+            switch (srlPacket.type)
+            {
+                case DB2_REPLY_ITEM:
+                    writeItemRecordLegion(recordId, record);
+                    break;
+                case DB2_REPLY_SPARSE:
+                    writeItemSparseRecordLegion(recordId, record);
+                    break;
+                default:
+                    sLogger.debug("Received hotfix request for table 0x{:08X} record {}, not served", srlPacket.type, recordId);
+                    break;
+            }
+
+            SmsgDbReply managedPacket(recordId, srlPacket.type, record);
+            sendManagedPacket(managedPacket);
+        }
+        return;
+    }
+
+    if (protocol.isWoD())
+    {
+        // the client data tables of this version are not loaded: every record is reported as not available
+        for (const uint32_t recordId : srlPacket.entries)
+        {
+            SmsgDbReply managedPacket(recordId, srlPacket.type, ByteBuffer());
+            sendManagedPacket(managedPacket);
+        }
+        return;
+    }
+
+    // older clients only ask in the world
+    if (_player == nullptr)
+        return;
+
     switch (srlPacket.type)
     {
         case DB2_REPLY_ITEM:
@@ -44,6 +85,128 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
             recvPacket.clear();
         } break;
     }
+}
+
+// Item record of 7.3.5 (layout 0x0DFCC83D) without its id: icon, class, sub class, sound override, material,
+// inventory type, sheathe type, group sounds. Icons are not known, the client falls back to its own appearance data.
+void WorldSession::writeItemRecordLegion(uint32_t entry, ByteBuffer& record)
+{
+    ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
+    if (proto == nullptr)
+        return;
+
+    record << uint32_t(0);                                          // icon file data id
+    record << uint8_t(proto->Class);
+    record << uint8_t(proto->SubClass);
+    record << int8_t(-1);                                           // sound override sub class
+    record << int8_t(proto->LockMaterial);                          // material
+    record << uint8_t(proto->InventoryType);
+    record << uint8_t(proto->SheathID);
+    record << uint8_t(0);                                           // item group sounds
+}
+
+// ItemSparse record of 7.3.5 (layout 0x4007DE16) without its id, in the field order of the client data
+void WorldSession::writeItemSparseRecordLegion(uint32_t entry, ByteBuffer& record)
+{
+    ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
+    if (proto == nullptr)
+        return;
+
+    record << int64_t(proto->AllowableRace);
+    record << proto->Name;                                          // display name, 4 variants
+    record << proto->Name;
+    record << proto->Name;
+    record << proto->Name;
+    record << proto->Description;
+    record << uint32_t(proto->Flags);
+    record << uint32_t(proto->Flags2);
+    record << uint32_t(0);                                          // flags 3
+    record << uint32_t(0);                                          // flags 4
+    record << float(1.0f);                                          // price random value
+    record << float(1.0f);                                          // price variance
+    record << int32_t(1);                                           // vendor stack count
+    record << int32_t(proto->BuyPrice);
+    record << int32_t(proto->SellPrice);
+    record << int32_t(proto->RequiredSpell);                        // required ability
+    record << int32_t(proto->Unique);                               // max count
+    record << int32_t(proto->MaxCount);                             // stackable
+
+    for (uint8_t i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
+        record << int32_t(0);                                       // stat percent editor
+    for (uint8_t i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
+        record << float(0.0f);                                      // stat percentage of socket
+
+    record << float(proto->Range);
+    record << int32_t(proto->BagFamily);
+    record << float(1.0f);                                          // quality modifier
+    record << int32_t(proto->ExistingDuration);                     // duration in inventory
+    record << float(0.0f);                                          // damage variance
+    record << int16_t(proto->AllowableClass);
+    record << uint16_t(proto->ItemLevel);
+    record << uint16_t(proto->RequiredSkill);
+    record << uint16_t(proto->RequiredSkillRank);
+    record << uint16_t(proto->RequiredFaction);
+
+    // stat values; the stat types follow further down
+    uint8_t statCount = 0;
+    for (const auto& [statType, statValue] : proto->generalStatsMap)
+    {
+        if (statCount == MAX_ITEM_PROTO_STATS)
+            break;
+        record << int16_t(statValue);
+        ++statCount;
+    }
+    for (; statCount < MAX_ITEM_PROTO_STATS; ++statCount)
+        record << int16_t(0);
+
+    record << uint16_t(proto->ScalingStatsEntry);
+    record << uint16_t(proto->Delay);
+    record << uint16_t(proto->PageId);
+    record << uint16_t(proto->QuestId);
+    record << uint16_t(proto->LockId);
+    record << uint16_t(proto->RandomPropId);                        // random select
+    record << uint16_t(proto->RandomSuffixId);                      // random suffix group
+    record << uint16_t(proto->ItemSet);
+    record << uint16_t(proto->ZoneNameID);
+    record << uint16_t(proto->MapID);
+    record << uint16_t(proto->TotemCategory);
+    record << uint16_t(proto->SocketBonus);
+    record << uint16_t(proto->GemProperties);
+    record << uint16_t(proto->ItemLimitCategory);
+    record << uint16_t(proto->HolidayId);
+    record << uint16_t(0);                                          // required transmog holiday
+    record << uint16_t(0);                                          // item name description
+    record << uint8_t(proto->Quality);
+    record << uint8_t(proto->InventoryType);
+    record << int8_t(proto->RequiredLevel);
+    record << uint8_t(proto->RequiredPlayerRank1);
+    record << uint8_t(proto->RequiredPlayerRank2);
+    record << uint8_t(proto->RequiredFactionStanding);
+    record << uint8_t(proto->ContainerSlots);
+
+    statCount = 0;
+    for (const auto& [statType, statValue] : proto->generalStatsMap)
+    {
+        if (statCount == MAX_ITEM_PROTO_STATS)
+            break;
+        record << int8_t(statType);
+        ++statCount;
+    }
+    for (; statCount < MAX_ITEM_PROTO_STATS; ++statCount)
+        record << int8_t(-1);
+
+    record << uint8_t(proto->Damage[0].Type);
+    record << uint8_t(proto->Bonding);
+    record << uint8_t(proto->PageLanguage);
+    record << uint8_t(proto->PageMaterial);
+    record << int8_t(proto->LockMaterial);                          // material
+    record << uint8_t(proto->SheathID);
+    for (uint8_t i = 0; i < MAX_ITEM_PROTO_SOCKETS; ++i)
+        record << uint8_t(proto->Sockets[i].SocketColor);
+    record << uint8_t(0);                                           // spell weight category
+    record << uint8_t(0);                                           // spell weight
+    record << uint8_t(0);                                           // artifact
+    record << uint8_t(0);                                           // expansion
 }
 
 void WorldSession::sendItemDb2Reply(uint32_t entry)

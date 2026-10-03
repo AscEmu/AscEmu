@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/Definitions/SpellPacketFlags.hpp"
 #include "Spell/Spell.hpp"
+#include "SpellCastDataLegion.h"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -50,6 +51,25 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                SpellCastDataLegion castData;
+                castData.casterGuid = casterGuid;
+                castData.casterUnitGuid = casterUnitGuid;
+                castData.spellId = spellId;
+                castData.castFlags = castFlags;
+                castData.castTime = castTime;
+                castData.targets = &targets;
+                castData.hasPower = (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE) != 0;
+                castData.powerType = powerType;
+                castData.powerValue = powerValue;
+                castData.ammoDisplayId = (castFlags & SPELL_PACKET_FLAGS_RANGED) ? projectile.displayInfo : 0;
+                castData.realmId = m_protocol.realmId;
+                castData.mapId = m_receiverMapId;
+                castData.write(packet);
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << casterGuid;

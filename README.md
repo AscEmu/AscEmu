@@ -28,7 +28,7 @@ Description       | Classic    | TBC        | WotLK      | Cata       | MoP     
 Authentification  | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ✔️         | ✔️
 Worldsocket       | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ✔️         | ✔️
 Char Enum         | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ✔️         | ✔️
-Log into world    | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ❌         | ❌
+Log into world    | ✔️         | ✔️         | ✔️         | ✔️         | ✔️        | ❌         | ✔️
 
 ## Contributing & Issues
 

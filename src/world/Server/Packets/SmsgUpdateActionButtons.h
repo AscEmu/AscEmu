@@ -43,6 +43,15 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // every button packed: action in the low 56 bits, type in the high byte
+                for (const auto& button : buttons)
+                    packet << uint64_t((uint64_t(button.action) & 0x00FFFFFFFFFFFFFFULL) | (uint64_t(button.type & 0xFF) << 56));
+                packet << action;
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // every button is sent as 8 bytes (action, type), split into bit and byte streams

@@ -56,7 +56,7 @@ void TaxiPath::initTaxiNodesForLevel(uint32_t race, [[maybe_unused]] uint32_t ch
     {
         case DEATHKNIGHT:
             {
-                for (uint8_t i = 0; i < DBC_TAXI_MASK_SIZE; ++i)
+                for (uint32_t i = 0; i < DBC_TAXI_MASK_SIZE; ++i)
                     m_taximask[i] |= sOldContinentsNodesMask[i];
                 break;
             }
@@ -191,7 +191,7 @@ void TaxiPath::loadTaxiMask(std::string const& data)
 {
     const auto tokens = AscEmu::Util::Strings::split(data, " ");
     auto iter = tokens.cbegin();
-    uint8_t index = 0;
+    uint32_t index = 0;
     for (; index < DBC_TAXI_MASK_SIZE && iter != tokens.cend(); ++iter, ++index)
     {
         if (const uint32_t mask = std::stoul((*iter).c_str()))
@@ -228,7 +228,7 @@ bool TaxiPath::setTaximaskNode(uint32_t nodeidx)
 std::string TaxiPath::saveTaximaskNodeToString() const
 {
     std::ostringstream ss;
-    for (uint8_t i = 0; i < DBC_TAXI_MASK_SIZE; ++i)
+    for (uint32_t i = 0; i < DBC_TAXI_MASK_SIZE; ++i)
         ss << uint32_t(m_taximask[i]) << " ";
     return ss.str();
 }

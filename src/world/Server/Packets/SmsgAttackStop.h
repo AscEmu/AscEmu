@@ -34,6 +34,16 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // attacker, victim, victim is dead
+                packet << attackerGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << victimGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet.writeBit((victimGuid.getRawGuid() != 0) && victimIsDead);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << attackerGuid;

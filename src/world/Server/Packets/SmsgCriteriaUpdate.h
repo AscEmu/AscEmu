@@ -37,6 +37,19 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // criteria, quantity, player, flags, current time, elapsed time, creation time
+                packet << criteriaId;
+                packet << uint64_t(counter);
+                packet << guid.toGuid128(m_protocol.realmId, 0);
+                packet << uint32_t(0);                  // criteria is not time-limited (time-limited criteria are not tracked)
+                packet.appendPackedTime(progressDate);
+                packet << uint32_t(0);                  // elapsed time since criteria was started (not tracked)
+                packet << uint32_t(0);
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 packet.writeBit(guid[4]);

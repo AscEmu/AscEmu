@@ -76,8 +76,97 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override { return m_minimum_size; }
 
+        // the chat types of 7.3.5: the types after the raid warning moved
+        static uint8_t legionChatType(uint8_t chatType)
+        {
+            switch (chatType)
+            {
+                case CHAT_MSG_RAID_WARNING_WIDESCREEN:  return 40;      // raid warning
+                case CHAT_MSG_RAID_BOSS_EMOTE:          return 41;
+                case CHAT_MSG_FILTERED:                 return 43;
+                case CHAT_MSG_BATTLEGROUND:             return 62;      // instance chat
+                case CHAT_MSG_BATTLEGROUND_LEADER:      return 63;      // instance chat leader
+                case CHAT_MSG_RESTRICTED:               return 44;
+                case CHAT_MSG_ACHIEVEMENT:              return 46;
+                case CHAT_MSG_GUILD_ACHIEVEMENT:        return 47;
+                case CHAT_MSG_PARTY_LEADER:             return 49;
+                default:                                return chatType;
+            }
+        }
+
+        bool serialiseLegion(WorldPacket& packet)
+        {
+            // player senders are resolved by their guid, creatures and battleground events carry their name
+            std::string legionSenderName;
+            std::string targetName;
+            std::string channelName;
+
+            switch (type)
+            {
+                case CHAT_MSG_MONSTER_SAY:
+                case CHAT_MSG_MONSTER_PARTY:
+                case CHAT_MSG_MONSTER_YELL:
+                case CHAT_MSG_MONSTER_WHISPER:
+                case CHAT_MSG_MONSTER_EMOTE:
+                case CHAT_MSG_RAID_BOSS_EMOTE:
+                case CHAT_MSG_WHISPER_MOB:
+                    legionSenderName = senderName;
+                    if (receiverGuid && !receiverGuid.isPlayer() && !receiverGuid.isPet() && type != CHAT_MSG_WHISPER_MOB)
+                        targetName = receiverName;
+                    break;
+                case CHAT_MSG_BG_EVENT_NEUTRAL:
+                case CHAT_MSG_BG_EVENT_ALLIANCE:
+                case CHAT_MSG_BG_EVENT_HORDE:
+                    if (receiverGuid && !receiverGuid.isPlayer())
+                        targetName = receiverName;
+                    break;
+                case CHAT_MSG_CHANNEL:
+                    channelName = receiverName;
+                    break;
+                default:
+                    break;
+            }
+
+            const bool hasGroupGuid = type == CHAT_MSG_PARTY || type == CHAT_MSG_PARTY_LEADER || type == CHAT_MSG_RAID ||
+                type == CHAT_MSG_RAID_LEADER || type == CHAT_MSG_RAID_WARNING;
+            const bool hasGuildGuid = type == CHAT_MSG_GUILD || type == CHAT_MSG_OFFICER || type == CHAT_MSG_GUILD_ACHIEVEMENT;
+            const bool hasAchievement = (type == CHAT_MSG_ACHIEVEMENT || type == CHAT_MSG_GUILD_ACHIEVEMENT) && achievementId;
+            const uint32_t virtualRealm = m_protocol.getVirtualRealmAddress();
+
+            packet << uint8_t(legionChatType(type));
+            packet << uint8_t(language);
+            packet << senderGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+            packet << (hasGuildGuid ? guildGuid.toGuid128(m_protocol.realmId, 0) : WoWGuid128());
+            packet << WoWGuid128();                                     // account of the sender
+            packet << (type == CHAT_MSG_CHANNEL ? WoWGuid128() : receiverGuid.toGuid128(m_protocol.realmId, m_receiverMapId));
+            packet << uint32_t(virtualRealm);                           // realm of the target
+            packet << uint32_t(virtualRealm);                           // realm of the sender
+            packet << (hasGroupGuid ? groupGuid.toGuid128(m_protocol.realmId, 0) : WoWGuid128());
+            packet << uint32_t(hasAchievement ? achievementId : 0);
+            packet << float(0.0f);                                      // display time
+
+            packet.writeBits(static_cast<uint32_t>(legionSenderName.length()), 11);
+            packet.writeBits(static_cast<uint32_t>(targetName.length()), 11);
+            packet.writeBits(0, 5);                                     // addon prefix
+            packet.writeBits(static_cast<uint32_t>(channelName.length()), 7);
+            packet.writeBits(static_cast<uint32_t>(message.length()), 12);
+            packet.writeBits(flag, 11);
+            packet.writeBit(false);                                     // hide in the chat log
+            packet.writeBit(false);                                     // fake sender name
+            packet.flushBits();
+
+            packet.writeString(legionSenderName);
+            packet.writeString(targetName);
+            packet.writeString(channelName);
+            packet.writeString(message);
+            return true;
+        }
+
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+                return serialiseLegion(packet);
+
             if (m_protocol.expansion == WoW::Expansion::_Classic)
             {
                 packet << mapInternalToClassicType(type);

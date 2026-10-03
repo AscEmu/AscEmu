@@ -32,7 +32,12 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            if (m_protocol.isLegion())
+            {
+                // server time, game time, speed and the holiday offsets of both times
+                packet << time << time << gameSpeed << uint32_t(0) << uint32_t(0);
+            }
+            else if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << time << gameSpeed;
                 if (m_protocol.expansion > WoW::Expansion::_TBC)

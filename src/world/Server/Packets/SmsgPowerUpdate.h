@@ -37,6 +37,16 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // unit, then every changed power with its type
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << uint32_t(1);
+                packet << int32_t(power);
+                packet << uint8_t(powerType);
+                return true;
+            }
+
             if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
                 packet.writeBit(guid[4]);

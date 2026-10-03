@@ -32,6 +32,16 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // spell, clear on hold, of the pet
+                packet << spellId;
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             packet << spellId << guid;
 
             return true;

@@ -44,6 +44,67 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // the attack round as a block behind the combat log bit, closed by the sandbox scaling data
+                ByteBuffer buff;
+                buff << uint32_t(hitStatus);
+                buff << attackerGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                buff << victimGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                buff << int32_t(damage);
+                buff << int32_t(overKill);
+                buff.writeBit(true);                                         // sub damage
+                buff.flushBits();
+                buff << int32_t(damageInfo.schoolMask);
+                buff << float(damage);
+                buff << int32_t(damage);
+
+                if (hitStatus & HITSTATUS_ABSORBED)
+                    buff << int32_t(absorbedDamage);
+
+                if (hitStatus & HITSTATUS_RESIST)
+                    buff << int32_t(damageInfo.resistedDamage);
+
+                buff << uint8_t(visualState);
+                buff << int32_t(0);                                          // attacker state
+                buff << int32_t(0);                                          // melee spell
+
+                if (hitStatus & HITSTATUS_BLOCK)
+                    buff << int32_t(blockedDamage);
+
+                if (hitStatus & HITSTATUS_RAGE_GAIN)
+                    buff << int32_t(rageGain);
+
+                if (hitStatus & HITSTATUS_UNK_00)                            // debug information
+                {
+                    buff << int32_t(0);
+                    for (uint8_t i = 0; i < 10; ++i)
+                        buff << float(0);
+                    buff << int32_t(0);
+                }
+
+                if (hitStatus & (HITSTATUS_BLOCK | HITSTATUS_UNK_04))
+                    buff << float(0);
+
+                // sandbox scaling: type, level delta, item level, target level, expansion, class, scaling levels
+                buff.writeBits(0, 4);
+                buff.flushBits();
+                buff << int16_t(0);
+                buff << uint16_t(0);
+                buff << uint8_t(0);
+                buff << uint8_t(0);
+                buff << uint8_t(0);
+                buff << uint8_t(0);
+                buff << uint8_t(0);
+                buff << int8_t(0);
+
+                packet.writeBit(false);                                      // no combat log data
+                packet.flushBits();
+                packet << uint32_t(buff.size());
+                packet.append(buff);
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 ByteBuffer buff;

@@ -964,6 +964,16 @@ void Player::setHairColor(uint8_t color) { setField<uint8_t>(PlayerField::Player
 
 //bytes2 begin
 uint32_t Player::getPlayerBytes2() const { return getField<uint32_t>(PlayerField::PlayerBytes2); }
+
+// the bytes as the database stores them (Mop order: facial features, -, bank slots, rest state)
+uint32_t Player::getStoredPlayerBytes2() const
+{
+#if VERSION_STRING == Legion
+    return uint32_t(getFacialFeatures()) | (uint32_t(getBankSlots()) << 16) | (uint32_t(getRestState()) << 24);
+#else
+    return getPlayerBytes2();
+#endif
+}
 void Player::setPlayerBytes2(uint32_t bytes2) { setField<uint32_t>(PlayerField::PlayerBytes2, bytes2); }
 
 uint8_t Player::getFacialFeatures() const { return getField<uint8_t>(PlayerField::PlayerBytes2FacialHair); }
@@ -9769,8 +9779,13 @@ void Player::sendPartyKillLogPacket(uint64_t killedGuid)
 
 void Player::sendDestroyObjectPacket(uint64_t destroyedGuid)
 {
+#if VERSION_STRING == Legion
+    // 7.x has no destroy packet, the object leaves the range with the next object update
+    getUpdateMgr().pushOutOfRangeGuid(WoWGuid(destroyedGuid));
+#else
     SmsgDestroyObject managedPacket(destroyedGuid);
     m_session->sendManagedPacket(managedPacket);
+#endif
 }
 
 void Player::sendEquipmentSetUseResultPacket(uint8_t result)
@@ -9823,6 +9838,9 @@ void Player::sendMeetingStoneSetQueuePacket(uint32_t dungeonId, uint8_t status)
 void Player::sendPlayObjectSoundPacket(uint64_t objectGuid, uint32_t soundId)
 {
     SmsgPlayObjectSound managedPacket(soundId, objectGuid);
+    managedPacket.x = GetPositionX();
+    managedPacket.y = GetPositionY();
+    managedPacket.z = GetPositionZ();
     PacketBroadcast::sendToSet(*this, managedPacket, true);
 }
 
@@ -14471,7 +14489,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
 
     ss << getFreePrimaryProfessionPoints() << ", ";
 
-    ss << m_loadHealth << ", " << m_loadMana << ", " << uint32_t(getPvpRank()) << ", " << getPlayerBytes() << ", " << getPlayerBytes2() << ", ";
+    ss << m_loadHealth << ", " << m_loadMana << ", " << uint32_t(getPvpRank()) << ", " << getPlayerBytes() << ", " << getStoredPlayerBytes2() << ", ";
 
     // Remove un-needed and problematic player flags from being saved :p
     if (hasPlayerFlags(PLAYER_FLAG_PARTY_LEADER))
@@ -15009,7 +15027,17 @@ void Player::loadFromDBProc(QueryResultVector& results)
     setPvpRank(field[21].asUint8());
 
     setPlayerBytes(field[22].asUint32());
+#if VERSION_STRING == Legion
+    // the stored bytes keep the Mop order (facial features, -, bank slots, rest state); 7.x keeps them in separate fields
+    {
+        const uint32_t storedBytes2 = field[23].asUint32();
+        setFacialFeatures(static_cast<uint8_t>(storedBytes2 & 0xFF));
+        setBankSlots(static_cast<uint8_t>((storedBytes2 >> 16) & 0xFF));
+        setRestState(static_cast<uint8_t>((storedBytes2 >> 24) & 0xFF));
+    }
+#else
     setPlayerBytes2(field[23].asUint32());
+#endif
 
     setPlayerGender(getGender());
 

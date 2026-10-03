@@ -39,6 +39,18 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // cast guid, spell, visual, reason, two arguments
+                packet << WoWGuid128();
+                packet << int32_t(spellId);
+                packet << uint32_t(0);
+                packet << int32_t(errorMsg);
+                packet << int32_t(extra1 || extra2 ? extra1 : -1);
+                packet << int32_t(extra2 ? extra2 : -1);
+                return true;
+            }
+
             if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
                 packet << spellId << errorMsg << multiCast;

@@ -30,11 +30,11 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override { return m_protocol.isMop() ? 4 : 12; }
+        size_t expectedSize() const override { return m_protocol.isMop() || m_protocol.isLegion() ? 4 : 12; }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isMop())
+            if (m_protocol.isMop() || m_protocol.isLegion())
             {
                 packet.initialize(SMSG_SET_DUNGEON_DIFFICULTY, 4);
                 packet << uint32_t(difficulty);

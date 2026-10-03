@@ -22,6 +22,19 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // difficulty, tournament realm, cross realm pvp alert, restricted level, restricted money, instance group size
+                packet << uint32_t(0);
+                packet << uint8_t(0);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 packet.writeBit(0);

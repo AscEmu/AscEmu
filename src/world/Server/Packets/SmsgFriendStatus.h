@@ -45,6 +45,23 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // result, player, its account, realm, status, area, level, class, note
+                packet << status;
+                packet << WoWGuid(guid).toGuid128(m_protocol.realmId, 0);
+                packet << WoWGuid128();
+                packet << uint32_t(m_protocol.getVirtualRealmAddress());
+                packet << online;
+                packet << areaId;
+                packet << level;
+                packet << _class;
+                packet.writeBits(static_cast<uint32_t>(note.length()), 10);
+                packet.flushBits();
+                packet.writeString(note);
+                return true;
+            }
+
             packet << status;
             packet << guid;
 

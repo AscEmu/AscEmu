@@ -50,7 +50,52 @@ namespace AscEmu::Packets
             if (m_protocol.expansion <= WoW::Expansion::_TBC)
                 return false;
 
-            if (m_protocol.expansion == WoW::Expansion::_Cata)
+            if (m_protocol.isLegion())
+            {
+                packet << uint8_t(2);                   // complaint status
+                packet << uint32_t(1);                  // scroll of resurrection: requests remaining
+                packet << uint32_t(1);                  // scroll of resurrection: requests per day
+                packet << uint32_t(m_protocol.realmId); // realm id
+                packet << int32_t(0);                   // realm record id
+                packet << uint32_t(60);                 // twitter post throttle limit
+                packet << uint32_t(20);                 // twitter post throttle cooldown
+                packet << uint32_t(300);                // token poll time in seconds
+                packet << uint32_t(0);                  // token redeem index
+                packet << int64_t(0);                   // token balance
+                packet << uint32_t(0);                  // shop delivery delay
+
+                packet.writeBit(0);                     // voice chat
+                packet.writeBit(0);                     // has the ticket system status
+                packet.writeBit(0);                     // scroll of resurrection
+                packet.writeBit(0);                     // shop enabled
+                packet.writeBit(0);                     // shop available
+                packet.writeBit(0);                     // shop disabled by parental controls
+                packet.writeBit(1);                     // item restoration button
+                packet.writeBit(0);                     // browser
+                packet.writeBit(0);                     // has a session alert
+                packet.writeBit(0);                     // recruit a friend
+                packet.writeBit(0);                     // character restore
+                packet.writeBit(0);                     // restricted account
+                packet.writeBit(1);                     // tutorials
+                packet.writeBit(1);                     // new player tutorials
+                packet.writeBit(0);                     // twitter
+                packet.writeBit(0);                     // commerce system
+                packet.writeBit(1);
+                packet.writeBit(0);                     // will kick from world
+                packet.writeBit(0);                     // kiosk mode
+                packet.writeBit(0);                     // competitive mode
+                packet.writeBit(0);                     // has race and class expansion levels
+                packet.writeBit(0);                     // token balance
+                packet.flushBits();
+
+                // quick join: toasts and the throttle values of the social queue
+                packet.writeBit(0);                     // toasts disabled
+                packet.flushBits();
+                packet << float(7) << float(10) << float(1);    // toast duration, delay, queue multiplier
+                for (uint8_t i = 0; i < 19; ++i)
+                    packet << float(0);
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_Cata)
             {
                 bool featureBitFour = true;
 

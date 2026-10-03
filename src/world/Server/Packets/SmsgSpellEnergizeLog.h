@@ -36,6 +36,20 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // target, caster, spell, power type, amount, over energize, log data
+                packet << targetGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << casterGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << int32_t(spellId);
+                packet << int32_t(type);
+                packet << int32_t(amount);
+                packet << int32_t(0);
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << casterGuid << targetGuid << spellId << type << amount;

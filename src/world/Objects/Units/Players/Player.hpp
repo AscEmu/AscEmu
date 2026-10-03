@@ -167,6 +167,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // bytes2 begin
     uint32_t getPlayerBytes2() const;
+    uint32_t getStoredPlayerBytes2() const;
     void setPlayerBytes2(uint32_t bytes2);
 
     uint8_t getFacialFeatures() const;

@@ -522,7 +522,7 @@ public:
         GameObject* getWorldMapGameObject(const uint64_t & guid) const;
         DynamicObject* getWorldMapDynamicObject(const uint64_t & guid) const;
 
-        void SetMapId(uint32_t newMap) { m_mapId = newMap; }
+        void SetMapId(uint32_t newMap) { m_mapId = newMap; obj_movement_info.mapId = newMap; }
         void setZoneId(uint32_t newZone);
         void setAreaId(uint32_t area) { m_areaId = area; }
 

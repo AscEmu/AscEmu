@@ -198,6 +198,40 @@ public:
         return *this;
     }
 
+    // 128 bit guid: one mask byte per half, then the non zero bytes of the low and of the high part
+    void append(const WoWGuid128& value)
+    {
+        flushBits();
+
+        uint8_t masks[2] = { 0, 0 };
+        uint8_t bytes[16];
+        size_t count = 0;
+
+        const uint64_t parts[2] = { value.low, value.high };
+        for (size_t part = 0; part < 2; ++part)
+        {
+            for (uint8_t i = 0; i < 8; ++i)
+            {
+                const uint8_t byte = static_cast<uint8_t>((parts[part] >> (i * 8)) & 0xFF);
+                if (byte != 0)
+                {
+                    masks[part] |= static_cast<uint8_t>(1 << i);
+                    bytes[count++] = byte;
+                }
+            }
+        }
+
+        append<uint8_t>(masks[0]);
+        append<uint8_t>(masks[1]);
+        append(bytes, count);
+    }
+
+    ByteBuffer& operator<<(const WoWGuid128& value)
+    {
+        append(value);
+        return *this;
+    }
+
     void append(const char* src, size_t cnt)
     {
         return append(reinterpret_cast<const uint8_t*>(src), cnt);
@@ -357,6 +391,14 @@ public:
         m_bitPosition = 8;
     }
 
+    // read side counterpart of flushBits(): the next readBit() starts a new byte. Layouts of 6.x and 7.x clients
+    // alternate between bit and byte fields, every byte field after a bit field ends the bit field.
+    void resetBitPos()
+    {
+        m_bitPosition = 8;
+        m_currentBitValue = 0;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////
     // read functions
 
@@ -397,6 +439,25 @@ public:
         vec.y = read<float>();
         vec.z = read<float>();
 
+        return *this;
+    }
+
+    ByteBuffer& operator>>(WoWGuid128& _guid)
+    {
+        const uint8_t masks[2] = { read<uint8_t>(), read<uint8_t>() };
+        uint64_t parts[2] = { 0, 0 };
+
+        for (size_t part = 0; part < 2; ++part)
+        {
+            for (uint8_t i = 0; i < 8; ++i)
+            {
+                if (masks[part] & (1 << i))
+                    parts[part] |= uint64_t(read<uint8_t>()) << (i * 8);
+            }
+        }
+
+        _guid.low = parts[0];
+        _guid.high = parts[1];
         return *this;
     }
 

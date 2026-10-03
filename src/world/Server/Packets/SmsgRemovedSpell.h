@@ -34,6 +34,16 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // unlearned spells, suppress the message
+                packet << uint32_t(1);
+                packet << spellId;
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_WotLK)
                 packet << static_cast<uint16_t>(spellId);
             else

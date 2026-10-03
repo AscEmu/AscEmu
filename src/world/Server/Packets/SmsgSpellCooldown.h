@@ -42,6 +42,23 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // caster, flags, then every cooldown with its forced duration and rate
+                packet << guid.toGuid128(m_protocol.realmId, 0);
+                packet << uint8_t(isGlobalCooldown);
+                packet << uint32_t(spellMap.size());
+
+                for (auto const& cooldowns : spellMap)
+                {
+                    packet << cooldowns.spellId;
+                    packet << cooldowns.duration;
+                    packet << float(1.0f);              // modifier rate
+                }
+
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << guid;

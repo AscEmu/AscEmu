@@ -31,7 +31,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isMop())
+            if (m_protocol.isMop() || m_protocol.isLegion())
             {
                 packet.writeBits(timeZone.length(), 7);
                 packet.writeBits(timeZone.length(), 7);

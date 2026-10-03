@@ -34,6 +34,17 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // caster, cast guid, spell, visual, reason
+                packet << casterGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << WoWGuid128();
+                packet << uint32_t(spellId);
+                packet << uint32_t(0);
+                packet << uint16_t(result);
+                return true;
+            }
+
             if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
                 WoWGuid guid = casterGuid.getRawGuid();

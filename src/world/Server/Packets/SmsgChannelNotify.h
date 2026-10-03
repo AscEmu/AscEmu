@@ -45,8 +45,61 @@ namespace AscEmu::Packets
             return 1 + channelName.size() + 1 + 8;
         }
 
+        bool serialiseLegion(WorldPacket& packet)
+        {
+            // joining and leaving a channel have their own packets
+            if (flag == CHANNEL_NOTIFY_FLAG_YOUJOINED)
+            {
+                packet.initialize(SMSG_CHANNEL_NOTIFY_JOINED, 2 + 4 + 4 + 8 + channelName.size());
+                packet.writeBits(static_cast<uint32_t>(channelName.length()), 7);
+                packet.writeBits(0, 10);                                    // welcome message
+                packet << uint32_t(extraFlag);
+                packet << uint32_t(channelId);
+                packet << uint64_t(0);                                      // instance
+                packet.writeString(channelName);
+                return true;
+            }
+
+            if (flag == CHANNEL_NOTIFY_FLAG_YOULEFT)
+            {
+                packet.initialize(SMSG_CHANNEL_NOTIFY_LEFT, 1 + 4 + channelName.size());
+                packet.writeBits(static_cast<uint32_t>(channelName.length()), 7);
+                packet.writeBit(false);                                     // suspended
+                packet << uint32_t(channelId);
+                packet.writeString(channelName);
+                return true;
+            }
+
+            // player names are resolved by the client, the sender of a notice is the player it is about
+            const WoWGuid128 senderGuid = WoWGuid(guid).toGuid128(m_protocol.realmId, 0);
+            const WoWGuid128 targetGuid = WoWGuid(sourceGuid).toGuid128(m_protocol.realmId, 0);
+
+            packet.writeBits(flag, 6);
+            packet.writeBits(static_cast<uint32_t>(channelName.length()), 7);
+            packet.writeBits(static_cast<uint32_t>(playerName.length()), 6);
+            packet << senderGuid;
+            packet << WoWGuid128();                                         // account of the sender
+            packet << uint32_t(m_protocol.getVirtualRealmAddress());
+            packet << targetGuid;
+            packet << uint32_t(m_protocol.getVirtualRealmAddress());
+            packet << uint32_t(channelId);
+
+            if (flag == CHANNEL_NOTIFY_FLAG_MODE_CHG)
+            {
+                packet << uint8_t(extraFlag);
+                packet << uint8_t(extraFlags2);
+            }
+
+            packet.writeString(channelName);
+            packet.writeString(playerName);
+            return true;
+        }
+
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+                return serialiseLegion(packet);
+
             packet << flag;
             packet << channelName;
 

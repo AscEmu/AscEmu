@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include <cstdint>
+#include <map>
 
 #include "Management/WorldStatesHandler.hpp"
 
@@ -129,6 +130,32 @@ namespace AscEmu::Packets
                     packet << uint32_t(arenaSeason);
                     packet << uint32_t(3901);
                     packet << uint32_t(arenaProgress);
+                }
+
+                return true;
+            }
+            else if (m_protocol.isLegion())
+            {
+                // map, area, sub area, then the states ordered by their variable
+                packet << uint32_t(mapId);
+                packet << uint32_t(zone);
+                packet << uint32_t(area);
+
+                if (clear)
+                {
+                    packet << uint32_t(0);
+                    return true;
+                }
+
+                std::map<uint32_t, uint32_t> orderedStates(zoneWorldStates.begin(), zoneWorldStates.end());
+                orderedStates[3191] = arenaSeason;
+                orderedStates[3901] = arenaProgress;
+
+                packet << uint32_t(orderedStates.size());
+                for (const auto& [variable, value] : orderedStates)
+                {
+                    packet << uint32_t(variable);
+                    packet << uint32_t(value);
                 }
 
                 return true;

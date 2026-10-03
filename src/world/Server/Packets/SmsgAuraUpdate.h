@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "AuraDataLegion.h"
 #include <cstdint>
 
 #include "Spell/SpellAuraDefines.hpp"
@@ -48,10 +49,26 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override { return m_minimum_size; }
 
+        bool serialiseLegion(WorldPacket& packet)
+        {
+            // one aura per packet: update all, count, the slot with its data, the unit last
+            packet.writeBit(false);
+            packet.writeBits(1, 9);
+            packet.flushBits();
+
+            writeAuraSlotLegion(packet, aura_updates, remove, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
+
+            packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+            return true;
+        }
+
         bool internalSerialise(WorldPacket& packet) override
         {
             if (m_protocol.expansion < WoW::Expansion::_TBC)
                 return false;
+
+            if (m_protocol.isLegion())
+                return serialiseLegion(packet);
 
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {

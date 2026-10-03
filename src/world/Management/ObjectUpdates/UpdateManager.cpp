@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Opcodes.hpp"
 #include "Server/WorldSession.h"
+#include "Server/World.h"
 
 UpdateManager::UpdateManager(Player* owner, size_t compressionThreshold, size_t creationBufferInitialSize, size_t updateBufferInitialSize, size_t outOfRangeIdsInitialSize)
     : 
@@ -67,7 +68,11 @@ void UpdateManager::pushOutOfRangeGuid(const WoWGuid& guid)
         m_owner->sendDestroyObjectPacket(guid.getRawGuid());
 #endif
 
+#if VERSION_STRING == Legion
+    m_outOfRangeIds << guid.toGuid128(worldConfig.battleNetComm.realmId, m_owner->GetMapId());
+#else
     m_outOfRangeIds << guid;
+#endif
     ++m_outOfRangeIdCount;
 
     internalUpdateMapMgr();
@@ -133,6 +138,49 @@ void UpdateManager::internalProcessPendingUpdates()
 
     ByteBuffer buffer(calculateBufferSize());
 
+#if VERSION_STRING == Legion
+    // 7.x: block count, map, the objects that left the range, size of the blocks, the blocks
+    const auto sendBlocks = [this, &buffer](uint32_t blockCount, ByteBuffer& blocks, bool withOutOfRange)
+    {
+        buffer.clear();
+        buffer << uint32_t(blockCount);
+        buffer << uint16_t(m_owner->GetMapId());
+
+        const bool hasOutOfRange = withOutOfRange && m_outOfRangeIdCount > 0;
+        buffer.writeBit(hasOutOfRange);
+        buffer.flushBits();
+        if (hasOutOfRange)
+        {
+            buffer << uint16_t(m_outOfRangeIdCount);    // removed at once, without fading out
+            buffer << uint32_t(m_outOfRangeIdCount);
+            buffer.append(m_outOfRangeIds);
+            m_outOfRangeIds.clear();
+            m_outOfRangeIdCount = 0;
+        }
+
+        buffer << uint32_t(blocks.size());
+        buffer.append(blocks);
+
+        WorldPacket packet(SMSG_UPDATE_OBJECT, buffer.wpos());
+        packet.append(buffer.contents(), buffer.wpos());
+        m_owner->getSession()->SendPacket(&packet);
+    };
+
+    if (m_creationBuffer.size() > 0 || m_outOfRangeIdCount > 0)
+    {
+        sendBlocks(m_creationCount, m_creationBuffer, true);
+        m_creationBuffer.clear();
+        m_creationCount = 0;
+    }
+
+    if (m_updateBuffer.size() > 0)
+    {
+        sendBlocks(m_updateCount, m_updateBuffer, false);
+        m_updateBuffer.clear();
+        m_updateCount = 0;
+    }
+
+#else
     if (m_creationBuffer.size() > 0 || m_outOfRangeIdCount > 0)
     {
 #if VERSION_STRING >= Cata
@@ -205,6 +253,7 @@ void UpdateManager::internalProcessPendingUpdates()
         if (!sent_packet)
             m_owner->getSession()->OutPacket(SMSG_UPDATE_OBJECT, uint16_t(buffer.wpos()), buffer.contents());
     }
+#endif
 
     m_processPending = false;
     internalSendDelayedPackets();

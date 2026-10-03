@@ -94,7 +94,18 @@ enum class MovementOp : uint16_t
     WriteUInt8_1,
     WriteFloat1,
 
-    FlushBits
+    FlushBits,
+
+    // 128 bit guids of the mover and its transport (6.x and 7.x clients)
+    Guid128,
+    TGuid128,
+
+    // removed movement forces: their count, then one guid each
+    RemovedForcesCount,
+    RemovedForces,
+
+    // end of a bit field between byte fields: flushes on write, starts a new byte on read
+    AlignBits
 };
 
 struct MovementStep
@@ -143,5 +154,13 @@ struct MovementVersionTraits<WoW::Expansion::_Mop>
 {
     static constexpr bool hasFlags2 = true;
     static constexpr int flags2BitWidth = 13;
+    static constexpr bool flags2IsBitPacked = true;
+};
+
+template <>
+struct MovementVersionTraits<WoW::Expansion::_Legion>
+{
+    static constexpr bool hasFlags2 = true;
+    static constexpr int flags2BitWidth = 18;
     static constexpr bool flags2IsBitPacked = true;
 };

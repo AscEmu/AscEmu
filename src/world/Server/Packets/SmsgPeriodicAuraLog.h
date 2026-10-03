@@ -54,6 +54,61 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // target, caster, spell, one effect: type, amount, over heal or kill, school or power, absorbed or
+                // amplitude, resisted, crit, debug info, sandbox scaling
+                int32_t overHealOrKill = 0;
+                int32_t schoolOrPower = 0;
+                int32_t absorbedOrAmplitude = 0;
+                int32_t resisted = 0;
+
+                switch (auraType)
+                {
+                    case 3:     // SPELL_AURA_PERIODIC_DAMAGE
+                    case 89:    // SPELL_AURA_PERIODIC_DAMAGE_PERCENT
+                        overHealOrKill = static_cast<int32_t>(overKillOrOverHeal);
+                        schoolOrPower = static_cast<int32_t>(schoolMask);
+                        absorbedOrAmplitude = static_cast<int32_t>(absorbAmount);
+                        resisted = static_cast<int32_t>(resistedAmount);
+                        break;
+                    case 8:     // SPELL_AURA_PERIODIC_HEAL
+                    case 20:    // SPELL_AURA_PERIODIC_HEAL_PCT
+                        overHealOrKill = static_cast<int32_t>(overKillOrOverHeal);
+                        absorbedOrAmplitude = static_cast<int32_t>(absorbAmount);
+                        break;
+                    case 21:    // SPELL_AURA_PERIODIC_POWER_PCT
+                    case 24:    // SPELL_AURA_PERIODIC_ENERGIZE
+                        schoolOrPower = static_cast<int32_t>(miscValue);
+                        break;
+                    case 64:    // SPELL_AURA_PERIODIC_MANA_LEECH
+                        schoolOrPower = static_cast<int32_t>(miscValue);
+                        absorbedOrAmplitude = static_cast<int32_t>(gainMultiplier);
+                        break;
+                    default:
+                        break;
+                }
+
+                packet << targetGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << casterGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << int32_t(spellId);
+                packet << uint32_t(1);
+                packet.writeBit(false);                 // log data
+                packet.flushBits();
+
+                packet << int32_t(auraType);
+                packet << int32_t(amount);
+                packet << overHealOrKill;
+                packet << schoolOrPower;
+                packet << absorbedOrAmplitude;
+                packet << resisted;
+                packet.writeBit(isCritical != 0);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             packet << targetGuid << casterGuid << spellId << uint32_t(1) << auraType;
 
             switch (auraType)

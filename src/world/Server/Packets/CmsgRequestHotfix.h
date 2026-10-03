@@ -98,6 +98,24 @@ namespace AscEmu::Packets
 
                 return true;
             }
+            else if (m_protocol.expansion >= WoW::Expansion::_WoD && m_protocol.expansion <= WoW::Expansion::_Legion)
+            {
+                // bulk query: hash of the client data table and the requested records
+                packet >> type;
+                count = packet.readBits(13);
+
+                entries.reserve(count);
+                for (uint32_t i = 0; i < count; ++i)
+                {
+                    WoWGuid128 guid;
+                    packet >> guid;
+                    packet >> entry;
+
+                    entries.push_back(entry);
+                }
+
+                return !packet.hadReadFailure();
+            }
 
             return false;
         }

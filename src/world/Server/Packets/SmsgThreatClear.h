@@ -30,6 +30,12 @@ namespace AscEmu::Packets
             if (m_protocol.expansion < WoW::Expansion::_WotLK)
                 return false;
 
+            if (m_protocol.isLegion())
+            {
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet.appendPackGuid(guid.getRawGuid());

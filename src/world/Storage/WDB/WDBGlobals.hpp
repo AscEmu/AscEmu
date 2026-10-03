@@ -194,7 +194,8 @@ namespace WDB
     {
         using Traits = DbcTraits<RuntimeEntry>;
 
-        const WoW::Expansion activeExpansion = WoW::getServerExpansion();
+        // files, layouts and formats follow the expansion of the game data, not of the client
+        const WoW::Expansion activeExpansion = WoW::getServerDataExpansion();
         auto const expansionId = static_cast<uint32_t>(activeExpansion);
         auto const expansionName = WoW::getExpansionName(activeExpansion);
 

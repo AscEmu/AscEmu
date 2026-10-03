@@ -80,7 +80,7 @@ namespace WDB
             return {};
         }
 
-        auto const expansionIndex = static_cast<std::size_t>(WoW::getServerExpansion());
+        auto const expansionIndex = static_cast<std::size_t>(WoW::getServerDataExpansion());
         if (expansionIndex < std::size(it->second.format))
         {
             return it->second.format[expansionIndex];

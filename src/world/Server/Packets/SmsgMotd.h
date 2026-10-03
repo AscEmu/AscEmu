@@ -38,7 +38,19 @@ namespace AscEmu::Packets
             if (m_protocol.isClassic())
                 return false;
 
-            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            if (m_protocol.isLegion())
+            {
+                // every line: length, then the text
+                packet.writeBits(lineCount, 4);
+                packet.flushBits();
+                for (const auto& line : motdLines)
+                {
+                    packet.writeBits(strlen(line.c_str()), 7);
+                    packet.flushBits();
+                    packet.writeString(line);
+                }
+            }
+            else if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << lineCount;
                 for (const auto& line : motdLines)

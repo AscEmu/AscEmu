@@ -376,16 +376,12 @@ namespace AscEmu::Packets
             return true;
         }
 
-        // character of the 6.x and 7.x lists; guids are 128 bit with type and realm in the high part
-        // and the counter in the low part
+        // character of the 6.x and 7.x lists
         void writeCharacter128(WorldPacket& packet, CharEnumData const& data, uint8_t listPosition) const
         {
-            constexpr uint64_t highTypePlayer = 2;
-            constexpr uint64_t highTypeGuild = 28;
-            const uint64_t realmPart = static_cast<uint64_t>(m_protocol.realmId & 0xFFFF) << 42;
             const bool legion = m_protocol.isLegion();
 
-            writePackedGuid128(packet, (highTypePlayer << 58) | realmPart, WoWGuid::getLowGuidFromRaw(data.guid));
+            packet << WoWGuid128::realmSpecific(HighGuid128::Player, m_protocol.realmId, WoWGuid::getLowGuidFromRaw(data.guid));
 
             packet << listPosition;
             packet << data.race << data.Class << data.gender;
@@ -402,9 +398,9 @@ namespace AscEmu::Packets
             packet << data.x << data.y << data.z;
 
             if (data.guildId != 0)
-                writePackedGuid128(packet, (highTypeGuild << 58) | realmPart, data.guildId);
+                packet << WoWGuid128::realmSpecific(HighGuid128::Guild, m_protocol.realmId, data.guildId);
             else
-                writePackedGuid128(packet, 0, 0);
+                packet << WoWGuid128();
 
             packet << uint32_t(data.char_flags);
             packet << uint32_t(data.customization_flag);
@@ -439,31 +435,6 @@ namespace AscEmu::Packets
             packet.flushBits();
 
             packet.append(data.name.c_str(), data.name.length());
-        }
-
-        // 128 bit guid: one mask byte per half, then the non zero bytes of the low and the high part
-        static void writePackedGuid128(WorldPacket& packet, uint64_t high, uint64_t low)
-        {
-            uint8_t masks[2] = { 0, 0 };
-            uint8_t bytes[16];
-            size_t count = 0;
-
-            const uint64_t parts[2] = { low, high };
-            for (size_t part = 0; part < 2; ++part)
-            {
-                for (uint8_t i = 0; i < 8; ++i)
-                {
-                    const uint8_t value = static_cast<uint8_t>((parts[part] >> (i * 8)) & 0xFF);
-                    if (value != 0)
-                    {
-                        masks[part] |= static_cast<uint8_t>(1 << i);
-                        bytes[count++] = value;
-                    }
-                }
-            }
-
-            packet << masks[0] << masks[1];
-            packet.append(bytes, count);
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

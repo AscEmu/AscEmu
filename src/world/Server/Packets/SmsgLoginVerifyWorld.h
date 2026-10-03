@@ -42,7 +42,12 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion != WoW::Expansion::_Mop)
+            if (m_protocol.isLegion())
+            {
+                packet << mapId << location.x << location.y << location.z << location.o;
+                packet << uint32_t(0);                  // reason
+            }
+            else if (m_protocol.expansion != WoW::Expansion::_Mop)
             {
                 packet << mapId << location.x << location.y << location.z << location.o;
             }

@@ -109,6 +109,134 @@ Object::~Object()
     }
 }
 
+
+#if VERSION_STRING == Legion
+#include "Server/World.h"
+
+#include <array>
+#include <unordered_map>
+#include <vector>
+
+namespace
+{
+    // object type of area triggers in 7.x packets
+    constexpr uint8_t wireTypeIdAreaTrigger = 8;
+
+    uint8_t wireObjectTypeId(uint8_t objectTypeId)
+    {
+        return objectTypeId == TYPEID_AREATRIGGER ? wireTypeIdAreaTrigger : objectTypeId;
+    }
+
+    void collectGuidIndexes(const Version::LayoutTable& table, std::vector<uint16_t>& indexes)
+    {
+        constexpr uint16_t guidFieldSize = 16;
+
+        for (const Version::FieldDesc& desc : table.fields)
+        {
+            if (desc.offset == Version::kNoField || desc.size != guidFieldSize)
+                continue;
+
+            const uint16_t count = desc.count == 0 ? 1 : desc.count;
+            for (uint16_t element = 0; element < count; ++element)
+                indexes.push_back(static_cast<uint16_t>((desc.offset + element * desc.stride) / sizeof(uint32_t)));
+        }
+    }
+
+    // Value indexes where a guid field starts. The object values keep the 64 bit guid of the server in the
+    // first half of these 16 byte fields, packets carry the 128 bit guid of the client in all four values.
+    const std::vector<uint16_t>& guidValueIndexes(uint8_t objectTypeId)
+    {
+        static const std::array<std::vector<uint16_t>, TYPEID_AREATRIGGER + 1> indexes = []
+        {
+            std::array<std::vector<uint16_t>, TYPEID_AREATRIGGER + 1> result;
+            const auto& layouts = Version::layouts();
+
+            for (uint8_t typeId = 0; typeId <= TYPEID_AREATRIGGER; ++typeId)
+            {
+                collectGuidIndexes(layouts.object, result[typeId]);
+                switch (typeId)
+                {
+                    case TYPEID_CONTAINER:
+                        collectGuidIndexes(layouts.container, result[typeId]);
+                        [[fallthrough]];
+                    case TYPEID_ITEM:
+                        collectGuidIndexes(layouts.item, result[typeId]);
+                        break;
+                    case TYPEID_PLAYER:
+                        collectGuidIndexes(layouts.player, result[typeId]);
+                        [[fallthrough]];
+                    case TYPEID_UNIT:
+                        collectGuidIndexes(layouts.unit, result[typeId]);
+                        break;
+                    case TYPEID_GAMEOBJECT:
+                        collectGuidIndexes(layouts.gameObject, result[typeId]);
+                        break;
+                    case TYPEID_DYNAMICOBJECT:
+                        collectGuidIndexes(layouts.dynamicObject, result[typeId]);
+                        break;
+                    case TYPEID_CORPSE:
+                        collectGuidIndexes(layouts.corpse, result[typeId]);
+                        break;
+                    case TYPEID_AREATRIGGER:
+                        collectGuidIndexes(layouts.areaTrigger, result[typeId]);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return result;
+        }();
+
+        static const std::vector<uint16_t> none;
+        return objectTypeId < indexes.size() ? indexes[objectTypeId] : none;
+    }
+
+    // Mask blocks of the dynamic values of an object type (7.3.5: 17 player, 3 unit, 5 item and container,
+    // 1 gameobject field). The server keeps no dynamic values, the mask is sent empty.
+    uint8_t dynamicValuesBlockCount(uint8_t objectTypeId)
+    {
+        switch (objectTypeId)
+        {
+            case TYPEID_ITEM:
+            case TYPEID_CONTAINER:
+            case TYPEID_UNIT:
+            case TYPEID_PLAYER:
+            case TYPEID_GAMEOBJECT:
+                return 1;
+            default:
+                return 0;
+        }
+    }
+
+    void writeEmptyDynamicValues(ByteBuffer& data, uint8_t objectTypeId)
+    {
+        const uint8_t blockCount = dynamicValuesBlockCount(objectTypeId);
+        data << blockCount;
+        for (uint8_t block = 0; block < blockCount; ++block)
+            data << uint32_t(0);
+    }
+
+    // transport part of a movement block: transport, position on it, seat and times
+    void writeTransportInfo(ByteBuffer& data, const MovementInfo& info, uint32_t realmId, uint32_t mapId)
+    {
+        data << info.transport_guid.toGuid128(realmId, mapId);
+        data << float(info.transport_position.x);
+        data << float(info.transport_position.y);
+        data << float(info.transport_position.z);
+        data << float(info.transport_position.o);
+        data << int8_t(info.transport_seat);
+        data << uint32_t(info.transport_time);
+        data.writeBit(info.transport_time2 != 0);
+        data.writeBit(false);                           // vehicle record
+        data.flushBits();
+
+        if (info.transport_time2 != 0)
+            data << uint32_t(info.transport_time2);
+    }
+}
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 uint64_t Object::getGuid() const { return getField<uint64_t>(ObjectField::Guid); }
@@ -318,8 +446,13 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     // build our actual update
     *data << uint8_t(updateType);
+#if VERSION_STRING == Legion
+    *data << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, target->GetMapId());
+    *data << wireObjectTypeId(m_objectTypeId);
+#else
     *data << m_wowGuid;
     *data << uint8_t(m_objectTypeId);
+#endif
 
     buildMovementUpdate(data, updateFlags, target);
 
@@ -2038,6 +2171,7 @@ void Object::sendGameobjectDespawnAnim()
 void Object::_Create(uint32_t mapid, float x, float y, float z, float ang)
 {
     m_mapId = mapid;
+    obj_movement_info.mapId = mapid;
     m_position.changeCoords({ x, y, z, ang });
     m_spawnLocation.changeCoords({ x, y, z, ang });
     m_lastMapUpdatePosition.changeCoords({ x, y, z, ang });
@@ -2047,7 +2181,11 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
 {
     ByteBuffer buf(500);
     buf << uint8_t(UPDATETYPE_VALUES);
+#if VERSION_STRING == Legion
+    buf << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, Target->GetMapId());
+#else
     buf << GetNewGUID();
+#endif
 
     uint32_t mBlocks = Index / 32 + 1;
     buf << uint8_t(mBlocks);
@@ -2058,7 +2196,9 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
     buf << (((uint32_t)(1)) << (Index % 32));
     buf << Value;
 
-#if VERSION_STRING >= Mop
+#if VERSION_STRING == Legion
+    writeEmptyDynamicValues(buf, m_objectTypeId);
+#elif VERSION_STRING >= Mop
     // Mop closes every values-update block with a dynamic-values section; for anything
     // that isn't an item or a player this is a single zero byte meaning "no dynamic
     // fields". buildValuesUpdate() already writes this trailer for the normal per-tick update path;
@@ -2073,7 +2213,11 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
 void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Value)
 {
     *buf << uint8_t(UPDATETYPE_VALUES);
+#if VERSION_STRING == Legion
+    *buf << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, GetMapId());
+#else
     *buf << GetNewGUID();
+#endif
 
     uint32_t mBlocks = Index / 32 + 1;
     *buf << uint8_t(mBlocks);
@@ -2084,7 +2228,9 @@ void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Va
     *buf << (((uint32_t)(1)) << (Index % 32));
     *buf << Value;
 
-#if VERSION_STRING >= Mop
+#if VERSION_STRING == Legion
+    writeEmptyDynamicValues(*buf, m_objectTypeId);
+#elif VERSION_STRING >= Mop
     // See the other BuildFieldUpdatePacket() overload above for why this is required.
     *buf << static_cast<uint8_t>(0);
 #endif
@@ -2102,7 +2248,11 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* targe
             if (m_wowGuid.getNewGuidLen() > 0)
             {
                 *data << uint8_t(UPDATETYPE_VALUES);              // update type == update
+#if VERSION_STRING == Legion
+                *data << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, target != nullptr ? target->GetMapId() : GetMapId());
+#else
                 *data << m_wowGuid;
+#endif
 
                 buildValuesUpdate(UPDATETYPE_VALUES, data, &updateMask, target);
 
@@ -2124,7 +2274,11 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* ma
     if (m_wowGuid.getNewGuidLen() > 0)
     {
         *buf << uint8_t(UPDATETYPE_VALUES);
+#if VERSION_STRING == Legion
+        *buf << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, GetMapId());
+#else
         *buf << m_wowGuid;
+#endif
 
         buildValuesUpdate(UPDATETYPE_VALUES, buf, mask, nullptr);
 
@@ -2973,7 +3127,143 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 }
 #endif
 
-#if VERSION_STRING >= Mop
+#if VERSION_STRING == Legion
+void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* target)
+{
+    const uint32_t realmId = worldConfig.battleNetComm.realmId;
+    const uint32_t mapId = target != nullptr ? target->GetMapId() : GetMapId();
+
+    const bool living = (updateFlags & UPDATEFLAG_LIVING) != 0 && isCreatureOrPlayer();
+    const bool transportPosition = (updateFlags & UPDATEFLAG_POSITION) != 0;
+    const bool stationary = (updateFlags & UPDATEFLAG_HAS_POSITION) != 0;
+    const bool hasTarget = (updateFlags & UPDATEFLAG_HAS_TARGET) != 0 && isCreatureOrPlayer();
+    const bool serverTime = (updateFlags & UPDATEFLAG_TRANSPORT) != 0;
+    const bool vehicle = (updateFlags & UPDATEFLAG_VEHICLE) != 0;
+    const bool rotation = (updateFlags & UPDATEFLAG_ROTATION) != 0 && isGameObject();
+
+    data->writeBit(false);                              // no birth animation
+    data->writeBit(false);                              // enable portals
+    data->writeBit(false);                              // play hover animation
+    data->writeBit(living);
+    data->writeBit(transportPosition);
+    data->writeBit(stationary);
+    data->writeBit(hasTarget);
+    data->writeBit(serverTime);
+    data->writeBit(vehicle);
+    data->writeBit(false);                              // anim kits
+    data->writeBit(rotation);
+    data->writeBit(false);                              // area trigger shape
+    data->writeBit(false);                              // world effect of a gameobject
+    data->writeBit(false);                              // smooth phasing
+    data->writeBit(updateFlags & UPDATEFLAG_SELF);
+    data->writeBit(false);                              // scene object
+    data->writeBit(false);                              // rune state of the player
+    data->flushBits();
+
+    if (living)
+    {
+        Unit* unit = static_cast<Unit*>(this);
+
+        const uint32_t movementFlags = obj_movement_info.getMovementFlags();
+        const uint32_t movementFlags2 = static_cast<uint32_t>(obj_movement_info.getMovementFlags2());
+        const bool hasTransport = !obj_movement_info.transport_guid.isEmpty();
+        const bool hasFallDirection = obj_movement_info.hasMovementFlag(MOVEFLAG_FALLING);
+        const bool hasFall = hasFallDirection;
+
+        *data << m_wowGuid.toGuid128(realmId, mapId);
+        *data << uint32_t(Util::getMSTime());
+        *data << float(GetPositionX());
+        *data << float(GetPositionY());
+        *data << float(GetPositionZ());
+        *data << float(LocationVector::normalizeOrientation(GetOrientation()));
+        *data << float(obj_movement_info.getPitch());
+        *data << float(obj_movement_info.getSplineElevation());
+        *data << uint32_t(0);                           // removed movement forces
+        *data << uint32_t(0);                           // move index
+
+        data->writeBits(movementFlags, 30);
+        data->writeBits(movementFlags2, 18);
+        data->writeBit(hasTransport);
+        data->writeBit(hasFall);
+        data->writeBit(false);                          // spline
+        data->writeBit(false);                          // height change failed
+        data->writeBit(false);                          // remote time valid
+        data->flushBits();
+
+        if (hasTransport)
+            writeTransportInfo(*data, obj_movement_info, realmId, mapId);
+
+        if (hasFall)
+        {
+            *data << uint32_t(obj_movement_info.fall_time);
+            *data << float(obj_movement_info.jump_info.velocity);
+
+            data->writeBit(hasFallDirection);
+            data->flushBits();
+            if (hasFallDirection)
+            {
+                *data << float(obj_movement_info.jump_info.sinAngle);
+                *data << float(obj_movement_info.jump_info.cosAngle);
+                *data << float(obj_movement_info.jump_info.xyspeed);
+            }
+        }
+
+        *data << float(unit->getSpeedRate(TYPE_WALK, true));
+        *data << float(unit->getSpeedRate(TYPE_RUN, true));
+        *data << float(unit->getSpeedRate(TYPE_RUN_BACK, true));
+        *data << float(unit->getSpeedRate(TYPE_SWIM, true));
+        *data << float(unit->getSpeedRate(TYPE_SWIM_BACK, true));
+        *data << float(unit->getSpeedRate(TYPE_FLY, true));
+        *data << float(unit->getSpeedRate(TYPE_FLY_BACK, true));
+        *data << float(unit->getSpeedRate(TYPE_TURN_RATE, true));
+        *data << float(unit->getSpeedRate(TYPE_PITCH_RATE, true));
+
+        *data << uint32_t(0);                           // movement forces
+        data->writeBit(false);                          // spline
+        data->flushBits();
+    }
+
+    *data << uint32_t(0);                               // pause times of a transport
+
+    if (stationary)
+    {
+        *data << float(GetPositionX());
+        *data << float(GetPositionY());
+        *data << float(GetPositionZ());
+        *data << float(LocationVector::normalizeOrientation(GetOrientation()));
+    }
+
+    if (hasTarget)
+        *data << WoWGuid(static_cast<Unit*>(this)->getTargetGuid()).toGuid128(realmId, mapId);
+
+    if (serverTime)
+    {
+        GameObject const* go = isGameObject() ? static_cast<GameObject*>(this) : nullptr;
+        if (go && go->ToTransport())
+            *data << uint32_t(go->getGOValue()->PathProgress);
+        else
+            *data << uint32_t(Util::getMSTime());
+    }
+
+    if (vehicle)
+    {
+        uint32_t vehicleid = 0;
+        if (isCreature())
+            vehicleid = static_cast<Creature*>(this)->GetCreatureProperties()->vehicleid;
+        else if (isPlayer())
+            vehicleid = static_cast<Player*>(this)->getMountVehicleId();
+
+        *data << uint32_t(vehicleid);
+        *data << float(GetOrientation());
+    }
+
+    if (rotation)
+        *data << uint64_t(static_cast<GameObject*>(this)->getPackedLocalRotation());
+
+    if (transportPosition)
+        writeTransportInfo(*data, obj_movement_info, realmId, mapId);
+}
+#elif VERSION_STRING >= Mop
 void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* /*target*/)
 {
     WoWGuid Guid = getGuid();
@@ -3350,6 +3640,46 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
 
     uint32_t block_count, values_count;
     const bool isCreate = (updateType == UPDATETYPE_CREATE_OBJECT || updateType == UPDATETYPE_CREATE_OBJECT2);
+
+#if VERSION_STRING == Legion
+    // guid fields: the 64 bit guid of the server becomes the 128 bit guid of the client, four values per field
+    std::unordered_map<uint32_t, uint32_t> guidValues;
+    {
+        const uint32_t realmId = worldConfig.battleNetComm.realmId;
+        const uint32_t mapId = target != nullptr ? target->GetMapId() : GetMapId();
+
+        for (const uint16_t index : guidValueIndexes(m_objectTypeId))
+        {
+            if (index + 3u >= m_valuesCount)
+                continue;
+
+            if (!updateMask->GetBit(index) && !updateMask->GetBit(index + 1u))
+                continue;
+
+            uint64_t rawGuid = 0;
+            std::memcpy(&rawGuid, &m_uint32Values[index], sizeof(rawGuid));
+
+            const WoWGuid128 guid = WoWGuid(rawGuid).toGuid128(realmId, mapId);
+            const uint32_t words[4] =
+            {
+                static_cast<uint32_t>(guid.low), static_cast<uint32_t>(guid.low >> 32),
+                static_cast<uint32_t>(guid.high), static_cast<uint32_t>(guid.high >> 32)
+            };
+
+            for (uint32_t part = 0; part < 4; ++part)
+            {
+                // a create block only carries the values that are set
+                if (isCreate && words[part] == 0)
+                    updateMask->UnsetBit(index + part);
+                else
+                    updateMask->SetBit(index + part);
+
+                guidValues[index + part] = words[part];
+            }
+        }
+    }
+#endif
+
     if (m_valuesCount > 2 * 0x20 && !isCreate)
     {
         block_count = updateMask->GetUpdateBlockCount();
@@ -3370,6 +3700,11 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
         {
             // Some data must be altered because it has to be different to each player
             auto bitValue = m_uint32Values[idx];
+
+#if VERSION_STRING == Legion
+            if (const auto guidValue = guidValues.find(idx); guidValue != guidValues.end())
+                bitValue = guidValue->second;
+#endif
 
             if (target != nullptr)
             {
@@ -3575,7 +3910,9 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
         }
     }
 
-#if VERSION_STRING >= Mop
+#if VERSION_STRING == Legion
+    writeEmptyDynamicValues(*data, m_objectTypeId);
+#elif VERSION_STRING >= Mop
     *data << static_cast<uint8_t>(0);
 #endif
 }
@@ -3739,6 +4076,7 @@ void Object::registerToWorld(WorldMap& map)
     m_lifecycleMap = &map;
     m_instanceId = map.getInstanceId();
     m_mapId = map.getBaseMap()->getMapId();
+    obj_movement_info.mapId = m_mapId;
     event_Relocate();
 }
 
@@ -4390,8 +4728,17 @@ void Object::SendAIReaction(uint32_t reaction)
 
 void Object::SendDestroyObject()
 {
+#if VERSION_STRING == Legion
+    // 7.x has no destroy packet, the object leaves the range of every player with the next object update
+    for (Object* inRangePlayer : getInRangePlayersSet())
+    {
+        if (auto* const player = dynamic_cast<Player*>(inRangePlayer))
+            player->getUpdateMgr().pushOutOfRangeGuid(m_wowGuid);
+    }
+#else
     SmsgDestroyObject sendPacket(getGuid());
     PacketBroadcast::sendToSet(*this, sendPacket);
+#endif
 }
 
 bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float & outz, bool sloppypath)
