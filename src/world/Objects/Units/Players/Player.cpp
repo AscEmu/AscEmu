@@ -10224,15 +10224,14 @@ void Player::addQuestKill(uint32_t questId, uint8_t reqId, uint32_t delay)
     {
         if (QuestProperties const* quest = questLogEntry->getQuestProperties())
         {
-            if (questLogEntry->getMobCountByIndex(reqId) >= quest->required_mob_or_go_count[reqId])
+            if (reqId >= 4 || quest->required_mob_or_go[reqId] == 0)
                 return;
 
-            questLogEntry->incrementMobCountForIndex(reqId);
-            questLogEntry->sendUpdateAddKill(reqId);
-            questLogEntry->updatePlayerFields();
-
-            if (questLogEntry->canBeFinished())
-                questLogEntry->sendQuestComplete();
+            QuestObjectiveCreditEvent credit;
+            credit.type = quest->required_mobtype[reqId] == QUEST_MOB_TYPE_GAMEOBJECT ? QuestObjectiveCreditType::GameObjectActivate : QuestObjectiveCreditType::MonsterKill;
+            credit.objectId = quest->required_mob_or_go[reqId] < 0 ? -quest->required_mob_or_go[reqId] : quest->required_mob_or_go[reqId];
+            credit.questId = questId;
+            sQuestMgr.updateQuestObjectiveProgress(this, credit);
         }
     }
 }
@@ -11014,12 +11013,12 @@ void Player::sendItemPushResultPacket(bool created, bool recieved, bool sendtose
         getSession()->sendManagedPacket(managedPacket);
 }
 
-void Player::sendQuestItemPushResultPacket(uint32_t entry, uint32_t count, uint32_t questCount)
+void Player::sendQuestItemPushResultPacket(uint32_t entry, uint32_t count, uint32_t questCount, uint32_t proxyItemId)
 {
     if (getSession() == nullptr || !getSession()->getClientProtocol().isForever())
         return;
 
-    SmsgItemPushResult managedPacket(getGuid(), WoWGuid(), true, false, uint8_t(0xFF), uint32_t(-1), entry, 0, 0, count, questCount, static_cast<uint16_t>(GetMapId()), 0, 0, false, false, 3, true);
+    SmsgItemPushResult managedPacket(getGuid(), WoWGuid(), true, false, uint8_t(0xFF), uint32_t(-1), entry, 0, 0, count, questCount, static_cast<uint16_t>(GetMapId()), static_cast<int32_t>(proxyItemId), 0, false, false, 3, true);
     getSession()->sendManagedPacket(managedPacket);
 }
 

@@ -1395,16 +1395,15 @@ void ObjectMgr::eventScriptsUpdate(Player* _player, uint32_t _nextEvent)
                 {
                     if (auto* questLog = _player->getQuestLogByQuestId(itr->second.data_2))
                     {
-                        if (questLog->getQuestProperties()->required_mob_or_go[itr->second.data_5] >= 0)
+                        const auto index = static_cast<uint8_t>(itr->second.data_5);
+                        QuestProperties const* quest = questLog->getQuestProperties();
+                        if (quest != nullptr && index < 4 && quest->required_mob_or_go[index] != 0)
                         {
-                            const uint32_t requiredMob = questLog->getQuestProperties()->required_mob_or_go[itr->second.data_5];
-                            const auto index = static_cast<uint8_t>(itr->second.data_5);
-                            if (questLog->getMobCountByIndex(index) < requiredMob)
-                            {
-                                questLog->setMobCountForIndex(index, questLog->getMobCountByIndex(index) + 1);
-                                questLog->sendUpdateAddKill(index);
-                                questLog->updatePlayerFields();
-                            }
+                            QuestObjectiveCreditEvent credit;
+                            credit.type = quest->required_mobtype[index] == QUEST_MOB_TYPE_GAMEOBJECT ? QuestObjectiveCreditType::GameObjectActivate : QuestObjectiveCreditType::MonsterKill;
+                            credit.objectId = quest->required_mob_or_go[index] < 0 ? -quest->required_mob_or_go[index] : quest->required_mob_or_go[index];
+                            credit.questId = quest->id;
+                            sQuestMgr.updateQuestObjectiveProgress(_player, credit);
                         }
                     }
                 } break;

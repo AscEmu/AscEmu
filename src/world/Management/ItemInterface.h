@@ -187,7 +187,9 @@ private:
 
         Item* FindItemLessMax(uint32_t itemid, uint32_t cnt, bool IncBank);
         uint32_t GetItemCount(uint32_t itemid, bool IncBank = false);
+        uint32_t GetQuestItemCount(uint32_t objectiveItemId, bool IncBank = false);
         uint32_t RemoveItemAmt(uint32_t id, uint32_t amt);
+        uint32_t RemoveQuestItemAmt(uint32_t objectiveItemId, uint32_t amt);
         uint32_t RemoveItemAmt_ProtectPointer(uint32_t id, uint32_t amt, Item** pointer);
         uint32_t RemoveItemAmtByGuid(uint64_t guid, uint32_t amt);
         void RemoveAllConjured();

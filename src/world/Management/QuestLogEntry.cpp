@@ -213,57 +213,77 @@ void QuestLogEntry::clearAffectedUnits()
 
 bool QuestLogEntry::canBeFinished() const
 {
+    const bool forever = m_player != nullptr && m_player->getSession() != nullptr && m_player->getSession()->getClientProtocol().isForever();
+
     if (m_questProperties->iscompletedbyspelleffect && m_state == QUEST_INCOMPLETE)
+    {
+        if (forever)
         return false;
+    }
 
     if (m_state == QUEST_FAILED)
+    {
+        if (forever)
         return false;
-    
+    }
+
     if (m_state == QUEST_COMPLETE)
+    {
+        if (forever)
         return true;
+    }
 
     for (uint8_t i = 0; i < 4; ++i)
     {
-        if (m_questProperties->required_mob_or_go[i])
+        if (m_questProperties->required_mob_or_go[i] && m_mobcount[i] < m_questProperties->required_mob_or_go_count[i])
         {
-            if (m_mobcount[i] < m_questProperties->required_mob_or_go_count[i])
-                return false;
+            if (forever)
+            return false;
         }
 
-        if (m_questProperties->required_spell[i])
+        if (m_questProperties->required_spell[i] && (m_mobcount[i] == 0 || m_mobcount[i] < m_questProperties->required_mob_or_go_count[i]))
         {
-            if (m_mobcount[i] == 0 || m_mobcount[i] < m_questProperties->required_mob_or_go_count[i])
-                return false;
+            if (forever)
+            return false;
         }
 
-        if (m_questProperties->required_emote[i])
+        if (m_questProperties->required_emote[i] && (m_mobcount[i] == 0 || m_mobcount[i] < m_questProperties->required_mob_or_go_count[i]))
         {
-            if (m_mobcount[i] == 0 || m_mobcount[i] < m_questProperties->required_mob_or_go_count[i])
-                return false;
+            if (forever)
+            return false;
         }
     }
 
     for (uint8_t i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
     {
-        if (m_questProperties->required_item[i])
+        if (!m_questProperties->required_item[i])
+            continue;
+
+        const uint32_t itemCount = m_player->getItemInterface()->GetQuestItemCount(m_questProperties->required_item[i], true);
+        if (forever)
+        if (itemCount < m_questProperties->required_itemcount[i])
         {
-            if (m_player->getItemInterface()->GetItemCount(m_questProperties->required_item[i]) < m_questProperties->required_itemcount[i])
-                return false;
+            if (forever)
+            return false;
         }
     }
 
     if (m_questProperties->reward_money < 0 && m_player->getCoinage() < uint32_t(-m_questProperties->reward_money))
+    {
+        if (forever)
         return false;
+    }
 
     for (uint8_t i = 0; i < 4; ++i)
     {
-        if (m_questProperties->required_triggers[i])
+        if (m_questProperties->required_triggers[i] && m_explored_areas[i] == 0)
         {
-            if (m_explored_areas[i] == 0)
-                return false;
+            if (forever)
+            return false;
         }
     }
 
+    if (forever)
     return true;
 }
 
@@ -392,31 +412,14 @@ void QuestLogEntry::updatePlayerFields()
 
     if (m_player->getSession() != nullptr && m_player->getSession()->getClientProtocol().isForever())
     {
-        const auto objectives = sQuestMgr.buildForeverQuestObjectives(m_questProperties, 0);
-        for (ForeverQuestObjectiveData const& objective : objectives)
+        const auto objectives = sQuestMgr.buildQuestObjectives(m_questProperties, 0);
+        for (QuestObjectiveData const& objective : objectives)
         {
-            uint32_t progress = 0;
-            if (objective.type == 1)
-            {
-                progress = m_player->getItemInterface()->GetItemCount(static_cast<uint32_t>(objective.objectId), true);
-            }
-            else
-            {
-                for (uint8_t i = 0; i < 4; ++i)
-                {
-                    const bool sameCreature = objective.type == 0 && m_questProperties->required_mob_or_go[i] == objective.objectId;
-                    const bool sameGameObject = objective.type == 2 && m_questProperties->required_mob_or_go[i] == -objective.objectId;
-                    const bool sameSpell = objective.type == 5 && m_questProperties->required_spell[i] != 0 && static_cast<int32_t>(m_questProperties->required_spell[i]) == objective.objectId;
-                    if (sameCreature || sameGameObject || sameSpell)
-                    {
-                        progress = m_mobcount[i];
-                        break;
-                    }
-                }
-            }
+            if (objective.storageIndex < 0)
+                continue;
 
-            if (objective.storageIndex >= 0)
-                m_player->setQuestLogObjectiveProgressBySlot(m_slot, static_cast<uint8_t>(objective.storageIndex), progress);
+            const uint32_t progress = sQuestMgr.getQuestObjectiveProgress(m_player, this, objective);
+            m_player->setQuestLogObjectiveProgressBySlot(m_slot, static_cast<uint8_t>(objective.storageIndex), progress);
         }
     }
     else
@@ -447,7 +450,7 @@ void QuestLogEntry::sendQuestComplete()
         questScript->OnQuestComplete(m_player, this);
 }
 
-void QuestLogEntry::sendUpdateAddKill(uint8_t index, uint64_t guid, uint16_t mapId)
+void QuestLogEntry::sendUpdateAddKill(uint8_t index, Object const* source)
 {
     if (index >= 4)
     {
@@ -456,7 +459,7 @@ void QuestLogEntry::sendUpdateAddKill(uint8_t index, uint64_t guid, uint16_t map
     }
 
     sQuestMgr.SendQuestUpdateAddKill(m_player, m_questProperties->id, m_questProperties->required_mob_or_go[index],
-        m_mobcount[index], m_questProperties->required_mob_or_go_count[index], guid, mapId);
+        m_mobcount[index], m_questProperties->required_mob_or_go_count[index], source);
 }
 
 QuestScript* QuestLogEntry::getQuestScript() const

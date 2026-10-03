@@ -13,6 +13,7 @@ class QueryBuffer;
 class Field;
 class QuestScript;
 class Unit;
+class Object;
 class Player;
 struct QuestProperties;
 
@@ -66,7 +67,7 @@ public:
 
     void updatePlayerFields();
     void sendQuestComplete();
-    void sendUpdateAddKill(uint8_t index, uint64_t guid = 0, uint16_t mapId = 0);
+    void sendUpdateAddKill(uint8_t index, Object const* source = nullptr);
 
     QuestScript* getQuestScript() const;
 

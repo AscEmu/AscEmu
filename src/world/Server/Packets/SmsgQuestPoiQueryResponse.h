@@ -67,8 +67,8 @@ namespace AscEmu::Packets
                         int32_t questObjectiveId = static_cast<int32_t>(blob.QuestObjectiveId);
                         int32_t questObjectId = 0;
 
-                        const auto objectives = sQuestMgr.buildForeverQuestObjectives(q, 0);
-                        for (ForeverQuestObjectiveData const& objective : objectives)
+                        const auto objectives = sQuestMgr.buildQuestObjectives(q, 0);
+                        for (QuestObjectiveData const& objective : objectives)
                         {
                             if (objective.storageIndex != blob.ObjectiveIndex)
                                 continue;

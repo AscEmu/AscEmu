@@ -1261,6 +1261,63 @@ uint32_t ItemInterface::GetItemCount(uint32_t itemid, bool IncBank)
     return cnt;
 }
 
+uint32_t ItemInterface::GetQuestItemCount(uint32_t objectiveItemId, bool IncBank)
+{
+    uint32_t count = 0;
+
+    const auto addItem = [&count, objectiveItemId](Item* item)
+    {
+        if (item == nullptr || item->m_wrappedItemId != 0)
+            return;
+
+        ItemProperties const* properties = item->getItemProperties();
+        if (properties == nullptr)
+            return;
+
+        if (item->getEntry() != objectiveItemId && properties->QuestLogItemId != objectiveItemId)
+            return;
+
+        count += item->getStackCount() ? item->getStackCount() : 1;
+    };
+
+    for (uint32_t i = EQUIPMENT_SLOT_START; i < INVENTORY_SLOT_ITEM_END; ++i)
+        addItem(GetInventoryItem(static_cast<int16_t>(i)));
+
+    for (uint32_t i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; ++i)
+    {
+        Item* bag = GetInventoryItem(static_cast<int16_t>(i));
+        if (bag == nullptr || !bag->isContainer())
+            continue;
+
+        for (uint32_t j = 0; j < bag->getItemProperties()->ContainerSlots; ++j)
+            addItem(static_cast<Container*>(bag)->getItem(static_cast<int16_t>(j)));
+    }
+
+    for (uint32_t i = InventoryLayout::KeyringStart; i < InventoryLayout::KeyringEnd; ++i)
+        addItem(GetInventoryItem(static_cast<int16_t>(i)));
+
+    for (uint32_t i = InventoryLayout::CurrencyTokenStart; i < InventoryLayout::CurrencyTokenEnd; ++i)
+        addItem(GetInventoryItem(static_cast<int16_t>(i)));
+
+    if (IncBank)
+    {
+        for (uint32_t i = BANK_SLOT_ITEM_START; i < BANK_SLOT_BAG_END; ++i)
+            addItem(GetInventoryItem(static_cast<int16_t>(i)));
+
+        for (uint32_t i = BANK_SLOT_BAG_START; i < BANK_SLOT_BAG_END; ++i)
+        {
+            Item* bag = GetInventoryItem(static_cast<int16_t>(i));
+            if (bag == nullptr || !bag->isContainer())
+                continue;
+
+            for (uint32_t j = 0; j < bag->getItemProperties()->ContainerSlots; ++j)
+                addItem(static_cast<Container*>(bag)->getItem(static_cast<int16_t>(j)));
+        }
+    }
+
+    return count;
+}
+
 /// Removes a ammount of items from inventory
 uint32_t ItemInterface::RemoveItemAmt(uint32_t id, uint32_t amt)
 {
@@ -1421,6 +1478,82 @@ uint32_t ItemInterface::RemoveItemAmt(uint32_t id, uint32_t amt)
         }
     }
     return 0;
+}
+
+
+uint32_t ItemInterface::RemoveQuestItemAmt(uint32_t objectiveItemId, uint32_t amt)
+{
+    const uint32_t requestedAmount = amt;
+
+    const auto matchesObjectiveItem = [objectiveItemId](Item* item)
+    {
+        if (item == nullptr || item->m_wrappedItemId != 0)
+            return false;
+
+        ItemProperties const* properties = item->getItemProperties();
+        if (properties == nullptr)
+            return false;
+
+        return item->getEntry() == objectiveItemId || properties->QuestLogItemId == objectiveItemId;
+    };
+
+    const auto removeFromItem = [this, &amt](Item* item, int16_t containerSlot, int16_t slot)
+    {
+        const uint32_t stackCount = item->getStackCount() ? item->getStackCount() : 1;
+        if (stackCount > amt)
+        {
+            item->setStackCount(stackCount - amt);
+            item->m_isDirty = true;
+            onItemRemoved(item);
+            amt = 0;
+            return;
+        }
+
+        amt -= stackCount;
+        SafeFullRemoveItemFromSlot(containerSlot, slot);
+    };
+
+    for (uint32_t i = EQUIPMENT_SLOT_START; i < INVENTORY_SLOT_ITEM_END && amt > 0; ++i)
+    {
+        Item* item = GetInventoryItem(static_cast<int16_t>(i));
+        if (!matchesObjectiveItem(item))
+            continue;
+
+        if (item->getItemProperties()->ContainerSlots > 0 && item->isContainer() && static_cast<Container*>(item)->hasItems())
+            continue;
+
+        removeFromItem(item, InventoryLayout::SlotNotSet, static_cast<int16_t>(i));
+    }
+
+    for (uint32_t i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END && amt > 0; ++i)
+    {
+        Item* bag = GetInventoryItem(static_cast<int16_t>(i));
+        if (bag == nullptr || !bag->isContainer())
+            continue;
+
+        for (uint32_t j = 0; j < bag->getItemProperties()->ContainerSlots && amt > 0; ++j)
+        {
+            Item* item = static_cast<Container*>(bag)->getItem(static_cast<int16_t>(j));
+            if (matchesObjectiveItem(item))
+                removeFromItem(item, static_cast<int16_t>(i), static_cast<int16_t>(j));
+        }
+    }
+
+    for (uint32_t i = InventoryLayout::KeyringStart; i < InventoryLayout::KeyringEnd && amt > 0; ++i)
+    {
+        Item* item = GetInventoryItem(static_cast<int16_t>(i));
+        if (matchesObjectiveItem(item))
+            removeFromItem(item, InventoryLayout::SlotNotSet, static_cast<int16_t>(i));
+    }
+
+    for (uint32_t i = InventoryLayout::CurrencyTokenStart; i < InventoryLayout::CurrencyTokenEnd && amt > 0; ++i)
+    {
+        Item* item = GetInventoryItem(static_cast<int16_t>(i));
+        if (matchesObjectiveItem(item))
+            removeFromItem(item, InventoryLayout::SlotNotSet, static_cast<int16_t>(i));
+    }
+
+    return requestedAmount - amt;
 }
 
 uint32_t ItemInterface::RemoveItemAmt_ProtectPointer(uint32_t id, uint32_t amt, Item** pointer)

@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "Server/World.h"
+#include "WoWGuid.hpp"
 
 #include <cstdint>
 #include <string>
@@ -28,6 +30,7 @@ namespace AscEmu::Packets
     struct QuestgiverQuestListInput
     {
         uint64_t questGiverGuid = 0;
+        uint16_t mapId = 0;
         std::string greeting; // "" for a gameobject quest giver, else the localized hello line
         bool isValid = false; // false if the quest giver has no quest relations at all
         uint8_t activeQuestsCount = 0;
@@ -57,6 +60,42 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                const WoWGuid questGiverGuid = WoWGuid::createModernFromLegacy(input.questGiverGuid, worldConfig.battleNetComm.realmId, input.mapId, 0);
+                const auto packedQuestGiverGuid = questGiverGuid.packModern();
+                packet.append(packedQuestGiverGuid.data(), packedQuestGiverGuid.size());
+
+                packet << uint32_t(0); // GreetEmoteDelay; sniff-verified for 70124
+                packet << uint32_t(1); // GreetEmoteType
+                packet << static_cast<uint32_t>(input.quests.size());
+
+                for (const auto& quest : input.quests)
+                {
+                    packet << static_cast<int32_t>(quest.questId);
+                    packet << int32_t(0); // ContentTuningID
+                    packet << static_cast<int32_t>(quest.statusIcon); // QuestType / quest icon
+                    packet << int32_t(0); // QuestInfoID
+                    packet << static_cast<uint32_t>(quest.questFlags); // QuestFlags[0]
+                    packet << uint32_t(0); // QuestFlags[1]
+                    packet << uint32_t(0); // QuestFlags[2]
+                    packet << uint32_t(0); // QuestFlags[3]
+
+                    packet.writeBit(quest.isRepeatable);
+                    packet.writeBit(false); // ResetByScheduler
+                    packet.writeBit(false); // Important
+                    packet.writeBit(false); // Meta
+                    packet.writeBits(quest.title.length(), 9);
+                    packet.flushBits();
+                    packet.writeString(quest.title);
+                }
+
+                packet.writeBits(input.greeting.length(), 11);
+                packet.flushBits();
+                packet.writeString(input.greeting);
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // Quests with !input.isValid naturally serialise as an empty (count == 0) list,

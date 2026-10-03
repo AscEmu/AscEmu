@@ -38,6 +38,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Objects/Item.hpp"
 #include "Objects/Units/Creatures/Creature.h"
+
+#include <algorithm>
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Packets/SmsgGossipComplete.h"
 #include "Server/Script/HookInterface.hpp"
@@ -357,7 +359,8 @@ std::unique_ptr<WorldPacket> WorldSession::buildQuestQueryResponse(QuestProperti
     const std::string portraitTurnInText;
     const std::string portraitTurnInName;
     const std::string questCompletionLog = qst->completiontext;
-    const auto objectives = sQuestMgr.buildForeverQuestObjectives(qst, language);
+    const auto objectives = sQuestMgr.buildQuestObjectives(qst, language);
+    const uint32_t clientObjectiveCount = static_cast<uint32_t>(std::count_if(objectives.begin(), objectives.end(), [](QuestObjectiveData const& objective) { return objective.clientVisible; }));
     const bool hiddenReward = qst->HasFlag(QUEST_FLAGS_HIDDEN_REWARDS);
 
     *data << uint32_t(qst->id);
@@ -446,7 +449,7 @@ std::unique_ptr<WorldPacket> WorldSession::buildQuestQueryResponse(QuestProperti
     *data << int32_t(878);                                                      // CompleteSoundKitID, verified in 70124 capture
     *data << int32_t(0);                                                        // AreaGroupID
     *data << int64_t(qst->time);                                                // TimeAllowed
-    *data << uint32_t(objectives.size());
+    *data << clientObjectiveCount;
 
     const uint64_t allowableRaces = qst->required_races != 0 ? static_cast<uint64_t>(qst->required_races) : UINT64_MAX;
     *data << allowableRaces;
@@ -463,6 +466,9 @@ std::unique_ptr<WorldPacket> WorldSession::buildQuestQueryResponse(QuestProperti
 
     for (const auto& objective : objectives)
     {
+        if (!objective.clientVisible)
+            continue;
+
         *data << uint32_t(objective.id);
         *data << int32_t(objective.type);
         *data << int8_t(objective.storageIndex);
@@ -1301,7 +1307,7 @@ void WorldSession::handleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    if (srlPacket.rewardSlot >= 6)
+    if (!getClientProtocol().isForever() && srlPacket.rewardSlot >= 6)
         return;
 
     bool bValid = false;
@@ -1344,6 +1350,32 @@ void WorldSession::handleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     {
         sLogger.debug("Creature is not a questgiver.");
         return;
+    }
+
+    if (getClientProtocol().isForever())
+    {
+        if (srlPacket.rewardItemType != 0)
+            return;
+
+        if (srlPacket.rewardItemId != 0)
+        {
+            bool rewardFound = false;
+            for (uint8_t i = 0; i < 6; ++i)
+            {
+                if (qst->reward_choiceitem[i] != srlPacket.rewardItemId)
+                    continue;
+
+                srlPacket.rewardSlot = i;
+                rewardFound = true;
+                break;
+            }
+
+            if (!rewardFound)
+                return;
+        }
+
+        if (srlPacket.rewardSlot >= 6)
+            return;
     }
 
     QuestLogEntry* qle = _player->getQuestLogByQuestId(srlPacket.questId);

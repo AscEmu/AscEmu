@@ -110,6 +110,36 @@ enum QUEST_TYPE
     QUEST_SLAY      = 0x02
 };
 
+// Modern quest objective types. Kept protocol-neutral so the same objective model can be used by legacy and modern quest logic.
+enum QuestObjectiveType : uint8_t
+{
+    QUEST_OBJECTIVE_MONSTER                 = 0,
+    QUEST_OBJECTIVE_ITEM                    = 1,
+    QUEST_OBJECTIVE_GAMEOBJECT              = 2,
+    QUEST_OBJECTIVE_TALKTO                  = 3,
+    QUEST_OBJECTIVE_CURRENCY                = 4,
+    QUEST_OBJECTIVE_LEARNSPELL              = 5,
+    QUEST_OBJECTIVE_MIN_REPUTATION          = 6,
+    QUEST_OBJECTIVE_MAX_REPUTATION          = 7,
+    QUEST_OBJECTIVE_MONEY                   = 8,
+    QUEST_OBJECTIVE_PLAYERKILLS             = 9,
+    QUEST_OBJECTIVE_AREATRIGGER             = 10,
+    QUEST_OBJECTIVE_WINPETBATTLEAGAINSTNPC  = 11,
+    QUEST_OBJECTIVE_DEFEATBATTLEPET         = 12,
+    QUEST_OBJECTIVE_WINPVPPETBATTLES        = 13,
+    QUEST_OBJECTIVE_CRITERIA_TREE           = 14,
+    QUEST_OBJECTIVE_PROGRESS_BAR            = 15,
+    QUEST_OBJECTIVE_HAVE_CURRENCY           = 16,
+    QUEST_OBJECTIVE_OBTAIN_CURRENCY         = 17,
+    QUEST_OBJECTIVE_INCREASE_REPUTATION     = 18,
+    QUEST_OBJECTIVE_AREA_TRIGGER_ENTER      = 19,
+    QUEST_OBJECTIVE_AREA_TRIGGER_EXIT       = 20,
+    QUEST_OBJECTIVE_KILL_WITH_LABEL         = 21,
+    QUEST_OBJECTIVE_UNK_1127                = 22,
+
+    MAX_QUEST_OBJECTIVE_TYPE
+};
+
 enum QuestFlag
 {
     QUEST_FLAG_NONE               = 0x00000000,

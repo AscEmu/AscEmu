@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include <cstdint>
+#include <cstring>
 
 namespace AscEmu::Packets
 {
@@ -16,6 +17,9 @@ namespace AscEmu::Packets
         WoWGuid questgiverGuid;
         uint32_t questId;
         uint32_t rewardSlot;
+        uint32_t rewardItemId;
+        uint32_t rewardQuantity;
+        uint8_t rewardItemType;
 
         CmsgQuestgiverChooseReward() : CmsgQuestgiverChooseReward(0, 0, 0)
         {
@@ -25,7 +29,10 @@ namespace AscEmu::Packets
             ManagedPacket(CMSG_QUESTGIVER_CHOOSE_REWARD, 12),
             questgiverGuid(questgiverGuid),
             questId(questId),
-            rewardSlot(rewardSlot)
+            rewardSlot(rewardSlot),
+            rewardItemId(0),
+            rewardQuantity(0),
+            rewardItemType(0)
         {
         }
 
@@ -41,7 +48,7 @@ namespace AscEmu::Packets
         size_t expectedSize() const override
         {
             if (m_protocol.isForever())
-                return 16; // packed modern GUID + questId + empty QuestChoiceItem observed in 70009
+                return 16; // packed modern GUID + questId + modern QuestChoiceItem
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
                 return m_minimum_size;
             else if (m_protocol.isMop())
@@ -64,12 +71,43 @@ namespace AscEmu::Packets
                     return false;
                 packet >> questId;
 
-                // Build 70009 capture had no selectable reward: QuestChoiceItem = 11 zero bytes.
-                if (packet.remaining() != 11)
+                // Forever sends a modern QuestChoiceItem, not a legacy reward-slot index.
+                // The simple item-choice form used by normal quest rewards is:
+                // bits: LootItemType(2), ContextFlagsPresent(1); ItemID; ItemModListCount(7);
+                // ItemBonusPresent(1); Quantity; optional ContextFlags.
+                if (packet.remaining() < 11)
                     return false;
-                for (std::size_t i = packet.rpos(); i < packet.size(); ++i)
-                    if (packet.contents()[i] != 0)
-                        return false;
+
+                const uint8_t* choice = packet.contents() + packet.rpos();
+                const std::size_t choiceSize = packet.remaining();
+                rewardItemType = static_cast<uint8_t>((choice[0] >> 6) & 0x03U);
+                const bool hasContextFlags = (choice[0] & 0x20U) != 0;
+
+                int32_t itemId = 0;
+                std::memcpy(&itemId, choice + 1, sizeof(itemId));
+                if (itemId < 0)
+                    return false;
+                rewardItemId = static_cast<uint32_t>(itemId);
+
+                const uint32_t modificationCount = static_cast<uint32_t>(choice[5] >> 1);
+                if (modificationCount != 0)
+                    return false; // not emitted by AscEmu's current quest reward serializer
+
+                const bool hasItemBonus = (choice[6] & 0x80U) != 0;
+                if (hasItemBonus)
+                    return false; // not emitted by AscEmu's current quest reward serializer
+
+                const std::size_t quantityOffset = 7;
+                const std::size_t expectedChoiceSize = quantityOffset + sizeof(int32_t) + (hasContextFlags ? sizeof(int32_t) : 0);
+                if (choiceSize != expectedChoiceSize)
+                    return false;
+
+                int32_t quantity = 0;
+                std::memcpy(&quantity, choice + quantityOffset, sizeof(quantity));
+                if (quantity < 0)
+                    return false;
+                rewardQuantity = static_cast<uint32_t>(quantity);
+
                 packet.rpos(packet.size());
                 rewardSlot = 0;
                 return true;

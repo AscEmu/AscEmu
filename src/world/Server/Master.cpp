@@ -104,7 +104,7 @@ namespace
 {
     // DB version
     constexpr std::string_view REQUIRED_CHAR_DB_VERSION = "20260905-00_character_currency";
-    constexpr std::string_view REQUIRED_WORLD_DB_VERSION = "20261001-00_quest_poi_build";
+    constexpr std::string_view REQUIRED_WORLD_DB_VERSION = "20261003-00_item_properties_addon";
 
     void printBanner()
     {

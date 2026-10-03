@@ -39,6 +39,7 @@ struct ItemProperties;
 struct QuestProperties;
 class WorldPacket;
 class GossipMenu;
+class QuestLogEntry;
 
 namespace AscEmu::Packets
 {
@@ -49,16 +50,42 @@ namespace AscEmu::Packets
 }
 
 
-struct ForeverQuestObjectiveData
+struct QuestObjectiveData
 {
     uint32_t id = 0;
-    int32_t type = 0;
-    int8_t storageIndex = 0;
+    QuestObjectiveType type = QUEST_OBJECTIVE_MONSTER;
+    int8_t storageIndex = -1;
+    int8_t sourceIndex = -1;
     int32_t objectId = 0;
     int32_t amount = 0;
+    uint32_t requiredSpellId = 0;
+    uint32_t requiredEmoteId = 0;
     uint32_t flags = 0;
     uint32_t flags2 = 0;
+    bool clientVisible = true;
     std::string description;
+};
+
+enum class QuestObjectiveCreditType : uint8_t
+{
+    MonsterKill,
+    GameObjectActivate,
+    ItemPickup,
+    SpellCast,
+    Emote,
+    AreaTrigger,
+    ScriptExplore
+};
+
+struct QuestObjectiveCreditEvent
+{
+    QuestObjectiveCreditType type = QuestObjectiveCreditType::MonsterKill;
+    int32_t objectId = 0;
+    uint32_t amount = 1;
+    uint32_t actionId = 0;
+    uint32_t questId = 0;
+    Object const* source = nullptr;
+    bool groupCredit = false;
 };
 
 struct QuestRelation
@@ -160,17 +187,19 @@ public:
 
         AscEmu::Packets::QuestgiverOfferRewardInput buildOfferRewardInput(QuestProperties const* qst, Object* qst_giver, Player* plr, uint32_t language);
         AscEmu::Packets::QuestgiverQuestDetailsInput buildQuestDetailsInput(QuestProperties const* qst, Object* qst_giver, Player* plr, uint32_t language);
-        std::vector<ForeverQuestObjectiveData> buildForeverQuestObjectives(QuestProperties const* qst, uint32_t language) const;
+        std::vector<QuestObjectiveData> buildQuestObjectives(QuestProperties const* qst, uint32_t language) const;
+        uint32_t getQuestObjectiveProgress(Player* plr, QuestLogEntry const* questLog, QuestObjectiveData const& objective) const;
+        bool updateQuestObjectiveProgress(Player* plr, QuestObjectiveCreditEvent const& event);
         AscEmu::Packets::QuestgiverRequestItemsInput buildRequestItemsInput(QuestProperties const* qst, Object* qst_giver, uint32_t status, uint32_t language);
         AscEmu::Packets::QuestgiverQuestListInput buildQuestListInput(Object* qst_giver, Player* plr, uint32_t language);
         bool isRepeatableQuestFinished(Player* plr, QuestProperties const* qst);
 
-        void SendQuestUpdateAddKill(Player* plr, uint32_t questid, uint32_t entry, uint32_t count, uint32_t tcount, uint64_t guid, uint16_t mapId = 0);
+        void SendQuestUpdateAddKill(Player* plr, uint32_t questid, uint32_t entry, uint32_t count, uint32_t tcount, Object const* source = nullptr);
         void SendPushToPartyResponse(Player* plr, Player* pTarget, uint8_t response);
 
         bool OnGameObjectActivate(Player* plr, GameObject* go);
         void OnPlayerKill(Player* plr, Creature* victim, bool IsGroupKill);
-        void _OnPlayerKill(Player* plr, uint32_t entry, bool IsGroupKill, uint64_t guid = 0, uint16_t mapId = 0);
+        void _OnPlayerKill(Player* plr, uint32_t entry, bool IsGroupKill, Object const* source = nullptr);
         void OnPlayerCast(Player* plr, uint32_t spellid, uint64_t & victimguid);
         void OnPlayerEmote(Player* plr, uint32_t emoteid, uint64_t & victimguid);
         void OnPlayerItemPickup(Player* plr, Item* item);

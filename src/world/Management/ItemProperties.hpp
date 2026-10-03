@@ -85,6 +85,10 @@ struct ItemProperties
     uint32_t ItemLimitCategory;
     uint32_t HolidayId;
     uint32_t FoodType;
+    uint32_t MinMoneyLoot = 0;
+    uint32_t MaxMoneyLoot = 0;
+    uint32_t RandomBonusListTemplateId = 0;
+    uint32_t QuestLogItemId = 0;
 
     std::string lowercase_name; // used in auctions
     int32_t ForcedPetId;
