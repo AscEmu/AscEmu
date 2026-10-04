@@ -17,6 +17,13 @@
 
 INSERT INTO `ascemu_world`.`world_db_version` (`LastUpdate`) VALUES ('20260927-00_playercreateinfo_69893');
 
+--
+-- AscEmu updater compatibility:
+--   Migration helper tables are deliberately non-temporary because individual
+--   SQL statements may execute on different pooled database connections.
+--   Inline SQL comments were moved above their statements so each semicolon
+--   remains the unambiguous statement terminator for the updater.
+--
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -57,13 +64,15 @@ ALTER TABLE `player_classlevelstats` MODIFY COLUMN `build` INT UNSIGNED NOT NULL
 -- per concrete race, and only then removed from the live tables.
 -- race=0 is retained only for rows whose legacy raceMask was 0 (unrestricted).
 -- -----------------------------------------------------------------------------
-CREATE TEMPORARY TABLE `_ae_race_ids` (`race` TINYINT UNSIGNED NOT NULL PRIMARY KEY) ENGINE=MEMORY;
+DROP TABLE IF EXISTS `_ae_race_ids`;
+CREATE TABLE `_ae_race_ids` (`race` TINYINT UNSIGNED NOT NULL PRIMARY KEY) ENGINE=MEMORY;
 INSERT INTO `_ae_race_ids` (`race`) VALUES
 (1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12),(13),(14),(15),(16),
 (17),(18),(19),(20),(21),(22),(23),(24),(25),(26),(27),(28),(29),(30),(31),(32);
 
 -- playercreateinfo_skills
-CREATE TEMPORARY TABLE `_ae_old_playercreateinfo_skills` AS SELECT * FROM `playercreateinfo_skills`;
+DROP TABLE IF EXISTS `_ae_old_playercreateinfo_skills`;
+CREATE TABLE `_ae_old_playercreateinfo_skills` AS SELECT * FROM `playercreateinfo_skills`;
 
 ALTER TABLE `playercreateinfo_skills`
     ADD COLUMN `race` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `max_build`,
@@ -94,10 +103,11 @@ ALTER TABLE `playercreateinfo_skills`
     ADD PRIMARY KEY (`max_build`,`min_build`,`race`,`classMask`,`skillid`) USING BTREE,
     ADD UNIQUE INDEX `unique_index` (`max_build`,`min_build`,`race`,`classMask`,`skillid`) USING BTREE;
 
-DROP TEMPORARY TABLE `_ae_old_playercreateinfo_skills`;
+DROP TABLE IF EXISTS `_ae_old_playercreateinfo_skills`;
 
 -- playercreateinfo_spell_learn
-CREATE TEMPORARY TABLE `_ae_old_playercreateinfo_spell_learn` AS SELECT * FROM `playercreateinfo_spell_learn`;
+DROP TABLE IF EXISTS `_ae_old_playercreateinfo_spell_learn`;
+CREATE TABLE `_ae_old_playercreateinfo_spell_learn` AS SELECT * FROM `playercreateinfo_spell_learn`;
 
 ALTER TABLE `playercreateinfo_spell_learn`
     ADD COLUMN `race` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `max_build`,
@@ -126,10 +136,11 @@ ALTER TABLE `playercreateinfo_spell_learn`
     ADD PRIMARY KEY (`min_build`,`max_build`,`race`,`classMask`,`spellid`) USING BTREE,
     ADD UNIQUE INDEX `unique_index` (`min_build`,`max_build`,`race`,`classMask`,`spellid`) USING BTREE;
 
-DROP TEMPORARY TABLE `_ae_old_playercreateinfo_spell_learn`;
+DROP TABLE IF EXISTS `_ae_old_playercreateinfo_spell_learn`;
 
 -- playercreateinfo_spell_cast
-CREATE TEMPORARY TABLE `_ae_old_playercreateinfo_spell_cast` AS SELECT * FROM `playercreateinfo_spell_cast`;
+DROP TABLE IF EXISTS `_ae_old_playercreateinfo_spell_cast`;
+CREATE TABLE `_ae_old_playercreateinfo_spell_cast` AS SELECT * FROM `playercreateinfo_spell_cast`;
 
 ALTER TABLE `playercreateinfo_spell_cast`
     ADD COLUMN `race` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `max_build`,
@@ -158,8 +169,8 @@ ALTER TABLE `playercreateinfo_spell_cast`
     ADD PRIMARY KEY (`min_build`,`max_build`,`race`,`classMask`,`spellid`) USING BTREE,
     ADD UNIQUE INDEX `unique_index` (`min_build`,`max_build`,`race`,`classMask`,`spellid`) USING BTREE;
 
-DROP TEMPORARY TABLE `_ae_old_playercreateinfo_spell_cast`;
-DROP TEMPORARY TABLE `_ae_race_ids`;
+DROP TABLE IF EXISTS `_ae_old_playercreateinfo_spell_cast`;
+DROP TABLE IF EXISTS `_ae_race_ids`;
 
 -- =============================================================================
 -- SOURCE SECTION: Human
@@ -1812,538 +1823,964 @@ INSERT INTO `playercreateinfo_spell_cast` (`min_build`, `max_build`, `classMask`
 -- LEVEL 1 PRIMARY STATS
 -- =============================================================================
 DELETE FROM `player_levelstats` WHERE `build`=70009 AND `level`=1;
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,1,1,1,23,20,22,20,20); -- Human Warrior [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,1,2,1,22,20,22,20,21); -- Human Paladin [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,1,3,1,20,23,21,20,21); -- Human Hunter [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,1,4,1,21,23,21,20,20); -- Human Rogue [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,1,5,1,20,20,20,22,23); -- Human Priest [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,1,8,1,20,20,20,23,22); -- Human Mage [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,1,9,1,20,20,21,22,22); -- Human Warlock [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,3,1,1,25,18,23,19,20); -- Dwarf Warrior [inferred exactly from zero-residual race+class additive model over supplied 70009 sniffs]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,3,2,1,24,18,23,19,21); -- Dwarf Paladin [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,3,3,1,22,21,22,19,21); -- Dwarf Hunter [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,3,4,1,23,21,22,19,20); -- Dwarf Rogue [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,3,5,1,22,18,21,21,23); -- Dwarf Priest [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,3,7,1,23,18,22,20,22); -- Dwarf Shaman [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,4,1,1,21,22,22,20,20); -- Night Elf Warrior [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,4,3,1,18,25,21,20,21); -- Night Elf Hunter [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,4,4,1,19,25,21,20,20); -- Night Elf Rogue [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,4,5,1,18,22,20,22,23); -- Night Elf Priest [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,4,11,1,19,22,20,22,22); -- Night Elf Druid [inferred exactly from zero-residual race+class additive model over supplied 70009 sniffs]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,7,1,1,20,21,21,23,20); -- Gnome Warrior [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,7,4,1,18,24,20,23,20); -- Gnome Rogue [inferred exactly from zero-residual race+class additive model over supplied 70009 sniffs]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,7,5,1,17,21,19,25,23); -- Gnome Priest [inferred exactly from zero-residual race+class additive model over supplied 70009 sniffs]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,7,8,1,17,21,19,26,22); -- Gnome Mage [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,7,9,1,17,21,20,25,22); -- Gnome Warlock [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,95,1,1,22,21,21,21,20); -- Skyborn Alliance Warrior [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,95,3,1,19,24,20,21,21); -- Skyborn Alliance Hunter [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,95,4,1,20,24,20,21,20); -- Skyborn Alliance Rogue [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,95,8,1,19,21,19,24,22); -- Skyborn Alliance Mage [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,95,11,1,20,21,19,23,22); -- Skyborn Alliance Druid [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,2,1,1,26,17,23,19,20); -- Orc Warrior [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,2,3,1,23,20,22,19,21); -- Orc Hunter [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,2,4,1,24,20,22,19,20); -- Orc Rogue [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,2,7,1,24,17,22,20,22); -- Orc Shaman [inferred exactly from zero-residual race+class additive model over supplied 70009 sniffs]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,2,8,1,23,17,21,22,22); -- Orc Mage [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,2,9,1,23,17,22,21,22); -- Orc Warlock [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,5,1,1,25,19,23,18,20); -- Undead Warrior [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,5,2,1,24,19,23,18,21); -- Undead Paladin [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,5,4,1,23,22,22,18,20); -- Undead Rogue [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,5,5,1,22,19,21,20,23); -- Undead Priest [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,5,8,1,22,19,21,21,22); -- Undead Mage [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,5,9,1,22,19,22,20,22); -- Undead Warlock [inferred exactly from zero-residual race+class additive model over supplied 70009 sniffs]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,6,1,1,25,18,24,18,20); -- Tauren Warrior [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,6,3,1,22,21,23,18,21); -- Tauren Hunter [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,6,7,1,23,18,23,19,22); -- Tauren Shaman [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,6,11,1,23,18,22,20,22); -- Tauren Druid [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,8,1,1,24,22,22,17,20); -- Troll Warrior [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,8,3,1,21,25,21,17,21); -- Troll Hunter [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,8,4,1,22,25,21,17,20); -- Troll Rogue [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,8,5,1,21,22,20,19,23); -- Troll Priest [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,8,7,1,22,22,21,18,22); -- Troll Shaman [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,8,8,1,21,22,20,20,22); -- Troll Mage [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,8,9,1,21,22,21,19,22); -- Troll Warlock [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,96,1,1,22,21,21,21,20); -- Skyborn Horde Warrior [inferred exactly from zero-residual race+class additive model over supplied 70009 sniffs]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,96,3,1,19,24,20,21,21); -- Skyborn Horde Hunter [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,96,4,1,20,24,20,21,20); -- Skyborn Horde Rogue [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,96,7,1,20,21,20,22,22); -- Skyborn Horde Shaman [direct sniff]
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,96,11,1,20,21,19,23,22); -- Skyborn Horde Druid [direct sniff]
+-- Human Warrior [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,1,1,1,23,20,22,20,20);
+-- Human Paladin [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,1,2,1,22,20,22,20,21);
+-- Human Hunter [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,1,3,1,20,23,21,20,21);
+-- Human Rogue [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,1,4,1,21,23,21,20,20);
+-- Human Priest [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,1,5,1,20,20,20,22,23);
+-- Human Mage [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,1,8,1,20,20,20,23,22);
+-- Human Warlock [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,1,9,1,20,20,21,22,22);
+-- Dwarf Warrior [inferred exactly from zero-residual race+class additive model over supplied 70009 sniffs]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,3,1,1,25,18,23,19,20);
+-- Dwarf Paladin [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,3,2,1,24,18,23,19,21);
+-- Dwarf Hunter [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,3,3,1,22,21,22,19,21);
+-- Dwarf Rogue [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,3,4,1,23,21,22,19,20);
+-- Dwarf Priest [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,3,5,1,22,18,21,21,23);
+-- Dwarf Shaman [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,3,7,1,23,18,22,20,22);
+-- Night Elf Warrior [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,4,1,1,21,22,22,20,20);
+-- Night Elf Hunter [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,4,3,1,18,25,21,20,21);
+-- Night Elf Rogue [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,4,4,1,19,25,21,20,20);
+-- Night Elf Priest [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,4,5,1,18,22,20,22,23);
+-- Night Elf Druid [inferred exactly from zero-residual race+class additive model over supplied 70009 sniffs]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,4,11,1,19,22,20,22,22);
+-- Gnome Warrior [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,7,1,1,20,21,21,23,20);
+-- Gnome Rogue [inferred exactly from zero-residual race+class additive model over supplied 70009 sniffs]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,7,4,1,18,24,20,23,20);
+-- Gnome Priest [inferred exactly from zero-residual race+class additive model over supplied 70009 sniffs]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,7,5,1,17,21,19,25,23);
+-- Gnome Mage [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,7,8,1,17,21,19,26,22);
+-- Gnome Warlock [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,7,9,1,17,21,20,25,22);
+-- Skyborn Alliance Warrior [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,95,1,1,22,21,21,21,20);
+-- Skyborn Alliance Hunter [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,95,3,1,19,24,20,21,21);
+-- Skyborn Alliance Rogue [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,95,4,1,20,24,20,21,20);
+-- Skyborn Alliance Mage [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,95,8,1,19,21,19,24,22);
+-- Skyborn Alliance Druid [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,95,11,1,20,21,19,23,22);
+-- Orc Warrior [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,2,1,1,26,17,23,19,20);
+-- Orc Hunter [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,2,3,1,23,20,22,19,21);
+-- Orc Rogue [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,2,4,1,24,20,22,19,20);
+-- Orc Shaman [inferred exactly from zero-residual race+class additive model over supplied 70009 sniffs]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,2,7,1,24,17,22,20,22);
+-- Orc Mage [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,2,8,1,23,17,21,22,22);
+-- Orc Warlock [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,2,9,1,23,17,22,21,22);
+-- Undead Warrior [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,5,1,1,25,19,23,18,20);
+-- Undead Paladin [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,5,2,1,24,19,23,18,21);
+-- Undead Rogue [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,5,4,1,23,22,22,18,20);
+-- Undead Priest [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,5,5,1,22,19,21,20,23);
+-- Undead Mage [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,5,8,1,22,19,21,21,22);
+-- Undead Warlock [inferred exactly from zero-residual race+class additive model over supplied 70009 sniffs]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,5,9,1,22,19,22,20,22);
+-- Tauren Warrior [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,6,1,1,25,18,24,18,20);
+-- Tauren Hunter [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,6,3,1,22,21,23,18,21);
+-- Tauren Shaman [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,6,7,1,23,18,23,19,22);
+-- Tauren Druid [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,6,11,1,23,18,22,20,22);
+-- Troll Warrior [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,8,1,1,24,22,22,17,20);
+-- Troll Hunter [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,8,3,1,21,25,21,17,21);
+-- Troll Rogue [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,8,4,1,22,25,21,17,20);
+-- Troll Priest [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,8,5,1,21,22,20,19,23);
+-- Troll Shaman [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,8,7,1,22,22,21,18,22);
+-- Troll Mage [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,8,8,1,21,22,20,20,22);
+-- Troll Warlock [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,8,9,1,21,22,21,19,22);
+-- Skyborn Horde Warrior [inferred exactly from zero-residual race+class additive model over supplied 70009 sniffs]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,96,1,1,22,21,21,21,20);
+-- Skyborn Horde Hunter [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,96,3,1,19,24,20,21,21);
+-- Skyborn Horde Rogue [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,96,4,1,20,24,20,21,20);
+-- Skyborn Horde Shaman [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,96,7,1,20,21,20,22,22);
+-- Skyborn Horde Druid [direct sniff]
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,96,11,1,20,21,19,23,22);
 
 -- =============================================================================
 -- LEVEL 1 CLASS BASE HEALTH / MANA
 -- =============================================================================
 DELETE FROM `player_classlevelstats` WHERE `build`=70009 AND `level`=1 AND `class` IN (1,2,3,4,5,7,8,9,11);
-INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,1,1,20,0); -- Warrior
-INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,2,1,18,60); -- Paladin
-INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,3,1,26,65); -- Hunter
-INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,4,1,25,0); -- Rogue
-INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,5,1,32,110); -- Priest
-INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,7,1,27,55); -- Shaman
-INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,8,1,32,100); -- Mage
-INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,9,1,23,90); -- Warlock
-INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,11,1,34,50); -- Druid
+-- Warrior
+INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,1,1,20,0);
+-- Paladin
+INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,2,1,18,60);
+-- Hunter
+INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,3,1,26,65);
+-- Rogue
+INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,4,1,25,0);
+-- Priest
+INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,5,1,32,110);
+-- Shaman
+INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,7,1,27,55);
+-- Mage
+INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,8,1,32,100);
+-- Warlock
+INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,9,1,23,90);
+-- Druid
+INSERT INTO `player_classlevelstats` (`build`,`class`,`level`,`BaseHealth`,`BaseMana`) VALUES (70009,11,1,34,50);
 
 -- =============================================================================
 -- START ITEMS - DIRECTLY DECODED ONLY
 -- =============================================================================
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,38,3,1); -- Human Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,39,6,1); -- Human Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,40,7,1); -- Human Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,25,15,1); -- Human Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,2362,16,1); -- Human Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,117,35,4); -- Human Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,6948,36,1); -- Human Warrior
+-- Human Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,38,3,1);
+-- Human Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,39,6,1);
+-- Human Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,40,7,1);
+-- Human Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,25,15,1);
+-- Human Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,2362,16,1);
+-- Human Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,117,35,4);
+-- Human Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,1,6948,36,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class`=2;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,45,3,1); -- Human Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,44,6,1); -- Human Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,43,7,1); -- Human Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,2361,15,1); -- Human Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,6948,35,1); -- Human Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,159,36,2); -- Human Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,2070,37,4); -- Human Paladin
+-- Human Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,45,3,1);
+-- Human Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,44,6,1);
+-- Human Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,43,7,1);
+-- Human Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,2361,15,1);
+-- Human Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,6948,35,1);
+-- Human Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,159,36,2);
+-- Human Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,2,2070,37,4);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,148,3,1); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,147,6,1); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,129,7,1); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,2092,15,1); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,2504,17,1); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,159,35,2); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,117,36,4); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,6948,37,1); -- Human Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,2512,255,200); -- Human Hunter
+-- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,148,3,1);
+-- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,147,6,1);
+-- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,129,7,1);
+-- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,2092,15,1);
+-- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,2504,17,1);
+-- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,159,35,2);
+-- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,117,36,4);
+-- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,6948,37,1);
+-- Human Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,3,2512,255,200);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,49,3,1); -- Human Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,48,6,1); -- Human Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,47,7,1); -- Human Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,2092,15,1); -- Human Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,2947,17,1); -- Human Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,2070,35,4); -- Human Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,6948,36,1); -- Human Rogue
+-- Human Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,49,3,1);
+-- Human Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,48,6,1);
+-- Human Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,47,7,1);
+-- Human Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,2092,15,1);
+-- Human Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,2947,17,1);
+-- Human Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,2070,35,4);
+-- Human Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,4,6948,36,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class`=5;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,53,3,1); -- Human Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,6098,4,1); -- Human Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,52,6,1); -- Human Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,51,7,1); -- Human Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,36,15,1); -- Human Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,159,35,2); -- Human Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,2070,36,4); -- Human Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,6948,37,1); -- Human Priest
+-- Human Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,53,3,1);
+-- Human Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,6098,4,1);
+-- Human Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,52,6,1);
+-- Human Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,51,7,1);
+-- Human Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,36,15,1);
+-- Human Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,159,35,2);
+-- Human Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,2070,36,4);
+-- Human Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,5,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class`=8;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,6096,3,1); -- Human Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,56,4,1); -- Human Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,1395,6,1); -- Human Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,55,7,1); -- Human Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,35,15,1); -- Human Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,2070,35,4); -- Human Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,159,36,2); -- Human Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,6948,37,1); -- Human Mage
+-- Human Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,6096,3,1);
+-- Human Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,56,4,1);
+-- Human Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,1395,6,1);
+-- Human Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,55,7,1);
+-- Human Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,35,15,1);
+-- Human Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,2070,35,4);
+-- Human Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,159,36,2);
+-- Human Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,8,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=1 AND `class`=9;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,6097,3,1); -- Human Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,57,4,1); -- Human Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,1396,6,1); -- Human Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,59,7,1); -- Human Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,2092,15,1); -- Human Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,4604,35,4); -- Human Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,159,36,2); -- Human Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,6948,37,1); -- Human Warlock
+-- Human Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,6097,3,1);
+-- Human Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,57,4,1);
+-- Human Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,1396,6,1);
+-- Human Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,59,7,1);
+-- Human Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,2092,15,1);
+-- Human Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,4604,35,4);
+-- Human Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,159,36,2);
+-- Human Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,1,9,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=2 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,6125,3,1); -- Orc Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,139,6,1); -- Orc Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,140,7,1); -- Orc Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,12282,15,1); -- Orc Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,6948,35,1); -- Orc Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,117,36,4); -- Orc Warrior
+-- Orc Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,6125,3,1);
+-- Orc Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,139,6,1);
+-- Orc Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,140,7,1);
+-- Orc Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,12282,15,1);
+-- Orc Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,6948,35,1);
+-- Orc Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,1,117,36,4);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=2 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,127,3,1); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,6126,6,1); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,6127,7,1); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,37,15,1); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,2504,17,1); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,159,35,2); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,6948,36,1); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,117,37,4); -- Orc Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,2512,255,200); -- Orc Hunter
+-- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,127,3,1);
+-- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,6126,6,1);
+-- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,6127,7,1);
+-- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,37,15,1);
+-- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,2504,17,1);
+-- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,159,35,2);
+-- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,6948,36,1);
+-- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,117,37,4);
+-- Orc Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,3,2512,255,200);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=2 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,2105,3,1); -- Orc Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,120,6,1); -- Orc Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,121,7,1); -- Orc Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,2092,15,1); -- Orc Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,3111,17,1); -- Orc Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,117,35,4); -- Orc Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,6948,36,1); -- Orc Rogue
+-- Orc Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,2105,3,1);
+-- Orc Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,120,6,1);
+-- Orc Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,121,7,1);
+-- Orc Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,2092,15,1);
+-- Orc Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,3111,17,1);
+-- Orc Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,117,35,4);
+-- Orc Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,4,6948,36,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=2 AND `class`=8;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,6096,3,1); -- Orc Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,6140,4,1); -- Orc Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,1395,6,1); -- Orc Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,55,7,1); -- Orc Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,35,15,1); -- Orc Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,117,35,4); -- Orc Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,159,36,2); -- Orc Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,6948,37,1); -- Orc Mage
+-- Orc Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,6096,3,1);
+-- Orc Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,6140,4,1);
+-- Orc Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,1395,6,1);
+-- Orc Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,55,7,1);
+-- Orc Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,35,15,1);
+-- Orc Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,117,35,4);
+-- Orc Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,159,36,2);
+-- Orc Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,8,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=2 AND `class`=9;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,6129,4,1); -- Orc Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,1396,6,1); -- Orc Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,59,7,1); -- Orc Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,2092,15,1); -- Orc Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,6948,35,1); -- Orc Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,117,36,4); -- Orc Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,159,37,2); -- Orc Warlock
+-- Orc Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,6129,4,1);
+-- Orc Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,1396,6,1);
+-- Orc Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,59,7,1);
+-- Orc Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,2092,15,1);
+-- Orc Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,6948,35,1);
+-- Orc Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,117,36,4);
+-- Orc Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,9,159,37,2);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=3 AND `class`=2;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,6117,3,1); -- Dwarf Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,6118,6,1); -- Dwarf Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,43,7,1); -- Dwarf Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,2361,15,1); -- Dwarf Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,4540,35,4); -- Dwarf Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,159,36,2); -- Dwarf Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,6948,37,1); -- Dwarf Paladin
+-- Dwarf Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,6117,3,1);
+-- Dwarf Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,6118,6,1);
+-- Dwarf Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,43,7,1);
+-- Dwarf Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,2361,15,1);
+-- Dwarf Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,4540,35,4);
+-- Dwarf Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,159,36,2);
+-- Dwarf Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,2,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=3 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,148,3,1); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,147,6,1); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,129,7,1); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,37,15,1); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,2508,17,1); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,159,35,2); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,117,36,4); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,6948,37,1); -- Dwarf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,2516,255,200); -- Dwarf Hunter
+-- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,148,3,1);
+-- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,147,6,1);
+-- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,129,7,1);
+-- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,37,15,1);
+-- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,2508,17,1);
+-- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,159,35,2);
+-- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,117,36,4);
+-- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,6948,37,1);
+-- Dwarf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,3,2516,255,200);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=3 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,49,3,1); -- Dwarf Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,48,6,1); -- Dwarf Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,47,7,1); -- Dwarf Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,2092,15,1); -- Dwarf Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,3111,17,1); -- Dwarf Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,4540,35,4); -- Dwarf Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,6948,36,1); -- Dwarf Rogue
+-- Dwarf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,49,3,1);
+-- Dwarf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,48,6,1);
+-- Dwarf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,47,7,1);
+-- Dwarf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,2092,15,1);
+-- Dwarf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,3111,17,1);
+-- Dwarf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,4540,35,4);
+-- Dwarf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,4,6948,36,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=3 AND `class`=5;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,53,3,1); -- Dwarf Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,6098,4,1); -- Dwarf Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,52,6,1); -- Dwarf Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,51,7,1); -- Dwarf Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,36,15,1); -- Dwarf Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,159,35,2); -- Dwarf Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,4540,36,4); -- Dwarf Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,6948,37,1); -- Dwarf Priest
+-- Dwarf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,53,3,1);
+-- Dwarf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,6098,4,1);
+-- Dwarf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,52,6,1);
+-- Dwarf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,51,7,1);
+-- Dwarf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,36,15,1);
+-- Dwarf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,159,35,2);
+-- Dwarf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,4540,36,4);
+-- Dwarf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,5,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=3 AND `class`=7;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,154,3,1); -- Dwarf Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,153,6,1); -- Dwarf Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,36,15,1); -- Dwarf Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,6948,35,1); -- Dwarf Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,159,36,2); -- Dwarf Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,4540,37,4); -- Dwarf Shaman
+-- Dwarf Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,154,3,1);
+-- Dwarf Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,153,6,1);
+-- Dwarf Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,36,15,1);
+-- Dwarf Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,6948,35,1);
+-- Dwarf Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,159,36,2);
+-- Dwarf Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,7,4540,37,4);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=4 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,6120,3,1); -- Night Elf Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,6121,6,1); -- Night Elf Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,6122,7,1); -- Night Elf Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,25,15,1); -- Night Elf Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,2362,16,1); -- Night Elf Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,117,35,4); -- Night Elf Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,6948,36,1); -- Night Elf Warrior
+-- Night Elf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,6120,3,1);
+-- Night Elf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,6121,6,1);
+-- Night Elf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,6122,7,1);
+-- Night Elf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,25,15,1);
+-- Night Elf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,2362,16,1);
+-- Night Elf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,117,35,4);
+-- Night Elf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,1,6948,36,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=4 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,148,3,1); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,147,6,1); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,129,7,1); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,2092,15,1); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,2504,17,1); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,159,35,2); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,117,36,4); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,6948,37,1); -- Night Elf Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,2512,255,200); -- Night Elf Hunter
+-- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,148,3,1);
+-- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,147,6,1);
+-- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,129,7,1);
+-- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,2092,15,1);
+-- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,2504,17,1);
+-- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,159,35,2);
+-- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,117,36,4);
+-- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,6948,37,1);
+-- Night Elf Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,3,2512,255,200);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=4 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,49,3,1); -- Night Elf Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,48,6,1); -- Night Elf Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,47,7,1); -- Night Elf Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,2092,15,1); -- Night Elf Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,2947,17,1); -- Night Elf Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,4540,35,4); -- Night Elf Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,6948,36,1); -- Night Elf Rogue
+-- Night Elf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,49,3,1);
+-- Night Elf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,48,6,1);
+-- Night Elf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,47,7,1);
+-- Night Elf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,2092,15,1);
+-- Night Elf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,2947,17,1);
+-- Night Elf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,4540,35,4);
+-- Night Elf Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,4,6948,36,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=4 AND `class`=5;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,53,3,1); -- Night Elf Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,6119,4,1); -- Night Elf Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,52,6,1); -- Night Elf Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,51,7,1); -- Night Elf Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,36,15,1); -- Night Elf Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,2070,35,4); -- Night Elf Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,159,36,2); -- Night Elf Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,6948,37,1); -- Night Elf Priest
+-- Night Elf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,53,3,1);
+-- Night Elf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,6119,4,1);
+-- Night Elf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,52,6,1);
+-- Night Elf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,51,7,1);
+-- Night Elf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,36,15,1);
+-- Night Elf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,2070,35,4);
+-- Night Elf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,159,36,2);
+-- Night Elf Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,5,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=5 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,6125,3,1); -- Undead Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,139,6,1); -- Undead Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,140,7,1); -- Undead Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,25,15,1); -- Undead Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,2362,16,1); -- Undead Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,4604,35,4); -- Undead Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,6948,36,1); -- Undead Warrior
+-- Undead Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,6125,3,1);
+-- Undead Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,139,6,1);
+-- Undead Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,140,7,1);
+-- Undead Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,25,15,1);
+-- Undead Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,2362,16,1);
+-- Undead Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,4604,35,4);
+-- Undead Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,1,6948,36,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=5 AND `class`=2;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,6125,3,1); -- Undead Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,139,6,1); -- Undead Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,140,7,1); -- Undead Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,2361,15,1); -- Undead Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,4604,35,4); -- Undead Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,6948,36,1); -- Undead Paladin
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,159,37,2); -- Undead Paladin
+-- Undead Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,6125,3,1);
+-- Undead Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,139,6,1);
+-- Undead Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,140,7,1);
+-- Undead Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,2361,15,1);
+-- Undead Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,4604,35,4);
+-- Undead Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,6948,36,1);
+-- Undead Paladin
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,2,159,37,2);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=5 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,2105,3,1); -- Undead Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,120,6,1); -- Undead Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,121,7,1); -- Undead Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,2092,15,1); -- Undead Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,2947,17,1); -- Undead Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,4604,35,4); -- Undead Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,6948,36,1); -- Undead Rogue
+-- Undead Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,2105,3,1);
+-- Undead Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,120,6,1);
+-- Undead Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,121,7,1);
+-- Undead Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,2092,15,1);
+-- Undead Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,2947,17,1);
+-- Undead Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,4604,35,4);
+-- Undead Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,4,6948,36,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=5 AND `class`=5;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,53,3,1); -- Undead Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,6144,4,1); -- Undead Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,52,6,1); -- Undead Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,51,7,1); -- Undead Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,36,15,1); -- Undead Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,4604,35,4); -- Undead Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,159,36,2); -- Undead Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,6948,37,1); -- Undead Priest
+-- Undead Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,53,3,1);
+-- Undead Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,6144,4,1);
+-- Undead Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,52,6,1);
+-- Undead Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,51,7,1);
+-- Undead Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,36,15,1);
+-- Undead Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,4604,35,4);
+-- Undead Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,159,36,2);
+-- Undead Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,5,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=5 AND `class`=8;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,6096,3,1); -- Undead Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,6140,4,1); -- Undead Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,1395,6,1); -- Undead Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,55,7,1); -- Undead Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,35,15,1); -- Undead Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,4604,35,4); -- Undead Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,159,36,2); -- Undead Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,6948,37,1); -- Undead Mage
+-- Undead Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,6096,3,1);
+-- Undead Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,6140,4,1);
+-- Undead Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,1395,6,1);
+-- Undead Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,55,7,1);
+-- Undead Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,35,15,1);
+-- Undead Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,4604,35,4);
+-- Undead Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,159,36,2);
+-- Undead Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,8,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=6 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,1,6125,3,1); -- Tauren Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,1,139,6,1); -- Tauren Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,1,2361,15,1); -- Tauren Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,1,6948,35,1); -- Tauren Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,1,4540,36,4); -- Tauren Warrior
+-- Tauren Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,1,6125,3,1);
+-- Tauren Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,1,139,6,1);
+-- Tauren Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,1,2361,15,1);
+-- Tauren Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,1,6948,35,1);
+-- Tauren Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,1,4540,36,4);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=6 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,127,3,1); -- Tauren Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,6126,6,1); -- Tauren Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,37,15,1); -- Tauren Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,2508,17,1); -- Tauren Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,6948,35,1); -- Tauren Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,159,36,2); -- Tauren Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,117,37,4); -- Tauren Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,2516,255,200); -- Tauren Hunter
+-- Tauren Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,127,3,1);
+-- Tauren Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,6126,6,1);
+-- Tauren Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,37,15,1);
+-- Tauren Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,2508,17,1);
+-- Tauren Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,6948,35,1);
+-- Tauren Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,159,36,2);
+-- Tauren Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,117,37,4);
+-- Tauren Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,3,2516,255,200);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=6 AND `class`=7;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,154,3,1); -- Tauren Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,153,6,1); -- Tauren Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,36,15,1); -- Tauren Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,6948,35,1); -- Tauren Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,4604,36,4); -- Tauren Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,159,37,2); -- Tauren Shaman
+-- Tauren Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,154,3,1);
+-- Tauren Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,153,6,1);
+-- Tauren Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,36,15,1);
+-- Tauren Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,6948,35,1);
+-- Tauren Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,4604,36,4);
+-- Tauren Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,7,159,37,2);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=6 AND `class`=11;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,6139,4,1); -- Tauren Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,6124,6,1); -- Tauren Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,35,15,1); -- Tauren Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,159,35,2); -- Tauren Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,4536,36,4); -- Tauren Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,6948,37,1); -- Tauren Druid
+-- Tauren Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,6139,4,1);
+-- Tauren Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,6124,6,1);
+-- Tauren Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,35,15,1);
+-- Tauren Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,159,35,2);
+-- Tauren Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,4536,36,4);
+-- Tauren Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,6,11,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=7 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,38,3,1); -- Gnome Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,39,6,1); -- Gnome Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,40,7,1); -- Gnome Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,25,15,1); -- Gnome Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,2362,16,1); -- Gnome Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,117,35,4); -- Gnome Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,6948,36,1); -- Gnome Warrior
+-- Gnome Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,38,3,1);
+-- Gnome Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,39,6,1);
+-- Gnome Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,40,7,1);
+-- Gnome Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,25,15,1);
+-- Gnome Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,2362,16,1);
+-- Gnome Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,117,35,4);
+-- Gnome Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,1,6948,36,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=7 AND `class`=8;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,6096,3,1); -- Gnome Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,56,4,1); -- Gnome Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,1395,6,1); -- Gnome Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,55,7,1); -- Gnome Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,35,15,1); -- Gnome Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,4536,35,4); -- Gnome Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,159,36,2); -- Gnome Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,6948,37,1); -- Gnome Mage
+-- Gnome Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,6096,3,1);
+-- Gnome Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,56,4,1);
+-- Gnome Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,1395,6,1);
+-- Gnome Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,55,7,1);
+-- Gnome Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,35,15,1);
+-- Gnome Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,4536,35,4);
+-- Gnome Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,159,36,2);
+-- Gnome Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,8,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=7 AND `class`=9;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,6097,3,1); -- Gnome Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,57,4,1); -- Gnome Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,1396,6,1); -- Gnome Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,59,7,1); -- Gnome Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,2092,15,1); -- Gnome Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,159,35,2); -- Gnome Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,4604,36,4); -- Gnome Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,6948,37,1); -- Gnome Warlock
+-- Gnome Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,6097,3,1);
+-- Gnome Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,57,4,1);
+-- Gnome Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,1396,6,1);
+-- Gnome Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,59,7,1);
+-- Gnome Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,2092,15,1);
+-- Gnome Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,159,35,2);
+-- Gnome Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,4604,36,4);
+-- Gnome Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,9,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,6125,3,1); -- Troll Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,139,6,1); -- Troll Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,37,15,1); -- Troll Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,2362,16,1); -- Troll Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,3111,17,1); -- Troll Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,117,35,4); -- Troll Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,6948,36,1); -- Troll Warrior
+-- Troll Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,6125,3,1);
+-- Troll Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,139,6,1);
+-- Troll Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,37,15,1);
+-- Troll Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,2362,16,1);
+-- Troll Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,3111,17,1);
+-- Troll Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,117,35,4);
+-- Troll Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,1,6948,36,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,127,3,1); -- Troll Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,6126,6,1); -- Troll Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,37,15,1); -- Troll Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,2504,17,1); -- Troll Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,4604,35,4); -- Troll Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,159,36,2); -- Troll Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,6948,37,1); -- Troll Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,2512,255,200); -- Troll Hunter
+-- Troll Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,127,3,1);
+-- Troll Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,6126,6,1);
+-- Troll Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,37,15,1);
+-- Troll Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,2504,17,1);
+-- Troll Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,4604,35,4);
+-- Troll Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,159,36,2);
+-- Troll Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,6948,37,1);
+-- Troll Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,3,2512,255,200);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,6136,3,1); -- Troll Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,6137,6,1); -- Troll Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,6138,7,1); -- Troll Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,2092,15,1); -- Troll Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,3111,17,1); -- Troll Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,117,35,4); -- Troll Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,6948,36,1); -- Troll Rogue
+-- Troll Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,6136,3,1);
+-- Troll Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,6137,6,1);
+-- Troll Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,6138,7,1);
+-- Troll Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,2092,15,1);
+-- Troll Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,3111,17,1);
+-- Troll Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,117,35,4);
+-- Troll Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,4,6948,36,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class`=5;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,53,3,1); -- Troll Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,6144,4,1); -- Troll Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,52,6,1); -- Troll Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,36,15,1); -- Troll Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,4540,35,4); -- Troll Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,159,36,2); -- Troll Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,6948,37,1); -- Troll Priest
+-- Troll Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,53,3,1);
+-- Troll Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,6144,4,1);
+-- Troll Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,52,6,1);
+-- Troll Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,36,15,1);
+-- Troll Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,4540,35,4);
+-- Troll Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,159,36,2);
+-- Troll Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,5,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class`=7;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,6134,3,1); -- Troll Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,6135,6,1); -- Troll Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,36,15,1); -- Troll Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,117,35,4); -- Troll Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,159,36,2); -- Troll Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,6948,37,1); -- Troll Shaman
+-- Troll Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,6134,3,1);
+-- Troll Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,6135,6,1);
+-- Troll Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,36,15,1);
+-- Troll Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,117,35,4);
+-- Troll Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,159,36,2);
+-- Troll Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,7,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class`=8;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,6096,3,1); -- Troll Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,6140,4,1); -- Troll Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,1395,6,1); -- Troll Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,55,7,1); -- Troll Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,35,15,1); -- Troll Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,117,35,4); -- Troll Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,159,36,2); -- Troll Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,6948,37,1); -- Troll Mage
+-- Troll Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,6096,3,1);
+-- Troll Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,6140,4,1);
+-- Troll Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,1395,6,1);
+-- Troll Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,55,7,1);
+-- Troll Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,35,15,1);
+-- Troll Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,117,35,4);
+-- Troll Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,159,36,2);
+-- Troll Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,8,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=8 AND `class`=9;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,6129,4,1); -- Troll Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,1396,6,1); -- Troll Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,59,7,1); -- Troll Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,2092,15,1); -- Troll Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,6948,35,1); -- Troll Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,117,36,4); -- Troll Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,159,37,2); -- Troll Warlock
+-- Troll Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,6129,4,1);
+-- Troll Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,1396,6,1);
+-- Troll Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,59,7,1);
+-- Troll Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,2092,15,1);
+-- Troll Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,6948,35,1);
+-- Troll Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,117,36,4);
+-- Troll Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,8,9,159,37,2);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=95 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,271669,3,1); -- Skyborn Alliance Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,271672,6,1); -- Skyborn Alliance Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,271671,7,1); -- Skyborn Alliance Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,280399,15,1); -- Skyborn Alliance Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,876,16,1); -- Skyborn Alliance Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,117,35,4); -- Skyborn Alliance Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,6948,36,1); -- Skyborn Alliance Warrior
+-- Skyborn Alliance Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,271669,3,1);
+-- Skyborn Alliance Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,271672,6,1);
+-- Skyborn Alliance Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,271671,7,1);
+-- Skyborn Alliance Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,280399,15,1);
+-- Skyborn Alliance Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,876,16,1);
+-- Skyborn Alliance Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,117,35,4);
+-- Skyborn Alliance Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,1,6948,36,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=95 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,271668,3,1); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,271666,6,1); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,271665,7,1); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,2092,15,1); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,2504,17,1); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,159,35,2); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,117,36,4); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,6948,37,1); -- Skyborn Alliance Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,2512,255,200); -- Skyborn Alliance Hunter
+-- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,271668,3,1);
+-- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,271666,6,1);
+-- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,271665,7,1);
+-- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,2092,15,1);
+-- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,2504,17,1);
+-- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,159,35,2);
+-- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,117,36,4);
+-- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,6948,37,1);
+-- Skyborn Alliance Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,3,2512,255,200);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=95 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,271675,3,1); -- Skyborn Alliance Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,271674,6,1); -- Skyborn Alliance Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,271673,7,1); -- Skyborn Alliance Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,2092,15,1); -- Skyborn Alliance Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,2947,17,1); -- Skyborn Alliance Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,4540,35,4); -- Skyborn Alliance Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,6948,36,1); -- Skyborn Alliance Rogue
+-- Skyborn Alliance Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,271675,3,1);
+-- Skyborn Alliance Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,271674,6,1);
+-- Skyborn Alliance Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,271673,7,1);
+-- Skyborn Alliance Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,2092,15,1);
+-- Skyborn Alliance Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,2947,17,1);
+-- Skyborn Alliance Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,4540,35,4);
+-- Skyborn Alliance Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,4,6948,36,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=95 AND `class`=8;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,271655,3,1); -- Skyborn Alliance Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,271658,6,1); -- Skyborn Alliance Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,271659,7,1); -- Skyborn Alliance Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,35,15,1); -- Skyborn Alliance Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,117,35,4); -- Skyborn Alliance Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,159,36,2); -- Skyborn Alliance Mage
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,6948,37,1); -- Skyborn Alliance Mage
+-- Skyborn Alliance Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,271655,3,1);
+-- Skyborn Alliance Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,271658,6,1);
+-- Skyborn Alliance Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,271659,7,1);
+-- Skyborn Alliance Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,35,15,1);
+-- Skyborn Alliance Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,117,35,4);
+-- Skyborn Alliance Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,159,36,2);
+-- Skyborn Alliance Mage
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,8,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=95 AND `class`=11;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,271668,3,1); -- Skyborn Alliance Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,271666,6,1); -- Skyborn Alliance Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,271665,7,1); -- Skyborn Alliance Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,3661,15,1); -- Skyborn Alliance Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,6948,35,1); -- Skyborn Alliance Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,159,36,2); -- Skyborn Alliance Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,4536,37,4); -- Skyborn Alliance Druid
+-- Skyborn Alliance Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,271668,3,1);
+-- Skyborn Alliance Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,271666,6,1);
+-- Skyborn Alliance Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,271665,7,1);
+-- Skyborn Alliance Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,3661,15,1);
+-- Skyborn Alliance Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,6948,35,1);
+-- Skyborn Alliance Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,159,36,2);
+-- Skyborn Alliance Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,95,11,4536,37,4);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=96 AND `class`=3;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,271668,3,1); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,271666,6,1); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,271665,7,1); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,2092,15,1); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,2504,17,1); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,159,35,2); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,117,36,4); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,6948,37,1); -- Skyborn Horde Hunter
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,2512,255,200); -- Skyborn Horde Hunter
+-- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,271668,3,1);
+-- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,271666,6,1);
+-- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,271665,7,1);
+-- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,2092,15,1);
+-- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,2504,17,1);
+-- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,159,35,2);
+-- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,117,36,4);
+-- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,6948,37,1);
+-- Skyborn Horde Hunter
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,3,2512,255,200);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=96 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,271675,3,1); -- Skyborn Horde Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,271674,6,1); -- Skyborn Horde Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,271673,7,1); -- Skyborn Horde Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,2092,15,1); -- Skyborn Horde Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,2947,17,1); -- Skyborn Horde Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,4540,35,4); -- Skyborn Horde Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,6948,36,1); -- Skyborn Horde Rogue
+-- Skyborn Horde Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,271675,3,1);
+-- Skyborn Horde Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,271674,6,1);
+-- Skyborn Horde Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,271673,7,1);
+-- Skyborn Horde Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,2092,15,1);
+-- Skyborn Horde Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,2947,17,1);
+-- Skyborn Horde Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,4540,35,4);
+-- Skyborn Horde Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,4,6948,36,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=96 AND `class`=7;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,271663,3,1); -- Skyborn Horde Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,271662,6,1); -- Skyborn Horde Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,271661,7,1); -- Skyborn Horde Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,280400,15,1); -- Skyborn Horde Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,117,35,4); -- Skyborn Horde Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,159,36,2); -- Skyborn Horde Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,6948,37,1); -- Skyborn Horde Shaman
+-- Skyborn Horde Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,271663,3,1);
+-- Skyborn Horde Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,271662,6,1);
+-- Skyborn Horde Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,271661,7,1);
+-- Skyborn Horde Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,280400,15,1);
+-- Skyborn Horde Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,117,35,4);
+-- Skyborn Horde Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,159,36,2);
+-- Skyborn Horde Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,7,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=96 AND `class`=11;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,271668,3,1); -- Skyborn Horde Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,271666,6,1); -- Skyborn Horde Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,271665,7,1); -- Skyborn Horde Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,3661,15,1); -- Skyborn Horde Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,6948,35,1); -- Skyborn Horde Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,159,36,2); -- Skyborn Horde Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,4536,37,4); -- Skyborn Horde Druid
+-- Skyborn Horde Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,271668,3,1);
+-- Skyborn Horde Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,271666,6,1);
+-- Skyborn Horde Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,271665,7,1);
+-- Skyborn Horde Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,3661,15,1);
+-- Skyborn Horde Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,6948,35,1);
+-- Skyborn Horde Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,159,36,2);
+-- Skyborn Horde Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,11,4536,37,4);
 
 -- Incomplete self-create states: no item rows generated, intentionally.
 
@@ -5452,31 +5889,38 @@ INSERT INTO `playercreateinfo_skills` (`min_build`,`max_build`,`race`,`classMask
 -- Replaces the previously interpolated rows for these seven combinations.
 -- =============================================================================
 DELETE FROM `player_levelstats` WHERE `build`=70009 AND `race`=3 AND `class`=1 AND `level`=1;
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,3,1,1,25,18,23,19,20); -- Dwarf Warrior DIRECT
+-- Dwarf Warrior DIRECT
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,3,1,1,25,18,23,19,20);
 -- Observed UnitData: Health=70, MaxHealth=70, BaseHealth=20, BaseMana=0
 
 DELETE FROM `player_levelstats` WHERE `build`=70009 AND `race`=4 AND `class`=11 AND `level`=1;
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,4,11,1,19,22,20,22,22); -- Night Elf Druid DIRECT
+-- Night Elf Druid DIRECT
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,4,11,1,19,22,20,22,22);
 -- Observed UnitData: Health=54, MaxHealth=54, BaseHealth=34, BaseMana=50
 
 DELETE FROM `player_levelstats` WHERE `build`=70009 AND `race`=7 AND `class`=4 AND `level`=1;
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,7,4,1,18,24,20,23,20); -- Gnome Rogue DIRECT
+-- Gnome Rogue DIRECT
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,7,4,1,18,24,20,23,20);
 -- Observed UnitData: Health=45, MaxHealth=45, BaseHealth=25, BaseMana=0
 
 DELETE FROM `player_levelstats` WHERE `build`=70009 AND `race`=7 AND `class`=5 AND `level`=1;
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,7,5,1,17,21,19,25,23); -- Gnome Priest DIRECT
+-- Gnome Priest DIRECT
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,7,5,1,17,21,19,25,23);
 -- Observed UnitData: Health=51, MaxHealth=51, BaseHealth=32, BaseMana=110
 
 DELETE FROM `player_levelstats` WHERE `build`=70009 AND `race`=2 AND `class`=7 AND `level`=1;
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,2,7,1,24,17,22,20,22); -- Orc Shaman DIRECT
+-- Orc Shaman DIRECT
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,2,7,1,24,17,22,20,22);
 -- Observed UnitData: Health=67, MaxHealth=67, BaseHealth=27, BaseMana=55
 
 DELETE FROM `player_levelstats` WHERE `build`=70009 AND `race`=5 AND `class`=9 AND `level`=1;
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,5,9,1,22,19,22,20,22); -- Undead Warlock DIRECT
+-- Undead Warlock DIRECT
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,5,9,1,22,19,22,20,22);
 -- Observed UnitData: Health=63, MaxHealth=63, BaseHealth=23, BaseMana=90
 
 DELETE FROM `player_levelstats` WHERE `build`=70009 AND `race`=96 AND `class`=1 AND `level`=1;
-INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,96,1,1,22,21,21,21,20); -- Skyborn Horde Warrior DIRECT
+-- Skyborn Horde Warrior DIRECT
+INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`BaseAgility`,`BaseStamina`,`BaseIntellect`,`BaseSpirit`) VALUES (70009,96,1,1,22,21,21,21,20);
 -- Observed UnitData: Health=50, MaxHealth=50, BaseHealth=20, BaseMana=0
 
 -- =============================================================================
@@ -5484,65 +5928,112 @@ INSERT INTO `player_levelstats` (`build`,`race`,`class`,`level`,`BaseStrength`,`
 -- slotid is the actual ActivePlayerData invSlots index.
 -- =============================================================================
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=3 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,38,3,1); -- Dwarf Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,39,6,1); -- Dwarf Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,40,7,1); -- Dwarf Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,12282,15,1); -- Dwarf Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,6948,35,1); -- Dwarf Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,117,36,4); -- Dwarf Warrior
+-- Dwarf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,38,3,1);
+-- Dwarf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,39,6,1);
+-- Dwarf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,40,7,1);
+-- Dwarf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,12282,15,1);
+-- Dwarf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,6948,35,1);
+-- Dwarf Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,3,1,117,36,4);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=4 AND `class`=11;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,6123,4,1); -- Night Elf Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,6124,6,1); -- Night Elf Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,3661,15,1); -- Night Elf Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,159,35,2); -- Night Elf Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,4536,36,4); -- Night Elf Druid
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,6948,37,1); -- Night Elf Druid
+-- Night Elf Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,6123,4,1);
+-- Night Elf Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,6124,6,1);
+-- Night Elf Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,3661,15,1);
+-- Night Elf Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,159,35,2);
+-- Night Elf Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,4536,36,4);
+-- Night Elf Druid
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,4,11,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=7 AND `class`=4;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,49,3,1); -- Gnome Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,48,6,1); -- Gnome Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,47,7,1); -- Gnome Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,2092,15,1); -- Gnome Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,2947,17,1); -- Gnome Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,117,35,4); -- Gnome Rogue
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,6948,36,1); -- Gnome Rogue
+-- Gnome Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,49,3,1);
+-- Gnome Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,48,6,1);
+-- Gnome Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,47,7,1);
+-- Gnome Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,2092,15,1);
+-- Gnome Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,2947,17,1);
+-- Gnome Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,117,35,4);
+-- Gnome Rogue
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,4,6948,36,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=7 AND `class`=5;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,53,3,1); -- Gnome Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,6098,4,1); -- Gnome Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,52,6,1); -- Gnome Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,51,7,1); -- Gnome Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,36,15,1); -- Gnome Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,159,35,2); -- Gnome Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,6948,36,1); -- Gnome Priest
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,4540,37,4); -- Gnome Priest
+-- Gnome Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,53,3,1);
+-- Gnome Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,6098,4,1);
+-- Gnome Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,52,6,1);
+-- Gnome Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,51,7,1);
+-- Gnome Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,36,15,1);
+-- Gnome Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,159,35,2);
+-- Gnome Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,6948,36,1);
+-- Gnome Priest
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,7,5,4540,37,4);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=2 AND `class`=7;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,154,3,1); -- Orc Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,153,6,1); -- Orc Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,36,15,1); -- Orc Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,6948,35,1); -- Orc Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,117,36,4); -- Orc Shaman
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,159,37,2); -- Orc Shaman
+-- Orc Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,154,3,1);
+-- Orc Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,153,6,1);
+-- Orc Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,36,15,1);
+-- Orc Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,6948,35,1);
+-- Orc Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,117,36,4);
+-- Orc Shaman
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,2,7,159,37,2);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=5 AND `class`=9;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,6129,4,1); -- Undead Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,1396,6,1); -- Undead Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,59,7,1); -- Undead Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,2092,15,1); -- Undead Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,4604,35,4); -- Undead Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,159,36,2); -- Undead Warlock
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,6948,37,1); -- Undead Warlock
+-- Undead Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,6129,4,1);
+-- Undead Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,1396,6,1);
+-- Undead Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,59,7,1);
+-- Undead Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,2092,15,1);
+-- Undead Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,4604,35,4);
+-- Undead Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,159,36,2);
+-- Undead Warlock
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,5,9,6948,37,1);
 
 DELETE FROM `playercreateinfo_items` WHERE `min_build`=69893 AND `max_build`=70009 AND `race`=96 AND `class`=1;
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,271669,3,1); -- Skyborn Horde Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,271672,6,1); -- Skyborn Horde Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,271671,7,1); -- Skyborn Horde Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,280399,15,1); -- Skyborn Horde Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,876,16,1); -- Skyborn Horde Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,117,35,4); -- Skyborn Horde Warrior
-INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,6948,36,1); -- Skyborn Horde Warrior
+-- Skyborn Horde Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,271669,3,1);
+-- Skyborn Horde Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,271672,6,1);
+-- Skyborn Horde Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,271671,7,1);
+-- Skyborn Horde Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,280399,15,1);
+-- Skyborn Horde Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,876,16,1);
+-- Skyborn Horde Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,117,35,4);
+-- Skyborn Horde Warrior
+INSERT INTO `playercreateinfo_items` (`min_build`,`max_build`,`race`,`class`,`protoid`,`slotid`,`amount`) VALUES (69893,70009,96,1,6948,36,1);
 
 -- =============================================================================
 -- DIRECT START SKILLS
