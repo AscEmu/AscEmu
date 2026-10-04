@@ -16,6 +16,14 @@ protected:
     void handleRc4EnableEncryptionAck();
     void completeRc4Authentication();
 
+    // Second connection of a session: the client opens it after SMSG_CONNECT_TO and sends the
+    // movement, query and interaction opcodes through it.
+    void handleRc4AuthContinuedSession(WorldPacket& packet);
+
+public:
+    bool sendConnectTo(uint64_t key, uint32_t serial);
+    bool isInstanceConnection() const { return m_rc4InstanceConnection; }
+
 private:
     enum class Rc4WorldState : uint8_t
     {
@@ -36,6 +44,11 @@ private:
 
     std::array<uint8_t, 16> m_rc4ServerChallenge{};
     std::array<uint8_t, 40> m_rc4SessionKey{};
+
+    // seeds of the auth challenge: encryption and decryption of a second connection
+    std::array<uint8_t, 32> m_rc4ChallengeSeeds{};
+    bool m_rc4InstanceConnection{false};
+    uint64_t m_rc4ConnectToKey{0};
 
     // account of the verified session until the encryption is enabled
     uint32_t m_rc4GameAccountId{0};

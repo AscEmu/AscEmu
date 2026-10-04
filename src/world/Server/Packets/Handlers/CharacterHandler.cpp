@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/ClientProtocol.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Server/WorldSession.h"
+#include "Utilities/Random.hpp"
 #include "Server/Packets/CmsgSetFactionAtWar.h"
 #include "Server/Packets/CmsgSetFactionInactive.h"
 #include "Objects/Units/Players/Player.hpp"
@@ -218,10 +219,103 @@ void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
         return;
     }
 
+#if VERSION_STRING == Legion
+    // 7.x clients send movement, queries and interaction through a second connection: the login
+    // continues once the client opened it
+    if (getClientProtocol().isLegion() && _instanceSocket == nullptr)
+    {
+        constexpr uint32_t firstWorldAttempt = 17;
+
+        m_pendingLoginGuid = srlPacket.guid.getLowGuid();
+        sendConnectToInstance(firstWorldAttempt);
+        return;
+    }
+#endif
+
+    continuePlayerLogin(srlPacket.guid.getLowGuid());
+}
+
+void WorldSession::continuePlayerLogin(uint32_t guidLow)
+{
     auto query = std::make_unique<AsyncQuery>(std::make_unique<SQLClassCallbackP0<WorldSession>>(this, &WorldSession::loadPlayerFromDBProc));
     query->addQuery("SELECT guid,class FROM characters WHERE guid = %u AND login_flags = %u",
-        srlPacket.guid.getLowGuid(), static_cast<uint32_t>(LOGIN_NO_FLAG));
+        guidLow, static_cast<uint32_t>(LOGIN_NO_FLAG));
     CharacterDatabase.queueAsyncQuery(std::move(query));
+}
+
+void WorldSession::sendConnectToInstance([[maybe_unused]] uint32_t serial)
+{
+#if VERSION_STRING == Legion
+    // key the client answers with: account (32 bit), connection type (1 bit), random part (31 bit)
+    constexpr uint64_t instanceConnection = 1;
+
+    m_connectToSerial = serial;
+    m_instanceConnectKey = uint64_t(_accountId) | (instanceConnection << 32) | (uint64_t(Util::getRandomUInt(1, 0x7FFFFFFF)) << 33);
+
+    if (_socket != nullptr && _socket->sendConnectTo(m_instanceConnectKey, serial))
+        return;
+#endif
+
+    m_instanceConnectKey = 0;
+    m_pendingLoginGuid = 0;
+
+    SmsgCharacterLoginFailed managedPacket(E_CHAR_LOGIN_NO_WORLD);
+    sendManagedPacket(managedPacket);
+}
+
+void WorldSession::handleAuthContinuedSessionOpcode(WorldPacket& /*recvPacket*/)
+{
+    // queued by the second connection after its authentication
+    if (_instanceSocket == nullptr)
+        return;
+
+    // the client resumes sending on the new connection
+    WorldPacket resumeComms(SMSG_FORCE_SEND_QUEUED_PACKETS, 0);
+    SendPacket(&resumeComms);
+
+    if (m_pendingLoginGuid == 0)
+        return;
+
+    const uint32_t guidLow = m_pendingLoginGuid;
+    m_pendingLoginGuid = 0;
+
+    if (sObjectMgr.getPlayer(guidLow) != nullptr || m_loggingInPlayer || _player)
+    {
+        SmsgCharacterLoginFailed managedPacket(E_CHAR_LOGIN_DUPLICATE_CHARACTER);
+        sendManagedPacket(managedPacket);
+        return;
+    }
+
+    continuePlayerLogin(guidLow);
+}
+
+void WorldSession::handleConnectToFailedOpcode(WorldPacket& recvPacket)
+{
+    uint32_t serial = 0;
+    uint8_t connection = 0;
+    recvPacket >> serial >> connection;
+
+    sLogger.debug("WorldSession: account {} could not open its second connection (serial {})", _accountId, serial);
+
+    if (m_pendingLoginGuid == 0 || serial != m_connectToSerial)
+        return;
+
+    // five attempts with these serials, then the login fails
+    switch (serial)
+    {
+        case 17: sendConnectToInstance(35); break;
+        case 35: sendConnectToInstance(53); break;
+        case 53: sendConnectToInstance(71); break;
+        case 71: sendConnectToInstance(89); break;
+        default:
+        {
+            m_instanceConnectKey = 0;
+            m_pendingLoginGuid = 0;
+
+            SmsgCharacterLoginFailed managedPacket(E_CHAR_LOGIN_NO_WORLD);
+            sendManagedPacket(managedPacket);
+        } break;
+    }
 }
 
 void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)

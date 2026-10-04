@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/QuestMgr.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/CmsgCreatureQuery.h"
@@ -87,6 +88,20 @@ void WorldSession::handleRealmNameQueryOpcode(WorldPacket& recvData)
 
     SmsgRealmNameQueryResponse response;
     response.realmId = srlPacket.realmId;
+
+    if (getClientProtocol().isLegion())
+    {
+        // 7.x asks with the virtual realm address, the realm id is its low part
+        if ((srlPacket.realmId & 0xFFFF) == worldConfig.battleNetComm.realmId)
+        {
+            response.found = true;
+            response.realmName = worldConfig.battleNetComm.realmName;
+            response.isLocalRealm = true;
+        }
+
+        sendManagedPacket(response);
+        return;
+    }
 
     const auto realmName = sLogonCommHandler.getRealmName(srlPacket.realmId);
     if (!realmName.empty())

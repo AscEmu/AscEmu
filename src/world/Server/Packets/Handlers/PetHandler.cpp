@@ -238,6 +238,7 @@ void WorldSession::handlePetNameQuery(WorldPacket& recvPacket)
         return;
 
     SmsgPetNameQuery managedPacket(srlPacket.petNumber, pet->getName(), pet->getPetNameTimestamp(), 0);
+    managedPacket.petGuid = srlPacket.guid;
     sendManagedPacket(managedPacket);
 }
 

@@ -50,7 +50,11 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_WotLK)
+            if (m_protocol.isLegion())
+            {
+                packet << static_cast<uint32_t>(time);
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_WotLK)
             {
                 packet << time;
             }

@@ -35,8 +35,94 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override { return m_minimum_size; }
 
+        bool serialiseLegion(WorldPacket& packet)
+        {
+            // entry, allow, then the string lengths (with terminator), names, flags, type, family, rank, kill
+            // credits, displays, modifiers, quest items and the strings
+            std::string creatureName = name;
+            std::string title = subName;
+
+            if (entry == 300000)
+            {
+                creatureName = "WayPoint";
+                title = "Level is WayPoint ID";
+            }
+
+            const bool allow = info != nullptr || entry == 300000;
+
+            packet << entry;
+            packet.writeBit(allow);
+            packet.flushBits();
+
+            if (!allow)
+                return true;
+
+            const std::string cursorName = info != nullptr ? info->icon_name : std::string();
+
+            std::vector<uint32_t> questItems;
+            if (info != nullptr)
+            {
+                for (uint8_t i = 0; i < 6; ++i)
+                {
+                    if (info->QuestItems[i] != 0)
+                        questItems.push_back(info->QuestItems[i]);
+                }
+            }
+
+            packet.writeBits(static_cast<uint32_t>(title.length() + 1), 11);
+            packet.writeBits(1, 11);                                    // alternative title
+            packet.writeBits(static_cast<uint32_t>(cursorName.length() + 1), 6);
+            packet.writeBit(info != nullptr && info->Leader);
+
+            // four names with an alternative each, only the first one is used
+            packet.writeBits(static_cast<uint32_t>(creatureName.length() + 1), 11);
+            packet.writeBits(1, 11);
+            for (uint8_t i = 1; i < 4; ++i)
+            {
+                packet.writeBits(1, 11);
+                packet.writeBits(1, 11);
+            }
+            packet.flushBits();
+
+            if (!creatureName.empty())
+                packet << creatureName;
+
+            packet << uint32_t(info != nullptr ? info->typeFlags : 0);
+            packet << uint32_t(0);                                      // flags 2
+            packet << uint32_t(info != nullptr ? info->Type : 0);
+            packet << uint32_t(info != nullptr ? info->Family : 0);
+            packet << uint32_t(info != nullptr ? info->Rank : 0);
+            packet << uint32_t(info != nullptr ? info->killcredit[0] : 0);
+            packet << uint32_t(info != nullptr ? info->killcredit[1] : 0);
+            packet << uint32_t(info != nullptr ? info->Male_DisplayID : 0);
+            packet << uint32_t(info != nullptr ? info->Female_DisplayID : 0);
+            packet << uint32_t(info != nullptr ? info->Male_DisplayID2 : 0);
+            packet << uint32_t(info != nullptr ? info->Female_DisplayID2 : 0);
+            packet << float(1.0f);                                      // health modifier
+            packet << float(1.0f);                                      // power modifier
+            packet << uint32_t(questItems.size());
+            packet << uint32_t(info != nullptr ? info->waypointid : 0); // movement info
+            packet << uint32_t(0);                                      // health scaling expansion
+            packet << uint32_t(0);                                      // required expansion
+            packet << uint32_t(0);                                      // vignette
+
+            if (!title.empty())
+                packet << title;
+
+            if (!cursorName.empty())
+                packet << cursorName;
+
+            for (const uint32_t questItem : questItems)
+                packet << questItem;
+
+            return true;
+        }
+
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+                return serialiseLegion(packet);
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 if (entry == 300000)

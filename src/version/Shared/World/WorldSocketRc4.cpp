@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "world/Server/Opcodes.hpp"
 #include "world/Server/Packets/CmsgAuthSession.h"
 #include "world/Server/Packets/SmsgAuthChallenge.h"
+#include "world/Server/World.h"
 #include "world/Server/WorldConfig.h"
 #include "world/Server/WorldSession.h"
 #include "world/Version/VersionRegistry.hpp"
@@ -25,8 +26,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "version/Legion/World/WorldProfile.hpp"
 #endif
 
+#include <openssl/bio.h>
 #include <openssl/crypto.h>
+#include <openssl/evp.h>
+#include <openssl/hmac.h>
+#include <openssl/pem.h>
 #include <openssl/rand.h>
+#include <openssl/rsa.h>
 #include <zlib.h>
 
 #include <algorithm>
@@ -149,6 +155,9 @@ bool WorldSocket::initializeVersionedConnection()
     m_rc4SessionKey.fill(0);
     m_rc4GameAccountId = 0;
     m_rc4GameAccountName.clear();
+    m_rc4ChallengeSeeds.fill(0);
+    m_rc4InstanceConnection = false;
+    m_rc4ConnectToKey = 0;
 
     sLogger.debug("WorldSocket::{}: connection from {}:{}", Profile::Name, getRemoteIp(), getRemotePort());
 
@@ -249,6 +258,7 @@ bool WorldSocket::processRc4Initializer()
         return false;
     }
     challenge.challenge = m_rc4ServerChallenge;
+    m_rc4ChallengeSeeds = challenge.dosChallenge;
 
     m_rc4WorldState = Rc4WorldState::AwaitAuthSession;
     sendManagedPacket(challenge);
@@ -322,6 +332,20 @@ bool WorldSocket::processRc4Packet()
         }
 
         handleRc4AuthSession(*packet);
+        return m_rc4WorldState != Rc4WorldState::Disabled;
+    }
+
+    if (opcode == CMSG_AUTH_CONTINUED_SESSION)
+    {
+        if (m_rc4WorldState != Rc4WorldState::AwaitAuthSession)
+        {
+            sLogger.failure("WorldSocket::{}: {}:{} sent an unexpected CMSG_AUTH_CONTINUED_SESSION", Profile::Name, getRemoteIp(), getRemotePort());
+            m_rc4WorldState = Rc4WorldState::Disabled;
+            disconnect();
+            return false;
+        }
+
+        handleRc4AuthContinuedSession(*packet);
         return m_rc4WorldState != Rc4WorldState::Disabled;
     }
 
@@ -454,8 +478,282 @@ void WorldSocket::handleRc4AuthSession(WorldPacket& packet)
 
 void WorldSocket::handleRc4EnableEncryptionAck()
 {
+    if (m_rc4InstanceConnection)
+    {
+        // the seeds of the challenge key this connection; it joins the session that asked for it
+        m_crypt.initSeededCrypt(m_rc4SessionKey.data(), m_rc4ChallengeSeeds.data(), m_rc4ChallengeSeeds.data() + 16);
+
+        WorldSession* session = sWorld.getSessionByAccountId(m_rc4GameAccountId);
+        if (!m_crypt.isInitialized() || session == nullptr || session->getInstanceConnectKey() != m_rc4ConnectToKey)
+        {
+            sLogger.failure("WorldSocket::{}: the session of game account {} is gone, second connection closed", Profile::Name, m_rc4GameAccountId);
+            m_rc4WorldState = Rc4WorldState::Disabled;
+            disconnect();
+            return;
+        }
+
+        m_rc4WorldState = Rc4WorldState::Authenticated;
+        m_session = session;
+        session->setInstanceSocket(this);
+
+        // the session continues the login in its own update
+        session->QueuePacket(std::make_unique<WorldPacket>(Version::opcodeHexFor(CMSG_AUTH_CONTINUED_SESSION, m_protocol), 0));
+        return;
+    }
+
     m_crypt.initForClientVersion(static_cast<uint8_t>(m_protocol.expansion), m_rc4SessionKey.data());
     completeRc4Authentication();
+}
+
+namespace
+{
+    // SMSG_CONNECT_TO carries the address signed with the key pair whose public part the client knows
+    namespace ConnectTo
+    {
+        constexpr std::array<uint8_t, 16> ContinuedSessionSeed = { 0x16, 0xAD, 0x0C, 0xD4, 0x46, 0xF9, 0x4F, 0xB2, 0xEF, 0x7D, 0xEA, 0x2A, 0x17, 0x66, 0x4D, 0x2F };
+
+        constexpr uint8_t ConnectionTypeInstance = 1;
+        constexpr uint8_t AddressTypeIPv4 = 1;
+        constexpr uint32_t PayloadChecksum = 0xA0A66C10;
+        constexpr uint8_t XorMagic = 0x2A;
+        constexpr size_t SignatureSize = 256;
+
+        constexpr std::array<uint8_t, 64> WhereHmacKey =
+        {
+            0x2C, 0x1F, 0x1D, 0x80, 0xC3, 0x8C, 0x23, 0x64, 0xDA, 0x90, 0xCA, 0x8E, 0x2C, 0xFC, 0x0C, 0xCE,
+            0x09, 0xD3, 0x62, 0xF9, 0xF3, 0x8B, 0xBE, 0x9F, 0x19, 0xEF, 0x58, 0xA1, 0x1C, 0x34, 0x14, 0x41,
+            0x3F, 0x23, 0xFD, 0xD3, 0xE8, 0x14, 0xEC, 0x2A, 0xFD, 0x4F, 0x95, 0xBA, 0x30, 0x7E, 0x56, 0x5D,
+            0x83, 0x95, 0x81, 0x69, 0xB0, 0x5A, 0xB4, 0x9D, 0xA8, 0x55, 0xFF, 0xFC, 0xEE, 0x58, 0x0A, 0x2F
+        };
+
+        constexpr std::array<uint8_t, 32> PanamaKey =
+        {
+            0xF4, 0x1D, 0xCB, 0x2D, 0x72, 0x8C, 0xF3, 0x33, 0x7A, 0x4F, 0xF3, 0x38, 0xFA, 0x89, 0xDB, 0x01,
+            0xBB, 0xBE, 0x9C, 0x3B, 0x65, 0xE9, 0xDA, 0x96, 0x26, 0x86, 0x87, 0x35, 0x3E, 0x48, 0xB9, 0x4C
+        };
+
+        // 68 characters and three zero bytes
+        constexpr char Haiku[71] = "An island of peace\nCorruption is brought ashore\nPandarens will rise\n\0";
+
+        constexpr std::array<uint8_t, 108> PiDigits =
+        {
+            0x31, 0x41, 0x59, 0x26, 0x53, 0x58, 0x97, 0x93, 0x23, 0x84, 0x62, 0x64, 0x33, 0x83, 0x27, 0x95, 0x02, 0x88,
+            0x41, 0x97, 0x16, 0x93, 0x99, 0x37, 0x51, 0x05, 0x82, 0x09, 0x74, 0x94, 0x45, 0x92, 0x30, 0x78, 0x16, 0x40,
+            0x62, 0x86, 0x20, 0x89, 0x98, 0x62, 0x80, 0x34, 0x82, 0x53, 0x42, 0x11, 0x70, 0x67, 0x98, 0x21, 0x48, 0x08,
+            0x65, 0x13, 0x28, 0x23, 0x06, 0x64, 0x70, 0x93, 0x84, 0x46, 0x09, 0x55, 0x05, 0x82, 0x23, 0x17, 0x25, 0x35,
+            0x94, 0x08, 0x12, 0x84, 0x81, 0x11, 0x74, 0x50, 0x28, 0x41, 0x02, 0x70, 0x19, 0x38, 0x52, 0x11, 0x05, 0x55,
+            0x96, 0x44, 0x62, 0x29, 0x48, 0x95, 0x49, 0x30, 0x38, 0x19, 0x64, 0x42, 0x88, 0x10, 0x97, 0x56, 0x65, 0x93
+        };
+
+        // key pair shared by the servers of these client versions, the connection patcher writes its modulus into the client
+        constexpr char PrivateKey[] =
+            "-----BEGIN RSA PRIVATE KEY-----\n"
+            "MIIEpAIBAAKCAQEA7rPc1NPDtFRRzmZbyzK48PeSU8YZ8gyFL4omqXpFn2DE683q\n"
+            "f41Z2FeyYHsJTJtouMft7x6ADeZrN1tTkOsYEw1/Q2SD2pjmrMIwooKlxsvH+4af\n"
+            "n6kCagNJxTj7wMhVzMDOJZG+hc/R0TfOzIPS6jCAB3uAn51EVCIpvoba20jFqfkT\n"
+            "NpUjdvEO3IQNlAISqJfzOxTuqm+YBSdOH6Ngpana2BffM8viE1SLGLDKubuIZAbf\n"
+            "dabXYQC7sFoOetR3CE0V4hCDsASqnot3qQaJXQhdD7gua8HLZM9uXNtPWGUIUfsN\n"
+            "SBpvtj0fC93+Gx3wv7Ana/WOvMdAAf+nC4DWXwIDAQABAoIBACKa5q/gB2Y0Nyvi\n"
+            "APrDXrZoXclRVd+WWxSaRaKaPE+vuryovI9DUbwgcpa0H5QAj70CFwdsd4oMVozO\n"
+            "6519x56zfTiq8MaXFhIDkQNuR1Q7pMFdMfT2jogJ8/7olO7M3EtzxC8EIwfJKhTX\n"
+            "r15M2h3jbBwplmsNZKOB1GVvrXjOm1KtOZ4CTTM0WrPaLVDT9ax8pykjmFw16vGP\n"
+            "j/R5Dky9VpabtfZOu/AEW259XDEiQgTrB4Eg+S4GJjHqAzPZBmMy/xhlDK4oMXef\n"
+            "qXScfD4w0RxuuCFr6lxLPZz0S35BK1kIWmIkuv+9eQuI4Hr1CyVwch4fkfvrp84x\n"
+            "8tvAFnkCgYEA87NZaG9a8/Mob6GgY4BVLHJVOSzzFdNyMA+4LfSbtzgON2RSZyeD\n"
+            "0JpDowwXssw5XOyUUctj2cLLdlMCpDfdzk4F/PEakloDJWpason3lmur0/5Oq3T9\n"
+            "3+fnNUl4d3UOs1jcJ1yGQ/BfrTyRTcEoZx8Mu9mJ4ituVkKuLeG5vX0CgYEA+r/w\n"
+            "QBJS6kDyQPj1k/SMClUhWhyADwDod03hHTQHc9BleJyjXmVy+/pWhN7aELhjgLbf\n"
+            "o/Gm3aKJjCxS4qBmqUKwAvGoSVux1Bo2ZjcfF7sX9BXBOlFTG+bPVCZUoaksTyXN\n"
+            "g7GsA1frKkWWkgQuOeK3o/p9IZoBl93vEgcTGgsCgYEAv5ucCIjFMllUybCCsrkM\n"
+            "Ps4GQ9YbqmV9ulwhq8BPTlc8lkDCqWhgM3uXAnNXjrUTxQQd+dG4yFZoMrhBs2xZ\n"
+            "cQPXoXDQO5GaN6jPduETUamGiD/DCvwJQCrNlxAVL5dR36FWN3x/9JriHwsoE8Jz\n"
+            "SeEX2frIdpM/RYNX/6sipuECgYEA+rwFRDxOdvm8hGWuQ2WMxyQ7Nn07PEV/LxVM\n"
+            "HkSRkyh23vVakyDEqty3uSOSUJfgv6ud07TnU8ac3fLQatdT8LrDgB4fVkN/fYU8\n"
+            "kldaGwO1vxgl4OfDQCo7dXzisciViwtVBvQZ+jnm6J0vJBFUHAPt9+WZTIlQQIjm\n"
+            "71LtseMCgYBSAhs6lshtz+ujR3fmc4QqJVGqeXvEBPAVm6yYoKYRLwVs/rFv3WLN\n"
+            "LOwwBQ6lz7P9RqYYB5wVlaRvEhb9+lCve/xVcxMeZ5GkOBPxVygYV9l/wNdE25Nz\n"
+            "OHYtKG3GK3GEcFDwZU2LPHq21EroUAdtRfbrJ4KW2yc8igtXKxTBYw==\n"
+            "-----END RSA PRIVATE KEY-----\n";
+
+        // raw private key operation over the little endian payload, the result is little endian as well
+        bool sign(std::array<uint8_t, SignatureSize> payload, uint8_t* output)
+        {
+            std::reverse(payload.begin(), payload.end());
+
+            BIO* keyBio = BIO_new_mem_buf(PrivateKey, -1);
+            if (keyBio == nullptr)
+                return false;
+
+            EVP_PKEY* key = PEM_read_bio_PrivateKey(keyBio, nullptr, nullptr, nullptr);
+            BIO_free(keyBio);
+            if (key == nullptr)
+                return false;
+
+            bool signedPayload = false;
+            if (EVP_PKEY_CTX* context = EVP_PKEY_CTX_new(key, nullptr))
+            {
+                size_t outputSize = SignatureSize;
+                signedPayload = EVP_PKEY_sign_init(context) > 0
+                    && EVP_PKEY_CTX_set_rsa_padding(context, RSA_NO_PADDING) > 0
+                    && EVP_PKEY_sign(context, output, &outputSize, payload.data(), payload.size()) > 0
+                    && outputSize == SignatureSize;
+
+                EVP_PKEY_CTX_free(context);
+            }
+
+            EVP_PKEY_free(key);
+
+            if (signedPayload)
+                std::reverse(output, output + SignatureSize);
+
+            return signedPayload;
+        }
+    }
+}
+
+bool WorldSocket::sendConnectTo(uint64_t key, uint32_t serial)
+{
+    // the address the client reached this connection with, the second connection uses the world port as well
+    sockaddr_in local{};
+#ifdef _WIN32
+    int localSize = sizeof(local);
+#else
+    socklen_t localSize = sizeof(local);
+#endif
+    if (getsockname(getFd(), reinterpret_cast<sockaddr*>(&local), &localSize) != 0 || local.sin_family != AF_INET)
+    {
+        sLogger.failure("WorldSocket::{}: cannot read the local address for SMSG_CONNECT_TO", Profile::Name);
+        return false;
+    }
+
+    std::array<uint8_t, 16> where{};
+    std::memcpy(where.data(), &local.sin_addr, 4);
+
+    const uint8_t addressType = ConnectTo::AddressTypeIPv4;
+    const uint16_t port = static_cast<uint16_t>(worldConfig.listen.listenPort);
+    const uint8_t portBytes[2] = { static_cast<uint8_t>(port & 0xFF), static_cast<uint8_t>(port >> 8) };
+
+    // HMAC-SHA1 over address, type, port, haiku, panama key, pi digits and the xor magic
+    std::vector<uint8_t> hmacInput;
+    hmacInput.insert(hmacInput.end(), where.begin(), where.end());
+    hmacInput.push_back(addressType);
+    hmacInput.insert(hmacInput.end(), portBytes, portBytes + 2);
+    hmacInput.insert(hmacInput.end(), ConnectTo::Haiku, ConnectTo::Haiku + sizeof(ConnectTo::Haiku));
+    hmacInput.insert(hmacInput.end(), ConnectTo::PanamaKey.begin(), ConnectTo::PanamaKey.end());
+    hmacInput.insert(hmacInput.end(), ConnectTo::PiDigits.begin(), ConnectTo::PiDigits.end());
+    hmacInput.push_back(ConnectTo::XorMagic);
+
+    std::array<uint8_t, 20> hmacDigest{};
+    unsigned int hmacSize = 0;
+    if (HMAC(EVP_sha1(), ConnectTo::WhereHmacKey.data(), static_cast<int>(ConnectTo::WhereHmacKey.size()), hmacInput.data(), hmacInput.size(), hmacDigest.data(), &hmacSize) == nullptr || hmacSize != hmacDigest.size())
+        return false;
+
+    // checksum, type, address, port, haiku, panama key, pi digits, xor magic, hmac; zero filled up to the key size
+    std::vector<uint8_t> payload;
+    appendUInt32LE(payload, ConnectTo::PayloadChecksum);
+    payload.push_back(addressType);
+    payload.insert(payload.end(), where.begin(), where.end());
+    payload.insert(payload.end(), portBytes, portBytes + 2);
+    payload.insert(payload.end(), ConnectTo::Haiku, ConnectTo::Haiku + sizeof(ConnectTo::Haiku));
+    payload.insert(payload.end(), ConnectTo::PanamaKey.begin(), ConnectTo::PanamaKey.end());
+    payload.insert(payload.end(), ConnectTo::PiDigits.begin(), ConnectTo::PiDigits.end());
+    payload.push_back(ConnectTo::XorMagic);
+    payload.insert(payload.end(), hmacDigest.begin(), hmacDigest.end());
+
+    std::array<uint8_t, ConnectTo::SignatureSize> block{};
+    if (payload.size() > block.size())
+        return false;
+    std::memcpy(block.data(), payload.data(), payload.size());
+
+    std::array<uint8_t, ConnectTo::SignatureSize> signature{};
+    if (!ConnectTo::sign(block, signature.data()))
+    {
+        sLogger.failure("WorldSocket::{}: cannot sign SMSG_CONNECT_TO", Profile::Name);
+        return false;
+    }
+
+    WorldPacket connectTo(SMSG_CONNECT_TO, 8 + 4 + ConnectTo::SignatureSize + 1);
+    connectTo << uint64_t(key);
+    connectTo << uint32_t(serial);
+    connectTo.append(signature.data(), signature.size());
+    connectTo << uint8_t(ConnectTo::ConnectionTypeInstance);
+    sendPacket(&connectTo);
+
+    sLogger.debug("WorldSocket::{}: sent SMSG_CONNECT_TO (serial {}) to game account {}", Profile::Name, serial, m_rc4GameAccountId);
+    return true;
+}
+
+void WorldSocket::handleRc4AuthContinuedSession(WorldPacket& packet)
+{
+    const auto reject = [this](const char* reason)
+    {
+        sLogger.failure("WorldSocket::{}: continued session from {}:{} rejected: {}", Profile::Name, getRemoteIp(), getRemotePort(), reason);
+        m_rc4WorldState = Rc4WorldState::Disabled;
+        disconnect();
+    };
+
+    // dos response, key, local challenge, digest
+    uint64_t dosResponse = 0;
+    uint64_t key = 0;
+    std::array<uint8_t, 16> localChallenge{};
+    std::array<uint8_t, 24> digest{};
+
+    if (packet.size() < sizeof(dosResponse) + sizeof(key) + localChallenge.size() + digest.size())
+    {
+        reject("malformed CMSG_AUTH_CONTINUED_SESSION");
+        return;
+    }
+
+    packet >> dosResponse >> key;
+    packet.read(localChallenge.data(), localChallenge.size());
+    packet.read(digest.data(), digest.size());
+
+    // key: account (32 bit), connection type (1 bit), random part (31 bit)
+    const uint32_t accountId = static_cast<uint32_t>(key & 0xFFFFFFFF);
+    const uint8_t connectionType = static_cast<uint8_t>((key >> 32) & 1);
+    if (connectionType != ConnectTo::ConnectionTypeInstance)
+    {
+        reject("unexpected connection type");
+        return;
+    }
+
+    WorldSession* session = sWorld.getSessionByAccountId(accountId);
+    WorldSocket* realmSocket = session != nullptr ? session->GetSocket() : nullptr;
+    if (session == nullptr || realmSocket == nullptr || session->getInstanceConnectKey() != key || session->getInstanceConnectKey() == 0)
+    {
+        reject("no session waits for this key");
+        return;
+    }
+
+    // HMAC-SHA256 keyed by the session key over key, local challenge, server challenge and the seed
+    std::array<uint8_t, 8 + 16 + 16 + 16> input{};
+    std::memcpy(input.data(), &key, 8);
+    std::memcpy(input.data() + 8, localChallenge.data(), 16);
+    std::memcpy(input.data() + 24, m_rc4ServerChallenge.data(), 16);
+    std::memcpy(input.data() + 40, ConnectTo::ContinuedSessionSeed.data(), 16);
+
+    std::array<uint8_t, Sha256Hash::DigestLength> expected{};
+    Sha256Hash::hmac(realmSocket->m_rc4SessionKey.data(), realmSocket->m_rc4SessionKey.size(), input.data(), input.size(), expected.data());
+
+    if (CRYPTO_memcmp(expected.data(), digest.data(), digest.size()) != 0)
+    {
+        reject("digest mismatch");
+        return;
+    }
+
+    setClientProtocol(realmSocket->getClientProtocol());
+    m_rc4SessionKey = realmSocket->m_rc4SessionKey;
+    m_rc4GameAccountId = accountId;
+    m_rc4GameAccountName = realmSocket->m_rc4GameAccountName;
+    m_rc4InstanceConnection = true;
+    m_rc4ConnectToKey = key;
+
+    sLogger.debug("WorldSocket::{}: second connection of game account {} authenticated from {}:{}", Profile::Name, accountId, getRemoteIp(), getRemotePort());
+
+    m_rc4WorldState = Rc4WorldState::AwaitEncryptionAck;
+
+    WorldPacket enableEncryption(SMSG_ENABLE_ENCRYPTION, 0);
+    sendPacket(&enableEncryption);
 }
 
 void WorldSocket::completeRc4Authentication()

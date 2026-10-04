@@ -196,6 +196,11 @@ public:
 
         WorldSocket* GetSocket() { return _socket; }
 
+        // second connection of 7.x clients: movement, queries and interaction opcodes arrive there
+        void setInstanceSocket(WorldSocket* sock) { _instanceSocket = sock; }
+        WorldSocket* getInstanceSocket() { return _instanceSocket; }
+        uint64_t getInstanceConnectKey() const { return m_instanceConnectKey; }
+
         /// Client version of this session, the configured expansion when no socket is attached
         [[nodiscard]] WoW::ClientProtocol getClientProtocol() const noexcept
         {
@@ -401,6 +406,10 @@ protected:
         void handleSetFactionInactiveOpcode(WorldPacket& recvPacket);
         void handleCharDeleteOpcode(WorldPacket& recvPacket);
         void handlePlayerLoginOpcode(WorldPacket& recvPacket);
+        void continuePlayerLogin(uint32_t guidLow);
+        void sendConnectToInstance(uint32_t serial);
+        void handleAuthContinuedSessionOpcode(WorldPacket& recvPacket);
+        void handleConnectToFailedOpcode(WorldPacket& recvPacket);
         void handleCharRenameOpcode(WorldPacket& recvPacket);
         void handleCharCreateOpcode(WorldPacket& recvPacket);
         void handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket); // declined names (Cyrillic client)
@@ -1020,6 +1029,15 @@ protected:
         friend class Player;
         Player* _player;
         WorldSocket* _socket;
+
+        // second connection, the key the client has to answer with and the login that waits for it
+        WorldSocket* _instanceSocket = nullptr;
+        uint64_t m_instanceConnectKey = 0;
+        uint32_t m_connectToSerial = 0;
+        uint32_t m_pendingLoginGuid = 0;
+
+        // connection a server packet is sent through
+        WorldSocket* socketForServerPacket(uint32_t opcode) const;
 
         // Preallocated buffers for movement handlers
         MovementInfo sessionMovementInfo;

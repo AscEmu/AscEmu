@@ -21,6 +21,9 @@ namespace AscEmu::Packets
         uint32_t timeStamp;
         uint8_t unknown;
 
+        // 6.x and 7.x clients ask and are answered with the guid of the pet
+        WoWGuid petGuid;
+
         SmsgPetNameQuery() : SmsgPetNameQuery(0, "", 0, 0)
         {
         }
@@ -39,6 +42,21 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // pet, allow, name length, declined names, timestamp, name
+                packet << petGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet.writeBit(true);
+                packet.writeBits(static_cast<uint32_t>(name.length()), 8);
+                packet.writeBit(false);
+                for (uint8_t i = 0; i < 5; ++i)
+                    packet.writeBits(0, 7);
+                packet.flushBits();
+                packet << timeStamp;
+                packet.writeString(name);
+                return true;
+            }
+
             packet << petNumber << name << timeStamp << unknown;
             return true;
         }

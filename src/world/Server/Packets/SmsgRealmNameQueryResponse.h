@@ -28,6 +28,24 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // virtual realm address, lookup state (0 = found), then local, unknown and both names
+                packet << realmId;
+                packet << static_cast<uint8_t>(!found);
+                if (found)
+                {
+                    packet.writeBit(isLocalRealm);
+                    packet.writeBit(false);
+                    packet.writeBits(realmName.size(), 8);
+                    packet.writeBits(realmName.size(), 8);
+                    packet.flushBits();
+                    packet.writeString(realmName);
+                    packet.writeString(realmName);
+                }
+                return true;
+            }
+
             if (!m_protocol.isMop())
                 return false;
 

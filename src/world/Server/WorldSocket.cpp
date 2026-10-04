@@ -238,7 +238,12 @@ void WorldSocket::onDisconnect()
 
     if (m_session)
     {
-        m_session->SetSocket(nullptr);
+        // the second connection of a session only gives up its own slot
+        if (m_session->getInstanceSocket() == this)
+            m_session->setInstanceSocket(nullptr);
+        else
+            m_session->SetSocket(nullptr);
+
         m_session = nullptr;
     }
 

@@ -108,6 +108,13 @@ WorldSession::~WorldSession()
     if (_socket)
         _socket->setSession(nullptr);
 
+    if (_instanceSocket)
+    {
+        _instanceSocket->setSession(nullptr);
+        _instanceSocket->disconnect();
+        _instanceSocket = nullptr;
+    }
+
     if (m_loggingInPlayer)
         m_loggingInPlayer->setSession(nullptr);
 }
@@ -671,20 +678,49 @@ void WorldSession::SendPacket(WorldPacket* packet)
         return;
     }
 
-    if (_socket && _socket->isConnected())
-        _socket->sendPacket(packet);
+    WorldSocket* socket = socketForServerPacket(packet->getOpcode());
+    if (socket && socket->isConnected())
+        socket->sendPacket(packet);
 }
 
 void WorldSession::OutPacket(uint16_t opcode)
 {
-    if (_socket && _socket->isConnected())
-        _socket->outPacket(opcode, 0, nullptr);
+    WorldSocket* socket = socketForServerPacket(opcode);
+    if (socket && socket->isConnected())
+        socket->outPacket(opcode, 0, nullptr);
 }
 
 void WorldSession::OutPacket(uint16_t opcode, uint16_t len, const void* data)
 {
-    if (_socket && _socket->isConnected())
-        _socket->outPacket(opcode, len, data);
+    WorldSocket* socket = socketForServerPacket(opcode);
+    if (socket && socket->isConnected())
+        socket->outPacket(opcode, len, data);
+}
+
+WorldSocket* WorldSession::socketForServerPacket(uint32_t opcode) const
+{
+    // 7.x clients accept these packets on their second connection only
+    if (_instanceSocket != nullptr)
+    {
+        switch (opcode)
+        {
+            case SMSG_FORCE_SEND_QUEUED_PACKETS:
+            case SMSG_QUESTGIVER_STATUS:
+            case SMSG_QUERY_TIME_RESPONSE:
+            case SMSG_ATTACK_START:
+            case SMSG_ATTACK_STOP:
+            case SMSG_DUEL_REQUESTED:
+            case SMSG_DUEL_INBOUNDS:
+            case SMSG_DUEL_OUTOFBOUNDS:
+            case SMSG_DUEL_WINNER:
+            case SMSG_DUEL_COMPLETE:
+                return _instanceSocket;
+            default:
+                break;
+        }
+    }
+
+    return _socket;
 }
 
 void WorldSession::QueuePacket(std::unique_ptr<WorldPacket> packet)
@@ -705,6 +741,9 @@ void WorldSession::Disconnect()
     {
         _socket->disconnect();
     }
+
+    if (_instanceSocket && _instanceSocket->isConnected())
+        _instanceSocket->disconnect();
 }
 
 // MIT
@@ -726,6 +765,9 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode<STATUS_AUTHED>(CMSG_SET_PLAYER_DECLINED_NAMES, &WorldSession::handleSetPlayerDeclinedNamesOpcode, false, true, true, true, true);
 
     registry.registerOpcode<STATUS_AUTHED>(CMSG_PLAYER_LOGIN, &WorldSession::handlePlayerLoginOpcode, true, true, true, true, true, false, true);
+    // 7.x: the second connection of the session is open or could not be opened
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_AUTH_CONTINUED_SESSION, &WorldSession::handleAuthContinuedSessionOpcode, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_CONNECT_TO_FAILED, &WorldSession::handleConnectToFailedOpcode, false, false, false, false, false, false, true);
 
     registry.registerOpcode<STATUS_AUTHED>(CMSG_REALM_SPLIT, &WorldSession::handleRealmSplitOpcode, true, true, true, true, true, true, true);
 
@@ -744,11 +786,11 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_NAME_QUERY, &WorldSession::handleNameQueryOpcode, true, true, true, true, true);
     // 7.x asks with this id, on the character list as well
     registry.registerOpcode<STATUS_AUTHED>(CMSG_QUERY_PLAYER_NAME, &WorldSession::handleNameQueryOpcode, false, false, false, false, false, false, true);
-    registry.registerOpcode(CMSG_REALM_NAME_QUERY, &WorldSession::handleRealmNameQueryOpcode, false, false, false, false, true);
-    registry.registerOpcode(CMSG_QUERY_TIME, &WorldSession::handleQueryTimeOpcode, false, true, true, true, true);
-    registry.registerOpcode(CMSG_CREATURE_QUERY, &WorldSession::handleCreatureQueryOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_GAMEOBJECT_QUERY, &WorldSession::handleGameObjectQueryOpcode, false, true, true, true, true);
-    registry.registerOpcode(CMSG_PAGE_TEXT_QUERY, &WorldSession::handlePageTextQueryOpcode, false, true, true, true, true);
+    registry.registerOpcode(CMSG_REALM_NAME_QUERY, &WorldSession::handleRealmNameQueryOpcode, false, false, false, false, true, false, true);
+    registry.registerOpcode(CMSG_QUERY_TIME, &WorldSession::handleQueryTimeOpcode, false, true, true, true, true, false, true);
+    registry.registerOpcode(CMSG_CREATURE_QUERY, &WorldSession::handleCreatureQueryOpcode, true, true, true, true, true, false, true);
+    registry.registerOpcode(CMSG_GAMEOBJECT_QUERY, &WorldSession::handleGameObjectQueryOpcode, false, true, true, true, true, false, true);
+    registry.registerOpcode(CMSG_PAGE_TEXT_QUERY, &WorldSession::handlePageTextQueryOpcode, false, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_ITEM_NAME_QUERY, &WorldSession::handleItemNameQueryOpcode, false, true, true, true, false);
     registry.registerOpcode(CMSG_QUERY_INSPECT_ACHIEVEMENTS, &WorldSession::handleAchievmentQueryOpcode, false, false, true, true, false);
 
@@ -976,7 +1018,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_GOSSIP_HELLO, &WorldSession::handleGossipHelloOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_GOSSIP_SELECT_OPTION, &WorldSession::handleGossipSelectOptionOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_SPIRIT_HEALER_ACTIVATE, &WorldSession::handleSpiritHealerActivateOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_NPC_TEXT_QUERY, &WorldSession::handleNpcTextQueryOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_NPC_TEXT_QUERY, &WorldSession::handleNpcTextQueryOpcode, true, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_BINDER_ACTIVATE, &WorldSession::handleBinderActivateOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_ACTIVATE_TAXI_EXPRESS, &WorldSession::handleMultipleActivateTaxiOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_MOVE_SPLINE_DONE, &WorldSession::handleMoveSplineDoneOpcode, true, true, true, true, true);
@@ -1075,7 +1117,7 @@ void WorldSession::registerOpcodeHandler()
 
     // Mail System
     registry.registerOpcode(CMSG_GET_MAIL_LIST, &WorldSession::handleGetMailOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_ITEM_TEXT_QUERY, &WorldSession::handleItemTextQueryOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_ITEM_TEXT_QUERY, &WorldSession::handleItemTextQueryOpcode, true, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_SEND_MAIL, &WorldSession::handleSendMailOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_MAIL_TAKE_MONEY, &WorldSession::handleTakeMoneyOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_MAIL_TAKE_ITEM, &WorldSession::handleTakeItemOpcode, true, true, true, true, true);
@@ -1140,7 +1182,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(MSG_LIST_STABLED_PETS, &WorldSession::handleStabledPetList, true, true, true, true, false);
 
     registry.registerOpcode(CMSG_PET_ACTION, &WorldSession::handlePetAction, true, true, true, true, true);
-    registry.registerOpcode(CMSG_PET_NAME_QUERY, &WorldSession::handlePetNameQuery, true, true, true, true, true);
+    registry.registerOpcode(CMSG_PET_NAME_QUERY, &WorldSession::handlePetNameQuery, true, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_BUY_STABLE_SLOT, &WorldSession::handleBuyStableSlot, true, true, true, true, true);
     registry.registerOpcode(CMSG_STABLE_PET, &WorldSession::handleStablePet, true, true, true, true, true);
     registry.registerOpcode(CMSG_UNSTABLE_PET, &WorldSession::handleUnstablePet, true, true, true, true, false);

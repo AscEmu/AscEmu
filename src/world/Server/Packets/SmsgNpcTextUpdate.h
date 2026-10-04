@@ -66,6 +66,28 @@ namespace AscEmu::Packets
         {
             packet << input.textId;
 
+            if (m_protocol.isLegion())
+            {
+                // allow, size of the data, eight probabilities, eight broadcast texts. The texts themselves are
+                // client data: the text id is sent as broadcast text, as for 5.4.8.
+                constexpr uint8_t optionCount = 8;
+
+                packet.writeBit(input.found);
+                packet.flushBits();
+                packet << int32_t(input.found ? optionCount * (sizeof(float) + sizeof(uint32_t)) : 0);
+
+                if (input.found)
+                {
+                    for (uint8_t i = 0; i < optionCount; ++i)
+                        packet << float(i < input.pages.size() ? input.pages[i].probability : 0.0f);
+
+                    for (uint8_t i = 0; i < optionCount; ++i)
+                        packet << uint32_t(i < input.pages.size() && (i == 0 || input.pages[i].probability > 0.0f) ? input.textId : 0);
+                }
+
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 if (input.found)

@@ -32,6 +32,9 @@ private:
 public:
     void initWotlkCrypt(uint8_t* key);
     void initMopCrypt(uint8_t* key);
+
+    // second connection of a 6.x or 7.x session: the seeds of its auth challenge key both directions
+    void initSeededCrypt(uint8_t* key, const uint8_t* encryptSeed, const uint8_t* decryptSeed);
     void decryptWotlkReceive(uint8_t* data, size_t length);
     void encryptWotlkSend(uint8_t* data, size_t length);
 

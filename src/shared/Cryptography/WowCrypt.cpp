@@ -134,6 +134,29 @@ void WowCrypt::initMopCrypt(uint8_t* key)
     m_isInitialized = true;
 }
 
+void WowCrypt::initSeededCrypt(uint8_t* key, const uint8_t* encryptSeed, const uint8_t* decryptSeed)
+{
+    uint8_t encryptHash[SHA_DIGEST_LENGTH];
+    uint8_t decryptHash[SHA_DIGEST_LENGTH];
+
+    uint8_t pass[1024] = { 0 };
+    uint32_t mdLength;
+
+    HMAC(EVP_sha1(), decryptSeed, seedLenght, key, 40, decryptHash, &mdLength);
+    assert(mdLength == SHA_DIGEST_LENGTH);
+
+    HMAC(EVP_sha1(), encryptSeed, seedLenght, key, 40, encryptHash, &mdLength);
+    assert(mdLength == SHA_DIGEST_LENGTH);
+
+    m_clientWotlkDecrypt.setup(decryptHash, SHA_DIGEST_LENGTH);
+    m_servertWotlkEncrypt.setup(encryptHash, SHA_DIGEST_LENGTH);
+
+    m_clientWotlkDecrypt.process(pass, pass, 1024);
+    m_servertWotlkEncrypt.process(pass, pass, 1024);
+
+    m_isInitialized = true;
+}
+
 void WowCrypt::decryptWotlkReceive(uint8_t* data, size_t length)
 {
     if (!m_isInitialized)

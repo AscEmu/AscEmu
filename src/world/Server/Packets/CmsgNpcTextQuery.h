@@ -30,6 +30,14 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                WoWGuid128 npcGuid;
+                packet >> text_id >> npcGuid;
+                guid = WoWGuid::fromGuid128(npcGuid);
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 uint64_t rawGuid;

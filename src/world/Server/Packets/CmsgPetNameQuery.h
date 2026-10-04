@@ -47,6 +47,15 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                WoWGuid128 petGuid;
+                packet >> petGuid;
+                guid = WoWGuid::fromGuid128(petGuid);
+                petNumber = guid.getLowGuid();
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 uint64_t unpacked_guid;

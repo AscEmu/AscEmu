@@ -36,6 +36,54 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // entry, allow, then the size of the data block: type, display, four names, three strings,
+                // 33 data values, size, quest items, required level
+                packet << info.entry;
+                packet.writeBit(info.entry != 0);
+                packet.flushBits();
+
+                ByteBuffer stats;
+                if (info.entry != 0)
+                {
+                    std::string _name = name;
+
+                    stats << info.type << info.display_id << _name << uint8_t(0) << uint8_t(0) << uint8_t(0);
+                    stats << info.category_name << info.cast_bar_text << info.Unkstr;
+                    stats << info.raw.parameter_0 << info.raw.parameter_1 << info.raw.parameter_2 << info.raw.parameter_3 << info.raw.parameter_4
+                        << info.raw.parameter_5 << info.raw.parameter_6 << info.raw.parameter_7 << info.raw.parameter_8 << info.raw.parameter_9
+                        << info.raw.parameter_10 << info.raw.parameter_11 << info.raw.parameter_12 << info.raw.parameter_13 << info.raw.parameter_14
+                        << info.raw.parameter_15 << info.raw.parameter_16 << info.raw.parameter_17 << info.raw.parameter_18 << info.raw.parameter_19
+                        << info.raw.parameter_20 << info.raw.parameter_21 << info.raw.parameter_22 << info.raw.parameter_23 << info.raw.parameter_24
+                        << info.raw.parameter_25 << info.raw.parameter_26 << info.raw.parameter_27 << info.raw.parameter_28 << info.raw.parameter_29
+                        << info.raw.parameter_30 << info.raw.parameter_31 << info.raw.parameter_32;
+                    stats << float(info.size);
+
+                    uint8_t questItemCount = 0;
+                    for (uint8_t i = 0; i < 6; ++i)
+                    {
+                        if (info.QuestItems[i] != 0)
+                            ++questItemCount;
+                    }
+
+                    stats << questItemCount;
+                    for (uint8_t i = 0; i < 6; ++i)
+                    {
+                        if (info.QuestItems[i] != 0)
+                            stats << uint32_t(info.QuestItems[i]);
+                    }
+
+                    stats << uint32_t(0);                       // required level
+                }
+
+                packet << uint32_t(stats.size());
+                if (stats.size() != 0)
+                    packet.append(stats);
+
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << info.entry;
