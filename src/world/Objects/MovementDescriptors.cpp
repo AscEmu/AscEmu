@@ -11285,11 +11285,12 @@ std::span<MovementStep const> getMopMovementDescriptor(uint16_t opcode, bool rea
     }
 }
 
-std::span<MovementStep const> getLegionMovementDescriptor(uint16_t opcode, bool read)
+// 6.x and 7.x share the layouts, the width of the second flags comes from the version traits
+static std::span<MovementStep const> getGuid128MovementDescriptor(uint16_t opcode, bool read, WoW::Expansion expansion)
 {
     uint32_t internalId = 0;
     if (read)
-        internalId = Version::opcodeIdForHex(opcode, WoW::Expansion::_Legion);
+        internalId = Version::opcodeIdForHex(opcode, expansion);
     else
         internalId = static_cast<uint32_t>(opcode);
 
@@ -11415,4 +11416,14 @@ std::span<MovementStep const> getLegionMovementDescriptor(uint16_t opcode, bool 
         default:
             return UnknownDescriptor;
     }
+}
+
+std::span<MovementStep const> getWoDMovementDescriptor(uint16_t opcode, bool read)
+{
+    return getGuid128MovementDescriptor(opcode, read, WoW::Expansion::_WoD);
+}
+
+std::span<MovementStep const> getLegionMovementDescriptor(uint16_t opcode, bool read)
+{
+    return getGuid128MovementDescriptor(opcode, read, WoW::Expansion::_Legion);
 }

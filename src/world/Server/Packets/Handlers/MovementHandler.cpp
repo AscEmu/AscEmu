@@ -108,7 +108,7 @@ void WorldSession::handleMoveTimeSkippedOpcode(WorldPacket& recvPacket)
     uint64_t guid;
     uint32_t timeSkipped;
 
-    if (getClientProtocol().isLegion())
+    if (getClientProtocol().expansion >= WoW::Expansion::_WoD)
     {
         WoWGuid128 moverGuid;
         recvPacket >> moverGuid;
@@ -125,6 +125,10 @@ void WorldSession::handleMoveTimeSkippedOpcode(WorldPacket& recvPacket)
         return;
 
     mover->obj_movement_info.update_time += timeSkipped;
+
+    // 6.x: the skipped time is not forwarded to the other clients
+    if (getClientProtocol().isWoD())
+        return;
 
     if (getClientProtocol().isLegion())
     {

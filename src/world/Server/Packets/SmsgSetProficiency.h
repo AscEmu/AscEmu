@@ -35,7 +35,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion == WoW::Expansion::_Mop || m_protocol.isLegion())
+            if (m_protocol.expansion >= WoW::Expansion::_Mop)
             {
                 packet << proficiency << itemClass;
             }

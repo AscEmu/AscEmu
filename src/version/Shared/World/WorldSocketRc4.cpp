@@ -337,6 +337,8 @@ bool WorldSocket::processRc4Packet()
 
     if (opcode == CMSG_AUTH_CONTINUED_SESSION)
     {
+        m_rc4LargeClientHeader = true;
+
         if (m_rc4WorldState != Rc4WorldState::AwaitAuthSession)
         {
             sLogger.failure("WorldSocket::{}: {}:{} sent an unexpected CMSG_AUTH_CONTINUED_SESSION", Profile::Name, getRemoteIp(), getRemotePort());
@@ -480,29 +482,34 @@ void WorldSocket::handleRc4EnableEncryptionAck()
 {
     if (m_rc4InstanceConnection)
     {
-        // the seeds of the challenge key this connection; it joins the session that asked for it
-        m_crypt.initSeededCrypt(m_rc4SessionKey.data(), m_rc4ChallengeSeeds.data(), m_rc4ChallengeSeeds.data() + 16);
-
-        WorldSession* session = sWorld.getSessionByAccountId(m_rc4GameAccountId);
-        if (!m_crypt.isInitialized() || session == nullptr || session->getInstanceConnectKey() != m_rc4ConnectToKey)
-        {
-            sLogger.failure("WorldSocket::{}: the session of game account {} is gone, second connection closed", Profile::Name, m_rc4GameAccountId);
-            m_rc4WorldState = Rc4WorldState::Disabled;
-            disconnect();
-            return;
-        }
-
-        m_rc4WorldState = Rc4WorldState::Authenticated;
-        m_session = session;
-        session->setInstanceSocket(this);
-
-        // the session continues the login in its own update
-        session->QueuePacket(std::make_unique<WorldPacket>(Version::opcodeHexFor(CMSG_AUTH_CONTINUED_SESSION, m_protocol), 0));
+        attachRc4InstanceConnection();
         return;
     }
 
     m_crypt.initForClientVersion(static_cast<uint8_t>(m_protocol.expansion), m_rc4SessionKey.data());
     completeRc4Authentication();
+}
+
+void WorldSocket::attachRc4InstanceConnection()
+{
+    // the seeds of the challenge key this connection; it joins the session that asked for it
+    m_crypt.initSeededCrypt(m_rc4SessionKey.data(), m_rc4ChallengeSeeds.data(), m_rc4ChallengeSeeds.data() + 16);
+
+    WorldSession* session = sWorld.getSessionByAccountId(m_rc4GameAccountId);
+    if (!m_crypt.isInitialized() || session == nullptr || session->getInstanceConnectKey() != m_rc4ConnectToKey)
+    {
+        sLogger.failure("WorldSocket::{}: the session of game account {} is gone, second connection closed", Profile::Name, m_rc4GameAccountId);
+        m_rc4WorldState = Rc4WorldState::Disabled;
+        disconnect();
+        return;
+    }
+
+    m_rc4WorldState = Rc4WorldState::Authenticated;
+    m_session = session;
+    session->setInstanceSocket(this);
+
+    // the session continues the login in its own update
+    session->QueuePacket(std::make_unique<WorldPacket>(Version::opcodeHexFor(CMSG_AUTH_CONTINUED_SESSION, m_protocol), 0));
 }
 
 namespace
@@ -750,10 +757,18 @@ void WorldSocket::handleRc4AuthContinuedSession(WorldPacket& packet)
 
     sLogger.debug("WorldSocket::{}: second connection of game account {} authenticated from {}:{}", Profile::Name, accountId, getRemoteIp(), getRemotePort());
 
-    m_rc4WorldState = Rc4WorldState::AwaitEncryptionAck;
+    if constexpr (Profile::EnableEncryptionHandshake)
+    {
+        m_rc4WorldState = Rc4WorldState::AwaitEncryptionAck;
 
-    WorldPacket enableEncryption(SMSG_ENABLE_ENCRYPTION, 0);
-    sendPacket(&enableEncryption);
+        WorldPacket enableEncryption(SMSG_ENABLE_ENCRYPTION, 0);
+        sendPacket(&enableEncryption);
+    }
+    else
+    {
+        // without the handshake the encryption starts with the next packet in both directions
+        attachRc4InstanceConnection();
+    }
 }
 
 void WorldSocket::completeRc4Authentication()

@@ -62,10 +62,25 @@ namespace AscEmu::Packets
             return true;
         }
 
+        bool serialiseWoD(WorldPacket& packet)
+        {
+            // one aura per packet: update all, the unit, count, the slot with its data
+            packet.writeBit(false);
+            packet.flushBits();
+            packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+            packet << uint32_t(1);
+
+            writeAuraSlotWoD(packet, aura_updates, remove, m_protocol.realmId, m_receiverMapId);
+            return true;
+        }
+
         bool internalSerialise(WorldPacket& packet) override
         {
             if (m_protocol.expansion < WoW::Expansion::_TBC)
                 return false;
+
+            if (m_protocol.isWoD())
+                return serialiseWoD(packet);
 
             if (m_protocol.isLegion())
                 return serialiseLegion(packet);

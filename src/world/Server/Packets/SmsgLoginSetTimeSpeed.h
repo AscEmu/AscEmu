@@ -32,7 +32,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 // server time, game time, speed and the holiday offsets of both times
                 packet << time << time << gameSpeed << uint32_t(0) << uint32_t(0);

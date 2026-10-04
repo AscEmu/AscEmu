@@ -38,7 +38,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 // attacker (the shielded unit), defender, spell, damage, overkill, school, absorbed, log data
                 packet << WoWGuid(victimGuid).toGuid128(m_protocol.realmId, m_receiverMapId);

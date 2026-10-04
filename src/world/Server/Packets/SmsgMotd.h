@@ -38,7 +38,7 @@ namespace AscEmu::Packets
             if (m_protocol.isClassic())
                 return false;
 
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 // every line: length, then the text
                 packet.writeBits(lineCount, 4);

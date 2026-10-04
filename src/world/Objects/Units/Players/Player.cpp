@@ -9779,8 +9779,8 @@ void Player::sendPartyKillLogPacket(uint64_t killedGuid)
 
 void Player::sendDestroyObjectPacket(uint64_t destroyedGuid)
 {
-#if VERSION_STRING == Legion
-    // 7.x has no destroy packet, the object leaves the range with the next object update
+#if VERSION_STRING >= WoD
+    // 6.x and 7.x have no destroy packet, the object leaves the range with the next object update
     getUpdateMgr().pushOutOfRangeGuid(WoWGuid(destroyedGuid));
 #else
     SmsgDestroyObject managedPacket(destroyedGuid);

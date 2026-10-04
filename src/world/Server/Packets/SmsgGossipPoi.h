@@ -45,7 +45,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 // flags, name length, position, icon, importance, name
                 packet.writeBits(flags, 14);

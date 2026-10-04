@@ -54,7 +54,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 // target, caster, spell, one effect: type, amount, over heal or kill, school or power, absorbed or
                 // amplitude, resisted, crit, debug info, sandbox scaling
@@ -93,8 +93,11 @@ namespace AscEmu::Packets
                 packet << casterGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 packet << int32_t(spellId);
                 packet << uint32_t(1);
-                packet.writeBit(false);                 // log data
-                packet.flushBits();
+                if (m_protocol.isLegion())
+                {
+                    packet.writeBit(false);             // log data
+                    packet.flushBits();
+                }
 
                 packet << int32_t(auraType);
                 packet << int32_t(amount);
@@ -106,6 +109,14 @@ namespace AscEmu::Packets
                 packet.writeBit(false);
                 packet.writeBit(false);
                 packet.flushBits();
+
+                // 6.x: the log data follows the effects
+                if (m_protocol.isWoD())
+                {
+                    packet.writeBit(false);
+                    packet.flushBits();
+                }
+
                 return true;
             }
 

@@ -76,8 +76,8 @@ namespace AscEmu::Packets
                 }
             }
 
-#if VERSION_STRING == Legion
-            if (m_protocol.isLegion())
+#if VERSION_STRING >= WoD
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 if (mode == Mode::Launch)
                 {

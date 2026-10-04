@@ -36,7 +36,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 // victim, original amount, reason (kill 0, quest 1), amount, group bonus, refer a friend bonus
                 packet << WoWGuid(guid).toGuid128(m_protocol.realmId, m_receiverMapId);

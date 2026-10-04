@@ -44,9 +44,9 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
-                // the attack round as a block behind the combat log bit, closed by the sandbox scaling data
+                // the attack round as a block behind the combat log bit, 7.x closes it with the sandbox scaling data
                 ByteBuffer buff;
                 buff << uint32_t(hitStatus);
                 buff << attackerGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
@@ -86,17 +86,20 @@ namespace AscEmu::Packets
                 if (hitStatus & (HITSTATUS_BLOCK | HITSTATUS_UNK_04))
                     buff << float(0);
 
-                // sandbox scaling: type, level delta, item level, target level, expansion, class, scaling levels
-                buff.writeBits(0, 4);
-                buff.flushBits();
-                buff << int16_t(0);
-                buff << uint16_t(0);
-                buff << uint8_t(0);
-                buff << uint8_t(0);
-                buff << uint8_t(0);
-                buff << uint8_t(0);
-                buff << uint8_t(0);
-                buff << int8_t(0);
+                if (m_protocol.isLegion())
+                {
+                    // sandbox scaling: type, level delta, item level, target level, expansion, class, scaling levels
+                    buff.writeBits(0, 4);
+                    buff.flushBits();
+                    buff << int16_t(0);
+                    buff << uint16_t(0);
+                    buff << uint8_t(0);
+                    buff << uint8_t(0);
+                    buff << uint8_t(0);
+                    buff << uint8_t(0);
+                    buff << uint8_t(0);
+                    buff << int8_t(0);
+                }
 
                 packet.writeBit(false);                                      // no combat log data
                 packet.flushBits();

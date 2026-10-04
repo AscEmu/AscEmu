@@ -36,13 +36,17 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 // entry, allow, then the size of the data block: type, display, four names, three strings,
                 // 33 data values, size, quest items, required level
                 packet << info.entry;
                 packet.writeBit(info.entry != 0);
                 packet.flushBits();
+
+                // 6.x: an unknown entry ends here
+                if (m_protocol.isWoD() && info.entry == 0)
+                    return true;
 
                 ByteBuffer stats;
                 if (info.entry != 0)

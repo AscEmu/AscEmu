@@ -58,6 +58,21 @@ namespace AscEmu::Packets
             if (m_protocol.expansion < WoW::Expansion::_TBC)
                 return false;
 
+            if (m_protocol.isWoD())
+            {
+                // 6.x sends the full update as SMSG_AURA_UPDATE with the update all bit: the unit and the count first
+                packet.initialize(SMSG_AURA_UPDATE, 24 + aura_updates.size() * 40);
+                packet.writeBit(true);
+                packet.flushBits();
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << uint32_t(aura_updates.size());
+
+                for (const auto& auras : aura_updates)
+                    writeAuraSlotWoD(packet, auras, false, m_protocol.realmId, m_receiverMapId);
+
+                return true;
+            }
+
             if (m_protocol.isLegion())
             {
                 // 7.x sends the full update as SMSG_AURA_UPDATE with the update all bit

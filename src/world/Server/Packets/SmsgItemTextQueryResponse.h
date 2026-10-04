@@ -44,6 +44,18 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD())
+            {
+                // valid, item, text
+                packet.writeBit(result == 0);
+                packet.flushBits();
+                packet << WoWGuid(guid).toGuid128(m_protocol.realmId, 0);
+                packet.writeBits(static_cast<uint32_t>(text.length()), 13);
+                packet.flushBits();
+                packet.writeString(text);
+                return true;
+            }
+
             if (m_protocol.isLegion())
             {
                 // valid, text, item

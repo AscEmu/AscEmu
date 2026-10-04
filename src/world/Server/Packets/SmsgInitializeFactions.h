@@ -32,12 +32,12 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
-                // 300 factions: flags and standing, then one bonus bit per faction
-                constexpr uint16_t legionFactionCount = 300;
+                // 256 (6.x) or 300 (7.x) factions: flags and standing, then one bonus bit per faction
+                const uint16_t factionCount = m_protocol.isWoD() ? 256 : 300;
 
-                for (uint16_t i = 0; i < legionFactionCount; ++i)
+                for (uint16_t i = 0; i < factionCount; ++i)
                 {
                     const auto* const factionReputation = i < reputationByListId.size() ? reputationByListId[i] : nullptr;
                     if (factionReputation == nullptr)
@@ -52,7 +52,7 @@ namespace AscEmu::Packets
                     }
                 }
 
-                for (uint16_t i = 0; i < legionFactionCount; ++i)
+                for (uint16_t i = 0; i < factionCount; ++i)
                     packet.writeBit(false);
                 packet.flushBits();
                 return true;

@@ -667,11 +667,11 @@ void PacketBuilder::WriteMonsterMove([[maybe_unused]] MoveSpline const& moveSpli
 #endif
 }
 
-#if VERSION_STRING == Legion
+#if VERSION_STRING >= WoD
 namespace
 {
-    // the spline flags of 7.3.5: the path flags are shared, animation and parabolic moved up, the facing
-    // and the animation tier are separate fields
+    // the spline flags of 6.2.4 and 7.3.5: the path flags are shared, animation and parabolic moved up, the
+    // facing and the animation tier are separate fields
     uint32_t legionSplineFlags(MoveSplineFlag const& flags)
     {
         constexpr uint32_t sharedMask = 0x007FFFF8;             // falling slow .. uncompressed path
@@ -689,16 +689,28 @@ namespace
         return result;
     }
 
-    // the spline block after the mover: id, destination, teleport, tolerance, then the movement spline
-    void writeMonsterSplineHeaderLegion(ByteBuffer& data, uint32_t splineId, uint8_t stopDistanceTolerance)
+    // the spline block after the mover: id, destination, 7.x: teleport, tolerance, then the movement spline
+    void writeMonsterSplineHeaderLegion(ByteBuffer& data, uint32_t splineId, [[maybe_unused]] uint8_t stopDistanceTolerance)
     {
         data << uint32_t(splineId);
         data << float(0.0f);                                    // destination
         data << float(0.0f);
         data << float(0.0f);
+#if VERSION_STRING != WoD
         data.writeBit(false);                                   // cross realm teleport
         data.writeBits(stopDistanceTolerance, 3);
+#endif
     }
+
+#if VERSION_STRING == WoD
+    // 6.x closes the packet with the teleport bit and the stop tolerance: 2 for a spline without flags
+    void writeMonsterSplineTailWoD(ByteBuffer& data, uint32_t splineFlags)
+    {
+        data.writeBit(false);                                   // cross realm teleport
+        data.writeBits(splineFlags != 0 ? 0 : 2, 2);
+        data.flushBits();
+    }
+#endif
 
     void writeTransportOfMoverLegion(ByteBuffer& data, Unit* unit, uint32_t realmId)
     {
@@ -741,17 +753,6 @@ void PacketBuilder::WriteMonsterMoveLegion(MoveSpline const& moveSpline, ByteBuf
     const bool animation = moveSpline.splineflags.animation;
     const bool uncompressed = (moveSpline.splineflags & MoveSplineFlag::UncompressedPath) != 0;
 
-    data << uint32_t(legionSplineFlags(moveSpline.splineflags));
-    data << uint8_t(animation ? moveSpline.splineflags.animTier : 0);
-    data << uint32_t(animation ? moveSpline.effect_start_time : 0);   // tier transition start
-    data << int32_t(0);                                               // elapsed
-    data << uint32_t(moveSpline.Duration());
-    data << float(parabolic ? moveSpline.vertical_acceleration : 0.0f);
-    data << uint32_t(parabolic ? moveSpline.effect_start_time : 0);   // special time
-    data << uint8_t(0);                                               // mode
-    data << uint8_t(0);                                               // vehicle exit voluntary
-    writeTransportOfMoverLegion(data, unit, realmId);
-
     // the points: the whole path uncompressed, otherwise the last point and the packed offsets of the others
     const uint32_t pointCount = static_cast<uint32_t>(moveSpline.spline.getPointCount());
     uint32_t points = 0;
@@ -767,6 +768,91 @@ void PacketBuilder::WriteMonsterMoveLegion(MoveSpline const& moveSpline, ByteBuf
         packedDeltas = lastIdx > 1 ? lastIdx - 1 : 0;
     }
 
+    const auto writeFacing = [&]()
+    {
+        switch (type)
+        {
+            case MonsterMoveFacingSpot:
+                data << moveSpline.facing.f.x << moveSpline.facing.f.y << moveSpline.facing.f.z;
+                break;
+            case MonsterMoveFacingTarget:
+                data << float(0.0f);                                  // face direction
+                data << WoWGuid(moveSpline.facing.target).toGuid128(realmId, unit->GetMapId());
+                break;
+            case MonsterMoveFacingAngle:
+                data << float(moveSpline.facing.angle);
+                break;
+            default:
+                break;
+        }
+    };
+
+    const auto writePoints = [&]()
+    {
+        if (uncompressed)
+        {
+            if (moveSpline.splineflags.cyclic)
+            {
+                data << moveSpline.spline.getPoint(1);                // the client erases it after the first cycle
+                for (uint32_t i = 1; i < pointCount - 2; ++i)
+                    data << moveSpline.spline.getPoint(i);
+            }
+            else
+            {
+                for (uint32_t i = 2; i < pointCount - 1; ++i)
+                    data << moveSpline.spline.getPoint(i);
+            }
+        }
+        else
+        {
+            const uint32_t lastIdx = pointCount - 3;
+            G3D::Vector3 const* realPath = &moveSpline.spline.getPoint(1);
+
+            data << realPath[lastIdx];
+
+            if (lastIdx > 1)
+            {
+                G3D::Vector3 middle = (realPath[0] + realPath[lastIdx]) / 2.f;
+                for (uint32_t i = 1; i < lastIdx; ++i)
+                {
+                    G3D::Vector3 offset = middle - realPath[i];
+                    data.appendPackXYZ(offset.x, offset.y, offset.z);
+                }
+            }
+        }
+    };
+
+    const uint32_t splineFlags = legionSplineFlags(moveSpline.splineflags);
+
+    data << uint32_t(splineFlags);
+    data << uint8_t(animation ? moveSpline.splineflags.animTier : 0);
+    data << uint32_t(animation ? moveSpline.effect_start_time : 0);   // tier transition start
+    data << int32_t(0);                                               // elapsed
+    data << uint32_t(moveSpline.Duration());
+    data << float(parabolic ? moveSpline.vertical_acceleration : 0.0f);
+    data << uint32_t(parabolic ? moveSpline.effect_start_time : 0);   // special time
+
+#if VERSION_STRING == WoD
+    // 6.x: the counts are fields, the points come before the facing and the packet ends with the tolerance
+    data << int32_t(points);
+    data << uint8_t(0);                                               // mode
+    data << uint8_t(0);                                               // vehicle exit voluntary
+    writeTransportOfMoverLegion(data, unit, realmId);
+    data << int32_t(packedDeltas);
+
+    writePoints();
+
+    data.writeBits(face, 2);
+    data.writeBit(false);                                             // spline filter
+    data.flushBits();
+
+    writeFacing();
+    writeMonsterSplineTailWoD(data, splineFlags);
+#else
+    data << uint8_t(0);                                               // mode
+    data << uint8_t(0);                                               // vehicle exit voluntary
+    writeTransportOfMoverLegion(data, unit, realmId);
+
     data.writeBits(face, 2);
     data.writeBits(points, 16);
     data.writeBits(packedDeltas, 16);
@@ -774,53 +860,9 @@ void PacketBuilder::WriteMonsterMoveLegion(MoveSpline const& moveSpline, ByteBuf
     data.writeBit(false);                                             // spell effect extra data
     data.flushBits();
 
-    switch (type)
-    {
-        case MonsterMoveFacingSpot:
-            data << moveSpline.facing.f.x << moveSpline.facing.f.y << moveSpline.facing.f.z;
-            break;
-        case MonsterMoveFacingTarget:
-            data << float(0.0f);                                      // face direction
-            data << WoWGuid(moveSpline.facing.target).toGuid128(realmId, unit->GetMapId());
-            break;
-        case MonsterMoveFacingAngle:
-            data << float(moveSpline.facing.angle);
-            break;
-        default:
-            break;
-    }
-
-    if (uncompressed)
-    {
-        if (moveSpline.splineflags.cyclic)
-        {
-            data << moveSpline.spline.getPoint(1);                    // the client erases it after the first cycle
-            for (uint32_t i = 1; i < pointCount - 2; ++i)
-                data << moveSpline.spline.getPoint(i);
-        }
-        else
-        {
-            for (uint32_t i = 2; i < pointCount - 1; ++i)
-                data << moveSpline.spline.getPoint(i);
-        }
-    }
-    else
-    {
-        const uint32_t lastIdx = pointCount - 3;
-        G3D::Vector3 const* realPath = &moveSpline.spline.getPoint(1);
-
-        data << realPath[lastIdx];
-
-        if (lastIdx > 1)
-        {
-            G3D::Vector3 middle = (realPath[0] + realPath[lastIdx]) / 2.f;
-            for (uint32_t i = 1; i < lastIdx; ++i)
-            {
-                G3D::Vector3 offset = middle - realPath[i];
-                data.appendPackXYZ(offset.x, offset.y, offset.z);
-            }
-        }
-    }
+    writeFacing();
+    writePoints();
+#endif
 }
 
 void PacketBuilder::WriteStopMovementLegion(G3D::Vector3 const& pos, uint32_t splineId, ByteBuffer& data, Unit* unit, uint32_t realmId)
@@ -839,6 +881,20 @@ void PacketBuilder::WriteStopMovementLegion(G3D::Vector3 const& pos, uint32_t sp
     data << uint32_t(0);                                              // move time
     data << float(0.0f);                                              // jump gravity
     data << uint32_t(0);                                              // special time
+
+#if VERSION_STRING == WoD
+    data << int32_t(0);                                               // points
+    data << uint8_t(0);                                               // mode
+    data << uint8_t(0);                                               // vehicle exit voluntary
+    writeTransportOfMoverLegion(data, unit, realmId);
+    data << int32_t(0);                                               // packed deltas
+
+    data.writeBits(0, 2);                                             // face
+    data.writeBit(false);                                             // spline filter
+    data.flushBits();
+
+    writeMonsterSplineTailWoD(data, 0);
+#else
     data << uint8_t(0);                                               // mode
     data << uint8_t(0);                                               // vehicle exit voluntary
     writeTransportOfMoverLegion(data, unit, realmId);
@@ -849,6 +905,7 @@ void PacketBuilder::WriteStopMovementLegion(G3D::Vector3 const& pos, uint32_t sp
     data.writeBit(false);                                             // spline filter
     data.writeBit(false);                                             // spell effect extra data
     data.flushBits();
+#endif
 }
 #endif
 

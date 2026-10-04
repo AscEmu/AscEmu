@@ -94,6 +94,17 @@ namespace AscEmu::Packets
             }
         }
 
+        // the chat types of 6.2.4: as 7.3.5, the instance chat types have other values
+        static uint8_t wodChatType(uint8_t chatType)
+        {
+            switch (chatType)
+            {
+                case CHAT_MSG_BATTLEGROUND:             return 66;      // instance chat
+                case CHAT_MSG_BATTLEGROUND_LEADER:      return 67;      // instance chat leader
+                default:                                return legionChatType(chatType);
+            }
+        }
+
         bool serialiseLegion(WorldPacket& packet)
         {
             // player senders are resolved by their guid, creatures and battleground events carry their name
@@ -133,7 +144,7 @@ namespace AscEmu::Packets
             const bool hasAchievement = (type == CHAT_MSG_ACHIEVEMENT || type == CHAT_MSG_GUILD_ACHIEVEMENT) && achievementId;
             const uint32_t virtualRealm = m_protocol.getVirtualRealmAddress();
 
-            packet << uint8_t(legionChatType(type));
+            packet << uint8_t(m_protocol.isWoD() ? wodChatType(type) : legionChatType(type));
             packet << uint8_t(language);
             packet << senderGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
             packet << (hasGuildGuid ? guildGuid.toGuid128(m_protocol.realmId, 0) : WoWGuid128());
@@ -164,7 +175,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
                 return serialiseLegion(packet);
 
             if (m_protocol.expansion == WoW::Expansion::_Classic)

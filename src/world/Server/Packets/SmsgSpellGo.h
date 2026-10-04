@@ -60,7 +60,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 // cast data, then the combat log bit: the basic packet without the log data
                 SpellCastDataLegion castData;
@@ -81,7 +81,12 @@ namespace AscEmu::Packets
                 castData.missileTravelTime = missileTravelTime;
                 castData.realmId = m_protocol.realmId;
                 castData.mapId = m_receiverMapId;
-                castData.write(packet);
+                castData.castNumber = extraCastNumber;
+
+                if (m_protocol.isWoD())
+                    castData.writeWoD(packet);
+                else
+                    castData.write(packet);
 
                 packet.writeBit(false);                 // no combat log data
                 packet.flushBits();

@@ -50,7 +50,13 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD())
+            {
+                // time, seconds until the next daily reset
+                packet << static_cast<uint32_t>(time);
+                packet << int32_t(0);
+            }
+            else if (m_protocol.isLegion())
             {
                 packet << static_cast<uint32_t>(time);
             }

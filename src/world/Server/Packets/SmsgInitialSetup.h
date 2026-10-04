@@ -33,6 +33,17 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD())
+            {
+                // expansion level and tier, region, raid origin
+                constexpr int32_t serverRegionId = 3;
+                constexpr uint32_t raidOrigin = 1135753200;
+
+                packet << expansionLevel << expansionTier;
+                packet << serverRegionId << raidOrigin;
+                return true;
+            }
+
             if (!m_protocol.isLegion())
                 return false;
 

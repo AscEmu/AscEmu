@@ -35,7 +35,7 @@ namespace AscEmu::Packets
             if (m_protocol.expansion < WoW::Expansion::_WotLK)
                 return false;
 
-            if (m_protocol.expansion < WoW::Expansion::_Mop || m_protocol.isLegion())
+            if (m_protocol.expansion < WoW::Expansion::_Mop || m_protocol.expansion >= WoW::Expansion::_WoD)
             {
                 packet << count;
             }

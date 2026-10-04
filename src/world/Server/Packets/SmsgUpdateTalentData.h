@@ -61,6 +61,30 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD())
+            {
+                if (isPet)
+                    return false;
+
+                // active group, then every group with its specialization, six glyphs and talents
+                constexpr uint8_t glyphSlots = 6;
+
+                packet << uint8_t(activeSpec);
+                packet << uint32_t(specs.size());
+
+                for (const auto& spec : specs)
+                {
+                    packet << uint32_t(spec.specializationId);
+                    packet << uint32_t(spec.talents.size());
+                    for (uint8_t i = 0; i < glyphSlots; ++i)
+                        packet << uint16_t(0);
+                    for (const auto& [talentId, rank] : spec.talents)
+                        packet << uint16_t(talentId);
+                }
+
+                return true;
+            }
+
             if (m_protocol.isLegion())
             {
                 if (isPet)

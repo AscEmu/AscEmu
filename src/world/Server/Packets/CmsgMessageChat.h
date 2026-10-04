@@ -73,9 +73,11 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 // one opcode per chat type: language, then the lengths and the texts
+                const uint8_t textLengthBits = m_protocol.isWoD() ? 8 : 9;
+
                 type = getMessageTypeForOpcode(static_cast<uint16_t>(Version::opcodeIdForHex(packet.getOpcode(), m_protocol)));
                 if (type == 0xFF)
                     return false;
@@ -86,7 +88,7 @@ namespace AscEmu::Packets
                     case CHAT_MSG_DND:
                     case CHAT_MSG_EMOTE:
                     {
-                        const uint32_t textLength = packet.readBits(9);
+                        const uint32_t textLength = packet.readBits(textLengthBits);
                         message = packet.readString(textLength);
                     } break;
                     case CHAT_MSG_WHISPER:
@@ -95,7 +97,7 @@ namespace AscEmu::Packets
                         packet >> language;
                         packet.resetBitPos();
                         const uint32_t receiverLength = packet.readBits(9);
-                        const uint32_t textLength = packet.readBits(9);
+                        const uint32_t textLength = packet.readBits(textLengthBits);
                         destination = packet.readString(receiverLength);
                         message = packet.readString(textLength);
                     } break;
@@ -103,7 +105,7 @@ namespace AscEmu::Packets
                     {
                         packet >> language;
                         packet.resetBitPos();
-                        const uint32_t textLength = packet.readBits(9);
+                        const uint32_t textLength = packet.readBits(textLengthBits);
                         message = packet.readString(textLength);
                     } break;
                 }

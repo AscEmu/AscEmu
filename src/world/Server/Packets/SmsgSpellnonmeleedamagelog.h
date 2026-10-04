@@ -43,6 +43,27 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD())
+            {
+                // target, caster, spell, damage, overkill, school, blocked, resisted, absorbed,
+                // periodic, hit flags (crit 0x2), debug info, log data
+                packet << targetGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << casterGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << int32_t(spellId);
+                packet << int32_t(damage);
+                packet << int32_t(overKill);
+                packet << uint8_t(school);
+                packet << int32_t(blockedDamage);
+                packet << int32_t(resistedDamage);
+                packet << int32_t(absorbedDamage);
+                packet.writeBit(isPeriodicDamage);
+                packet.writeBits(isCriticalHit ? 0x2 : 0, 8);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isLegion())
             {
                 // target, caster, cast guid, spell, visual, damage, overkill, school, absorbed, resisted, blocked,

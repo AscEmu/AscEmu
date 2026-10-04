@@ -39,6 +39,17 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD())
+            {
+                // spell, reason, two arguments, cast count
+                packet << int32_t(spellId);
+                packet << int32_t(errorMsg);
+                packet << int32_t(extra1 || extra2 ? extra1 : -1);
+                packet << int32_t(extra2 ? extra2 : -1);
+                packet << uint8_t(multiCast);
+                return true;
+            }
+
             if (m_protocol.isLegion())
             {
                 // cast guid, spell, visual, reason, two arguments

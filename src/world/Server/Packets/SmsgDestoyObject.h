@@ -29,8 +29,8 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            // 7.x clients have no destroy packet, objects are removed with the out of range list of the object update
-            if (m_protocol.isLegion())
+            // 6.x and 7.x clients have no destroy packet, objects are removed with the out of range list of the object update
+            if (m_protocol.isWoD() || m_protocol.isLegion())
                 return false;
 
             if (m_protocol.expansion < WoW::Expansion::_Mop)

@@ -102,9 +102,10 @@ namespace AscEmu::Packets
             packet << float(1.0f);                                      // power modifier
             packet << uint32_t(questItems.size());
             packet << uint32_t(info != nullptr ? info->waypointid : 0); // movement info
-            packet << uint32_t(0);                                      // health scaling expansion
+            if (m_protocol.isLegion())
+                packet << uint32_t(0);                                  // health scaling expansion
             packet << uint32_t(0);                                      // required expansion
-            packet << uint32_t(0);                                      // vignette
+            packet << uint32_t(0);                                      // 6.x: quest flag, 7.x: vignette
 
             if (!title.empty())
                 packet << title;
@@ -120,7 +121,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
                 return serialiseLegion(packet);
 
             if (m_protocol.expansion <= WoW::Expansion::_Cata)

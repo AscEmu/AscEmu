@@ -43,6 +43,7 @@ namespace AscEmu::Packets
                 // table hash, record, time; a record without data is answered as not available
                 packet << type << entry << hotfixTime;
                 packet.writeBit(bufferSize != 0);
+                packet.flushBits();
                 packet << bufferSize;
                 packet.append(buffer);
                 return true;

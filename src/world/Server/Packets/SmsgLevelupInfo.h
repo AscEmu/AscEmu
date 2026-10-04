@@ -60,6 +60,18 @@ namespace AscEmu::Packets
 
                 return true;
             }
+            else if (m_protocol.isWoD())
+            {
+                // level, health, six powers, five stats, combo points
+                packet << int32_t(level);
+                packet << int32_t(hp);
+                packet << int32_t(mana);
+                for (uint8_t i = 0; i < 5; ++i)
+                    packet << int32_t(0);
+                packet << int32_t(stat0) << int32_t(stat1) << int32_t(stat2) << int32_t(stat3) << int32_t(stat4);
+                packet << int32_t(0);
+                return true;
+            }
             else if (m_protocol.isLegion())
             {
                 // level, health, six powers, four stats, combo points

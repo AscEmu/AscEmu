@@ -83,4 +83,70 @@ namespace AscEmu::Packets
         for (uint8_t effect = 0; effect < effectCount; ++effect)
             packet << ((aura.flags & (AFLAG_EFFECT_1 << effect)) ? float(aura.effAmount[effect]) : 0.0f);
     }
+
+    // The aura of one slot in SMSG_AURA_UPDATE of 6.2.4 clients, shared by the single and the full update.
+    template <typename AuraUpdate>
+    void writeAuraSlotWoD(WorldPacket& packet, AuraUpdate const& aura, bool remove, uint32_t realmId, uint32_t mapId)
+    {
+        packet << uint8_t(aura.visualSlot);
+        packet.writeBit(!remove);
+        packet.flushBits();
+
+        if (remove)
+            return;
+
+        const bool hasCaster = !(aura.flags & AFLAG_IS_CASTER);
+        const bool hasDuration = (aura.flags & AFLAG_DURATION) != 0;
+
+        // the flags of 6.2.4: no caster, positive, duration, scalable, negative
+        uint8_t wodFlags = 0;
+        if (aura.flags & AFLAG_IS_CASTER)
+            wodFlags |= 0x01;
+        if (!(aura.flags & AFLAG_NEGATIVE))
+            wodFlags |= 0x02;
+        if (hasDuration)
+            wodFlags |= 0x04;
+        if (aura.flags & AFLAG_SEND_EFFECT_AMOUNT)
+            wodFlags |= 0x08;
+        if (aura.flags & AFLAG_NEGATIVE)
+            wodFlags |= 0x10;
+
+        // the effect amounts are indexed by effect, gaps are sent as zero
+        uint32_t effectCount = 0;
+        if (aura.flags & AFLAG_SEND_EFFECT_AMOUNT)
+        {
+            if (aura.flags & AFLAG_EFFECT_1)
+                effectCount = 1;
+            if (aura.flags & AFLAG_EFFECT_2)
+                effectCount = 2;
+            if (aura.flags & AFLAG_EFFECT_3)
+                effectCount = 3;
+        }
+
+        packet << int32_t(aura.spellId);
+        packet << uint32_t(0);                                      // spell visual
+        packet << uint8_t(wodFlags);
+        packet << uint32_t(aura.flags & (AFLAG_EFFECT_1 | AFLAG_EFFECT_2 | AFLAG_EFFECT_3));
+        packet << uint16_t(aura.level);
+        packet << uint8_t(aura.stackCount != 0 ? aura.stackCount : 1);
+        packet << uint32_t(effectCount);
+        packet << uint32_t(0);                                      // estimated points
+
+        for (uint32_t effect = 0; effect < effectCount; ++effect)
+            packet << ((aura.flags & (AFLAG_EFFECT_1 << effect)) ? float(aura.effAmount[effect]) : 0.0f);
+
+        packet.writeBit(hasCaster);
+        packet.writeBit(hasDuration);
+        packet.writeBit(hasDuration);
+        packet.flushBits();
+
+        if (hasCaster)
+            packet << aura.casterGuid.toGuid128(realmId, mapId);
+
+        if (hasDuration)
+        {
+            packet << uint32_t(aura.duration);
+            packet << uint32_t(aura.timeLeft);
+        }
+    }
 }

@@ -19,6 +19,7 @@ protected:
     // Second connection of a session: the client opens it after SMSG_CONNECT_TO and sends the
     // movement, query and interaction opcodes through it.
     void handleRc4AuthContinuedSession(WorldPacket& packet);
+    void attachRc4InstanceConnection();
 
 public:
     bool sendConnectTo(uint64_t key, uint32_t serial);

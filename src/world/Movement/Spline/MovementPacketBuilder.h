@@ -41,8 +41,8 @@ public:
     static void WriteStopMovement(G3D::Vector3 const& loc, uint32_t splineId, ByteBuffer& data, Unit* unit);
     static void WriteSplineSync(MoveSpline const& mov, ByteBuffer& data);
 
-    // 7.3.5: the mover and its position, then the spline block. The facing is a separate field, the animation
-    // tier a byte and the flags above the path flags are renumbered.
+    // 6.2.4 and 7.3.5: the mover and its position, then the spline block. The facing is a separate field, the
+    // animation tier a byte and the flags above the path flags are renumbered.
     static void WriteMonsterMoveLegion(MoveSpline const& mov, ByteBuffer& data, Unit* unit, uint32_t realmId);
     static void WriteStopMovementLegion(G3D::Vector3 const& loc, uint32_t splineId, ByteBuffer& data, Unit* unit, uint32_t realmId);
 };

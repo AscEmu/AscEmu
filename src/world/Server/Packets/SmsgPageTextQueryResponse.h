@@ -34,19 +34,24 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
-                // page, allow, then the pages: id, next page, player condition, flags, text
+                // page, allow, then 6.x: id, next page, text; 7.x: the pages with id, next page, player condition,
+                // flags, text
                 const std::string pageText = text != nullptr ? text : "";
 
                 packet << pageId;
                 packet.writeBit(true);
                 packet.flushBits();
-                packet << uint32_t(1);
+                if (m_protocol.isLegion())
+                    packet << uint32_t(1);
                 packet << pageId;
                 packet << nextPageId;
-                packet << int32_t(0);
-                packet << uint8_t(0);
+                if (m_protocol.isLegion())
+                {
+                    packet << int32_t(0);
+                    packet << uint8_t(0);
+                }
                 packet.writeBits(static_cast<uint32_t>(pageText.length()), 12);
                 packet.flushBits();
                 packet.writeString(pageText);

@@ -158,6 +158,14 @@ struct MovementVersionTraits<WoW::Expansion::_Mop>
 };
 
 template <>
+struct MovementVersionTraits<WoW::Expansion::_WoD>
+{
+    static constexpr bool hasFlags2 = true;
+    static constexpr int flags2BitWidth = 16;
+    static constexpr bool flags2IsBitPacked = true;
+};
+
+template <>
 struct MovementVersionTraits<WoW::Expansion::_Legion>
 {
     static constexpr bool hasFlags2 = true;

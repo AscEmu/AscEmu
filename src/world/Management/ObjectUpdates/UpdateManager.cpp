@@ -68,7 +68,7 @@ void UpdateManager::pushOutOfRangeGuid(const WoWGuid& guid)
         m_owner->sendDestroyObjectPacket(guid.getRawGuid());
 #endif
 
-#if VERSION_STRING == Legion
+#if VERSION_STRING >= WoD
     m_outOfRangeIds << guid.toGuid128(worldConfig.battleNetComm.realmId, m_owner->GetMapId());
 #else
     m_outOfRangeIds << guid;
@@ -138,8 +138,8 @@ void UpdateManager::internalProcessPendingUpdates()
 
     ByteBuffer buffer(calculateBufferSize());
 
-#if VERSION_STRING == Legion
-    // 7.x: block count, map, the objects that left the range, size of the blocks, the blocks
+#if VERSION_STRING >= WoD
+    // 6.x and 7.x: block count, map, the objects that left the range, size of the blocks, the blocks
     const auto sendBlocks = [this, &buffer](uint32_t blockCount, ByteBuffer& blocks, bool withOutOfRange)
     {
         buffer.clear();

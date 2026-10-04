@@ -34,6 +34,16 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD())
+            {
+                // caster, cast count, spell, reason
+                packet << casterGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << uint8_t(castNumber);
+                packet << uint32_t(spellId);
+                packet << uint8_t(result);
+                return true;
+            }
+
             if (m_protocol.isLegion())
             {
                 // caster, cast guid, spell, visual, reason

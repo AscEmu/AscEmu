@@ -46,7 +46,7 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else if (m_protocol.isLegion())
+            else if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 packet << int32_t(soundId);
                 packet << sourceGuid.toGuid128(m_protocol.realmId, m_receiverMapId);

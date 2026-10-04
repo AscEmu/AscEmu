@@ -49,7 +49,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 // unit, gossip, friendship faction, text, both counts, then the options and the quests
                 packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
@@ -85,7 +85,8 @@ namespace AscEmu::Packets
                     packet << uint32_t(questListItem.first);
                     packet << uint32_t(questListItem.second.icon);
                     packet << int32_t(questListItem.second.level);
-                    packet << int32_t(0);                               // max scaling level
+                    if (m_protocol.isLegion())
+                        packet << int32_t(0);                           // max scaling level
                     packet << uint32_t(questListItem.second.flags);
                     packet << uint32_t(0);                              // flags 2
                     packet.writeBit(questListItem.second.repeatable != 0);

@@ -30,7 +30,7 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 packet << WoWGuid(itemGuid).toGuid128(m_protocol.realmId, 0);
                 packet << duration;

@@ -219,10 +219,10 @@ void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
         return;
     }
 
-#if VERSION_STRING == Legion
-    // 7.x clients send movement, queries and interaction through a second connection: the login
+#if VERSION_STRING >= WoD
+    // 6.x and 7.x clients send movement, queries and interaction through a second connection: the login
     // continues once the client opened it
-    if (getClientProtocol().isLegion() && _instanceSocket == nullptr)
+    if (getClientProtocol().expansion >= WoW::Expansion::_WoD && _instanceSocket == nullptr)
     {
         constexpr uint32_t firstWorldAttempt = 17;
 
@@ -245,7 +245,7 @@ void WorldSession::continuePlayerLogin(uint32_t guidLow)
 
 void WorldSession::sendConnectToInstance([[maybe_unused]] uint32_t serial)
 {
-#if VERSION_STRING == Legion
+#if VERSION_STRING >= WoD
     // key the client answers with: account (32 bit), connection type (1 bit), random part (31 bit)
     constexpr uint64_t instanceConnection = 1;
 
@@ -746,8 +746,8 @@ void WorldSession::fullLogin(Player* player)
     SmsgFeatureSystemStatus featurePacket(2, 0);
     sendManagedPacket(featurePacket);
 
-    // 7.x clients: the expansion of the server (Legion = 6)
-    SmsgInitialSetup initialSetupPacket(6, 0);
+    // 6.x and 7.x clients: the expansion of the server (WoD = 5, Legion = 6)
+    SmsgInitialSetup initialSetupPacket(getClientProtocol().isWoD() ? 5 : 6, 0);
     sendManagedPacket(initialSetupPacket);
     //////////////////////////////////////////////////////////////////////////////////////////
 

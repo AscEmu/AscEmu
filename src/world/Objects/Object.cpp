@@ -110,7 +110,7 @@ Object::~Object()
 }
 
 
-#if VERSION_STRING == Legion
+#if VERSION_STRING >= WoD
 #include "Server/World.h"
 
 #include <array>
@@ -119,7 +119,7 @@ Object::~Object()
 
 namespace
 {
-    // object type of area triggers in 7.x packets
+    // object type of area triggers in 6.x and 7.x packets
     constexpr uint8_t wireTypeIdAreaTrigger = 8;
 
     uint8_t wireObjectTypeId(uint8_t objectTypeId)
@@ -446,7 +446,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     // build our actual update
     *data << uint8_t(updateType);
-#if VERSION_STRING == Legion
+#if VERSION_STRING >= WoD
     *data << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, target->GetMapId());
     *data << wireObjectTypeId(m_objectTypeId);
 #else
@@ -2181,7 +2181,7 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
 {
     ByteBuffer buf(500);
     buf << uint8_t(UPDATETYPE_VALUES);
-#if VERSION_STRING == Legion
+#if VERSION_STRING >= WoD
     buf << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, Target->GetMapId());
 #else
     buf << GetNewGUID();
@@ -2196,7 +2196,7 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
     buf << (((uint32_t)(1)) << (Index % 32));
     buf << Value;
 
-#if VERSION_STRING == Legion
+#if VERSION_STRING >= WoD
     writeEmptyDynamicValues(buf, m_objectTypeId);
 #elif VERSION_STRING >= Mop
     // Mop closes every values-update block with a dynamic-values section; for anything
@@ -2213,7 +2213,7 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
 void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Value)
 {
     *buf << uint8_t(UPDATETYPE_VALUES);
-#if VERSION_STRING == Legion
+#if VERSION_STRING >= WoD
     *buf << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, GetMapId());
 #else
     *buf << GetNewGUID();
@@ -2228,7 +2228,7 @@ void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Va
     *buf << (((uint32_t)(1)) << (Index % 32));
     *buf << Value;
 
-#if VERSION_STRING == Legion
+#if VERSION_STRING >= WoD
     writeEmptyDynamicValues(*buf, m_objectTypeId);
 #elif VERSION_STRING >= Mop
     // See the other BuildFieldUpdatePacket() overload above for why this is required.
@@ -2248,7 +2248,7 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* targe
             if (m_wowGuid.getNewGuidLen() > 0)
             {
                 *data << uint8_t(UPDATETYPE_VALUES);              // update type == update
-#if VERSION_STRING == Legion
+#if VERSION_STRING >= WoD
                 *data << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, target != nullptr ? target->GetMapId() : GetMapId());
 #else
                 *data << m_wowGuid;
@@ -2274,7 +2274,7 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* ma
     if (m_wowGuid.getNewGuidLen() > 0)
     {
         *buf << uint8_t(UPDATETYPE_VALUES);
-#if VERSION_STRING == Legion
+#if VERSION_STRING >= WoD
         *buf << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, GetMapId());
 #else
         *buf << m_wowGuid;
@@ -3127,7 +3127,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 }
 #endif
 
-#if VERSION_STRING == Legion
+#if VERSION_STRING >= WoD
 void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* target)
 {
     const uint32_t realmId = worldConfig.battleNetComm.realmId;
@@ -3144,6 +3144,9 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     data->writeBit(false);                              // no birth animation
     data->writeBit(false);                              // enable portals
     data->writeBit(false);                              // play hover animation
+#if VERSION_STRING == WoD
+    data->writeBit(false);                              // suppresses greetings
+#endif
     data->writeBit(living);
     data->writeBit(transportPosition);
     data->writeBit(stationary);
@@ -3154,11 +3157,21 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     data->writeBit(rotation);
     data->writeBit(false);                              // area trigger shape
     data->writeBit(false);                              // world effect of a gameobject
+#if VERSION_STRING == WoD
+    data->writeBit(updateFlags & UPDATEFLAG_SELF);
+    data->writeBit(false);                              // replace active
+    data->writeBit(false);                              // scene object
+    data->writeBit(false);                              // pending scene instances
+    data->flushBits();
+
+    *data << uint32_t(0);                               // pause times of a transport
+#else
     data->writeBit(false);                              // smooth phasing
     data->writeBit(updateFlags & UPDATEFLAG_SELF);
     data->writeBit(false);                              // scene object
     data->writeBit(false);                              // rune state of the player
     data->flushBits();
+#endif
 
     if (living)
     {
@@ -3182,7 +3195,11 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         *data << uint32_t(0);                           // move index
 
         data->writeBits(movementFlags, 30);
+#if VERSION_STRING == WoD
+        data->writeBits(movementFlags2, 16);
+#else
         data->writeBits(movementFlags2, 18);
+#endif
         data->writeBit(hasTransport);
         data->writeBit(hasFall);
         data->writeBit(false);                          // spline
@@ -3223,7 +3240,13 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         data->flushBits();
     }
 
+#if VERSION_STRING == WoD
+    // 6.x: the position on the transport follows the living block, 7.x sends it last
+    if (transportPosition)
+        writeTransportInfo(*data, obj_movement_info, realmId, mapId);
+#else
     *data << uint32_t(0);                               // pause times of a transport
+#endif
 
     if (stationary)
     {
@@ -3260,8 +3283,10 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     if (rotation)
         *data << uint64_t(static_cast<GameObject*>(this)->getPackedLocalRotation());
 
+#if VERSION_STRING != WoD
     if (transportPosition)
         writeTransportInfo(*data, obj_movement_info, realmId, mapId);
+#endif
 }
 #elif VERSION_STRING >= Mop
 void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* /*target*/)
@@ -3641,7 +3666,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
     uint32_t block_count, values_count;
     const bool isCreate = (updateType == UPDATETYPE_CREATE_OBJECT || updateType == UPDATETYPE_CREATE_OBJECT2);
 
-#if VERSION_STRING == Legion
+#if VERSION_STRING >= WoD
     // guid fields: the 64 bit guid of the server becomes the 128 bit guid of the client, four values per field
     std::unordered_map<uint32_t, uint32_t> guidValues;
     {
@@ -3701,7 +3726,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
             // Some data must be altered because it has to be different to each player
             auto bitValue = m_uint32Values[idx];
 
-#if VERSION_STRING == Legion
+#if VERSION_STRING >= WoD
             if (const auto guidValue = guidValues.find(idx); guidValue != guidValues.end())
                 bitValue = guidValue->second;
 #endif
@@ -3910,7 +3935,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
         }
     }
 
-#if VERSION_STRING == Legion
+#if VERSION_STRING >= WoD
     writeEmptyDynamicValues(*data, m_objectTypeId);
 #elif VERSION_STRING >= Mop
     *data << static_cast<uint8_t>(0);
@@ -4728,8 +4753,8 @@ void Object::SendAIReaction(uint32_t reaction)
 
 void Object::SendDestroyObject()
 {
-#if VERSION_STRING == Legion
-    // 7.x has no destroy packet, the object leaves the range of every player with the next object update
+#if VERSION_STRING >= WoD
+    // 6.x and 7.x have no destroy packet, the object leaves the range of every player with the next object update
     for (Object* inRangePlayer : getInRangePlayersSet())
     {
         if (auto* const player = dynamic_cast<Player*>(inRangePlayer))

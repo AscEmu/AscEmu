@@ -71,12 +71,13 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 packet.writeBit(unk1);                  // initial login
                 packet.flushBits();
                 packet << uint32_t(spell_ids.size());
-                packet << uint32_t(0);                  // favorite spells
+                if (m_protocol.isLegion())
+                    packet << uint32_t(0);              // favorite spells
                 for (uint32_t spell_id : spell_ids)
                     packet << spell_id;
             }

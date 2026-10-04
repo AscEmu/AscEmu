@@ -194,7 +194,7 @@ private:
 
             case MovementOp::Flags:
             {
-                if constexpr (Version == WoW::Expansion::_Cata || Version == WoW::Expansion::_Mop || Version == WoW::Expansion::_Legion)
+                if constexpr (Version >= WoW::Expansion::_Cata)
                 {
                     movementInfo.flags = buffer.readBits(30);
                 }
@@ -424,7 +424,7 @@ private:
 
             case MovementOp::Flags:
             {
-                if constexpr (Version == WoW::Expansion::_Cata || Version == WoW::Expansion::_Mop || Version == WoW::Expansion::_Legion)
+                if constexpr (Version >= WoW::Expansion::_Cata)
                     data.writeBits(movementInfo.flags, 30);
                 else
                     data << movementInfo.flags;
@@ -544,6 +544,8 @@ private:
             return getWotlkMovementDescriptor(opcode, read);
         else if constexpr (Version == WoW::Expansion::_Cata)
             return getCataMovementDescriptor(opcode, read);
+        else if constexpr (Version == WoW::Expansion::_WoD)
+            return getWoDMovementDescriptor(opcode, read);
         else if constexpr (Version == WoW::Expansion::_Legion)
             return getLegionMovementDescriptor(opcode, read);
         else

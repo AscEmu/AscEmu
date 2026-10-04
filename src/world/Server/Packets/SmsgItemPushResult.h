@@ -55,6 +55,38 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD())
+            {
+                // player, slots, the item instance, quest log item, quantities, encounter, battle pet, item, flags
+                packet << WoWGuid(guid).toGuid128(m_protocol.realmId, 0);
+                packet << uint8_t(bagSlot);
+                packet << int32_t(slot ? slot : -1);
+
+                packet << int32_t(entry);
+                packet << int32_t(suffix);
+                packet << int32_t(randomProp);
+                packet.writeBit(false);                 // item bonus
+                packet.writeBit(false);                 // modifications
+                packet.flushBits();
+
+                packet << uint32_t(0);
+                packet << int32_t(count);
+                packet << int32_t(stackCount);
+                packet << uint32_t(0);                  // dungeon encounter
+                packet << int32_t(0);                   // battle pet breed
+                packet << int32_t(0);                   // battle pet quality
+                packet << int32_t(0);                   // battle pet species
+                packet << int32_t(0);                   // battle pet level
+                packet << itemGuid.toGuid128(m_protocol.realmId, 0);
+                packet.writeBit(isReceived);
+                packet.writeBit(isCreated);
+                packet.writeBits(2, 2);                 // display text: normal
+                packet.writeBit(false);                 // bonus roll
+                packet.writeBit(false);                 // encounter loot
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isLegion())
             {
                 // player, slots, quest log item, quantities, encounter, battle pet, item, flags, then the item instance

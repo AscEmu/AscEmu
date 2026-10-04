@@ -51,7 +51,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 SpellCastDataLegion castData;
                 castData.casterGuid = casterGuid;
@@ -66,7 +66,13 @@ namespace AscEmu::Packets
                 castData.ammoDisplayId = (castFlags & SPELL_PACKET_FLAGS_RANGED) ? projectile.displayInfo : 0;
                 castData.realmId = m_protocol.realmId;
                 castData.mapId = m_receiverMapId;
-                castData.write(packet);
+                castData.castNumber = extraCastNumber;
+
+                if (m_protocol.isWoD())
+                    castData.writeWoD(packet);
+                else
+                    castData.write(packet);
+
                 return true;
             }
 

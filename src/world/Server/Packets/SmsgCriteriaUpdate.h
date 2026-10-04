@@ -37,7 +37,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 // criteria, quantity, player, flags, current time, elapsed time, creation time
                 packet << criteriaId;

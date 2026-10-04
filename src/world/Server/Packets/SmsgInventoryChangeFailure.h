@@ -40,7 +40,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 // result, both items, bag slot, then the data of the result: the level (1, 87), the containers of a
                 // bind confirmation (81) or the limit category (84, 85, 89)

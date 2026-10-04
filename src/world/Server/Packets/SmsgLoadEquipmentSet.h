@@ -29,7 +29,7 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else if (m_protocol.isLegion())
+            else if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 packet << uint32_t(0);          // no equipment sets
                 return true;

@@ -50,7 +50,40 @@ namespace AscEmu::Packets
             if (m_protocol.expansion <= WoW::Expansion::_TBC)
                 return false;
 
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD())
+            {
+                packet << uint8_t(2);                   // complaint status
+                packet << uint32_t(1);                  // scroll of resurrection: requests remaining
+                packet << uint32_t(1);                  // scroll of resurrection: requests per day
+                packet << uint32_t(m_protocol.realmId); // realm id
+                packet << int32_t(0);                   // realm record id
+                packet << uint32_t(60);                 // twitter post throttle limit
+                packet << uint32_t(20);                 // twitter post throttle cooldown
+                packet << uint32_t(300);                // token poll time in seconds
+                packet << uint32_t(0);                  // token redeem index
+
+                packet.writeBit(0);                     // voice chat
+                packet.writeBit(0);                     // has the ticket system status
+                packet.writeBit(0);                     // scroll of resurrection
+                packet.writeBit(0);                     // shop enabled
+                packet.writeBit(0);                     // shop available
+                packet.writeBit(0);                     // shop disabled by parental controls
+                packet.writeBit(1);                     // item restoration button
+                packet.writeBit(0);                     // browser
+                packet.writeBit(0);                     // has a session alert
+                packet.writeBit(0);                     // recruit a friend
+                packet.writeBit(0);                     // character restore
+                packet.writeBit(0);                     // restricted account
+                packet.writeBit(1);                     // tutorials
+                packet.writeBit(1);                     // new player tutorials
+                packet.writeBit(0);                     // twitter
+                packet.writeBit(0);                     // commerce system
+                packet.writeBit(1);
+                packet.writeBit(0);                     // will kick from world
+                packet.writeBit(0);
+                packet.flushBits();
+            }
+            else if (m_protocol.isLegion())
             {
                 packet << uint8_t(2);                   // complaint status
                 packet << uint32_t(1);                  // scroll of resurrection: requests remaining

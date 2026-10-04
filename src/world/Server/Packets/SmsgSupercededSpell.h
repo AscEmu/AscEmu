@@ -36,12 +36,13 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion())
             {
-                // new spells, superceded spells, favorite spells
+                // new spells, superceded spells, favorite spells (7.x)
                 packet << uint32_t(1);
                 packet << uint32_t(1);
-                packet << uint32_t(0);
+                if (m_protocol.isLegion())
+                    packet << uint32_t(0);
                 packet << int32_t(supercedeSpellId);
                 packet << int32_t(spellId);
                 return true;
