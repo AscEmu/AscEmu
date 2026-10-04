@@ -32,6 +32,15 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // target, emote, sound index
+                WoWGuid128 target;
+                packet >> target >> text_emote >> numEmote;
+                guid = WoWGuid::fromGuid128(target);
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 uint64_t rawGuid;

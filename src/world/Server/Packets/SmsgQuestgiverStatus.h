@@ -36,6 +36,13 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                packet << WoWGuid(questgiverGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << status;
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet << questgiverGuid << static_cast<uint8_t>(status);

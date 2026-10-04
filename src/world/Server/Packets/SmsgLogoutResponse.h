@@ -57,6 +57,15 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // result, instant
+                packet << failReason;
+                packet.writeBit(instant);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isClassic())
                 packet << result;
             else

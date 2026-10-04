@@ -49,6 +49,19 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                packet << static_cast<uint32_t>(questgiverSet.size());
+
+                for (const auto& questGiver : questgiverSet)
+                {
+                    packet << WoWGuid(questGiver.rawGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                    packet << static_cast<uint32_t>(questGiver.status);
+                }
+
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 packet.writeBits(inrangeCount, 21);

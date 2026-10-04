@@ -66,6 +66,76 @@ namespace AscEmu::Packets
             if (trainer == nullptr)
                 return false;
 
+            if (m_protocol.isLegion())
+            {
+                // trainer, type, trainer id, then the spells and the greeting
+                constexpr uint8_t maxRequiredCount = 3;
+
+                packet << WoWGuid(creature->getGuid()).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << static_cast<uint32_t>(trainer->TrainerType);
+                packet << static_cast<uint32_t>(1);
+
+                const size_t countPos = packet.wpos();
+                packet << static_cast<uint32_t>(0);
+
+                uint32_t count = 0;
+                for (auto& spellItr : *sObjectMgr.getTrainerSpellSetById(trainer->spellset_id))
+                {
+                    auto trainerSpell = spellItr;
+
+                    const auto spellInfo = trainerSpell.castRealSpell != nullptr ? trainerSpell.castSpell : trainerSpell.learnSpell;
+                    if (spellInfo == nullptr)
+                        continue;
+
+                    if (!player->isSpellFitByClassAndRace(spellInfo->getId()))
+                        continue;
+
+                    if (spellItr.isStatic == 0)
+                    {
+                        // the limits of the trainer: level and skill value
+                        if (trainer->can_train_max_level && spellItr.requiredLevel > trainer->can_train_max_level)
+                            continue;
+
+                        if (trainer->can_train_min_skill_value && spellItr.requiredSkillLineValue < trainer->can_train_min_skill_value)
+                            continue;
+
+                        if (trainer->can_train_max_skill_value && spellItr.requiredSkillLineValue > trainer->can_train_max_skill_value)
+                            continue;
+                    }
+
+                    packet << static_cast<uint32_t>(spellInfo->getId());
+                    packet << static_cast<uint32_t>(trainerSpell.cost);
+                    packet << static_cast<uint32_t>(trainerSpell.requiredSkillLine);
+                    packet << static_cast<uint32_t>(trainerSpell.requiredSkillLineValue);
+
+                    uint8_t requiredSpellCount = 0;
+                    for (const auto requiredSpell : trainerSpell.requiredSpell)
+                    {
+                        if (requiredSpell == 0 || requiredSpellCount >= maxRequiredCount)
+                            continue;
+
+                        packet << static_cast<uint32_t>(requiredSpell);
+                        ++requiredSpellCount;
+                    }
+
+                    for (; requiredSpellCount < maxRequiredCount; ++requiredSpellCount)
+                        packet << static_cast<uint32_t>(0);
+
+                    packet << static_cast<uint8_t>(player->getSession()->trainerGetSpellStatus(&trainerSpell));
+                    packet << static_cast<uint8_t>(trainerSpell.requiredLevel);
+
+                    ++count;
+                }
+
+                packet.put<uint32_t>(countPos, count);
+
+                packet.writeBits(static_cast<uint32_t>(uiMessage.size()), 11);
+                packet.flushBits();
+                packet.writeString(uiMessage);
+
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 const WoWGuid guid = creature->getGuid();

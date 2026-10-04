@@ -49,6 +49,54 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // unit, gossip, friendship faction, text, both counts, then the options and the quests
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << id;
+                packet << uint32_t(0);
+                packet << textId;
+                packet << uint32_t(gossipItemList.size());
+                packet << uint32_t(gossipQuestList.size());
+
+                for (const auto& itemListItem : gossipItemList)
+                {
+                    std::string optionText;
+                    if (!itemListItem.second.text.empty())
+                        optionText = itemListItem.second.text;
+                    else
+                        optionText = sMySQLStore.getLocaleGossipMenuOptionOrElse(itemListItem.second.textId, locale);
+
+                    packet << uint32_t(itemListItem.first);
+                    packet << uint8_t(itemListItem.second.icon);
+                    packet << uint8_t(itemListItem.second.isCoded ? 1 : 0);
+                    packet << uint32_t(itemListItem.second.boxMoney);
+                    packet.writeBits(static_cast<uint32_t>(optionText.length()), 12);
+                    packet.writeBits(static_cast<uint32_t>(itemListItem.second.boxMessage.length()), 12);
+                    packet.flushBits();
+                    packet.writeString(optionText);
+                    packet.writeString(itemListItem.second.boxMessage);
+                }
+
+                for (const auto& questListItem : gossipQuestList)
+                {
+                    const std::string questTitle = sMySQLStore.getLocaleGossipTitleOrElse(questListItem.first, locale);
+
+                    packet << uint32_t(questListItem.first);
+                    packet << uint32_t(questListItem.second.icon);
+                    packet << int32_t(questListItem.second.level);
+                    packet << int32_t(0);                               // max scaling level
+                    packet << uint32_t(questListItem.second.flags);
+                    packet << uint32_t(0);                              // flags 2
+                    packet.writeBit(questListItem.second.repeatable != 0);
+                    packet.writeBits(static_cast<uint32_t>(questTitle.length()), 9);
+                    packet.flushBits();
+                    packet.writeString(questTitle);
+                }
+
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << guid.getRawGuid() << id << textId;

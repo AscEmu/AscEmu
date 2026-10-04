@@ -780,6 +780,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode<STATUS_AUTHED>(CMSG_ENGINE_SURVEY, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_QUICK_JOIN_AUTO_ACCEPT_REQUESTS, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_GET_ACCOUNT_CHARACTER_LIST, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, true);
+    // the client only tells that it closed a window
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_CLOSE_INTERACTION, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, true);
 
     // Queries
     registry.registerOpcode(MSG_CORPSE_QUERY, &WorldSession::handleCorpseQueryOpcode, false, true, true, true, false);
@@ -821,7 +823,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(MSG_MOVE_STOP, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_MOVE_SET_FLY, &WorldSession::handleMovementOpcodes, true, true, true, false, true, false, true);
     registry.registerOpcode(CMSG_MOVE_NOT_ACTIVE_MOVER, &WorldSession::handleMoveNotActiveMoverOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_SET_ACTIVE_MOVER, &WorldSession::handleSetActiveMoverOpcode, false, true, true, true, true);
+    registry.registerOpcode(CMSG_SET_ACTIVE_MOVER, &WorldSession::handleSetActiveMoverOpcode, false, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_MOVE_TIME_SKIPPED, &WorldSession::handleMoveTimeSkippedOpcode, false, true, false, false, false, false, true);
     registry.registerOpcode(CMSG_MOVE_CHNG_TRANSPORT, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_MOVE_FALL_RESET, &WorldSession::handleMovementOpcodes, false, false, false, true, true, false, true);
@@ -865,14 +867,14 @@ void WorldSession::registerOpcodeHandler()
     // Player Interaction
     registry.registerOpcode(CMSG_WHO, &WorldSession::handleWhoOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_WHOIS, &WorldSession::handleWhoIsOpcode, true, false, true, true, true);
-    registry.registerOpcode(CMSG_LOGOUT_REQUEST, &WorldSession::handleLogoutRequestOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LOGOUT_REQUEST, &WorldSession::handleLogoutRequestOpcode, true, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_PLAYER_LOGOUT, &WorldSession::handlePlayerLogoutOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_LOGOUT_CANCEL, &WorldSession::handleLogoutCancelOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LOGOUT_CANCEL, &WorldSession::handleLogoutCancelOpcode, true, true, true, true, true, false, true);
     // registry.registerOpcode(CMSG_LOGOUT_CANCEL].status = STATUS_LOGGEDIN_RECENTLY_LOGGOUT, false, false, true, false, false);
 
     registry.registerOpcode(CMSG_ZONEUPDATE, &WorldSession::handleZoneupdate, true, true, true, true, false);
     // registry.registerOpcode(CMSG_SET_TARGET_OBSOLETE, &WorldSession::HandleSetTargetOpcode, false, false, true, false, false);
-    registry.registerOpcode(CMSG_SET_SELECTION, &WorldSession::handleSetSelectionOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_SET_SELECTION, &WorldSession::handleSetSelectionOpcode, true, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_STANDSTATECHANGE, &WorldSession::handleStandStateChangeOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_CANCEL_MOUNT_AURA, &WorldSession::handleDismountOpcode, true, true, true, true, true);
 
@@ -905,8 +907,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_REQUEST_PLAYED_TIME, &WorldSession::handlePlayedTimeOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_SETSHEATHED, &WorldSession::handleSetSheathedOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_MESSAGECHAT, &WorldSession::handleMessageChatOpcode, true, true, true, false, false);
-    registry.registerOpcode(CMSG_EMOTE, &WorldSession::handleEmoteOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_TEXT_EMOTE, &WorldSession::handleTextEmoteOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_EMOTE, &WorldSession::handleEmoteOpcode, true, true, true, true, true, false, true);
+    registry.registerOpcode(CMSG_TEXT_EMOTE, &WorldSession::handleTextEmoteOpcode, true, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_INSPECT, &WorldSession::handleInspectOpcode, true, true, true, true, true);
     // clearly wrong naming!
     //registry.registerOpcode(SMSG_BARBER_SHOP_RESULT, &WorldSession::handleBarberShopResult, false, false, true, false, false);
@@ -1010,13 +1012,13 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(MSG_TABARDVENDOR_ACTIVATE, &WorldSession::handleTabardVendorActivateOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_BANKER_ACTIVATE, &WorldSession::handleBankerActivateOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_BUY_BANK_SLOT, &WorldSession::handleBuyBankSlotOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_TRAINER_LIST, &WorldSession::handleTrainerListOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_TRAINER_LIST, &WorldSession::handleTrainerListOpcode, true, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_TRAINER_BUY_SPELL, &WorldSession::handleTrainerBuySpellOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_PETITION_SHOWLIST, &WorldSession::handleCharterShowListOpcode, true, true, true, true, true);
     registry.registerOpcode(MSG_AUCTION_HELLO, &WorldSession::handleAuctionHelloOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_AUCTION_HELLO, &WorldSession::handleAuctionHelloRequestOpcode, false, false, false, false, true);
-    registry.registerOpcode(CMSG_GOSSIP_HELLO, &WorldSession::handleGossipHelloOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_GOSSIP_SELECT_OPTION, &WorldSession::handleGossipSelectOptionOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_GOSSIP_HELLO, &WorldSession::handleGossipHelloOpcode, true, true, true, true, true, false, true);
+    registry.registerOpcode(CMSG_GOSSIP_SELECT_OPTION, &WorldSession::handleGossipSelectOptionOpcode, true, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_SPIRIT_HEALER_ACTIVATE, &WorldSession::handleSpiritHealerActivateOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_NPC_TEXT_QUERY, &WorldSession::handleNpcTextQueryOpcode, true, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_BINDER_ACTIVATE, &WorldSession::handleBinderActivateOpcode, true, true, true, true, true);
@@ -1068,8 +1070,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_REQUEST_CATEGORY_COOLDOWNS, &WorldSession::handleRequestCategoryCooldownsOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_UPDATE_PROJECTILE_POSITION, &WorldSession::handleUpdateProjectilePosition, false, false, true, true, false);
     // Combat / Duel
-    registry.registerOpcode(CMSG_ATTACKSWING, &WorldSession::handleAttackSwingOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_ATTACK_STOP, &WorldSession::handleAttackStopOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_ATTACKSWING, &WorldSession::handleAttackSwingOpcode, true, true, true, true, true, false, true);
+    registry.registerOpcode(CMSG_ATTACK_STOP, &WorldSession::handleAttackStopOpcode, true, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_DUEL_ACCEPTED, &WorldSession::handleDuelAccepted, true, true, true, true, false);
     registry.registerOpcode(CMSG_DUEL_CANCELLED, &WorldSession::handleDuelCancelled, true, true, true, true, false);
     registry.registerOpcode(CMSG_DUEL_PROPOSED, &WorldSession::handleDuelProposed, false, false, false, false, true);
@@ -1088,8 +1090,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_SET_TRADE_GOLD, &WorldSession::handleSetTradeGold, true, true, true, true, true);
 
     // Quest System
-    registry.registerOpcode(CMSG_QUEST_GIVER_STATUS_MULTIPLE_QUERY, &WorldSession::handleInrangeQuestgiverQuery, false, true, true, true, true);
-    registry.registerOpcode(CMSG_QUESTGIVER_STATUS_QUERY, &WorldSession::handleQuestgiverStatusQueryOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_QUEST_GIVER_STATUS_MULTIPLE_QUERY, &WorldSession::handleInrangeQuestgiverQuery, false, true, true, true, true, false, true);
+    registry.registerOpcode(CMSG_QUESTGIVER_STATUS_QUERY, &WorldSession::handleQuestgiverStatusQueryOpcode, true, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_QUESTGIVER_HELLO, &WorldSession::handleQuestgiverHelloOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_QUESTGIVER_ACCEPT_QUEST, &WorldSession::handleQuestgiverAcceptQuestOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_QUESTGIVER_CANCEL, &WorldSession::handleQuestgiverCancelOpcode, true, true, true, true, true);
@@ -1174,7 +1176,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(MSG_GUILD_PERMISSIONS, &WorldSession::handleGuildPermissions, true, true, true, false, false);
 
     // Tutorials
-    registry.registerOpcode(CMSG_TUTORIAL_FLAG, &WorldSession::handleTutorialFlag, true, true, true, true, true);
+    registry.registerOpcode(CMSG_TUTORIAL_FLAG, &WorldSession::handleTutorialFlag, true, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_TUTORIAL_CLEAR, &WorldSession::handleTutorialClear, true, true, true, true, true);
     registry.registerOpcode(CMSG_TUTORIAL_RESET, &WorldSession::handleTutorialReset, true, true, true, true, true);
 
@@ -1209,7 +1211,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(MSG_BATTLEGROUND_PLAYER_POSITIONS, &WorldSession::handleBattlegroundPlayerPositionsOpcode, true, true, true, true, true);
     registry.registerOpcode(MSG_PVP_LOG_DATA, &WorldSession::handlePVPLogDataOpcode, true, true, true, true, true);
     registry.registerOpcode(MSG_INSPECT_HONOR_STATS, &WorldSession::handleInspectHonorStatsOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_SET_ACTIONBAR_TOGGLES, &WorldSession::handleSetActionBarTogglesOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_SET_ACTIONBAR_TOGGLES, &WorldSession::handleSetActionBarTogglesOpcode, true, true, true, true, true, false, true);
     //registry.registerOpcode(CMSG_BATTLEFIELD_MGR_ENTRY_INVITE_RESPONSE, &WorldSession::HandleBgInviteResponse, false, false, true, false, false);
 
     // GM Ticket System
@@ -1239,8 +1241,8 @@ void WorldSession::registerOpcodeHandler()
 
     // Misc
     registry.registerOpcode(CMSG_OPEN_ITEM, &WorldSession::handleOpenItemOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_COMPLETE_CINEMATIC, &WorldSession::handleCompleteCinematic, true, true, true, true, true);
-    registry.registerOpcode(CMSG_NEXT_CINEMATIC_CAMERA, &WorldSession::handleNextCinematic, true, false, true, true, true);
+    registry.registerOpcode(CMSG_COMPLETE_CINEMATIC, &WorldSession::handleCompleteCinematic, true, true, true, true, true, false, true);
+    registry.registerOpcode(CMSG_NEXT_CINEMATIC_CAMERA, &WorldSession::handleNextCinematic, true, false, true, true, true, false, true);
     registry.registerOpcode(CMSG_MOUNTSPECIAL_ANIM, &WorldSession::handleMountSpecialAnimOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_TOGGLE_CLOAK, &WorldSession::handleToggleCloakOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_TOGGLE_HELM, &WorldSession::handleToggleHelmOpcode, true, true, true, true, true);
@@ -1319,19 +1321,19 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode<STATUS_AUTHED>(CMSG_TIME_SYNC_RESPONSE, &WorldSession::handleTimeSyncRespOpcode, true, true, true, true, true, false, true);
     registry.registerOpcode(CMSG_MOVE_SET_CAN_FLY, &WorldSession::handleMovementOpcodes, false, false, false, true, false);
     registry.registerOpcode(CMSG_FORCE_PITCH_RATE_CHANGE_ACK, &WorldSession::handleAcknowledgementOpcodes, false, false, false, true, false, false, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_SAY, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_YELL, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_CHANNEL, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_WHISPER, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_GUILD, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_OFFICER, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_AFK, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_DND, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_EMOTE, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_PARTY, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_RAID, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_RAID_WARNING, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_MESSAGECHAT_BATTLEGROUND, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_SAY, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_YELL, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_CHANNEL, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_WHISPER, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_GUILD, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_OFFICER, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_AFK, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_DND, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_EMOTE, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_PARTY, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_RAID, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_RAID_WARNING, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, true);
+    registry.registerOpcode(CMSG_MESSAGECHAT_BATTLEGROUND, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, true);
     registry.registerOpcode(CMSG_GROUP_INVITE_RESPONSE, &WorldSession::handleGroupInviteResponseOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_GROUP_SET_ROLES, &WorldSession::handleGroupSetRolesOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_GROUP_REQUEST_JOIN_UPDATES, &WorldSession::handleGroupRequestJoinUpdatesOpcode, false, false, false, true, false);

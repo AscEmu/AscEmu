@@ -45,6 +45,18 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // flags, name length, position, icon, importance, name
+                packet.writeBits(flags, 14);
+                packet.writeBits(static_cast<uint32_t>(name.length()), 6);
+                packet.flushBits();
+                packet << posX << posY << icon << data;
+                if (name.length())
+                    packet.append(reinterpret_cast<const uint8_t*>(name.c_str()), name.length());
+                return true;
+            }
+
             packet << flags << posX << posY << icon << data;
             if (name.length())
                 packet.append(reinterpret_cast<const uint8_t*>(name.c_str()), name.length() + 1);

@@ -34,6 +34,21 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // unit, gossip, option, then the code the player typed
+                WoWGuid128 unit;
+                packet >> unit >> gossip_id >> option;
+                guid = WoWGuid::fromGuid128(unit);
+
+                packet.resetBitPos();
+                const uint32_t inputLength = packet.readBits(8);
+                if (inputLength > 0)
+                    input = packet.readString(inputLength);
+
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 uint64_t unpackedGuid;

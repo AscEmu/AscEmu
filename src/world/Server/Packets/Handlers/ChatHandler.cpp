@@ -502,6 +502,15 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleEmoteOpcode(WorldPacket& recvPacket)
 {
+    // 7.x sends this opcode without data: the client ended its emote state
+    if (getClientProtocol().isLegion())
+    {
+        if (_player->isAlive() && _player->getEmoteState())
+            _player->setEmoteState(EMOTE_ONESHOT_NONE);
+
+        return;
+    }
+
     CmsgEmote srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;

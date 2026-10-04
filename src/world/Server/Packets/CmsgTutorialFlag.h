@@ -28,6 +28,18 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // one opcode for update, clear and reset; only the update carries a flag
+                constexpr uint32_t actionUpdate = 0;
+
+                if (packet.readBits(2) != actionUpdate)
+                    return false;
+
+                packet >> flag;
+                return true;
+            }
+
             packet >> flag;
             return true;
         }

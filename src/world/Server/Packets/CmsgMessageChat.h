@@ -73,6 +73,44 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isLegion())
+            {
+                // one opcode per chat type: language, then the lengths and the texts
+                type = getMessageTypeForOpcode(static_cast<uint16_t>(Version::opcodeIdForHex(packet.getOpcode(), m_protocol)));
+                if (type == 0xFF)
+                    return false;
+
+                switch (type)
+                {
+                    case CHAT_MSG_AFK:
+                    case CHAT_MSG_DND:
+                    case CHAT_MSG_EMOTE:
+                    {
+                        const uint32_t textLength = packet.readBits(9);
+                        message = packet.readString(textLength);
+                    } break;
+                    case CHAT_MSG_WHISPER:
+                    case CHAT_MSG_CHANNEL:
+                    {
+                        packet >> language;
+                        packet.resetBitPos();
+                        const uint32_t receiverLength = packet.readBits(9);
+                        const uint32_t textLength = packet.readBits(9);
+                        destination = packet.readString(receiverLength);
+                        message = packet.readString(textLength);
+                    } break;
+                    default:
+                    {
+                        packet >> language;
+                        packet.resetBitPos();
+                        const uint32_t textLength = packet.readBits(9);
+                        message = packet.readString(textLength);
+                    } break;
+                }
+
+                return language < NUM_LANGUAGES;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet >> type >> language;

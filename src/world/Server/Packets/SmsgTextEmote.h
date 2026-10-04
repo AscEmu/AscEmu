@@ -49,7 +49,7 @@ namespace AscEmu::Packets
                 packet << WoWGuid128();
                 packet << int32_t(textEmote);
                 packet << int32_t(numEmote);
-                packet << targetGuid.toGuid128(m_protocol.realmId, 0);
+                packet << targetGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 return true;
             }
 
