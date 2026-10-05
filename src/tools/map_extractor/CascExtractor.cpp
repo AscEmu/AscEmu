@@ -12,18 +12,6 @@ This file is released under the MIT license.See README - MIT for more informatio
 #include <filesystem>
 #include <iostream>
 
-#pragma pack(push, 1)
-struct Db2HeaderCommon
-{
-    char magic[4]; // 'WDB5', 'WDB6', 'WDC1', ...
-    uint32_t recordCount;
-    uint32_t fieldCount;
-    uint32_t recordSize;
-    uint32_t stringTableSize;
-    uint32_t tableHash; // 0x14: Jenkins hash of the table name (lowercase)
-};
-#pragma pack(pop)
-
 namespace
 {
     struct DiscoveredDb2
@@ -44,6 +32,60 @@ namespace
             memcmp(magic, "WDC3", 4) == 0 ||
             memcmp(magic, "WDC4", 4) == 0 ||
             memcmp(magic, "WDC5", 4) == 0);
+    }
+
+    bool readDb2Identity(const std::vector<uint8_t>& headerData, uint32_t& outTableHash, uint32_t& outLayoutHash)
+    {
+        if (headerData.size() < 28)
+            return false;
+
+        // Prüfe WDBx / WDCx Magic
+        bool const isWdc =
+            headerData[0] == 'W' &&
+            headerData[1] == 'D' &&
+            (headerData[2] == 'B' || headerData[2] == 'C') &&
+            headerData[3] >= '0' &&
+            headerData[3] <= '9';
+
+        if (!isWdc)
+            return false;
+
+        auto readU32 = [&headerData](size_t offset) -> uint32_t
+            {
+                if (offset + 4 > headerData.size())
+                    return 0;
+
+                return static_cast<uint32_t>(headerData[offset])
+                    | (static_cast<uint32_t>(headerData[offset + 1]) << 8)
+                    | (static_cast<uint32_t>(headerData[offset + 2]) << 16)
+                    | (static_cast<uint32_t>(headerData[offset + 3]) << 24);
+            };
+
+        // WOWSTATIC-Wrapper ab Offset 8 abfangen
+        bool const isWowStatic =
+            headerData.size() >= 160 &&
+            headerData[8] == 'W' &&
+            headerData[9] == 'O' &&
+            headerData[10] == 'W' &&
+            headerData[11] == 'S' &&
+            headerData[12] == 'T' &&
+            headerData[13] == 'A' &&
+            headerData[14] == 'T' &&
+            headerData[15] == 'I' &&
+            headerData[16] == 'C';
+
+        if (isWowStatic)
+        {
+            outTableHash = readU32(152);
+            outLayoutHash = readU32(156);
+        }
+        else
+        {
+            outTableHash = readU32(20);
+            outLayoutHash = readU32(24);
+        }
+
+        return true;
     }
 
     void printDefinitionBlock(const std::vector<DiscoveredDb2>& files, uint32_t buildNumber)
@@ -89,47 +131,56 @@ namespace
                 printf("Progress: %zu files scanned (%zu DB2s identified)\n", scannedCount, discovered.size());
             }
 
-            if (findData.FileSize != CASC_INVALID_SIZE && findData.FileSize < sizeof(Db2HeaderCommon))
+            if (findData.dwFileDataId == CASC_INVALID_ID || findData.dwFileDataId == 0)
                 continue;
 
             HANDLE fileHandle = nullptr;
             bool opened = false;
 
-            // Attempt to open the file by its data ID first, if available
+            // Attempt to open the file by its data ID first, if available (Legion, Forever, etc.)
             if (findData.dwFileDataId != CASC_INVALID_ID && findData.dwFileDataId != 0)
             {
-                opened = CascOpenFile(storageHandle, CASC_FILE_DATA_ID(findData.dwFileDataId), findData.dwLocaleFlags, CASC_OPEN_BY_FILEID, &fileHandle);
+                opened = CascOpenFile(storageHandle, CASC_FILE_DATA_ID(findData.dwFileDataId), findData.dwLocaleFlags,
+                    CASC_OPEN_BY_FILEID | CASC_OVERCOME_ENCRYPTED, &fileHandle);
                 if (!opened)
-                    opened = CascOpenFile(storageHandle, CASC_FILE_DATA_ID(findData.dwFileDataId), CASC_LOCALE_ALL, CASC_OPEN_BY_FILEID, &fileHandle);
+                    opened = CascOpenFile(storageHandle, CASC_FILE_DATA_ID(findData.dwFileDataId), CASC_LOCALE_NONE,
+                        CASC_OPEN_BY_FILEID | CASC_OVERCOME_ENCRYPTED, &fileHandle);
+                if (!opened)
+                    opened = CascOpenFile(storageHandle, CASC_FILE_DATA_ID(findData.dwFileDataId), CASC_LOCALE_ALL_WOW,
+                        CASC_OPEN_BY_FILEID | CASC_OVERCOME_ENCRYPTED, &fileHandle);
             }
 
-            // Fallback to opening by name if the file data ID is invalid or the file couldn't be opened by ID
+            // Fallback to opening by name if the file data ID is invalid or the file couldn't be opened by ID (WoD 6.x)
             if (!opened && findData.szFileName[0] != '\0')
             {
-                opened = CascOpenFile(storageHandle, findData.szFileName, findData.dwLocaleFlags, CASC_OPEN_BY_NAME, &fileHandle);
+                opened = CascOpenFile(storageHandle, findData.szFileName, findData.dwLocaleFlags,
+                    CASC_OPEN_BY_NAME | CASC_OVERCOME_ENCRYPTED, &fileHandle);
                 if (!opened)
-                    opened = CascOpenFile(storageHandle, findData.szFileName, CASC_LOCALE_ALL, CASC_OPEN_BY_NAME, &fileHandle);
+                    opened = CascOpenFile(storageHandle, findData.szFileName, CASC_LOCALE_ALL,
+                        CASC_OPEN_BY_NAME | CASC_OVERCOME_ENCRYPTED, &fileHandle);
             }
 
             if (!opened)
                 continue;
 
             DWORD fileSize = CascGetFileSize(fileHandle, nullptr);
-            if (fileSize < sizeof(Db2HeaderCommon) || fileSize == CASC_INVALID_SIZE)
+            if (fileSize < 28 || fileSize == CASC_INVALID_SIZE)
             {
                 CascCloseFile(fileHandle);
                 continue;
             }
 
-            Db2HeaderCommon header{};
+            std::vector<uint8_t> headerBuffer(160);
             DWORD bytesRead = 0;
-            if (!CascReadFile(fileHandle, &header, sizeof(Db2HeaderCommon), &bytesRead) || bytesRead != sizeof(Db2HeaderCommon))
+            if (!CascReadFile(fileHandle, headerBuffer.data(), static_cast<DWORD>(headerBuffer.size()), &bytesRead) || bytesRead < 28)
             {
                 CascCloseFile(fileHandle);
                 continue;
             }
 
-            if (!isDb2Magic(header.magic))
+            uint32_t tableHash = 0;
+            uint32_t layoutHash = 0;
+            if (!readDb2Identity(headerBuffer, tableHash, layoutHash))
             {
                 CascCloseFile(fileHandle);
                 continue;
@@ -144,7 +195,7 @@ namespace
             }
             CascCloseFile(fileHandle);
 
-            std::string_view resolved = MapExtractor::DB2::getDb2FileNameByHash(header.tableHash);
+            std::string_view resolved = MapExtractor::DB2::getDb2FileNameByHash(tableHash);
             std::string fileName;
 
             if (!resolved.empty())
@@ -159,7 +210,7 @@ namespace
             }
             else
             {
-                fileName = "Unknown_0x" + std::to_string(header.tableHash) + ".db2";
+                fileName = "Unknown_0x" + std::to_string(tableHash) + ".db2";
             }
 
             fs::path targetPath = outputDir / fileName;
@@ -167,7 +218,7 @@ namespace
             if (outFile.is_open())
             {
                 outFile.write(reinterpret_cast<const char*>(buffer.data()), buffer.size());
-                discovered.push_back({findData.dwFileDataId, header.tableHash, fileName});
+                discovered.push_back({findData.dwFileDataId, tableHash, fileName});
             }
         } while (CascFindNextFile(findHandle, &findData));
 
@@ -203,11 +254,13 @@ namespace
     bool extractSingleFileById(HANDLE storageHandle, uint32_t fileDataId, const fs::path& destinationPath)
     {
         HANDLE fileHandle = nullptr;
-        bool opened = CascOpenFile(storageHandle, CASC_FILE_DATA_ID(fileDataId), CASC_LOCALE_ALL_WOW, CASC_OPEN_BY_FILEID, &fileHandle);
+        bool opened = CascOpenFile(storageHandle, CASC_FILE_DATA_ID(fileDataId), CASC_LOCALE_NONE,
+            CASC_OPEN_BY_FILEID | CASC_OVERCOME_ENCRYPTED, &fileHandle);
         if (!opened)
-            opened = CascOpenFile(storageHandle, CASC_FILE_DATA_ID(fileDataId), CASC_LOCALE_NONE, CASC_OPEN_BY_FILEID, &fileHandle);
-        if (!opened)
-            opened = CascOpenFile(storageHandle, CASC_FILE_DATA_ID(fileDataId), CASC_LOCALE_ALL, CASC_OPEN_BY_FILEID, &fileHandle);
+        {
+            opened = CascOpenFile(storageHandle, CASC_FILE_DATA_ID(fileDataId), CASC_LOCALE_ALL_WOW,
+                CASC_OPEN_BY_FILEID | CASC_OVERCOME_ENCRYPTED, &fileHandle);
+        }
 
         if (!opened)
             return false;

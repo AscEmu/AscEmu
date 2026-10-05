@@ -5,6 +5,7 @@ This file is released under the MIT license.See README - MIT for more informatio
 
 #include "Db2Registry.hpp"
 #include "Db2LegionDefinition.hpp"
+#include "Db2ForeverDefinition.hpp"
 // Add future expansion definitions here as needed Db2WodDefinition.hpp, Db2BfaDefinition.hpp, etc.
 
 namespace MapExtractor::DB2
@@ -21,6 +22,12 @@ namespace MapExtractor::DB2
                 26972, // Legion 7.3.5 Release
                 LegionDefinition::DB2_FILES
             },
+            {
+                "Forever",
+                69876, // 1.60.1 first build 2026-09-16
+                70170, // 1.60.1 current build 2026-10-01
+                ForeverDefinition::DB2_FILES
+            },
             // Placeholder for Warlords of Draenor build definitions.
             // Uncomment and fill in the actual DB2 files when they are available.
             /*
@@ -33,10 +40,10 @@ namespace MapExtractor::DB2
                 */
             // Add future expansion definitions here as needed:
             // {
-            //     "Forever/Classic+",
-            //     Forever::MinSupportedBuild,
-            //     Forever::MaxSupportedBuild,
-            //     Forever::Db2Files
+            //     "Midnight",
+            //     Midnight::MinSupportedBuild,
+            //     Midnight::MaxSupportedBuild,
+            //     MidnightDefinition::DB2_FILES
             // }
         };
     }

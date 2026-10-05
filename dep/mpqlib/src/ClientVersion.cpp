@@ -169,6 +169,10 @@ namespace mpqlib
         if (build == 0)
             return std::nullopt;
 
+        // Special client branches
+        if (build >= 69000 && build <= 71000)
+            return ClientVersion::Forever;
+
         if (build < static_cast<uint32_t>(ClientVersion::BurningCrusade))
             return ClientVersion::Vanilla;
         if (build < static_cast<uint32_t>(ClientVersion::WrathOfTheLichKing))
@@ -181,8 +185,18 @@ namespace mpqlib
             return ClientVersion::MistsOfPandaria;
         if (build < static_cast<uint32_t>(ClientVersion::Legion))
             return ClientVersion::WarlordsOfDraenor;
+        if (build < static_cast<uint32_t>(ClientVersion::BattleForAzeroth))
+            return ClientVersion::Legion;
+        if (build < static_cast<uint32_t>(ClientVersion::Shadowlands))
+            return ClientVersion::BattleForAzeroth;
+        if (build < static_cast<uint32_t>(ClientVersion::Dragonflight))
+            return ClientVersion::Shadowlands;
+        if (build < static_cast<uint32_t>(ClientVersion::TheWarWithin))
+            return ClientVersion::Dragonflight;
+        if (build < static_cast<uint32_t>(ClientVersion::Midnight))
+            return ClientVersion::TheWarWithin;
 
-        return ClientVersion::Legion;
+        return ClientVersion::Midnight;
     }
 
     std::optional<ClientVersion> detectClientVersion(std::filesystem::path const& clientRoot)

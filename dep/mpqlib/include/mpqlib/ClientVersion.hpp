@@ -28,13 +28,26 @@ namespace mpqlib
     // recognized value per expansion.
     enum class ClientVersion : uint32_t
     {
-        Vanilla = 5875,
-        BurningCrusade = 8606,
-        WrathOfTheLichKing = 12340,
-        Cataclysm = 15595,
-        MistsOfPandaria = 18414,
-        WarlordsOfDraenor = 21742,
-        Legion = 26972
+        Vanilla = 5875, // 1.12.1
+        BurningCrusade = 8606, // 2.4.3
+        WrathOfTheLichKing = 12340, // 3.3.5a
+        Cataclysm = 15595, // 4.3.4
+        MistsOfPandaria = 18414, // 5.4.8
+        WarlordsOfDraenor = 21742, // 6.2.4
+        Legion = 26972, // 7.3.5
+        BattleForAzeroth = 35662, // 8.3.7
+        Shadowlands = 45745, // 9.2.7
+        Dragonflight = 55664, // 10.2.7
+        TheWarWithin = 65000, // 11.x
+        Midnight = 75000, // 12.x
+        Forever = 69913 // WoW Forever Beta Client
+    };
+
+    enum class ClientSupportStatus
+    {
+        Unsupported, // Expansions like BfA, SL, DF, TWW, Midnight
+        Db2Only,     // Verified DB2 extraction, Map/ADT pipeline pending (WoD, Legion, Forever)
+        Full         // Full support: DB2, Maps, VMaps, MMaps (Vanilla to MoP)
     };
 
     [[nodiscard]] constexpr std::string_view getClientVersionName(ClientVersion version) noexcept
@@ -48,15 +61,82 @@ namespace mpqlib
             case ClientVersion::MistsOfPandaria:    return "Mists of Pandaria";
             case ClientVersion::WarlordsOfDraenor:  return "Warlords of Draenor";
             case ClientVersion::Legion:             return "Legion";
+            case ClientVersion::BattleForAzeroth:   return "Battle for Azeroth";
+            case ClientVersion::Shadowlands:        return "Shadowlands";
+            case ClientVersion::Dragonflight:       return "Dragonflight";
+            case ClientVersion::TheWarWithin:       return "The War Within";
+            case ClientVersion::Midnight:           return "Midnight";
+            case ClientVersion::Forever:            return "WoW Forever";
             default:                                return "Unknown";
         }
     }
 
     [[nodiscard]] uint32_t getDetectedBuildNumber();
 
+    // Every expansion starting with WoD uses CASC instead of MPQ
     [[nodiscard]] constexpr bool isCascClient(ClientVersion version) noexcept
     {
-        return version == ClientVersion::WarlordsOfDraenor || version == ClientVersion::Legion;
+        switch (version)
+        {
+            case ClientVersion::WarlordsOfDraenor:
+            case ClientVersion::Legion:
+            case ClientVersion::BattleForAzeroth:
+            case ClientVersion::Shadowlands:
+            case ClientVersion::Dragonflight:
+            case ClientVersion::TheWarWithin:
+            case ClientVersion::Midnight:
+            case ClientVersion::Forever:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    // Flags which expansions have validated definitions and extraction support in AscEmu
+    [[nodiscard]] constexpr bool isTestedClient(ClientVersion version) noexcept
+    {
+        switch (version)
+        {
+            case ClientVersion::Vanilla:
+            case ClientVersion::BurningCrusade:
+            case ClientVersion::WrathOfTheLichKing:
+            case ClientVersion::Cataclysm:
+            case ClientVersion::MistsOfPandaria:
+            case ClientVersion::WarlordsOfDraenor:
+            case ClientVersion::Legion:
+            case ClientVersion::Forever:
+                return true;
+            default:
+                return false; // BfA, SL, DF, TWW, Midnight, Forever are currently experimental / untested
+        }
+    }
+
+    // Flags which expansions have full support for DB2, Maps, VMaps, and MMaps in AscEmu
+    [[nodiscard]] constexpr ClientSupportStatus getClientSupportStatus(ClientVersion version) noexcept
+    {
+        switch (version)
+        {
+            case ClientVersion::Vanilla:
+            case ClientVersion::BurningCrusade:
+            case ClientVersion::WrathOfTheLichKing:
+            case ClientVersion::Cataclysm:
+            case ClientVersion::MistsOfPandaria:
+                return ClientSupportStatus::Full;
+
+            case ClientVersion::WarlordsOfDraenor:
+            case ClientVersion::Legion:
+            case ClientVersion::Forever:
+                return ClientSupportStatus::Db2Only;
+
+            default:
+                return ClientSupportStatus::Unsupported;
+        }
+    }
+
+    // Flags which expansions have full support for map extraction in AscEmu
+    [[nodiscard]] constexpr bool supportsMapExtraction(ClientVersion version) noexcept
+    {
+        return getClientSupportStatus(version) == ClientSupportStatus::Full;
     }
 
     // Classifies a raw build number - obtained by whatever means a caller

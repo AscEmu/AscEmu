@@ -2058,6 +2058,19 @@ int main(int argc, char* arg[])
 
     printf("Detected client: %s (Build: %u)\n", std::string(versionName).c_str(), buildNumber);
 
+    auto status = mpqlib::getClientSupportStatus(gClientVersion);
+
+    if (status == mpqlib::ClientSupportStatus::Unsupported)
+    {
+        printf("[WARNING] %.*s is experimental/untested. DB2 and Map extraction may fail.\n",
+               static_cast<int>(getClientVersionName(gClientVersion).size()), getClientVersionName(gClientVersion).data());
+    }
+    else if (status == mpqlib::ClientSupportStatus::Db2Only)
+    {
+        printf("[INFO] %.*s: DB2 extraction is verified. Map/VMap/MMap extraction is not yet supported.\n",
+               static_cast<int>(getClientVersionName(gClientVersion).size()), getClientVersionName(gClientVersion).data());
+    }
+
     if (mpqlib::isCascClient(gClientVersion))
     {
         if (!CascExtractor::run(fs::path(input_path), versionName, buildNumber))
