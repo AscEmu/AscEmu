@@ -2256,8 +2256,12 @@ void QuestMgr::LoadExtraQuestStuff()
     m_QuestPOIMap.clear();
 
 #if defined(AE_FOREVER)
+    uint32_t db2PoiQuestCount = 0;
     for (auto const& [questId, db2Blobs] : sForeverQuestPOIStore)
     {
+        if (sMySQLStore.getQuestProperties(questId) == nullptr)
+            continue;
+
         QuestPOIVector& target = m_QuestPOIMap[questId];
         target.reserve(db2Blobs.size());
         uint32_t blobIndex = 0;
@@ -2272,11 +2276,12 @@ void QuestMgr::LoadExtraQuestStuff()
                 poi.points.emplace_back(db2Point.x, db2Point.y, db2Point.z);
             target.push_back(std::move(poi));
         }
+        ++db2PoiQuestCount;
     }
-    sLogger.info("QuestMgr : seeded POI data for {} quests from Forever DB2.", sForeverQuestPOIStore.size());
+    sLogger.info("QuestMgr : seeded POI data for {} existing quests from Forever DB2.", db2PoiQuestCount);
 #endif
 
-    auto result = WorldDatabase.query("SELECT build, questId, poiId, objIndex, mapId, mapAreaId, floorId, unk3, unk4 FROM quest_poi base WHERE build=(SELECT MAX(build) FROM quest_poi buildspecific WHERE base.questId = buildspecific.questId AND buildspecific.build <= %u) ORDER BY questId, poiId", VERSION_STRING);
+    auto result = WorldDatabase.query("SELECT build, questId, poiId, objIndex, mapId, mapAreaId, floorId, unk3, unk4 FROM quest_poi base WHERE build=(SELECT MAX(build) FROM quest_poi buildspecific WHERE base.questId = buildspecific.questId AND buildspecific.build <= %u) ORDER BY questId, poiId", WoW::getConfigBuild());
     if (result != NULL)
     {
         uint32_t count = 0;
@@ -2288,6 +2293,8 @@ void QuestMgr::LoadExtraQuestStuff()
 
             const uint32_t selectedBuild = fields[0].asUint32();
             const uint32_t questId = fields[1].asUint32();
+            if (sMySQLStore.getQuestProperties(questId) == nullptr)
+                continue;
 #if defined(AE_FOREVER)
             if (selectedBuild == 0 && sForeverQuestPOIStore.contains(questId))
                 continue;
@@ -2311,7 +2318,7 @@ void QuestMgr::LoadExtraQuestStuff()
 
         sLogger.info("QuestMgr : Point Of Interest (POI) data loaded for {} quests.", count);
 
-        auto points = WorldDatabase.query("SELECT points.questId, points.poiId, points.x, points.y FROM quest_poi_points points WHERE points.build=(SELECT MAX(poi.build) FROM quest_poi poi WHERE poi.questId = points.questId AND poi.build <= %u) ORDER BY points.questId, points.poiId", VERSION_STRING);
+        auto points = WorldDatabase.query("SELECT points.questId, points.poiId, points.x, points.y FROM quest_poi_points points WHERE points.build=(SELECT MAX(poi.build) FROM quest_poi poi WHERE poi.questId = points.questId AND poi.build <= %u) ORDER BY points.questId, points.poiId", WoW::getConfigBuild());
         if (points != NULL)
         {
             count = 0;

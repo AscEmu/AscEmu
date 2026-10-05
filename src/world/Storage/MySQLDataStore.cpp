@@ -1678,8 +1678,8 @@ void MySQLDataStore::loadQuestPropertiesTable()
         //     139                 140                     141                   142                    143                 144
         "completionemote4, completionemotedelay1, completionemotedelay2, completionemotedelay3, completionemotedelay4, completeemote, "
         //      145                   146              147
-        "incompleteemote, iscompletedbyspelleffect, RewXPId FROM quest_properties base "
-        "WHERE build=(SELECT MAX(build) FROM quest_properties buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", VERSION_STRING);
+        "incompleteemote, iscompletedbyspelleffect, RewXPId FROM quest_properties "
+        "WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
 
     if (quest_result == nullptr)
     {
