@@ -2007,7 +2007,7 @@ void ObjectMgr::loadCreatureMovementOverrides()
 
     m_creatureMovementOverrides.clear();
 
-    auto result = WorldDatabase.query("SELECT SpawnId, Ground, Swim, Flight, Rooted, Chase, Random from creature_movement_override");
+    auto result = WorldDatabase.query("SELECT SpawnId, Ground, Swim, Flight, Rooted, Chase, Random FROM creature_movement_override WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (!result)
     {
         sLogger.info("CreatureMovementOverrides : Loaded 0 creature movement overrides. DB table `creature_movement_override` is empty!");
@@ -2019,7 +2019,7 @@ void ObjectMgr::loadCreatureMovementOverrides()
         Field* fields = result->fetch();
         uint32_t spawnId = fields[0].asUint32();
 
-        auto spawnResult = WorldDatabase.query("SELECT * FROM creature_spawns WHERE id = %u", spawnId);
+        auto spawnResult = WorldDatabase.query("SELECT 1 FROM creature_spawns WHERE id = %u AND min_build <= %u AND max_build >= %u LIMIT 1", spawnId, WoW::getConfigBuild(), WoW::getConfigBuild());
         if (spawnResult == nullptr)
         {
             sLogger.failure("Creature (SpawnId: {}) does not exist but has a record in `creature_movement_override`", spawnId);
@@ -2111,7 +2111,7 @@ WorldStateMap const* ObjectMgr::getWorldStatesForMap(uint32_t _map) const
 
 void ObjectMgr::loadCreatureTimedEmotes()
 {
-    auto result = WorldDatabase.query("SELECT * FROM creature_timed_emotes order by rowid asc");
+    auto result = WorldDatabase.query("SELECT * FROM creature_timed_emotes WHERE min_build <= %u AND max_build >= %u ORDER BY rowid ASC", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (!result)
         return;
 

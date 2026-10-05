@@ -1003,7 +1003,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         //  66         67        68          69          70          71          72          73         74         75
         "vehicleid, rooted, questitem1, questitem2, questitem3, questitem4, questitem5, questitem6, waypointid, gossipId FROM creature_properties base "
         //
-        "WHERE build=(SELECT MAX(build) FROM creature_properties buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", VERSION_STRING);
+        "WHERE build=(SELECT MAX(build) FROM creature_properties buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", WoW::getConfigBuild());
 
     if (creature_properties_result == nullptr)
     {
@@ -1295,7 +1295,7 @@ void MySQLDataStore::loadCreaturePropertiesMovementTable()
     uint32_t creature_properties_movement_count = 0;
 
     //                                                                      0          1           2             3                 4               5                  6
-    auto creature_properties_movement_result = WorldDatabase.query("SELECT CreatureId, Ground, Swim, Flight, Rooted, Chase, Random, InteractionPauseTimer FROM creature_properties_movement");
+    auto creature_properties_movement_result = WorldDatabase.query("SELECT CreatureId, Ground, Swim, Flight, Rooted, Chase, Random, InteractionPauseTimer FROM creature_properties_movement WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
 
     if (creature_properties_movement_result == nullptr)
     {
@@ -1556,7 +1556,7 @@ void MySQLDataStore::loadCurrencyCreatureOnKillTable()
     if (!WoW::isDataLoadRequired(WoW::Expansion::_Cata))
         return;
 
-    auto result = getWorldDBQuery("SELECT creature_id, currency_id, currency_count FROM currency_creature_onkill");
+    auto result = getWorldDBQuery("SELECT creature_id, currency_id, currency_count FROM currency_creature_onkill WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (result == nullptr)
         return;
 
@@ -1979,7 +1979,7 @@ void MySQLDataStore::loadCreatureDifficultyTable()
     auto startTime = Util::TimeNow();
 
     //                                                             0          1            2             3
-    auto creature_difficulty_result = WorldDatabase.query("SELECT entry, difficulty_1, difficulty_2, difficulty_3 FROM creature_difficulty");
+    auto creature_difficulty_result = WorldDatabase.query("SELECT entry, difficulty_1, difficulty_2, difficulty_3 FROM creature_difficulty WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
 
     if (creature_difficulty_result == nullptr)
     {
@@ -2903,7 +2903,7 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
     auto startTime = Util::TimeNow();
 
     //                                                                0              1           2          3
-    auto initial_equipment_result = WorldDatabase.query("SELECT creature_entry, itemslot_1, itemslot_2, itemslot_3 FROM creature_initial_equip;");
+    auto initial_equipment_result = WorldDatabase.query("SELECT creature_entry, itemslot_1, itemslot_2, itemslot_3 FROM creature_initial_equip WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (initial_equipment_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `creature_initial_equip` is empty!");
@@ -4924,7 +4924,7 @@ void MySQLDataStore::loadCreatureSpawns()
     auto startTime = Util::TimeNow();
     uint32_t count = 0;
 
-    auto creature_spawn_result = getWorldDBQuery("SELECT * FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", getAEVersion(), getAEVersion());
+    auto creature_spawn_result = getWorldDBQuery("SELECT * FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (creature_spawn_result)
     {
         uint32_t creature_spawn_fields = creature_spawn_result->getFieldCount();
@@ -5240,7 +5240,7 @@ void MySQLDataStore::loadCreatureGroupSpawns()
 
     _spawnGroupMapStore.clear();
 
-    auto result = WorldDatabase.query("SELECT * FROM creature_group_spawn ORDER BY groupId");
+    auto result = WorldDatabase.query("SELECT * FROM creature_group_spawn WHERE min_build <= %u AND max_build >= %u ORDER BY groupId", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `creature_group_spawn` is empty!");

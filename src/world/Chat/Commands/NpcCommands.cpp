@@ -679,7 +679,7 @@ bool ChatCommandHandler::HandleNpcListLootCommand(const char* args, WorldSession
     if (creature_target == nullptr)
         return true;
 
-    auto loot_result = WorldDatabase.query("SELECT itemid, normal10percentchance, heroic10percentchance, normal25percentchance, heroic25percentchance, mincount, maxcount FROM loot_creatures WHERE entryid=%u;", creature_target->getEntry());
+    auto loot_result = WorldDatabase.query("SELECT itemid, normal10percentchance, heroic10percentchance, normal25percentchance, heroic25percentchance, mincount, maxcount FROM loot_creatures WHERE entryid=%u AND min_build <= %u AND max_build >= %u;", creature_target->getEntry(), WoW::getConfigBuild(), WoW::getConfigBuild());
     if (loot_result != nullptr)
     {
         uint8_t numFound = 0;

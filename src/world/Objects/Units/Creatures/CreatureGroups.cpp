@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "CreatureGroups.h"
+#include "Server/ClientProtocol.hpp"
 #include "Creature.h"
 #include "AIInterface.h"
 #include "Logging/Logger.hpp"
@@ -80,7 +81,7 @@ void FormationMgr::loadCreatureFormations()
     auto oldMSTime = Util::TimeNow();
 
     //Get group data
-    auto result = WorldDatabase.query("SELECT leaderGUID, memberGUID, dist, angle, groupAI, point_1, point_2 FROM creature_formations ORDER BY leaderGUID");
+    auto result = WorldDatabase.query("SELECT leaderGUID, memberGUID, dist, angle, groupAI, point_1, point_2 FROM creature_formations WHERE min_build <= %u AND max_build >= %u ORDER BY leaderGUID", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (!result)
     {
         sLogger.debug("FormationMgr : Loaded 0 creatures in formations. DB table `creature_formations` is empty!");

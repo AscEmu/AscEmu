@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Loot.hpp"
+#include "Server/ClientProtocol.hpp"
 #include "LootItem.hpp"
 #include "LootMgr.hpp"
 #include "LootTemplate.hpp"
@@ -131,6 +132,7 @@ void LootMgr::loadLoot()
 
 void LootMgr::loadLootProp()
 {
+#if VERSION_STRING != Camelot
     auto result = WorldDatabase.query("SELECT * FROM item_randomprop_groups");
     if (result != nullptr)
     {
@@ -188,24 +190,29 @@ void LootMgr::loadLootProp()
             }
         } while (result->nextRow());
     }
+#else
+    sLogger.warning("LootMgr::loadLootProp : Forever dont has DBC for this Investigate further.");
+#endif
 }
 
 void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* lootTable)
 {
-    auto result = sMySQLStore.getWorldDBQuery(
+    const bool isCreatureTable = (szTableName == "loot_creatures");
+    std::unique_ptr<QueryResult> result;
+    result = sMySQLStore.getWorldDBQuery(
         "SELECT entryid, itemid, normal10percentchance, normal25percentchance, "
         "heroic10percentchance, heroic25percentchance, mincount, maxcount"
 #if VERSION_STRING >= Cata
         ", is_currency"
 #endif
-        " FROM %s ORDER BY entryid ASC", szTableName.c_str());
+        " FROM %s WHERE min_build <= %u AND max_build >= %u ORDER BY entryid ASC",
+        szTableName.c_str(), WoW::getConfigBuild(), WoW::getConfigBuild());
     if (result == nullptr)
     {
         sLogger.failure("LootMgr::loadLootTables : Loading loot from table {} failed.", szTableName);
         return;
     }
 
-    const bool isCreatureTable = (szTableName == "loot_creatures");
     LootTemplateMap::iterator tab = lootTable->end();
 
     uint32_t currentEntry = std::numeric_limits<uint32_t>::max();

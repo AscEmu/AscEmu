@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "WaypointManager.h"
+#include "Server/ClientProtocol.hpp"
 #include "Utilities/Util.hpp"
 #include "Logging/Logger.hpp"
 #include "Storage/MySQLDataStore.hpp"
@@ -16,7 +17,7 @@ void WaypointMgr::load()
     _waypointStore.clear();
 
     //                                                 0    1         2           3          4            5           6        7      8           9
-    auto result = sMySQLStore.getWorldDBQuery("SELECT id, point, position_x, position_y, position_z, orientation, move_type, delay, action, action_chance FROM creature_waypoints ORDER BY id, point");
+    auto result = sMySQLStore.getWorldDBQuery("SELECT id, point, position_x, position_y, position_z, orientation, move_type, delay, action, action_chance FROM creature_waypoints WHERE min_build <= %u AND max_build >= %u ORDER BY id, point", WoW::getConfigBuild(), WoW::getConfigBuild());
 
     if (!result)
     {
@@ -146,7 +147,7 @@ WaypointPath* WaypointMgr::getCustomScriptWaypointPath(uint32_t id)
 
 uint32_t WaypointMgr::generateWaypointPathId()
 {
-    auto result = sMySQLStore.getWorldDBQuery("SELECT MAX(id) FROM creature_waypoints");
+    auto result = sMySQLStore.getWorldDBQuery("SELECT MAX(id) FROM creature_waypoints WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (result)
     {
         uint32_t maxPathId = result->fetch()[0].asUint32();
@@ -168,18 +169,18 @@ void WaypointMgr::addWayPoint(uint32_t pathid, WaypointNode waypoint, bool saveT
     path.nodes.push_back(std::move(waypoint));
 
     if (saveToDB)
-        WorldDatabase.execute("INSERT INTO creature_waypoints VALUES(%u, %u, %f, %f, %f, %f, %u, %u, %u, %u, %u)", pathid, waypoint.id, waypoint.x, waypoint.y, waypoint.z, waypoint.orientation, waypoint.delay, waypoint.moveType, waypoint.eventId, waypoint.eventChance, 0);
+        WorldDatabase.execute("INSERT INTO creature_waypoints (id, point, position_x, position_y, position_z, orientation, delay, move_type, action, action_chance, wpguid, min_build, max_build) VALUES(%u, %u, %f, %f, %f, %f, %u, %u, %u, %u, %u, %u, %u)", pathid, waypoint.id, waypoint.x, waypoint.y, waypoint.z, waypoint.orientation, waypoint.delay, waypoint.moveType, waypoint.eventId, waypoint.eventChance, 0, WoW::getConfigBuild(), WoW::getConfigBuild());
 }
 
 void WaypointMgr::deleteWayPointById(uint32_t pathid, uint32_t waypointId)
 {
-    WorldDatabase.execute("DELETE FROM creature_waypoints WHERE id = %u AND point = %u", pathid, waypointId);
+    WorldDatabase.execute("DELETE FROM creature_waypoints WHERE id = %u AND point = %u AND min_build <= %u AND max_build >= %u", pathid, waypointId, WoW::getConfigBuild(), WoW::getConfigBuild());
     load();
 }
 
 void WaypointMgr::deleteAllWayPoints(uint32_t pathid)
 {
-    WorldDatabase.execute("DELETE FROM creature_waypoints WHERE id = %u", pathid);
+    WorldDatabase.execute("DELETE FROM creature_waypoints WHERE id = %u AND min_build <= %u AND max_build >= %u", pathid, WoW::getConfigBuild(), WoW::getConfigBuild());
 
     auto itr = _waypointStore.find(pathid);
     if (itr != _waypointStore.end())
