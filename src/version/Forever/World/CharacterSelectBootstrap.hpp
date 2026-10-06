@@ -71,14 +71,6 @@ namespace AscEmu::Version::Forever::CharacterSelectBootstrap
         0xA0, 0xBB, 0x2C, 0x68, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    // Exact payloads from the second enum gate in the official 69893 capture.
-    // The client reaches this gate after CMSG_GET_UNDELETE_CHARACTER_COOLDOWN_STATUS,
-    // CMSG_ENUM_CHARACTERS, BattlePay/VAS requests and CMSG_SOCIAL_CONTRACT_REQUEST.
-    inline constexpr std::array<uint8_t, 8> CharacterSelectGate460382 =
-    {
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-    };
-
     inline constexpr std::array<uint8_t, 24> EnumPreludeExtended46021C =
     {
         0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

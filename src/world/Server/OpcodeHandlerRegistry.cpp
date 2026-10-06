@@ -175,6 +175,7 @@ void OpcodeHandlerRegistry::initializeForeverSocketHandlers()
     registerSocketOpcode(CMSG_BATTLE_PAY_GET_PRODUCT_LIST, &WorldSocket::handleForeverIgnoredGlueOpcode);
     registerSocketOpcode(CMSG_UPDATE_VAS_PURCHASE_STATES, &WorldSocket::handleForeverIgnoredGlueOpcode);
     registerSocketOpcode(CMSG_QUICK_JOIN_AUTO_ACCEPT_REQUESTS, &WorldSocket::handleForeverQuickJoinOpcode);
+    registerSocketOpcode(CMSG_UPDATE_LAST_CATALOG_FETCH, &WorldSocket::handleForeverIgnoredGlueOpcode);
     registerSocketOpcode(CMSG_GET_LAST_CATALOG_FETCH, &WorldSocket::handleForeverLastCatalogFetchOpcode);
     registerSocketOpcode(CMSG_CHARACTER_SELECT_GATE_ACK, &WorldSocket::handleForeverIgnoredGlueOpcode);
     registerSocketOpcode(CMSG_CHARACTER_LIST_ACK, &WorldSocket::handleForeverCharacterListAckOpcode);

@@ -886,10 +886,10 @@ void WorldSession::registerOpcodeHandler()
 
     // Faction / Reputation
     registry.registerOpcode(CMSG_SET_FACTION_ATWAR, &WorldSession::handleSetFactionAtWarOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_SET_WATCHED_FACTION, &WorldSession::handleSetWatchedFactionIndexOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_SET_WATCHED_FACTION, &WorldSession::handleSetWatchedFactionIndexOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_REQUEST_FORCED_REACTIONS, &WorldSession::handleRequestForcedReactions, false, false, false, false, true);
     registry.registerOpcode(CMSG_REQUEST_CONQUEST_FORMULA_CONSTANTS, &WorldSession::handleRequestConquestFormulaConstants, false, false, false, false, true);
-    registry.registerOpcode(CMSG_SET_FACTION_INACTIVE, &WorldSession::handleSetFactionInactiveOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_SET_FACTION_INACTIVE, &WorldSession::handleSetFactionInactiveOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
 
     // Player Interaction
     registry.registerOpcode(CMSG_GAMEOBJ_USE, &WorldSession::handleGameObjectUse, true, true, true, true, true);

@@ -51,7 +51,9 @@ bool WorldSocket::processForeverGlueState(WorldPacket& packet, bool& consumed)
             if (opcode == CMSG_BATTLE_PAY_GET_PURCHASE_LIST)
             {
                 consumed = true;
-                if (!sendForeverPacket(SMSG_LAST_CATALOG_FETCH_RESPONSE, CharacterSelectBootstrap::CharacterSelectGate460382.data(), static_cast<uint32_t>(CharacterSelectBootstrap::CharacterSelectGate460382.size())))
+                ByteBuffer response;
+                response << int64_t(0);
+                if (!sendForeverPacket(SMSG_LAST_CATALOG_FETCH_RESPONSE, response.contents(), static_cast<uint32_t>(response.size())))
                     return false;
 
                 m_foreverSecondEnumGateSent = true;
@@ -118,7 +120,10 @@ bool WorldSocket::handleForeverLastCatalogFetchOpcode(WorldPacket& packet)
 {
     if (packet.remaining() != 0)
         sLogger.warning("WorldSocket::Forever: CMSG_GET_LAST_CATALOG_FETCH expected empty payload.");
-    return true;
+
+    ByteBuffer response;
+    response << int64_t(0);
+    return sendForeverPacket(SMSG_LAST_CATALOG_FETCH_RESPONSE, response.contents(), static_cast<uint32_t>(response.size()));
 }
 
 
