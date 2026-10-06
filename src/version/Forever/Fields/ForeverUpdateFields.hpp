@@ -939,6 +939,11 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t XpBit = 60;
         static inline constexpr std::size_t NextLevelXpBit = 61;
         static inline constexpr std::size_t UnknownChangeBit62 = 62;
+        // [FOREVER-VERIFIED] Retail 1.60.1.70235 watched-faction differential.
+        // CMSG_SET_WATCHED_FACTION carries int32 faction index (20 for Ironforge, -1 to clear);
+        // the following ActivePlayerData VALUES update sets parent bit 102 and field bit 113.
+        static inline constexpr std::size_t WatchedFactionParentBit = 102;
+        static inline constexpr std::size_t WatchedFactionIndexBit = 113;
         // [FOREVER-VERIFIED] Forever 1.60.1.70124 retail sell differentials.
         // One shared array group is followed by 12 price bits and 12 timestamp bits.
         // Slot N updates bits 354+N and 366+N under parent/group bit 353.
@@ -1079,6 +1084,10 @@ namespace AscEmu::Version::Forever::Fields
         // Current zero-state wire span is 2 bytes; semantics are not proven.
         static inline constexpr std::size_t UnknownAfterTransmogSize = 2;
         std::array<uint8_t, UnknownAfterTransmogSize> unknownAfterTransmog{};
+
+        // [FOREVER-VERIFIED] VALUES-only mapping from the 1.60.1.70235 watched-faction differential.
+        // CREATE placement is intentionally not claimed while that region remains opaque.
+        int32_t watchedFactionIndex = -1;
     };
 
     // [FOREVER-STRUCTURE] Mask size/order and the captured all-fields payload are supported by

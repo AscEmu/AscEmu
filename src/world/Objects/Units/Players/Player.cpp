@@ -1853,7 +1853,7 @@ void Player::setSelfResurrectSpell(uint32_t spell) { write(playerData()->self_re
 uint32_t Player::getWatchedFaction() const
 {
 #if defined(AE_FOREVER)
-    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverWatchedFactionIndex));
+    return static_cast<uint32_t>(m_foreverActivePlayerFields.watchedFactionIndex);
 #else
     return playerData()->field_watched_faction_idx;
 #endif
@@ -1861,10 +1861,13 @@ uint32_t Player::getWatchedFaction() const
 void Player::setWatchedFaction(uint32_t factionId)
 {
 #if defined(AE_FOREVER)
-    if (m_foreverWatchedFactionIndex == static_cast<int32_t>(factionId))
+    const int32_t watchedFactionIndex = static_cast<int32_t>(factionId);
+    if (m_foreverActivePlayerFields.watchedFactionIndex == watchedFactionIndex)
         return;
 
-    m_foreverWatchedFactionIndex = static_cast<int32_t>(factionId);
+    m_foreverActivePlayerFields.watchedFactionIndex = watchedFactionIndex;
+    m_foreverActivePlayerFields.changes.set(AscEmu::Version::Forever::Fields::ActivePlayerData::WatchedFactionParentBit);
+    m_foreverActivePlayerFields.changes.set(AscEmu::Version::Forever::Fields::ActivePlayerData::WatchedFactionIndexBit);
     updateObject();
 #else
     write(playerData()->field_watched_faction_idx, factionId);

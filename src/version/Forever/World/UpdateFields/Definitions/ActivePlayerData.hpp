@@ -130,6 +130,7 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
         ScalarField<&Fields::ActivePlayerData::coinage, Fields::ActivePlayerData::CoinageBit, 32, FieldVerification::Verified, "coinage">,
         ScalarField<&Fields::ActivePlayerData::xp, Fields::ActivePlayerData::XpBit, 32, FieldVerification::Verified, "xp">,
         ScalarField<&Fields::ActivePlayerData::nextLevelXp, Fields::ActivePlayerData::NextLevelXpBit, 32, FieldVerification::Verified, "nextLevelXp">,
+        ScalarField<&Fields::ActivePlayerData::watchedFactionIndex, Fields::ActivePlayerData::WatchedFactionIndexBit, Fields::ActivePlayerData::WatchedFactionParentBit, FieldVerification::Verified, "watchedFactionIndex">,
         GuidArrayField<&Fields::ActivePlayerData::invSlots, Fields::ActivePlayerData::InventorySlotsGroupBit, Fields::ActivePlayerData::InventorySlotsFirstBit, FieldVerification::Verified, "inventorySlots">,
         BuybackDataField>;
 }

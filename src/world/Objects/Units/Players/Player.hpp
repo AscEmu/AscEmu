@@ -2377,7 +2377,6 @@ protected:
     // Server-only state whose Forever 69913 wire fields/change-mask bits are
     // not proven yet.  Keep these out of ActivePlayerData until a sniff maps
     // them to the real wire representation.
-    int32_t m_foreverWatchedFactionIndex = 0;
     uint32_t m_foreverLifetimeHonorableKills = 0;
     std::array<int32_t, 32> m_foreverCombatRatings{};
 #endif
