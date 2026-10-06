@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Management/LFG/LFGMgr.hpp"
 #include "Management/MeetingStone/MeetingStoneMgr.hpp"
+#include "Management/ItemBonus/ItemBonusMgr.hpp"
 #include "Management/Loot/LootMgr.hpp"
 #include "Management/WordFilter.hpp"
 #include "Management/WeatherMgr.hpp"
@@ -761,6 +762,8 @@ bool World::setInitialWorldSettings()
 
     if (!loadDbcDb2Stores())
         return false;
+
+    sItemBonusMgr.initialize();
 
 #if VERSION_STRING < Cata
     auto localeString = Util::getLanguagesStringFromId(m_dbcLocaleId);

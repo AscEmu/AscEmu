@@ -1276,6 +1276,7 @@ namespace WDB
         inline const WDC5TableSchema ItemModifiedAppearance = makeScalarSchema("ItemModifiedAppearance.db2", 0x03A6C979, 0, 7);
         inline const WDC5TableSchema ItemSet = makeSchemaWithArrays("ItemSet.db2", 0xF79068A4, -1, 5, {{4, 17}});
         inline const WDC5TableSchema ItemSetSpell = makeScalarSchema("ItemSetSpell.db2", 0x2666A73F, -1, 4);
+        inline const WDC5TableSchema ItemBonus = makeSchemaWithArrays("ItemBonus.db2", 0x79CD4525, -1, 4, {{0, 4}});
         inline const WDC5TableSchema RandPropPoints = makeSchemaWithArrays("RandPropPoints.db2", 0x4FD22743, -1, 10, {{4, 5}, {5, 5}, {6, 5}, {7, 5}, {8, 5}, {9, 5}});
         inline const WDC5TableSchema ArmorLocation = makeScalarSchema("ArmorLocation.db2", 0xFB67352F, -1, 5);
         inline const WDC5TableSchema ItemArmorQuality = makeSchemaWithArrays("ItemArmorQuality.db2", 0x2935AA9D, -1, 1, {{0, 7}});

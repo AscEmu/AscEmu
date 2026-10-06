@@ -1710,6 +1710,26 @@ namespace {
         sItemSparseStore.assignEntries(sparseEntries);
         sLogger.info("Forever ItemSparse DB2 store: {} entries loaded.", sparseEntries.size());
 
+        WDB::WDC5File itemBonus;
+        if (loadForeverWDC5Optional(itemBonus, ForeverFormat::ItemBonus, dbcPath))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::ItemBonusEntry>> entries;
+            entries.reserve(itemBonus.getRecordCount());
+            for (uint32_t row = 0; row < itemBonus.getRecordCount(); ++row)
+            {
+                WDB::Structures::ItemBonusEntry entry{};
+                entry.ID = itemBonus.getRecordId(row);
+                for (uint32_t i = 0; i < 4; ++i)
+                    entry.Value[i] = itemBonus.getInt32(row, 0, i);
+                entry.ParentItemBonusListID = itemBonus.getUInt16(row, 1);
+                entry.Type = itemBonus.getUInt8(row, 2);
+                entry.OrderIndex = itemBonus.getUInt8(row, 3);
+                entries.emplace_back(entry.ID, entry);
+            }
+            sItemBonusStore.assignEntries(entries);
+            sLogger.info("Forever ItemBonus DB2 store: {} entries loaded.", entries.size());
+        }
+
         WDB::WDC5File durabilityCosts;
         if (loadForeverWDC5Optional(durabilityCosts, ForeverFormat::DurabilityCosts, dbcPath))
         {

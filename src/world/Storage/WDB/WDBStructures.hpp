@@ -1410,6 +1410,15 @@ namespace WDB::Structures
         uint8_t AmmunitionType{0};
     };
 
+    struct ItemBonusEntry
+    {
+        uint32_t ID{0};
+        int32_t Value[4]{};
+        uint16_t ParentItemBonusListID{0};
+        uint8_t Type{0};
+        uint8_t OrderIndex{0};
+    };
+
     struct RandPropPointsEntry
     {
         uint32_t ID{0}; // item level

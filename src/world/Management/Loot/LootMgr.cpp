@@ -132,7 +132,9 @@ void LootMgr::loadLoot()
 
 void LootMgr::loadLootProp()
 {
-#if VERSION_STRING != Camelot
+    if (WoW::isServerExpansion(WoW::Expansion::_Forever))
+        return;
+
     auto result = WorldDatabase.query("SELECT * FROM item_randomprop_groups");
     if (result != nullptr)
     {
@@ -190,9 +192,6 @@ void LootMgr::loadLootProp()
             }
         } while (result->nextRow());
     }
-#else
-    sLogger.warning("LootMgr::loadLootProp : Forever dont has DBC for this Investigate further.");
-#endif
 }
 
 void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* lootTable)

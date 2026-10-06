@@ -21,6 +21,7 @@ namespace WDB::Structures
     struct ItemEntry;
 #if defined(AE_FOREVER)
     struct ItemSparseEntry;
+    struct ItemBonusEntry;
     struct RandPropPointsEntry;
     struct ArmorLocationEntry;
     struct ItemArmorQualityEntry;
@@ -246,6 +247,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::VehicleSeatEntry> sVehicle
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemEntry> sItemStore; // todo: available for versions > Classic
 #if defined(AE_FOREVER)
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemSparseEntry> sItemSparseStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemBonusEntry> sItemBonusStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::RandPropPointsEntry> sRandPropPointsStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ArmorLocationEntry> sArmorLocationForeverStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemArmorQualityEntry> sItemArmorQualityForeverStore;
