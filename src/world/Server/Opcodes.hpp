@@ -1825,7 +1825,7 @@ SMSG_MOVE_UPDATE,
 SMSG_CHARACTER_ENUM_PRELUDE,
 SMSG_CHARACTER_ENUM_PRELUDE_EXTENDED,
 SMSG_CHARACTER_SELECT_STATUS,
-SMSG_CHARACTER_SELECT_GATE,
+SMSG_LAST_CATALOG_FETCH_RESPONSE,
 SMSG_SPELL_PREPARE,
 NUM_OPCODES
 };
@@ -3617,7 +3617,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {SMSG_CHARACTER_ENUM_PRELUDE, {0x20, "SMSG_CHARACTER_ENUM_PRELUDE", OpcodeDevelopmentState::Unchecked, {0/*Classic*/, 0/*BC*/, 0/*WotLK*/, 0/*Cata*/, 0/*Mop*/, 0/*WoD*/, 0/*Legion*/, 0/*BfA*/, 0/*Shadowlands*/, 0/*Dragonflight*/, 0/*TWW*/, 0/*Midnight*/, 0x0046021D/*Forever*/}}},
 {SMSG_CHARACTER_ENUM_PRELUDE_EXTENDED, {0x20, "SMSG_CHARACTER_ENUM_PRELUDE_EXTENDED", OpcodeDevelopmentState::Unchecked, {0/*Classic*/, 0/*BC*/, 0/*WotLK*/, 0/*Cata*/, 0/*Mop*/, 0/*WoD*/, 0/*Legion*/, 0/*BfA*/, 0/*Shadowlands*/, 0/*Dragonflight*/, 0/*TWW*/, 0/*Midnight*/, 0x0046021C/*Forever*/}}},
 {SMSG_CHARACTER_SELECT_STATUS, {0x20, "SMSG_CHARACTER_SELECT_STATUS", OpcodeDevelopmentState::Unchecked, {0/*Classic*/, 0/*BC*/, 0/*WotLK*/, 0/*Cata*/, 0/*Mop*/, 0/*WoD*/, 0/*Legion*/, 0/*BfA*/, 0/*Shadowlands*/, 0/*Dragonflight*/, 0/*TWW*/, 0/*Midnight*/, 0x0046029D/*Forever*/}}},
-{SMSG_CHARACTER_SELECT_GATE, {0x20, "SMSG_CHARACTER_SELECT_GATE", OpcodeDevelopmentState::Unchecked, {0/*Classic*/, 0/*BC*/, 0/*WotLK*/, 0/*Cata*/, 0/*Mop*/, 0/*WoD*/, 0/*Legion*/, 0/*BfA*/, 0/*Shadowlands*/, 0/*Dragonflight*/, 0/*TWW*/, 0/*Midnight*/, 0x00460382/*Forever*/}}},
+{SMSG_LAST_CATALOG_FETCH_RESPONSE, {0x20, "SMSG_LAST_CATALOG_FETCH_RESPONSE", OpcodeDevelopmentState::Unchecked, {0/*Classic*/, 0/*BC*/, 0/*WotLK*/, 0/*Cata*/, 0/*Mop*/, 0/*WoD*/, 0/*Legion*/, 0/*BfA*/, 0/*Shadowlands*/, 0/*Dragonflight*/, 0/*TWW*/, 0/*Midnight*/, 0x00460382/*Forever*/}}},
 // Forever World-V2 auth/glue opcodes resolved through the central AscEmu opcode table.
 {SMSG_RESUME_COMMS, {0x20, "SMSG_RESUME_COMMS", OpcodeDevelopmentState::Unchecked, {0/*Classic*/, 0/*BC*/, 0/*WotLK*/, 0/*Cata*/, 0/*Mop*/, 0/*WoD*/, 0/*Legion*/, 0/*BfA*/, 0/*Shadowlands*/, 0/*Dragonflight*/, 0/*TWW*/, 0/*Midnight*/, 0x004D0006/*Forever*/}}},
 {SMSG_ENTER_ENCRYPTED_MODE, {0x20, "SMSG_ENTER_ENCRYPTED_MODE", OpcodeDevelopmentState::Unchecked, {0/*Classic*/, 0/*BC*/, 0/*WotLK*/, 0/*Cata*/, 0/*Mop*/, 0/*WoD*/, 0/*Legion*/, 0/*BfA*/, 0/*Shadowlands*/, 0/*Dragonflight*/, 0/*TWW*/, 0/*Midnight*/, 0x004D0004/*Forever*/}}},

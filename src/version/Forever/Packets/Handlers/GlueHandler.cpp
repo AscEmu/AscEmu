@@ -51,7 +51,7 @@ bool WorldSocket::processForeverGlueState(WorldPacket& packet, bool& consumed)
             if (opcode == CMSG_BATTLE_PAY_GET_PURCHASE_LIST)
             {
                 consumed = true;
-                if (!sendForeverPacket(SMSG_CHARACTER_SELECT_GATE, CharacterSelectBootstrap::CharacterSelectGate460382.data(), static_cast<uint32_t>(CharacterSelectBootstrap::CharacterSelectGate460382.size())))
+                if (!sendForeverPacket(SMSG_LAST_CATALOG_FETCH_RESPONSE, CharacterSelectBootstrap::CharacterSelectGate460382.data(), static_cast<uint32_t>(CharacterSelectBootstrap::CharacterSelectGate460382.size())))
                     return false;
 
                 m_foreverSecondEnumGateSent = true;
