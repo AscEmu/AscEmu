@@ -11,9 +11,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgLearnTalent.h"
 #include "Server/Packets/CmsgLearnTalentMultiple.h"
 #include "Server/Packets/CmsgSetPrimaryTalentTree.h"
+#include "Server/Packets/CmsgTraitsCommitConfig.h"
 #include "Objects/Units/Players/Player.hpp"
 
 using namespace AscEmu::Packets;
+
 
 void WorldSession::handleUnlearnSkillOpcode(WorldPacket& recvPacket)
 {
@@ -105,11 +107,39 @@ void WorldSession::handleSetPrimaryTalentTreeOpcode([[maybe_unused]] WorldPacket
 
     _player->setPrimaryTalentSpecialization(srlPacket.specializationTabId);
 #elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
+// Forever currently reuses the shared specialization-selection packet parser.
     CmsgSetPrimaryTalentTree srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
     _player->setPrimaryTalentSpecialization(srlPacket.specializationTabId);
 #endif
+}
+
+void WorldSession::handleTraitsCommitConfigOpcode(WorldPacket& recvPacket)
+{
+    CmsgTraitsCommitConfig packet;
+    if (!parsePacket(recvPacket, packet))
+        return;
+
+    if (!_player->getTraitManager().commitConfigUpdate(packet.config, packet.config.savedConfigId, packet.config.savedLocalIdentifier))
+    {
+        sLogger.debugOpcode("[ForeverDebug][Traits] commit rejected id={} type={} entries={}; failure response is not implemented for Forever", packet.config.id, static_cast<int32_t>(packet.config.type), packet.config.entries.size());
+        return;
+    }
+
+    _player->saveToDB(false);
+}
+
+void WorldSession::handleCloseTraitSystemInteractionOpcode(WorldPacket& recvPacket)
+{
+    recvPacket.rfinish();
+}
+
+void WorldSession::handleTraitsTalentTestUnlearnSpellsOpcode(WorldPacket& recvPacket)
+{
+    // [UNKNOWN] Forever payload layout is not verified. Consume the packet without
+    // applying changes until a capture proves the structure.
+    sLogger.debugOpcode("[ForeverDebug][Traits] CMSG_TRAITS_TALENT_TEST_UNLEARN_SPELLS payload={} byte(s)", recvPacket.remaining());
+    recvPacket.rfinish();
 }

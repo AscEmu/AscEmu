@@ -3258,6 +3258,7 @@ namespace WDB::Structures
         SpellEntry(SpellEntry const&);
     };
 
+
 #pragma pack(pop)
 
     typedef std::set<uint32_t> SpellCategorySet;
@@ -3487,6 +3488,136 @@ namespace WDB::Structures
         uint32_t GetTargets() const;
         uint32_t GetEffectApplyAuraNameByIndex(uint8_t index) const;
 
+    };
+
+    struct TraitSystemEntry
+    {
+        uint32_t id = 0;
+        int32_t flags = 0;
+        int32_t widgetSetId = 0;
+        int32_t traitChangeSpell = 0;
+        int32_t itemId = 0;
+        int32_t variationType = 0;
+    };
+
+    struct TraitTreeEntry
+    {
+        uint32_t id = 0;
+        uint32_t traitSystemId = 0;
+        int32_t baseNodeGroup = 0;
+        int32_t firstTraitNodeId = 0;
+        int32_t playerConditionId = 0;
+        int32_t flags = 0;
+        float minZoom = 0.0f;
+        float maxZoom = 0.0f;
+        int32_t uiTextureKitId = 0;
+    };
+
+    struct TraitNodeEntry
+    {
+        uint32_t id = 0;
+        uint32_t traitTreeId = 0;
+        int32_t posX = 0;
+        int32_t posY = 0;
+        uint8_t type = 0;
+        int32_t flags = 0;
+        int32_t traitSubTreeId = 0;
+    };
+
+    struct TraitNodeEntryEntry
+    {
+        uint32_t id = 0;
+        int32_t traitDefinitionId = 0;
+        int32_t maxRanks = 0;
+        uint8_t nodeEntryType = 0;
+        int32_t traitSubTreeId = 0;
+    };
+
+    struct TraitNodeXTraitNodeEntryEntry
+    {
+        uint32_t id = 0;
+        uint32_t traitNodeId = 0;
+        int32_t traitNodeEntryId = 0;
+        int32_t index = 0;
+    };
+
+    struct TraitDefinitionEntry
+    {
+        uint32_t id = 0;
+        int32_t spellId = 0;
+        int32_t overrideIcon = 0;
+        int32_t overridesSpellId = 0;
+        int32_t visibleSpellId = 0;
+    };
+
+    struct TraitSubTreeEntry
+    {
+        uint32_t id = 0;
+        int32_t uiTextureAtlasElementId = 0;
+        uint32_t traitTreeId = 0;
+    };
+
+    struct TraitCostEntry
+    {
+        uint32_t id = 0;
+        int32_t amount = 0;
+        int32_t traitCurrencyId = 0;
+        int32_t curveId = 0;
+    };
+
+    struct TraitCurrencyEntry
+    {
+        uint32_t id = 0;
+        int32_t type = 0;
+        int32_t currencyTypesId = 0;
+        int32_t flags = 0;
+        int32_t icon = 0;
+        int32_t playerDataElementAccountId = 0;
+        int32_t playerDataElementCharacterId = 0;
+        int32_t unknownField7 = 0; // Forever 1.60.1 adds an eighth TraitCurrency field; semantics not proven yet.
+    };
+
+    struct TraitCurrencySourceEntry
+    {
+        uint32_t id = 0;
+        uint32_t traitCurrencyId = 0;
+        int32_t amount = 0;
+        int32_t questId = 0;
+        int32_t achievementId = 0;
+        int32_t playerLevel = 0;
+        int32_t traitNodeEntryId = 0;
+        int32_t orderIndex = 0;
+        int32_t superDistrictSetId = 0;
+    };
+
+    struct TraitNodeEntryXTraitCostEntry
+    {
+        uint32_t id = 0;
+        uint32_t traitNodeEntryId = 0;
+        int32_t traitCostId = 0;
+    };
+
+    struct TraitTreeXTraitCurrencyEntry
+    {
+        uint32_t id = 0;
+        int32_t index = 0;
+        uint32_t traitTreeId = 0;
+        int32_t traitCurrencyId = 0;
+    };
+
+    struct SkillLineXTraitTreeEntry
+    {
+        uint32_t id = 0;
+        uint32_t skillLineId = 0;
+        int32_t traitTreeId = 0;
+        int32_t orderIndex = 0;
+    };
+
+    struct TraitTreeLoadoutEntry
+    {
+        uint32_t id = 0;
+        uint32_t traitTreeId = 0;
+        int32_t chrSpecializationId = 0;
     };
 
 #pragma pack(pop)

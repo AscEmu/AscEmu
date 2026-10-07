@@ -907,6 +907,13 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
     isForcedCrit = false;
 
     const auto effectId = getSpellInfo()->getEffect(effIndex);
+#if defined(AE_FOREVER)
+    if (effectId == 303) // SPELL_EFFECT_CREATE_TRAIT_TREE_CONFIG
+    {
+        SpellEffectCreateTraitTreeConfig(effIndex);
+        return;
+    }
+#endif
     if (effectId >= TOTAL_SPELL_EFFECTS)
     {
         sLogger.failure("Spell::handleHittedEffect : Unknown spell effect {} in spell id {}, index {}", effectId, getSpellInfo()->getId(), effIndex);

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ForeverSpellPacketUtils.hpp"
 
 #include <cstdint>
 #include <vector>
@@ -24,16 +25,18 @@ namespace AscEmu::Packets
         WoWGuid guid;
         uint8_t isGlobalCooldown;
         std::vector<SmsgSpellCooldownMap> spellMap;
+        uint16_t mapId;
 
-        SmsgSpellCooldown() : SmsgSpellCooldown(WoWGuid(), 0, {})
+        SmsgSpellCooldown() : SmsgSpellCooldown(WoWGuid(), 0, {}, 0)
         {
         }
 
-        SmsgSpellCooldown(WoWGuid guid, uint8_t isGlobalCooldown, std::vector<SmsgSpellCooldownMap> spellMap) :
-            ManagedPacket(SMSG_SPELL_COOLDOWN, 8 + 1 + spellMap.size() * 8),
+        SmsgSpellCooldown(WoWGuid guid, uint8_t isGlobalCooldown, std::vector<SmsgSpellCooldownMap> spellMap, uint16_t mapId = 0) :
+            ManagedPacket(SMSG_SPELL_COOLDOWN, 16 + 1 + 4 + spellMap.size() * 12),
             guid(guid),
             isGlobalCooldown(isGlobalCooldown),
-            spellMap(spellMap)
+            spellMap(spellMap),
+            mapId(mapId)
         {
         }
 
@@ -42,12 +45,17 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            // Forever opcode/layout is not verified yet. The managed-packet layer
-            // keeps this packet blocked while no Forever opcode is assigned.
             if (m_protocol.isForever())
             {
-                sLogger.debugSpell("SmsgCooldown, Unhandled for Forever until prooven");
-                return false;
+                const WoWGuid modernCaster = ForeverSpellPacket::toModernGuid(guid, m_protocol.realmId, mapId);
+                ForeverSpellPacket::writePackedGuid(packet, modernCaster);
+                packet << uint8_t(isGlobalCooldown);
+                packet << uint32_t(spellMap.size());
+
+                for (auto const& cooldown : spellMap)
+                    packet << uint32_t(cooldown.spellId) << uint32_t(cooldown.duration) << float(1.0f);
+
+                return true;
             }
 
             if (m_protocol.expansion < WoW::Expansion::_Mop)

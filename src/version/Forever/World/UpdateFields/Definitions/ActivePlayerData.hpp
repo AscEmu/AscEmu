@@ -125,12 +125,121 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
         }
     };
 
+
+    // [FOREVER-VERIFIED] Classic 1.60 wire positions for the trait-config map and
+    // active combat config. AscEmu stores wire positions directly.
+    struct TraitConfigsField
+    {
+        static constexpr UpdateFieldMetadata metadata() { return {FieldVerification::Verified, "traitConfigs", "map"}; }
+
+        static void writeTraitEntry(ByteBuffer& data, Fields::TraitEntry const& entry)
+        {
+            data << entry.traitNodeId << entry.traitNodeEntryId << entry.rank << entry.grantedRanks << entry.bonusRanks;
+        }
+
+        static void writeTraitSubTree(ByteBuffer& data, Fields::TraitSubTreeCache const& subTree)
+        {
+            data << subTree.traitSubTreeId << uint32_t(subTree.entries.size());
+            for (auto const& entry : subTree.entries)
+                writeTraitEntry(data, entry);
+            data.writeBit(subTree.active != 0);
+            data.flushBits();
+        }
+
+        static void writeCompleteDynamicFieldUpdateMask(ByteBuffer& data, std::size_t size)
+        {
+            // Complete dynamic-field mask: 32-bit element count followed by one changed
+            // bit per element. Keep this bit-oriented so byte alignment does not matter.
+            data.writeBits(size, 32);
+            for (std::size_t i = 0; i < size; ++i)
+                data.writeBit(true);
+        }
+
+        static void writeTraitConfigUpdateAll(ByteBuffer& data, Fields::TraitConfig const& config)
+        {
+            // TraitConfig uses a 15-bit nested change mask. Changed map entries currently
+            // send every nested field as changed while the outer map remains a diff update.
+            data.writeBits(0x7FFFu, 15);
+            writeCompleteDynamicFieldUpdateMask(data, config.entries.size());
+            writeCompleteDynamicFieldUpdateMask(data, config.subTrees.size());
+            data.flushBits();
+
+            for (auto const& entry : config.entries)
+                writeTraitEntry(data, entry);
+            for (auto const& subTree : config.subTrees)
+                writeTraitSubTree(data, subTree);
+
+            data << config.id;
+
+            data << int32_t(config.type == 1 ? 4 : config.type); // Forever CamelotCombat wire type
+            if (config.type == 2)
+                data << config.skillLineId;
+
+            if (config.type == 1)
+                data << config.chrSpecializationId << config.combatConfigFlags << config.localIdentifier;
+
+            if (config.type == 3)
+                data << config.traitSystemId << config.variationId;
+
+            data.writeBits(config.name.size(), 9);
+            data.flushBits();
+            if (!config.name.empty())
+                data.append(reinterpret_cast<uint8_t const*>(config.name.data()), config.name.size());
+        }
+
+        template <typename Owner, std::size_t N>
+        static void copyKnownBits(Owner const&, std::bitset<N> const& source, std::bitset<N>& target)
+        {
+            if (source.test(Fields::ActivePlayerData::TraitDataParentBit))
+                target.set(Fields::ActivePlayerData::TraitDataParentBit);
+            if (source.test(Fields::ActivePlayerData::TraitConfigsBit))
+                target.set(Fields::ActivePlayerData::TraitConfigsBit);
+        }
+
+        template <typename Owner>
+        static void write(ByteBuffer& data, Owner const& owner, auto const& changed)
+        {
+            if (!changed(Fields::ActivePlayerData::TraitDataParentBit) || !changed(Fields::ActivePlayerData::TraitConfigsBit))
+                return;
+
+            // Diff-map update: uint8 completeMap=0, uint16 changesCount, followed by
+            // key/state/value-update records.
+            data << uint8_t(0);
+
+            uint16_t changesCount = 0;
+            for (auto const& [configId, state] : owner.traitConfigUpdateStates)
+                if (state != Fields::TraitConfigMapState::Unchanged)
+                    ++changesCount;
+            data << changesCount;
+
+            for (auto const& [configId, state] : owner.traitConfigUpdateStates)
+            {
+                if (state == Fields::TraitConfigMapState::Unchanged)
+                    continue;
+
+                data << configId;
+                data << static_cast<uint8_t>(state);
+
+                if (state == Fields::TraitConfigMapState::Deleted)
+                    continue;
+
+                auto const itr = owner.traitConfigs.find(configId);
+                if (itr == owner.traitConfigs.end())
+                    continue;
+
+                writeTraitConfigUpdateAll(data, itr->second);
+            }
+        }
+    };
+
     // Its CREATE location is deliberately not claimed while that create span remains opaque.
     using ActivePlayerDataUpdate = UpdateDefinition<Fields::ActivePlayerData::ChangeMaskSize,
         ScalarField<&Fields::ActivePlayerData::coinage, Fields::ActivePlayerData::CoinageBit, 32, FieldVerification::Verified, "coinage">,
         ScalarField<&Fields::ActivePlayerData::xp, Fields::ActivePlayerData::XpBit, 32, FieldVerification::Verified, "xp">,
         ScalarField<&Fields::ActivePlayerData::nextLevelXp, Fields::ActivePlayerData::NextLevelXpBit, 32, FieldVerification::Verified, "nextLevelXp">,
         ScalarField<&Fields::ActivePlayerData::watchedFactionIndex, Fields::ActivePlayerData::WatchedFactionIndexBit, Fields::ActivePlayerData::WatchedFactionParentBit, FieldVerification::Verified, "watchedFactionIndex">,
+        TraitConfigsField,
+        ScalarField<&Fields::ActivePlayerData::activeCombatTraitConfigId, Fields::ActivePlayerData::ActiveCombatTraitConfigIdBit, Fields::ActivePlayerData::TraitDataParentBit, FieldVerification::Verified, "activeCombatTraitConfigId">,
         GuidArrayField<&Fields::ActivePlayerData::invSlots, Fields::ActivePlayerData::InventorySlotsGroupBit, Fields::ActivePlayerData::InventorySlotsFirstBit, FieldVerification::Verified, "inventorySlots">,
         BuybackDataField>;
 }

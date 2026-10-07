@@ -11,6 +11,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetFactionAtWar.h"
 #include "Server/Packets/CmsgSetFactionInactive.h"
 #include "Objects/Units/Players/Player.hpp"
+#if defined(AE_FOREVER)
+#include "Objects/Units/Players/TraitManager.hpp"
+#endif
 #include "Server/Packets/CmsgCharDelete.h"
 #include "Server/Packets/SmsgCharDelete.h"
 #include "Server/Packets/SmsgHotfixNotifyBlob.h"
@@ -839,6 +842,12 @@ void WorldSession::fullLogin(Player* player)
         sLogger.failure("Cant Enter World: failed for Object with GUID {} MapId {} InstanceId {}", std::to_string(player->getGuid()), player->GetMapId(), player->GetInstanceID());
     }
     //////////////////////////////////////////////////////////////////////////////////////////
+
+#if defined(AE_FOREVER)
+    // ActivePlayerData CREATE still contains opaque Forever regions. Re-publish the
+    // fully loaded trait map as a verified VALUES update after the player is in-world.
+    player->getTraitManager().syncActivePlayerData(true);
+#endif
 
 #if VERSION_STRING >= Cata
     player->sendSmsgSetupCurrency();

@@ -8,6 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include <zlib.h>
 
 #include "Player.hpp"
+#if defined(AE_FOREVER)
+#include "TraitManager.hpp"
+#endif
 #include "Objects/Units/Creatures/AIInterface.h"
 
 #include "TradeData.hpp"
@@ -193,6 +196,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/InstanceScript.hpp"
 #include "Server/Script/QuestScript.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include <cstdarg>
 
 #include "Utilities/Narrow.hpp"
@@ -294,6 +298,9 @@ Player::Player(uint32_t guid) :
     m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
     m_mailBox(std::make_unique<Mailbox>(guid)),
     m_cufProfiles(std::make_unique<CUFProfileMgr>(guid))
+#if defined(AE_FOREVER)
+    , m_traitManager(std::make_unique<TraitManager>(this))
+#endif
 {
     //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_PLAYER;
@@ -1874,6 +1881,74 @@ void Player::setWatchedFaction(uint32_t factionId)
 #endif
 }
 
+#if defined(AE_FOREVER)
+TraitManager& Player::getTraitManager()
+{
+    return *m_traitManager;
+}
+
+TraitManager const& Player::getTraitManager() const
+{
+    return *m_traitManager;
+}
+
+void Player::updateClassicLegacyUnlock()
+{
+    static constexpr uint32_t LegacyRenownCurrencyId = 3485;
+    static constexpr uint32_t LegacyRewardTrackFactionId = 2802;
+    static constexpr uint32_t LegacyPointsTraitCurrencyId = 4225;
+    static constexpr uint32_t LegacyAdventureTraitTreeId = 1188;
+    static constexpr uint8_t LegacyUnlockLevel = 25;
+
+    if (!m_traitManager)
+        return;
+
+    int32_t earnedLegacyPoints = 0;
+    if (m_achievementMgr)
+    {
+        for (auto const& [id, source] : sTraitCurrencySourceStore)
+        {
+            (void)id;
+            if (source.traitCurrencyId != LegacyPointsTraitCurrencyId || source.superDistrictSetId != 0 || source.achievementId <= 0)
+                continue;
+            if (m_achievementMgr->hasCompleted(static_cast<uint32_t>(source.achievementId)))
+                earnedLegacyPoints += source.amount;
+        }
+    }
+
+    const uint32_t level = getLevel();
+    if (earnedLegacyPoints == 0 && level < LegacyUnlockLevel)
+        return;
+
+    sLogger.debug("[ForeverDebug][Legacy] update level={} earnedPoints={}", level, earnedLegacyPoints);
+
+    // Generic Legacy configs use the same TraitManager path as other trait trees.
+    // Tree 1188 (Adventure) belongs to Legacy trait system 45. Do not create it before the unlock condition is met.
+    auto* legacyConfig = m_traitManager->createGenericConfigForTree(LegacyAdventureTraitTreeId);
+    if (!legacyConfig)
+        sLogger.debug("[ForeverDebug][Legacy] unable to ensure Legacy trait config for tree={}", LegacyAdventureTraitTreeId);
+    else
+        sLogger.debug("[ForeverDebug][Legacy] config id={} traitSystem={} tree={}", legacyConfig->id, legacyConfig->traitSystemId, LegacyAdventureTraitTreeId);
+
+    const int32_t currentRenown = static_cast<int32_t>(getCurrency(LegacyRenownCurrencyId));
+    if (earnedLegacyPoints > currentRenown)
+    {
+        modifyCurrency(LegacyRenownCurrencyId, earnedLegacyPoints - currentRenown);
+        sLogger.debug("[ForeverDebug][Legacy] currency id={} {}->{}", LegacyRenownCurrencyId, currentRenown, earnedLegacyPoints);
+    }
+
+    if (auto const* legacyFaction = sFactionStore.lookupEntry(LegacyRewardTrackFactionId))
+    {
+        if (legacyFaction->reputationIndex >= 0 && legacyFaction->reputationIndex < PLAYER_REPUTATION_COUNT && !m_reputationByListId[legacyFaction->reputationIndex])
+            addNewFaction(legacyFaction, 0, true);
+        onTalkReputation(legacyFaction);
+        sLogger.debug("[ForeverDebug][Legacy] faction id={} reputationIndex={} visible", LegacyRewardTrackFactionId, legacyFaction->reputationIndex);
+    }
+    else
+        sLogger.debug("[ForeverDebug][Legacy] missing faction id={}", LegacyRewardTrackFactionId);
+}
+#endif
+
 #if VERSION_STRING == TBC
 float Player::getManaRegeneration() const { return playerData()->field_mod_mana_regen; }
 void Player::setManaRegeneration(float value) { write(playerData()->field_mod_mana_regen, value); }
@@ -2025,7 +2100,7 @@ uint32_t Player::getBuybackTimestampSlot(uint8_t slot) const
 #if defined(AE_FOREVER)
     if (slot >= m_foreverActivePlayerFields.buybackTimestamp.size())
         return 0;
-    return m_foreverActivePlayerFields.buybackTimestamp[slot];
+    return static_cast<uint32_t>(m_foreverActivePlayerFields.buybackTimestamp[slot]);
 #else
     return playerData()->field_buy_back_timestamp[slot];
 #endif
@@ -3435,6 +3510,10 @@ void Player::applyLevelInfo(uint32_t newLevel)
 #if VERSION_STRING >= WotLK
     updateGlyphs();
     updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
+#endif
+
+#if defined(AE_FOREVER)
+    updateClassicLegacyUnlock();
 #endif
 
     if (m_firstLogin)
@@ -4888,7 +4967,7 @@ void Player::sendPreventSchoolCast(uint32_t spellSchool, uint32_t timeMs)
             }
         }
     }
-    SmsgSpellCooldown managedPacket(getGuid(), 0x0, spellCoodlownMap);
+    SmsgSpellCooldown managedPacket(getGuid(), 0x0, spellCoodlownMap, static_cast<uint16_t>(GetMapId()));
     getSession()->sendManagedPacket(managedPacket);
 }
 
@@ -5316,7 +5395,7 @@ void Player::sendSpellCooldownPacket(SpellInfo const* spellInfo, const uint32_t 
         }
     }
 
-    SmsgSpellCooldown managedPacket(GetNewGUID(), isGcd, spellMap);
+    SmsgSpellCooldown managedPacket(GetNewGUID(), isGcd, spellMap, static_cast<uint16_t>(GetMapId()));
     PacketBroadcast::sendToSet(*this, managedPacket, true);
 }
 
@@ -7095,7 +7174,10 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
 uint32_t Player::getCurrentSpecId() const
 {
 #if defined(AE_FOREVER)
-    return m_foreverPlayerFields.unknownU32_6;
+    // The persisted specialization lives in PlayerSpec. During early login the
+    // Forever update field may not have been initialized yet, so use the active
+    // spec as the authoritative fallback.
+    return m_foreverPlayerFields.unknownU32_6 != 0 ? m_foreverPlayerFields.unknownU32_6 : m_specs[m_talentActiveSpec].getSpecializationId();
 #else
     return playerData()->current_spec_id;
 #endif
@@ -7132,6 +7214,9 @@ void Player::setPrimaryTalentSpecialization(uint32_t specializationTabId)
     getActiveSpec().setSpecializationId(specializationId);
     setCurrentSpecId(specializationId);
 
+    if (m_traitManager)
+        m_traitManager->ensureCombatConfigForCurrentSpec();
+
     sendTalentsInfo();
     saveToDB(false);
 }
@@ -7140,7 +7225,10 @@ void Player::setPrimaryTalentSpecialization(uint32_t specializationTabId)
 uint32_t Player::getCurrentSpecId() const
 {
 #if defined(AE_FOREVER)
-    return m_foreverPlayerFields.unknownU32_6;
+    // The persisted specialization lives in PlayerSpec. During early login the
+    // Forever update field may not have been initialized yet, so use the active
+    // spec as the authoritative fallback.
+    return m_foreverPlayerFields.unknownU32_6 != 0 ? m_foreverPlayerFields.unknownU32_6 : m_specs[m_talentActiveSpec].getSpecializationId();
 #else
     return playerData()->current_spec_id;
 #endif
@@ -15846,6 +15934,10 @@ void Player::saveToDB(bool newCharacter /* =false */)
 #if VERSION_STRING >= Cata
     saveCurrencies(newCharacter, buf);
 #endif
+#if defined(AE_FOREVER)
+    if (!newCharacter)
+        m_traitManager->saveToDB(buf);
+#endif
 
     // Add player action bars
 #ifdef FT_DUAL_SPEC
@@ -16073,7 +16165,12 @@ namespace PlayerQuery
         Achievements = 16,
         AchievementProgress = 17,
         CufProfiles = 18,
-        Currencies = 19
+        Currencies = 19,
+#if defined(AE_FOREVER)
+        TraitConfigs = 20,
+        TraitEntries = 21,
+        TraitSubTrees = 22
+#endif
     };
 }
 
@@ -16109,6 +16206,11 @@ bool Player::loadFromDB(uint32_t guid)
 #if VERSION_STRING >= Cata
     q->addQuery("SELECT id, name, frameHeight, frameWidth, sortBy, healthText, boolOptions, topPoint, bottomPoint, leftPoint, topOffset, bottomOffset, leftOffset FROM character_cuf_profiles WHERE ownerguid = %u", guid); // 18
     q->addQuery("SELECT currency, quantity, weekly_quantity, tracked_quantity, flags FROM character_currency WHERE guid = %u", guid); // 19
+#endif
+#if defined(AE_FOREVER)
+    q->addQuery("SELECT config_id, config_type, specialization_id, combat_config_flags, local_identifier, skill_line_id, trait_system_id, variation_id, name, saved_config_id, saved_local_identifier FROM character_trait_config WHERE guid = %u ORDER BY config_id", guid); // 20
+    q->addQuery("SELECT config_id, subtree_id, trait_node_id, trait_node_entry_id, `rank`, granted_ranks, bonus_ranks FROM character_trait_config_entry WHERE guid = %u ORDER BY config_id, subtree_id, trait_node_id, trait_node_entry_id", guid); // 21
+    q->addQuery("SELECT config_id, subtree_id, active FROM character_trait_config_subtree WHERE guid = %u ORDER BY config_id, subtree_id", guid); // 22
 #endif
 
     // queue it!
@@ -16714,6 +16816,12 @@ void Player::loadFromDBProc(QueryResultVector& results)
         }
     }
 
+#if defined(AE_FOREVER)
+    // Keep the Forever PlayerData specialization field in sync with the persisted
+    // PlayerSpec before TraitManager::loadFromDB() creates the active combat config.
+    m_foreverPlayerFields.unknownU32_6 = getActiveSpec().getSpecializationId();
+#endif
+
     HonorHandler::RecalculateHonorFields(this);
 
 #if VERSION_STRING > TBC
@@ -16856,6 +16964,8 @@ void Player::loadFromDBProc(QueryResultVector& results)
 #endif
 
 #if defined(AE_FOREVER)
+    m_traitManager->loadFromDB(results[PlayerQuery::TraitConfigs].result.get(), results[PlayerQuery::TraitEntries].result.get(), results[PlayerQuery::TraitSubTrees].result.get());
+    updateClassicLegacyUnlock();
     m_session->fullLoginForever(this);
 #else
     m_session->fullLogin(this);

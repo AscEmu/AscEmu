@@ -62,6 +62,43 @@ namespace AscEmu::Version::Forever::UpdateFields
             data.flushBits();
         }
 
+        void writeTraitEntryCreate(ByteBuffer& data, Fields::TraitEntry const& entry)
+        {
+            data << entry.traitNodeId << entry.traitNodeEntryId << entry.rank << entry.grantedRanks << entry.bonusRanks;
+        }
+
+        void writeTraitSubTreeCreate(ByteBuffer& data, Fields::TraitSubTreeCache const& subTree)
+        {
+            data << subTree.traitSubTreeId << uint32_t(subTree.entries.size());
+            for (Fields::TraitEntry const& entry : subTree.entries)
+                writeTraitEntryCreate(data, entry);
+            data.writeBit(subTree.active != 0);
+            data.flushBits();
+        }
+
+        void writeTraitConfigCreate(ByteBuffer& data, Fields::TraitConfig const& config)
+        {
+            data << config.id << int32_t(config.type == 1 ? 4 : config.type);
+            data << uint32_t(config.entries.size()) << uint32_t(config.subTrees.size());
+
+            if (config.type == 2)
+                data << config.skillLineId;
+            if (config.type == 1)
+                data << config.chrSpecializationId << config.combatConfigFlags << config.localIdentifier;
+            if (config.type == 3)
+                data << config.traitSystemId << config.variationId;
+
+            for (Fields::TraitEntry const& entry : config.entries)
+                writeTraitEntryCreate(data, entry);
+            for (Fields::TraitSubTreeCache const& subTree : config.subTrees)
+                writeTraitSubTreeCreate(data, subTree);
+
+            data.writeBits(config.name.size(), 9);
+            data.flushBits();
+            if (!config.name.empty())
+                data.append(reinterpret_cast<uint8_t const*>(config.name.data()), config.name.size());
+        }
+
         bool hasRequiredActivePlayerOpaqueRecords(Fields::ActivePlayerData const&)
         {
             return true;
@@ -156,6 +193,13 @@ namespace AscEmu::Version::Forever::UpdateFields
             0x00,0x00,0x0C,0x00,0x00,0x00,0x00,0x00,0x02,0x00,0x00,0x00,0x00,0x02,0x00,0x00,
             0x00,
         };
+
+        // [FOREVER-VERIFIED] Classic 1.60 ActivePlayerData CREATE contains the trait-config
+        // map, ActiveCombatTraitConfigID and one following uint8 at this position. The
+        // surrounding bytes remain opaque and must stay byte-identical.
+        inline constexpr std::size_t PreOutfitTraitConfigsOffset = 744;
+        inline constexpr std::size_t PreOutfitAfterTraitStateOffset = 796;
+
 
 
         void applyDefaultTransmogOutfit(Fields::TransmogOutfitData& outfit, uint32_t id, uint8_t setType, char const* name, bool withSituations, uint32_t flags)
@@ -305,6 +349,11 @@ namespace AscEmu::Version::Forever::UpdateFields
 
         std::copy_n(PreOutfitDefaults.begin(), Fields::ActivePlayerData::UnknownBeforeOutfitSize, result.unknownBeforeOutfit.begin());
 
+        // TraitConfigs are now proven fields inside the former pre-outfit opaque span.
+        // Preserve the live state so CREATE sends the same configs that TraitManager owns.
+        result.traitConfigs = source.traitConfigs;
+        result.activeCombatTraitConfigId = source.activeCombatTraitConfigId;
+
         // The following 32-bit slot exists on the wire immediately after
         // NextLevelXP, but its Forever semantics are not proven. Keep
         // unknownAfterNextLevelXp at its zero default until differential testing
@@ -379,7 +428,21 @@ namespace AscEmu::Version::Forever::UpdateFields
             data << record.unknown0 << record.unknown4 << record.multiplier0 << record.multiplier1;
         data.append(fields.unknownPostSkillTail.data(), fields.unknownPostSkillTail.size());
 
-        data.append(fields.unknownBeforeOutfit.data(), fields.unknownBeforeOutfit.size());
+        static_assert(PreOutfitAfterTraitStateOffset <= Fields::ActivePlayerData::UnknownBeforeOutfitSize);
+        data.append(fields.unknownBeforeOutfit.data(), PreOutfitTraitConfigsOffset);
+
+        // MapUpdateField CREATE: count, key, TraitConfig::WriteCreate for every entry.
+        data << uint32_t(fields.traitConfigs.size());
+        for (auto const& [configId, config] : fields.traitConfigs)
+        {
+            data << configId;
+            writeTraitConfigCreate(data, config);
+        }
+
+        data << uint32_t(fields.activeCombatTraitConfigId);
+        data << uint8_t(0); // Classic 1.60 unknown uint8 immediately after ActiveCombatTraitConfigID.
+
+        data.append(fields.unknownBeforeOutfit.data() + PreOutfitAfterTraitStateOffset, fields.unknownBeforeOutfit.size() - PreOutfitAfterTraitStateOffset);
         data << fields.unknownOutfitScalar0 << fields.unknownOutfitScalar1;
         writeTransmogOutfitDataCreate(data, fields.viewedOutfit);
         data << uint32_t(fields.additionalOutfits.size());

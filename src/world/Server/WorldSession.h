@@ -963,6 +963,9 @@ protected:
         void handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket); //< Cata
         void handleLearnPreviewTalentsOpcode(WorldPacket& recvPacket);  //>=Cata
         void handleSetPrimaryTalentTreeOpcode(WorldPacket& recvPacket); //>=Mop
+        void handleTraitsCommitConfigOpcode(WorldPacket& recvPacket); // Forever
+        void handleCloseTraitSystemInteractionOpcode(WorldPacket& recvPacket); // Forever
+        void handleTraitsTalentTestUnlearnSpellsOpcode(WorldPacket& recvPacket); // Forever
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // SocialHandler.cpp

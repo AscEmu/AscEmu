@@ -255,6 +255,20 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemArmorShieldEntry> sItemArm
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemArmorTotalEntry> sItemArmorTotalForeverStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemEffectEntry> sItemEffectForeverStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemXItemEffectEntry> sItemXItemEffectForeverStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitSystemEntry> sTraitSystemStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitTreeEntry> sTraitTreeStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitNodeEntry> sTraitNodeStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitNodeEntryEntry> sTraitNodeEntryStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitNodeXTraitNodeEntryEntry> sTraitNodeXTraitNodeEntryStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitDefinitionEntry> sTraitDefinitionStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitSubTreeEntry> sTraitSubTreeStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitCostEntry> sTraitCostStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitCurrencyEntry> sTraitCurrencyStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitCurrencySourceEntry> sTraitCurrencySourceStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitNodeEntryXTraitCostEntry> sTraitNodeEntryXTraitCostStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitTreeXTraitCurrencyEntry> sTraitTreeXTraitCurrencyStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitTreeLoadoutEntry> sTraitTreeLoadoutStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::SkillLineXTraitTreeEntry> sSkillLineXTraitTreeStore;
 #endif
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemExtendedCostEntry> sItemExtendedCostStore; // todo: available for versions > Classic
 
@@ -344,7 +358,6 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
 
     WDB::Structures::SpellPowerEntry const* getSpellPowerEntry(uint32_t spellId);
 #elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
 

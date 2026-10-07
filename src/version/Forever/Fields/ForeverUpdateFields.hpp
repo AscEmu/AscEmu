@@ -53,6 +53,47 @@ namespace AscEmu::Version::Forever::Fields
         uint32_t choiceId = 0;
     };
 
+
+    // [FOREVER-VERIFIED] Classic 1.60 trait update structures. Combat configs use wire
+    // type 4; the internal TraitManager keeps its own ConfigType::Combat value.
+    struct TraitEntry
+    {
+        int32_t traitNodeId = 0;
+        int32_t traitNodeEntryId = 0;
+        int32_t rank = 0;
+        int32_t grantedRanks = 0;
+        int32_t bonusRanks = 0;
+    };
+
+    struct TraitSubTreeCache
+    {
+        std::vector<TraitEntry> entries;
+        int32_t traitSubTreeId = 0;
+        uint32_t active = 0;
+    };
+
+    enum class TraitConfigMapState : uint8_t
+    {
+        Unchanged = 0,
+        Changed = 1,
+        Deleted = 2
+    };
+
+    struct TraitConfig
+    {
+        int32_t id = 0;
+        std::string name;
+        int32_t type = 0;
+        int32_t skillLineId = 0;
+        int32_t chrSpecializationId = 0;
+        int32_t combatConfigFlags = 0;
+        int32_t localIdentifier = 0;
+        int32_t traitSystemId = 0;
+        int32_t variationId = 0;
+        std::vector<TraitEntry> entries;
+        std::vector<TraitSubTreeCache> subTrees;
+    };
+
     // [REFERENCE] Modern modern reference schema semantic labels unless a local capture comment says otherwise.
     struct ItemEnchantment
     {
@@ -944,6 +985,11 @@ namespace AscEmu::Version::Forever::Fields
         // the following ActivePlayerData VALUES update sets parent bit 102 and field bit 113.
         static inline constexpr std::size_t WatchedFactionParentBit = 102;
         static inline constexpr std::size_t WatchedFactionIndexBit = 113;
+        // [FOREVER-VERIFIED] Classic 1.60 wire bits for TraitConfigs and
+        // ActiveCombatTraitConfigID. Parent bit 134 gates both fields.
+        static inline constexpr std::size_t TraitDataParentBit = 134;
+        static inline constexpr std::size_t TraitConfigsBit = 149;
+        static inline constexpr std::size_t ActiveCombatTraitConfigIdBit = 150;
         // [FOREVER-VERIFIED] Forever 1.60.1.70124 retail sell differentials.
         // One shared array group is followed by 12 price bits and 12 timestamp bits.
         // Slot N updates bits 354+N and 366+N under parent/group bit 353.
@@ -958,11 +1004,11 @@ namespace AscEmu::Version::Forever::Fields
 
         void markChanged(std::size_t bit) { changes.set(bit & ~std::size_t(31)); changes.set(bit); }
         void markArrayChanged(std::size_t groupBit, std::size_t elementBit) { changes.set(groupBit); changes.set(elementBit); }
-        void clearChanges() { changes.reset(); }
+        void clearChanges() { changes.reset(); traitConfigUpdateStates.clear(); }
         bool hasChanges() const { return changes.any(); }
 
         // -----------------------------------------------------------------
-        // CREATE wire order for Forever Forever.
+        // CREATE wire order for Forever.
         // Keep this declaration order aligned with writeActivePlayerDataCreate.
         // Names inherited from older layouts are not automatically considered
         // proven Forever semantics; they remain until their regions are replaced
@@ -1084,6 +1130,13 @@ namespace AscEmu::Version::Forever::Fields
         // Current zero-state wire span is 2 bytes; semantics are not proven.
         static inline constexpr std::size_t UnknownAfterTransmogSize = 2;
         std::array<uint8_t, UnknownAfterTransmogSize> unknownAfterTransmog{};
+
+        // [FOREVER-VERIFIED] Trait configs are sent as a map keyed by config ID.
+        std::map<int32_t, TraitConfig> traitConfigs;
+        // Trait-config map state: 0 unchanged, 1 changed, 2 deleted. Keep this
+        // separately from traitConfigs so deleted keys can still be serialized.
+        std::map<int32_t, TraitConfigMapState> traitConfigUpdateStates;
+        uint32_t activeCombatTraitConfigId = 0;
 
         // [FOREVER-VERIFIED] VALUES-only mapping from the 1.60.1.70235 watched-faction differential.
         // CREATE placement is intentionally not claimed while that region remains opaque.

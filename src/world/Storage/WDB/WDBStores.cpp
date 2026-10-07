@@ -29,6 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <algorithm>
 #include <concepts>
 #include <cstdint>
+#include <cstring>
 #include <deque>
 #include <initializer_list>
 #include <iterator>
@@ -204,7 +205,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
 WDB::Structures::SpellPowerMap sSpellPowerMap;
 #elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
 WDB::Structures::SpellPowerMap sSpellPowerMap;
@@ -1178,9 +1178,20 @@ namespace {
         WDB::WDC5File chrRaces;
         WDB::WDC5File faction;
         WDB::WDC5File factionTemplate;
+        WDB::WDC5File chrSpecialization;
 
         if (!loadForeverWDC5Group({ { chrClasses, ForeverFormat::ChrClasses }, { chrClassesXPowerTypes, ForeverFormat::ChrClassesXPowerTypes }, { chrRaces, ForeverFormat::ChrRaces }, { faction, ForeverFormat::Faction }, { factionTemplate, ForeverFormat::FactionTemplate } }, errors, dbcPath))
             return false;
+
+        if (!loadForeverGenericWDC5(chrSpecialization, "ChrSpecialization.db2", errors, dbcPath, {{12, 2}}))
+            return false;
+
+        if (chrSpecialization.getFieldCount() != 13)
+        {
+            errors.push_back("Forever DB2 ChrSpecialization.db2: expected 13 fields, got " + std::to_string(chrSpecialization.getFieldCount()));
+            sLogger.failure("Forever DB2 ChrSpecialization.db2 has unexpected field count {} (expected 13).", chrSpecialization.getFieldCount());
+            return false;
+        }
 
         // Populate the existing AscEmu runtime stores. This deliberately keeps
         // Player and the rest of the core on the established WDBStore API while
@@ -1210,6 +1221,25 @@ namespace {
         }
         buildPowerIndexByClass();
         sLogger.info("Forever ChrClassesXPowerTypes DB2 store: {} entries loaded, warrior rage index {}.", sChrPowerTypesStore.getNumRows(), powerIndexByClass[WARRIOR][POWER_TYPE_RAGE]);
+
+        std::memset(ClassSpecializationTabs, 0, sizeof(ClassSpecializationTabs));
+        std::vector<std::pair<uint32_t, WDB::Structures::ChrSpecializationEntry>> specializationEntries;
+        specializationEntries.reserve(chrSpecialization.getRecordCount());
+        for (uint32_t row = 0; row < chrSpecialization.getRecordCount(); ++row)
+        {
+            WDB::Structures::ChrSpecializationEntry entry{};
+            entry.Id = chrSpecialization.getRecordId(row);
+            entry.classId = chrSpecialization.getUInt8(row, 4);
+            entry.tabPage = static_cast<uint32_t>(static_cast<uint8_t>(chrSpecialization.getInt8(row, 5)));
+            entry.petTabPage = static_cast<uint32_t>(static_cast<uint8_t>(chrSpecialization.getInt8(row, 6)));
+            entry.masterySpellId = chrSpecialization.getUInt32(row, 12, 0);
+            specializationEntries.emplace_back(entry.Id, entry);
+
+            if (entry.classId < 12 && entry.tabPage < 4)
+                ClassSpecializationTabs[entry.classId][entry.tabPage] = entry.Id;
+        }
+        sChrSpecializationStore.assignEntries(specializationEntries);
+        sLogger.debugDbTables("Forever ChrSpecialization DB2 store: {} entries loaded.", sChrSpecializationStore.getNumRows());
 
         sChrRacesStore.clear();
         for (uint32_t row = 0; row < chrRaces.getRecordCount(); ++row)
@@ -1988,6 +2018,239 @@ namespace {
         return true;
     }
 
+    bool loadForeverTraitStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
+    {
+        WDB::WDC5File traitSystem, traitTree, traitNode, traitNodeEntry, traitNodeXEntry, traitDefinition, traitSubTree;
+        WDB::WDC5File traitCost, traitCurrency, traitCurrencySource, traitNodeEntryXCost, traitTreeXCurrency, traitTreeLoadout, skillLineXTraitTree;
+
+        auto load = [&](WDB::WDC5File& file, char const* name)
+        {
+            return loadForeverGenericWDC5(file, name, errors, dbcPath);
+        };
+
+        if (!load(traitSystem, "TraitSystem.db2") || !load(traitTree, "TraitTree.db2") || !load(traitNode, "TraitNode.db2")
+            || !load(traitNodeEntry, "TraitNodeEntry.db2") || !load(traitNodeXEntry, "TraitNodeXTraitNodeEntry.db2")
+            || !load(traitDefinition, "TraitDefinition.db2") || !load(traitSubTree, "TraitSubTree.db2")
+            || !load(traitCost, "TraitCost.db2") || !load(traitCurrency, "TraitCurrency.db2")
+            || !load(traitCurrencySource, "TraitCurrencySource.db2") || !load(traitNodeEntryXCost, "TraitNodeEntryXTraitCost.db2")
+            || !load(traitTreeXCurrency, "TraitTreeXTraitCurrency.db2") || !load(traitTreeLoadout, "TraitTreeLoadout.db2")
+            || !load(skillLineXTraitTree, "SkillLineXTraitTree.db2"))
+            return false;
+
+        auto verify = [&](WDB::WDC5File const& file, char const* name, uint32_t logicalFields)
+        {
+            uint32_t const fields = file.getFieldCount();
+            bool const externalId = file.hasExternalRecordIds() || file.getIndexField() < 0;
+            uint32_t const expected = externalId ? logicalFields - 1 : logicalFields;
+            if (fields == expected)
+                return true;
+
+            errors.push_back(std::string("Forever DB2 ") + name + ": unexpected field count " + std::to_string(fields)
+                + " (expected " + std::to_string(expected) + (externalId ? " with external ID)" : " with embedded ID)"));
+            sLogger.failure("Forever DB2 {} has unexpected field count {} (expected {}, indexField={}).", name, fields, expected, file.getIndexField());
+            return false;
+        };
+
+        if (!verify(traitSystem, "TraitSystem.db2", 6) || !verify(traitTree, "TraitTree.db2", 10)
+            || !verify(traitNode, "TraitNode.db2", 7) || !verify(traitNodeEntry, "TraitNodeEntry.db2", 5)
+            || !verify(traitNodeXEntry, "TraitNodeXTraitNodeEntry.db2", 4) || !verify(traitDefinition, "TraitDefinition.db2", 8)
+            || !verify(traitSubTree, "TraitSubTree.db2", 5) || !verify(traitCost, "TraitCost.db2", 5)
+            || !verify(traitCurrency, "TraitCurrency.db2", 8)
+            || !verify(traitNodeEntryXCost, "TraitNodeEntryXTraitCost.db2", 3) || !verify(traitTreeXCurrency, "TraitTreeXTraitCurrency.db2", 4)
+            || !verify(traitTreeLoadout, "TraitTreeLoadout.db2", 3) || !verify(skillLineXTraitTree, "SkillLineXTraitTree.db2", 4))
+            return false;
+
+        bool const currencySourceHasSuperDistrict = traitCurrencySource.getFieldCount() == static_cast<uint32_t>(((traitCurrencySource.hasExternalRecordIds() || traitCurrencySource.getIndexField() < 0) ? 10 : 11) - 1);
+        uint32_t const currencySourceLogicalFields = currencySourceHasSuperDistrict ? 10u : 9u;
+        if (!verify(traitCurrencySource, "TraitCurrencySource.db2", currencySourceLogicalFields))
+            return false;
+
+        auto field = [](WDB::WDC5File const& file, uint32_t logicalField, uint32_t idLogicalField)
+        {
+            if (file.hasExternalRecordIds() || file.getIndexField() < 0)
+                return logicalField < idLogicalField ? logicalField : logicalField - 1;
+            return logicalField;
+        };
+
+        sTraitSystemStore.clear();
+        for (uint32_t row = 0; row < traitSystem.getRecordCount(); ++row)
+        {
+            WDB::Structures::TraitSystemEntry e{};
+            e.id = traitSystem.getRecordId(row);
+            e.flags = traitSystem.getInt32(row, field(traitSystem, 1, 0));
+            e.widgetSetId = traitSystem.getInt32(row, field(traitSystem, 2, 0));
+            e.traitChangeSpell = traitSystem.getInt32(row, field(traitSystem, 3, 0));
+            e.itemId = traitSystem.getInt32(row, field(traitSystem, 4, 0));
+            e.variationType = traitSystem.getInt32(row, field(traitSystem, 5, 0));
+            sTraitSystemStore[e.id] = e;
+        }
+
+        sTraitTreeStore.clear();
+        for (uint32_t row = 0; row < traitTree.getRecordCount(); ++row)
+        {
+            WDB::Structures::TraitTreeEntry e{};
+            e.id = traitTree.getRecordId(row);
+            e.traitSystemId = traitTree.getUInt32(row, field(traitTree, 2, 1));
+            e.baseNodeGroup = traitTree.getInt32(row, field(traitTree, 3, 1));
+            e.firstTraitNodeId = traitTree.getInt32(row, field(traitTree, 4, 1));
+            e.playerConditionId = traitTree.getInt32(row, field(traitTree, 5, 1));
+            e.flags = traitTree.getInt32(row, field(traitTree, 6, 1));
+            e.minZoom = traitTree.getFloat(row, field(traitTree, 7, 1));
+            e.maxZoom = traitTree.getFloat(row, field(traitTree, 8, 1));
+            e.uiTextureKitId = traitTree.getInt32(row, field(traitTree, 9, 1));
+            sTraitTreeStore[e.id] = e;
+        }
+
+        sTraitNodeStore.clear();
+        for (uint32_t row = 0; row < traitNode.getRecordCount(); ++row)
+        {
+            WDB::Structures::TraitNodeEntry e{};
+            e.id = traitNode.getRecordId(row);
+            e.traitTreeId = traitNode.getUInt32(row, field(traitNode, 1, 0));
+            e.posX = traitNode.getInt32(row, field(traitNode, 2, 0));
+            e.posY = traitNode.getInt32(row, field(traitNode, 3, 0));
+            e.type = traitNode.getUInt8(row, field(traitNode, 4, 0));
+            e.flags = traitNode.getInt32(row, field(traitNode, 5, 0));
+            e.traitSubTreeId = traitNode.getInt32(row, field(traitNode, 6, 0));
+            sTraitNodeStore[e.id] = e;
+        }
+
+        sTraitNodeEntryStore.clear();
+        for (uint32_t row = 0; row < traitNodeEntry.getRecordCount(); ++row)
+        {
+            WDB::Structures::TraitNodeEntryEntry e{};
+            e.id = traitNodeEntry.getRecordId(row);
+            e.traitDefinitionId = traitNodeEntry.getInt32(row, field(traitNodeEntry, 1, 0));
+            e.maxRanks = traitNodeEntry.getInt32(row, field(traitNodeEntry, 2, 0));
+            e.nodeEntryType = traitNodeEntry.getUInt8(row, field(traitNodeEntry, 3, 0));
+            e.traitSubTreeId = traitNodeEntry.getInt32(row, field(traitNodeEntry, 4, 0));
+            sTraitNodeEntryStore[e.id] = e;
+        }
+
+        sTraitNodeXTraitNodeEntryStore.clear();
+        for (uint32_t row = 0; row < traitNodeXEntry.getRecordCount(); ++row)
+        {
+            WDB::Structures::TraitNodeXTraitNodeEntryEntry e{};
+            e.id = traitNodeXEntry.getRecordId(row);
+            e.traitNodeId = traitNodeXEntry.getUInt32(row, field(traitNodeXEntry, 1, 0));
+            e.traitNodeEntryId = traitNodeXEntry.getInt32(row, field(traitNodeXEntry, 2, 0));
+            e.index = traitNodeXEntry.getInt32(row, field(traitNodeXEntry, 3, 0));
+            sTraitNodeXTraitNodeEntryStore[e.id] = e;
+        }
+
+        sTraitDefinitionStore.clear();
+        for (uint32_t row = 0; row < traitDefinition.getRecordCount(); ++row)
+        {
+            WDB::Structures::TraitDefinitionEntry e{};
+            e.id = traitDefinition.getRecordId(row);
+            e.spellId = traitDefinition.getInt32(row, field(traitDefinition, 4, 3));
+            e.overrideIcon = traitDefinition.getInt32(row, field(traitDefinition, 5, 3));
+            e.overridesSpellId = traitDefinition.getInt32(row, field(traitDefinition, 6, 3));
+            e.visibleSpellId = traitDefinition.getInt32(row, field(traitDefinition, 7, 3));
+            sTraitDefinitionStore[e.id] = e;
+        }
+
+        sTraitSubTreeStore.clear();
+        for (uint32_t row = 0; row < traitSubTree.getRecordCount(); ++row)
+        {
+            WDB::Structures::TraitSubTreeEntry e{};
+            e.id = traitSubTree.getRecordId(row);
+            e.uiTextureAtlasElementId = traitSubTree.getInt32(row, field(traitSubTree, 3, 2));
+            e.traitTreeId = traitSubTree.getUInt32(row, field(traitSubTree, 4, 2));
+            sTraitSubTreeStore[e.id] = e;
+        }
+
+        sTraitCostStore.clear();
+        for (uint32_t row = 0; row < traitCost.getRecordCount(); ++row)
+        {
+            WDB::Structures::TraitCostEntry e{};
+            e.id = traitCost.getRecordId(row);
+            e.amount = traitCost.getInt32(row, field(traitCost, 2, 1));
+            e.traitCurrencyId = traitCost.getInt32(row, field(traitCost, 3, 1));
+            e.curveId = traitCost.getInt32(row, field(traitCost, 4, 1));
+            sTraitCostStore[e.id] = e;
+        }
+
+        sTraitCurrencyStore.clear();
+        for (uint32_t row = 0; row < traitCurrency.getRecordCount(); ++row)
+        {
+            WDB::Structures::TraitCurrencyEntry e{};
+            e.id = traitCurrency.getRecordId(row);
+            e.type = traitCurrency.getInt32(row, field(traitCurrency, 1, 0));
+            e.currencyTypesId = traitCurrency.getInt32(row, field(traitCurrency, 2, 0));
+            e.flags = traitCurrency.getInt32(row, field(traitCurrency, 3, 0));
+            e.icon = traitCurrency.getInt32(row, field(traitCurrency, 4, 0));
+            e.playerDataElementAccountId = traitCurrency.getInt32(row, field(traitCurrency, 5, 0));
+            e.playerDataElementCharacterId = traitCurrency.getInt32(row, field(traitCurrency, 6, 0));
+            e.unknownField7 = traitCurrency.getInt32(row, field(traitCurrency, 7, 0));
+            sTraitCurrencyStore[e.id] = e;
+        }
+
+        sTraitCurrencySourceStore.clear();
+        for (uint32_t row = 0; row < traitCurrencySource.getRecordCount(); ++row)
+        {
+            WDB::Structures::TraitCurrencySourceEntry e{};
+            e.id = traitCurrencySource.getRecordId(row);
+            e.traitCurrencyId = traitCurrencySource.getUInt32(row, field(traitCurrencySource, 2, 1));
+            e.amount = traitCurrencySource.getInt32(row, field(traitCurrencySource, 3, 1));
+            e.questId = traitCurrencySource.getInt32(row, field(traitCurrencySource, 4, 1));
+            e.achievementId = traitCurrencySource.getInt32(row, field(traitCurrencySource, 5, 1));
+            e.playerLevel = traitCurrencySource.getInt32(row, field(traitCurrencySource, 6, 1));
+            e.traitNodeEntryId = traitCurrencySource.getInt32(row, field(traitCurrencySource, 7, 1));
+            e.orderIndex = traitCurrencySource.getInt32(row, field(traitCurrencySource, 8, 1));
+            if (currencySourceHasSuperDistrict)
+                e.superDistrictSetId = traitCurrencySource.getInt32(row, field(traitCurrencySource, 9, 1));
+            sTraitCurrencySourceStore[e.id] = e;
+        }
+
+        sTraitNodeEntryXTraitCostStore.clear();
+        for (uint32_t row = 0; row < traitNodeEntryXCost.getRecordCount(); ++row)
+        {
+            WDB::Structures::TraitNodeEntryXTraitCostEntry e{};
+            e.id = traitNodeEntryXCost.getRecordId(row);
+            e.traitNodeEntryId = traitNodeEntryXCost.getUInt32(row, field(traitNodeEntryXCost, 1, 0));
+            e.traitCostId = traitNodeEntryXCost.getInt32(row, field(traitNodeEntryXCost, 2, 0));
+            sTraitNodeEntryXTraitCostStore[e.id] = e;
+        }
+
+        sTraitTreeXTraitCurrencyStore.clear();
+        for (uint32_t row = 0; row < traitTreeXCurrency.getRecordCount(); ++row)
+        {
+            WDB::Structures::TraitTreeXTraitCurrencyEntry e{};
+            e.id = traitTreeXCurrency.getRecordId(row);
+            e.index = traitTreeXCurrency.getInt32(row, field(traitTreeXCurrency, 1, 0));
+            e.traitTreeId = traitTreeXCurrency.getUInt32(row, field(traitTreeXCurrency, 2, 0));
+            e.traitCurrencyId = traitTreeXCurrency.getInt32(row, field(traitTreeXCurrency, 3, 0));
+            sTraitTreeXTraitCurrencyStore[e.id] = e;
+        }
+
+        sTraitTreeLoadoutStore.clear();
+        for (uint32_t row = 0; row < traitTreeLoadout.getRecordCount(); ++row)
+        {
+            WDB::Structures::TraitTreeLoadoutEntry e{};
+            e.id = traitTreeLoadout.getRecordId(row);
+            e.traitTreeId = traitTreeLoadout.getUInt32(row, field(traitTreeLoadout, 1, 0));
+            e.chrSpecializationId = traitTreeLoadout.getInt32(row, field(traitTreeLoadout, 2, 0));
+            sTraitTreeLoadoutStore[e.id] = e;
+        }
+
+        sSkillLineXTraitTreeStore.clear();
+        for (uint32_t row = 0; row < skillLineXTraitTree.getRecordCount(); ++row)
+        {
+            WDB::Structures::SkillLineXTraitTreeEntry e{};
+            e.id = skillLineXTraitTree.getRecordId(row);
+            e.skillLineId = skillLineXTraitTree.getUInt32(row, field(skillLineXTraitTree, 1, 0));
+            e.traitTreeId = skillLineXTraitTree.getInt32(row, field(skillLineXTraitTree, 2, 0));
+            e.orderIndex = skillLineXTraitTree.getInt32(row, field(skillLineXTraitTree, 3, 0));
+            sSkillLineXTraitTreeStore[e.id] = e;
+        }
+
+        sLogger.debugDbTables("Forever Trait DB2 stores: systems={} trees={} nodes={} entries={} definitions={} subtrees={} currencies={} sources={} skillLineTrees={}.",
+            sTraitSystemStore.size(), sTraitTreeStore.size(), sTraitNodeStore.size(), sTraitNodeEntryStore.size(), sTraitDefinitionStore.size(),
+            sTraitSubTreeStore.size(), sTraitCurrencyStore.size(), sTraitCurrencySourceStore.size(), sSkillLineXTraitTreeStore.size());
+        return true;
+    }
+
     bool loadForeverModernMapStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
     {
         WDB::WDC5File map;
@@ -2228,6 +2491,7 @@ bool loadDBCs()
     loadForeverModernCustomizationStores(bad_dbc_files, dbc_path);
     loadForeverModernTaxiStores(bad_dbc_files, dbc_path);
     loadForeverModernItemStores(bad_dbc_files, dbc_path);
+    loadForeverTraitStores(bad_dbc_files, dbc_path);
     loadForeverModernMapStores(bad_dbc_files, dbc_path);
     loadForeverModernTerrainStores(bad_dbc_files, dbc_path);
     loadForeverModernQuestStores(bad_dbc_files, dbc_path);

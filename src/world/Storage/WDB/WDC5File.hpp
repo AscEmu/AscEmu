@@ -41,6 +41,13 @@ namespace WDB
         [[nodiscard]] uint32_t getFieldCount() const noexcept { return m_header.fieldCount; }
         [[nodiscard]] uint32_t getTotalFieldCount() const noexcept { return m_header.totalFieldCount; }
         [[nodiscard]] int16_t getIndexField() const noexcept { return m_header.indexField; }
+        [[nodiscard]] bool hasExternalRecordIds() const noexcept
+        {
+            for (auto const& record : m_records)
+                if (record.hasExternalId)
+                    return true;
+            return false;
+        }
         [[nodiscard]] uint32_t getMinId() const noexcept { return m_header.minId; }
         [[nodiscard]] uint32_t getMaxId() const noexcept { return m_header.maxId; }
         [[nodiscard]] uint32_t getLayoutHash() const noexcept { return m_layoutHash; }

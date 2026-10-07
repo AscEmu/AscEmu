@@ -52,6 +52,9 @@ namespace AscEmu::Packets
 }
 
 class CUFProfileMgr;
+#if defined(AE_FOREVER)
+class TraitManager;
+#endif
 
 namespace MySQLStructure
 {
@@ -416,6 +419,11 @@ public:
 
     uint32_t getWatchedFaction() const;
     void setWatchedFaction(uint32_t factionId);
+#if defined(AE_FOREVER)
+    TraitManager& getTraitManager();
+    TraitManager const& getTraitManager() const;
+    void updateClassicLegacyUnlock();
+#endif
 
 #if VERSION_STRING == TBC
     float getManaRegeneration() const;
@@ -2333,6 +2341,9 @@ public:
 
     std::unique_ptr<Mailbox> m_mailBox;
     std::unique_ptr<CUFProfileMgr> m_cufProfiles;
+#if defined(AE_FOREVER)
+    std::unique_ptr<TraitManager> m_traitManager;
+#endif
     bool m_finishingMovesDodge = false;
 
     bool isAttacking() { return m_attacking; }

@@ -214,10 +214,35 @@ namespace WDB
             return fail(error, "truncated field entries in " + filename);
         offset += fieldEntriesSize;
 
-        if (m_header.columnMetaSize != m_header.totalFieldCount * 24U)
-            return fail(error, "unexpected WDC5 column metadata size in " + filename);
+        // Some Forever WDC5 tables are schema-only in a given build: they contain
+        // the header and field entries, but no records, sections, or column metadata.
+        // Treat those as valid empty stores instead of rejecting columnMetaSize == 0.
+        if (m_header.recordCount == 0 && m_header.sectionCount == 0 && m_header.columnMetaSize == 0)
+        {
+            m_columns.clear();
+            m_records.clear();
+            return true;
+        }
 
-        m_columns.resize(m_header.totalFieldCount);
+        static constexpr uint32_t ColumnMetaEntrySize = 24U;
+        if ((m_header.columnMetaSize % ColumnMetaEntrySize) != 0)
+        {
+            std::ostringstream out;
+            out << "unexpected WDC5 column metadata size in " << filename << ": " << m_header.columnMetaSize
+                << " is not divisible by " << ColumnMetaEntrySize;
+            return fail(error, out.str());
+        }
+
+        uint32_t const columnMetaCount = m_header.columnMetaSize / ColumnMetaEntrySize;
+        if (columnMetaCount < m_header.totalFieldCount)
+        {
+            std::ostringstream out;
+            out << "insufficient WDC5 column metadata in " << filename << ": got " << columnMetaCount
+                << " entries for " << m_header.totalFieldCount << " fields";
+            return fail(error, out.str());
+        }
+
+        m_columns.resize(columnMetaCount);
         for (ColumnMeta& column : m_columns)
         {
             uint32_t compression = 0;
@@ -237,11 +262,11 @@ namespace WDB
             column.compression = static_cast<WDC5CompressionType>(compression);
         }
 
-        m_palletValues.resize(m_header.totalFieldCount);
-        m_palletArrayValues.resize(m_header.totalFieldCount);
-        m_commonValues.resize(m_header.totalFieldCount);
+        m_palletValues.resize(columnMetaCount);
+        m_palletArrayValues.resize(columnMetaCount);
+        m_commonValues.resize(columnMetaCount);
 
-        for (uint32_t field = 0; field < m_header.totalFieldCount; ++field)
+        for (uint32_t field = 0; field < columnMetaCount; ++field)
         {
             ColumnMeta const& column = m_columns[field];
             if (column.compression != WDC5CompressionType::Pallet)
@@ -256,7 +281,7 @@ namespace WDB
                     return fail(error, "truncated WDC5 pallet data in " + filename);
         }
 
-        for (uint32_t field = 0; field < m_header.totalFieldCount; ++field)
+        for (uint32_t field = 0; field < columnMetaCount; ++field)
         {
             ColumnMeta const& column = m_columns[field];
             if (column.compression != WDC5CompressionType::PalletArray)
@@ -271,7 +296,7 @@ namespace WDB
                     return fail(error, "truncated WDC5 pallet-array data in " + filename);
         }
 
-        for (uint32_t field = 0; field < m_header.totalFieldCount; ++field)
+        for (uint32_t field = 0; field < columnMetaCount; ++field)
         {
             ColumnMeta const& column = m_columns[field];
             if (column.compression != WDC5CompressionType::CommonData)

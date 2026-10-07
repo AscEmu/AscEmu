@@ -38,6 +38,7 @@
 #include "Management/Battleground/Battleground.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Players/PlayerClasses.hpp"
+#include "Objects/Units/Players/TraitManager.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Area/AreaManagementGlobals.hpp"
@@ -6557,3 +6558,25 @@ void Spell::SpellEffectForceDeselect(uint8_t /*effectIndex*/)
 
     //stop attacking and pet target
 }
+
+#if defined(AE_FOREVER)
+void Spell::SpellEffectCreateTraitTreeConfig(uint8_t effectIndex)
+{
+    if (!m_unitTarget || !m_unitTarget->isPlayer())
+        return;
+
+    const int32_t traitTreeId = getSpellInfo()->getEffectMiscValue(effectIndex);
+    if (traitTreeId <= 0)
+        return;
+
+    Player* target = m_unitTarget->ToPlayer();
+    if (!target->getTraitManager().createGenericConfigForTree(static_cast<uint32_t>(traitTreeId)))
+    {
+        sLogger.debugSpellEffect("[ForeverDebug][Traits] CREATE_TRAIT_TREE_CONFIG failed spell={} tree={} player={}", getSpellInfo()->getId(), traitTreeId, target->getGuidLow());
+        return;
+    }
+
+    target->updateObject();
+    sLogger.debugSpellEffect("[ForeverDebug][Traits] CREATE_TRAIT_TREE_CONFIG spell={} tree={} player={}", getSpellInfo()->getId(), traitTreeId, target->getGuidLow());
+}
+#endif
