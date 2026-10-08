@@ -1193,6 +1193,10 @@ void WorldSession::fullLoginForever(Player* player)
     sHookInterface.OnFullLogin(player);
     sObjectMgr.addPlayer(player);
 
+    // Forever: rebuild Legacy unlock after the player is attached to the world and initial login state is available.
+    // The earlier load-time call is intentionally left idempotent; this post-world pass is the client-visible one.
+    player->updateClassicLegacyUnlock();
+
     if (Group* group = player->getGroup())
         group->Update();
 

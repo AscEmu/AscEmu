@@ -36,6 +36,46 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                packet << uint32_t(completedAchievements.size());
+                packet << uint32_t(criteriaProgress.size());
+
+                const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(guid.getRawGuid(), m_protocol.realmId);
+                for (const auto& completed : completedAchievements)
+                {
+                    packet << uint32_t(completed.achievementId);
+                    packet.appendPackedTime(completed.date);
+
+                    if (completed.account)
+                    {
+                        packet << uint64_t(0) << uint64_t(0);
+                        packet << uint32_t(0) << uint32_t(0);
+                    }
+                    else
+                    {
+                        packet << uint64_t(modernGuid.getModernLow()) << uint64_t(modernGuid.getModernHigh());
+                        packet << uint32_t(m_protocol.realmId) << uint32_t(m_protocol.realmId);
+                    }
+                }
+
+                for (const auto& progress : criteriaProgress)
+                {
+                    packet << uint32_t(progress.criteriaId);
+                    packet << uint64_t(progress.counter);
+                    packet << uint64_t(modernGuid.getModernLow()) << uint64_t(modernGuid.getModernHigh());
+                    packet << uint32_t(0); // Flags - no special flags for the persisted AscEmu criteria state
+                    packet << uint32_t(0); // StateFlags - UNKNOWN for Forever, zero for ordinary criteria
+                    packet.appendPackedTime(progress.date);
+                    packet << int64_t(0); // TimeFromStart
+                    packet << int64_t(0); // TimeFromCreate
+                    packet.writeBit(false); // DynamicID absent
+                    packet.flushBits();
+                }
+
+                return true;
+            }
+
             if (m_protocol.isCata())
             {
                 ByteBuffer criteriaData(criteriaProgress.size() * (4 + 4 + 4 + 4 + 8 + 8));

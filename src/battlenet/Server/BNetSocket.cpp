@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Database/Database.hpp"
 #include "Logging/Logger.hpp"
 #include "version/Forever/BuildProfile.hpp"
+#include "version/Forever/RulesetProfile.hpp"
 
 #include <openssl/err.h>
 #include <openssl/rand.h>
@@ -486,64 +487,6 @@ namespace AscEmu::Battlenet
                    static_cast<uint32_t>(realmId);
         }
 
-        enum class ForeverRulesetProfile : uint8_t
-        {
-            None,
-            Legacy69893,
-            Modern70009Plus,
-        };
-
-        struct ForeverSuperDistrictProfile
-        {
-            ForeverRulesetProfile rulesetProfile = ForeverRulesetProfile::None;
-            uint32_t build = 0;
-            uint32_t collectionId = 0;
-            uint32_t superDistrictSetId = 0;
-
-            uint32_t pveAvailableSuperDistrictId = 0;
-            uint32_t pvpAvailableSuperDistrictId = 0;
-            uint32_t roleplayAvailableSuperDistrictId = 0;
-            uint32_t hardcoreAvailableSuperDistrictId = 0;
-
-            uint32_t currentCfgContentSetId = 0;
-            bool contentSetIdKnown = false;
-        };
-
-        [[nodiscard]] ForeverSuperDistrictProfile getForeverSuperDistrictProfile(uint32_t clientBuild)
-        {
-            if (!AscEmu::Version::Forever::supportsBuild(clientBuild))
-                return {};
-
-            // Build 69893 keeps its separately verified ruleset behavior.
-            if (clientBuild == 69893u)
-            {
-                return {
-                    .rulesetProfile = ForeverRulesetProfile::Legacy69893,
-                    .build = clientBuild,
-                };
-            }
-
-            // Build 70009 introduced the newer PvE/PvP/Roleplay/Hardcore selector.
-            // The DB2 relationships below are diagnostic metadata only and are not
-            // serialized as invented Battle.net fields. Builds 70124 and 70205 use
-            // this profile until a build-specific sniff proves a different layout.
-            // Verified: collection 1 -> set 36, AvailableSuperDistrict 2 -> PvP,
-            // AvailableSuperDistrict 3 -> PvE/Normal. Roleplay, Hardcore and the
-            // ContentSet selector are still unknown.
-            return {
-                .rulesetProfile = ForeverRulesetProfile::Modern70009Plus,
-                .build = clientBuild,
-                .collectionId = 1u,
-                .superDistrictSetId = 36u,
-                .pveAvailableSuperDistrictId = 3u,
-                .pvpAvailableSuperDistrictId = 2u,
-                .roleplayAvailableSuperDistrictId = 0u,
-                .hardcoreAvailableSuperDistrictId = 0u,
-                .currentCfgContentSetId = 0u,
-                .contentSetIdKnown = false,
-            };
-        }
-
         [[nodiscard]] constexpr uint32_t getRealmCfgTimezonesId()
         {
             // The official 69893 Forever capture confirmed sub-region "70-1-70" but
@@ -893,7 +836,7 @@ namespace AscEmu::Battlenet
                 }
             }
 
-            const ForeverSuperDistrictProfile foreverProfile = getForeverSuperDistrictProfile(clientBuild);
+            const AscEmu::Version::Forever::SuperDistrictProfile foreverProfile = AscEmu::Version::Forever::getSuperDistrictProfile(clientBuild);
 
             std::ostringstream realmJson;
             realmJson << "JSONRealmListUpdates:{\"updates\":[";
@@ -913,6 +856,8 @@ namespace AscEmu::Battlenet
                     : "AscEmu " + std::to_string(realm.id);
 
                 const ClientVersionParts version = getClientVersionParts(clientBuild);
+                const AscEmu::BattlenetComm::RealmRuleset realmRuleset = sBattleNetCommManager.getRealmRuleset(realm.id);
+                const uint32_t cfgSuperDistrictId = AscEmu::Version::Forever::getCfgSuperDistrictId(realmRuleset);
 
                 realmJson
                     << "{\"update\":{" 
@@ -932,6 +877,7 @@ namespace AscEmu::Battlenet
                     << "\"cfgConfigsID\":1,"
                     << "\"cfgLanguagesID\":1,"
                     << "\"cfgContentSetID\":" << foreverProfile.currentCfgContentSetId << ','
+                    << "\"superDistrictID\":" << cfgSuperDistrictId << ','
                     << "\"useBleepChance\":0.0"
                     << "},\"deleting\":false}";
             }
@@ -2046,11 +1992,11 @@ namespace AscEmu::Battlenet
         (void)commandName;
         std::ostringstream json;
 
-        const ForeverSuperDistrictProfile foreverProfile = getForeverSuperDistrictProfile(m_clientBuild);
-        if (foreverProfile.rulesetProfile != ForeverRulesetProfile::None)
+        const AscEmu::Version::Forever::SuperDistrictProfile foreverProfile = AscEmu::Version::Forever::getSuperDistrictProfile(m_clientBuild);
+        if (foreverProfile.rulesetProfile != AscEmu::Version::Forever::RulesetProfile::None)
         {
             // Both verified profile families currently use the same wire response.
-            // Keep their metadata separate in getForeverSuperDistrictProfile().
+            // Keep their metadata separate in getSuperDistrictProfile().
             json
                 << "JSONSuperDistrictList:{\"superDistricts\":["
                 << "{\"superDistrictID\":2,\"disallowLogin\":false},"

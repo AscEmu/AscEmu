@@ -81,11 +81,13 @@ public:
     void clear();
     void syncActivePlayerData(bool notifyClient = true);
     AscEmu::Traits::Config* ensureCombatConfigForCurrentSpec();
+    int32_t getAvailableCurrency(int32_t traitCurrencyId, AscEmu::Traits::Config const* config = nullptr) const;
 
 private:
     bool validateConfig(AscEmu::Traits::Config const& config) const;
     bool validateEntry(AscEmu::Traits::Config const& config, AscEmu::Traits::Entry const& entry, int32_t subTreeId) const;
     bool isTreeAllowedForConfig(AscEmu::Traits::Config const& config, uint32_t traitTreeId) const;
+    bool validateCurrencyBudget(AscEmu::Traits::Config const& config) const;
     void applyTraitSpells();
     int32_t allocateConfigId() const;
 

@@ -4,9 +4,12 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "PlayerData.hpp"
+#include "Server/ForeverRuleset.hpp"
 
 #include "ChangeMask.hpp"
 #include "Definitions/PlayerData.hpp"
+
+#include <cstring>
 #include "Nested/QuestLog.hpp"
 #include "Nested/VisibleItem.hpp"
 #include "WireHelpers.hpp"
@@ -105,7 +108,11 @@ namespace AscEmu::Version::Forever::UpdateFields
         data << fields.unknownU64_0;
         writeModernGuid(data, fields.unknownGuid3);
         data << fields.unknownU32_0 << fields.unknownU32_1 << fields.unknownU32_2 << fields.unknownU32_3 << fields.unknownI32_0;
-        data.append(fields.unknownBeforeCustomizationCounts.data(), fields.unknownBeforeCustomizationCounts.size());
+        auto superDistrictBlock0 = fields.unknownBeforeCustomizationCounts;
+        uint32_t const superDistrictId = AscEmu::Version::Forever::getRealmCfgSuperDistrictId();
+        static_assert(sizeof(superDistrictId) <= superDistrictBlock0.size());
+        std::memcpy(superDistrictBlock0.data(), &superDistrictId, sizeof(superDistrictId));
+        data.append(superDistrictBlock0.data(), superDistrictBlock0.size());
         data << uint32_t(fields.customizations.size()) << uint32_t(fields.unknownCustomizationChoices0.size());
 
         for (uint8_t value : fields.unknownBytes0)
@@ -160,7 +167,10 @@ namespace AscEmu::Version::Forever::UpdateFields
 
         writeCustomTabardInfoCreate(data, fields.unknownCustomTabard0);
         writeNpcAsPlayerInfoCreate(data, fields.unknownNpcAsPlayer0);
-        data.append(fields.unknownBeforeCustomizationPayload.data(), fields.unknownBeforeCustomizationPayload.size());
+        auto superDistrictBlock1 = fields.unknownBeforeCustomizationPayload;
+        static_assert(sizeof(superDistrictId) <= superDistrictBlock1.size());
+        std::memcpy(superDistrictBlock1.data(), &superDistrictId, sizeof(superDistrictId));
+        data.append(superDistrictBlock1.data(), superDistrictBlock1.size());
 
         for (Fields::ChrCustomizationChoice const& value : fields.customizations)
             writeCustomizationCreate(data, value);

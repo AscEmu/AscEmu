@@ -15,6 +15,7 @@ namespace AscEmu::Packets
     {
         uint32_t achievementId = 0;
         time_t date = 0;
+        bool account = false;
     };
 
     struct CriteriaProgressEntry

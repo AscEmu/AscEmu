@@ -19,6 +19,8 @@ namespace AscEmu::Packets
         uint32_t weeklyQuantity = 0;
         uint32_t weekCap = 0;
         uint32_t trackedQuantity = 0;
+        uint32_t maxQuantity = 0;
+        uint32_t totalEarned = 0;
         uint8_t flags = 0;
     };
 
@@ -68,6 +70,39 @@ namespace AscEmu::Packets
                         packet << uint32_t(record.weeklyQuantity);
                 }
 
+                return true;
+            }
+            else if (m_protocol.isForever())
+            {
+                // FOREVER-VERIFIED STRUCTURE: modern SetupCurrency writes a uint32 count,
+                // then fixed fields followed by presence bits for optional values.
+                packet << uint32_t(records.size());
+                for (auto const& record : records)
+                {
+                    packet << int32_t(record.id);
+                    packet << int32_t(record.quantity);
+                    packet << uint8_t(record.flags);
+
+                    packet.writeBit(record.weeklyQuantity != 0);
+                    packet.writeBit(record.weekCap != 0);
+                    packet.writeBit(record.trackedQuantity != 0);
+                    packet.writeBit(record.maxQuantity != 0);
+                    packet.writeBit(record.totalEarned != 0);
+                    packet.writeBit(false); // NextRechargeTime - UNKNOWN/unused by AscEmu.
+                    packet.writeBit(false); // RechargeCycleStartTime - UNKNOWN/unused by AscEmu.
+                    packet.flushBits();
+
+                    if (record.weeklyQuantity != 0)
+                        packet << uint32_t(record.weeklyQuantity);
+                    if (record.weekCap != 0)
+                        packet << uint32_t(record.weekCap);
+                    if (record.trackedQuantity != 0)
+                        packet << uint32_t(record.trackedQuantity);
+                    if (record.maxQuantity != 0)
+                        packet << int32_t(record.maxQuantity);
+                    if (record.totalEarned != 0)
+                        packet << int32_t(record.totalEarned);
+                }
                 return true;
             }
             else if (m_protocol.isMop())

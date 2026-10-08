@@ -2018,6 +2018,162 @@ namespace {
         return true;
     }
 
+    bool loadForeverAchievementStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
+    {
+        WDB::WDC5File achievement, criteria, criteriaTree, modifierTree;
+        if (!loadForeverGenericWDC5(achievement, "Achievement.db2", errors, dbcPath)
+            || !loadForeverGenericWDC5(criteria, "Criteria.db2", errors, dbcPath)
+            || !loadForeverGenericWDC5(criteriaTree, "CriteriaTree.db2", errors, dbcPath)
+            || !loadForeverGenericWDC5(modifierTree, "ModifierTree.db2", errors, dbcPath))
+            return false;
+
+        auto verify = [&](WDB::WDC5File const& file, char const* name, uint32_t logicalFields)
+        {
+            bool const externalId = file.hasExternalRecordIds() || file.getIndexField() < 0;
+            uint32_t const expected = externalId ? logicalFields - 1 : logicalFields;
+            if (file.getFieldCount() == expected)
+                return true;
+            errors.push_back(std::string("Forever DB2 ") + name + ": unexpected field count " + std::to_string(file.getFieldCount()) + " (expected " + std::to_string(expected) + ")");
+            sLogger.failure("Forever DB2 {} has unexpected field count {} (expected {}).", name, file.getFieldCount(), expected);
+            return false;
+        };
+
+        if (!verify(achievement, "Achievement.db2", 19) || !verify(criteria, "Criteria.db2", 12)
+            || !verify(criteriaTree, "CriteriaTree.db2", 8) || !verify(modifierTree, "ModifierTree.db2", 8))
+            return false;
+
+        auto field = [](WDB::WDC5File const& file, uint32_t logical, uint32_t idLogical)
+        {
+            bool const externalId = file.hasExternalRecordIds() || file.getIndexField() < 0;
+            if (!externalId || logical < idLogical)
+                return logical;
+            return logical > idLogical ? logical - 1 : logical;
+        };
+
+        sForeverAchievementStore.clear();
+        for (uint32_t row = 0; row < achievement.getRecordCount(); ++row)
+        {
+            WDB::Structures::ForeverAchievementEntry e{};
+            e.id = achievement.getRecordId(row);
+            e.faction = achievement.getInt8(row, field(achievement, 5, 3));
+            e.flags = achievement.getInt32(row, field(achievement, 10, 3));
+            e.criteriaTreeId = achievement.getUInt32(row, field(achievement, 14, 3));
+            sForeverAchievementStore[e.id] = e;
+        }
+
+        sForeverCriteriaStore.clear();
+        for (uint32_t row = 0; row < criteria.getRecordCount(); ++row)
+        {
+            WDB::Structures::ForeverCriteriaEntry e{};
+            e.id = criteria.getRecordId(row);
+            e.type = criteria.getInt16(row, field(criteria, 1, 0));
+            e.asset = criteria.getInt32(row, field(criteria, 2, 0));
+            e.modifierTreeId = criteria.getInt32(row, field(criteria, 3, 0));
+            sForeverCriteriaStore[e.id] = e;
+        }
+
+        sForeverCriteriaTreeStore.clear();
+        for (uint32_t row = 0; row < criteriaTree.getRecordCount(); ++row)
+        {
+            WDB::Structures::ForeverCriteriaTreeEntry e{};
+            e.id = criteriaTree.getRecordId(row);
+            e.parent = criteriaTree.getUInt32(row, field(criteriaTree, 2, 0));
+            e.amount = criteriaTree.getUInt32(row, field(criteriaTree, 3, 0));
+            e.op = criteriaTree.getInt32(row, field(criteriaTree, 4, 0));
+            e.criteriaId = criteriaTree.getUInt32(row, field(criteriaTree, 5, 0));
+            sForeverCriteriaTreeStore[e.id] = e;
+        }
+
+        sForeverModifierTreeStore.clear();
+        for (uint32_t row = 0; row < modifierTree.getRecordCount(); ++row)
+        {
+            WDB::Structures::ForeverModifierTreeEntry e{};
+            e.id = modifierTree.getRecordId(row);
+            e.parent = modifierTree.getUInt32(row, field(modifierTree, 1, 0));
+            e.op = modifierTree.getInt8(row, field(modifierTree, 2, 0));
+            e.amount = modifierTree.getInt8(row, field(modifierTree, 3, 0));
+            e.type = modifierTree.getInt32(row, field(modifierTree, 4, 0));
+            e.asset = modifierTree.getInt32(row, field(modifierTree, 5, 0));
+            e.secondaryAsset = modifierTree.getInt32(row, field(modifierTree, 6, 0));
+            e.tertiaryAsset = modifierTree.getInt32(row, field(modifierTree, 7, 0));
+            sForeverModifierTreeStore[e.id] = e;
+        }
+
+        sLogger.debugDbTables("Forever Achievement DB2 stores: achievements={} criteria={} trees={} modifiers={}.", sForeverAchievementStore.size(), sForeverCriteriaStore.size(), sForeverCriteriaTreeStore.size(), sForeverModifierTreeStore.size());
+        return true;
+    }
+
+    bool loadForeverRulesetStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
+    {
+        WDB::WDC5File relation;
+        if (!loadForeverGenericWDC5(relation, "SuperDistrictSetXAvailableSD.db2", errors, dbcPath))
+            return false;
+
+        // Classic 1.60 stores AvailableSuperDistrictID as the only physical field.
+        // SuperDistrictSetID is the WDC5 relationship parent and is exposed by getParentId().
+        if (relation.getFieldCount() != 1u)
+        {
+            errors.push_back("Forever DB2 SuperDistrictSetXAvailableSD.db2: unexpected field count " + std::to_string(relation.getFieldCount()) + " (expected 1 plus relationship parent)");
+            sLogger.failure("Forever DB2 SuperDistrictSetXAvailableSD.db2 has unexpected field count {} (expected 1 plus relationship parent).", relation.getFieldCount());
+            return false;
+        }
+
+        sSuperDistrictSetXAvailableSDStore.clear();
+        for (uint32_t row = 0; row < relation.getRecordCount(); ++row)
+        {
+            WDB::Structures::SuperDistrictSetXAvailableSDEntry entry{};
+            entry.id = relation.getRecordId(row);
+            entry.superDistrictSetId = relation.getParentId(row);
+            entry.availableSuperDistrictId = relation.getUInt32(row, 0);
+
+            if (entry.superDistrictSetId == 0u)
+            {
+                sLogger.debugDbTables("Forever SuperDistrictSetXAvailableSD row id={} has no relationship parent; skipping.", entry.id);
+                continue;
+            }
+
+            sSuperDistrictSetXAvailableSDStore[entry.id] = entry;
+        }
+
+        sLogger.debugDbTables("Forever SuperDistrictSetXAvailableSD DB2 store: {} relations loaded.", sSuperDistrictSetXAvailableSDStore.size());
+        return true;
+    }
+
+    bool loadForeverCurrencyStore(WDB::StoreProblemList& errors, std::string const& dbcPath)
+    {
+        WDB::WDC5File currencyTypes;
+        if (!loadForeverGenericWDC5(currencyTypes, "CurrencyTypes.db2", errors, dbcPath, {{22, 2}}))
+            return false;
+
+        // FOREVER-VERIFIED: CurrencyTypes.db2 uses 23 physical fields in 1.60.1.
+        // The record ID is external; field 22 is Flags[2]. Only the fields used by
+        // AscEmu's common currency runtime are bridged here.
+        if (currencyTypes.getFieldCount() != 23)
+        {
+            errors.push_back("Forever DB2 CurrencyTypes.db2: unexpected field count " + std::to_string(currencyTypes.getFieldCount()) + " (expected 23)");
+            sLogger.failure("Forever DB2 CurrencyTypes.db2 has unexpected field count {} (expected 23).", currencyTypes.getFieldCount());
+            return false;
+        }
+
+        std::vector<std::pair<uint32_t, WDB::Structures::CurrencyTypesEntry>> entries;
+        entries.reserve(currencyTypes.getRecordCount());
+        for (uint32_t row = 0; row < currencyTypes.getRecordCount(); ++row)
+        {
+            WDB::Structures::CurrencyTypesEntry entry{};
+            const uint32_t id = currencyTypes.getRecordId(row);
+            entry.Category = static_cast<uint32_t>(currencyTypes.getInt32(row, 2));
+            entry.name = nullptr; // Localized DB2 name is not required by the runtime currency logic.
+            entry.TotalCap = currencyTypes.getUInt32(row, 6);
+            entry.WeekCap = currencyTypes.getUInt32(row, 7);
+            entry.Flags = currencyTypes.getUInt32(row, 22, 0);
+            entries.emplace_back(id, entry);
+        }
+
+        sCurrencyTypesStore.assignEntries(entries);
+        sLogger.debugDbTables("Forever CurrencyTypes DB2 store: {} entries loaded.", entries.size());
+        return true;
+    }
+
     bool loadForeverTraitStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
     {
         WDB::WDC5File traitSystem, traitTree, traitNode, traitNodeEntry, traitNodeXEntry, traitDefinition, traitSubTree;
@@ -2182,7 +2338,7 @@ namespace {
             e.icon = traitCurrency.getInt32(row, field(traitCurrency, 4, 0));
             e.playerDataElementAccountId = traitCurrency.getInt32(row, field(traitCurrency, 5, 0));
             e.playerDataElementCharacterId = traitCurrency.getInt32(row, field(traitCurrency, 6, 0));
-            e.unknownField7 = traitCurrency.getInt32(row, field(traitCurrency, 7, 0));
+            e.sourcedMax = traitCurrency.getInt32(row, field(traitCurrency, 7, 0));
             sTraitCurrencyStore[e.id] = e;
         }
 
@@ -2197,9 +2353,9 @@ namespace {
             e.achievementId = traitCurrencySource.getInt32(row, field(traitCurrencySource, 5, 1));
             e.playerLevel = traitCurrencySource.getInt32(row, field(traitCurrencySource, 6, 1));
             e.traitNodeEntryId = traitCurrencySource.getInt32(row, field(traitCurrencySource, 7, 1));
-            e.orderIndex = traitCurrencySource.getInt32(row, field(traitCurrencySource, 8, 1));
             if (currencySourceHasSuperDistrict)
-                e.superDistrictSetId = traitCurrencySource.getInt32(row, field(traitCurrencySource, 9, 1));
+                e.superDistrictSetId = traitCurrencySource.getInt32(row, field(traitCurrencySource, 8, 1));
+            e.orderIndex = traitCurrencySource.getInt32(row, field(traitCurrencySource, currencySourceHasSuperDistrict ? 9 : 8, 1));
             sTraitCurrencySourceStore[e.id] = e;
         }
 
@@ -2491,6 +2647,9 @@ bool loadDBCs()
     loadForeverModernCustomizationStores(bad_dbc_files, dbc_path);
     loadForeverModernTaxiStores(bad_dbc_files, dbc_path);
     loadForeverModernItemStores(bad_dbc_files, dbc_path);
+    loadForeverAchievementStores(bad_dbc_files, dbc_path);
+    loadForeverCurrencyStore(bad_dbc_files, dbc_path);
+    loadForeverRulesetStores(bad_dbc_files, dbc_path);
     loadForeverTraitStores(bad_dbc_files, dbc_path);
     loadForeverModernMapStores(bad_dbc_files, dbc_path);
     loadForeverModernTerrainStores(bad_dbc_files, dbc_path);

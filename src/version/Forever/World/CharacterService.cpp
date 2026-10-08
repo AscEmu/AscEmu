@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "world/Server/WorldSocket.hpp"
 #include "world/Server/Opcodes.hpp"
+#include "world/Server/ForeverRuleset.hpp"
 
 #include "Logging/Logger.hpp"
 #include "version/Forever/BuildProfile.hpp"
@@ -402,7 +403,7 @@ bool WorldSocket::sendForeverCharacterEnumFromDatabase(bool includeCollection)
 
     const uint32_t virtualRealmAddress = ((m_foreverRegionId & 0xFFU) << 24U) | ((m_foreverBattlegroupId & 0xFFU) << 16U) | (m_foreverRealmId & 0xFFFFU);
     const auto& raceClassAvailability = AscEmu::Version::Forever::Packets::getRaceClassAvailability();
-    ByteBuffer wire = AscEmu::Version::Forever::Packets::buildCharacterEnumResponse(virtualRealmAddress, m_foreverRealmId, characters, raceClassAvailability);
+    ByteBuffer wire = AscEmu::Version::Forever::Packets::buildCharacterEnumResponse(virtualRealmAddress, m_foreverRealmId, AscEmu::Version::Forever::getRealmCfgSuperDistrictId(), characters, raceClassAvailability);
 
     if (!sendForeverPacket(SMSG_ENUM_CHARACTERS_RESULT, wire.contents(), static_cast<uint32_t>(wire.size())))
         return false;

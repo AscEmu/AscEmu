@@ -3490,6 +3490,44 @@ namespace WDB::Structures
 
     };
 
+
+    struct ForeverAchievementEntry
+    {
+        uint32_t id = 0;
+        int8_t faction = -1;
+        int32_t flags = 0;
+        uint32_t criteriaTreeId = 0;
+    };
+
+    struct ForeverCriteriaEntry
+    {
+        uint32_t id = 0;
+        int16_t type = 0;
+        int32_t asset = 0;
+        int32_t modifierTreeId = 0;
+    };
+
+    struct ForeverCriteriaTreeEntry
+    {
+        uint32_t id = 0;
+        uint32_t parent = 0;
+        uint32_t amount = 0;
+        int32_t op = 0;
+        uint32_t criteriaId = 0;
+    };
+
+    struct ForeverModifierTreeEntry
+    {
+        uint32_t id = 0;
+        uint32_t parent = 0;
+        int8_t op = 0;
+        int8_t amount = 0;
+        int32_t type = 0;
+        int32_t asset = 0;
+        int32_t secondaryAsset = 0;
+        int32_t tertiaryAsset = 0;
+    };
+
     struct TraitSystemEntry
     {
         uint32_t id = 0;
@@ -3574,7 +3612,7 @@ namespace WDB::Structures
         int32_t icon = 0;
         int32_t playerDataElementAccountId = 0;
         int32_t playerDataElementCharacterId = 0;
-        int32_t unknownField7 = 0; // Forever 1.60.1 adds an eighth TraitCurrency field; semantics not proven yet.
+        int32_t sourcedMax = 0;
     };
 
     struct TraitCurrencySourceEntry
@@ -3611,6 +3649,13 @@ namespace WDB::Structures
         uint32_t skillLineId = 0;
         int32_t traitTreeId = 0;
         int32_t orderIndex = 0;
+    };
+
+    struct SuperDistrictSetXAvailableSDEntry
+    {
+        uint32_t id = 0;
+        uint32_t superDistrictSetId = 0;
+        uint32_t availableSuperDistrictId = 0;
     };
 
     struct TraitTreeLoadoutEntry

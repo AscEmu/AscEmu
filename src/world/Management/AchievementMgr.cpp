@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/ForeverRuleset.hpp"
 #include "Server/World.h"
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/SpellMgr.hpp"
@@ -1265,8 +1266,38 @@ void AchievementMgr::sendRespondInspectAchievements(Player* _player)
 #else
 void AchievementMgr::sendAllAchievementData(Player* _player)
 {
-    SmsgAllAchievementData managedPacket{ m_player->getGuid(), buildCriteriaProgressEntries(m_criteriaProgress), buildCompletedAchievementEntries(m_completedAchievements) };
-    _player->getSession()->sendManagedPacket(managedPacket);
+    if (_player->getSession() != nullptr && _player->getSession()->getClientProtocol().isForever())
+    {
+        std::vector<AscEmu::Packets::CompletedAchievementEntry> completedAchievements;
+        completedAchievements.reserve(m_completedAchievements.size());
+        for (const auto& completeIter : m_completedAchievements)
+        {
+            const auto* achievement = sForeverAchievementStore.lookupEntry(completeIter.first);
+            if (achievement == nullptr || (achievement->flags & ACHIEVEMENT_FLAG_HIDDEN))
+                continue;
+
+            completedAchievements.push_back({ completeIter.first, completeIter.second, (achievement->flags & ACHIEVEMENT_FLAG_ACCOUNT) != 0 });
+        }
+
+        std::vector<AscEmu::Packets::CriteriaProgressEntry> criteriaProgress;
+        criteriaProgress.reserve(m_criteriaProgress.size());
+        for (const auto& progressIter : m_criteriaProgress)
+        {
+            if (sForeverCriteriaStore.lookupEntry(progressIter.first) == nullptr)
+                continue;
+
+            criteriaProgress.push_back({ progressIter.first, progressIter.second->counter, progressIter.second->date });
+        }
+
+        sLogger.debug("[ForeverDebug][Achievement] sending initial achievement state earned={} criteria={}", completedAchievements.size(), criteriaProgress.size());
+        SmsgAllAchievementData managedPacket{ m_player->getGuid(), std::move(criteriaProgress), std::move(completedAchievements) };
+        _player->getSession()->sendManagedPacket(managedPacket);
+    }
+    else
+    {
+        SmsgAllAchievementData managedPacket{ m_player->getGuid(), buildCriteriaProgressEntries(m_criteriaProgress), buildCompletedAchievementEntries(m_completedAchievements) };
+        _player->getSession()->sendManagedPacket(managedPacket);
+    }
 
     if (isCharacterLoading && _player == m_player)
     {
@@ -1385,6 +1416,216 @@ bool AchievementMgr::hasCompleted(uint32_t _achievementId) const
     return m_completedAchievements.contains(_achievementId);
 }
 
+namespace
+{
+    bool evaluateForeverModifierTree(uint32_t id, Player const* player)
+    {
+        auto const* entry = sForeverModifierTreeStore.lookupEntry(id);
+        if (!entry)
+            return id == 0;
+
+        auto own = [&]()
+        {
+            switch (entry->type)
+            {
+                case 0:  return true;
+                case 26: return entry->asset == static_cast<int32_t>(player->getClass()); // PlayerClass
+                case 39: return entry->asset == static_cast<int32_t>(player->getLevel()); // PlayerLevelEqual
+                case 69: return static_cast<int32_t>(player->getLevel()) >= entry->asset;  // PlayerLevelEqualOrGreaterThan
+                default:
+                    sLogger.debug("[ForeverDebug][Achievement] unhandled modifier type={} id={} asset={}", entry->type, entry->id, entry->asset);
+                    return false;
+            }
+        };
+
+        if (entry->op == 2)
+            return entry->type != 0 && own();
+        if (entry->op == 3)
+            return entry->type != 0 && !own();
+
+        std::vector<uint32_t> children;
+        for (auto const& [childId, child] : sForeverModifierTreeStore)
+            if (child.parent == id)
+                children.push_back(childId);
+
+        if (entry->op == 4)
+        {
+            for (uint32_t child : children)
+                if (!evaluateForeverModifierTree(child, player))
+                    return false;
+            return true;
+        }
+        if (entry->op == 8)
+        {
+            int32_t remaining = std::max<int32_t>(entry->amount, 1);
+            for (uint32_t child : children)
+                if (evaluateForeverModifierTree(child, player) && --remaining == 0)
+                    return true;
+            return false;
+        }
+        return own();
+    }
+
+    struct ForeverCriteriaTreeEvaluation
+    {
+        uint64_t progress = 0;
+        bool complete = false;
+        bool supported = true;
+    };
+
+    ForeverCriteriaTreeEvaluation evaluateForeverCriteriaTree(uint32_t treeId, Player const* player)
+    {
+        auto const* tree = sForeverCriteriaTreeStore.lookupEntry(treeId);
+        if (!tree)
+            return { 0, false, false };
+
+        if (tree->criteriaId)
+        {
+            auto const* criteria = sForeverCriteriaStore.lookupEntry(tree->criteriaId);
+            if (!criteria)
+                return { 0, false, false };
+            if (criteria->modifierTreeId && !evaluateForeverModifierTree(static_cast<uint32_t>(criteria->modifierTreeId), player))
+                return { 0, false, true };
+
+            if (criteria->type == ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL)
+            {
+                uint64_t const progress = player->getLevel();
+                return { progress, progress >= tree->amount, true };
+            }
+
+            sLogger.debug("[ForeverDebug][Achievement] unsupported Legacy challenge criteria id={} type={} tree={}", criteria->id, criteria->type, tree->id);
+            return { 0, false, false };
+        }
+
+        std::vector<ForeverCriteriaTreeEvaluation> children;
+        for (auto const& [childId, child] : sForeverCriteriaTreeStore)
+        {
+            if (child.parent != treeId)
+                continue;
+            children.push_back(evaluateForeverCriteriaTree(childId, player));
+        }
+
+        // FOREVER-VERIFIED: CriteriaTree uses the modern operator values used by Classic 1.60.
+        switch (tree->op)
+        {
+            case 0: // Complete
+                return children.size() == 1 ? children.front() : ForeverCriteriaTreeEvaluation{ 0, false, false };
+            case 1: // NotComplete
+                return children.size() == 1 ? ForeverCriteriaTreeEvaluation{ children.front().progress, !children.front().complete, children.front().supported }
+                                            : ForeverCriteriaTreeEvaluation{ 0, false, false };
+            case 4: // CompleteAll
+            {
+                bool const supported = !children.empty() && std::ranges::all_of(children, [](auto const& child) { return child.supported; });
+                bool const complete = supported && std::ranges::all_of(children, [](auto const& child) { return child.complete; });
+                return { complete ? static_cast<uint64_t>(children.size()) : 0, complete, supported };
+            }
+            case 5: // Sum
+            {
+                uint64_t progress = 0;
+                bool supported = !children.empty();
+                for (auto const& child : children)
+                {
+                    supported = supported && child.supported;
+                    progress += child.progress;
+                }
+                return { progress, supported && progress >= tree->amount, supported };
+            }
+            case 6: // Highest
+            {
+                uint64_t progress = 0;
+                bool supported = !children.empty();
+                for (auto const& child : children)
+                {
+                    supported = supported && child.supported;
+                    progress = std::max(progress, child.progress);
+                }
+                return { progress, supported && progress >= tree->amount, supported };
+            }
+            case 7: // StartedAtLeast
+            {
+                uint64_t progress = 0;
+                bool supported = !children.empty();
+                for (auto const& child : children)
+                {
+                    supported = supported && child.supported;
+                    if (child.progress >= 1)
+                        ++progress;
+                }
+                return { progress, supported && progress >= tree->amount, supported };
+            }
+            case 8: // CompleteAtLeast
+            {
+                uint64_t progress = 0;
+                bool supported = !children.empty();
+                for (auto const& child : children)
+                {
+                    supported = supported && child.supported;
+                    if (child.complete)
+                        ++progress;
+                }
+                return { progress, supported && progress >= tree->amount, supported };
+            }
+            case 9: // ProgressBar
+            {
+                uint64_t progress = 0;
+                bool supported = !children.empty();
+                for (auto const& child : children)
+                {
+                    supported = supported && child.supported;
+                    progress += child.progress;
+                }
+                return { progress, supported && progress >= tree->amount, supported };
+            }
+            default:
+                sLogger.debug("[ForeverDebug][Achievement] unsupported Legacy CriteriaTree operator={} tree={} amount={}", tree->op, tree->id, tree->amount);
+                return { 0, false, false };
+        }
+    }
+
+}
+
+void AchievementMgr::updateForeverLegacyChallengeAchievements()
+{
+    if (!m_player || !m_player->getSession() || !m_player->getSession()->getClientProtocol().isForever())
+        return;
+
+    static constexpr uint32_t LegacyPointsTraitCurrencyId = 4225;
+    for (auto const& [sourceId, source] : sTraitCurrencySourceStore)
+    {
+        (void)sourceId;
+        if (source.traitCurrencyId != LegacyPointsTraitCurrencyId || source.achievementId <= 0)
+            continue;
+        if (!AscEmu::Version::Forever::isSuperDistrictSetActiveForRealm(source.superDistrictSetId))
+            continue;
+        uint32_t const achievementId = static_cast<uint32_t>(source.achievementId);
+        if (hasCompleted(achievementId))
+            continue;
+        auto const* achievement = sForeverAchievementStore.lookupEntry(achievementId);
+        if (!achievement)
+        {
+            sLogger.debug("[ForeverDebug][Achievement] Legacy source={} achievement={} missing from Achievement.db2 store", sourceId, achievementId);
+            continue;
+        }
+        if (!achievement->criteriaTreeId)
+        {
+            sLogger.debug("[ForeverDebug][Achievement] Legacy source={} achievement={} has no CriteriaTree", sourceId, achievementId);
+            continue;
+        }
+
+        ForeverCriteriaTreeEvaluation const evaluation = evaluateForeverCriteriaTree(achievement->criteriaTreeId, m_player);
+        sLogger.debug("[ForeverDebug][Achievement] Legacy source={} achievement={} tree={} progress={} complete={} supported={} level={} class={}", sourceId, achievementId, achievement->criteriaTreeId, evaluation.progress, evaluation.complete, evaluation.supported, m_player->getLevel(), m_player->getClass());
+        if (!evaluation.complete)
+            continue;
+
+        WDB::Structures::AchievementEntry synthetic{};
+        synthetic.ID = achievementId;
+        synthetic.flags = static_cast<uint32_t>(achievement->flags);
+        synthetic.criteriaTreeID = achievement->criteriaTreeId;
+        sLogger.debug("[ForeverDebug][Achievement] completed Legacy challenge achievement={} level={} class={}", achievementId, m_player->getLevel(), m_player->getClass());
+        completedAchievement(&synthetic);
+    }
+}
+
 Player* AchievementMgr::getPlayer() const { return m_player; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1401,6 +1642,9 @@ void AchievementMgr::completedAchievement(WDB::Structures::AchievementEntry cons
 
     sObjectMgr.addCompletedAchievement(achievement->ID);
     updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_ACHIEVEMENT);
+
+    if (m_player->getSession() != nullptr && m_player->getSession()->getClientProtocol().isForever())
+        m_player->updateClassicLegacyUnlock();
 
     // check for reward
     giveAchievementReward(achievement);

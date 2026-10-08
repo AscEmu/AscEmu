@@ -33,6 +33,20 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(guid.getRawGuid(), m_protocol.realmId);
+                packet << uint64_t(modernGuid.getModernLow()) << uint64_t(modernGuid.getModernHigh()); // Sender
+                packet << uint64_t(modernGuid.getModernLow()) << uint64_t(modernGuid.getModernHigh()); // Earner
+                packet << achievementId;
+                packet.appendPackedTime(completionTime);
+                packet << uint32_t(m_protocol.realmId); // EarnerNativeRealm
+                packet << uint32_t(m_protocol.realmId); // EarnerVirtualRealm
+                packet.writeBit(false); // Initial
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 packet.writeBit(guid[6]);

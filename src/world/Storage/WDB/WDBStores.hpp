@@ -255,6 +255,10 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemArmorShieldEntry> sItemArm
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemArmorTotalEntry> sItemArmorTotalForeverStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemEffectEntry> sItemEffectForeverStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemXItemEffectEntry> sItemXItemEffectForeverStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ForeverAchievementEntry> sForeverAchievementStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ForeverCriteriaEntry> sForeverCriteriaStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ForeverCriteriaTreeEntry> sForeverCriteriaTreeStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ForeverModifierTreeEntry> sForeverModifierTreeStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitSystemEntry> sTraitSystemStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitTreeEntry> sTraitTreeStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitNodeEntry> sTraitNodeStore;
@@ -269,6 +273,7 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitNodeEntryXTraitCostEntry>
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitTreeXTraitCurrencyEntry> sTraitTreeXTraitCurrencyStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitTreeLoadoutEntry> sTraitTreeLoadoutStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::SkillLineXTraitTreeEntry> sSkillLineXTraitTreeStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::SuperDistrictSetXAvailableSDEntry> sSuperDistrictSetXAvailableSDStore;
 #endif
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemExtendedCostEntry> sItemExtendedCostStore; // todo: available for versions > Classic
 

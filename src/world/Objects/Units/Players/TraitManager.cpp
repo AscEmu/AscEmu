@@ -8,13 +8,17 @@ This file is released under the MIT license. See README-MIT for more information
 #if defined(AE_FOREVER)
 
 #include "Player.hpp"
+#include "Management/AchievementMgr.h"
 #include "Database/Database.hpp"
 #include "Database/Field.hpp"
 #include "Logging/Logger.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/ForeverRuleset.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
 #include <algorithm>
+#include <limits>
+#include <map>
 #include <ranges>
 #include <unordered_set>
 
@@ -29,6 +33,128 @@ namespace
     }
 
     constexpr int32_t TraitCombatConfigFlagActiveForSpec = 0x1;
+
+    enum class TraitCurrencyType : int32_t
+    {
+        Gold = 0,
+        CurrencyTypesBased = 1,
+        TraitSourced = 2,
+        TraitSourcedPlayerDataElement = 3
+    };
+}
+
+int32_t TraitManager::getAvailableCurrency(int32_t traitCurrencyId, AscEmu::Traits::Config const* config) const
+{
+    if (!m_owner || traitCurrencyId <= 0)
+        return 0;
+
+    auto const* currency = sTraitCurrencyStore.lookupEntry(static_cast<uint32_t>(traitCurrencyId));
+    if (!currency)
+        return 0;
+
+    switch (static_cast<TraitCurrencyType>(currency->type))
+    {
+        case TraitCurrencyType::Gold:
+            return static_cast<int32_t>(std::min<uint64_t>(m_owner->getCoinage(), static_cast<uint64_t>(std::numeric_limits<int32_t>::max())));
+        case TraitCurrencyType::CurrencyTypesBased:
+            return currency->currencyTypesId > 0 ? static_cast<int32_t>(m_owner->getCurrency(static_cast<uint32_t>(currency->currencyTypesId))) : 0;
+        case TraitCurrencyType::TraitSourced:
+        {
+            int64_t total = 0;
+            auto hasTraitNodeEntry = [&](int32_t traitNodeEntryId)
+            {
+                if (!config || traitNodeEntryId <= 0)
+                    return false;
+
+                auto contains = [traitNodeEntryId](std::vector<AscEmu::Traits::Entry> const& entries)
+                {
+                    return std::ranges::any_of(entries, [traitNodeEntryId](AscEmu::Traits::Entry const& entry)
+                    {
+                        return entry.traitNodeEntryId == traitNodeEntryId && (entry.rank > 0 || entry.grantedRanks > 0);
+                    });
+                };
+
+                if (contains(config->entries))
+                    return true;
+                return std::ranges::any_of(config->subTrees, [&](AscEmu::Traits::SubTree const& subTree) { return contains(subTree.entries); });
+            };
+
+            for (auto const& [id, source] : sTraitCurrencySourceStore)
+            {
+                (void)id;
+                if (source.traitCurrencyId != static_cast<uint32_t>(traitCurrencyId))
+                    continue;
+
+                if (!AscEmu::Version::Forever::isSuperDistrictSetActiveForRealm(source.superDistrictSetId))
+                    continue;
+                if (source.questId > 0 && !m_owner->hasQuestFinished(static_cast<uint32_t>(source.questId)))
+                    continue;
+                if (source.achievementId > 0 && (!m_owner->getAchievementMgr() || !m_owner->getAchievementMgr()->hasCompleted(static_cast<uint32_t>(source.achievementId))))
+                    continue;
+                if (source.playerLevel > 0 && m_owner->getLevel() < static_cast<uint32_t>(source.playerLevel))
+                    continue;
+                if (source.traitNodeEntryId > 0 && !hasTraitNodeEntry(source.traitNodeEntryId))
+                    continue;
+
+                total += source.amount;
+                if (total >= std::numeric_limits<int32_t>::max())
+                    return std::numeric_limits<int32_t>::max();
+            }
+
+            return static_cast<int32_t>(std::max<int64_t>(0, total));
+        }
+        case TraitCurrencyType::TraitSourcedPlayerDataElement:
+            sLogger.debug("[ForeverDebug][Traits] currency id={} uses unimplemented player-data-element source account={} character={}", traitCurrencyId, currency->playerDataElementAccountId, currency->playerDataElementCharacterId);
+            return 0;
+        default:
+            sLogger.debug("[ForeverDebug][Traits] currency id={} has unknown type={}", traitCurrencyId, currency->type);
+            return 0;
+    }
+}
+
+bool TraitManager::validateCurrencyBudget(AscEmu::Traits::Config const& config) const
+{
+    std::map<int32_t, int64_t> spent;
+
+    auto addEntryCost = [&](AscEmu::Traits::Entry const& entry)
+    {
+        if (entry.rank <= 0)
+            return true;
+
+        for (auto const& [id, relation] : sTraitNodeEntryXTraitCostStore)
+        {
+            (void)id;
+            if (relation.traitNodeEntryId != static_cast<uint32_t>(entry.traitNodeEntryId))
+                continue;
+
+            auto const* cost = sTraitCostStore.lookupEntry(static_cast<uint32_t>(relation.traitCostId));
+            if (!cost || cost->traitCurrencyId <= 0 || cost->amount < 0)
+                return false;
+
+            spent[cost->traitCurrencyId] += static_cast<int64_t>(cost->amount) * entry.rank;
+        }
+        return true;
+    };
+
+    for (auto const& entry : config.entries)
+        if (!addEntryCost(entry))
+            return false;
+    for (auto const& subTree : config.subTrees)
+        for (auto const& entry : subTree.entries)
+            if (!addEntryCost(entry))
+                return false;
+
+    for (auto const& [traitCurrencyId, amount] : spent)
+    {
+        const int32_t available = getAvailableCurrency(traitCurrencyId, &config);
+        if (amount > available)
+        {
+            sLogger.debug("[ForeverDebug][Traits] reject config id={} currency={} spent={} available={}", config.id, traitCurrencyId, amount, available);
+            return false;
+        }
+    }
+
+    return true;
 }
 
 bool TraitManager::isTreeAllowedForConfig(AscEmu::Traits::Config const& config, uint32_t traitTreeId) const
@@ -166,7 +292,7 @@ bool TraitManager::validateConfig(AscEmu::Traits::Config const& config) const
                 return false;
     }
 
-    return true;
+    return validateCurrencyBudget(config);
 }
 
 void TraitManager::applyTraitSpells()

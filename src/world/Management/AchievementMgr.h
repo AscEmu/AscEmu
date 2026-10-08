@@ -60,7 +60,12 @@ enum AchievementFlags
     ACHIEVEMENT_FLAG_SHOW_IN_GUILD_HEADER   = 0x00002000,    // Shows in guild news header
     ACHIEVEMENT_FLAG_GUILD                  = 0x00004000,    //
     ACHIEVEMENT_FLAG_SHOW_GUILD_MEMBERS     = 0x00008000,    //
+#if VERSION_STRING < Camelot
     ACHIEVEMENT_FLAG_SHOW_CRITERIA_MEMBERS  = 0x00010000     //
+#else
+    ACHIEVEMENT_FLAG_SHOW_CRITERIA_MEMBERS  = 0x00010000,    //
+    ACHIEVEMENT_FLAG_ACCOUNT                = 0x00020000     // Account-wide achievement (Forever)
+#endif
 };
 
 inline uint32_t secsToTimeBitFields(time_t secs)
@@ -338,6 +343,7 @@ public:
     time_t getCompletedTime(WDB::Structures::AchievementEntry const* _achievement);
     uint32_t getCompletedAchievementsCount() const;
     bool hasCompleted(uint32_t _achievementId) const;
+    void updateForeverLegacyChallengeAchievements();
 
     Player* getPlayer() const;
 

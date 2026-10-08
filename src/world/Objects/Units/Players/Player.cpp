@@ -118,6 +118,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgBindPointUpdate.h"
 #include "Server/Packets/SmsgLoadEquipmentSet.h"
 #include "Server/Packets/SmsgSetupCurrency.h"
+#include "Server/Packets/SmsgSetCurrency.h"
 #include "Server/Packets/SmsgUpdateCurrency.h"
 #include "Server/Packets/SmsgWeeklyResetCurrency.h"
 #include "Server/Packets/SmsgCancelCombat.h"
@@ -1903,18 +1904,7 @@ void Player::updateClassicLegacyUnlock()
     if (!m_traitManager)
         return;
 
-    int32_t earnedLegacyPoints = 0;
-    if (m_achievementMgr)
-    {
-        for (auto const& [id, source] : sTraitCurrencySourceStore)
-        {
-            (void)id;
-            if (source.traitCurrencyId != LegacyPointsTraitCurrencyId || source.superDistrictSetId != 0 || source.achievementId <= 0)
-                continue;
-            if (m_achievementMgr->hasCompleted(static_cast<uint32_t>(source.achievementId)))
-                earnedLegacyPoints += source.amount;
-        }
-    }
+    const int32_t earnedLegacyPoints = m_traitManager->getAvailableCurrency(LegacyPointsTraitCurrencyId);
 
     const uint32_t level = getLevel();
     if (earnedLegacyPoints == 0 && level < LegacyUnlockLevel)
@@ -3510,6 +3500,8 @@ void Player::applyLevelInfo(uint32_t newLevel)
 #if VERSION_STRING >= WotLK
     updateGlyphs();
     updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
+    if (m_achievementMgr && getSession() != nullptr && getSession()->getClientProtocol().isForever())
+        m_achievementMgr->updateForeverLegacyChallengeAchievements();
 #endif
 
 #if defined(AE_FOREVER)
@@ -14812,6 +14804,7 @@ void Player::modifyCurrency(uint32_t id, int32_t count, bool printLog/* = true*/
         record.quantity = playerCurrency.quantity / precision;
         record.weeklyQuantity = playerCurrency.weeklyQuantity / precision;
         record.weekCap = weekCap / precision;
+        record.maxQuantity = currency->TotalCap / precision;
         record.trackedQuantity = playerCurrency.trackedQuantity / precision;
         record.flags = playerCurrency.flags;
 
@@ -14841,14 +14834,29 @@ void Player::modifyCurrency(uint32_t id, int32_t count, bool printLog/* = true*/
     }
 #endif
 
-    AscEmu::Packets::SmsgUpdateCurrency updatePacket(
-        id,
-        static_cast<int32_t>(playerCurrency.quantity / precision),
-        playerCurrency.weeklyQuantity / precision,
-        playerCurrency.trackedQuantity / precision,
-        playerCurrency.flags,
-        !printLog);
-    m_session->sendManagedPacket(updatePacket);
+    if (m_session->getClientProtocol().isForever())
+    {
+        AscEmu::Packets::SmsgSetCurrency setPacket(
+            id,
+            static_cast<int32_t>(playerCurrency.quantity / precision),
+            playerCurrency.weeklyQuantity / precision,
+            playerCurrency.trackedQuantity / precision,
+            currency->TotalCap / precision,
+            0, // Forever CurrencyGainFlags; no specific gain source is proven here yet.
+            !printLog);
+        m_session->sendManagedPacket(setPacket);
+    }
+    else
+    {
+        AscEmu::Packets::SmsgUpdateCurrency updatePacket(
+            id,
+            static_cast<int32_t>(playerCurrency.quantity / precision),
+            playerCurrency.weeklyQuantity / precision,
+            playerCurrency.trackedQuantity / precision,
+            playerCurrency.flags,
+            !printLog);
+        m_session->sendManagedPacket(updatePacket);
+    }
 }
 
 void Player::resetCurrencyWeekCap()
@@ -14888,6 +14896,7 @@ void Player::sendSmsgSetupCurrency()
         record.quantity = currency.quantity / precision;
         record.weeklyQuantity = currency.weeklyQuantity / precision;
         record.weekCap = currencyEntry->WeekCap / precision;
+        record.maxQuantity = currencyEntry->TotalCap / precision;
         record.trackedQuantity = currency.trackedQuantity / precision;
         record.flags = currency.flags;
 
@@ -16965,6 +16974,8 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
 #if defined(AE_FOREVER)
     m_traitManager->loadFromDB(results[PlayerQuery::TraitConfigs].result.get(), results[PlayerQuery::TraitEntries].result.get(), results[PlayerQuery::TraitSubTrees].result.get());
+    if (m_achievementMgr && m_session != nullptr && m_session->getClientProtocol().isForever())
+        m_achievementMgr->updateForeverLegacyChallengeAchievements();
     updateClassicLegacyUnlock();
     m_session->fullLoginForever(this);
 #else

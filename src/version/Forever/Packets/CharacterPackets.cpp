@@ -164,13 +164,12 @@ namespace AscEmu::Version::Forever::Packets
         return packet;
     }
 
-    ByteBuffer buildCharacterEnumResponse(uint32_t virtualRealmAddress, uint32_t realmId, const std::vector<CharacterEnumEntry>& characters, const std::vector<RaceClassAvailability>& raceClassAvailability)
+    ByteBuffer buildCharacterEnumResponse(uint32_t virtualRealmAddress, uint32_t realmId, uint32_t superDistrictId, const std::vector<CharacterEnumEntry>& characters, const std::vector<RaceClassAvailability>& raceClassAvailability)
     {
         constexpr uint32_t ClassDisableMask69913 = 0x7FFFFA20U;
         constexpr uint32_t CharacterFlags2_69913 = 0x00000004U;
         constexpr uint32_t CharacterFlags4_69913 = 0x00040120U;
         constexpr int32_t CharacterSaveVersion69913 = 76;
-        constexpr uint32_t CharacterInfoUnknown69913 = 2U;
         constexpr uint8_t CharacterNameFlags69913 = 0x0CU;
 
         ByteBuffer packet;
@@ -243,7 +242,7 @@ namespace AscEmu::Version::Forever::Packets
             packet << int32_t(0); // TimerunningSeasonID
             packet << uint32_t(0); // OverrideSelectScreenFileDataID
             packet << uint32_t(0); // RealmQueue
-            packet << CharacterInfoUnknown69913;
+            packet << superDistrictId; // FOREVER-VERIFIED: Cfg_SuperDistrictID for this realm/character.
 
             for (const CharacterCustomizationChoice& customization : character.customizations)
                 packet << customization.optionId << customization.choiceId;
