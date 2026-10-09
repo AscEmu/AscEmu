@@ -49,21 +49,25 @@ namespace AscEmu::Packets
 
                     if (completed.account)
                     {
-                        packet << uint64_t(0) << uint64_t(0);
+                        const auto packedOwner = WoWGuid::createModernEmpty().packModern();
+                        packet.append(packedOwner.data(), packedOwner.size());
                         packet << uint32_t(0) << uint32_t(0);
                     }
                     else
                     {
-                        packet << uint64_t(modernGuid.getModernLow()) << uint64_t(modernGuid.getModernHigh());
+                        const auto packedOwner = modernGuid.packModern();
+                        packet.append(packedOwner.data(), packedOwner.size());
                         packet << uint32_t(m_protocol.realmId) << uint32_t(m_protocol.realmId);
                     }
                 }
 
                 for (const auto& progress : criteriaProgress)
                 {
+                    const WoWGuid progressGuid = progress.playerGuid != 0 ? WoWGuid::createModernFromLegacy(progress.playerGuid, m_protocol.realmId) : modernGuid;
                     packet << uint32_t(progress.criteriaId);
                     packet << uint64_t(progress.counter);
-                    packet << uint64_t(modernGuid.getModernLow()) << uint64_t(modernGuid.getModernHigh());
+                    const auto packedPlayer = progressGuid.packModern();
+                    packet.append(packedPlayer.data(), packedPlayer.size());
                     packet << uint32_t(0); // Flags - no special flags for the persisted AscEmu criteria state
                     packet << uint32_t(0); // StateFlags - UNKNOWN for Forever, zero for ordinary criteria
                     packet.appendPackedTime(progress.date);

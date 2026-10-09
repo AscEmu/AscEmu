@@ -422,6 +422,7 @@ public:
 #if defined(AE_FOREVER)
     TraitManager& getTraitManager();
     TraitManager const& getTraitManager() const;
+    void syncForeverWatchedFaction();
     void updateClassicLegacyUnlock();
 #endif
 

@@ -24,8 +24,8 @@ namespace AscEmu::Version::Forever::Fields
     // [FOREVER-VERIFIED]  Proven by a Forever retail capture and/or a working
     //                     differential test against the Forever client.
     // [FOREVER-STRUCTURE] Wire position/size/order is proven, semantics are not.
-    // [REFERENCE]    Name/layout originates from the modern reference schema
-    //                     reference and is useful as a label only. It MUST NOT be
+    // [REFERENCE]         Name/layout originates from an external schema reference
+    //                     and is useful as a label only. It MUST NOT be
     //                     treated as proven Forever semantics until a Forever
     //                     capture confirms it.
     // [UNKNOWN]           Neither semantics nor a stable reference name is proven.
@@ -39,7 +39,7 @@ namespace AscEmu::Version::Forever::Fields
     struct Vec3 { float x = 0.0f; float y = 0.0f; float z = 0.0f; };
     struct Quaternion { float x = 0.0f; float y = 0.0f; float z = 0.0f; float w = 1.0f; };
 
-    // [REFERENCE] Modern modern reference schema field names; wire shape is used by Forever,
+    // [REFERENCE] External schema field names; wire shape is used by Forever,
     // but each semantic label must still be proven independently.
     struct SpellCastVisual
     {
@@ -94,7 +94,7 @@ namespace AscEmu::Version::Forever::Fields
         std::vector<TraitSubTreeCache> subTrees;
     };
 
-    // [REFERENCE] Modern modern reference schema semantic labels unless a local capture comment says otherwise.
+    // [REFERENCE] External schema semantic labels unless a local capture comment says otherwise.
     struct ItemEnchantment
     {
         int32_t id = 0;
@@ -148,7 +148,7 @@ namespace AscEmu::Version::Forever::Fields
         int32_t auraSpellId = 0;
     };
 
-    // [REFERENCE] Modern modern reference schema semantic labels. Preserve only as reference names
+    // [REFERENCE] External schema semantic labels. Preserve only as reference names
     // until a Forever channel/cast differential proves the individual fields.
     struct UnitChannel
     {
@@ -198,7 +198,7 @@ namespace AscEmu::Version::Forever::Fields
     struct DynamicRecord { std::vector<uint8_t> data; };
 
 
-    // [REFERENCE] The following modern nested records keep modern reference schema names only
+    // [REFERENCE] The following nested records keep external schema names only
     // to document the reference wire shape. Their semantics are not Forever-proven unless
     // an explicit local [FOREVER-VERIFIED] comment says otherwise.
     struct ZonePlayerForcedReaction
@@ -353,7 +353,7 @@ namespace AscEmu::Version::Forever::Fields
     };
 
     // [REFERENCE] The 41-bit modern ItemData map and most semantic bit names come from
-    // the modern reference schema reference. Only fields exercised by Forever captures/tests
+    // an external schema reference. Only fields exercised by Forever captures/tests
     // should be considered verified; Definitions/ItemData.hpp controls live VALUES output.
     struct ItemData
     {
@@ -413,7 +413,7 @@ namespace AscEmu::Version::Forever::Fields
         bool hasChanges() const { return changes.any(); }
     };
 
-    // [REFERENCE] Modern modern reference schema semantic labels and mask positions.
+    // [REFERENCE] External schema semantic labels and mask positions.
     // Do not treat NumSlots/Slots bit meanings as Forever-proven without a capture.
     struct ContainerData
     {
@@ -432,7 +432,7 @@ namespace AscEmu::Version::Forever::Fields
         bool hasChanges() const { return changes.any(); }
     };
 
-    // [REFERENCE] The complete semantic map below is based on the modern reference schema
+    // [REFERENCE] The complete semantic map below is based on an external schema reference
     // reference. Only the subset listed in Definitions/UnitData.hpp is currently treated as
     // [FOREVER-VERIFIED] for differential VALUES output. Unlisted names are labels, not proof.
     struct UnitData
@@ -566,7 +566,7 @@ namespace AscEmu::Version::Forever::Fields
         void clearChanges() { changes.reset(); }
         bool hasChanges() const { return changes.any(); }
 
-        // Forever Forever CREATE wire order.
+        // Forever CREATE wire order.
         // Semantic names are kept only where current captures strongly support them.
         bool field314 = false; // final bit; semantic meaning not proven
         std::vector<uint32_t> unknownU32Vector0;
@@ -757,7 +757,7 @@ namespace AscEmu::Version::Forever::Fields
         std::optional<UnitAssistActionData> unknownOptionalRecord0;
     };
 
-    // [REFERENCE] The complete 326-bit semantic map is a modern reference schema reference.
+    // [REFERENCE] The complete 326-bit semantic map is retained from an external schema reference.
     // Forever CREATE remains capture-driven and differential output is restricted to verified fields.
     struct PlayerData
     {
@@ -868,7 +868,7 @@ namespace AscEmu::Version::Forever::Fields
         }
         bool hasChanges() const { return changes.any(); }
 
-        // Forever Forever CREATE wire order.
+        // Forever CREATE wire order.
         // Only wire-verified semantics keep semantic names. Every other field
         // intentionally uses an unknown* name, even when an older client
         // gives the slot a plausible semantic meaning.
@@ -886,7 +886,9 @@ namespace AscEmu::Version::Forever::Fields
 
         // Wire-verified 5-byte structural block immediately before the two
         // customization-count fields. Internal semantics are unknown.
-        std::array<uint8_t, 5> unknownBeforeCustomizationCounts{};
+        // [FOREVER-VERIFIED] First Cfg_SuperDistrictID copy is written directly before
+        // the customization-count pair. The following byte is structurally present but unknown.
+        std::array<uint8_t, 1> unknownAfterCfgSuperDistrictBeforeCustomizationCounts{};
 
         // Wire-verified customization list. The second list occupies a proven
         // customization-shaped wire slot, but its semantic purpose is not yet proven.
@@ -939,14 +941,14 @@ namespace AscEmu::Version::Forever::Fields
         CustomTabardInfo unknownCustomTabard0{};
         NpcAsPlayerInfo unknownNpcAsPlayer0{};
 
-        // Wire-verified 33-byte structural block immediately before the
-        // ChrCustomizationChoice payload. Internal semantics are unknown.
-        std::array<uint8_t, 33> unknownBeforeCustomizationPayload{
+        // [FOREVER-VERIFIED] A second Cfg_SuperDistrictID copy is written immediately
+        // before this structurally verified tail and the ChrCustomizationChoice payload.
+        // The remaining 29 bytes are not semantically identified yet.
+        std::array<uint8_t, 29> unknownAfterCfgSuperDistrictBeforeCustomizationPayload{
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x41, 0x14, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
-            0x0C, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-            0x01
+            0x00, 0x00, 0x00, 0x00, 0x41, 0x14, 0x00, 0x00,
+            0x02, 0x00, 0x00, 0x00, 0x0C, 0x00, 0x00, 0x00,
+            0x01, 0x00, 0x00, 0x00, 0x01
         };
 
         // Wire-verified Forever name tail.
@@ -961,15 +963,14 @@ namespace AscEmu::Version::Forever::Fields
     };
 
     // [REFERENCE] Most semantic names in the CREATE structure come from the modern
-    // modern reference schema reference and MUST NOT be considered Forever-proven unless an explicit
+    // an external schema reference and MUST NOT be considered Forever-proven unless an explicit
     // [FOREVER-VERIFIED] comment exists. VALUES output remains restricted to verified fields.
     struct ActivePlayerData
     {
         // Forever 1.60.1.70009 VALUES uses 14 ActivePlayerData block-presence bits.
         // This is required for the capture-verified XP differential (parent bit 32 + XP bit 60).
         static inline constexpr std::size_t ChangeMaskSize = 14 * 32;
-        // Runtime candidate bit positions retained from the old mapping.
-        // These bit positions remain provisional until differential VALUES testing confirms them.
+        // Provisional bit positions retained for fields that are not yet differential-verified.
         static inline constexpr std::size_t UnknownChangeBit56 = 56;
         static inline constexpr std::size_t UnknownChangeBit57 = 57;
         static inline constexpr std::size_t CoinageBit = 58;
@@ -1047,7 +1048,7 @@ namespace AscEmu::Version::Forever::Fields
         // [FOREVER-STRUCTURE] Forever wire alignment proves this is a 104-byte span of
         // 26 consecutive 32-bit fields immediately following SkillInfo. The semantic
         // slots below intentionally use neutral wire-position names. The former
-        // modern reference schema labels live only in ActivePlayerDataCreateFields as
+        // external schema labels live only in ActivePlayerDataCreateFields as
         // REFERENCE metadata until a Forever differential proves each field independently.
         int32_t unknownI32AfterSkill0 = 0;
         int32_t unknownI32AfterSkill1 = 0;
@@ -1218,7 +1219,7 @@ namespace AscEmu::Version::Forever::Fields
         bool hasChanges() const { return changes.any(); }
     };
 
-    // [REFERENCE] Modern modern reference schema semantic labels; not yet individually proven by Forever captures.
+    // [REFERENCE] External schema semantic labels; not yet individually proven by Forever captures.
     struct DynamicObjectData
     {
         static inline constexpr std::size_t ChangeMaskSize = 7;
@@ -1242,7 +1243,7 @@ namespace AscEmu::Version::Forever::Fields
         bool hasChanges() const { return changes.any(); }
     };
 
-    // [REFERENCE] Modern modern reference schema semantic labels; not yet individually proven by Forever captures.
+    // [REFERENCE] External schema semantic labels; not yet individually proven by Forever captures.
     struct CorpseData
     {
         static inline constexpr std::size_t ChangeMaskSize = 33;
@@ -1282,7 +1283,7 @@ namespace AscEmu::Version::Forever::Fields
         bool hasChanges() const { return changes.any(); }
     };
 
-    // [REFERENCE] Modern modern reference schema AreaTrigger-family labels below are structural
+    // [REFERENCE] External AreaTrigger-family labels below are structural
     // reference names only until exercised by a Forever capture.
     struct ScaleCurve
     {

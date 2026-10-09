@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ChangeMask.hpp"
 #include "Definitions/PlayerData.hpp"
 
-#include <cstring>
 #include "Nested/QuestLog.hpp"
 #include "Nested/VisibleItem.hpp"
 #include "WireHelpers.hpp"
@@ -40,7 +39,7 @@ namespace AscEmu::Version::Forever::UpdateFields
 
         void writeCtrOptionsCreate(ByteBuffer& data, Fields::CtrOptions const& value)
         {
-            // Forever Forever capture layout:
+            // Forever capture layout:
             //   uint32 ConditionalFlagsCount
             //   uint8  FactionGroup
             //   uint32 ChromieTimeExpansionMask
@@ -98,7 +97,7 @@ namespace AscEmu::Version::Forever::UpdateFields
     bool writePlayerDataCreate(ByteBuffer& data, Fields::PlayerData const& fields, bool partyMemberVisible)
     {
         // Verification source of truth: Definitions::PlayerDataCreateFields. Neutral canonical
-        // names describe unknown slots; modern semantic names survive only as reference metadata.
+        // names describe unknown slots; external semantic names survive only as reference metadata.
         if (!hasRequiredPlayerOpaqueRecords(fields))
             return false;
 
@@ -108,11 +107,9 @@ namespace AscEmu::Version::Forever::UpdateFields
         data << fields.unknownU64_0;
         writeModernGuid(data, fields.unknownGuid3);
         data << fields.unknownU32_0 << fields.unknownU32_1 << fields.unknownU32_2 << fields.unknownU32_3 << fields.unknownI32_0;
-        auto superDistrictBlock0 = fields.unknownBeforeCustomizationCounts;
-        uint32_t const superDistrictId = AscEmu::Version::Forever::getRealmCfgSuperDistrictId();
-        static_assert(sizeof(superDistrictId) <= superDistrictBlock0.size());
-        std::memcpy(superDistrictBlock0.data(), &superDistrictId, sizeof(superDistrictId));
-        data.append(superDistrictBlock0.data(), superDistrictBlock0.size());
+        uint32_t const cfgSuperDistrictId = AscEmu::Version::Forever::getRealmCfgSuperDistrictId();
+        data << cfgSuperDistrictId;
+        data.append(fields.unknownAfterCfgSuperDistrictBeforeCustomizationCounts.data(), fields.unknownAfterCfgSuperDistrictBeforeCustomizationCounts.size());
         data << uint32_t(fields.customizations.size()) << uint32_t(fields.unknownCustomizationChoices0.size());
 
         for (uint8_t value : fields.unknownBytes0)
@@ -167,10 +164,8 @@ namespace AscEmu::Version::Forever::UpdateFields
 
         writeCustomTabardInfoCreate(data, fields.unknownCustomTabard0);
         writeNpcAsPlayerInfoCreate(data, fields.unknownNpcAsPlayer0);
-        auto superDistrictBlock1 = fields.unknownBeforeCustomizationPayload;
-        static_assert(sizeof(superDistrictId) <= superDistrictBlock1.size());
-        std::memcpy(superDistrictBlock1.data(), &superDistrictId, sizeof(superDistrictId));
-        data.append(superDistrictBlock1.data(), superDistrictBlock1.size());
+        data << cfgSuperDistrictId;
+        data.append(fields.unknownAfterCfgSuperDistrictBeforeCustomizationPayload.data(), fields.unknownAfterCfgSuperDistrictBeforeCustomizationPayload.size());
 
         for (Fields::ChrCustomizationChoice const& value : fields.customizations)
             writeCustomizationCreate(data, value);

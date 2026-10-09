@@ -421,6 +421,9 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
             "1413, 1415, 1414, 1416, 1417, 1418, 1419, 1420, 1421, 1422, 1423, 1424, 1425, 1426, 1427, 1463, 1400, 456, 1402)",
             guid.getLowGuid());
         CharacterDatabase.execute("DELETE FROM character_achievement_progress WHERE guid = %u", guid.getLowGuid());
+        CharacterDatabase.execute("DELETE FROM character_trait_config_entry WHERE guid = %u", guid.getLowGuid());
+        CharacterDatabase.execute("DELETE FROM character_trait_config_subtree WHERE guid = %u", guid.getLowGuid());
+        CharacterDatabase.execute("DELETE FROM character_trait_config WHERE guid = %u", guid.getLowGuid());
         CharacterDatabase.execute("DELETE FROM playerspells WHERE GUID = %u", guid.getLowGuid());
         CharacterDatabase.execute("DELETE FROM playerdeletedspells WHERE GUID = %u", guid.getLowGuid());
         CharacterDatabase.execute("DELETE FROM playerreputations WHERE guid = %u", guid.getLowGuid());
@@ -1193,9 +1196,12 @@ void WorldSession::fullLoginForever(Player* player)
     sHookInterface.OnFullLogin(player);
     sObjectMgr.addPlayer(player);
 
-    // Forever: rebuild Legacy unlock after the player is attached to the world and initial login state is available.
-    // The earlier load-time call is intentionally left idempotent; this post-world pass is the client-visible one.
+    // Rebuild Legacy after the player is attached to the world so the client sees the final config/currency state.
     player->updateClassicLegacyUnlock();
+
+    // watchedFactionIndex is verified for VALUES updates, while its CREATE position is still opaque.
+    // Push the authoritative value once after world entry so the client does not keep its default index 0.
+    player->syncForeverWatchedFaction();
 
     if (Group* group = player->getGroup())
         group->Update();

@@ -19,6 +19,9 @@ namespace AscEmu::Version::Forever
     };
 
 
+    // Realm-wide Forever ruleset state. Cfg_SuperDistrictID is the value exposed
+    // to realm/character/player wire state; AvailableSuperDistrictID is the DB2
+    // relation key used to resolve SuperDistrictSet membership.
     struct RealmRulesetState
     {
         AscEmu::BattlenetComm::RealmRuleset ruleset = AscEmu::BattlenetComm::RealmRuleset::PvE;
@@ -52,6 +55,7 @@ namespace AscEmu::Version::Forever
             return {
                 .rulesetProfile = RulesetProfile::Legacy69893,
                 .build = clientBuild,
+                .superDistrictSetId = 60u,
             };
         }
 
@@ -73,7 +77,7 @@ namespace AscEmu::Version::Forever
 
     [[nodiscard]] inline constexpr uint32_t getCfgSuperDistrictId(AscEmu::BattlenetComm::RealmRuleset ruleset)
     {
-        // Classic 1.60 Cfg_SuperDistrict ruleset ids carried by realm, character and player state.
+        // FOREVER-VERIFIED: Cfg_SuperDistrictID carried by realm, character and player state.
         switch (ruleset)
         {
             case AscEmu::BattlenetComm::RealmRuleset::PvP: return 1u;

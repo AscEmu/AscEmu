@@ -82,6 +82,7 @@ public:
     void syncActivePlayerData(bool notifyClient = true);
     AscEmu::Traits::Config* ensureCombatConfigForCurrentSpec();
     int32_t getAvailableCurrency(int32_t traitCurrencyId, AscEmu::Traits::Config const* config = nullptr) const;
+    int32_t getSpentCurrency(int32_t traitCurrencyId, AscEmu::Traits::Config const& config) const;
 
 private:
     bool validateConfig(AscEmu::Traits::Config const& config) const;

@@ -112,6 +112,45 @@ int32_t TraitManager::getAvailableCurrency(int32_t traitCurrencyId, AscEmu::Trai
     }
 }
 
+int32_t TraitManager::getSpentCurrency(int32_t traitCurrencyId, AscEmu::Traits::Config const& config) const
+{
+    if (traitCurrencyId <= 0)
+        return 0;
+
+    int64_t spent = 0;
+    auto addEntryCost = [&](AscEmu::Traits::Entry const& entry)
+    {
+        if (entry.rank <= 0)
+            return;
+
+        for (auto const& [id, relation] : sTraitNodeEntryXTraitCostStore)
+        {
+            (void)id;
+            if (relation.traitNodeEntryId != static_cast<uint32_t>(entry.traitNodeEntryId))
+                continue;
+
+            auto const* cost = sTraitCostStore.lookupEntry(static_cast<uint32_t>(relation.traitCostId));
+            if (!cost || cost->traitCurrencyId != traitCurrencyId || cost->amount <= 0)
+                continue;
+
+            spent += static_cast<int64_t>(cost->amount) * entry.rank;
+            if (spent >= std::numeric_limits<int32_t>::max())
+            {
+                spent = std::numeric_limits<int32_t>::max();
+                return;
+            }
+        }
+    };
+
+    for (auto const& entry : config.entries)
+        addEntryCost(entry);
+    for (auto const& subTree : config.subTrees)
+        for (auto const& entry : subTree.entries)
+            addEntryCost(entry);
+
+    return static_cast<int32_t>(spent);
+}
+
 bool TraitManager::validateCurrencyBudget(AscEmu::Traits::Config const& config) const
 {
     std::map<int32_t, int64_t> spent;

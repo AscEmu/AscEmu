@@ -27,12 +27,19 @@ namespace AscEmu::Version::Forever
     }
 
 #if defined(AE_FOREVER)
+    // SuperDistrictSetID 0 is global. Build 69893 predates the modern
+    // AvailableSuperDistrict selector and addresses its Legacy source set directly.
+    // Modern builds resolve non-zero sets through SuperDistrictSetXAvailableSD.
     [[nodiscard]] inline bool isSuperDistrictSetActiveForRealm(int32_t superDistrictSetId)
     {
         if (superDistrictSetId == 0)
             return true;
         if (superDistrictSetId < 0)
             return false;
+
+        SuperDistrictProfile const profile = getSuperDistrictProfile(Build);
+        if (profile.rulesetProfile == RulesetProfile::Legacy69893)
+            return static_cast<uint32_t>(superDistrictSetId) == profile.superDistrictSetId;
 
         uint32_t const availableSuperDistrictId = getRealmAvailableSuperDistrictId();
         if (availableSuperDistrictId == 0)

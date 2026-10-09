@@ -30,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAchievementDeleted.h"
 #include "Server/Packets/SmsgAchievementEarned.h"
 #include "Server/Packets/SmsgAllAchievementData.h"
+#include "Server/Packets/SmsgAllAccountCriteria.h"
 #include "Server/Packets/SmsgAllAchievementDataLegacy.h"
 #include "Server/Packets/SmsgCriteriaDeleted.h"
 #include "Server/Packets/SmsgCriteriaUpdate.h"
@@ -41,6 +42,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellInfo.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 
+#include <limits>
+#include <unordered_set>
+#include <vector>
+
 using namespace AscEmu::Packets;
 
 #if VERSION_STRING > TBC
@@ -49,37 +54,90 @@ AchievementMgr::~AchievementMgr()
 {
     m_criteriaProgress.clear();
     m_completedAchievements.clear();
+    m_accountCriteriaProgress.clear();
+    m_accountCompletedAchievements.clear();
 }
 
-void AchievementMgr::loadFromDb(QueryResult* _achievementResult, QueryResult* _criteriaResult)
+void AchievementMgr::loadFromDb(QueryResult* _achievementResult, QueryResult* _criteriaResult, QueryResult* _accountAchievementResult, QueryResult* _accountCriteriaResult)
 {
-    if (_achievementResult)
+    auto loadAchievements = [&](QueryResult* result, CompletedAchievementMap& store, const char* scope)
     {
+        if (!result)
+            return;
+
         do
         {
-            Field* field = _achievementResult->fetch();
-            uint32_t id = field[0].asUint32();
-            if (m_completedAchievements[id] == 0)
-                m_completedAchievements[id] = field[1].asUint32();
+            Field* field = result->fetch();
+            const uint32_t id = field[0].asUint32();
+            const time_t date = static_cast<time_t>(field[1].asUint64());
+            if (!store.contains(id))
+                store[id] = date;
             else
-                sLogger.failure("Duplicate completed achievement {} for player {}, skipping", id, m_player->getGuidLow());
-        } while (_achievementResult->nextRow());
+                sLogger.failure("Duplicate {} achievement {} for player {}, skipping", scope, id, m_player->getGuidLow());
+        } while (result->nextRow());
+    };
+
+    auto loadCriteria = [&](QueryResult* result, CriteriaProgressMap& store, const char* scope, bool accountScope)
+    {
+        if (!result)
+            return;
+
+        do
+        {
+            Field* field = result->fetch();
+            const uint32_t id = field[0].asUint32();
+            const uint64_t playerGuid = accountScope ? field[3].asUint64() : m_player->getGuid();
+            if (!store.contains(id))
+                store[id] = std::make_unique<CriteriaProgress>(id, field[1].asUint32(), static_cast<time_t>(field[2].asUint64()), playerGuid);
+            else
+                sLogger.failure("Duplicate {} criteria progress {} for player {}, skipping", scope, id, m_player->getGuidLow());
+        } while (result->nextRow());
+    };
+
+    loadAchievements(_achievementResult, m_completedAchievements, "character");
+    loadCriteria(_criteriaResult, m_criteriaProgress, "character", false);
+    loadAchievements(_accountAchievementResult, m_accountCompletedAchievements, "account");
+    loadCriteria(_accountCriteriaResult, m_accountCriteriaProgress, "account", true);
+
+    if (!m_player || !m_player->getSession() || !m_player->getSession()->getClientProtocol().isForever())
+        return;
+
+    // Older development builds stored Forever account achievements on the character. Promote
+    // them on load so existing test characters migrate without a one-off list of achievement IDs.
+    for (auto itr = m_completedAchievements.begin(); itr != m_completedAchievements.end();)
+    {
+        if (!isForeverAccountAchievement(itr->first))
+        {
+            ++itr;
+            continue;
+        }
+
+        auto [accountItr, inserted] = m_accountCompletedAchievements.try_emplace(itr->first, itr->second);
+        if (!inserted && itr->second != 0 && (accountItr->second == 0 || itr->second < accountItr->second))
+            accountItr->second = itr->second;
+
+        CharacterDatabase.execute("REPLACE INTO account_achievement (account_id, achievement, date) VALUES (%u, %u, %u)", m_player->getSession()->GetAccountId(), itr->first, static_cast<uint32_t>(accountItr->second));
+        CharacterDatabase.execute("DELETE FROM character_achievement WHERE guid = %u AND achievement = %u", m_player->getGuidLow(), itr->first);
+        itr = m_completedAchievements.erase(itr);
     }
 
-    if (_criteriaResult)
+    for (auto itr = m_criteriaProgress.begin(); itr != m_criteriaProgress.end();)
     {
-        do
+        if (!isForeverAccountCriteria(itr->first))
         {
-            Field* field = _criteriaResult->fetch();
-            uint32_t progress_id = field[0].asUint32();
-            if (m_criteriaProgress[progress_id] == nullptr)
-            {
-                m_criteriaProgress[progress_id] = std::make_unique<CriteriaProgress>(progress_id, field[1].asUint32(), static_cast<time_t>(field[2].asUint64()));
-            }
-            else
-                sLogger.failure("Duplicate criteria progress {} for player {}, skipping", progress_id, m_player->getGuidLow());
+            ++itr;
+            continue;
+        }
 
-        } while (_criteriaResult->nextRow());
+        auto accountItr = m_accountCriteriaProgress.find(itr->first);
+        if (accountItr == m_accountCriteriaProgress.end() || accountItr->second->counter < itr->second->counter)
+        {
+            m_accountCriteriaProgress[itr->first] = std::make_unique<CriteriaProgress>(itr->first, itr->second->counter, itr->second->date, itr->second->playerGuid != 0 ? itr->second->playerGuid : m_player->getGuid());
+            CharacterDatabase.execute("REPLACE INTO account_achievement_progress (account_id, criteria, counter, date, player_guid) VALUES (%u, %u, %u, %u, %llu)", m_player->getSession()->GetAccountId(), itr->first, itr->second->counter, static_cast<uint32_t>(itr->second->date), static_cast<unsigned long long>(m_accountCriteriaProgress[itr->first]->playerGuid));
+        }
+
+        CharacterDatabase.execute("DELETE FROM character_achievement_progress WHERE guid = %u AND criteria = %u", m_player->getGuidLow(), itr->first);
+        itr = m_criteriaProgress.erase(itr);
     }
 }
 
@@ -184,6 +242,30 @@ void AchievementMgr::saveToDb(QueryBuffer* _buffer)
                 _buffer->addQueryNA(ss.str().c_str());
         }
     }
+
+    if (m_player && m_player->getSession() && m_player->getSession()->getClientProtocol().isForever())
+    {
+        const uint32_t accountId = m_player->getSession()->GetAccountId();
+
+        for (const auto& [achievementId, date] : m_accountCompletedAchievements)
+        {
+            if (_buffer == nullptr)
+                CharacterDatabase.execute("REPLACE INTO account_achievement (account_id, achievement, date) VALUES (%u, %u, %u)", accountId, achievementId, static_cast<uint32_t>(date));
+            else
+                _buffer->addQuery("REPLACE INTO account_achievement (account_id, achievement, date) VALUES (%u, %u, %u)", accountId, achievementId, static_cast<uint32_t>(date));
+        }
+
+        for (const auto& [criteriaId, progress] : m_accountCriteriaProgress)
+        {
+            if (!progress)
+                continue;
+
+            if (_buffer == nullptr)
+                CharacterDatabase.execute("REPLACE INTO account_achievement_progress (account_id, criteria, counter, date, player_guid) VALUES (%u, %u, %u, %u, %llu)", accountId, criteriaId, progress->counter, static_cast<uint32_t>(progress->date), static_cast<unsigned long long>(progress->playerGuid));
+            else
+                _buffer->addQuery("REPLACE INTO account_achievement_progress (account_id, criteria, counter, date, player_guid) VALUES (%u, %u, %u, %u, %llu)", accountId, criteriaId, progress->counter, static_cast<uint32_t>(progress->date), static_cast<unsigned long long>(progress->playerGuid));
+        }
+    }
 }
 
 bool AchievementMgr::canCompleteCriteria(WDB::Structures::AchievementCriteriaEntry const* _achievementCriteria, AchievementCriteriaTypes _type, Player* _player) const
@@ -207,7 +289,7 @@ bool AchievementMgr::canCompleteCriteria(WDB::Structures::AchievementCriteriaEnt
         case ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA:
             return _player->hasOverlayUncovered(_achievementCriteria->explore_area.areaReference);
         case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_ACHIEVEMENT:
-            return m_completedAchievements.find(_achievementCriteria->complete_achievement.linkedAchievement) != m_completedAchievements.end();
+            return hasCompleted(_achievementCriteria->complete_achievement.linkedAchievement);
         case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL:
             return _player->hasSpell(_achievementCriteria->learn_spell.spellID);
         default:
@@ -1269,29 +1351,58 @@ void AchievementMgr::sendAllAchievementData(Player* _player)
     if (_player->getSession() != nullptr && _player->getSession()->getClientProtocol().isForever())
     {
         std::vector<AscEmu::Packets::CompletedAchievementEntry> completedAchievements;
-        completedAchievements.reserve(m_completedAchievements.size());
-        for (const auto& completeIter : m_completedAchievements)
+        completedAchievements.reserve(m_completedAchievements.size() + m_accountCompletedAchievements.size());
+        auto appendCompleted = [&](CompletedAchievementMap const& store, bool accountScope)
         {
-            const auto* achievement = sForeverAchievementStore.lookupEntry(completeIter.first);
-            if (achievement == nullptr || (achievement->flags & ACHIEVEMENT_FLAG_HIDDEN))
-                continue;
+            for (const auto& completeIter : store)
+            {
+                const auto* achievement = sForeverAchievementStore.lookupEntry(completeIter.first);
+                if (achievement == nullptr || (achievement->flags & ACHIEVEMENT_FLAG_HIDDEN))
+                    continue;
 
-            completedAchievements.push_back({ completeIter.first, completeIter.second, (achievement->flags & ACHIEVEMENT_FLAG_ACCOUNT) != 0 });
-        }
+                completedAchievements.push_back({ completeIter.first, completeIter.second, accountScope || (achievement->flags & ACHIEVEMENT_FLAG_ACCOUNT) != 0 });
+            }
+        };
+        appendCompleted(m_completedAchievements, false);
+        appendCompleted(m_accountCompletedAchievements, true);
 
         std::vector<AscEmu::Packets::CriteriaProgressEntry> criteriaProgress;
-        criteriaProgress.reserve(m_criteriaProgress.size());
-        for (const auto& progressIter : m_criteriaProgress)
+        criteriaProgress.reserve(m_criteriaProgress.size() + m_accountCriteriaProgress.size());
+        std::unordered_set<uint32_t> sentCriteria;
+        auto appendCriteria = [&](CriteriaProgressMap const& store)
         {
-            if (sForeverCriteriaStore.lookupEntry(progressIter.first) == nullptr)
-                continue;
+            for (const auto& progressIter : store)
+            {
+                if (!progressIter.second || sForeverCriteriaStore.lookupEntry(progressIter.first) == nullptr || !sentCriteria.insert(progressIter.first).second)
+                    continue;
 
-            criteriaProgress.push_back({ progressIter.first, progressIter.second->counter, progressIter.second->date });
-        }
+                criteriaProgress.push_back({ progressIter.first, progressIter.second->counter, progressIter.second->date, progressIter.second->playerGuid });
+            }
+        };
+        appendCriteria(m_accountCriteriaProgress);
+        appendCriteria(m_criteriaProgress);
 
-        sLogger.debug("[ForeverDebug][Achievement] sending initial achievement state earned={} criteria={}", completedAchievements.size(), criteriaProgress.size());
         SmsgAllAchievementData managedPacket{ m_player->getGuid(), std::move(criteriaProgress), std::move(completedAchievements) };
         _player->getSession()->sendManagedPacket(managedPacket);
+
+        if (!m_accountCriteriaProgress.empty())
+        {
+            std::vector<AscEmu::Packets::CriteriaProgressEntry> accountCriteriaProgress;
+            accountCriteriaProgress.reserve(m_accountCriteriaProgress.size());
+            for (const auto& progressIter : m_accountCriteriaProgress)
+            {
+                if (!progressIter.second || sForeverCriteriaStore.lookupEntry(progressIter.first) == nullptr)
+                    continue;
+
+                accountCriteriaProgress.push_back({ progressIter.first, progressIter.second->counter, progressIter.second->date, progressIter.second->playerGuid });
+            }
+
+            if (!accountCriteriaProgress.empty())
+            {
+                SmsgAllAccountCriteria accountCriteriaPacket{ m_player->getSession()->GetAccountId(), std::move(accountCriteriaProgress) };
+                _player->getSession()->sendManagedPacket(accountCriteriaPacket);
+            }
+        }
     }
     else
     {
@@ -1348,7 +1459,7 @@ bool AchievementMgr::gmCompleteAchievement(WorldSession* _gmSession, uint32_t _a
         return true;
     }
 
-    if (m_completedAchievements.contains(_achievementId))
+    if (hasCompleted(_achievementId))
     {
         _gmSession->systemMessage("Player has already completed that achievement.");
         return false;
@@ -1384,36 +1495,109 @@ void AchievementMgr::gmResetAchievement(uint32_t _achievementId, bool _finishAll
             SmsgAchievementDeleted sendPacket(completedAchievement.first);
             getPlayer()->getSession()->sendManagedPacket(sendPacket);
         }
+        for (const auto& completedAchievement : m_accountCompletedAchievements)
+        {
+            SmsgAchievementDeleted sendPacket(completedAchievement.first);
+            getPlayer()->getSession()->sendManagedPacket(sendPacket);
+        }
 
         m_completedAchievements.clear();
+        m_accountCompletedAchievements.clear();
         CharacterDatabase.execute("DELETE FROM character_achievement WHERE guid = %u", m_player->getGuidLow());
+        if (m_player->getSession() && m_player->getSession()->getClientProtocol().isForever())
+            CharacterDatabase.execute("DELETE FROM account_achievement WHERE account_id = %u", m_player->getSession()->GetAccountId());
     }
     else
     {
         SmsgAchievementDeleted sendPacket(_achievementId);
         getPlayer()->getSession()->sendManagedPacket(sendPacket);
 
-        m_completedAchievements.erase(_achievementId);
-        CharacterDatabase.execute("DELETE FROM character_achievement WHERE guid = %u AND achievement = %u", m_player->getGuidLow(), static_cast<uint32_t>(_achievementId));
+        if (isForeverAccountAchievement(_achievementId))
+        {
+            m_accountCompletedAchievements.erase(_achievementId);
+            if (m_player->getSession())
+                CharacterDatabase.execute("DELETE FROM account_achievement WHERE account_id = %u AND achievement = %u", m_player->getSession()->GetAccountId(), _achievementId);
+        }
+        else
+        {
+            m_completedAchievements.erase(_achievementId);
+            CharacterDatabase.execute("DELETE FROM character_achievement WHERE guid = %u AND achievement = %u", m_player->getGuidLow(), _achievementId);
+        }
     }
 }
 
 time_t AchievementMgr::getCompletedTime(WDB::Structures::AchievementEntry const* _achievement)
 {
-    auto iter = m_completedAchievements.find(_achievement->ID);
-    if (iter != m_completedAchievements.end())
+    if (auto iter = m_completedAchievements.find(_achievement->ID); iter != m_completedAchievements.end())
+        return iter->second;
+    if (auto iter = m_accountCompletedAchievements.find(_achievement->ID); iter != m_accountCompletedAchievements.end())
         return iter->second;
     return 0;
 }
 
 uint32_t AchievementMgr::getCompletedAchievementsCount() const
 {
-    return static_cast<uint32_t>(m_completedAchievements.size());
+    return static_cast<uint32_t>(m_completedAchievements.size() + m_accountCompletedAchievements.size());
 }
 
 bool AchievementMgr::hasCompleted(uint32_t _achievementId) const
 {
-    return m_completedAchievements.contains(_achievementId);
+    return m_completedAchievements.contains(_achievementId) || m_accountCompletedAchievements.contains(_achievementId);
+}
+
+bool AchievementMgr::isForeverAccountAchievement(uint32_t _achievementId) const
+{
+    if (!m_player || !m_player->getSession() || !m_player->getSession()->getClientProtocol().isForever())
+        return false;
+
+    if (const auto* achievement = sForeverAchievementStore.lookupEntry(_achievementId); achievement && (achievement->flags & ACHIEVEMENT_FLAG_ACCOUNT))
+        return true;
+
+    static constexpr uint32_t LegacyPointsTraitCurrencyId = 4225;
+    for (const auto& [sourceId, source] : sTraitCurrencySourceStore)
+    {
+        (void)sourceId;
+        if (source.traitCurrencyId != LegacyPointsTraitCurrencyId || source.achievementId != static_cast<int32_t>(_achievementId))
+            continue;
+        if (AscEmu::Version::Forever::isSuperDistrictSetActiveForRealm(source.superDistrictSetId))
+            return true;
+    }
+
+    return false;
+}
+
+bool AchievementMgr::isForeverAccountCriteria(uint32_t _criteriaId) const
+{
+    if (!sForeverCriteriaStore.lookupEntry(_criteriaId))
+        return false;
+
+    for (const auto& [achievementId, achievement] : sForeverAchievementStore)
+    {
+        if (!isForeverAccountAchievement(achievementId) || achievement.criteriaTreeId == 0)
+            continue;
+
+        std::vector<uint32_t> pending{ achievement.criteriaTreeId };
+        std::unordered_set<uint32_t> visited;
+        while (!pending.empty())
+        {
+            const uint32_t treeId = pending.back();
+            pending.pop_back();
+            if (!visited.insert(treeId).second)
+                continue;
+
+            const auto* tree = sForeverCriteriaTreeStore.lookupEntry(treeId);
+            if (!tree)
+                continue;
+            if (tree->criteriaId == _criteriaId)
+                return true;
+
+            for (const auto& [childId, child] : sForeverCriteriaTreeStore)
+                if (child.parent == treeId)
+                    pending.push_back(childId);
+        }
+    }
+
+    return false;
 }
 
 namespace
@@ -1433,7 +1617,6 @@ namespace
                 case 39: return entry->asset == static_cast<int32_t>(player->getLevel()); // PlayerLevelEqual
                 case 69: return static_cast<int32_t>(player->getLevel()) >= entry->asset;  // PlayerLevelEqualOrGreaterThan
                 default:
-                    sLogger.debug("[ForeverDebug][Achievement] unhandled modifier type={} id={} asset={}", entry->type, entry->id, entry->asset);
                     return false;
             }
         };
@@ -1473,7 +1656,7 @@ namespace
         bool supported = true;
     };
 
-    ForeverCriteriaTreeEvaluation evaluateForeverCriteriaTree(uint32_t treeId, Player const* player)
+    ForeverCriteriaTreeEvaluation evaluateForeverCriteriaTree(uint32_t treeId, Player const* player, std::unordered_map<uint32_t, uint64_t>* accountProgress = nullptr)
     {
         auto const* tree = sForeverCriteriaTreeStore.lookupEntry(treeId);
         if (!tree)
@@ -1489,11 +1672,11 @@ namespace
 
             if (criteria->type == ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL)
             {
-                uint64_t const progress = player->getLevel();
+                const uint64_t progress = player->getLevel();
+                if (accountProgress)
+                    (*accountProgress)[criteria->id] = std::max((*accountProgress)[criteria->id], progress);
                 return { progress, progress >= tree->amount, true };
             }
-
-            sLogger.debug("[ForeverDebug][Achievement] unsupported Legacy challenge criteria id={} type={} tree={}", criteria->id, criteria->type, tree->id);
             return { 0, false, false };
         }
 
@@ -1502,7 +1685,7 @@ namespace
         {
             if (child.parent != treeId)
                 continue;
-            children.push_back(evaluateForeverCriteriaTree(childId, player));
+            children.push_back(evaluateForeverCriteriaTree(childId, player, accountProgress));
         }
 
         // FOREVER-VERIFIED: CriteriaTree uses the modern operator values used by Classic 1.60.
@@ -1577,7 +1760,6 @@ namespace
                 return { progress, supported && progress >= tree->amount, supported };
             }
             default:
-                sLogger.debug("[ForeverDebug][Achievement] unsupported Legacy CriteriaTree operator={} tree={} amount={}", tree->op, tree->id, tree->amount);
                 return { 0, false, false };
         }
     }
@@ -1603,17 +1785,39 @@ void AchievementMgr::updateForeverLegacyChallengeAchievements()
         auto const* achievement = sForeverAchievementStore.lookupEntry(achievementId);
         if (!achievement)
         {
-            sLogger.debug("[ForeverDebug][Achievement] Legacy source={} achievement={} missing from Achievement.db2 store", sourceId, achievementId);
             continue;
         }
         if (!achievement->criteriaTreeId)
         {
-            sLogger.debug("[ForeverDebug][Achievement] Legacy source={} achievement={} has no CriteriaTree", sourceId, achievementId);
             continue;
         }
 
-        ForeverCriteriaTreeEvaluation const evaluation = evaluateForeverCriteriaTree(achievement->criteriaTreeId, m_player);
-        sLogger.debug("[ForeverDebug][Achievement] Legacy source={} achievement={} tree={} progress={} complete={} supported={} level={} class={}", sourceId, achievementId, achievement->criteriaTreeId, evaluation.progress, evaluation.complete, evaluation.supported, m_player->getLevel(), m_player->getClass());
+        std::unordered_map<uint32_t, uint64_t> accountProgress;
+        ForeverCriteriaTreeEvaluation const evaluation = evaluateForeverCriteriaTree(achievement->criteriaTreeId, m_player, &accountProgress);
+        for (const auto& [criteriaId, progressValue] : accountProgress)
+        {
+            if (progressValue == 0 || !isForeverAccountCriteria(criteriaId))
+                continue;
+
+            const uint32_t storedValue = static_cast<uint32_t>(std::min<uint64_t>(progressValue, std::numeric_limits<uint32_t>::max()));
+            auto itr = m_accountCriteriaProgress.find(criteriaId);
+            if (itr != m_accountCriteriaProgress.end() && itr->second && itr->second->counter >= storedValue)
+            {
+                if (itr->second->playerGuid == 0)
+                {
+                    itr->second->playerGuid = m_player->getGuid();
+                    CharacterDatabase.execute("UPDATE account_achievement_progress SET player_guid = %llu WHERE account_id = %u AND criteria = %u", static_cast<unsigned long long>(itr->second->playerGuid), m_player->getSession()->GetAccountId(), criteriaId);
+                }
+                continue;
+            }
+
+            auto progress = std::make_unique<CriteriaProgress>(criteriaId, storedValue, time(nullptr), m_player->getGuid());
+            const time_t progressDate = progress->date;
+            m_accountCriteriaProgress[criteriaId] = std::move(progress);
+            CharacterDatabase.execute("REPLACE INTO account_achievement_progress (account_id, criteria, counter, date, player_guid) VALUES (%u, %u, %u, %u, %llu)", m_player->getSession()->GetAccountId(), criteriaId, storedValue, static_cast<uint32_t>(progressDate), static_cast<unsigned long long>(m_accountCriteriaProgress[criteriaId]->playerGuid));
+            sendCriteriaUpdate(m_accountCriteriaProgress[criteriaId].get());
+        }
+
         if (!evaluation.complete)
             continue;
 
@@ -1621,7 +1825,6 @@ void AchievementMgr::updateForeverLegacyChallengeAchievements()
         synthetic.ID = achievementId;
         synthetic.flags = static_cast<uint32_t>(achievement->flags);
         synthetic.criteriaTreeID = achievement->criteriaTreeId;
-        sLogger.debug("[ForeverDebug][Achievement] completed Legacy challenge achievement={} level={} class={}", achievementId, m_player->getLevel(), m_player->getClass());
         completedAchievement(&synthetic);
     }
 }
@@ -1632,19 +1835,38 @@ Player* AchievementMgr::getPlayer() const { return m_player; }
 /// Completes the achievement for the player.
 void AchievementMgr::completedAchievement(WDB::Structures::AchievementEntry const* achievement)
 {
-    if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER || m_completedAchievements.find(achievement->ID) != m_completedAchievements.end())
+    if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER || hasCompleted(achievement->ID))
         return;
+
+    const bool foreverAccountAchievement = isForeverAccountAchievement(achievement->ID);
+    const time_t completedAt = time(nullptr);
+    if (foreverAccountAchievement)
+    {
+        m_accountCompletedAchievements[achievement->ID] = completedAt;
+        if (m_player && m_player->getSession())
+            CharacterDatabase.execute("REPLACE INTO account_achievement (account_id, achievement, date) VALUES (%u, %u, %u)", m_player->getSession()->GetAccountId(), achievement->ID, static_cast<uint32_t>(completedAt));
+    }
+    else
+    {
+        m_completedAchievements[achievement->ID] = completedAt;
+    }
 
     if (showCompletedAchievement(achievement->ID, getPlayer()))
         sendAchievementEarned(achievement);
-
-    m_completedAchievements[achievement->ID] = time(nullptr);
 
     sObjectMgr.addCompletedAchievement(achievement->ID);
     updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_ACHIEVEMENT);
 
     if (m_player->getSession() != nullptr && m_player->getSession()->getClientProtocol().isForever())
+    {
         m_player->updateClassicLegacyUnlock();
+
+        // The Forever SMSG_ACHIEVEMENT_EARNED opcode/layout is still unverified.
+        // Re-send the proven full achievement state after storing an account-wide
+        // completion so the Legacy Challenges UI updates immediately without a relog.
+        if (foreverAccountAchievement && !isCharacterLoading)
+            sendAllAchievementData(m_player);
+    }
 
     // check for reward
     giveAchievementReward(achievement);
@@ -1930,7 +2152,7 @@ void AchievementMgr::sendAchievementEarned(WDB::Structures::AchievementEntry con
 /// ACHIEVEMENT_COMPLETED_NONE: has not been completed yet
 AchievementCompletionState AchievementMgr::getAchievementCompletionState(WDB::Structures::AchievementEntry const* _entry)
 {
-    if (m_completedAchievements.contains(_entry->ID))
+    if (hasCompleted(_entry->ID))
         return ACHIEVEMENT_COMPLETED_COMPLETED_STORED;
 
     uint32_t completedCount = 0;
@@ -2201,7 +2423,7 @@ bool AchievementMgr::isCompletedCriteria(WDB::Structures::AchievementCriteriaEnt
         case ACHIEVEMENT_CRITERIA_TYPE_HK_RACE:
             return progresscounter >= achievementCriteria->hk_race.count;
         case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_ACHIEVEMENT:
-            return m_completedAchievements.contains(achievementCriteria->complete_achievement.linkedAchievement);
+            return hasCompleted(achievementCriteria->complete_achievement.linkedAchievement);
 
         // These achievements only require counter to be 1 (or higher)
         case ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA:

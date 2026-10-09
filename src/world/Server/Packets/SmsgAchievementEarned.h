@@ -36,8 +36,10 @@ namespace AscEmu::Packets
             if (m_protocol.isForever())
             {
                 const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(guid.getRawGuid(), m_protocol.realmId);
-                packet << uint64_t(modernGuid.getModernLow()) << uint64_t(modernGuid.getModernHigh()); // Sender
-                packet << uint64_t(modernGuid.getModernLow()) << uint64_t(modernGuid.getModernHigh()); // Earner
+                const auto packedSender = modernGuid.packModern();
+                packet.append(packedSender.data(), packedSender.size()); // Sender
+                const auto packedEarner = modernGuid.packModern();
+                packet.append(packedEarner.data(), packedEarner.size()); // Earner
                 packet << achievementId;
                 packet.appendPackedTime(completionTime);
                 packet << uint32_t(m_protocol.realmId); // EarnerNativeRealm

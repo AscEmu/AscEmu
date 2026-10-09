@@ -76,16 +76,18 @@ inline uint32_t secsToTimeBitFields(time_t secs)
 
 struct CriteriaProgress
 {
-    CriteriaProgress(uint32_t iid, uint32_t icounter, time_t tdate = time(nullptr))
+    CriteriaProgress(uint32_t iid, uint32_t icounter, time_t tdate = time(nullptr), uint64_t iplayerGuid = 0)
         :
         id(iid),
         counter(icounter),
-        date(tdate)
+        date(tdate),
+        playerGuid(iplayerGuid)
     { }
 
-    uint32_t id;     ///< Criteria ID
+    uint32_t id;      ///< Criteria ID
     uint32_t counter; ///< Completed count: how many times the criteria has been completed
-    time_t date;   ///< Date/time
+    time_t date;      ///< Date/time
+    uint64_t playerGuid; ///< Character that produced this criteria progress; required for account-wide Forever criteria
 };
 
 struct AchievementReward
@@ -314,7 +316,7 @@ public:
     // Need public for unique_ptr -Appled
     ~AchievementMgr();
 
-    void loadFromDb(QueryResult* _achievementResult, QueryResult* _criteriaResult);
+    void loadFromDb(QueryResult* _achievementResult, QueryResult* _criteriaResult, QueryResult* _accountAchievementResult = nullptr, QueryResult* _accountCriteriaResult = nullptr);
     void saveToDb(QueryBuffer* _buffer);
 
     bool canCompleteCriteria(WDB::Structures::AchievementCriteriaEntry const* _achievementCriteria, AchievementCriteriaTypes _type, Player* _player) const;
@@ -343,6 +345,8 @@ public:
     time_t getCompletedTime(WDB::Structures::AchievementEntry const* _achievement);
     uint32_t getCompletedAchievementsCount() const;
     bool hasCompleted(uint32_t _achievementId) const;
+    bool isForeverAccountAchievement(uint32_t _achievementId) const;
+    bool isForeverAccountCriteria(uint32_t _criteriaId) const;
     void updateForeverLegacyChallengeAchievements();
 
     Player* getPlayer() const;
@@ -369,6 +373,8 @@ private:
     Player* m_player;
     CriteriaProgressMap m_criteriaProgress;
     CompletedAchievementMap m_completedAchievements;
+    CriteriaProgressMap m_accountCriteriaProgress;
+    CompletedAchievementMap m_accountCompletedAchievements;
     bool isCharacterLoading;
 };
 #endif

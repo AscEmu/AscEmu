@@ -23,5 +23,6 @@ namespace AscEmu::Packets
         uint32_t criteriaId = 0;
         uint64_t counter = 0;
         time_t date = 0;
+        uint64_t playerGuid = 0;
     };
 }

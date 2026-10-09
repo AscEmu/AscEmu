@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 namespace AscEmu::Version::Forever::UpdateFields::Definitions
 {
     // REFERENCE: canonical metadata names are deliberately neutral. The final string is
-    // the modern reference schema reference label and must never be presented as Forever-proven.
+    // the external schema reference label and must never be presented as Forever-proven.
     using ItemDataUpdate = UnfilteredUpdateDefinition<Fields::ItemData::ChangeMaskSize,
         GuidField<&Fields::ItemData::owner, Fields::ItemData::OwnerBit, NoParentBit, FieldVerification::ReferenceOnly, "unknownGuidBit3", "Owner">,
         GuidField<&Fields::ItemData::containedIn, Fields::ItemData::ContainedInBit, NoParentBit, FieldVerification::ReferenceOnly, "unknownGuidBit4", "ContainedIn">,

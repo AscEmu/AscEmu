@@ -1883,6 +1883,16 @@ void Player::setWatchedFaction(uint32_t factionId)
 }
 
 #if defined(AE_FOREVER)
+void Player::syncForeverWatchedFaction()
+{
+    m_foreverActivePlayerFields.changes.set(AscEmu::Version::Forever::Fields::ActivePlayerData::WatchedFactionParentBit);
+    m_foreverActivePlayerFields.changes.set(AscEmu::Version::Forever::Fields::ActivePlayerData::WatchedFactionIndexBit);
+    if (IsInWorld())
+        updateObject();
+}
+#endif
+
+#if defined(AE_FOREVER)
 TraitManager& Player::getTraitManager()
 {
     return *m_traitManager;
@@ -1899,43 +1909,36 @@ void Player::updateClassicLegacyUnlock()
     static constexpr uint32_t LegacyRewardTrackFactionId = 2802;
     static constexpr uint32_t LegacyPointsTraitCurrencyId = 4225;
     static constexpr uint32_t LegacyAdventureTraitTreeId = 1188;
-    static constexpr uint8_t LegacyUnlockLevel = 25;
 
     if (!m_traitManager)
         return;
 
     const int32_t earnedLegacyPoints = m_traitManager->getAvailableCurrency(LegacyPointsTraitCurrencyId);
 
-    const uint32_t level = getLevel();
-    if (earnedLegacyPoints == 0 && level < LegacyUnlockLevel)
-        return;
-
-    sLogger.debug("[ForeverDebug][Legacy] update level={} earnedPoints={}", level, earnedLegacyPoints);
-
-    // Generic Legacy configs use the same TraitManager path as other trait trees.
-    // Tree 1188 (Adventure) belongs to Legacy trait system 45. Do not create it before the unlock condition is met.
+    // Every Forever character needs a valid Legacy config, even before the account has unlocked
+    // Legacy. The earned point budget is account-wide; the selected nodes remain character-specific.
     auto* legacyConfig = m_traitManager->createGenericConfigForTree(LegacyAdventureTraitTreeId);
     if (!legacyConfig)
         sLogger.debug("[ForeverDebug][Legacy] unable to ensure Legacy trait config for tree={}", LegacyAdventureTraitTreeId);
-    else
-        sLogger.debug("[ForeverDebug][Legacy] config id={} traitSystem={} tree={}", legacyConfig->id, legacyConfig->traitSystemId, LegacyAdventureTraitTreeId);
+
+    if (earnedLegacyPoints <= 0)
+    {
+        return;
+    }
 
     const int32_t currentRenown = static_cast<int32_t>(getCurrency(LegacyRenownCurrencyId));
-    if (earnedLegacyPoints > currentRenown)
-    {
+    if (earnedLegacyPoints != currentRenown)
         modifyCurrency(LegacyRenownCurrencyId, earnedLegacyPoints - currentRenown);
-        sLogger.debug("[ForeverDebug][Legacy] currency id={} {}->{}", LegacyRenownCurrencyId, currentRenown, earnedLegacyPoints);
-    }
 
     if (auto const* legacyFaction = sFactionStore.lookupEntry(LegacyRewardTrackFactionId))
     {
         if (legacyFaction->reputationIndex >= 0 && legacyFaction->reputationIndex < PLAYER_REPUTATION_COUNT && !m_reputationByListId[legacyFaction->reputationIndex])
             addNewFaction(legacyFaction, 0, true);
         onTalkReputation(legacyFaction);
-        sLogger.debug("[ForeverDebug][Legacy] faction id={} reputationIndex={} visible", LegacyRewardTrackFactionId, legacyFaction->reputationIndex);
     }
     else
         sLogger.debug("[ForeverDebug][Legacy] missing faction id={}", LegacyRewardTrackFactionId);
+
 }
 #endif
 
@@ -3500,11 +3503,14 @@ void Player::applyLevelInfo(uint32_t newLevel)
 #if VERSION_STRING >= WotLK
     updateGlyphs();
     updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
-    if (m_achievementMgr && getSession() != nullptr && getSession()->getClientProtocol().isForever())
-        m_achievementMgr->updateForeverLegacyChallengeAchievements();
 #endif
 
 #if defined(AE_FOREVER)
+    // Forever is built independently from the legacy VERSION_STRING achievement gates.
+    // Evaluate modern Legacy challenge criteria immediately after the new level is applied,
+    // then rebuild the sourced TraitCurrency/renown state in the same level-up pass.
+    if (m_achievementMgr && getSession() != nullptr && getSession()->getClientProtocol().isForever())
+        m_achievementMgr->updateForeverLegacyChallengeAchievements();
     updateClassicLegacyUnlock();
 #endif
 
@@ -16178,7 +16184,9 @@ namespace PlayerQuery
 #if defined(AE_FOREVER)
         TraitConfigs = 20,
         TraitEntries = 21,
-        TraitSubTrees = 22
+        TraitSubTrees = 22,
+        AccountAchievements = 23,
+        AccountAchievementProgress = 24
 #endif
     };
 }
@@ -16220,6 +16228,8 @@ bool Player::loadFromDB(uint32_t guid)
     q->addQuery("SELECT config_id, config_type, specialization_id, combat_config_flags, local_identifier, skill_line_id, trait_system_id, variation_id, name, saved_config_id, saved_local_identifier FROM character_trait_config WHERE guid = %u ORDER BY config_id", guid); // 20
     q->addQuery("SELECT config_id, subtree_id, trait_node_id, trait_node_entry_id, `rank`, granted_ranks, bonus_ranks FROM character_trait_config_entry WHERE guid = %u ORDER BY config_id, subtree_id, trait_node_id, trait_node_entry_id", guid); // 21
     q->addQuery("SELECT config_id, subtree_id, active FROM character_trait_config_subtree WHERE guid = %u ORDER BY config_id, subtree_id", guid); // 22
+    q->addQuery("SELECT achievement, date FROM account_achievement WHERE account_id = %u", getSession()->GetAccountId()); // 23
+    q->addQuery("SELECT criteria, counter, date, player_guid FROM account_achievement_progress WHERE account_id = %u", getSession()->GetAccountId()); // 24
 #endif
 
     // queue it!
@@ -16323,7 +16333,11 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
 #if VERSION_STRING > TBC
     // load achievements before anything else otherwise skills would complete achievements already in the DB, leading to duplicate achievements and criterias(like achievement=126).
+#if defined(AE_FOREVER)
+    m_achievementMgr->loadFromDb(results[PlayerQuery::Achievements].result.get(), results[PlayerQuery::AchievementProgress].result.get(), results[PlayerQuery::AccountAchievements].result.get(), results[PlayerQuery::AccountAchievementProgress].result.get());
+#else
     m_achievementMgr->loadFromDb(results[PlayerQuery::Achievements].result.get(), results[PlayerQuery::AchievementProgress].result.get());
+#endif
 #endif
 
     setInitialPlayerData();

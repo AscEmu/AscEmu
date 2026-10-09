@@ -42,7 +42,8 @@ namespace AscEmu::Packets
                 const WoWGuid modernGuid = WoWGuid::createModernFromLegacy(guid.getRawGuid(), m_protocol.realmId);
                 packet << criteriaId;
                 packet << uint64_t(counter);
-                packet << uint64_t(modernGuid.getModernLow()) << uint64_t(modernGuid.getModernHigh());
+                const auto packedPlayer = modernGuid.packModern();
+                packet.append(packedPlayer.data(), packedPlayer.size());
                 packet << uint32_t(0); // Flags - UNKNOWN for Forever, zero matches non-timed criteria
                 packet << uint32_t(0); // StateFlags - UNKNOWN for Forever
                 packet.appendPackedTime(progressDate);
