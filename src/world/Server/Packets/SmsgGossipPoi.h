@@ -45,6 +45,19 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isBfA())
+            {
+                // id, position, icon, importance, flags, name length, name
+                packet << int32_t(0);
+                packet << posX << posY << icon << data;
+                packet.writeBits(flags, 14);
+                packet.writeBits(static_cast<uint32_t>(name.length()), 6);
+                packet.flushBits();
+                if (name.length())
+                    packet.append(reinterpret_cast<const uint8_t*>(name.c_str()), name.length());
+                return true;
+            }
+
             if (m_protocol.isWoD() || m_protocol.isLegion())
             {
                 // flags, name length, position, icon, importance, name

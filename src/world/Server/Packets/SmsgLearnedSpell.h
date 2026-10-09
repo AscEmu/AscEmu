@@ -30,11 +30,11 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // learned spells, favorite spells (7.x), suppress the message
                 packet << uint32_t(1);
-                if (m_protocol.isLegion())
+                if (m_protocol.isLegion() || m_protocol.isBfA())
                     packet << uint32_t(0);
                 packet << int32_t(spellId);
                 packet.writeBit(false);

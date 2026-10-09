@@ -44,7 +44,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // the attack round as a block behind the combat log bit, 7.x closes it with the sandbox scaling data
                 ByteBuffer buff;
@@ -52,9 +52,18 @@ namespace AscEmu::Packets
                 buff << attackerGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 buff << victimGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 buff << int32_t(damage);
+                if (m_protocol.isBfA())
+                    buff << int32_t(damage);                                 // original damage
                 buff << int32_t(overKill);
-                buff.writeBit(true);                                         // sub damage
-                buff.flushBits();
+                if (m_protocol.isBfA())
+                {
+                    buff << uint8_t(1);                                      // sub damage count
+                }
+                else
+                {
+                    buff.writeBit(true);                                     // sub damage
+                    buff.flushBits();
+                }
                 buff << int32_t(damageInfo.schoolMask);
                 buff << float(damage);
                 buff << int32_t(damage);
@@ -99,6 +108,12 @@ namespace AscEmu::Packets
                     buff << uint8_t(0);
                     buff << uint8_t(0);
                     buff << int8_t(0);
+                }
+                else if (m_protocol.isBfA())
+                {
+                    // content tuning: type, target level, expansion, scaling levels, level delta, item levels, curve, scales with item level
+                    for (uint8_t i = 0; i < 15; ++i)
+                        buff << uint8_t(0);
                 }
 
                 packet.writeBit(false);                                      // no combat log data

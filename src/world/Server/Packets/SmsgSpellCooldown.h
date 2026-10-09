@@ -42,7 +42,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // caster, flags, then every cooldown with its forced duration and rate (7.x)
                 packet << guid.toGuid128(m_protocol.realmId, 0);
@@ -53,7 +53,7 @@ namespace AscEmu::Packets
                 {
                     packet << cooldowns.spellId;
                     packet << cooldowns.duration;
-                    if (m_protocol.isLegion())
+                    if (m_protocol.isLegion() || m_protocol.isBfA())
                         packet << float(1.0f);          // modifier rate
                 }
 

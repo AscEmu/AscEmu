@@ -58,6 +58,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/PacketBroadcast.hpp"
 #include "Server/Script/InstanceScript.hpp"
 #include "Version/ObjectLayout.hpp"
+#include "ObjectUpdateBfA.hpp"
 
 using Version::CorpseField;
 using Version::GameObjectField;
@@ -446,7 +447,10 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     // build our actual update
     *data << uint8_t(updateType);
-#if VERSION_STRING >= WoD
+#if VERSION_STRING == BfA
+    *data << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, target->GetMapId());
+    *data << ObjectUpdateBfA::wireObjectTypeId(this, target);
+#elif VERSION_STRING >= WoD
     *data << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, target->GetMapId());
     *data << wireObjectTypeId(m_objectTypeId);
 #else
@@ -456,6 +460,11 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     buildMovementUpdate(data, updateFlags, target);
 
+#if VERSION_STRING == BfA
+    // 8.x: the values as update field structures
+    ObjectUpdateBfA::writeCreateValues(this, target, *data);
+    return 1;
+#else
     // we have dirty data, or are creating for ourself.
     UpdateMask updateMask;
     updateMask.SetCount(m_valuesCount);
@@ -475,6 +484,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     // Update count
     return 1;
+#endif
 }
 
 void Object::prepareInitialCreateForPlayer(Player* /*target*/)
@@ -2187,6 +2197,14 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
     buf << GetNewGUID();
 #endif
 
+#if VERSION_STRING == BfA
+    // 8.x: the structure that holds the value
+    (void)Value;
+    UpdateMask fieldMask;
+    fieldMask.SetCount(m_valuesCount);
+    fieldMask.SetBit(Index);
+    ObjectUpdateBfA::writeUpdateValues(this, Target, fieldMask, buf);
+#else
     uint32_t mBlocks = Index / 32 + 1;
     buf << uint8_t(mBlocks);
 
@@ -2195,8 +2213,9 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
 
     buf << (((uint32_t)(1)) << (Index % 32));
     buf << Value;
+#endif
 
-#if VERSION_STRING >= WoD
+#if VERSION_STRING >= WoD && VERSION_STRING != BfA
     writeEmptyDynamicValues(buf, m_objectTypeId);
 #elif VERSION_STRING >= Mop
     // Mop closes every values-update block with a dynamic-values section; for anything
@@ -2219,6 +2238,13 @@ void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Va
     *buf << GetNewGUID();
 #endif
 
+#if VERSION_STRING == BfA
+    (void)Value;
+    UpdateMask fieldMask;
+    fieldMask.SetCount(m_valuesCount);
+    fieldMask.SetBit(Index);
+    ObjectUpdateBfA::writeUpdateValues(this, nullptr, fieldMask, *buf);
+#else
     uint32_t mBlocks = Index / 32 + 1;
     *buf << uint8_t(mBlocks);
 
@@ -2227,8 +2253,9 @@ void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Va
 
     *buf << (((uint32_t)(1)) << (Index % 32));
     *buf << Value;
+#endif
 
-#if VERSION_STRING >= WoD
+#if VERSION_STRING >= WoD && VERSION_STRING != BfA
     writeEmptyDynamicValues(*buf, m_objectTypeId);
 #elif VERSION_STRING >= Mop
     // See the other BuildFieldUpdatePacket() overload above for why this is required.
@@ -2254,7 +2281,11 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* targe
                 *data << m_wowGuid;
 #endif
 
+#if VERSION_STRING == BfA
+                ObjectUpdateBfA::writeUpdateValues(this, target, updateMask, *data);
+#else
                 buildValuesUpdate(UPDATETYPE_VALUES, data, &updateMask, target);
+#endif
 
                 return 1;
             }
@@ -2280,7 +2311,11 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* ma
         *buf << m_wowGuid;
 #endif
 
+#if VERSION_STRING == BfA
+        ObjectUpdateBfA::writeUpdateValues(this, nullptr, *mask, *buf);
+#else
         buildValuesUpdate(UPDATETYPE_VALUES, buf, mask, nullptr);
+#endif
 
         // 1 update.
         return 1;
@@ -3169,7 +3204,12 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     data->writeBit(false);                              // smooth phasing
     data->writeBit(updateFlags & UPDATEFLAG_SELF);
     data->writeBit(false);                              // scene object
+#if VERSION_STRING == BfA
+    data->writeBit(updateFlags & UPDATEFLAG_SELF);      // active player
+    data->writeBit(false);                              // conversation
+#else
     data->writeBit(false);                              // rune state of the player
+#endif
     data->flushBits();
 #endif
 
@@ -3236,6 +3276,9 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         *data << float(unit->getSpeedRate(TYPE_PITCH_RATE, true));
 
         *data << uint32_t(0);                           // movement forces
+#if VERSION_STRING == BfA
+        *data << float(1.0f);                           // magnitude modifier of the movement forces
+#endif
         data->writeBit(false);                          // spline
         data->flushBits();
     }
@@ -3286,6 +3329,28 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 #if VERSION_STRING != WoD
     if (transportPosition)
         writeTransportInfo(*data, obj_movement_info, realmId, mapId);
+#endif
+
+#if VERSION_STRING == BfA
+    // the active player block announced in the header: scene instances and the rune state of death knights
+    if (updateFlags & UPDATEFLAG_SELF)
+    {
+        constexpr uint32_t maxRunes = 6;
+        const bool hasRuneState = isPlayer() && static_cast<Player*>(this)->getClass() == DEATHKNIGHT;
+
+        data->writeBit(false);                          // scene instance ids
+        data->writeBit(hasRuneState);
+        data->flushBits();
+
+        if (hasRuneState)
+        {
+            *data << uint8_t((1 << maxRunes) - 1);       // rune mask
+            *data << uint8_t((1 << maxRunes) - 1);       // ready runes
+            *data << uint32_t(maxRunes);
+            for (uint32_t i = 0; i < maxRunes; ++i)
+                *data << uint8_t(255);                   // remaining cooldown, 255 = ready
+        }
+    }
 #endif
 }
 #elif VERSION_STRING >= Mop

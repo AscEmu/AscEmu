@@ -45,7 +45,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // result, player; with data: names, account guids, realm and the look of the character
                 constexpr uint8_t resultSuccess = 0;
@@ -67,6 +67,8 @@ namespace AscEmu::Packets
                 packet << WoWGuid128::global(HighGuid128::WowAccount, accountId);
                 packet << WoWGuid128::global(HighGuid128::BNetAccount, accountId);
                 packet << guid.toGuid128(m_protocol.realmId, 0);
+                if (m_protocol.isBfA())
+                    packet << (uint64_t(guid.getLowGuid()) | (uint64_t(m_protocol.realmId & 0xFFF) << 48));    // guild club member
                 packet << uint32_t(m_protocol.getVirtualRealmAddress());
                 packet << race << gender << class_ << level;
                 packet.writeString(player_name);

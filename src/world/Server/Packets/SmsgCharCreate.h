@@ -26,6 +26,14 @@ namespace AscEmu::Packets
         {
             auto rawErrorCode = static_cast<uint8_t>(errorCode);
 
+            if (m_protocol.isBfA())
+            {
+                // result, the created character
+                packet << toBfACharacterErrorCode(rawErrorCode);
+                packet << WoWGuid128();
+                return true;
+            }
+
             if (m_protocol.getExpansion() == WoW::Expansion::_Classic)
             {
                 if (rawErrorCode >= static_cast<uint8_t>(E_CHAR_CREATE_SUCCESS))

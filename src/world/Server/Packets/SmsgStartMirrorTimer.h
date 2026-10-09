@@ -41,7 +41,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // timer, value, max value, scale, spell, paused
                 packet << int32_t(type) << int32_t(current) << int32_t(max) << int32_t(regen) << int32_t(spellId);

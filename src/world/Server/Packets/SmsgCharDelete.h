@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "Server/CharacterErrors.h"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -30,6 +31,12 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isBfA())
+            {
+                packet << toBfACharacterErrorCode(result);
+                return true;
+            }
+
             packet << result;
             return true;
         }

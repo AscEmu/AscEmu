@@ -25,6 +25,9 @@ elseif ("${ASCEMU_VERSION}" STREQUAL "WoD")
 elseif ("${ASCEMU_VERSION}" STREQUAL "Legion")
     set(ASCEMU_NUMBER 6)
     set(ASC_VERSION_MAX_LEVEL "110")
+elseif ("${ASCEMU_VERSION}" STREQUAL "BfA")
+    set(ASCEMU_NUMBER 7)
+    set(ASC_VERSION_MAX_LEVEL "120")
 endif ()
 
 # generate Configs

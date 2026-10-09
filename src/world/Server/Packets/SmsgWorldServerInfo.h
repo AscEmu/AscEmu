@@ -38,12 +38,15 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isLegion())
+            if (m_protocol.isLegion() || m_protocol.isBfA())
             {
-                // difficulty, tournament realm, cross realm pvp alert, restricted level, restricted money, instance group size
+                // difficulty, tournament realm, cross realm pvp alert, 8.x: block exiting loading screen, restricted level,
+                // restricted money, instance group size
                 packet << uint32_t(0);
                 packet << uint8_t(0);
                 packet.writeBit(false);
+                if (m_protocol.isBfA())
+                    packet.writeBit(false);
                 packet.writeBit(false);
                 packet.writeBit(false);
                 packet.writeBit(false);

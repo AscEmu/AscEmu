@@ -15,6 +15,7 @@ environment:
   - ASC_VERSION: Mop
   - ASC_VERSION: WoD
   - ASC_VERSION: Legion
+  - ASC_VERSION: BfA
 
 matrix:
   fast_finish: true # Abort all other Matrix builds if one fails

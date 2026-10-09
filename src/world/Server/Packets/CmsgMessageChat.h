@@ -73,7 +73,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // one opcode per chat type: language, then the lengths and the texts
                 const uint8_t textLengthBits = m_protocol.isWoD() ? 8 : 9;

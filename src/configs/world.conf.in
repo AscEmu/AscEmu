@@ -107,7 +107,7 @@
 #        Default: 2 (WotLK)
 #        0 = 5875 (Classic)     1 = 8606 (TBC)      2 = 12340 (WotLK)
 #        3 = 15595 (Cata)       4 = 18414 (Mop)     5 = 21742 (WoD)
-#        6 = 26972 (Legion)     7 = (BfA)           8 = (Shadowlands)
+#        6 = 26972 (Legion)     7 = 35662 (BfA)     8 = (Shadowlands)
 #        9 = (Dragonflight)    10 = (TWW)          11 = (Midnight)
 #
 

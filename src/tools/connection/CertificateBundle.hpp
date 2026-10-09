@@ -33,8 +33,9 @@ namespace cp
         // 6.2.4: the bundle with a placeholder signature, the patched client does not check it
         void writeUnsigned(const std::filesystem::path& _destination) const;
 
-        // 7.3.5: generates a signing key; its modulus replaces the one the client verifies the bundle with
-        std::array<uint8_t, 256> createSigningKey();
+        // 7.3.5 and 8.3.7: the signing key whose modulus replaces the one the client verifies the bundle with;
+        // the key is kept in _keyFile so every patched client of this server accepts the same cached bundle
+        std::array<uint8_t, 256> createSigningKey(const std::filesystem::path& _keyFile);
 
         // 7.3.5: the bundle signed with the key of createSigningKey()
         void writeSigned(const std::filesystem::path& _destination) const;

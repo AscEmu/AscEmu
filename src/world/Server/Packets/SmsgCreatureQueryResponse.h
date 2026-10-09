@@ -94,18 +94,54 @@ namespace AscEmu::Packets
             packet << uint32_t(info != nullptr ? info->Rank : 0);
             packet << uint32_t(info != nullptr ? info->killcredit[0] : 0);
             packet << uint32_t(info != nullptr ? info->killcredit[1] : 0);
-            packet << uint32_t(info != nullptr ? info->Male_DisplayID : 0);
-            packet << uint32_t(info != nullptr ? info->Female_DisplayID : 0);
-            packet << uint32_t(info != nullptr ? info->Male_DisplayID2 : 0);
-            packet << uint32_t(info != nullptr ? info->Female_DisplayID2 : 0);
+            if (m_protocol.isBfA())
+            {
+                // 8.x: the displays as list with scale and probability
+                const uint32_t displayIds[4] =
+                {
+                    info != nullptr ? info->Male_DisplayID : 0, info != nullptr ? info->Female_DisplayID : 0,
+                    info != nullptr ? info->Male_DisplayID2 : 0, info != nullptr ? info->Female_DisplayID2 : 0
+                };
+
+                uint32_t displayCount = 0;
+                for (const uint32_t displayId : displayIds)
+                    displayCount += displayId != 0 ? 1 : 0;
+
+                packet << displayCount;
+                packet << float(displayCount);                          // total probability
+                for (const uint32_t displayId : displayIds)
+                {
+                    if (displayId == 0)
+                        continue;
+
+                    packet << displayId;
+                    packet << float(1.0f);                              // scale
+                    packet << float(1.0f);                              // probability
+                }
+            }
+            else
+            {
+                packet << uint32_t(info != nullptr ? info->Male_DisplayID : 0);
+                packet << uint32_t(info != nullptr ? info->Female_DisplayID : 0);
+                packet << uint32_t(info != nullptr ? info->Male_DisplayID2 : 0);
+                packet << uint32_t(info != nullptr ? info->Female_DisplayID2 : 0);
+            }
             packet << float(1.0f);                                      // health modifier
             packet << float(1.0f);                                      // power modifier
             packet << uint32_t(questItems.size());
             packet << uint32_t(info != nullptr ? info->waypointid : 0); // movement info
-            if (m_protocol.isLegion())
+            if (m_protocol.isLegion() || m_protocol.isBfA())
                 packet << uint32_t(0);                                  // health scaling expansion
             packet << uint32_t(0);                                      // required expansion
             packet << uint32_t(0);                                      // 6.x: quest flag, 7.x: vignette
+            if (m_protocol.isBfA())
+            {
+                // class, fade region radius, widget set and its unit condition
+                packet << int32_t(1);
+                packet << float(0.0f);
+                packet << int32_t(0);
+                packet << int32_t(0);
+            }
 
             if (!title.empty())
                 packet << title;
@@ -121,7 +157,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
                 return serialiseLegion(packet);
 
             if (m_protocol.expansion <= WoW::Expansion::_Cata)

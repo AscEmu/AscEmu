@@ -72,7 +72,7 @@ namespace AscEmu::Packets
                 packet << int32_t(0);
                 return true;
             }
-            else if (m_protocol.isLegion())
+            else if (m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // level, health, six powers, four stats, combo points
                 packet << int32_t(level);
@@ -81,7 +81,9 @@ namespace AscEmu::Packets
                 for (uint8_t i = 0; i < 5; ++i)
                     packet << int32_t(0);
                 packet << int32_t(stat0) << int32_t(stat1) << int32_t(stat2) << int32_t(stat3);
-                packet << int32_t(0);
+                packet << int32_t(0);                   // new talents
+                if (m_protocol.isBfA())
+                    packet << int32_t(0);               // new pvp talent slots
                 return true;
             }
             else if (m_protocol.isMop())

@@ -144,8 +144,12 @@ namespace AscEmu::Packets
             const bool hasAchievement = (type == CHAT_MSG_ACHIEVEMENT || type == CHAT_MSG_GUILD_ACHIEVEMENT) && achievementId;
             const uint32_t virtualRealm = m_protocol.getVirtualRealmAddress();
 
-            packet << uint8_t(m_protocol.isWoD() ? wodChatType(type) : legionChatType(type));
-            packet << uint8_t(language);
+            // 8.x: the instance chat types of 6.x, the language as uint32
+            packet << uint8_t(m_protocol.isLegion() ? legionChatType(type) : wodChatType(type));
+            if (m_protocol.isBfA())
+                packet << uint32_t(language);
+            else
+                packet << uint8_t(language);
             packet << senderGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
             packet << (hasGuildGuid ? guildGuid.toGuid128(m_protocol.realmId, 0) : WoWGuid128());
             packet << WoWGuid128();                                     // account of the sender
@@ -164,6 +168,8 @@ namespace AscEmu::Packets
             packet.writeBits(flag, 11);
             packet.writeBit(false);                                     // hide in the chat log
             packet.writeBit(false);                                     // fake sender name
+            if (m_protocol.isBfA())
+                packet.writeBit(false);                                 // unused value
             packet.flushBits();
 
             packet.writeString(legionSenderName);
@@ -175,7 +181,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
                 return serialiseLegion(packet);
 
             if (m_protocol.expansion == WoW::Expansion::_Classic)

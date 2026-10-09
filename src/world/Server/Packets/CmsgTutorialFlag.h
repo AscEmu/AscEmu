@@ -28,7 +28,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // one opcode for update, clear and reset; only the update carries a flag
                 constexpr uint32_t actionUpdate = 0;

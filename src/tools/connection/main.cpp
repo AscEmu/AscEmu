@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 namespace
@@ -31,6 +32,7 @@ namespace
     // Battle.net clients of the WoD and Legion profiles
     constexpr uint32_t WoDBuild = 21742;
     constexpr uint32_t LegionBuild = 26972;
+    constexpr uint32_t BfABuild = 35662;
 
     // text in a buffer of the pattern size, the rest cleared
     std::vector<uint8_t> paddedText(const char* _text, size_t _size)
@@ -167,6 +169,40 @@ namespace
             return start;
         }
 
+        // 8.3.7 versions address: the text that ends with "/versions" and its zero padding up to the next text
+        std::optional<std::pair<size_t, size_t>> versionsField837(const std::vector<uint8_t>& _data)
+        {
+            const auto end = findUniqueText(_data, "/versions");
+            if (!end)
+                return std::nullopt;
+
+            const size_t start = textStart(_data, *end);
+            if (!startsWith(_data, start, "http://"))
+                return std::nullopt;
+
+            size_t next = *end + std::strlen("/versions") + 1;
+            while (next < _data.size() && _data[next] == 0)
+                ++next;
+
+            return std::make_pair(start, next - start);
+        }
+
+        // 8.3.7 bundle signing key: the 256 bytes in front of the public exponent and the tag that precede the salt
+        std::optional<size_t> certSignatureModulus837(const std::vector<uint8_t>& _data)
+        {
+            constexpr size_t modulusSize = 256;
+            const auto& trailer = cp::patterns::bnet::CertSignatureTrailer837;
+
+            const auto salt = findUniqueText(_data, "Blizzard Certificate Bundle");
+            if (!salt || *salt < modulusSize + trailer.size())
+                return std::nullopt;
+
+            if (std::memcmp(_data.data() + *salt - trailer.size(), trailer.data(), trailer.size()) != 0)
+                return std::nullopt;
+
+            return *salt - trailer.size() - modulusSize;
+        }
+
         // registry key of the launcher parameters: the text that ends with the launch options key
         std::optional<size_t> launcherLoginParameters(const std::vector<uint8_t>& _data, size_t _size)
         {
@@ -197,7 +233,7 @@ static std::filesystem::path patchedNameForExe(const std::filesystem::path& _pat
     return base.string() + "_AEPatched";
 }
 
-// 6.2.4 and 7.3.5: Battle.net host from the portal cvar, known SMSG_CONNECT_TO key, no self update and a
+// 6.2.4, 7.3.5 and 8.3.7: Battle.net host from the portal cvar, known SMSG_CONNECT_TO key, no self update and a
 // certificate bundle that trusts the TLS certificate of our bnetserver
 static int patchBattleNetClient(cp::Patcher& _patcher, uint32_t _build, const std::filesystem::path& _serverCertificate)
 {
@@ -205,7 +241,10 @@ static int patchBattleNetClient(cp::Patcher& _patcher, uint32_t _build, const st
     namespace patch = cp::patches::bnet;
 
     const bool legion = _build == LegionBuild;
-    std::cout << "AE Connection Patcher - " << (legion ? "Legion 7.3.5" : "WoD 6.2.4") << " client (build " << _build << ")\n";
+    const bool bfa = _build == BfABuild;
+    // 7.3.5 and 8.3.7 keep the bundle in the Battle.net cache and verify its signature with a key of the binary
+    const bool cachedBundle = legion || bfa;
+    std::cout << "AE Connection Patcher - " << (bfa ? "BfA 8.3.7" : legion ? "Legion 7.3.5" : "WoD 6.2.4") << " client (build " << _build << ")\n";
 
     if (_serverCertificate.empty())
     {
@@ -222,11 +261,16 @@ static int patchBattleNetClient(cp::Patcher& _patcher, uint32_t _build, const st
 
     cp::CertificateBundle bundle(_serverCertificate);
     std::cout << "Server certificate key hash: " << bundle.publicKeyHash() << "\n";
+
+    // one signing key per server: 7.x and 8.x clients share the cached bundle in the Battle.net cache
+    const std::filesystem::path signingKeyFile = _serverCertificate.parent_path() / "web_cert_bundle.key.pem";
+    if (cachedBundle)
+        std::cout << "Bundle signing key: " << signingKeyFile.string() << "\n";
     std::cout << "Press Enter to patch...\n";
     std::cin.get();
 
-    // the 6.x patterns carry wildcards, the 7.x patterns are matched exactly
-    const bool wildcards = !legion;
+    // the 6.x patterns carry wildcards, the 7.x and 8.x patterns are matched exactly
+    const bool wildcards = !cachedBundle;
     bool complete = true;
     auto apply = [&](const char* _name, std::span<const uint8_t> _replacement, std::span<const uint8_t> _pattern, std::optional<size_t> _knownOffset = std::nullopt)
     {
@@ -244,6 +288,8 @@ static int patchBattleNetClient(cp::Patcher& _patcher, uint32_t _build, const st
     if (wasPatchedBefore)
         std::cout << "This client was patched before, changed values are located through their surroundings\n";
 
+    // a prepared client may carry another suffix there; it is only appended to a portal value without a
+    // dot, so a host name or an IP address works unchanged
     if (wasPatchedBefore && !contains(_patcher.data(), pattern::Portal))
         std::cout << "patching portal: already removed\n";
     else
@@ -254,13 +300,27 @@ static int patchBattleNetClient(cp::Patcher& _patcher, uint32_t _build, const st
     else
         apply("SMSG_CONNECT_TO modulus", patch::ConnectToModulus, pattern::ConnectToModulus);
 
-    char versions[pattern::VersionsFile.size()] = {};
-    std::snprintf(versions, sizeof(versions), patch::VersionsFileFormat, _build);
-    apply("versions file", paddedText(versions, pattern::VersionsFile.size()), pattern::VersionsFile,
-        wasPatchedBefore ? patchedBefore::versionsFile(_patcher.data(), pattern::VersionsFile.size()) : std::nullopt);
+    if (bfa)
+    {
+        // 8.3.7: one text with the scheme, located through its path because other patchers rewrite it
+        const auto field = patchedBefore::versionsField837(_patcher.data());
+        char versions[64] = {};
+        std::snprintf(versions, sizeof(versions), patch::VersionsFileFormat837, _build);
+        const bool patched = field && field->second > std::strlen(versions) && _patcher.patchAt(field->first, paddedText(versions, field->second));
+        std::cout << "patching versions file: " << (patched ? 1 : 0) << " place(s)\n";
+        if (!patched)
+            complete = false;
+    }
+    else
+    {
+        char versions[pattern::VersionsFile.size()] = {};
+        std::snprintf(versions, sizeof(versions), patch::VersionsFileFormat, _build);
+        apply("versions file", paddedText(versions, pattern::VersionsFile.size()), pattern::VersionsFile,
+            wasPatchedBefore ? patchedBefore::versionsFile(_patcher.data(), pattern::VersionsFile.size()) : std::nullopt);
+    }
 
     std::filesystem::path bundlePath;
-    if (!legion)
+    if (!cachedBundle)
     {
         apply("certificate bundle file name", paddedText(patch::CertBundleFileName, pattern::CertBundleFileName.size()), pattern::CertBundleFileName,
             wasPatchedBefore ? patchedBefore::certBundleFileName(_patcher.data(), pattern::CertBundleFileName.size()) : std::nullopt);
@@ -287,12 +347,48 @@ static int patchBattleNetClient(cp::Patcher& _patcher, uint32_t _build, const st
         // the client opens the bundle relative to its own directory
         bundlePath = _patcher.binaryPath().parent_path() / patch::CertBundleFileName;
     }
+    else if (bfa)
+    {
+        const size_t urlSize = std::strlen(pattern::CertBundleUrl837);
+        const std::span<const uint8_t> urlPattern(reinterpret_cast<const uint8_t*>(pattern::CertBundleUrl837), urlSize);
+        apply("certificate bundle address", paddedText(patch::CertBundleUrl, urlSize + 1), urlPattern,
+            wasPatchedBefore ? patchedBefore::certBundleUrl(_patcher.data(), urlSize) : std::nullopt);
+
+        // a client that already carries the known SMSG_CONNECT_TO key was prepared by another patcher: such
+        // clients do not verify the bundle, and the signing key and launcher patches make them crash or close
+        const bool preparedClient = wasPatchedBefore && contains(_patcher.data(), patch::ConnectToModulus);
+        if (preparedClient)
+        {
+            std::cout << "patching certificate bundle signing key: skipped, prepared client\n";
+            std::cout << "patching launcher login parameters: skipped, prepared client\n";
+
+            // the cached bundle is still written for the other clients of this server
+            bundle.createSigningKey(signingKeyFile);
+        }
+        else
+        {
+            // the key is located through its surroundings, the original one is unknown
+            const auto signingModulus = bundle.createSigningKey(signingKeyFile);
+            const auto modulusOffset = patchedBefore::certSignatureModulus837(_patcher.data());
+            const bool patched = modulusOffset && _patcher.patchAt(*modulusOffset, signingModulus);
+            std::cout << "patching certificate bundle signing key: " << (patched ? 1 : 0) << " place(s)\n";
+            if (!patched)
+                complete = false;
+
+            const std::span<const uint8_t> launcherPattern(reinterpret_cast<const uint8_t*>(pattern::LauncherLoginParametersLocation), sizeof(pattern::LauncherLoginParametersLocation));
+            apply("launcher login parameters", paddedText(patch::LauncherLoginParametersLocation, sizeof(pattern::LauncherLoginParametersLocation)), launcherPattern,
+                wasPatchedBefore ? patchedBefore::launcherLoginParameters(_patcher.data(), sizeof(pattern::LauncherLoginParametersLocation)) : std::nullopt);
+        }
+
+        const char* programData = std::getenv("ProgramData");
+        bundlePath = std::filesystem::path(programData ? programData : "C:\\ProgramData") / "Blizzard Entertainment" / "Battle.net" / "Cache" / "web_cert_bundle";
+    }
     else
     {
         apply("certificate bundle address", paddedText(patch::CertBundleUrl, pattern::CertBundleUrl.size()), pattern::CertBundleUrl,
             wasPatchedBefore ? patchedBefore::certBundleUrl(_patcher.data(), pattern::CertBundleUrl.size()) : std::nullopt);
 
-        const auto signingModulus = bundle.createSigningKey();
+        const auto signingModulus = bundle.createSigningKey(signingKeyFile);
         apply("certificate bundle signing key", signingModulus, pattern::CertSignatureModulus,
             wasPatchedBefore ? patchedBefore::certSignatureModulus(_patcher.data()) : std::nullopt);
 
@@ -311,7 +407,7 @@ static int patchBattleNetClient(cp::Patcher& _patcher, uint32_t _build, const st
         return 1;
     }
 
-    if (legion)
+    if (cachedBundle)
     {
         // keep the bundle of the official client once
         std::error_code error;
@@ -346,7 +442,7 @@ int main(int argc, char** argv)
     {
         auto patcher = cp::Patcher{ std::filesystem::path{ argv[1] } };
         const uint32_t build = cp::getBuildNumber(patcher.data());
-        if (build == WoDBuild || build == LegionBuild)
+        if (build == WoDBuild || build == LegionBuild || build == BfABuild)
             return patchBattleNetClient(patcher, build, argc > 2 ? std::filesystem::path{ argv[2] } : std::filesystem::path{});
     }
     catch (const std::exception& e)

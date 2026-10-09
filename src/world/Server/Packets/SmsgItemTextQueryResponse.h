@@ -56,7 +56,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isLegion())
+            if (m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // valid, text, item
                 packet.writeBit(result == 0);

@@ -22,7 +22,7 @@ namespace AscEmu::Packets
         uint8_t authDigest[20]{0};
         ByteBuffer addonInfoBuffer;
 
-        // 6.2.4 and 7.3.5 clients: realm, challenge and HMAC-SHA256 digest, the account comes from the realm join ticket
+        // 6.2.4, 7.3.5 and 8.3.7 clients: realm, challenge and HMAC-SHA256 digest, the account comes from the realm join ticket
         uint32_t regionId = 0;
         uint32_t battlegroupId = 0;
         uint32_t realmId = 0;
@@ -40,6 +40,29 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isBfA())
+            {
+                // dos response, realm, local challenge, digest, ipv6 bit, realm join ticket
+                packet.read<uint64_t>();
+                packet >> regionId;
+                packet >> battlegroupId;
+                packet >> realmId;
+                packet.read(localChallenge.data(), localChallenge.size());
+                packet.read(sessionDigest.data(), sessionDigest.size());
+                packet.readBit();                       // use ipv6
+
+                uint32_t ticketSize;
+                packet >> ticketSize;
+                if (ticketSize == 0 || packet.rpos() + ticketSize > packet.size())
+                {
+                    errorMsg = "Realm join ticket size overflow packet size!";
+                    return false;
+                }
+                realmJoinTicket = packet.readString(ticketSize);
+
+                return true;
+            }
+
             if (m_protocol.isLegion())
             {
                 packet.read<uint64_t>();                // dos response

@@ -31,7 +31,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion())
+            if (m_protocol.isLegion() || m_protocol.isBfA())
             {
                 packet << result;
                 packet << uint32_t(0);                  // purchases

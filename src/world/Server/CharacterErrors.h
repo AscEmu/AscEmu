@@ -165,3 +165,18 @@ enum CharacterErrorCodes : uint8_t
     E_CHAR_NAME_DECLENSION_DOESNT_MATCH_BASE_NAME = 0x6C,
 #endif
 };
+
+// the results of 8.3.7 clients: created (23 ..), deleted (53 ..), logged in (64 ..) and named (80 ..)
+inline uint8_t toBfACharacterErrorCode(uint8_t code)
+{
+    if (code >= E_CHAR_NAME_SUCCESS)
+        return code - E_CHAR_NAME_SUCCESS + 80;
+    if (code >= E_CHAR_LOGIN_IN_PROGRESS)
+        return code - E_CHAR_LOGIN_IN_PROGRESS + 64;
+    if (code >= E_CHAR_DELETE_IN_PROGRESS)
+        return code - E_CHAR_DELETE_IN_PROGRESS + 53;
+    if (code >= E_CHAR_CREATE_IN_PROGRESS)
+        return code - E_CHAR_CREATE_IN_PROGRESS + 23;
+
+    return code;
+}

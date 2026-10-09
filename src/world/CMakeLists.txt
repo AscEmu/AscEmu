@@ -106,7 +106,7 @@ if (AE_USES_BATTLENET AND AE_IS_FOREVER)
         target_link_libraries(${EXECUTABLE_NAME} PUBLIC version_client)
     endif ()
 elseif (AE_USES_BATTLENET)
-    # WoD and Legion: Battle.net login, classic world server; the world transport
+    # WoD, Legion and BfA: Battle.net login, classic world server; the world transport
     # of the profile comes from src/version when the profile has one
     target_compile_definitions(${EXECUTABLE_NAME} PRIVATE
         AE_BUILD_BATTLENET=1

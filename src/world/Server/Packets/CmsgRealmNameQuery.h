@@ -22,7 +22,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (!m_protocol.isMop() && !m_protocol.isLegion())
+            if (!m_protocol.isMop() && !m_protocol.isLegion() && !m_protocol.isBfA() || m_protocol.isBfA())
                 return false;
 
             packet >> realmId;

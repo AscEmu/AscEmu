@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Packets/SmsgPong.h"
 #include "Packets/SmsgAuthChallenge.h"
 #include "Packets/SmsgAuthResponse.h"
+#include "Packets/SmsgFeatureSystemStatusGlueScreen.h"
 #include "Version/VersionRegistry.hpp"
 #include "WorldSession.h"
 #include "Utilities/Random.hpp"
@@ -143,7 +144,12 @@ WorldSocket::~WorldSocket()
 
     if (m_session)
     {
-        m_session->SetSocket(nullptr);
+        // the second connection of a session only gives up its own slot
+        if (m_session->getInstanceSocket() == this)
+            m_session->setInstanceSocket(nullptr);
+        else
+            m_session->SetSocket(nullptr);
+
         m_session = nullptr;
     }
 }
@@ -229,13 +235,12 @@ void WorldSocket::onConnect()
 
 void WorldSocket::onDisconnect()
 {
-    if (!m_queue.hasItems())
-        return;
-
     while (auto pck = m_queue.tryPop())
     {
     }
 
+    // the session must not keep a pointer to a closed socket, its slot is given up here even when no
+    // packet was queued
     if (m_session)
     {
         // the second connection of a session only gives up its own slot
@@ -294,7 +299,7 @@ void WorldSocket::outPacket(uint32_t opcode, size_t len, const void* data)
         return;
     }
 
-#if AE_WORLD_PROFILE_WOD || AE_WORLD_PROFILE_LEGION
+#if AE_WORLD_PROFILE_WOD || AE_WORLD_PROFILE_LEGION || AE_WORLD_PROFILE_BFA
     // connections with their own framing and encryption take every packet through it
     {
         WorldPacket packet(static_cast<WorldPacket::Opcode>(opcode), len);
@@ -456,6 +461,12 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
     SmsgAuthResponse response(AuthOkay, ARST_ACCOUNT_DATA);
     response.realmName = worldConfig.battleNetComm.realmName;
     sendManagedPacket(response);
+
+    if (m_protocol.isBfA())
+    {
+        SmsgFeatureSystemStatusGlueScreen glueScreen(static_cast<uint8_t>(m_protocol.expansion));
+        sendManagedPacket(glueScreen);
+    }
 
     m_session->sendAddonInfo();
 
@@ -641,7 +652,7 @@ void WorldSocket::handlePing(std::unique_ptr<WorldPacket> recvPacket)
     }
 
     // Mop alone sends the latency first
-    if (m_protocol.expansion <= WoW::Expansion::_Cata || (m_protocol.expansion >= WoW::Expansion::_WoD && m_protocol.expansion <= WoW::Expansion::_Legion))
+    if (m_protocol.expansion <= WoW::Expansion::_Cata || (m_protocol.expansion >= WoW::Expansion::_WoD && m_protocol.expansion <= WoW::Expansion::_BfA))
     {
         *recvPacket >> ping;
         *recvPacket >> m_latency;

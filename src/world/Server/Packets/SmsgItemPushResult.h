@@ -87,7 +87,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isLegion())
+            if (m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // player, slots, quest log item, quantities, encounter, battle pet, item, flags, then the item instance
                 packet << WoWGuid(guid).toGuid128(m_protocol.realmId, 0);
@@ -104,14 +104,18 @@ namespace AscEmu::Packets
                 packet << itemGuid.toGuid128(m_protocol.realmId, 0);
                 packet.writeBit(isReceived);
                 packet.writeBit(isCreated);
-                packet.writeBits(2, 3);                 // display text: normal
+                packet.writeBits(m_protocol.isBfA() ? 1 : 2, 3);    // display text: normal
                 packet.writeBit(false);                 // bonus roll
                 packet.writeBit(false);                 // encounter loot
                 packet.flushBits();
 
+                // 8.x: the item instance has no random properties anymore
                 packet << int32_t(entry);
-                packet << int32_t(suffix);
-                packet << int32_t(randomProp);
+                if (!m_protocol.isBfA())
+                {
+                    packet << int32_t(suffix);
+                    packet << int32_t(randomProp);
+                }
                 packet.writeBit(false);                 // item bonus
                 packet.writeBit(false);                 // modifications
                 packet.flushBits();

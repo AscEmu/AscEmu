@@ -746,8 +746,8 @@ void WorldSession::fullLogin(Player* player)
     SmsgFeatureSystemStatus featurePacket(2, 0);
     sendManagedPacket(featurePacket);
 
-    // 6.x and 7.x clients: the expansion of the server (WoD = 5, Legion = 6)
-    SmsgInitialSetup initialSetupPacket(getClientProtocol().isWoD() ? 5 : 6, 0);
+    // 6.x, 7.x and 8.x clients: the expansion of the server (WoD = 5, Legion = 6, BfA = 7)
+    SmsgInitialSetup initialSetupPacket(static_cast<uint8_t>(getClientProtocol().expansion), 0);
     sendManagedPacket(initialSetupPacket);
     //////////////////////////////////////////////////////////////////////////////////////////
 

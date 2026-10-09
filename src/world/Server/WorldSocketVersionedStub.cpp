@@ -17,7 +17,11 @@ This file is released under the MIT license. See README-MIT for more information
 #define AE_WORLD_PROFILE_LEGION 0
 #endif
 
-#if !AE_WORLD_PROFILE_FOREVER && !AE_WORLD_PROFILE_WOD && !AE_WORLD_PROFILE_LEGION
+#ifndef AE_WORLD_PROFILE_BFA
+#define AE_WORLD_PROFILE_BFA 0
+#endif
+
+#if !AE_WORLD_PROFILE_FOREVER && !AE_WORLD_PROFILE_WOD && !AE_WORLD_PROFILE_LEGION && !AE_WORLD_PROFILE_BFA
 bool WorldSocket::initializeVersionedConnection()
 {
     return false;

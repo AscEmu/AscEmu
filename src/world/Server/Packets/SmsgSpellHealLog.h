@@ -42,13 +42,15 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // target, caster, spell, health, over heal, absorbed, crit, crit rolls, log data, sandbox scaling
                 packet << targetGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 packet << casterGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 packet << int32_t(spellId);
                 packet << int32_t(healed);
+                if (m_protocol.isBfA())
+                    packet << int32_t(healed);          // original heal
                 packet << int32_t(overHealed);
                 packet << int32_t(absorb);
                 packet.writeBit(isCritical != 0);

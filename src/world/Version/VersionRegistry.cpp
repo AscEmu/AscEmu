@@ -26,6 +26,7 @@ namespace Version
             WoW::Expansion::_Mop,
             WoW::Expansion::_WoD,
             WoW::Expansion::_Legion,
+            WoW::Expansion::_BfA,
         };
 
         size_t opcodeCount = 0;

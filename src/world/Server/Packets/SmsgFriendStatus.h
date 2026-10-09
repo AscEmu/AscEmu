@@ -45,7 +45,7 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // result, player, its account, realm, status, area, level, class, note
                 packet << status;
@@ -57,6 +57,8 @@ namespace AscEmu::Packets
                 packet << level;
                 packet << _class;
                 packet.writeBits(static_cast<uint32_t>(note.length()), 10);
+                if (m_protocol.isBfA())
+                    packet.writeBit(false);             // mobile
                 packet.flushBits();
                 packet.writeString(note);
                 return true;

@@ -45,7 +45,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isLegion())
+            if (m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // caster, cast guid, spell, visual, reason
                 packet << casterGuid.toGuid128(m_protocol.realmId, m_receiverMapId);

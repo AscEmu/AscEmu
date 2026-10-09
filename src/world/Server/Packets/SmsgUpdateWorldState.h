@@ -48,7 +48,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isWoD() || m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // variable, value, hidden
                 packet << worldState1 << value1;

@@ -548,6 +548,8 @@ private:
             return getWoDMovementDescriptor(opcode, read);
         else if constexpr (Version == WoW::Expansion::_Legion)
             return getLegionMovementDescriptor(opcode, read);
+        else if constexpr (Version == WoW::Expansion::_BfA)
+            return getBfAMovementDescriptor(opcode, read);
         else
             return getMopMovementDescriptor(opcode, read);
     }

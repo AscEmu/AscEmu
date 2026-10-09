@@ -10,9 +10,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <string_view>
 
-// 6.2.4 and 7.x clients log in through the v1 services, the older Variant layout and the
+// 6.2.4, 7.x and 8.x clients log in through the v1 services, the older Variant layout and the
 // plain password web login; Forever uses the v2 services
-#if defined(AE_WOD) || defined(AE_LEGION)
+#if defined(AE_WOD) || defined(AE_LEGION) || defined(AE_BFA)
 #define AE_BNET_V1_SERVICES 1
 #else
 #define AE_BNET_V1_SERVICES 0

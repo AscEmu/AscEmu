@@ -40,11 +40,13 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // result, both items, bag slot, then the data of the result: the level (1, 87), the containers of a
-                // bind confirmation (81) or the limit category (84, 85, 89)
-                packet << int8_t(error);
+                // bind confirmation (81) or the limit category (84, 85, 89); 8.x adds a result at 81, the ones above move up
+                const uint8_t wireError = m_protocol.isBfA() && error >= 81 ? error + 1 : error;
+
+                packet << int8_t(wireError);
                 packet << srcGuid.toGuid128(m_protocol.realmId, 0);
                 packet << destGuid.toGuid128(m_protocol.realmId, 0);
                 packet << uint8_t(0);

@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <array>
 #include <cstdint>
 
-// replacement bytes for cp::patterns::bnet (6.2.4 and 7.3.5 clients)
+// replacement bytes for cp::patterns::bnet (6.2.4, 7.3.5 and 8.3.7 clients)
 namespace cp::patches::bnet
 {
     // removes ".actual.battle.net", the portal cvar is the Battle.net host
@@ -41,8 +41,11 @@ namespace cp::patches::bnet
     // 6.2.4: bundle file next to the client instead of the CASC entry
     inline constexpr char CertBundleFileName[] = "ae_bundle.txt";
 
-    // 7.3.5: unreachable refresh address, the client keeps the bundle of its cache
+    // 7.3.5 and 8.3.7: unreachable refresh address, the client keeps the bundle of its cache
     inline constexpr char CertBundleUrl[] = "http://127.0.0.1:1/Bnet/client/bgs-key-fingerprint";
+
+    // 8.3.7: the versions address carries its scheme
+    inline constexpr char VersionsFileFormat837[] = "http://localhost/%%s/%%s/%u/versions";
 
     // 7.3.5: own registry key for the launcher login parameters (same length as the original)
     inline constexpr char LauncherLoginParametersLocation[] = R"(Software\AscEmu Server Emulator\Battle.net\Launch Options\)";

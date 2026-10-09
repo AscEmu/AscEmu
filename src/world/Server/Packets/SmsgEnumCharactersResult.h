@@ -334,7 +334,7 @@ namespace AscEmu::Packets
                 for (auto const& data : enum_data)
                     writeCharacter128(packet, data, listPosition++);
             }
-            else if (m_protocol.isLegion())
+            else if (m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // races a new character can be created with, allied races are not offered
                 static constexpr int32_t unlockedRaces[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 22, 24, 25, 26 };
@@ -358,6 +358,8 @@ namespace AscEmu::Packets
                 packet << uint32_t(enum_data.size());
                 packet << maxCharacterLevel;
                 packet << uint32_t(sizeof(unlockedRaces) / sizeof(unlockedRaces[0]));
+                if (m_protocol.isBfA())
+                    packet << uint32_t(0);                      // unlocked conditional appearances
 
                 uint8_t listPosition = 0;
                 for (auto const& data : enum_data)
@@ -376,12 +378,15 @@ namespace AscEmu::Packets
             return true;
         }
 
-        // character of the 6.x and 7.x lists
+        // character of the 6.x, 7.x and 8.x lists
         void writeCharacter128(WorldPacket& packet, CharEnumData const& data, uint8_t listPosition) const
         {
-            const bool legion = m_protocol.isLegion();
+            const bool legion = m_protocol.isLegion() || m_protocol.isBfA();
+            const bool bfa = m_protocol.isBfA();
 
             packet << WoWGuid128::realmSpecific(HighGuid128::Player, m_protocol.realmId, WoWGuid::getLowGuidFromRaw(data.guid));
+            if (bfa)
+                packet << (uint64_t(WoWGuid::getLowGuidFromRaw(data.guid)) | (uint64_t(m_protocol.realmId & 0xFFF) << 48));   // guild club member
 
             packet << listPosition;
             packet << data.race << data.Class << data.gender;
@@ -417,6 +422,8 @@ namespace AscEmu::Packets
                 packet << uint32_t(data.player_items[i].displayId);
                 packet << uint32_t(data.player_items[i].enchantmentId);
                 packet << uint8_t(data.player_items[i].inventoryType);
+                if (bfa)
+                    packet << uint8_t(0);                       // subclass
             }
 
             packet << uint32_t(0);                              // last played time
@@ -424,8 +431,10 @@ namespace AscEmu::Packets
             {
                 packet << uint16_t(0);                          // specialization
                 packet << uint32_t(0);
-                packet << uint32_t(WoW::Build::LEGION_BUILD);        // build of the last login
+                packet << uint32_t(bfa ? WoW::Build::BFA_BUILD : WoW::Build::LEGION_BUILD);     // build of the last login
                 packet << uint32_t(0);                          // flags 4
+                if (bfa)
+                    packet << uint32_t(0);                      // additional strings
             }
 
             packet.writeBits(static_cast<uint32_t>(data.name.length()), 6);

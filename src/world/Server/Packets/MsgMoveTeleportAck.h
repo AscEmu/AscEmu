@@ -119,7 +119,7 @@ namespace AscEmu::Packets
 
                 guid = mopGuid;
             }
-            else if (m_protocol.isWoD() || m_protocol.isLegion())
+            else if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // mover, sequence of the teleport, movement time of the client
                 WoWGuid128 moverGuid;

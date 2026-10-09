@@ -172,3 +172,11 @@ struct MovementVersionTraits<WoW::Expansion::_Legion>
     static constexpr int flags2BitWidth = 18;
     static constexpr bool flags2IsBitPacked = true;
 };
+
+template <>
+struct MovementVersionTraits<WoW::Expansion::_BfA>
+{
+    static constexpr bool hasFlags2 = true;
+    static constexpr int flags2BitWidth = 18;
+    static constexpr bool flags2IsBitPacked = true;
+};

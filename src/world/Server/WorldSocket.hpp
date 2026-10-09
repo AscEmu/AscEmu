@@ -6,6 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Cryptography/WowCrypt.hpp"
+#if AE_WORLD_PROFILE_BFA
+#include "Cryptography/AesGcmCrypt.hpp"
+#endif
 #include "Network/WorldPacket.hpp"
 #include "Network/Network.hpp"
 #include "ClientProtocol.hpp"
@@ -143,5 +146,7 @@ private:
 #include "version/Forever/World/WorldSocketForever.inc"
 #elif AE_WORLD_PROFILE_WOD || AE_WORLD_PROFILE_LEGION
 #include "version/Shared/World/WorldSocketRc4.inc"
+#elif AE_WORLD_PROFILE_BFA
+#include "version/Shared/World/WorldSocketAes.inc"
 #endif
 };

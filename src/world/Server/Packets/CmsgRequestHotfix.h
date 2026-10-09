@@ -116,6 +116,21 @@ namespace AscEmu::Packets
 
                 return !packet.hadReadFailure();
             }
+            else if (m_protocol.isBfA())
+            {
+                // bulk query: hash of the client data table and the requested record ids
+                packet >> type;
+                count = packet.readBits(13);
+
+                entries.reserve(count);
+                for (uint32_t i = 0; i < count; ++i)
+                {
+                    packet >> entry;
+                    entries.push_back(entry);
+                }
+
+                return !packet.hadReadFailure();
+            }
 
             return false;
         }

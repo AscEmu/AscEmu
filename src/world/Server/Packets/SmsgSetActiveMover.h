@@ -27,7 +27,7 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // movers of the login are players, their guid carries no map
                 packet << guid.toGuid128(m_protocol.realmId, 0);

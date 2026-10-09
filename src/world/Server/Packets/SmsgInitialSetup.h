@@ -44,7 +44,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (!m_protocol.isLegion())
+            if (!m_protocol.isLegion() || m_protocol.isBfA())
                 return false;
 
             packet << expansionLevel << expansionTier;

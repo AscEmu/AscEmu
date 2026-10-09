@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/Definitions/SpellPacketFlags.hpp"
 #include "Spell/Spell.hpp"
+#include "SpellCastDataBfA.h"
 #include "SpellCastDataLegion.h"
 #include <cstdint>
 
@@ -60,7 +61,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // cast data, then the combat log bit: the basic packet without the log data
                 SpellCastDataLegion castData;
@@ -82,9 +83,10 @@ namespace AscEmu::Packets
                 castData.realmId = m_protocol.realmId;
                 castData.mapId = m_receiverMapId;
                 castData.castNumber = extraCastNumber;
-
                 if (m_protocol.isWoD())
                     castData.writeWoD(packet);
+                else if (m_protocol.isBfA())
+                    writeSpellCastDataBfA(packet, castData);
                 else
                     castData.write(packet);
 

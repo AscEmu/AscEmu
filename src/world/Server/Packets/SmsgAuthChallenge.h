@@ -60,7 +60,7 @@ namespace AscEmu::Packets
 
                 packet << uint8_t(1) << seed;
             }
-            else if (m_protocol.expansion >= WoW::Expansion::_WoD && m_protocol.expansion <= WoW::Expansion::_Legion)
+            else if (m_protocol.expansion >= WoW::Expansion::_WoD)
             {
                 packet.append(dosChallenge.data(), dosChallenge.size());
                 packet.append(challenge.data(), challenge.size());

@@ -2,7 +2,8 @@
 
 # World transport of the client profile selected by ASCEMU_VERSION. Every profile
 # keeps its own directory; profiles without one stay on the classic WorldSocket path.
-# WoD and Legion share the transport in Shared/, their values come from <profile>/World/WorldProfile.hpp.
+# WoD and Legion share the RC4 transport in Shared/, BfA uses the AES transport there; the values of a
+# profile come from <profile>/World/WorldProfile.hpp.
 if (ASCEMU_VERSION STREQUAL "Forever")
     set(VERSION_CLIENT_DIRS Forever)
     set(VERSION_CLIENT_DEFINITIONS
@@ -18,6 +19,11 @@ elseif (ASCEMU_VERSION STREQUAL "Legion")
     set(VERSION_CLIENT_DIRS Legion Shared)
     set(VERSION_CLIENT_DEFINITIONS
         AE_WORLD_PROFILE_LEGION=1
+    )
+elseif (ASCEMU_VERSION STREQUAL "BfA")
+    set(VERSION_CLIENT_DIRS BfA Shared)
+    set(VERSION_CLIENT_DEFINITIONS
+        AE_WORLD_PROFILE_BFA=1
     )
 else ()
     return()

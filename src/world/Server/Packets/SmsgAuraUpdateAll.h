@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "AuraDataBfA.h"
 #include "AuraDataLegion.h"
 #include "Spell/SpellAuraDefines.hpp"
 
@@ -73,7 +74,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isLegion())
+            if (m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // 7.x sends the full update as SMSG_AURA_UPDATE with the update all bit
                 packet.initialize(SMSG_AURA_UPDATE, 16 + aura_updates.size() * 40);
@@ -82,7 +83,12 @@ namespace AscEmu::Packets
                 packet.flushBits();
 
                 for (const auto& auras : aura_updates)
-                    writeAuraSlotLegion(packet, auras, false, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
+                {
+                    if (m_protocol.isBfA())
+                        writeAuraSlotBfA(packet, auras, false, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
+                    else
+                        writeAuraSlotLegion(packet, auras, false, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
+                }
 
                 packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 return true;

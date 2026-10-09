@@ -56,7 +56,7 @@ namespace AscEmu::Packets
                 packet << static_cast<uint32_t>(time);
                 packet << int32_t(0);
             }
-            else if (m_protocol.isLegion())
+            else if (m_protocol.isLegion() || m_protocol.isBfA())
             {
                 packet << static_cast<uint32_t>(time);
             }

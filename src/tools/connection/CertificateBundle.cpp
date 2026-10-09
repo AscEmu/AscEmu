@@ -143,11 +143,26 @@ namespace cp
         out << buildJson() << placeholder;
     }
 
-    std::array<uint8_t, 256> CertificateBundle::createSigningKey()
+    std::array<uint8_t, 256> CertificateBundle::createSigningKey(const std::filesystem::path& _keyFile)
     {
-        m_signingKey.reset(EVP_RSA_gen(2048));
-        if (!m_signingKey)
-            throw std::runtime_error("Cannot generate the bundle signing key");
+        std::error_code error;
+        if (std::filesystem::exists(_keyFile, error))
+        {
+            std::unique_ptr<BIO, void(*)(BIO*)> in(BIO_new_file(_keyFile.string().c_str(), "rb"), BIO_free_all);
+            m_signingKey.reset(in ? PEM_read_bio_PrivateKey(in.get(), nullptr, nullptr, nullptr) : nullptr);
+            if (!m_signingKey)
+                throw std::runtime_error("Cannot read the bundle signing key " + _keyFile.string());
+        }
+        else
+        {
+            m_signingKey.reset(EVP_RSA_gen(2048));
+            if (!m_signingKey)
+                throw std::runtime_error("Cannot generate the bundle signing key");
+
+            std::unique_ptr<BIO, void(*)(BIO*)> out(BIO_new_file(_keyFile.string().c_str(), "wb"), BIO_free_all);
+            if (!out || PEM_write_bio_PrivateKey(out.get(), m_signingKey.get(), nullptr, nullptr, 0, nullptr, nullptr) != 1)
+                throw std::runtime_error("Cannot write the bundle signing key " + _keyFile.string());
+        }
 
         BIGNUM* modulus = nullptr;
         if (EVP_PKEY_get_bn_param(m_signingKey.get(), OSSL_PKEY_PARAM_RSA_N, &modulus) != 1)

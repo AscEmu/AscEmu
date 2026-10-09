@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "AuraDataBfA.h"
 #include "AuraDataLegion.h"
 #include <cstdint>
 
@@ -56,7 +57,10 @@ namespace AscEmu::Packets
             packet.writeBits(1, 9);
             packet.flushBits();
 
-            writeAuraSlotLegion(packet, aura_updates, remove, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
+            if (m_protocol.isBfA())
+                writeAuraSlotBfA(packet, aura_updates, remove, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
+            else
+                writeAuraSlotLegion(packet, aura_updates, remove, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
 
             packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
             return true;
@@ -82,7 +86,7 @@ namespace AscEmu::Packets
             if (m_protocol.isWoD())
                 return serialiseWoD(packet);
 
-            if (m_protocol.isLegion())
+            if (m_protocol.isLegion() || m_protocol.isBfA())
                 return serialiseLegion(packet);
 
             if (m_protocol.expansion < WoW::Expansion::_Mop)

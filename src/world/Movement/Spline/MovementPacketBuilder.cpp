@@ -829,8 +829,12 @@ void PacketBuilder::WriteMonsterMoveLegion(MoveSpline const& moveSpline, ByteBuf
     data << uint32_t(animation ? moveSpline.effect_start_time : 0);   // tier transition start
     data << int32_t(0);                                               // elapsed
     data << uint32_t(moveSpline.Duration());
+#if VERSION_STRING == BfA
+    data << uint32_t(0);                                              // fade object time
+#else
     data << float(parabolic ? moveSpline.vertical_acceleration : 0.0f);
     data << uint32_t(parabolic ? moveSpline.effect_start_time : 0);   // special time
+#endif
 
 #if VERSION_STRING == WoD
     // 6.x: the counts are fields, the points come before the facing and the packet ends with the tolerance
@@ -858,10 +862,22 @@ void PacketBuilder::WriteMonsterMoveLegion(MoveSpline const& moveSpline, ByteBuf
     data.writeBits(packedDeltas, 16);
     data.writeBit(false);                                             // spline filter
     data.writeBit(false);                                             // spell effect extra data
+#if VERSION_STRING == BfA
+    data.writeBit(parabolic);                                         // jump extra data
+#endif
     data.flushBits();
 
     writeFacing();
     writePoints();
+
+#if VERSION_STRING == BfA
+    if (parabolic)
+    {
+        data << float(moveSpline.vertical_acceleration);              // jump gravity
+        data << uint32_t(moveSpline.effect_start_time);               // start time
+        data << uint32_t(0);                                          // duration
+    }
+#endif
 #endif
 }
 
@@ -879,8 +895,12 @@ void PacketBuilder::WriteStopMovementLegion(G3D::Vector3 const& pos, uint32_t sp
     data << uint32_t(0);                                              // tier transition start
     data << int32_t(0);                                               // elapsed
     data << uint32_t(0);                                              // move time
+#if VERSION_STRING == BfA
+    data << uint32_t(0);                                              // fade object time
+#else
     data << float(0.0f);                                              // jump gravity
     data << uint32_t(0);                                              // special time
+#endif
 
 #if VERSION_STRING == WoD
     data << int32_t(0);                                               // points
@@ -904,6 +924,9 @@ void PacketBuilder::WriteStopMovementLegion(G3D::Vector3 const& pos, uint32_t sp
     data.writeBits(0, 16);                                            // packed deltas
     data.writeBit(false);                                             // spline filter
     data.writeBit(false);                                             // spell effect extra data
+#if VERSION_STRING == BfA
+    data.writeBit(false);                                             // jump extra data
+#endif
     data.flushBits();
 #endif
 }

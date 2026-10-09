@@ -66,7 +66,7 @@ namespace AscEmu::Packets
             if (m_protocol.isWoD())
                 return serialiseWoD(packet);
 
-            if (m_protocol.isLegion())
+            if (m_protocol.isLegion() || m_protocol.isBfA())
                 return serialiseLegion(packet);
 
             SmsgAuthAccount accountInfo = { 0, 0, 0, static_cast<uint8_t>(m_protocol.expansion) };
@@ -308,7 +308,7 @@ namespace AscEmu::Packets
             return true;
         }
 
-        // 7.3.5: classes only, game time, billing after the bits, realms after the billing
+        // 7.3.5 and 8.3.7: classes only, game time, billing after the bits, realms after the billing
         bool serialiseLegion(WorldPacket& packet)
         {
             constexpr uint32_t resultOk = 0;
@@ -337,24 +337,45 @@ namespace AscEmu::Packets
                 std::string normalizedName = realmName;
                 normalizedName.erase(std::remove_if(normalizedName.begin(), normalizedName.end(), [](unsigned char c) { return std::isspace(c) != 0; }), normalizedName.end());
 
+                // 8.x: the classes a race can be created with
+                static constexpr uint8_t races[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 22, 24, 25, 26 };
+
                 packet << realmAddress;
                 packet << uint32_t(1);                  // virtual realms
                 packet << uint32_t(0);                  // time rested
                 packet << expansion;                    // active expansion
                 packet << expansion;                    // account expansion
                 packet << uint32_t(0);                  // seconds until pc kick
-                packet << uint32_t(sizeof(classes) / sizeof(classes[0]));
+                if (m_protocol.isBfA())
+                    packet << uint32_t(sizeof(races) / sizeof(races[0]));
+                else
+                    packet << uint32_t(sizeof(classes) / sizeof(classes[0]));
                 packet << uint32_t(0);                  // character templates
                 packet << uint32_t(0);                  // currency id
                 packet << static_cast<int32_t>(std::time(nullptr));
 
-                for (const auto& playerClass : classes)
-                    packet << playerClass[0] << playerClass[1];
+                if (m_protocol.isBfA())
+                {
+                    for (const uint8_t race : races)
+                    {
+                        packet << race;
+                        packet << uint32_t(sizeof(classes) / sizeof(classes[0]));
+                        for (const auto& playerClass : classes)
+                            packet << playerClass[0] << playerClass[1] << playerClass[1];
+                    }
+                }
+                else
+                {
+                    for (const auto& playerClass : classes)
+                        packet << playerClass[0] << playerClass[1];
+                }
 
                 packet.writeBit(0);                     // is expansion trial
                 packet.writeBit(0);                     // force character template
                 packet.writeBit(0);                     // has horde player count
                 packet.writeBit(0);                     // has alliance player count
+                if (m_protocol.isBfA())
+                    packet.writeBit(0);                 // has an expansion trial expiration
                 packet.flushBits();
 
                 packet << uint32_t(0);                  // billing plan

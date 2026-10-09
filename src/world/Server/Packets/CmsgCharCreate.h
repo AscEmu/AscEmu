@@ -28,6 +28,28 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isBfA())
+            {
+                // name length, template set, trial boost; the look; custom display; the name; the template set
+                const uint32_t nameLength = packet.readBits(6);
+                const bool hasTemplateSet = packet.readBit();
+                packet.readBit();                       // trial boost
+                packet.resetBitPos();
+
+                packet >> createStruct._race >> createStruct._class >> createStruct.gender >> createStruct.skin >>
+                    createStruct.face >> createStruct.hairStyle >> createStruct.hairColor >> createStruct.facialHair >>
+                    createStruct.outfitId;
+                packet.read<uint8_t>();
+                packet.read<uint8_t>();
+                packet.read<uint8_t>();
+                createStruct.name = packet.readString(nameLength);
+
+                if (hasTemplateSet)
+                    packet.read<int32_t>();
+
+                return true;
+            }
+
             if (!m_protocol.isMop())
             {
                 packet >> createStruct.name >> createStruct._race >> createStruct._class >>

@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <array>
 #include <cstdint>
 
-// byte sequences of the 6.2.4 (21742) and 7.3.5 (26972) clients the patches are applied at
+// byte sequences of the 6.2.4 (21742), 7.3.5 (26972) and 8.3.7 (35662) clients the patches are applied at
 namespace cp::patterns::bnet
 {
     // "<Version>" of the embedded manifest, the build number is the last component of the version behind it
@@ -33,6 +33,13 @@ namespace cp::patterns::bnet
 
     // 7.3.5: start of the RSA modulus the certificate bundle signature is verified with
     inline constexpr std::array<std::uint8_t, 8> CertSignatureModulus{ { 0x85, 0xF3, 0x7B, 0x14, 0x5A, 0x9C, 0x48, 0xF6 } };
+
+    // 8.3.7: address the client refreshes the certificate bundle from
+    inline constexpr char CertBundleUrl837[] = "http://nydus.battle.net/Bnet/zxx/client/bgs-key-fingerprint";
+
+    // 8.3.7: the bundle signing modulus lies in front of its public exponent and the reversed "SIGN" tag,
+    // which precede the signature salt
+    inline constexpr std::array<std::uint8_t, 8> CertSignatureTrailer837{ { 0x01, 0x00, 0x01, 0x00, 'N', 'G', 'I', 'S' } };
 
     // 7.3.5: registry key the launcher stores its login parameters under (with the terminating zero)
     inline constexpr char LauncherLoginParametersLocation[] = R"(Software\Blizzard Entertainment\Battle.net\Launch Options\)";

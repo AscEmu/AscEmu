@@ -50,7 +50,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isLegion())
+            if (m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // cast guid, spell, visual, reason, two arguments
                 packet << WoWGuid128();

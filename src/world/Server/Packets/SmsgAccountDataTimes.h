@@ -50,7 +50,7 @@ namespace AscEmu::Packets
                     if (mask & (1 << i))
                         packet << uint32_t(0);
             }
-            else if (m_protocol.expansion >= WoW::Expansion::_WoD && m_protocol.expansion <= WoW::Expansion::_Legion)
+            else if (m_protocol.expansion >= WoW::Expansion::_WoD && m_protocol.expansion <= WoW::Expansion::_BfA)
             {
                 packet << WoWGuid(playerGuid).toGuid128(m_protocol.realmId, 0);
                 packet << time;

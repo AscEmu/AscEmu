@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define Mop 18414
 #define WoD 21742
 #define Legion 26972
+#define BfA 35662
 #define AE_PROFILE_FOREVER 70009
 
 // TODO: Remove when Forever player level stats are loaded from modern DB2 data.
@@ -58,6 +59,11 @@ This file is released under the MIT license. See README-MIT for more information
     #define VERSION 7, 3, 5
     #define VERSION_STRING Legion
     #define BUILD_VERSION 26972
+#elif AE_CLIENT_PROFILE == BfA
+    #define AE_BFA
+    #define VERSION 8, 3, 7
+    #define VERSION_STRING BfA
+    #define BUILD_VERSION 35662
 #elif AE_CLIENT_PROFILE == AE_PROFILE_FOREVER
     #define AE_FOREVER
     #define AE_MODERN_CLIENT

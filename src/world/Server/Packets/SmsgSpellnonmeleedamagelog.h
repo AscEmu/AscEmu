@@ -64,7 +64,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isLegion())
+            if (m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // target, caster, cast guid, spell, visual, damage, overkill, school, absorbed, resisted, blocked,
                 // periodic, hit flags (crit 0x2), debug info, log data, sandbox scaling
@@ -74,6 +74,8 @@ namespace AscEmu::Packets
                 packet << int32_t(spellId);
                 packet << int32_t(0);
                 packet << int32_t(damage);
+                if (m_protocol.isBfA())
+                    packet << int32_t(damage);          // original damage
                 packet << int32_t(overKill);
                 packet << uint8_t(school);
                 packet << int32_t(absorbedDamage);
