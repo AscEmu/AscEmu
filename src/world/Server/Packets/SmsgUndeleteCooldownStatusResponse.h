@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    // cooldown of the character restore on the character list (6.x and 7.x clients)
+    // cooldown of the character restore on the character list (6.x to 10.x clients)
     class SmsgUndeleteCooldownStatusResponse : public ManagedPacket
     {
     public:
@@ -35,7 +35,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_WoD && m_protocol.expansion <= WoW::Expansion::_Shadowlands)
+            if (m_protocol.expansion >= WoW::Expansion::_WoD && m_protocol.expansion <= WoW::Expansion::_Dragonflight)
             {
                 packet.writeBit(onCooldown);
                 packet.flushBits();

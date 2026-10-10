@@ -29,7 +29,9 @@ enum class Cond : uint8_t
     HasTransportTime3,
     HasCount,
     IsTransportPresent,
-    HasInertia
+    HasInertia,
+    HasStandingOnGameObject,
+    HasAdvFlying
 };
 
 enum class MovementOp : uint16_t
@@ -111,6 +113,14 @@ enum class MovementOp : uint16_t
     HasInertia,
     SkipInertia,
 
+    // 10.x: the inertia block carries an id instead of a guid; the bits and blocks of the game object the mover
+    // stands on (guid) and of the advanced flying (forward and up velocity), both only read
+    SkipInertiaId,
+    HasStandingOnGameObject,
+    SkipStandingOnGameObject,
+    HasAdvFlying,
+    SkipAdvFlying,
+
     // end of a bit field between byte fields: flushes on write, starts a new byte on read
     AlignBits
 };
@@ -191,6 +201,15 @@ struct MovementVersionTraits<WoW::Expansion::_BfA>
 // 9.x carries the flags, the second flags and the third flags as plain 32 bit fields
 template <>
 struct MovementVersionTraits<WoW::Expansion::_Shadowlands>
+{
+    static constexpr bool hasFlags2 = true;
+    static constexpr int flags2BitWidth = 32;
+    static constexpr bool flags2IsBitPacked = false;
+};
+
+// 10.x keeps the plain 32 bit flag fields of 9.x
+template <>
+struct MovementVersionTraits<WoW::Expansion::_Dragonflight>
 {
     static constexpr bool hasFlags2 = true;
     static constexpr int flags2BitWidth = 32;

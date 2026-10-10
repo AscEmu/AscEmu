@@ -32,14 +32,14 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // target, emote, sound index
                 WoWGuid128 target;
                 packet >> target >> text_emote >> numEmote;
                 guid = WoWGuid::fromGuid128(target);
 
-                if (m_protocol.isShadowlands())
+                if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 {
                     // spell visual kits and the sequence variation
                     const uint32_t kitCount = packet.read<uint32_t>();

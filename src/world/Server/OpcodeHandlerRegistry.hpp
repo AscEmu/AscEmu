@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Opcodes.hpp"
 
 // Define the number of supported versions (0 = Classic, 1 = TBC, etc.)
-constexpr int NUM_VERSIONS = 9;
+constexpr int NUM_VERSIONS = 10;
 
 class WorldSession;
 
@@ -41,18 +41,18 @@ public:
         return instance;
     }
 
-    // Overload for member functions with version flags (Classic .. Shadowlands)
+    // Overload for member functions with version flags (Classic .. Dragonflight)
     template <OpcodeState State = STATUS_LOGGEDIN>
-    void registerOpcode(uint32_t opcode, void (WorldSession::* handler)(WorldPacket&), bool classic, bool tbc, bool wotlk, bool cata, bool mop, bool wod, bool legion, bool bfa = false, bool shadowlands = false)
+    void registerOpcode(uint32_t opcode, void (WorldSession::* handler)(WorldPacket&), bool classic, bool tbc, bool wotlk, bool cata, bool mop, bool wod, bool legion, bool bfa = false, bool shadowlands = false, bool dragonflight = false)
     {
         registerOpcode<State>(opcode, std::function<void(WorldSession&, WorldPacket&)>([handler](WorldSession& session, WorldPacket& packet) {
             (session.*handler)(packet);  // Call the member function
-            }), classic, tbc, wotlk, cata, mop, wod, legion, bfa, shadowlands);
+            }), classic, tbc, wotlk, cata, mop, wod, legion, bfa, shadowlands, dragonflight);
     }
 
-    // Overload for free functions or lambdas with version flags (Classic .. Shadowlands)
+    // Overload for free functions or lambdas with version flags (Classic .. Dragonflight)
     template <OpcodeState State = STATUS_LOGGEDIN>
-    void registerOpcode(uint32_t opcode, std::function<void(WorldSession&, WorldPacket&)> handler, bool classic, bool tbc, bool wotlk, bool cata, bool mop, bool wod, bool legion, bool bfa = false, bool shadowlands = false)
+    void registerOpcode(uint32_t opcode, std::function<void(WorldSession&, WorldPacket&)> handler, bool classic, bool tbc, bool wotlk, bool cata, bool mop, bool wod, bool legion, bool bfa = false, bool shadowlands = false, bool dragonflight = false)
     {
         OpcodeEntry entry;
         entry.handler = handler;
@@ -66,11 +66,12 @@ public:
         entry.versions[6] = legion;
         entry.versions[7] = bfa;
         entry.versions[8] = shadowlands;
+        entry.versions[9] = dragonflight;
 
         opcodeHandlers[opcode] = entry;
     }
 
-    // Overloads with the flags up to Mop: the handler is not enabled for WoD, Legion, BfA and Shadowlands clients, their packet
+    // Overloads with the flags up to Mop: the handler is not enabled for WoD, Legion, BfA, Shadowlands and Dragonflight clients, their packet
     // layouts have to be checked before a handler is registered for them with the overloads above
     template <OpcodeState State = STATUS_LOGGEDIN>
     void registerOpcode(uint32_t opcode, void (WorldSession::* handler)(WorldPacket&), bool classic, bool tbc, bool wotlk, bool cata, bool mop)

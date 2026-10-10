@@ -71,12 +71,12 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 packet.writeBit(unk1);                  // initial login
                 packet.flushBits();
                 packet << uint32_t(spell_ids.size());
-                if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+                if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                     packet << uint32_t(0);              // favorite spells
                 for (uint32_t spell_id : spell_ids)
                     packet << spell_id;

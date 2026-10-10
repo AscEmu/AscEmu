@@ -83,6 +83,93 @@ namespace AscEmu::Packets
                 packet.writeBit(0);
                 packet.flushBits();
             }
+            else if (m_protocol.isDragonflight())
+            {
+                packet << uint8_t(2);                   // complaint status
+                packet << uint32_t(m_protocol.realmId); // realm id
+                packet << int32_t(0);                   // realm record id
+                packet << uint32_t(0);                  // recruit a friend: max recruits
+                packet << uint32_t(0);                  // recruit a friend: max recruit months
+                packet << uint32_t(0);                  // recruit a friend: max recruitment uses
+                packet << uint32_t(0);                  // recruit a friend: days in cycle
+                packet << uint32_t(0);                  // recruit a friend: unused value
+                packet << uint32_t(300);                // token poll time in seconds
+                packet << uint32_t(0);                  // kiosk session minutes
+                packet << int64_t(0);                   // token balance
+                packet << uint32_t(0);                  // shop delivery delay
+                packet << uint32_t(0);                  // clubs presence update timer
+                packet << uint32_t(0);                  // hidden ui clubs presence update timer
+                packet << int32_t(0);                   // active season
+                packet << uint32_t(0);                  // game rules
+                packet << int16_t(50);                  // player name queries per packet
+                packet << int16_t(600);                 // player name query telemetry interval
+                packet << uint32_t(10);                 // player name query interval
+                packet << int32_t(10);                  // addon chat throttle: tries
+                packet << int32_t(1);                   // addon chat throttle: tries restored per second
+                packet << int32_t(1);                   // addon chat throttle: tries per message
+
+                packet.writeBit(0);                     // voice chat
+                packet.writeBit(0);                     // has the ticket system status
+                packet.writeBit(0);                     // shop enabled
+                packet.writeBit(0);                     // shop available
+                packet.writeBit(0);                     // shop disabled by parental controls
+                packet.writeBit(1);                     // item restoration button
+                packet.writeBit(0);                     // browser
+                packet.writeBit(0);                     // has a session alert
+                packet.writeBit(0);                     // recruit a friend
+                packet.writeBit(0);                     // recruit a friend: recruiting
+                packet.writeBit(0);                     // character restore
+                packet.writeBit(0);                     // restricted account
+                packet.writeBit(0);                     // commerce system
+                packet.writeBit(1);                     // tutorials
+                packet.writeBit(1);
+                packet.writeBit(0);                     // will kick from world
+                packet.writeBit(0);                     // kiosk mode
+                packet.writeBit(0);                     // competitive mode
+                packet.writeBit(0);                     // token balance
+                packet.writeBit(0);                     // war mode
+                packet.writeBit(0);                     // clubs
+                packet.writeBit(0);                     // clubs: battle.net club type
+                packet.writeBit(0);                     // clubs: character club type
+                packet.writeBit(0);                     // clubs: presence update
+                packet.writeBit(0);                     // voice chat disabled by parental controls
+                packet.writeBit(0);                     // voice chat muted by parental controls
+                packet.writeBit(0);                     // quest session
+                packet.writeBit(0);                     // is muted
+                packet.writeBit(0);                     // club finder
+                packet.writeBit(0);                     // community finder
+                packet.writeBit(0);                     // checkout related
+                packet.writeBit(0);                     // text to speech
+                packet.writeBit(0);                     // chat disabled by default
+                packet.writeBit(0);                     // chat disabled by the player
+                packet.writeBit(0);                     // custom lfg list requires an authenticator
+                packet.writeBit(0);                     // addons disabled
+                packet.writeBit(0);                     // war games
+                packet.writeBit(0);                     // content tracking
+                packet.writeBit(0);                     // sell all junk
+                packet.writeBit(1);                     // group finder
+                packet.writeBit(1);                     // dungeon finder
+                packet.writeBit(1);                     // raid finder
+                packet.writeBit(1);                     // premade groups
+                packet.writeBit(1);                     // can show the set role button
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.writeBits(0, 7);                 // length of the movement text
+                packet.flushBits();
+
+                // quick join: toasts and the throttle values of the social queue
+                packet.writeBit(0);                     // toasts disabled
+                packet.flushBits();
+                packet << float(7) << float(10) << float(1);    // toast duration, delay, queue multiplier
+                for (uint8_t i = 0; i < 19; ++i)
+                    packet << float(0);
+
+                // voice chat: squelched, battle.net account, guild
+                packet.writeBit(0);
+                packet.flushBits();
+                packet << WoWGuid128();
+                packet << WoWGuid128();
+            }
             else if (m_protocol.isShadowlands())
             {
                 packet << uint8_t(2);                   // complaint status

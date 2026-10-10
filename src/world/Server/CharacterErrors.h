@@ -181,6 +181,22 @@ inline uint8_t toBfACharacterErrorCode(uint8_t code)
     return code;
 }
 
+// the results of 10.2.7 clients: created (23 ..), deleted (64 ..), logged in (75 ..) and named (92 ..); the groups
+// keep their order, the codes added to the creation group lie behind the ones used here
+inline uint8_t toDragonflightCharacterErrorCode(uint8_t code)
+{
+    if (code >= E_CHAR_NAME_SUCCESS)
+        return code - E_CHAR_NAME_SUCCESS + 92;
+    if (code >= E_CHAR_LOGIN_IN_PROGRESS)
+        return code - E_CHAR_LOGIN_IN_PROGRESS + 75;
+    if (code >= E_CHAR_DELETE_IN_PROGRESS)
+        return code - E_CHAR_DELETE_IN_PROGRESS + 64;
+    if (code >= E_CHAR_CREATE_IN_PROGRESS)
+        return code - E_CHAR_CREATE_IN_PROGRESS + 23;
+
+    return code;
+}
+
 // the results of 9.2.7 clients: created (23 ..), deleted (57 ..), logged in (68 ..) and named (85 ..); the groups
 // keep their order, the added codes of 9.x lie behind the ones used here
 inline uint8_t toShadowlandsCharacterErrorCode(uint8_t code)

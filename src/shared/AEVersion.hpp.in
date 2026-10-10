@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define Legion 26972
 #define BfA 35662
 #define Shadowlands 45745
+#define Dragonflight 55664
 #define AE_PROFILE_FOREVER 70009
 
 // TODO: Remove when Forever player level stats are loaded from modern DB2 data.
@@ -70,6 +71,11 @@ This file is released under the MIT license. See README-MIT for more information
     #define VERSION 9, 2, 7
     #define VERSION_STRING Shadowlands
     #define BUILD_VERSION 45745
+#elif AE_CLIENT_PROFILE == Dragonflight
+    #define AE_DRAGONFLIGHT
+    #define VERSION 10, 2, 7
+    #define VERSION_STRING Dragonflight
+    #define BUILD_VERSION 55664
 #elif AE_CLIENT_PROFILE == AE_PROFILE_FOREVER
     #define AE_FOREVER
     #define AE_MODERN_CLIENT

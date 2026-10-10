@@ -523,6 +523,9 @@ namespace AscEmu::Battlenet
         }
 
         [[nodiscard]] constexpr bool usesForever1601Transport(uint32_t build) { return build == 69893u || build == 70009u; }
+        // 10.x clients verify the web login certificate against the system store and drop the connection
+        // after the TLS handshake with a self signed certificate; they log in over plain http
+        [[nodiscard]] constexpr bool usesPlainWebAuth(uint32_t build) { return build >= 55664u && !usesForever1601Transport(build); }
 
         struct ClientVersionParts
         {
@@ -545,6 +548,7 @@ namespace AscEmu::Battlenet
                 case 26972u: return { 7u, 3u, 5u };
                 case 35662u: return { 8u, 3u, 7u };
                 case 45745u: return { 9u, 2u, 7u };
+                case 55664u: return { 10u, 2u, 7u };
                 default:     return { 0u, 0u, 0u };
             }
         }
@@ -2799,7 +2803,7 @@ namespace AscEmu::Battlenet
         // bgs.protocol.challenge.v1.ChallengeExternalRequest
         // field 1 (request_token) is optional and intentionally omitted.
         appendStringField(challenge, 2, "web_auth_url");
-        const std::string webAuthUrl = bnetConfig.webAuth.loginUrl();
+        const std::string webAuthUrl = bnetConfig.webAuth.loginUrl(!usesPlainWebAuth(m_clientBuild));
         appendStringField(challenge, 3, webAuthUrl);
 
         // Server-side RPC token space. This is currently our first

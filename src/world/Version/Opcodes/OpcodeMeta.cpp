@@ -2561,5 +2561,9 @@ namespace Version::Tables
         { "SMSG_WOW_TOKEN_SELL_RESULT_CONFIRMATION", OpcodeDevelopmentState::NotUsed },
         { "SMSG_WOW_TOKEN_UPDATE_AUCTIONABLE_LIST_RESPONSE", OpcodeDevelopmentState::NotUsed },
         { "SMSG_XP_GAIN_ENABLED", OpcodeDevelopmentState::NotUsed },
+        { "CMSG_SERVER_TIME_OFFSET_REQUEST", OpcodeDevelopmentState::Okay },
+        { "SMSG_SERVER_TIME_OFFSET", OpcodeDevelopmentState::Okay },
+        { "CMSG_SOCIAL_CONTRACT_REQUEST", OpcodeDevelopmentState::Okay },
+        { "SMSG_SOCIAL_CONTRACT_REQUEST_RESPONSE", OpcodeDevelopmentState::Okay },
     };
 }

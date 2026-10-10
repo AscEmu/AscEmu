@@ -60,12 +60,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Version/ObjectLayout.hpp"
 #include "ObjectUpdateBfA.hpp"
 #include "ObjectUpdateShadowlands.hpp"
+#include "ObjectUpdateDragonflight.hpp"
 
 // 8.x and 9.x send their values as update field structures, each version has its own serializer
 #if VERSION_STRING == BfA
 namespace ObjectUpdateUF = ObjectUpdateBfA;
 #elif VERSION_STRING == Shadowlands
 namespace ObjectUpdateUF = ObjectUpdateShadowlands;
+#elif VERSION_STRING == Dragonflight
+namespace ObjectUpdateUF = ObjectUpdateDragonflight;
 #endif
 
 using Version::CorpseField;
@@ -455,7 +458,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     // build our actual update
     *data << uint8_t(updateType);
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
     *data << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, target->GetMapId());
     *data << ObjectUpdateUF::wireObjectTypeId(this, target);
 #elif VERSION_STRING >= WoD
@@ -468,7 +471,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     buildMovementUpdate(data, updateFlags, target);
 
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
     // 8.x: the values as update field structures
     ObjectUpdateUF::writeCreateValues(this, target, *data);
     return 1;
@@ -2205,7 +2208,7 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
     buf << GetNewGUID();
 #endif
 
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
     // 8.x: the structure that holds the value
     (void)Value;
     UpdateMask fieldMask;
@@ -2223,7 +2226,7 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
     buf << Value;
 #endif
 
-#if VERSION_STRING >= WoD && VERSION_STRING != BfA && VERSION_STRING != Shadowlands
+#if VERSION_STRING >= WoD && VERSION_STRING != BfA && VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight
     writeEmptyDynamicValues(buf, m_objectTypeId);
 #elif VERSION_STRING >= Mop
     // Mop closes every values-update block with a dynamic-values section; for anything
@@ -2246,7 +2249,7 @@ void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Va
     *buf << GetNewGUID();
 #endif
 
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
     (void)Value;
     UpdateMask fieldMask;
     fieldMask.SetCount(m_valuesCount);
@@ -2263,7 +2266,7 @@ void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Va
     *buf << Value;
 #endif
 
-#if VERSION_STRING >= WoD && VERSION_STRING != BfA && VERSION_STRING != Shadowlands
+#if VERSION_STRING >= WoD && VERSION_STRING != BfA && VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight
     writeEmptyDynamicValues(*buf, m_objectTypeId);
 #elif VERSION_STRING >= Mop
     // See the other BuildFieldUpdatePacket() overload above for why this is required.
@@ -2289,7 +2292,7 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* targe
                 *data << m_wowGuid;
 #endif
 
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
                 ObjectUpdateUF::writeUpdateValues(this, target, updateMask, *data);
 #else
                 buildValuesUpdate(UPDATETYPE_VALUES, data, &updateMask, target);
@@ -2319,7 +2322,7 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* ma
         *buf << m_wowGuid;
 #endif
 
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
         ObjectUpdateUF::writeUpdateValues(this, nullptr, *mask, *buf);
 #else
         buildValuesUpdate(UPDATETYPE_VALUES, buf, mask, nullptr);
@@ -3212,7 +3215,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     data->writeBit(false);                              // smooth phasing
     data->writeBit(updateFlags & UPDATEFLAG_SELF);
     data->writeBit(false);                              // scene object
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
     data->writeBit(updateFlags & UPDATEFLAG_SELF);      // active player
     data->writeBit(false);                              // conversation
 #else
@@ -3232,7 +3235,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         const bool hasFall = hasFallDirection;
 
         *data << m_wowGuid.toGuid128(realmId, mapId);
-#if VERSION_STRING == Shadowlands
+#if VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
         // 9.x: the flags are plain fields behind the guid, the inertia bit closes the bit field
         *data << uint32_t(movementFlags);
         *data << uint32_t(movementFlags2);
@@ -3248,7 +3251,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         *data << uint32_t(0);                           // removed movement forces
         *data << uint32_t(0);                           // move index
 
-#if VERSION_STRING != Shadowlands
+#if VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight
         data->writeBits(movementFlags, 30);
 #if VERSION_STRING == WoD
         data->writeBits(movementFlags2, 16);
@@ -3256,13 +3259,19 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         data->writeBits(movementFlags2, 18);
 #endif
 #endif
+#if VERSION_STRING == Dragonflight
+        data->writeBit(false);                          // standing on a game object
+#endif
         data->writeBit(hasTransport);
         data->writeBit(hasFall);
         data->writeBit(false);                          // spline
         data->writeBit(false);                          // height change failed
         data->writeBit(false);                          // remote time valid
-#if VERSION_STRING == Shadowlands
+#if VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
         data->writeBit(false);                          // inertia
+#endif
+#if VERSION_STRING == Dragonflight
+        data->writeBit(false);                          // advanced flying
 #endif
         data->flushBits();
 
@@ -3295,8 +3304,28 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         *data << float(unit->getSpeedRate(TYPE_PITCH_RATE, true));
 
         *data << uint32_t(0);                           // movement forces
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
         *data << float(1.0f);                           // magnitude modifier of the movement forces
+#endif
+#if VERSION_STRING == Dragonflight
+        // 10.x: the advanced flying parameters of the mover
+        *data << float(2.0f);                           // air friction
+        *data << float(65.0f);                          // maximum velocity
+        *data << float(1.0f);                           // lift coefficient
+        *data << float(3.0f);                           // double jump velocity modifier
+        *data << float(10.0f);                          // glide start minimum height
+        *data << float(100.0f);                         // add impulse maximum speed
+        *data << float(90.0f);                          // minimum banking rate
+        *data << float(140.0f);                         // maximum banking rate
+        *data << float(180.0f);                         // minimum pitching rate down
+        *data << float(360.0f);                         // maximum pitching rate down
+        *data << float(90.0f);                          // minimum pitching rate up
+        *data << float(270.0f);                         // maximum pitching rate up
+        *data << float(30.0f);                          // minimum turn velocity threshold
+        *data << float(80.0f);                          // maximum turn velocity threshold
+        *data << float(2.75f);                          // surface friction
+        *data << float(7.0f);                           // over maximum deceleration
+        *data << float(0.4f);                           // launch speed coefficient
 #endif
         data->writeBit(false);                          // spline
         data->flushBits();
@@ -3350,7 +3379,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         writeTransportInfo(*data, obj_movement_info, realmId, mapId);
 #endif
 
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
     // the active player block announced in the header: scene instances and the rune state of death knights
     if (updateFlags & UPDATEFLAG_SELF)
     {

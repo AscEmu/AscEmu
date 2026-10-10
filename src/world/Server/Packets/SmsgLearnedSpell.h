@@ -30,13 +30,29 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isDragonflight())
+            {
+                // 10.x: the spells as list with their bits, the specialization and the message bit in front
+                packet << uint32_t(1);
+                packet << uint32_t(0);                  // specialization
+                packet.writeBit(false);                 // suppress the message
+                packet.flushBits();
+                packet << int32_t(spellId);
+                packet.writeBit(false);                 // favorite
+                packet.writeBit(false);
+                packet.writeBit(false);                 // superceded spell
+                packet.writeBit(false);                 // trait definition
+                packet.flushBits();
+                return true;
+            }
+
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // learned spells, favorite spells (7.x), suppress the message
                 packet << uint32_t(1);
-                if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+                if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                     packet << uint32_t(0);
-                if (m_protocol.isShadowlands())
+                if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
                     packet << uint32_t(0);              // specialization
                 packet << int32_t(spellId);
                 packet.writeBit(false);

@@ -11770,3 +11770,357 @@ std::span<MovementStep const> getShadowlandsMovementDescriptor(uint16_t opcode, 
 {
     return getShadowlandsGuid128MovementDescriptor(opcode, read);
 }
+
+namespace
+{
+    // 10.x: the 9.x layout with the bit and the guid of the game object the mover stands on, the advanced flying
+    // bit with its two velocities, and an id instead of the guid in the inertia block
+    static constexpr std::array DragonflightMovementInfoDescriptor
+    {
+        MovementStep{ MovementOp::Guid128 },
+        MovementStep{ MovementOp::Flags },
+        MovementStep{ MovementOp::Flags2 },
+        MovementStep{ MovementOp::Flags3 },
+        MovementStep{ MovementOp::Timestamp },
+        MovementStep{ MovementOp::PosX },
+        MovementStep{ MovementOp::PosY },
+        MovementStep{ MovementOp::PosZ },
+        MovementStep{ MovementOp::Orientation },
+        MovementStep{ MovementOp::Pitch },
+        MovementStep{ MovementOp::SplineElevation },
+        MovementStep{ MovementOp::RemovedForcesCount },
+        MovementStep{ MovementOp::Count },                      // move index
+        MovementStep{ MovementOp::RemovedForces },
+        MovementStep{ MovementOp::HasStandingOnGameObject },
+        MovementStep{ MovementOp::HasTransport },
+        MovementStep{ MovementOp::HasFallData },
+        MovementStep{ MovementOp::HasSpline },
+        MovementStep{ MovementOp::SkipBit },                    // height change failed
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::SkipBit },                    // remote time valid
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::HasInertia },
+        MovementStep{ MovementOp::HasAdvFlying },
+        MovementStep{ MovementOp::AlignBits },
+        MovementStep{ MovementOp::TGuid128, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosX, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosY, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosZ, Cond::HasTransport },
+        MovementStep{ MovementOp::TOrientation, Cond::HasTransport },
+        MovementStep{ MovementOp::TSeat, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime2, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime3, Cond::HasTransport },
+        MovementStep{ MovementOp::AlignBits, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime2, Cond::HasTransportTime2 },
+        MovementStep{ MovementOp::TTime3, Cond::HasTransportTime3 },
+        MovementStep{ MovementOp::SkipStandingOnGameObject, Cond::HasStandingOnGameObject },
+        MovementStep{ MovementOp::SkipInertiaId, Cond::HasInertia },
+        MovementStep{ MovementOp::SkipAdvFlying, Cond::HasAdvFlying },
+        MovementStep{ MovementOp::FallTime, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpVelocity, Cond::HasFallData },
+        MovementStep{ MovementOp::HasFallDirection, Cond::HasFallData },
+        MovementStep{ MovementOp::AlignBits, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpSin, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpCos, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpXYSpeed, Cond::HasFallDirection },
+        MovementStep{ MovementOp::End }
+    };
+
+    static constexpr std::array DragonflightUpdateSpeedDescriptor
+    {
+        MovementStep{ MovementOp::Guid128 },
+        MovementStep{ MovementOp::Flags },
+        MovementStep{ MovementOp::Flags2 },
+        MovementStep{ MovementOp::Flags3 },
+        MovementStep{ MovementOp::Timestamp },
+        MovementStep{ MovementOp::PosX },
+        MovementStep{ MovementOp::PosY },
+        MovementStep{ MovementOp::PosZ },
+        MovementStep{ MovementOp::Orientation },
+        MovementStep{ MovementOp::Pitch },
+        MovementStep{ MovementOp::SplineElevation },
+        MovementStep{ MovementOp::RemovedForcesCount },
+        MovementStep{ MovementOp::Count },                      // move index
+        MovementStep{ MovementOp::RemovedForces },
+        MovementStep{ MovementOp::HasStandingOnGameObject },
+        MovementStep{ MovementOp::HasTransport },
+        MovementStep{ MovementOp::HasFallData },
+        MovementStep{ MovementOp::HasSpline },
+        MovementStep{ MovementOp::SkipBit },                    // height change failed
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::SkipBit },                    // remote time valid
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::HasInertia },
+        MovementStep{ MovementOp::HasAdvFlying },
+        MovementStep{ MovementOp::AlignBits },
+        MovementStep{ MovementOp::TGuid128, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosX, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosY, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosZ, Cond::HasTransport },
+        MovementStep{ MovementOp::TOrientation, Cond::HasTransport },
+        MovementStep{ MovementOp::TSeat, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime2, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime3, Cond::HasTransport },
+        MovementStep{ MovementOp::AlignBits, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime2, Cond::HasTransportTime2 },
+        MovementStep{ MovementOp::TTime3, Cond::HasTransportTime3 },
+        MovementStep{ MovementOp::SkipStandingOnGameObject, Cond::HasStandingOnGameObject },
+        MovementStep{ MovementOp::SkipInertiaId, Cond::HasInertia },
+        MovementStep{ MovementOp::SkipAdvFlying, Cond::HasAdvFlying },
+        MovementStep{ MovementOp::FallTime, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpVelocity, Cond::HasFallData },
+        MovementStep{ MovementOp::HasFallDirection, Cond::HasFallData },
+        MovementStep{ MovementOp::AlignBits, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpSin, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpCos, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpXYSpeed, Cond::HasFallDirection },
+        MovementStep{ MovementOp::NewSpeed },
+        MovementStep{ MovementOp::End }
+    };
+
+    static constexpr std::array DragonflightAckDescriptor
+    {
+        MovementStep{ MovementOp::Guid128 },
+        MovementStep{ MovementOp::Flags },
+        MovementStep{ MovementOp::Flags2 },
+        MovementStep{ MovementOp::Flags3 },
+        MovementStep{ MovementOp::Timestamp },
+        MovementStep{ MovementOp::PosX },
+        MovementStep{ MovementOp::PosY },
+        MovementStep{ MovementOp::PosZ },
+        MovementStep{ MovementOp::Orientation },
+        MovementStep{ MovementOp::Pitch },
+        MovementStep{ MovementOp::SplineElevation },
+        MovementStep{ MovementOp::RemovedForcesCount },
+        MovementStep{ MovementOp::Count },                      // move index
+        MovementStep{ MovementOp::RemovedForces },
+        MovementStep{ MovementOp::HasStandingOnGameObject },
+        MovementStep{ MovementOp::HasTransport },
+        MovementStep{ MovementOp::HasFallData },
+        MovementStep{ MovementOp::HasSpline },
+        MovementStep{ MovementOp::SkipBit },                    // height change failed
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::SkipBit },                    // remote time valid
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::HasInertia },
+        MovementStep{ MovementOp::HasAdvFlying },
+        MovementStep{ MovementOp::AlignBits },
+        MovementStep{ MovementOp::TGuid128, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosX, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosY, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosZ, Cond::HasTransport },
+        MovementStep{ MovementOp::TOrientation, Cond::HasTransport },
+        MovementStep{ MovementOp::TSeat, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime2, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime3, Cond::HasTransport },
+        MovementStep{ MovementOp::AlignBits, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime2, Cond::HasTransportTime2 },
+        MovementStep{ MovementOp::TTime3, Cond::HasTransportTime3 },
+        MovementStep{ MovementOp::SkipStandingOnGameObject, Cond::HasStandingOnGameObject },
+        MovementStep{ MovementOp::SkipInertiaId, Cond::HasInertia },
+        MovementStep{ MovementOp::SkipAdvFlying, Cond::HasAdvFlying },
+        MovementStep{ MovementOp::FallTime, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpVelocity, Cond::HasFallData },
+        MovementStep{ MovementOp::HasFallDirection, Cond::HasFallData },
+        MovementStep{ MovementOp::AlignBits, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpSin, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpCos, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpXYSpeed, Cond::HasFallDirection },
+        MovementStep{ MovementOp::Count },
+        MovementStep{ MovementOp::End }
+    };
+
+    static constexpr std::array DragonflightSpeedAckDescriptor
+    {
+        MovementStep{ MovementOp::Guid128 },
+        MovementStep{ MovementOp::Flags },
+        MovementStep{ MovementOp::Flags2 },
+        MovementStep{ MovementOp::Flags3 },
+        MovementStep{ MovementOp::Timestamp },
+        MovementStep{ MovementOp::PosX },
+        MovementStep{ MovementOp::PosY },
+        MovementStep{ MovementOp::PosZ },
+        MovementStep{ MovementOp::Orientation },
+        MovementStep{ MovementOp::Pitch },
+        MovementStep{ MovementOp::SplineElevation },
+        MovementStep{ MovementOp::RemovedForcesCount },
+        MovementStep{ MovementOp::Count },                      // move index
+        MovementStep{ MovementOp::RemovedForces },
+        MovementStep{ MovementOp::HasStandingOnGameObject },
+        MovementStep{ MovementOp::HasTransport },
+        MovementStep{ MovementOp::HasFallData },
+        MovementStep{ MovementOp::HasSpline },
+        MovementStep{ MovementOp::SkipBit },                    // height change failed
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::SkipBit },                    // remote time valid
+        MovementStep{ MovementOp::WriteBit0 },
+        MovementStep{ MovementOp::HasInertia },
+        MovementStep{ MovementOp::HasAdvFlying },
+        MovementStep{ MovementOp::AlignBits },
+        MovementStep{ MovementOp::TGuid128, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosX, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosY, Cond::HasTransport },
+        MovementStep{ MovementOp::TPosZ, Cond::HasTransport },
+        MovementStep{ MovementOp::TOrientation, Cond::HasTransport },
+        MovementStep{ MovementOp::TSeat, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime2, Cond::HasTransport },
+        MovementStep{ MovementOp::HasTransportTime3, Cond::HasTransport },
+        MovementStep{ MovementOp::AlignBits, Cond::HasTransport },
+        MovementStep{ MovementOp::TTime2, Cond::HasTransportTime2 },
+        MovementStep{ MovementOp::TTime3, Cond::HasTransportTime3 },
+        MovementStep{ MovementOp::SkipStandingOnGameObject, Cond::HasStandingOnGameObject },
+        MovementStep{ MovementOp::SkipInertiaId, Cond::HasInertia },
+        MovementStep{ MovementOp::SkipAdvFlying, Cond::HasAdvFlying },
+        MovementStep{ MovementOp::FallTime, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpVelocity, Cond::HasFallData },
+        MovementStep{ MovementOp::HasFallDirection, Cond::HasFallData },
+        MovementStep{ MovementOp::AlignBits, Cond::HasFallData },
+        MovementStep{ MovementOp::JumpSin, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpCos, Cond::HasFallDirection },
+        MovementStep{ MovementOp::JumpXYSpeed, Cond::HasFallDirection },
+        MovementStep{ MovementOp::Count },
+        MovementStep{ MovementOp::NewSpeed },
+        MovementStep{ MovementOp::End }
+    };
+}
+
+static std::span<MovementStep const> getDragonflightGuid128MovementDescriptor(uint16_t opcode, bool read)
+{
+    uint32_t internalId = 0;
+    if (read)
+        internalId = Version::opcodeIdForHex(opcode, WoW::Expansion::_Dragonflight);
+    else
+        internalId = static_cast<uint32_t>(opcode);
+
+    switch (internalId)
+    {
+        case MSG_MOVE_HEARTBEAT:
+        case MSG_MOVE_JUMP:
+        case MSG_MOVE_START_ASCEND:
+        case MSG_MOVE_STOP_ASCEND:
+        case MSG_MOVE_START_DESCEND:
+        case MSG_MOVE_START_FORWARD:
+        case MSG_MOVE_START_BACKWARD:
+        case MSG_MOVE_SET_FACING:
+        case MSG_MOVE_START_STRAFE_LEFT:
+        case MSG_MOVE_START_STRAFE_RIGHT:
+        case MSG_MOVE_STOP_STRAFE:
+        case MSG_MOVE_START_TURN_LEFT:
+        case MSG_MOVE_START_TURN_RIGHT:
+        case MSG_MOVE_STOP_TURN:
+        case MSG_MOVE_START_PITCH_UP:
+        case MSG_MOVE_START_PITCH_DOWN:
+        case MSG_MOVE_STOP_PITCH:
+        case MSG_MOVE_SET_RUN_MODE:
+        case MSG_MOVE_SET_WALK_MODE:
+        case MSG_MOVE_SET_PITCH:
+        case MSG_MOVE_START_SWIM:
+        case MSG_MOVE_STOP_SWIM:
+        case MSG_MOVE_FALL_LAND:
+        case MSG_MOVE_STOP:
+        case CMSG_MOVE_SET_FLY:
+        case CMSG_MOVE_CHNG_TRANSPORT:
+        case CMSG_MOVE_FALL_RESET:
+        case SMSG_PLAYER_MOVE:
+        case SMSG_MOVE_UPDATE_TELEPORT:
+            return DragonflightMovementInfoDescriptor;
+
+        case MSG_MOVE_SET_WALK_SPEED:
+        case MSG_MOVE_SET_RUN_SPEED:
+        case MSG_MOVE_SET_RUN_BACK_SPEED:
+        case MSG_MOVE_SET_SWIM_SPEED:
+        case MSG_MOVE_SET_SWIM_BACK_SPEED:
+        case MSG_MOVE_SET_TURN_RATE:
+        case MSG_MOVE_SET_FLIGHT_SPEED:
+        case MSG_MOVE_SET_FLIGHT_BACK_SPEED:
+        case MSG_MOVE_SET_PITCH_RATE:
+            return DragonflightUpdateSpeedDescriptor;
+
+        case SMSG_FORCE_WALK_SPEED_CHANGE:
+        case SMSG_FORCE_RUN_SPEED_CHANGE:
+        case SMSG_FORCE_RUN_BACK_SPEED_CHANGE:
+        case SMSG_FORCE_SWIM_SPEED_CHANGE:
+        case SMSG_FORCE_SWIM_BACK_SPEED_CHANGE:
+        case SMSG_FORCE_TURN_RATE_CHANGE:
+        case SMSG_FORCE_FLIGHT_SPEED_CHANGE:
+        case SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE:
+        case SMSG_FORCE_PITCH_RATE_CHANGE:
+            return LegionSetSpeedDescriptor;
+
+        case SMSG_SPLINE_SET_WALK_SPEED:
+        case SMSG_SPLINE_SET_RUN_SPEED:
+        case SMSG_SPLINE_SET_RUN_BACK_SPEED:
+        case SMSG_SPLINE_SET_SWIM_SPEED:
+        case SMSG_SPLINE_SET_SWIM_BACK_SPEED:
+        case SMSG_SPLINE_SET_TURN_RATE:
+        case SMSG_SPLINE_SET_FLIGHT_SPEED:
+        case SMSG_SPLINE_SET_FLIGHT_BACK_SPEED:
+        case SMSG_SPLINE_SET_PITCH_RATE:
+            return LegionSplineSetSpeedDescriptor;
+
+        case SMSG_MOVE_SET_CAN_FLY:
+        case SMSG_MOVE_UNSET_CAN_FLY:
+        case SMSG_MOVE_WATER_WALK:
+        case SMSG_MOVE_LAND_WALK:
+        case SMSG_MOVE_FEATHER_FALL:
+        case SMSG_MOVE_NORMAL_FALL:
+        case SMSG_MOVE_SET_HOVER:
+        case SMSG_MOVE_UNSET_HOVER:
+        case SMSG_FORCE_MOVE_ROOT:
+        case SMSG_FORCE_MOVE_UNROOT:
+        case SMSG_MOVE_GRAVITY_DISABLE:
+        case SMSG_MOVE_GRAVITY_ENABLE:
+            return LegionSetFlagDescriptor;
+
+        case SMSG_SPLINE_MOVE_SET_FLYING:
+        case SMSG_SPLINE_MOVE_UNSET_FLYING:
+        case SMSG_SPLINE_MOVE_WATER_WALK:
+        case SMSG_SPLINE_MOVE_LAND_WALK:
+        case SMSG_SPLINE_MOVE_FEATHER_FALL:
+        case SMSG_SPLINE_MOVE_NORMAL_FALL:
+        case SMSG_SPLINE_MOVE_SET_HOVER:
+        case SMSG_SPLINE_MOVE_UNSET_HOVER:
+        case SMSG_SPLINE_MOVE_ROOT:
+        case SMSG_SPLINE_MOVE_UNROOT:
+        case SMSG_SPLINE_MOVE_GRAVITY_DISABLE:
+        case SMSG_SPLINE_MOVE_GRAVITY_ENABLE:
+        case SMSG_SPLINE_MOVE_SET_RUN_MODE:
+        case SMSG_SPLINE_MOVE_SET_WALK_MODE:
+            return LegionSplineSetFlagDescriptor;
+
+        case CMSG_MOVE_SET_CAN_FLY_ACK:
+        case CMSG_MOVE_FEATHER_FALL_ACK:
+        case CMSG_MOVE_WATER_WALK_ACK:
+        case CMSG_FORCE_MOVE_ROOT_ACK:
+        case CMSG_FORCE_MOVE_UNROOT_ACK:
+        case CMSG_MOVE_KNOCK_BACK_ACK:
+        case CMSG_MOVE_HOVER_ACK:
+        case CMSG_MOVE_GRAVITY_DISABLE_ACK:
+        case CMSG_MOVE_GRAVITY_ENABLE_ACK:
+        case CMSG_MOVE_SET_COLLISION_HEIGHT_ACK:
+            return DragonflightAckDescriptor;
+
+        case CMSG_FORCE_WALK_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_RUN_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_SWIM_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_TURN_RATE_CHANGE_ACK:
+        case CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_PITCH_RATE_CHANGE_ACK:
+            return DragonflightSpeedAckDescriptor;
+
+        default:
+            return UnknownDescriptor;
+    }
+}
+
+std::span<MovementStep const> getDragonflightMovementDescriptor(uint16_t opcode, bool read)
+{
+    return getDragonflightGuid128MovementDescriptor(opcode, read);
+}

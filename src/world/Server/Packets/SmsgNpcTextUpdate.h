@@ -66,7 +66,7 @@ namespace AscEmu::Packets
         {
             packet << input.textId;
 
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // allow, size of the data, eight probabilities, eight broadcast texts. The texts themselves are
                 // client data: the text id is sent as broadcast text, as for 5.4.8.

@@ -2,7 +2,7 @@
 
 # World transport of the client profile selected by ASCEMU_VERSION. Every profile
 # keeps its own directory; profiles without one stay on the classic WorldSocket path.
-# WoD and Legion share the RC4 transport in Shared/, BfA and Shadowlands the AES transport there; the values of a
+# WoD and Legion share the RC4 transport in Shared/, BfA, Shadowlands and Dragonflight the AES transport there; the values of a
 # profile come from <profile>/World/WorldProfile.hpp.
 if (ASCEMU_VERSION STREQUAL "Forever")
     set(VERSION_CLIENT_DIRS Forever)
@@ -29,6 +29,11 @@ elseif (ASCEMU_VERSION STREQUAL "Shadowlands")
     set(VERSION_CLIENT_DIRS Shadowlands Shared)
     set(VERSION_CLIENT_DEFINITIONS
         AE_WORLD_PROFILE_SHADOWLANDS=1
+    )
+elseif (ASCEMU_VERSION STREQUAL "Dragonflight")
+    set(VERSION_CLIENT_DIRS Dragonflight Shared)
+    set(VERSION_CLIENT_DEFINITIONS
+        AE_WORLD_PROFILE_DRAGONFLIGHT=1
     )
 else ()
     return()

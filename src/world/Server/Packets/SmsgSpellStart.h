@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Spell.hpp"
 #include "SpellCastDataBfA.h"
 #include "SpellCastDataShadowlands.h"
+#include "SpellCastDataDragonflight.h"
 #include "SpellCastDataLegion.h"
 #include <cstdint>
 
@@ -53,7 +54,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 SpellCastDataLegion castData;
                 castData.casterGuid = casterGuid;
@@ -71,6 +72,8 @@ namespace AscEmu::Packets
                 castData.castNumber = extraCastNumber;
                 if (m_protocol.isWoD())
                     castData.writeWoD(packet);
+                else if (m_protocol.isDragonflight())
+                    writeSpellCastDataDragonflight(packet, castData);
                 else if (m_protocol.isShadowlands())
                     writeSpellCastDataShadowlands(packet, castData);
                 else if (m_protocol.isBfA())

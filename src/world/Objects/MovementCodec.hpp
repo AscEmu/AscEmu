@@ -132,6 +132,8 @@ private:
             case Cond::HasTransportTime3:  return movementInfo.status_info.hasTransportTime3;
             case Cond::HasCount:           return movementInfo.hasCount;
             case Cond::HasInertia:         return movementInfo.hasInertia;
+            case Cond::HasStandingOnGameObject: return movementInfo.hasStandingOnGameObject;
+            case Cond::HasAdvFlying:       return movementInfo.hasAdvFlying;
 
             case Cond::NoReadOptWrite:     return true;
             case Cond::ReadOptWrite:       return true;
@@ -195,7 +197,7 @@ private:
 
             case MovementOp::Flags:
             {
-                if constexpr (Version == WoW::Expansion::_Shadowlands)
+                if constexpr (Version == WoW::Expansion::_Shadowlands || Version == WoW::Expansion::_Dragonflight)
                 {
                     buffer >> movementInfo.flags;
                 }
@@ -417,6 +419,30 @@ private:
                     buffer >> inertiaGuid >> force >> force >> force >> lifetime;
                 } break;
 
+            case MovementOp::SkipInertiaId:
+                {
+                    int32_t inertiaId = 0;
+                    float force = 0.0f;
+                    uint32_t lifetime = 0;
+                    buffer >> inertiaId >> force >> force >> force >> lifetime;
+                } break;
+
+            case MovementOp::HasStandingOnGameObject: movementInfo.hasStandingOnGameObject = buffer.readBit(); break;
+
+            case MovementOp::SkipStandingOnGameObject:
+                {
+                    WoWGuid128 gameObjectGuid;
+                    buffer >> gameObjectGuid;
+                } break;
+
+            case MovementOp::HasAdvFlying: movementInfo.hasAdvFlying = buffer.readBit(); break;
+
+            case MovementOp::SkipAdvFlying:
+                {
+                    float velocity = 0.0f;
+                    buffer >> velocity >> velocity;
+                } break;
+
             case MovementOp::AlignBits: buffer.resetBitPos(); break;
             default:
                 break;
@@ -451,7 +477,7 @@ private:
 
             case MovementOp::Flags:
             {
-                if constexpr (Version == WoW::Expansion::_Shadowlands)
+                if constexpr (Version == WoW::Expansion::_Shadowlands || Version == WoW::Expansion::_Dragonflight)
                     data << movementInfo.flags;
                 else if constexpr (Version >= WoW::Expansion::_Cata)
                     data.writeBits(movementInfo.flags, 30);
@@ -562,6 +588,11 @@ private:
             case MovementOp::Flags3:      data << uint32_t(0); break;
             case MovementOp::HasInertia:  data.writeBit(false); break;
             case MovementOp::SkipInertia: break;
+            case MovementOp::SkipInertiaId: break;
+            case MovementOp::HasStandingOnGameObject: data.writeBit(false); break;
+            case MovementOp::SkipStandingOnGameObject: break;
+            case MovementOp::HasAdvFlying: data.writeBit(false); break;
+            case MovementOp::SkipAdvFlying: break;
             case MovementOp::AlignBits: data.flushBits(); break;
             default:
                 break;
@@ -586,6 +617,8 @@ private:
             return getBfAMovementDescriptor(opcode, read);
         else if constexpr (Version == WoW::Expansion::_Shadowlands)
             return getShadowlandsMovementDescriptor(opcode, read);
+        else if constexpr (Version == WoW::Expansion::_Dragonflight)
+            return getDragonflightMovementDescriptor(opcode, read);
         else
             return getMopMovementDescriptor(opcode, read);
     }

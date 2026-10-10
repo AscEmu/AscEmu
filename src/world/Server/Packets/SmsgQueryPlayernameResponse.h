@@ -45,7 +45,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isShadowlands())
+            if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // a list with one result: result, player, data and unused bits; the data: deleted, names, account guids,
                 // realm, the character and the name
@@ -73,6 +73,8 @@ namespace AscEmu::Packets
                 packet << uint32_t(m_protocol.getVirtualRealmAddress());
                 packet << race << gender << class_ << level;
                 packet << uint8_t(0);
+                if (m_protocol.isDragonflight())
+                    packet << int32_t(0);               // timerunning season
                 packet.writeString(player_name);
                 return true;
             }

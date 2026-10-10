@@ -48,7 +48,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // variable, value, hidden
                 packet << worldState1 << value1;

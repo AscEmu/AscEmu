@@ -36,12 +36,26 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isDragonflight())
+            {
+                // 10.x: the new spell with its bits, the superceded spell behind them
+                packet << uint32_t(1);
+                packet << int32_t(supercedeSpellId);
+                packet.writeBit(false);                 // favorite
+                packet.writeBit(false);
+                packet.writeBit(true);                  // has a superceded spell
+                packet.writeBit(false);                 // trait definition
+                packet.flushBits();
+                packet << int32_t(spellId);
+                return true;
+            }
+
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // new spells, superceded spells, favorite spells (7.x)
                 packet << uint32_t(1);
                 packet << uint32_t(1);
-                if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+                if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                     packet << uint32_t(0);
                 packet << int32_t(supercedeSpellId);
                 packet << int32_t(spellId);

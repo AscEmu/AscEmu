@@ -50,12 +50,14 @@ namespace AscEmu::Packets
                     if (mask & (1 << i))
                         packet << uint32_t(0);
             }
-            else if (m_protocol.isShadowlands())
+            else if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 packet << WoWGuid(playerGuid).toGuid128(m_protocol.realmId, 0);
                 packet << int64_t(time);
 
-                for (uint8_t i = 0; i < 13; ++i)
+                // 9.x knows 13 account data types, 10.x knows 15
+                const uint8_t accountDataTypes = m_protocol.isDragonflight() ? 15 : 13;
+                for (uint8_t i = 0; i < accountDataTypes; ++i)
                     packet << int64_t(0);
             }
             else if (m_protocol.expansion >= WoW::Expansion::_WoD && m_protocol.expansion <= WoW::Expansion::_BfA)

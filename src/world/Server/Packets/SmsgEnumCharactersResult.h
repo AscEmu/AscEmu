@@ -334,7 +334,7 @@ namespace AscEmu::Packets
                 for (auto const& data : enum_data)
                     writeCharacter128(packet, data, listPosition++);
             }
-            else if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            else if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // races a new character can be created with, allied races are not offered
                 static constexpr int32_t unlockedRaces[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 22, 24, 25, 26 };
@@ -350,7 +350,7 @@ namespace AscEmu::Packets
                 packet.writeBit(1);                             // success
                 packet.writeBit(0);                             // list of deleted characters
                 packet.writeBit(0);                             // demon hunter creation allowed
-                packet.writeBit(m_protocol.isShadowlands() ? 0 : hasDemonHunter);   // has a demon hunter on this realm; 9.x: new player restriction
+                packet.writeBit(m_protocol.isShadowlands() || m_protocol.isDragonflight() ? 0 : hasDemonHunter);   // has a demon hunter on this realm; 9.x: new player restriction
                 packet.writeBit(0);
                 packet.writeBit(0);                             // has a mask of disabled classes
                 packet.writeBit(0);                             // allied race creation allowed
@@ -358,8 +358,10 @@ namespace AscEmu::Packets
                 packet << uint32_t(enum_data.size());
                 packet << maxCharacterLevel;
                 packet << uint32_t(sizeof(unlockedRaces) / sizeof(unlockedRaces[0]));
-                if (m_protocol.isBfA() || m_protocol.isShadowlands())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                     packet << uint32_t(0);                      // unlocked conditional appearances
+                if (m_protocol.isDragonflight())
+                    packet << uint32_t(0);                      // race limit disables
 
                 uint8_t listPosition = 0;
                 for (auto const& data : enum_data)
@@ -371,6 +373,11 @@ namespace AscEmu::Packets
                     packet.writeBit(1);                         // has the expansion
                     packet.writeBit(1);                         // has the achievement
                     packet.writeBit(0);                         // has the heritage armor
+                    if (m_protocol.isDragonflight())
+                    {
+                        packet.writeBit(0);                     // locked
+                        packet.writeBit(0);
+                    }
                     packet.flushBits();
                 }
             }
@@ -378,10 +385,11 @@ namespace AscEmu::Packets
             return true;
         }
 
-        // character of the 6.x, 7.x, 8.x and 9.x lists
+        // character of the 6.x, 7.x, 8.x, 9.x and 10.x lists
         void writeCharacter128(WorldPacket& packet, CharEnumData const& data, uint8_t listPosition) const
         {
-            const bool shadowlands = m_protocol.isShadowlands();
+            const bool dragonflight = m_protocol.isDragonflight();
+            const bool shadowlands = m_protocol.isShadowlands() || dragonflight;
             const bool legion = m_protocol.isLegion() || m_protocol.isBfA() || shadowlands;
             const bool bfa = m_protocol.isBfA() || shadowlands;
 
@@ -426,7 +434,9 @@ namespace AscEmu::Packets
             packet << uint32_t(0);                              // profession 1
             packet << uint32_t(0);                              // profession 2
 
-            for (uint8_t i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
+            // 10.x lists the equipment without the bags
+            const uint8_t visualItems = dragonflight ? 19 : INVENTORY_SLOT_BAG_END;
+            for (uint8_t i = 0; i < visualItems; ++i)
             {
                 packet << uint32_t(data.player_items[i].displayId);
                 packet << uint32_t(data.player_items[i].enchantmentId);
@@ -445,7 +455,7 @@ namespace AscEmu::Packets
             {
                 packet << uint16_t(0);                          // specialization
                 packet << uint32_t(0);
-                packet << uint32_t(shadowlands ? WoW::Build::SHADOWLANDS_BUILD : bfa ? WoW::Build::BFA_BUILD : WoW::Build::LEGION_BUILD);     // build of the last login
+                packet << uint32_t(dragonflight ? WoW::Build::DRAGONFLIGHT_BUILD : shadowlands ? WoW::Build::SHADOWLANDS_BUILD : bfa ? WoW::Build::BFA_BUILD : WoW::Build::LEGION_BUILD);     // build of the last login
                 packet << uint32_t(0);                          // flags 4
                 if (bfa)
                     packet << uint32_t(0);                      // additional strings (mail senders)
@@ -454,12 +464,24 @@ namespace AscEmu::Packets
                     packet << uint32_t(0);                      // mail sender types
                     packet << uint32_t(0);                      // override of the select screen file
                 }
+                if (dragonflight)
+                {
+                    // 10.x: the personal tabard (none) and the timerunning season
+                    for (uint8_t i = 0; i < 5; ++i)
+                        packet << int32_t(-1);
+                    packet << int32_t(0);
+                }
             }
 
             packet.writeBits(static_cast<uint32_t>(data.name.length()), 6);
             packet.writeBit(data.loginFlags & 0x20);            // first login
             packet.writeBit(0);                                 // boost in progress
             packet.writeBits(0, 5);
+            if (dragonflight)
+            {
+                packet.writeBit(0);                             // rpe reset available
+                packet.writeBit(0);                             // rpe reset quest clear available
+            }
             packet.flushBits();
 
             packet.append(data.name.c_str(), data.name.length());

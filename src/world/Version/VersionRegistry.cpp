@@ -28,6 +28,7 @@ namespace Version
             WoW::Expansion::_Legion,
             WoW::Expansion::_BfA,
             WoW::Expansion::_Shadowlands,
+            WoW::Expansion::_Dragonflight,
         };
 
         size_t opcodeCount = 0;

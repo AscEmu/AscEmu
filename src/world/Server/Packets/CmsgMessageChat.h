@@ -73,6 +73,79 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isDragonflight())
+            {
+                // 10.x: 11 bit texts; say, party, raid, raid warning and instance chat close with a secure bit; the
+                // whisper names its target by guid and realm and ends both texts with a terminator; the channel
+                // carries its guid and an optional secure bit
+                type = getMessageTypeForOpcode(static_cast<uint16_t>(Version::opcodeIdForHex(packet.getOpcode(), m_protocol)));
+                if (type == 0xFF)
+                    return false;
+
+                switch (type)
+                {
+                    case CHAT_MSG_AFK:
+                    case CHAT_MSG_DND:
+                    case CHAT_MSG_EMOTE:
+                    {
+                        const uint32_t textLength = packet.readBits(11);
+                        message = packet.readString(textLength);
+                    } break;
+                    case CHAT_MSG_WHISPER:
+                    {
+                        WoWGuid128 targetGuid;
+                        packet >> language >> targetGuid;
+                        packet.read<uint32_t>();                        // realm of the target
+                        packet.resetBitPos();
+                        const uint32_t receiverLength = packet.readBits(9);
+                        const uint32_t textLength = packet.readBits(11);
+                        if (receiverLength > 1)
+                        {
+                            destination = packet.readString(receiverLength - 1);
+                            packet.read<uint8_t>();
+                        }
+                        if (textLength > 1)
+                        {
+                            message = packet.readString(textLength - 1);
+                            packet.read<uint8_t>();
+                        }
+                    } break;
+                    case CHAT_MSG_CHANNEL:
+                    {
+                        WoWGuid128 channelGuid;
+                        packet >> language >> channelGuid;
+                        packet.resetBitPos();
+                        const uint32_t receiverLength = packet.readBits(9);
+                        const uint32_t textLength = packet.readBits(11);
+                        if (packet.readBit())
+                            packet.readBit();                           // secure
+                        destination = packet.readString(receiverLength);
+                        message = packet.readString(textLength);
+                    } break;
+                    case CHAT_MSG_SAY:
+                    case CHAT_MSG_PARTY:
+                    case CHAT_MSG_RAID:
+                    case CHAT_MSG_RAID_WARNING:
+                    case CHAT_MSG_BATTLEGROUND:
+                    {
+                        packet >> language;
+                        packet.resetBitPos();
+                        const uint32_t textLength = packet.readBits(11);
+                        packet.readBit();                               // secure
+                        message = packet.readString(textLength);
+                    } break;
+                    default:
+                    {
+                        packet >> language;
+                        packet.resetBitPos();
+                        const uint32_t textLength = packet.readBits(11);
+                        message = packet.readString(textLength);
+                    } break;
+                }
+
+                return language < NUM_LANGUAGES && !packet.hadReadFailure();
+            }
+
             if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // one opcode per chat type: language, then the lengths and the texts

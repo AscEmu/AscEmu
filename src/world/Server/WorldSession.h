@@ -786,6 +786,8 @@ protected:
         void handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/);        //>= Cata
         void handleGetUndeleteCooldownStatusOpcode(WorldPacket& /*recvPacket*/);    //>= WoD
         void handleNoResponseOpcode(WorldPacket& /*recvPacket*/);
+        void handleServerTimeOffsetRequestOpcode(WorldPacket& /*recvPacket*/);  //>= Dragonflight
+        void handleSocialContractRequestOpcode(WorldPacket& /*recvPacket*/);    //>= Dragonflight
         void handleTimeSyncRespOpcode(WorldPacket& recvPacket);
         void handleObjectUpdateFailedOpcode(WorldPacket& recvPacket);       //>= Cata
         

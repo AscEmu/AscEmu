@@ -32,8 +32,10 @@ namespace AscEmu::Battlenet
             // host name or address the clients reach the web login at
             std::string externalAddress = "bnet.ascemu.local";
 
-            // https://<externalAddress>:<port>/bnetserver/login/
-            std::string loginUrl() const { return "https://" + externalAddress + ":" + std::to_string(port) + "/bnetserver/login/"; }
+            // http(s)://<externalAddress>:<port>/bnetserver/login/
+            // 10.x clients verify the certificate of the web login against the system store, they get the
+            // plain http form of the url and the web auth listener answers them without TLS
+            std::string loginUrl(bool secure = true) const { return std::string(secure ? "https://" : "http://") + externalAddress + ":" + std::to_string(port) + "/bnetserver/login/"; }
         } webAuth;
 
         struct LogonDatabaseSettings

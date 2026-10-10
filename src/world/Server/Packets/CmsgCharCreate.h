@@ -28,6 +28,36 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isDragonflight())
+            {
+                // 10.x: name length, template set, trial boost, new player experience, hardcore self found; race, class,
+                // sex; the customization choices; the timerunning season; the name; the template set; the choices
+                const uint32_t nameLength = packet.readBits(6);
+                const bool hasTemplateSet = packet.readBit();
+                packet.readBit();                       // trial boost
+                packet.readBit();                       // new player experience
+                packet.readBit();                       // hardcore self found
+                packet.resetBitPos();
+
+                packet >> createStruct._race >> createStruct._class >> createStruct.gender;
+                const uint32_t customizationCount = packet.read<uint32_t>();
+                packet.read<int32_t>();                 // timerunning season
+                createStruct.skin = createStruct.face = createStruct.hairStyle = createStruct.hairColor = createStruct.facialHair = 0;
+                createStruct.outfitId = 0;
+                createStruct.name = packet.readString(nameLength);
+
+                if (hasTemplateSet)
+                    packet.read<int32_t>();
+
+                for (uint32_t i = 0; i < customizationCount; ++i)
+                {
+                    packet.read<uint32_t>();            // option
+                    packet.read<uint32_t>();            // choice
+                }
+
+                return !packet.hadReadFailure();
+            }
+
             if (m_protocol.isShadowlands())
             {
                 // name length, template set, trial boost, new player experience; race, class, sex; the customization

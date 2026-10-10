@@ -33,7 +33,7 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << cinematicId;
-            if (m_protocol.isShadowlands())
+            if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 packet << WoWGuid128();                 // conversation
 
             return true;

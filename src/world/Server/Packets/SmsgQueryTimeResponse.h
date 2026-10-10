@@ -56,7 +56,7 @@ namespace AscEmu::Packets
                 packet << static_cast<uint32_t>(time);
                 packet << int32_t(0);
             }
-            else if (m_protocol.isShadowlands())
+            else if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 packet << static_cast<int64_t>(time);
             }

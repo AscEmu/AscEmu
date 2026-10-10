@@ -26,10 +26,10 @@ namespace AscEmu::Packets
         {
             auto rawErrorCode = static_cast<uint8_t>(errorCode);
 
-            if (m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // result, the created character
-                packet << (m_protocol.isShadowlands() ? toShadowlandsCharacterErrorCode(rawErrorCode) : toBfACharacterErrorCode(rawErrorCode));
+                packet << (m_protocol.isDragonflight() ? toDragonflightCharacterErrorCode(rawErrorCode) : m_protocol.isShadowlands() ? toShadowlandsCharacterErrorCode(rawErrorCode) : toBfACharacterErrorCode(rawErrorCode));
                 packet << WoWGuid128();
                 return true;
             }

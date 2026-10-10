@@ -19,3 +19,4 @@ std::span<MovementStep const> getWoDMovementDescriptor(uint16_t opcode, bool rea
 std::span<MovementStep const> getLegionMovementDescriptor(uint16_t opcode, bool read);
 std::span<MovementStep const> getBfAMovementDescriptor(uint16_t opcode, bool read);
 std::span<MovementStep const> getShadowlandsMovementDescriptor(uint16_t opcode, bool read);
+std::span<MovementStep const> getDragonflightMovementDescriptor(uint16_t opcode, bool read);

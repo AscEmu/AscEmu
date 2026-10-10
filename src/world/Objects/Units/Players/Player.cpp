@@ -214,6 +214,10 @@ using Version::PlayerField;
 
 using namespace AscEmu::Packets;
 
+#if VERSION_STRING == Dragonflight
+static uint32_t getInitialSpecialization(uint8_t playerClass);
+#endif
+
 namespace
 {
     void sendMapTransferFailure(Player* player, uint32_t mapId, EnterState state)
@@ -647,6 +651,18 @@ void Player::onPreAttachToWorld()
             }
         }
     }
+
+#if VERSION_STRING == Dragonflight
+    // a character without a chosen specialization logs in with the initial one of its class
+    if (getActiveSpec().getSpecializationId() == 0)
+    {
+        if (const uint32_t initialSpecialization = getInitialSpecialization(static_cast<uint8_t>(getClass())))
+        {
+            getActiveSpec().setSpecializationId(initialSpecialization);
+            setCurrentSpecId(initialSpecialization);
+        }
+    }
+#endif
 
     sendInitialLogonPackets();
 #if VERSION_STRING > TBC
@@ -6110,6 +6126,31 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     setTalentPoints(curTalentPoints - requiredTalentPoints, false);
 #endif
 }
+
+#if VERSION_STRING == Dragonflight
+// 10.x: every class has an initial specialization (ChrSpecialization order index 4) a character carries until
+// a specialization is chosen; the client shows no talents and fails its spec checks without one
+static uint32_t getInitialSpecialization(uint8_t playerClass)
+{
+    switch (playerClass)
+    {
+        case 1:  return 1446;   // warrior
+        case 2:  return 1451;   // paladin
+        case 3:  return 1448;   // hunter
+        case 4:  return 1453;   // rogue
+        case 5:  return 1452;   // priest
+        case 6:  return 1455;   // death knight
+        case 7:  return 1444;   // shaman
+        case 8:  return 1449;   // mage
+        case 9:  return 1454;   // warlock
+        case 10: return 1450;   // monk
+        case 11: return 1447;   // druid
+        case 12: return 1456;   // demon hunter
+        case 13: return 1465;   // evoker
+        default: return 0;
+    }
+}
+#endif
 
 #if VERSION_STRING >= Mop
 uint32_t Player::getCurrentSpecId() const { return getField<uint32_t>(PlayerField::CurrentSpecId); }

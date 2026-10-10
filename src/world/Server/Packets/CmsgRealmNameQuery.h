@@ -22,7 +22,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isShadowlands())
+            if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 packet >> realmId;
                 return !packet.hadReadFailure();

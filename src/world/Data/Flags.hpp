@@ -168,7 +168,7 @@ enum ObjectUpdateFlags : uint16_t
 
 #endif
 
-#if VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands
+#if VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
 enum TrainerSpellState : uint8_t
 {
     TRAINER_SPELL_GRAY                  = 0,

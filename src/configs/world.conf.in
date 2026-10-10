@@ -108,7 +108,7 @@
 #        0 = 5875 (Classic)     1 = 8606 (TBC)      2 = 12340 (WotLK)
 #        3 = 15595 (Cata)       4 = 18414 (Mop)     5 = 21742 (WoD)
 #        6 = 26972 (Legion)     7 = 35662 (BfA)     8 = 45745 (Shadowlands)
-#        9 = (Dragonflight)    10 = (TWW)          11 = (Midnight)
+#        9 = 55664 (Dragonflight)    10 = (TWW)          11 = (Midnight)
 #
 
 <Realm1 Id            = "1"

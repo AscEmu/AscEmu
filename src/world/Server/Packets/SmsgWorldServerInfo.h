@@ -38,7 +38,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isShadowlands())
+            if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // difficulty; bits: tournament realm, cross realm pvp alert, block exiting loading screen, restricted level,
                 // restricted money, instance group size

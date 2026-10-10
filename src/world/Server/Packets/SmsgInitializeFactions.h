@@ -32,24 +32,21 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
-                // 256 (6.x), 300 (7.x), 350 (8.x) or 400 (9.x) factions: flags and standing, then one bonus bit per faction
-                const uint16_t factionCount = m_protocol.isWoD() ? 256 : m_protocol.isLegion() ? 300 : m_protocol.isShadowlands() ? 400 : 350;
+                // 256 (6.x), 300 (7.x), 350 (8.x), 400 (9.x) or 1000 (10.x) factions: flags (16 bit in 10.x) and
+                // standing, then one bonus bit per faction
+                const uint16_t factionCount = m_protocol.isWoD() ? 256 : m_protocol.isLegion() ? 300 : m_protocol.isDragonflight() ? 1000 : m_protocol.isShadowlands() ? 400 : 350;
 
                 for (uint16_t i = 0; i < factionCount; ++i)
                 {
                     const auto* const factionReputation = i < reputationByListId.size() ? reputationByListId[i] : nullptr;
-                    if (factionReputation == nullptr)
-                    {
-                        packet << uint8_t(0);
-                        packet << int32_t(0);
-                    }
+                    const uint8_t flags = factionReputation != nullptr ? factionReputation->flag : 0;
+                    if (m_protocol.isDragonflight())
+                        packet << uint16_t(flags);
                     else
-                    {
-                        packet << factionReputation->flag;
-                        packet << int32_t(factionReputation->calcStanding());
-                    }
+                        packet << uint8_t(flags);
+                    packet << int32_t(factionReputation != nullptr ? factionReputation->calcStanding() : 0);
                 }
 
                 for (uint16_t i = 0; i < factionCount; ++i)

@@ -25,6 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <climits>
 #include <cctype>
 #include <chrono>
+#include <ctime>
 #include <mutex>
 #include <string>
 #include <unordered_map>
@@ -39,6 +40,43 @@ namespace AscEmu::Battlenet
         constexpr size_t MAX_HTTP_REQUEST_SIZE = 64 * 1024;
 
         std::atomic<uint64_t> nextWebAuthConnectionId{ 1 };
+
+        // random session id in the 8-4-4-4-12 uuid notation
+        std::string createSessionId()
+        {
+            std::array<uint8_t, 16> randomBytes{};
+            if (RAND_bytes(randomBytes.data(), static_cast<int>(randomBytes.size())) != 1)
+                return {};
+
+            static constexpr char hexDigits[] = "0123456789abcdef";
+            std::string id;
+            id.reserve(36);
+            for (size_t i = 0; i < randomBytes.size(); ++i)
+            {
+                if (i == 4 || i == 6 || i == 8 || i == 10)
+                    id += '-';
+
+                id += hexDigits[randomBytes[i] >> 4];
+                id += hexDigits[randomBytes[i] & 0x0F];
+            }
+
+            return id;
+        }
+
+        // Date header value, e.g. "Sat, 10 Oct 2026 16:12:05 GMT"
+        std::string httpDate()
+        {
+            const std::time_t now = std::time(nullptr);
+            std::tm utc{};
+#if defined(_WIN32)
+            gmtime_s(&utc, &now);
+#else
+            gmtime_r(&now, &utc);
+#endif
+            char buffer[64]{};
+            std::strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S GMT", &utc);
+            return buffer;
+        }
 
         struct PendingSrpChallenge
         {
@@ -221,7 +259,7 @@ namespace AscEmu::Battlenet
             return body.substr(valueStart, valueEnd - valueStart);
         }
 
-#if AE_BNET_V1_SERVICES
+#if AE_BNET_PASSWORD_WEB_LOGIN
         // resolves the escapes a JSON string value may contain, \u sequences are kept as they are
         std::string unescapeJsonValue(const std::string& value)
         {
@@ -261,6 +299,7 @@ namespace AscEmu::Battlenet
 
     WebAuthSocket::WebAuthSocket(SOCKET fd)
         : Socket(fd, WEB_AUTH_SOCKET_BUFFER_SIZE, WEB_AUTH_SOCKET_BUFFER_SIZE)
+        , m_connectionId(nextWebAuthConnectionId.fetch_add(1, std::memory_order_relaxed))
     {
     }
 
@@ -271,20 +310,9 @@ namespace AscEmu::Battlenet
 
     void WebAuthSocket::onConnect()
     {
-        m_connectionId = nextWebAuthConnectionId.fetch_add(1, std::memory_order_relaxed);
         m_httpBuffer.clear();
-        m_responseSent = false;
 
         sLogger.info("BNet WebAuth: connection #{} from {}:{}", m_connectionId, getRemoteIp(), getRemotePort());
-
-        if (!ensureTls())
-        {
-            sLogger.failure("BNet WebAuth: connection #{} could not initialize TLS", m_connectionId);
-            disconnect();
-            return;
-        }
-
-        sLogger.info("BNet WebAuth: connection #{} TLS handshake started", m_connectionId);
     }
 
     bool WebAuthSocket::ensureTls()
@@ -328,13 +356,39 @@ namespace AscEmu::Battlenet
     void WebAuthSocket::onRead()
     {
         const size_t available = readBuffer.GetSize();
-        if (available == 0 || !ensureTls())
+        if (available == 0)
             return;
 
         std::vector<uint8_t> encryptedData(available);
         if (!readBuffer.Read(encryptedData.data(), encryptedData.size()))
         {
             sLogger.failure("BNet WebAuth: connection #{} failed to read {} byte(s)", m_connectionId, available);
+            disconnect();
+            return;
+        }
+
+        if (!m_transportDecided)
+        {
+            m_transportDecided = true;
+            m_plainHttp = encryptedData[0] != 0x16;
+
+            if (m_plainHttp)
+                sLogger.info("BNet WebAuth: connection #{} plain http request", m_connectionId);
+            else
+                sLogger.info("BNet WebAuth: connection #{} TLS handshake started", m_connectionId);
+        }
+
+        if (m_plainHttp)
+        {
+            if (!processHttpData(encryptedData.data(), encryptedData.size()))
+                disconnect();
+
+            return;
+        }
+
+        if (!ensureTls())
+        {
+            sLogger.failure("BNet WebAuth: connection #{} could not initialize TLS", m_connectionId);
             disconnect();
             return;
         }
@@ -427,6 +481,21 @@ namespace AscEmu::Battlenet
 
         m_httpBuffer.append(reinterpret_cast<const char*>(data), size);
 
+        // a kept connection delivers the requests one after another
+        bool handled = true;
+        while (handled)
+        {
+            if (!handleBufferedHttpRequest(handled))
+                return false;
+        }
+
+        return true;
+    }
+
+    bool WebAuthSocket::handleBufferedHttpRequest(bool& handled)
+    {
+        handled = false;
+
         const size_t headerEnd = m_httpBuffer.find("\r\n\r\n");
         if (headerEnd == std::string::npos)
             return true;
@@ -436,6 +505,12 @@ namespace AscEmu::Battlenet
 
         size_t contentLength = 0;
         const std::string contentLengthName = "content-length:";
+        const std::string connectionName = "connection:";
+        const std::string hostName = "host:";
+        const std::string cookieName = "cookie:";
+        std::string connectionValue;
+        std::string hostValue;
+        std::string cookieValue;
 
         size_t lineStart = 0;
         while (lineStart < headerEnd)
@@ -461,6 +536,18 @@ namespace AscEmu::Battlenet
                     return false;
                 }
             }
+            else if (lowerLine.rfind(connectionName, 0) == 0)
+            {
+                connectionValue = lowerLine.substr(connectionName.size());
+            }
+            else if (lowerLine.rfind(hostName, 0) == 0)
+            {
+                hostValue = line.substr(hostName.size());
+            }
+            else if (lowerLine.rfind(cookieName, 0) == 0)
+            {
+                cookieValue = line.substr(cookieName.size());
+            }
 
             lineStart = lineEnd + 2;
         }
@@ -483,6 +570,39 @@ namespace AscEmu::Battlenet
         const std::string requestLine = m_httpBuffer.substr(0, requestLineEnd);
         const std::string body = m_httpBuffer.substr(headersSize, contentLength);
 
+        // the request is taken out of the buffer, the next one may already follow
+        m_httpBuffer.erase(0, headersSize + contentLength);
+        handled = true;
+
+        m_keepAlive = requestLine.find(" HTTP/1.1") != std::string::npos;
+        if (connectionValue.find("close") != std::string::npos)
+            m_keepAlive = false;
+        else if (connectionValue.find("keep-alive") != std::string::npos)
+            m_keepAlive = true;
+
+        // the session cookie: a request without one gets a new id with its response
+        const size_t cookieStart = cookieValue.find("JSESSIONID=");
+        if (cookieStart != std::string::npos)
+        {
+            const size_t valueStart = cookieStart + 11;
+            const size_t valueEnd = cookieValue.find(';', valueStart);
+            m_sessionId = cookieValue.substr(valueStart, valueEnd == std::string::npos ? std::string::npos : valueEnd - valueStart);
+        }
+        else if (m_sessionId.empty())
+        {
+            m_sessionId = createSessionId();
+
+            std::string domain = hostValue;
+            domain.erase(0, domain.find_first_not_of(" \t"));
+            domain.erase(domain.find_last_not_of(" \t\r") + 1);
+            if (const size_t portStart = domain.find(':'); portStart != std::string::npos)
+                domain.erase(portStart);
+            if (domain.empty())
+                domain = bnetConfig.webAuth.externalAddress;
+
+            m_setCookie = "JSESSIONID=" + m_sessionId + "; Path=/bnetserver; Domain=" + domain + "; Secure; HttpOnly; SameSite=None";
+        }
+
         sLogger.debug("BNet WebAuth: connection #{} HTTP request:\n{}", m_connectionId, headers);
 
         if (!body.empty())
@@ -491,11 +611,6 @@ namespace AscEmu::Battlenet
 
             sLogger.debug("BNet WebAuth: connection #{} HTTP body ({} byte(s)):\n{}", m_connectionId, body.size(), diagnosticBody);
         }
-
-        if (m_responseSent)
-            return true;
-
-        m_responseSent = true;
 
         if (requestLine.rfind("GET /bnetserver/login/ ", 0) == 0)
             return sendLoginFormResponse();
@@ -507,8 +622,8 @@ namespace AscEmu::Battlenet
             const std::string publicA = extractLoginInputValue(body, "public_A");
             const std::string clientM1 = extractLoginInputValue(body, "client_evidence_M1");
 
-#if AE_BNET_V1_SERVICES
-            // 6.2.4 and 7.x clients post the plain password over the TLS connection
+#if AE_BNET_PASSWORD_WEB_LOGIN
+            // clients up to 9.x post the plain password over the TLS connection
             if (useSrp.empty())
                 return handlePasswordLogin(login, unescapeJsonValue(extractLoginInputValue(body, "password")));
 #endif
@@ -672,8 +787,8 @@ namespace AscEmu::Battlenet
         // Matches the Battle.net WebAuth LoginForm input contract used by current WoW clients.
         // /bnetserver/login/ endpoint. Keep the original proto field names:
         // type, inputs, input_id, max_length and srp_url.
-#if AE_BNET_V1_SERVICES
-        // 6.2.4 and 7.x clients know no SRP login and send the password with the form
+#if AE_BNET_PASSWORD_WEB_LOGIN
+        // clients up to 9.x send the password with the form, the SRP url is left out
         const std::string body = std::string(
             "{"
                 "\"type\":\"LOGIN_FORM\","
@@ -720,41 +835,58 @@ namespace AscEmu::Battlenet
                         "\"label\":\"Log In\""
                     "}"
                 "],"
-                "\"srp_url\":\"") + bnetConfig.webAuth.loginUrl() + "srp/\""
+                "\"srp_url\":\"") + bnetConfig.webAuth.loginUrl(!m_plainHttp) + "srp/\""
             "}";
 #endif
 
-        const std::string response =
-            "HTTP/1.1 200 OK\r\n"
-            "Content-Type: application/json;charset=utf-8\r\n"
-            "Cache-Control: no-store\r\n"
-            "Connection: close\r\n"
-            "Content-Length: " +
-            std::to_string(body.size()) +
-            "\r\n\r\n" +
-            body;
+        const std::string response = buildHttpResponse("200 OK", body);
 
         sLogger.info("BNet WebAuth: connection #{} GET /bnetserver/login/ -> " "HTTP 200 LOGIN_FORM with SRP URL ({} byte(s))", m_connectionId, body.size());
 
-        if (!writeTlsPlainText(reinterpret_cast<const uint8_t*>(response.data()), response.size()))
-            return false;
-
-        return true;
+        return writeResponse(reinterpret_cast<const uint8_t*>(response.data()), response.size());
     }
 
     bool WebAuthSocket::sendJsonResponse(const std::string& body, const char* status)
     {
-        const std::string response =
-            "HTTP/1.1 " + std::string(status) + "\r\n"
-            "Content-Type: application/json;charset=utf-8\r\n"
-            "Cache-Control: no-store\r\n"
-            "Connection: close\r\n"
-            "Content-Length: " +
-            std::to_string(body.size()) +
-            "\r\n\r\n" +
-            body;
+        const std::string response = buildHttpResponse(status, body);
 
-        return writeTlsPlainText(reinterpret_cast<const uint8_t*>(response.data()), response.size());
+        return writeResponse(reinterpret_cast<const uint8_t*>(response.data()), response.size());
+    }
+
+    std::string WebAuthSocket::buildHttpResponse(const char* status, const std::string& body)
+    {
+        // the connection stays open for the next request unless the client asked to close it
+        std::string response =
+            "HTTP/1.1 " + std::string(status) + "\r\n"
+            "Date: " + httpDate() + "\r\n"
+            "Server: AscEmu\r\n"
+            "Content-Type: application/json;charset=utf-8\r\n"
+            "Cache-Control: no-store\r\n";
+
+        if (!m_keepAlive)
+            response += "Connection: close\r\n";
+
+        // a new session id goes out once, with the response to the request that had none
+        if (!m_setCookie.empty())
+        {
+            response += "Set-Cookie: " + m_setCookie + "\r\n";
+            m_setCookie.clear();
+        }
+
+        response += "Content-Length: " + std::to_string(body.size()) + "\r\n";
+
+        sLogger.debug("BNet WebAuth: connection #{} HTTP response:\n{}", m_connectionId, response);
+
+        response += "\r\n" + body;
+        return response;
+    }
+
+    bool WebAuthSocket::writeResponse(const uint8_t* data, size_t size)
+    {
+        if (m_plainHttp)
+            return send(data, static_cast<uint32_t>(size));
+
+        return writeTlsPlainText(data, size);
     }
 
     bool WebAuthSocket::writeTlsPlainText(const uint8_t* data, size_t size)

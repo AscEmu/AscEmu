@@ -48,7 +48,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // flags, count, then every contact with its realms, status and note
                 packet << socialFlag;
@@ -66,7 +66,7 @@ namespace AscEmu::Packets
                     packet << listMember.level;
                     packet << listMember.playerClass;
                     packet.writeBits(static_cast<uint32_t>(listMember.note.length()), 10);
-                    if (m_protocol.isBfA() || m_protocol.isShadowlands())
+                    if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                         packet.writeBit(false);         // mobile
                     packet.flushBits();
                     packet.writeString(listMember.note);

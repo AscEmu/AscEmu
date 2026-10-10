@@ -146,7 +146,7 @@ namespace AscEmu::Packets
 
             // 8.x: the instance chat types of 6.x, the language as uint32
             packet << uint8_t(m_protocol.isLegion() ? legionChatType(type) : wodChatType(type));
-            if (m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 packet << uint32_t(language);
             else
                 packet << uint8_t(language);
@@ -156,21 +156,33 @@ namespace AscEmu::Packets
             packet << (type == CHAT_MSG_CHANNEL ? WoWGuid128() : receiverGuid.toGuid128(m_protocol.realmId, m_receiverMapId));
             packet << uint32_t(virtualRealm);                           // realm of the target
             packet << uint32_t(virtualRealm);                           // realm of the sender
-            packet << (hasGroupGuid ? groupGuid.toGuid128(m_protocol.realmId, 0) : WoWGuid128());
-            packet << uint32_t(hasAchievement ? achievementId : 0);
-            packet << float(0.0f);                                      // display time
+            if (m_protocol.isDragonflight())
+            {
+                // 10.x: no party guid; the achievement, the flags, the display time and the spell as fields
+                packet << int32_t(hasAchievement ? achievementId : 0);
+                packet << uint16_t(flag);
+                packet << float(0.0f);                                  // display time
+                packet << int32_t(0);                                   // spell
+            }
+            else
+            {
+                packet << (hasGroupGuid ? groupGuid.toGuid128(m_protocol.realmId, 0) : WoWGuid128());
+                packet << uint32_t(hasAchievement ? achievementId : 0);
+                packet << float(0.0f);                                  // display time
+            }
 
             packet.writeBits(static_cast<uint32_t>(legionSenderName.length()), 11);
             packet.writeBits(static_cast<uint32_t>(targetName.length()), 11);
             packet.writeBits(0, 5);                                     // addon prefix
             packet.writeBits(static_cast<uint32_t>(channelName.length()), 7);
             packet.writeBits(static_cast<uint32_t>(message.length()), 12);
-            packet.writeBits(flag, m_protocol.isShadowlands() ? 14 : 11);
+            if (!m_protocol.isDragonflight())
+                packet.writeBits(flag, m_protocol.isShadowlands() ? 14 : 11);
             packet.writeBit(false);                                     // hide in the chat log
             packet.writeBit(false);                                     // fake sender name
-            if (m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 packet.writeBit(false);                                 // unused value
-            if (m_protocol.isShadowlands())
+            if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 packet.writeBit(false);                                 // channel guid
             packet.flushBits();
 
@@ -183,7 +195,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 return serialiseLegion(packet);
 
             if (m_protocol.expansion == WoW::Expansion::_Classic)

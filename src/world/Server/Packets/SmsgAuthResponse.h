@@ -66,7 +66,7 @@ namespace AscEmu::Packets
             if (m_protocol.isWoD())
                 return serialiseWoD(packet);
 
-            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 return serialiseLegion(packet);
 
             SmsgAuthAccount accountInfo = { 0, 0, 0, static_cast<uint8_t>(m_protocol.expansion) };
@@ -301,7 +301,11 @@ namespace AscEmu::Packets
             {
                 packet << queuePosition;                // wait count
                 packet << uint32_t(0);                  // wait time
+                if (m_protocol.isDragonflight())
+                    packet << uint32_t(0);              // allowed faction group for character creation
                 packet.writeBit(0);                     // has fcm
+                if (m_protocol.isDragonflight())
+                    packet.writeBit(0);                 // can create only with existing characters
                 packet.flushBits();
             }
 
@@ -346,25 +350,29 @@ namespace AscEmu::Packets
                 packet << expansion;                    // active expansion
                 packet << expansion;                    // account expansion
                 packet << uint32_t(0);                  // seconds until pc kick
-                if (m_protocol.isBfA() || m_protocol.isShadowlands())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                     packet << uint32_t(sizeof(races) / sizeof(races[0]));
                 else
                     packet << uint32_t(sizeof(classes) / sizeof(classes[0]));
                 packet << uint32_t(0);                  // character templates
                 packet << uint32_t(0);                  // currency id
-                if (m_protocol.isShadowlands())
+                if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
                     packet << static_cast<int64_t>(std::time(nullptr));
                 else
                     packet << static_cast<int32_t>(std::time(nullptr));
 
-                if (m_protocol.isBfA() || m_protocol.isShadowlands())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 {
                     for (const uint8_t race : races)
                     {
                         packet << race;
                         packet << uint32_t(sizeof(classes) / sizeof(classes[0]));
                         for (const auto& playerClass : classes)
+                        {
                             packet << playerClass[0] << playerClass[1] << playerClass[1];
+                            if (m_protocol.isDragonflight())
+                                packet << playerClass[1];   // minimum active expansion level
+                        }
                     }
                 }
                 else
@@ -377,8 +385,10 @@ namespace AscEmu::Packets
                 packet.writeBit(0);                     // force character template
                 packet.writeBit(0);                     // has horde player count
                 packet.writeBit(0);                     // has alliance player count
-                if (m_protocol.isBfA() || m_protocol.isShadowlands())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                     packet.writeBit(0);                 // has an expansion trial expiration
+                if (m_protocol.isDragonflight())
+                    packet.writeBit(0);                 // has new build keys
                 packet.flushBits();
 
                 packet << uint32_t(0);                  // billing plan
@@ -403,7 +413,11 @@ namespace AscEmu::Packets
             {
                 packet << queuePosition;                // wait count
                 packet << uint32_t(0);                  // wait time
+                if (m_protocol.isDragonflight())
+                    packet << uint32_t(0);              // allowed faction group for character creation
                 packet.writeBit(0);                     // has fcm
+                if (m_protocol.isDragonflight())
+                    packet.writeBit(0);                 // can create only with existing characters
                 packet.flushBits();
             }
 

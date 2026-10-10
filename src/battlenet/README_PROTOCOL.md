@@ -18,6 +18,8 @@ Unknown services and methods are logged with service hash, service name (when kn
 
 Connection method 7 is handled as `RequestDisconnect`.
 
+The web login listener (`WebAuth` section, port 8081) accepts both transports on the same port and decides by the first byte of a connection: a TLS record starts the handshake with the server certificate, anything else is read as a plain http request. Clients from build 55664 (10.2.7) on verify the certificate of the web login against the system store and close the connection after the handshake with a self signed certificate, so they receive the login url and the SRP url with the `http://` scheme. Older clients keep `https://`. The listener follows HTTP/1.1 keep alive: the connection stays open after a response and the following requests (the SRP challenge and proof after the form) are answered on the same connection unless the client sends `Connection: close`. The first request of a connection without a `JSESSIONID` cookie is answered with `Set-Cookie: JSESSIONID=<uuid>; Path=/bnetserver; Domain=<host>; Secure; HttpOnly; SameSite=None`; the 10.x client reads this cookie from the form response and sends it with the SRP requests. The login form itself depends on the build target (`AE_BNET_PASSWORD_WEB_LOGIN` in `Server/BNetProtocol.hpp`): the 6.2.4 to 9.x targets send the password form without `srp_url` and verify the posted password, the Dragonflight and Forever targets send the form with `srp_url` and run the SRP challenge (`POST /bnetserver/login/srp/`) and proof (`POST /bnetserver/login/` with `use_srp`); a 10.x client disconnects after a form without the SRP url.
+
 
 ## Known Battle.net service registry
 

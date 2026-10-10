@@ -38,11 +38,12 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isShadowlands())
+            if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // table hash, record, time, status (valid or removed), size, data
                 packet << type << entry << hotfixTime;
-                packet.writeBits(bufferSize != 0 ? 1 : 2, 3);
+                // 10.x reports a record it does not have as invalid, 9.x as removed
+                packet.writeBits(bufferSize != 0 ? 1 : (m_protocol.isDragonflight() ? 3 : 2), 3);
                 packet.flushBits();
                 packet << bufferSize;
                 packet.append(buffer);

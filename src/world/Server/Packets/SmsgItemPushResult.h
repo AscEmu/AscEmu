@@ -55,6 +55,41 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isDragonflight())
+            {
+                // player, slots, quest log item, quantities, encounter, battle pet, item, toasts, flags, then the
+                // item instance; no crafting data
+                packet << WoWGuid(guid).toGuid128(m_protocol.realmId, 0);
+                packet << uint8_t(bagSlot);
+                packet << int32_t(slot ? slot : -1);
+                packet << int32_t(0);                   // quest log item
+                packet << int32_t(count);
+                packet << int32_t(stackCount);
+                packet << int32_t(0);                   // dungeon encounter
+                packet << int32_t(0);                   // battle pet species
+                packet << int32_t(0);                   // battle pet breed
+                packet << uint32_t(0);                  // battle pet quality
+                packet << int32_t(0);                   // battle pet level
+                packet << itemGuid.toGuid128(m_protocol.realmId, 0);
+                packet << uint32_t(0);                  // toasts
+                packet.writeBit(isReceived);
+                packet.writeBit(isCreated);
+                packet.writeBit(false);
+                packet.writeBits(1, 3);                 // display text: normal
+                packet.writeBit(false);                 // bonus roll
+                packet.writeBit(false);                 // encounter loot
+                packet.writeBit(false);                 // crafting data
+                packet.writeBit(false);                 // first craft operation
+                packet.flushBits();
+
+                packet << int32_t(entry);
+                packet.writeBit(false);                 // item bonus
+                packet.flushBits();
+                packet.writeBits(0, 6);                 // modifications
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isWoD())
             {
                 // player, slots, the item instance, quest log item, quantities, encounter, battle pet, item, flags
@@ -111,12 +146,12 @@ namespace AscEmu::Packets
 
                 // 8.x: the item instance has no random properties anymore
                 packet << int32_t(entry);
-                if (!(m_protocol.isBfA() || m_protocol.isShadowlands()))
+                if (!(m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight()))
                 {
                     packet << int32_t(suffix);
                     packet << int32_t(randomProp);
                 }
-                if (m_protocol.isShadowlands())
+                if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 {
                     // 9.x: the modification list is counted, the bonus list follows it
                     packet.writeBit(false);             // item bonus

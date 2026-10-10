@@ -44,7 +44,7 @@ namespace AscEmu::Packets
                 mopInfo.writeMovementInfo(packet, SMSG_MOVE_UPDATE_TELEPORT, m_protocol.expansion);
                 return true;
             }
-            else if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            else if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // movement info, movement forces, then one bit per speed that changed
                 MovementInfo info = mi;

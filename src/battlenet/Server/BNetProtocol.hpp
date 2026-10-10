@@ -10,12 +10,20 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <string_view>
 
-// 6.2.4, 7.x, 8.x and 9.x clients log in through the v1 services, the older Variant layout and the
-// plain password web login; Forever uses the v2 services
-#if defined(AE_WOD) || defined(AE_LEGION) || defined(AE_BFA) || defined(AE_SHADOWLANDS)
+// 6.2.4, 7.x, 8.x, 9.x and 10.x clients log in through the v1 services and the older Variant layout;
+// Forever uses the v2 services
+#if defined(AE_WOD) || defined(AE_LEGION) || defined(AE_BFA) || defined(AE_SHADOWLANDS) || defined(AE_DRAGONFLIGHT)
 #define AE_BNET_V1_SERVICES 1
 #else
 #define AE_BNET_V1_SERVICES 0
+#endif
+
+// the web login form: clients up to 9.x post the plain password with the form, 10.x clients abort on a form
+// without the SRP url and log in with the SRP challenge and proof like Forever
+#if AE_BNET_V1_SERVICES && !defined(AE_DRAGONFLIGHT)
+#define AE_BNET_PASSWORD_WEB_LOGIN 1
+#else
+#define AE_BNET_PASSWORD_WEB_LOGIN 0
 #endif
 
 namespace AscEmu::Battlenet::Protocol

@@ -26,6 +26,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "version/BfA/World/WorldProfile.hpp"
 #elif AE_WORLD_PROFILE_SHADOWLANDS
 #include "version/Shadowlands/World/WorldProfile.hpp"
+#elif AE_WORLD_PROFILE_DRAGONFLIGHT
+#include "version/Dragonflight/World/WorldProfile.hpp"
 #endif
 
 #include <openssl/bio.h>
@@ -45,7 +47,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-#if AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS
+#if AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS || AE_WORLD_PROFILE_DRAGONFLIGHT
 
 namespace
 {
@@ -531,10 +533,10 @@ bool WorldSocket::sendAesEnterEncryptedMode()
     std::array<uint8_t, Sha256Hash::DigestLength> digest{};
     Sha256Hash::hmac(m_aesEncryptKey.data(), m_aesEncryptKey.size(), message.data(), message.size(), digest.data());
 
-    // 8.x: RSA signature, 9.x: Ed25519 signature with a context
+    // 8.x: RSA signature, 9.x and 10.x: Ed25519 signature with a context
     std::array<uint8_t, AesWorld::SignatureSize> signature{};
     size_t signatureSize = AesWorld::SignatureSize;
-    if constexpr (Profile::Expansion == WoW::Expansion::_Shadowlands)
+    if constexpr (Profile::Expansion == WoW::Expansion::_Shadowlands || Profile::Expansion == WoW::Expansion::_Dragonflight)
     {
         signatureSize = Ed25519SignatureSize;
         if (!signDigestEd25519(digest, signature.data()))

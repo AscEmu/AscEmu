@@ -40,14 +40,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // slot, totem, duration, spell, 7.x: time modifier, cannot dismiss
                 packet << int8_t(slot);
                 packet << WoWGuid(guid).toGuid128(m_protocol.realmId, m_receiverMapId);
                 packet << int32_t(duration);
                 packet << int32_t(spellId);
-                if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+                if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 {
                     packet << float(1.0f);
                     packet.writeBit(false);

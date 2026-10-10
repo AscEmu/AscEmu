@@ -75,7 +75,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // 7.x sends the full update as SMSG_AURA_UPDATE with the update all bit
                 packet.initialize(SMSG_AURA_UPDATE, 16 + aura_updates.size() * 40);
@@ -85,7 +85,7 @@ namespace AscEmu::Packets
 
                 for (const auto& auras : aura_updates)
                 {
-                    if (m_protocol.isShadowlands())
+                    if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
                         writeAuraSlotShadowlands(packet, auras, false, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
                     else if (m_protocol.isBfA())
                         writeAuraSlotBfA(packet, auras, false, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());

@@ -31,6 +31,20 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isDragonflight())
+            {
+                // 10.x: the server time zone, the game time zone and the regional time zone
+                packet.writeBits(timeZone.length(), 7);
+                packet.writeBits(timeZone.length(), 7);
+                packet.writeBits(timeZone.length(), 7);
+                packet.flushBits();
+                packet.writeString(timeZone);
+                packet.writeString(timeZone);
+                packet.writeString(timeZone);
+
+                return true;
+            }
+
             if (m_protocol.expansion >= WoW::Expansion::_Mop)
             {
                 packet.writeBits(timeZone.length(), 7);

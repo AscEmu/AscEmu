@@ -45,7 +45,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isShadowlands())
+            if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // id, position with height, icon, importance, wmo group, flags, name length, name
                 packet << int32_t(0);

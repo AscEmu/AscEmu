@@ -35,10 +35,11 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isClassic())
+            // 10.x has no message of the day packet
+            if (m_protocol.isClassic() || m_protocol.isDragonflight())
                 return false;
 
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // every line: length, then the text
                 packet.writeBits(lineCount, 4);

@@ -49,7 +49,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // target, caster, spell, power type, amount, over energize, log data
                 packet << targetGuid.toGuid128(m_protocol.realmId, m_receiverMapId);

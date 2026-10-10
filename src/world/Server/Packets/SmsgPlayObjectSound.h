@@ -41,14 +41,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // sound, source, target, position
                 packet << soundId;
                 packet << WoWGuid(objectGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
                 packet << WoWGuid(objectGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
                 packet << x << y << z;
-                if (m_protocol.isShadowlands())
+                if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
                     packet << int32_t(0);               // broadcast text
                 return true;
             }

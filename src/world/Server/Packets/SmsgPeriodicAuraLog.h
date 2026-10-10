@@ -54,7 +54,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // target, caster, spell, one effect: type, amount, over heal or kill, school or power, absorbed or
                 // amplitude, resisted, crit, debug info, sandbox scaling
@@ -93,7 +93,7 @@ namespace AscEmu::Packets
                 packet << casterGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 packet << int32_t(spellId);
                 packet << uint32_t(1);
-                if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+                if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 {
                     packet.writeBit(false);             // log data
                     packet.flushBits();
@@ -101,12 +101,14 @@ namespace AscEmu::Packets
 
                 packet << int32_t(auraType);
                 packet << int32_t(amount);
-                if (m_protocol.isBfA() || m_protocol.isShadowlands())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                     packet << int32_t(amount);          // original amount
                 packet << overHealOrKill;
                 packet << schoolOrPower;
                 packet << absorbedOrAmplitude;
                 packet << resisted;
+                if (m_protocol.isDragonflight())
+                    packet << uint32_t(0);              // supporters
                 packet.writeBit(isCritical != 0);
                 packet.writeBit(false);
                 packet.writeBit(false);

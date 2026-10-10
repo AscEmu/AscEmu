@@ -17,6 +17,7 @@ environment:
   - ASC_VERSION: Legion
   - ASC_VERSION: BfA
   - ASC_VERSION: Shadowlands
+  - ASC_VERSION: Dragonflight
 
 matrix:
   fast_finish: true # Abort all other Matrix builds if one fails

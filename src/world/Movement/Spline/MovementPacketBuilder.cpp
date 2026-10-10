@@ -693,9 +693,11 @@ namespace
     void writeMonsterSplineHeaderLegion(ByteBuffer& data, uint32_t splineId, [[maybe_unused]] uint8_t stopDistanceTolerance)
     {
         data << uint32_t(splineId);
-        data << float(0.0f);                                    // destination
+#if VERSION_STRING != Dragonflight
+        data << float(0.0f);                                    // destination, gone in 10.x
         data << float(0.0f);
         data << float(0.0f);
+#endif
 #if VERSION_STRING != WoD
         data.writeBit(false);                                   // cross realm teleport
         data.writeBits(stopDistanceTolerance, 3);
@@ -825,13 +827,13 @@ void PacketBuilder::WriteMonsterMoveLegion(MoveSpline const& moveSpline, ByteBuf
     const uint32_t splineFlags = legionSplineFlags(moveSpline.splineflags);
 
     data << uint32_t(splineFlags);
-#if VERSION_STRING != Shadowlands
+#if VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight
     data << uint8_t(animation ? moveSpline.splineflags.animTier : 0);
     data << uint32_t(animation ? moveSpline.effect_start_time : 0);   // tier transition start
 #endif
     data << int32_t(0);                                               // elapsed
     data << uint32_t(moveSpline.Duration());
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
     data << uint32_t(0);                                              // fade object time
 #else
     data << float(parabolic ? moveSpline.vertical_acceleration : 0.0f);
@@ -854,7 +856,7 @@ void PacketBuilder::WriteMonsterMoveLegion(MoveSpline const& moveSpline, ByteBuf
 
     writeFacing();
     writeMonsterSplineTailWoD(data, splineFlags);
-#elif VERSION_STRING == Shadowlands
+#elif VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
     // 9.x: the vehicle exit and the interpolation are bits behind the point count, the animation goes through
     // the tier transition block
     data << uint8_t(0);                                               // mode
@@ -920,13 +922,13 @@ void PacketBuilder::WriteStopMovementLegion(G3D::Vector3 const& pos, uint32_t sp
     writeMonsterSplineHeaderLegion(data, splineId, 2);
 
     data << uint32_t(0);                                              // flags
-#if VERSION_STRING != Shadowlands
+#if VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight
     data << uint8_t(0);                                               // animation tier
     data << uint32_t(0);                                              // tier transition start
 #endif
     data << int32_t(0);                                               // elapsed
     data << uint32_t(0);                                              // move time
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
     data << uint32_t(0);                                              // fade object time
 #else
     data << float(0.0f);                                              // jump gravity
@@ -945,7 +947,7 @@ void PacketBuilder::WriteStopMovementLegion(G3D::Vector3 const& pos, uint32_t sp
     data.flushBits();
 
     writeMonsterSplineTailWoD(data, 0);
-#elif VERSION_STRING == Shadowlands
+#elif VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
     data << uint8_t(0);                                               // mode
     writeTransportOfMoverLegion(data, unit, realmId);
 

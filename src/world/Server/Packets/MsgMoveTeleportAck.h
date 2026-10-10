@@ -119,7 +119,7 @@ namespace AscEmu::Packets
 
                 guid = mopGuid;
             }
-            else if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            else if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // mover, sequence of the teleport, movement time of the client
                 WoWGuid128 moverGuid;

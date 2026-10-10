@@ -88,6 +88,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgBattlePetJournal.h"
 #include "Server/Packets/SmsgBattlePetJournalLockAcquired.h"
 #include "Server/Packets/SmsgConquestFormulaConstants.h"
+#include "Server/Packets/SmsgServerTimeOffset.h"
+#include "Server/Packets/SmsgSocialContractRequestResponse.h"
 #include "Server/Packets/CmsgSaveCufProfiles.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Objects/Transporter.hpp"
@@ -1293,6 +1295,19 @@ void WorldSession::handleGetUndeleteCooldownStatusOpcode(WorldPacket& /*recvPack
 void WorldSession::handleNoResponseOpcode(WorldPacket& /*recvPacket*/)
 {
     // notifications of the client the server has nothing to answer to
+}
+
+void WorldSession::handleServerTimeOffsetRequestOpcode(WorldPacket& /*recvPacket*/)
+{
+    SmsgServerTimeOffset managedPacket(static_cast<int64_t>(UNIXTIME));
+    sendManagedPacket(managedPacket);
+}
+
+void WorldSession::handleSocialContractRequestOpcode(WorldPacket& /*recvPacket*/)
+{
+    // the social contract is not shown
+    SmsgSocialContractRequestResponse managedPacket(false);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/)

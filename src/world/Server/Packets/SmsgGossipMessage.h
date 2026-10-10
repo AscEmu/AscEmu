@@ -49,7 +49,68 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            if (m_protocol.isDragonflight())
+            {
+                // unit, gossip, friendship faction, both counts, the text and broadcast text bits, the options with
+                // their order, the text, then the quests with content tuning and importance
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << int32_t(id);
+                packet << int32_t(0);                                   // friendship faction
+                packet << uint32_t(gossipItemList.size());
+                packet << uint32_t(gossipQuestList.size());
+                packet.writeBit(true);                                  // has a text
+                packet.writeBit(false);                                 // has a broadcast text
+                packet.flushBits();
+
+                int32_t orderIndex = 0;
+                for (const auto& itemListItem : gossipItemList)
+                {
+                    std::string optionText;
+                    if (!itemListItem.second.text.empty())
+                        optionText = itemListItem.second.text;
+                    else
+                        optionText = sMySQLStore.getLocaleGossipMenuOptionOrElse(itemListItem.second.textId, locale);
+
+                    packet << int32_t(itemListItem.first);              // option id, sent back by the selection
+                    packet << uint8_t(itemListItem.second.icon);
+                    packet << int8_t(itemListItem.second.isCoded ? 1 : 0);
+                    packet << int32_t(itemListItem.second.boxMoney);
+                    packet << uint32_t(0);                              // language
+                    packet << int32_t(0);                               // flags
+                    packet << int32_t(orderIndex++);
+                    packet.writeBits(static_cast<uint32_t>(optionText.length()), 12);
+                    packet.writeBits(static_cast<uint32_t>(itemListItem.second.boxMessage.length()), 12);
+                    packet.writeBits(0, 2);                             // status: available
+                    packet.writeBit(false);                             // spell
+                    packet.writeBit(false);                             // override icon
+                    packet.flushBits();
+                    packet << uint32_t(0);                              // treasure items
+                    packet.writeString(optionText);
+                    packet.writeString(itemListItem.second.boxMessage);
+                }
+
+                packet << int32_t(textId);
+
+                for (const auto& questListItem : gossipQuestList)
+                {
+                    const std::string questTitle = sMySQLStore.getLocaleGossipTitleOrElse(questListItem.first, locale);
+
+                    packet << int32_t(questListItem.first);
+                    packet << int32_t(0);                               // content tuning
+                    packet << int32_t(questListItem.second.icon);
+                    packet << int32_t(questListItem.second.flags);
+                    packet << int32_t(0);                               // flags 2
+                    packet.writeBit(questListItem.second.repeatable != 0);
+                    packet.writeBit(false);                             // important
+                    packet.writeBits(static_cast<uint32_t>(questTitle.length()), 9);
+                    packet.flushBits();
+                    packet.writeString(questTitle);
+                }
+
+                return true;
+            }
+
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // unit, gossip, friendship faction, text, both counts, then the options and the quests
                 packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
@@ -71,11 +132,11 @@ namespace AscEmu::Packets
                     packet << uint8_t(itemListItem.second.icon);
                     packet << uint8_t(itemListItem.second.isCoded ? 1 : 0);
                     packet << uint32_t(itemListItem.second.boxMoney);
-                    if (m_protocol.isShadowlands())
+                    if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
                         packet << uint32_t(0);                          // language
                     packet.writeBits(static_cast<uint32_t>(optionText.length()), 12);
                     packet.writeBits(static_cast<uint32_t>(itemListItem.second.boxMessage.length()), 12);
-                    if (m_protocol.isShadowlands())
+                    if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
                     {
                         // 9.x: status (available), spell, then the treasure list
                         packet.writeBits(0, 2);
@@ -96,7 +157,7 @@ namespace AscEmu::Packets
                     const std::string questTitle = sMySQLStore.getLocaleGossipTitleOrElse(questListItem.first, locale);
 
                     packet << uint32_t(questListItem.first);
-                    if (m_protocol.isShadowlands())
+                    if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
                     {
                         // 9.x: content tuning instead of the levels
                         packet << int32_t(0);
