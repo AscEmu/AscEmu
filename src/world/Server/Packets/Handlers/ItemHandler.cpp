@@ -44,6 +44,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgDestroyItem.h"
 #include "Server/Packets/CmsgSwapInvItem.h"
 #include "Server/Packets/CmsgUseItem.h"
+#include "Server/Packets/SmsgSpellPrepare.h"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Spell/SpellMgr.hpp"
@@ -353,8 +354,14 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     spell->extra_cast_number = srlPacket.castCount;
     if (srlPacket.isForeverPacket)
     {
-        spell->m_foreverSpellXSpellVisualId = srlPacket.spellXSpellVisualId;
+        spell->m_foreverClientCastId = srlPacket.clientCastId;
+        if (spellInfo->getSpellVisual(0) == 0)
+            spell->m_foreverSpellXSpellVisualId = srlPacket.spellXSpellVisualId;
         spell->m_foreverScriptVisualId = srlPacket.scriptVisualId;
+        spell->ensureForeverCastId();
+
+        SmsgSpellPrepare preparePacket(spell->m_foreverClientCastId, spell->m_foreverServerCastId);
+        sendManagedPacket(preparePacket);
     }
     spell->setItemCaster(tmpItem);
 

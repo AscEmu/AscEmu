@@ -30,17 +30,17 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
-            return sizeof(spellId) + sizeof(playerGuid);
+            return m_protocol.isForever() ? sizeof(int32_t) + sizeof(uint8_t) : sizeof(spellId) + sizeof(playerGuid);
         }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            // Forever opcode/layout is not verified yet. The managed-packet layer
-            // keeps this packet blocked while no Forever opcode is assigned.
             if (m_protocol.isForever())
             {
-                sLogger.debugSpell("SmsgCooldownEvent, Unhandled for Forever until prooven");
-                return false;
+                packet << int32_t(spellId);
+                packet.writeBit(false); // IsPet
+                packet.flushBits();
+                return true;
             }
 
             if (m_protocol.expansion < WoW::Expansion::_Mop)

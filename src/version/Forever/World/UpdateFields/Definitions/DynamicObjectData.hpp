@@ -24,10 +24,10 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
     };
 
     using DynamicObjectDataUpdate = UnfilteredUpdateDefinition<Fields::DynamicObjectData::ChangeMaskSize,
-        GuidField<&Fields::DynamicObjectData::caster, Fields::DynamicObjectData::CasterBit, NoParentBit, FieldVerification::ReferenceOnly, "unknownGuidBit1", "Caster">,
-        ScalarField<&Fields::DynamicObjectData::type, Fields::DynamicObjectData::TypeBit, NoParentBit, FieldVerification::ReferenceOnly, "unknownU8Bit2", "Type">,
+        GuidField<&Fields::DynamicObjectData::caster, Fields::DynamicObjectData::CasterBit, NoParentBit, FieldVerification::Unverified, "unknownGuidBit1", "Caster">,
+        ScalarField<&Fields::DynamicObjectData::type, Fields::DynamicObjectData::TypeBit, NoParentBit, FieldVerification::Unverified, "unknownU8Bit2", "Type">,
         ReferenceSpellCastVisualField<&Fields::DynamicObjectData::spellVisual, Fields::DynamicObjectData::SpellVisualBit>,
-        ScalarField<&Fields::DynamicObjectData::spellId, Fields::DynamicObjectData::SpellIdBit, NoParentBit, FieldVerification::ReferenceOnly, "unknownI32Bit4", "SpellID">,
-        ScalarField<&Fields::DynamicObjectData::radius, Fields::DynamicObjectData::RadiusBit, NoParentBit, FieldVerification::ReferenceOnly, "unknownFloatBit5", "Radius">,
-        ScalarField<&Fields::DynamicObjectData::castTime, Fields::DynamicObjectData::CastTimeBit, NoParentBit, FieldVerification::ReferenceOnly, "unknownU32Bit6", "CastTime">>;
+        ScalarField<&Fields::DynamicObjectData::spellId, Fields::DynamicObjectData::SpellIdBit, NoParentBit, FieldVerification::Unverified, "unknownI32Bit4", "SpellID">,
+        ScalarField<&Fields::DynamicObjectData::radius, Fields::DynamicObjectData::RadiusBit, NoParentBit, FieldVerification::Unverified, "unknownFloatBit5", "Radius">,
+        ScalarField<&Fields::DynamicObjectData::castTime, Fields::DynamicObjectData::CastTimeBit, NoParentBit, FieldVerification::Unverified, "unknownU32Bit6", "CastTime">>;
 }

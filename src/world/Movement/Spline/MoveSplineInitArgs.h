@@ -15,6 +15,14 @@ namespace MovementMgr {
 
 typedef std::vector<Vector3> PointsArray;
 
+struct SpellEffectExtraData
+{
+    uint64_t target = 0;
+    uint32_t spellVisualId = 0;
+    uint32_t progressCurveId = 0;
+    uint32_t parabolicCurveId = 0;
+};
+
 union FacingInfo
 {
     struct
@@ -44,6 +52,8 @@ struct MoveSplineInitArgs
     float time_perc;
     uint32_t splineId;
     float initialOrientation;
+    SpellEffectExtraData spellEffectExtra;
+    bool hasSpellEffectExtra;
     bool walk;
     bool HasVelocity;
     bool TransformForTransport;

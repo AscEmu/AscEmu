@@ -522,6 +522,11 @@ namespace
         if (legacyGuid == 0)
             return WoWGuid::createModernEmpty();
 
+        // Player self movement must use the same Modern GUID that was sent in CREATE_OBJECT.
+        // Other world objects retain their realm/map encoded representation.
+        if (Player const* player = unit->ToPlayer(); player != nullptr && legacyGuid == unit->getGuid())
+            return WoWGuid::createModernPlayer(player->getForeverRealmId(), player->getGuidLow());
+
         return WoWGuid::createModernFromLegacy(legacyGuid, worldConfig.battleNetComm.realmId, static_cast<uint16_t>(unit->GetMapId()), 0, 0);
     }
 
@@ -638,7 +643,7 @@ void PacketBuilder::WriteForeverMovementSpline(MoveSpline const& moveSpline, Byt
         data.writeBit(false);                               // TaxiSmoothing
         data.writeBits(packedDeltasCount, 16);
         data.writeBit(false); // HasSplineFilter
-        data.writeBit(false); // HasSpellEffectExtraData
+        data.writeBit(moveSpline.has_spell_effect_extra); // HasSpellEffectExtraData
         data.writeBit(hasJumpExtraData);
         data.writeBit(false); // HasTurnData
         data.writeBit(false); // HasAnimTierTransition
@@ -668,6 +673,15 @@ void PacketBuilder::WriteForeverMovementSpline(MoveSpline const& moveSpline, Byt
                     data.appendPackXYZ(delta.x, delta.y, delta.z);
                 }
             }
+        }
+
+        if (moveSpline.has_spell_effect_extra)
+        {
+            WriteForeverPackedGuid(data, MakeForeverGuid(unit, moveSpline.spell_effect_extra.target));
+            data << uint32_t(moveSpline.spell_effect_extra.spellVisualId);
+            data << uint32_t(moveSpline.spell_effect_extra.progressCurveId);
+            data << uint32_t(moveSpline.spell_effect_extra.parabolicCurveId);
+            data << float(moveSpline.vertical_acceleration);
         }
 
         if (hasJumpExtraData)
@@ -963,6 +977,7 @@ void PacketBuilder::WriteMonsterMove([[maybe_unused]] MoveSpline const& moveSpli
 
     const G3D::Vector3& firstPoint = moveSpline.spline.getPoint(moveSpline.spline.first());
     data << float(firstPoint.x) << float(firstPoint.y) << float(firstPoint.z);
+
 #endif
 }
 

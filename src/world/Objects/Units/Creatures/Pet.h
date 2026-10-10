@@ -30,7 +30,11 @@
 
 class CreatureAISpells;
 struct PetCache;
+#if defined(AE_FOREVER)
+enum SpellCastResult : int32_t;
+#else
 enum SpellCastResult : uint8_t;
+#endif
 
 namespace WDB::Structures
 {
@@ -188,7 +192,7 @@ public:
     // Packets
 
     void sendActionFeedback(PetActionFeedback feedback);
-    void sendPetCastFailed(uint32_t spellId, uint8_t reason);
+    void sendPetCastFailed(uint32_t spellId, SpellCastResult reason);
 
 public:
     // MIT END

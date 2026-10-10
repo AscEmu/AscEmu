@@ -132,6 +132,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgDuelWinner.h"
 #include "Server/Packets/SmsgDurabilityDamageDeath.h"
 #include "Server/Packets/SmsgSendKnownSpells.h"
+#include "Server/Packets/SmsgSendSpellHistory.h"
 #include "Server/Packets/SmsgLearnedSpell.h"
 #include "Server/Packets/SmsgLoginSetTimeSpeed.h"
 #include "Server/Packets/SmsgMessageChat.h"
@@ -1560,7 +1561,7 @@ void Player::setFarsightGuid(uint64_t farsightGuid)
         return;
 
     m_foreverActivePlayerFields.farsightObject = modernGuid;
-    m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::UnknownChangeBit56);
+    m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::FarsightObjectBit);
     updateObject();
 #else
     write(playerData()->farsight_guid, farsightGuid);
@@ -4941,6 +4942,52 @@ void Player::sendSmsgInitialSpells()
     }
 
     getSession()->sendManagedPacket(smsgInitialSpells);
+
+    if (getSession()->getClientProtocol().isForever())
+    {
+        std::unordered_map<uint32_t, SmsgSpellHistoryEntry> historyBySpell;
+
+        for (auto const& [spellKey, cooldown] : m_cooldownMap[COOLDOWN_TYPE_SPELL])
+        {
+            if (cooldown.ExpireTime <= mstime)
+                continue;
+
+            const uint32_t spellId = cooldown.SpellId != 0 ? cooldown.SpellId : spellKey;
+            auto& entry = historyBySpell[spellId];
+            entry.spellId = spellId;
+            entry.itemId = cooldown.ItemId;
+            entry.recoveryTime = static_cast<int32_t>(cooldown.ExpireTime - mstime);
+
+            if (SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(spellId))
+                entry.categoryId = spellInfo->getCategory();
+        }
+
+        for (auto const& [categoryId, cooldown] : m_cooldownMap[COOLDOWN_TYPE_CATEGORY])
+        {
+            if (cooldown.ExpireTime <= mstime || cooldown.SpellId == 0)
+                continue;
+
+            auto& entry = historyBySpell[cooldown.SpellId];
+            entry.spellId = cooldown.SpellId;
+            if (entry.itemId == 0)
+                entry.itemId = cooldown.ItemId;
+            entry.categoryId = categoryId;
+            entry.categoryRecoveryTime = static_cast<int32_t>(cooldown.ExpireTime - mstime);
+        }
+
+        if (!historyBySpell.empty())
+        {
+            std::vector<SmsgSpellHistoryEntry> history;
+            history.reserve(historyBySpell.size());
+
+            for (auto const& [spellId, entry] : historyBySpell)
+                history.push_back(entry);
+
+            std::ranges::sort(history, {}, &SmsgSpellHistoryEntry::spellId);
+            SmsgSendSpellHistory historyPacket(std::move(history));
+            getSession()->sendManagedPacket(historyPacket);
+        }
+    }
 }
 
 void Player::sendPreventSchoolCast(uint32_t spellSchool, uint32_t timeMs)
@@ -5431,9 +5478,18 @@ void Player::clearCooldownForSpell(uint32_t spellId)
     if (spellInfo == nullptr)
         return;
 
-    // Send cooldown clear packet
-    SmsgClearCooldown managedPacket(spellId, getGuid());
-    getSession()->sendManagedPacket(managedPacket);
+    // Forever has no verified SMSG_CLEAR_COOLDOWN opcode in our table. A zero-duration
+    // SMSG_SPELL_COOLDOWN entry clears the same client-side spell cooldown without guessing an opcode.
+    if (getSession()->getClientProtocol().isForever())
+    {
+        SmsgSpellCooldown managedPacket(getGuid(), 0, { { spellId, 0 } }, static_cast<uint16_t>(GetMapId()));
+        getSession()->sendManagedPacket(managedPacket);
+    }
+    else
+    {
+        SmsgClearCooldown managedPacket(spellId, getGuid());
+        getSession()->sendManagedPacket(managedPacket);
+    }
 
     for (uint8_t i = 0; i < NUM_COOLDOWN_TYPES; ++i)
     {
@@ -5473,8 +5529,16 @@ void Player::resetAllCooldowns()
         for (auto itr = m_cooldownMap[i].begin(); itr != m_cooldownMap[i].end();)
         {
             auto spellId = (*itr).second.SpellId;
-            SmsgClearCooldown managedPacket(spellId, getGuid());
-            getSession()->sendManagedPacket(managedPacket);
+            if (getSession()->getClientProtocol().isForever())
+            {
+                SmsgSpellCooldown managedPacket(getGuid(), 0, { { spellId, 0 } }, static_cast<uint16_t>(GetMapId()));
+                getSession()->sendManagedPacket(managedPacket);
+            }
+            else
+            {
+                SmsgClearCooldown managedPacket(spellId, getGuid());
+                getSession()->sendManagedPacket(managedPacket);
+            }
             itr = m_cooldownMap[i].erase(itr);
         }
     }
@@ -5499,12 +5563,21 @@ void Player::cooldownAddItem(ItemProperties const* itemProp, uint32_t spellIndex
     uint32_t categoryId = itemSpell->Category;
     int32_t categoryCooldownTime = itemSpell->CategoryCooldown;
 
+    if (getSession()->getClientProtocol().isForever())
+        sendSpellCooldownEventPacket(itemSpellId);
+
     if (itemSpell->CategoryCooldown > 0)
         _addCategoryCooldown(categoryId, categoryCooldownTime + mstime, itemSpellId, itemProp->ItemId);
 
     int32_t cooldownTime = itemSpell->Cooldown;
     if (cooldownTime > 0)
         _addCooldown(COOLDOWN_TYPE_SPELL, itemSpellId, cooldownTime + mstime, itemSpellId, itemProp->ItemId);
+
+    if (getSession()->getClientProtocol().isForever())
+    {
+        if (SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(itemSpellId))
+            sendSpellCooldownPacket(spellInfo, static_cast<uint32_t>(std::max(cooldownTime, categoryCooldownTime)), false, categoryCooldownTime > 0 ? categoryId : 0);
+    }
 }
 
 bool Player::cooldownCanCast(ItemProperties const* itemProp, uint32_t spellIndex)
@@ -11076,7 +11149,7 @@ void Player::sendDismountResultPacket(uint32_t result)
     m_session->sendManagedPacket(managedPacket);
 }
 
-void Player::sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2, WoWGuid castId, uint32_t spellXSpellVisualId, uint32_t scriptVisualId, uint16_t mapId)
+void Player::sendCastFailedPacket(uint32_t spellId, SpellCastResult errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2, WoWGuid castId, uint32_t spellXSpellVisualId, uint32_t scriptVisualId, uint16_t mapId)
 {
     SmsgCastFailed managedPacket(multiCast, spellId, errorMessage, extra1, extra2);
     managedPacket.castId = castId;

@@ -719,16 +719,30 @@ void MovementManager::moveCharge(LocationVector const& pos, float speed /*= SPEE
     }
 }
 
-void MovementManager::moveCharge(PathGenerator const& path, float speed /*= SPEED_CHARGE*/)
+void MovementManager::moveCharge(PathGenerator const& path, float speed /*= SPEED_CHARGE*/, Unit const* target /*= nullptr*/, uint32_t spellVisualId /*= 0*/)
 {
     G3D::Vector3 dest = path.getActualEndPosition();
 
     moveCharge(LocationVector(dest.x, dest.y, dest.z), speed, EVENT_CHARGE_PREPATH);
 
-    // Charge movement is not started when using EVENT_CHARGE_PREPATH
+    // Charge movement is not started when using EVENT_CHARGE_PREPATH.
+    // Forever follows the modern charge spline: face the target and attach the
+    // spell-effect extra block when SpellEffect.MiscValueB provides a visual.
     MovementMgr::MoveSplineInit init(_owner);
     init.MovebyPath(path.getPath());
     init.SetVelocity(speed);
+
+    if (target != nullptr)
+        init.SetFacing(target);
+
+    if (spellVisualId != 0)
+    {
+        MovementMgr::SpellEffectExtraData extra;
+        extra.target = target != nullptr ? target->getGuid() : 0;
+        extra.spellVisualId = spellVisualId;
+        init.SetSpellEffectExtraData(extra);
+    }
+
     init.Launch();
 }
 

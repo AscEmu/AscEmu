@@ -25,6 +25,7 @@ namespace AscEmu::Packets
 
         uint32_t spellXSpellVisualId = 0; // Forever SpellCastVisual
         uint32_t scriptVisualId = 0;      // Forever SpellCastVisual
+        WoWGuid clientCastId = WoWGuid::createModernEmpty();
 
         uint64_t itemGuidRaw = 0;   // just a helper
         WoWGuid itemGuid;           // since 12340
@@ -74,7 +75,6 @@ namespace AscEmu::Packets
                     return false;
                 itemGuid.init(modernItemGuid.toLegacyRaw());
 
-                WoWGuid clientCastId;
                 if (!readPackedGuid(packet, clientCastId))
                     return false;
 

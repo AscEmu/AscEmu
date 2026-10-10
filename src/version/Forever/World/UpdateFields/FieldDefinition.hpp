@@ -22,13 +22,13 @@ namespace AscEmu::Version::Forever::UpdateFields
 
     // VERIFIED: Forever captures/runtime differentials prove the semantic identity.
     // STRUCTURE: serializer order and wire shape/type are known, but the semantic identity is not proven.
-    // REFERENCE: serializer order and wire shape/type are known and a modern reference label exists, but Forever has not proven it.
+    // UNVERIFIED: serializer order and wire shape/type are known, but Forever has not proven the semantic identity.
     // UNKNOWN: the remaining payload/bit is still opaque enough that even its structure should not be treated as settled.
     enum class FieldVerification : uint8_t
     {
         Verified,
         StructureOnly,
-        ReferenceOnly,
+        Unverified,
         Unknown
     };
 
@@ -108,7 +108,7 @@ namespace AscEmu::Version::Forever::UpdateFields
     constexpr bool referenceCreateFieldsHaveReferenceNames(std::array<CreateFieldMetadata, N> const& fields)
     {
         for (auto const& field : fields)
-            if (field.verification == FieldVerification::ReferenceOnly && field.referenceName.empty())
+            if (field.verification == FieldVerification::Unverified && field.referenceName.empty())
                 return false;
         return true;
     }
@@ -117,7 +117,7 @@ namespace AscEmu::Version::Forever::UpdateFields
     constexpr bool referenceCreateFieldsUseNeutralNames(std::array<CreateFieldMetadata, N> const& fields)
     {
         for (auto const& field : fields)
-            if (field.verification == FieldVerification::ReferenceOnly && !field.name.starts_with("unknown"))
+            if (field.verification == FieldVerification::Unverified && !field.name.starts_with("unknown"))
                 return false;
         return true;
     }

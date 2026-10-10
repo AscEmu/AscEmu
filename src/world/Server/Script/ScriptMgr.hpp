@@ -28,7 +28,11 @@ class SpellProc;
 class Object;
 class Player;
 
+#if defined(AE_FOREVER)
+enum SpellCastResult : int32_t;
+#else
 enum SpellCastResult : uint8_t;
+#endif
 enum AuraRemoveMode : uint8_t;
 enum SpellProcFlags : uint32_t;
 enum ServerHookEvents;

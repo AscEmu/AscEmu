@@ -235,6 +235,8 @@ void MoveSpline::Initialize(MoveSplineInitArgs const& args)
     time_passed = 0;
     vertical_acceleration = 0.f;
     effect_start_time = 0;
+    spell_effect_extra = args.spellEffectExtra;
+    has_spell_effect_extra = args.hasSpellEffectExtra;
 
     velocity = args.velocity;
 
@@ -315,7 +317,7 @@ bool MoveSplineInitArgs::_checkPathBounds() const
 
 MoveSplineInitArgs::MoveSplineInitArgs(size_t path_capacity /*= 16*/) : path_Idx_offset(0), velocity(0.f),
 parabolic_amplitude(0.f), time_perc(0.f), splineId(0), initialOrientation(0.f),
-walk(false), HasVelocity(false), TransformForTransport(true)
+hasSpellEffectExtra(false), walk(false), HasVelocity(false), TransformForTransport(true)
 {
     path.reserve(path_capacity);
 }

@@ -543,6 +543,22 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
 #endif
 };
 
+#if defined(AE_FOREVER)
+namespace
+{
+    struct ForeverAuraHandlerInitializer
+    {
+        ForeverAuraHandlerInitializer()
+        {
+            for (uint32_t i = 438; i < TOTAL_SPELL_AURAS; ++i)
+                SpellAuraHandler[i] = &Aura::spellAuraEffectNotImplemented;
+        }
+    };
+
+    ForeverAuraHandlerInitializer foreverAuraHandlerInitializer;
+}
+#endif
+
 const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
 {
     "SPELL_AURA_NONE",                                                      //   0 None
@@ -1378,12 +1394,18 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
         }
     }
 
+    const uint8_t newForm = apply ? static_cast<uint8_t>(aurEff->getEffectMiscValue()) : FORM_NORMAL;
     const auto shapeshiftForm = sSpellShapeshiftFormStore.lookupEntry(static_cast<uint32_t>(aurEff->getEffectMiscValue()));
     if (shapeshiftForm == nullptr)
+    {
+#if defined(AE_FOREVER)
+        getOwner()->setShapeShiftForm(newForm);
+        sLogger.warning("Forever shapeshift aura {} uses form {} without SpellShapeshiftForm metadata; internal form state was still updated.", getSpellId(), aurEff->getEffectMiscValue());
+#endif
         return;
+    }
 
     const auto oldForm = getOwner()->getShapeShiftForm();
-    const uint8_t newForm = apply ? static_cast<uint8_t>(aurEff->getEffectMiscValue()) : FORM_NORMAL;
 
     // Remove previous shapeshift aura on apply
     if (apply)
@@ -1650,8 +1672,8 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
         {
             if (oldForm != FORM_NORMAL && oldForm != FORM_SHADOW && oldForm != FORM_STEALTH)
             {
-                const uint32_t oldFormMask = 1U << (oldForm - 1);
-                const uint32_t newFormMask = 1U << (newForm - 1);
+                const SpellExtendedMask oldFormMask = oldForm > 0 ? (SpellExtendedMask{1} << (oldForm - 1U)) : SpellExtendedMask{0};
+                const SpellExtendedMask newFormMask = newForm > 0 ? (SpellExtendedMask{1} << (newForm - 1U)) : SpellExtendedMask{0};
                 // Check if the aura is usable in new form
                 if (oldFormMask & requiredForm && !(newFormMask & requiredForm))
                 {
@@ -1673,7 +1695,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
 
             if (spellInfo->isPassive() && spellInfo->getRequiredShapeShift() > 0)
             {
-                const uint32_t newFormMask = 1U << (newForm - 1);
+                const SpellExtendedMask newFormMask = newForm > 0 ? (SpellExtendedMask{1} << (newForm - 1U)) : SpellExtendedMask{0};
                 if (newFormMask & spellInfo->getRequiredShapeShift())
                     getPlayerOwner()->castSpell(getPlayerOwner(), spellInfo, true);
             }
@@ -1699,7 +1721,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
             if (spellInfo == nullptr)
                 continue;
 
-            const uint32_t newFormMask = 1U << (newForm - 1);
+            const SpellExtendedMask newFormMask = newForm > 0 ? (SpellExtendedMask{1} << (newForm - 1U)) : SpellExtendedMask{0};
             if (spellInfo->getRequiredShapeShift() > 0 && (newFormMask & spellInfo->getRequiredShapeShift()))
                 getPlayerOwner()->castSpell(getPlayerOwner(), spellInfo, true);
         }

@@ -1494,7 +1494,7 @@ void Pet::sendActionFeedback(PetActionFeedback feedback)
     plrOwner->getSession()->sendManagedPacket(managedPacket);
 }
 
-void Pet::sendPetCastFailed(uint32_t spellId, uint8_t reason)
+void Pet::sendPetCastFailed(uint32_t spellId, SpellCastResult reason)
 {
     auto* const plrOwner = getPlayerOwner();
     if (plrOwner == nullptr)

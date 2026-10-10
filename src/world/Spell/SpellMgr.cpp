@@ -790,7 +790,9 @@ void SpellMgr::loadSpellInfoData()
         spellInfo->setRangeIndex(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->RangeIndex : 0);
         spellInfo->setSpeed(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->Speed : 0.0f);
         // Forever SpellMisc.db2 no longer contains the legacy SpellVisual fields.
-        // Spell cast visuals are supplied by the modern SpellXSpellVisual path.
+        // Resolve the default unconditional SpellXSpellVisual row once during DB2 loading.
+        spellInfo->setSpellVisual(0, dbcSpellEntry->SpellXSpellVisualId);
+        spellInfo->setSpellVisual(1, 0);
         spellInfo->setSpellIconID(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->SpellIconFileDataId : 0);
         spellInfo->setActiveIconID(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->ActiveIconFileDataId : 0);
         spellInfo->setSchoolMask(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->SchoolMask : 0);

@@ -539,7 +539,7 @@ public:
 
     // Send Packet functions
     void SendLogExecute(uint32_t damage, uint64_t& targetGuid);
-    void SendInterrupted(uint8_t result);
+    void SendInterrupted(SpellCastResult result);
     void SendResurrectRequest(Player* target);
     void SendTameFailure(uint8_t failure);
 

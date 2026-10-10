@@ -301,7 +301,7 @@ namespace AscEmu::Version::Forever::UpdateFields
 
         // The complete 104-byte post-SkillInfo 26x32-bit cluster is structurally identified.
         // Storage identifiers are neutral wire-position names. Definitions::ActivePlayerDataCreateFields
-        // retains the former modern labels only as REFERENCE metadata. Copying live source values
+        // retains the former modern labels only as UNVERIFIED metadata. Copying live source values
         // here therefore cannot accidentally promote those labels to verified Forever semantics.
         result.unknownI32AfterSkill0 = source.unknownI32AfterSkill0;
         result.unknownI32AfterSkill1 = source.unknownI32AfterSkill1;
@@ -380,7 +380,7 @@ namespace AscEmu::Version::Forever::UpdateFields
     bool writeActivePlayerDataCreate(ByteBuffer& data, Fields::ActivePlayerData const& fields)
     {
         // Verification source of truth: Definitions::ActivePlayerDataCreateFields. In particular,
-        // the post-SkillInfo storage names are neutral; former semantic labels remain REFERENCE-only metadata.
+        // the post-SkillInfo storage names are neutral; former semantic labels remain UNVERIFIED metadata.
         if (!hasRequiredActivePlayerOpaqueRecords(fields))
             return false;
 

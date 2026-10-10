@@ -52,15 +52,23 @@ namespace AscEmu::Packets
                 packet.readSkip<int8_t>(); // container in InvUpdate
                 packet.readSkip<int8_t>(); // slot in InvUpdate
 
-                packet >> srcInventorySlot;
+                packet >> srcInventorySlot >> srcSlot;
 
-                uint8_t wireSrcSlot = 0;
-                packet >> wireSrcSlot;
+                if (srcInventorySlot == InventoryLayout::SlotNotSet)
+                {
+                    const int16_t logicalSlot = InventoryLayout::Forever::logicalSlot(static_cast<uint8_t>(srcSlot));
+                    if (logicalSlot == InventoryLayout::NoSlotAvailable)
+                        return false;
+                    srcSlot = static_cast<int8_t>(logicalSlot);
+                }
+                else
+                {
+                    const int16_t logicalContainerSlot = InventoryLayout::Forever::logicalSlot(static_cast<uint8_t>(srcInventorySlot));
+                    if (logicalContainerSlot == InventoryLayout::NoSlotAvailable)
+                        return false;
+                    srcInventorySlot = static_cast<int8_t>(logicalContainerSlot);
+                }
 
-                const int16_t logicalSrcSlot = InventoryLayout::Forever::logicalSlot(wireSrcSlot);
-                if (logicalSrcSlot == InventoryLayout::NoSlotAvailable) return false;
-
-                srcSlot = static_cast<int8_t>(logicalSrcSlot);
                 return true;
             }
 

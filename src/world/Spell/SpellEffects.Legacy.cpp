@@ -81,6 +81,7 @@
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
 #include "Movement/MovementManager.h"
+#include "Movement/PathGenerator.h"
 #include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Corpse.hpp"
 #include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
@@ -5081,7 +5082,7 @@ void Spell::SpellEffectSkinning(uint8_t /*effectIndex*/)
     }
 }
 
-void Spell::SpellEffectCharge(uint8_t /*effectIndex*/)
+void Spell::SpellEffectCharge(uint8_t effectIndex)
 {
     if (m_unitTarget == nullptr || !m_unitTarget->isAlive())
         return;
@@ -5089,7 +5090,18 @@ void Spell::SpellEffectCharge(uint8_t /*effectIndex*/)
     float speed = G3D::fuzzyGt(getSpellInfo()->getSpeed(), 0.0f) ? getSpellInfo()->getSpeed() : SPEED_CHARGE;
 
     LocationVector pos = m_unitTarget->getFirstCollisionPosition(m_unitTarget->getCombatReach(), m_unitTarget->getRelativeAngle(m_caster));
+
+#if defined(AE_FOREVER)
+    // Forever charge movement must be launched immediately from a pre-generated path.
+    // The point-movement overload initializes while the spell is still casting and can
+    // therefore reject the movement through PointMovementGenerator::doInitialize().
+    PathGenerator path(u_caster);
+    path.calculatePath(pos.x, pos.y, pos.z, false);
+    const uint32_t spellVisualId = static_cast<uint32_t>(std::max<int32_t>(0, getSpellInfo()->getEffectMiscValueB(effectIndex)));
+    u_caster->getMovementManager()->moveCharge(path, speed, m_unitTarget, spellVisualId);
+#else
     u_caster->getMovementManager()->moveCharge(pos, speed);
+#endif
 }
 
 void Spell::SpellEffectKnockBack(uint8_t effectIndex)

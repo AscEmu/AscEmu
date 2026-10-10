@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Version::Forever::UpdateFields::Definitions
 {
-    // CREATE metadata mirrors writeUnitDataCreate order. REFERENCE entries keep the modern reference-schema
+    // CREATE metadata mirrors writeUnitDataCreate order. UNVERIFIED entries keep the modern reference-schema
     // label only as referenceName; their canonical Forever name remains neutral until a Forever
     // capture/runtime differential proves the semantic identity. STRUCTURE entries keep an established runtime name while
     // explicitly stopping short of semantic capture verification. condition marks owner-visible conditional slots.
@@ -20,13 +20,13 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
         CreateFieldMetadata{0, FieldVerification::StructureOnly, "displayId", "DisplayID", "int32", ""},
         CreateFieldMetadata{1, FieldVerification::Verified, "npcFlags", "", "uint32", ""},
         CreateFieldMetadata{2, FieldVerification::Verified, "npcFlags2", "", "uint32", ""},
-        CreateFieldMetadata{3, FieldVerification::ReferenceOnly, "unknownU32Create3", "StateSpellVisualID", "uint32", ""},
-        CreateFieldMetadata{4, FieldVerification::ReferenceOnly, "unknownU32Create4", "StateAnimID", "uint32", ""},
-        CreateFieldMetadata{5, FieldVerification::ReferenceOnly, "unknownU32Create5", "StateAnimKitID", "uint32", ""},
+        CreateFieldMetadata{3, FieldVerification::Unverified, "unknownU32Create3", "StateSpellVisualID", "uint32", ""},
+        CreateFieldMetadata{4, FieldVerification::Unverified, "unknownU32Create4", "StateAnimID", "uint32", ""},
+        CreateFieldMetadata{5, FieldVerification::Unverified, "unknownU32Create5", "StateAnimKitID", "uint32", ""},
         CreateFieldMetadata{6, FieldVerification::StructureOnly, "unknownU32Create6", "StateWorldEffectIDsCount", "uint32", ""},
-        CreateFieldMetadata{7, FieldVerification::ReferenceOnly, "unknownU32Create7", "StateWorldEffectsQuestObjectiveID", "uint32", ""},
-        CreateFieldMetadata{8, FieldVerification::ReferenceOnly, "unknownI32Create8", "SpellOverrideNameID", "int32", ""},
-        CreateFieldMetadata{9, FieldVerification::ReferenceOnly, "unknownU32Vector0", "StateWorldEffectIDs", "uint32-vector", ""},
+        CreateFieldMetadata{7, FieldVerification::Unverified, "unknownU32Create7", "StateWorldEffectsQuestObjectiveID", "uint32", ""},
+        CreateFieldMetadata{8, FieldVerification::Unverified, "unknownI32Create8", "SpellOverrideNameID", "int32", ""},
+        CreateFieldMetadata{9, FieldVerification::Unverified, "unknownU32Vector0", "StateWorldEffectIDs", "uint32-vector", ""},
         CreateFieldMetadata{10, FieldVerification::StructureOnly, "unknownGuidCreate10", "Charm", "packed-guid", ""},
         CreateFieldMetadata{11, FieldVerification::StructureOnly, "unknownGuidCreate11", "Summon", "packed-guid", ""},
         CreateFieldMetadata{12, FieldVerification::StructureOnly, "unknownGuidCreate12", "Critter", "packed-guid", "ownerVisible"},
@@ -37,7 +37,7 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
         CreateFieldMetadata{17, FieldVerification::StructureOnly, "unknownGuidCreate17", "LookAtControllerTarget", "packed-guid", ""},
         CreateFieldMetadata{18, FieldVerification::Verified, "target", "", "packed-guid", ""},
         CreateFieldMetadata{19, FieldVerification::StructureOnly, "unknownGuidCreate19", "BattlePetCompanionGUID", "packed-guid", ""},
-        CreateFieldMetadata{20, FieldVerification::ReferenceOnly, "unknownU64Create20", "BattlePetDBID", "uint64", ""},
+        CreateFieldMetadata{20, FieldVerification::Unverified, "unknownU64Create20", "BattlePetDBID", "uint64", ""},
         CreateFieldMetadata{21, FieldVerification::StructureOnly, "unknownGuidCreate21", "BattlePetAttachedToDecorGUID", "packed-guid", ""},
         CreateFieldMetadata{22, FieldVerification::StructureOnly, "unknownGuidCreate22", "BattlePetDecorHouseGUID", "packed-guid", ""},
         CreateFieldMetadata{23, FieldVerification::StructureOnly, "unknownRecordCreate23", "ChannelData", "nested-record", ""},
@@ -163,7 +163,7 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
     static_assert(verifiedCreateFieldsHaveNoReferenceNames(UnitDataCreateFields));
     static_assert(countCreateFieldsByVerification(UnitDataCreateFields, FieldVerification::Verified) == 29);
     static_assert(countCreateFieldsByVerification(UnitDataCreateFields, FieldVerification::StructureOnly) == 102);
-    static_assert(countCreateFieldsByVerification(UnitDataCreateFields, FieldVerification::ReferenceOnly) == 7);
+    static_assert(countCreateFieldsByVerification(UnitDataCreateFields, FieldVerification::Unverified) == 7);
     static_assert(countCreateFieldsByVerification(UnitDataCreateFields, FieldVerification::Unknown) == 0);
 
     // Only Forever-verified differential fields are permitted here. Verification metadata is
@@ -178,7 +178,9 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
         ScalarField<&Fields::UnitData::unitFlags, Fields::UnitData::FlagsBit, 32, FieldVerification::Verified, "unitFlags">,
         ScalarField<&Fields::UnitData::unitFlags2, Fields::UnitData::Flags2Bit, 32, FieldVerification::Verified, "unitFlags2">,
         ScalarField<&Fields::UnitData::auraState, Fields::UnitData::AuraStateBit, 32, FieldVerification::Verified, "auraState">,
-        ScalarField<&Fields::UnitData::emoteState, Fields::UnitData::EmoteStateBit, 32, FieldVerification::StructureOnly, "emoteState", "EmoteState">,
+        // EmoteState is present in the 70009 reference layout at wire bit 85, but remains
+        // unverified and therefore does not participate in live VALUES output.
+        ScalarField<&Fields::UnitData::shapeshiftForm, Fields::UnitData::ShapeshiftFormBit, 64, FieldVerification::Verified, "shapeshiftForm">,
         ScalarArrayField<&Fields::UnitData::power, Fields::UnitData::PowerGroupBit, Fields::UnitData::PowerFirstBit, FieldVerification::Verified, "power">,
         ScalarArrayField<&Fields::UnitData::maxPower, Fields::UnitData::PowerGroupBit, Fields::UnitData::MaxPowerFirstBit, FieldVerification::Verified, "maxPower">,
         ScalarArrayField<&Fields::UnitData::resistances, Fields::UnitData::ResistancesGroupBit, Fields::UnitData::ResistancesFirstBit, FieldVerification::Verified, "resistances">>;

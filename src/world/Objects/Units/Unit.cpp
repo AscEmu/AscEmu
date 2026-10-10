@@ -2704,7 +2704,12 @@ void Unit::setShapeShiftForm(uint8_t shapeShiftForm)
 {
     write(unitData()->field_bytes_2.s.shape_shift_form, shapeShiftForm);
 #if defined(AE_FOREVER)
-    m_foreverUnitFields.shapeshiftForm = shapeShiftForm;
+    if (m_foreverUnitFields.shapeshiftForm != shapeShiftForm)
+    {
+        m_foreverUnitFields.shapeshiftForm = shapeShiftForm;
+        m_foreverUnitFields.markChanged(AscEmu::Version::Forever::Fields::UnitData::ShapeshiftFormBit);
+        updateObject();
+    }
 #endif
 }
 #endif

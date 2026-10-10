@@ -26,6 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
     #include "Spell/SpellAura.hpp"
 #endif
 
+#include <limits>
 #include <algorithm>
 #include <concepts>
 #include <cstdint>
@@ -423,7 +424,7 @@ namespace {
         WDB::WDC5File spellCastingRequirements, spellCategories, spellClassOptions, spellCooldowns, spellDuration, spellEffect;
         WDB::WDC5File spellEquippedItems, spellInterrupts, spellLevels, spellMisc, spellPower, spellRadius, spellRange;
         WDB::WDC5File spellReagents, spellScaling, spellShapeshift, spellShapeshiftForm, spellTargetRestrictions, spellTotems;
-        WDB::WDC5File spellItemEnchantment;
+        WDB::WDC5File spellItemEnchantment, spellXSpellVisual;
 
         bool ok = true;
         auto load = [&](WDB::WDC5File& file, char const* name)
@@ -466,6 +467,7 @@ namespace {
         bool const haveTargetRestrictions = load(spellTargetRestrictions, "SpellTargetRestrictions.db2");
         bool const haveTotems = loadArrays(spellTotems, "SpellTotems.db2", {{1, 2}, {2, 2}});
         bool const haveItemEnchantment = loadArrays(spellItemEnchantment, "SpellItemEnchantment.db2", {{4, 3}, {5, 3}, {6, 3}, {8, 3}});
+        bool const haveSpellXSpellVisual = loadForeverGenericWDC5Optional(spellXSpellVisual, "SpellXSpellVisual.db2", dbcPath);
 
         auto verifyFields = [&](WDB::WDC5File const& file, char const* name, uint32_t expected)
         {
@@ -542,6 +544,74 @@ namespace {
             if (itr != spellEntries.end())
                 itr->second.*member = rowId;
         };
+
+        if (haveSpellXSpellVisual)
+        {
+            if (spellXSpellVisual.getFieldCount() != 12)
+            {
+                sLogger.warning("Optional Forever DB2 SpellXSpellVisual.db2 ignored: field count {} (expected 12).", spellXSpellVisual.getFieldCount());
+            }
+            else
+            {
+                struct VisualCandidate
+                {
+                    uint32_t rowId = 0;
+                    int32_t priority = std::numeric_limits<int32_t>::min();
+                };
+
+                std::unordered_map<uint32_t, VisualCandidate> defaultVisuals;
+                std::unordered_map<uint32_t, VisualCandidate> fallbackVisuals;
+                for (uint32_t row = 0; row < spellXSpellVisual.getRecordCount(); ++row)
+                {
+                    const uint32_t spellId = spellXSpellVisual.getParentId(row);
+                    if (spellId == 0 || spellEntries.find(spellId) == spellEntries.end())
+                        continue;
+
+                    const uint16_t difficultyId = static_cast<uint16_t>(spellXSpellVisual.getInt16(row, 0));
+                    const uint32_t spellVisualId = spellXSpellVisual.getUInt32(row, 1);
+                    const int32_t priority = spellXSpellVisual.getInt32(row, 4);
+                    const uint32_t viewerUnitCondition = spellXSpellVisual.getUInt32(row, 7);
+                    const uint32_t viewerPlayerCondition = spellXSpellVisual.getUInt32(row, 8);
+                    const uint32_t casterUnitCondition = spellXSpellVisual.getUInt32(row, 9);
+                    const uint32_t casterPlayerCondition = spellXSpellVisual.getUInt32(row, 10);
+                    if (difficultyId != 0 || spellVisualId == 0)
+                        continue;
+
+                    auto& fallback = fallbackVisuals[spellId];
+                    if (fallback.rowId == 0 || priority > fallback.priority)
+                    {
+                        fallback.rowId = spellXSpellVisual.getRecordId(row);
+                        fallback.priority = priority;
+                    }
+
+                    if (viewerUnitCondition != 0 || viewerPlayerCondition != 0 || casterUnitCondition != 0 || casterPlayerCondition != 0)
+                        continue;
+
+                    auto& candidate = defaultVisuals[spellId];
+                    if (candidate.rowId == 0 || priority > candidate.priority)
+                    {
+                        candidate.rowId = spellXSpellVisual.getRecordId(row);
+                        candidate.priority = priority;
+                    }
+                }
+
+                uint32_t fallbackCount = 0;
+                for (auto const& [spellId, fallback] : fallbackVisuals)
+                {
+                    auto const defaultItr = defaultVisuals.find(spellId);
+                    if (defaultItr != defaultVisuals.end())
+                    {
+                        spellEntries[spellId].SpellXSpellVisualId = defaultItr->second.rowId;
+                        continue;
+                    }
+
+                    spellEntries[spellId].SpellXSpellVisualId = fallback.rowId;
+                    ++fallbackCount;
+                }
+
+                sLogger.info("Forever SpellXSpellVisual DB2 store: {} unconditional defaults, {} difficulty-0 conditional fallbacks resolved.", defaultVisuals.size(), fallbackCount);
+            }
+        }
 
         if (haveAuraOptions && verifyFields(spellAuraOptions, "SpellAuraOptions.db2", 7))
         {
@@ -708,6 +778,8 @@ namespace {
 
         if (haveEffect && verifyFields(spellEffect, "SpellEffect.db2", 29))
         {
+            uint32_t maxForeverEffectId = 0;
+            uint32_t maxForeverAuraId = 0;
             std::vector<std::pair<uint32_t, WDB::Structures::SpellEffectEntry>> entries;
             entries.reserve(spellEffect.getRecordCount());
             for (uint32_t row = 0; row < spellEffect.getRecordCount(); ++row)
@@ -718,6 +790,8 @@ namespace {
                 entry.DifficultyId = spellEffect.getUInt16(row, 1);
                 entry.EffectIndex = spellEffect.getUInt32(row, 2);
                 entry.Effect = spellEffect.getUInt32(row, 3);
+                maxForeverEffectId = std::max(maxForeverEffectId, entry.Effect);
+                maxForeverAuraId = std::max(maxForeverAuraId, static_cast<uint32_t>(entry.EffectApplyAuraName));
                 entry.EffectAmplitudeFloat = spellEffect.getFloat(row, 4);
                 entry.EffectAttributes = spellEffect.getUInt32(row, 5);
                 entry.EffectAmplitude = spellEffect.getUInt32(row, 6); // EffectAuraPeriod
@@ -755,6 +829,7 @@ namespace {
                 entries.emplace_back(entry.id, entry);
             }
             sSpellEffectStore.assignEntries(entries);
+            sLogger.info("Forever SpellEffect DB2 coverage: max Effect={} (enum limit {}), max Aura={} (enum limit {}).", maxForeverEffectId, TOTAL_SPELL_EFFECTS - 1, maxForeverAuraId, TOTAL_SPELL_AURAS - 1);
             sSpellEffectMap.clear();
             for (uint32_t id = 0; id < sSpellEffectStore.getNumRows(); ++id)
             {
@@ -1220,7 +1295,7 @@ namespace {
             sChrPowerTypesStore[entry.entry] = entry;
         }
         buildPowerIndexByClass();
-        sLogger.info("Forever ChrClassesXPowerTypes DB2 store: {} entries loaded, warrior rage index {}.", sChrPowerTypesStore.getNumRows(), powerIndexByClass[WARRIOR][POWER_TYPE_RAGE]);
+        sLogger.info("Forever ChrClassesXPowerTypes DB2 store: {} entries loaded, warrior rage index {}, mage mana index {}.", sChrPowerTypesStore.getNumRows(), powerIndexByClass[WARRIOR][POWER_TYPE_RAGE], powerIndexByClass[MAGE][POWER_TYPE_MANA]);
 
         std::memset(ClassSpecializationTabs, 0, sizeof(ClassSpecializationTabs));
         std::vector<std::pair<uint32_t, WDB::Structures::ChrSpecializationEntry>> specializationEntries;
@@ -2608,10 +2683,37 @@ namespace {
 #endif
 
         for (auto& classPowers : powerIndexByClass)
-        {
             classPowers.fill(invalidPowerIndex);
+
+#if defined(AE_FOREVER)
+        // ChrClassesXPowerTypes defines the per-class wire order. Sort by ClassID and
+        // PowerType before assigning array indices; store iteration order is not stable
+        // and can place powers in the wrong slot for classes with multiple power types.
+        std::vector<WDB::Structures::ChrPowerTypesEntry> powers;
+        powers.reserve(sChrPowerTypesStore.getNumRows());
+
+        for (auto const& powerEntry : sChrPowerTypesStore | std::views::values)
+        {
+            if (powerEntry.classId >= MAX_PLAYER_CLASSES || powerEntry.power >= TOTAL_PLAYER_POWER_TYPES)
+                continue;
+
+            powers.push_back(powerEntry);
         }
 
+        std::ranges::sort(powers, [](auto const& left, auto const& right)
+        {
+            if (left.classId != right.classId)
+                return left.classId < right.classId;
+
+            return left.power < right.power;
+        });
+
+        std::array<uint8_t, MAX_PLAYER_CLASSES> nextIndex{};
+        nextIndex.fill(POWER_FIELD_INDEX_1);
+
+        for (auto const& powerEntry : powers)
+            powerIndexByClass[powerEntry.classId][powerEntry.power] = nextIndex[powerEntry.classId]++;
+#else
         for (auto const& powerEntry : sChrPowerTypesStore | std::views::values)
         {
             // Boundary Checks against Out-of-Bounds access
@@ -2627,6 +2729,7 @@ namespace {
 
             powerIndexByClass[powerEntry.classId][powerEntry.power] = index;
         }
+#endif
     }
 }
 

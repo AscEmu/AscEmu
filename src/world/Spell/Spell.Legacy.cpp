@@ -1184,7 +1184,7 @@ void Spell::SendLogExecute(uint32_t spellDamage, uint64_t & targetGuid)
     PacketBroadcast::sendToSet(*m_caster, sendPacket, true);
 }
 
-void Spell::SendInterrupted(uint8_t result)
+void Spell::SendInterrupted(SpellCastResult result)
 {
     SetSpellFailed();
 

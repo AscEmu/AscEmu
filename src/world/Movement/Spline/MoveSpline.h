@@ -61,6 +61,8 @@ protected:
     float           vertical_acceleration;
     float           initialOrientation;
     int32_t         effect_start_time;
+    SpellEffectExtraData spell_effect_extra;
+    bool            has_spell_effect_extra = false;
     int32_t         point_Idx;
     int32_t         point_Idx_offset;
     float           velocity;

@@ -93,17 +93,24 @@ void AuraEffectModifier::applyEffect(bool apply, bool skipScriptCheck/* = false*
     if (mActive == apply)
         return;
 
+    const uint32_t auraEffectType = static_cast<uint32_t>(getAuraEffectType());
+    if (auraEffectType >= TOTAL_SPELL_AURAS)
+    {
+        sLogger.warning("AuraEffectModifier::applyEffect: aura effect {} is outside supported range 0..{} for spell {}.", auraEffectType, TOTAL_SPELL_AURAS - 1, mAura.getSpellId());
+        return;
+    }
+
     mActive = apply;
 
     if (skipScriptCheck)
     {
-        (mAura.*SpellAuraHandler[getAuraEffectType()])(this, apply);
+        (mAura.*SpellAuraHandler[auraEffectType])(this, apply);
     }
     else
     {
         const auto scriptResult = sScriptMgr.callScriptedAuraBeforeAuraEffect(&mAura, this, apply);
         if (scriptResult != SpellScriptExecuteState::EXECUTE_PREVENT)
-            (mAura.*SpellAuraHandler[getAuraEffectType()])(this, apply);
+            (mAura.*SpellAuraHandler[auraEffectType])(this, apply);
     }
 }
 

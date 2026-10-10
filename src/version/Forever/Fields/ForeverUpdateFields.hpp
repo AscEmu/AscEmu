@@ -24,7 +24,7 @@ namespace AscEmu::Version::Forever::Fields
     // [FOREVER-VERIFIED]  Proven by a Forever retail capture and/or a working
     //                     differential test against the Forever client.
     // [FOREVER-STRUCTURE] Wire position/size/order is proven, semantics are not.
-    // [REFERENCE]         Name/layout originates from an external schema reference
+    // [UNVERIFIED]        Name/layout is not yet proven by a local capture or runtime test
     //                     and is useful as a label only. It MUST NOT be
     //                     treated as proven Forever semantics until a Forever
     //                     capture confirms it.
@@ -39,7 +39,7 @@ namespace AscEmu::Version::Forever::Fields
     struct Vec3 { float x = 0.0f; float y = 0.0f; float z = 0.0f; };
     struct Quaternion { float x = 0.0f; float y = 0.0f; float z = 0.0f; float w = 1.0f; };
 
-    // [REFERENCE] External schema field names; wire shape is used by Forever,
+    // [UNVERIFIED] Semantic names are not yet individually proven by Forever captures;
     // but each semantic label must still be proven independently.
     struct SpellCastVisual
     {
@@ -94,7 +94,7 @@ namespace AscEmu::Version::Forever::Fields
         std::vector<TraitSubTreeCache> subTrees;
     };
 
-    // [REFERENCE] External schema semantic labels unless a local capture comment says otherwise.
+    // [UNVERIFIED] Semantic labels remain unverified unless a local capture comment says otherwise.
     struct ItemEnchantment
     {
         int32_t id = 0;
@@ -148,7 +148,7 @@ namespace AscEmu::Version::Forever::Fields
         int32_t auraSpellId = 0;
     };
 
-    // [REFERENCE] External schema semantic labels. Preserve only as reference names
+    // [UNVERIFIED] Semantic labels are retained only as structural names
     // until a Forever channel/cast differential proves the individual fields.
     struct UnitChannel
     {
@@ -198,7 +198,7 @@ namespace AscEmu::Version::Forever::Fields
     struct DynamicRecord { std::vector<uint8_t> data; };
 
 
-    // [REFERENCE] The following nested records keep external schema names only
+    // [UNVERIFIED] The following nested records keep provisional semantic names only
     // to document the reference wire shape. Their semantics are not Forever-proven unless
     // an explicit local [FOREVER-VERIFIED] comment says otherwise.
     struct ZonePlayerForcedReaction
@@ -352,8 +352,8 @@ namespace AscEmu::Version::Forever::Fields
         bool hasChanges() const { return changes.any(); }
     };
 
-    // [REFERENCE] The 41-bit modern ItemData map and most semantic bit names come from
-    // an external schema reference. Only fields exercised by Forever captures/tests
+    // [UNVERIFIED] Most ItemData semantic bit names are structural labels only;
+    // only fields exercised by Forever captures/tests
     // should be considered verified; Definitions/ItemData.hpp controls live VALUES output.
     struct ItemData
     {
@@ -413,7 +413,7 @@ namespace AscEmu::Version::Forever::Fields
         bool hasChanges() const { return changes.any(); }
     };
 
-    // [REFERENCE] External schema semantic labels and mask positions.
+    // [UNVERIFIED] Semantic labels and mask positions are not yet individually proven.
     // Do not treat NumSlots/Slots bit meanings as Forever-proven without a capture.
     struct ContainerData
     {
@@ -432,16 +432,15 @@ namespace AscEmu::Version::Forever::Fields
         bool hasChanges() const { return changes.any(); }
     };
 
-    // [REFERENCE] The complete semantic map below is based on an external schema reference
-    // reference. Only the subset listed in Definitions/UnitData.hpp is currently treated as
+    // The complete semantic map below contains both verified and unverified labels.
+    // Only the subset listed in Definitions/UnitData.hpp is currently treated as
     // [FOREVER-VERIFIED] for differential VALUES output. Unlisted names are labels, not proof.
     struct UnitData
     {
-        // [FOREVER-STRUCTURE] Current Forever captures/tests use the 230-bit mask shape.
-        // The previous AscEmu table was stale by two bits from Race onward because
-        // BattlePetAttachedToDecorGUID/BattlePetDecorHouseGUID were present in the
-        // create structure but missing from the dirty-bit numbering.
-        static inline constexpr std::size_t ChangeMaskSize = 230;
+        // [FOREVER-STRUCTURE] Classic/Forever 1.60.1.70009 uses 8 mask blocks and
+        // wire bits through 238. Imported semantic names remain [UNVERIFIED]
+        // unless explicitly marked [FOREVER-VERIFIED] below.
+        static inline constexpr std::size_t ChangeMaskSize = 239;
         static inline constexpr std::size_t DisplayIdBit = 6;
         static inline constexpr std::size_t NpcFlagsBit = 7;
         static inline constexpr std::size_t NpcFlags2Bit = 8;
@@ -503,59 +502,80 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t PetTalentPointsBit = 69;
         static inline constexpr std::size_t VisFlagsBit = 70;
         static inline constexpr std::size_t AnimTierBit = 71;
-        static inline constexpr std::size_t PetNumberBit = 72;
-        static inline constexpr std::size_t PetNameTimestampBit = 73;
-        static inline constexpr std::size_t PetExperienceBit = 74;
-        static inline constexpr std::size_t PetNextLevelExperienceBit = 75;
-        static inline constexpr std::size_t ModCastingSpeedBit = 76;
-        static inline constexpr std::size_t ModCastingSpeedNegBit = 77;
-        static inline constexpr std::size_t ModSpellHasteBit = 78;
-        static inline constexpr std::size_t ModHasteBit = 79;
-        static inline constexpr std::size_t ModRangedHasteBit = 80;
-        static inline constexpr std::size_t ModHasteRegenBit = 81;
-        static inline constexpr std::size_t ModTimeRateBit = 82;
-        static inline constexpr std::size_t CreatedBySpellBit = 83;
-        static inline constexpr std::size_t EmoteStateBit = 84;
-        static inline constexpr std::size_t BaseManaBit = 85;
-        static inline constexpr std::size_t BaseHealthBit = 86;
-        static inline constexpr std::size_t SheatheStateBit = 87;
-        static inline constexpr std::size_t PvpFlagsBit = 88;
-        static inline constexpr std::size_t PetFlagsBit = 89;
-        static inline constexpr std::size_t ShapeshiftFormBit = 90;
+        // [UNVERIFIED] 1.60.1.70009 inserts one byte
+        // after AnimTier. Retail logical 72..84 therefore move by +1 on the wire.
+        static inline constexpr std::size_t UnknownAfterAnimTierBit = 72;
+        static inline constexpr std::size_t PetNumberBit = 73;
+        static inline constexpr std::size_t PetNameTimestampBit = 74;
+        static inline constexpr std::size_t PetExperienceBit = 75;
+        static inline constexpr std::size_t PetNextLevelExperienceBit = 76;
+        static inline constexpr std::size_t ModCastingSpeedBit = 77;
+        static inline constexpr std::size_t ModCastingSpeedNegBit = 78;
+        static inline constexpr std::size_t ModSpellHasteBit = 79;
+        static inline constexpr std::size_t ModHasteBit = 80;
+        static inline constexpr std::size_t ModRangedHasteBit = 81;
+        static inline constexpr std::size_t ModHasteRegenBit = 82;
+        static inline constexpr std::size_t ModTimeRateBit = 83;
+        static inline constexpr std::size_t CreatedBySpellBit = 84;
+        static inline constexpr std::size_t EmoteStateBit = 85;
 
-        // The verified Forever differential updates line up
-        // with the modern 230-bit grouping (for example bits 48/49/52/90 and
-        // the 148..150 power island). Keep the complete array groups aligned.
+        // [UNVERIFIED] Two int16 fields exist after
+        // EmoteState in the 70009 client reader. Their semantics are unknown.
+        static inline constexpr std::size_t UnknownAfterEmoteState0Bit = 86;
+        static inline constexpr std::size_t UnknownAfterEmoteState1Bit = 87;
+
+        // Retail logical 85..92 move by +3 on the 70009 wire.
+        static inline constexpr std::size_t BaseManaBit = 88;
+        static inline constexpr std::size_t BaseHealthBit = 89;
+        static inline constexpr std::size_t SheatheStateBit = 90;
+        static inline constexpr std::size_t PvpFlagsBit = 91;
+        static inline constexpr std::size_t PetFlagsBit = 92;
+
+        // [FOREVER-VERIFIED] Battle/Defensive/Berserker stance switching proved
+        // that retail logical ShapeshiftForm bit 90 is wire bit 93 on 70009.
+        static inline constexpr std::size_t ShapeshiftFormBit = 93;
+
+        // From this point on use 70009 wire positions, not Retail logical bits.
+        // [UNVERIFIED] Additional 70009-only scalar
+        // slots identified by the 70009 reference layout.
+        static inline constexpr std::size_t UnknownAfterRangedAttackPowerModSupportBit = 105;
+        static inline constexpr std::size_t UnknownAfterSetAttackSpeedAuraBit = 110;
+        static inline constexpr std::size_t UnknownAfterSilencedSchoolMaskBit = 139;
+        static inline constexpr std::size_t UnknownAfterCurrentAreaGuidBit = 141;
+        static inline constexpr std::size_t UnknownAfterCurrentAreaInt32Bit = 142;
+        static inline constexpr std::size_t UnknownAfterCurrentAreaFloatBit = 143;
+
         // Capture-verified Forever differential UnitData power mask:
         // block 4 mask 0x00300000 for Power[0] => group bit 148 + element bit 149.
         static inline constexpr std::size_t PowerGroupBit = 148;
         static inline constexpr std::size_t PowerFirstBit = 149;
         static inline constexpr std::size_t MaxPowerFirstBit = 159;
-        static inline constexpr std::size_t AttackRoundBaseTimeGroupBit = 184;
-        static inline constexpr std::size_t AttackRoundBaseTimeFirstBit = 185;
+        // [UNVERIFIED] Retail logical VirtualItems
+        // 180..183 are shifted by +9 in 70009.
+        static inline constexpr std::size_t VirtualItemsGroupBit = 189;
+        static inline constexpr std::size_t VirtualItemsFirstBit = 190;
 
-        static inline constexpr std::size_t StatsGroupBit = 187;
-        static inline constexpr std::size_t StatsFirstBit = 188;
-        static inline constexpr std::size_t StatPosBuffFirstBit = 193;
-        static inline constexpr std::size_t StatNegBuffFirstBit = 198;
-        static inline constexpr std::size_t StatSupportBuffFirstBit = 203;
+        // [UNVERIFIED] Retail logical AttackRoundBaseTime
+        // group 184 / first 185 become wire 193 / 194.
+        static inline constexpr std::size_t AttackRoundBaseTimeGroupBit = 193;
+        static inline constexpr std::size_t AttackRoundBaseTimeFirstBit = 194;
 
-        // Retail 70009 shows an additional 9-bit region here.
-        // Meaning not yet identified.
-        static inline constexpr std::size_t Unknown208Bit = 208;
-        static inline constexpr std::size_t Unknown209Bit = 209;
-        static inline constexpr std::size_t Unknown210Bit = 210;
-        static inline constexpr std::size_t Unknown211Bit = 211;
-        static inline constexpr std::size_t Unknown212Bit = 212;
-        static inline constexpr std::size_t Unknown213Bit = 213;
-        static inline constexpr std::size_t Unknown214Bit = 214;
-        static inline constexpr std::size_t Unknown215Bit = 215;
-        static inline constexpr std::size_t Unknown216Bit = 216;
+        // [UNVERIFIED] Retail logical Stats group 187
+        // and children are shifted by +9 in the 70009 wire layout.
+        static inline constexpr std::size_t StatsGroupBit = 196;
+        static inline constexpr std::size_t StatsFirstBit = 197;
+        static inline constexpr std::size_t StatPosBuffFirstBit = 202;
+        static inline constexpr std::size_t StatNegBuffFirstBit = 207;
+        static inline constexpr std::size_t StatSupportBuffFirstBit = 212;
 
-        // Capture-verified Forever 1.60.1.70009 Frost Armor differential:
+        // [FOREVER-VERIFIED] Frost Armor differential:
         // bit 217 = Resistances group, bit 218 = Resistances[0] (physical armor).
         static inline constexpr std::size_t ResistancesGroupBit = 217;
         static inline constexpr std::size_t ResistancesFirstBit = 218;
+
+        // [UNVERIFIED] Remaining resistance arrays.
+        static inline constexpr std::size_t BonusResistanceModsFirstBit = 225;
+        static inline constexpr std::size_t ManaCostModifierFirstBit = 232;
 
         std::bitset<ChangeMaskSize> changes{};
 
@@ -757,15 +777,16 @@ namespace AscEmu::Version::Forever::Fields
         std::optional<UnitAssistActionData> unknownOptionalRecord0;
     };
 
-    // [REFERENCE] The complete 326-bit semantic map is retained from an external schema reference.
+    // The complete semantic map contains both verified and unverified fields.
     // Forever CREATE remains capture-driven and differential output is restricted to verified fields.
     struct PlayerData
     {
-        static inline constexpr std::size_t ChangeMaskSize = 326;
+        // 70009 PlayerData uses wire bits through 329 (11 change-mask blocks).
+        // Imported semantic labels remain [UNVERIFIED] until locally proven.
+        static inline constexpr std::size_t ChangeMaskSize = 330;
 
-        // [REFERENCE] 326-bit modern reference mask. These names describe the
-        // reference dirty-mask positions only; they do not prove Forever semantics.
-        // Forever CREATE payload remains capture-driven below.
+        // [UNVERIFIED] Wire positions below already include
+        // the 70009 insertions/remapping. They are not Retail logical bit numbers.
         static inline constexpr std::size_t HasQuestSessionBit = 1;
         static inline constexpr std::size_t HasLevelLinkBit = 2;
         static inline constexpr std::size_t CustomizationsBit = 3;
@@ -784,50 +805,56 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t GuildRankBit = 16;
         static inline constexpr std::size_t GuildDeleteDateBit = 17;
         static inline constexpr std::size_t GuildLevelBit = 18;
-        static inline constexpr std::size_t NativeSexBit = 19;
-        static inline constexpr std::size_t InebriationBit = 20;
-        static inline constexpr std::size_t PvpTitleBit = 21;
-        static inline constexpr std::size_t ArenaFactionBit = 22;
-        static inline constexpr std::size_t DuelTeamBit = 23;
-        static inline constexpr std::size_t GuildTimeStampBit = 24;
+        static inline constexpr std::size_t NativeSexBit = 20;
+        static inline constexpr std::size_t InebriationBit = 21;
+        static inline constexpr std::size_t PvpTitleBit = 22;
+        static inline constexpr std::size_t ArenaFactionBit = 23;
+        static inline constexpr std::size_t DuelTeamBit = 24;
+        static inline constexpr std::size_t GuildTimeStampBit = 25;
         static inline constexpr std::size_t QuestLogQuestIdToIndexBit = 26;
-        static inline constexpr std::size_t PlayerTitleBit = 26;
-        static inline constexpr std::size_t FakeInebriationBit = 27;
-        static inline constexpr std::size_t VirtualPlayerRealmBit = 28;
-        static inline constexpr std::size_t CurrentSpecBit = 29;
-        static inline constexpr std::size_t CombatTraitSubTreeBit = 30;
-        static inline constexpr std::size_t TaxiMountAnimKitBit = 31;
-        static inline constexpr std::size_t BattlePetBreedQualityBit = 33;
-        static inline constexpr std::size_t HonorBit = 34;
-        static inline constexpr std::size_t LogoutTimeBit = 35;
-        static inline constexpr std::size_t NameBit = 36;
-        static inline constexpr std::size_t OfferedAdventureQuestBit = 37;
-        static inline constexpr std::size_t OfferedScriptedQuestBit = 38;
-        static inline constexpr std::size_t CurrentBattlePetSpeciesBit = 39;
-        static inline constexpr std::size_t CtrOptionsBit = 40;
-        static inline constexpr std::size_t CovenantIdBit = 41;
-        static inline constexpr std::size_t SoulbindIdBit = 42;
-        static inline constexpr std::size_t DungeonScoreBit = 43;
-        static inline constexpr std::size_t LeaverInfoBit = 44;
-        static inline constexpr std::size_t SpectateTargetBit = 45;
-        static inline constexpr std::size_t WorldLootSwapSlotBit = 46;
-        static inline constexpr std::size_t DeclinedNamesBit = 47;
-        static inline constexpr std::size_t PersonalTabardBit = 48;
-        static inline constexpr std::size_t NpcAsPlayerInfoBit = 49;
-        static inline constexpr std::size_t PartyTypeGroupBit = 50;
-        static inline constexpr std::size_t PartyTypeFirstBit = 51;
+        static inline constexpr std::size_t PlayerTitleBit = 27;
+        static inline constexpr std::size_t FakeInebriationBit = 28;
+        static inline constexpr std::size_t VirtualPlayerRealmBit = 29;
+        static inline constexpr std::size_t CurrentSpecBit = 30;
+        static inline constexpr std::size_t CombatTraitSubTreeBit = 31;
+        static inline constexpr std::size_t TaxiMountAnimKitBit = 33;
+        static inline constexpr std::size_t BattlePetBreedQualityBit = 34;
+        static inline constexpr std::size_t HonorBit = 35;
+        static inline constexpr std::size_t LogoutTimeBit = 36;
+        static inline constexpr std::size_t NameBit = 37;
+        static inline constexpr std::size_t OfferedAdventureQuestBit = 39;
+        static inline constexpr std::size_t OfferedScriptedQuestBit = 40;
+        static inline constexpr std::size_t CurrentBattlePetSpeciesBit = 41;
+        static inline constexpr std::size_t CtrOptionsBit = 42;
+        static inline constexpr std::size_t CovenantIdBit = 43;
+        static inline constexpr std::size_t SoulbindIdBit = 44;
+        static inline constexpr std::size_t DungeonScoreBit = 45;
+        static inline constexpr std::size_t LeaverInfoBit = 46;
+        static inline constexpr std::size_t SpectateTargetBit = 47;
+        static inline constexpr std::size_t WorldLootSwapSlotBit = 48;
+        static inline constexpr std::size_t DeclinedNamesBit = 49;
+        static inline constexpr std::size_t PersonalTabardBit = 51;
+        static inline constexpr std::size_t NpcAsPlayerInfoBit = 52;
+        static inline constexpr std::size_t PartyTypeGroupBit = 54;
+        static inline constexpr std::size_t PartyTypeFirstBit = 55;
         static inline constexpr std::size_t QuestLogGroupBit = 57;
         static inline constexpr std::size_t QuestLogFirstBit = 58;
         static inline constexpr std::size_t VisibleItemsGroupBit = 233;
         static inline constexpr std::size_t VisibleItemsFirstBit = 234;
-        static inline constexpr std::size_t AvgItemLevelGroupBit = 249;
-        static inline constexpr std::size_t AvgItemLevelFirstBit = 250;
-        static inline constexpr std::size_t ForcedReactionsGroupBit = 256;
-        static inline constexpr std::size_t ForcedReactionsFirstBit = 257;
-        static inline constexpr std::size_t VisibleEquipableSpellsGroupBit = 289;
-        static inline constexpr std::size_t VisibleEquipableSpellsFirstBit = 290;
-        static inline constexpr std::size_t PlunderstormItemDisplayIdGroupBit = 306;
-        static inline constexpr std::size_t PlunderstormItemDisplayIdFirstBit = 307;
+        static inline constexpr std::size_t AvgItemLevelGroupBit = 253;
+        static inline constexpr std::size_t AvgItemLevelFirstBit = 254;
+        static inline constexpr std::size_t ForcedReactionsGroupBit = 260;
+        static inline constexpr std::size_t ForcedReactionsFirstBit = 261;
+        static inline constexpr std::size_t VisibleEquipableSpellsGroupBit = 293;
+        static inline constexpr std::size_t VisibleEquipableSpellsFirstBit = 294;
+        static inline constexpr std::size_t PlunderstormItemDisplayIdGroupBit = 310;
+        static inline constexpr std::size_t PlunderstormItemDisplayIdFirstBit = 311;
+
+        // [UNVERIFIED] 70009-only inserted fields.
+        static inline constexpr std::size_t UnknownAfterGuildLevelBit = 19;       // 17-byte struct
+        static inline constexpr std::size_t SurnameBit = 38;                     // surname string
+        static inline constexpr std::size_t UnknownPlayerBit50 = 50;
+        static inline constexpr std::size_t UnknownAfterNpcAsPlayerInfoBit = 53;  // 17-byte struct
 
         // Legacy aliases kept while existing runtime setters are migrated.
         static inline constexpr std::size_t UnknownChangeBit3 = 3;
@@ -962,25 +989,27 @@ namespace AscEmu::Version::Forever::Fields
         std::optional<DynamicRecord> unknownOptionalNamePayload0;
     };
 
-    // [REFERENCE] Most semantic names in the CREATE structure come from the modern
-    // an external schema reference and MUST NOT be considered Forever-proven unless an explicit
+    // Most semantic names in the CREATE structure are still [UNVERIFIED] and MUST NOT
+    // be considered Forever-proven unless an explicit
     // [FOREVER-VERIFIED] comment exists. VALUES output remains restricted to verified fields.
     struct ActivePlayerData
     {
         // Forever 1.60.1.70009 VALUES uses 14 ActivePlayerData block-presence bits.
         // This is required for the capture-verified XP differential (parent bit 32 + XP bit 60).
-        static inline constexpr std::size_t ChangeMaskSize = 14 * 32;
-        // Provisional bit positions retained for fields that are not yet differential-verified.
-        static inline constexpr std::size_t UnknownChangeBit56 = 56;
-        static inline constexpr std::size_t UnknownChangeBit57 = 57;
+        static inline constexpr std::size_t ChangeMaskSize = 443;
+
+        // [UNVERIFIED] Reference names only; keep them out of live VALUES output
+        // until a Forever capture or runtime test proves their semantics.
+        static inline constexpr std::size_t FarsightObjectBit = 56;
+        static inline constexpr std::size_t SummonedBattlePetGuidBit = 57;
         static inline constexpr std::size_t CoinageBit = 58;
-        static inline constexpr std::size_t UnknownChangeBit59 = 59;
+        static inline constexpr std::size_t AccountBankCoinageBit = 59;
         // Capture-verified Forever 1.60.1.70009 ActivePlayerData core scalars.
         // Normal XP gains update bit 60; the retail level-up differential sends
         // the reset XP immediately followed by the new NextLevelXP value.
         static inline constexpr std::size_t XpBit = 60;
         static inline constexpr std::size_t NextLevelXpBit = 61;
-        static inline constexpr std::size_t UnknownChangeBit62 = 62;
+        static inline constexpr std::size_t TrialXpBit = 62; // [UNVERIFIED]
         // [FOREVER-VERIFIED] Retail 1.60.1.70235 watched-faction differential.
         // CMSG_SET_WATCHED_FACTION carries int32 faction index (20 for Ironforge, -1 to clear);
         // the following ActivePlayerData VALUES update sets parent bit 102 and field bit 113.
@@ -1000,6 +1029,15 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t AppearanceCollectionBit = 134;
         static inline constexpr std::size_t InventorySlotsGroupBit = 168;
         static inline constexpr std::size_t InventorySlotsFirstBit = 169;
+
+        // [UNVERIFIED] 70009-only inserted scalar slots.
+        static inline constexpr std::size_t UnknownAfterPvpMedalsBit = 108;          // uint32
+        static inline constexpr std::size_t UnknownAfterYesterdayHonorableKillsBit = 111; // float
+        static inline constexpr std::size_t UnknownBeforeHomeRealmTimeOffsetBit = 120;     // float
+        static inline constexpr std::size_t UnknownAfterActiveCombatTraitConfigIdBit = 151; // uint8
+        static inline constexpr std::size_t UnknownAfterLootHistoryInstanceIdBit = 158;      // uint8
+        static inline constexpr std::size_t TransmogMetadataGroupBit = 166;
+        static inline constexpr std::size_t TransmogMetadataBit = 167;
 
         std::bitset<ChangeMaskSize> changes{};
 
@@ -1048,8 +1086,8 @@ namespace AscEmu::Version::Forever::Fields
         // [FOREVER-STRUCTURE] Forever wire alignment proves this is a 104-byte span of
         // 26 consecutive 32-bit fields immediately following SkillInfo. The semantic
         // slots below intentionally use neutral wire-position names. The former
-        // external schema labels live only in ActivePlayerDataCreateFields as
-        // REFERENCE metadata until a Forever differential proves each field independently.
+        // unverified labels live only in ActivePlayerDataCreateFields as
+        // UNVERIFIED metadata until a Forever differential proves each field independently.
         int32_t unknownI32AfterSkill0 = 0;
         int32_t unknownI32AfterSkill1 = 0;
         uint32_t unknownU32AfterSkill2 = 0;
@@ -1183,6 +1221,23 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t UnknownU32Bit26 = 26;
         static inline constexpr std::size_t UnknownU32Bit27 = 27;
 
+        // [UNVERIFIED] The 70009 reference layout maps an extra creator-level int32
+        // to wire bit 16, then shifts State..AssistActionData
+        // by +1. These constants remain unverified; the current AscEmu GameObject
+        // serializer remains capture-driven until we run a differential sniff.
+        static inline constexpr std::size_t ReferenceCreatorLevelBit = 16;
+        static inline constexpr std::size_t ReferenceStateBit = 17;
+        static inline constexpr std::size_t ReferenceTypeIdBit = 18;
+        static inline constexpr std::size_t ReferencePercentHealthBit = 19;
+        static inline constexpr std::size_t ReferenceArtKitBit = 20;
+        static inline constexpr std::size_t ReferenceCustomParamBit = 21;
+        static inline constexpr std::size_t ReferenceLevelBit = 22;
+        static inline constexpr std::size_t ReferenceAnimGroupInstanceBit = 23;
+        static inline constexpr std::size_t ReferenceUiWidgetItemIdBit = 24;
+        static inline constexpr std::size_t ReferenceUiWidgetItemQualityBit = 25;
+        static inline constexpr std::size_t ReferenceUiWidgetItemCountBit = 26;
+        static inline constexpr std::size_t ReferenceAssistActionDataBit = 27;
+
         std::bitset<ChangeMaskSize> changes{};
 
         // Wire order for CREATE_OBJECT in Forever.
@@ -1219,7 +1274,7 @@ namespace AscEmu::Version::Forever::Fields
         bool hasChanges() const { return changes.any(); }
     };
 
-    // [REFERENCE] External schema semantic labels; not yet individually proven by Forever captures.
+    // [UNVERIFIED] Semantic labels are not yet individually proven by Forever captures.
     struct DynamicObjectData
     {
         static inline constexpr std::size_t ChangeMaskSize = 7;
@@ -1243,7 +1298,7 @@ namespace AscEmu::Version::Forever::Fields
         bool hasChanges() const { return changes.any(); }
     };
 
-    // [REFERENCE] External schema semantic labels; not yet individually proven by Forever captures.
+    // [UNVERIFIED] Semantic labels are not yet individually proven by Forever captures.
     struct CorpseData
     {
         static inline constexpr std::size_t ChangeMaskSize = 33;
@@ -1283,7 +1338,7 @@ namespace AscEmu::Version::Forever::Fields
         bool hasChanges() const { return changes.any(); }
     };
 
-    // [REFERENCE] External AreaTrigger-family labels below are structural
+    // [UNVERIFIED] AreaTrigger-family labels below are structural
     // reference names only until exercised by a Forever capture.
     struct ScaleCurve
     {

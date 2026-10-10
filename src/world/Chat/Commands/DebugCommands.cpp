@@ -993,12 +993,16 @@ bool ChatCommandHandler::HandleSendCastFailed(const char* args, WorldSession* m_
         return true;
 
     uint32_t fail = std::stoul(args);
+#if defined(AE_FOREVER)
+    if (fail > SPELL_FAILED_NOT_IN_ARENA)
+#else
     if (fail > SPELL_FAILED_UNKNOWN)
+#endif
     {
         redSystemMessage(m_session, "Argument {} is out of range!", fail);
         return false;
     }
-    selected_player->sendCastFailedPacket(1, static_cast<uint8_t>(fail), 0, 0);
+    selected_player->sendCastFailedPacket(1, static_cast<SpellCastResult>(fail), 0, 0);
 
     return true;
 }

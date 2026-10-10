@@ -37,7 +37,11 @@ class CreatureGroup;
 class SpellInfo;
 
 enum MovementGeneratorType : uint8_t;
+#if defined(AE_FOREVER)
+enum SpellCastResult : int32_t;
+#else
 enum SpellCastResult : uint8_t;
+#endif
 
 namespace AIConstants
 {

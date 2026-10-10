@@ -153,7 +153,8 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     if (getClientProtocol().isForever())
     {
         spell->m_foreverClientCastId = srlPacket.clientCastId;
-        spell->m_foreverSpellXSpellVisualId = srlPacket.spellXSpellVisualId;
+        if (spellInfo->getSpellVisual(0) == 0)
+            spell->m_foreverSpellXSpellVisualId = srlPacket.spellXSpellVisualId;
         spell->m_foreverScriptVisualId = srlPacket.scriptVisualId;
         spell->ensureForeverCastId();
 

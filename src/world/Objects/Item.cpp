@@ -134,10 +134,14 @@ void Item::create(uint32_t itemId, Player* owner)
 #if defined(AE_FOREVER)
 namespace
 {
-    WoWGuid makeForeverItemOwnerGuid(Item const* item, uint64_t legacyGuid)
+    WoWGuid makeForeverItemReferenceGuid(Item const* item, uint64_t legacyGuid)
     {
         if (legacyGuid == 0)
             return WoWGuid::createModernEmpty();
+
+        const HighGuid legacyType = WoWGuid::getHighTypeFromRaw(legacyGuid);
+        if (legacyType == HighGuid::Item || legacyType == HighGuid::Container)
+            return WoWGuid::createModernItem(worldConfig.battleNetComm.realmId, uint64_t(WoWGuid::getLowGuidFromRaw(legacyGuid)));
 
         uint32_t realmId = worldConfig.battleNetComm.realmId;
         if (Player const* owner = item->getOwner())
@@ -161,7 +165,7 @@ uint32_t Item::getOwnerGuidHigh() const { return static_cast<uint32_t>(getOwnerG
 void Item::setOwnerGuid(uint64_t guid)
 {
 #if defined(AE_FOREVER)
-    const WoWGuid modernGuid = makeForeverItemOwnerGuid(this, guid);
+    const WoWGuid modernGuid = makeForeverItemReferenceGuid(this, guid);
     if (m_foreverItemFields.owner.getModernHigh() == modernGuid.getModernHigh() && m_foreverItemFields.owner.getModernLow() == modernGuid.getModernLow())
         return;
 
@@ -176,7 +180,7 @@ void Item::setOwnerGuid(uint64_t guid)
 void Item::setContainerGuid(uint64_t guid)
 {
 #if defined(AE_FOREVER)
-    const WoWGuid modernGuid = makeForeverItemOwnerGuid(this, guid);
+    const WoWGuid modernGuid = makeForeverItemReferenceGuid(this, guid);
     if (m_foreverItemFields.containedIn.getModernHigh() == modernGuid.getModernHigh() && m_foreverItemFields.containedIn.getModernLow() == modernGuid.getModernLow())
         return;
 
@@ -207,7 +211,7 @@ uint64_t Item::getCreatorGuid() const
 void Item::setCreatorGuid(uint64_t guid)
 {
 #if defined(AE_FOREVER)
-    const WoWGuid modernGuid = makeForeverItemOwnerGuid(this, guid);
+    const WoWGuid modernGuid = makeForeverItemReferenceGuid(this, guid);
     if (m_foreverItemFields.creator.getModernHigh() == modernGuid.getModernHigh() && m_foreverItemFields.creator.getModernLow() == modernGuid.getModernLow())
         return;
 
@@ -230,7 +234,7 @@ uint64_t Item::getGiftCreatorGuid() const
 void Item::setGiftCreatorGuid(uint64_t guid)
 {
 #if defined(AE_FOREVER)
-    const WoWGuid modernGuid = makeForeverItemOwnerGuid(this, guid);
+    const WoWGuid modernGuid = makeForeverItemReferenceGuid(this, guid);
     if (m_foreverItemFields.giftCreator.getModernHigh() == modernGuid.getModernHigh() && m_foreverItemFields.giftCreator.getModernLow() == modernGuid.getModernLow())
         return;
 

@@ -9,7 +9,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
+#if defined(AE_FOREVER)
+enum SpellCastResult : int32_t
+#else
 enum SpellCastResult : uint8_t
+#endif
 {
 #if VERSION_STRING == Classic
     SPELL_FAILED_AFFECTING_COMBAT               = 0x00, // You are in combat

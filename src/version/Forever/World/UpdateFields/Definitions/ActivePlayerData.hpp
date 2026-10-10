@@ -17,53 +17,53 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
     // not a byte offset; packed GUIDs and variable-length records make absolute offsets dynamic.
     inline constexpr std::array<CreateFieldMetadata, 49> ActivePlayerDataCreateFields{{
         CreateFieldMetadata{0, FieldVerification::Verified, "inventorySlots", "", "packed-guid[105]", ""},
-        CreateFieldMetadata{1, FieldVerification::ReferenceOnly, "unknownGuidCreate0", "FarsightObject", "packed-guid", ""},
-        CreateFieldMetadata{2, FieldVerification::ReferenceOnly, "unknownGuidCreate1", "SummonedBattlePetGUID", "packed-guid", ""},
-        CreateFieldMetadata{3, FieldVerification::ReferenceOnly, "unknownU32Create2", "KnownTitlesCount", "uint32", ""},
+        CreateFieldMetadata{1, FieldVerification::Unverified, "unknownGuidCreate0", "FarsightObject", "packed-guid", ""},
+        CreateFieldMetadata{2, FieldVerification::Unverified, "unknownGuidCreate1", "SummonedBattlePetGUID", "packed-guid", ""},
+        CreateFieldMetadata{3, FieldVerification::Unverified, "unknownU32Create2", "KnownTitlesCount", "uint32", ""},
         CreateFieldMetadata{4, FieldVerification::StructureOnly, "unknownByteSpanCreate3", "", "byte-span", ""},
         CreateFieldMetadata{5, FieldVerification::Verified, "coinage", "", "uint64", ""},
-        CreateFieldMetadata{6, FieldVerification::ReferenceOnly, "unknownU64Create5", "AccountBankCoinage", "uint64", ""},
+        CreateFieldMetadata{6, FieldVerification::Unverified, "unknownU64Create5", "AccountBankCoinage", "uint64", ""},
         CreateFieldMetadata{7, FieldVerification::Verified, "xp", "", "int32", ""},
         CreateFieldMetadata{8, FieldVerification::Verified, "nextLevelXp", "", "int32", ""},
         CreateFieldMetadata{9, FieldVerification::StructureOnly, "unknownI32Create9", "", "int32", ""},
         CreateFieldMetadata{10, FieldVerification::Verified, "skillInfo", "", "nested-record", ""},
-        CreateFieldMetadata{11, FieldVerification::ReferenceOnly, "unknownI32AfterSkill0", "CharacterPoints", "int32", ""},
-        CreateFieldMetadata{12, FieldVerification::ReferenceOnly, "unknownI32AfterSkill1", "MaxTalentTiers", "int32", ""},
-        CreateFieldMetadata{13, FieldVerification::ReferenceOnly, "unknownU32AfterSkill2", "TrackCreatureMask", "uint32", ""},
-        CreateFieldMetadata{14, FieldVerification::ReferenceOnly, "unknownFloatAfterSkill3", "MainhandExpertise", "float", ""},
-        CreateFieldMetadata{15, FieldVerification::ReferenceOnly, "unknownFloatAfterSkill4", "OffhandExpertise", "float", ""},
-        CreateFieldMetadata{16, FieldVerification::ReferenceOnly, "unknownFloatAfterSkill5", "RangedExpertise", "float", ""},
-        CreateFieldMetadata{17, FieldVerification::ReferenceOnly, "unknownFloatAfterSkill6", "CombatRatingExpertise", "float", ""},
+        CreateFieldMetadata{11, FieldVerification::Unverified, "unknownI32AfterSkill0", "CharacterPoints", "int32", ""},
+        CreateFieldMetadata{12, FieldVerification::Unverified, "unknownI32AfterSkill1", "MaxTalentTiers", "int32", ""},
+        CreateFieldMetadata{13, FieldVerification::Unverified, "unknownU32AfterSkill2", "TrackCreatureMask", "uint32", ""},
+        CreateFieldMetadata{14, FieldVerification::Unverified, "unknownFloatAfterSkill3", "MainhandExpertise", "float", ""},
+        CreateFieldMetadata{15, FieldVerification::Unverified, "unknownFloatAfterSkill4", "OffhandExpertise", "float", ""},
+        CreateFieldMetadata{16, FieldVerification::Unverified, "unknownFloatAfterSkill5", "RangedExpertise", "float", ""},
+        CreateFieldMetadata{17, FieldVerification::Unverified, "unknownFloatAfterSkill6", "CombatRatingExpertise", "float", ""},
         CreateFieldMetadata{18, FieldVerification::Verified, "blockPercentage", "", "float", ""},
         CreateFieldMetadata{19, FieldVerification::Verified, "dodgePercentage", "", "float", ""},
-        CreateFieldMetadata{20, FieldVerification::ReferenceOnly, "unknownFloatAfterSkill9", "DodgePercentageFromAttribute", "float", ""},
+        CreateFieldMetadata{20, FieldVerification::Unverified, "unknownFloatAfterSkill9", "DodgePercentageFromAttribute", "float", ""},
         CreateFieldMetadata{21, FieldVerification::Verified, "parryPercentage", "", "float", ""},
-        CreateFieldMetadata{22, FieldVerification::ReferenceOnly, "unknownFloatAfterSkill11", "ParryPercentageFromAttribute", "float", ""},
+        CreateFieldMetadata{22, FieldVerification::Unverified, "unknownFloatAfterSkill11", "ParryPercentageFromAttribute", "float", ""},
         CreateFieldMetadata{23, FieldVerification::Verified, "critPercentage", "", "float", ""},
         CreateFieldMetadata{24, FieldVerification::Verified, "rangedCritPercentage", "", "float", ""},
         CreateFieldMetadata{25, FieldVerification::Verified, "offhandCritPercentage", "", "float", ""},
-        CreateFieldMetadata{26, FieldVerification::ReferenceOnly, "unknownFloatAfterSkill15", "SpellCritPercentage", "float", ""},
+        CreateFieldMetadata{26, FieldVerification::Unverified, "unknownFloatAfterSkill15", "SpellCritPercentage", "float", ""},
         CreateFieldMetadata{27, FieldVerification::Verified, "shieldBlock", "", "int32", ""},
         CreateFieldMetadata{28, FieldVerification::Verified, "shieldBlockCritPercentage", "", "float", ""},
-        CreateFieldMetadata{29, FieldVerification::ReferenceOnly, "unknownFloatAfterSkill18", "Mastery", "float", ""},
-        CreateFieldMetadata{30, FieldVerification::ReferenceOnly, "unknownFloatAfterSkill19", "Speed", "float", ""},
-        CreateFieldMetadata{31, FieldVerification::ReferenceOnly, "unknownFloatAfterSkill20", "Avoidance", "float", ""},
-        CreateFieldMetadata{32, FieldVerification::ReferenceOnly, "unknownFloatAfterSkill21", "Sturdiness", "float", ""},
-        CreateFieldMetadata{33, FieldVerification::ReferenceOnly, "unknownI32AfterSkill22", "Versatility", "int32", ""},
-        CreateFieldMetadata{34, FieldVerification::ReferenceOnly, "unknownFloatAfterSkill23", "VersatilityBonus", "float", ""},
-        CreateFieldMetadata{35, FieldVerification::ReferenceOnly, "unknownFloatAfterSkill24", "PvpPowerDamage", "float", ""},
-        CreateFieldMetadata{36, FieldVerification::ReferenceOnly, "unknownFloatAfterSkill25", "PvpPowerHealing", "float", ""},
+        CreateFieldMetadata{29, FieldVerification::Unverified, "unknownFloatAfterSkill18", "Mastery", "float", ""},
+        CreateFieldMetadata{30, FieldVerification::Unverified, "unknownFloatAfterSkill19", "Speed", "float", ""},
+        CreateFieldMetadata{31, FieldVerification::Unverified, "unknownFloatAfterSkill20", "Avoidance", "float", ""},
+        CreateFieldMetadata{32, FieldVerification::Unverified, "unknownFloatAfterSkill21", "Sturdiness", "float", ""},
+        CreateFieldMetadata{33, FieldVerification::Unverified, "unknownI32AfterSkill22", "Versatility", "int32", ""},
+        CreateFieldMetadata{34, FieldVerification::Unverified, "unknownFloatAfterSkill23", "VersatilityBonus", "float", ""},
+        CreateFieldMetadata{35, FieldVerification::Unverified, "unknownFloatAfterSkill24", "PvpPowerDamage", "float", ""},
+        CreateFieldMetadata{36, FieldVerification::Unverified, "unknownFloatAfterSkill25", "PvpPowerHealing", "float", ""},
         CreateFieldMetadata{37, FieldVerification::StructureOnly, "unknownPostSkillHeader", "", "byte-span", ""},
         CreateFieldMetadata{38, FieldVerification::StructureOnly, "unknownPostSkillRecords", "", "record-array", ""},
         CreateFieldMetadata{39, FieldVerification::StructureOnly, "unknownPostSkillTail", "", "byte-span", ""},
         CreateFieldMetadata{40, FieldVerification::StructureOnly, "unknownBeforeOutfit", "", "byte-span", ""},
         CreateFieldMetadata{41, FieldVerification::StructureOnly, "unknownU32BeforeOutfit0", "", "uint32", ""},
         CreateFieldMetadata{42, FieldVerification::StructureOnly, "unknownU32BeforeOutfit1", "", "uint32", ""},
-        CreateFieldMetadata{43, FieldVerification::ReferenceOnly, "unknownOutfitRecord0", "ViewedOutfit", "nested-record", ""},
+        CreateFieldMetadata{43, FieldVerification::Unverified, "unknownOutfitRecord0", "ViewedOutfit", "nested-record", ""},
         CreateFieldMetadata{44, FieldVerification::StructureOnly, "unknownOutfitRecordCount", "", "uint32", ""},
-        CreateFieldMetadata{45, FieldVerification::ReferenceOnly, "unknownOutfitRecords", "AdditionalOutfits", "nested-vector", ""},
-        CreateFieldMetadata{46, FieldVerification::ReferenceOnly, "unknownOutfitMetadata", "TransmogOutfitMetadata", "nested-record", ""},
-        CreateFieldMetadata{47, FieldVerification::ReferenceOnly, "unknownU64Vector0", "KnownTitles", "uint64-vector", ""},
+        CreateFieldMetadata{45, FieldVerification::Unverified, "unknownOutfitRecords", "AdditionalOutfits", "nested-vector", ""},
+        CreateFieldMetadata{46, FieldVerification::Unverified, "unknownOutfitMetadata", "TransmogOutfitMetadata", "nested-record", ""},
+        CreateFieldMetadata{47, FieldVerification::Unverified, "unknownU64Vector0", "KnownTitles", "uint64-vector", ""},
         CreateFieldMetadata{48, FieldVerification::StructureOnly, "unknownAfterOutfit", "", "byte-span", ""}
     }};
 
@@ -73,7 +73,7 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
     static_assert(verifiedCreateFieldsHaveNoReferenceNames(ActivePlayerDataCreateFields));
     static_assert(countCreateFieldsByVerification(ActivePlayerDataCreateFields, FieldVerification::Verified) == 13);
     static_assert(countCreateFieldsByVerification(ActivePlayerDataCreateFields, FieldVerification::StructureOnly) == 10);
-    static_assert(countCreateFieldsByVerification(ActivePlayerDataCreateFields, FieldVerification::ReferenceOnly) == 26);
+    static_assert(countCreateFieldsByVerification(ActivePlayerDataCreateFields, FieldVerification::Unverified) == 26);
     static_assert(countCreateFieldsByVerification(ActivePlayerDataCreateFields, FieldVerification::Unknown) == 0);
 
     // These live VALUES fields have Forever capture support. Large CREATE-only opaque regions
@@ -92,7 +92,7 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
     // The timestamp value itself is 64-bit on the wire.
     struct BuybackDataField
     {
-        static constexpr UpdateFieldMetadata metadata() { return {FieldVerification::ReferenceOnly, "buybackData", "BuybackPrice/BuybackTimestamp"}; }
+        static constexpr UpdateFieldMetadata metadata() { return {FieldVerification::Unverified, "buybackData", "BuybackPrice/BuybackTimestamp"}; }
 
         template <typename Owner, std::size_t N>
         static void copyKnownBits(Owner const& owner, std::bitset<N> const& source, std::bitset<N>& target)

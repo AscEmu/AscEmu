@@ -3422,9 +3422,10 @@ namespace WDB::Structures
         uint32_t SpellTotemsId;                                     // 22 SpellTotems.dbc
         uint32_t ResearchProject;                                   // 23 ResearchProject.dbc
         uint32_t SpellMiscId;                                       // 24 SpellMisc.dbc
+        uint32_t SpellXSpellVisualId;                               // default unconditional SpellXSpellVisual.db2 row
 
         SpellEntry()
-            : Id(0), Name(""), Rank(""), RuneCostID(0), AttackPowerCoefficient(0.0f), SpellScalingId(0), SpellAuraOptionsId(0), SpellAuraRestrictionsId(0), SpellCastingRequirementsId(0), SpellCategoriesId(0), SpellClassOptionsId(0), SpellCooldownsId(0), SpellEquippedItemsId(0), SpellInterruptsId(0), SpellLevelsId(0), SpellReagentsId(0), SpellShapeshiftId(0), SpellTargetRestrictionsId(0), SpellTotemsId(0), ResearchProject(0), SpellMiscId(0) {}
+            : Id(0), Name(""), Rank(""), RuneCostID(0), AttackPowerCoefficient(0.0f), SpellScalingId(0), SpellAuraOptionsId(0), SpellAuraRestrictionsId(0), SpellCastingRequirementsId(0), SpellCategoriesId(0), SpellClassOptionsId(0), SpellCooldownsId(0), SpellEquippedItemsId(0), SpellInterruptsId(0), SpellLevelsId(0), SpellReagentsId(0), SpellShapeshiftId(0), SpellTargetRestrictionsId(0), SpellTotemsId(0), ResearchProject(0), SpellMiscId(0), SpellXSpellVisualId(0) {}
         SpellEntry(SpellEntry const&) = default;
         SpellEntry& operator=(SpellEntry const&) = default;
 

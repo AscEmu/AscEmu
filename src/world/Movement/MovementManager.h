@@ -155,7 +155,7 @@ public:
     void moveLand(uint32_t id, LocationVector const& pos, Optional<float> velocity = {});
     void moveTakeoff(uint32_t id, LocationVector const& pos, Optional<float> velocity = {});
     void moveCharge(LocationVector const& pos, float speed = SPEED_CHARGE, uint32_t id = EVENT_CHARGE, bool generatePath = false);
-    void moveCharge(PathGenerator const& path, float speed = SPEED_CHARGE);
+    void moveCharge(PathGenerator const& path, float speed = SPEED_CHARGE, Unit const* target = nullptr, uint32_t spellVisualId = 0);
     void moveKnockbackFrom(float srcX, float srcY, float speedXY, float speedZ);
     void moveJumpTo(float angle, float speedXY, float speedZ);
     void moveJump(LocationVector const& pos, float speedXY, float speedZ, uint32_t id = EVENT_JUMP, bool hasOrientation = false);

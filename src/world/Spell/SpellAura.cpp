@@ -325,7 +325,7 @@ void Aura::applyModifiers(bool apply, AuraEffect applyOnlyFor/* = SPELL_AURA_NON
         m_auraEffects[i].applyEffect(apply);
 
         sLogger.debugAura("Aura::applyModifiers : Spell Id {}, Aura Effect {} ({}), Target GUID {}, EffectIndex {}, Duration {}, Damage {}, MiscValue {}.",
-            getSpellInfo()->getId(), m_auraEffects[i].getAuraEffectType(), SpellAuraNames[m_auraEffects[i].getAuraEffectType()], getOwner()->getGuid(), i, getTimeLeft(), m_auraEffects[i].getEffectDamage(), m_auraEffects[i].getEffectMiscValue());
+            getSpellInfo()->getId(), m_auraEffects[i].getAuraEffectType(), (SpellAuraNames[m_auraEffects[i].getAuraEffectType()] != nullptr ? SpellAuraNames[m_auraEffects[i].getAuraEffectType()] : "SPELL_AURA_FOREVER_UNIMPLEMENTED"), getOwner()->getGuid(), i, getTimeLeft(), m_auraEffects[i].getEffectDamage(), m_auraEffects[i].getEffectMiscValue());
     }
 
     // Modifiers are applied => aura can be updated now
@@ -356,7 +356,7 @@ void Aura::updateModifiers()
         }
 
         sLogger.debug("Aura::updateModifiers : Spell Id {}, Aura Effect {} ({}), Target GUID {}, EffectIndex {}, Duration {}, Damage {}, MiscValue {}",
-            getSpellInfo()->getId(), m_auraEffects[i].getAuraEffectType(), SpellAuraNames[m_auraEffects[i].getAuraEffectType()], getOwner()->getGuid(), i, getTimeLeft(), m_auraEffects[i].getEffectDamage(), m_auraEffects[i].getEffectMiscValue());
+            getSpellInfo()->getId(), m_auraEffects[i].getAuraEffectType(), (SpellAuraNames[m_auraEffects[i].getAuraEffectType()] != nullptr ? SpellAuraNames[m_auraEffects[i].getAuraEffectType()] : "SPELL_AURA_FOREVER_UNIMPLEMENTED"), getOwner()->getGuid(), i, getTimeLeft(), m_auraEffects[i].getEffectDamage(), m_auraEffects[i].getEffectMiscValue());
     }
     m_updatingModifiers = false;
 }

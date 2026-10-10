@@ -52,6 +52,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgChannelStart.h"
 #include "Server/Packets/SmsgSpellStart.h"
 #include "Server/Packets/SmsgSpellGo.h"
+#include "Server/Packets/SmsgItemCooldown.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Unit.hpp"
@@ -365,7 +366,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
         // Triggered spells also need to go through cancast check but they do not pop a error message
         sendCastResult(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : cancastresult, parameter1, parameter2);
         // Also need to send SMSG_SPELL_FAILED_OTHER, otherwise spell button gets stuck
-        SendInterrupted(0);
+        SendInterrupted(static_cast<SpellCastResult>(0));
 
         if (m_triggeredByAura != nullptr)
         {
@@ -437,7 +438,7 @@ void Spell::castMe(const bool doReCheck)
     if (DuelSpellNoMoreValid())
     {
         sendCastResult(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_INTERRUPTED);
-        SendInterrupted(0);
+        SendInterrupted(static_cast<SpellCastResult>(0));
         finish(false);
         return;
     }
@@ -471,7 +472,7 @@ void Spell::castMe(const bool doReCheck)
         if (cancastresult != SPELL_CAST_SUCCESS)
         {
             sendCastResult(cancastresult, parameter1, parameter2);
-            SendInterrupted(0);
+            SendInterrupted(static_cast<SpellCastResult>(0));
             finish(false);
             return;
         }
@@ -553,7 +554,7 @@ void Spell::castMe(const bool doReCheck)
             {
                 // Normally error messages are not sent for triggered spells but this is an exception
                 sendCastResult(powerResult);
-                SendInterrupted(0);
+                SendInterrupted(static_cast<SpellCastResult>(0));
                 finish(false);
                 return;
             }
@@ -674,7 +675,23 @@ void Spell::castMe(const bool doReCheck)
             {
                 const auto& itemSpell = i_caster->getItemProperties()->Spells[spellIndex];
                 if (itemSpell.Id != 0 && itemSpell.Trigger == USE)
+                {
                     i_caster->getOwner()->cooldownAddItem(i_caster->getItemProperties(), spellIndex);
+
+                    if (i_caster->getOwner()->getSession()->getClientProtocol().isForever())
+                    {
+                        const int32_t itemCooldown = std::max(itemSpell.Cooldown, itemSpell.CategoryCooldown);
+                        if (itemCooldown > 0)
+                        {
+                            SmsgItemCooldown itemCooldownPacket(
+                                i_caster->getGuid(),
+                                itemSpell.Id,
+                                static_cast<uint32_t>(itemCooldown),
+                                static_cast<uint16_t>(i_caster->getOwner()->GetMapId()));
+                            i_caster->getOwner()->getSession()->sendManagedPacket(itemCooldownPacket);
+                        }
+                    }
+                }
             }
         }
     }
@@ -1417,13 +1434,13 @@ void Spell::cancel()
             if (getPlayerCaster() != nullptr)
                 getPlayerCaster()->clearGlobalCooldown();
 
-            SendInterrupted(0);
+            SendInterrupted(static_cast<SpellCastResult>(0));
             sendCastResult(SPELL_FAILED_INTERRUPTED);
         } break;
         case SPELL_STATE_CHANNELING:
         {
             sendChannelUpdate(0);
-            SendInterrupted(0);
+            SendInterrupted(static_cast<SpellCastResult>(0));
             sendCastResult(SPELL_FAILED_INTERRUPTED);
 
             if (getUnitCaster() != nullptr)
@@ -4526,7 +4543,25 @@ SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_
     if (talentRank > 0 && spellInfo->hasEffect(SPELL_EFFECT_LEARN_SPELL))
         return SPELL_CAST_SUCCESS;
 
-    const uint32_t stanceMask = shapeshiftForm ? 1 << (shapeshiftForm - 1U) : 0U;
+    uint32_t effectiveShapeshiftForm = shapeshiftForm;
+#if defined(AE_FOREVER)
+    if (u_caster != nullptr)
+    {
+        if (Aura* shapeshiftAura = u_caster->getAuraWithAuraEffect(SPELL_AURA_MOD_SHAPESHIFT))
+        {
+            for (uint8_t effectIndex = 0; effectIndex < MAX_SPELL_EFFECTS; ++effectIndex)
+            {
+                const AuraEffectModifier* auraEffect = shapeshiftAura->getAuraEffect(effectIndex);
+                if (auraEffect != nullptr && auraEffect->getAuraEffectType() == SPELL_AURA_MOD_SHAPESHIFT && auraEffect->getEffectMiscValue() > 0)
+                {
+                    effectiveShapeshiftForm = static_cast<uint32_t>(auraEffect->getEffectMiscValue());
+                    break;
+                }
+            }
+        }
+    }
+#endif
+    const SpellExtendedMask stanceMask = effectiveShapeshiftForm > 0 && effectiveShapeshiftForm <= sizeof(SpellExtendedMask) * 8U ? (SpellExtendedMask{1} << (effectiveShapeshiftForm - 1U)) : SpellExtendedMask{0};
 
     // Cannot explicitly be casted in this stance/form
     if (spellInfo->getShapeshiftExclude() > 0 && spellInfo->getShapeshiftExclude() & stanceMask)
@@ -4539,10 +4574,10 @@ SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_
     auto actAsShifted = false;
     if (stanceMask > FORM_NORMAL)
     {
-        auto shapeShift = sSpellShapeshiftFormStore.lookupEntry(shapeshiftForm);
+        auto shapeShift = sSpellShapeshiftFormStore.lookupEntry(effectiveShapeshiftForm);
         if (shapeShift == nullptr)
         {
-            sLogger.failure("Spell::checkShapeshift: Caster has unknown shapeshift form {}", shapeshiftForm);
+            sLogger.failure("Spell::checkShapeshift: Caster has unknown shapeshift form {}", effectiveShapeshiftForm);
             return SPELL_CAST_SUCCESS;
         }
 
@@ -4660,10 +4695,11 @@ void Spell::ensureForeverCastId()
 
 uint32_t Spell::getForeverSpellXSpellVisualId() const
 {
-    // For player initiated Forever casts the client supplies the modern SpellXSpellVisualID.
-    // Keep the old SpellInfo visual as a compatibility fallback for server/triggered casts
-    // until Forever has a verified Spell -> SpellXSpellVisual data source.
-    return m_foreverSpellXSpellVisualId != 0 ? m_foreverSpellXSpellVisualId : getSpellInfo()->getSpellVisual(0);
+    // SpellXSpellVisual.db2 is resolved into SpellInfo once during Forever DB2 loading.
+    // The per-cast client value is only a fallback for condition-dependent visuals that
+    // do not have an unconditional DB2 default.
+    const uint32_t db2VisualId = getSpellInfo()->getSpellVisual(0);
+    return db2VisualId != 0 ? db2VisualId : m_foreverSpellXSpellVisualId;
 }
 
 uint32_t Spell::getForeverScriptVisualId() const
@@ -4885,7 +4921,7 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
     {
         case SPELL_FAILED_ONLY_SHAPESHIFT:
             if (parameter1 == 0)
-                parameter1 = getSpellInfo()->getRequiredShapeShift();
+                parameter1 = static_cast<uint32_t>(getSpellInfo()->getRequiredShapeShift());
             break;
         case SPELL_FAILED_REQUIRES_AREA:
             if (parameter1 == 0)
