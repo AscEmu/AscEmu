@@ -1209,8 +1209,8 @@ void Spell::SendInterrupted(SpellCastResult result)
             {
                 ensureForeverCastId();
                 sendPacket.castId = m_foreverServerCastId;
-                sendPacket.spellXSpellVisualId = getForeverSpellXSpellVisualId();
-                sendPacket.scriptVisualId = getForeverScriptVisualId();
+                sendPacket.spellXSpellVisualId = getSpellInfo()->getSpellVisual(0);
+                sendPacket.scriptVisualId = getSpellInfo()->getSpellVisual(1);
                 sendPacket.mapId = static_cast<uint16_t>(m_caster->GetMapId());
             }
             plr->getSession()->sendManagedPacket(sendPacket);
@@ -1222,8 +1222,8 @@ void Spell::SendInterrupted(SpellCastResult result)
     {
         ensureForeverCastId();
         sendPacket.castId = m_foreverServerCastId;
-        sendPacket.spellXSpellVisualId = getForeverSpellXSpellVisualId();
-        sendPacket.scriptVisualId = getForeverScriptVisualId();
+        sendPacket.spellXSpellVisualId = getSpellInfo()->getSpellVisual(0);
+        sendPacket.scriptVisualId = getSpellInfo()->getSpellVisual(1);
         sendPacket.mapId = static_cast<uint16_t>(m_caster->GetMapId());
     }
     PacketBroadcast::sendToSet(*m_caster, sendPacket);

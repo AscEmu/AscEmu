@@ -1371,29 +1371,23 @@ public:
 #if VERSION_STRING >= Cata
     WDB::Structures::MountCapabilityEntry const* getMountCapability(uint32_t mountType);
 #endif
-    void setOnMeleeSpell(uint32_t spellId, uint8_t ecn = 0, WoWGuid const& clientCastId = WoWGuid::createModernEmpty(), WoWGuid const& serverCastId = WoWGuid::createModernEmpty(), uint32_t spellXSpellVisualId = 0, uint32_t scriptVisualId = 0)
+    void setOnMeleeSpell(uint32_t spellId, uint8_t ecn = 0, WoWGuid const& clientCastId = WoWGuid::createModernEmpty(), WoWGuid const& serverCastId = WoWGuid::createModernEmpty())
     {
         m_meleeSpell = spellId;
         m_meleeSpell_ecn = ecn;
         m_meleeSpellClientCastId = clientCastId;
         m_meleeSpellServerCastId = serverCastId;
-        m_meleeSpellXSpellVisualId = spellXSpellVisualId;
-        m_meleeSpellScriptVisualId = scriptVisualId;
     }
     uint32_t getOnMeleeSpell() const { return m_meleeSpell; }
     uint8_t getOnMeleeSpellEcn() const { return m_meleeSpell_ecn; }
     WoWGuid const& getOnMeleeSpellClientCastId() const { return m_meleeSpellClientCastId; }
     WoWGuid const& getOnMeleeSpellServerCastId() const { return m_meleeSpellServerCastId; }
-    uint32_t getOnMeleeSpellXSpellVisualId() const { return m_meleeSpellXSpellVisualId; }
-    uint32_t getOnMeleeSpellScriptVisualId() const { return m_meleeSpellScriptVisualId; }
 
 protected:
     uint32_t m_meleeSpell = 0;
     uint8_t m_meleeSpell_ecn = 0;         // extra_cast_number
     WoWGuid m_meleeSpellClientCastId = WoWGuid::createModernEmpty();
     WoWGuid m_meleeSpellServerCastId = WoWGuid::createModernEmpty();
-    uint32_t m_meleeSpellXSpellVisualId = 0;
-    uint32_t m_meleeSpellScriptVisualId = 0;
 
 public:
     void setHitFromMeleeSpell(float value) { m_hitFromMeleeSpell = value; }

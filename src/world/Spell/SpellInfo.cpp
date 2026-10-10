@@ -20,6 +20,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Item.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Management/ItemInterface.h"
+#include "Management/QuestLogEntry.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
@@ -120,6 +122,252 @@ SpellInfo::SpellInfo()
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         EffectCustomFlag[i] = 0;
 }
+
+#if defined(AE_FOREVER)
+namespace
+{
+    bool compareForeverUnitCondition(int32_t left, uint8_t op, int32_t right)
+    {
+        switch (op)
+        {
+            case 1: return left == right;
+            case 2: return left != right;
+            case 3: return left < right;
+            case 4: return left <= right;
+            case 5: return left > right;
+            case 6: return left >= right;
+            default: return false;
+        }
+    }
+
+    std::optional<int32_t> getForeverUnitConditionValue(Unit const* unit, Unit const* otherUnit, uint8_t variable, int32_t conditionValue)
+    {
+        if (unit == nullptr)
+            return std::nullopt;
+
+        switch (variable)
+        {
+            case 1: return unit->getRace();
+            case 2: return unit->getClass();
+            case 3: return static_cast<int32_t>(unit->getLevel());
+            case 4: return unit == otherUnit ? 1 : 0;
+            case 10: return unit->getPet() != nullptr ? 1 : 0;
+            case 12: return static_cast<int32_t>(unit->getHealthPct());
+            case 13: return static_cast<int32_t>(unit->getPowerPct(POWER_TYPE_MANA));
+            case 14: return static_cast<int32_t>(unit->getPowerPct(POWER_TYPE_RAGE));
+            case 15: return static_cast<int32_t>(unit->getPowerPct(POWER_TYPE_ENERGY));
+            case 31: return unit->isInCombat() ? 1 : 0;
+            case 32: return unit->isMoving() ? 1 : 0;
+            default: return std::nullopt;
+        }
+    }
+
+    bool meetsForeverUnitCondition(Unit const* unit, Unit const* otherUnit, uint16_t conditionId)
+    {
+        if (conditionId == 0)
+            return true;
+
+        auto const* condition = sForeverUnitConditionStore.lookupEntry(conditionId);
+        if (condition == nullptr)
+            return false;
+
+        const bool logicOr = (condition->Flags & 0x1u) != 0;
+        bool haveCondition = false;
+        bool result = logicOr ? false : true;
+        for (uint8_t i = 0; i < condition->Variable.size(); ++i)
+        {
+            if (condition->Variable[i] == 0)
+                break;
+
+            haveCondition = true;
+            auto const value = getForeverUnitConditionValue(unit, otherUnit, condition->Variable[i], condition->Value[i]);
+            const bool current = value.has_value() && compareForeverUnitCondition(*value, condition->Op[i], condition->Value[i]);
+            if (logicOr)
+            {
+                result = result || current;
+                if (result)
+                    return true;
+            }
+            else
+            {
+                result = result && current;
+                if (!result)
+                    return false;
+            }
+        }
+
+        return haveCondition && result;
+    }
+
+    template <size_t N>
+    bool meetsForeverPlayerConditionLogic(uint32_t logic, std::array<bool, N> const& results)
+    {
+        static_assert(N < 8);
+        uint32_t resultsMask = 0;
+        for (size_t i = 0; i < N; ++i)
+            if (results[i])
+                resultsMask |= 1u << i;
+
+        resultsMask ^= logic >> 16;
+        uint32_t result = resultsMask & 1u;
+        for (size_t i = 1; i < N; ++i)
+        {
+            switch ((logic >> (2 * (i - 1))) & 3u)
+            {
+                case 1: result &= (resultsMask >> i) & 1u; break;
+                case 2: result |= (resultsMask >> i) & 1u; break;
+                default: break;
+            }
+        }
+        return result != 0;
+    }
+
+    bool meetsForeverPlayerCondition(Unit const* unit, uint32_t conditionId)
+    {
+        if (conditionId == 0)
+            return true;
+
+        if (unit == nullptr || !unit->isPlayer())
+            return false;
+
+        auto const* condition = sForeverPlayerConditionStore.lookupEntry(conditionId);
+        if (condition == nullptr || condition->HasUnsupportedRequirements)
+            return false;
+
+        Player const* player = static_cast<Player const*>(unit);
+        if (condition->MinLevel != 0 && player->getLevel() < condition->MinLevel)
+            return false;
+        if (condition->MaxLevel != 0 && player->getLevel() > condition->MaxLevel)
+            return false;
+        if (condition->RaceMask != 0 && (condition->RaceMask & (1ull << (player->getRace() - 1))) == 0)
+            return false;
+        if (condition->ClassMask != 0 && (condition->ClassMask & player->getClassMask()) == 0)
+            return false;
+        if (condition->Gender >= 0 && player->getGender() != static_cast<uint8_t>(condition->Gender))
+            return false;
+
+        if (condition->MinFactionId[0] != 0 || condition->MinFactionId[1] != 0 || condition->MinFactionId[2] != 0)
+        {
+            std::array<bool, 4> results{};
+            for (size_t i = 0; i < condition->MinFactionId.size(); ++i)
+            {
+                if (condition->MinFactionId[i] == 0)
+                    results[i] = true;
+                else
+                    results[i] = static_cast<uint8_t>(player->getFactionStandingRank(condition->MinFactionId[i])) >= condition->MinReputation[i];
+            }
+            results[3] = true;
+            if (!meetsForeverPlayerConditionLogic(condition->ReputationLogic, results))
+                return false;
+        }
+
+        if (condition->PrevQuestId[0] != 0)
+        {
+            std::array<bool, 4> results{};
+            for (size_t i = 0; i < condition->PrevQuestId.size(); ++i)
+                results[i] = condition->PrevQuestId[i] == 0 || player->hasQuestFinished(static_cast<uint32_t>(condition->PrevQuestId[i]));
+            if (!meetsForeverPlayerConditionLogic(condition->PrevQuestLogic, results))
+                return false;
+        }
+
+        if (condition->CurrQuestId[0] != 0)
+        {
+            std::array<bool, 4> results{};
+            for (size_t i = 0; i < condition->CurrQuestId.size(); ++i)
+                results[i] = condition->CurrQuestId[i] == 0 || player->getQuestLogByQuestId(static_cast<uint32_t>(condition->CurrQuestId[i])) != nullptr;
+            if (!meetsForeverPlayerConditionLogic(condition->CurrQuestLogic, results))
+                return false;
+        }
+
+        if (condition->CurrentCompletedQuestId[0] != 0)
+        {
+            std::array<bool, 4> results{};
+            for (size_t i = 0; i < condition->CurrentCompletedQuestId.size(); ++i)
+            {
+                if (condition->CurrentCompletedQuestId[i] == 0)
+                {
+                    results[i] = true;
+                    continue;
+                }
+                QuestLogEntry const* quest = player->getQuestLogByQuestId(static_cast<uint32_t>(condition->CurrentCompletedQuestId[i]));
+                results[i] = quest != nullptr && quest->canBeFinished();
+            }
+            if (!meetsForeverPlayerConditionLogic(condition->CurrentCompletedQuestLogic, results))
+                return false;
+        }
+
+        if (condition->SpellId[0] != 0)
+        {
+            std::array<bool, 4> results{};
+            for (size_t i = 0; i < condition->SpellId.size(); ++i)
+                results[i] = condition->SpellId[i] == 0 || player->hasSpell(static_cast<uint32_t>(condition->SpellId[i]));
+            if (!meetsForeverPlayerConditionLogic(condition->SpellLogic, results))
+                return false;
+        }
+
+        if (condition->ItemId[0] != 0)
+        {
+            std::array<bool, 4> results{};
+            const bool includeBank = (condition->ItemFlags & 1u) != 0;
+            for (size_t i = 0; i < condition->ItemId.size(); ++i)
+            {
+                if (condition->ItemId[i] == 0)
+                    results[i] = true;
+                else if ((condition->ItemFlags & 2u) != 0)
+                    results[i] = false;
+                else
+                    results[i] = player->getItemInterface()->GetItemCount(static_cast<uint32_t>(condition->ItemId[i]), includeBank) >= condition->ItemCount[i];
+            }
+            if (!meetsForeverPlayerConditionLogic(condition->ItemLogic, results))
+                return false;
+        }
+
+        if (condition->AuraSpellId[0] != 0)
+        {
+            std::array<bool, 4> results{};
+            for (size_t i = 0; i < condition->AuraSpellId.size(); ++i)
+            {
+                if (condition->AuraSpellId[i] == 0)
+                {
+                    results[i] = true;
+                    continue;
+                }
+                Aura const* aura = player->getAuraWithId(static_cast<uint32_t>(condition->AuraSpellId[i]));
+                results[i] = aura != nullptr && (condition->AuraStacks[i] == 0 || aura->getStackCount() >= condition->AuraStacks[i]);
+            }
+            if (!meetsForeverPlayerConditionLogic(condition->AuraSpellLogic, results))
+                return false;
+        }
+
+        return true;
+    }
+}
+
+uint32_t SpellInfo::getSpellVisual(uint8_t visualIndex, Unit const* caster, Unit const* viewer) const
+{
+    if (visualIndex != 0 || m_foreverSpellVisualCandidates.empty())
+        return SpellVisual[visualIndex];
+
+    for (size_t first = 0; first < m_foreverSpellVisualCandidates.size();)
+    {
+        const int32_t priority = m_foreverSpellVisualCandidates[first].priority;
+        size_t last = first;
+        while (last < m_foreverSpellVisualCandidates.size() && m_foreverSpellVisualCandidates[last].priority == priority)
+        {
+            auto const& candidate = m_foreverSpellVisualCandidates[last];
+            const bool casterCondition = meetsForeverUnitCondition(caster, viewer, candidate.casterUnitConditionId) && meetsForeverPlayerCondition(caster, candidate.casterPlayerConditionId);
+            const bool viewerCondition = meetsForeverUnitCondition(viewer, caster, candidate.viewerUnitConditionId) && meetsForeverPlayerCondition(viewer, candidate.viewerPlayerConditionId);
+            if (casterCondition && viewerCondition)
+                return candidate.id;
+            ++last;
+        }
+
+        first = last;
+    }
+
+    return SpellVisual[0];
+}
+#endif
 
 bool SpellInfo::hasEffect(uint32_t effect) const
 {

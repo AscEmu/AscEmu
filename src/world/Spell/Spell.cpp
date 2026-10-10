@@ -590,7 +590,7 @@ void Spell::castMe(const bool doReCheck)
                 u_caster->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_CAST);
             }
 
-            u_caster->setOnMeleeSpell(getSpellInfo()->getId(), extra_cast_number, m_foreverClientCastId, m_foreverServerCastId, m_foreverSpellXSpellVisualId, m_foreverScriptVisualId);
+            u_caster->setOnMeleeSpell(getSpellInfo()->getId(), extra_cast_number, m_foreverClientCastId, m_foreverServerCastId);
         }
 
         finish();
@@ -4693,28 +4693,14 @@ void Spell::ensureForeverCastId()
     m_foreverServerCastId = WoWGuid::createModernWorldObject(ModernHighGuid::Cast, 3, worldConfig.battleNetComm.realmId, mapId, 0, spellId, castCounter);
 }
 
-uint32_t Spell::getForeverSpellXSpellVisualId() const
-{
-    // SpellXSpellVisual.db2 is resolved into SpellInfo once during Forever DB2 loading.
-    // The per-cast client value is only a fallback for condition-dependent visuals that
-    // do not have an unconditional DB2 default.
-    const uint32_t db2VisualId = getSpellInfo()->getSpellVisual(0);
-    return db2VisualId != 0 ? db2VisualId : m_foreverSpellXSpellVisualId;
-}
-
-uint32_t Spell::getForeverScriptVisualId() const
-{
-    return m_foreverScriptVisualId != 0 ? m_foreverScriptVisualId : getSpellInfo()->getSpellVisual(1);
-}
-
 void Spell::sendSpellStart()
 {
     if (!m_caster || !m_caster->IsInWorld())
         return;
 
     // If spell has no visuals, it's not channeled and it's triggered, no need to send packet
-    if (!(getSpellInfo()->isChanneled() || getSpellInfo()->getSpeed() > 0.0f || getForeverSpellXSpellVisualId() != 0 ||
-        getForeverScriptVisualId() != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
+    if (!(getSpellInfo()->isChanneled() || getSpellInfo()->getSpeed() > 0.0f || getSpellInfo()->getSpellVisual(0) != 0 ||
+        getSpellInfo()->getSpellVisual(1) != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
         return;
 
     // Set cast flags
@@ -4751,8 +4737,8 @@ void Spell::sendSpellStart()
     ensureForeverCastId();
     managedPacket.castId = m_foreverServerCastId;
     managedPacket.mapId = static_cast<uint16_t>(m_caster->GetMapId());
-    managedPacket.spellXSpellVisualId = getForeverSpellXSpellVisualId();
-    managedPacket.scriptVisualId = getForeverScriptVisualId();
+    managedPacket.spellXSpellVisualId = getSpellInfo()->getSpellVisual(0, u_caster, m_unitTarget);
+    managedPacket.scriptVisualId = getSpellInfo()->getSpellVisual(1);
 
 #if VERSION_STRING >= WotLK
     if (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE && u_caster != nullptr)
@@ -4770,7 +4756,8 @@ void Spell::sendSpellStart()
 
 void Spell::sendSpellGo()
 {
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : entered for spell id {} GetType {} isChanneled {} speed {} spellXSpellVisualId {} scriptVisualId {} triggeredSpell {} triggeredByAura {}", getSpellInfo()->getId(), GetType(), getSpellInfo()->isChanneled(), getSpellInfo()->getSpeed(), getForeverSpellXSpellVisualId(), getForeverScriptVisualId(), m_triggeredSpell, m_triggeredByAura != nullptr);
+    const uint32_t spellXSpellVisualId = getSpellInfo()->getSpellVisual(0, u_caster, m_unitTarget);
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : entered for spell id {} GetType {} isChanneled {} speed {} spellXSpellVisualId {} scriptVisualId {} triggeredSpell {} triggeredByAura {}", getSpellInfo()->getId(), GetType(), getSpellInfo()->isChanneled(), getSpellInfo()->getSpeed(), spellXSpellVisualId, getSpellInfo()->getSpellVisual(1), m_triggeredSpell, m_triggeredByAura != nullptr);
 
     if (!m_caster || !m_caster->IsInWorld())
     {
@@ -4779,7 +4766,7 @@ void Spell::sendSpellGo()
     }
 
     // If spell has no visuals, it's not channeled and it's triggered, no need to send packet
-    if (!(getSpellInfo()->isChanneled() || getSpellInfo()->getSpeed() > 0.0f || getForeverSpellXSpellVisualId() != 0 || getForeverScriptVisualId() != 0 || getSpellInfo()->isOnNextMeleeAttack() || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
+    if (!(getSpellInfo()->isChanneled() || getSpellInfo()->getSpeed() > 0.0f || spellXSpellVisualId != 0 || getSpellInfo()->getSpellVisual(1) != 0 || getSpellInfo()->isOnNextMeleeAttack() || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
     {
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::sendSpellGo : no-visual/triggered early-return hit, not sending packet");
         return;
@@ -4843,8 +4830,8 @@ void Spell::sendSpellGo()
     ensureForeverCastId();
     managedPacket.castId = m_foreverServerCastId;
     managedPacket.mapId = static_cast<uint16_t>(m_caster->GetMapId());
-    managedPacket.spellXSpellVisualId = getForeverSpellXSpellVisualId();
-    managedPacket.scriptVisualId = getForeverScriptVisualId();
+    managedPacket.spellXSpellVisualId = spellXSpellVisualId;
+    managedPacket.scriptVisualId = getSpellInfo()->getSpellVisual(1);
 
 #if VERSION_STRING >= WotLK
     if (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE && u_caster != nullptr)
@@ -5012,8 +4999,8 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
     {
         ensureForeverCastId();
         castId = m_foreverClientCastId ? m_foreverClientCastId : m_foreverServerCastId;
-        spellXSpellVisualId = getForeverSpellXSpellVisualId();
-        scriptVisualId = getForeverScriptVisualId();
+        spellXSpellVisualId = getSpellInfo()->getSpellVisual(0);
+        scriptVisualId = getSpellInfo()->getSpellVisual(1);
         mapId = static_cast<uint16_t>(m_caster->GetMapId());
     }
 

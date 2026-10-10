@@ -424,7 +424,7 @@ namespace {
         WDB::WDC5File spellCastingRequirements, spellCategories, spellClassOptions, spellCooldowns, spellDuration, spellEffect;
         WDB::WDC5File spellEquippedItems, spellInterrupts, spellLevels, spellMisc, spellPower, spellRadius, spellRange;
         WDB::WDC5File spellReagents, spellScaling, spellShapeshift, spellShapeshiftForm, spellTargetRestrictions, spellTotems;
-        WDB::WDC5File spellItemEnchantment, spellXSpellVisual;
+        WDB::WDC5File spellItemEnchantment, spellXSpellVisual, unitCondition, playerCondition;
 
         bool ok = true;
         auto load = [&](WDB::WDC5File& file, char const* name)
@@ -468,6 +468,8 @@ namespace {
         bool const haveTotems = loadArrays(spellTotems, "SpellTotems.db2", {{1, 2}, {2, 2}});
         bool const haveItemEnchantment = loadArrays(spellItemEnchantment, "SpellItemEnchantment.db2", {{4, 3}, {5, 3}, {6, 3}, {8, 3}});
         bool const haveSpellXSpellVisual = loadForeverGenericWDC5Optional(spellXSpellVisual, "SpellXSpellVisual.db2", dbcPath);
+        bool const haveUnitCondition = loadForeverGenericWDC5Optional(unitCondition, "UnitCondition.db2", dbcPath, {{1, 8}, {2, 8}, {3, 8}});
+        bool const havePlayerCondition = loadForeverGenericWDC5Optional(playerCondition, "PlayerCondition.db2", dbcPath, {{59, 4}, {60, 4}, {61, 4}, {62, 3}, {63, 3}, {64, 4}, {65, 4}, {66, 4}, {67, 4}, {68, 4}, {69, 4}, {70, 2}, {71, 2}, {72, 4}, {73, 4}, {74, 4}, {75, 4}, {76, 4}, {77, 4}, {78, 4}, {79, 4}, {80, 4}, {81, 6}, {82, 2}, {83, 4}, {84, 4}, {85, 4}});
 
         auto verifyFields = [&](WDB::WDC5File const& file, char const* name, uint32_t expected)
         {
@@ -545,6 +547,119 @@ namespace {
                 itr->second.*member = rowId;
         };
 
+        if (haveUnitCondition)
+        {
+            if (unitCondition.getFieldCount() != 4)
+            {
+                sLogger.warning("Optional Forever DB2 UnitCondition.db2 ignored: field count {} (expected 4).", unitCondition.getFieldCount());
+            }
+            else
+            {
+                std::vector<std::pair<uint32_t, WDB::Structures::ForeverUnitConditionEntry>> entries;
+                entries.reserve(unitCondition.getRecordCount());
+                for (uint32_t row = 0; row < unitCondition.getRecordCount(); ++row)
+                {
+                    WDB::Structures::ForeverUnitConditionEntry entry{};
+                    entry.Id = unitCondition.getRecordId(row);
+                    entry.Flags = unitCondition.getUInt32(row, 0);
+                    for (uint8_t i = 0; i < 8; ++i)
+                    {
+                        entry.Variable[i] = unitCondition.getUInt8(row, 1, i);
+                        entry.Op[i] = unitCondition.getUInt8(row, 2, i);
+                        entry.Value[i] = unitCondition.getInt32(row, 3, i);
+                    }
+                    entries.emplace_back(entry.Id, entry);
+                }
+                sForeverUnitConditionStore.assignEntries(entries);
+                sLogger.info("Forever UnitCondition DB2 store: {} entries loaded.", entries.size());
+            }
+        }
+
+        if (havePlayerCondition)
+        {
+            if (playerCondition.getFieldCount() != 86)
+            {
+                sLogger.warning("Optional Forever DB2 PlayerCondition.db2 ignored: field count {} (expected 86).", playerCondition.getFieldCount());
+            }
+            else
+            {
+                std::vector<std::pair<uint32_t, WDB::Structures::ForeverPlayerConditionEntry>> entries;
+                entries.reserve(playerCondition.getRecordCount());
+                uint32_t supported = 0;
+                uint32_t unsupported = 0;
+                for (uint32_t row = 0; row < playerCondition.getRecordCount(); ++row)
+                {
+                    WDB::Structures::ForeverPlayerConditionEntry entry{};
+                    entry.Id = playerCondition.getRecordId(row);
+                    entry.MinLevel = playerCondition.getUInt16(row, 1);
+                    entry.MaxLevel = playerCondition.getUInt16(row, 2);
+                    entry.ClassMask = playerCondition.getUInt32(row, 3);
+                    entry.ReputationLogic = playerCondition.getUInt32(row, 10);
+                    entry.PrevQuestLogic = playerCondition.getUInt32(row, 13);
+                    entry.CurrQuestLogic = playerCondition.getUInt32(row, 14);
+                    entry.CurrentCompletedQuestLogic = playerCondition.getUInt32(row, 15);
+                    entry.SpellLogic = playerCondition.getUInt32(row, 16);
+                    entry.ItemLogic = playerCondition.getUInt32(row, 17);
+                    entry.ItemFlags = playerCondition.getUInt32(row, 18);
+                    entry.AuraSpellLogic = playerCondition.getUInt32(row, 19);
+                    entry.Gender = playerCondition.getInt8(row, 25);
+                    entry.NativeGender = playerCondition.getInt8(row, 26);
+                    entry.Flags = playerCondition.getUInt32(row, 41);
+                    for (uint8_t i = 0; i < 3; ++i)
+                    {
+                        entry.MinFactionId[i] = playerCondition.getUInt32(row, 62, i);
+                        entry.MinReputation[i] = playerCondition.getUInt8(row, 63, i);
+                    }
+                    for (uint8_t i = 0; i < 4; ++i)
+                    {
+                        entry.PrevQuestId[i] = playerCondition.getInt32(row, 64, i);
+                        entry.CurrQuestId[i] = playerCondition.getInt32(row, 65, i);
+                        entry.CurrentCompletedQuestId[i] = playerCondition.getInt32(row, 66, i);
+                        entry.SpellId[i] = playerCondition.getInt32(row, 67, i);
+                        entry.ItemId[i] = playerCondition.getInt32(row, 68, i);
+                        entry.ItemCount[i] = playerCondition.getUInt32(row, 69, i);
+                        entry.AuraSpellId[i] = playerCondition.getInt32(row, 72, i);
+                        entry.AuraStacks[i] = playerCondition.getUInt8(row, 73, i);
+                    }
+                    entry.RaceMask = static_cast<uint64_t>(playerCondition.getUInt32(row, 82, 0)) | (static_cast<uint64_t>(playerCondition.getUInt32(row, 82, 1)) << 32);
+
+                    // Keep PlayerCondition selection conservative: any requirement we do not yet evaluate makes this row unsupported.
+                    const bool unsupportedScalar = playerCondition.getUInt32(row, 4) != 0 || playerCondition.getUInt32(row, 5) != 0 || playerCondition.getUInt8(row, 6) != 0 || playerCondition.getUInt32(row, 7) != 0 ||
+                        playerCondition.getUInt16(row, 8) != 0 || playerCondition.getUInt8(row, 9) != 0 || playerCondition.getInt8(row, 11) != 0 || playerCondition.getUInt8(row, 12) != 0 ||
+                        playerCondition.getUInt16(row, 20) != 0 || playerCondition.getInt32(row, 21) != 0 || playerCondition.getUInt8(row, 22) != 0 || playerCondition.getInt8(row, 23) != 0 ||
+                        playerCondition.getUInt32(row, 24) != 0 || entry.NativeGender >= 0 || playerCondition.getUInt32(row, 27) != 0 || playerCondition.getUInt32(row, 28) != 0 || playerCondition.getUInt32(row, 29) != 0 ||
+                        playerCondition.getInt32(row, 30) != 0 || playerCondition.getUInt32(row, 31) != 0 || playerCondition.getInt8(row, 32) > 0 || playerCondition.getInt8(row, 33) > 0 ||
+                        playerCondition.getInt32(row, 34) != 0 || playerCondition.getInt32(row, 35) != 0 || playerCondition.getUInt16(row, 36) != 0 || playerCondition.getUInt16(row, 37) != 0 ||
+                        playerCondition.getInt32(row, 38) != 0 || playerCondition.getUInt16(row, 39) != 0 || playerCondition.getUInt32(row, 40) != 0 || playerCondition.getInt8(row, 42) >= 0 ||
+                        playerCondition.getInt8(row, 43) >= 0 || playerCondition.getUInt32(row, 44) != 0 || playerCondition.getInt8(row, 45) >= 0 || playerCondition.getUInt8(row, 46) != 0 ||
+                        playerCondition.getInt8(row, 47) != 0 || playerCondition.getUInt32(row, 48) != 0 || playerCondition.getInt32(row, 49) != 0 || playerCondition.getUInt8(row, 50) != 0 ||
+                        playerCondition.getUInt8(row, 51) != 0 || playerCondition.getInt8(row, 52) > 0 || playerCondition.getInt8(row, 53) > 0 || playerCondition.getInt8(row, 54) > 0 ||
+                        playerCondition.getInt8(row, 55) > 0 || playerCondition.getInt32(row, 56) != 0 || playerCondition.getInt32(row, 57) != 0 || playerCondition.getUInt32(row, 58) != 0;
+                    bool unsupportedArrays = false;
+                    for (uint8_t i = 0; i < 4; ++i)
+                    {
+                        unsupportedArrays = unsupportedArrays || playerCondition.getUInt16(row, 59, i) != 0 || playerCondition.getUInt16(row, 60, i) != 0 || playerCondition.getUInt16(row, 61, i) != 0 ||
+                            playerCondition.getUInt32(row, 74, i) != 0 || playerCondition.getUInt16(row, 75, i) != 0 || playerCondition.getUInt8(row, 76, i) != 0 || playerCondition.getUInt8(row, 77, i) != 0 ||
+                            playerCondition.getUInt32(row, 78, i) != 0 || playerCondition.getUInt32(row, 79, i) != 0 || playerCondition.getUInt32(row, 80, i) != 0 ||
+                            playerCondition.getInt32(row, 83, i) != 0 || playerCondition.getUInt16(row, 84, i) != 0 || playerCondition.getUInt16(row, 85, i) != 0;
+                    }
+                    for (uint8_t i = 0; i < 2; ++i)
+                        unsupportedArrays = unsupportedArrays || playerCondition.getUInt16(row, 70, i) != 0 || playerCondition.getUInt32(row, 71, i) != 0;
+                    for (uint8_t i = 0; i < 6; ++i)
+                        unsupportedArrays = unsupportedArrays || playerCondition.getUInt32(row, 81, i) != 0;
+
+                    entry.HasUnsupportedRequirements = unsupportedScalar || unsupportedArrays || entry.Flags != 0;
+                    if (entry.HasUnsupportedRequirements)
+                        ++unsupported;
+                    else
+                        ++supported;
+                    entries.emplace_back(entry.Id, entry);
+                }
+                sForeverPlayerConditionStore.assignEntries(entries);
+                sLogger.info("Forever PlayerCondition DB2 store: {} entries loaded, {} fully supported, {} conservative fallbacks.", entries.size(), supported, unsupported);
+            }
+        }
+
         if (haveSpellXSpellVisual)
         {
             if (spellXSpellVisual.getFieldCount() != 12)
@@ -561,43 +676,63 @@ namespace {
 
                 std::unordered_map<uint32_t, VisualCandidate> defaultVisuals;
                 std::unordered_map<uint32_t, VisualCandidate> fallbackVisuals;
+                uint32_t conditionalRows = 0;
                 for (uint32_t row = 0; row < spellXSpellVisual.getRecordCount(); ++row)
                 {
                     const uint32_t spellId = spellXSpellVisual.getParentId(row);
-                    if (spellId == 0 || spellEntries.find(spellId) == spellEntries.end())
+                    auto spellItr = spellEntries.find(spellId);
+                    if (spellId == 0 || spellItr == spellEntries.end())
                         continue;
 
-                    const uint16_t difficultyId = static_cast<uint16_t>(spellXSpellVisual.getInt16(row, 0));
-                    const uint32_t spellVisualId = spellXSpellVisual.getUInt32(row, 1);
-                    const int32_t priority = spellXSpellVisual.getInt32(row, 4);
-                    const uint32_t viewerUnitCondition = spellXSpellVisual.getUInt32(row, 7);
-                    const uint32_t viewerPlayerCondition = spellXSpellVisual.getUInt32(row, 8);
-                    const uint32_t casterUnitCondition = spellXSpellVisual.getUInt32(row, 9);
-                    const uint32_t casterPlayerCondition = spellXSpellVisual.getUInt32(row, 10);
+                    const int16_t difficultyId = spellXSpellVisual.getInt16(row, 1);
+                    const uint32_t spellVisualId = spellXSpellVisual.getUInt32(row, 2);
                     if (difficultyId != 0 || spellVisualId == 0)
                         continue;
 
+                    WDB::Structures::ForeverSpellXSpellVisualEntry visual{};
+                    visual.Id = spellXSpellVisual.getRecordId(row);
+                    visual.SpellVisualId = spellVisualId;
+                    visual.Probability = spellXSpellVisual.getFloat(row, 3);
+                    visual.Priority = spellXSpellVisual.getInt32(row, 5);
+                    visual.ViewerUnitConditionId = spellXSpellVisual.getUInt16(row, 8);
+                    visual.ViewerPlayerConditionId = spellXSpellVisual.getUInt32(row, 9);
+                    visual.CasterUnitConditionId = spellXSpellVisual.getUInt16(row, 10);
+                    visual.CasterPlayerConditionId = spellXSpellVisual.getUInt32(row, 11);
+                    spellItr->second.SpellXSpellVisuals.push_back(visual);
+
+                    const bool conditional = visual.ViewerUnitConditionId != 0 || visual.ViewerPlayerConditionId != 0 || visual.CasterUnitConditionId != 0 || visual.CasterPlayerConditionId != 0;
+                    if (conditional)
+                        ++conditionalRows;
+
                     auto& fallback = fallbackVisuals[spellId];
-                    if (fallback.rowId == 0 || priority > fallback.priority)
+                    if (fallback.rowId == 0 || visual.Priority > fallback.priority)
                     {
-                        fallback.rowId = spellXSpellVisual.getRecordId(row);
-                        fallback.priority = priority;
+                        fallback.rowId = visual.Id;
+                        fallback.priority = visual.Priority;
                     }
 
-                    if (viewerUnitCondition != 0 || viewerPlayerCondition != 0 || casterUnitCondition != 0 || casterPlayerCondition != 0)
+                    if (conditional)
                         continue;
 
                     auto& candidate = defaultVisuals[spellId];
-                    if (candidate.rowId == 0 || priority > candidate.priority)
+                    if (candidate.rowId == 0 || visual.Priority > candidate.priority)
                     {
-                        candidate.rowId = spellXSpellVisual.getRecordId(row);
-                        candidate.priority = priority;
+                        candidate.rowId = visual.Id;
+                        candidate.priority = visual.Priority;
                     }
                 }
 
                 uint32_t fallbackCount = 0;
                 for (auto const& [spellId, fallback] : fallbackVisuals)
                 {
+                    auto& visuals = spellEntries[spellId].SpellXSpellVisuals;
+                    std::sort(visuals.begin(), visuals.end(), [](auto const& left, auto const& right)
+                    {
+                        if (left.Priority != right.Priority)
+                            return left.Priority > right.Priority;
+                        return left.Id < right.Id;
+                    });
+
                     auto const defaultItr = defaultVisuals.find(spellId);
                     if (defaultItr != defaultVisuals.end())
                     {
@@ -609,7 +744,7 @@ namespace {
                     ++fallbackCount;
                 }
 
-                sLogger.info("Forever SpellXSpellVisual DB2 store: {} unconditional defaults, {} difficulty-0 conditional fallbacks resolved.", defaultVisuals.size(), fallbackCount);
+                sLogger.info("Forever SpellXSpellVisual DB2 store: {} unconditional defaults, {} conditional-only fallbacks, {} conditional rows retained.", defaultVisuals.size(), fallbackCount, conditionalRows);
             }
         }
 

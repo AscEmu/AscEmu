@@ -789,10 +789,22 @@ void SpellMgr::loadSpellInfoData()
         spellInfo->setPowerType(static_cast<PowerType>(dbcSpellEntry->GetSpellPower() ? dbcSpellEntry->GetSpellPower()->powerType : 0));
         spellInfo->setRangeIndex(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->RangeIndex : 0);
         spellInfo->setSpeed(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->Speed : 0.0f);
-        // Forever SpellMisc.db2 no longer contains the legacy SpellVisual fields.
-        // Resolve the default unconditional SpellXSpellVisual row once during DB2 loading.
+        // Forever SpellCastVisual uses the SpellXSpellVisual.db2 row ID.
+        // SpellMisc::SpellVisualScript is not the network ScriptVisualID; keep it separate until proven.
         spellInfo->setSpellVisual(0, dbcSpellEntry->SpellXSpellVisualId);
         spellInfo->setSpellVisual(1, 0);
+        for (auto const& visual : dbcSpellEntry->SpellXSpellVisuals)
+        {
+            ForeverSpellVisualCandidate candidate{};
+            candidate.id = visual.Id;
+            candidate.probability = visual.Probability;
+            candidate.priority = visual.Priority;
+            candidate.viewerUnitConditionId = visual.ViewerUnitConditionId;
+            candidate.viewerPlayerConditionId = visual.ViewerPlayerConditionId;
+            candidate.casterUnitConditionId = visual.CasterUnitConditionId;
+            candidate.casterPlayerConditionId = visual.CasterPlayerConditionId;
+            spellInfo->addSpellVisualCandidate(candidate);
+        }
         spellInfo->setSpellIconID(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->SpellIconFileDataId : 0);
         spellInfo->setActiveIconID(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->ActiveIconFileDataId : 0);
         spellInfo->setSchoolMask(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->SchoolMask : 0);

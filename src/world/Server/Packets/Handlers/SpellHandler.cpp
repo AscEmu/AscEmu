@@ -153,9 +153,6 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     if (getClientProtocol().isForever())
     {
         spell->m_foreverClientCastId = srlPacket.clientCastId;
-        if (spellInfo->getSpellVisual(0) == 0)
-            spell->m_foreverSpellXSpellVisualId = srlPacket.spellXSpellVisualId;
-        spell->m_foreverScriptVisualId = srlPacket.scriptVisualId;
         spell->ensureForeverCastId();
 
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "WorldSession::handleCastSpellOpcode [Forever]: spellId {} SpellXSpellVisualID {} ScriptVisualID {}", srlPacket.spellId, srlPacket.spellXSpellVisualId, srlPacket.scriptVisualId);

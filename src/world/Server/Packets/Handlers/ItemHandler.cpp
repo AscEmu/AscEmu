@@ -355,9 +355,6 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     if (srlPacket.isForeverPacket)
     {
         spell->m_foreverClientCastId = srlPacket.clientCastId;
-        if (spellInfo->getSpellVisual(0) == 0)
-            spell->m_foreverSpellXSpellVisualId = srlPacket.spellXSpellVisualId;
-        spell->m_foreverScriptVisualId = srlPacket.scriptVisualId;
         spell->ensureForeverCastId();
 
         SmsgSpellPrepare preparePacket(spell->m_foreverClientCastId, spell->m_foreverServerCastId);

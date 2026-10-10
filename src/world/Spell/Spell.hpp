@@ -704,13 +704,7 @@ public:
     // ServerCastID is generated once per Spell and reused by PREPARE/START/GO.
     WoWGuid m_foreverClientCastId = WoWGuid::createModernEmpty();
     WoWGuid m_foreverServerCastId = WoWGuid::createModernEmpty();
-    // Modern SpellCastVisual. Forever 1.60.1 sends SpellXSpellVisualID + ScriptVisualID
-    // in CMSG_CAST_SPELL and expects the same pair in START/GO/failure packets.
-    uint32_t m_foreverSpellXSpellVisualId = 0;
-    uint32_t m_foreverScriptVisualId = 0;
     void ensureForeverCastId();
-    uint32_t getForeverSpellXSpellVisualId() const;
-    uint32_t getForeverScriptVisualId() const;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     ///bool DuelSpellNoMoreValid()

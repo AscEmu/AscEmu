@@ -10053,8 +10053,6 @@ void Unit::castOnMeleeSpell()
         spell->extra_cast_number = getOnMeleeSpellEcn();
         spell->m_foreverClientCastId = getOnMeleeSpellClientCastId();
         spell->m_foreverServerCastId = getOnMeleeSpellServerCastId();
-        spell->m_foreverSpellXSpellVisualId = getOnMeleeSpellXSpellVisualId();
-        spell->m_foreverScriptVisualId = getOnMeleeSpellScriptVisualId();
 
         SpellCastTargets targets(getTargetGuid());
         spell->prepare(&targets);

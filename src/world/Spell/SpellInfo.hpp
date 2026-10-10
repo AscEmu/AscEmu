@@ -17,11 +17,25 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <vector>
 
 class Item;
 class Player;
 class SpellInfo;
 class Unit;
+
+#if defined(AE_FOREVER)
+struct ForeverSpellVisualCandidate
+{
+    uint32_t id = 0;
+    float probability = 0.0f;
+    int32_t priority = 0;
+    uint16_t viewerUnitConditionId = 0;
+    uint32_t viewerPlayerConditionId = 0;
+    uint16_t casterUnitConditionId = 0;
+    uint32_t casterPlayerConditionId = 0;
+};
+#endif
 
 struct SpellForcedBasePoints
 {
@@ -292,6 +306,9 @@ public:
 #endif
 
     uint32_t getSpellVisual(uint8_t visualIndex) const { return SpellVisual[visualIndex]; }
+#if defined(AE_FOREVER)
+    uint32_t getSpellVisual(uint8_t visualIndex, Unit const* caster, Unit const* viewer) const;
+#endif
     uint32_t getSpellIconID() const { return spellIconID; }
     uint32_t getActiveIconID() const { return activeIconID; }
     uint32_t getSpellPriority() const { return spellPriority; } // not used!
@@ -466,6 +483,9 @@ private:
 #endif
 
     void setSpellVisual(uint8_t visualIndex, uint32_t value) { SpellVisual[visualIndex] = value; }
+#if defined(AE_FOREVER)
+    void addSpellVisualCandidate(ForeverSpellVisualCandidate const& candidate) { m_foreverSpellVisualCandidates.push_back(candidate); }
+#endif
     void setSpellIconID(uint32_t value) { spellIconID = value; }
     void setActiveIconID(uint32_t value) { activeIconID = value; }
     void setSpellPriority(uint32_t value) { spellPriority = value; }
@@ -642,6 +662,9 @@ private:
 #endif
     // Data from Spell.dbc (in Cataclysm)
     uint32_t SpellVisual[2];
+#if defined(AE_FOREVER)
+    std::vector<ForeverSpellVisualCandidate> m_foreverSpellVisualCandidates;
+#endif
     uint32_t spellIconID = 0;
     uint32_t activeIconID = 0;
     uint32_t spellPriority = 0;

@@ -29,6 +29,8 @@ namespace WDB::Structures
     struct ItemArmorTotalEntry;
     struct ItemEffectEntry;
     struct ItemXItemEffectEntry;
+    struct ForeverUnitConditionEntry;
+    struct ForeverPlayerConditionEntry;
 #endif
     struct VehicleSeatEntry;
     struct VehicleEntry;
@@ -259,6 +261,8 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::ForeverAchievementEntry> sFore
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ForeverCriteriaEntry> sForeverCriteriaStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ForeverCriteriaTreeEntry> sForeverCriteriaTreeStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ForeverModifierTreeEntry> sForeverModifierTreeStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ForeverUnitConditionEntry> sForeverUnitConditionStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ForeverPlayerConditionEntry> sForeverPlayerConditionStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitSystemEntry> sTraitSystemStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitTreeEntry> sTraitTreeStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitNodeEntry> sTraitNodeStore;

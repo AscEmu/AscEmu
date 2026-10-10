@@ -9,10 +9,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/InstanceDefines.hpp"
 #include "WDBDefines.hpp"
 
+#include <array>
 #include <cstring>
 #include <string>
 #include <map>
 #include <set>
+#include <vector>
 
 struct WMOAreaTableTripple
 {
@@ -3395,6 +3397,58 @@ namespace WDB::Structures
 #elif defined(AE_FOREVER)
 // Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
 
+    struct ForeverSpellXSpellVisualEntry
+    {
+        uint32_t Id = 0;
+        uint32_t SpellVisualId = 0;
+        float Probability = 0.0f;
+        int32_t Priority = 0;
+        uint16_t ViewerUnitConditionId = 0;
+        uint32_t ViewerPlayerConditionId = 0;
+        uint16_t CasterUnitConditionId = 0;
+        uint32_t CasterPlayerConditionId = 0;
+    };
+
+    struct ForeverUnitConditionEntry
+    {
+        uint32_t Id = 0;
+        uint32_t Flags = 0;
+        std::array<uint8_t, 8> Variable{};
+        std::array<uint8_t, 8> Op{};
+        std::array<int32_t, 8> Value{};
+    };
+
+    struct ForeverPlayerConditionEntry
+    {
+        uint32_t Id = 0;
+        uint16_t MinLevel = 0;
+        uint16_t MaxLevel = 0;
+        uint32_t ClassMask = 0;
+        int8_t Gender = -1;
+        int8_t NativeGender = -1;
+        uint32_t Flags = 0;
+        uint32_t PrevQuestLogic = 0;
+        uint32_t CurrQuestLogic = 0;
+        uint32_t CurrentCompletedQuestLogic = 0;
+        uint32_t SpellLogic = 0;
+        uint32_t ItemLogic = 0;
+        uint32_t ItemFlags = 0;
+        uint32_t AuraSpellLogic = 0;
+        uint32_t ReputationLogic = 0;
+        uint64_t RaceMask = 0;
+        std::array<uint32_t, 3> MinFactionId{};
+        std::array<uint8_t, 3> MinReputation{};
+        std::array<int32_t, 4> PrevQuestId{};
+        std::array<int32_t, 4> CurrQuestId{};
+        std::array<int32_t, 4> CurrentCompletedQuestId{};
+        std::array<int32_t, 4> SpellId{};
+        std::array<int32_t, 4> ItemId{};
+        std::array<uint32_t, 4> ItemCount{};
+        std::array<int32_t, 4> AuraSpellId{};
+        std::array<uint8_t, 4> AuraStacks{};
+        bool HasUnsupportedRequirements = false;
+    };
+
     struct SpellEntry
     {
         uint32_t Id;                                                // 0
@@ -3422,7 +3476,8 @@ namespace WDB::Structures
         uint32_t SpellTotemsId;                                     // 22 SpellTotems.dbc
         uint32_t ResearchProject;                                   // 23 ResearchProject.dbc
         uint32_t SpellMiscId;                                       // 24 SpellMisc.dbc
-        uint32_t SpellXSpellVisualId;                               // default unconditional SpellXSpellVisual.db2 row
+        uint32_t SpellXSpellVisualId;                               // default SpellXSpellVisual.db2 row
+        std::vector<ForeverSpellXSpellVisualEntry> SpellXSpellVisuals;
 
         SpellEntry()
             : Id(0), Name(""), Rank(""), RuneCostID(0), AttackPowerCoefficient(0.0f), SpellScalingId(0), SpellAuraOptionsId(0), SpellAuraRestrictionsId(0), SpellCastingRequirementsId(0), SpellCategoriesId(0), SpellClassOptionsId(0), SpellCooldownsId(0), SpellEquippedItemsId(0), SpellInterruptsId(0), SpellLevelsId(0), SpellReagentsId(0), SpellShapeshiftId(0), SpellTargetRestrictionsId(0), SpellTotemsId(0), ResearchProject(0), SpellMiscId(0), SpellXSpellVisualId(0) {}
