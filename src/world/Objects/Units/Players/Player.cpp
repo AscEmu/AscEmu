@@ -6584,6 +6584,23 @@ void Player::addComboPoints(uint64_t targetGuid, int8_t points)
         // Clear points when switching combo target
         m_comboTarget = targetGuid;
         m_comboPoints = points;
+
+#if defined(AE_FOREVER)
+        if (m_session != nullptr && m_session->getClientProtocol().isForever())
+        {
+            // Forever 1.60.1.69913 retail Rogue combat differential: the first combo
+            // point on a target sets UnitData parent bit 128 + ComboTarget bit 141.
+            // Keep this dirty until updateComboPoints() changes Power[1], so target GUID
+            // and combo count are emitted together in the same VALUES update like retail.
+            const WoWGuid modernComboTarget = makeForeverPlayerReferenceGuid(this, targetGuid);
+            auto& foreverFields = foreverUnitFields();
+            if (foreverFields.comboTarget.getModernHigh() != modernComboTarget.getModernHigh() || foreverFields.comboTarget.getModernLow() != modernComboTarget.getModernLow())
+            {
+                foreverFields.comboTarget = modernComboTarget;
+                foreverFields.markChanged(AscEmu::Version::Forever::Fields::UnitData::ComboTargetBit);
+            }
+        }
+#endif
     }
 
     updateComboPoints();
@@ -6598,9 +6615,16 @@ void Player::updateComboPoints()
         m_comboPoints = 0;
 
 #if defined(AE_FOREVER)
-    setPower(POWER_TYPE_COMBO_POINTS, static_cast<uint32_t>(getComboPoints()));
-    return;
-#else
+    if (m_session != nullptr && m_session->getClientProtocol().isForever())
+    {
+        // Forever 1.60.1.69913 retail Rogue combat differential verifies UnitData
+        // Power group bit 148: Power[0] is Energy (bit 149) and Power[1] is
+        // Combo Points (bit 150).
+        setPower(POWER_TYPE_COMBO_POINTS, static_cast<uint32_t>(getComboPoints()), false);
+        return;
+    }
+#endif
+
     // todo: I think there should be a better way to do this, copypasting from legacy method now -Appled
     unsigned char buffer[10];
     uint16_t length = 2;
@@ -6624,7 +6648,6 @@ void Player::updateComboPoints()
     }
 
     m_session->OutPacket(SMSG_UPDATE_COMBO_POINTS, length, buffer);
-#endif
 }
 
 void Player::clearComboPoints()

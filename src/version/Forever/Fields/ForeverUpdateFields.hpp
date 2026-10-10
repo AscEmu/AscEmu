@@ -541,12 +541,17 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t UnknownAfterRangedAttackPowerModSupportBit = 105;
         static inline constexpr std::size_t UnknownAfterSetAttackSpeedAuraBit = 110;
         static inline constexpr std::size_t UnknownAfterSilencedSchoolMaskBit = 139;
-        static inline constexpr std::size_t UnknownAfterCurrentAreaGuidBit = 141;
         static inline constexpr std::size_t UnknownAfterCurrentAreaInt32Bit = 142;
         static inline constexpr std::size_t UnknownAfterCurrentAreaFloatBit = 143;
 
-        // Capture-verified Forever differential UnitData power mask:
-        // block 4 mask 0x00300000 for Power[0] => group bit 148 + element bit 149.
+        // [FOREVER-VERIFIED] 1.60.1.69913 Rogue combat differential:
+        // first combo point UnitData block 4 contains mask 0x00702001: parent bit 128,
+        // ComboTarget GUID bit 141, Power group bit 148 and Power[0]/Power[1] bits 149/150.
+        // The packed GUID at bit 141 exactly matches the CMSG_CAST_SPELL target GUID.
+        // The second point omits bits 128/141 because the target is unchanged and carries
+        // Energy=37, ComboPoints=2; Eviscerate carries Energy=12, ComboPoints=0.
+        static inline constexpr std::size_t ComboTargetParentBit = 128;
+        static inline constexpr std::size_t ComboTargetBit = 141;
         static inline constexpr std::size_t PowerGroupBit = 148;
         static inline constexpr std::size_t PowerFirstBit = 149;
         static inline constexpr std::size_t MaxPowerFirstBit = 159;
@@ -628,6 +633,7 @@ namespace AscEmu::Version::Forever::Fields
         uint32_t unknownU32Create32 = 0;
         int64_t health = 0;
 
+        WoWGuid comboTarget;
         std::array<int32_t, 10> power{};
         std::array<int32_t, 10> maxPower{};
         std::array<float, 10> powerRegenFlatModifier{};
@@ -1180,6 +1186,10 @@ namespace AscEmu::Version::Forever::Fields
         // [FOREVER-VERIFIED] VALUES-only mapping from the 1.60.1.70235 watched-faction differential.
         // CREATE placement is intentionally not claimed while that region remains opaque.
         int32_t watchedFactionIndex = -1;
+
+        // [FOREVER-REFERENCE] VALUES-only mapping from the 1.60.1.70338 Rogue
+        // combat differential. The client changed this field 1 -> 2 -> 0 for
+        // two Sinister Strikes followed by Eviscerate.
     };
 
     // [FOREVER-STRUCTURE] Mask size/order and the captured all-fields payload are supported by

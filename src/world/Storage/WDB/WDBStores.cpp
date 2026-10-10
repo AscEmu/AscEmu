@@ -1430,7 +1430,7 @@ namespace {
             sChrPowerTypesStore[entry.entry] = entry;
         }
         buildPowerIndexByClass();
-        sLogger.info("DB2: ChrClassesXPowerTypes store ready (entries={}, warriorRageIndex={}, mageManaIndex={}, rogueComboIndex={}).", sChrPowerTypesStore.getNumRows(), powerIndexByClass[WARRIOR][POWER_TYPE_RAGE], powerIndexByClass[MAGE][POWER_TYPE_MANA], powerIndexByClass[ROGUE][POWER_TYPE_COMBO_POINTS]);
+        sLogger.info("DB2: ChrClassesXPowerTypes store ready (entries={}, warriorRageIndex={}, rogueEnergyIndex={}, rogueComboIndex={}, mageManaIndex={}).", sChrPowerTypesStore.getNumRows(), powerIndexByClass[WARRIOR][POWER_TYPE_RAGE], powerIndexByClass[ROGUE][POWER_TYPE_ENERGY], powerIndexByClass[ROGUE][POWER_TYPE_COMBO_POINTS], powerIndexByClass[MAGE][POWER_TYPE_MANA]);
 
         std::memset(ClassSpecializationTabs, 0, sizeof(ClassSpecializationTabs));
         std::vector<std::pair<uint32_t, WDB::Structures::ChrSpecializationEntry>> specializationEntries;
@@ -2866,6 +2866,14 @@ namespace {
 
         for (auto const& powerEntry : powers)
             powerIndexByClass[powerEntry.classId][powerEntry.power] = nextIndex[powerEntry.classId]++;
+
+        // Forever 1.60.1.69913 retail rogue combat capture verifies the early
+        // Forever UnitData wire order directly: Power[0] is Energy and Power[1]
+        // is Combo Points. Keep DB2 as the general source of per-class powers,
+        // but pin these two capture-proven Rogue slots so a missing or differently
+        // ordered ChrClassesXPowerTypes row cannot move the client-visible resource.
+        powerIndexByClass[ROGUE][POWER_TYPE_ENERGY] = POWER_FIELD_INDEX_1;
+        powerIndexByClass[ROGUE][POWER_TYPE_COMBO_POINTS] = POWER_FIELD_INDEX_2;
 #else
         for (auto const& powerEntry : sChrPowerTypesStore | std::views::values)
         {

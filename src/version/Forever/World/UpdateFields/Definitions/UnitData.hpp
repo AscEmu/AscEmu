@@ -169,7 +169,7 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
     // Only Forever-verified differential fields are permitted here. Verification metadata is
     // intentionally remains part of the descriptor so reference labels cannot be treated as
     // confirmed Forever semantics.
-    using UnitDataUpdate = UpdateDefinition<Fields::UnitData::ChangeMaskSize,
+    using UnitDataCreateMappedUpdate = UpdateDefinition<Fields::UnitData::ChangeMaskSize,
         ScalarField<&Fields::UnitData::displayPower, Fields::UnitData::DisplayPowerBit, 32, FieldVerification::Verified, "displayPower">,
         ScalarField<&Fields::UnitData::health, Fields::UnitData::HealthBit, 32, FieldVerification::Verified, "health">,
         ScalarField<&Fields::UnitData::maxHealth, Fields::UnitData::MaxHealthBit, 32, FieldVerification::Verified, "maxHealth">,
@@ -185,5 +185,46 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
         ScalarArrayField<&Fields::UnitData::maxPower, Fields::UnitData::PowerGroupBit, Fields::UnitData::MaxPowerFirstBit, FieldVerification::Verified, "maxPower">,
         ScalarArrayField<&Fields::UnitData::resistances, Fields::UnitData::ResistancesGroupBit, Fields::UnitData::ResistancesFirstBit, FieldVerification::Verified, "resistances">>;
 
-    static_assert(updateFieldsMatchCreateMetadata(UnitDataCreateFields, UnitDataUpdate::Metadata));
+    static_assert(updateFieldsMatchCreateMetadata(UnitDataCreateFields, UnitDataCreateMappedUpdate::Metadata));
+
+    struct ComboTargetField
+    {
+        static constexpr UpdateFieldMetadata metadata() { return {FieldVerification::Verified, "comboTarget", "guid"}; }
+
+        template <typename Owner, std::size_t N>
+        static void copyKnownBits(Owner const&, std::bitset<N> const& source, std::bitset<N>& target)
+        {
+            if (source.test(Fields::UnitData::ComboTargetParentBit))
+                target.set(Fields::UnitData::ComboTargetParentBit);
+            if (source.test(Fields::UnitData::ComboTargetBit))
+                target.set(Fields::UnitData::ComboTargetBit);
+        }
+
+        template <typename Owner>
+        static void write(ByteBuffer& data, Owner const& owner, auto const& changed)
+        {
+            if (!changed(Fields::UnitData::ComboTargetParentBit) || !changed(Fields::UnitData::ComboTargetBit))
+                return;
+
+            // Forever 1.60.1.69913 Rogue combat capture: ComboTarget is a packed
+            // modern GUID followed by one zero byte before the Power[] values.
+            writeModernGuid(data, owner.comboTarget);
+            data << uint8_t(0);
+        }
+    };
+
+    using UnitDataUpdate = UpdateDefinition<Fields::UnitData::ChangeMaskSize,
+        ScalarField<&Fields::UnitData::displayPower, Fields::UnitData::DisplayPowerBit, 32, FieldVerification::Verified, "displayPower">,
+        ScalarField<&Fields::UnitData::health, Fields::UnitData::HealthBit, 32, FieldVerification::Verified, "health">,
+        ScalarField<&Fields::UnitData::maxHealth, Fields::UnitData::MaxHealthBit, 32, FieldVerification::Verified, "maxHealth">,
+        ScalarField<&Fields::UnitData::level, Fields::UnitData::LevelBit, 32, FieldVerification::Verified, "level">,
+        ScalarField<&Fields::UnitData::effectiveLevel, Fields::UnitData::EffectiveLevelBit, 32, FieldVerification::Verified, "effectiveLevel">,
+        ScalarField<&Fields::UnitData::unitFlags, Fields::UnitData::FlagsBit, 32, FieldVerification::Verified, "unitFlags">,
+        ScalarField<&Fields::UnitData::unitFlags2, Fields::UnitData::Flags2Bit, 32, FieldVerification::Verified, "unitFlags2">,
+        ScalarField<&Fields::UnitData::auraState, Fields::UnitData::AuraStateBit, 32, FieldVerification::Verified, "auraState">,
+        ScalarField<&Fields::UnitData::shapeshiftForm, Fields::UnitData::ShapeshiftFormBit, 64, FieldVerification::Verified, "shapeshiftForm">,
+        ComboTargetField,
+        ScalarArrayField<&Fields::UnitData::power, Fields::UnitData::PowerGroupBit, Fields::UnitData::PowerFirstBit, FieldVerification::Verified, "power">,
+        ScalarArrayField<&Fields::UnitData::maxPower, Fields::UnitData::PowerGroupBit, Fields::UnitData::MaxPowerFirstBit, FieldVerification::Verified, "maxPower">,
+        ScalarArrayField<&Fields::UnitData::resistances, Fields::UnitData::ResistancesGroupBit, Fields::UnitData::ResistancesFirstBit, FieldVerification::Verified, "resistances">>;
 }

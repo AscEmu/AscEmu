@@ -3341,7 +3341,29 @@ void Spell::SpellEffectEnergize(uint8_t effectIndex) // Energize
         modEnergy = uint32_t(modEnergy * 1.4f);
 
     if (u_caster)
-        u_caster->energize(m_unitTarget, getSpellInfo()->getId(), modEnergy, static_cast<PowerType>(getSpellInfo()->getEffectMiscValue(effectIndex)));
+    {
+        const auto powerType = static_cast<PowerType>(getSpellInfo()->getEffectMiscValue(effectIndex));
+
+#if defined(AE_FOREVER)
+        if (powerType == POWER_TYPE_COMBO_POINTS && p_caster != nullptr && p_caster->getSession() != nullptr && p_caster->getSession()->getClientProtocol().isForever())
+        {
+            uint64_t comboTargetGuid = m_targets.getUnitTargetGuid();
+            if (comboTargetGuid == 0 || comboTargetGuid == p_caster->getGuid())
+                comboTargetGuid = p_caster->getTargetGuid();
+
+            if (comboTargetGuid != 0 && modEnergy > 0)
+            {
+                if (m_unitTarget != nullptr)
+                    u_caster->sendSpellEnergizeLog(m_unitTarget, getSpellInfo()->getId(), modEnergy, powerType);
+
+                p_caster->addComboPoints(comboTargetGuid, static_cast<int8_t>(modEnergy));
+                return;
+            }
+        }
+#endif
+
+        u_caster->energize(m_unitTarget, getSpellInfo()->getId(), modEnergy, powerType);
+    }
 }
 
 void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent damage
