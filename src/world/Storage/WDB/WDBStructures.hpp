@@ -1463,6 +1463,13 @@ namespace WDB::Structures
         float Armor[4]{};
     };
 
+    struct ItemDamageEntry
+    {
+        uint32_t ID{0};
+        uint32_t ItemLevel{0};
+        float Quality[7]{};
+    };
+
     struct ItemEffectEntry
     {
         uint32_t ID{0};

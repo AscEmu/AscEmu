@@ -1430,7 +1430,7 @@ namespace {
             sChrPowerTypesStore[entry.entry] = entry;
         }
         buildPowerIndexByClass();
-        sLogger.info("DB2: ChrClassesXPowerTypes store ready (entries={}, warriorRageIndex={}, mageManaIndex={}).", sChrPowerTypesStore.getNumRows(), powerIndexByClass[WARRIOR][POWER_TYPE_RAGE], powerIndexByClass[MAGE][POWER_TYPE_MANA]);
+        sLogger.info("DB2: ChrClassesXPowerTypes store ready (entries={}, warriorRageIndex={}, mageManaIndex={}, rogueComboIndex={}).", sChrPowerTypesStore.getNumRows(), powerIndexByClass[WARRIOR][POWER_TYPE_RAGE], powerIndexByClass[MAGE][POWER_TYPE_MANA], powerIndexByClass[ROGUE][POWER_TYPE_COMBO_POINTS]);
 
         std::memset(ClassSpecializationTabs, 0, sizeof(ClassSpecializationTabs));
         std::vector<std::pair<uint32_t, WDB::Structures::ChrSpecializationEntry>> specializationEntries;
@@ -2102,6 +2102,24 @@ namespace {
             }
             sItemArmorTotalForeverStore.assignEntries(entries);
             sLogger.info("DB2: ItemArmorTotal store ready (entries={}).", entries.size());
+        }
+
+        WDB::WDC5File itemDamageThrown;
+        if (loadForeverWDC5Optional(itemDamageThrown, ForeverFormat::ItemDamageThrown, dbcPath))
+        {
+            std::vector<std::pair<uint32_t, WDB::Structures::ItemDamageEntry>> entries;
+            entries.reserve(itemDamageThrown.getRecordCount());
+            for (uint32_t row = 0; row < itemDamageThrown.getRecordCount(); ++row)
+            {
+                WDB::Structures::ItemDamageEntry entry{};
+                entry.ID = itemDamageThrown.getRecordId(row);
+                entry.ItemLevel = itemDamageThrown.getUInt32(row, 0);
+                for (uint32_t i = 0; i < 7; ++i)
+                    entry.Quality[i] = itemDamageThrown.getFloat(row, 1, i);
+                entries.emplace_back(entry.ID, entry);
+            }
+            sItemDamageThrownForeverStore.assignEntries(entries);
+            sLogger.info("DB2: ItemDamageThrown store ready (entries={}).", entries.size());
         }
 
         WDB::WDC5File itemEffect;

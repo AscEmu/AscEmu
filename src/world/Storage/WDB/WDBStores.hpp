@@ -27,6 +27,7 @@ namespace WDB::Structures
     struct ItemArmorQualityEntry;
     struct ItemArmorShieldEntry;
     struct ItemArmorTotalEntry;
+    struct ItemDamageEntry;
     struct ItemEffectEntry;
     struct ItemXItemEffectEntry;
     struct ForeverUnitConditionEntry;
@@ -255,6 +256,7 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::ArmorLocationEntry> sArmorLoca
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemArmorQualityEntry> sItemArmorQualityForeverStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemArmorShieldEntry> sItemArmorShieldForeverStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemArmorTotalEntry> sItemArmorTotalForeverStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemDamageEntry> sItemDamageThrownForeverStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemEffectEntry> sItemEffectForeverStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemXItemEffectEntry> sItemXItemEffectForeverStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ForeverAchievementEntry> sForeverAchievementStore;

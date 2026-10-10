@@ -137,6 +137,35 @@ namespace AscEmu::Items
             return static_cast<uint32_t>(std::lround(std::max(0.0f, armor)));
         }
 
+        WDB::Structures::ItemDamageEntry const* getThrownDamage(uint32_t itemLevel)
+        {
+            if (auto const* entry = sItemDamageThrownForeverStore.lookupEntry(itemLevel); entry && entry->ItemLevel == itemLevel)
+                return entry;
+            for (auto const& [id, entry] : sItemDamageThrownForeverStore)
+                if (entry.ItemLevel == itemLevel) return &entry;
+            return nullptr;
+        }
+
+        void generateWeaponDamage(uint32_t itemLevel, uint32_t itemClass, uint32_t quality, uint32_t inventoryType, uint32_t delay, float variance, float& minDamage, float& maxDamage)
+        {
+            minDamage = 0.0f;
+            maxDamage = 0.0f;
+            if (itemClass != ITEM_CLASS_WEAPON || inventoryType != INVTYPE_THROWN || quality >= 7 || delay == 0)
+                return;
+
+            auto const* damage = getThrownDamage(itemLevel);
+            if (!damage)
+                return;
+
+            float const dps = damage->Quality[quality];
+            if (dps <= 0.0f)
+                return;
+
+            float const average = dps * static_cast<float>(delay) * 0.001f;
+            minDamage = std::max(0.0f, (1.0f - variance * 0.5f) * average);
+            maxDamage = std::max(minDamage, std::floor(average * (1.0f + variance * 0.5f) + 0.5f));
+        }
+
         float getDurabilityQualityModifier(uint32_t quality)
         {
             switch (quality)
@@ -260,6 +289,8 @@ namespace AscEmu::Items
         result.inventoryType = static_cast<uint32_t>(static_cast<uint8_t>(sparse->InventoryType));
         result.randomPropertyPoints = getRandomPropertyPoints(result.itemLevel, result.quality, result.inventoryType, item->SubClass);
         result.armor = generateArmor(result.itemLevel, item->Class, item->SubClass, result.quality, result.inventoryType);
+        generateWeaponDamage(result.itemLevel, item->Class, result.quality, result.inventoryType, sparse->ItemDelay, sparse->DmgVariance, result.damageMin, result.damageMax);
+        result.damageType = sparse->DamageType;
         result.maxDurability = generateMaxDurability(result.itemLevel, item->Class, item->SubClass, result.quality, result.inventoryType);
         result.effects = resolveEffects(entry);
         result.stats.reserve(10 + overrides.stats.size());

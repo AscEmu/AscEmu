@@ -766,7 +766,18 @@ void Player::onAttachToWorld()
         case ROGUE:
             setMaxPower(POWER_TYPE_ENERGY, 100);
             setPower(POWER_TYPE_ENERGY, 100);
+#if defined(AE_FOREVER)
+            setMaxPower(POWER_TYPE_COMBO_POINTS, 5);
+            setPower(POWER_TYPE_COMBO_POINTS, 0);
+#endif
             break;
+#if defined(AE_FOREVER)
+        case DRUID:
+            setMaxPower(POWER_TYPE_COMBO_POINTS, 5);
+            setPower(POWER_TYPE_COMBO_POINTS, 0);
+            setPower(POWER_TYPE_MANA, getMaxPower(POWER_TYPE_MANA));
+            break;
+#endif
 #if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
         case DEATHKNIGHT:
             setMaxPower(POWER_TYPE_RUNES, 8);
@@ -4551,7 +4562,17 @@ void Player::setInitialPlayerData()
         case ROGUE:
         {
             setMaxPower(POWER_TYPE_ENERGY, 100);
+#if defined(AE_FOREVER)
+            setMaxPower(POWER_TYPE_COMBO_POINTS, 5);
+#endif
         } break;
+#if defined(AE_FOREVER)
+        case DRUID:
+        {
+            setMaxPower(POWER_TYPE_COMBO_POINTS, 5);
+            setMaxPower(POWER_TYPE_MANA, getBaseMana());
+        } break;
+#endif
 #if VERSION_STRING >= WotLK && !defined(AE_FOREVER)
         case DEATHKNIGHT:
         {
@@ -6576,6 +6597,10 @@ void Player::updateComboPoints()
     if (getComboPoints() < 0)
         m_comboPoints = 0;
 
+#if defined(AE_FOREVER)
+    setPower(POWER_TYPE_COMBO_POINTS, static_cast<uint32_t>(getComboPoints()));
+    return;
+#else
     // todo: I think there should be a better way to do this, copypasting from legacy method now -Appled
     unsigned char buffer[10];
     uint16_t length = 2;
@@ -6599,6 +6624,7 @@ void Player::updateComboPoints()
     }
 
     m_session->OutPacket(SMSG_UPDATE_COMBO_POINTS, length, buffer);
+#endif
 }
 
 void Player::clearComboPoints()

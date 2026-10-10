@@ -5010,7 +5010,14 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
 void Spell::addProjectileDataToPacket(ProjectileData& data)
 {
     ItemProperties const* ammoItem = nullptr;
-#if VERSION_STRING < Cata
+#if defined(AE_FOREVER)
+    if (p_caster != nullptr)
+    {
+        const auto rangedItem = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+        if (rangedItem != nullptr && rangedItem->getItemProperties()->InventoryType == INVTYPE_THROWN)
+            ammoItem = rangedItem->getItemProperties();
+    }
+#elif VERSION_STRING < Cata
     if (p_caster != nullptr)
     {
         const auto rangedItem = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);

@@ -30,7 +30,7 @@ namespace MapExtractor::Forever
     // fully renamed Forever beta DB2 dump. TableHash is stable identity;
     // layoutHash is kept only as a diagnostic/reference because layouts may
     // legitimately change between supported builds.
-    inline constexpr std::array<Db2FileEntry, 1132> Db2Files =
+    inline constexpr std::array<Db2FileEntry, 1135> Db2Files =
     {
         Db2FileEntry{ 0x1B5BAF01u, 0xE78C9607u, "AccountStoreCategory.db2" },
         Db2FileEntry{ 0x58EFC38Bu, 0x83E16957u, "AccountStoreItem.db2" },
@@ -532,8 +532,11 @@ namespace MapExtractor::Forever
         Db2FileEntry{ 0x9790C2EEu, 0x56F30531u, "ItemDamageAmmo.db2" },
         Db2FileEntry{ 0xE0A6BB08u, 0x56F30531u, "ItemDamageOneHand.db2" },
         Db2FileEntry{ 0xF2972767u, 0x56F30531u, "ItemDamageOneHandCaster.db2" },
+        Db2FileEntry{ 0x30E32F7Au, 0x3CD722C1u, "ItemDamageRanged.db2" },
+        Db2FileEntry{ 0x72FD7ADBu, 0x3CD722C1u, "ItemDamageThrown.db2" },
         Db2FileEntry{ 0xD8C5FD43u, 0x56F30531u, "ItemDamageTwoHand.db2" },
         Db2FileEntry{ 0x80A1A0FAu, 0x56F30531u, "ItemDamageTwoHandCaster.db2" },
+        Db2FileEntry{ 0xC2C866AFu, 0x3CD722C1u, "ItemDamageWand.db2" },
         Db2FileEntry{ 0x66A4506Eu, 0x5845A4AAu, "ItemDisenchantLoot.db2" },
         Db2FileEntry{ 0x986F8CD0u, 0x9F3AB8A9u, "ItemDisplayInfo.db2" },
         Db2FileEntry{ 0xF35AF3DBu, 0xAA462C0Eu, "ItemDisplayInfoMaterialRes.db2" },

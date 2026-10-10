@@ -928,7 +928,7 @@ void Unit::setPower(PowerType type, uint32_t value, [[maybe_unused]] bool sendPa
     return;
 #else
     if (sendPacket)
-        sendPowerUpdate(isPlayer());
+        sendPowerUpdate(type, isPlayer());
 
     const auto plr = getPlayerOwnerOrSelf();
     if (plr == nullptr || !plr->IsInWorld() || plr->getGroup() == nullptr)
@@ -7273,13 +7273,18 @@ uint8_t Unit::getPowerPct(PowerType powerType) const
     return static_cast<uint8_t>(getPower(powerType) * 100 / getMaxPower(powerType));
 }
 
-void Unit::sendPowerUpdate([[maybe_unused]] bool self)
+void Unit::sendPowerUpdate(bool self)
+{
+    sendPowerUpdate(getPowerType(), self);
+}
+
+void Unit::sendPowerUpdate(PowerType type, [[maybe_unused]] bool self)
 {
 #if VERSION_STRING >= WotLK || defined(AE_FOREVER)
     // Save current power so the same amount is sent to player and everyone else
-    const auto powerAmount = getPower(getPowerType());
+    const auto powerAmount = getPower(type);
 
-    SmsgPowerUpdate sendPacket(GetNewGUID(), static_cast<uint8_t>(getPowerType()), powerAmount, GetMapId());
+    SmsgPowerUpdate sendPacket(GetNewGUID(), static_cast<uint8_t>(type), powerAmount, GetMapId());
     PacketBroadcast::sendToSet(*this, sendPacket, self);
 #endif
 }

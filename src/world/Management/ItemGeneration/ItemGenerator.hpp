@@ -55,6 +55,9 @@ namespace AscEmu::Items
         uint32_t inventoryType{0};
         float randomPropertyPoints{0.0f};
         uint32_t armor{0};
+        float damageMin{0.0f};
+        float damageMax{0.0f};
+        uint32_t damageType{0};
         uint32_t maxDurability{0};
         std::vector<ResolvedStat> stats;
         std::vector<ResolvedItemEffect> effects;

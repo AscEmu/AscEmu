@@ -334,6 +334,9 @@ void MySQLDataStore::loadItemPropertiesTable()
         if (auto generated = AscEmu::Items::generateItemData(entry))
         {
             properties.Armor = generated->armor;
+            properties.Damage[0].Min = generated->damageMin;
+            properties.Damage[0].Max = generated->damageMax;
+            properties.Damage[0].Type = generated->damageType;
             properties.MaxDurability = generated->maxDurability;
             for (auto const& stat : generated->stats) properties.addStat(static_cast<uint32_t>(stat.type), stat.value);
             for (size_t i = 0; i < generated->effects.size() && i < MAX_ITEM_PROTO_SPELLS; ++i)

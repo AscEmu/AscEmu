@@ -992,6 +992,7 @@ public:
     uint8_t getPowerPct(PowerType powerType) const;
 
     void sendPowerUpdate(bool self);
+    void sendPowerUpdate(PowerType type, bool self);
 
 private:
     // Converts power type to power index
