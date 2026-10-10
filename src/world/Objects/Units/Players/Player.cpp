@@ -1060,8 +1060,28 @@ void Player::setFacialFeatures(uint8_t feature) { write(playerData()->player_byt
 uint8_t Player::getBankSlots() const { return playerData()->player_bytes_2.s.bank_slots; }
 void Player::setBankSlots(uint8_t slots) { write(playerData()->player_bytes_2.s.bank_slots, slots); }
 
-uint8_t Player::getRestState() const { return playerData()->player_bytes_2.s.rest_state; }
-void Player::setRestState(uint8_t state) { write(playerData()->player_bytes_2.s.rest_state, state); }
+uint8_t Player::getRestState() const
+{
+#if defined(AE_FOREVER)
+    if (m_session != nullptr && m_session->getClientProtocol().isForever())
+        return m_foreverActivePlayerFields.restInfo[0].stateId;
+#endif
+    return playerData()->player_bytes_2.s.rest_state;
+}
+void Player::setRestState(uint8_t state)
+{
+#if defined(AE_FOREVER)
+    if (m_session != nullptr && m_session->getClientProtocol().isForever())
+    {
+        auto& rest = m_foreverActivePlayerFields.restInfo[0];
+        rest.setStateId(state);
+        m_foreverActivePlayerFields.markRestInfoChanged(0);
+        updateObject();
+        return;
+    }
+#endif
+    write(playerData()->player_bytes_2.s.rest_state, state);
+}
 //bytes2 end
 
 //bytes3 begin
@@ -1985,8 +2005,28 @@ float Player::getRuneRegen(uint8_t rune) const { return playerData()->rune_regen
 void Player::setRuneRegen(uint8_t rune, float regen) { write(playerData()->rune_regen[rune], regen); }
 #endif
 
-uint32_t Player::getRestStateXp() const { return playerData()->rest_state_xp; }
-void Player::setRestStateXp(uint32_t xp)  { write(playerData()->rest_state_xp, xp); }
+uint32_t Player::getRestStateXp() const
+{
+#if defined(AE_FOREVER)
+    if (m_session != nullptr && m_session->getClientProtocol().isForever())
+        return m_foreverActivePlayerFields.restInfo[0].threshold;
+#endif
+    return playerData()->rest_state_xp;
+}
+void Player::setRestStateXp(uint32_t xp)
+{
+#if defined(AE_FOREVER)
+    if (m_session != nullptr && m_session->getClientProtocol().isForever())
+    {
+        auto& rest = m_foreverActivePlayerFields.restInfo[0];
+        rest.setThreshold(xp);
+        m_foreverActivePlayerFields.markRestInfoChanged(0);
+        updateObject();
+        return;
+    }
+#endif
+    write(playerData()->rest_state_xp, xp);
+}
 
 #if VERSION_STRING < Cata
 uint32_t Player::getCoinage() const { return playerData()->field_coinage; }
@@ -16602,6 +16642,15 @@ void Player::loadFromDBProc(QueryResultVector& results)
     m_isResting = field[43].asUint8();
     m_restState = field[44].asUint8();
     m_restAmount = field[45].asUint32();
+#if defined(AE_FOREVER)
+    if (m_session != nullptr && m_session->getClientProtocol().isForever())
+    {
+        auto& rest = m_foreverActivePlayerFields.restInfo[0];
+        rest.threshold = m_restAmount >> 1;
+        rest.stateId = m_restState;
+        rest.clearChanges();
+    }
+#endif
 
 
     std::string tmpStr = field[46].asCString();

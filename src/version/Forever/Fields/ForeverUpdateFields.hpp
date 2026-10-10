@@ -1035,6 +1035,11 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t AppearanceCollectionBit = 134;
         static inline constexpr std::size_t InventorySlotsGroupBit = 168;
         static inline constexpr std::size_t InventorySlotsFirstBit = 169;
+        // [FOREVER-VERIFIED] Forever 1.60 reserves InvSlots group 168 with
+        // entries 169..313. RestInfo follows directly on the client wire at
+        // group bit 314 with elements 315..316.
+        static inline constexpr std::size_t RestInfoGroupBit = 314;
+        static inline constexpr std::size_t RestInfoFirstBit = 315;
 
         // [UNVERIFIED] 70009-only inserted scalar slots.
         static inline constexpr std::size_t UnknownAfterPvpMedalsBit = 108;          // uint32
@@ -1045,11 +1050,51 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t TransmogMetadataGroupBit = 166;
         static inline constexpr std::size_t TransmogMetadataBit = 167;
 
+        struct RestInfo
+        {
+            uint32_t threshold = 0;
+            uint8_t stateId = 2;
+            std::bitset<3> changes{};
+
+            void setThreshold(uint32_t value)
+            {
+                if (threshold == value)
+                    return;
+                threshold = value;
+                changes.set(0);
+                changes.set(1);
+            }
+
+            void setStateId(uint8_t value)
+            {
+                if (stateId == value)
+                    return;
+                stateId = value;
+                changes.set(0);
+                changes.set(2);
+            }
+
+            void clearChanges() { changes.reset(); }
+            bool hasChanges() const { return changes.any(); }
+        };
+
         std::bitset<ChangeMaskSize> changes{};
 
         void markChanged(std::size_t bit) { changes.set(bit & ~std::size_t(31)); changes.set(bit); }
         void markArrayChanged(std::size_t groupBit, std::size_t elementBit) { changes.set(groupBit); changes.set(elementBit); }
-        void clearChanges() { changes.reset(); traitConfigUpdateStates.clear(); }
+        void markRestInfoChanged(std::size_t index)
+        {
+            if (index >= restInfo.size() || !restInfo[index].hasChanges())
+                return;
+            markArrayChanged(RestInfoGroupBit, RestInfoFirstBit + index);
+        }
+        void clearChanges()
+        {
+            changes.reset();
+            traitConfigUpdateStates.clear();
+            for (RestInfo& value : restInfo)
+                value.clearChanges();
+        }
         bool hasChanges() const { return changes.any(); }
 
         // -----------------------------------------------------------------
@@ -1068,13 +1113,6 @@ namespace AscEmu::Version::Forever::Fields
         // The actual uint64 title payload is emitted later, after the outfit
         // cluster; keep the member itself at that later declaration position
         // so this struct mirrors wire payload order instead of count order.
-
-        // WoW Forever: 80-byte zeroed prefix extension observed between
-        // the known-titles count and the fixed core scalars. Its semantics are
-        // intentionally left unknown until differential tests (for example
-        // with the additional Forever bag/inventory state) can prove ownership.
-        static inline constexpr std::size_t UnknownInventoryExtensionSize = 80;
-        std::array<uint8_t, UnknownInventoryExtensionSize> unknownInventoryExtension{};
 
         uint64_t coinage = 0;
         uint64_t accountBankCoinage = 0;
@@ -1134,10 +1172,15 @@ namespace AscEmu::Version::Forever::Fields
             float multiplier1 = 0.0f;
         };
 
-        static inline constexpr std::size_t PostSkillHeaderSize = 98;
+        // [FOREVER-VERIFIED] The Forever CREATE layout places RestInfo[2] here.
+        // The verified CREATE seed decodes to 88 bytes before RestInfo, followed
+        // by RestInfo[0] and RestInfo[1] (uint32 Threshold + uint8 StateID).
+        static inline constexpr std::size_t PostSkillHeaderSize = 88;
+        static inline constexpr std::size_t RestInfoCreateSize = 10;
         static inline constexpr std::size_t PostSkillRecordCount = 5;
         static inline constexpr std::size_t PostSkillTailSize = 2;
         std::array<uint8_t, PostSkillHeaderSize> unknownPostSkillHeader{};
+        std::array<RestInfo, 2> restInfo{};
         std::array<PostSkillRecord, PostSkillRecordCount> unknownPostSkillRecords{};
         std::array<uint8_t, PostSkillTailSize> unknownPostSkillTail{};
 

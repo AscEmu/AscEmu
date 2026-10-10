@@ -104,7 +104,7 @@ namespace InventoryLayout
     {
         // Modern Forever ActivePlayerData::InvSlots wire layout. These offsets
         // are deliberately independent from the legacy logical slot counts.
-        static inline constexpr std::size_t InvSlotCount = 105;
+        static inline constexpr std::size_t InvSlotCount = 145;
 
         static inline constexpr std::size_t EquipmentOffset = 0;
         static inline constexpr std::size_t EquipmentCount = 19;
@@ -138,6 +138,13 @@ namespace InventoryLayout
         static inline constexpr std::size_t AccountBankBagOffset = 100;
         static inline constexpr std::size_t AccountBankBagCount = 5;
 
+        // [FOREVER-VERIFIED] ActivePlayerData::InvSlots occupies VALUES bits
+        // 169..313 inclusive, which is 145 packed GUID entries. The semantics
+        // of the final 40 entries are not proven yet; keep them addressable as
+        // inventory GUID slots without assigning imported modern names.
+        static inline constexpr std::size_t UnknownTailOffset = AccountBankBagOffset + AccountBankBagCount;
+        static inline constexpr std::size_t UnknownTailCount = 40;
+
         static inline constexpr std::size_t InvalidIndex = InvSlotCount;
 
         static_assert(EquipmentOffset + EquipmentCount == ProfessionEquipmentOffset);
@@ -150,7 +157,8 @@ namespace InventoryLayout
         static_assert(BankBagOffset + BankBagCount <= BuybackOffset);
         static_assert(ChildEquipmentOffset + ChildEquipmentCount == EquipableSpellOffset);
         static_assert(EquipableSpellOffset + EquipableSpellCount == AccountBankBagOffset);
-        static_assert(AccountBankBagOffset + AccountBankBagCount == InvSlotCount);
+        static_assert(AccountBankBagOffset + AccountBankBagCount == UnknownTailOffset);
+        static_assert(UnknownTailOffset + UnknownTailCount == InvSlotCount);
 
         constexpr std::size_t inventoryIndex(Slot logicalSlot)
         {

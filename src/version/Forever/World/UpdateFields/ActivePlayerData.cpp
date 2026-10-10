@@ -298,6 +298,7 @@ namespace AscEmu::Version::Forever::UpdateFields
         // SkillInfo layout is now wire/runtime verified as the 4200-byte
         // block immediately following the core scalars.
         result.skill = source.skill;
+        result.restInfo = source.restInfo;
 
         // The complete 104-byte post-SkillInfo 26x32-bit cluster is structurally identified.
         // Storage identifiers are neutral wire-position names. Definitions::ActivePlayerDataCreateFields
@@ -336,7 +337,7 @@ namespace AscEmu::Version::Forever::UpdateFields
         // legacy packet template. Replace individual values with live semantics
         // as their live semantics are identified.
         std::copy_n(PostSkillDefaults.begin(), Fields::ActivePlayerData::PostSkillHeaderSize, result.unknownPostSkillHeader.begin());
-        std::size_t postSkillSeedOffset = Fields::ActivePlayerData::PostSkillHeaderSize;
+        std::size_t postSkillSeedOffset = Fields::ActivePlayerData::PostSkillHeaderSize + Fields::ActivePlayerData::RestInfoCreateSize;
         for (Fields::ActivePlayerData::PostSkillRecord& record : result.unknownPostSkillRecords)
         {
             std::memcpy(&record.unknown0, PostSkillDefaults.data() + postSkillSeedOffset + 0, sizeof(record.unknown0));
@@ -391,7 +392,6 @@ namespace AscEmu::Version::Forever::UpdateFields
         writeModernGuid(data, fields.summonedBattlePetGuid);
 
         data << uint32_t(fields.knownTitles.size());
-        data.append(fields.unknownInventoryExtension.data(), fields.unknownInventoryExtension.size());
         data << fields.coinage << fields.accountBankCoinage << fields.xp << fields.nextLevelXp << fields.unknownAfterNextLevelXp;
 
         writeSkillInfoCreate(data, fields.skill);
@@ -424,6 +424,8 @@ namespace AscEmu::Version::Forever::UpdateFields
              << fields.unknownFloatAfterSkill25;
 
         data.append(fields.unknownPostSkillHeader.data(), fields.unknownPostSkillHeader.size());
+        for (Fields::ActivePlayerData::RestInfo const& rest : fields.restInfo)
+            data << rest.threshold << rest.stateId;
         for (Fields::ActivePlayerData::PostSkillRecord const& record : fields.unknownPostSkillRecords)
             data << record.unknown0 << record.unknown4 << record.multiplier0 << record.multiplier1;
         data.append(fields.unknownPostSkillTail.data(), fields.unknownPostSkillTail.size());

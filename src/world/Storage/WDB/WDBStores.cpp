@@ -209,6 +209,7 @@ WDB::Structures::SpellPowerMap sSpellPowerMap;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
 WDB::Structures::SpellPowerMap sSpellPowerMap;
+WDB::Structures::SpellPowerTypeMap sSpellPowerTypeMap;
 #endif
 
 namespace {
@@ -1116,6 +1117,7 @@ namespace {
             }
             sSpellPowerStore.assignEntries(entries);
             sSpellPowerMap.clear();
+            sSpellPowerTypeMap.clear();
             for (uint32_t id = 0; id < sSpellPowerStore.getNumRows(); ++id)
             {
                 auto const* power = sSpellPowerStore.lookupEntry(id);
@@ -1125,6 +1127,11 @@ namespace {
                 auto itr = sSpellPowerMap.find(power->spellId);
                 if (itr == sSpellPowerMap.end() || (itr->second->requiredAuraSpellId != 0 && power->requiredAuraSpellId == 0))
                     sSpellPowerMap[power->spellId] = power;
+
+                const uint64_t typeKey = (static_cast<uint64_t>(power->spellId) << 32) | power->powerType;
+                auto typeItr = sSpellPowerTypeMap.find(typeKey);
+                if (typeItr == sSpellPowerTypeMap.end() || (typeItr->second->requiredAuraSpellId != 0 && power->requiredAuraSpellId == 0))
+                    sSpellPowerTypeMap[typeKey] = power;
             }
         }
 
@@ -3935,11 +3942,20 @@ WDB::Structures::SpellPowerEntry const* getSpellPowerEntry(uint32_t spellId)
     return itr->second;
 }
 #elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
 WDB::Structures::SpellPowerEntry const* getSpellPowerEntry(uint32_t spellId)
 {
     WDB::Structures::SpellPowerMap::const_iterator itr = sSpellPowerMap.find(spellId);
     if (itr == sSpellPowerMap.end())
+        return nullptr;
+
+    return itr->second;
+}
+
+WDB::Structures::SpellPowerEntry const* getSpellPowerEntry(uint32_t spellId, uint32_t powerType)
+{
+    const uint64_t typeKey = (static_cast<uint64_t>(spellId) << 32) | powerType;
+    WDB::Structures::SpellPowerTypeMap::const_iterator itr = sSpellPowerTypeMap.find(typeKey);
+    if (itr == sSpellPowerTypeMap.end())
         return nullptr;
 
     return itr->second;

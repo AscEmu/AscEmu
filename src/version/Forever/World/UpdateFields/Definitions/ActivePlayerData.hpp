@@ -16,7 +16,7 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
     // promoting imported modern reference-schema names to Forever semantics. order is serializer order,
     // not a byte offset; packed GUIDs and variable-length records make absolute offsets dynamic.
     inline constexpr std::array<CreateFieldMetadata, 49> ActivePlayerDataCreateFields{{
-        CreateFieldMetadata{0, FieldVerification::Verified, "inventorySlots", "", "packed-guid[105]", ""},
+        CreateFieldMetadata{0, FieldVerification::Verified, "inventorySlots", "", "packed-guid[145]", ""},
         CreateFieldMetadata{1, FieldVerification::Unverified, "unknownGuidCreate0", "FarsightObject", "packed-guid", ""},
         CreateFieldMetadata{2, FieldVerification::Unverified, "unknownGuidCreate1", "SummonedBattlePetGUID", "packed-guid", ""},
         CreateFieldMetadata{3, FieldVerification::Unverified, "unknownU32Create2", "KnownTitlesCount", "uint32", ""},
@@ -232,6 +232,55 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
         }
     };
 
+
+    // [FOREVER-VERIFIED] RestInfo update uses a 3-bit nested mask followed by
+    // Threshold/StateID. The client reserves InvSlots through wire bit 313, so
+    // RestInfo follows at group bit 314 with elements 315..316.
+    struct RestInfoField
+    {
+        static constexpr UpdateFieldMetadata metadata() { return {FieldVerification::Verified, "restInfo", "RestInfo[2]"}; }
+
+        template <typename Owner, std::size_t N>
+        static void copyKnownBits(Owner const& owner, std::bitset<N> const& source, std::bitset<N>& target)
+        {
+            if (source.test(Fields::ActivePlayerData::RestInfoGroupBit))
+                target.set(Fields::ActivePlayerData::RestInfoGroupBit);
+
+            for (std::size_t i = 0; i < owner.restInfo.size(); ++i)
+                if (source.test(Fields::ActivePlayerData::RestInfoFirstBit + i))
+                    target.set(Fields::ActivePlayerData::RestInfoFirstBit + i);
+        }
+
+        template <typename Owner>
+        static void write(ByteBuffer& data, Owner const& owner, auto const& changed)
+        {
+            if (!changed(Fields::ActivePlayerData::RestInfoGroupBit))
+                return;
+
+            for (std::size_t i = 0; i < owner.restInfo.size(); ++i)
+            {
+                if (!changed(Fields::ActivePlayerData::RestInfoFirstBit + i))
+                    continue;
+
+                auto const& rest = owner.restInfo[i];
+                uint8_t nestedMask = 0;
+                for (std::size_t bit = 0; bit < rest.changes.size(); ++bit)
+                    if (rest.changes.test(bit))
+                        nestedMask |= uint8_t(1U << bit);
+
+                data.writeBits(nestedMask, 3);
+                data.flushBits();
+                if (rest.changes.test(0))
+                {
+                    if (rest.changes.test(1))
+                        data << rest.threshold;
+                    if (rest.changes.test(2))
+                        data << rest.stateId;
+                }
+            }
+        }
+    };
+
     // Its CREATE location is deliberately not claimed while that create span remains opaque.
     using ActivePlayerDataUpdate = UpdateDefinition<Fields::ActivePlayerData::ChangeMaskSize,
         ScalarField<&Fields::ActivePlayerData::coinage, Fields::ActivePlayerData::CoinageBit, 32, FieldVerification::Verified, "coinage">,
@@ -241,5 +290,6 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
         TraitConfigsField,
         ScalarField<&Fields::ActivePlayerData::activeCombatTraitConfigId, Fields::ActivePlayerData::ActiveCombatTraitConfigIdBit, Fields::ActivePlayerData::TraitDataParentBit, FieldVerification::Verified, "activeCombatTraitConfigId">,
         GuidArrayField<&Fields::ActivePlayerData::invSlots, Fields::ActivePlayerData::InventorySlotsGroupBit, Fields::ActivePlayerData::InventorySlotsFirstBit, FieldVerification::Verified, "inventorySlots">,
+        RestInfoField,
         BuybackDataField>;
 }

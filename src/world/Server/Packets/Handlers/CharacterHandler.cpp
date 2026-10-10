@@ -1067,6 +1067,8 @@ void WorldSession::fullLoginForever(Player* player)
         activeFields.xp = static_cast<int32_t>(player->getXp());
         activeFields.nextLevelXp = static_cast<int32_t>(player->getNextLevelXp());
         activeFields.coinage = player->getCoinage();
+        activeFields.restInfo[0].threshold = player->m_restAmount >> 1;
+        activeFields.restInfo[0].stateId = player->m_restAmount ? RESTSTATE_RESTED : RESTSTATE_NORMAL;
 
         // Recalculate combat chances after inventory/stats are available so the
         // owner-only ActivePlayerData create carries the current character-sheet values.
@@ -1202,6 +1204,10 @@ void WorldSession::fullLoginForever(Player* player)
     // watchedFactionIndex is verified for VALUES updates, while its CREATE position is still opaque.
     // Push the authoritative value once after world entry so the client does not keep its default index 0.
     player->syncForeverWatchedFaction();
+
+    // RestInfo CREATE placement is still inside an opaque owner-only region.
+    // Push the authoritative rested-XP state through the known VALUES path after world entry.
+    player->updateRestState();
 
     if (Group* group = player->getGroup())
         group->Update();

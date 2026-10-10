@@ -373,6 +373,7 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
 
     WDB::Structures::SpellPowerEntry const* getSpellPowerEntry(uint32_t spellId);
+    WDB::Structures::SpellPowerEntry const* getSpellPowerEntry(uint32_t spellId, uint32_t powerType);
 #endif
 
 

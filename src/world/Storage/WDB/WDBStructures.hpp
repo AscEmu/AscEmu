@@ -3743,7 +3743,9 @@ namespace WDB::Structures
     typedef std::map<uint32_t, SpellEffect> SpellEffectMap;
 
     // SpellPower.db2 is keyed by its own row id on Forever; the spell it belongs to is the
-    // relationship parent, so like SpellEffect it needs a spell id -> row helper map.
+    // relationship parent. Keep the legacy-compatible primary row lookup and an additional
+    // spell/power-type lookup because modern spells can have multiple SpellPower rows.
     typedef std::map<uint32_t, SpellPowerEntry const*> SpellPowerMap;
+    typedef std::map<uint64_t, SpellPowerEntry const*> SpellPowerTypeMap;
 #endif
 }

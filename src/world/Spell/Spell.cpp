@@ -178,6 +178,12 @@ Spell::Spell(Object* _caster, SpellInfo const* _spellInfo, bool _triggered, Aura
         m_triggeredSpell = true;
 
     m_requiresCP = getSpellInfo()->getAttributesEx() & (ATTRIBUTESEX_REQ_COMBO_POINTS1 | ATTRIBUTESEX_REQ_COMBO_POINTS2);
+#if defined(AE_FOREVER)
+    // Forever SpellPower.db2 can contain multiple power rows for one spell. Finishers
+    // keep Energy as their primary cost and carry Combo Points in an additional row.
+    if (!m_requiresCP && getSpellPowerEntry(getSpellInfo()->getId(), POWER_TYPE_COMBO_POINTS) != nullptr)
+        m_requiresCP = true;
+#endif
 
     m_uniqueHittedTargets.clear();
     m_missedTargets.clear();
