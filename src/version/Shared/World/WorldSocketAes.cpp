@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "world/Server/WorldSocket.hpp"
 
+#include "Cryptography/Ed25519.hpp"
 #include "Cryptography/Sha256.hpp"
 #include "Logging/Log.hpp"
 #include "Logging/Logger.hpp"
@@ -32,8 +33,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <openssl/evp.h>
 #include <openssl/pem.h>
 #include <openssl/rand.h>
-#include <openssl/core_names.h>
-#include <openssl/params.h>
 #include <openssl/rsa.h>
 #include <zlib.h>
 
@@ -217,28 +216,8 @@ namespace
     {
         using namespace AscEmu::Version::WorldConnectKey;
 
-        std::unique_ptr<EVP_PKEY, EvpKeyDeleter> key(EVP_PKEY_new_raw_private_key(EVP_PKEY_ED25519, nullptr, EnterEncryptedModeKey.data(), EnterEncryptedModeKey.size()));
-        if (!key)
-            return false;
-
-        const OSSL_PARAM params[] = {
-            OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_INSTANCE, const_cast<char*>("Ed25519ctx"), 0),
-            OSSL_PARAM_construct_octet_string(OSSL_SIGNATURE_PARAM_CONTEXT_STRING, const_cast<uint8_t*>(EnterEncryptedModeContext.data()), EnterEncryptedModeContext.size()),
-            OSSL_PARAM_construct_end()
-        };
-
-        bool result = false;
-        if (EVP_MD_CTX* context = EVP_MD_CTX_new())
-        {
-            size_t outputSize = Ed25519SignatureSize;
-            result = EVP_DigestSignInit_ex(context, nullptr, nullptr, nullptr, nullptr, key.get(), params) > 0
-                && EVP_DigestSign(context, output, &outputSize, digest.data(), digest.size()) > 0
-                && outputSize == Ed25519SignatureSize;
-
-            EVP_MD_CTX_free(context);
-        }
-
-        return result;
+        static_assert(EnterEncryptedModeKey.size() == Ed25519::KeyLength && Ed25519::SignatureLength == Ed25519SignatureSize);
+        return Ed25519::signWithContext(EnterEncryptedModeKey.data(), EnterEncryptedModeContext.data(), EnterEncryptedModeContext.size(), digest.data(), digest.size(), output);
     }
 }
 
