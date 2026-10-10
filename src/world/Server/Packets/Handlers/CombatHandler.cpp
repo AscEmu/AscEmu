@@ -23,11 +23,12 @@ void WorldSession::handleAttackSwingOpcode(WorldPacket& recvPacket)
         return;
 
     const auto unitTarget = _player->getWorldMapUnit(srlPacket.guid.getRawGuid());
-    if (unitTarget == nullptr)
+    if (unitTarget == nullptr || !_player->isValidAttackableTarget(unitTarget) || unitTarget->isDead())
+    {
+        _player->eventAttackStop();
+        _player->smsg_AttackStop(unitTarget);
         return;
-
-    if (!_player->isValidAttackableTarget(unitTarget) || unitTarget->isDead())
-        return;
+    }
 
     _player->smsg_AttackStart(unitTarget);
     _player->eventAttackStart();
@@ -36,9 +37,6 @@ void WorldSession::handleAttackSwingOpcode(WorldPacket& recvPacket)
 void WorldSession::handleAttackStopOpcode(WorldPacket& /*recvPacket*/)
 {
     const auto unitTarget = _player->getWorldMapUnit(_player->getTargetGuid());
-    if (unitTarget == nullptr)
-        return;
-
     _player->eventAttackStop();
     _player->smsg_AttackStop(unitTarget);
 }

@@ -8165,20 +8165,27 @@ void Unit::smsg_AttackStop(Unit* pVictim)
 
 void Unit::smsg_AttackStart(Unit* pVictim)
 {
+    if (pVictim == nullptr)
+        return;
+
+    bool sendToSelf = false;
+    Player* player = nullptr;
+    if (isPlayer())
+    {
+        player = dynamic_cast<Player*>(this);
+        sendToSelf = player != nullptr && player->getSession() != nullptr && player->getSession()->getClientProtocol().isForever();
+    }
+
     SmsgAttackStart sendPacket(getGuid(), pVictim->getGuid(), GetMapId());
-    PacketBroadcast::sendToSet(*this, sendPacket, false);
+    PacketBroadcast::sendToSet(*this, sendPacket, sendToSelf);
 
     sLogger.debugOpcode("WORLD: Sent SMSG_ATTACK_START");
 
-    if (isPlayer())
+    if (player != nullptr && player->m_cannibalize)
     {
-        Player* player = dynamic_cast<Player*>(this);
-        if (player->m_cannibalize)
-        {
-            sEventMgr.RemoveEvents(player, EVENT_CANNIBALIZE);
-            player->setEmoteState(EMOTE_ONESHOT_NONE);
-            player->m_cannibalize = false;
-        }
+        sEventMgr.RemoveEvents(player, EVENT_CANNIBALIZE);
+        player->setEmoteState(EMOTE_ONESHOT_NONE);
+        player->m_cannibalize = false;
     }
 }
 
