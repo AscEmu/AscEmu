@@ -88,12 +88,12 @@ namespace AscEmu::Version::Forever::Db2
                     std::string error;
                     if (!table.file->loadGeneric(table.path.string(), &error))
                     {
-                        sLogger.failure("Failed to load {} DB2 table.", table.name);
+                        sLogger.failure("DB2: {} failed to load.", table.name);
                         table.file.reset();
                         return false;
                     }
 
-                    sLogger.info("Loaded {} DB2 table.", table.name);
+                    sLogger.info("DB2: {} loaded.", table.name);
                 }
 
                 if (!table.file)

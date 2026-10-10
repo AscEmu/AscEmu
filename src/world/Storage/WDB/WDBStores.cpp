@@ -237,12 +237,12 @@ namespace {
         std::string error;
         if (file.load(dbcPath + format.filename, format, &error))
         {
-            sLogger.info("Loaded {} DB2 table.", format.filename);
+            sLogger.info("DB2: {} loaded.", format.filename);
             return true;
         }
 
         errors.push_back("Forever WDC5: " + error);
-        sLogger.failure("Failed to load {} DB2 table.", format.filename);
+        sLogger.failure("DB2: {} failed to load.", format.filename);
         return false;
     }
 
@@ -251,11 +251,11 @@ namespace {
         std::string error;
         if (file.load(dbcPath + format.filename, format, &error))
         {
-            sLogger.info("Loaded optional {} DB2 table.", format.filename);
+            sLogger.info("DB2: {} loaded (optional).", format.filename);
             return true;
         }
 
-        sLogger.warning("Optional Forever DB2 {} not loaded: {}", format.filename, error);
+        sLogger.warning("DB2: {} not loaded (optional): {}", format.filename, error);
         return false;
     }
 
@@ -275,12 +275,12 @@ namespace {
         std::string error;
         if (file.loadGeneric(dbcPath + filename, arrays, &error))
         {
-            sLogger.info("Loaded {} DB2 table (fields={}, layout=0x{:08X}).", filename, file.getFieldCount(), file.getLayoutHash());
+            sLogger.info("DB2: {} loaded (fields={}, layout=0x{:08X}).", filename, file.getFieldCount(), file.getLayoutHash());
             return true;
         }
 
         errors.push_back("Forever WDC5: " + error);
-        sLogger.failure("Failed to load {} DB2 table.", filename);
+        sLogger.failure("DB2: {} failed to load.", filename);
         return false;
     }
 
@@ -290,11 +290,11 @@ namespace {
         std::string error;
         if (file.loadGeneric(dbcPath + filename, arrays, &error))
         {
-            sLogger.info("Loaded optional {} DB2 table (fields={}, layout=0x{:08X}).", filename, file.getFieldCount(), file.getLayoutHash());
+            sLogger.info("DB2: {} loaded (optional, fields={}, layout=0x{:08X}).", filename, file.getFieldCount(), file.getLayoutHash());
             return true;
         }
 
-        sLogger.warning("Optional Forever DB2 {} not loaded: {}", filename, error);
+        sLogger.warning("DB2: {} not loaded (optional): {}", filename, error);
         return false;
     }
 
@@ -307,7 +307,7 @@ namespace {
         if (emotesText.getFieldCount() != 2)
         {
             errors.push_back("Forever DB2 EmotesText.db2: expected 2 fields, got " + std::to_string(emotesText.getFieldCount()));
-            sLogger.failure("Forever DB2 EmotesText.db2 has unexpected field count {} (expected 2).", emotesText.getFieldCount());
+            sLogger.failure("DB2: EmotesText.db2 invalid (fields={}, expected=2).", emotesText.getFieldCount());
             return false;
         }
 
@@ -322,7 +322,7 @@ namespace {
         }
 
         sEmotesTextStore.assignEntries(entries);
-        sLogger.info("Forever EmotesText DB2 store: {} entries loaded.", entries.size());
+        sLogger.info("DB2: EmotesText store ready (entries={}).", entries.size());
         return true;
     }
 
@@ -335,7 +335,7 @@ namespace {
         if (questXP.getFieldCount() != 1)
         {
             errors.push_back("Forever DB2 QuestXP.db2: expected 1 field, got " + std::to_string(questXP.getFieldCount()));
-            sLogger.failure("Forever DB2 QuestXP.db2 has unexpected field count {} (expected 1).", questXP.getFieldCount());
+            sLogger.failure("DB2: QuestXP.db2 invalid (fields={}, expected=1).", questXP.getFieldCount());
             return false;
         }
 
@@ -351,7 +351,7 @@ namespace {
         }
 
         sQuestXPStore.assignEntries(entries);
-        sLogger.info("Forever QuestXP DB2 store: {} levels loaded.", sQuestXPStore.getNumRows());
+        sLogger.info("DB2: QuestXP store ready (levels={}).", sQuestXPStore.getNumRows());
 
         sForeverQuestPOIStore.clear();
         WDB::WDC5File questPOIBlob;
@@ -361,9 +361,9 @@ namespace {
         if (haveQuestPOIBlob && haveQuestPOIPoint)
         {
             if (questPOIBlob.getLayoutHash() != 0xFDC814CF || questPOIBlob.getFieldCount() != 10)
-                sLogger.warning("Forever QuestPOIBlob.db2 layout differs from verified 70124 layout: fields={} layout=0x{:08X}; skipping POI DB2 data.", questPOIBlob.getFieldCount(), questPOIBlob.getLayoutHash());
+                sLogger.warning("DB2: QuestPOIBlob.db2 skipped (fields={}, layout=0x{:08X}, reason=layout mismatch).", questPOIBlob.getFieldCount(), questPOIBlob.getLayoutHash());
             else if (questPOIPoint.getLayoutHash() != 0x5CBBEFE7 || questPOIPoint.getFieldCount() != 4)
-                sLogger.warning("Forever QuestPOIPoint.db2 layout differs from verified 70124 layout: fields={} layout=0x{:08X}; skipping POI DB2 data.", questPOIPoint.getFieldCount(), questPOIPoint.getLayoutHash());
+                sLogger.warning("DB2: QuestPOIPoint.db2 skipped (fields={}, layout=0x{:08X}, reason=layout mismatch).", questPOIPoint.getFieldCount(), questPOIPoint.getLayoutHash());
             else
             {
                 std::unordered_map<uint32_t, std::pair<uint32_t, size_t>> blobsById;
@@ -410,7 +410,7 @@ namespace {
                     for (ForeverQuestPOIBlobData const& blob : blobs)
                         pointCount += static_cast<uint32_t>(blob.points.size());
                 }
-                sLogger.info("Forever Quest POI DB2 store: {} quests, {} blobs, {} points loaded.", sForeverQuestPOIStore.size(), blobCount, pointCount);
+                sLogger.info("DB2: QuestPOI store ready (quests={}, blobs={}, points={}).", sForeverQuestPOIStore.size(), blobCount, pointCount);
             }
         }
         return true;
@@ -477,7 +477,7 @@ namespace {
                 return true;
 
             errors.push_back(std::string("Forever DB2 ") + name + ": expected " + std::to_string(expected) + " fields, got " + std::to_string(file.getFieldCount()));
-            sLogger.failure("Forever DB2 {} has unexpected field count {} (expected {}).", name, file.getFieldCount(), expected);
+            sLogger.failure("DB2: {} invalid (fields={}, expected={}).", name, file.getFieldCount(), expected);
             ok = false;
             return false;
         };
@@ -551,7 +551,7 @@ namespace {
         {
             if (unitCondition.getFieldCount() != 4)
             {
-                sLogger.warning("Optional Forever DB2 UnitCondition.db2 ignored: field count {} (expected 4).", unitCondition.getFieldCount());
+                sLogger.warning("DB2: UnitCondition.db2 skipped (optional, fields={}, expected=4).", unitCondition.getFieldCount());
             }
             else
             {
@@ -571,7 +571,7 @@ namespace {
                     entries.emplace_back(entry.Id, entry);
                 }
                 sForeverUnitConditionStore.assignEntries(entries);
-                sLogger.info("Forever UnitCondition DB2 store: {} entries loaded.", entries.size());
+                sLogger.info("DB2: UnitCondition store ready (entries={}).", entries.size());
             }
         }
 
@@ -579,7 +579,7 @@ namespace {
         {
             if (playerCondition.getFieldCount() != 86)
             {
-                sLogger.warning("Optional Forever DB2 PlayerCondition.db2 ignored: field count {} (expected 86).", playerCondition.getFieldCount());
+                sLogger.warning("DB2: PlayerCondition.db2 skipped (optional, fields={}, expected=86).", playerCondition.getFieldCount());
             }
             else
             {
@@ -656,7 +656,7 @@ namespace {
                     entries.emplace_back(entry.Id, entry);
                 }
                 sForeverPlayerConditionStore.assignEntries(entries);
-                sLogger.info("Forever PlayerCondition DB2 store: {} entries loaded, {} fully supported, {} conservative fallbacks.", entries.size(), supported, unsupported);
+                sLogger.info("DB2: PlayerCondition store ready (entries={}, supported={}, fallback={}).", entries.size(), supported, unsupported);
             }
         }
 
@@ -664,7 +664,7 @@ namespace {
         {
             if (spellXSpellVisual.getFieldCount() != 12)
             {
-                sLogger.warning("Optional Forever DB2 SpellXSpellVisual.db2 ignored: field count {} (expected 12).", spellXSpellVisual.getFieldCount());
+                sLogger.warning("DB2: SpellXSpellVisual.db2 skipped (optional, fields={}, expected=12).", spellXSpellVisual.getFieldCount());
             }
             else
             {
@@ -744,7 +744,7 @@ namespace {
                     ++fallbackCount;
                 }
 
-                sLogger.info("Forever SpellXSpellVisual DB2 store: {} unconditional defaults, {} conditional-only fallbacks, {} conditional rows retained.", defaultVisuals.size(), fallbackCount, conditionalRows);
+                sLogger.info("DB2: SpellXSpellVisual store ready (defaults={}, conditionalFallbacks={}, conditionalRows={}).", defaultVisuals.size(), fallbackCount, conditionalRows);
             }
         }
 
@@ -964,7 +964,7 @@ namespace {
                 entries.emplace_back(entry.id, entry);
             }
             sSpellEffectStore.assignEntries(entries);
-            sLogger.info("Forever SpellEffect DB2 coverage: max Effect={} (enum limit {}), max Aura={} (enum limit {}).", maxForeverEffectId, TOTAL_SPELL_EFFECTS - 1, maxForeverAuraId, TOTAL_SPELL_AURAS - 1);
+            sLogger.info("DB2: SpellEffect coverage (maxEffect={}, effectEnumLimit={}, maxAura={}, auraEnumLimit={}).", maxForeverEffectId, TOTAL_SPELL_EFFECTS - 1, maxForeverAuraId, TOTAL_SPELL_AURAS - 1);
             sSpellEffectMap.clear();
             for (uint32_t id = 0; id < sSpellEffectStore.getNumRows(); ++id)
             {
@@ -1348,7 +1348,7 @@ namespace {
             }
         }
 
-        sLogger.info("Forever DB2 spell/skill stores: {} skills, {} skill abilities, {} spells, {} effects.", sSkillLineStore.getNumRows(), sSkillLineAbilityStore.getNumRows(), sSpellStore.getNumRows(), sSpellEffectStore.getNumRows());
+        sLogger.info("DB2: Spell/Skill stores ready (skills={}, skillAbilities={}, spells={}, effects={}).", sSkillLineStore.getNumRows(), sSkillLineAbilityStore.getNumRows(), sSpellStore.getNumRows(), sSpellEffectStore.getNumRows());
         return ok;
     }
 
@@ -1399,7 +1399,7 @@ namespace {
         if (chrSpecialization.getFieldCount() != 13)
         {
             errors.push_back("Forever DB2 ChrSpecialization.db2: expected 13 fields, got " + std::to_string(chrSpecialization.getFieldCount()));
-            sLogger.failure("Forever DB2 ChrSpecialization.db2 has unexpected field count {} (expected 13).", chrSpecialization.getFieldCount());
+            sLogger.failure("DB2: ChrSpecialization.db2 invalid (fields={}, expected=13).", chrSpecialization.getFieldCount());
             return false;
         }
 
@@ -1430,7 +1430,7 @@ namespace {
             sChrPowerTypesStore[entry.entry] = entry;
         }
         buildPowerIndexByClass();
-        sLogger.info("Forever ChrClassesXPowerTypes DB2 store: {} entries loaded, warrior rage index {}, mage mana index {}.", sChrPowerTypesStore.getNumRows(), powerIndexByClass[WARRIOR][POWER_TYPE_RAGE], powerIndexByClass[MAGE][POWER_TYPE_MANA]);
+        sLogger.info("DB2: ChrClassesXPowerTypes store ready (entries={}, warriorRageIndex={}, mageManaIndex={}).", sChrPowerTypesStore.getNumRows(), powerIndexByClass[WARRIOR][POWER_TYPE_RAGE], powerIndexByClass[MAGE][POWER_TYPE_MANA]);
 
         std::memset(ClassSpecializationTabs, 0, sizeof(ClassSpecializationTabs));
         std::vector<std::pair<uint32_t, WDB::Structures::ChrSpecializationEntry>> specializationEntries;
@@ -1449,7 +1449,7 @@ namespace {
                 ClassSpecializationTabs[entry.classId][entry.tabPage] = entry.Id;
         }
         sChrSpecializationStore.assignEntries(specializationEntries);
-        sLogger.debugDbTables("Forever ChrSpecialization DB2 store: {} entries loaded.", sChrSpecializationStore.getNumRows());
+        sLogger.debugDbTables("DB2: ChrSpecialization store ready (entries={}).", sChrSpecializationStore.getNumRows());
 
         sChrRacesStore.clear();
         for (uint32_t row = 0; row < chrRaces.getRecordCount(); ++row)
@@ -1860,7 +1860,7 @@ namespace {
 
         sItemStore.assignEntries(itemEntries);
         sLogger.info(
-            "Forever item DB2 store: {} items, {} default display IDs resolved from ItemModifiedAppearance/ItemAppearance.",
+            "DB2: Item store ready (items={}, defaultDisplayIds={}).",
             itemEntries.size(),
             displayInfoByItemId.size());
 
@@ -1948,7 +1948,7 @@ namespace {
             sparseEntries.emplace_back(entry.ID, std::move(entry));
         }
         sItemSparseStore.assignEntries(sparseEntries);
-        sLogger.info("Forever ItemSparse DB2 store: {} entries loaded.", sparseEntries.size());
+        sLogger.info("DB2: ItemSparse store ready (entries={}).", sparseEntries.size());
 
         WDB::WDC5File itemBonus;
         if (loadForeverWDC5Optional(itemBonus, ForeverFormat::ItemBonus, dbcPath))
@@ -1967,7 +1967,7 @@ namespace {
                 entries.emplace_back(entry.ID, entry);
             }
             sItemBonusStore.assignEntries(entries);
-            sLogger.info("Forever ItemBonus DB2 store: {} entries loaded.", entries.size());
+            sLogger.info("DB2: ItemBonus store ready (entries={}).", entries.size());
         }
 
         WDB::WDC5File durabilityCosts;
@@ -1986,7 +1986,7 @@ namespace {
                 entries.emplace_back(entry.itemLevel, entry);
             }
             sDurabilityCostsStore.assignEntries(entries);
-            sLogger.info("Forever DurabilityCosts DB2 store: {} item levels loaded.", entries.size());
+            sLogger.info("DB2: DurabilityCosts store ready (itemLevels={}).", entries.size());
         }
 
         WDB::WDC5File durabilityQuality;
@@ -2002,7 +2002,7 @@ namespace {
                 entries.emplace_back(entry.id, entry);
             }
             sDurabilityQualityStore.assignEntries(entries);
-            sLogger.info("Forever DurabilityQuality DB2 store: {} entries loaded.", entries.size());
+            sLogger.info("DB2: DurabilityQuality store ready (entries={}).", entries.size());
         }
 
         WDB::WDC5File randPropPoints;
@@ -2030,7 +2030,7 @@ namespace {
                 randPropEntries.emplace_back(entry.ID, entry);
             }
             sRandPropPointsStore.assignEntries(randPropEntries);
-            sLogger.info("Forever RandPropPoints DB2 store: {} entries loaded.", randPropEntries.size());
+            sLogger.info("DB2: RandPropPoints store ready (entries={}).", randPropEntries.size());
         }
 
         WDB::WDC5File armorLocation;
@@ -2048,7 +2048,7 @@ namespace {
                 entries.emplace_back(entry.ID, entry);
             }
             sArmorLocationForeverStore.assignEntries(entries);
-            sLogger.info("Forever ArmorLocation DB2 store: {} entries loaded.", entries.size());
+            sLogger.info("DB2: ArmorLocation store ready (entries={}).", entries.size());
         }
 
         WDB::WDC5File itemArmorQuality;
@@ -2065,7 +2065,7 @@ namespace {
                 entries.emplace_back(entry.ID, entry);
             }
             sItemArmorQualityForeverStore.assignEntries(entries);
-            sLogger.info("Forever ItemArmorQuality DB2 store: {} entries loaded.", entries.size());
+            sLogger.info("DB2: ItemArmorQuality store ready (entries={}).", entries.size());
         }
 
         WDB::WDC5File itemArmorShield;
@@ -2083,7 +2083,7 @@ namespace {
                 entries.emplace_back(entry.ID, entry);
             }
             sItemArmorShieldForeverStore.assignEntries(entries);
-            sLogger.info("Forever ItemArmorShield DB2 store: {} entries loaded.", entries.size());
+            sLogger.info("DB2: ItemArmorShield store ready (entries={}).", entries.size());
         }
 
         WDB::WDC5File itemArmorTotal;
@@ -2101,7 +2101,7 @@ namespace {
                 entries.emplace_back(entry.ID, entry);
             }
             sItemArmorTotalForeverStore.assignEntries(entries);
-            sLogger.info("Forever ItemArmorTotal DB2 store: {} entries loaded.", entries.size());
+            sLogger.info("DB2: ItemArmorTotal store ready (entries={}).", entries.size());
         }
 
         WDB::WDC5File itemEffect;
@@ -2125,7 +2125,7 @@ namespace {
                 entries.emplace_back(entry.ID, entry);
             }
             sItemEffectForeverStore.assignEntries(entries);
-            sLogger.info("Forever ItemEffect DB2 store: {} entries loaded.", entries.size());
+            sLogger.info("DB2: ItemEffect store ready (entries={}).", entries.size());
         }
 
         WDB::WDC5File itemXItemEffect;
@@ -2142,7 +2142,7 @@ namespace {
                 entries.emplace_back(entry.ID, entry);
             }
             sItemXItemEffectForeverStore.assignEntries(entries);
-            sLogger.info("Forever ItemXItemEffect DB2 store: {} entries loaded.", entries.size());
+            sLogger.info("DB2: ItemXItemEffect store ready (entries={}).", entries.size());
         }
 
         std::vector<std::pair<uint32_t, WDB::Structures::ItemExtendedCostEntry>> extendedCostEntries;
@@ -2169,7 +2169,7 @@ namespace {
         }
 
         sItemExtendedCostStore.assignEntries(extendedCostEntries);
-        sLogger.info("Forever item extended cost DB2 store: {} entries.", extendedCostEntries.size());
+        sLogger.info("DB2: ItemExtendedCost store ready (entries={}).", extendedCostEntries.size());
 
         std::vector<std::pair<uint32_t, WDB::Structures::ItemSetEntry>> entries;
         entries.reserve(itemSet.getRecordCount());
@@ -2244,7 +2244,7 @@ namespace {
             if (file.getFieldCount() == expected)
                 return true;
             errors.push_back(std::string("Forever DB2 ") + name + ": unexpected field count " + std::to_string(file.getFieldCount()) + " (expected " + std::to_string(expected) + ")");
-            sLogger.failure("Forever DB2 {} has unexpected field count {} (expected {}).", name, file.getFieldCount(), expected);
+            sLogger.failure("DB2: {} invalid (fields={}, expected={}).", name, file.getFieldCount(), expected);
             return false;
         };
 
@@ -2309,7 +2309,7 @@ namespace {
             sForeverModifierTreeStore[e.id] = e;
         }
 
-        sLogger.debugDbTables("Forever Achievement DB2 stores: achievements={} criteria={} trees={} modifiers={}.", sForeverAchievementStore.size(), sForeverCriteriaStore.size(), sForeverCriteriaTreeStore.size(), sForeverModifierTreeStore.size());
+        sLogger.debugDbTables("DB2: Achievement stores ready (achievements={}, criteria={}, trees={}, modifiers={}).", sForeverAchievementStore.size(), sForeverCriteriaStore.size(), sForeverCriteriaTreeStore.size(), sForeverModifierTreeStore.size());
         return true;
     }
 
@@ -2324,7 +2324,7 @@ namespace {
         if (relation.getFieldCount() != 1u)
         {
             errors.push_back("Forever DB2 SuperDistrictSetXAvailableSD.db2: unexpected field count " + std::to_string(relation.getFieldCount()) + " (expected 1 plus relationship parent)");
-            sLogger.failure("Forever DB2 SuperDistrictSetXAvailableSD.db2 has unexpected field count {} (expected 1 plus relationship parent).", relation.getFieldCount());
+            sLogger.failure("DB2: SuperDistrictSetXAvailableSD.db2 invalid (fields={}, expected=1 plus relationship parent).", relation.getFieldCount());
             return false;
         }
 
@@ -2345,7 +2345,7 @@ namespace {
             sSuperDistrictSetXAvailableSDStore[entry.id] = entry;
         }
 
-        sLogger.debugDbTables("Forever SuperDistrictSetXAvailableSD DB2 store: {} relations loaded.", sSuperDistrictSetXAvailableSDStore.size());
+        sLogger.debugDbTables("DB2: SuperDistrictSetXAvailableSD store ready (relations={}).", sSuperDistrictSetXAvailableSDStore.size());
         return true;
     }
 
@@ -2361,7 +2361,7 @@ namespace {
         if (currencyTypes.getFieldCount() != 23)
         {
             errors.push_back("Forever DB2 CurrencyTypes.db2: unexpected field count " + std::to_string(currencyTypes.getFieldCount()) + " (expected 23)");
-            sLogger.failure("Forever DB2 CurrencyTypes.db2 has unexpected field count {} (expected 23).", currencyTypes.getFieldCount());
+            sLogger.failure("DB2: CurrencyTypes.db2 invalid (fields={}, expected=23).", currencyTypes.getFieldCount());
             return false;
         }
 
@@ -2380,7 +2380,7 @@ namespace {
         }
 
         sCurrencyTypesStore.assignEntries(entries);
-        sLogger.debugDbTables("Forever CurrencyTypes DB2 store: {} entries loaded.", entries.size());
+        sLogger.debugDbTables("DB2: CurrencyTypes store ready (entries={}).", entries.size());
         return true;
     }
 
@@ -2413,7 +2413,7 @@ namespace {
 
             errors.push_back(std::string("Forever DB2 ") + name + ": unexpected field count " + std::to_string(fields)
                 + " (expected " + std::to_string(expected) + (externalId ? " with external ID)" : " with embedded ID)"));
-            sLogger.failure("Forever DB2 {} has unexpected field count {} (expected {}, indexField={}).", name, fields, expected, file.getIndexField());
+            sLogger.failure("DB2: {} invalid (fields={}, expected={}, indexField={}).", name, fields, expected, file.getIndexField());
             return false;
         };
 
@@ -2611,7 +2611,7 @@ namespace {
             sSkillLineXTraitTreeStore[e.id] = e;
         }
 
-        sLogger.debugDbTables("Forever Trait DB2 stores: systems={} trees={} nodes={} entries={} definitions={} subtrees={} currencies={} sources={} skillLineTrees={}.",
+        sLogger.debugDbTables("DB2: Trait stores ready (systems={}, trees={}, nodes={}, entries={}, definitions={}, subtrees={}, currencies={}, sources={}, skillLineTrees={}).",
             sTraitSystemStore.size(), sTraitTreeStore.size(), sTraitNodeStore.size(), sTraitNodeEntryStore.size(), sTraitDefinitionStore.size(),
             sTraitSubTreeStore.size(), sTraitCurrencyStore.size(), sTraitCurrencySourceStore.size(), sSkillLineXTraitTreeStore.size());
         return true;
@@ -2753,7 +2753,7 @@ namespace {
         }
         sWMOAreaTableStore.assignEntries(wmoEntries);
 
-        sLogger.info("Forever terrain DB2 stores: AreaTable={} LiquidType={} WMOAreaTable={}",
+        sLogger.info("DB2: Terrain stores ready (AreaTable={}, LiquidType={}, WMOAreaTable={}).",
             sAreaStore.size(), liquidEntries.size(), wmoEntries.size());
         return !sAreaStore.empty() && !liquidEntries.empty();
     }
