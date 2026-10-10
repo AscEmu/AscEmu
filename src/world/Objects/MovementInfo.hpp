@@ -78,6 +78,7 @@ struct MovementInfo
 
     //todo: move this to status
     bool hasTransportData = false;
+    bool hasInertia = false;            // 9.x
     bool hasMovementFlags = false;
     bool hasMovementFlags2 = false;
     bool hasCount = false;

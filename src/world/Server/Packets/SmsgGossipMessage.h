@@ -49,7 +49,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // unit, gossip, friendship faction, text, both counts, then the options and the quests
                 packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
@@ -71,9 +71,22 @@ namespace AscEmu::Packets
                     packet << uint8_t(itemListItem.second.icon);
                     packet << uint8_t(itemListItem.second.isCoded ? 1 : 0);
                     packet << uint32_t(itemListItem.second.boxMoney);
+                    if (m_protocol.isShadowlands())
+                        packet << uint32_t(0);                          // language
                     packet.writeBits(static_cast<uint32_t>(optionText.length()), 12);
                     packet.writeBits(static_cast<uint32_t>(itemListItem.second.boxMessage.length()), 12);
-                    packet.flushBits();
+                    if (m_protocol.isShadowlands())
+                    {
+                        // 9.x: status (available), spell, then the treasure list
+                        packet.writeBits(0, 2);
+                        packet.writeBit(false);
+                        packet.flushBits();
+                        packet << uint32_t(0);
+                    }
+                    else
+                    {
+                        packet.flushBits();
+                    }
                     packet.writeString(optionText);
                     packet.writeString(itemListItem.second.boxMessage);
                 }
@@ -83,10 +96,19 @@ namespace AscEmu::Packets
                     const std::string questTitle = sMySQLStore.getLocaleGossipTitleOrElse(questListItem.first, locale);
 
                     packet << uint32_t(questListItem.first);
-                    packet << uint32_t(questListItem.second.icon);
-                    packet << int32_t(questListItem.second.level);
-                    if (m_protocol.isLegion() || m_protocol.isBfA())
-                        packet << int32_t(0);                           // max scaling level
+                    if (m_protocol.isShadowlands())
+                    {
+                        // 9.x: content tuning instead of the levels
+                        packet << int32_t(0);
+                        packet << uint32_t(questListItem.second.icon);
+                    }
+                    else
+                    {
+                        packet << uint32_t(questListItem.second.icon);
+                        packet << int32_t(questListItem.second.level);
+                        if (m_protocol.isLegion() || m_protocol.isBfA())
+                            packet << int32_t(0);                       // max scaling level
+                    }
                     packet << uint32_t(questListItem.second.flags);
                     packet << uint32_t(0);                              // flags 2
                     packet.writeBit(questListItem.second.repeatable != 0);

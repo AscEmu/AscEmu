@@ -16,6 +16,7 @@ environment:
   - ASC_VERSION: WoD
   - ASC_VERSION: Legion
   - ASC_VERSION: BfA
+  - ASC_VERSION: Shadowlands
 
 matrix:
   fast_finish: true # Abort all other Matrix builds if one fails

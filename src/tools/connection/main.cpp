@@ -444,6 +444,13 @@ int main(int argc, char** argv)
         const uint32_t build = cp::getBuildNumber(patcher.data());
         if (build == WoDBuild || build == LegionBuild || build == BfABuild)
             return patchBattleNetClient(patcher, build, argc > 2 ? std::filesystem::path{ argv[2] } : std::filesystem::path{});
+
+        // later Battle.net clients are started through their own launcher instead of a patched binary
+        if (build >= WoDBuild)
+        {
+            std::cerr << "Error: Battle.net client build " << build << " is not supported by this patcher" << std::endl;
+            return 1;
+        }
     }
     catch (const std::exception& e)
     {

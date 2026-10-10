@@ -72,7 +72,7 @@ namespace AscEmu::Packets
                 packet << int32_t(0);
                 return true;
             }
-            else if (m_protocol.isLegion() || m_protocol.isBfA())
+            else if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // level, health, six powers, four stats, combo points
                 packet << int32_t(level);
@@ -82,7 +82,7 @@ namespace AscEmu::Packets
                     packet << int32_t(0);
                 packet << int32_t(stat0) << int32_t(stat1) << int32_t(stat2) << int32_t(stat3);
                 packet << int32_t(0);                   // new talents
-                if (m_protocol.isBfA())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands())
                     packet << int32_t(0);               // new pvp talent slots
                 return true;
             }

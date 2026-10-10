@@ -133,7 +133,7 @@ uint32_t getConColor(uint16_t AttackerLvl, uint16_t VictimLvl)
     };
 #endif
 
-#if VERSION_STRING >= Mop
+#if VERSION_STRING >= Mop && VERSION_STRING != Shadowlands
     const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
     {
         0,                                          //0
@@ -146,6 +146,21 @@ uint32_t getConColor(uint16_t AttackerLvl, uint16_t VictimLvl)
         48, 49, 50, 51, 51, 52, 53, 54, 55, 56,     //61-70
         57, 58, 59, 60, 61, 62, 63, 64, 65, 65,     //71-80
         65, 66, 67, 68, 69, 70, 71, 72, 74, 75      //81-90
+    };
+#endif
+
+#if VERSION_STRING == Shadowlands
+    // 9.x after the level squish: no gray level below 7, up to 34 the level less 7 and less one per fifth level
+    // from 15 on, from 35 on the level less 10
+    const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
+    {
+        0,                                          //0
+        0, 0, 0, 0, 0, 0, 1, 2, 3, 4,               //1-10
+        5, 6, 7, 8, 8, 9, 10, 11, 12, 12,           //11-20
+        13, 14, 15, 16, 16, 17, 18, 19, 20, 20,     //21-30
+        21, 22, 23, 24, 25, 26, 27, 28, 29, 30,     //31-40
+        31, 32, 33, 34, 35, 36, 37, 38, 39, 40,     //41-50
+        41, 42, 43, 44, 45, 46, 47, 48, 49, 50      //51-60
     };
 #endif
 

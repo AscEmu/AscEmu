@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+
+#include <vector>
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -18,6 +20,7 @@ namespace AscEmu::Packets
         bool hasNativeRealm = false;  // bit1C
         uint32_t virtualRealmId = 0;
         uint32_t nativeRealmId = 0;
+        std::vector<WoWGuid> guids;     // 9.x: every requested player
 
         CmsgNameQuery() : ManagedPacket(CMSG_NAME_QUERY, 0)
         {
@@ -26,6 +29,24 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isShadowlands())
+            {
+                // 9.x asks for several players at once, the first one takes the single guid
+                const uint32_t count = packet.read<uint32_t>();
+                if (count == 0 || count > 50)
+                    return false;
+
+                for (uint32_t i = 0; i < count; ++i)
+                {
+                    WoWGuid128 clientGuid;
+                    packet >> clientGuid;
+                    guids.push_back(WoWGuid::fromGuid128(clientGuid));
+                }
+
+                guid = guids.front();
+                return !packet.hadReadFailure();
+            }
+
             if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
             {
                 WoWGuid128 clientGuid;

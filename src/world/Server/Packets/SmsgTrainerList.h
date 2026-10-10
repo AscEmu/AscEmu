@@ -66,7 +66,7 @@ namespace AscEmu::Packets
             if (trainer == nullptr)
                 return false;
 
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // trainer, type, trainer id, then the spells and the greeting
                 constexpr uint8_t maxRequiredCount = 3;

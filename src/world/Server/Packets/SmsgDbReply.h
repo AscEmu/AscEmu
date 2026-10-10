@@ -38,6 +38,17 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isShadowlands())
+            {
+                // table hash, record, time, status (valid or removed), size, data
+                packet << type << entry << hotfixTime;
+                packet.writeBits(bufferSize != 0 ? 1 : 2, 3);
+                packet.flushBits();
+                packet << bufferSize;
+                packet.append(buffer);
+                return true;
+            }
+
             if (m_protocol.expansion >= WoW::Expansion::_WoD && m_protocol.expansion <= WoW::Expansion::_BfA)
             {
                 // table hash, record, time; a record without data is answered as not available

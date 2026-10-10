@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [Classic, TBC, WotLK, Cata, Mop, WoD, Legion, BfA]
+        version: [Classic, TBC, WotLK, Cata, Mop, WoD, Legion, BfA, Shadowlands]
 
     steps:
       - name: Check out repo

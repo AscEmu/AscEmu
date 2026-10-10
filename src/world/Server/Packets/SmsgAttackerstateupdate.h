@@ -44,7 +44,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // the attack round as a block behind the combat log bit, 7.x closes it with the sandbox scaling data
                 ByteBuffer buff;
@@ -52,10 +52,10 @@ namespace AscEmu::Packets
                 buff << attackerGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 buff << victimGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 buff << int32_t(damage);
-                if (m_protocol.isBfA())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands())
                     buff << int32_t(damage);                                 // original damage
                 buff << int32_t(overKill);
-                if (m_protocol.isBfA())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands())
                 {
                     buff << uint8_t(1);                                      // sub damage count
                 }
@@ -114,6 +114,22 @@ namespace AscEmu::Packets
                     // content tuning: type, target level, expansion, scaling levels, level delta, item levels, curve, scales with item level
                     for (uint8_t i = 0; i < 15; ++i)
                         buff << uint8_t(0);
+                }
+                else if (m_protocol.isShadowlands())
+                {
+                    // content tuning: type, target level, expansion, level delta, scaling level delta, item levels, curve,
+                    // flags (no level and no item level scaling), content tuning of player and target
+                    buff << uint8_t(0);
+                    buff << uint8_t(0);
+                    buff << uint8_t(0);
+                    buff << int16_t(0);
+                    buff << int8_t(0);
+                    buff << float(0.0f);
+                    buff << float(0.0f);
+                    buff << uint16_t(0);
+                    buff << uint32_t(3);
+                    buff << int32_t(0);
+                    buff << int32_t(0);
                 }
 
                 packet.writeBit(false);                                      // no combat log data

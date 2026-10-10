@@ -28,7 +28,8 @@ enum class Cond : uint8_t
     HasTransportTime2,
     HasTransportTime3,
     HasCount,
-    IsTransportPresent
+    IsTransportPresent,
+    HasInertia
 };
 
 enum class MovementOp : uint16_t
@@ -103,6 +104,12 @@ enum class MovementOp : uint16_t
     // removed movement forces: their count, then one guid each
     RemovedForcesCount,
     RemovedForces,
+
+    // 9.x: the third flags as plain field, the inertia bit and the inertia block (guid, force, lifetime) that is
+    // only read
+    Flags3,
+    HasInertia,
+    SkipInertia,
 
     // end of a bit field between byte fields: flushes on write, starts a new byte on read
     AlignBits
@@ -179,4 +186,13 @@ struct MovementVersionTraits<WoW::Expansion::_BfA>
     static constexpr bool hasFlags2 = true;
     static constexpr int flags2BitWidth = 18;
     static constexpr bool flags2IsBitPacked = true;
+};
+
+// 9.x carries the flags, the second flags and the third flags as plain 32 bit fields
+template <>
+struct MovementVersionTraits<WoW::Expansion::_Shadowlands>
+{
+    static constexpr bool hasFlags2 = true;
+    static constexpr int flags2BitWidth = 32;
+    static constexpr bool flags2IsBitPacked = false;
 };

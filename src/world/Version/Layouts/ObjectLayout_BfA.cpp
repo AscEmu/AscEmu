@@ -3,8 +3,8 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-// Layout of the object values the server keeps for BfA clients: the 7.3.5 layout, the client receives the values
-// as the update field structures of 8.x (byte offset, size, element count and element stride of every field).
+// Layout of the object values the server keeps for BfA clients: byte offset, size, element count and element stride
+// of every field. Unchanged since 7.3.5; the client receives the values as the update field structures of 8.3.7.
 
 #include "Version/ObjectLayout.hpp"
 

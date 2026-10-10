@@ -38,7 +38,7 @@ namespace AscEmu::Packets
             if (m_protocol.isClassic())
                 return false;
 
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // every line: length, then the text
                 packet.writeBits(lineCount, 4);

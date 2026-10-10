@@ -36,12 +36,12 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // entry, allow, then the size of the data block: type, display, four names, three strings,
                 // 33 data values, size, quest items, required level
                 packet << info.entry;
-                if (m_protocol.isBfA())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands())
                     packet << WoWGuid128();                 // the queried object
                 packet.writeBit(info.entry != 0);
                 packet.flushBits();
@@ -64,8 +64,10 @@ namespace AscEmu::Packets
                         << info.raw.parameter_20 << info.raw.parameter_21 << info.raw.parameter_22 << info.raw.parameter_23 << info.raw.parameter_24
                         << info.raw.parameter_25 << info.raw.parameter_26 << info.raw.parameter_27 << info.raw.parameter_28 << info.raw.parameter_29
                         << info.raw.parameter_30 << info.raw.parameter_31 << info.raw.parameter_32;
-                    if (m_protocol.isBfA())
+                    if (m_protocol.isBfA() || m_protocol.isShadowlands())
                         stats << uint32_t(0);                   // data 33
+                    if (m_protocol.isShadowlands())
+                        stats << uint32_t(0);                   // data 34
                     stats << float(info.size);
 
                     uint8_t questItemCount = 0;

@@ -37,7 +37,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // criteria, quantity, player, flags, current time, elapsed time, creation time
                 packet << criteriaId;
@@ -45,6 +45,15 @@ namespace AscEmu::Packets
                 packet << guid.toGuid128(m_protocol.realmId, 0);
                 packet << uint32_t(0);                  // criteria is not time-limited (time-limited criteria are not tracked)
                 packet.appendPackedTime(progressDate);
+                if (m_protocol.isShadowlands())
+                {
+                    // 9.x: 64 bit elapsed and creation times, no recruit a friend acceptance
+                    packet << int64_t(0);
+                    packet << int64_t(0);
+                    packet.writeBit(false);
+                    packet.flushBits();
+                    return true;
+                }
                 packet << uint32_t(0);                  // elapsed time since criteria was started (not tracked)
                 packet << uint32_t(0);
                 return true;

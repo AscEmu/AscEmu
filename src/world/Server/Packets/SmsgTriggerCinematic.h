@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "WoWGuid.hpp"
 
 #include <cstdint>
 
@@ -32,6 +33,8 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << cinematicId;
+            if (m_protocol.isShadowlands())
+                packet << WoWGuid128();                 // conversation
 
             return true;
         }

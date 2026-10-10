@@ -22,6 +22,12 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isShadowlands())
+            {
+                packet >> realmId;
+                return !packet.hadReadFailure();
+            }
+
             if (!m_protocol.isMop() && !m_protocol.isLegion() && !m_protocol.isBfA() || m_protocol.isBfA())
                 return false;
 

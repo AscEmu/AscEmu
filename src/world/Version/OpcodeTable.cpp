@@ -19,6 +19,7 @@ namespace Version
             case WoW::Expansion::_WoD:     return &Tables::wodOpcodes;
             case WoW::Expansion::_Legion:  return &Tables::legionOpcodes;
             case WoW::Expansion::_BfA:      return &Tables::bfaOpcodes;
+            case WoW::Expansion::_Shadowlands:        return &Tables::shadowlandsOpcodes;
             default:                       return nullptr;
         }
     }

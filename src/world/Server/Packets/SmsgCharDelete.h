@@ -31,9 +31,9 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isBfA())
+            if (m_protocol.isBfA() || m_protocol.isShadowlands())
             {
-                packet << toBfACharacterErrorCode(result);
+                packet << (m_protocol.isShadowlands() ? toShadowlandsCharacterErrorCode(result) : toBfACharacterErrorCode(result));
                 return true;
             }
 

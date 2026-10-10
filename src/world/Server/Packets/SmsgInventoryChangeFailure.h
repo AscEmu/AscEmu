@@ -44,7 +44,7 @@ namespace AscEmu::Packets
             {
                 // result, both items, bag slot, then the data of the result: the level (1, 87), the containers of a
                 // bind confirmation (81) or the limit category (84, 85, 89); 8.x adds a result at 81, the ones above move up
-                const uint8_t wireError = m_protocol.isBfA() && error >= 81 ? error + 1 : error;
+                const uint8_t wireError = (m_protocol.isBfA() || m_protocol.isShadowlands()) && error >= 81 ? error + 1 : error;
 
                 packet << int8_t(wireError);
                 packet << srcGuid.toGuid128(m_protocol.realmId, 0);

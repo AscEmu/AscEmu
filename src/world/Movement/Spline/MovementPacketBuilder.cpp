@@ -825,11 +825,13 @@ void PacketBuilder::WriteMonsterMoveLegion(MoveSpline const& moveSpline, ByteBuf
     const uint32_t splineFlags = legionSplineFlags(moveSpline.splineflags);
 
     data << uint32_t(splineFlags);
+#if VERSION_STRING != Shadowlands
     data << uint8_t(animation ? moveSpline.splineflags.animTier : 0);
     data << uint32_t(animation ? moveSpline.effect_start_time : 0);   // tier transition start
+#endif
     data << int32_t(0);                                               // elapsed
     data << uint32_t(moveSpline.Duration());
-#if VERSION_STRING == BfA
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands
     data << uint32_t(0);                                              // fade object time
 #else
     data << float(parabolic ? moveSpline.vertical_acceleration : 0.0f);
@@ -852,6 +854,33 @@ void PacketBuilder::WriteMonsterMoveLegion(MoveSpline const& moveSpline, ByteBuf
 
     writeFacing();
     writeMonsterSplineTailWoD(data, splineFlags);
+#elif VERSION_STRING == Shadowlands
+    // 9.x: the vehicle exit and the interpolation are bits behind the point count, the animation goes through
+    // the tier transition block
+    data << uint8_t(0);                                               // mode
+    writeTransportOfMoverLegion(data, unit, realmId);
+
+    data.writeBits(face, 2);
+    data.writeBits(points, 16);
+    data.writeBit(false);                                             // vehicle exit voluntary
+    data.writeBit(false);                                             // interpolate
+    data.writeBits(packedDeltas, 16);
+    data.writeBit(false);                                             // spline filter
+    data.writeBit(false);                                             // spell effect extra data
+    data.writeBit(parabolic);                                         // jump extra data
+    data.writeBit(false);                                             // animation tier transition
+    data.writeBit(false);                                             // unknown block
+    data.flushBits();
+
+    writeFacing();
+    writePoints();
+
+    if (parabolic)
+    {
+        data << float(moveSpline.vertical_acceleration);              // jump gravity
+        data << uint32_t(moveSpline.effect_start_time);               // start time
+        data << uint32_t(0);                                          // duration
+    }
 #else
     data << uint8_t(0);                                               // mode
     data << uint8_t(0);                                               // vehicle exit voluntary
@@ -891,11 +920,13 @@ void PacketBuilder::WriteStopMovementLegion(G3D::Vector3 const& pos, uint32_t sp
     writeMonsterSplineHeaderLegion(data, splineId, 2);
 
     data << uint32_t(0);                                              // flags
+#if VERSION_STRING != Shadowlands
     data << uint8_t(0);                                               // animation tier
     data << uint32_t(0);                                              // tier transition start
+#endif
     data << int32_t(0);                                               // elapsed
     data << uint32_t(0);                                              // move time
-#if VERSION_STRING == BfA
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands
     data << uint32_t(0);                                              // fade object time
 #else
     data << float(0.0f);                                              // jump gravity
@@ -914,6 +945,21 @@ void PacketBuilder::WriteStopMovementLegion(G3D::Vector3 const& pos, uint32_t sp
     data.flushBits();
 
     writeMonsterSplineTailWoD(data, 0);
+#elif VERSION_STRING == Shadowlands
+    data << uint8_t(0);                                               // mode
+    writeTransportOfMoverLegion(data, unit, realmId);
+
+    data.writeBits(0, 2);                                             // face
+    data.writeBits(0, 16);                                            // points
+    data.writeBit(false);                                             // vehicle exit voluntary
+    data.writeBit(false);                                             // interpolate
+    data.writeBits(0, 16);                                            // packed deltas
+    data.writeBit(false);                                             // spline filter
+    data.writeBit(false);                                             // spell effect extra data
+    data.writeBit(false);                                             // jump extra data
+    data.writeBit(false);                                             // animation tier transition
+    data.writeBit(false);                                             // unknown block
+    data.flushBits();
 #else
     data << uint8_t(0);                                               // mode
     data << uint8_t(0);                                               // vehicle exit voluntary

@@ -5,6 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <array>
+#include <cstdint>
+
 // Key pair of SMSG_CONNECT_TO and SMSG_ENTER_ENCRYPTED_MODE, shared by the 6.x, 7.x and 8.x servers.
 // The connection patcher writes its modulus into the client.
 namespace AscEmu::Version::WorldConnectKey
@@ -37,4 +40,14 @@ namespace AscEmu::Version::WorldConnectKey
         "LOwwBQ6lz7P9RqYYB5wVlaRvEhb9+lCve/xVcxMeZ5GkOBPxVygYV9l/wNdE25Nz\n"
         "OHYtKG3GK3GEcFDwZU2LPHq21EroUAdtRfbrJ4KW2yc8igtXKxTBYw==\n"
         "-----END RSA PRIVATE KEY-----\n";
+
+    // 9.x: SMSG_ENTER_ENCRYPTED_MODE carries an Ed25519 signature with a context instead of the RSA signature;
+    // the private key and the context of the known key pair
+    inline constexpr std::array<uint8_t, 32> EnterEncryptedModeKey = {
+        0x08, 0xBD, 0xC7, 0xA3, 0xCC, 0xC3, 0x4F, 0x3F, 0x6A, 0x0B, 0xFF, 0xCF, 0x31, 0xC1, 0xB6, 0x97,
+        0x69, 0x1E, 0x72, 0x9A, 0x0A, 0xAB, 0x2C, 0x77, 0xC3, 0x6F, 0x8A, 0xE7, 0x5A, 0x9A, 0xA7, 0xC9
+    };
+    inline constexpr std::array<uint8_t, 16> EnterEncryptedModeContext = {
+        0xA7, 0x1F, 0xB6, 0x9B, 0xC9, 0x7C, 0xDD, 0x96, 0xE9, 0xBB, 0xB8, 0x21, 0x39, 0x8D, 0x5A, 0xD4
+    };
 }

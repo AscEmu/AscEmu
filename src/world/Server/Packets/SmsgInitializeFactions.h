@@ -32,10 +32,10 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
-                // 256 (6.x), 300 (7.x) or 350 (8.x) factions: flags and standing, then one bonus bit per faction
-                const uint16_t factionCount = m_protocol.isWoD() ? 256 : m_protocol.isLegion() ? 300 : 350;
+                // 256 (6.x), 300 (7.x), 350 (8.x) or 400 (9.x) factions: flags and standing, then one bonus bit per faction
+                const uint16_t factionCount = m_protocol.isWoD() ? 256 : m_protocol.isLegion() ? 300 : m_protocol.isShadowlands() ? 400 : 350;
 
                 for (uint16_t i = 0; i < factionCount; ++i)
                 {

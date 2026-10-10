@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 // Warlords of Draenor = ??
 // Legion = ??
 // Battle for Azeroth = ??
+// Shadowlands = ??
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -35,9 +36,7 @@ This file is released under the MIT license. See README-MIT for more information
     #define DBC_NUM_RACES 27
 #elif VERSION_STRING == WoD
     #define DBC_NUM_RACES 27
-#elif VERSION_STRING == Legion
-    #define DBC_NUM_RACES 31
-#elif VERSION_STRING == BfA
+#elif VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands
     #define DBC_NUM_RACES 31
 #endif
 
@@ -54,6 +53,7 @@ This file is released under the MIT license. See README-MIT for more information
 // Warlords of Draenor = ??
 // Legion = ??
 // Battle for Azeroth = ??
+// Shadowlands = ??
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -69,9 +69,7 @@ This file is released under the MIT license. See README-MIT for more information
     #define DBC_TAXI_MASK_SIZE 255
 #elif VERSION_STRING == WoD
     #define DBC_TAXI_MASK_SIZE 217
-#elif VERSION_STRING == Legion
-    #define DBC_TAXI_MASK_SIZE 258
-#elif VERSION_STRING == BfA
+#elif VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands
     #define DBC_TAXI_MASK_SIZE 258
 #endif
 
@@ -88,6 +86,7 @@ This file is released under the MIT license. See README-MIT for more information
 // Warlords of Draenor = 100
 // Legion = 110
 // Battle for Azeroth = 120
+// Shadowlands = 60
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -106,7 +105,9 @@ This file is released under the MIT license. See README-MIT for more information
 #elif VERSION_STRING == Legion
     #define DBC_PLAYER_LEVEL_CAP 110
 #elif VERSION_STRING == BfA
-    #define DBC_PLAYER_LEVEL_CAP 110
+    #define DBC_PLAYER_LEVEL_CAP 120
+#elif VERSION_STRING == Shadowlands
+    #define DBC_PLAYER_LEVEL_CAP 60
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -122,6 +123,7 @@ This file is released under the MIT license. See README-MIT for more information
 // Warlords of Draenor = ??
 // Legion = ??
 // Battle for Azeroth = ??
+// Shadowlands = ??
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -181,9 +183,7 @@ This file is released under the MIT license. See README-MIT for more information
     #define PLAYER_ACTION_BUTTON_COUNT 132
 #elif VERSION_STRING == WoD
     #define PLAYER_ACTION_BUTTON_COUNT 132
-#elif VERSION_STRING == Legion
-    #define PLAYER_ACTION_BUTTON_COUNT 132
-#elif VERSION_STRING == BfA
+#elif VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands
     #define PLAYER_ACTION_BUTTON_COUNT 132
 #endif
 
@@ -217,11 +217,8 @@ This file is released under the MIT license. See README-MIT for more information
     #define GLYPHS_COUNT 6
 #elif VERSION_STRING == WoD
     #define GLYPHS_COUNT 6
-#elif VERSION_STRING == Legion
-    // 7.x has no glyph slots anymore (a glyph list per specialization); keeps the 6.x slot count until glyphs are ported
-    #define GLYPHS_COUNT 6
-#elif VERSION_STRING == BfA
-    // 7.x has no glyph slots anymore (a glyph list per specialization); keeps the 6.x slot count until glyphs are ported
+#elif VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands
+    // 7.x and later have no glyph slots anymore (a glyph list per specialization); keeps the 6.x slot count until glyphs are ported
     #define GLYPHS_COUNT 6
 #endif
 

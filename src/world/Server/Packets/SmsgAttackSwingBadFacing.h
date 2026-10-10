@@ -24,12 +24,12 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // one packet for every swing error; 6.x: cannot attack, not in range, bad facing, dead target,
                 // 7.x: cannot attack, bad facing, not in range, dead target
                 packet.initialize(SMSG_ATTACK_SWING_ERROR, 1);
-                if (m_protocol.isBfA())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands())
                     packet.writeBits(1, 3);             // 8.x: not in range, bad facing, cannot attack, dead target
                 else
                     packet.writeBits(m_protocol.isWoD() ? 2 : 1, 2);

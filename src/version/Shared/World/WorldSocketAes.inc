@@ -1,4 +1,4 @@
-// BfA (8.3.7) extension of WorldSocket: the V2 world transport.
+// BfA (8.3.7) and Shadowlands (9.2.7) extension of WorldSocket: the V2 world transport.
 // Every packet travels behind a 16 byte header (size and AES-GCM tag), the encryption starts after
 // SMSG_ENTER_ENCRYPTED_MODE was acknowledged. Application opcodes are resolved and dispatched through
 // the central opcode table like on the classic path. The values of the client come from

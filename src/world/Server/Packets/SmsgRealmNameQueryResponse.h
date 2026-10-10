@@ -28,7 +28,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // virtual realm address, lookup state (0 = found), then local, unknown and both names
                 packet << realmId;

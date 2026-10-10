@@ -73,7 +73,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // one opcode per chat type: language, then the lengths and the texts
                 const uint8_t textLengthBits = m_protocol.isWoD() ? 8 : 9;
@@ -95,6 +95,11 @@ namespace AscEmu::Packets
                     case CHAT_MSG_CHANNEL:
                     {
                         packet >> language;
+                        if (type == CHAT_MSG_CHANNEL && m_protocol.isShadowlands())
+                        {
+                            WoWGuid128 channelGuid;
+                            packet >> channelGuid;
+                        }
                         packet.resetBitPos();
                         const uint32_t receiverLength = packet.readBits(9);
                         const uint32_t textLength = packet.readBits(textLengthBits);

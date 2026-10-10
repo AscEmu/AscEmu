@@ -64,7 +64,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // target, caster, cast guid, spell, visual, damage, overkill, school, absorbed, resisted, blocked,
                 // periodic, hit flags (crit 0x2), debug info, log data, sandbox scaling
@@ -73,8 +73,10 @@ namespace AscEmu::Packets
                 packet << WoWGuid128();
                 packet << int32_t(spellId);
                 packet << int32_t(0);
+                if (m_protocol.isShadowlands())
+                    packet << int32_t(0);           // script visual
                 packet << int32_t(damage);
-                if (m_protocol.isBfA())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands())
                     packet << int32_t(damage);          // original damage
                 packet << int32_t(overKill);
                 packet << uint8_t(school);

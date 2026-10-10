@@ -32,13 +32,23 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // target, emote, sound index
                 WoWGuid128 target;
                 packet >> target >> text_emote >> numEmote;
                 guid = WoWGuid::fromGuid128(target);
-                return true;
+
+                if (m_protocol.isShadowlands())
+                {
+                    // spell visual kits and the sequence variation
+                    const uint32_t kitCount = packet.read<uint32_t>();
+                    packet.read<int32_t>();
+                    for (uint32_t i = 0; i < kitCount && !packet.hadReadFailure(); ++i)
+                        packet.read<int32_t>();
+                }
+
+                return !packet.hadReadFailure();
             }
 
             if (m_protocol.expansion <= WoW::Expansion::_Cata)

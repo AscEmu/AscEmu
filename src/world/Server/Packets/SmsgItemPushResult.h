@@ -111,11 +111,21 @@ namespace AscEmu::Packets
 
                 // 8.x: the item instance has no random properties anymore
                 packet << int32_t(entry);
-                if (!m_protocol.isBfA())
+                if (!(m_protocol.isBfA() || m_protocol.isShadowlands()))
                 {
                     packet << int32_t(suffix);
                     packet << int32_t(randomProp);
                 }
+                if (m_protocol.isShadowlands())
+                {
+                    // 9.x: the modification list is counted, the bonus list follows it
+                    packet.writeBit(false);             // item bonus
+                    packet.flushBits();
+                    packet.writeBits(0, 6);             // modifications
+                    packet.flushBits();
+                    return true;
+                }
+
                 packet.writeBit(false);                 // item bonus
                 packet.writeBit(false);                 // modifications
                 packet.flushBits();

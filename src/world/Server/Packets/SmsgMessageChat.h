@@ -146,7 +146,7 @@ namespace AscEmu::Packets
 
             // 8.x: the instance chat types of 6.x, the language as uint32
             packet << uint8_t(m_protocol.isLegion() ? legionChatType(type) : wodChatType(type));
-            if (m_protocol.isBfA())
+            if (m_protocol.isBfA() || m_protocol.isShadowlands())
                 packet << uint32_t(language);
             else
                 packet << uint8_t(language);
@@ -165,11 +165,13 @@ namespace AscEmu::Packets
             packet.writeBits(0, 5);                                     // addon prefix
             packet.writeBits(static_cast<uint32_t>(channelName.length()), 7);
             packet.writeBits(static_cast<uint32_t>(message.length()), 12);
-            packet.writeBits(flag, 11);
+            packet.writeBits(flag, m_protocol.isShadowlands() ? 14 : 11);
             packet.writeBit(false);                                     // hide in the chat log
             packet.writeBit(false);                                     // fake sender name
-            if (m_protocol.isBfA())
+            if (m_protocol.isBfA() || m_protocol.isShadowlands())
                 packet.writeBit(false);                                 // unused value
+            if (m_protocol.isShadowlands())
+                packet.writeBit(false);                                 // channel guid
             packet.flushBits();
 
             packet.writeString(legionSenderName);
@@ -181,7 +183,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
                 return serialiseLegion(packet);
 
             if (m_protocol.expansion == WoW::Expansion::_Classic)

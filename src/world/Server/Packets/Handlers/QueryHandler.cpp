@@ -49,31 +49,36 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
         return;
     }
 
-    SmsgQueryPlayerNameResponse response;
-    response.guid = srlPacket.guid;
-
-    if (const auto info = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getLowGuid()))
+    // 9.x asks for several players in one request and gets one answer per player
+    const std::vector<WoWGuid> queriedGuids = getClientProtocol().isShadowlands() ? srlPacket.guids : std::vector<WoWGuid>{ srlPacket.guid };
+    for (const auto& queriedGuid : queriedGuids)
     {
-        sLogger.debugOpcode("Received CMSG_NAME_QUERY for name: {}, race: {}, gender: {}, class: {}, level: {}.",
-            info->name, info->race, info->gender, info->cl, info->lastLevel);
+        SmsgQueryPlayerNameResponse response;
+        response.guid = queriedGuid;
 
-        response.hasData = true;
-        response.player_name = info->name;
-        response.race = info->race;
-        response.gender = info->gender;
-        response.class_ = info->cl;
-        response.level = static_cast<uint8_t>(info->lastLevel);
+        if (const auto info = sObjectMgr.getCachedCharacterInfo(queriedGuid.getLowGuid()))
+        {
+            sLogger.debugOpcode("Received CMSG_NAME_QUERY for name: {}, race: {}, gender: {}, class: {}, level: {}.",
+                info->name, info->race, info->gender, info->cl, info->lastLevel);
 
-        response.realmId = sLogonCommHandler.getRealmId();
-        response.accountId = GetAccountId();
+            response.hasData = true;
+            response.player_name = info->name;
+            response.race = info->race;
+            response.gender = info->gender;
+            response.class_ = info->cl;
+            response.level = static_cast<uint8_t>(info->lastLevel);
+
+            response.realmId = sLogonCommHandler.getRealmId();
+            response.accountId = GetAccountId();
+        }
+        else
+        {
+            sLogger.debugOpcode("CMSG_NAME_QUERY for unknown GUID: {}.", queriedGuid.getLowGuid());
+            response.hasData = false;
+        }
+
+        sendManagedPacket(response);
     }
-    else
-    {
-        sLogger.debugOpcode("CMSG_NAME_QUERY for unknown GUID: {}.", srlPacket.guid.getLowGuid());
-        response.hasData = false;
-    }
-
-    sendManagedPacket(response);
 }
 
 void WorldSession::handleRealmNameQueryOpcode(WorldPacket& recvData)

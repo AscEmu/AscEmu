@@ -42,7 +42,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // pet, allow, name length, declined names, timestamp, name
                 packet << petGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
@@ -52,7 +52,10 @@ namespace AscEmu::Packets
                 for (uint8_t i = 0; i < 5; ++i)
                     packet.writeBits(0, 7);
                 packet.flushBits();
-                packet << timeStamp;
+                if (m_protocol.isShadowlands())
+                    packet << int64_t(timeStamp);
+                else
+                    packet << timeStamp;
                 packet.writeString(name);
                 return true;
             }

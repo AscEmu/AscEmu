@@ -85,7 +85,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 if (isPet)
                     return false;

@@ -38,6 +38,21 @@ namespace AscEmu::Packets
                 return true;
             }
 
+            if (m_protocol.isShadowlands())
+            {
+                // difficulty; bits: tournament realm, cross realm pvp alert, block exiting loading screen, restricted level,
+                // restricted money, instance group size
+                packet << uint32_t(0);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isLegion() || m_protocol.isBfA())
             {
                 // difficulty, tournament realm, cross realm pvp alert, 8.x: block exiting loading screen, restricted level,

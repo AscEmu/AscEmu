@@ -131,6 +131,7 @@ private:
             case Cond::HasTransportTime2:  return movementInfo.status_info.hasTransportTime2;
             case Cond::HasTransportTime3:  return movementInfo.status_info.hasTransportTime3;
             case Cond::HasCount:           return movementInfo.hasCount;
+            case Cond::HasInertia:         return movementInfo.hasInertia;
 
             case Cond::NoReadOptWrite:     return true;
             case Cond::ReadOptWrite:       return true;
@@ -194,7 +195,11 @@ private:
 
             case MovementOp::Flags:
             {
-                if constexpr (Version >= WoW::Expansion::_Cata)
+                if constexpr (Version == WoW::Expansion::_Shadowlands)
+                {
+                    buffer >> movementInfo.flags;
+                }
+                else if constexpr (Version >= WoW::Expansion::_Cata)
                 {
                     movementInfo.flags = buffer.readBits(30);
                 }
@@ -237,6 +242,12 @@ private:
                         if constexpr (MovementVersionTraits<Version>::flags2BitWidth == 8)
                         {
                             uint8_t tempFlags2 = 0;
+                            buffer >> tempFlags2;
+                            movementInfo.flags2 = static_cast<uint16_t>(tempFlags2);
+                        }
+                        else if constexpr (MovementVersionTraits<Version>::flags2BitWidth == 32)
+                        {
+                            uint32_t tempFlags2 = 0;
                             buffer >> tempFlags2;
                             movementInfo.flags2 = static_cast<uint16_t>(tempFlags2);
                         }
@@ -390,6 +401,22 @@ private:
                     }
                 } break;
 
+            case MovementOp::Flags3:
+                {
+                    uint32_t flags3 = 0;
+                    buffer >> flags3;
+                } break;
+
+            case MovementOp::HasInertia: movementInfo.hasInertia = buffer.readBit(); break;
+
+            case MovementOp::SkipInertia:
+                {
+                    WoWGuid128 inertiaGuid;
+                    float force = 0.0f;
+                    uint32_t lifetime = 0;
+                    buffer >> inertiaGuid >> force >> force >> force >> lifetime;
+                } break;
+
             case MovementOp::AlignBits: buffer.resetBitPos(); break;
             default:
                 break;
@@ -424,7 +451,9 @@ private:
 
             case MovementOp::Flags:
             {
-                if constexpr (Version >= WoW::Expansion::_Cata)
+                if constexpr (Version == WoW::Expansion::_Shadowlands)
+                    data << movementInfo.flags;
+                else if constexpr (Version >= WoW::Expansion::_Cata)
                     data.writeBits(movementInfo.flags, 30);
                 else
                     data << movementInfo.flags;
@@ -442,6 +471,8 @@ private:
                     {
                         if constexpr (MovementVersionTraits<Version>::flags2BitWidth == 8)
                             data << static_cast<uint8_t>(movementInfo.flags2);
+                        else if constexpr (MovementVersionTraits<Version>::flags2BitWidth == 32)
+                            data << static_cast<uint32_t>(movementInfo.flags2);
                         else
                             data << movementInfo.flags2;
                     }
@@ -528,6 +559,9 @@ private:
             case MovementOp::TGuid128: data << movementInfo.transport_guid.toGuid128(worldConfig.battleNetComm.realmId, movementInfo.mapId); break;
             case MovementOp::RemovedForcesCount: data << static_cast<uint32_t>(0); break;
             case MovementOp::RemovedForces: break;
+            case MovementOp::Flags3:      data << uint32_t(0); break;
+            case MovementOp::HasInertia:  data.writeBit(false); break;
+            case MovementOp::SkipInertia: break;
             case MovementOp::AlignBits: data.flushBits(); break;
             default:
                 break;
@@ -550,6 +584,8 @@ private:
             return getLegionMovementDescriptor(opcode, read);
         else if constexpr (Version == WoW::Expansion::_BfA)
             return getBfAMovementDescriptor(opcode, read);
+        else if constexpr (Version == WoW::Expansion::_Shadowlands)
+            return getShadowlandsMovementDescriptor(opcode, read);
         else
             return getMopMovementDescriptor(opcode, read);
     }

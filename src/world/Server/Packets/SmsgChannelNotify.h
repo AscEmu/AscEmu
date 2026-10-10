@@ -52,11 +52,11 @@ namespace AscEmu::Packets
             {
                 packet.initialize(SMSG_CHANNEL_NOTIFY_JOINED, 2 + 4 + 4 + 8 + channelName.size());
                 packet.writeBits(static_cast<uint32_t>(channelName.length()), 7);
-                packet.writeBits(0, m_protocol.isBfA() ? 11 : 10);          // welcome message
+                packet.writeBits(0, m_protocol.isBfA() || m_protocol.isShadowlands() ? 11 : 10);          // welcome message
                 packet << uint32_t(extraFlag);
                 packet << uint32_t(channelId);
                 packet << uint64_t(0);                                      // instance
-                if (m_protocol.isBfA())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands())
                     packet << WoWGuid128();                                 // channel
                 packet.writeString(channelName);
                 return true;
@@ -99,7 +99,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
                 return serialiseLegion(packet);
 
             packet << flag;

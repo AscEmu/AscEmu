@@ -544,6 +544,7 @@ namespace AscEmu::Battlenet
                 case 21742u: return { 6u, 2u, 4u };
                 case 26972u: return { 7u, 3u, 5u };
                 case 35662u: return { 8u, 3u, 7u };
+                case 45745u: return { 9u, 2u, 7u };
                 default:     return { 0u, 0u, 0u };
             }
         }

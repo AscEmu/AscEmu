@@ -34,7 +34,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // page, allow, then 6.x: id, next page, text; 7.x: the pages with id, next page, player condition,
                 // flags, text
@@ -43,11 +43,11 @@ namespace AscEmu::Packets
                 packet << pageId;
                 packet.writeBit(true);
                 packet.flushBits();
-                if (m_protocol.isLegion() || m_protocol.isBfA())
+                if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
                     packet << uint32_t(1);
                 packet << pageId;
                 packet << nextPageId;
-                if (m_protocol.isLegion() || m_protocol.isBfA())
+                if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
                 {
                     packet << int32_t(0);
                     packet << uint8_t(0);

@@ -27,6 +27,7 @@ namespace Version
             WoW::Expansion::_WoD,
             WoW::Expansion::_Legion,
             WoW::Expansion::_BfA,
+            WoW::Expansion::_Shadowlands,
         };
 
         size_t opcodeCount = 0;

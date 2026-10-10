@@ -45,6 +45,20 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isShadowlands())
+            {
+                // id, position with height, icon, importance, wmo group, flags, name length, name
+                packet << int32_t(0);
+                packet << posX << posY << float(0.0f) << icon << data;
+                packet << int32_t(0);
+                packet.writeBits(flags, 14);
+                packet.writeBits(static_cast<uint32_t>(name.length()), 6);
+                packet.flushBits();
+                if (name.length())
+                    packet.append(reinterpret_cast<const uint8_t*>(name.c_str()), name.length());
+                return true;
+            }
+
             if (m_protocol.isBfA())
             {
                 // id, position, icon, importance, flags, name length, name

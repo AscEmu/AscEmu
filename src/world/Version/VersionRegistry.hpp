@@ -49,7 +49,7 @@ namespace Version
         [[nodiscard]] const ExpansionLayouts& layouts() const noexcept;
 
     private:
-        static constexpr size_t kTableCount = 8;
+        static constexpr size_t kTableCount = 9;
 
         std::array<OpcodeTable, kTableCount> m_opcodeTables{};
         const ExpansionLayouts* m_layouts = nullptr;

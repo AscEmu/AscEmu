@@ -23,6 +23,7 @@ public:
             case WoW::Expansion::_WoD: return MovementCodec<WoW::Expansion::_WoD>::hasDescriptor(opcode, read);
             case WoW::Expansion::_Legion: return MovementCodec<WoW::Expansion::_Legion>::hasDescriptor(opcode, read);
             case WoW::Expansion::_BfA: return MovementCodec<WoW::Expansion::_BfA>::hasDescriptor(opcode, read);
+            case WoW::Expansion::_Shadowlands: return MovementCodec<WoW::Expansion::_Shadowlands>::hasDescriptor(opcode, read);
             default: return MovementCodec<WoW::Expansion::_Mop>::hasDescriptor(opcode, read);
         }
     }
@@ -38,6 +39,7 @@ public:
             case WoW::Expansion::_WoD: MovementCodec<WoW::Expansion::_WoD>::read(buffer, movementInfo, opcode); break;
             case WoW::Expansion::_Legion: MovementCodec<WoW::Expansion::_Legion>::read(buffer, movementInfo, opcode); break;
             case WoW::Expansion::_BfA: MovementCodec<WoW::Expansion::_BfA>::read(buffer, movementInfo, opcode); break;
+            case WoW::Expansion::_Shadowlands: MovementCodec<WoW::Expansion::_Shadowlands>::read(buffer, movementInfo, opcode); break;
             default: MovementCodec<WoW::Expansion::_Mop>::read(buffer, movementInfo, opcode); break;
         }
     }
@@ -53,6 +55,7 @@ public:
             case WoW::Expansion::_WoD: MovementCodec<WoW::Expansion::_WoD>::write(data, movementInfo, opcode, withGuid); break;
             case WoW::Expansion::_Legion: MovementCodec<WoW::Expansion::_Legion>::write(data, movementInfo, opcode, withGuid); break;
             case WoW::Expansion::_BfA: MovementCodec<WoW::Expansion::_BfA>::write(data, movementInfo, opcode, withGuid); break;
+            case WoW::Expansion::_Shadowlands: MovementCodec<WoW::Expansion::_Shadowlands>::write(data, movementInfo, opcode, withGuid); break;
             default: MovementCodec<WoW::Expansion::_Mop>::write(data, movementInfo, opcode, withGuid); break;
         }
     }

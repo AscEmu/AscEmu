@@ -40,7 +40,7 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isBfA())
+            if (m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // dos response, realm, local challenge, digest, ipv6 bit, realm join ticket
                 packet.read<uint64_t>();

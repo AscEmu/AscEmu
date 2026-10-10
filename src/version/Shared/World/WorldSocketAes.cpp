@@ -23,6 +23,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if AE_WORLD_PROFILE_BFA
 #include "version/BfA/World/WorldProfile.hpp"
+#elif AE_WORLD_PROFILE_SHADOWLANDS
+#include "version/Shadowlands/World/WorldProfile.hpp"
 #endif
 
 #include <openssl/bio.h>
@@ -30,6 +32,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <openssl/evp.h>
 #include <openssl/pem.h>
 #include <openssl/rand.h>
+#include <openssl/core_names.h>
+#include <openssl/params.h>
 #include <openssl/rsa.h>
 #include <zlib.h>
 
@@ -42,7 +46,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-#if AE_WORLD_PROFILE_BFA
+#if AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS
 
 namespace
 {
@@ -204,6 +208,37 @@ namespace
         std::array<uint8_t, Sha256Hash::DigestLength> digest{};
         Sha256Hash::hash(message, messageSize, digest.data());
         return signDigest(digest, output);
+    }
+
+    // 9.x: Ed25519 signature with a context (Ed25519ctx) over the digest, 64 bytes as they are
+    constexpr size_t Ed25519SignatureSize = 64;
+
+    bool signDigestEd25519(const std::array<uint8_t, Sha256Hash::DigestLength>& digest, uint8_t* output)
+    {
+        using namespace AscEmu::Version::WorldConnectKey;
+
+        std::unique_ptr<EVP_PKEY, EvpKeyDeleter> key(EVP_PKEY_new_raw_private_key(EVP_PKEY_ED25519, nullptr, EnterEncryptedModeKey.data(), EnterEncryptedModeKey.size()));
+        if (!key)
+            return false;
+
+        const OSSL_PARAM params[] = {
+            OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_INSTANCE, const_cast<char*>("Ed25519ctx"), 0),
+            OSSL_PARAM_construct_octet_string(OSSL_SIGNATURE_PARAM_CONTEXT_STRING, const_cast<uint8_t*>(EnterEncryptedModeContext.data()), EnterEncryptedModeContext.size()),
+            OSSL_PARAM_construct_end()
+        };
+
+        bool result = false;
+        if (EVP_MD_CTX* context = EVP_MD_CTX_new())
+        {
+            size_t outputSize = Ed25519SignatureSize;
+            result = EVP_DigestSignInit_ex(context, nullptr, nullptr, nullptr, nullptr, key.get(), params) > 0
+                && EVP_DigestSign(context, output, &outputSize, digest.data(), digest.size()) > 0
+                && outputSize == Ed25519SignatureSize;
+
+            EVP_MD_CTX_free(context);
+        }
+
+        return result;
     }
 }
 
@@ -517,15 +552,26 @@ bool WorldSocket::sendAesEnterEncryptedMode()
     std::array<uint8_t, Sha256Hash::DigestLength> digest{};
     Sha256Hash::hmac(m_aesEncryptKey.data(), m_aesEncryptKey.size(), message.data(), message.size(), digest.data());
 
+    // 8.x: RSA signature, 9.x: Ed25519 signature with a context
     std::array<uint8_t, AesWorld::SignatureSize> signature{};
-    if (!signDigest(digest, signature.data()))
-        return false;
+    size_t signatureSize = AesWorld::SignatureSize;
+    if constexpr (Profile::Expansion == WoW::Expansion::_Shadowlands)
+    {
+        signatureSize = Ed25519SignatureSize;
+        if (!signDigestEd25519(digest, signature.data()))
+            return false;
+    }
+    else
+    {
+        if (!signDigest(digest, signature.data()))
+            return false;
+    }
 
     // the client acknowledges before the encryption starts in both directions
     m_aesWorldState = AesWorldState::AwaitEncryptionAck;
 
-    WorldPacket enterEncryptedMode(SMSG_ENABLE_ENCRYPTION, AesWorld::SignatureSize + 1);
-    enterEncryptedMode.append(signature.data(), signature.size());
+    WorldPacket enterEncryptedMode(SMSG_ENABLE_ENCRYPTION, static_cast<uint32_t>(signatureSize + 1));
+    enterEncryptedMode.append(signature.data(), signatureSize);
     enterEncryptedMode.writeBit(true);
     enterEncryptedMode.flushBits();
     sendPacket(&enterEncryptedMode);

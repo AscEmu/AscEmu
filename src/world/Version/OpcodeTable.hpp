@@ -55,6 +55,7 @@ namespace Version
         extern const OpcodeSource wodOpcodes;
         extern const OpcodeSource legionOpcodes;
         extern const OpcodeSource bfaOpcodes;
+        extern const OpcodeSource shadowlandsOpcodes;
 
         extern const OpcodeMeta opcodeMeta[NUM_OPCODES];
     }

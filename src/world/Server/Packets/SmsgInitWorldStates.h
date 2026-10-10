@@ -134,7 +134,7 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            else if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 // map, area, sub area, then the states ordered by their variable
                 packet << uint32_t(mapId);

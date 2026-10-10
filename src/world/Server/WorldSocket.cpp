@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Packets/SmsgPong.h"
 #include "Packets/SmsgAuthChallenge.h"
 #include "Packets/SmsgAuthResponse.h"
+#include "Packets/SmsgAccountDataTimes.h"
 #include "Packets/SmsgFeatureSystemStatusGlueScreen.h"
 #include "Version/VersionRegistry.hpp"
 #include "WorldSession.h"
@@ -299,7 +300,7 @@ void WorldSocket::outPacket(uint32_t opcode, size_t len, const void* data)
         return;
     }
 
-#if AE_WORLD_PROFILE_WOD || AE_WORLD_PROFILE_LEGION || AE_WORLD_PROFILE_BFA
+#if AE_WORLD_PROFILE_WOD || AE_WORLD_PROFILE_LEGION || AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS
     // connections with their own framing and encryption take every packet through it
     {
         WorldPacket packet(static_cast<WorldPacket::Opcode>(opcode), len);
@@ -462,10 +463,17 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
     response.realmName = worldConfig.battleNetComm.realmName;
     sendManagedPacket(response);
 
-    if (m_protocol.isBfA())
+    if (m_protocol.isBfA() || m_protocol.isShadowlands())
     {
         SmsgFeatureSystemStatusGlueScreen glueScreen(static_cast<uint8_t>(m_protocol.expansion));
         sendManagedPacket(glueScreen);
+    }
+
+    // 9.x: the global account data times before the character list
+    if (m_protocol.isShadowlands())
+    {
+        SmsgAccountDataTimes accountDataTimes(static_cast<uint32_t>(UNIXTIME), 1, 0, 0, 0);
+        sendManagedPacket(accountDataTimes);
     }
 
     m_session->sendAddonInfo();

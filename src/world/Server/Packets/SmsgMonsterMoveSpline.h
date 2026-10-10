@@ -77,7 +77,7 @@ namespace AscEmu::Packets
             }
 
 #if VERSION_STRING >= WoD
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 if (mode == Mode::Launch)
                 {

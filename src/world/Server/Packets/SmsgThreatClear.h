@@ -30,7 +30,7 @@ namespace AscEmu::Packets
             if (m_protocol.expansion < WoW::Expansion::_WotLK)
                 return false;
 
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
             {
                 packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 return true;
