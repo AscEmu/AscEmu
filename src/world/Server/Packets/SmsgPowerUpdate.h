@@ -37,6 +37,16 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithin())
+            {
+                // 11.x: unit, then every changed power with its type in front of the value
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << uint32_t(1);
+                packet << uint8_t(powerType);
+                packet << int32_t(power);
+                return true;
+            }
+
             if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // unit, then every changed power with its type

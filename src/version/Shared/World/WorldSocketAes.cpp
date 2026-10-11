@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Cryptography/Ed25519.hpp"
 #include "Cryptography/Sha256.hpp"
+#include "Cryptography/Sha512.hpp"
 #include "Logging/Log.hpp"
 #include "Logging/Logger.hpp"
 #include "Utilities/Util.hpp"
@@ -28,6 +29,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "version/Shadowlands/World/WorldProfile.hpp"
 #elif AE_WORLD_PROFILE_DRAGONFLIGHT
 #include "version/Dragonflight/World/WorldProfile.hpp"
+#elif AE_WORLD_PROFILE_THEWARWITHIN
+#include "version/TheWarWithin/World/WorldProfile.hpp"
 #endif
 
 #include <openssl/bio.h>
@@ -43,11 +46,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstring>
 #include <memory>
 #include <string_view>
+#include <type_traits>
 #include <vector>
 
 using namespace AscEmu::Packets;
 
-#if AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS || AE_WORLD_PROFILE_DRAGONFLIGHT
+#if AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS || AE_WORLD_PROFILE_DRAGONFLIGHT || AE_WORLD_PROFILE_THEWARWITHIN
 
 namespace
 {
@@ -62,11 +66,46 @@ namespace
         constexpr uint32_t MinSizeForCompression = 0x400;
         constexpr uLong CompressionAdlerSeed = 0x9827D8F1;
 
-        constexpr std::array<uint8_t, 16> AuthCheckSeed = { 0xC5, 0xC6, 0x98, 0x95, 0x76, 0x3F, 0x1D, 0xCD, 0xB6, 0xA1, 0x37, 0x28, 0xB3, 0x12, 0xFF, 0x8A };
-        constexpr std::array<uint8_t, 16> SessionKeySeed = { 0x58, 0xCB, 0xCF, 0x40, 0xFE, 0x2E, 0xCE, 0xA6, 0x5A, 0x90, 0xB8, 0x01, 0x68, 0x6C, 0x28, 0x0B };
-        constexpr std::array<uint8_t, 16> ContinuedSessionSeed = { 0x16, 0xAD, 0x0C, 0xD4, 0x46, 0xF9, 0x4F, 0xB2, 0xEF, 0x7D, 0xEA, 0x2A, 0x17, 0x66, 0x4D, 0x2F };
-        constexpr std::array<uint8_t, 16> EncryptionKeySeed = { 0xE9, 0x75, 0x3C, 0x50, 0x90, 0x93, 0x61, 0xDA, 0x3B, 0x07, 0xEE, 0xFA, 0xFF, 0x9D, 0x41, 0xB8 };
-        constexpr std::array<uint8_t, 16> EnableEncryptionSeed = { 0x90, 0x9C, 0xD0, 0x50, 0x5A, 0x2C, 0x14, 0xDD, 0x5C, 0x2C, 0xC0, 0x64, 0x14, 0xF3, 0xFE, 0xC9 };
+        // 11.x widened the transport: 32 bit opcodes, 32 byte challenges and seeds, SHA512 for the digests and the
+        // session key, AES-256-GCM for the packets
+        constexpr bool WideTransport = Profile::Expansion == WoW::Expansion::_TheWarWithin;
+        constexpr size_t OpcodeSize = WideTransport ? sizeof(uint32_t) : sizeof(uint16_t);
+        constexpr size_t ChallengeSize = WideTransport ? 32 : 16;
+        constexpr size_t EncryptKeySize = WideTransport ? AesGcmCrypt::KeySize256 : AesGcmCrypt::KeySize;
+        using Hash = std::conditional_t<WideTransport, Sha512Hash, Sha256Hash>;
+
+        template <bool Wide>
+        struct TransportSeeds;
+
+        // 8.x to 10.x
+        template <>
+        struct TransportSeeds<false>
+        {
+            static constexpr std::array<uint8_t, 16> AuthCheckSeed = { 0xC5, 0xC6, 0x98, 0x95, 0x76, 0x3F, 0x1D, 0xCD, 0xB6, 0xA1, 0x37, 0x28, 0xB3, 0x12, 0xFF, 0x8A };
+            static constexpr std::array<uint8_t, 16> SessionKeySeed = { 0x58, 0xCB, 0xCF, 0x40, 0xFE, 0x2E, 0xCE, 0xA6, 0x5A, 0x90, 0xB8, 0x01, 0x68, 0x6C, 0x28, 0x0B };
+            static constexpr std::array<uint8_t, 16> ContinuedSessionSeed = { 0x16, 0xAD, 0x0C, 0xD4, 0x46, 0xF9, 0x4F, 0xB2, 0xEF, 0x7D, 0xEA, 0x2A, 0x17, 0x66, 0x4D, 0x2F };
+            static constexpr std::array<uint8_t, 16> EncryptionKeySeed = { 0xE9, 0x75, 0x3C, 0x50, 0x90, 0x93, 0x61, 0xDA, 0x3B, 0x07, 0xEE, 0xFA, 0xFF, 0x9D, 0x41, 0xB8 };
+            static constexpr std::array<uint8_t, 16> EnableEncryptionSeed = { 0x90, 0x9C, 0xD0, 0x50, 0x5A, 0x2C, 0x14, 0xDD, 0x5C, 0x2C, 0xC0, 0x64, 0x14, 0xF3, 0xFE, 0xC9 };
+        };
+
+        // 11.x
+        template <>
+        struct TransportSeeds<true>
+        {
+            static constexpr std::array<uint8_t, 32> AuthCheckSeed = { 0xDE, 0x3A, 0x2A, 0x8E, 0x6B, 0x89, 0x52, 0x66, 0x88, 0x9D, 0x7E, 0x7A, 0x77, 0x1D, 0x5D, 0x1F,
+                0x4E, 0xD9, 0x0C, 0x23, 0x9B, 0xCD, 0x0E, 0xDC, 0xD2, 0xE8, 0x04, 0x3A, 0x68, 0x64, 0xC7, 0xB0 };
+            static constexpr std::array<uint8_t, 32> SessionKeySeed = { 0xE8, 0x1E, 0x8B, 0x59, 0x27, 0x62, 0x1E, 0xAA, 0x86, 0x15, 0x18, 0xEA, 0xC0, 0xBF, 0x66, 0x8C,
+                0x6D, 0xBF, 0x83, 0x93, 0xBC, 0xAA, 0x80, 0x52, 0x5B, 0x1E, 0xDC, 0x23, 0xA0, 0x12, 0xB7, 0x50 };
+            static constexpr std::array<uint8_t, 32> ContinuedSessionSeed = { 0x56, 0x5C, 0x61, 0x9C, 0x48, 0x3A, 0x52, 0x1F, 0x61, 0x5D, 0x05, 0x49, 0xB2, 0x9A, 0x39, 0xBF,
+                0x4B, 0x97, 0xB0, 0x1B, 0xF9, 0x6C, 0xDE, 0xD6, 0x80, 0x1D, 0xAB, 0x26, 0x02, 0xA9, 0x9B, 0x9D };
+            static constexpr std::array<uint8_t, 32> EncryptionKeySeed = { 0x71, 0xC9, 0xED, 0x5A, 0xA7, 0x0E, 0x4D, 0xFF, 0x4C, 0x36, 0xA6, 0x5A, 0x3E, 0x46, 0x8A, 0x4A,
+                0x5D, 0xA1, 0x48, 0xC8, 0x30, 0x47, 0x4A, 0xDE, 0xF6, 0x0D, 0x6C, 0xBE, 0x6F, 0xE4, 0x55, 0x73 };
+            static constexpr std::array<uint8_t, 32> EnableEncryptionSeed = { 0x66, 0xBE, 0x29, 0x79, 0xEF, 0xF2, 0xD5, 0xB5, 0x61, 0x53, 0xF6, 0x5F, 0x45, 0xAE, 0x81, 0xCB,
+                0x32, 0xEC, 0x94, 0xEC, 0x75, 0xB3, 0x5F, 0x44, 0x6A, 0x63, 0x43, 0x67, 0x17, 0x20, 0x44, 0x34 };
+        };
+
+        using Seeds = TransportSeeds<WideTransport>;
+        constexpr size_t SeedSize = Seeds::AuthCheckSeed.size();
 
         constexpr size_t SignatureSize = 256;
         constexpr uint8_t ConnectionTypeInstance = 1;
@@ -90,27 +129,57 @@ namespace
         return static_cast<uint32_t>(data[0]) | (static_cast<uint32_t>(data[1]) << 8) | (static_cast<uint32_t>(data[2]) << 16) | (static_cast<uint32_t>(data[3]) << 24);
     }
 
-    // 40 byte key stream: o0 = SHA256(o1 | o0 | o2) with o1/o2 the SHA256 of both halves of the seed
+    // the opcode on the wire: 16 bit up to 10.x, 32 bit from 11.x on
+    void appendOpcode(std::vector<uint8_t>& out, uint32_t opcode)
+    {
+        if constexpr (AesWorld::OpcodeSize == sizeof(uint32_t))
+            appendUInt32LE(out, opcode);
+        else
+            appendUInt16LE(out, static_cast<uint16_t>(opcode));
+    }
+
+    uint32_t readOpcode(const uint8_t* data)
+    {
+        if constexpr (AesWorld::OpcodeSize == sizeof(uint32_t))
+            return readUInt32LE(data);
+        else
+            return static_cast<uint32_t>(data[0]) | (static_cast<uint32_t>(data[1]) << 8);
+    }
+
+    // the two challenges and a seed, the input of the digest and key derivations
+    using ChallengeInput = std::array<uint8_t, AesWorld::ChallengeSize * 2 + AesWorld::SeedSize>;
+
+    ChallengeInput challengeInput(const uint8_t* first, const uint8_t* second, const uint8_t* seed)
+    {
+        ChallengeInput input{};
+        std::memcpy(input.data(), first, AesWorld::ChallengeSize);
+        std::memcpy(input.data() + AesWorld::ChallengeSize, second, AesWorld::ChallengeSize);
+        std::memcpy(input.data() + AesWorld::ChallengeSize * 2, seed, AesWorld::SeedSize);
+        return input;
+    }
+
+    // 40 byte key stream: o0 = H(o1 | o0 | o2) with o1/o2 the hash of both halves of the seed (SHA256, 11.x: SHA512)
     void generateSessionKey(const uint8_t* seed, size_t seedSize, std::array<uint8_t, 40>& sessionKey)
     {
+        using Hash = AesWorld::Hash;
         const size_t half = seedSize / 2;
 
-        std::array<uint8_t, Sha256Hash::DigestLength> o0{};
-        std::array<uint8_t, Sha256Hash::DigestLength> o1{};
-        std::array<uint8_t, Sha256Hash::DigestLength> o2{};
-        Sha256Hash::hash(seed, half, o1.data());
-        Sha256Hash::hash(seed + half, seedSize - half, o2.data());
+        std::array<uint8_t, Hash::DigestLength> o0{};
+        std::array<uint8_t, Hash::DigestLength> o1{};
+        std::array<uint8_t, Hash::DigestLength> o2{};
+        Hash::hash(seed, half, o1.data());
+        Hash::hash(seed + half, seedSize - half, o2.data());
 
         size_t taken = o0.size();
         for (uint8_t& value : sessionKey)
         {
             if (taken == o0.size())
             {
-                std::array<uint8_t, Sha256Hash::DigestLength * 3> input{};
+                std::array<uint8_t, Hash::DigestLength * 3> input{};
                 std::memcpy(input.data(), o1.data(), o1.size());
                 std::memcpy(input.data() + o1.size(), o0.data(), o0.size());
                 std::memcpy(input.data() + o1.size() + o0.size(), o2.data(), o2.size());
-                Sha256Hash::hash(input.data(), input.size(), o0.data());
+                Hash::hash(input.data(), input.size(), o0.data());
                 taken = 0;
             }
 
@@ -118,31 +187,27 @@ namespace
         }
     }
 
-    // digest of CMSG_AUTH_SESSION: HMAC-SHA256(local challenge | server challenge | check seed), first 24 bytes compared
-    bool digestMatches(const std::array<uint8_t, Sha256Hash::DigestLength>& key, const std::array<uint8_t, 16>& localChallenge, const std::array<uint8_t, 16>& serverChallenge, const std::array<uint8_t, 24>& received)
+    // digest of CMSG_AUTH_SESSION: HMAC(local challenge | server challenge | check seed), first 24 bytes compared
+    bool digestMatches(const std::array<uint8_t, AesWorld::Hash::DigestLength>& key, const uint8_t* localChallenge, const uint8_t* serverChallenge, const std::array<uint8_t, 24>& received)
     {
-        std::array<uint8_t, 48> input{};
-        std::memcpy(input.data(), localChallenge.data(), 16);
-        std::memcpy(input.data() + 16, serverChallenge.data(), 16);
-        std::memcpy(input.data() + 32, AesWorld::AuthCheckSeed.data(), 16);
+        const ChallengeInput input = challengeInput(localChallenge, serverChallenge, AesWorld::Seeds::AuthCheckSeed.data());
 
-        std::array<uint8_t, Sha256Hash::DigestLength> digest{};
-        Sha256Hash::hmac(key.data(), key.size(), input.data(), input.size(), digest.data());
+        std::array<uint8_t, AesWorld::Hash::DigestLength> digest{};
+        AesWorld::Hash::hmac(key.data(), key.size(), input.data(), input.size(), digest.data());
 
         return CRYPTO_memcmp(digest.data(), received.data(), received.size()) == 0;
     }
 
-    // key of the packet encryption: HMAC-SHA256(session key, local challenge | server challenge | seed), first 16 bytes
-    void deriveEncryptKey(const std::array<uint8_t, 40>& sessionKey, const std::array<uint8_t, 16>& localChallenge, const std::array<uint8_t, 16>& serverChallenge, AesGcmCrypt::Key& encryptKey)
+    // key of the packet encryption: HMAC(session key, local challenge | server challenge | seed), the first 16 bytes
+    // (11.x: 32 bytes)
+    void deriveEncryptKey(const std::array<uint8_t, 40>& sessionKey, const uint8_t* localChallenge, const uint8_t* serverChallenge, std::array<uint8_t, 32>& encryptKey)
     {
-        std::array<uint8_t, 48> input{};
-        std::memcpy(input.data(), localChallenge.data(), 16);
-        std::memcpy(input.data() + 16, serverChallenge.data(), 16);
-        std::memcpy(input.data() + 32, AesWorld::EncryptionKeySeed.data(), 16);
+        const ChallengeInput input = challengeInput(localChallenge, serverChallenge, AesWorld::Seeds::EncryptionKeySeed.data());
 
-        std::array<uint8_t, Sha256Hash::DigestLength> digest{};
-        Sha256Hash::hmac(sessionKey.data(), sessionKey.size(), input.data(), input.size(), digest.data());
-        std::memcpy(encryptKey.data(), digest.data(), encryptKey.size());
+        std::array<uint8_t, AesWorld::Hash::DigestLength> digest{};
+        AesWorld::Hash::hmac(sessionKey.data(), sessionKey.size(), input.data(), input.size(), digest.data());
+        encryptKey.fill(0);
+        std::memcpy(encryptKey.data(), digest.data(), AesWorld::EncryptKeySize);
     }
 
     void destroyCompressionStream(void* pointer)
@@ -214,12 +279,12 @@ namespace
     // 9.x: Ed25519 signature with a context (Ed25519ctx) over the digest, 64 bytes as they are
     constexpr size_t Ed25519SignatureSize = 64;
 
-    bool signDigestEd25519(const std::array<uint8_t, Sha256Hash::DigestLength>& digest, uint8_t* output)
+    bool signDigestEd25519(const uint8_t* digest, size_t digestSize, uint8_t* output)
     {
         using namespace AscEmu::Version::WorldConnectKey;
 
         static_assert(EnterEncryptedModeKey.size() == Ed25519::KeyLength && Ed25519::SignatureLength == Ed25519SignatureSize);
-        return Ed25519::signWithContext(EnterEncryptedModeKey.data(), EnterEncryptedModeContext.data(), EnterEncryptedModeContext.size(), digest.data(), digest.size(), output);
+        return Ed25519::signWithContext(EnterEncryptedModeKey.data(), EnterEncryptedModeContext.data(), EnterEncryptedModeContext.size(), digest, digestSize, output);
     }
 }
 
@@ -314,7 +379,8 @@ bool WorldSocket::processAesInitializer()
 
     // the server challenge and the dos challenge
     SmsgAuthChallenge challenge;
-    if (RAND_bytes(m_aesServerChallenge.data(), static_cast<int>(m_aesServerChallenge.size())) != 1
+    m_aesServerChallenge.fill(0);
+    if (RAND_bytes(m_aesServerChallenge.data(), static_cast<int>(AesWorld::ChallengeSize)) != 1
         || RAND_bytes(challenge.dosChallenge.data(), static_cast<int>(challenge.dosChallenge.size())) != 1)
     {
         sLogger.failure("WorldSocket::{}: RAND_bytes failed while creating the auth challenge", Profile::Name);
@@ -344,7 +410,7 @@ bool WorldSocket::processAesPacket()
         std::memcpy(m_aesPacketTag.data(), header.data() + sizeof(uint32_t), m_aesPacketTag.size());
 
         // the size counts the opcode
-        if (size < sizeof(uint16_t) || size >= Profile::MaxClientPacketSize)
+        if (size < AesWorld::OpcodeSize || size >= Profile::MaxClientPacketSize)
         {
             sLogger.failure("WorldSocket::{}: {}:{} sent a malformed packet (size {})", Profile::Name, getRemoteIp(), getRemotePort(), size);
             m_aesWorldState = AesWorldState::Disabled;
@@ -371,13 +437,13 @@ bool WorldSocket::processAesPacket()
         return false;
     }
 
-    const uint16_t rawOpcode = static_cast<uint16_t>(data[0] | (data[1] << 8));
-    const uint32_t payloadSize = m_aesPacketSize - static_cast<uint32_t>(sizeof(uint16_t));
+    const uint32_t rawOpcode = readOpcode(data.data());
+    const uint32_t payloadSize = m_aesPacketSize - static_cast<uint32_t>(AesWorld::OpcodeSize);
 
     auto packet = std::make_unique<WorldPacket>(rawOpcode, payloadSize);
     packet->resize(payloadSize);
     if (payloadSize != 0)
-        std::memcpy(packet->contents(), data.data() + sizeof(uint16_t), payloadSize);
+        std::memcpy(packet->contents(), data.data() + AesWorld::OpcodeSize, payloadSize);
 
     const uint32_t opcode = Version::opcodeIdForHex(rawOpcode, m_protocol);
     sWorldPacketLog.logPacket(payloadSize, static_cast<uint16_t>(opcode), payloadSize ? packet->contents() : nullptr, 0, (m_session ? m_session->GetAccountId() : 0), m_protocol.expansion);
@@ -460,10 +526,10 @@ void WorldSocket::handleAesAuthSession(WorldPacket& packet)
         std::memcpy(input.data(), pending.worldAuthKeyData.data(), 64);
         std::memcpy(input.data() + 64, seed.data(), seed.size());
 
-        std::array<uint8_t, Sha256Hash::DigestLength> digestKey{};
-        Sha256Hash::hash(input.data(), input.size(), digestKey.data());
+        std::array<uint8_t, AesWorld::Hash::DigestLength> digestKey{};
+        AesWorld::Hash::hash(input.data(), input.size(), digestKey.data());
 
-        if (digestMatches(digestKey, authSession.localChallenge, m_aesServerChallenge, authSession.sessionDigest))
+        if (digestMatches(digestKey, authSession.localChallenge.data(), m_aesServerChallenge.data(), authSession.sessionDigest))
         {
             verified = true;
             break;
@@ -487,20 +553,17 @@ void WorldSocket::handleAesAuthSession(WorldPacket& packet)
         return;
     }
 
-    // world session key: key stream seeded with HMAC-SHA256(server challenge | local challenge | seed), keyed by SHA256 of the key data
-    std::array<uint8_t, Sha256Hash::DigestLength> keyDataHash{};
-    Sha256Hash::hash(pending.worldAuthKeyData.data(), pending.worldAuthKeyData.size(), keyDataHash.data());
+    // world session key: key stream seeded with HMAC(server challenge | local challenge | seed), keyed by the hash of the key data
+    std::array<uint8_t, AesWorld::Hash::DigestLength> keyDataHash{};
+    AesWorld::Hash::hash(pending.worldAuthKeyData.data(), pending.worldAuthKeyData.size(), keyDataHash.data());
 
-    std::array<uint8_t, 48> sessionInput{};
-    std::memcpy(sessionInput.data(), m_aesServerChallenge.data(), 16);
-    std::memcpy(sessionInput.data() + 16, authSession.localChallenge.data(), 16);
-    std::memcpy(sessionInput.data() + 32, AesWorld::SessionKeySeed.data(), 16);
+    const ChallengeInput sessionInput = challengeInput(m_aesServerChallenge.data(), authSession.localChallenge.data(), AesWorld::Seeds::SessionKeySeed.data());
 
-    std::array<uint8_t, Sha256Hash::DigestLength> sessionSeed{};
-    Sha256Hash::hmac(keyDataHash.data(), keyDataHash.size(), sessionInput.data(), sessionInput.size(), sessionSeed.data());
+    std::array<uint8_t, AesWorld::Hash::DigestLength> sessionSeed{};
+    AesWorld::Hash::hmac(keyDataHash.data(), keyDataHash.size(), sessionInput.data(), sessionInput.size(), sessionSeed.data());
     generateSessionKey(sessionSeed.data(), sessionSeed.size(), m_aesSessionKey);
 
-    deriveEncryptKey(m_aesSessionKey, authSession.localChallenge, m_aesServerChallenge, m_aesEncryptKey);
+    deriveEncryptKey(m_aesSessionKey, authSession.localChallenge.data(), m_aesServerChallenge.data(), m_aesEncryptKey);
 
     auto protocol = getClientProtocol();
     protocol.regionId = authSession.regionId;
@@ -525,33 +588,39 @@ void WorldSocket::handleAesAuthSession(WorldPacket& packet)
 
 bool WorldSocket::sendAesEnterEncryptedMode()
 {
-    // signature of HMAC-SHA256(encrypt key, enabled | seed), then the enabled bit
-    std::array<uint8_t, 17> message{};
+    // signature of HMAC(encrypt key, enabled | seed), then the enabled bit
+    std::array<uint8_t, 1 + AesWorld::SeedSize> message{};
     message[0] = 1;
-    std::memcpy(message.data() + 1, AesWorld::EnableEncryptionSeed.data(), AesWorld::EnableEncryptionSeed.size());
+    std::memcpy(message.data() + 1, AesWorld::Seeds::EnableEncryptionSeed.data(), AesWorld::SeedSize);
 
-    std::array<uint8_t, Sha256Hash::DigestLength> digest{};
-    Sha256Hash::hmac(m_aesEncryptKey.data(), m_aesEncryptKey.size(), message.data(), message.size(), digest.data());
+    std::array<uint8_t, AesWorld::Hash::DigestLength> digest{};
+    AesWorld::Hash::hmac(m_aesEncryptKey.data(), AesWorld::EncryptKeySize, message.data(), message.size(), digest.data());
 
-    // 8.x: RSA signature, 9.x and 10.x: Ed25519 signature with a context
+    // 8.x: RSA signature, 9.x, 10.x and 11.x: Ed25519 signature with a context
     std::array<uint8_t, AesWorld::SignatureSize> signature{};
     size_t signatureSize = AesWorld::SignatureSize;
-    if constexpr (Profile::Expansion == WoW::Expansion::_Shadowlands || Profile::Expansion == WoW::Expansion::_Dragonflight)
+    if constexpr (Profile::Expansion == WoW::Expansion::_Shadowlands || Profile::Expansion == WoW::Expansion::_Dragonflight || Profile::Expansion == WoW::Expansion::_TheWarWithin)
     {
         signatureSize = Ed25519SignatureSize;
-        if (!signDigestEd25519(digest, signature.data()))
+        if (!signDigestEd25519(digest.data(), digest.size(), signature.data()))
             return false;
     }
     else
     {
-        if (!signDigest(digest, signature.data()))
+        static_assert(AesWorld::Hash::DigestLength == Sha256Hash::DigestLength || AesWorld::WideTransport);
+        std::array<uint8_t, Sha256Hash::DigestLength> rsaDigest{};
+        std::memcpy(rsaDigest.data(), digest.data(), rsaDigest.size());
+        if (!signDigest(rsaDigest, signature.data()))
             return false;
     }
 
     // the client acknowledges before the encryption starts in both directions
     m_aesWorldState = AesWorldState::AwaitEncryptionAck;
 
-    WorldPacket enterEncryptedMode(SMSG_ENABLE_ENCRYPTION, static_cast<uint32_t>(signatureSize + 1));
+    // 11.x: the region group in front of the signature
+    WorldPacket enterEncryptedMode(SMSG_ENABLE_ENCRYPTION, static_cast<uint32_t>(signatureSize + 5));
+    if constexpr (AesWorld::WideTransport)
+        enterEncryptedMode << int32_t(0);
     enterEncryptedMode.append(signature.data(), signatureSize);
     enterEncryptedMode.writeBit(true);
     enterEncryptedMode.flushBits();
@@ -561,7 +630,7 @@ bool WorldSocket::sendAesEnterEncryptedMode()
 
 void WorldSocket::handleAesEnterEncryptedModeAck()
 {
-    if (!m_aesCrypt.init(m_aesEncryptKey))
+    if (!m_aesCrypt.init(m_aesEncryptKey.data(), AesWorld::EncryptKeySize))
     {
         sLogger.failure("WorldSocket::{}: cannot initialize the packet encryption for game account {}", Profile::Name, m_aesGameAccountId);
         m_aesWorldState = AesWorldState::Disabled;
@@ -617,21 +686,35 @@ void WorldSocket::handleAesAuthContinuedSession(WorldPacket& packet)
         disconnect();
     };
 
-    // dos response, key, local challenge, digest
+    // dos response, key, local challenge, digest; 11.x: dos response, local challenge, digest, key, native realm
+    // address, third key
     uint64_t dosResponse = 0;
     uint64_t key = 0;
-    std::array<uint8_t, 16> localChallenge{};
+    std::array<uint8_t, AesWorld::ChallengeSize> localChallenge{};
     std::array<uint8_t, 24> digest{};
 
-    if (packet.size() < sizeof(dosResponse) + sizeof(key) + localChallenge.size() + digest.size())
+    constexpr size_t minimumSize = sizeof(dosResponse) + sizeof(key) + localChallenge.size() + digest.size() + (AesWorld::WideTransport ? 8 : 0);
+    if (packet.size() < minimumSize)
     {
         reject("malformed CMSG_AUTH_CONTINUED_SESSION");
         return;
     }
 
-    packet >> dosResponse >> key;
-    packet.read(localChallenge.data(), localChallenge.size());
-    packet.read(digest.data(), digest.size());
+    if constexpr (AesWorld::WideTransport)
+    {
+        packet >> dosResponse;
+        packet.read(localChallenge.data(), localChallenge.size());
+        packet.read(digest.data(), digest.size());
+        packet >> key;
+        packet.read<uint32_t>();                        // native realm address
+        packet.read<uint32_t>();                        // third key
+    }
+    else
+    {
+        packet >> dosResponse >> key;
+        packet.read(localChallenge.data(), localChallenge.size());
+        packet.read(digest.data(), digest.size());
+    }
 
     // key: account (32 bit), connection type (1 bit), random part (31 bit)
     const uint32_t accountId = static_cast<uint32_t>(key & 0xFFFFFFFF);
@@ -650,15 +733,15 @@ void WorldSocket::handleAesAuthContinuedSession(WorldPacket& packet)
         return;
     }
 
-    // HMAC-SHA256 keyed by the session key over key, local challenge, server challenge and the seed
-    std::array<uint8_t, 8 + 16 + 16 + 16> input{};
+    // HMAC keyed by the session key over key, local challenge, server challenge and the seed
+    std::array<uint8_t, 8 + AesWorld::ChallengeSize * 2 + AesWorld::SeedSize> input{};
     std::memcpy(input.data(), &key, 8);
-    std::memcpy(input.data() + 8, localChallenge.data(), 16);
-    std::memcpy(input.data() + 24, m_aesServerChallenge.data(), 16);
-    std::memcpy(input.data() + 40, AesWorld::ContinuedSessionSeed.data(), 16);
+    std::memcpy(input.data() + 8, localChallenge.data(), AesWorld::ChallengeSize);
+    std::memcpy(input.data() + 8 + AesWorld::ChallengeSize, m_aesServerChallenge.data(), AesWorld::ChallengeSize);
+    std::memcpy(input.data() + 8 + AesWorld::ChallengeSize * 2, AesWorld::Seeds::ContinuedSessionSeed.data(), AesWorld::SeedSize);
 
-    std::array<uint8_t, Sha256Hash::DigestLength> expected{};
-    Sha256Hash::hmac(realmSocket->m_aesSessionKey.data(), realmSocket->m_aesSessionKey.size(), input.data(), input.size(), expected.data());
+    std::array<uint8_t, AesWorld::Hash::DigestLength> expected{};
+    AesWorld::Hash::hmac(realmSocket->m_aesSessionKey.data(), realmSocket->m_aesSessionKey.size(), input.data(), input.size(), expected.data());
 
     if (CRYPTO_memcmp(expected.data(), digest.data(), digest.size()) != 0)
     {
@@ -674,7 +757,7 @@ void WorldSocket::handleAesAuthContinuedSession(WorldPacket& packet)
     m_aesConnectToKey = key;
 
     // the key of this connection comes from its own challenge
-    deriveEncryptKey(m_aesSessionKey, localChallenge, m_aesServerChallenge, m_aesEncryptKey);
+    deriveEncryptKey(m_aesSessionKey, localChallenge.data(), m_aesServerChallenge.data(), m_aesEncryptKey);
 
     sLogger.debug("WorldSocket::{}: second connection of game account {} authenticated from {}:{}", Profile::Name, accountId, getRemoteIp(), getRemotePort());
 
@@ -716,14 +799,19 @@ bool WorldSocket::sendConnectTo(uint64_t key, uint32_t serial)
         return false;
     }
 
-    // signature, where, port, serial, connection type, key
-    WorldPacket connectTo(SMSG_CONNECT_TO, AesWorld::SignatureSize + where.size() + 2 + 4 + 1 + 8);
+    // signature, where, port, serial, connection type, key; 11.x: the native realm address and the third key
+    WorldPacket connectTo(SMSG_CONNECT_TO, AesWorld::SignatureSize + where.size() + 2 + 4 + 1 + 8 + 8);
     connectTo.append(signature.data(), signature.size());
     connectTo.append(where.data(), where.size());
     connectTo << uint16_t(port);
     connectTo << uint32_t(serial);
     connectTo << uint8_t(AesWorld::ConnectionTypeInstance);
     connectTo << uint64_t(key);
+    if constexpr (AesWorld::WideTransport)
+    {
+        connectTo << uint32_t(m_protocol.getVirtualRealmAddress());
+        connectTo << uint32_t(0);                       // third key
+    }
     sendPacket(&connectTo);
 
     sLogger.debug("WorldSocket::{}: sent SMSG_CONNECT_TO (serial {}) to game account {}", Profile::Name, serial, m_aesGameAccountId);
@@ -738,7 +826,7 @@ bool WorldSocket::sendVersionedPacket(WorldPacket* packet)
     if (packet == nullptr)
         return true;
 
-    const uint16_t rawOpcode = Version::opcodeHexFor(packet->getOpcode(), m_protocol);
+    const uint32_t rawOpcode = Version::opcodeHexFor(packet->getOpcode(), m_protocol);
     if (rawOpcode == 0)
     {
         sLogger.debug("WorldSocket::{}: dropped {} without an opcode of this client ({} bytes)", Profile::Name, Version::opcodeNameForId(packet->getOpcode(), m_protocol.expansion), packet->size());
@@ -757,7 +845,7 @@ bool WorldSocket::sendVersionedPacket(WorldPacket* packet)
     return true;
 }
 
-bool WorldSocket::writeAesPacket(uint16_t rawOpcode, const uint8_t* payload, uint32_t payloadSize)
+bool WorldSocket::writeAesPacket(uint32_t rawOpcode, const uint8_t* payload, uint32_t payloadSize)
 {
     burstBegin();
 
@@ -765,20 +853,21 @@ bool WorldSocket::writeAesPacket(uint16_t rawOpcode, const uint8_t* payload, uin
 
     // opcode and payload, compressed when large enough
     std::vector<uint8_t> body;
-    body.reserve(sizeof(uint16_t) + payloadSize + 16);
+    body.reserve(AesWorld::OpcodeSize + payloadSize + 16);
 
     auto* stream = static_cast<z_stream*>(m_aesCompressionStream.get());
     bool compressed = false;
     if (encrypted && payloadSize > AesWorld::MinSizeForCompression && stream != nullptr)
     {
-        // uncompressed size with the opcode, checksum of opcode and payload, checksum of the deflate data
-        const uint32_t uncompressedAdler = static_cast<uint32_t>(adler32(adler32(AesWorld::CompressionAdlerSeed, reinterpret_cast<const Bytef*>(&rawOpcode), sizeof(uint16_t)), payload, payloadSize));
+        // uncompressed size with the opcode, checksum of opcode and payload, checksum of the deflate data; the
+        // opcode bytes are the low bytes of the little endian value
+        const uint32_t uncompressedAdler = static_cast<uint32_t>(adler32(adler32(AesWorld::CompressionAdlerSeed, reinterpret_cast<const Bytef*>(&rawOpcode), static_cast<uInt>(AesWorld::OpcodeSize)), payload, payloadSize));
 
-        std::vector<uint8_t> deflated(deflateBound(stream, payloadSize + sizeof(uint16_t)));
+        std::vector<uint8_t> deflated(deflateBound(stream, payloadSize + static_cast<uLong>(AesWorld::OpcodeSize)));
         stream->next_out = deflated.data();
         stream->avail_out = static_cast<uInt>(deflated.size());
         stream->next_in = reinterpret_cast<Bytef*>(&rawOpcode);
-        stream->avail_in = sizeof(uint16_t);
+        stream->avail_in = static_cast<uInt>(AesWorld::OpcodeSize);
 
         bool compressedOk = deflate(stream, Z_NO_FLUSH) == Z_OK;
         if (compressedOk)
@@ -796,9 +885,9 @@ bool WorldSocket::writeAesPacket(uint16_t rawOpcode, const uint8_t* payload, uin
 
         deflated.resize(deflated.size() - stream->avail_out);
 
-        const uint16_t compressedOpcode = Version::opcodeHexFor(SMSG_COMPRESSED_PACKET, m_protocol);
-        appendUInt16LE(body, compressedOpcode);
-        appendUInt32LE(body, payloadSize + static_cast<uint32_t>(sizeof(uint16_t)));
+        const uint32_t compressedOpcode = Version::opcodeHexFor(SMSG_COMPRESSED_PACKET, m_protocol);
+        appendOpcode(body, compressedOpcode);
+        appendUInt32LE(body, payloadSize + static_cast<uint32_t>(AesWorld::OpcodeSize));
         appendUInt32LE(body, uncompressedAdler);
         appendUInt32LE(body, static_cast<uint32_t>(adler32(AesWorld::CompressionAdlerSeed, deflated.data(), static_cast<uInt>(deflated.size()))));
         body.insert(body.end(), deflated.begin(), deflated.end());
@@ -807,7 +896,7 @@ bool WorldSocket::writeAesPacket(uint16_t rawOpcode, const uint8_t* payload, uin
 
     if (!compressed)
     {
-        appendUInt16LE(body, rawOpcode);
+        appendOpcode(body, rawOpcode);
         if (payloadSize != 0)
             body.insert(body.end(), payload, payload + payloadSize);
     }

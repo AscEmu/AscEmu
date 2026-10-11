@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 class SERVER_DECL WorldPacket : public ByteBuffer
 {
 public:
-    using Opcode = uint16_t;
+    using Opcode = uint32_t;
 
     static constexpr size_t defaultReserve = 200;
 

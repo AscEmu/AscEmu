@@ -18,6 +18,7 @@ environment:
   - ASC_VERSION: BfA
   - ASC_VERSION: Shadowlands
   - ASC_VERSION: Dragonflight
+  - ASC_VERSION: TheWarWithin
 
 matrix:
   fast_finish: true # Abort all other Matrix builds if one fails

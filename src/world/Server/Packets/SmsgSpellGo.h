@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellCastDataShadowlands.h"
 #include "SpellCastDataDragonflight.h"
 #include "SpellCastDataLegion.h"
+#include "SpellCastDataTheWarWithin.h"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -63,7 +64,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
             {
                 // cast data, then the combat log bit: the basic packet without the log data
                 SpellCastDataLegion castData;
@@ -85,7 +86,9 @@ namespace AscEmu::Packets
                 castData.realmId = m_protocol.realmId;
                 castData.mapId = m_receiverMapId;
                 castData.castNumber = extraCastNumber;
-                if (m_protocol.isWoD())
+                if (m_protocol.isTheWarWithin())
+                    writeSpellCastDataTheWarWithin(packet, castData);
+                else if (m_protocol.isWoD())
                     castData.writeWoD(packet);
                 else if (m_protocol.isDragonflight())
                     writeSpellCastDataDragonflight(packet, castData);

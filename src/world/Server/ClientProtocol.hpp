@@ -28,6 +28,7 @@ namespace WoW::Build {
     inline constexpr uint32_t BFA_BUILD = 35662;
     inline constexpr uint32_t SHADOWLANDS_BUILD = 45745;
     inline constexpr uint32_t DRAGONFLIGHT_BUILD = 55664;
+    inline constexpr uint32_t THEWARWITHIN_BUILD = 65299;
 }
 
 namespace WoW {
@@ -43,7 +44,7 @@ namespace WoW {
         _BfA,
         _Shadowlands,
         _Dragonflight,
-        TWW,
+        _TheWarWithin,
         MN,
         Unknown = 255
     };
@@ -82,6 +83,7 @@ namespace WoW {
         [[nodiscard]] bool isBfA() const { return expansion == WoW::Expansion::_BfA; }
         [[nodiscard]] bool isShadowlands() const { return expansion == WoW::Expansion::_Shadowlands; }
         [[nodiscard]] bool isDragonflight() const { return expansion == WoW::Expansion::_Dragonflight; }
+        [[nodiscard]] bool isTheWarWithin() const { return expansion == WoW::Expansion::_TheWarWithin; }
         [[nodiscard]] bool isLegacy() const { return isClassic() || isTbc(); }
     };
 
@@ -146,6 +148,8 @@ namespace WoW {
     inline constexpr Expansion COMPILED_EXPANSION = Expansion::_Shadowlands;
 #elif defined(AE_DRAGONFLIGHT)
     inline constexpr Expansion COMPILED_EXPANSION = Expansion::_Dragonflight;
+#elif defined(AE_THEWARWITHIN)
+    inline constexpr Expansion COMPILED_EXPANSION = Expansion::_TheWarWithin;
 #else
     inline constexpr Expansion COMPILED_EXPANSION = Expansion::_WotLK; // Fallback
 #endif
@@ -178,25 +182,26 @@ namespace WoW {
             case Expansion::_BfA:       return Build::BFA_BUILD;
             case Expansion::_Shadowlands:         return Build::SHADOWLANDS_BUILD;
             case Expansion::_Dragonflight:        return Build::DRAGONFLIGHT_BUILD;
+            case Expansion::_TheWarWithin:        return Build::THEWARWITHIN_BUILD;
             default:                  return 0;
         }
     }
 
     /// Expansion of the game data (dbc, maps, database rows) the server loads for an expansion.
-    /// WoD, Legion, BfA, Shadowlands and Dragonflight run on the Mop data until their own data is available.
+    /// WoD, Legion, BfA, Shadowlands, Dragonflight and The War Within run on the Mop data until their own data is available.
     [[nodiscard]] constexpr Expansion getDataExpansion(Expansion const expansion) noexcept
     {
-        if (expansion == Expansion::_WoD || expansion == Expansion::_Legion || expansion == Expansion::_BfA || expansion == Expansion::_Shadowlands || expansion == Expansion::_Dragonflight)
+        if (expansion == Expansion::_WoD || expansion == Expansion::_Legion || expansion == Expansion::_BfA || expansion == Expansion::_Shadowlands || expansion == Expansion::_Dragonflight || expansion == Expansion::_TheWarWithin)
             return Expansion::_Mop;
 
         return expansion;
     }
 
     /// Build of the game data (dbc, maps, database rows) the server loads for an expansion.
-    /// WoD, Legion, BfA, Shadowlands and Dragonflight run on the Mop data until their own data is available.
+    /// WoD, Legion, BfA, Shadowlands, Dragonflight and The War Within run on the Mop data until their own data is available.
     [[nodiscard]] constexpr uint32_t getDataBuildForExpansion(Expansion const expansion) noexcept
     {
-        if (expansion == Expansion::_WoD || expansion == Expansion::_Legion || expansion == Expansion::_BfA || expansion == Expansion::_Shadowlands || expansion == Expansion::_Dragonflight)
+        if (expansion == Expansion::_WoD || expansion == Expansion::_Legion || expansion == Expansion::_BfA || expansion == Expansion::_Shadowlands || expansion == Expansion::_Dragonflight || expansion == Expansion::_TheWarWithin)
             return Build::MOP_BUILD;
 
         return getBuildForExpansion(expansion);
@@ -216,6 +221,7 @@ namespace WoW {
             case Build::BFA_BUILD:     return Expansion::_BfA;
             case Build::SHADOWLANDS_BUILD: return Expansion::_Shadowlands;
             case Build::DRAGONFLIGHT_BUILD: return Expansion::_Dragonflight;
+            case Build::THEWARWITHIN_BUILD: return Expansion::_TheWarWithin;
             default:                   return Expansion::Unknown;
         }
     }
@@ -276,10 +282,10 @@ namespace WoW {
     /// Legacy wrapper: Build number used for database build filters
     [[nodiscard]] inline uint32_t getConfigBuild() noexcept { return getDataBuildForExpansion(getServerExpansion()); }
 
-    /// Returns the array index for opcode/version tables (0 = Classic ... 9 = Dragonflight), or -1 if unsupported
+    /// Returns the array index for opcode/version tables (0 = Classic ... 10 = The War Within), or -1 if unsupported
     [[nodiscard]] constexpr int32_t getOpcodeTableIndex(Expansion const expansion) noexcept
     {
-        if (expansion == Expansion::Unknown || expansion > Expansion::_Dragonflight)
+        if (expansion == Expansion::Unknown || expansion > Expansion::_TheWarWithin)
         {
             return -1;
         }
@@ -319,7 +325,7 @@ namespace WoW {
             case Expansion::_BfA: return "Battle for Azeroth";
             case Expansion::_Shadowlands: return "Shadowlands";
             case Expansion::_Dragonflight: return "Dragonflight";
-            case Expansion::TWW: return "The War Within";
+            case Expansion::_TheWarWithin: return "The War Within";
             case Expansion::MN: return "Midnight";
             case Expansion::Unknown:
             default: return "Unknown expansion";
@@ -341,7 +347,7 @@ namespace WoW {
             case Expansion::_BfA:      return "BfA";
             case Expansion::_Shadowlands:       return "Shadowlands";
             case Expansion::_Dragonflight:      return "Dragonflight";
-            case Expansion::TWW:      return "TWW";
+            case Expansion::_TheWarWithin:      return "TheWarWithin";
             case Expansion::MN:       return "Midnight";
             case Expansion::Unknown:
             default:                  return "Unknown";

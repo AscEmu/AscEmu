@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    // the server time the 10.x client asks for on the glue screen
+    // the server time the 10.x and 11.x clients ask for on the glue screen
     class SmsgServerTimeOffset : public ManagedPacket
     {
     public:
@@ -28,7 +28,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (!m_protocol.isDragonflight())
+            if (!m_protocol.isDragonflight() && !m_protocol.isTheWarWithin())
                 return false;
 
             packet << time;

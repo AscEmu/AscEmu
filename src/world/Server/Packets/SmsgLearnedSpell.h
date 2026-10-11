@@ -30,9 +30,9 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isDragonflight())
+            if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
             {
-                // 10.x: the spells as list with their bits, the specialization and the message bit in front
+                // 10.x and 11.x: the spells as list with their bits, the specialization and the message bit in front
                 packet << uint32_t(1);
                 packet << uint32_t(0);                  // specialization
                 packet.writeBit(false);                 // suppress the message

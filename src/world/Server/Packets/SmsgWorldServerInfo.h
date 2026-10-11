@@ -38,6 +38,26 @@ namespace AscEmu::Packets
                 return true;
             }
 
+            if (m_protocol.isTheWarWithin())
+            {
+                // 11.x: difficulty; housing: house, house owner battle.net account, house owner player, neighborhood (none);
+                // bits: tournament realm, cross realm pvp alert, block exiting loading screen, restricted level,
+                // restricted money, instance group size
+                packet << uint32_t(0);
+                packet << WoWGuid128();
+                packet << WoWGuid128();
+                packet << WoWGuid128();
+                packet << WoWGuid128();
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // difficulty; bits: tournament realm, cross realm pvp alert, block exiting loading screen, restricted level,

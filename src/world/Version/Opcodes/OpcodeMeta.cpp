@@ -2565,5 +2565,8 @@ namespace Version::Tables
         { "SMSG_SERVER_TIME_OFFSET", OpcodeDevelopmentState::Okay },
         { "CMSG_SOCIAL_CONTRACT_REQUEST", OpcodeDevelopmentState::Okay },
         { "SMSG_SOCIAL_CONTRACT_REQUEST_RESPONSE", OpcodeDevelopmentState::Okay },
+        { "CMSG_MESSAGE_WHISPER", OpcodeDevelopmentState::Unchecked },
+        { "SMSG_ACCOUNT_ITEM_COLLECTION_DATA", OpcodeDevelopmentState::Okay },
+        { "SMSG_BATTLE_NET_CONNECTION_STATUS", OpcodeDevelopmentState::Okay },
     };
 }

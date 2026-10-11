@@ -181,8 +181,8 @@ inline uint8_t toBfACharacterErrorCode(uint8_t code)
     return code;
 }
 
-// the results of 10.2.7 clients: created (23 ..), deleted (64 ..), logged in (75 ..) and named (92 ..); the groups
-// keep their order, the codes added to the creation group lie behind the ones used here
+// the results of 10.2.7 and 11.2.7 clients: created (23 ..), deleted (64 ..), logged in (75 ..) and named (92 ..); the
+// groups keep their order, the codes added to the creation group lie behind the ones used here
 inline uint8_t toDragonflightCharacterErrorCode(uint8_t code)
 {
     if (code >= E_CHAR_NAME_SUCCESS)

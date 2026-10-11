@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AuraDataBfA.h"
 #include "AuraDataShadowlands.h"
 #include "AuraDataLegion.h"
+#include "AuraDataTheWarWithin.h"
 #include "Spell/SpellAuraDefines.hpp"
 
 #include <cstdint>
@@ -75,7 +76,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
+            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
             {
                 // 7.x sends the full update as SMSG_AURA_UPDATE with the update all bit
                 packet.initialize(SMSG_AURA_UPDATE, 16 + aura_updates.size() * 40);
@@ -85,7 +86,9 @@ namespace AscEmu::Packets
 
                 for (const auto& auras : aura_updates)
                 {
-                    if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
+                    if (m_protocol.isTheWarWithin())
+                        writeAuraSlotTheWarWithin(packet, auras, false, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
+                    else if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
                         writeAuraSlotShadowlands(packet, auras, false, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
                     else if (m_protocol.isBfA())
                         writeAuraSlotBfA(packet, auras, false, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());

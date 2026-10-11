@@ -31,6 +31,13 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithin())
+            {
+                // 11.x: result as a 32 bit value (same result codes as 10.x)
+                packet << uint32_t(toDragonflightCharacterErrorCode(result));
+                return true;
+            }
+
             if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 packet << (m_protocol.isDragonflight() ? toDragonflightCharacterErrorCode(result) : m_protocol.isShadowlands() ? toShadowlandsCharacterErrorCode(result) : toBfACharacterErrorCode(result));

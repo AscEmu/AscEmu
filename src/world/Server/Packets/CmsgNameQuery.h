@@ -29,9 +29,9 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
+            if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
             {
-                // 9.x asks for several players at once, the first one takes the single guid
+                // 9.x, 10.x and 11.x ask for several players at once, the first one takes the single guid
                 const uint32_t count = packet.read<uint32_t>();
                 if (count == 0 || count > 50)
                     return false;

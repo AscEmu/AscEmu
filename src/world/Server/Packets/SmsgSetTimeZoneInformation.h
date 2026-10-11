@@ -31,9 +31,9 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isDragonflight())
+            if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
             {
-                // 10.x: the server time zone, the game time zone and the regional time zone
+                // 10.x and 11.x: the server time zone, the game time zone and the regional time zone
                 packet.writeBits(timeZone.length(), 7);
                 packet.writeBits(timeZone.length(), 7);
                 packet.writeBits(timeZone.length(), 7);

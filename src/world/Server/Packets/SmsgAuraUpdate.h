@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 #include "AuraDataBfA.h"
 #include "AuraDataShadowlands.h"
+#include "AuraDataTheWarWithin.h"
 #include "AuraDataLegion.h"
 #include <cstdint>
 
@@ -58,7 +59,9 @@ namespace AscEmu::Packets
             packet.writeBits(1, 9);
             packet.flushBits();
 
-            if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
+            if (m_protocol.isTheWarWithin())
+                writeAuraSlotTheWarWithin(packet, aura_updates, remove, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
+            else if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 writeAuraSlotShadowlands(packet, aura_updates, remove, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
             else if (m_protocol.isBfA())
                 writeAuraSlotBfA(packet, aura_updates, remove, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
@@ -89,7 +92,7 @@ namespace AscEmu::Packets
             if (m_protocol.isWoD())
                 return serialiseWoD(packet);
 
-            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
+            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
                 return serialiseLegion(packet);
 
             if (m_protocol.expansion < WoW::Expansion::_Mop)

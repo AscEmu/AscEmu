@@ -60,10 +60,10 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
         return;
     }
 
-    if (protocol.isDragonflight())
+    if (protocol.isDragonflight() || protocol.isTheWarWithin())
     {
-        // 10.x: the records of the client data tables are not served yet. The 5.x item record the older clients
-        // get passes the size check of the 10.x client and leaves it with an unreadable record, so every record
+        // 10.x and 11.x: the records of the client data tables are not served yet. The 5.x item record the older clients
+        // get passes the size check of these clients and leaves them with an unreadable record, so every record
         // is reported as not available; the client asks on the character screen as well and waits for the answers
         for (const uint32_t recordId : srlPacket.entries)
         {

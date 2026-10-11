@@ -139,12 +139,19 @@ void UpdateManager::internalProcessPendingUpdates()
     ByteBuffer buffer(calculateBufferSize());
 
 #if VERSION_STRING >= WoD
-    // 6.x and 7.x: block count, map, the objects that left the range, size of the blocks, the blocks
+    // 6.x and 7.x: block count, map, the objects that left the range, size of the blocks, the blocks;
+    // 11.x: map, block count, a set bit, then the objects that left the range
     const auto sendBlocks = [this, &buffer](uint32_t blockCount, ByteBuffer& blocks, bool withOutOfRange)
     {
         buffer.clear();
+#if VERSION_STRING == TheWarWithin
+        buffer << uint16_t(m_owner->GetMapId());
+        buffer << uint32_t(blockCount);
+        buffer.writeBit(true);
+#else
         buffer << uint32_t(blockCount);
         buffer << uint16_t(m_owner->GetMapId());
+#endif
 
         const bool hasOutOfRange = withOutOfRange && m_outOfRangeIdCount > 0;
         buffer.writeBit(hasOutOfRange);

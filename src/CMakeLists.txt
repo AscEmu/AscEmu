@@ -21,19 +21,20 @@ set_property(CACHE ASCEMU_VERSION PROPERTY STRINGS
     BfA
     Shadowlands
     Dragonflight
+    TheWarWithin
     Forever
 )
 
 set(AE_USES_BATTLENET OFF)
 set(AE_IS_FOREVER OFF)
 
-# WoD (6.2.4), Legion (7.3.5), BfA (8.3.7), Shadowlands (9.2.7) and Dragonflight (10.2.7) clients log in through Battle.net as well,
+# WoD (6.2.4), Legion (7.3.5), BfA (8.3.7), Shadowlands (9.2.7), Dragonflight (10.2.7) and The War Within (11.2.7) clients log in through Battle.net as well,
 # all with the protobuf login over TLS. They keep the classic world server and scripts;
 # their world transport comes from src/version.
 if (ASCEMU_VERSION STREQUAL "Forever")
     set(AE_USES_BATTLENET ON)
     set(AE_IS_FOREVER ON)
-elseif (ASCEMU_VERSION STREQUAL "WoD" OR ASCEMU_VERSION STREQUAL "Legion" OR ASCEMU_VERSION STREQUAL "BfA" OR ASCEMU_VERSION STREQUAL "Shadowlands" OR ASCEMU_VERSION STREQUAL "Dragonflight")
+elseif (ASCEMU_VERSION STREQUAL "WoD" OR ASCEMU_VERSION STREQUAL "Legion" OR ASCEMU_VERSION STREQUAL "BfA" OR ASCEMU_VERSION STREQUAL "Shadowlands" OR ASCEMU_VERSION STREQUAL "Dragonflight" OR ASCEMU_VERSION STREQUAL "TheWarWithin")
     set(AE_USES_BATTLENET ON)
 endif ()
 

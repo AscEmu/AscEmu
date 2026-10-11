@@ -64,6 +64,35 @@ namespace AscEmu::Packets
                 return true;
             }
 
+            if (m_protocol.isTheWarWithin())
+            {
+                // target, caster, cast guid, spell, visual, damage, original damage, overkill, school, absorbed, resisted,
+                // blocked, hit flags (crit 0x2, 32 bit field in 11.x), world text viewers, supporters,
+                // periodic, debug info, log data, content tuning
+                packet << targetGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << casterGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << WoWGuid128();
+                packet << int32_t(spellId);
+                packet << int32_t(0);
+                packet << int32_t(0);               // script visual
+                packet << int32_t(damage);
+                packet << int32_t(damage);          // original damage
+                packet << int32_t(overKill);
+                packet << uint8_t(school);
+                packet << int32_t(absorbedDamage);
+                packet << int32_t(resistedDamage);
+                packet << int32_t(blockedDamage);
+                packet << int32_t(isCriticalHit ? 0x2 : 0);
+                packet << uint32_t(0);              // world text viewers
+                packet << uint32_t(0);              // supporters
+                packet.writeBit(isPeriodicDamage);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // target, caster, cast guid, spell, visual, damage, overkill, school, absorbed, resisted, blocked,

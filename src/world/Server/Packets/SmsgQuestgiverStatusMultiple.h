@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "SmsgQuestgiverStatus.h"
 
 #include <cstdint>
 #include <utility>
@@ -49,6 +50,20 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithin())
+            {
+                // 11.x: as 10.x with the moved status bits
+                packet << static_cast<uint32_t>(questgiverSet.size());
+
+                for (const auto& questGiver : questgiverSet)
+                {
+                    packet << WoWGuid(questGiver.rawGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                    packet << questgiverStatusForTheWarWithin(static_cast<uint32_t>(questGiver.status));
+                }
+
+                return true;
+            }
+
             if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 packet << static_cast<uint32_t>(questgiverSet.size());

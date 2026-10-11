@@ -41,6 +41,16 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithin())
+            {
+                // 11.x: timer as byte, value, max value, scale, spell, paused
+                packet << uint8_t(type);
+                packet << int32_t(current) << int32_t(max) << int32_t(regen) << int32_t(spellId);
+                packet.writeBit(paused != 0);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // timer, value, max value, scale, spell, paused

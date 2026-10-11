@@ -40,6 +40,8 @@ This file is released under the MIT license. See README-MIT for more information
     #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860) && (a != 870) && (a != 1116) && (a != 1220) && (a != 1642) && (a != 1643) && (a != 1669) && (a != 1718) && (a != 2175) && (a != 2222)) // Shadowlands (untested)
 #elif VERSION_STRING == Dragonflight
     #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860) && (a != 870) && (a != 1116) && (a != 1220) && (a != 1642) && (a != 1643) && (a != 1669) && (a != 1718) && (a != 2175) && (a != 2222) && (a != 2444) && (a != 2454) && (a != 2548)) // Dragonflight (untested)
+#elif VERSION_STRING == TheWarWithin
+    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860) && (a != 870) && (a != 1116) && (a != 1220) && (a != 1642) && (a != 1643) && (a != 1669) && (a != 1718) && (a != 2175) && (a != 2222) && (a != 2444) && (a != 2454) && (a != 2548) && (a != 2552)) // The War Within (untested)
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -57,6 +59,7 @@ This file is released under the MIT license. See README-MIT for more information
 // Battle for Azeroth = 2500 - untested, upper bound until Map.db2 of 35662 is extracted
 // Shadowlands = 3000 - untested, upper bound until Map.db2 of 45745 is extracted
 // Dragonflight = 3000 - untested, upper bound until Map.db2 of 55664 is extracted
+// The War Within = 3000 - untested, upper bound until Map.db2 of 65299 is extracted
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -76,7 +79,7 @@ This file is released under the MIT license. See README-MIT for more information
     #define MAX_NUM_MAPS 2000
 #elif VERSION_STRING == BfA
     #define MAX_NUM_MAPS 2500
-#elif VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
+#elif VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin
     #define MAX_NUM_MAPS 3000
 #endif
 

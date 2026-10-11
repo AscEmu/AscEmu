@@ -7,8 +7,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
+#include "Storage/WDB/WDBStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
+#include <algorithm>
 #include <array>
 #include <cstdint>
+#include <utility>
+#include <vector>
 
 namespace AscEmu::Packets
 {
@@ -32,6 +37,39 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithin())
+            {
+                // 11.x: the factions are listed with their id instead of being indexed by the reputation list: faction
+                // count, bonus count, every faction with id, flags (16 bit) and standing, then every bonus with id and bit
+                std::vector<std::pair<int32_t, uint32_t>> factionsByListId;   // reputation index, faction id
+                for (const auto& [factionId, factionEntry] : sFactionStore)
+                {
+                    if (factionEntry.reputationIndex >= 0 && static_cast<size_t>(factionEntry.reputationIndex) < reputationByListId.size())
+                        factionsByListId.emplace_back(factionEntry.reputationIndex, factionId);
+                }
+                std::ranges::sort(factionsByListId);
+
+                packet << uint32_t(factionsByListId.size());
+                packet << uint32_t(factionsByListId.size());
+
+                for (const auto& [listId, factionId] : factionsByListId)
+                {
+                    const auto* const factionReputation = reputationByListId[static_cast<size_t>(listId)];
+                    packet << int32_t(factionId);
+                    packet << uint16_t(factionReputation != nullptr ? factionReputation->flag : 0);
+                    packet << int32_t(factionReputation != nullptr ? factionReputation->calcStanding() : 0);
+                }
+
+                for (const auto& [listId, factionId] : factionsByListId)
+                {
+                    packet << int32_t(factionId);
+                    packet.writeBit(false);             // faction has a bonus
+                    packet.flushBits();
+                }
+
+                return true;
+            }
+
             if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // 256 (6.x), 300 (7.x), 350 (8.x), 400 (9.x) or 1000 (10.x) factions: flags (16 bit in 10.x) and

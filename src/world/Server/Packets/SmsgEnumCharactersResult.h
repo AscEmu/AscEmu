@@ -334,6 +334,52 @@ namespace AscEmu::Packets
                 for (auto const& data : enum_data)
                     writeCharacter128(packet, data, listPosition++);
             }
+            else if (m_protocol.isTheWarWithin())
+            {
+                // races a new character can be created with, allied races are not offered
+                static constexpr int8_t unlockedRaces[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 22, 24, 25, 26 };
+
+                int32_t maxCharacterLevel = 1;
+                for (auto const& data : enum_data)
+                    maxCharacterLevel = std::max<int32_t>(maxCharacterLevel, data.level);
+
+                // 11.x: success, realmless, list of deleted characters, new player restrictions ignored, restricted
+                // new player, newcomer chat completed, restricted trial, unused, has a mask of disabled classes,
+                // no character displays
+                packet.writeBit(1);
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.flushBits();
+                packet << uint32_t(enum_data.size());
+                packet << uint32_t(0);                          // regionwide characters
+                packet << maxCharacterLevel;
+                packet << uint32_t(sizeof(unlockedRaces) / sizeof(unlockedRaces[0]));
+                packet << uint32_t(0);                          // unlocked conditional appearances
+                packet << uint32_t(0);                          // race limit disables
+                packet << uint32_t(0);                          // warband groups
+
+                uint16_t listPosition = 0;
+                for (auto const& data : enum_data)
+                    writeCharacterTheWarWithin(packet, data, listPosition++);
+
+                for (const int8_t race : unlockedRaces)
+                {
+                    packet << race;
+                    packet.writeBit(1);                         // has the license
+                    packet.writeBit(1);                         // has the achievement
+                    packet.writeBit(0);                         // has the heritage armor achievement
+                    packet.writeBit(0);                         // hidden on the client
+                    packet.writeBit(0);
+                    packet.flushBits();
+                }
+            }
             else if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // races a new character can be created with, allied races are not offered
@@ -485,6 +531,76 @@ namespace AscEmu::Packets
             packet.flushBits();
 
             packet.append(data.name.c_str(), data.name.length());
+        }
+
+        // character of the 11.x list: the basic data, then the restrictions and mails
+        void writeCharacterTheWarWithin(WorldPacket& packet, CharEnumData const& data, uint16_t listPosition) const
+        {
+            packet << WoWGuid128::realmSpecific(HighGuid128::Player, m_protocol.realmId, WoWGuid::getLowGuidFromRaw(data.guid));
+            packet << uint32_t(m_protocol.getVirtualRealmAddress());
+            packet << listPosition;
+            packet << data.race << data.gender << data.Class;
+            packet << int16_t(0);                               // specialization
+            packet << uint32_t(0);                              // customization choices, none are stored yet
+            packet << data.level;
+            packet << int32_t(data.mapId);
+            packet << int32_t(data.zoneId);
+            packet << data.x << data.y << data.z;
+            packet << (uint64_t(WoWGuid::getLowGuidFromRaw(data.guid)) | (uint64_t(m_protocol.realmId & 0xFFF) << 48));   // guild club member
+
+            if (data.guildId != 0)
+                packet << WoWGuid128::realmSpecific(HighGuid128::Guild, m_protocol.realmId, data.guildId);
+            else
+                packet << WoWGuid128();
+
+            packet << uint32_t(data.char_flags);
+            packet << uint32_t(data.customization_flag);
+            packet << uint32_t(0);                              // flags 3
+            packet << uint32_t(0);                              // flags 4
+            packet << uint8_t(0);                               // reason the character cannot log in
+            packet << uint32_t(data.pet_data.display_id);
+            packet << uint32_t(data.pet_data.level);
+            packet << uint32_t(data.pet_data.family);
+
+            // the equipment without the bags: display, inventory type, enchantment, subclass, secondary appearance,
+            // item, transmogrified item
+            for (uint8_t i = 0; i < 19; ++i)
+            {
+                packet << uint32_t(data.player_items[i].displayId);
+                packet << uint8_t(data.player_items[i].inventoryType);
+                packet << uint32_t(data.player_items[i].enchantmentId);
+                packet << uint8_t(0);                           // subclass
+                packet << int32_t(0);                           // secondary item modified appearance
+                packet << uint32_t(0);                          // item
+                packet << uint32_t(0);                          // transmogrified item
+            }
+
+            packet << int32_t(0);                               // save version
+            packet << int64_t(0);                               // creation time
+            packet << int64_t(0);                               // last active time
+            packet << uint32_t(WoW::Build::THEWARWITHIN_BUILD); // build of the last login
+            for (uint8_t i = 0; i < 5; ++i)
+                packet << int32_t(-1);                          // personal tabard (none)
+            packet << uint32_t(0);                              // profession 1
+            packet << uint32_t(0);                              // profession 2
+            packet << int32_t(0);                               // timerunning season
+            packet << uint32_t(0);                              // override of the select screen file
+            packet << uint32_t(0);
+
+            packet.writeBits(static_cast<uint32_t>(data.name.length()), 6);
+            packet.writeBit(data.loginFlags & 0x20);            // first login
+            packet.writeBit(0);
+            packet.writeBit(0);
+            packet.flushBits();
+            packet.append(data.name.c_str(), data.name.length());
+
+            // restrictions and mails: boost in progress, rpe available; restriction flags, mail senders, mail sender types
+            packet.writeBit(0);
+            packet.writeBit(0);
+            packet.flushBits();
+            packet << uint32_t(0);
+            packet << uint32_t(0);
+            packet << uint32_t(0);
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

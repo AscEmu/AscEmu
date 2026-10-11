@@ -1,4 +1,4 @@
-// BfA (8.3.7), Shadowlands (9.2.7) and Dragonflight (10.2.7) extension of WorldSocket: the V2 world transport.
+// BfA (8.3.7), Shadowlands (9.2.7), Dragonflight (10.2.7) and The War Within (11.2.7) extension of WorldSocket: the V2 world transport.
 // Every packet travels behind a 16 byte header (size and AES-GCM tag), the encryption starts after
 // SMSG_ENTER_ENCRYPTED_MODE was acknowledged. Application opcodes are resolved and dispatched through
 // the central opcode table like on the classic path. The values of the client come from
@@ -9,7 +9,7 @@ protected:
     bool sendAesInitializer();
     bool processAesInitializer();
     bool processAesPacket();
-    bool writeAesPacket(uint16_t rawOpcode, const uint8_t* payload, uint32_t payloadSize);
+    bool writeAesPacket(uint32_t rawOpcode, const uint8_t* payload, uint32_t payloadSize);
     bool flushAesOutput();
 
     // Authentication with the pending Battle.net session.
@@ -46,9 +46,10 @@ private:
 
     AesGcmCrypt m_aesCrypt;
 
-    std::array<uint8_t, 16> m_aesServerChallenge{};
+    // the challenge and the encryption key of the profile: 16 bytes up to 10.x, 32 bytes from 11.x on
+    std::array<uint8_t, 32> m_aesServerChallenge{};
     std::array<uint8_t, 40> m_aesSessionKey{};
-    AesGcmCrypt::Key m_aesEncryptKey{};
+    std::array<uint8_t, 32> m_aesEncryptKey{};
 
     bool m_aesInstanceConnection{false};
     uint64_t m_aesConnectToKey{0};

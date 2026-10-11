@@ -26,6 +26,14 @@ namespace AscEmu::Packets
         {
             auto rawErrorCode = static_cast<uint8_t>(errorCode);
 
+            if (m_protocol.isTheWarWithin())
+            {
+                // 11.x: result as a 32 bit value (same result codes as 10.x), the created character
+                packet << uint32_t(toDragonflightCharacterErrorCode(rawErrorCode));
+                packet << WoWGuid128();
+                return true;
+            }
+
             if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // result, the created character

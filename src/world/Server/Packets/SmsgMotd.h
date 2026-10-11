@@ -35,6 +35,20 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithin())
+            {
+                // 11.x: line count, then every line with its length and text
+                packet.writeBits(lineCount, 4);
+                packet.flushBits();
+                for (const auto& line : motdLines)
+                {
+                    packet.writeBits(strlen(line.c_str()), 7);
+                    packet.flushBits();
+                    packet.writeString(line);
+                }
+                return true;
+            }
+
             // 10.x has no message of the day packet
             if (m_protocol.isClassic() || m_protocol.isDragonflight())
                 return false;

@@ -10,13 +10,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 extern std::span<MovementStep const> const UnknownDescriptor;
 
-std::span<MovementStep const> getClassicMovementDescriptor(uint16_t opcode, bool read);
-std::span<MovementStep const> getTbcMovementDescriptor(uint16_t opcode, bool read);
-std::span<MovementStep const> getWotlkMovementDescriptor(uint16_t opcode, bool read);
-std::span<MovementStep const> getCataMovementDescriptor(uint16_t opcode, bool read);
-std::span<MovementStep const> getMopMovementDescriptor(uint16_t opcode, bool read);
-std::span<MovementStep const> getWoDMovementDescriptor(uint16_t opcode, bool read);
-std::span<MovementStep const> getLegionMovementDescriptor(uint16_t opcode, bool read);
-std::span<MovementStep const> getBfAMovementDescriptor(uint16_t opcode, bool read);
-std::span<MovementStep const> getShadowlandsMovementDescriptor(uint16_t opcode, bool read);
-std::span<MovementStep const> getDragonflightMovementDescriptor(uint16_t opcode, bool read);
+std::span<MovementStep const> getClassicMovementDescriptor(uint32_t opcode, bool read);
+std::span<MovementStep const> getTbcMovementDescriptor(uint32_t opcode, bool read);
+std::span<MovementStep const> getWotlkMovementDescriptor(uint32_t opcode, bool read);
+std::span<MovementStep const> getCataMovementDescriptor(uint32_t opcode, bool read);
+std::span<MovementStep const> getMopMovementDescriptor(uint32_t opcode, bool read);
+std::span<MovementStep const> getWoDMovementDescriptor(uint32_t opcode, bool read);
+std::span<MovementStep const> getLegionMovementDescriptor(uint32_t opcode, bool read);
+std::span<MovementStep const> getBfAMovementDescriptor(uint32_t opcode, bool read);
+std::span<MovementStep const> getShadowlandsMovementDescriptor(uint32_t opcode, bool read);
+std::span<MovementStep const> getDragonflightMovementDescriptor(uint32_t opcode, bool read);
+std::span<MovementStep const> getTheWarWithinMovementDescriptor(uint32_t opcode, bool read);

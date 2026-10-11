@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 class MovementCodecDispatch
 {
 public:
-    static bool hasDescriptor(WoW::Expansion expansion, uint16_t opcode, bool read)
+    static bool hasDescriptor(WoW::Expansion expansion, uint32_t opcode, bool read)
     {
         switch (resolve(expansion))
         {
@@ -25,11 +25,12 @@ public:
             case WoW::Expansion::_BfA: return MovementCodec<WoW::Expansion::_BfA>::hasDescriptor(opcode, read);
             case WoW::Expansion::_Shadowlands: return MovementCodec<WoW::Expansion::_Shadowlands>::hasDescriptor(opcode, read);
             case WoW::Expansion::_Dragonflight: return MovementCodec<WoW::Expansion::_Dragonflight>::hasDescriptor(opcode, read);
+            case WoW::Expansion::_TheWarWithin: return MovementCodec<WoW::Expansion::_TheWarWithin>::hasDescriptor(opcode, read);
             default: return MovementCodec<WoW::Expansion::_Mop>::hasDescriptor(opcode, read);
         }
     }
 
-    static void read(WoW::Expansion expansion, ByteBuffer& buffer, MovementInfo& movementInfo, uint16_t opcode)
+    static void read(WoW::Expansion expansion, ByteBuffer& buffer, MovementInfo& movementInfo, uint32_t opcode)
     {
         switch (resolve(expansion))
         {
@@ -42,11 +43,12 @@ public:
             case WoW::Expansion::_BfA: MovementCodec<WoW::Expansion::_BfA>::read(buffer, movementInfo, opcode); break;
             case WoW::Expansion::_Shadowlands: MovementCodec<WoW::Expansion::_Shadowlands>::read(buffer, movementInfo, opcode); break;
             case WoW::Expansion::_Dragonflight: MovementCodec<WoW::Expansion::_Dragonflight>::read(buffer, movementInfo, opcode); break;
+            case WoW::Expansion::_TheWarWithin: MovementCodec<WoW::Expansion::_TheWarWithin>::read(buffer, movementInfo, opcode); break;
             default: MovementCodec<WoW::Expansion::_Mop>::read(buffer, movementInfo, opcode); break;
         }
     }
 
-    static void write(WoW::Expansion expansion, ByteBuffer& data, MovementInfo const& movementInfo, uint16_t opcode, bool withGuid)
+    static void write(WoW::Expansion expansion, ByteBuffer& data, MovementInfo const& movementInfo, uint32_t opcode, bool withGuid)
     {
         switch (resolve(expansion))
         {
@@ -59,6 +61,7 @@ public:
             case WoW::Expansion::_BfA: MovementCodec<WoW::Expansion::_BfA>::write(data, movementInfo, opcode, withGuid); break;
             case WoW::Expansion::_Shadowlands: MovementCodec<WoW::Expansion::_Shadowlands>::write(data, movementInfo, opcode, withGuid); break;
             case WoW::Expansion::_Dragonflight: MovementCodec<WoW::Expansion::_Dragonflight>::write(data, movementInfo, opcode, withGuid); break;
+            case WoW::Expansion::_TheWarWithin: MovementCodec<WoW::Expansion::_TheWarWithin>::write(data, movementInfo, opcode, withGuid); break;
             default: MovementCodec<WoW::Expansion::_Mop>::write(data, movementInfo, opcode, withGuid); break;
         }
     }

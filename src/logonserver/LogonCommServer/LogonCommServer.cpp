@@ -293,7 +293,7 @@ void LogonCommServerSocket::SendPacket(WorldPacket* data)
     burstBegin();
 
     LogonWorldPacket header;
-    header.opcode = data->getOpcode();
+    header.opcode = static_cast<uint16_t>(data->getOpcode());
 
     uint32_t sizeValue = static_cast<uint32_t>(data->size());
     byteSwapUInt32(&sizeValue);

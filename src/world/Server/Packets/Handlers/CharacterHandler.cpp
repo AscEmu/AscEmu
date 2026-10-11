@@ -34,6 +34,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetPlayerDeclinedNames.h"
 #include "Server/Packets/SmsgSetPlayerDeclinedNamesResult.h"
 #include "Server/Packets/SmsgEnumCharactersResult.h"
+#include "Server/Packets/SmsgAccountItemCollectionData.h"
 #include "Server/Packets/SmsgSetTimeZoneInformation.h"
 #include "Server/Packets/SmsgSetupCurrency.h"
 #include "Management/Guild/GuildMgr.hpp"
@@ -1099,6 +1100,13 @@ void WorldSession::characterEnumProc(QueryResult* result)
     sLogger.debug("Character Enum Built in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     SmsgEnumCharactersResult enumPacket(charRealCount, enumData);
     sendManagedPacket(enumPacket);
+
+    // 11.x: the warband scenes of the account follow the character list
+    if (getClientProtocol().isTheWarWithin())
+    {
+        SmsgAccountItemCollectionData warbandScenes(7);
+        sendManagedPacket(warbandScenes);
+    }
 }
 
 void WorldSession::handleCharEnumOpcode(WorldPacket& /*recvPacket*/)

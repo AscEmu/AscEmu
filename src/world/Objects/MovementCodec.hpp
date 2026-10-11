@@ -18,7 +18,7 @@ class MovementCodec
 public:
     static constexpr WoW::Expansion expansion = Version;
 
-    static void read(ByteBuffer& buffer, MovementInfo& movementInfo, uint16_t opcode)
+    static void read(ByteBuffer& buffer, MovementInfo& movementInfo, uint32_t opcode)
     {
         unsetState(movementInfo);
 
@@ -37,12 +37,12 @@ public:
         }
     }
 
-    static bool hasDescriptor(uint16_t opcode, bool read)
+    static bool hasDescriptor(uint32_t opcode, bool read)
     {
         return !isUnknownDescriptor(getDescriptor(opcode, read));
     }
 
-    static void write(ByteBuffer& data, MovementInfo movementInfo, uint16_t opcode, bool withGuid = true)
+    static void write(ByteBuffer& data, MovementInfo movementInfo, uint32_t opcode, bool withGuid = true)
     {
         setState(movementInfo);
 
@@ -134,6 +134,7 @@ private:
             case Cond::HasInertia:         return movementInfo.hasInertia;
             case Cond::HasStandingOnGameObject: return movementInfo.hasStandingOnGameObject;
             case Cond::HasAdvFlying:       return movementInfo.hasAdvFlying;
+            case Cond::HasDriveStatus:     return movementInfo.hasDriveStatus;
 
             case Cond::NoReadOptWrite:     return true;
             case Cond::ReadOptWrite:       return true;
@@ -169,7 +170,7 @@ private:
             descriptor.size() == UnknownDescriptor.size();
     }
 
-    static void executeReadStep(ByteBuffer& buffer, MovementInfo& movementInfo, MovementOp op, uint16_t opcode)
+    static void executeReadStep(ByteBuffer& buffer, MovementInfo& movementInfo, MovementOp op, uint32_t opcode)
     {
         switch (op)
         {
@@ -197,7 +198,7 @@ private:
 
             case MovementOp::Flags:
             {
-                if constexpr (Version == WoW::Expansion::_Shadowlands || Version == WoW::Expansion::_Dragonflight)
+                if constexpr (Version == WoW::Expansion::_Shadowlands || Version == WoW::Expansion::_Dragonflight || Version == WoW::Expansion::_TheWarWithin)
                 {
                     buffer >> movementInfo.flags;
                 }
@@ -443,6 +444,17 @@ private:
                     buffer >> velocity >> velocity;
                 } break;
 
+            case MovementOp::HasDriveStatus: movementInfo.hasDriveStatus = buffer.readBit(); break;
+
+            case MovementOp::SkipDriveStatus:
+                {
+                    float value = 0.0f;
+                    buffer >> value >> value;               // speed, movement angle
+                    buffer.readBit();                       // accelerating
+                    buffer.readBit();                       // drifting
+                    buffer.resetBitPos();
+                } break;
+
             case MovementOp::AlignBits: buffer.resetBitPos(); break;
             default:
                 break;
@@ -477,7 +489,7 @@ private:
 
             case MovementOp::Flags:
             {
-                if constexpr (Version == WoW::Expansion::_Shadowlands || Version == WoW::Expansion::_Dragonflight)
+                if constexpr (Version == WoW::Expansion::_Shadowlands || Version == WoW::Expansion::_Dragonflight || Version == WoW::Expansion::_TheWarWithin)
                     data << movementInfo.flags;
                 else if constexpr (Version >= WoW::Expansion::_Cata)
                     data.writeBits(movementInfo.flags, 30);
@@ -593,13 +605,15 @@ private:
             case MovementOp::SkipStandingOnGameObject: break;
             case MovementOp::HasAdvFlying: data.writeBit(false); break;
             case MovementOp::SkipAdvFlying: break;
+            case MovementOp::HasDriveStatus: data.writeBit(false); break;
+            case MovementOp::SkipDriveStatus: break;
             case MovementOp::AlignBits: data.flushBits(); break;
             default:
                 break;
         }
     }
 
-    static std::span<MovementStep const> getDescriptor(uint16_t opcode, bool read)
+    static std::span<MovementStep const> getDescriptor(uint32_t opcode, bool read)
     {
         if constexpr (Version == WoW::Expansion::_Classic)
             return getClassicMovementDescriptor(opcode, read);
@@ -619,6 +633,8 @@ private:
             return getShadowlandsMovementDescriptor(opcode, read);
         else if constexpr (Version == WoW::Expansion::_Dragonflight)
             return getDragonflightMovementDescriptor(opcode, read);
+        else if constexpr (Version == WoW::Expansion::_TheWarWithin)
+            return getTheWarWithinMovementDescriptor(opcode, read);
         else
             return getMopMovementDescriptor(opcode, read);
     }

@@ -31,7 +31,8 @@ enum class Cond : uint8_t
     IsTransportPresent,
     HasInertia,
     HasStandingOnGameObject,
-    HasAdvFlying
+    HasAdvFlying,
+    HasDriveStatus
 };
 
 enum class MovementOp : uint16_t
@@ -120,6 +121,11 @@ enum class MovementOp : uint16_t
     SkipStandingOnGameObject,
     HasAdvFlying,
     SkipAdvFlying,
+
+    // 11.x: the drive status bit and its block behind the fall data (speed, movement angle, the accelerating
+    // and drifting bits), only read
+    HasDriveStatus,
+    SkipDriveStatus,
 
     // end of a bit field between byte fields: flushes on write, starts a new byte on read
     AlignBits
@@ -210,6 +216,15 @@ struct MovementVersionTraits<WoW::Expansion::_Shadowlands>
 // 10.x keeps the plain 32 bit flag fields of 9.x
 template <>
 struct MovementVersionTraits<WoW::Expansion::_Dragonflight>
+{
+    static constexpr bool hasFlags2 = true;
+    static constexpr int flags2BitWidth = 32;
+    static constexpr bool flags2IsBitPacked = false;
+};
+
+// 11.x keeps the plain 32 bit flag fields of 9.x
+template <>
+struct MovementVersionTraits<WoW::Expansion::_TheWarWithin>
 {
     static constexpr bool hasFlags2 = true;
     static constexpr int flags2BitWidth = 32;

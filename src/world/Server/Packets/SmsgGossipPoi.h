@@ -45,9 +45,23 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
+            if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
             {
-                // id, position with height, icon, importance, wmo group, flags, name length, name
+                // 10.x and 11.x: id, flags as field, position with height, icon, importance, wmo group, name length, name
+                packet << int32_t(0);
+                packet << int32_t(flags);
+                packet << posX << posY << float(0.0f) << icon << data;
+                packet << int32_t(0);
+                packet.writeBits(static_cast<uint32_t>(name.length()), 6);
+                packet.flushBits();
+                if (name.length())
+                    packet.append(reinterpret_cast<const uint8_t*>(name.c_str()), name.length());
+                return true;
+            }
+
+            if (m_protocol.isShadowlands())
+            {
+                // 9.x: id, position with height, icon, importance, wmo group, flags as 14 bits, name length, name
                 packet << int32_t(0);
                 packet << posX << posY << float(0.0f) << icon << data;
                 packet << int32_t(0);

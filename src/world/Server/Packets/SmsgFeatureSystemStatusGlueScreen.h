@@ -30,6 +30,71 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithin())
+            {
+                packet.writeBit(0);                     // shop available
+                packet.writeBit(0);                     // shop disabled by parental controls
+                packet.writeBit(0);                     // character restore
+                packet.writeBit(0);                     // commerce system
+                packet.writeBit(0);                     // veteran token redeem will kick
+                packet.writeBit(0);                     // world token redeem will kick
+                packet.writeBit(0);                     // expansion preorder in the shop
+                packet.writeBit(0);                     // kiosk mode
+                packet.writeBit(0);                     // competitive mode
+                packet.writeBit(0);                     // boost
+                packet.writeBit(0);                     // trial boost
+                packet.writeBit(0);                     // redeem for balance
+                packet.writeBit(0);                     // paid character transfers between battle.net accounts
+                packet.writeBit(0);                     // live region character list
+                packet.writeBit(0);                     // live region character copy
+                packet.writeBit(0);                     // live region account copy
+                packet.writeBit(0);                     // live region key bindings copy
+                packet.writeBit(0);                     // browser crash reporter
+                packet.writeBit(0);                     // employee account
+                packet.writeBit(0);                     // has the ticket system status
+                packet.writeBit(0);                     // name reservation only
+                packet.writeBit(0);                     // has a launch eta
+                packet.writeBit(0);                     // timerunning
+                packet.writeBit(0);                     // scripts disallowed for beta
+                packet.writeBit(0);                     // player identity options
+                packet.writeBit(0);                     // account export
+                packet.writeBit(0);                     // account locked after export
+                packet.writeBits(1, 11);                // length of the hidden realm alert with its terminator
+                packet.writeBit(0);                     // battle.net whisper: v2 services
+                packet.writeBit(0);                     // battle.net game data: v2 services
+                packet.writeBit(0);                     // realmless character select list
+                packet.writeBit(0);                     // token limited mode
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.writeBit(0);                     // pandaren level boost allowed
+                packet.flushBits();
+
+                packet << uint32_t(300);                // commerce price poll time in seconds
+                packet << uint32_t(0);                  // kiosk session minutes
+                packet << int64_t(0);                   // redeem for balance amount
+                packet << int32_t(10);                  // characters per realm
+                packet << uint32_t(0);                  // live region copy source regions
+                packet << int32_t(0);                   // character upgrade boost
+                packet << int32_t(0);                   // class trial boost
+                packet << int32_t(0);                   // minimum expansion level
+                packet << int32_t(maximumExpansionLevel);
+                packet << int32_t(0);                   // content set
+                packet << uint32_t(0);                  // disabled game modes
+                packet << uint32_t(0);                  // game rules
+                packet << uint32_t(0);                  // available game modes
+                packet << int32_t(0);                   // active timerunning season
+                packet << int32_t(0);                   // remaining timerunning season seconds
+                packet << int32_t(0);                   // timerunning conversion: minimum character age in seconds
+                packet << int32_t(0);                   // timerunning conversion: maximum season
+                packet << int16_t(50);                  // player guid lookups per request
+                packet << int16_t(600);                 // name lookup telemetry interval
+                packet << uint32_t(10);                 // not found cache time in seconds
+                packet << uint32_t(0);                  // debug time events
+                packet << int32_t(0);                   // most recent time event
+                packet << uint32_t(0);                  // event realm queues
+                return true;
+            }
+
             if (m_protocol.isDragonflight())
             {
                 packet.writeBit(0);                     // shop enabled

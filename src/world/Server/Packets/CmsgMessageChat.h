@@ -40,7 +40,7 @@ namespace AscEmu::Packets
             uint8_t chatType;
         };
 
-#define MSG_OPCODE_COUNT 13
+#define MSG_OPCODE_COUNT 14
 
         OpcodeToChatType opcodeToChatTypeList[MSG_OPCODE_COUNT] =
         {
@@ -56,7 +56,8 @@ namespace AscEmu::Packets
             { CMSG_MESSAGECHAT_PARTY, CHAT_MSG_PARTY },
             { CMSG_MESSAGECHAT_RAID, CHAT_MSG_RAID },
             { CMSG_MESSAGECHAT_BATTLEGROUND, CHAT_MSG_BATTLEGROUND },
-            { CMSG_MESSAGECHAT_RAID_WARNING, CHAT_MSG_RAID_WARNING }
+            { CMSG_MESSAGECHAT_RAID_WARNING, CHAT_MSG_RAID_WARNING },
+            { CMSG_MESSAGE_WHISPER, CHAT_MSG_WHISPER }                  // 11.x: second whisper opcode, same layout
         };
 
         uint8_t getMessageTypeForOpcode(uint16_t opcode)
@@ -73,9 +74,9 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isDragonflight())
+            if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
             {
-                // 10.x: 11 bit texts; say, party, raid, raid warning and instance chat close with a secure bit; the
+                // 10.x and 11.x: 11 bit texts; say, party, raid, raid warning and instance chat close with a secure bit; the
                 // whisper names its target by guid and realm and ends both texts with a terminator; the channel
                 // carries its guid and an optional secure bit
                 type = getMessageTypeForOpcode(static_cast<uint16_t>(Version::opcodeIdForHex(packet.getOpcode(), m_protocol)));

@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 bool OpcodeHandlerRegistry::handleOpcode(WorldSession& session, WorldPacket& packet)
 {
-    uint16_t rawOpcode = packet.getOpcode();
+    uint32_t rawOpcode = packet.getOpcode();
 
     // Get the internal ID from the opcode table of the client version of this session
     const auto protocol = session.getClientProtocol();
@@ -49,9 +49,9 @@ bool OpcodeHandlerRegistry::handleOpcode(WorldSession& session, WorldPacket& pac
     return true;
 }
 
-void OpcodeHandlerRegistry::logUnhandledOpcode(uint16_t rawOpcode, uint32_t internalId, const std::string& name)
+void OpcodeHandlerRegistry::logUnhandledOpcode(uint32_t rawOpcode, uint32_t internalId, const std::string& name)
 {
-    static const std::set<uint16_t> ignoredOpcodes = 
+    static const std::set<uint32_t> ignoredOpcodes =
     {
         0x0000, 0x0040, 0x0150, 0x03F6, 0x15A9, 0x15AB
     };

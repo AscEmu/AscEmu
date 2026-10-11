@@ -81,6 +81,7 @@ struct MovementInfo
     bool hasInertia = false;            // 9.x
     bool hasStandingOnGameObject = false;   // 10.x
     bool hasAdvFlying = false;              // 10.x
+    bool hasDriveStatus = false;            // 11.x
     bool hasMovementFlags = false;
     bool hasMovementFlags2 = false;
     bool hasCount = false;
@@ -157,10 +158,10 @@ struct MovementInfo
     }
 
     // the movement layout depends on the client version of the session that sends or receives the packet
-    void readMovementInfo(ByteBuffer& data, uint16_t opcode, WoW::Expansion expansion);
+    void readMovementInfo(ByteBuffer& data, uint32_t opcode, WoW::Expansion expansion);
     void read(WorldPacket& packet, WoW::ClientProtocol const& protocol);
 
-    void writeMovementInfo(ByteBuffer& data, uint16_t opcode, WoW::Expansion expansion, bool withGuid = true) const;
+    void writeMovementInfo(ByteBuffer& data, uint32_t opcode, WoW::Expansion expansion, bool withGuid = true) const;
     void write(WorldPacket& packet, WoW::ClientProtocol const& protocol, bool withGuid = true) const;
 };
 

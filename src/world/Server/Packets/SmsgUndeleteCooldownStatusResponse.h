@@ -35,6 +35,15 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithin())
+            {
+                // 11.x: the cooldown bit follows the two durations
+                packet << maxCooldown << currentCooldown;
+                packet.writeBit(onCooldown);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.expansion >= WoW::Expansion::_WoD && m_protocol.expansion <= WoW::Expansion::_Dragonflight)
             {
                 packet.writeBit(onCooldown);

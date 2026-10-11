@@ -36,15 +36,15 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
             {
-                // victim, original amount, reason (kill 0, quest 1), amount, group bonus, refer a friend bonus
+                // victim, original amount, reason (kill 0, quest 1), amount, group bonus, refer a friend bonus (up to 9.x)
                 packet << WoWGuid(guid).toGuid128(m_protocol.realmId, m_receiverMapId);
                 packet << int32_t(normalXp);
                 packet << uint8_t(isQuestXp ? 1 : 0);
                 packet << int32_t(normalXp + restedXp);
                 packet << float(1.0f);
-                if (!m_protocol.isDragonflight())
+                if (!(m_protocol.isDragonflight() || m_protocol.isTheWarWithin()))
                     packet << uint8_t(0);               // refer a friend bonus
                 return true;
             }

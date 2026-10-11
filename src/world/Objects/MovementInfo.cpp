@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Version/VersionRegistry.hpp"
 #include "Utilities/Util.hpp"
 
-void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode, WoW::Expansion expansion)
+void MovementInfo::readMovementInfo(ByteBuffer& data, uint32_t opcode, WoW::Expansion expansion)
 {
     if (MovementCodecDispatch::hasDescriptor(expansion, opcode, true))
     {
@@ -28,7 +28,7 @@ void MovementInfo::read(WorldPacket& packet, WoW::ClientProtocol const& protocol
     readMovementInfo(packet, packet.getOpcode(), protocol.expansion);
 }
 
-void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, WoW::Expansion expansion, bool withGuid/* = true*/) const
+void MovementInfo::writeMovementInfo(ByteBuffer& data, uint32_t opcode, WoW::Expansion expansion, bool withGuid/* = true*/) const
 {
     if (MovementCodecDispatch::hasDescriptor(expansion, opcode, false))
     {

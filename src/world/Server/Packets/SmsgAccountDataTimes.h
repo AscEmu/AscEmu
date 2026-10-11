@@ -50,6 +50,15 @@ namespace AscEmu::Packets
                     if (mask & (1 << i))
                         packet << uint32_t(0);
             }
+            else if (m_protocol.isTheWarWithin())
+            {
+                packet << WoWGuid(playerGuid).toGuid128(m_protocol.realmId, 0);
+                packet << int64_t(time);
+
+                // 11.x knows 20 account data types
+                for (uint8_t i = 0; i < 20; ++i)
+                    packet << int64_t(0);
+            }
             else if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 packet << WoWGuid(playerGuid).toGuid128(m_protocol.realmId, 0);

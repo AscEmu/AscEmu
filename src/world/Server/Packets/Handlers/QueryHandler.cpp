@@ -49,8 +49,8 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
         return;
     }
 
-    // 9.x and 10.x ask for several players in one request and get one answer per player
-    const std::vector<WoWGuid> queriedGuids = getClientProtocol().isShadowlands() || getClientProtocol().isDragonflight() ? srlPacket.guids : std::vector<WoWGuid>{ srlPacket.guid };
+    // 9.x, 10.x and 11.x ask for several players in one request and get one answer per player
+    const std::vector<WoWGuid> queriedGuids = getClientProtocol().isShadowlands() || getClientProtocol().isDragonflight() || getClientProtocol().isTheWarWithin() ? srlPacket.guids : std::vector<WoWGuid>{ srlPacket.guid };
     for (const auto& queriedGuid : queriedGuids)
     {
         SmsgQueryPlayerNameResponse response;
@@ -94,9 +94,9 @@ void WorldSession::handleRealmNameQueryOpcode(WorldPacket& recvData)
     SmsgRealmNameQueryResponse response;
     response.realmId = srlPacket.realmId;
 
-    if (getClientProtocol().isLegion())
+    if (getClientProtocol().expansion >= WoW::Expansion::_Legion)
     {
-        // 7.x asks with the virtual realm address, the realm id is its low part
+        // 7.x and later ask with the virtual realm address, the realm id is its low part
         if ((srlPacket.realmId & 0xFFFF) == worldConfig.battleNetComm.realmId)
         {
             response.found = true;

@@ -49,6 +49,74 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithin())
+            {
+                // 11.x: as 10.x with the lfg dungeon after the gossip, the option npc as uint32, the cost as uint64 and a
+                // failure description per option; the quests carry an unused value, four flag values and two more bits
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << int32_t(id);
+                packet << int32_t(0);                                   // lfg dungeon
+                packet << int32_t(0);                                   // friendship faction
+                packet << uint32_t(gossipItemList.size());
+                packet << uint32_t(gossipQuestList.size());
+                packet.writeBit(true);                                  // has a text
+                packet.writeBit(false);                                 // has a broadcast text
+                packet.flushBits();
+
+                int32_t orderIndex = 0;
+                for (const auto& itemListItem : gossipItemList)
+                {
+                    std::string optionText;
+                    if (!itemListItem.second.text.empty())
+                        optionText = itemListItem.second.text;
+                    else
+                        optionText = sMySQLStore.getLocaleGossipMenuOptionOrElse(itemListItem.second.textId, locale);
+
+                    packet << int32_t(itemListItem.first);              // option id, sent back by the selection
+                    packet << uint32_t(itemListItem.second.icon);
+                    packet << int8_t(itemListItem.second.isCoded ? 1 : 0);
+                    packet << uint64_t(itemListItem.second.boxMoney);
+                    packet << uint32_t(0);                              // language
+                    packet << int32_t(0);                               // flags
+                    packet << int32_t(orderIndex++);
+                    packet.writeBits(static_cast<uint32_t>(optionText.length()), 12);
+                    packet.writeBits(static_cast<uint32_t>(itemListItem.second.boxMessage.length()), 12);
+                    packet.writeBits(0, 2);                             // status: available
+                    packet.writeBit(false);                             // spell
+                    packet.writeBit(false);                             // override icon
+                    packet.writeBits(1, 8);                             // failure description: empty, length with terminator
+                    packet.flushBits();
+                    packet << uint32_t(0);                              // treasure items
+                    packet.writeString(optionText);
+                    packet.writeString(itemListItem.second.boxMessage);
+                }
+
+                packet << int32_t(textId);
+
+                for (const auto& questListItem : gossipQuestList)
+                {
+                    const std::string questTitle = sMySQLStore.getLocaleGossipTitleOrElse(questListItem.first, locale);
+
+                    packet << int32_t(questListItem.first);
+                    packet << int32_t(0);                               // content tuning
+                    packet << int32_t(questListItem.second.icon);
+                    packet << int32_t(0);                               // unused
+                    packet << int32_t(questListItem.second.flags);
+                    packet << int32_t(0);                               // flags 2
+                    packet << int32_t(0);                               // flags 3
+                    packet << int32_t(0);                               // flags 4
+                    packet.writeBit(questListItem.second.repeatable != 0);
+                    packet.writeBit(false);                             // reset by scheduler
+                    packet.writeBit(false);                             // important
+                    packet.writeBit(false);                             // meta
+                    packet.writeBits(static_cast<uint32_t>(questTitle.length()), 9);
+                    packet.flushBits();
+                    packet.writeString(questTitle);
+                }
+
+                return true;
+            }
+
             if (m_protocol.isDragonflight())
             {
                 // unit, gossip, friendship faction, both counts, the text and broadcast text bits, the options with

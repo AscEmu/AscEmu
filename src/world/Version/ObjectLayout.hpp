@@ -149,6 +149,7 @@ namespace Version
         extern const ExpansionLayoutSources bfaLayouts;
         extern const ExpansionLayoutSources shadowlandsLayouts;
         extern const ExpansionLayoutSources dragonflightLayouts;
+        extern const ExpansionLayoutSources theWarWithinLayouts;
     }
 
     [[nodiscard]] bool hasLayoutsForExpansion(WoW::Expansion expansion) noexcept;

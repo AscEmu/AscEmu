@@ -85,6 +85,32 @@ namespace AscEmu::Packets
                 return true;
             }
 
+            if (m_protocol.isTheWarWithin())
+            {
+                if (isPet)
+                    return false;
+
+                // 11.x: active group, active specialization, then every group with its specialization, the talent, pvp
+                // talent and glyph counts and the talents
+                const uint32_t activeSpecialization = activeSpec < specs.size() ? specs[activeSpec].specializationId : 0;
+
+                packet << uint8_t(activeSpec);
+                packet << uint32_t(activeSpecialization);
+                packet << uint32_t(specs.size());
+
+                for (const auto& spec : specs)
+                {
+                    packet << uint32_t(spec.specializationId);
+                    packet << uint32_t(spec.talents.size());
+                    packet << uint32_t(0);                              // pvp talents
+                    packet << uint32_t(0);                              // glyphs
+                    for (const auto& [talentId, rank] : spec.talents)
+                        packet << uint16_t(talentId);
+                }
+
+                return true;
+            }
+
             if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 if (isPet)

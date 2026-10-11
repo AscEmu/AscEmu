@@ -42,6 +42,34 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithin())
+            {
+                // 11.x: every currency: type, quantity, flags as byte, then the presence bits of the optional values
+                packet << uint32_t(records.size());
+                for (auto const& record : records)
+                {
+                    packet << uint32_t(record.id);
+                    packet << uint32_t(record.quantity);
+                    packet << uint8_t(record.flags);
+                    packet.writeBit(record.weeklyQuantity != 0);
+                    packet.writeBit(record.weekCap != 0);
+                    packet.writeBit(record.trackedQuantity != 0);
+                    packet.writeBit(false);             // max quantity
+                    packet.writeBit(false);             // total earned
+                    packet.writeBit(false);             // next recharge time
+                    packet.writeBit(false);             // recharge cycle start
+                    packet.flushBits();
+
+                    if (record.weeklyQuantity != 0)
+                        packet << uint32_t(record.weeklyQuantity);
+                    if (record.weekCap != 0)
+                        packet << uint32_t(record.weekCap);
+                    if (record.trackedQuantity != 0)
+                        packet << uint32_t(record.trackedQuantity);
+                }
+                return true;
+            }
+
             if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // every currency: type, quantity, weekly quantity, weekly cap, tracked quantity, max quantity (7.x), flags

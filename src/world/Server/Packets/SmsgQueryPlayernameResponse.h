@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "Network/WorldPacket.hpp"
+#include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Server/Opcodes.hpp"
 #include "WoWGuid.hpp"
 
@@ -45,6 +46,39 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithin())
+            {
+                // 11.x: as 10.x with a third optional block (house) and the pvp faction of the character
+                packet << uint32_t(1);
+                packet << uint8_t(hasData ? 0 : 1);
+                packet << guid.toGuid128(m_protocol.realmId, 0);
+                packet.writeBit(hasData);
+                packet.writeBit(false);                 // guild
+                packet.writeBit(false);                 // house
+                packet.flushBits();
+                if (!hasData)
+                    return true;
+
+                packet.writeBit(0);                     // deleted
+                packet.writeBits(static_cast<uint32_t>(player_name.length()), 6);
+                for (const auto& declinedName : declinedNames)
+                    packet.writeBits(static_cast<uint32_t>(declinedName.length()), 7);
+                packet.flushBits();
+                for (const auto& declinedName : declinedNames)
+                    packet.writeString(declinedName);
+
+                packet << WoWGuid128::global(HighGuid128::WowAccount, accountId);
+                packet << WoWGuid128::global(HighGuid128::BNetAccount, accountId);
+                packet << guid.toGuid128(m_protocol.realmId, 0);
+                packet << (uint64_t(guid.getLowGuid()) | (uint64_t(m_protocol.realmId & 0xFFF) << 48));    // guild club member
+                packet << uint32_t(m_protocol.getVirtualRealmAddress());
+                packet << race << gender << class_ << level;
+                packet << uint8_t(getSideByRace(race) == TEAM_ALLIANCE ? 1 : 0);    // pvp faction
+                packet << int32_t(0);                   // timerunning season
+                packet.writeString(player_name);
+                return true;
+            }
+
             if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // a list with one result: result, player, data and unused bits; the data: deleted, names, account guids,

@@ -34,6 +34,9 @@ elseif ("${ASCEMU_VERSION}" STREQUAL "Shadowlands")
 elseif ("${ASCEMU_VERSION}" STREQUAL "Dragonflight")
     set(ASCEMU_NUMBER 9)
     set(ASC_VERSION_MAX_LEVEL "70")
+elseif ("${ASCEMU_VERSION}" STREQUAL "TheWarWithin")
+    set(ASCEMU_NUMBER 10)
+    set(ASC_VERSION_MAX_LEVEL "80")
 endif ()
 
 # generate Configs

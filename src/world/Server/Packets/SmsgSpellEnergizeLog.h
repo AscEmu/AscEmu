@@ -49,6 +49,20 @@ namespace AscEmu::Packets
                 return true;
             }
 
+            if (m_protocol.isTheWarWithin())
+            {
+                // target, caster, spell, power type (8 bit in 11.x), amount, over energize, log data
+                packet << targetGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << casterGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << int32_t(spellId);
+                packet << int8_t(type);
+                packet << int32_t(amount);
+                packet << int32_t(0);
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 // target, caster, spell, power type, amount, over energize, log data

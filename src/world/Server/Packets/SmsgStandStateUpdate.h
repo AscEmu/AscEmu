@@ -29,6 +29,14 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithin())
+            {
+                // 11.x: the state in front of the animation kit
+                packet << state;
+                packet << uint32_t(0);              // animation kit
+                return true;
+            }
+
             if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 packet << uint32_t(0);              // animation kit
 

@@ -237,7 +237,7 @@ void LogonCommClientSocket::SendPacket(WorldPacket* data, bool no_crypto)
 
     burstBegin();
 
-    header.opcode = data->getOpcode();
+    header.opcode = static_cast<uint16_t>(data->getOpcode());
 
     uint32_t sizeVal = static_cast<uint32_t>(data->size());
     byteSwapUInt32(&sizeVal);

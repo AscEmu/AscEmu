@@ -770,7 +770,7 @@ bool WorldSocket::sendVersionedPacket(WorldPacket* packet)
     if (packet == nullptr)
         return true;
 
-    const uint16_t rawOpcode = Version::opcodeHexFor(packet->getOpcode(), m_protocol);
+    const uint16_t rawOpcode = static_cast<uint16_t>(Version::opcodeHexFor(packet->getOpcode(), m_protocol));
     if (rawOpcode == 0)
     {
         sLogger.debug("WorldSocket::{}: dropped {} without an opcode of this client ({} bytes)", Profile::Name, Version::opcodeNameForId(packet->getOpcode(), m_protocol.expansion), packet->size());
@@ -835,7 +835,7 @@ bool WorldSocket::writeRc4Packet(uint16_t rawOpcode, const uint8_t* payload, uin
         appendUInt32LE(body, static_cast<uint32_t>(adler32(Rc4World::CompressionAdlerSeed, compressed.data(), static_cast<uInt>(compressed.size()))));
         body.insert(body.end(), compressed.begin(), compressed.end());
 
-        opcode = Version::opcodeHexFor(SMSG_COMPRESSED_PACKET, m_protocol);
+        opcode = static_cast<uint16_t>(Version::opcodeHexFor(SMSG_COMPRESSED_PACKET, m_protocol));
         payload = body.data();
         payloadSize = static_cast<uint32_t>(body.size());
     }

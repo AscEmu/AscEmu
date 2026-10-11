@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 // Battle for Azeroth = ??
 // Shadowlands = ??
 // Dragonflight = 71 (the Horde dracthyr are race 70)
+// The War Within = 88 (the earthen are the races 84 and 85)
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +42,8 @@ This file is released under the MIT license. See README-MIT for more information
     #define DBC_NUM_RACES 31
 #elif VERSION_STRING == Dragonflight
     #define DBC_NUM_RACES 71
+#elif VERSION_STRING == TheWarWithin
+    #define DBC_NUM_RACES 88
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -72,7 +75,7 @@ This file is released under the MIT license. See README-MIT for more information
     #define DBC_TAXI_MASK_SIZE 255
 #elif VERSION_STRING == WoD
     #define DBC_TAXI_MASK_SIZE 217
-#elif VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
+#elif VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin
     #define DBC_TAXI_MASK_SIZE 258
 #endif
 
@@ -91,6 +94,7 @@ This file is released under the MIT license. See README-MIT for more information
 // Battle for Azeroth = 120
 // Shadowlands = 60
 // Dragonflight = 70
+// The War Within = 80
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -114,6 +118,8 @@ This file is released under the MIT license. See README-MIT for more information
     #define DBC_PLAYER_LEVEL_CAP 60
 #elif VERSION_STRING == Dragonflight
     #define DBC_PLAYER_LEVEL_CAP 70
+#elif VERSION_STRING == TheWarWithin
+    #define DBC_PLAYER_LEVEL_CAP 80
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -191,8 +197,8 @@ This file is released under the MIT license. See README-MIT for more information
     #define PLAYER_ACTION_BUTTON_COUNT 132
 #elif VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands
     #define PLAYER_ACTION_BUTTON_COUNT 132
-#elif VERSION_STRING == Dragonflight
-    // 10.x has 180 action buttons
+#elif VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin
+    // 10.x and 11.x have 180 action buttons
     #define PLAYER_ACTION_BUTTON_COUNT 180
 #endif
 
@@ -226,7 +232,7 @@ This file is released under the MIT license. See README-MIT for more information
     #define GLYPHS_COUNT 6
 #elif VERSION_STRING == WoD
     #define GLYPHS_COUNT 6
-#elif VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
+#elif VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin
     // 7.x and later have no glyph slots anymore (a glyph list per specialization); keeps the 6.x slot count until glyphs are ported
     #define GLYPHS_COUNT 6
 #endif

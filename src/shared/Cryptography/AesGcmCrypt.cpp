@@ -39,17 +39,25 @@ AesGcmCrypt::~AesGcmCrypt()
     EVP_CIPHER_CTX_free(static_cast<EVP_CIPHER_CTX*>(m_decryptContext));
 }
 
-bool AesGcmCrypt::init(const Key& key)
+bool AesGcmCrypt::init(const uint8_t* key, size_t keySize)
 {
     auto* encrypt = static_cast<EVP_CIPHER_CTX*>(m_encryptContext);
     auto* decrypt = static_cast<EVP_CIPHER_CTX*>(m_decryptContext);
-    if (encrypt == nullptr || decrypt == nullptr)
+    if (encrypt == nullptr || decrypt == nullptr || key == nullptr)
         return false;
 
-    if (EVP_CipherInit_ex(encrypt, nullptr, nullptr, key.data(), nullptr, -1) != 1)
+    const EVP_CIPHER* cipher = nullptr;
+    if (keySize == KeySize)
+        cipher = EVP_aes_128_gcm();
+    else if (keySize == KeySize256)
+        cipher = EVP_aes_256_gcm();
+    else
         return false;
 
-    if (EVP_CipherInit_ex(decrypt, nullptr, nullptr, key.data(), nullptr, -1) != 1)
+    if (EVP_CipherInit_ex(encrypt, cipher, nullptr, key, nullptr, 1) != 1)
+        return false;
+
+    if (EVP_CipherInit_ex(decrypt, cipher, nullptr, key, nullptr, 0) != 1)
         return false;
 
     m_initialized = true;

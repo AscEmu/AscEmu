@@ -22,11 +22,12 @@ namespace AscEmu::Packets
         uint8_t authDigest[20]{0};
         ByteBuffer addonInfoBuffer;
 
-        // 6.2.4, 7.3.5 and 8.3.7 clients: realm, challenge and HMAC-SHA256 digest, the account comes from the realm join ticket
+        // 6.2.4 and later clients: realm, challenge (16 bytes, 11.x: 32 bytes) and the HMAC digest, the account comes
+        // from the realm join ticket
         uint32_t regionId = 0;
         uint32_t battlegroupId = 0;
         uint32_t realmId = 0;
-        std::array<uint8_t, 16> localChallenge{};
+        std::array<uint8_t, 32> localChallenge{};
         std::array<uint8_t, 24> sessionDigest{};
         std::string realmJoinTicket;
 
@@ -40,14 +41,14 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
+            if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
             {
                 // dos response, realm, local challenge, digest, ipv6 bit, realm join ticket
                 packet.read<uint64_t>();
                 packet >> regionId;
                 packet >> battlegroupId;
                 packet >> realmId;
-                packet.read(localChallenge.data(), localChallenge.size());
+                packet.read(localChallenge.data(), m_protocol.isTheWarWithin() ? localChallenge.size() : 16);
                 packet.read(sessionDigest.data(), sessionDigest.size());
                 packet.readBit();                       // use ipv6
 
@@ -75,7 +76,7 @@ namespace AscEmu::Packets
                 packet >> regionId;
                 packet >> battlegroupId;
                 packet >> realmId;
-                packet.read(localChallenge.data(), localChallenge.size());
+                packet.read(localChallenge.data(), 16);
                 packet.read(sessionDigest.data(), sessionDigest.size());
                 packet.readBit();                       // use ipv6
 
@@ -101,7 +102,7 @@ namespace AscEmu::Packets
                 packet >> regionId;
                 packet >> battlegroupId;
                 packet >> realmId;
-                packet.read(localChallenge.data(), localChallenge.size());
+                packet.read(localChallenge.data(), 16);
                 packet.read(sessionDigest.data(), sessionDigest.size());
                 packet.read<uint64_t>();                // dos response
 

@@ -97,8 +97,31 @@ namespace AscEmu::Packets
             return true;
         }
 
+        bool serialiseTheWarWithin(WorldPacket& packet)
+        {
+            // 11.x: joining a channel carries one more byte after the flags, every other notice is as 10.x
+            if (flag == CHANNEL_NOTIFY_FLAG_YOUJOINED)
+            {
+                packet.initialize(SMSG_CHANNEL_NOTIFY_JOINED, 2 + 4 + 1 + 4 + 8 + 16 + channelName.size());
+                packet.writeBits(static_cast<uint32_t>(channelName.length()), 7);
+                packet.writeBits(0, 11);                                    // welcome message
+                packet << uint32_t(extraFlag);
+                packet << uint8_t(0);                                       // unknown byte after the flags
+                packet << uint32_t(channelId);
+                packet << uint64_t(0);                                      // instance
+                packet << WoWGuid128();                                     // channel
+                packet.writeString(channelName);
+                return true;
+            }
+
+            return serialiseLegion(packet);
+        }
+
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithin())
+                return serialiseTheWarWithin(packet);
+
             if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 return serialiseLegion(packet);
 

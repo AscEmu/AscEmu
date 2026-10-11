@@ -160,8 +160,119 @@ namespace AscEmu::Packets
             return true;
         }
 
+        bool serialiseTheWarWithin(WorldPacket& packet)
+        {
+            // 11.x: as 10.x with three flag values, the type as one byte and the rank as one signed byte
+            std::string creatureName = name;
+            std::string title = subName;
+
+            if (entry == 300000)
+            {
+                creatureName = "WayPoint";
+                title = "Level is WayPoint ID";
+            }
+
+            const bool allow = info != nullptr || entry == 300000;
+
+            packet << entry;
+            packet.writeBit(allow);
+            packet.flushBits();
+
+            if (!allow)
+                return true;
+
+            const std::string cursorName = info != nullptr ? info->icon_name : std::string();
+
+            std::vector<uint32_t> questItems;
+            if (info != nullptr)
+            {
+                for (uint8_t i = 0; i < 6; ++i)
+                {
+                    if (info->QuestItems[i] != 0)
+                        questItems.push_back(info->QuestItems[i]);
+                }
+            }
+
+            packet.writeBits(static_cast<uint32_t>(title.length() + 1), 11);
+            packet.writeBits(1, 11);                                    // alternative title
+            packet.writeBits(static_cast<uint32_t>(cursorName.length() + 1), 6);
+            packet.writeBit(info != nullptr && info->Leader);
+
+            // four names with an alternative each, only the first one is used
+            packet.writeBits(static_cast<uint32_t>(creatureName.length() + 1), 11);
+            packet.writeBits(1, 11);
+            for (uint8_t i = 1; i < 4; ++i)
+            {
+                packet.writeBits(1, 11);
+                packet.writeBits(1, 11);
+            }
+            packet.flushBits();
+
+            if (!creatureName.empty())
+                packet << creatureName;
+
+            packet << uint32_t(info != nullptr ? info->typeFlags : 0);
+            packet << uint32_t(0);                                      // flags 2
+            packet << uint32_t(0);                                      // flags 3
+            packet << uint8_t(info != nullptr ? info->Type : 0);
+            packet << uint32_t(info != nullptr ? info->Family : 0);
+            packet << int8_t(info != nullptr ? info->Rank : 0);
+            packet << uint32_t(info != nullptr ? info->killcredit[0] : 0);
+            packet << uint32_t(info != nullptr ? info->killcredit[1] : 0);
+
+            // the displays as list with scale and probability
+            const uint32_t displayIds[4] =
+            {
+                info != nullptr ? info->Male_DisplayID : 0, info != nullptr ? info->Female_DisplayID : 0,
+                info != nullptr ? info->Male_DisplayID2 : 0, info != nullptr ? info->Female_DisplayID2 : 0
+            };
+
+            uint32_t displayCount = 0;
+            for (const uint32_t displayId : displayIds)
+                displayCount += displayId != 0 ? 1 : 0;
+
+            packet << displayCount;
+            packet << float(displayCount);                              // total probability
+            for (const uint32_t displayId : displayIds)
+            {
+                if (displayId == 0)
+                    continue;
+
+                packet << displayId;
+                packet << float(1.0f);                                  // scale
+                packet << float(1.0f);                                  // probability
+            }
+
+            packet << float(1.0f);                                      // health modifier
+            packet << float(1.0f);                                      // power modifier
+            packet << uint32_t(questItems.size());
+            packet << uint32_t(0);                                      // quest currencies
+            packet << uint32_t(info != nullptr ? info->waypointid : 0); // movement info
+            packet << uint32_t(0);                                      // health scaling expansion
+            packet << uint32_t(0);                                      // required expansion
+            packet << uint32_t(0);                                      // vignette
+            packet << int32_t(1);                                       // class
+            packet << int32_t(0);                                       // creature difficulty
+            packet << int32_t(0);                                       // widget set
+            packet << int32_t(0);                                       // widget set unit condition
+
+            if (!title.empty())
+                packet << title;
+
+            if (!cursorName.empty())
+                packet << cursorName;
+
+            for (const uint32_t questItem : questItems)
+                packet << questItem;
+
+            return true;
+        }
+
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithin())
+                return serialiseTheWarWithin(packet);
+
             if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 return serialiseLegion(packet);
 

@@ -29,6 +29,7 @@ namespace Version
             WoW::Expansion::_BfA,
             WoW::Expansion::_Shadowlands,
             WoW::Expansion::_Dragonflight,
+            WoW::Expansion::_TheWarWithin,
         };
 
         size_t opcodeCount = 0;

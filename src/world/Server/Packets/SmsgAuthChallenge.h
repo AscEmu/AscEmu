@@ -16,8 +16,8 @@ namespace AscEmu::Packets
     public:
         uint32_t seed;
 
-        // 6.2.4 and 7.3.5 clients: server challenge and the two encryption seeds of the instance connection
-        std::array<uint8_t, 16> challenge{};
+        // 6.2.4 and later clients: server challenge (16 bytes, 11.x: 32 bytes) and the dos challenge
+        std::array<uint8_t, 32> challenge{};
         std::array<uint8_t, 32> dosChallenge{};
 
         SmsgAuthChallenge() : SmsgAuthChallenge(0)
@@ -63,7 +63,7 @@ namespace AscEmu::Packets
             else if (m_protocol.expansion >= WoW::Expansion::_WoD)
             {
                 packet.append(dosChallenge.data(), dosChallenge.size());
-                packet.append(challenge.data(), challenge.size());
+                packet.append(challenge.data(), m_protocol.isTheWarWithin() ? challenge.size() : 16);
                 packet << uint8_t(1);                   // dos zero bits
             }
             return true;

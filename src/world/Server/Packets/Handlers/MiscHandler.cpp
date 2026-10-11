@@ -90,6 +90,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgConquestFormulaConstants.h"
 #include "Server/Packets/SmsgServerTimeOffset.h"
 #include "Server/Packets/SmsgSocialContractRequestResponse.h"
+#include "Server/Packets/CmsgBattlenetRequest.h"
+#include "Server/Packets/SmsgBattlenetResponse.h"
 #include "Server/Packets/CmsgSaveCufProfiles.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Objects/Transporter.hpp"
@@ -1308,6 +1310,19 @@ void WorldSession::handleSocialContractRequestOpcode(WorldPacket& /*recvPacket*/
     // the social contract is not shown
     SmsgSocialContractRequestResponse managedPacket(false);
     sendManagedPacket(managedPacket);
+}
+
+void WorldSession::handleBattlenetRequestOpcode(WorldPacket& recvPacket)
+{
+    CmsgBattlenetRequest srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    sLogger.debugOpcode("Received CMSG_BATTLENET_REQUEST service 0x{:08X} method {} token {}.", srlPacket.getServiceHash(), srlPacket.getMethodId(), srlPacket.token);
+
+    // no Battle.net service is served through the world connection, the call is answered as not implemented
+    SmsgBattlenetResponse response(SmsgBattlenetResponse::StatusNotImplemented, srlPacket.methodType, srlPacket.token);
+    sendManagedPacket(response);
 }
 
 void WorldSession::handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/)

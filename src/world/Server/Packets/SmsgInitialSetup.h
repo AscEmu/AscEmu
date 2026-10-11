@@ -44,7 +44,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (!(m_protocol.isLegion() || m_protocol.isShadowlands() || m_protocol.isDragonflight()))
+            if (!(m_protocol.isLegion() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin()))
                 return false;
 
             packet << expansionLevel << expansionTier;

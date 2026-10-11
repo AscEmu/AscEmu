@@ -214,7 +214,7 @@ using Version::PlayerField;
 
 using namespace AscEmu::Packets;
 
-#if VERSION_STRING == Dragonflight
+#if VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin
 static uint32_t getInitialSpecialization(uint8_t playerClass);
 #endif
 
@@ -652,7 +652,7 @@ void Player::onPreAttachToWorld()
         }
     }
 
-#if VERSION_STRING == Dragonflight
+#if VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin
     // a character without a chosen specialization logs in with the initial one of its class
     if (getActiveSpec().getSpecializationId() == 0)
     {
@@ -6127,8 +6127,8 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
 #endif
 }
 
-#if VERSION_STRING == Dragonflight
-// 10.x: every class has an initial specialization (ChrSpecialization order index 4) a character carries until
+#if VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin
+// 10.x and 11.x: every class has an initial specialization (ChrSpecialization order index 4) a character carries until
 // a specialization is chosen; the client shows no talents and fails its spec checks without one
 static uint32_t getInitialSpecialization(uint8_t playerClass)
 {

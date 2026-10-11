@@ -40,14 +40,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
             {
                 // result, both items, bag slot, then the data of the result: the level (1, 87), the containers of a
                 // bind confirmation (81) or the limit category (84, 85, 89); 8.x adds a result at 81, the ones above move up;
-                // 10.x sends the result as 32 bit value
-                const uint8_t wireError = (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight()) && error >= 81 ? error + 1 : error;
+                // 10.x and 11.x send the result as 32 bit value
+                const uint8_t wireError = (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin()) && error >= 81 ? error + 1 : error;
 
-                if (m_protocol.isDragonflight())
+                if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
                     packet << int32_t(wireError);
                 else
                     packet << int8_t(wireError);

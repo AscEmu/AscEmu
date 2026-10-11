@@ -49,7 +49,7 @@ namespace Version
         [[nodiscard]] const ExpansionLayouts& layouts() const noexcept;
 
     private:
-        static constexpr size_t kTableCount = 10;
+        static constexpr size_t kTableCount = 11;
 
         std::array<OpcodeTable, kTableCount> m_opcodeTables{};
         const ExpansionLayouts* m_layouts = nullptr;
@@ -63,23 +63,23 @@ namespace Version
     // Lookup helpers for the packet path, the client version decides which table answers
 
     /// internal id for a hex value received from a client of this expansion, MSG_NULL_ACTION when unknown
-    [[nodiscard]] inline uint32_t opcodeIdForHex(uint16_t hex, WoW::Expansion expansion) noexcept
+    [[nodiscard]] inline uint32_t opcodeIdForHex(uint32_t hex, WoW::Expansion expansion) noexcept
     {
         return sVersionRegistry.opcodes(expansion).internalIdFor(hex);
     }
 
-    [[nodiscard]] inline uint32_t opcodeIdForHex(uint16_t hex, WoW::ClientProtocol const& protocol) noexcept
+    [[nodiscard]] inline uint32_t opcodeIdForHex(uint32_t hex, WoW::ClientProtocol const& protocol) noexcept
     {
         return opcodeIdForHex(hex, protocol.expansion);
     }
 
     /// hex value sent to a client of this expansion, 0 when the opcode does not exist there
-    [[nodiscard]] inline uint16_t opcodeHexFor(uint32_t internalId, WoW::Expansion expansion) noexcept
+    [[nodiscard]] inline uint32_t opcodeHexFor(uint32_t internalId, WoW::Expansion expansion) noexcept
     {
         return sVersionRegistry.opcodes(expansion).hexFor(internalId);
     }
 
-    [[nodiscard]] inline uint16_t opcodeHexFor(uint32_t internalId, WoW::ClientProtocol const& protocol) noexcept
+    [[nodiscard]] inline uint32_t opcodeHexFor(uint32_t internalId, WoW::ClientProtocol const& protocol) noexcept
     {
         return opcodeHexFor(internalId, protocol.expansion);
     }
@@ -90,12 +90,12 @@ namespace Version
         return fmt::format("{} [{}]", opcodeName(internalId), WoW::getShortExpansionName(expansion));
     }
 
-    [[nodiscard]] inline std::string opcodeNameForHex(uint16_t hex, WoW::Expansion expansion)
+    [[nodiscard]] inline std::string opcodeNameForHex(uint32_t hex, WoW::Expansion expansion)
     {
         return opcodeNameForId(opcodeIdForHex(hex, expansion), expansion);
     }
 
-    [[nodiscard]] inline std::string opcodeNameForHex(uint16_t hex, WoW::ClientProtocol const& protocol)
+    [[nodiscard]] inline std::string opcodeNameForHex(uint32_t hex, WoW::ClientProtocol const& protocol)
     {
         return opcodeNameForHex(hex, protocol.expansion);
     }

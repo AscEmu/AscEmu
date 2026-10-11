@@ -28,6 +28,18 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithin())
+            {
+                // 11.x: guid, far clip, remix (RPE) bit
+                WoWGuid128 clientGuid;
+                float farClip;
+                packet >> clientGuid >> farClip;
+                packet.readBit();                       // remix / RPE login
+
+                guid = WoWGuid::fromGuid128(clientGuid);
+                return !packet.hadReadFailure();
+            }
+
             if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
             {
                 WoWGuid128 clientGuid;

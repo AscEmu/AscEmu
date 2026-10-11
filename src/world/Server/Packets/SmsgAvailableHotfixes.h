@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    // the hotfix ids the client may request on the glue screen (9.x and 10.x), none are offered
+    // the hotfix ids the client may request on the glue screen (9.x to 11.x), none are offered
     class SmsgAvailableHotfixes : public ManagedPacket
     {
     public:
@@ -21,7 +21,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (!m_protocol.isShadowlands() && !m_protocol.isDragonflight())
+            if (!m_protocol.isShadowlands() && !m_protocol.isDragonflight() && !m_protocol.isTheWarWithin())
                 return false;
 
             packet << int32_t(m_protocol.getVirtualRealmAddress());

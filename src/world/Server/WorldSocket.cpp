@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Packets/SmsgSetTimeZoneInformation.h"
 #include "Packets/SmsgAvailableHotfixes.h"
 #include "Packets/SmsgTutorialFlags.h"
+#include "Packets/SmsgBattleNetConnectionStatus.h"
 #include "Version/VersionRegistry.hpp"
 #include "WorldSession.h"
 #include "Utilities/Random.hpp"
@@ -303,7 +304,7 @@ void WorldSocket::outPacket(uint32_t opcode, size_t len, const void* data)
         return;
     }
 
-#if AE_WORLD_PROFILE_WOD || AE_WORLD_PROFILE_LEGION || AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS || AE_WORLD_PROFILE_DRAGONFLIGHT
+#if AE_WORLD_PROFILE_WOD || AE_WORLD_PROFILE_LEGION || AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS || AE_WORLD_PROFILE_DRAGONFLIGHT || AE_WORLD_PROFILE_THEWARWITHIN
     // connections with their own framing and encryption take every packet through it
     {
         WorldPacket packet(static_cast<WorldPacket::Opcode>(opcode), len);
@@ -466,14 +467,14 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
     response.realmName = worldConfig.battleNetComm.realmName;
     sendManagedPacket(response);
 
-    // 10.x: the time zones before the glue screen status
-    if (m_protocol.isDragonflight())
+    // 10.x and 11.x: the time zones before the glue screen status
+    if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
     {
         SmsgSetTimeZoneInformation timeZonePacket("Etc/UTC");
         sendManagedPacket(timeZonePacket);
     }
 
-    if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
+    if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
     {
         SmsgFeatureSystemStatusGlueScreen glueScreen(static_cast<uint8_t>(m_protocol.expansion));
         sendManagedPacket(glueScreen);
@@ -491,8 +492,8 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
     if (m_protocol.expansion > WoW::Expansion::_TBC)
         m_session->sendClientCacheVersion(BUILD_VERSION);
 
-    // 10.x: the hotfix list, the global account data times and the account tutorials after the cache version
-    if (m_protocol.isDragonflight())
+    // 10.x and 11.x: the hotfix list, the global account data times and the account tutorials after the cache version
+    if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
     {
         SmsgAvailableHotfixes availableHotfixes;
         sendManagedPacket(availableHotfixes);
@@ -503,6 +504,13 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
         // the tutorials are kept with the characters, the glue screen gets an empty set
         SmsgTutorialFlags tutorialFlags(std::vector<uint32_t>(8, 0));
         sendManagedPacket(tutorialFlags);
+
+        // 11.x: the Battle.net connection state closes the glue sequence
+        if (m_protocol.isTheWarWithin())
+        {
+            SmsgBattleNetConnectionStatus connectionStatus(1, false);
+            sendManagedPacket(connectionStatus);
+        }
     }
 
     m_session->_latency = m_latency;

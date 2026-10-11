@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    // whether the 10.x client shows the social contract on the glue screen
+    // whether the 10.x and 11.x clients show the social contract on the glue screen
     class SmsgSocialContractRequestResponse : public ManagedPacket
     {
     public:
@@ -28,7 +28,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (!m_protocol.isDragonflight())
+            if (!m_protocol.isDragonflight() && !m_protocol.isTheWarWithin())
                 return false;
 
             packet.writeBit(showSocialContract);

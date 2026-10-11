@@ -36,9 +36,9 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isDragonflight())
+            if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
             {
-                // 10.x: the new spell with its bits, the superceded spell behind them
+                // 10.x and 11.x: the new spell with its bits, the superceded spell behind them
                 packet << uint32_t(1);
                 packet << int32_t(supercedeSpellId);
                 packet.writeBit(false);                 // favorite

@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Opcodes.hpp"
 
 // Define the number of supported versions (0 = Classic, 1 = TBC, etc.)
-constexpr int NUM_VERSIONS = 10;
+constexpr int NUM_VERSIONS = 11;
 
 class WorldSession;
 
@@ -41,18 +41,18 @@ public:
         return instance;
     }
 
-    // Overload for member functions with version flags (Classic .. Dragonflight)
+    // Overload for member functions with version flags (Classic .. The War Within)
     template <OpcodeState State = STATUS_LOGGEDIN>
-    void registerOpcode(uint32_t opcode, void (WorldSession::* handler)(WorldPacket&), bool classic, bool tbc, bool wotlk, bool cata, bool mop, bool wod, bool legion, bool bfa = false, bool shadowlands = false, bool dragonflight = false)
+    void registerOpcode(uint32_t opcode, void (WorldSession::* handler)(WorldPacket&), bool classic, bool tbc, bool wotlk, bool cata, bool mop, bool wod, bool legion, bool bfa = false, bool shadowlands = false, bool dragonflight = false, bool theWarWithin = false)
     {
         registerOpcode<State>(opcode, std::function<void(WorldSession&, WorldPacket&)>([handler](WorldSession& session, WorldPacket& packet) {
             (session.*handler)(packet);  // Call the member function
-            }), classic, tbc, wotlk, cata, mop, wod, legion, bfa, shadowlands, dragonflight);
+            }), classic, tbc, wotlk, cata, mop, wod, legion, bfa, shadowlands, dragonflight, theWarWithin);
     }
 
-    // Overload for free functions or lambdas with version flags (Classic .. Dragonflight)
+    // Overload for free functions or lambdas with version flags (Classic .. The War Within)
     template <OpcodeState State = STATUS_LOGGEDIN>
-    void registerOpcode(uint32_t opcode, std::function<void(WorldSession&, WorldPacket&)> handler, bool classic, bool tbc, bool wotlk, bool cata, bool mop, bool wod, bool legion, bool bfa = false, bool shadowlands = false, bool dragonflight = false)
+    void registerOpcode(uint32_t opcode, std::function<void(WorldSession&, WorldPacket&)> handler, bool classic, bool tbc, bool wotlk, bool cata, bool mop, bool wod, bool legion, bool bfa = false, bool shadowlands = false, bool dragonflight = false, bool theWarWithin = false)
     {
         OpcodeEntry entry;
         entry.handler = handler;
@@ -67,11 +67,12 @@ public:
         entry.versions[7] = bfa;
         entry.versions[8] = shadowlands;
         entry.versions[9] = dragonflight;
+        entry.versions[10] = theWarWithin;
 
         opcodeHandlers[opcode] = entry;
     }
 
-    // Overloads with the flags up to Mop: the handler is not enabled for WoD, Legion, BfA, Shadowlands and Dragonflight clients, their packet
+    // Overloads with the flags up to Mop: the handler is not enabled for WoD, Legion, BfA, Shadowlands, Dragonflight and The War Within clients, their packet
     // layouts have to be checked before a handler is registered for them with the overloads above
     template <OpcodeState State = STATUS_LOGGEDIN>
     void registerOpcode(uint32_t opcode, void (WorldSession::* handler)(WorldPacket&), bool classic, bool tbc, bool wotlk, bool cata, bool mop)
@@ -100,7 +101,7 @@ public:
 
     // Handles the incoming packet using the internal ID
     bool handleOpcode(WorldSession& session, WorldPacket& packet);
-    static void logUnhandledOpcode(uint16_t rawOpcode, uint32_t internalId, const std::string& name);
+    static void logUnhandledOpcode(uint32_t rawOpcode, uint32_t internalId, const std::string& name);
 
 private:
     std::unordered_map<uint32_t, OpcodeEntry> opcodeHandlers;  // Map of internal IDs to handler functions and states

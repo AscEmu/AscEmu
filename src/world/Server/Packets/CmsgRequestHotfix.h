@@ -116,7 +116,7 @@ namespace AscEmu::Packets
 
                 return !packet.hadReadFailure();
             }
-            else if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
+            else if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
             {
                 // bulk query: hash of the client data table and the requested record ids
                 packet >> type;

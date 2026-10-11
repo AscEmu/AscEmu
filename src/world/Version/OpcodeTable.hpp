@@ -24,11 +24,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace Version
 {
-    /// one line of a version table: internal id -> hex value of that client version
+    /// one line of a version table: internal id -> hex value of that client version (16 bit up to 10.x, 32 bit from 11.x on)
     struct OpcodeEntry
     {
         Opcodes internalId;
-        uint16_t hex;
+        uint32_t hex;
     };
 
     /// a complete version table as emitted by the generator
@@ -57,6 +57,7 @@ namespace Version
         extern const OpcodeSource bfaOpcodes;
         extern const OpcodeSource shadowlandsOpcodes;
         extern const OpcodeSource dragonflightOpcodes;
+        extern const OpcodeSource theWarWithinOpcodes;
 
         extern const OpcodeMeta opcodeMeta[NUM_OPCODES];
     }
@@ -86,7 +87,7 @@ namespace Version
         [[nodiscard]] size_t size() const noexcept { return m_hexToId.size(); }
 
         /// hex value on the wire, 0 when the opcode does not exist in this client version
-        [[nodiscard]] uint16_t hexFor(uint32_t internalId) const noexcept
+        [[nodiscard]] uint32_t hexFor(uint32_t internalId) const noexcept
         {
             return internalId < m_idToHex.size() ? m_idToHex[internalId] : 0;
         }
@@ -94,7 +95,7 @@ namespace Version
         [[nodiscard]] bool hasOpcode(uint32_t internalId) const noexcept { return hexFor(internalId) != 0; }
 
         /// internal id for a hex value received from the client, MSG_NULL_ACTION (0) when unknown
-        [[nodiscard]] uint32_t internalIdFor(uint16_t hex) const noexcept
+        [[nodiscard]] uint32_t internalIdFor(uint32_t hex) const noexcept
         {
             const auto it = m_hexToId.find(hex);
             return it != m_hexToId.end() ? it->second : 0;
@@ -102,7 +103,7 @@ namespace Version
 
     private:
         WoW::Expansion m_expansion = WoW::Expansion::Unknown;
-        std::vector<uint16_t> m_idToHex;
-        std::unordered_map<uint16_t, uint32_t> m_hexToId;
+        std::vector<uint32_t> m_idToHex;
+        std::unordered_map<uint32_t, uint32_t> m_hexToId;
     };
 }

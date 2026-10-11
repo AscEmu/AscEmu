@@ -29,7 +29,7 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
+            else if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
             {
                 packet << uint32_t(0);          // no equipment sets
                 return true;
