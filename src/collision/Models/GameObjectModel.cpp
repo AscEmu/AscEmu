@@ -93,6 +93,12 @@ void LoadGameObjectModelList(std::string const& dataPath)
     sLogger.info("LoadGameObjectModelList : Loaded {} GameObject models in {} ms", uint32_t(model_list.size()), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
+bool GameObjectModel::isMapObjectDisplay(uint32_t displayId)
+{
+    const auto itr = model_list.find(displayId);
+    return itr != model_list.end() && itr->second.isWmo;
+}
+
 GameObjectModel::~GameObjectModel()
 {
     if (iModel)

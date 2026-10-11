@@ -22,6 +22,8 @@
 #define GAMEOBJECT_H
 
 #include "Object.hpp"
+
+#include <vector>
 #include "GameObjectDefines.hpp"
 #include "Management/Loot/Loot.hpp"
 #include "Management/Loot/LootDefines.hpp"
@@ -154,6 +156,15 @@ public:
     //bytes1
     uint8_t getState() const;
     void setState(uint8_t state);
+
+    // the flags an 8.x or later client expects: the map object flag marks a wmo model (elevators, ships, buildings),
+    // the 7.0 and later clients load the model by this flag instead of the file extension
+    uint32_t getClientFlags() const;
+    // the state an 8.x or later client expects: an elevator is transport active (24) or stopped at a floor
+    // (25 and up, one per stop frame), every other type keeps its state
+    uint8_t getClientState() const;
+    // the times in ms of the floors an elevator stops at, in order, from the gameobject properties
+    std::vector<uint32_t> getTransportStopFrames() const;
 
     uint8_t getGoType() const;
     void setGoType(uint8_t type);

@@ -54,11 +54,25 @@ list, login and world entry work.
   character list, SMSG_BATTLE_NET_CONNECTION_STATUS behind the tutorials, CMSG_REALM_NAME_QUERY is answered before
   the login (virtual realm address), CMSG_BATTLENET_REQUEST (resource service) is answered as not implemented; the
   client does not send CMSG_PLAYER_LOGIN while one of these is unanswered.
+- Transports: the 11.x create block carries the time offset of a moving transport and the path progress of an
+  elevator in the game object block, the dynamic flags keep only the flags. Transport guids use the client's
+  transport format (type and a 20 bit counter in the high part, low part 0) and elevators (gameobject type 11)
+  travel as transport guids like moving transports (`WoWGuid::toGuid128`, entries registered from the gameobject
+  properties, bit 19 of the counter marks an elevator); this applies to every 6.x and later target. Elevators
+  go out with the transport states (24 active, 25 and up stopped at a floor, `GameObject::getClientState`, 8.x and
+  later writers) and their stop frames as pause times of the create block; a state of 0 or 1 on a type 11 object
+  crashed the 11.2.7 client in Thunder Bluff.
+- Game object flags for 7.0 and later clients (`GameObject::getClientFlags`, 8.x and later writers): the map
+  object flag (0x100000) marks a wmo model (ships, zeppelins, buildings), decided by the model of the object or
+  the model list of the vmaps. Without it the client loads the wmo as m2 and crashes when it tests this flag on
+  the missing model (the faulting instruction of the Thunder Bluff crash tests exactly this bit).
+- Client data records: the 11.2.7 Item and ItemSparse records are written from the item properties, every other
+  table is answered as not available (status 0). The client asks for TactKey (0xDF2F53CF) and Creature
+  (0xC9D6B6B3) records of its own data at the login, these answers are harmless.
 
 Open:
 
-- the client data records (CMSG_DB_QUERY_BULK) are answered as not available for every table; the 11.2.7 Item and
-  ItemSparse record layouts are not written yet
+- the client data records of the other tables (CMSG_DB_QUERY_BULK) are answered as not available
 - the trait configurations, pvp brackets, warband groups, bit vectors (completed quests) and housing data are sent
   empty
 - CMSG_HOTFIX_REQUEST above the 0x10000 packet limit is rejected (the client sends it only with announced hotfixes)

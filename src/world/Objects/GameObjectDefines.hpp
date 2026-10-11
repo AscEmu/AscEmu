@@ -29,7 +29,8 @@ enum GameObject_Flags
     GO_FLAG_UNK1                = 0x080,
     GO_FLAG_UNK2                = 0x100,
     GO_FLAG_DAMAGED             = 0x200,
-    GO_FLAG_DESTROYED           = 0x400
+    GO_FLAG_DESTROYED           = 0x400,
+    GO_FLAG_MAP_OBJECT          = 0x100000      // 7.0 and later: the model is a wmo, not an m2
 };
 
 enum GameObjectDestructibleState

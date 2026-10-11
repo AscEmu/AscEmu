@@ -79,6 +79,9 @@ public:
 
     static std::unique_ptr<GameObjectModel> Create(std::unique_ptr<GameObjectModelOwnerBase> modelOwner, std::string const& dataPath);
 
+    // whether the model of a display is a wmo, from the model list of the vmaps (false if the list is not loaded)
+    static bool isMapObjectDisplay(uint32_t displayId);
+
     bool UpdatePosition();
 
 private:

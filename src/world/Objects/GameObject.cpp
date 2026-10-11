@@ -948,6 +948,56 @@ uint32_t GameObject::getTransportPeriod() const
 #endif
 }
 
+std::vector<uint32_t> GameObject::getTransportStopFrames() const
+{
+    std::vector<uint32_t> stopFrames;
+    if (getGoType() != GAMEOBJECT_TYPE_TRANSPORT || gameobject_properties == nullptr)
+        return stopFrames;
+
+    // the time to the 2nd floor, then the time to every further floor while it is set
+    const uint32_t floorTimes[] =
+    {
+        gameobject_properties->raw.parameter_0, static_cast<uint32_t>(gameobject_properties->raw.parameter_6),
+        gameobject_properties->raw.parameter_8, gameobject_properties->raw.parameter_10, gameobject_properties->raw.parameter_12,
+        gameobject_properties->raw.parameter_14, gameobject_properties->raw.parameter_16, gameobject_properties->raw.parameter_18,
+        gameobject_properties->raw.parameter_20
+    };
+
+    for (const uint32_t floorTime : floorTimes)
+    {
+        if (floorTime == 0)
+            break;
+
+        stopFrames.push_back(floorTime);
+    }
+
+    return stopFrames;
+}
+
+uint32_t GameObject::getClientFlags() const
+{
+    uint32_t flags = getFlags();
+    const bool mapObject = m_model != nullptr ? m_model->isMapObject() : GameObjectModel::isMapObjectDisplay(getDisplayId());
+    if (mapObject)
+        flags |= GO_FLAG_MAP_OBJECT;
+
+    return flags;
+}
+
+uint8_t GameObject::getClientState() const
+{
+    if (getGoType() != GAMEOBJECT_TYPE_TRANSPORT)
+        return getState();
+
+    // without stop frames the elevator runs its animation, with them an open elevator waits at the first floor
+    constexpr uint8_t transportActive = 24;
+    constexpr uint8_t transportStopped = 25;
+    if (getState() == GO_STATE_OPEN && !getTransportStopFrames().empty())
+        return transportStopped;
+
+    return transportActive;
+}
+
 class GameObjectModelOwnerImpl final : public GameObjectModelOwnerBase
 {
 public:

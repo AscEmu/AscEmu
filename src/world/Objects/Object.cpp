@@ -3193,7 +3193,9 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     // 11.x: elevators and moving transports carry their progress in the game object block
     const GameObject* transportObject = isGameObject() ? static_cast<GameObject*>(this) : nullptr;
     const bool movingTransport = transportObject != nullptr && transportObject->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT;
-    const bool gameObjectBlock = transportObject != nullptr && (movingTransport || transportObject->getGoType() == GAMEOBJECT_TYPE_TRANSPORT);
+    const bool elevator = transportObject != nullptr && transportObject->getGoType() == GAMEOBJECT_TYPE_TRANSPORT;
+    const bool gameObjectBlock = movingTransport || elevator;
+    const std::vector<uint32_t> pauseTimes = elevator ? transportObject->getTransportStopFrames() : std::vector<uint32_t>();
 #endif
 
 #if VERSION_STRING == TheWarWithin
@@ -3364,6 +3366,8 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     // 6.x: the position on the transport follows the living block, 7.x sends it last
     if (transportPosition)
         writeTransportInfo(*data, obj_movement_info, realmId, mapId);
+#elif VERSION_STRING == TheWarWithin
+    *data << uint32_t(pauseTimes.size());               // pause times of an elevator, the list follows the rotation
 #else
     *data << uint32_t(0);                               // pause times of a transport
 #endif
@@ -3407,6 +3411,11 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
     if (rotation)
         *data << uint64_t(static_cast<GameObject*>(this)->getPackedLocalRotation());
+
+#if VERSION_STRING == TheWarWithin
+    for (const uint32_t pauseTime : pauseTimes)
+        *data << pauseTime;
+#endif
 
 #if VERSION_STRING != WoD
     if (transportPosition)

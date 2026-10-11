@@ -2524,11 +2524,11 @@ namespace
         data << uint32_t(0);                                                // state world effects quest objective
         ctx.guid(gameobject->getCreatedByGuid());
         data << WoWGuid128();                                               // guild
-        data << uint32_t(gameobject->getFlags());
+        data << uint32_t(gameobject->getClientFlags());
         for (uint8_t i = 0; i < 4; ++i)
             data << float(gameobject->getParentRotation(i));
         data << int32_t(gameobject->getFactionTemplate());
-        data << int8_t(gameobject->getState());
+        data << int8_t(gameobject->getClientState());
         data << int8_t(gameobject->getGoType());
         data << uint8_t(gameobject->getField<uint8_t>(GameObjectField::Bytes1Health));
         data << uint32_t(gameobject->getArtKit());
@@ -2592,14 +2592,14 @@ namespace
             if (mask[11])
                 data << WoWGuid128();
             if (mask[12])
-                data << uint32_t(gameobject->getFlags());
+                data << uint32_t(gameobject->getClientFlags());
             if (mask[13])
                 for (uint8_t i = 0; i < 4; ++i)
                     data << float(gameobject->getParentRotation(i));
             if (mask[14])
                 data << int32_t(gameobject->getFactionTemplate());
             if (mask[15])
-                data << int8_t(gameobject->getState());
+                data << int8_t(gameobject->getClientState());
             if (mask[16])
                 data << int8_t(gameobject->getGoType());
             if (mask[17])

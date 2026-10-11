@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 #include <functional>
+#include <unordered_set>
 
 #define BitCount1(x) ((x) & 1)
 #define BitCount2(x) ( BitCount1(x) + BitCount1((x)>>1) )
@@ -88,6 +89,7 @@ enum class HighGuid128 : uint8_t
 // 128 bit guid of 6.x and 7.x clients.
 // high part: type (6 bit) | realm (16 bit, 13 bit for map bound types) | map (13 bit) | entry (23 bit) | sub type (6 bit)
 // low part:  server (24 bit) | counter (40 bit)
+// Transports (ships, zeppelins, elevators) carry only their counter: high part type (6 bit) | counter (20 bit), low part 0.
 // The server keeps its 64 bit guids; WoWGuid::toGuid128() and WoWGuid::fromGuid128() translate at the packet boundary.
 struct WoWGuid128
 {
@@ -107,6 +109,12 @@ struct WoWGuid128
     static constexpr WoWGuid128 realmSpecific(HighGuid128 type, uint32_t realmId, uint64_t counter) noexcept
     {
         return { (uint64_t(type) << 58) | (uint64_t(realmId & 0xFFFF) << 42), counter };
+    }
+
+    // moving transports and elevators: the counter sits in the high part, the low part stays empty
+    static constexpr WoWGuid128 transport(HighGuid128 type, uint32_t counter) noexcept
+    {
+        return { (uint64_t(type) << 58) | (uint64_t(counter & 0xFFFFF) << 38), 0 };
     }
 
     // types bound to a map: creatures, pets, vehicles, gameobjects, dynamic objects, area triggers, corpses
@@ -130,6 +138,7 @@ struct WoWGuid128
     constexpr uint32_t getEntry() const noexcept { return static_cast<uint32_t>((high >> 6) & 0x7FFFFF); }
     constexpr uint8_t getSubType() const noexcept { return static_cast<uint8_t>(high & 0x3F); }
     constexpr uint64_t getCounter() const noexcept { return low & UINT64_C(0xFFFFFFFFFF); }
+    constexpr uint32_t getTransportCounter() const noexcept { return static_cast<uint32_t>((high >> 38) & 0xFFFFF); }
 
     constexpr bool operator==(WoWGuid128 const& other) const noexcept { return low == other.low && high == other.high; }
     constexpr bool operator!=(WoWGuid128 const& other) const noexcept { return !(*this == other); }
@@ -275,6 +284,20 @@ public:
 
     uint64_t getRawGuid() const noexcept { return _raw.value; }
 
+    // Elevators (gameobject type transport) are transport guids for a 6.x or later client. Their entries are
+    // registered when the gameobject properties load; bit 19 of the transport counter separates them from the
+    // moving transports, which have their own counters.
+    static constexpr uint32_t ElevatorCounterBit = 0x80000;
+
+    static std::unordered_set<uint32_t>& transportEntries() noexcept
+    {
+        static std::unordered_set<uint32_t> entries;
+        return entries;
+    }
+
+    static void addTransportEntry(uint32_t entry) { transportEntries().insert(entry); }
+    static bool isTransportEntry(uint32_t entry) noexcept { return transportEntries().count(entry) != 0; }
+
     // This guid for a 6.x or 7.x client. Map bound types carry the map the receiving player is on.
     WoWGuid128 toGuid128(uint32_t realmId, uint32_t mapId) const noexcept
     {
@@ -291,12 +314,15 @@ public:
             case masked(HIGHGUID_TYPE_CONTAINER):       return WoWGuid128::realmSpecific(HighGuid128::Item, realmId, getLowGuid());
             case masked(HIGHGUID_TYPE_GUILD):           return WoWGuid128::realmSpecific(HighGuid128::Guild, realmId, getLowGuid());
             case masked(HIGHGUID_TYPE_TRANSPORTER):
-            case masked(HIGHGUID_TYPE_TRANSPORT):       return WoWGuid128::realmSpecific(HighGuid128::Transport, realmId, getLowGuid());
+            case masked(HIGHGUID_TYPE_TRANSPORT):       return WoWGuid128::transport(HighGuid128::Transport, getCounter() & (ElevatorCounterBit - 1));
             case masked(HIGHGUID_TYPE_GROUP):           return WoWGuid128::global(HighGuid128::Party, getLowGuid());
             case masked(HIGHGUID_TYPE_UNIT):            return WoWGuid128::mapSpecific(HighGuid128::Creature, realmId, mapId, getEntry(), getCounter());
             case masked(HIGHGUID_TYPE_VEHICLE):         return WoWGuid128::mapSpecific(HighGuid128::Vehicle, realmId, mapId, getEntry(), getCounter());
             case masked(HIGHGUID_TYPE_PET):             return WoWGuid128::mapSpecific(HighGuid128::Pet, realmId, mapId, getEntry(), getCounter());
-            case masked(HIGHGUID_TYPE_GAMEOBJECT):      return WoWGuid128::mapSpecific(HighGuid128::GameObject, realmId, mapId, getEntry(), getCounter());
+            case masked(HIGHGUID_TYPE_GAMEOBJECT):
+                if (isTransportEntry(getEntry()))
+                    return WoWGuid128::transport(HighGuid128::Transport, (getCounter() & (ElevatorCounterBit - 1)) | ElevatorCounterBit);
+                return WoWGuid128::mapSpecific(HighGuid128::GameObject, realmId, mapId, getEntry(), getCounter());
             case masked(HIGHGUID_TYPE_AREATRIGGER):     return WoWGuid128::mapSpecific(HighGuid128::AreaTrigger, realmId, mapId, getEntry(), getCounter());
             case masked(HIGHGUID_TYPE_DYNAMICOBJECT):   return WoWGuid128::mapSpecific(HighGuid128::DynamicObject, realmId, mapId, 0, getLowGuid());
             case masked(HIGHGUID_TYPE_CORPSE):          return WoWGuid128::mapSpecific(HighGuid128::Corpse, realmId, mapId, 0, getLowGuid());
@@ -309,17 +335,21 @@ public:
     }
 
     // The server guid for a guid a 6.x or 7.x client sent. Item guids come back as items, a container has
-    // to be looked up by its counter.
+    // to be looked up by its counter. An elevator comes back as a gameobject guid without its entry.
     static WoWGuid fromGuid128(WoWGuid128 const& guid) noexcept
     {
         const uint32_t counter = static_cast<uint32_t>(guid.getCounter());
+        const uint32_t transportCounter = guid.getTransportCounter();
 
         switch (guid.getHighType())
         {
             case HighGuid128::Player:           return WoWGuid(static_cast<uint64_t>(counter));
             case HighGuid128::Item:             return WoWGuid((uint64_t(HIGHGUID_TYPE_ITEM) << 32) | counter);
             case HighGuid128::Guild:            return WoWGuid((uint64_t(HIGHGUID_TYPE_GUILD) << 32) | counter);
-            case HighGuid128::Transport:        return WoWGuid((uint64_t(HIGHGUID_TYPE_TRANSPORTER) << 32) | counter);
+            case HighGuid128::Transport:
+                if (transportCounter & ElevatorCounterBit)
+                    return WoWGuid(transportCounter & (ElevatorCounterBit - 1), 0, HIGHGUID_TYPE_GAMEOBJECT);
+                return WoWGuid((uint64_t(HIGHGUID_TYPE_TRANSPORTER) << 32) | transportCounter);
             case HighGuid128::Party:            return WoWGuid((uint64_t(HIGHGUID_TYPE_GROUP) << 32) | counter);
             case HighGuid128::Creature:         return WoWGuid(counter & LOWGUID_ENTRY_MASK, guid.getEntry(), HIGHGUID_TYPE_UNIT);
             case HighGuid128::Vehicle:          return WoWGuid(counter & LOWGUID_ENTRY_MASK, guid.getEntry(), HIGHGUID_TYPE_VEHICLE);

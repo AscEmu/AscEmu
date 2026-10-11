@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObjectProperties.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Server/DatabaseDefinition.hpp"
+#include "WoWGuid.hpp"
 #include "Server/World.h"
 #include "Spell/SpellClickInfo.hpp"
 #include "Spell/SpellInfo.hpp"
@@ -1178,6 +1179,8 @@ void MySQLDataStore::loadGameObjectPropertiesTable()
 
         gameobjecProperties.entry = entry;
         gameobjecProperties.type = fields[1].asUint32();
+        if (gameobjecProperties.type == GAMEOBJECT_TYPE_TRANSPORT)
+            WoWGuid::addTransportEntry(entry);                  // 6.0 and later clients: elevators travel as transport guids
         gameobjecProperties.display_id = fields[2].asUint32();
         gameobjecProperties.name = fields[3].asCString();
         gameobjecProperties.category_name = fields[4].asCString();
