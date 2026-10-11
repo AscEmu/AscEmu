@@ -1854,7 +1854,7 @@ void SpellMgr::loadSpellEffectOverride()
             spellInfo->setEffectImplicitTargetB(seo_ImplicitTargetB, seo_EffectId);
 
         if (seo_EffectCustomFlag != 0)
-            spellInfo->EffectCustomFlag[seo_Effect] = seo_EffectCustomFlag;
+            spellInfo->EffectCustomFlag[seo_EffectId] = seo_EffectCustomFlag;
 
         ++overridenEffects;
     } while (result->nextRow());

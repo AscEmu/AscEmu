@@ -53,6 +53,7 @@
 #include "Definitions/LockTypes.hpp"
 #include "Definitions/SpellIsFlags.hpp"
 #include "Definitions/TeleportEffectCustomFlags.hpp"
+#include "Definitions/SpellEffectTarget.hpp"
 #include "Definitions/SummonControlTypes.hpp"
 #include "Definitions/SummonTypes.hpp"
 #include "Definitions/SpellState.hpp"
@@ -291,13 +292,133 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::spellEffectNotImplemented,          // 179 SPELL_EFFECT_NULL_179
     &Spell::spellEffectNotImplemented,          // 180 SPELL_EFFECT_NULL_180
     &Spell::spellEffectNotImplemented,          // 181 SPELL_EFFECT_NULL_181
-    &Spell::spellEffectNotImplemented           // 182 SPELL_EFFECT_NULL_182
+    &Spell::spellEffectNotImplemented,          // 182 SPELL_EFFECT_NULL_182
 #endif
 #if VERSION_STRING == Mop
     // TODO: mop
-#elif defined(AE_FOREVER)
-// Copied from MoP as a temporary baseline. Replace with dedicated Forever values once verified.
-    // TODO: mop
+#endif
+#if VERSION_STRING == Camelot
+    &Spell::spellEffectNotImplemented,          // 183 SPELL_EFFECT_UNKNOWN_183
+    &Spell::spellEffectNotImplemented,          // 184 SPELL_EFFECT_UNKNOWN_184
+    &Spell::spellEffectNotImplemented,          // 185 SPELL_EFFECT_UNKNOWN_185
+    &Spell::spellEffectNotImplemented,          // 186 SPELL_EFFECT_UNKNOWN_186
+    &Spell::spellEffectNotImplemented,          // 187 SPELL_EFFECT_UNKNOWN_187
+    &Spell::spellEffectNotImplemented,          // 188 SPELL_EFFECT_UNKNOWN_188
+    &Spell::spellEffectNotImplemented,          // 189 SPELL_EFFECT_UNKNOWN_189
+    &Spell::spellEffectNotImplemented,          // 190 SPELL_EFFECT_UNKNOWN_190
+    &Spell::spellEffectNotImplemented,          // 191 SPELL_EFFECT_UNKNOWN_191
+    &Spell::spellEffectNotImplemented,          // 192 SPELL_EFFECT_UNKNOWN_192
+    &Spell::spellEffectNotImplemented,          // 193 SPELL_EFFECT_UNKNOWN_193
+    &Spell::spellEffectNotImplemented,          // 194 SPELL_EFFECT_UNKNOWN_194
+    &Spell::spellEffectNotImplemented,          // 195 SPELL_EFFECT_UNKNOWN_195
+    &Spell::spellEffectNotImplemented,          // 196 SPELL_EFFECT_UNKNOWN_196
+    &Spell::spellEffectNotImplemented,          // 197 SPELL_EFFECT_UNKNOWN_197
+    &Spell::spellEffectNotImplemented,          // 198 SPELL_EFFECT_UNKNOWN_198
+    &Spell::spellEffectNotImplemented,          // 199 SPELL_EFFECT_UNKNOWN_199
+    &Spell::spellEffectNotImplemented,          // 200 SPELL_EFFECT_UNKNOWN_200
+    &Spell::spellEffectNotImplemented,          // 201 SPELL_EFFECT_UNKNOWN_201
+    &Spell::spellEffectNotImplemented,          // 202 SPELL_EFFECT_UNKNOWN_202
+    &Spell::spellEffectNotImplemented,          // 203 SPELL_EFFECT_UNKNOWN_203
+    &Spell::spellEffectNotImplemented,          // 204 SPELL_EFFECT_UNKNOWN_204
+    &Spell::spellEffectNotImplemented,          // 205 SPELL_EFFECT_UNKNOWN_205
+    &Spell::spellEffectNotImplemented,          // 206 SPELL_EFFECT_UNKNOWN_206
+    &Spell::spellEffectNotImplemented,          // 207 SPELL_EFFECT_UNKNOWN_207
+    &Spell::spellEffectNotImplemented,          // 208 SPELL_EFFECT_UNKNOWN_208
+    &Spell::spellEffectNotImplemented,          // 209 SPELL_EFFECT_UNKNOWN_209
+    &Spell::spellEffectNotImplemented,          // 210 SPELL_EFFECT_UNKNOWN_210
+    &Spell::spellEffectNotImplemented,          // 211 SPELL_EFFECT_UNKNOWN_211
+    &Spell::spellEffectNotImplemented,          // 212 SPELL_EFFECT_UNKNOWN_212
+    &Spell::spellEffectNotImplemented,          // 213 SPELL_EFFECT_UNKNOWN_213
+    &Spell::spellEffectNotImplemented,          // 214 SPELL_EFFECT_UNKNOWN_214
+    &Spell::spellEffectNotImplemented,          // 215 SPELL_EFFECT_UNKNOWN_215
+    &Spell::spellEffectNotImplemented,          // 216 SPELL_EFFECT_UNKNOWN_216
+    &Spell::spellEffectNotImplemented,          // 217 SPELL_EFFECT_UNKNOWN_217
+    &Spell::spellEffectNotImplemented,          // 218 SPELL_EFFECT_UNKNOWN_218
+    &Spell::spellEffectNotImplemented,          // 219 SPELL_EFFECT_UNKNOWN_219
+    &Spell::spellEffectNotImplemented,          // 220 SPELL_EFFECT_UNKNOWN_220
+    &Spell::spellEffectNotImplemented,          // 221 SPELL_EFFECT_UNKNOWN_221
+    &Spell::spellEffectNotImplemented,          // 222 SPELL_EFFECT_UNKNOWN_222
+    &Spell::spellEffectNotImplemented,          // 223 SPELL_EFFECT_UNKNOWN_223
+    &Spell::spellEffectNotImplemented,          // 224 SPELL_EFFECT_UNKNOWN_224
+    &Spell::spellEffectNotImplemented,          // 225 SPELL_EFFECT_UNKNOWN_225
+    &Spell::spellEffectNotImplemented,          // 226 SPELL_EFFECT_UNKNOWN_226
+    &Spell::spellEffectNotImplemented,          // 227 SPELL_EFFECT_UNKNOWN_227
+    &Spell::spellEffectNotImplemented,          // 228 SPELL_EFFECT_UNKNOWN_228
+    &Spell::spellEffectNotImplemented,          // 229 SPELL_EFFECT_UNKNOWN_229
+    &Spell::spellEffectNotImplemented,          // 230 SPELL_EFFECT_UNKNOWN_230
+    &Spell::spellEffectNotImplemented,          // 231 SPELL_EFFECT_UNKNOWN_231
+    &Spell::spellEffectNotImplemented,          // 232 SPELL_EFFECT_UNKNOWN_232
+    &Spell::spellEffectNotImplemented,          // 233 SPELL_EFFECT_UNKNOWN_233
+    &Spell::spellEffectNotImplemented,          // 234 SPELL_EFFECT_UNKNOWN_234
+    &Spell::spellEffectNotImplemented,          // 235 SPELL_EFFECT_UNKNOWN_235
+    &Spell::spellEffectNotImplemented,          // 236 SPELL_EFFECT_UNKNOWN_236
+    &Spell::spellEffectNotImplemented,          // 237 SPELL_EFFECT_UNKNOWN_237
+    &Spell::spellEffectNotImplemented,          // 238 SPELL_EFFECT_UNKNOWN_238
+    &Spell::spellEffectNotImplemented,          // 239 SPELL_EFFECT_UNKNOWN_239
+    &Spell::spellEffectNotImplemented,          // 240 SPELL_EFFECT_UNKNOWN_240
+    &Spell::spellEffectNotImplemented,          // 241 SPELL_EFFECT_UNKNOWN_241
+    &Spell::spellEffectNotImplemented,          // 242 SPELL_EFFECT_UNKNOWN_242
+    &Spell::spellEffectNotImplemented,          // 243 SPELL_EFFECT_UNKNOWN_243
+    &Spell::spellEffectNotImplemented,          // 244 SPELL_EFFECT_UNKNOWN_244
+    &Spell::spellEffectNotImplemented,          // 245 SPELL_EFFECT_UNKNOWN_245
+    &Spell::spellEffectNotImplemented,          // 246 SPELL_EFFECT_UNKNOWN_246
+    &Spell::spellEffectNotImplemented,          // 247 SPELL_EFFECT_UNKNOWN_247
+    &Spell::spellEffectNotImplemented,          // 248 SPELL_EFFECT_UNKNOWN_248
+    &Spell::spellEffectNotImplemented,          // 249 SPELL_EFFECT_UNKNOWN_249
+    &Spell::spellEffectNotImplemented,          // 250 SPELL_EFFECT_UNKNOWN_250
+    &Spell::spellEffectNotImplemented,          // 251 SPELL_EFFECT_UNKNOWN_251
+    &Spell::SpellEffectTeleportUnits ,          // 252 SPELL_EFFECT_TELEPORT_UNITS_FOREVER
+    &Spell::spellEffectNotImplemented,          // 253 SPELL_EFFECT_UNKNOWN_253
+    &Spell::spellEffectNotImplemented,          // 254 SPELL_EFFECT_UNKNOWN_254
+    &Spell::spellEffectNotImplemented,          // 255 SPELL_EFFECT_UNKNOWN_255
+    &Spell::spellEffectNotImplemented,          // 256 SPELL_EFFECT_UNKNOWN_256
+    &Spell::spellEffectNotImplemented,          // 257 SPELL_EFFECT_UNKNOWN_257
+    &Spell::spellEffectNotImplemented,          // 258 SPELL_EFFECT_UNKNOWN_258
+    &Spell::spellEffectNotImplemented,          // 259 SPELL_EFFECT_UNKNOWN_259
+    &Spell::spellEffectNotImplemented,          // 260 SPELL_EFFECT_UNKNOWN_260
+    &Spell::spellEffectNotImplemented,          // 261 SPELL_EFFECT_UNKNOWN_261
+    &Spell::spellEffectNotImplemented,          // 262 SPELL_EFFECT_UNKNOWN_262
+    &Spell::spellEffectNotImplemented,          // 263 SPELL_EFFECT_UNKNOWN_263
+    &Spell::spellEffectNotImplemented,          // 264 SPELL_EFFECT_UNKNOWN_264
+    &Spell::spellEffectNotImplemented,          // 265 SPELL_EFFECT_UNKNOWN_265
+    &Spell::spellEffectNotImplemented,          // 266 SPELL_EFFECT_UNKNOWN_266
+    &Spell::spellEffectNotImplemented,          // 267 SPELL_EFFECT_UNKNOWN_267
+    &Spell::spellEffectNotImplemented,          // 268 SPELL_EFFECT_UNKNOWN_268
+    &Spell::spellEffectNotImplemented,          // 269 SPELL_EFFECT_UNKNOWN_269
+    &Spell::spellEffectNotImplemented,          // 270 SPELL_EFFECT_UNKNOWN_270
+    &Spell::spellEffectNotImplemented,          // 271 SPELL_EFFECT_UNKNOWN_271
+    &Spell::spellEffectNotImplemented,          // 272 SPELL_EFFECT_UNKNOWN_272
+    &Spell::spellEffectNotImplemented,          // 273 SPELL_EFFECT_UNKNOWN_273
+    &Spell::spellEffectNotImplemented,          // 274 SPELL_EFFECT_UNKNOWN_274
+    &Spell::spellEffectNotImplemented,          // 275 SPELL_EFFECT_UNKNOWN_275
+    &Spell::spellEffectNotImplemented,          // 276 SPELL_EFFECT_UNKNOWN_276
+    &Spell::spellEffectNotImplemented,          // 277 SPELL_EFFECT_UNKNOWN_277
+    &Spell::spellEffectNotImplemented,          // 278 SPELL_EFFECT_UNKNOWN_278
+    &Spell::spellEffectNotImplemented,          // 279 SPELL_EFFECT_UNKNOWN_279
+    &Spell::spellEffectNotImplemented,          // 280 SPELL_EFFECT_UNKNOWN_280
+    &Spell::spellEffectNotImplemented,          // 281 SPELL_EFFECT_UNKNOWN_281
+    &Spell::spellEffectNotImplemented,          // 282 SPELL_EFFECT_UNKNOWN_282
+    &Spell::spellEffectNotImplemented,          // 283 SPELL_EFFECT_UNKNOWN_283
+    &Spell::spellEffectNotImplemented,          // 284 SPELL_EFFECT_UNKNOWN_284
+    &Spell::spellEffectNotImplemented,          // 285 SPELL_EFFECT_UNKNOWN_285
+    &Spell::spellEffectNotImplemented,          // 286 SPELL_EFFECT_UNKNOWN_286
+    &Spell::spellEffectNotImplemented,          // 287 SPELL_EFFECT_UNKNOWN_287
+    &Spell::spellEffectNotImplemented,          // 288 SPELL_EFFECT_UNKNOWN_288
+    &Spell::spellEffectNotImplemented,          // 289 SPELL_EFFECT_UNKNOWN_289
+    &Spell::spellEffectNotImplemented,          // 290 SPELL_EFFECT_UNKNOWN_290
+    &Spell::spellEffectNotImplemented,          // 291 SPELL_EFFECT_UNKNOWN_291
+    &Spell::spellEffectNotImplemented,          // 292 SPELL_EFFECT_UNKNOWN_292
+    &Spell::spellEffectNotImplemented,          // 293 SPELL_EFFECT_UNKNOWN_293
+    &Spell::spellEffectNotImplemented,          // 294 SPELL_EFFECT_UNKNOWN_294
+    &Spell::spellEffectNotImplemented,          // 295 SPELL_EFFECT_UNKNOWN_295
+    &Spell::spellEffectNotImplemented,          // 296 SPELL_EFFECT_UNKNOWN_296
+    &Spell::spellEffectNotImplemented,          // 297 SPELL_EFFECT_UNKNOWN_297
+    &Spell::spellEffectNotImplemented,          // 298 SPELL_EFFECT_UNKNOWN_298
+    &Spell::spellEffectNotImplemented,          // 299 SPELL_EFFECT_UNKNOWN_299
+    &Spell::spellEffectNotImplemented,          // 300 SPELL_EFFECT_UNKNOWN_300
+    &Spell::spellEffectNotImplemented,          // 301 SPELL_EFFECT_UNKNOWN_301
+    &Spell::spellEffectNotImplemented,          // 302 SPELL_EFFECT_UNKNOWN_302
+    &Spell::SpellEffectCreateTraitTreeConfig    // 303 SPELL_EFFECT_CREATE_TRAIT_TREE_CONFIG
 #endif
 };
 
@@ -491,6 +612,129 @@ const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
     "SPELL_EFFECT_NULL_180"                     //    180
     "SPELL_EFFECT_NULL_181"                     //    181
     "SPELL_EFFECT_NULL_182"                     //    182
+#endif
+#if defined(AE_FOREVER)
+    "SPELL_EFFECT_UNKNOWN_183", //    183
+    "SPELL_EFFECT_UNKNOWN_184", //    184
+    "SPELL_EFFECT_UNKNOWN_185", //    185
+    "SPELL_EFFECT_UNKNOWN_186", //    186
+    "SPELL_EFFECT_UNKNOWN_187", //    187
+    "SPELL_EFFECT_UNKNOWN_188", //    188
+    "SPELL_EFFECT_UNKNOWN_189", //    189
+    "SPELL_EFFECT_UNKNOWN_190", //    190
+    "SPELL_EFFECT_UNKNOWN_191", //    191
+    "SPELL_EFFECT_UNKNOWN_192", //    192
+    "SPELL_EFFECT_UNKNOWN_193", //    193
+    "SPELL_EFFECT_UNKNOWN_194", //    194
+    "SPELL_EFFECT_UNKNOWN_195", //    195
+    "SPELL_EFFECT_UNKNOWN_196", //    196
+    "SPELL_EFFECT_UNKNOWN_197", //    197
+    "SPELL_EFFECT_UNKNOWN_198", //    198
+    "SPELL_EFFECT_UNKNOWN_199", //    199
+    "SPELL_EFFECT_UNKNOWN_200", //    200
+    "SPELL_EFFECT_UNKNOWN_201", //    201
+    "SPELL_EFFECT_UNKNOWN_202", //    202
+    "SPELL_EFFECT_UNKNOWN_203", //    203
+    "SPELL_EFFECT_UNKNOWN_204", //    204
+    "SPELL_EFFECT_UNKNOWN_205", //    205
+    "SPELL_EFFECT_UNKNOWN_206", //    206
+    "SPELL_EFFECT_UNKNOWN_207", //    207
+    "SPELL_EFFECT_UNKNOWN_208", //    208
+    "SPELL_EFFECT_UNKNOWN_209", //    209
+    "SPELL_EFFECT_UNKNOWN_210", //    210
+    "SPELL_EFFECT_UNKNOWN_211", //    211
+    "SPELL_EFFECT_UNKNOWN_212", //    212
+    "SPELL_EFFECT_UNKNOWN_213", //    213
+    "SPELL_EFFECT_UNKNOWN_214", //    214
+    "SPELL_EFFECT_UNKNOWN_215", //    215
+    "SPELL_EFFECT_UNKNOWN_216", //    216
+    "SPELL_EFFECT_UNKNOWN_217", //    217
+    "SPELL_EFFECT_UNKNOWN_218", //    218
+    "SPELL_EFFECT_UNKNOWN_219", //    219
+    "SPELL_EFFECT_UNKNOWN_220", //    220
+    "SPELL_EFFECT_UNKNOWN_221", //    221
+    "SPELL_EFFECT_UNKNOWN_222", //    222
+    "SPELL_EFFECT_UNKNOWN_223", //    223
+    "SPELL_EFFECT_UNKNOWN_224", //    224
+    "SPELL_EFFECT_UNKNOWN_225", //    225
+    "SPELL_EFFECT_UNKNOWN_226", //    226
+    "SPELL_EFFECT_UNKNOWN_227", //    227
+    "SPELL_EFFECT_UNKNOWN_228", //    228
+    "SPELL_EFFECT_UNKNOWN_229", //    229
+    "SPELL_EFFECT_UNKNOWN_230", //    230
+    "SPELL_EFFECT_UNKNOWN_231", //    231
+    "SPELL_EFFECT_UNKNOWN_232", //    232
+    "SPELL_EFFECT_UNKNOWN_233", //    233
+    "SPELL_EFFECT_UNKNOWN_234", //    234
+    "SPELL_EFFECT_UNKNOWN_235", //    235
+    "SPELL_EFFECT_UNKNOWN_236", //    236
+    "SPELL_EFFECT_UNKNOWN_237", //    237
+    "SPELL_EFFECT_UNKNOWN_238", //    238
+    "SPELL_EFFECT_UNKNOWN_239", //    239
+    "SPELL_EFFECT_UNKNOWN_240", //    240
+    "SPELL_EFFECT_UNKNOWN_241", //    241
+    "SPELL_EFFECT_UNKNOWN_242", //    242
+    "SPELL_EFFECT_UNKNOWN_243", //    243
+    "SPELL_EFFECT_UNKNOWN_244", //    244
+    "SPELL_EFFECT_UNKNOWN_245", //    245
+    "SPELL_EFFECT_UNKNOWN_246", //    246
+    "SPELL_EFFECT_UNKNOWN_247", //    247
+    "SPELL_EFFECT_UNKNOWN_248", //    248
+    "SPELL_EFFECT_UNKNOWN_249", //    249
+    "SPELL_EFFECT_UNKNOWN_250", //    250
+    "SPELL_EFFECT_UNKNOWN_251", //    251
+    "SPELL_EFFECT_TELEPORT_UNITS_FOREVER", //    252
+    "SPELL_EFFECT_UNKNOWN_253", //    253
+    "SPELL_EFFECT_UNKNOWN_254", //    254
+    "SPELL_EFFECT_UNKNOWN_255", //    255
+    "SPELL_EFFECT_UNKNOWN_256", //    256
+    "SPELL_EFFECT_UNKNOWN_257", //    257
+    "SPELL_EFFECT_UNKNOWN_258", //    258
+    "SPELL_EFFECT_UNKNOWN_259", //    259
+    "SPELL_EFFECT_UNKNOWN_260", //    260
+    "SPELL_EFFECT_UNKNOWN_261", //    261
+    "SPELL_EFFECT_UNKNOWN_262", //    262
+    "SPELL_EFFECT_UNKNOWN_263", //    263
+    "SPELL_EFFECT_UNKNOWN_264", //    264
+    "SPELL_EFFECT_UNKNOWN_265", //    265
+    "SPELL_EFFECT_UNKNOWN_266", //    266
+    "SPELL_EFFECT_UNKNOWN_267", //    267
+    "SPELL_EFFECT_UNKNOWN_268", //    268
+    "SPELL_EFFECT_UNKNOWN_269", //    269
+    "SPELL_EFFECT_UNKNOWN_270", //    270
+    "SPELL_EFFECT_UNKNOWN_271", //    271
+    "SPELL_EFFECT_UNKNOWN_272", //    272
+    "SPELL_EFFECT_UNKNOWN_273", //    273
+    "SPELL_EFFECT_UNKNOWN_274", //    274
+    "SPELL_EFFECT_UNKNOWN_275", //    275
+    "SPELL_EFFECT_UNKNOWN_276", //    276
+    "SPELL_EFFECT_UNKNOWN_277", //    277
+    "SPELL_EFFECT_UNKNOWN_278", //    278
+    "SPELL_EFFECT_UNKNOWN_279", //    279
+    "SPELL_EFFECT_UNKNOWN_280", //    280
+    "SPELL_EFFECT_UNKNOWN_281", //    281
+    "SPELL_EFFECT_UNKNOWN_282", //    282
+    "SPELL_EFFECT_UNKNOWN_283", //    283
+    "SPELL_EFFECT_UNKNOWN_284", //    284
+    "SPELL_EFFECT_UNKNOWN_285", //    285
+    "SPELL_EFFECT_UNKNOWN_286", //    286
+    "SPELL_EFFECT_UNKNOWN_287", //    287
+    "SPELL_EFFECT_UNKNOWN_288", //    288
+    "SPELL_EFFECT_UNKNOWN_289", //    289
+    "SPELL_EFFECT_UNKNOWN_290", //    290
+    "SPELL_EFFECT_UNKNOWN_291", //    291
+    "SPELL_EFFECT_UNKNOWN_292", //    292
+    "SPELL_EFFECT_UNKNOWN_293", //    293
+    "SPELL_EFFECT_UNKNOWN_294", //    294
+    "SPELL_EFFECT_UNKNOWN_295", //    295
+    "SPELL_EFFECT_UNKNOWN_296", //    296
+    "SPELL_EFFECT_UNKNOWN_297", //    297
+    "SPELL_EFFECT_UNKNOWN_298", //    298
+    "SPELL_EFFECT_UNKNOWN_299", //    299
+    "SPELL_EFFECT_UNKNOWN_300", //    300
+    "SPELL_EFFECT_UNKNOWN_301", //    301
+    "SPELL_EFFECT_UNKNOWN_302", //    302
+    "SPELL_EFFECT_CREATE_TRAIT_TREE_CONFIG" //    303
 #endif
 };
 
@@ -1783,10 +2027,31 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
 
 void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
 {
-    if (m_unitTarget == nullptr || m_caster == nullptr)
+    if (m_caster == nullptr)
         return;
 
     uint32_t spellId = getSpellInfo()->getId();
+
+    const bool teleportToBindpoint = m_spellInfo->hasCustomFlagForEffect(effectIndex, TELEPORT_TO_BINDPOINT) ||
+        m_spellInfo->getEffectImplicitTargetA(effectIndex) == EFF_TARGET_HEARTSTONE_LOCATION ||
+        m_spellInfo->getEffectImplicitTargetB(effectIndex) == EFF_TARGET_HEARTSTONE_LOCATION;
+
+    if (teleportToBindpoint)
+    {
+        Player* playerTarget = nullptr;
+        if (m_unitTarget != nullptr && m_unitTarget->isPlayer())
+            playerTarget = static_cast<Player*>(m_unitTarget);
+        else if (p_caster != nullptr)
+            playerTarget = p_caster;
+
+        if (playerTarget != nullptr)
+            HandleTeleport(playerTarget->getBindPosition(), playerTarget->getBindMapId(), playerTarget);
+
+        return;
+    }
+
+    if (m_unitTarget == nullptr)
+        return;
 
     // Portals
     if (m_spellInfo->hasCustomFlagForEffect(effectIndex, TELEPORT_TO_COORDINATES))
@@ -1799,18 +2064,6 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
         }
 
         HandleTeleport(LocationVector(teleport_coord->x, teleport_coord->y, teleport_coord->z), teleport_coord->mapId, m_unitTarget);
-        return;
-    }
-
-    // Hearthstone and co.
-    if (m_spellInfo->hasCustomFlagForEffect(effectIndex, TELEPORT_TO_BINDPOINT))
-    {
-        if (m_unitTarget->isPlayer())
-        {
-            Player* p = static_cast<Player*>(m_unitTarget);
-
-            HandleTeleport(p->getBindPosition(), p->getBindMapId(), p);
-        }
         return;
     }
 
@@ -6605,9 +6858,7 @@ void Spell::SpellEffectCreateTraitTreeConfig(uint8_t effectIndex)
 
     Player* target = m_unitTarget->ToPlayer();
     if (!target->getTraitManager().createGenericConfigForTree(static_cast<uint32_t>(traitTreeId)))
-    {
         return;
-    }
 
     target->updateObject();
 }
