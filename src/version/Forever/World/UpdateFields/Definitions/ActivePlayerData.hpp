@@ -281,11 +281,85 @@ namespace AscEmu::Version::Forever::UpdateFields::Definitions
         }
     };
 
+
+    struct SkillInfoField
+    {
+        static constexpr UpdateFieldMetadata metadata() { return {FieldVerification::Unverified, "skillInfo", "nested-record"}; }
+
+        template <typename Owner, std::size_t N>
+        static void copyKnownBits(Owner const& owner, std::bitset<N> const& source, std::bitset<N>& target)
+        {
+            if (source.test(32) && source.test(Fields::ActivePlayerData::SkillInfoBit) && owner.skill.hasChanges())
+            {
+                target.set(32);
+                target.set(Fields::ActivePlayerData::SkillInfoBit);
+            }
+        }
+
+        static uint32_t getBlock(Fields::SkillInfo const& skill, std::size_t blockIndex)
+        {
+            uint32_t block = 0;
+            std::size_t const firstBit = blockIndex * 32U;
+            for (std::size_t bit = 0; bit < 32U && firstBit + bit < Fields::SkillInfo::ChangeMaskSize; ++bit)
+                if (skill.changes.test(firstBit + bit))
+                    block |= uint32_t(1U << bit);
+            return block;
+        }
+
+        template <typename Owner>
+        static void write(ByteBuffer& data, Owner const& owner, auto const& changed)
+        {
+            if (!changed(Fields::ActivePlayerData::SkillInfoBit) || !owner.skill.hasChanges())
+                return;
+
+            constexpr std::size_t BlockCount = (Fields::SkillInfo::ChangeMaskSize + 31U) / 32U;
+            static_assert(BlockCount == 66);
+
+            uint32_t blockPresence[3]{};
+            for (std::size_t blockIndex = 0; blockIndex < BlockCount; ++blockIndex)
+                if (getBlock(owner.skill, blockIndex) != 0)
+                    blockPresence[blockIndex / 32U] |= uint32_t(1U << (blockIndex % 32U));
+
+            data << blockPresence[0] << blockPresence[1];
+            data.writeBits(blockPresence[2], 2);
+
+            for (std::size_t blockIndex = 0; blockIndex < BlockCount; ++blockIndex)
+            {
+                uint32_t const block = getBlock(owner.skill, blockIndex);
+                if (block != 0)
+                    data.writeBits(block, 32);
+            }
+            data.flushBits();
+
+            if (!owner.skill.changes.test(0))
+                return;
+
+            for (std::size_t i = 0; i < owner.skill.skillLineId.size(); ++i)
+            {
+                if (owner.skill.changes.test(Fields::SkillInfo::SkillLineIdFirstBit + i))
+                    data << owner.skill.skillLineId[i];
+                if (owner.skill.changes.test(Fields::SkillInfo::SkillStepFirstBit + i))
+                    data << owner.skill.skillStep[i];
+                if (owner.skill.changes.test(Fields::SkillInfo::SkillRankFirstBit + i))
+                    data << owner.skill.skillRank[i];
+                if (owner.skill.changes.test(Fields::SkillInfo::SkillStartingRankFirstBit + i))
+                    data << owner.skill.skillStartingRank[i];
+                if (owner.skill.changes.test(Fields::SkillInfo::SkillMaxRankFirstBit + i))
+                    data << owner.skill.skillMaxRank[i];
+                if (owner.skill.changes.test(Fields::SkillInfo::SkillTempBonusFirstBit + i))
+                    data << owner.skill.skillTempBonus[i];
+                if (owner.skill.changes.test(Fields::SkillInfo::SkillPermBonusFirstBit + i))
+                    data << owner.skill.skillPermBonus[i];
+            }
+        }
+    };
+
     // Its CREATE location is deliberately not claimed while that create span remains opaque.
     using ActivePlayerDataUpdate = UpdateDefinition<Fields::ActivePlayerData::ChangeMaskSize,
         ScalarField<&Fields::ActivePlayerData::coinage, Fields::ActivePlayerData::CoinageBit, 32, FieldVerification::Verified, "coinage">,
         ScalarField<&Fields::ActivePlayerData::xp, Fields::ActivePlayerData::XpBit, 32, FieldVerification::Verified, "xp">,
         ScalarField<&Fields::ActivePlayerData::nextLevelXp, Fields::ActivePlayerData::NextLevelXpBit, 32, FieldVerification::Verified, "nextLevelXp">,
+        SkillInfoField,
         ScalarField<&Fields::ActivePlayerData::watchedFactionIndex, Fields::ActivePlayerData::WatchedFactionIndexBit, Fields::ActivePlayerData::WatchedFactionParentBit, FieldVerification::Verified, "watchedFactionIndex">,
         TraitConfigsField,
         ScalarField<&Fields::ActivePlayerData::activeCombatTraitConfigId, Fields::ActivePlayerData::ActiveCombatTraitConfigIdBit, Fields::ActivePlayerData::TraitDataParentBit, FieldVerification::Verified, "activeCombatTraitConfigId">,

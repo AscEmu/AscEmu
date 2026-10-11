@@ -1673,48 +1673,72 @@ void Player::setSkillInfoId(uint32_t index, uint16_t id)
 {
     write(playerData()->skill_info[index].id, id);
 #if defined(AE_FOREVER)
-    if (index < m_foreverActivePlayerFields.skill.skillLineId.size())
+    if (index < m_foreverActivePlayerFields.skill.skillLineId.size() && m_foreverActivePlayerFields.skill.skillLineId[index] != id)
+    {
         m_foreverActivePlayerFields.skill.skillLineId[index] = id;
+        m_foreverActivePlayerFields.skill.markChanged(AscEmu::Version::Forever::Fields::SkillInfo::SkillLineIdFirstBit, index);
+        m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::SkillInfoBit);
+    }
 #endif
 }
 void Player::setSkillInfoStep(uint32_t index, uint16_t step)
 {
     write(playerData()->skill_info[index].step, step);
 #if defined(AE_FOREVER)
-    if (index < m_foreverActivePlayerFields.skill.skillStep.size())
+    if (index < m_foreverActivePlayerFields.skill.skillStep.size() && m_foreverActivePlayerFields.skill.skillStep[index] != step)
+    {
         m_foreverActivePlayerFields.skill.skillStep[index] = step;
+        m_foreverActivePlayerFields.skill.markChanged(AscEmu::Version::Forever::Fields::SkillInfo::SkillStepFirstBit, index);
+        m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::SkillInfoBit);
+    }
 #endif
 }
 void Player::setSkillInfoCurrentValue(uint32_t index, uint16_t current)
 {
     write(playerData()->skill_info[index].current_value, current);
 #if defined(AE_FOREVER)
-    if (index < m_foreverActivePlayerFields.skill.skillRank.size())
+    if (index < m_foreverActivePlayerFields.skill.skillRank.size() && m_foreverActivePlayerFields.skill.skillRank[index] != current)
+    {
         m_foreverActivePlayerFields.skill.skillRank[index] = current;
+        m_foreverActivePlayerFields.skill.markChanged(AscEmu::Version::Forever::Fields::SkillInfo::SkillRankFirstBit, index);
+        m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::SkillInfoBit);
+    }
 #endif
 }
 void Player::setSkillInfoMaxValue(uint32_t index, uint16_t max)
 {
     write(playerData()->skill_info[index].max_value, max);
 #if defined(AE_FOREVER)
-    if (index < m_foreverActivePlayerFields.skill.skillMaxRank.size())
+    if (index < m_foreverActivePlayerFields.skill.skillMaxRank.size() && m_foreverActivePlayerFields.skill.skillMaxRank[index] != max)
+    {
         m_foreverActivePlayerFields.skill.skillMaxRank[index] = max;
+        m_foreverActivePlayerFields.skill.markChanged(AscEmu::Version::Forever::Fields::SkillInfo::SkillMaxRankFirstBit, index);
+        m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::SkillInfoBit);
+    }
 #endif
 }
 void Player::setSkillInfoBonusTemporary(uint32_t index, uint16_t bonus)
 {
     write(playerData()->skill_info[index].bonus_temporary, bonus);
 #if defined(AE_FOREVER)
-    if (index < m_foreverActivePlayerFields.skill.skillTempBonus.size())
+    if (index < m_foreverActivePlayerFields.skill.skillTempBonus.size() && m_foreverActivePlayerFields.skill.skillTempBonus[index] != static_cast<int16_t>(bonus))
+    {
         m_foreverActivePlayerFields.skill.skillTempBonus[index] = static_cast<int16_t>(bonus);
+        m_foreverActivePlayerFields.skill.markChanged(AscEmu::Version::Forever::Fields::SkillInfo::SkillTempBonusFirstBit, index);
+        m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::SkillInfoBit);
+    }
 #endif
 }
 void Player::setSkillInfoBonusPermanent(uint32_t index, uint16_t bonus)
 {
     write(playerData()->skill_info[index].bonus_permanent, bonus);
 #if defined(AE_FOREVER)
-    if (index < m_foreverActivePlayerFields.skill.skillPermBonus.size())
+    if (index < m_foreverActivePlayerFields.skill.skillPermBonus.size() && m_foreverActivePlayerFields.skill.skillPermBonus[index] != bonus)
+    {
         m_foreverActivePlayerFields.skill.skillPermBonus[index] = bonus;
+        m_foreverActivePlayerFields.skill.markChanged(AscEmu::Version::Forever::Fields::SkillInfo::SkillPermBonusFirstBit, index);
+        m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::SkillInfoBit);
+    }
 #endif
 }
 #else
@@ -1730,8 +1754,12 @@ void Player::setSkillInfoId(uint32_t index, uint8_t offset, uint16_t id)
     write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_line[index]) + offset), id);
 #if defined(AE_FOREVER)
     const std::size_t slot = static_cast<std::size_t>(index) * 2U + offset;
-    if (slot < m_foreverActivePlayerFields.skill.skillLineId.size())
+    if (slot < m_foreverActivePlayerFields.skill.skillLineId.size() && m_foreverActivePlayerFields.skill.skillLineId[slot] != id)
+    {
         m_foreverActivePlayerFields.skill.skillLineId[slot] = id;
+        m_foreverActivePlayerFields.skill.markChanged(AscEmu::Version::Forever::Fields::SkillInfo::SkillLineIdFirstBit, slot);
+        m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::SkillInfoBit);
+    }
 #endif
 }
 void Player::setSkillInfoStep(uint32_t index, uint8_t offset, uint16_t step)
@@ -1739,8 +1767,12 @@ void Player::setSkillInfoStep(uint32_t index, uint8_t offset, uint16_t step)
     write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_step[index]) + offset), step);
 #if defined(AE_FOREVER)
     const std::size_t slot = static_cast<std::size_t>(index) * 2U + offset;
-    if (slot < m_foreverActivePlayerFields.skill.skillStep.size())
+    if (slot < m_foreverActivePlayerFields.skill.skillStep.size() && m_foreverActivePlayerFields.skill.skillStep[slot] != step)
+    {
         m_foreverActivePlayerFields.skill.skillStep[slot] = step;
+        m_foreverActivePlayerFields.skill.markChanged(AscEmu::Version::Forever::Fields::SkillInfo::SkillStepFirstBit, slot);
+        m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::SkillInfoBit);
+    }
 #endif
 }
 void Player::setSkillInfoCurrentValue(uint32_t index, uint8_t offset, uint16_t current)
@@ -1748,8 +1780,12 @@ void Player::setSkillInfoCurrentValue(uint32_t index, uint8_t offset, uint16_t c
     write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_rank[index]) + offset), current);
 #if defined(AE_FOREVER)
     const std::size_t slot = static_cast<std::size_t>(index) * 2U + offset;
-    if (slot < m_foreverActivePlayerFields.skill.skillRank.size())
+    if (slot < m_foreverActivePlayerFields.skill.skillRank.size() && m_foreverActivePlayerFields.skill.skillRank[slot] != current)
+    {
         m_foreverActivePlayerFields.skill.skillRank[slot] = current;
+        m_foreverActivePlayerFields.skill.markChanged(AscEmu::Version::Forever::Fields::SkillInfo::SkillRankFirstBit, slot);
+        m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::SkillInfoBit);
+    }
 #endif
 }
 void Player::setSkillInfoMaxValue(uint32_t index, uint8_t offset, uint16_t max)
@@ -1757,8 +1793,12 @@ void Player::setSkillInfoMaxValue(uint32_t index, uint8_t offset, uint16_t max)
     write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_max_rank[index]) + offset), max);
 #if defined(AE_FOREVER)
     const std::size_t slot = static_cast<std::size_t>(index) * 2U + offset;
-    if (slot < m_foreverActivePlayerFields.skill.skillMaxRank.size())
+    if (slot < m_foreverActivePlayerFields.skill.skillMaxRank.size() && m_foreverActivePlayerFields.skill.skillMaxRank[slot] != max)
+    {
         m_foreverActivePlayerFields.skill.skillMaxRank[slot] = max;
+        m_foreverActivePlayerFields.skill.markChanged(AscEmu::Version::Forever::Fields::SkillInfo::SkillMaxRankFirstBit, slot);
+        m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::SkillInfoBit);
+    }
 #endif
 }
 void Player::setSkillInfoBonusTemporary(uint32_t index, uint8_t offset, uint16_t bonus)
@@ -1766,8 +1806,12 @@ void Player::setSkillInfoBonusTemporary(uint32_t index, uint8_t offset, uint16_t
     write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_mod[index]) + offset), bonus);
 #if defined(AE_FOREVER)
     const std::size_t slot = static_cast<std::size_t>(index) * 2U + offset;
-    if (slot < m_foreverActivePlayerFields.skill.skillTempBonus.size())
+    if (slot < m_foreverActivePlayerFields.skill.skillTempBonus.size() && m_foreverActivePlayerFields.skill.skillTempBonus[slot] != static_cast<int16_t>(bonus))
+    {
         m_foreverActivePlayerFields.skill.skillTempBonus[slot] = static_cast<int16_t>(bonus);
+        m_foreverActivePlayerFields.skill.markChanged(AscEmu::Version::Forever::Fields::SkillInfo::SkillTempBonusFirstBit, slot);
+        m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::SkillInfoBit);
+    }
 #endif
 }
 void Player::setSkillInfoBonusPermanent(uint32_t index, uint8_t offset, uint16_t bonus)
@@ -1775,8 +1819,12 @@ void Player::setSkillInfoBonusPermanent(uint32_t index, uint8_t offset, uint16_t
     write(*(((uint16_t*)&playerData()->field_skill_info.skill_info_parts.skill_talent[index]) + offset), bonus);
 #if defined(AE_FOREVER)
     const std::size_t slot = static_cast<std::size_t>(index) * 2U + offset;
-    if (slot < m_foreverActivePlayerFields.skill.skillPermBonus.size())
+    if (slot < m_foreverActivePlayerFields.skill.skillPermBonus.size() && m_foreverActivePlayerFields.skill.skillPermBonus[slot] != bonus)
+    {
         m_foreverActivePlayerFields.skill.skillPermBonus[slot] = bonus;
+        m_foreverActivePlayerFields.skill.markChanged(AscEmu::Version::Forever::Fields::SkillInfo::SkillPermBonusFirstBit, slot);
+        m_foreverActivePlayerFields.markChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::SkillInfoBit);
+    }
 #endif
 }
 void Player::setProfessionSkillLine(uint32_t index, uint32_t value) { write(playerData()->profession_skill_line[index], value); }
@@ -1949,9 +1997,7 @@ void Player::updateClassicLegacyUnlock()
 
     // Every Forever character needs a valid Legacy config, even before the account has unlocked
     // Legacy. The earned point budget is account-wide; the selected nodes remain character-specific.
-    auto* legacyConfig = m_traitManager->createGenericConfigForTree(LegacyAdventureTraitTreeId);
-    if (!legacyConfig)
-        sLogger.debug("[ForeverDebug][Legacy] unable to ensure Legacy trait config for tree={}", LegacyAdventureTraitTreeId);
+    m_traitManager->createGenericConfigForTree(LegacyAdventureTraitTreeId);
 
     if (earnedLegacyPoints <= 0)
     {
@@ -1968,8 +2014,6 @@ void Player::updateClassicLegacyUnlock()
             addNewFaction(legacyFaction, 0, true);
         onTalkReputation(legacyFaction);
     }
-    else
-        sLogger.debug("[ForeverDebug][Legacy] missing faction id={}", LegacyRewardTrackFactionId);
 
 }
 #endif
@@ -5880,7 +5924,7 @@ void Player::advanceSkillLine(uint16_t skillLine, uint16_t amount/* = 1*/)
         skillStep = itr->second.MaximumValue / 75U;
 
     // Update skill fields
-#if VERSION_STRING >= Cata
+#if VERSION_STRING >= Cata && !defined(AE_FOREVER)
     if (itr->second.Skill->type != SKILL_TYPE_WEAPON)
 #endif
     {
@@ -6257,7 +6301,7 @@ void Player::modifySkillMaximum(uint16_t skillLine, uint16_t maxValue)
     if (oldMaxValue != itr->second.MaximumValue || valuesChanged)
     {
         // Update skill fields
-#if VERSION_STRING >= Cata
+#if VERSION_STRING >= Cata && !defined(AE_FOREVER)
         if (itr->second.Skill->type != SKILL_TYPE_WEAPON)
 #endif
         {
@@ -7616,6 +7660,19 @@ void Player::setTalentPointsFromQuests(uint32_t talentPoints)
 
 void Player::sendTalentsInfo()
 {
+    if (m_session != nullptr && m_session->getClientProtocol().isForever())
+    {
+        TalentSpecEntry entry;
+        entry.specializationId = getCurrentSpecId();
+
+        std::vector<TalentSpecEntry> foreverSpecs;
+        foreverSpecs.push_back(std::move(entry));
+
+        SmsgUpdateTalentData managedPacket(0, 0, std::move(foreverSpecs));
+        getSession()->sendManagedPacket(managedPacket);
+        return;
+    }
+
     // TODO: classic and tbc
     if (m_talentSpecsCount > MAX_SPEC_COUNT)
         m_talentSpecsCount = MAX_SPEC_COUNT;
@@ -11204,6 +11261,12 @@ void Player::sendSpellModifierPacket(uint8_t spellGroup, uint8_t spellType, int3
 #else
 void Player::sendSpellModifierPacket(uint8_t spellType, std::vector<std::pair<uint8_t, float>> modValues, bool isPct)
 {
+    // Forever registers passive spell modifiers while the character is still loading.
+    // Keep them server-side during that phase and send one complete bulk snapshot once
+    // the login state has been assembled.
+    if (getSession() != nullptr && getSession()->getClientProtocol().isForever() && getSession()->m_loggingInPlayer == this)
+        return;
+
     if (isPct)
     {
         SmsgSetPctSpellModifier managedPacket(spellType, modValues);
@@ -11212,6 +11275,80 @@ void Player::sendSpellModifierPacket(uint8_t spellType, std::vector<std::pair<ui
     else
     {
         SmsgSetFlatSpellModifier managedPacket(spellType, modValues);
+        getSession()->sendManagedPacket(managedPacket);
+    }
+}
+
+void Player::sendAllSpellModifierPackets()
+{
+    if (getSession() == nullptr || !getSession()->getClientProtocol().isForever())
+        return;
+
+    using ModifierValues = std::vector<std::pair<uint8_t, float>>;
+    using ModifierBlocks = std::vector<std::pair<uint8_t, ModifierValues>>;
+
+    ModifierBlocks flatModifiers;
+    ModifierBlocks pctModifiers;
+
+    // Forever spell-family masks are 128 bits wide.
+    constexpr uint8_t foreverSpellGroupCount = 128;
+
+    for (uint8_t modType = 0; modType < MAX_SPELLMOD_TYPE; ++modType)
+    {
+        ModifierValues flatValues;
+        ModifierValues pctValues;
+
+        for (uint8_t bit = 0; bit < foreverSpellGroupCount; ++bit)
+        {
+            const uint8_t groupNum = bit / 32;
+            const uint8_t intBit = bit % 32;
+            const uint32_t bitMask = uint32_t(1) << intBit;
+            float flatTotal = 0.0f;
+            float pctTotal = 1.0f;
+            bool hasFlat = false;
+            bool hasPct = false;
+
+            for (const auto* modifier : getSpellModifiers(static_cast<SpellModifierType>(modType)))
+            {
+                if (modifier == nullptr || modifier->getAura() == nullptr || modifier->getAura()->getSpellInfo() == nullptr)
+                    continue;
+
+                if ((modifier->getAura()->getSpellInfo()->getEffectSpellClassMask(modifier->getEffectIndex(), groupNum) & bitMask) == 0)
+                    continue;
+
+                if (modifier->getAuraEffectType() == SPELL_AURA_ADD_FLAT_MODIFIER)
+                {
+                    flatTotal += static_cast<float>(modifier->getEffectDamage());
+                    hasFlat = true;
+                }
+                else if (modifier->getAuraEffectType() == SPELL_AURA_ADD_PCT_MODIFIER)
+                {
+                    pctTotal *= 1.0f + (static_cast<float>(modifier->getEffectDamage()) / 100.0f);
+                    hasPct = true;
+                }
+            }
+
+            if (hasFlat)
+                flatValues.emplace_back(bit, flatTotal);
+            if (hasPct)
+                pctValues.emplace_back(bit, pctTotal);
+        }
+
+        if (!flatValues.empty())
+            flatModifiers.emplace_back(modType, std::move(flatValues));
+        if (!pctValues.empty())
+            pctModifiers.emplace_back(modType, std::move(pctValues));
+    }
+
+    if (!flatModifiers.empty())
+    {
+        SmsgSetFlatSpellModifier managedPacket(std::move(flatModifiers));
+        getSession()->sendManagedPacket(managedPacket);
+    }
+
+    if (!pctModifiers.empty())
+    {
+        SmsgSetPctSpellModifier managedPacket(std::move(pctModifiers));
         getSession()->sendManagedPacket(managedPacket);
     }
 }
@@ -17288,7 +17425,7 @@ void Player::_loadQuestLogEntry(QueryResult* result)
 #if VERSION_STRING >= TBC
 float Player::getDefenseChance([[maybe_unused]] uint32_t opLevel)
 {
-#if VERSION_STRING >= Cata
+#if VERSION_STRING >= Cata && !defined(AE_FOREVER)
     // Defense skill was removed from the client entirely in patch 4.0.1; there is no separate
     // "defense contribution" layered on top of dodge/parry/block anymore in real Cata/Mop - those
     // are purely rating- and agility-based (see Player::getDodgeChance/getBlockChance/getParryChance

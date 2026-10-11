@@ -6606,11 +6606,9 @@ void Spell::SpellEffectCreateTraitTreeConfig(uint8_t effectIndex)
     Player* target = m_unitTarget->ToPlayer();
     if (!target->getTraitManager().createGenericConfigForTree(static_cast<uint32_t>(traitTreeId)))
     {
-        sLogger.debugSpellEffect("[ForeverDebug][Traits] CREATE_TRAIT_TREE_CONFIG failed spell={} tree={} player={}", getSpellInfo()->getId(), traitTreeId, target->getGuidLow());
         return;
     }
 
     target->updateObject();
-    sLogger.debugSpellEffect("[ForeverDebug][Traits] CREATE_TRAIT_TREE_CONFIG spell={} tree={} player={}", getSpellInfo()->getId(), traitTreeId, target->getGuidLow());
 }
 #endif

@@ -47,7 +47,7 @@ enum PlayerSkills : uint16_t
     SKILL_RACIAL_ORC                    = 125,
     SKILL_RACIAL_NIGHT_ELF              = 126,
     SKILL_FIRST_AID                     = 129,
-#if VERSION_STRING <= Cata
+#if VERSION_STRING <= Cata || defined(AE_FOREVER)
     SKILL_FERAL_COMBAT                  = 134,
 #endif
     SKILL_STAVES                        = 136,

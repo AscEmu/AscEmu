@@ -106,6 +106,33 @@ namespace AscEmu::Packets
 
                 return true;
             }
+            else if (m_protocol.expansion == WoW::Expansion::_Forever)
+            {
+                const uint32_t primarySpecialization = activeSpec < specs.size() ? specs[activeSpec].specializationId : 0;
+
+                packet << uint8_t(activeSpec);
+                packet << uint32_t(primarySpecialization);
+                packet << uint32_t(specs.size());
+
+                for (const auto& spec : specs)
+                {
+                    packet << uint32_t(spec.specializationId);
+                    packet << uint32_t(spec.talents.size());
+                    packet << uint32_t(0); // PvPTalents
+                    packet << uint32_t(spec.glyphs.size());
+
+                    for (const auto& [talentId, rank] : spec.talents)
+                    {
+                        (void)rank;
+                        packet << uint16_t(talentId);
+                    }
+
+                    for (const auto glyph : spec.glyphs)
+                        packet << uint32_t(glyph);
+                }
+
+                return true;
+            }
             else if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
                 packet << uint8_t(activeSpec);

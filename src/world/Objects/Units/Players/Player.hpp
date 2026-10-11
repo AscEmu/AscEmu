@@ -2003,6 +2003,7 @@ public:
     void sendSpellModifierPacket(uint8_t spellGroup, uint8_t spellType, int32_t modifier, bool isPct);
 #else
     void sendSpellModifierPacket(uint8_t spellType, std::vector<std::pair<uint8_t, float>> modValues, bool isPct);
+    void sendAllSpellModifierPackets();
 #endif
     void sendLoginVerifyWorldPacket();
     void sendMountResultPacket(uint32_t result);

@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/ClientProtocol.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Server/WorldSession.h"
+#include "Server/EventMgr.h"
+#include "Macros/PlayerMacros.hpp"
 #include "Server/Packets/CmsgSetFactionAtWar.h"
 #include "Server/Packets/CmsgSetFactionInactive.h"
 #include "Objects/Units/Players/Player.hpp"
@@ -1208,6 +1210,10 @@ void WorldSession::fullLoginForever(Player* player)
     // RestInfo CREATE placement is still inside an opaque owner-only region.
     // Push the authoritative rested-XP state through the known VALUES path after world entry.
     player->updateRestState();
+
+    // Forever spell modifiers are registered while the character is loading without sending
+    // incremental packets. Send one complete snapshot after CREATE/VALUES and aura setup.
+    player->sendAllSpellModifierPackets();
 
     if (Group* group = player->getGroup())
         group->Update();

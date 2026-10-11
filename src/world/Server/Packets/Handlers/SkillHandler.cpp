@@ -123,10 +123,7 @@ void WorldSession::handleTraitsCommitConfigOpcode(WorldPacket& recvPacket)
         return;
 
     if (!_player->getTraitManager().commitConfigUpdate(packet.config, packet.config.savedConfigId, packet.config.savedLocalIdentifier))
-    {
-        sLogger.debugOpcode("[ForeverDebug][Traits] commit rejected id={} type={} entries={}; failure response is not implemented for Forever", packet.config.id, static_cast<int32_t>(packet.config.type), packet.config.entries.size());
         return;
-    }
 
     _player->saveToDB(false);
 }
@@ -140,6 +137,5 @@ void WorldSession::handleTraitsTalentTestUnlearnSpellsOpcode(WorldPacket& recvPa
 {
     // [UNKNOWN] Forever payload layout is not verified. Consume the packet without
     // applying changes until a capture proves the structure.
-    sLogger.debugOpcode("[ForeverDebug][Traits] CMSG_TRAITS_TALENT_TEST_UNLEARN_SPELLS payload={} byte(s)", recvPacket.remaining());
     recvPacket.rfinish();
 }

@@ -184,6 +184,16 @@ namespace AscEmu::Version::Forever::Fields
 
     struct SkillInfo
     {
+        static inline constexpr std::size_t ChangeMaskSize = 2101;
+        static inline constexpr std::size_t SkillLineIdFirstBit = 1;
+        static inline constexpr std::size_t SkillStepFirstBit = 301;
+        static inline constexpr std::size_t SkillRankFirstBit = 601;
+        static inline constexpr std::size_t SkillStartingRankFirstBit = 901;
+        static inline constexpr std::size_t SkillMaxRankFirstBit = 1201;
+        static inline constexpr std::size_t SkillTempBonusFirstBit = 1501;
+        static inline constexpr std::size_t SkillPermBonusFirstBit = 1801;
+
+        std::bitset<ChangeMaskSize> changes{};
         std::array<uint16_t, 300> skillLineId{};
         std::array<uint16_t, 300> skillStep{};
         std::array<uint16_t, 300> skillRank{};
@@ -191,6 +201,17 @@ namespace AscEmu::Version::Forever::Fields
         std::array<uint16_t, 300> skillMaxRank{};
         std::array<int16_t, 300> skillTempBonus{};
         std::array<uint16_t, 300> skillPermBonus{};
+
+        void markChanged(std::size_t firstBit, std::size_t index)
+        {
+            if (index >= skillLineId.size())
+                return;
+            changes.set(0);
+            changes.set(firstBit + index);
+        }
+
+        void clearChanges() { changes.reset(); }
+        bool hasChanges() const { return changes.any(); }
     };
 
     // These nested records are intentionally represented as semantic payload records here.
@@ -1016,13 +1037,16 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t XpBit = 60;
         static inline constexpr std::size_t NextLevelXpBit = 61;
         static inline constexpr std::size_t TrialXpBit = 62; // [UNVERIFIED]
+        // Classic 1.60 keeps SkillInfo at ActivePlayerData bit 63.
+        static inline constexpr std::size_t SkillInfoBit = 63;
         // [FOREVER-VERIFIED] Retail 1.60.1.70235 watched-faction differential.
         // CMSG_SET_WATCHED_FACTION carries int32 faction index (20 for Ironforge, -1 to clear);
         // the following ActivePlayerData VALUES update sets parent bit 102 and field bit 113.
         static inline constexpr std::size_t WatchedFactionParentBit = 102;
         static inline constexpr std::size_t WatchedFactionIndexBit = 113;
-        // [FOREVER-VERIFIED] Classic 1.60 wire bits for TraitConfigs and
-        // ActiveCombatTraitConfigID. Parent bit 134 gates both fields.
+        // [FOREVER-VERIFIED] Classic 1.60.1.70009 wire bits for TraitConfigs and
+        // ActiveCombatTraitConfigID. Parent bit 134 gates both fields; the Classic wire layout
+        // maps TraitConfigs to bit 149 and ActiveCombatTraitConfigID to bit 150.
         static inline constexpr std::size_t TraitDataParentBit = 134;
         static inline constexpr std::size_t TraitConfigsBit = 149;
         static inline constexpr std::size_t ActiveCombatTraitConfigIdBit = 150;
@@ -1091,6 +1115,7 @@ namespace AscEmu::Version::Forever::Fields
         void clearChanges()
         {
             changes.reset();
+            skill.clearChanges();
             traitConfigUpdateStates.clear();
             for (RestInfo& value : restInfo)
                 value.clearChanges();

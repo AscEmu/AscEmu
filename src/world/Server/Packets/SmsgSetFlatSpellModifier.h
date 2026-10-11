@@ -21,6 +21,7 @@ namespace AscEmu::Packets
         uint32_t modifier = 0;
         uint32_t unknown = 1;
         std::vector<std::pair<uint8_t, float>> modifierValues;
+        std::vector<std::pair<uint8_t, std::vector<std::pair<uint8_t, float>>>> modifiers;
 
         SmsgSetFlatSpellModifier() :
             ManagedPacket(SMSG_SET_FLAT_SPELL_MODIFIER, 0)
@@ -42,11 +43,25 @@ namespace AscEmu::Packets
         {
         }
 
+        SmsgSetFlatSpellModifier(std::vector<std::pair<uint8_t, std::vector<std::pair<uint8_t, float>>>> modifiers) :
+            ManagedPacket(SMSG_SET_FLAT_SPELL_MODIFIER, 0),
+            modifiers(std::move(modifiers))
+        {
+        }
+
     protected:
         size_t expectedSize() const override
         {
             if (m_protocol.expansion < WoW::Expansion::_Cata)
                 return 6;
+
+            if (m_protocol.expansion == WoW::Expansion::_Forever && !modifiers.empty())
+            {
+                size_t size = 4;
+                for (const auto& modifierBlock : modifiers)
+                    size += 5 + (5 * modifierBlock.second.size());
+                return size;
+            }
 
             return 9 + (5 * modifierValues.size());
         }
@@ -56,6 +71,30 @@ namespace AscEmu::Packets
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet << spellGroup << spellType << modifier;
+            }
+            else if (m_protocol.expansion == WoW::Expansion::_Forever)
+            {
+                // Forever: uint32 modifier count, then for each modifier
+                // uint8 ModIndex + uint32 value count + (float value, uint8 class index).
+                if (!modifiers.empty())
+                {
+                    packet << static_cast<uint32_t>(modifiers.size());
+                    for (const auto& modifierBlock : modifiers)
+                    {
+                        packet << modifierBlock.first;
+                        packet << static_cast<uint32_t>(modifierBlock.second.size());
+                        for (const auto& modifierValue : modifierBlock.second)
+                            packet << modifierValue.second << modifierValue.first;
+                    }
+                }
+                else
+                {
+                    packet << uint32_t(1);
+                    packet << spellType;
+                    packet << static_cast<uint32_t>(modifierValues.size());
+                    for (const auto& modifierValue : modifierValues)
+                        packet << modifierValue.second << modifierValue.first;
+                }
             }
             else
             {

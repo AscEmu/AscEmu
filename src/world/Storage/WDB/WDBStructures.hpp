@@ -3651,6 +3651,31 @@ namespace WDB::Structures
         int32_t visibleSpellId = 0;
     };
 
+    struct TraitDefinitionEffectPointsEntry
+    {
+        uint32_t id = 0;
+        uint32_t traitDefinitionId = 0;
+        int32_t effectIndex = 0;
+        int32_t operationType = 0;
+        int32_t curveId = 0;
+    };
+
+    struct CurveEntry
+    {
+        uint32_t id = 0;
+        uint8_t type = 0;
+        int32_t flags = 0;
+    };
+
+    struct CurvePointEntry
+    {
+        uint32_t id = 0;
+        uint32_t curveId = 0;
+        uint32_t orderIndex = 0;
+        float x = 0.0f;
+        float y = 0.0f;
+    };
+
     struct TraitSubTreeEntry
     {
         uint32_t id = 0;

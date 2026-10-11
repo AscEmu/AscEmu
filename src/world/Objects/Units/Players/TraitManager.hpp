@@ -84,6 +84,14 @@ public:
     int32_t getAvailableCurrency(int32_t traitCurrencyId, AscEmu::Traits::Config const* config = nullptr) const;
     int32_t getSpentCurrency(int32_t traitCurrencyId, AscEmu::Traits::Config const& config) const;
 
+    struct SpellTraitInfo
+    {
+        int32_t definitionId = 0;
+        int32_t rank = 0;
+    };
+
+    SpellTraitInfo const* getSpellTraitInfo(uint32_t spellId) const;
+
 private:
     bool validateConfig(AscEmu::Traits::Config const& config) const;
     bool validateEntry(AscEmu::Traits::Config const& config, AscEmu::Traits::Entry const& entry, int32_t subTreeId) const;
@@ -94,7 +102,7 @@ private:
 
     Player* m_owner = nullptr;
     std::unordered_map<int32_t, AscEmu::Traits::Config> m_configs;
-    std::unordered_set<uint32_t> m_traitSpells;
+    std::unordered_map<uint32_t, SpellTraitInfo> m_traitSpells;
 };
 
 #endif

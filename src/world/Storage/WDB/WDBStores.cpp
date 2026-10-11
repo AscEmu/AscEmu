@@ -29,6 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <limits>
 #include <algorithm>
 #include <concepts>
+#include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <deque>
@@ -2411,8 +2412,9 @@ namespace {
 
     bool loadForeverTraitStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
     {
-        WDB::WDC5File traitSystem, traitTree, traitNode, traitNodeEntry, traitNodeXEntry, traitDefinition, traitSubTree;
+        WDB::WDC5File traitSystem, traitTree, traitNode, traitNodeEntry, traitNodeXEntry, traitDefinition, traitDefinitionEffectPoints, traitSubTree;
         WDB::WDC5File traitCost, traitCurrency, traitCurrencySource, traitNodeEntryXCost, traitTreeXCurrency, traitTreeLoadout, skillLineXTraitTree;
+        WDB::WDC5File curve, curvePoint;
 
         auto load = [&](WDB::WDC5File& file, char const* name)
         {
@@ -2421,7 +2423,9 @@ namespace {
 
         if (!load(traitSystem, "TraitSystem.db2") || !load(traitTree, "TraitTree.db2") || !load(traitNode, "TraitNode.db2")
             || !load(traitNodeEntry, "TraitNodeEntry.db2") || !load(traitNodeXEntry, "TraitNodeXTraitNodeEntry.db2")
-            || !load(traitDefinition, "TraitDefinition.db2") || !load(traitSubTree, "TraitSubTree.db2")
+            || !load(traitDefinition, "TraitDefinition.db2") || !load(traitDefinitionEffectPoints, "TraitDefinitionEffectPoints.db2")
+            || !load(traitSubTree, "TraitSubTree.db2") || !load(curve, "Curve.db2")
+            || !loadForeverGenericWDC5(curvePoint, "CurvePoint.db2", errors, dbcPath, {{0, 2}, {1, 2}})
             || !load(traitCost, "TraitCost.db2") || !load(traitCurrency, "TraitCurrency.db2")
             || !load(traitCurrencySource, "TraitCurrencySource.db2") || !load(traitNodeEntryXCost, "TraitNodeEntryXTraitCost.db2")
             || !load(traitTreeXCurrency, "TraitTreeXTraitCurrency.db2") || !load(traitTreeLoadout, "TraitTreeLoadout.db2")
@@ -2445,7 +2449,8 @@ namespace {
         if (!verify(traitSystem, "TraitSystem.db2", 6) || !verify(traitTree, "TraitTree.db2", 10)
             || !verify(traitNode, "TraitNode.db2", 7) || !verify(traitNodeEntry, "TraitNodeEntry.db2", 5)
             || !verify(traitNodeXEntry, "TraitNodeXTraitNodeEntry.db2", 4) || !verify(traitDefinition, "TraitDefinition.db2", 8)
-            || !verify(traitSubTree, "TraitSubTree.db2", 5) || !verify(traitCost, "TraitCost.db2", 5)
+            || !verify(traitDefinitionEffectPoints, "TraitDefinitionEffectPoints.db2", 5) || !verify(traitSubTree, "TraitSubTree.db2", 5)
+            || !verify(curve, "Curve.db2", 3) || !verify(curvePoint, "CurvePoint.db2", 5) || !verify(traitCost, "TraitCost.db2", 5)
             || !verify(traitCurrency, "TraitCurrency.db2", 8)
             || !verify(traitNodeEntryXCost, "TraitNodeEntryXTraitCost.db2", 3) || !verify(traitTreeXCurrency, "TraitTreeXTraitCurrency.db2", 4)
             || !verify(traitTreeLoadout, "TraitTreeLoadout.db2", 3) || !verify(skillLineXTraitTree, "SkillLineXTraitTree.db2", 4))
@@ -2539,6 +2544,40 @@ namespace {
             e.overridesSpellId = traitDefinition.getInt32(row, field(traitDefinition, 6, 3));
             e.visibleSpellId = traitDefinition.getInt32(row, field(traitDefinition, 7, 3));
             sTraitDefinitionStore[e.id] = e;
+        }
+
+        sTraitDefinitionEffectPointsStore.clear();
+        for (uint32_t row = 0; row < traitDefinitionEffectPoints.getRecordCount(); ++row)
+        {
+            WDB::Structures::TraitDefinitionEffectPointsEntry e{};
+            e.id = traitDefinitionEffectPoints.getRecordId(row);
+            e.traitDefinitionId = traitDefinitionEffectPoints.getUInt32(row, field(traitDefinitionEffectPoints, 1, 0));
+            e.effectIndex = traitDefinitionEffectPoints.getInt32(row, field(traitDefinitionEffectPoints, 2, 0));
+            e.operationType = traitDefinitionEffectPoints.getInt32(row, field(traitDefinitionEffectPoints, 3, 0));
+            e.curveId = traitDefinitionEffectPoints.getInt32(row, field(traitDefinitionEffectPoints, 4, 0));
+            sTraitDefinitionEffectPointsStore[e.id] = e;
+        }
+
+        sForeverCurveStore.clear();
+        for (uint32_t row = 0; row < curve.getRecordCount(); ++row)
+        {
+            WDB::Structures::CurveEntry e{};
+            e.id = curve.getRecordId(row);
+            e.type = curve.getUInt8(row, field(curve, 1, 0));
+            e.flags = curve.getInt32(row, field(curve, 2, 0));
+            sForeverCurveStore[e.id] = e;
+        }
+
+        sForeverCurvePointStore.clear();
+        for (uint32_t row = 0; row < curvePoint.getRecordCount(); ++row)
+        {
+            WDB::Structures::CurvePointEntry e{};
+            e.id = curvePoint.getRecordId(row);
+            e.x = curvePoint.getFloat(row, field(curvePoint, 0, 2), 0);
+            e.y = curvePoint.getFloat(row, field(curvePoint, 0, 2), 1);
+            e.curveId = curvePoint.getUInt32(row, field(curvePoint, 3, 2));
+            e.orderIndex = curvePoint.getUInt32(row, field(curvePoint, 4, 2));
+            sForeverCurvePointStore[e.id] = e;
         }
 
         sTraitSubTreeStore.clear();
@@ -3997,6 +4036,118 @@ WDB::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32_t r
 }
 
 #if defined(AE_FOREVER)
+float getForeverCurveValueAt(uint32_t curveId, float x)
+{
+    auto const* curve = sForeverCurveStore.lookupEntry(curveId);
+    if (!curve)
+        return 0.0f;
+
+    std::vector<WDB::Structures::CurvePointEntry const*> points;
+    for (auto const& [id, point] : sForeverCurvePointStore)
+    {
+        (void)id;
+        if (point.curveId == curveId)
+            points.push_back(&point);
+    }
+
+    if (points.empty())
+        return 0.0f;
+
+    std::ranges::sort(points, {}, [](auto const* point) { return point->orderIndex; });
+    if (points.size() == 1)
+        return points.front()->y;
+
+    auto findPointIndex = [&](std::size_t pointIndex)
+    {
+        while (pointIndex < points.size() && points[pointIndex]->x <= x)
+            ++pointIndex;
+        return pointIndex;
+    };
+
+    auto linear = [&]()
+    {
+        std::size_t pointIndex = findPointIndex(0);
+        if (!pointIndex)
+            return points.front()->y;
+        if (pointIndex >= points.size())
+            return points.back()->y;
+        const float xDiff = points[pointIndex]->x - points[pointIndex - 1]->x;
+        if (xDiff == 0.0f)
+            return points[pointIndex]->y;
+        return (((x - points[pointIndex - 1]->x) / xDiff) * (points[pointIndex]->y - points[pointIndex - 1]->y)) + points[pointIndex - 1]->y;
+    };
+
+    if (curve->type == 4)
+    {
+        std::size_t pointIndex = findPointIndex(0);
+        if (!pointIndex)
+            return points.front()->y;
+        if (pointIndex >= points.size())
+            return points.back()->y;
+        return 0.0f;
+    }
+
+    if (curve->type == 5)
+    {
+        std::size_t pointIndex = findPointIndex(0);
+        if (!pointIndex)
+            return points.front()->y;
+        if (pointIndex >= points.size())
+            return points.back()->y;
+        return points[pointIndex - 1]->y;
+    }
+
+    if (curve->type == 3 || (curve->type == 1 && points.size() < 4) || (curve->type == 2 && points.size() == 2))
+    {
+        std::size_t pointIndex = findPointIndex(0);
+        if (!pointIndex)
+            return points.front()->y;
+        if (pointIndex >= points.size())
+            return points.back()->y;
+        const float xDiff = points[pointIndex]->x - points[pointIndex - 1]->x;
+        if (xDiff == 0.0f)
+            return points[pointIndex]->y;
+        constexpr float Pi = 3.14159265358979323846f;
+        return ((points[pointIndex]->y - points[pointIndex - 1]->y) * (1.0f - std::cos((x - points[pointIndex - 1]->x) / xDiff * Pi)) * 0.5f) + points[pointIndex - 1]->y;
+    }
+
+    if (curve->type == 1 && points.size() >= 4)
+    {
+        std::size_t pointIndex = findPointIndex(1);
+        if (pointIndex == 1)
+            return points[1]->y;
+        if (pointIndex >= points.size() - 1)
+            return points[points.size() - 2]->y;
+        const float xDiff = points[pointIndex]->x - points[pointIndex - 1]->x;
+        if (xDiff == 0.0f)
+            return points[pointIndex]->y;
+        const float mu = (x - points[pointIndex - 1]->x) / xDiff;
+        const float a0 = -0.5f * points[pointIndex - 2]->y + 1.5f * points[pointIndex - 1]->y - 1.5f * points[pointIndex]->y + 0.5f * points[pointIndex + 1]->y;
+        const float a1 = points[pointIndex - 2]->y - 2.5f * points[pointIndex - 1]->y + 2.0f * points[pointIndex]->y - 0.5f * points[pointIndex + 1]->y;
+        const float a2 = -0.5f * points[pointIndex - 2]->y + 0.5f * points[pointIndex]->y;
+        const float a3 = points[pointIndex - 1]->y;
+        return a0 * mu * mu * mu + a1 * mu * mu + a2 * mu + a3;
+    }
+
+    if (curve->type == 2 && points.size() >= 3)
+    {
+        const float xDiff = points.back()->x - points.front()->x;
+        if (xDiff == 0.0f)
+            return points.back()->y;
+        std::vector<float> values;
+        values.reserve(points.size());
+        for (auto const* point : points)
+            values.push_back(point->y);
+        const float mu = (x - points.front()->x) / xDiff;
+        for (std::size_t count = values.size(); count > 1; --count)
+            for (std::size_t i = 0; i + 1 < count; ++i)
+                values[i] += mu * (values[i + 1] - values[i]);
+        return values.front();
+    }
+
+    return linear();
+}
+
 WDB::Structures::ChrModelEntry const* getForeverChrModel(uint8_t race, uint8_t gender)
 {
     for (auto const& [id, relation] : sChrRaceXChrModelStore)

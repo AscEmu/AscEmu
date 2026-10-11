@@ -271,6 +271,9 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitNodeEntry> sTraitNodeStor
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitNodeEntryEntry> sTraitNodeEntryStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitNodeXTraitNodeEntryEntry> sTraitNodeXTraitNodeEntryStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitDefinitionEntry> sTraitDefinitionStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitDefinitionEffectPointsEntry> sTraitDefinitionEffectPointsStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::CurveEntry> sForeverCurveStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::CurvePointEntry> sForeverCurvePointStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitSubTreeEntry> sTraitSubTreeStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitCostEntry> sTraitCostStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitCurrencyEntry> sTraitCurrencyStore;
@@ -280,6 +283,8 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitTreeXTraitCurrencyEntry> 
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TraitTreeLoadoutEntry> sTraitTreeLoadoutStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::SkillLineXTraitTreeEntry> sSkillLineXTraitTreeStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::SuperDistrictSetXAvailableSDEntry> sSuperDistrictSetXAvailableSDStore;
+
+SERVER_DECL float getForeverCurveValueAt(uint32_t curveId, float x);
 #endif
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemExtendedCostEntry> sItemExtendedCostStore; // todo: available for versions > Classic
 

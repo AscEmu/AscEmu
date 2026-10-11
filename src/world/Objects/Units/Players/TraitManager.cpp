@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/AchievementMgr.h"
 #include "Database/Database.hpp"
 #include "Database/Field.hpp"
-#include "Logging/Logger.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/ForeverRuleset.hpp"
 #include "Storage/WDB/WDBStores.hpp"
@@ -104,10 +103,8 @@ int32_t TraitManager::getAvailableCurrency(int32_t traitCurrencyId, AscEmu::Trai
             return static_cast<int32_t>(std::max<int64_t>(0, total));
         }
         case TraitCurrencyType::TraitSourcedPlayerDataElement:
-            sLogger.debug("[ForeverDebug][Traits] currency id={} uses unimplemented player-data-element source account={} character={}", traitCurrencyId, currency->playerDataElementAccountId, currency->playerDataElementCharacterId);
             return 0;
         default:
-            sLogger.debug("[ForeverDebug][Traits] currency id={} has unknown type={}", traitCurrencyId, currency->type);
             return 0;
     }
 }
@@ -188,7 +185,6 @@ bool TraitManager::validateCurrencyBudget(AscEmu::Traits::Config const& config) 
         const int32_t available = getAvailableCurrency(traitCurrencyId, &config);
         if (amount > available)
         {
-            sLogger.debug("[ForeverDebug][Traits] reject config id={} currency={} spent={} available={}", config.id, traitCurrencyId, amount, available);
             return false;
         }
     }
@@ -225,28 +221,16 @@ bool TraitManager::isTreeAllowedForConfig(AscEmu::Traits::Config const& config, 
 bool TraitManager::validateEntry(AscEmu::Traits::Config const& config, AscEmu::Traits::Entry const& entry, int32_t subTreeId) const
 {
     if (entry.traitNodeId <= 0 || entry.traitNodeEntryId <= 0 || entry.rank < 0 || entry.grantedRanks < 0 || entry.bonusRanks < 0)
-    {
-        sLogger.debug("[ForeverDebug][Traits] reject entry invalid values node={} entry={} rank={} granted={} bonus={}", entry.traitNodeId, entry.traitNodeEntryId, entry.rank, entry.grantedRanks, entry.bonusRanks);
         return false;
-    }
 
     auto const* node = sTraitNodeStore.lookupEntry(static_cast<uint32_t>(entry.traitNodeId));
     auto const* nodeEntry = sTraitNodeEntryStore.lookupEntry(static_cast<uint32_t>(entry.traitNodeEntryId));
     if (!node)
-    {
-        sLogger.debug("[ForeverDebug][Traits] reject entry node={} missing", entry.traitNodeId);
         return false;
-    }
     if (!nodeEntry)
-    {
-        sLogger.debug("[ForeverDebug][Traits] reject entry nodeEntry={} missing", entry.traitNodeEntryId);
         return false;
-    }
     if (!isTreeAllowedForConfig(config, node->traitTreeId))
-    {
-        sLogger.debug("[ForeverDebug][Traits] reject entry node={} entry={} tree={} not allowed type={} spec={} currentSpec={}", entry.traitNodeId, entry.traitNodeEntryId, node->traitTreeId, static_cast<int32_t>(config.type), config.specializationId, m_owner ? m_owner->getCurrentSpecId() : 0);
         return false;
-    }
 
     bool const linked = std::ranges::any_of(sTraitNodeXTraitNodeEntryStore, [&](auto const& pair)
     {
@@ -254,16 +238,10 @@ bool TraitManager::validateEntry(AscEmu::Traits::Config const& config, AscEmu::T
         return relation.traitNodeId == static_cast<uint32_t>(entry.traitNodeId) && relation.traitNodeEntryId == entry.traitNodeEntryId;
     });
     if (!linked)
-    {
-        sLogger.debug("[ForeverDebug][Traits] reject entry node={} entry={} relation missing", entry.traitNodeId, entry.traitNodeEntryId);
         return false;
-    }
 
     if (nodeEntry->maxRanks > 0 && entry.rank > nodeEntry->maxRanks)
-    {
-        sLogger.debug("[ForeverDebug][Traits] reject entry node={} entry={} rank={} maxRanks={}", entry.traitNodeId, entry.traitNodeEntryId, entry.rank, nodeEntry->maxRanks);
         return false;
-    }
 
     if (subTreeId > 0)
     {
@@ -339,26 +317,28 @@ void TraitManager::applyTraitSpells()
     if (!m_owner)
         return;
 
-    std::unordered_set<uint32_t> desired;
+    std::unordered_map<uint32_t, SpellTraitInfo> desired;
     auto collect = [&](AscEmu::Traits::Entry const& entry)
     {
-        if (entry.rank + entry.grantedRanks + entry.bonusRanks <= 0)
+        const int32_t rank = entry.rank + entry.grantedRanks + entry.bonusRanks;
+        if (rank <= 0)
             return;
+
         auto const* nodeEntry = sTraitNodeEntryStore.lookupEntry(static_cast<uint32_t>(entry.traitNodeEntryId));
         if (!nodeEntry || nodeEntry->traitDefinitionId <= 0)
             return;
+
         auto const* definition = sTraitDefinitionStore.lookupEntry(static_cast<uint32_t>(nodeEntry->traitDefinitionId));
-        if (definition && definition->spellId > 0 && sSpellStore.lookupEntry(static_cast<uint32_t>(definition->spellId)))
-            desired.insert(static_cast<uint32_t>(definition->spellId));
+        if (!definition || definition->spellId <= 0 || !sSpellStore.lookupEntry(static_cast<uint32_t>(definition->spellId)))
+            return;
+
+        desired[static_cast<uint32_t>(definition->spellId)] = SpellTraitInfo{ nodeEntry->traitDefinitionId, rank };
     };
 
     const uint32_t currentSpecId = m_owner->getCurrentSpecId();
     for (auto const& [id, config] : m_configs)
     {
         (void)id;
-        // Only the active combat configuration contributes combat trait spells.
-        // Generic configs (Legacy) remain active, while profession configs are only
-        // applied once their dedicated profession ownership path is implemented.
         if (config.type == AscEmu::Traits::ConfigType::Combat)
         {
             if (config.specializationId != static_cast<int32_t>(currentSpecId) || (config.combatConfigFlags & TraitCombatConfigFlagActiveForSpec) == 0)
@@ -375,15 +355,45 @@ void TraitManager::applyTraitSpells()
                     collect(entry);
     }
 
-    for (uint32_t spellId : m_traitSpells)
+    auto previousTraitSpells = m_traitSpells;
+
+    for (auto const& [spellId, trait] : previousTraitSpells)
         if (!desired.contains(spellId))
             m_owner->removeSpell(spellId, false);
 
-    for (uint32_t spellId : desired)
-        if (!m_owner->hasSpell(spellId))
-            m_owner->addSpell(spellId);
+    m_traitSpells = desired;
 
-    m_traitSpells = std::move(desired);
+    for (auto const& [spellId, trait] : m_traitSpells)
+    {
+        const auto previous = previousTraitSpells.find(spellId);
+        const bool traitChanged = previous != previousTraitSpells.end() &&
+            (previous->second.definitionId != trait.definitionId || previous->second.rank != trait.rank);
+
+        if (!m_owner->hasSpell(spellId))
+        {
+            m_owner->addSpell(spellId);
+            continue;
+        }
+
+        // Forever trait ranks can reuse the same passive spell and change only
+        // its TraitDefinitionEffectPoints value. Reapply the aura so its amount
+        // and the corresponding spell modifier packet use the new rank.
+        if (traitChanged)
+        {
+            auto const* spellInfo = sSpellMgr.getSpellInfo(spellId);
+            if (spellInfo != nullptr && spellInfo->isPassive())
+            {
+                m_owner->removeAllAurasById(spellId, m_owner->getGuid());
+                m_owner->castSpell(m_owner->getGuid(), spellInfo, true);
+            }
+        }
+    }
+}
+
+TraitManager::SpellTraitInfo const* TraitManager::getSpellTraitInfo(uint32_t spellId) const
+{
+    auto const itr = m_traitSpells.find(spellId);
+    return itr != m_traitSpells.end() ? &itr->second : nullptr;
 }
 
 void TraitManager::syncActivePlayerData(bool notifyClient)
@@ -439,10 +449,13 @@ void TraitManager::syncActivePlayerData(bool notifyClient)
             wireConfig.subTrees.push_back(std::move(wireSubTree));
         }
 
-        activePlayer.traitConfigs.emplace(id, std::move(wireConfig));
-        if (config.type == AscEmu::Traits::ConfigType::Combat &&
+        const bool isActiveCombatConfig = config.type == AscEmu::Traits::ConfigType::Combat &&
             config.specializationId == static_cast<int32_t>(m_owner->getCurrentSpecId()) &&
-            (config.combatConfigFlags & TraitCombatConfigFlagActiveForSpec) != 0)
+            (config.combatConfigFlags & TraitCombatConfigFlagActiveForSpec) != 0;
+
+
+        activePlayer.traitConfigs.emplace(id, std::move(wireConfig));
+        if (isActiveCombatConfig)
             activeCombatConfigId = static_cast<uint32_t>(id);
     }
 
@@ -478,16 +491,11 @@ void TraitManager::syncActivePlayerData(bool notifyClient)
 bool TraitManager::commitConfig(AscEmu::Traits::Config config)
 {
     if (!validateConfig(config))
-    {
-        sLogger.debug("[ForeverDebug][Traits] rejected trait config id={} type={} entries={} subtrees={}", config.id, static_cast<int32_t>(config.type), config.entries.size(), config.subTrees.size());
         return false;
-    }
 
     m_configs[config.id] = std::move(config);
     applyTraitSpells();
     syncActivePlayerData(m_owner && m_owner->IsInWorld());
-    auto const& stored = m_configs.at(config.id);
-    sLogger.debug("[ForeverDebug][Traits] committed trait config id={} type={} entries={} subtrees={} spec={} skillLine={} traitSystem={}", stored.id, static_cast<int32_t>(stored.type), stored.entries.size(), stored.subTrees.size(), stored.specializationId, stored.skillLineId, stored.traitSystemId);
     return true;
 }
 
@@ -495,17 +503,11 @@ bool TraitManager::commitConfigUpdate(AscEmu::Traits::Config const& update, int3
 {
     auto itr = m_configs.find(update.id);
     if (itr == m_configs.end())
-    {
-        sLogger.debug("[ForeverDebug][Traits] rejected update for unknown config id={} type={}", update.id, static_cast<int32_t>(update.type));
         return false;
-    }
 
     AscEmu::Traits::Config merged = itr->second;
     if (update.type != merged.type)
-    {
-        sLogger.debug("[ForeverDebug][Traits] rejected config id={} type mismatch current={} wire={}", update.id, static_cast<int32_t>(merged.type), static_cast<int32_t>(update.type));
         return false;
-    }
 
     auto findEntry = [](std::vector<AscEmu::Traits::Entry>& entries, int32_t nodeId, int32_t nodeEntryId)
     {
@@ -541,16 +543,11 @@ bool TraitManager::commitConfigUpdate(AscEmu::Traits::Config const& update, int3
     merged.savedLocalIdentifier = savedLocalIdentifier;
 
     if (!validateConfig(merged))
-    {
-        sLogger.debug("[ForeverDebug][Traits] rejected merged trait config id={} entries={} subtrees={}", merged.id, merged.entries.size(), merged.subTrees.size());
         return false;
-    }
 
     m_configs[merged.id] = std::move(merged);
     applyTraitSpells();
     syncActivePlayerData(m_owner && m_owner->IsInWorld());
-    auto const& stored = m_configs.at(update.id);
-    sLogger.debug("[ForeverDebug][Traits] updated trait config id={} type={} entries={} spec={} flags=0x{:X}", stored.id, static_cast<int32_t>(stored.type), stored.entries.size(), stored.specializationId, stored.combatConfigFlags);
     return true;
 }
 
@@ -573,17 +570,13 @@ AscEmu::Traits::Config* TraitManager::ensureCombatConfigForCurrentSpec()
                 specId = static_cast<int32_t>(classSpecializations[index]);
                 m_owner->getActiveSpec().setSpecializationId(static_cast<uint32_t>(specId));
                 m_owner->setCurrentSpecId(static_cast<uint32_t>(specId));
-                sLogger.debug("[ForeverDebug][Traits] initialized default Classic 1.60 specialization spec={} class={} index={}", specId, m_owner->getClass(), index);
                 break;
             }
         }
     }
 
     if (specId <= 0)
-    {
-        sLogger.debug("[ForeverDebug][Traits] cannot create active combat config: no specialization for class={}", m_owner->getClass());
         return nullptr;
-    }
 
     for (auto& [id, config] : m_configs)
     {
@@ -602,7 +595,6 @@ AscEmu::Traits::Config* TraitManager::ensureCombatConfigForCurrentSpec()
     if (!commitConfig(std::move(config)))
         return nullptr;
 
-    sLogger.debug("[ForeverDebug][Traits] created active combat config id={} spec={}", id, specId);
     return &m_configs.at(id);
 }
 
@@ -633,7 +625,6 @@ AscEmu::Traits::Config* TraitManager::createGenericConfigForTree(uint32_t traitT
             variationId = m_owner ? static_cast<int32_t>(m_owner->getCurrentSpecId()) : 0;
             break;
         default:
-            sLogger.debug("[ForeverDebug][Traits] unsupported variation type={} system={} tree={}", system->variationType, tree->traitSystemId, traitTreeId);
             return nullptr;
     }
 

@@ -806,6 +806,7 @@ public:
     void addSpellModifier(AuraEffectModifier const* aurEff, bool apply);
     template <typename T> void applySpellModifiers(SpellModifierType modType, T* value, SpellInfo const* spellInfo, Spell* castingSpell = nullptr, Aura* castingAura = nullptr);
     template <typename T> void getTotalSpellModifiers(SpellModifierType modType, T baseValue, int32_t* flatMod, int32_t* pctMod, SpellInfo const* spellInfo, Spell* castingSpell = nullptr, Aura* castingAura = nullptr, bool checkOnly = false);
+    const std::list<AuraEffectModifier const*>& getSpellModifiers(SpellModifierType modType) const { return m_spellModifiers[modType]; }
 
     void addSpellImmunity(SpellImmunityMask immunityMask, bool apply);
     uint32_t getSpellImmunity() const;

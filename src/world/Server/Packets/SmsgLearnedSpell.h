@@ -14,14 +14,18 @@ namespace AscEmu::Packets
     {
     public:
         uint32_t spellId;
+        int32_t traitDefinitionId;
+        bool suppressMessaging;
         
         SmsgLearnedSpell() : SmsgLearnedSpell(0)
         {
         }
 
-        SmsgLearnedSpell(uint32_t spellId) :
+        SmsgLearnedSpell(uint32_t spellId, int32_t traitDefinitionId = 0, bool suppressMessaging = false) :
             ManagedPacket(SMSG_LEARNED_SPELL, 6),
-            spellId(spellId)
+            spellId(spellId),
+            traitDefinitionId(traitDefinitionId),
+            suppressMessaging(suppressMessaging)
         {
         }
 
@@ -29,7 +33,7 @@ namespace AscEmu::Packets
         size_t expectedSize() const override
         {
             if (m_protocol.expansion == WoW::Expansion::_Forever)
-                return 18;
+                return traitDefinitionId != 0 ? 22 : 18;
 
             return 6;
         }
@@ -46,9 +50,11 @@ namespace AscEmu::Packets
                 packet.writeBit(false);  // Favorite
                 packet.writeBit(false);  // EquipableSpellInvSlot present
                 packet.writeBit(false);  // Superceded present
-                packet.writeBit(false);  // TraitDefinitionID present
+                packet.writeBit(traitDefinitionId != 0);  // TraitDefinitionID present
                 packet.flushBits();
-                packet.writeBit(false);  // SuppressMessaging
+                if (traitDefinitionId != 0)
+                    packet << int32_t(traitDefinitionId);
+                packet.writeBit(suppressMessaging);  // SuppressMessaging
                 packet.writeBit(false);  // TraitGrantedByAura
                 packet.flushBits();
             }

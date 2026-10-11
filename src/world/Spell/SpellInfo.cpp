@@ -20,6 +20,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Item.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Players/Player.hpp"
+#if defined(AE_FOREVER)
+    #include "Objects/Units/Players/TraitManager.hpp"
+#endif
 #include "Management/ItemInterface.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
@@ -1527,6 +1530,28 @@ int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = n
 #endif
 
     forcedBasePoints.get(effIndex, &basePoints);
+
+#if defined(AE_FOREVER)
+    if (unitCaster != nullptr && unitCaster->isPlayer())
+    {
+        auto const* trait = static_cast<Player*>(unitCaster)->getTraitManager().getSpellTraitInfo(getId());
+        if (trait != nullptr && trait->definitionId > 0 && trait->rank > 0)
+        {
+            for (auto const& [id, modifier] : sTraitDefinitionEffectPointsStore)
+            {
+                (void)id;
+                if (modifier.traitDefinitionId != static_cast<uint32_t>(trait->definitionId) || modifier.effectIndex != effIndex || modifier.curveId <= 0)
+                    continue;
+
+                const float traitValue = getForeverCurveValueAt(static_cast<uint32_t>(modifier.curveId), static_cast<float>(trait->rank));
+                if (modifier.operationType == 0)
+                    basePoints = Util::float2int32(traitValue);
+                else if (modifier.operationType == 1)
+                    basePoints = Util::float2int32(static_cast<float>(basePoints) * traitValue);
+            }
+        }
+    }
+#endif
 
     // Check if value increases with level
     if (unitCaster != nullptr)
