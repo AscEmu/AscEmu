@@ -755,7 +755,7 @@ void PacketBuilder::WriteMonsterMoveLegion(MoveSpline const& moveSpline, ByteBuf
     writeMonsterSplineHeaderLegion(data, moveSpline.GetId(), 0);
 
     const bool parabolic = moveSpline.splineflags.parabolic;
-    const bool animation = moveSpline.splineflags.animation;
+    [[maybe_unused]]const bool animation = moveSpline.splineflags.animation;
     const bool uncompressed = (moveSpline.splineflags & MoveSplineFlag::UncompressedPath) != 0;
 
     // the points: the whole path uncompressed, otherwise the last point and the packed offsets of the others
