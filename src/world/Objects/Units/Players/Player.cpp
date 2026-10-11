@@ -14493,7 +14493,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
 
     // exploration data
     ss << "'";
-    for (uint8_t i = 0; i < Version::fieldCount(PlayerField::ExploredZones); ++i)
+    for (uint32_t i = 0; i < Version::fieldCount(PlayerField::ExploredZones); ++i)
         ss << getExploredZone(i) << ",";
     ss << "', ";
 

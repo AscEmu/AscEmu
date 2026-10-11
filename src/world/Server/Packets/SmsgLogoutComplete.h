@@ -21,8 +21,14 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override { return m_minimum_size; }
 
-        bool internalSerialise(WorldPacket& /*packet*/) override
+        bool internalSerialise(WorldPacket& packet) override
         {
+            // 11.x: the optional game mode switch
+            if (m_protocol.isTheWarWithin())
+            {
+                packet.writeBit(false);
+                packet.flushBits();
+            }
             return true;
         }
 

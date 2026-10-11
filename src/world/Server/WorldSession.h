@@ -1080,6 +1080,7 @@ protected:
         // while an Update() call is still unwinding. Never execute two session
         // updates concurrently during that handoff.
         std::atomic_bool m_updateInProgress{ false };
+        uint32_t m_skippedUpdates = 0;
 
 public:
     static void registerOpcodeHandler();

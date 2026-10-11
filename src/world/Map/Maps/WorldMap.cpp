@@ -288,6 +288,7 @@ void WorldMap::update(uint32_t t_diff)
 
             if (session->GetInstance() != instanceId)
             {
+                sLogger.debug("WorldMap::update: session of account {} left the update of instance {} (session instance {})", session->GetAccountId(), instanceId, session->GetInstance());
                 removeSession(session);
                 continue;
             }
@@ -295,6 +296,7 @@ void WorldMap::update(uint32_t t_diff)
             Player* player = session->GetPlayer();
             if (player == nullptr || player->getWorldMap() != this)
             {
+                sLogger.debug("WorldMap::update: session of account {} left the update of instance {} ({})", session->GetAccountId(), instanceId, player == nullptr ? "no player" : "player on another map");
                 removeSession(session);
                 continue;
             }
@@ -302,6 +304,7 @@ void WorldMap::update(uint32_t t_diff)
             const uint8_t result = session->Update(instanceId);
             if (result != 0)
             {
+                sLogger.debug("WorldMap::update: session of account {} left the update of instance {} (update result {})", session->GetAccountId(), instanceId, result);
                 removeSession(session);
 
                 if (result == 1)
@@ -1155,6 +1158,7 @@ void WorldMap::onPlayerLeave(Player* plr)
         return;
 
     // Use the same cleanup path for logout and map transfers.
+    sLogger.debug("WorldMap::onPlayerLeave: player {} leaves instance {}", plr->getName(), getInstanceId());
     removeSession(plr->getSession());
     removePlayerFromMap(plr);
     factory_->detachFromWorld(plr);

@@ -124,7 +124,13 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
     // A session can briefly be present in both ownership containers during a
     // global <-> map handoff. Only one thread may execute Update() at a time.
     if (m_updateInProgress.exchange(true, std::memory_order_acquire))
+    {
+        // every 50th skipped update is reported: a blocked update keeps the session from its packets and timers
+        if (++m_skippedUpdates % 50 == 0)
+            sLogger.warning("WorldSession::Update: update of account {} skipped {} times, another update is still in progress (instance {})", _accountId, m_skippedUpdates, InstanceID);
         return 0;
+    }
+    m_skippedUpdates = 0;
 
     struct SessionUpdateGuard
     {
@@ -329,6 +335,7 @@ void WorldSession::LogoutPlayer(bool Save)
             }
         }
 #endif
+
 
         // part channels
         _player->removeAllChannels();
@@ -714,6 +721,8 @@ WorldSocket* WorldSession::socketForServerPacket(uint32_t opcode) const
             case SMSG_DUEL_OUTOFBOUNDS:
             case SMSG_DUEL_WINNER:
             case SMSG_DUEL_COMPLETE:
+            case SMSG_LOGOUT_RESPONSE:
+            case SMSG_LOGOUT_CANCEL_ACK:
                 return _instanceSocket;
             default:
                 break;

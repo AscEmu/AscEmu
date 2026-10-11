@@ -1300,7 +1300,7 @@ bool ChatCommandHandler::HandleCharSetAllExploredCommand(const char* /*args*/, W
     greenSystemMessage(player_target->getSession(), "{} set all zones as explored for you.", m_session->GetPlayer()->getName());
     sGMLog.writefromsession(m_session, "Set all zones as explored for player {}.", player_target->getName());
 
-    for (uint8_t i = 0; i < Version::fieldCount(PlayerField::ExploredZones); ++i)
+    for (uint32_t i = 0; i < Version::fieldCount(PlayerField::ExploredZones); ++i)
     {
         player_target->setExploredZone(i, 0xFFFFFFFF);
     }
