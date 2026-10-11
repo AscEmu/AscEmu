@@ -706,6 +706,11 @@ void Player::onAttachToWorld()
     // Process create packet
     processPendingUpdates();
 
+    // the speed and the time sync follow the create packet of the player
+    resendSpeed();
+    resetTimeSync();
+    sendTimeSync();
+
     if (m_teleportState == 2)   // Worldport Ack
         onWorldPortAck();
 

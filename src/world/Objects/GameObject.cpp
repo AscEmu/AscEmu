@@ -2101,7 +2101,10 @@ void GameObject_Transport::_internalUpdateOnState(unsigned long timeDiff)
             // initial spawn. Sync it out through the dynamic path-progress field (the real
             // client's ongoing sync mechanism, per reference so periodic broadcasts
             // actually go out as this advances.
+#if VERSION_STRING != TheWarWithin
+            // 11.x clients take the progress from the create block and animate it themselves
             setDynamicPathProgress(static_cast<int16_t>((static_cast<uint64_t>(m_goValue.PathProgress) * 32767) / period));
+#endif
         }
 #else
             if (!m_goValue.AnimationInfo)

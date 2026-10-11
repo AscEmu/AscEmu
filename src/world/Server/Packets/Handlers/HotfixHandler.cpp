@@ -60,9 +60,34 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
         return;
     }
 
-    if (protocol.isDragonflight() || protocol.isTheWarWithin())
+    if (protocol.isTheWarWithin())
     {
-        // 10.x and 11.x: the records of the client data tables are not served yet. The 5.x item record the older clients
+        // 11.x: Item and ItemSparse records come from the item properties, every other table is reported as not
+        // available; the client asks on the character screen as well and waits for the answers
+        for (const uint32_t recordId : srlPacket.entries)
+        {
+            ByteBuffer record;
+            switch (srlPacket.type)
+            {
+                case DB2_REPLY_ITEM:
+                    writeItemRecordTheWarWithin(recordId, record);
+                    break;
+                case DB2_REPLY_SPARSE:
+                    writeItemSparseRecordTheWarWithin(recordId, record);
+                    break;
+                default:
+                    break;
+            }
+
+            SmsgDbReply managedPacket(recordId, srlPacket.type, record);
+            sendManagedPacket(managedPacket);
+        }
+        return;
+    }
+
+    if (protocol.isDragonflight())
+    {
+        // 10.x: the records of the client data tables are not served yet. The 5.x item record the older clients
         // get passes the size check of these clients and leaves them with an unreadable record, so every record
         // is reported as not available; the client asks on the character screen as well and waits for the answers
         for (const uint32_t recordId : srlPacket.entries)
@@ -220,6 +245,135 @@ void WorldSession::writeItemSparseRecordLegion(uint32_t entry, ByteBuffer& recor
     record << uint8_t(0);                                           // spell weight
     record << uint8_t(0);                                           // artifact
     record << uint8_t(0);                                           // expansion
+}
+
+// Item record of 11.2.7 without its id: class, sub class, material, inventory type, sheathe type, sound override,
+// icon, group sounds, content tuning, crafting reagent, crafting quality, one unused value. Icons are not known,
+// the client falls back to its own appearance data.
+void WorldSession::writeItemRecordTheWarWithin(uint32_t entry, ByteBuffer& record)
+{
+    ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
+    if (proto == nullptr)
+        return;
+
+    record << int32_t(proto->Class);
+    record << uint8_t(proto->SubClass);
+    record << uint8_t(proto->LockMaterial);                         // material
+    record << int8_t(proto->InventoryType);
+    record << uint8_t(proto->SheathID);
+    record << int8_t(-1);                                           // sound override sub class
+    record << int32_t(0);                                           // icon file data id
+    record << uint32_t(0);                                          // item group sounds
+    record << int32_t(0);                                           // content tuning
+    record << int32_t(0);                                           // modified crafting reagent item
+    record << int32_t(0);                                           // crafting quality
+    record << int32_t(0);
+}
+
+// ItemSparse record of 11.2.7 without its id, in the field order of the client data. The stat values of the
+// properties go out as stat percent editor values of their stat types; the item level curves stay empty.
+void WorldSession::writeItemSparseRecordTheWarWithin(uint32_t entry, ByteBuffer& record)
+{
+    ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
+    if (proto == nullptr)
+        return;
+
+    record << int64_t(proto->AllowableRace);
+    record << proto->Description;
+    record << proto->Name;                                          // display name, 4 variants
+    record << proto->Name;
+    record << proto->Name;
+    record << proto->Name;
+    record << int32_t(0);                                           // expansion
+    record << float(0.0f);                                          // damage variance
+    record << int32_t(proto->ItemLimitCategory);
+    record << uint32_t(proto->ExistingDuration);                    // duration in inventory
+    record << float(1.0f);                                          // quality modifier
+    record << uint32_t(proto->BagFamily);
+    record << int32_t(proto->QuestId);                              // start quest
+    record << int32_t(proto->PageLanguage);
+    record << float(proto->Range);
+
+    for (uint8_t i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
+        record << float(0.0f);                                      // stat percentage of socket
+
+    uint8_t statCount = 0;
+    for (const auto& [statType, statValue] : proto->generalStatsMap)
+    {
+        if (statCount == MAX_ITEM_PROTO_STATS)
+            break;
+        record << int32_t(statValue);                               // stat percent editor
+        ++statCount;
+    }
+    for (; statCount < MAX_ITEM_PROTO_STATS; ++statCount)
+        record << int32_t(0);
+
+    statCount = 0;
+    for (const auto& [statType, statValue] : proto->generalStatsMap)
+    {
+        if (statCount == MAX_ITEM_PROTO_STATS)
+            break;
+        record << int32_t(statType);                                // stat modifier bonus stat
+        ++statCount;
+    }
+    for (; statCount < MAX_ITEM_PROTO_STATS; ++statCount)
+        record << int32_t(-1);
+
+    record << int32_t(proto->MaxCount);                             // stackable
+    record << int32_t(proto->Unique);                               // max count
+    record << int32_t(proto->RequiredFactionStanding);              // minimum reputation
+    record << uint32_t(proto->RequiredSpell);                       // required ability
+    record << uint32_t(proto->SellPrice);
+    record << uint32_t(proto->BuyPrice);
+    record << uint32_t(1);                                          // vendor stack count
+    record << float(1.0f);                                          // price variance
+    record << float(1.0f);                                          // price random value
+    record << int32_t(proto->Flags);
+    record << int32_t(proto->Flags2);
+    record << int32_t(0);                                           // flags 3
+    record << int32_t(0);                                           // flags 4
+    record << int32_t(0);                                           // flags 5
+    record << int32_t(0);                                           // faction related
+    record << int32_t(0);                                           // modified crafting reagent item
+    record << int32_t(0);                                           // content tuning
+    record << int32_t(0);                                           // player level to item level curve
+    record << int32_t(0);                                           // item level offset curve
+    record << int32_t(0);                                           // item level offset item level
+    record << int32_t(0);
+    record << uint16_t(0);                                          // item name description
+    record << uint16_t(0);                                          // required transmog holiday
+    record << uint16_t(proto->HolidayId);                           // required holiday
+    record << uint16_t(proto->GemProperties);
+    record << uint16_t(proto->SocketBonus);                         // socket match enchantment
+    record << uint16_t(proto->TotemCategory);
+    record << uint16_t(proto->MapID);                               // instance bound
+    record << uint16_t(proto->ZoneNameID);                          // zone bound, 2 entries
+    record << uint16_t(0);
+    record << uint16_t(proto->ItemSet);
+    record << uint16_t(proto->LockId);
+    record << uint16_t(proto->PageId);
+    record << uint16_t(proto->Delay);
+    record << uint16_t(proto->RequiredFaction);                     // minimum faction
+    record << uint16_t(proto->RequiredSkillRank);
+    record << uint16_t(proto->RequiredSkill);
+    record << uint16_t(proto->ItemLevel);
+    record << int16_t(proto->AllowableClass);
+    record << uint8_t(0);                                           // artifact
+    record << uint8_t(0);                                           // spell weight
+    record << uint8_t(0);                                           // spell weight category
+    for (uint8_t i = 0; i < MAX_ITEM_PROTO_SOCKETS; ++i)
+        record << uint8_t(proto->Sockets[i].SocketColor);           // socket type
+    record << uint8_t(proto->SheathID);
+    record << uint8_t(proto->LockMaterial);                         // material
+    record << uint8_t(proto->PageMaterial);
+    record << uint8_t(proto->Bonding);
+    record << uint8_t(proto->Damage[0].Type);                       // damage type
+    record << uint8_t(proto->ContainerSlots);
+    record << uint8_t(proto->RequiredPlayerRank2);                  // required pvp medal
+    record << int8_t(proto->RequiredPlayerRank1);                   // required pvp rank
+    record << int8_t(proto->RequiredLevel);
+    record << int8_t(proto->InventoryType);
+    record << int8_t(proto->Quality);                               // overall quality
 }
 
 void WorldSession::sendItemDb2Reply(uint32_t entry)

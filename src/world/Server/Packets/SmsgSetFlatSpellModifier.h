@@ -57,6 +57,14 @@ namespace AscEmu::Packets
             {
                 packet << spellGroup << spellType << modifier;
             }
+            else if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x and later: one modifier with its index, then the values with the class index behind the value
+                packet << uint32_t(1) << spellType << static_cast<uint32_t>(modifierValues.size());
+
+                for (const auto& modifierValue : modifierValues)
+                    packet << modifierValue.second << modifierValue.first;
+            }
             else
             {
                 packet << unknown << static_cast<uint32_t>(modifierValues.size()) << spellType;

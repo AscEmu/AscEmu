@@ -293,10 +293,9 @@ namespace
 
         if (GameObject* gameobject = static_cast<GameObject*>(object); object->isGameObject())
         {
-            // flags in the low half, the path progress of a transport in the high half
+            // 11.x: flags only, the progress of a transport goes through the game object block of the create block
             uint32_t dynamicFlags = gameobject->getDynamicFlags() & ~(GO_DYN_FLAG_INTERACTABLE | GO_DYN_FLAG_SPARKLE);
-            const bool isMovingTransport = gameobject->getGoType() == GAMEOBJECT_TYPE_TRANSPORT || gameobject->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT;
-            const uint16_t pathProgress = isMovingTransport ? static_cast<uint16_t>(gameobject->getDynamicPathProgress()) : 0;
+            const uint16_t pathProgress = 0;
 
             if (target != nullptr)
             {

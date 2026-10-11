@@ -3189,6 +3189,12 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     const bool serverTime = (updateFlags & UPDATEFLAG_TRANSPORT) != 0;
     const bool vehicle = (updateFlags & UPDATEFLAG_VEHICLE) != 0;
     const bool rotation = (updateFlags & UPDATEFLAG_ROTATION) != 0 && isGameObject();
+#if VERSION_STRING == TheWarWithin
+    // 11.x: elevators and moving transports carry their progress in the game object block
+    const GameObject* transportObject = isGameObject() ? static_cast<GameObject*>(this) : nullptr;
+    const bool movingTransport = transportObject != nullptr && transportObject->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT;
+    const bool gameObjectBlock = transportObject != nullptr && (movingTransport || transportObject->getGoType() == GAMEOBJECT_TYPE_TRANSPORT);
+#endif
 
 #if VERSION_STRING == TheWarWithin
     data->writeBit(!IsType(TYPE_ITEM));                 // 11.x: the object has a position in the world
@@ -3212,8 +3218,10 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     data->writeBit(rotation);
 #if VERSION_STRING != TheWarWithin
     data->writeBit(false);                              // area trigger shape
-#endif
     data->writeBit(false);                              // world effect of a gameobject
+#else
+    data->writeBit(gameObjectBlock);                    // game object block: world effect, transport progress
+#endif
 #if VERSION_STRING == WoD
     data->writeBit(updateFlags & UPDATEFLAG_SELF);
     data->writeBit(false);                              // replace active
@@ -3373,11 +3381,16 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
     if (serverTime)
     {
+#if VERSION_STRING == TheWarWithin
+        // 11.x: the server time, the transport progress goes through the game object block
+        *data << uint32_t(Util::getMSTime());
+#else
         GameObject const* go = isGameObject() ? static_cast<GameObject*>(this) : nullptr;
         if (go && go->ToTransport())
             *data << uint32_t(go->getGOValue()->PathProgress);
         else
             *data << uint32_t(Util::getMSTime());
+#endif
     }
 
     if (vehicle)
@@ -3398,6 +3411,41 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 #if VERSION_STRING != WoD
     if (transportPosition)
         writeTransportInfo(*data, obj_movement_info, realmId, mapId);
+#endif
+
+#if VERSION_STRING == TheWarWithin
+    // 11.x: world effect, then the time offset of a moving transport or the path progress of an elevator
+    if (gameObjectBlock)
+    {
+        const uint32_t period = transportObject->getTransportPeriod();
+
+        *data << uint32_t(0);                           // world effect
+        data->writeBit(false);                          // unused value follows
+        data->writeBit(movingTransport);
+        data->writeBit(!movingTransport);               // has path progress
+        data->flushBits();
+
+        if (movingTransport)
+        {
+            // position in the period relative to the server time
+            uint32_t timeOffset = 0;
+            if (period != 0)
+            {
+                const int64_t offset = (int64_t(transportObject->getGOValue()->PathProgress) - int64_t(Util::getMSTime())) % int64_t(period);
+                timeOffset = static_cast<uint32_t>((offset + int64_t(period)) % int64_t(period));
+            }
+            *data << uint32_t(timeOffset);
+            *data << uint32_t(0);                       // next stop timestamp
+            data->writeBit(false);                      // has next stop
+            data->writeBit(false);                      // stopped
+            data->writeBit(false);
+            data->flushBits();
+        }
+        else
+        {
+            *data << float(period != 0 ? float(transportObject->getGOValue()->PathProgress) / float(period) : 0.0f);
+        }
+    }
 #endif
 
 #if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin
