@@ -787,7 +787,7 @@ void WorldSession::registerOpcodeHandler()
 
     // Movement
     registry.registerOpcode(MSG_MOVE_HEARTBEAT, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_WORLDPORT_ACK, &WorldSession::handleMoveWorldportAckOpcode, true, true, true, true, true);
+    registry.registerOpcode(MSG_MOVE_WORLDPORT_ACK, &WorldSession::handleMoveWorldportAckOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(MSG_MOVE_JUMP, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
     registry.registerOpcode(MSG_MOVE_START_ASCEND, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
     registry.registerOpcode(MSG_MOVE_STOP_ASCEND, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
@@ -819,7 +819,7 @@ void WorldSession::registerOpcodeHandler()
 
     // ACK
     registry.registerOpcode(MSG_MOVE_TELEPORT_ACK, &WorldSession::handleMoveTeleportAckOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_MOVE_TELEPORT_ACK, &WorldSession::handleMoveTeleportAckOpcode, false, false, false, false, true);
+    registry.registerOpcode(CMSG_MOVE_TELEPORT_ACK, &WorldSession::handleMoveTeleportAckOpcode, false, false, false, false, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_MOVE_FEATHER_FALL_ACK, &WorldSession::handleAcknowledgementOpcodes, true, true, true, true, true);
     registry.registerOpcode(CMSG_MOVE_WATER_WALK_ACK, &WorldSession::handleAcknowledgementOpcodes, true, true, true, true, true);
     registry.registerOpcode(CMSG_FORCE_MOVE_ROOT_ACK, &WorldSession::handleAcknowledgementOpcodes, true, true, true, true, true);

@@ -2929,7 +2929,13 @@ uint32_t Player::getTeleportState() const { return m_teleportState; }
 
 void Player::sendTeleportPacket(LocationVector position)
 {
-    MsgMoveTeleport managedPacket(GetNewGUID(), position, obj_movement_info);
+    WoWGuid moverGuid = GetNewGUID();
+#if defined(AE_FOREVER)
+    if (m_session != nullptr && m_session->getClientProtocol().isForever())
+        moverGuid = WoWGuid::createModernPlayer(getForeverRealmId(), getGuidLow());
+#endif
+
+    MsgMoveTeleport managedPacket(moverGuid, position, obj_movement_info);
     m_session->sendManagedPacket(managedPacket);
 
     LocationVector oldPos = LocationVector(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
@@ -2937,7 +2943,7 @@ void Player::sendTeleportPacket(LocationVector position)
     SetPosition(position.x, position.y, position.z, position.o);
 
 #if VERSION_STRING >= Cata
-    SmsgMoveUpdateTeleport updateTeleport(GetNewGUID(), obj_movement_info);
+    SmsgMoveUpdateTeleport updateTeleport(moverGuid, obj_movement_info);
     PacketBroadcast::sendToSet(*this, updateTeleport, false);
 #endif
 }
@@ -18319,7 +18325,17 @@ void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending
 
     if (sameWorld && !force_new_world)
     {
-        // Same-map teleports have no worldport ACK, so clear the transfer state here.
+        if (m_session != nullptr && m_session->getClientProtocol().isForever())
+        {
+            // Modern near teleports are completed by CMSG_MOVE_TELEPORT_ACK.
+            setTransferStatus(TRANSFER_PENDING);
+            m_sentTeleportPosition = v;
+            sendTeleportPacket(v);
+            m_zAxisPosition = 0.0f;
+            return;
+        }
+
+        // Legacy same-map teleports have no worldport ACK.
         sendTeleportAckPacket(v);
         m_sentTeleportPosition = v;
         SetPosition(v);

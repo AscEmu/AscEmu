@@ -37,6 +37,21 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                packet << int32_t(newMapId);
+                packet << float(0.0f) << float(0.0f) << float(0.0f); // OldMapPosition
+                packet.writeBit(isTransport);
+                packet.writeBit(false); // HasTransferSpellID
+                packet.writeBit(false); // HasTaxiPathID
+                packet.flushBits();
+
+                if (isTransport)
+                    packet << uint32_t(transportId) << int32_t(oldMapId);
+
+                return true;
+            }
+
             if (m_protocol.expansion >= WoW::Expansion::_Cata)
             {
                 packet.writeBit(0);

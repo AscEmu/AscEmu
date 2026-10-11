@@ -795,7 +795,8 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
 
     sLogger.debugOpcode("Received CMSG_MOVE_TELEPORT_ACK.");
 
-    if (srlPacket.guid.getRawGuid() == _player->getGuid())
+    const uint64_t acknowledgedGuid = getClientProtocol().isForever() ? srlPacket.guid.toLegacyRaw() : srlPacket.guid.getRawGuid();
+    if (acknowledgedGuid == _player->getGuid())
     {
         if (worldConfig.antiHack.isTeleportHackCheckEnabled && !(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm))
         {

@@ -39,5 +39,6 @@ namespace AscEmu::Version::Forever::Packets
     // decoder version-local instead of forcing this data through the legacy
     // MovementCodec/MoP descriptor tables.
     bool readMovementStatus(ByteBuffer& packet, MovementStatus& status, std::size_t expectedTrailingBytes = 0);
+    void writeMovementStatus(ByteBuffer& packet, MovementInfo const& info, WoWGuid const& guid);
     MovementInfo toLegacyMovementInfo(MovementStatus const& status);
 }

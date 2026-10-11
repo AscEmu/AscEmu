@@ -148,6 +148,63 @@ namespace AscEmu::Version::Forever::Packets
         return !packet.hadReadFailure() && packet.remaining() == expectedTrailingBytes;
     }
 
+    void writeMovementStatus(ByteBuffer& packet, MovementInfo const& info, WoWGuid const& guid)
+    {
+        const auto packedGuid = guid.packModern();
+        packet.append(packedGuid.data(), packedGuid.size());
+        packet << uint64_t(info.flags);
+        packet << uint32_t(info.update_time);
+        packet << info.position.x << info.position.y << info.position.z << info.position.o;
+        packet << float(info.pitch_rate);
+        packet << float(info.spline_elevation);
+        packet << uint32_t(0); // RemovedMovementForcesCount
+        packet << uint32_t(0); // MoveIndex
+        packet << float(1.0f); // GravityModifier
+
+        const bool hasTransport = !info.transport_guid.isEmpty();
+        const bool hasFallData = info.status_info.hasFallData;
+        packet.writeBit(false); // HasStandingOnGameObject
+        packet.writeBit(hasTransport);
+        packet.writeBit(hasFallData);
+        packet.writeBit(false); // HasSpline
+        packet.writeBit(false); // HeightChangeFailed
+        packet.writeBit(false); // RemoteTimeValid
+        packet.writeBit(false); // HasInertia
+        packet.writeBit(false); // HasAdvancedFlying
+        packet.writeBit(false); // HasDriveStatus
+        packet.flushBits();
+
+        if (hasTransport)
+        {
+            const auto packedTransportGuid = info.transport_guid.packModern();
+            packet.append(packedTransportGuid.data(), packedTransportGuid.size());
+            packet << info.transport_position.x << info.transport_position.y << info.transport_position.z << info.transport_position.o;
+            packet << int8_t(info.transport_seat);
+            packet << uint32_t(info.transport_time);
+
+            const bool hasPrevTime = info.status_info.hasTransportTime2;
+            const bool hasVehicleId = info.status_info.hasTransportTime3;
+            packet.writeBit(hasPrevTime);
+            packet.writeBit(hasVehicleId);
+            packet.flushBits();
+            if (hasPrevTime)
+                packet << uint32_t(info.transport_time2);
+            if (hasVehicleId)
+                packet << uint32_t(info.transport_time3);
+        }
+
+        if (hasFallData)
+        {
+            packet << uint32_t(info.fall_time);
+            packet << float(info.jump_info.velocity);
+            const bool hasFallDirection = info.status_info.hasFallDirection;
+            packet.writeBit(hasFallDirection);
+            packet.flushBits();
+            if (hasFallDirection)
+                packet << float(info.jump_info.sinAngle) << float(info.jump_info.cosAngle) << float(info.jump_info.xyspeed);
+        }
+    }
+
     MovementInfo toLegacyMovementInfo(MovementStatus const& status)
     {
         MovementInfo info;

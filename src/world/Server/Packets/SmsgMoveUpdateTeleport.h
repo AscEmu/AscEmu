@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "Objects/MovementInfo.hpp"
+#include "version/Forever/Packets/MovementPackets.hpp"
 
 #include <cstdint>
 
@@ -37,7 +38,16 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isMop())
+            if (m_protocol.isForever())
+            {
+                AscEmu::Version::Forever::Packets::writeMovementStatus(packet, mi, guid);
+                packet << uint32_t(0); // MovementForcesCount
+                for (uint8_t i = 0; i < 9; ++i)
+                    packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+            else if (m_protocol.isMop())
             {
                 MovementInfo mopInfo = mi;
                 mopInfo.guid = guid;

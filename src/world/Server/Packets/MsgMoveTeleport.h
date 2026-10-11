@@ -110,6 +110,25 @@ namespace AscEmu::Packets
                 mi.guid = guid;
                 mi.writeMovementInfo(packet, MSG_MOVE_TELEPORT, m_protocol.expansion);
             }
+            else if (m_protocol.isForever())
+            {
+                const auto packedGuid = guid.packModern();
+                packet.append(packedGuid.data(), packedGuid.size());
+                packet << uint32_t(0); // SequenceIndex
+                packet << lv.x << lv.y << lv.z << lv.o;
+
+                const bool hasTransport = !mi.transport_guid.isEmpty();
+                packet.writeBit(hasTransport);
+                packet.writeBit(false); // HasVehicle
+                packet.writeBit(false); // PreloadWorld
+                packet.flushBits();
+
+                if (hasTransport)
+                {
+                    const auto packedTransportGuid = mi.transport_guid.packModern();
+                    packet.append(packedTransportGuid.data(), packedTransportGuid.size());
+                }
+            }
             else
             {
                 return false;

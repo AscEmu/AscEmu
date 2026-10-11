@@ -55,9 +55,9 @@ namespace AscEmu::Packets
                 packet << uint32_t(0);
                 mi.writeMovementInfo(packet, 0, m_protocol.expansion, false);
             }
-            else if (m_protocol.isMop())
+            else if (m_protocol.isMop() || m_protocol.isForever())
             {
-                // the Mop client is teleported with SMSG_MOVE_TELEPORT, this opcode only exists as CMSG_MOVE_TELEPORT_ACK
+                // Modern clients are teleported with SMSG_MOVE_TELEPORT; this packet is client-to-server only.
                 return false;
             }
             return true;
@@ -118,6 +118,16 @@ namespace AscEmu::Packets
                 packet.readByteSeq(mopGuid[3]);
 
                 guid = mopGuid;
+            }
+            else if (m_protocol.isForever())
+            {
+                std::size_t consumed = 0;
+                if (!WoWGuid::unpackModern(packet.contents() + packet.rpos(), packet.size() - packet.rpos(), guid, consumed))
+                    return false;
+
+                packet.rpos(packet.rpos() + consumed);
+                packet >> flags; // AckIndex
+                packet >> time;  // MoveTime
             }
             else
             {

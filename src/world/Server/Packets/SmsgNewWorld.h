@@ -47,6 +47,18 @@ namespace AscEmu::Packets
                 packet << location.x << location.o << location.z << mapId << location.y;
                 return true;
             }
+            else if (m_protocol.isForever())
+            {
+                packet << int32_t(mapId);
+                packet << location.x << location.y << location.z << location.o;
+                packet << int32_t(-1); // FloorDifficulty
+                packet << int32_t(-1); // FloorIndex
+                packet << uint32_t(0); // Reason: normal
+                packet << float(0.0f) << float(0.0f) << float(0.0f); // MovementOffset
+                packet << int32_t(0);  // Counter
+                packet << uint64_t(0); // InstanceID
+                return true;
+            }
 
             return false;
         }
