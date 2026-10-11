@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetActiveMover.h"
 #include "Server/Packets/MovementPacket.h"
 #include "Server/WorldSession.h"
+#include "Server/WorldSocket.hpp"
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Creatures/Vehicle.hpp"
@@ -693,6 +694,16 @@ bool WorldSession::recoverFailedWorldport(const char* reason)
         reason, std::to_string(_player->getGuid()), failedMapId, failedInstanceId);
     Disconnect();
     return false;
+}
+
+void WorldSession::handleSuspendTokenResponseOpcode(WorldPacket& recvPacket)
+{
+    if (_player == nullptr || !getClientProtocol().isForever())
+        return;
+
+    uint32_t sequenceIndex = 0;
+    recvPacket >> sequenceIndex;
+    _player->completeForeverWorldTransfer(sequenceIndex);
 }
 
 void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)

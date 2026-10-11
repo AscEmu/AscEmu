@@ -634,6 +634,7 @@ public:
     void setTransferStatus(uint8_t status);
     uint8_t getTransferStatus() const;
     bool isTransferPending() const;
+    bool completeForeverWorldTransfer(uint32_t sequenceIndex);
 
     uint32_t getTeleportState() const;
 
@@ -669,6 +670,8 @@ public:
     void setMapEntryPoint(uint32_t mapId);
 
 protected:
+    void sendWorldTransferStart(uint32_t mapId, const LocationVector& position, bool sendTransferPending);
+
     bool m_isMoving = false;
     bool m_isMovingFB = false;
     bool m_isStrafing = false;
@@ -686,6 +689,10 @@ protected:
     bool m_hasTeleportTransport = false;
     uint8_t m_transferStatus = TRANSFER_NONE;
     uint32_t m_teleportState = 1;
+#if defined(AE_FOREVER)
+    uint32_t m_foreverMovementSequence = 0;
+    uint32_t m_foreverNewWorldCounter = 0;
+#endif
 
     uint32_t m_indoorCheckTimer = 0;
 

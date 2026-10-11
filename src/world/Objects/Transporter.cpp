@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Visibility/VisibilitySystem.hpp"
 #include "Models/GameObjectModel.h"
 #include "Server/Packets/SmsgTransferPending.h"
+#include "Server/WorldSocket.hpp"
 #include "Movement/Spline/Spline.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Definitions.h"
@@ -758,8 +759,18 @@ void Transporter::TeleportPlayers(float x, float y, float z, float o, uint32_t n
                 // client acknowledges the destination map.
                 player->setTeleportTransport(GetNewGUID(), transPos);
 
-                SmsgTransferPending managedPacket(newMapId, true, getEntry(), oldMapId);
-                player->getSession()->sendManagedPacket(managedPacket);
+                SmsgTransferPending managedPacket(newMapId, LocationVector(destX, destY, destZ, destO), true, getEntry(), oldMapId);
+#if defined(AE_FOREVER)
+                if (player->getSession()->getClientProtocol().isForever())
+                {
+                    if (WorldSocket* realmSocket = player->getSession()->GetSocket(); realmSocket != nullptr && realmSocket->isConnected())
+                        realmSocket->sendManagedPacket(managedPacket);
+                }
+                else
+#endif
+                {
+                    player->getSession()->sendManagedPacket(managedPacket);
+                }
             }
 
             WorldMap* destinationMap = targetMap ? targetMap : getWorldMap();

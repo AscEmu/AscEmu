@@ -18,16 +18,18 @@ namespace AscEmu::Packets
         WoWGuid guid;
         LocationVector lv;
         MovementInfo mi;
+        uint32_t sequenceIndex;
 
-        MsgMoveTeleport() : MsgMoveTeleport(WoWGuid(), LocationVector(), MovementInfo())
+        MsgMoveTeleport() : MsgMoveTeleport(WoWGuid(), LocationVector(), MovementInfo(), 0)
         {
         }
 
-        MsgMoveTeleport(WoWGuid guid, LocationVector lv, MovementInfo mi) :
+        MsgMoveTeleport(WoWGuid guid, LocationVector lv, MovementInfo mi, uint32_t sequenceIndex) :
             ManagedPacket(MSG_MOVE_TELEPORT, 0),
             guid(guid),
             lv(lv),
-            mi(mi)
+            mi(mi),
+            sequenceIndex(sequenceIndex)
         {
         }
 
@@ -114,7 +116,7 @@ namespace AscEmu::Packets
             {
                 const auto packedGuid = guid.packModern();
                 packet.append(packedGuid.data(), packedGuid.size());
-                packet << uint32_t(0); // SequenceIndex
+                packet << sequenceIndex;
                 packet << lv.x << lv.y << lv.z << lv.o;
 
                 const bool hasTransport = !mi.transport_guid.isEmpty();

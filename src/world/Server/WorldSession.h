@@ -805,6 +805,7 @@ protected:
         void handleCorpseReclaimOpcode(WorldPacket& recvPacket);
 
         void handleLoadScreenOpcode(WorldPacket& recvPacket);               //>= Cata
+        void handleSuspendTokenResponseOpcode(WorldPacket& recvPacket);               //>= Cata
         void handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/);        //>= Cata
         void handleTimeSyncRespOpcode(WorldPacket& recvPacket);
         void handleObjectUpdateFailedOpcode(WorldPacket& recvPacket);       //>= Cata

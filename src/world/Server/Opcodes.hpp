@@ -1834,6 +1834,8 @@ CMSG_TRAITS_COMMIT_CONFIG,
 CMSG_CLOSE_TRAIT_SYSTEM_INTERACTION,
 CMSG_TRAITS_TALENT_TEST_UNLEARN_SPELLS,
 SMSG_TRAIT_CONFIG_COMMIT_FAILED,
+CMSG_SUSPEND_TOKEN_RESPONSE,
+SMSG_SUSPEND_TOKEN,
 NUM_OPCODES
 };
 
@@ -3306,7 +3308,7 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {CMSG_LFG_LFR_LEAVE, {0x18, "CMSG_LFG_LFR_LEAVE", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x0500,/*Cata*/ 0x0000/*Mop*/}}},
 {CMSG_LFG_LOCK_INFO_REQUEST, {0x18, "CMSG_LFG_LOCK_INFO_REQUEST", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x0412,/*Cata*/ 0x006B/*Mop*/}}},
 {CMSG_LFG_SET_COMMENT, {0x18, "CMSG_LFG_SET_COMMENT", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x0530,/*Cata*/ 0x0000/*Mop*/}}},
-{CMSG_LOADING_SCREEN_NOTIFY, {0x18, "CMSG_LOADING_SCREEN_NOTIFY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x2422,/*Cata*/ 0x1DBD/*Mop*/}}},
+{CMSG_LOADING_SCREEN_NOTIFY, {0x18, "CMSG_LOADING_SCREEN_NOTIFY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x2422,/*Cata*/ 0x1DBD/*Mop*/, 0/*WoD*/, 0/*Legion*/, 0/*BfA*/, 0/*Shadowlands*/, 0/*Dragonflight*/, 0/*TWW*/, 0/*Midnight*/, 0x00440024/*Forever*/}}},
 {CMSG_LOG_DISCONNECT, {0x18, "CMSG_LOG_DISCONNECT", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x446D,/*Cata*/ 0x10B3/*Mop*/}}},
 {CMSG_LOOT_CURRENCY, {0x18, "CMSG_LOOT_CURRENCY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x781C,/*Cata*/ 0x0000/*Mop*/}}},
 {CMSG_MAKE_EVERYONE_ASSISTANT, {0x18, "", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0x2530,/*Cata*/ 0x0000/*Mop*/}}},
@@ -3591,6 +3593,8 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {CMSG_REALM_NAME_QUERY, {0x10, "CMSG_REALM_NAME_QUERY", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x1A16/*Mop*/}}},
 {SMSG_GM_TICKET_CASE_STATUS, {0x10, "SMSG_GM_TICKET_CASE_STATUS", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x148E/*Mop*/}}},
 {SMSG_MIRRORIMAGE_COMPONENTED_DATA, {0x10, "SMSG_MIRRORIMAGE_COMPONENTED_DATA", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x04D9/*Mop*/}}},
+{CMSG_SUSPEND_TOKEN_RESPONSE, {0x18, "CMSG_SUSPEND_TOKEN_RESPONSE", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0/*Mop*/, 0/*WoD*/, 0/*Legion*/, 0/*BfA*/, 0/*Shadowlands*/, 0/*Dragonflight*/, 0/*TWW*/, 0/*Midnight*/, 0x00450008/*Forever*/}}},
+{SMSG_SUSPEND_TOKEN, {0x18, "SMSG_SUSPEND_TOKEN", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0/*Mop*/, 0/*WoD*/, 0/*Legion*/, 0/*BfA*/, 0/*Shadowlands*/, 0/*Dragonflight*/, 0/*TWW*/, 0/*Midnight*/, 0x00460041/*Forever*/}}},
 {SMSG_MIRRORIMAGE_CREATURE_DATA, {0x10, "SMSG_MIRRORIMAGE_CREATURE_DATA", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x04D0/*Mop*/}}},
 {CMSG_UNHANDLED_044E, {0x10, "CMSG_UNHANDLED_044E", OpcodeDevelopmentState::NotUsed, {0/*Classic*/, 0/*BC*/, 0/*WotLK*/, 0/*Cata*/, 0x044E/*MoP*/}}},
 {CMSG_UNHANDLED_0CF0, {0x10, "CMSG_UNHANDLED_0CF0", OpcodeDevelopmentState::NotUsed, {0/*Classic*/, 0/*BC*/, 0/*WotLK*/, 0/*Cata*/, 0x0CF0/*MoP*/}}},

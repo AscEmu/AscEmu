@@ -15,17 +15,19 @@ namespace AscEmu::Packets
     {
     public:
         uint32_t newMapId;
+        LocationVector oldMapPosition;
         bool isTransport;
         uint32_t transportId;
         uint32_t oldMapId;
         
-        SmsgTransferPending() : SmsgTransferPending(0, false, 0, 0)
+        SmsgTransferPending() : SmsgTransferPending(0, {0, 0, 0, 0}, false, 0, 0)
         {
         }
 
-        SmsgTransferPending(uint32_t newMapId, bool isTransport = false, uint32_t transportId = 0, uint32_t oldMapId = 0) :
-            ManagedPacket(SMSG_TRANSFER_PENDING, 4),
+        SmsgTransferPending(uint32_t newMapId, LocationVector oldMapPosition = {0, 0, 0, 0}, bool isTransport = false, uint32_t transportId = 0, uint32_t oldMapId = 0) :
+            ManagedPacket(SMSG_TRANSFER_PENDING, 17),
             newMapId(newMapId),
+            oldMapPosition(oldMapPosition),
             isTransport(isTransport),
             transportId(transportId),
             oldMapId(oldMapId)
@@ -33,21 +35,21 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override { return 4; }
+        size_t expectedSize() const override { return m_protocol.isForever() ? 17 : 4; }
 
         bool internalSerialise(WorldPacket& packet) override
         {
             if (m_protocol.isForever())
             {
                 packet << int32_t(newMapId);
-                packet << float(0.0f) << float(0.0f) << float(0.0f); // OldMapPosition
+                packet << oldMapPosition.x << oldMapPosition.y << oldMapPosition.z;
                 packet.writeBit(isTransport);
-                packet.writeBit(false); // HasTransferSpellID
-                packet.writeBit(false); // HasTaxiPathID
+                packet.writeBit(0); // TransferSpellID
+                packet.writeBit(0); // TaxiPathID
                 packet.flushBits();
 
                 if (isTransport)
-                    packet << uint32_t(transportId) << int32_t(oldMapId);
+                    packet << transportId << int32_t(oldMapId);
 
                 return true;
             }

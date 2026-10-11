@@ -93,6 +93,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgStableResult.h"
 #include "Server/Packets/SmsgPetSpells.h"
 #include "Server/World.h"
+#include "Server/WorldSocket.hpp"
 #include "Server/Packets/SmsgContactList.h"
 #include "Server/Packets/SmsgFriendStatus.h"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
@@ -155,6 +156,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgTitleEarned.h"
 #include "Server/Packets/SmsgTransferAborted.h"
 #include "Server/Packets/SmsgTransferPending.h"
+#include "Server/Packets/SmsgSuspendToken.h"
 #include "Server/Packets/SmsgTutorialFlags.h"
 #include "Server/Packets/SmsgUpdateWorldState.h"
 #include "Server/Packets/SmsgCancelAutoRepeat.h"
@@ -2902,19 +2904,11 @@ void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
     SetMapId(mapId);
     SetInstanceID(instanceId);
 
-    // Transporters already sent their own transfer-pending packet.
-    if (!GetTransport())
-    {
-        SmsgTransferPending managedPacket(mapId);
-        getSession()->sendManagedPacket(managedPacket);
-    }
-
-    SmsgNewWorld managedPacket(mapId, vec);
-    getSession()->sendManagedPacket(managedPacket);
-
     setTransferStatus(TRANSFER_PENDING);
     m_sentTeleportPosition = vec;
     SetPosition(vec);
+
+    sendWorldTransferStart(mapId, vec, !GetTransport());
 
     refreshVisibilityAfterRelocation();
     speedCheatReset();
@@ -2924,6 +2918,53 @@ void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
 void Player::setTransferStatus(uint8_t status) { m_transferStatus = status; }
 uint8_t Player::getTransferStatus() const { return m_transferStatus; }
 bool Player::isTransferPending() const { return getTransferStatus() == TRANSFER_PENDING; }
+
+void Player::sendWorldTransferStart(uint32_t mapId, const LocationVector& position, bool sendTransferPending)
+{
+#if defined(AE_FOREVER)
+    if (m_session != nullptr && m_session->getClientProtocol().isForever())
+    {
+        if (sendTransferPending)
+        {
+            SmsgTransferPending transferPending(mapId, position);
+            if (WorldSocket* realmSocket = m_session->GetSocket(); realmSocket != nullptr && realmSocket->isConnected())
+                realmSocket->sendManagedPacket(transferPending);
+        }
+
+        ++m_foreverNewWorldCounter;
+        SmsgSuspendToken suspendToken(m_foreverMovementSequence);
+        if (WorldSocket* instanceSocket = m_session->GetForeverInstanceSocket(); instanceSocket != nullptr && instanceSocket->isConnected())
+            instanceSocket->sendManagedPacket(suspendToken);
+        return;
+    }
+#endif
+
+    if (sendTransferPending)
+    {
+        SmsgTransferPending transferPending(mapId);
+        m_session->sendManagedPacket(transferPending);
+    }
+
+    SmsgNewWorld newWorld(mapId, position);
+    m_session->sendManagedPacket(newWorld);
+}
+
+bool Player::completeForeverWorldTransfer(uint32_t sequenceIndex)
+{
+#if defined(AE_FOREVER)
+    if (m_session == nullptr || !m_session->getClientProtocol().isForever() || !isTransferPending() || sequenceIndex != m_foreverMovementSequence)
+        return false;
+
+    SmsgNewWorld newWorld(GetMapId(), m_sentTeleportPosition, 16, static_cast<int32_t>(m_foreverNewWorldCounter), GetInstanceID());
+    if (WorldSocket* realmSocket = m_session->GetSocket(); realmSocket != nullptr && realmSocket->isConnected())
+    {
+        realmSocket->sendManagedPacket(newWorld);
+        return true;
+    }
+#endif
+
+    return false;
+}
 
 uint32_t Player::getTeleportState() const { return m_teleportState; }
 
@@ -2935,7 +2976,13 @@ void Player::sendTeleportPacket(LocationVector position)
         moverGuid = WoWGuid::createModernPlayer(getForeverRealmId(), getGuidLow());
 #endif
 
-    MsgMoveTeleport managedPacket(moverGuid, position, obj_movement_info);
+    uint32_t sequenceIndex = 0;
+#if defined(AE_FOREVER)
+    if (m_session != nullptr && m_session->getClientProtocol().isForever())
+        sequenceIndex = m_foreverMovementSequence++;
+#endif
+
+    MsgMoveTeleport managedPacket(moverGuid, position, obj_movement_info, sequenceIndex);
     m_session->sendManagedPacket(managedPacket);
 
     LocationVector oldPos = LocationVector(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
@@ -18347,24 +18394,17 @@ void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending
 
     dismount(false);
 
-    if (sendpending)
-    {
-        SmsgTransferPending managedPacket(mapid);
-        getSession()->sendManagedPacket(managedPacket);
-    }
-
     leaveCurrentWorldMapForTransfer();
 
     SetMapId(mapid);
     SetInstanceID(instance_id);
 
-    SmsgNewWorld managedPacket(mapid, v);
-    getSession()->sendManagedPacket(managedPacket);
-
     setTransferStatus(TRANSFER_PENDING);
     m_sentTeleportPosition = v;
     SetPosition(v);
     m_zAxisPosition = 0.0f;
+
+    sendWorldTransferStart(mapid, v, sendpending);
 }
 
 #ifdef AE_TBC
