@@ -826,18 +826,18 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_FORCE_MOVE_UNROOT_ACK, &WorldSession::handleAcknowledgementOpcodes, true, true, true, true, true);
     registry.registerOpcode(CMSG_MOVE_KNOCK_BACK_ACK, &WorldSession::handleAcknowledgementOpcodes, true, true, true, true, true);
     registry.registerOpcode(CMSG_MOVE_HOVER_ACK, &WorldSession::handleAcknowledgementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(CMSG_MOVE_SET_CAN_FLY_ACK, &WorldSession::handleAcknowledgementOpcodes, true, true, true, true, true);
+    registry.registerOpcode(CMSG_MOVE_SET_CAN_FLY_ACK, &WorldSession::handleAcknowledgementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(MSG_MOVE_START_DESCEND, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
 
     // Force Speed Change
-    registry.registerOpcode(CMSG_FORCE_RUN_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, true, true, true, true);
-    registry.registerOpcode(CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, true, true, true, true);
-    registry.registerOpcode(CMSG_FORCE_SWIM_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, true, true, true, true);
-    registry.registerOpcode(CMSG_FORCE_WALK_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, true, true, true, true);
-    registry.registerOpcode(CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, true, true, true, true);
-    registry.registerOpcode(CMSG_FORCE_TURN_RATE_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, true, true, true, true);
-    registry.registerOpcode(CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, false, true, true, true);
-    registry.registerOpcode(CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, false, true, true, true);
+    registry.registerOpcode(CMSG_FORCE_RUN_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_FORCE_SWIM_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_FORCE_WALK_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_FORCE_TURN_RATE_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, false, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, false, true, true, true, false, false, false, false, false, false, false, true);
 
     // Action Buttons
     registry.registerOpcode(CMSG_SET_ACTION_BUTTON, &WorldSession::handleSetActionButtonOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
@@ -1316,7 +1316,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode<STATUS_LOGGEDIN>(CMSG_SUSPEND_TOKEN_RESPONSE, &WorldSession::handleSuspendTokenResponseOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_TIME_SYNC_RESPONSE, &WorldSession::handleTimeSyncRespOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_MOVE_SET_CAN_FLY, &WorldSession::handleMovementOpcodes, false, false, false, true, false);
-    registry.registerOpcode(CMSG_FORCE_PITCH_RATE_CHANGE_ACK, &WorldSession::handleAcknowledgementOpcodes, false, false, false, true, false);
+    registry.registerOpcode(CMSG_FORCE_PITCH_RATE_CHANGE_ACK, &WorldSession::handleAcknowledgementOpcodes, false, false, false, true, false, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_MESSAGECHAT_SAY, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_MESSAGECHAT_YELL, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_MESSAGECHAT_CHANNEL, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, false, false, false, false, false, false, false, true);

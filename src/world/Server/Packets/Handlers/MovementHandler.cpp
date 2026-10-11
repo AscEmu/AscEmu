@@ -549,6 +549,19 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 void WorldSession::handleAcknowledgementOpcodes(WorldPacket& recvPacket)
 {
     const auto opcode = sOpcodeTables.getInternalIdForHex(recvPacket.getOpcode(), getClientProtocol());
+
+    if (getClientProtocol().isForever())
+    {
+        switch (opcode)
+        {
+            case CMSG_MOVE_SET_CAN_FLY_ACK:
+            case CMSG_FORCE_PITCH_RATE_CHANGE_ACK:
+                recvPacket.rfinish();
+                return;
+            default:
+                break;
+        }
+    }
     switch (opcode)
     {
         case CMSG_MOVE_SET_CAN_FLY_ACK:
@@ -571,6 +584,34 @@ void WorldSession::handleAcknowledgementOpcodes(WorldPacket& recvPacket)
 void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
 {
     Unit* mover = _player->m_controledUnit;
+    if (mover == nullptr)
+        return;
+
+    if (getClientProtocol().isForever())
+    {
+        const auto opcode = sOpcodeTables.getInternalIdForHex(recvPacket.getOpcode(), getClientProtocol());
+        UnitSpeedType moveType;
+        switch (opcode)
+        {
+            case CMSG_FORCE_WALK_SPEED_CHANGE_ACK:        moveType = TYPE_WALK; break;
+            case CMSG_FORCE_RUN_SPEED_CHANGE_ACK:         moveType = TYPE_RUN; break;
+            case CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK:    moveType = TYPE_RUN_BACK; break;
+            case CMSG_FORCE_SWIM_SPEED_CHANGE_ACK:        moveType = TYPE_SWIM; break;
+            case CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK:   moveType = TYPE_SWIM_BACK; break;
+            case CMSG_FORCE_TURN_RATE_CHANGE_ACK:         moveType = TYPE_TURN_RATE; break;
+            case CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK:      moveType = TYPE_FLY; break;
+            case CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK: moveType = TYPE_FLY_BACK; break;
+            default:
+                recvPacket.rfinish();
+                return;
+        }
+
+        if (_player->m_forced_speed_changes[moveType] > 0)
+            --_player->m_forced_speed_changes[moveType];
+
+        recvPacket.rfinish();
+        return;
+    }
 
     MovementInfo movementInfo;
     movementInfo.read(recvPacket, getClientProtocol());

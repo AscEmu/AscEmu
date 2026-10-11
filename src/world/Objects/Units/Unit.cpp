@@ -3192,14 +3192,31 @@ static uint16_t resolveMovementOpcodeForReceiver(uint16_t opcode, bool isPlayer)
 void Unit::sendMoveInfoForPacket(uint16_t opcode, bool withGuid /* = true*/)
 {
     auto resolvedOpcode = resolveMovementOpcodeForReceiver(opcode, isPlayer());
+    MovementInfo movementInfo = obj_movement_info;
 
-    MsgMovementInfo packet(resolvedOpcode, obj_movement_info, withGuid);
+#if defined(AE_FOREVER)
+    if (isPlayer())
+    {
+        if (auto* const plr = dynamic_cast<Player*>(this); plr != nullptr && plr->getSession() != nullptr && plr->getSession()->getClientProtocol().isForever())
+        {
+            movementInfo.guid = WoWGuid::createModernPlayer(plr->getForeverRealmId(), plr->getGuidLow());
+            movementInfo.counter = plr->nextForeverMovementSequence();
+        }
+    }
+#endif
+
+    MsgMovementInfo packet(resolvedOpcode, movementInfo, withGuid);
 
     if (isPlayer())
     {
         // the moving player receives the move opcode itself, other clients receive SMSG_PLAYER_MOVE since Cata
         if (auto* const plr = dynamic_cast<Player*>(this))
             plr->sendManagedPacket(packet);
+
+#if defined(AE_FOREVER)
+        if (auto* const plr = dynamic_cast<Player*>(this); plr != nullptr && plr->getSession() != nullptr && plr->getSession()->getClientProtocol().isForever())
+            return;
+#endif
 
         SmsgPlayerMove broadcastPacket(obj_movement_info, withGuid, resolvedOpcode);
         PacketBroadcast::sendToSet(*this, broadcastPacket, false);
@@ -3553,11 +3570,25 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
     mi.newSpeed = rate;
     mi.guid = GetNewGUID();
 
+#if defined(AE_FOREVER)
+    const bool foreverPlayerMover = player_mover != nullptr && player_mover->getSession() != nullptr && player_mover->getSession()->getClientProtocol().isForever();
+    if (foreverPlayerMover)
+    {
+        mi.guid = WoWGuid::createModernPlayer(player_mover->getForeverRealmId(), player_mover->getGuidLow());
+        mi.counter = player_mover->nextForeverMovementSequence();
+    }
+#endif
+
     if (player_mover) // unit controlled by a player.
     {
-        // note: do not send this packet to the player, otherwise you will stuck in an endless loop
-        MsgMovementInfo setPacket(moveTypeToOpcode[mtype][2], mi);
-        PacketBroadcast::sendToSet(*player_mover, setPacket, false);
+#if defined(AE_FOREVER)
+        if (!foreverPlayerMover)
+#endif
+        {
+            // note: do not send this packet to the player, otherwise you will stuck in an endless loop
+            MsgMovementInfo setPacket(moveTypeToOpcode[mtype][2], mi);
+            PacketBroadcast::sendToSet(*player_mover, setPacket, false);
+        }
 
         MsgMovementInfo playerPacket(moveTypeToOpcode[mtype][1], mi);
         player_mover->sendManagedPacket(playerPacket);

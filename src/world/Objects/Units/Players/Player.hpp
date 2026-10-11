@@ -658,6 +658,9 @@ public:
 
     void sendTeleportPacket(LocationVector position);
     void sendTeleportAckPacket(LocationVector position);
+#if defined(AE_FOREVER)
+    uint32_t nextForeverMovementSequence() { return m_foreverMovementSequence++; }
+#endif
 
     void onWorldPortAck();
     void eventPortToGm(Player* gmPlayer);
