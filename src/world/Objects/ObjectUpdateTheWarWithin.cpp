@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ObjectUpdateTheWarWithin.hpp"
 
+#include "Storage/CharacterCustomizations.hpp"
+
 #if VERSION_STRING == TheWarWithin
 
 #include "Data/Flags.hpp"
@@ -1299,6 +1301,18 @@ namespace
         data.flushBits();
     }
 
+    // the look of a player as customization choices, converted from the stored bytes
+    static std::vector<CharacterCustomizations::ChrCustomizationChoice> playerCustomizations(Player* player)
+    {
+        CharacterCustomizations::LegacyLook look;
+        look.skin = player->getSkinColor();
+        look.face = player->getFace();
+        look.hairStyle = player->getHairStyle();
+        look.hairColor = player->getHairColor();
+        look.facialStyle = player->getFacialFeatures();
+        return CharacterCustomizations::convertLegacyLook(static_cast<uint8_t>(player->getRace()), static_cast<uint8_t>(player->getClass()), player->getPlayerGender(), look);
+    }
+
     void playerCreate(Player* player, Context const& ctx)
     {
         ByteBuffer& data = ctx.data;
@@ -1315,7 +1329,8 @@ namespace
         data << uint32_t(player->getGuildRank());
         data << uint32_t(player->getField<uint32_t>(PlayerField::GuildDeleteDate));
         data << int32_t(player->getField<uint32_t>(PlayerField::GuildLevel));
-        data << uint32_t(0);                                                // customizations: the look bytes of the server layout have no 11.x list
+        const auto customizations = playerCustomizations(player);
+        data << uint32_t(customizations.size());
         data << uint32_t(0);                                                // qa customizations
         data << uint8_t(0) << uint8_t(0);                                   // party type
         data << uint8_t(player->getPlayerGender());                         // native sex
@@ -1362,6 +1377,8 @@ namespace
         for (uint8_t i = 0; i < PlayerField3120Count; ++i)
             data << uint32_t(0);                                            // field 3120
         playerPersonalTabardCreate(data);
+        for (const auto& customization : customizations)
+            data << customization.optionId << customization.choiceId;
 
         data.flushBits();
         data.writeBits(static_cast<uint32_t>(name.size()), 6);
@@ -1392,7 +1409,9 @@ namespace
             if (changed.changed(single.field))
                 mask.set(single.bit);
 
-        // the look bytes (PlayerBytes, PlayerBytes2) have no 11.x field: the customization list stays empty
+        // the look bytes become the customization list
+        if (changed.changed(PlayerField::PlayerBytes) || changed.changed(PlayerField::PlayerBytes2))
+            mask.set(3);
         if (changed.changed(PlayerField::PlayerBytes3))
             mask.setRange(19, 4);
 
@@ -1427,6 +1446,8 @@ namespace
         const std::string name = player->getName();
         const uint32_t accountId = player->getSession() != nullptr ? player->getSession()->GetAccountId() : 0;
 
+        const auto customizations = mask[3] ? playerCustomizations(player) : std::vector<CharacterCustomizations::ChrCustomizationChoice>();
+
         mask.writeBlocks(data);
         data.writeBit(false);                                               // the quest log keeps its change masks
         if (mask[0])
@@ -1437,7 +1458,9 @@ namespace
                 data.writeBit(false);                                       // has a level link
             // the dynamic fields: customizations, qa customizations, quest session quest log, arena cooldowns,
             // pet names, visual item replacements
-            for (uint8_t bit = 3; bit <= 8; ++bit)
+            if (mask[3])
+                writeDynamicMask(data, static_cast<uint32_t>(customizations.size()));
+            for (uint8_t bit = 4; bit <= 8; ++bit)
                 if (mask[bit])
                     writeDynamicMask(data, 0);
         }
@@ -1445,6 +1468,9 @@ namespace
 
         if (mask[0])
         {
+            if (mask[3])
+                for (const auto& customization : customizations)
+                    data << customization.optionId << customization.choiceId;
             if (mask[9])
                 ctx.guid(player->getDuelArbiter());
             if (mask[10])

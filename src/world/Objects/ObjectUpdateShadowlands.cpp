@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ObjectUpdateShadowlands.hpp"
 
+#include "Storage/CharacterCustomizations.hpp"
+
 #if VERSION_STRING == Shadowlands
 
 #include "Data/Flags.hpp"
@@ -1188,6 +1190,18 @@ namespace
         data << float(0.0f) << float(0.0f) << uint32_t(0);
     }
 
+    // the look of a player as customization choices, converted from the stored bytes
+    static std::vector<CharacterCustomizations::ChrCustomizationChoice> playerCustomizations(Player* player)
+    {
+        CharacterCustomizations::LegacyLook look;
+        look.skin = player->getSkinColor();
+        look.face = player->getFace();
+        look.hairStyle = player->getHairStyle();
+        look.hairColor = player->getHairColor();
+        look.facialStyle = player->getFacialFeatures();
+        return CharacterCustomizations::convertLegacyLook(static_cast<uint8_t>(player->getRace()), static_cast<uint8_t>(player->getClass()), player->getPlayerGender(), look);
+    }
+
     void playerCreate(Player* player, Context const& ctx)
     {
         ByteBuffer& data = ctx.data;
@@ -1200,7 +1214,8 @@ namespace
         data << uint32_t(player->getGuildRank());
         data << uint32_t(player->getField<uint32_t>(PlayerField::GuildDeleteDate));
         data << int32_t(player->getField<uint32_t>(PlayerField::GuildLevel));
-        data << uint32_t(0);                                                // customizations: the look bytes of the server layout have no 9.x list
+        const auto customizations = playerCustomizations(player);
+        data << uint32_t(customizations.size());
         data << uint8_t(0);                                                 // party type
         data << uint8_t(player->getPlayerGender());                         // native sex
         data << uint8_t(player->getDrunkValue());                           // inebriation
@@ -1234,6 +1249,8 @@ namespace
         playerCtrOptionsCreate(data);
         data << int32_t(0);                                                 // covenant
         data << int32_t(0);                                                 // soulbind
+        for (const auto& customization : customizations)
+            data << customization.optionId << customization.choiceId;
 
         if (ctx.partyMember())
             data.writeBit(false);                                           // has a quest session
@@ -1257,7 +1274,9 @@ namespace
             if (changed.changed(single.field))
                 mask.set(single.bit);
 
-        // the look bytes (PlayerBytes, PlayerBytes2) have no 9.x field: the customization list stays empty
+        // the look bytes become the customization list
+        if (changed.changed(PlayerField::PlayerBytes) || changed.changed(PlayerField::PlayerBytes2))
+            mask.set(3);
         if (changed.changed(PlayerField::PlayerBytes3))
             mask.setRange(15, 4);
 
@@ -1289,6 +1308,8 @@ namespace
     {
         ByteBuffer& data = ctx.data;
 
+        const auto customizations = mask[3] ? playerCustomizations(player) : std::vector<CharacterCustomizations::ChrCustomizationChoice>();
+
         mask.writeBlocks(data);
         data.writeBit(false);                                               // the quest log keeps its change masks
         if (mask[0])
@@ -1298,7 +1319,7 @@ namespace
             if (mask[2])
                 data.writeBit(false);                                       // has a level link
             if (mask[3])
-                writeDynamicMask(data, 0);                                  // customizations
+                writeDynamicMask(data, static_cast<uint32_t>(customizations.size()));   // customizations
             if (mask[4])
                 writeDynamicMask(data, 0);                                  // quest session quest log
             if (mask[5])
@@ -1308,6 +1329,9 @@ namespace
 
         if (mask[0])
         {
+            if (mask[3])
+                for (const auto& customization : customizations)
+                    data << customization.optionId << customization.choiceId;
             if (mask[6])
                 ctx.guid(player->getDuelArbiter());
             if (mask[7])

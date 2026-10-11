@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "Storage/CharacterCustomizations.hpp"
 #include <algorithm>
 #include <cstdint>
 #include <vector>
@@ -445,10 +446,18 @@ namespace AscEmu::Packets
 
             packet << listPosition;
             packet << data.race << data.Class << data.gender;
+            // 9.x and 10.x: the look is a list of customization choices converted from the stored bytes
+            std::vector<CharacterCustomizations::ChrCustomizationChoice> customizations;
             if (shadowlands)
             {
-                // 9.x: the look is a list of customization choices, none are stored yet
-                packet << uint32_t(0);
+                CharacterCustomizations::LegacyLook look;
+                look.skin = static_cast<uint8_t>(data.bytes & 0xFF);
+                look.face = static_cast<uint8_t>((data.bytes >> 8) & 0xFF);
+                look.hairStyle = static_cast<uint8_t>((data.bytes >> 16) & 0xFF);
+                look.hairColor = static_cast<uint8_t>((data.bytes >> 24) & 0xFF);
+                look.facialStyle = static_cast<uint8_t>(data.bytes2 & 0xFF);
+                customizations = CharacterCustomizations::convertLegacyLook(data.race, data.Class, data.gender, look);
+                packet << uint32_t(customizations.size());
             }
             else
             {
@@ -519,6 +528,9 @@ namespace AscEmu::Packets
                 }
             }
 
+            for (const auto& customization : customizations)
+                packet << customization.optionId << customization.choiceId;
+
             packet.writeBits(static_cast<uint32_t>(data.name.length()), 6);
             packet.writeBit(data.loginFlags & 0x20);            // first login
             packet.writeBit(0);                                 // boost in progress
@@ -541,7 +553,17 @@ namespace AscEmu::Packets
             packet << listPosition;
             packet << data.race << data.gender << data.Class;
             packet << int16_t(0);                               // specialization
-            packet << uint32_t(0);                              // customization choices, none are stored yet
+
+            // the look as customization choices converted from the stored bytes
+            CharacterCustomizations::LegacyLook look;
+            look.skin = static_cast<uint8_t>(data.bytes & 0xFF);
+            look.face = static_cast<uint8_t>((data.bytes >> 8) & 0xFF);
+            look.hairStyle = static_cast<uint8_t>((data.bytes >> 16) & 0xFF);
+            look.hairColor = static_cast<uint8_t>((data.bytes >> 24) & 0xFF);
+            look.facialStyle = static_cast<uint8_t>(data.bytes2 & 0xFF);
+            const auto customizations = CharacterCustomizations::convertLegacyLook(data.race, data.Class, data.gender, look);
+
+            packet << uint32_t(customizations.size());
             packet << data.level;
             packet << int32_t(data.mapId);
             packet << int32_t(data.zoneId);
@@ -586,6 +608,9 @@ namespace AscEmu::Packets
             packet << int32_t(0);                               // timerunning season
             packet << uint32_t(0);                              // override of the select screen file
             packet << uint32_t(0);
+
+            for (const auto& customization : customizations)
+                packet << customization.optionId << customization.choiceId;
 
             packet.writeBits(static_cast<uint32_t>(data.name.length()), 6);
             packet.writeBit(data.loginFlags & 0x20);            // first login
