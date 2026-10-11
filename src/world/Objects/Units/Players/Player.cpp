@@ -1881,14 +1881,68 @@ void Player::setTrackCreature(uint32_t id) { write(playerData()->track_creatures
 uint32_t Player::getTrackResource() const { return playerData()->track_resources; }
 void Player::setTrackResource(uint32_t id) { write(playerData()->track_resources, id); }
 
-float Player::getBlockPercentage() const { return playerData()->block_pct; }
-void Player::setBlockPercentage(float value) { write(playerData()->block_pct, value); }
+float Player::getBlockPercentage() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverActivePlayerFields.blockPercentage;
+#else
+    return playerData()->block_pct;
+#endif
+}
+void Player::setBlockPercentage(float value)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverActivePlayerFields.blockPercentage == value)
+        return;
+    m_foreverActivePlayerFields.blockPercentage = value;
+    m_foreverActivePlayerFields.markGroupedChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::CombatStatsParentBit, AscEmu::Version::Forever::Fields::ActivePlayerData::BlockPercentageBit);
+    updateObject();
+#else
+    write(playerData()->block_pct, value);
+#endif
+}
 
-float Player::getDodgePercentage() const { return playerData()->dodge_pct; }
-void Player::setDodgePercentage(float value) { write(playerData()->dodge_pct, value); }
+float Player::getDodgePercentage() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverActivePlayerFields.dodgePercentage;
+#else
+    return playerData()->dodge_pct;
+#endif
+}
+void Player::setDodgePercentage(float value)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverActivePlayerFields.dodgePercentage == value)
+        return;
+    m_foreverActivePlayerFields.dodgePercentage = value;
+    m_foreverActivePlayerFields.markGroupedChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::CombatStatsParentBit, AscEmu::Version::Forever::Fields::ActivePlayerData::DodgePercentageBit);
+    updateObject();
+#else
+    write(playerData()->dodge_pct, value);
+#endif
+}
 
-float Player::getParryPercentage() const { return playerData()->parry_pct; }
-void Player::setParryPercentage(float value) { write(playerData()->parry_pct, value); }
+float Player::getParryPercentage() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverActivePlayerFields.parryPercentage;
+#else
+    return playerData()->parry_pct;
+#endif
+}
+void Player::setParryPercentage(float value)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverActivePlayerFields.parryPercentage == value)
+        return;
+    m_foreverActivePlayerFields.parryPercentage = value;
+    m_foreverActivePlayerFields.markGroupedChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::CombatStatsParentBit, AscEmu::Version::Forever::Fields::ActivePlayerData::ParryPercentageBit);
+    updateObject();
+#else
+    write(playerData()->parry_pct, value);
+#endif
+}
 
 #if VERSION_STRING >= TBC
 uint32_t Player::getExpertise() const { return playerData()->expertise; }
@@ -1900,26 +1954,116 @@ void Player::setOffHandExpertise(uint32_t value) { write(playerData()->offhand_e
 void Player::modOffHandExpertise(int32_t value) { setOffHandExpertise(getOffHandExpertise() + value); }
 #endif
 
-float Player::getMeleeCritPercentage() const { return playerData()->crit_pct; }
-void Player::setMeleeCritPercentage(float value) { write(playerData()->crit_pct, value); }
+float Player::getMeleeCritPercentage() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverActivePlayerFields.critPercentage;
+#else
+    return playerData()->crit_pct;
+#endif
+}
+void Player::setMeleeCritPercentage(float value)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverActivePlayerFields.critPercentage == value)
+        return;
+    m_foreverActivePlayerFields.critPercentage = value;
+    m_foreverActivePlayerFields.markGroupedChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::CombatStatsParentBit, AscEmu::Version::Forever::Fields::ActivePlayerData::CritPercentageBit);
+    updateObject();
+#else
+    write(playerData()->crit_pct, value);
+#endif
+}
 
-float Player::getRangedCritPercentage() const { return playerData()->ranged_crit_pct; }
-void Player::setRangedCritPercentage(float value) { write(playerData()->ranged_crit_pct, value); }
+float Player::getRangedCritPercentage() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverActivePlayerFields.rangedCritPercentage;
+#else
+    return playerData()->ranged_crit_pct;
+#endif
+}
+void Player::setRangedCritPercentage(float value)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverActivePlayerFields.rangedCritPercentage == value)
+        return;
+    m_foreverActivePlayerFields.rangedCritPercentage = value;
+    m_foreverActivePlayerFields.markGroupedChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::CombatStatsParentBit, AscEmu::Version::Forever::Fields::ActivePlayerData::RangedCritPercentageBit);
+    updateObject();
+#else
+    write(playerData()->ranged_crit_pct, value);
+#endif
+}
 
 #if VERSION_STRING >= TBC
-float Player::getOffHandCritPercentage() const { return playerData()->offhand_crit_pct; }
-void Player::setOffHandCritPercentage(float value) { write(playerData()->offhand_crit_pct, value); }
+float Player::getOffHandCritPercentage() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverActivePlayerFields.offhandCritPercentage;
+#else
+    return playerData()->offhand_crit_pct;
+#endif
+}
+void Player::setOffHandCritPercentage(float value)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverActivePlayerFields.offhandCritPercentage == value)
+        return;
+    m_foreverActivePlayerFields.offhandCritPercentage = value;
+    m_foreverActivePlayerFields.markGroupedChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::CombatStatsParentBit, AscEmu::Version::Forever::Fields::ActivePlayerData::OffhandCritPercentageBit);
+    updateObject();
+#else
+    write(playerData()->offhand_crit_pct, value);
+#endif
+}
 
 float Player::getSpellCritPercentage(uint8_t school) const { return playerData()->spell_crit_pct[school]; }
 void Player::setSpellCritPercentage(uint8_t school, float value) { write(playerData()->spell_crit_pct[school], value); }
 
-uint32_t Player::getShieldBlock() const { return playerData()->shield_block; }
-void Player::setShieldBlock(uint32_t value) { write(playerData()->shield_block, value); }
+uint32_t Player::getShieldBlock() const
+{
+#if defined(AE_FOREVER)
+    return static_cast<uint32_t>(std::max<int32_t>(0, m_foreverActivePlayerFields.shieldBlock));
+#else
+    return playerData()->shield_block;
+#endif
+}
+void Player::setShieldBlock(uint32_t value)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverActivePlayerFields.shieldBlock == static_cast<int32_t>(value))
+        return;
+    m_foreverActivePlayerFields.shieldBlock = static_cast<int32_t>(value);
+    m_foreverActivePlayerFields.markGroupedChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::CombatStatsParentBit, AscEmu::Version::Forever::Fields::ActivePlayerData::ShieldBlockBit);
+    updateObject();
+#else
+    write(playerData()->shield_block, value);
+#endif
+}
 #endif
 
 #if VERSION_STRING >= WotLK
-float Player::getShieldBlockCritPercentage() const { return playerData()->shield_block_crit_pct; }
-void Player::setShieldBlockCritPercentage(float value) { write(playerData()->shield_block_crit_pct, value); }
+float Player::getShieldBlockCritPercentage() const
+{
+#if defined(AE_FOREVER)
+    return m_foreverActivePlayerFields.shieldBlockCritPercentage;
+#else
+    return playerData()->shield_block_crit_pct;
+#endif
+}
+void Player::setShieldBlockCritPercentage(float value)
+{
+#if defined(AE_FOREVER)
+    if (m_foreverActivePlayerFields.shieldBlockCritPercentage == value)
+        return;
+    m_foreverActivePlayerFields.shieldBlockCritPercentage = value;
+    m_foreverActivePlayerFields.markGroupedChanged(AscEmu::Version::Forever::Fields::ActivePlayerData::CombatStatsParentBit, AscEmu::Version::Forever::Fields::ActivePlayerData::ShieldBlockCritPercentageBit);
+    updateObject();
+#else
+    write(playerData()->shield_block_crit_pct, value);
+#endif
+}
 #endif
 
 uint32_t Player::getExploredZone(uint32_t idx) const

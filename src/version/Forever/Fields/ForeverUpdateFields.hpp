@@ -911,7 +911,8 @@ namespace AscEmu::Version::Forever::Fields
         std::bitset<ChangeMaskSize> changes{};
 
         void markChanged(std::size_t bit) { changes.set(bit & ~std::size_t(31)); changes.set(bit); }
-        void markArrayChanged(std::size_t groupBit, std::size_t elementBit) { changes.set(groupBit); changes.set(elementBit); }
+        void markGroupedChanged(std::size_t groupBit, std::size_t fieldBit) { changes.set(groupBit); changes.set(fieldBit); }
+        void markArrayChanged(std::size_t groupBit, std::size_t elementBit) { markGroupedChanged(groupBit, elementBit); }
         void clearChanges()
         {
             changes.reset();
@@ -1039,6 +1040,17 @@ namespace AscEmu::Version::Forever::Fields
         static inline constexpr std::size_t TrialXpBit = 62; // [UNVERIFIED]
         // Classic 1.60 keeps SkillInfo at ActivePlayerData bit 63.
         static inline constexpr std::size_t SkillInfoBit = 63;
+        // Character-sheet combat statistics live in the ActivePlayerData 70 group.
+        // These wire positions are unchanged in the Forever 1.60 layout.
+        static inline constexpr std::size_t CombatStatsParentBit = 70;
+        static inline constexpr std::size_t BlockPercentageBit = 72;
+        static inline constexpr std::size_t DodgePercentageBit = 73;
+        static inline constexpr std::size_t ParryPercentageBit = 75;
+        static inline constexpr std::size_t CritPercentageBit = 77;
+        static inline constexpr std::size_t RangedCritPercentageBit = 78;
+        static inline constexpr std::size_t OffhandCritPercentageBit = 79;
+        static inline constexpr std::size_t ShieldBlockBit = 81;
+        static inline constexpr std::size_t ShieldBlockCritPercentageBit = 82;
         // [FOREVER-VERIFIED] Retail 1.60.1.70235 watched-faction differential.
         // CMSG_SET_WATCHED_FACTION carries int32 faction index (20 for Ironforge, -1 to clear);
         // the following ActivePlayerData VALUES update sets parent bit 102 and field bit 113.
@@ -1105,6 +1117,13 @@ namespace AscEmu::Version::Forever::Fields
         std::bitset<ChangeMaskSize> changes{};
 
         void markChanged(std::size_t bit) { changes.set(bit & ~std::size_t(31)); changes.set(bit); }
+        void markGroupedChanged(std::size_t groupBit, std::size_t fieldBit)
+        {
+            changes.set(groupBit & ~std::size_t(31));
+            changes.set(groupBit);
+            changes.set(fieldBit & ~std::size_t(31));
+            changes.set(fieldBit);
+        }
         void markArrayChanged(std::size_t groupBit, std::size_t elementBit) { changes.set(groupBit); changes.set(elementBit); }
         void markRestInfoChanged(std::size_t index)
         {
