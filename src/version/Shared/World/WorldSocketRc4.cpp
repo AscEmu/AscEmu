@@ -117,11 +117,12 @@ namespace
     }
 
     // digest of CMSG_AUTH_SESSION: HMAC-SHA256(local challenge | server challenge | check seed), first 24 bytes compared
-    bool digestMatches(const std::array<uint8_t, Sha256Hash::DigestLength>& key, const std::array<uint8_t, 16>& localChallenge, const std::array<uint8_t, 16>& serverChallenge, const std::array<uint8_t, 24>& received)
+    // the challenge buffers of the auth packets are 32 bytes for 11.x, this transport uses the first 16
+    bool digestMatches(const std::array<uint8_t, Sha256Hash::DigestLength>& key, const uint8_t* localChallenge, const uint8_t* serverChallenge, const std::array<uint8_t, 24>& received)
     {
         std::array<uint8_t, 48> input{};
-        std::memcpy(input.data(), localChallenge.data(), 16);
-        std::memcpy(input.data() + 16, serverChallenge.data(), 16);
+        std::memcpy(input.data(), localChallenge, 16);
+        std::memcpy(input.data() + 16, serverChallenge, 16);
         std::memcpy(input.data() + 32, Rc4World::AuthCheckSeed.data(), 16);
 
         std::array<uint8_t, Sha256Hash::DigestLength> digest{};
@@ -258,7 +259,7 @@ bool WorldSocket::processRc4Initializer()
         disconnect();
         return false;
     }
-    challenge.challenge = m_rc4ServerChallenge;
+    std::memcpy(challenge.challenge.data(), m_rc4ServerChallenge.data(), m_rc4ServerChallenge.size());
     m_rc4ChallengeSeeds = challenge.dosChallenge;
 
     m_rc4WorldState = Rc4WorldState::AwaitAuthSession;
@@ -401,7 +402,7 @@ void WorldSocket::handleRc4AuthSession(WorldPacket& packet)
     bool verified = false;
     if constexpr (Profile::AuthSeeds.empty())
     {
-        verified = digestMatches(keyDataHash, authSession.localChallenge, m_rc4ServerChallenge, authSession.sessionDigest);
+        verified = digestMatches(keyDataHash, authSession.localChallenge.data(), m_rc4ServerChallenge.data(), authSession.sessionDigest);
     }
     else
     {
@@ -415,7 +416,7 @@ void WorldSocket::handleRc4AuthSession(WorldPacket& packet)
             std::array<uint8_t, Sha256Hash::DigestLength> digestKey{};
             Sha256Hash::hash(input.data(), input.size(), digestKey.data());
 
-            if (digestMatches(digestKey, authSession.localChallenge, m_rc4ServerChallenge, authSession.sessionDigest))
+            if (digestMatches(digestKey, authSession.localChallenge.data(), m_rc4ServerChallenge.data(), authSession.sessionDigest))
             {
                 verified = true;
                 break;
