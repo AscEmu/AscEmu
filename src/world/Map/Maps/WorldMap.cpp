@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WorldMap.hpp"
 #include "Objects/DynamicObject.hpp"
+#include "Objects/AreaTrigger.hpp"
 #include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/AIInterface.h"
@@ -103,6 +104,34 @@ void WorldMap::initialize()
     // Call script OnLoad virtual procedure
     if (getScript())
         getScript()->OnLoad();
+
+    // Forever client-data AreaTriggers are detected by the client and arrive as
+    // CMSG_AREATRIGGER. Only legacy trigger volumes missing from AreaTrigger.db2
+    // need a server-side spatial fallback from `areatrigger_spawns`.
+    if (const auto* legacySpawnStore = sMySQLStore.getAreaTriggerSpawnsStore())
+    {
+        for (const auto& [triggerId, spawn] : *legacySpawnStore)
+        {
+            if (spawn.mapId != getBaseMap()->getMapId())
+                continue;
+
+            // If the client still knows this trigger, prefer the authoritative
+            // client-data/CMSG path and avoid creating a duplicate runtime volume.
+            if (sAreaTriggerStore.lookupEntry(triggerId))
+                continue;
+
+            AreaTrigger* areaTrigger = factory_->createAreaTrigger(triggerId);
+            if (!areaTrigger || !areaTrigger->create(this, spawn.mapId, spawn.x, spawn.y, spawn.z,
+                spawn.radius, spawn.boxX, spawn.boxY, spawn.boxZ, spawn.orientation))
+            {
+                delete areaTrigger;
+                continue;
+            }
+
+            factory_->attachToWorld(areaTrigger);
+            refreshAreaTriggerTargets(areaTrigger);
+        }
+    }
 
     // Continent maps may contain autonomous DB spawns (for example long waypoint
     // creatures). Spawn only those definitions here without activating the rest of
@@ -1221,7 +1250,7 @@ void WorldMap::onObjectMoved(Object* obj)
     // an unthrottled area-only signal that never triggers nearby AI acquisition.
     if (Unit* movedUnit = obj->ToUnit(); movedUnit && move.valid)
     {
-        if (maxDynamicObjectTargetRadius_ > 0.0f || !movedUnit->getDynamicObjectTargets().empty())
+        if (maxDynamicObjectTargetRadius_ > 0.0f || maxAreaTriggerRadius_ > 0.0f || !movedUnit->getDynamicObjectTargets().empty() || !movedUnit->getAreaTriggerTargets().empty())
             queueUnitAwareness(movedUnit, UnitAwarenessSignal::AreaMovement);
 
         queueUnitAwareness(movedUnit, UnitAwarenessSignal::Movement);
@@ -1290,8 +1319,11 @@ void WorldMap::processPendingUnitAwareness()
     thread_local std::vector<Creature*> observerCreatures;
     thread_local std::vector<Unit*> nearbyUnits;
     thread_local std::vector<DynamicObject*> nearbyDynamicObjects;
+    thread_local std::vector<AreaTrigger*> nearbyAreaTriggers;
     thread_local std::vector<uint64_t> currentDynamicObjects;
+    thread_local std::vector<uint64_t> currentAreaTriggers;
     thread_local std::unordered_set<uint64_t> processedDynamicObjects;
+    thread_local std::unordered_set<uint64_t> processedAreaTriggers;
 
     // Automatic creature aggro is capped at 45 yards; the shared awareness
     // range keeps a 5-yard safety margin while avoiding unnecessary wider scans.
@@ -1362,6 +1394,45 @@ void WorldMap::processPendingUnitAwareness()
                         continue;
 
                     dynamicObject->considerTarget(source);
+                }
+            }
+        }
+
+        if (refreshDynamicAreaTargets)
+        {
+            processedAreaTriggers.clear();
+
+            currentAreaTriggers.assign(source->getAreaTriggerTargets().begin(), source->getAreaTriggerTargets().end());
+            for (uint64_t areaGuid : currentAreaTriggers)
+            {
+                if (AreaTrigger* areaTrigger = getAreaTrigger(WoWGuid(areaGuid)))
+                {
+                    processedAreaTriggers.insert(areaGuid);
+                    areaTrigger->considerTarget(source);
+                }
+                else
+                {
+                    source->removeAreaTriggerTarget(areaGuid);
+                }
+            }
+
+            if (maxAreaTriggerRadius_ > 0.0f)
+            {
+                nearbyAreaTriggers.clear();
+                spatialIndex_->collectObjectsInRange<AreaTrigger>(source->GetPosition(), maxAreaTriggerRadius_, nearbyAreaTriggers);
+                ++m_awarenessQueriesThisTick;
+                m_awarenessCandidatesThisTick += nearbyAreaTriggers.size();
+
+                for (AreaTrigger* areaTrigger : nearbyAreaTriggers)
+                {
+                    if (!areaTrigger || !areaTrigger->IsInWorld() || areaTrigger->getWorldMap() != this)
+                        continue;
+
+                    const uint64_t areaGuid = areaTrigger->getGuid();
+                    if (!processedAreaTriggers.insert(areaGuid).second)
+                        continue;
+
+                    areaTrigger->considerTarget(source);
                 }
             }
         }
@@ -1482,6 +1553,32 @@ void WorldMap::refreshDynamicObjectTargets(DynamicObject* dynamicObject)
         // Aura/script application may despawn the DynamicObject.
         if (!dynamicObject->IsInWorld() || dynamicObject->getWorldMap() != this)
             break;
+    }
+}
+
+void WorldMap::refreshAreaTriggerTargets(AreaTrigger* areaTrigger)
+{
+    if (!areaTrigger || !areaTrigger->IsInWorld() || areaTrigger->getWorldMap() != this)
+        return;
+
+    const float radius = std::max(0.0f, areaTrigger->getSearchRadius());
+    maxAreaTriggerRadius_ = std::max(maxAreaTriggerRadius_, radius);
+
+    areaTrigger->refreshCurrentTargets();
+    if (radius <= 0.0f)
+        return;
+
+    thread_local std::vector<Unit*> nearbyUnits;
+    nearbyUnits.clear();
+    spatialIndex_->collectUnitsInRange(areaTrigger->GetPosition(), radius, nearbyUnits);
+    ++m_awarenessQueriesThisTick;
+    m_awarenessCandidatesThisTick += nearbyUnits.size();
+
+    for (Unit* target : nearbyUnits)
+    {
+        if (!target || !target->IsInWorld() || target->getWorldMap() != this)
+            continue;
+        areaTrigger->considerTarget(target);
     }
 }
 

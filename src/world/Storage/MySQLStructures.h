@@ -73,6 +73,21 @@ namespace MySQLStructure
         uint32_t requiredLevel;
     };
 
+    //areatrigger_spawns
+    struct AreaTriggerSpawn
+    {
+        uint32_t id;
+        uint32_t mapId;
+        float x;
+        float y;
+        float z;
+        float radius;
+        float boxX;
+        float boxY;
+        float boxZ;
+        float orientation;
+    };
+
     //\brief loaded in AuctionHouse.cpp
     //auctionhouse
 

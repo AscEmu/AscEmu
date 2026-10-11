@@ -290,8 +290,9 @@ bool ChatCommandHandler::HandleReloadCreaturesCommand(const char* /*args*/, Worl
 bool ChatCommandHandler::HandleReloadAreaTriggersCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
+    sMySQLStore.loadAreaTriggerSpawnTable();
     sMySQLStore.loadAreaTriggerTable();
-    greenSystemMessage(m_session, "WorldDB table 'areatriggers' reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB tables 'areatrigger_spawns' and 'areatriggers' reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 

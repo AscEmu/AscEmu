@@ -1004,6 +1004,7 @@ void World::loadMySQLStores()
             sMySQLStore.loadPetLevelAbilitiesTable();
             sMySQLStore.loadBroadcastTable();
 
+            sMySQLStore.loadAreaTriggerSpawnTable();
             sMySQLStore.loadAreaTriggerTable();
             sMySQLStore.loadWordFilterCharacterNames();
             sMySQLStore.loadWordFilterChat();

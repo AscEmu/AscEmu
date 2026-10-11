@@ -2687,7 +2687,8 @@ namespace {
         WDB::WDC5File mapDifficulty;
         WDB::WDC5File uiMapAssignment;
         WDB::WDC5File worldMapOverlay;
-        if (!loadForeverWDC5Group({ { map, ForeverFormat::Map }, { mapDifficulty, ForeverFormat::MapDifficulty }, { uiMapAssignment, ForeverFormat::UiMapAssignment }, { worldMapOverlay, ForeverFormat::WorldMapOverlay } }, errors, dbcPath))
+        WDB::WDC5File areaTrigger;
+        if (!loadForeverWDC5Group({ { map, ForeverFormat::Map }, { mapDifficulty, ForeverFormat::MapDifficulty }, { uiMapAssignment, ForeverFormat::UiMapAssignment }, { worldMapOverlay, ForeverFormat::WorldMapOverlay }, { areaTrigger, ForeverFormat::AreaTrigger } }, errors, dbcPath))
             return false;
 
         sMapStore.clear();
@@ -2708,6 +2709,26 @@ namespace {
             entry.maxPlayers = map.getUInt8(row, 18);
             sMapStore[entry.id] = std::move(entry);
         }
+
+        std::vector<std::pair<uint32_t, WDB::Structures::AreaTriggerEntry>> areaTriggerEntries;
+        areaTriggerEntries.reserve(areaTrigger.getRecordCount());
+        for (uint32_t row = 0; row < areaTrigger.getRecordCount(); ++row)
+        {
+            WDB::Structures::AreaTriggerEntry entry{};
+            entry.id = areaTrigger.getRecordId(row);
+            entry.mapId = areaTrigger.getParentId(row);
+            entry.x = areaTrigger.getFloat(row, 0, 0);
+            entry.y = areaTrigger.getFloat(row, 0, 1);
+            entry.z = areaTrigger.getFloat(row, 0, 2);
+            entry.boxRadius = areaTrigger.getFloat(row, 6);
+            entry.boxX = areaTrigger.getFloat(row, 7);
+            entry.boxY = areaTrigger.getFloat(row, 8);
+            entry.boxZ = areaTrigger.getFloat(row, 9);
+            entry.boxOrientation = areaTrigger.getFloat(row, 10);
+            areaTriggerEntries.emplace_back(entry.id, entry);
+        }
+        sAreaTriggerStore.assignEntries(areaTriggerEntries);
+        sLogger.info("DB2: AreaTrigger store ready (entries={}).", areaTriggerEntries.size());
 
         sMapDifficultyStore.clear();
         for (uint32_t row = 0; row < mapDifficulty.getRecordCount(); ++row)
@@ -2835,14 +2856,39 @@ namespace {
         }
     }
 
+    bool getInternalMapDifficulty(WDB::Structures::MapDifficultyEntry const& entry, uint16_t& difficulty)
+    {
+#if defined(AE_FOREVER)
+        // [FOREVER-VERIFIED] MapDifficulty.db2 uses modern Difficulty IDs.
+        // DifficultyID 1 is the normal 5-player dungeon mode (e.g. Stockades, Map 34),
+        // while AscEmu's legacy InstanceDifficulty enum uses 0 for DUNGEON_NORMAL.
+        // Do not reinterpret unverified modern Difficulty IDs as legacy 0..3 values.
+        switch (entry.difficulty)
+        {
+            case 1:
+                difficulty = InstanceDifficulty::Difficulties::DUNGEON_NORMAL;
+                return true;
+            default:
+                return false;
+        }
+#else
+        difficulty = static_cast<uint16_t>(entry.difficulty);
+        return true;
+#endif
+    }
+
     void buildMapDifficultyMap()
     {
         sMapDifficultyMap.clear();
 
-        // Fill the map difficulty map with data from MapDifficultyStore if available Cata / MoP
+        // Fill the legacy lookup map from the version-specific MapDifficulty store.
         for (auto const& entry : sMapDifficultyStore | std::views::values)
         {
-            uint32_t const key = Util::MAKE_PAIR32(static_cast<uint16_t>(entry.mapId), static_cast<uint16_t>(entry.difficulty));
+            uint16_t difficulty = 0;
+            if (!getInternalMapDifficulty(entry, difficulty))
+                continue;
+
+            uint32_t const key = Util::MAKE_PAIR32(static_cast<uint16_t>(entry.mapId), difficulty);
             sMapDifficultyMap[key] = WDB::Structures::MapDifficulty(
                 entry.raidDuration,
                 entry.maxPlayers,
@@ -4010,15 +4056,16 @@ WDB::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t ma
     {
         if (tmpDiff > 1) // heroic, downscale to normal
             tmpDiff -= 2;
+        else if (tmpDiff > 0)
+            --tmpDiff; // any non-normal mode for raids like tbc (only one mode)
         else
-            tmpDiff -= 1; // any non-normal mode for raids like tbc (only one mode)
+            return nullptr;
 
-        // pull new data
-        mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff)); // we are 10 normal or 25 normal
-        if (!mapDiff)
+        mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff));
+        if (!mapDiff && tmpDiff > 0)
         {
-            tmpDiff -= 1;
-            mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff)); // 10 normal
+            --tmpDiff;
+            mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff));
         }
     }
 

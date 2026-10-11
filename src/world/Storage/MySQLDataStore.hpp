@@ -120,6 +120,7 @@ public:
     typedef std::unordered_map<uint32_t, MySQLStructure::WorldBroadCast> WorldBroadcastContainer;
 
     typedef std::unordered_map<uint32_t, MySQLStructure::AreaTrigger> AreaTriggerContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::AreaTriggerSpawn> AreaTriggerSpawnContainer;
 
     typedef std::list<MySQLStructure::WordFilterCharacterNames> WordFilterCharacterNamesSet;
     typedef std::list<MySQLStructure::WordFilterChat> WordFilterChatSet;
@@ -248,7 +249,9 @@ public:
     WorldBroadcastContainer* getWorldBroadcastStore() { return &_worldBroadcastStore; }
 
     MySQLStructure::AreaTrigger const* getAreaTrigger(uint32_t entry);
+    MySQLStructure::AreaTriggerSpawn const* getAreaTriggerSpawn(uint32_t entry);
     AreaTriggerContainer const* getAreaTriggersStore() { return &_areaTriggerStore; }
+    AreaTriggerSpawnContainer const* getAreaTriggerSpawnsStore() { return &_areaTriggerSpawnStore; }
     MySQLStructure::AreaTrigger const* getMapEntranceTrigger(uint32_t mapId);
     MySQLStructure::AreaTrigger const* getMapGoBackTrigger(uint32_t mapId);
 
@@ -374,6 +377,7 @@ public:
     void loadBroadcastTable();
 
     void loadAreaTriggerTable();
+    void loadAreaTriggerSpawnTable();
 
     void loadWordFilterCharacterNames();
     void loadWordFilterChat();
@@ -464,6 +468,7 @@ public:
     WorldBroadcastContainer _worldBroadcastStore;
 
     AreaTriggerContainer _areaTriggerStore;
+    AreaTriggerSpawnContainer _areaTriggerSpawnStore;
 
     WordFilterCharacterNamesSet _wordFilterCharacterNamesStore;
     WordFilterChatSet _wordFilterChatStore;

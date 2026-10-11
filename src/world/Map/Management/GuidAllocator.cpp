@@ -82,6 +82,13 @@ uint64_t GuidAllocator::allocDynamicObject(uint32_t entry, bool canReuse)
     return packRaw(highType, entry, low);
 }
 
+uint64_t GuidAllocator::allocAreaTrigger(uint32_t entry, bool canReuse)
+{
+    const uint32_t highType = HIGHGUID_TYPE_AREATRIGGER;
+    const uint32_t low = allocateLow(highType, canReuse);
+    return packRaw(highType, entry, low);
+}
+
 uint64_t GuidAllocator::allocCorpse(bool canReuse)
 {
     const uint32_t highType = HIGHGUID_TYPE_CORPSE;

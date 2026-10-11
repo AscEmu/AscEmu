@@ -16,6 +16,7 @@ class Creature;
 class GameObject;
 class Transporter;
 class DynamicObject;
+class AreaTrigger;
 class Player;
 class Pet;
 class Corpse;
@@ -72,12 +73,14 @@ public:
     Transporter* createAndSpawnTransporter(uint32_t entry, uint32_t mapId, const LocationVector& pos);
 
     DynamicObject* createDynamic();
+    AreaTrigger* createAreaTrigger(uint32_t triggerId);
 
     Corpse* createCorpse(uint64_t rawGuid = 0);
 
     uint64_t generateCreatureGuid(uint32_t entry, bool reuse = true) const;
     uint64_t generateGameObjectGuid(uint32_t entry, bool reuse = true) const;
     uint64_t generateDynamicGuid(bool reuse = true) const;
+    uint64_t generateAreaTriggerGuid(uint32_t triggerId, bool reuse = true) const;
     uint64_t generateCorpseGuid(bool reuse = true) const;
 
 private:

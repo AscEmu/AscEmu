@@ -682,6 +682,8 @@ public:
 private:
     std::unordered_set<AbstractFollower*> m_followingMe;
     std::unordered_set<uint64_t> m_dynamicObjectTargets;
+    std::unordered_set<uint64_t> m_areaTriggerTargets;
+    std::unordered_set<uint32_t> m_activeAreaTriggerIds;
 
 protected:
     std::unique_ptr<MovementManager> i_movementManager;
@@ -1555,6 +1557,17 @@ public:
     void addDynamicObjectTarget(uint64_t guid) { m_dynamicObjectTargets.insert(guid); }
     void removeDynamicObjectTarget(uint64_t guid) { m_dynamicObjectTargets.erase(guid); }
     const std::unordered_set<uint64_t>& getDynamicObjectTargets() const { return m_dynamicObjectTargets; }
+
+
+    // Runtime AreaTrigger reverse-membership. This is intentionally independent
+    // from the legacy client-reported CMSG_AREATRIGGER path.
+    void addAreaTriggerTarget(uint64_t guid) { m_areaTriggerTargets.insert(guid); }
+    void removeAreaTriggerTarget(uint64_t guid) { m_areaTriggerTargets.erase(guid); }
+    const std::unordered_set<uint64_t>& getAreaTriggerTargets() const { return m_areaTriggerTargets; }
+
+    bool activateAreaTrigger(uint32_t triggerId) { return m_activeAreaTriggerIds.insert(triggerId).second; }
+    void deactivateAreaTrigger(uint32_t triggerId) { m_activeAreaTriggerIds.erase(triggerId); }
+    bool hasActiveAreaTrigger(uint32_t triggerId) const { return m_activeAreaTriggerIds.contains(triggerId); }
 
     bool m_isProcInUse = false;
     bool m_isInvincible = false;

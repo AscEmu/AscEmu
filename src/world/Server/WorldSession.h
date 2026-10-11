@@ -311,7 +311,10 @@ public:
         //////////////////////////////////////////////////////////////////////////////////////////
         // AreaTriggerHandler.cpp
         void handleAreaTriggerOpcode(WorldPacket& recvPacket);
+    public:
+        void processAreaTrigger(uint32_t triggerId);
 
+    protected:
         //////////////////////////////////////////////////////////////////////////////////////////
         // ArenaTeamHandler.cpp
         void handleArenaTeamQueryOpcode(WorldPacket& recvPacket);

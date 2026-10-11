@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/GameObject.h"
 #include "Objects/DynamicObject.hpp"
+#include "Objects/AreaTrigger.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/Corpse.hpp"
@@ -57,6 +58,17 @@ namespace world
         out.clear();
         out.reserve(m_dynamicObjects.size());
         for (auto& entry : m_dynamicObjects)
+        {
+            out.push_back(entry.second);
+        }
+    }
+
+    void WorldObjectRegistry::snapshotAreaTriggers(std::vector<AreaTrigger*>& out) const
+    {
+        std::shared_lock lock(m_mutex);
+        out.clear();
+        out.reserve(m_areaTriggers.size());
+        for (auto& entry : m_areaTriggers)
         {
             out.push_back(entry.second);
         }
@@ -137,6 +149,10 @@ namespace world
         {
             m_dynamicObjects[key] = dynamicObject;
         }
+        else if (auto* areaTrigger = dynamic_cast<AreaTrigger*>(obj))
+        {
+            m_areaTriggers[key] = areaTrigger;
+        }
         else if (auto* corpse = dynamic_cast<Corpse*>(obj))
         {
             m_corpses[key] = corpse;
@@ -160,6 +176,7 @@ namespace world
         m_creatures.erase(key);
         m_gameObjects.erase(key);
         m_dynamicObjects.erase(key);
+        m_areaTriggers.erase(key);
         m_pets.erase(key);
         m_corpses.erase(key);
         m_transporters.erase(key);
@@ -189,6 +206,7 @@ namespace world
         eraseIfSame(m_creatures);
         eraseIfSame(m_gameObjects);
         eraseIfSame(m_dynamicObjects);
+        eraseIfSame(m_areaTriggers);
         eraseIfSame(m_pets);
         eraseIfSame(m_corpses);
         eraseIfSame(m_transporters);
@@ -224,6 +242,10 @@ namespace world
         else if (auto* dynamicObject = dynamic_cast<DynamicObject*>(obj))
         {
             m_dynamicObjects[newKey] = dynamicObject;
+        }
+        else if (auto* areaTrigger = dynamic_cast<AreaTrigger*>(obj))
+        {
+            m_areaTriggers[newKey] = areaTrigger;
         }
         else if (auto* corpse = dynamic_cast<Corpse*>(obj))
         {
@@ -284,6 +306,12 @@ namespace world
         std::shared_lock lock(m_mutex);
         auto itr = m_dynamicObjects.find(keyOf(guid));
         return itr == m_dynamicObjects.end() ? nullptr : itr->second;
+    }
+    AreaTrigger* WorldObjectRegistry::getAreaTrigger(const WoWGuid& guid) const
+    {
+        std::shared_lock lock(m_mutex);
+        auto itr = m_areaTriggers.find(keyOf(guid));
+        return itr == m_areaTriggers.end() ? nullptr : itr->second;
     }
     Player* WorldObjectRegistry::getPlayer(const WoWGuid& guid) const
     {
@@ -349,6 +377,7 @@ namespace world
         m_creatures.clear();
         m_gameObjects.clear();
         m_dynamicObjects.clear();
+        m_areaTriggers.clear();
         m_pets.clear();
         m_corpses.clear();
         m_transporters.clear();
@@ -374,6 +403,11 @@ namespace world
         std::shared_lock lock(m_mutex);
         return m_dynamicObjects.size();
     }
+    size_t WorldObjectRegistry::countAreaTriggers() const
+    {
+        std::shared_lock lock(m_mutex);
+        return m_areaTriggers.size();
+    }
     size_t WorldObjectRegistry::countPlayers() const
     {
         std::shared_lock lock(m_mutex);
@@ -398,7 +432,7 @@ namespace world
     size_t WorldObjectRegistry::countAll() const
     {
         std::shared_lock lock(m_mutex);
-        return m_creatures.size() + m_gameObjects.size() + m_dynamicObjects.size()  + m_players.size() + m_pets.size() + m_corpses.size() + m_transporters.size();
+        return m_creatures.size() + m_gameObjects.size() + m_dynamicObjects.size() + m_areaTriggers.size() + m_players.size() + m_pets.size() + m_corpses.size() + m_transporters.size();
     }
 
     Summary WorldObjectRegistry::counts() const
@@ -410,10 +444,11 @@ namespace world
         s.gameObjects = m_gameObjects.size();
         s.transporters = m_transporters.size();
         s.dynamics = m_dynamicObjects.size();
+        s.areaTriggers = m_areaTriggers.size();
         s.players = m_players.size();
         s.pets = m_pets.size();
         s.corpses = m_corpses.size();
-        s.total = s.creatures + s.gameObjects + s.transporters + s.dynamics + s.players + s.pets + s.corpses;
+        s.total = s.creatures + s.gameObjects + s.transporters + s.dynamics + s.areaTriggers + s.players + s.pets + s.corpses;
         return s;
     }
 

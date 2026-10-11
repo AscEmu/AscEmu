@@ -27,6 +27,7 @@ class Creature;
 class GameObject;
 class Transporter;
 class DynamicObject;
+class AreaTrigger;
 class Pet;
 class Corpse;
 
@@ -111,8 +112,9 @@ namespace visibility
         Players                         = 4,
         Transporter                     = 5,
         Pets                            = 6,
-        Unknown                             = 7,
-        Count                           = 8
+        AreaTriggers                    = 7,
+        Unknown                         = 8,
+        Count                           = 9
     };
 
     template<typename T> struct TypeMap;
@@ -140,6 +142,11 @@ namespace visibility
     struct TypeMap<DynamicObject>
     {
         static constexpr Container container = Container::DynamicObjects;
+    };
+    template<>
+    struct TypeMap<AreaTrigger>
+    {
+        static constexpr Container container = Container::AreaTriggers;
     };
     template<>
     struct TypeMap<Pet>

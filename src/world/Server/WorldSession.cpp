@@ -877,7 +877,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_SET_CONTACT_NOTES, &WorldSession::handleSetFriendNote, false, true, true, true, true);
 
     // Areatrigger
-    registry.registerOpcode(CMSG_AREATRIGGER, &WorldSession::handleAreaTriggerOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_AREATRIGGER, &WorldSession::handleAreaTriggerOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
 
     // Account Data
     registry.registerOpcode<STATUS_AUTHED>(CMSG_UPDATE_ACCOUNT_DATA, &WorldSession::handleUpdateAccountData, true, true, true, true, true);

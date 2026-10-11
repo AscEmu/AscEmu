@@ -14,6 +14,8 @@ namespace AscEmu::Packets
     {
     public:
         uint32_t triggerId;
+        bool entered;
+        bool fromClient;
 
         CmsgAreatrigger() : CmsgAreatrigger(0)
         {
@@ -21,16 +23,33 @@ namespace AscEmu::Packets
 
         CmsgAreatrigger(uint32_t triggerId) :
             ManagedPacket(CMSG_AREATRIGGER, 4),
-            triggerId(triggerId)
+            triggerId(triggerId),
+            entered(true),
+            fromClient(true)
         {
         }
 
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                // Forever 1.60.x: uint32 AreaTriggerID followed by the
+                // Entered and FromClient bits. Captured payloads are 5 bytes.
+                if (packet.remaining() < 5)
+                    return false;
+
+                packet >> triggerId;
+                entered = packet.readBit();
+                fromClient = packet.readBit();
+                return true;
+            }
+
             if (m_protocol.expansion >= WoW::Expansion::_Classic)
             {
                 packet >> triggerId;
+                entered = true;
+                fromClient = true;
                 return true;
             }
 

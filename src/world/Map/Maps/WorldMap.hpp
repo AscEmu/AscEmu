@@ -51,6 +51,7 @@ class WorldSession;
 class ByteBuffer;
 class WorldPacket;
 class DynamicObject;
+class AreaTrigger;
 
 class BaseMap;
 class InstanceScript;
@@ -160,6 +161,7 @@ public:
 
     // Refresh nearby area spells when units or DynamicObjects change.
     void refreshDynamicObjectTargets(DynamicObject* dynamicObject);
+    void refreshAreaTriggerTargets(AreaTrigger* areaTrigger);
 
     void onObjectBecameVisible(const WoWGuid& viewer, const WoWGuid& obj);
     void onObjectBecameHidden(const WoWGuid& viewer, const WoWGuid& obj);
@@ -248,6 +250,7 @@ private:
     // keeps unit-event lookup exact for any radius seen on this map without
     // requiring a global DynamicObject scan to recompute the maximum.
     float maxDynamicObjectTargetRadius_ = 0.0f;
+    float maxAreaTriggerRadius_ = 0.0f;
 
     // Objects created for a viewer in the current visibility flush already include
     // their complete initial value state in the create block. If the object also
@@ -288,6 +291,7 @@ public:
     Creature* getCreature(const WoWGuid& guid) const { return registry_ ? registry_->getCreature(guid) : nullptr; }
     GameObject* getGameObject(const WoWGuid& guid) const { return registry_ ? registry_->getGameObject(guid) : nullptr; }
     DynamicObject* getDynamicObject(const WoWGuid& guid) const { return registry_ ? registry_->getDynamicObject(guid) : nullptr; }
+    AreaTrigger* getAreaTrigger(const WoWGuid& guid) const { return registry_ ? registry_->getAreaTrigger(guid) : nullptr; }
     Player* getPlayer(const WoWGuid& guid) const { return registry_ ? registry_->getPlayer(guid) : nullptr; }
     Pet* getPet(const WoWGuid& guid) const { return registry_ ? registry_->getPet(guid) : nullptr; }
     Corpse* getCorpse(const WoWGuid& guid) const { return registry_ ? registry_->getCorpse(guid) : nullptr; }

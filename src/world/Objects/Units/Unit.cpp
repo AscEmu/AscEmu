@@ -80,6 +80,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/AbstractFollower.h"
 #include "Movement/MovementManager.h"
 #include "Objects/DynamicObject.hpp"
+#include "Objects/AreaTrigger.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Objects/Item.hpp"
 #include "Objects/ItemDefines.hpp"
@@ -367,6 +368,18 @@ void Unit::onPreDetachFromWorld()
                 dynamicObject->removeTarget(this);
         }
         m_dynamicObjectTargets.clear();
+    }
+
+    if (!m_areaTriggerTargets.empty())
+    {
+        const std::vector<uint64_t> areaTargets(m_areaTriggerTargets.begin(), m_areaTriggerTargets.end());
+        for (uint64_t areaGuid : areaTargets)
+        {
+            if (AreaTrigger* areaTrigger = getWorldMap()->getAreaTrigger(WoWGuid(areaGuid)))
+                areaTrigger->removeTarget(this);
+        }
+        m_areaTriggerTargets.clear();
+        m_activeAreaTriggerIds.clear();
     }
 
     for (auto& objectSlot : m_objectSlots)

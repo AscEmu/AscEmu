@@ -20,6 +20,7 @@ public:
     uint64_t allocTransporter(uint32_t entry, bool canReuse = true);
 
     uint64_t allocDynamicObject(uint32_t entry = 0, bool canReuse = true);
+    uint64_t allocAreaTrigger(uint32_t entry = 0, bool canReuse = true);
 
     uint64_t allocCorpse(bool canReuse = true);
 
@@ -51,6 +52,7 @@ private:
             case HIGHGUID_TYPE_CORPSE:       return 6;
             case HIGHGUID_TYPE_TRANSPORTER:  return 7;
             case HIGHGUID_TYPE_TRANSPORT:    return 8;
+            case HIGHGUID_TYPE_AREATRIGGER:  return 9;
             default:                         return -1; // fallback bucket
         }
     }

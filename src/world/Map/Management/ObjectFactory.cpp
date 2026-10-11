@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Objects/Transporter.hpp"
 #include "Objects/DynamicObject.hpp"
+#include "Objects/AreaTrigger.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/Corpse.hpp"
@@ -80,6 +81,10 @@ visibility::ObjectMeta ObjectFactory::makeMeta(Object* obj, const WoWGuid& g) co
     else if (dynamic_cast<DynamicObject*>(obj))
     {
         m.container = visibility::Container::DynamicObjects;
+    }
+    else if (dynamic_cast<AreaTrigger*>(obj))
+    {
+        m.container = visibility::Container::AreaTriggers;
     }
     else if (dynamic_cast<Corpse*>(obj))
     {
@@ -587,6 +592,14 @@ DynamicObject* ObjectFactory::createDynamic()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+/// AreaTriggers
+//////////////////////////////////////////////////////////////////////////////////////////
+AreaTrigger* ObjectFactory::createAreaTrigger(uint32_t triggerId)
+{
+    return new AreaTrigger(m_guidAllocator.allocAreaTrigger(triggerId, true), triggerId);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Corpses
 //////////////////////////////////////////////////////////////////////////////////////////
 Corpse* ObjectFactory::createCorpse(uint64_t rawGuid)
@@ -607,3 +620,8 @@ uint64_t ObjectFactory::generateCreatureGuid(uint32_t entry, bool reuse) const {
 uint64_t ObjectFactory::generateGameObjectGuid(uint32_t entry, bool reuse) const { return const_cast<GuidAllocator&>(m_guidAllocator).allocGameObject(entry, reuse); }
 uint64_t ObjectFactory::generateDynamicGuid(bool reuse) const { return const_cast<GuidAllocator&>(m_guidAllocator).allocDynamicObject(0, reuse); }
 uint64_t ObjectFactory::generateCorpseGuid(bool reuse) const { return const_cast<GuidAllocator&>(m_guidAllocator).allocCorpse(reuse); }
+
+uint64_t ObjectFactory::generateAreaTriggerGuid(uint32_t triggerId, bool reuse) const
+{
+    return const_cast<GuidAllocator&>(m_guidAllocator).allocAreaTrigger(triggerId, reuse);
+}

@@ -16,8 +16,8 @@ namespace AscEmu::Packets
         WoWGuid guid;
         LocationVector lv;
         MovementInfo mi;
-        uint32_t flags;
-        uint32_t time;
+        uint32_t ackIndex;
+        uint32_t moveTime;
 
         MsgMoveTeleportAck() : MsgMoveTeleportAck(WoWGuid(), LocationVector(), MovementInfo())
         {
@@ -27,8 +27,27 @@ namespace AscEmu::Packets
             ManagedPacket(MSG_MOVE_TELEPORT_ACK, 4 + 4 + 8),
             guid(guid),
             lv(lv),
-            mi(mi)
+            mi(mi),
+            ackIndex(0),
+            moveTime(0)
         {
+        }
+
+        bool deserialise(WorldPacket& packet) override
+        {
+            // Forever uses a variable-length packed 128-bit GUID followed by
+            // AckIndex and MoveTime. The legacy 16-byte minimum would reject
+            // valid Forever acknowledgements before internalDeserialise().
+            if (m_protocol.isForever())
+            {
+                constexpr std::size_t MinimumForeverSize = sizeof(uint16_t) + sizeof(uint32_t) + sizeof(uint32_t);
+                if (packet.remaining() < MinimumForeverSize)
+                    return false;
+
+                return internalDeserialise(packet);
+            }
+
+            return ManagedPacket::deserialise(packet);
         }
 
     protected:
@@ -67,11 +86,11 @@ namespace AscEmu::Packets
         {
             if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
-                packet >> guid >> flags >> time;
+                packet >> guid >> ackIndex >> moveTime;
             }
             else if (m_protocol.isCata())
             {
-                packet >> flags >> time;
+                packet >> ackIndex >> moveTime;
 
                 WoWGuid cataGuid;
                 cataGuid[5] = packet.readBit();
@@ -96,7 +115,7 @@ namespace AscEmu::Packets
             }
             else if (m_protocol.isMop())
             {
-                packet >> time >> flags;
+                packet >> moveTime >> ackIndex;
 
                 WoWGuid mopGuid;
                 mopGuid[0] = packet.readBit();
@@ -121,13 +140,21 @@ namespace AscEmu::Packets
             }
             else if (m_protocol.isForever())
             {
+                const std::size_t remaining = packet.remaining();
                 std::size_t consumed = 0;
-                if (!WoWGuid::unpackModern(packet.contents() + packet.rpos(), packet.size() - packet.rpos(), guid, consumed))
+                if (!WoWGuid::unpackModern(packet.contents() + packet.rpos(), remaining, guid, consumed))
+                    return false;
+
+                constexpr std::size_t TailSize = sizeof(uint32_t) + sizeof(uint32_t);
+                if (remaining != consumed + TailSize)
                     return false;
 
                 packet.rpos(packet.rpos() + consumed);
-                packet >> flags; // AckIndex
-                packet >> time;  // MoveTime
+                packet >> ackIndex;
+                packet >> moveTime;
+
+                if (packet.remaining() != 0)
+                    return false;
             }
             else
             {

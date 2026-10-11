@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WorldStrings.h"
 #include "Management/Battleground/Battleground.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/AreaTrigger.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Packets/SmsgTransferAborted.h"
@@ -22,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgCorpseNotInInstance.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/InstanceScript.hpp"
+
 
 using namespace AscEmu::Packets;
 
@@ -36,27 +38,65 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
     if (!_player->IsInWorld())
         return;
 
-    sQuestMgr.OnPlayerExploreArea(_player, srlPacket.triggerId);
-
-    const auto areaTriggerEntry = sAreaTriggerStore.lookupEntry(srlPacket.triggerId);
-    if (areaTriggerEntry == nullptr)
+    if (getClientProtocol().isForever())
     {
-        sLogger.debug("{} is not part of AreaTrigger.dbc", srlPacket.triggerId);
+        // Forever reports client-data AreaTriggers as:
+        // uint32 AreaTriggerID, bit Entered, bit FromClient.
+        // Server-only legacy fallback triggers never need to arrive through this path.
+        const auto* definition = sAreaTriggerStore.lookupEntry(srlPacket.triggerId);
+        if (!srlPacket.fromClient || definition == nullptr)
+            return;
+
+        if (!srlPacket.entered)
+        {
+            _player->deactivateAreaTrigger(srlPacket.triggerId);
+            return;
+        }
+
+        // Never trust the client-reported enter by itself. Validate the player's
+        // current map and position against the authoritative AreaTrigger.db2 shape.
+        if (!AreaTrigger::contains(*definition, _player))
+        {
+            sLogger.debugOpcode("Rejected CMSG_AREATRIGGER {}: player is outside the client-data trigger volume.", srlPacket.triggerId);
+            return;
+        }
+
+        // The active-id set also covers server-only legacy fallback triggers,
+        // so one logical trigger can execute only once per enter cycle.
+        if (!_player->activateAreaTrigger(srlPacket.triggerId))
+            return;
+    }
+
+    processAreaTrigger(srlPacket.triggerId);
+}
+
+void WorldSession::processAreaTrigger(uint32_t triggerId)
+{
+    if (!_player || !_player->IsInWorld())
+        return;
+
+    sQuestMgr.OnPlayerExploreArea(_player, triggerId);
+
+    const auto areaTriggerEntry = sAreaTriggerStore.lookupEntry(triggerId);
+    const auto areaTriggerSpawn = sMySQLStore.getAreaTriggerSpawn(triggerId);
+    if (areaTriggerEntry == nullptr && areaTriggerSpawn == nullptr)
+    {
+        sLogger.debug("{} has neither an AreaTrigger client-data definition nor an `areatrigger_spawns` definition", triggerId);
         return;
     }
 
-    sHookInterface.OnAreaTrigger(_player, srlPacket.triggerId);
+    sHookInterface.OnAreaTrigger(_player, triggerId);
 
     if (_player->getWorldMap() && _player->getWorldMap()->getScript())
-        _player->getWorldMap()->getScript()->OnAreaTrigger(_player, srlPacket.triggerId);
+        _player->getWorldMap()->getScript()->OnAreaTrigger(_player, triggerId);
 
     if (_player->m_bg)
     {
-        _player->m_bg->HookOnAreaTrigger(_player, srlPacket.triggerId);
+        _player->m_bg->HookOnAreaTrigger(_player, triggerId);
         return;
     }
 
-    const auto areaTrigger = sMySQLStore.getAreaTrigger(srlPacket.triggerId);
+    const auto areaTrigger = sMySQLStore.getAreaTrigger(triggerId);
     if (areaTrigger == nullptr)
         return;
 

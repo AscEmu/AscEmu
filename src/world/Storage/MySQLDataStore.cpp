@@ -3709,11 +3709,62 @@ MySQLStructure::WorldBroadCast const* MySQLDataStore::getWorldBroadcastById(uint
     return nullptr;
 }
 
+
+void MySQLDataStore::loadAreaTriggerSpawnTable()
+{
+    auto startTime = Util::TimeNow();
+    auto result = WorldDatabase.query(
+        "SELECT entry, map, position_x, position_y, position_z, radius, box_x, box_y, box_z, orientation "
+        "FROM areatrigger_spawns WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
+
+    _areaTriggerSpawnStore.clear();
+
+    if (result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `areatrigger_spawns` is empty!");
+        return;
+    }
+
+    _areaTriggerSpawnStore.rehash(result->getRowCount());
+
+    uint32_t count = 0;
+    do
+    {
+        Field* fields = result->fetch();
+
+        MySQLStructure::AreaTriggerSpawn spawn;
+        spawn.id = fields[0].asUint32();
+        spawn.mapId = fields[1].asUint32();
+        spawn.x = fields[2].asFloat();
+        spawn.y = fields[3].asFloat();
+        spawn.z = fields[4].asFloat();
+        spawn.radius = fields[5].asFloat();
+        spawn.boxX = fields[6].asFloat();
+        spawn.boxY = fields[7].asFloat();
+        spawn.boxZ = fields[8].asFloat();
+        spawn.orientation = fields[9].asFloat();
+
+        if (spawn.radius <= 0.0f && (spawn.boxX <= 0.0f || spawn.boxY <= 0.0f || spawn.boxZ <= 0.0f))
+        {
+            sLogger.debugDbTables("AreaTriggerSpawn : Area trigger (ID:{}) has no valid radius or box volume.", spawn.id);
+            continue;
+        }
+
+        _areaTriggerSpawnStore[spawn.id] = spawn;
+        ++count;
+    } while (result->nextRow());
+
+    sLogger.info("MySQLDataLoads : Loaded {} rows from `areatrigger_spawns` table in {} ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
 void MySQLDataStore::loadAreaTriggerTable()
 {
     auto startTime = Util::TimeNow();
+    _areaTriggerStore.clear();
     //                                                       0      1    2     3       4       5           6          7             8               9                  10
-    auto area_trigger_result = WorldDatabase.query("SELECT entry, type, map, screen, name, position_x, position_y, position_z, orientation, required_honor_rank, required_level FROM areatriggers");
+    auto area_trigger_result = WorldDatabase.query(
+        "SELECT entry, type, map, screen, name, position_x, position_y, position_z, orientation, required_honor_rank, required_level "
+        "FROM areatriggers WHERE min_build <= %u AND max_build >= %u", WoW::getConfigBuild(), WoW::getConfigBuild());
     if (area_trigger_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `areatriggers` is empty!");
@@ -3743,16 +3794,17 @@ void MySQLDataStore::loadAreaTriggerTable()
         areaTrigger.requiredLevel = fields[10].asUint32();
 
         WDB::Structures::AreaTriggerEntry const* area_trigger_entry = sAreaTriggerStore.lookupEntry(areaTrigger.id);
-        if (!area_trigger_entry)
+        const bool hasLegacySpawn = _areaTriggerSpawnStore.contains(areaTrigger.id);
+        if (!area_trigger_entry && !hasLegacySpawn)
         {
-            sLogger.debugDbTables("AreaTrigger : Area trigger (ID:{}) does not exist in `AreaTrigger.dbc`.", areaTrigger.id);
+            sLogger.debugDbTables("AreaTrigger : Area trigger (ID:{}) has neither a client-data definition nor an `areatrigger_spawns` definition.", areaTrigger.id);
             continue;
         }
 
         WDB::Structures::MapEntry const* map_entry = sMapStore.lookupEntry(areaTrigger.mapId);
         if (!map_entry)
         {
-            sLogger.debugDbTables("AreaTrigger : Area trigger (ID:{}) target map (ID: {}) does not exist in `Map.dbc`.", areaTrigger.id, areaTrigger.mapId);
+            sLogger.debugDbTables("AreaTrigger : Area trigger (ID:{}) target map (ID: {}) does not exist in the Map client-data store.", areaTrigger.id, areaTrigger.mapId);
             continue;
         }
 
@@ -3778,16 +3830,21 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getAreaTrigger(uint32_t entry
     return nullptr;
 }
 
+MySQLStructure::AreaTriggerSpawn const* MySQLDataStore::getAreaTriggerSpawn(uint32_t entry)
+{
+    AreaTriggerSpawnContainer::const_iterator itr = _areaTriggerSpawnStore.find(entry);
+    if (itr != _areaTriggerSpawnStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}
+
 MySQLStructure::AreaTrigger const* MySQLDataStore::getMapEntranceTrigger(uint32_t mapId)
 {
     for (AreaTriggerContainer::const_iterator itr = _areaTriggerStore.begin(); itr != _areaTriggerStore.end(); ++itr)
     {
-        if (itr->second.mapId == mapId)
-        {
-            WDB::Structures::AreaTriggerEntry const* area_trigger_entry = sAreaTriggerStore.lookupEntry(itr->first);
-            if (area_trigger_entry)
-                return &itr->second;
-        }
+        if (itr->second.mapId == mapId && (sAreaTriggerStore.lookupEntry(itr->first) || getAreaTriggerSpawn(itr->first)))
+            return &itr->second;
     }
     return nullptr;
 }
@@ -3818,7 +3875,8 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t 
         if ((!useParentDbValue && itr->second.mapId == entrance_map) || (useParentDbValue && itr->second.mapId == parentId))
         {
             WDB::Structures::AreaTriggerEntry const* atEntry = sAreaTriggerStore.lookupEntry(itr->first);
-            if (atEntry && atEntry->mapId == mapId)
+            MySQLStructure::AreaTriggerSpawn const* spawn = getAreaTriggerSpawn(itr->first);
+            if ((atEntry && atEntry->mapId == mapId) || (spawn && spawn->mapId == mapId))
                 return &itr->second;
         }
     }
@@ -3850,7 +3908,8 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t 
         if ((!useParentDbValue && itr->second.mapId == entrance_map) || (useParentDbValue && itr->second.mapId == parentId))
         {
             WDB::Structures::AreaTriggerEntry const* atEntry = sAreaTriggerStore.lookupEntry(itr->first);
-            if (atEntry && atEntry->mapId == mapId)
+            MySQLStructure::AreaTriggerSpawn const* spawn = getAreaTriggerSpawn(itr->first);
+            if ((atEntry && atEntry->mapId == mapId) || (spawn && spawn->mapId == mapId))
                 return &itr->second;
         }
     }

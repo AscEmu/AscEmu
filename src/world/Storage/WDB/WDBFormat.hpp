@@ -1297,6 +1297,7 @@ namespace WDB
         // 1.60.1.69876/69893/69913/69977. AreaTable and LiquidType use
         // non-inline IDs; WMOAreaTable keeps its ID as field 1.
         inline const WDC5TableSchema AreaTable = makeSchemaWithArrays("AreaTable.db2", 0x9995B797, -1, 24, {{22, 2}, {23, 4}});
+        inline const WDC5TableSchema AreaTrigger = makeSchemaWithArrays("AreaTrigger.db2", 0xB97D2FC5, 1, 15, {{0, 3}});
 
         // Liquid tables used by the map extractor. IDs are non-inline in the
         // modern/Forever layouts, so indexField stays -1 and WDC5File uses the

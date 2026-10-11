@@ -845,7 +845,7 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    sLogger.debugOpcode("Received CMSG_MOVE_TELEPORT_ACK.");
+    sLogger.debugOpcode("Received CMSG_MOVE_TELEPORT_ACK guid={} ackIndex={} moveTime={}.", srlPacket.guid.toLegacyRaw(), srlPacket.ackIndex, srlPacket.moveTime);
 
     const uint64_t acknowledgedGuid = getClientProtocol().isForever() ? srlPacket.guid.toLegacyRaw() : srlPacket.guid.getRawGuid();
     if (acknowledgedGuid == _player->getGuid())
@@ -880,7 +880,12 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
 
         if (_player->m_sentTeleportPosition.x != 999999.0f)
         {
-            _player->m_position = _player->m_sentTeleportPosition;
+            // Forever SMSG_MOVE_TELEPORT already relocates the server-side player
+            // before the acknowledgement arrives. The ACK only completes the
+            // pending near-teleport state; do not relocate the object a second time.
+            if (!getClientProtocol().isForever())
+                _player->m_position = _player->m_sentTeleportPosition;
+
             _player->m_sentTeleportPosition.changeCoords({ 999999.0f, 999999.0f, 999999.0f });
         }
     }

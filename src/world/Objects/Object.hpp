@@ -217,6 +217,7 @@ public:
     bool isCreature() const;
     bool isItem() const;
     bool isGameObject() const;
+    bool isAreaTrigger() const { return getObjectTypeId() == TYPEID_AREATRIGGER; }
     bool isCorpse() const;
     bool isContainer() const;
 

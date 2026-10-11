@@ -27,6 +27,7 @@ struct Summary
     size_t creatures{ 0 };
     size_t gameObjects{ 0 };
     size_t dynamics{ 0 };
+    size_t areaTriggers{ 0 };
     size_t players{ 0 };
     size_t pets{ 0 };
     size_t corpses{ 0 };
@@ -45,6 +46,7 @@ namespace world
         void snapshotGameObjects(std::vector<GameObject*>& out) const;
         void snapshotTransporters(std::vector<Transporter*>& out) const;
         void snapshotDynamicObjects(std::vector<DynamicObject*>& out) const;
+        void snapshotAreaTriggers(std::vector<AreaTrigger*>& out) const;
         void snapshotPlayers(std::vector<Player*>& out) const;
         void snapshotPets(std::vector<Pet*>& out) const;
         void snapshotCorpses(std::vector<Corpse*>& out) const;
@@ -71,6 +73,7 @@ namespace world
         GameObject*     findGameObjectByLow32(uint32_t low) const;
         Transporter*    getTransporter  (const WoWGuid& g) const;
         DynamicObject*  getDynamicObject(const WoWGuid& g) const;
+        AreaTrigger*     getAreaTrigger(const WoWGuid& g) const;
         Player*         getPlayer       (const WoWGuid& g) const;
         Pet*            getPet          (const WoWGuid& g) const;
         Corpse*         getCorpse       (const WoWGuid& g) const;
@@ -83,6 +86,7 @@ namespace world
         size_t countCreatures() const;
         size_t countGameObjects() const;
         size_t countDynamics() const;
+        size_t countAreaTriggers() const;
         size_t countPlayers() const;
         size_t countPets() const;
         size_t countCorpses() const;
@@ -105,6 +109,7 @@ namespace world
         std::unordered_map<KeyType, GameObject*>    m_gameObjects;
         std::unordered_map<KeyType, Transporter*>   m_transporters;
         std::unordered_map<KeyType, DynamicObject*> m_dynamicObjects;
+        std::unordered_map<KeyType, AreaTrigger*>    m_areaTriggers;
         std::unordered_map<KeyType, Player*>        m_players;
         std::unordered_map<KeyType, Pet*>           m_pets;
         std::unordered_map<KeyType, Corpse*>        m_corpses;

@@ -104,7 +104,7 @@ namespace
 {
     // DB version
     constexpr std::string_view REQUIRED_CHAR_DB_VERSION = "20261009-00_account_achievements";
-    constexpr std::string_view REQUIRED_WORLD_DB_VERSION = "20261011-00_recall_forever_69893_70205";
+    constexpr std::string_view REQUIRED_WORLD_DB_VERSION = "20261011-04_classic_areatrigger_spawns_forever_69893_70205";
 
     void printBanner()
     {
