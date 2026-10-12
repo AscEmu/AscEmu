@@ -1,39 +1,76 @@
+// Formatting library for C++ - C++20 module
+//
+// Copyright (c) 2012 - present, Victor Zverovich and {fmt} contributors
+// All rights reserved.
+//
+// For the license information refer to format.h.
+
 module;
+
+#define FMT_MODULE
+
+#ifdef _MSVC_LANG
+#  define FMT_CPLUSPLUS _MSVC_LANG
+#else
+#  define FMT_CPLUSPLUS __cplusplus
+#endif
 
 // Put all implementation-provided headers into the global module fragment
 // to prevent attachment to this module.
-#include <algorithm>
+#ifndef FMT_IMPORT_STD
+#  include <algorithm>
+#  include <atomic>
+#  include <bitset>
+#  include <chrono>
+#  include <cmath>
+#  include <complex>
+#  include <cstddef>
+#  include <cstdint>
+#  include <cstdio>
+#  include <cstdlib>
+#  include <cstring>
+#  include <ctime>
+#  include <exception>
+#  if FMT_CPLUSPLUS > 202002L
+#    include <expected>
+#  endif
+#  include <filesystem>
+#  include <fstream>
+#  include <functional>
+#  include <iterator>
+#  include <limits>
+#  include <locale>
+#  include <memory>
+#  include <optional>
+#  include <ostream>
+#  include <source_location>
+#  include <stdexcept>
+#  include <string>
+#  include <string_view>
+#  include <system_error>
+#  include <thread>
+#  include <type_traits>
+#  include <typeinfo>
+#  include <utility>
+#  include <variant>
+#  include <vector>
+#else
+#  include <limits.h>
+#  include <stdint.h>
+#  include <stdio.h>
+#  include <stdlib.h>
+#  include <string.h>
+#  include <time.h>
+#endif
 #include <cerrno>
-#include <chrono>
 #include <climits>
-#include <cmath>
-#include <cstddef>
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
-#include <exception>
-#include <filesystem>
-#include <fstream>
-#include <functional>
-#include <iterator>
-#include <limits>
-#include <locale>
-#include <memory>
-#include <optional>
-#include <ostream>
-#include <stdexcept>
-#include <string>
-#include <string_view>
-#include <system_error>
-#include <thread>
-#include <type_traits>
-#include <typeinfo>
-#include <utility>
-#include <variant>
-#include <vector>
 #include <version>
+
+// fmt/enum.h uses C++26 reflection if it is available.
+#if defined(__cpp_impl_reflection) && __has_include(<meta>)
+#  include <array>
+#  include <meta>
+#endif
 
 #if __has_include(<cxxabi.h>)
 #  include <cxxabi.h>
@@ -70,6 +107,10 @@ module;
 
 export module fmt;
 
+#ifdef FMT_IMPORT_STD
+import std;
+#endif
+
 #define FMT_EXPORT export
 #define FMT_BEGIN_EXPORT export {
 #define FMT_END_EXPORT }
@@ -83,15 +124,24 @@ export module fmt;
 extern "C++" {
 #endif
 
+#ifndef FMT_OS
+#  define FMT_OS 1
+#endif
+
 // All library-provided declarations and definitions must be in the module
 // purview to be exported.
 #include "fmt/args.h"
 #include "fmt/chrono.h"
 #include "fmt/color.h"
 #include "fmt/compile.h"
+#include "fmt/enum.h"
 #include "fmt/format.h"
-#include "fmt/os.h"
+#if FMT_OS
+#  include "fmt/os.h"
+#endif
+#include "fmt/ostream.h"
 #include "fmt/printf.h"
+#include "fmt/ranges.h"
 #include "fmt/std.h"
 #include "fmt/xchar.h"
 
@@ -99,10 +149,17 @@ extern "C++" {
 }
 #endif
 
-// gcc doesn't yet implement private module fragments
-#if !FMT_GCC_VERSION
-module :private;
+#ifdef FMT_ATTACH_TO_GLOBAL_MODULE
+extern "C++" {
 #endif
 
-#include "format.cc"
-#include "os.cc"
+#if FMT_HAS_INCLUDE("format.cc")
+#  include "format.cc"
+#endif
+#if FMT_OS && FMT_HAS_INCLUDE("os.cc")
+#  include "os.cc"
+#endif
+
+#ifdef FMT_ATTACH_TO_GLOBAL_MODULE
+}
+#endif

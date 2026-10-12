@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <mutex>
 #include <string_view>
 #include <utility>
-#include <fmt/core.h>
+#include <fmt/format.h>
 
 namespace WoW
 {
@@ -79,7 +79,7 @@ public:
     template <typename... Args>
     void writefromsession(WorldSession* session, fmt::format_string<Args...> format, Args&&... args)
     {
-        writefromsession(session, fmt::format(format, std::forward<Args>(args)...));
+        writefromsession(session, fmt::format(fmt::runtime(format), std::forward<Args>(args)...));
     }
 
     void writefromsession(WorldSession* session,std::string_view message);

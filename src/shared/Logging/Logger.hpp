@@ -65,7 +65,7 @@ namespace AscEmu::Logging
             if (minimumMessageType > MessageType::TRACE)
                 return;
 
-            log(Severity::INFO, MessageType::TRACE, fmt::format(fmt, std::forward<Args>(args)...));
+            log(Severity::INFO, MessageType::TRACE, fmt::format(fmt::runtime(fmt), std::forward<Args>(args)...));
         }
 
         template <typename... Args>
@@ -74,7 +74,7 @@ namespace AscEmu::Logging
             if (minimumMessageType > MessageType::DEBUG)
                 return;
 
-            log(Severity::INFO, MessageType::DEBUG, fmt::format(fmt, std::forward<Args>(args)...));
+            log(Severity::INFO, MessageType::DEBUG, fmt::format(fmt::runtime(fmt), std::forward<Args>(args)...));
         }
 
         template <typename... Args>
@@ -83,7 +83,7 @@ namespace AscEmu::Logging
             if (minimumMessageType > MessageType::DEBUG || !(aelogDebugFlags & logFlags))
                 return;
 
-            log(getSeverityConsoleColorByDebugFlag(logFlags), MessageType::DEBUG, fmt::format(fmt, std::forward<Args>(args)...));
+            log(getSeverityConsoleColorByDebugFlag(logFlags), MessageType::DEBUG, fmt::format(fmt::runtime(fmt), std::forward<Args>(args)...));
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -162,7 +162,7 @@ namespace AscEmu::Logging
             if (minimumMessageType > MessageType::MINOR)
                 return;
 
-            log(Severity::INFO, MessageType::MINOR, fmt::format(fmt, std::forward<Args>(args)...));
+            log(Severity::INFO, MessageType::MINOR, fmt::format(fmt::runtime(fmt), std::forward<Args>(args)...));
         }
 
         template <typename... Args>
@@ -171,25 +171,25 @@ namespace AscEmu::Logging
             if (minimumMessageType > MessageType::MINOR)
                 return;
 
-            log(Severity::WARNING, MessageType::MINOR, fmt::format(fmt, std::forward<Args>(args)...));
+            log(Severity::WARNING, MessageType::MINOR, fmt::format(fmt::runtime(fmt), std::forward<Args>(args)...));
         }
 
         template <typename... Args>
         void failure(std::string_view fmt, Args&&... args)
         {
-            log(Severity::FAILURE, MessageType::MAJOR, fmt::format(fmt, std::forward<Args>(args)...));
+            log(Severity::FAILURE, MessageType::MAJOR, fmt::format(fmt::runtime(fmt), std::forward<Args>(args)...));
         }
 
         template <typename... Args>
         void fatal(std::string_view fmt, Args&&... args)
         {
-            log(Severity::FATAL, MessageType::MAJOR, fmt::format(fmt, std::forward<Args>(args)...));
+            log(Severity::FATAL, MessageType::MAJOR, fmt::format(fmt::runtime(fmt), std::forward<Args>(args)...));
         }
 
         template <typename... Args>
         void log(Severity severity, MessageType messageType, std::string_view fmt, Args&&... args)
         {
-            log(severity, messageType, fmt::format(fmt, std::forward<Args>(args)...));
+            log(severity, messageType, fmt::format(fmt::runtime(fmt), std::forward<Args>(args)...));
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -197,7 +197,7 @@ namespace AscEmu::Logging
         template <typename... Args>
         void file(Severity severity, MessageType messageType, std::string_view fmt, Args&&... args)
         {
-            file(severity, messageType, fmt::format(fmt, std::forward<Args>(args)...));
+            file(severity, messageType, fmt::format(fmt::runtime(fmt), std::forward<Args>(args)...));
         }
 
         void log(Severity severity, MessageType messageType, std::string_view message);

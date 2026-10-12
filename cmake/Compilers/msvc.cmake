@@ -30,6 +30,7 @@ add_compile_options(
 	/MP 
 	/bigobj 
 	/permissive-
+    /utf-8
 )
 
 # set build platform specific settings (x86/x64)
@@ -51,6 +52,7 @@ if (BUILD_WITH_WARNINGS)
 	/wd4251 # Suppress DLL-interface warning
 	/wd4820 # Suppress padding warning
 	/wd5045 # Suppress Spectre mitigation warning
+    /wd4702 # Suppress the warning from fmt
 )
 else ()
     add_compile_options(/W0)

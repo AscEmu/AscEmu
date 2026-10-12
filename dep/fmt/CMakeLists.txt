@@ -19,10 +19,13 @@ endfunction()
 # collect all public fmt headers.
 add_headers(FMT_HEADERS
     args.h
+    base.h
     chrono.h
     color.h
     compile.h
     core.h
+    enum.h
+    fmt-c.h
     format.h
     format-inl.h
     os.h
@@ -50,10 +53,6 @@ if (HAVE_STRTOD_L)
             FMT_LOCALE)
 endif()
 
-# define FMT_CONSTEVAL for C++20 usage.
-target_compile_definitions(fmt
-    PUBLIC
-        FMT_CONSTEVAL=)
 
 # add include directory for public headers.
 target_include_directories(fmt

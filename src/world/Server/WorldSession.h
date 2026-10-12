@@ -217,7 +217,7 @@ public:
         template <typename... Args>
         void sendNotification(fmt::format_string<Args...> format, Args&&... args)
         {
-            sendNotification(fmt::format(format, std::forward<Args>(args)...));
+            sendNotification(fmt::format(fmt::runtime(format), std::forward<Args>(args)...));
         }
 
         void sendNotification(std::string_view message);
@@ -1102,7 +1102,7 @@ public:
     void systemMessage(fmt::format_string<Args...> format, Args&&... args)
     {
         // Format the string and send the message via packet
-        sendSystemMessagePacket(fmt::format(format, std::forward<Args>(args)...));
+        sendSystemMessagePacket(fmt::format(fmt::runtime(format), std::forward<Args>(args)...));
     }
 
     uint32_t language;
