@@ -64,7 +64,7 @@ public:
 #endif
 
             // "If the Rogue is below 10% health, the killing blow is completely absorbed"
-            // "If the Rogue is over 10% health, enough damage will be absorbed to reduce the Rogue’s health down to 10%"
+            // "If the Rogue is over 10% health, enough damage will be absorbed to reduce the Rogue's health down to 10%"
             const int32_t minHealth = plrOwner->getMaxHealth() / 10;
             const auto realDmg = exactHealth > minHealth ? exactHealth - minHealth : 0;
             *absorbed = *dmg - realDmg;

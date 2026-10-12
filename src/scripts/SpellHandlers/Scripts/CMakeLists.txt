@@ -14,7 +14,7 @@ set(SRC_SPELL_SCRIPTS_FILES
     ${PATH_PREFIX}/Pets.cpp
     ${PATH_PREFIX}/Priest.cpp
     ${PATH_PREFIX}/Quests.cpp
-    ${PATH_PREFIX}/Rogue_utf8.cpp
+    ${PATH_PREFIX}/Rogue.cpp
     ${PATH_PREFIX}/Shaman.cpp
     ${PATH_PREFIX}/Warlock.cpp
     ${PATH_PREFIX}/Warrior.cpp
