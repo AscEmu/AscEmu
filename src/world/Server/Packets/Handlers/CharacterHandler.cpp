@@ -324,6 +324,14 @@ void WorldSession::beginPlayerLogin(uint32_t guidLow)
 {
     if (sObjectMgr.getPlayer(guidLow) != nullptr || m_loggingInPlayer || _player)
     {
+#if defined(AE_FOREVER)
+        if (getClientProtocol().isForever())
+        {
+            sLogger.warning("WorldSession::Forever: player login rejected guidLow={} because the character is already active or loading.", guidLow);
+            return;
+        }
+#endif
+
         SmsgCharacterLoginFailed managedPacket(E_CHAR_LOGIN_DUPLICATE_CHARACTER);
         sendManagedPacket(managedPacket);
         return;
@@ -333,22 +341,6 @@ void WorldSession::beginPlayerLogin(uint32_t guidLow)
     query->addQuery("SELECT guid,class FROM characters WHERE guid = %u AND login_flags = %u", guidLow, static_cast<uint32_t>(LOGIN_NO_FLAG));
     CharacterDatabase.queueAsyncQuery(std::move(query));
 }
-
-#if defined(AE_FOREVER)
-void WorldSession::beginForeverPlayerLogin(uint32_t guidLow)
-{
-    if (sObjectMgr.getPlayer(guidLow) != nullptr || m_loggingInPlayer || _player)
-    {
-        sLogger.warning("WorldSession::Forever: player login rejected guidLow={} because the character is already active or loading.", guidLow);
-        return;
-    }
-
-    sLogger.info("WorldSession::Forever: starting DB-backed player load guidLow={} without legacy login packets.", guidLow);
-    auto query = std::make_unique<AsyncQuery>(std::make_unique<SQLClassCallbackP0<WorldSession>>(this, &WorldSession::loadPlayerFromDBProc));
-    query->addQuery("SELECT guid,class FROM characters WHERE guid = %u AND login_flags = %u", guidLow, static_cast<uint32_t>(LOGIN_NO_FLAG));
-    CharacterDatabase.queueAsyncQuery(std::move(query));
-}
-#endif
 
 void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
 {

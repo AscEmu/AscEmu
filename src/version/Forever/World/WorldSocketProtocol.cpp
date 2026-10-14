@@ -1354,7 +1354,7 @@ bool WorldSocket::processForeverEnterEncryptedModeAck(uint32_t opcode, const std
             return false;
 
         sLogger.info("WorldSocket::Forever: instance connection attached for account {}.", m_session->GetAccountId());
-        m_session->beginForeverPlayerLogin(m_foreverPendingLoginGuid);
+        m_session->beginPlayerLogin(m_foreverPendingLoginGuid);
         return true;
     }
 

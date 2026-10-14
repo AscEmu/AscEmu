@@ -108,30 +108,17 @@ void WorldSession::handleGameObjectQueryOpcode(WorldPacket& recvData)
         return;
     }
 
-    const auto gameobject_info = sMySQLStore.getGameObjectProperties(srlPacket.entry);
-    if (!gameobject_info)
-    {
-        if (getClientProtocol().isForever())
-        {
-            SmsgGameobjectQueryResponse responsePacket(nullptr, srlPacket.entry, srlPacket.guid, "");
-            sendManagedPacket(responsePacket);
-        }
+    const auto gameobjectInfo = sMySQLStore.getGameObjectProperties(srlPacket.entry);
+    if (gameobjectInfo == nullptr && !getClientProtocol().isForever())
         return;
-    }
 
-    const auto loc = (language > 0) ? sMySQLStore.getLocalizedGameobject(srlPacket.entry, language) : nullptr;
-    const auto name = loc ? loc->name : gameobject_info->name.c_str();
+    const auto localized = gameobjectInfo != nullptr && language > 0 ? sMySQLStore.getLocalizedGameobject(srlPacket.entry, language) : nullptr;
+    const char* name = localized != nullptr ? localized->name : gameobjectInfo != nullptr ? gameobjectInfo->name.c_str() : "";
 
-    sLogger.debugOpcode("Received CMSG_GAMEOBJECT_QUERY for entry: {} name : {}.", srlPacket.entry, name);
+    if (gameobjectInfo != nullptr)
+        sLogger.debugOpcode("Received CMSG_GAMEOBJECT_QUERY for entry: {} name : {}.", srlPacket.entry, name);
 
-    if (getClientProtocol().isForever())
-    {
-        SmsgGameobjectQueryResponse responsePacket(gameobject_info, srlPacket.entry, srlPacket.guid, name);
-        sendManagedPacket(responsePacket);
-        return;
-    }
-
-    SmsgGameobjectQueryResponse responsePacket(*gameobject_info, name);
+    SmsgGameobjectQueryResponse responsePacket(gameobjectInfo, srlPacket.entry, srlPacket.guid, name);
     sendManagedPacket(responsePacket);
 }
 
@@ -144,24 +131,18 @@ void WorldSession::handleCreatureQueryOpcode(WorldPacket& recvData)
         return;
     }
 
-    const auto creature_info = sMySQLStore.getCreatureProperties(srlPacket.entry);
-    if (!creature_info)
-    {
-        if (getClientProtocol().isForever())
-        {
-            SmsgCreatureQueryResponse responsePacket(nullptr, srlPacket.entry, "", "");
-            sendManagedPacket(responsePacket);
-        }
+    const auto creatureInfo = sMySQLStore.getCreatureProperties(srlPacket.entry);
+    if (creatureInfo == nullptr && !getClientProtocol().isForever())
         return;
-    }
 
-    const auto loc = (!getClientProtocol().isForever() && language > 0) ? sMySQLStore.getLocalizedCreature(srlPacket.entry, language) : nullptr;
-    const auto name = loc ? loc->name : creature_info->Name.c_str();
-    const auto subName = loc ? loc->subName : creature_info->SubName.c_str();
+    const auto localized = creatureInfo != nullptr && !getClientProtocol().isForever() && language > 0 ? sMySQLStore.getLocalizedCreature(srlPacket.entry, language) : nullptr;
+    const char* name = localized != nullptr ? localized->name : creatureInfo != nullptr ? creatureInfo->Name.c_str() : "";
+    const char* subName = localized != nullptr ? localized->subName : creatureInfo != nullptr ? creatureInfo->SubName.c_str() : "";
 
-    sLogger.debug("Received CMSG_CREATURE_QUERY for entry: {} ({})", srlPacket.entry, name);
+    if (creatureInfo != nullptr)
+        sLogger.debug("Received CMSG_CREATURE_QUERY for entry: {} ({})", srlPacket.entry, name);
 
-    SmsgCreatureQueryResponse responsePacket(creature_info, srlPacket.entry, name, subName);
+    SmsgCreatureQueryResponse responsePacket(creatureInfo, srlPacket.entry, name, subName);
     sendManagedPacket(responsePacket);
 }
 
