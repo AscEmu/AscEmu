@@ -173,10 +173,10 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    handleForeverTrainerBuySpellData(srlPacket.guid.getRawGuid(), srlPacket.trainerId, srlPacket.spellId);
+    handleTrainerBuySpellData(srlPacket.guid.getRawGuid(), srlPacket.trainerId, srlPacket.spellId);
 }
 
-void WorldSession::handleForeverTrainerBuySpellData(uint64_t guid, uint32_t trainerId, uint32_t spellId)
+void WorldSession::handleTrainerBuySpellData(uint64_t guid, uint32_t trainerId, uint32_t spellId)
 {
     WoWGuid trainerGuid(guid);
     sLogger.debugOpcode("Received CMSG_TRAINER_BUY_SPELL: {} (guidLowPart), trainerId={}, spellId={}.", trainerGuid.getCounter(), trainerId, spellId);
@@ -277,10 +277,10 @@ void WorldSession::handleGossipHelloOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    handleForeverGossipHelloGuid(srlPacket.guid.getRawGuid());
+    handleGossipHelloGuid(srlPacket.guid.getRawGuid());
 }
 
-void WorldSession::handleForeverGossipHelloGuid(uint64_t guid)
+void WorldSession::handleGossipHelloGuid(uint64_t guid)
 {
     WoWGuid gossipGuid(guid);
     sLogger.debugOpcode("Received CMSG_GOSSIP_HELLO: {} (guidLowPart).", gossipGuid.getCounter());
@@ -307,10 +307,10 @@ void WorldSession::handleGossipSelectOptionOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    handleForeverGossipSelectOptionData(srlPacket.guid.getRawGuid(), srlPacket.gossip_id, srlPacket.option, srlPacket.input);
+    handleGossipSelectOptionData(srlPacket.guid.getRawGuid(), srlPacket.gossip_id, srlPacket.option, srlPacket.input);
 }
 
-void WorldSession::handleForeverGossipSelectOptionData(uint64_t guid, uint32_t gossipId, uint32_t option, const std::string& input)
+void WorldSession::handleGossipSelectOptionData(uint64_t guid, uint32_t gossipId, uint32_t option, const std::string& input)
 {
     WoWGuid gossipGuid(guid);
     sLogger.debugOpcode("Received CMSG_GOSSIP_SELECT_OPTION: {} (gossipId), {} (option), {} (guidLow).",

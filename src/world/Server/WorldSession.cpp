@@ -257,20 +257,6 @@ uint8_t WorldSession::processQueuedPackets(uint32_t InstanceID)
     return 0;
 }
 
-#if defined(AE_FOREVER)
-bool WorldSession::sendForeverLogoutComplete()
-{
-    WorldSocket* socket = GetForeverInstanceSocket();
-    if (socket == nullptr || !socket->isConnected())
-        return false;
-
-    ByteBuffer payload;
-    payload.writeBit(false); // verified 69913 payload = 00
-    payload.flushBits();
-
-    return socket->sendForeverPacket(SMSG_LOGOUT_COMPLETE, payload.contents(), static_cast<uint32_t>(payload.size()));
-}
-#endif
 
 void WorldSession::LogoutPlayer(bool Save)
 {
@@ -473,18 +459,16 @@ void WorldSession::LogoutPlayer(bool Save)
             sWorld.addGlobalSession(this);
         }
 
-#if defined(AE_FOREVER)
         WorldSocket* foreverInstanceSocket = GetForeverInstanceSocket();
-        sendForeverLogoutComplete();
+
+        SmsgLogoutComplete managedPacket;
+        sendManagedPacket(managedPacket);
+
         if (foreverInstanceSocket != nullptr && foreverInstanceSocket != _socket)
         {
             ClearForeverSocket(foreverInstanceSocket);
             foreverInstanceSocket->disconnect();
         }
-#else
-        SmsgLogoutComplete managedPacket;
-        sendManagedPacket(managedPacket);
-#endif
 
         sLogger.debug("SESSION: Sent SMSG_LOGOUT_COMPLETE Message");
     }

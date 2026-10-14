@@ -208,7 +208,6 @@ public:
         void LogoutPlayer(bool Save);
 
 #if defined(AE_FOREVER)
-        bool sendForeverLogoutComplete();
 #endif
 
         void QueuePacket(std::unique_ptr<WorldPacket> packet);
@@ -904,9 +903,9 @@ protected:
         void sendTrainerList(Creature* creature);
         void sendStabledPetList(uint64_t npcguid);
 
-        void handleForeverGossipHelloGuid(uint64_t guid);
-        void handleForeverGossipSelectOptionData(uint64_t guid, uint32_t gossipId, uint32_t option, const std::string& input);
-        void handleForeverTrainerBuySpellData(uint64_t guid, uint32_t trainerId, uint32_t spellId);
+        void handleGossipHelloGuid(uint64_t guid);
+        void handleGossipSelectOptionData(uint64_t guid, uint32_t gossipId, uint32_t option, const std::string& input);
+        void handleTrainerBuySpellData(uint64_t guid, uint32_t trainerId, uint32_t spellId);
 
         TrainerSpellState trainerGetSpellStatus(TrainerSpell const* trainerSpell) const;
 
@@ -949,7 +948,6 @@ protected:
         void handleNameQueryOpcode(WorldPacket& recvPacket);
         void handleRealmNameQueryOpcode(WorldPacket& recvPacket);
         void handleInrangeQuestgiverQuery(WorldPacket& /*recvPacket*/);
-        void handleForeverInrangeQuestgiverQuery();
         void handleCorpseQueryOpcode(WorldPacket& /*recvPacket*/);
         void handleItemNameQueryOpcode(WorldPacket& recvPacket);
         void handlePageTextQueryOpcode(WorldPacket& recvPacket);
@@ -959,10 +957,6 @@ protected:
         // QuestHandler.cpp
     public:
         std::unique_ptr<WorldPacket> buildQuestQueryResponse(QuestProperties const* qst);
-        void handleForeverQuestgiverHelloGuid(uint64_t guid);
-        void handleForeverQuestgiverStatusQueryGuid(uint64_t guid);
-        void handleForeverQuestgiverAcceptQuestData(uint64_t guid, uint32_t questId);
-        void handleForeverQuestgiverChooseRewardData(uint64_t guid, uint32_t questId, uint32_t rewardSlot);
 
     protected:
         void handleQuestPushResultOpcode(WorldPacket& recvPacket);
