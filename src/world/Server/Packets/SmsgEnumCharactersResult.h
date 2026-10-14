@@ -6,11 +6,55 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "world/Objects/ItemDefines.hpp"
+#include "world/Objects/Units/Players/PlayerDefines.hpp"
+#include "shared/WoWGuid.hpp"
+
+#include <algorithm>
+#include <array>
 #include <cstdint>
+#include <string>
+#include <utility>
 #include <vector>
 
 namespace AscEmu::Packets
 {
+    struct ForeverCharacterCustomizationChoice
+    {
+        uint32_t optionId{0};
+        uint32_t choiceId{0};
+    };
+
+    struct ForeverCharacterVisualItem
+    {
+        uint32_t itemId{0};
+        uint32_t transmogrifiedItemId{0};
+        uint8_t subclass{0};
+        uint8_t inventoryType{0};
+        uint32_t displayId{0};
+        uint32_t displayEnchantId{0};
+        int32_t secondaryItemModifiedAppearanceId{0};
+        uint8_t sheatheCategory{0};
+    };
+
+    struct ForeverCharacterEnumEntry
+    {
+        uint64_t guid{0};
+        uint8_t level{0};
+        uint8_t race{0};
+        uint8_t charClass{0};
+        uint8_t gender{0};
+        std::string firstName;
+        std::string lastName;
+        float x{0.0f};
+        float y{0.0f};
+        float z{0.0f};
+        int32_t mapId{0};
+        int32_t zoneId{0};
+        std::array<ForeverCharacterVisualItem, 19> visualItems{};
+        std::vector<ForeverCharacterCustomizationChoice> customizations;
+    };
+
     class SmsgEnumCharactersResult : public ManagedPacket
     {
     public:
@@ -32,6 +76,17 @@ namespace AscEmu::Packets
         {
         }
 
+        SmsgEnumCharactersResult(uint32_t virtualRealmAddress, uint32_t realmId, uint32_t superDistrictId, std::vector<ForeverCharacterEnumEntry> characters) :
+            ManagedPacket(SMSG_ENUM_CHARACTERS_RESULT, 430),
+            char_count(0),
+            unk1(0),
+            foreverVirtualRealmAddress(virtualRealmAddress),
+            foreverRealmId(realmId),
+            foreverSuperDistrictId(superDistrictId),
+            foreverCharacters(std::move(characters))
+        {
+        }
+
     protected:
         size_t expectedSize() const override
         {
@@ -40,6 +95,9 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+                return serialiseForever(packet);
+
             if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
                 //loop vector char enum count
@@ -320,6 +378,156 @@ namespace AscEmu::Packets
                     packet.writeBit(1);
                     packet.flushBits();
                 }
+            }
+
+            return true;
+        }
+
+    private:
+        uint32_t foreverVirtualRealmAddress{0};
+        uint32_t foreverRealmId{0};
+        uint32_t foreverSuperDistrictId{0};
+        std::vector<ForeverCharacterEnumEntry> foreverCharacters;
+
+        bool serialiseForever(WorldPacket& packet)
+        {
+            constexpr uint32_t ClassDisableMask69913 = 0x7FFFFA20U;
+            constexpr uint32_t CharacterFlags2_69913 = 0x00000004U;
+            constexpr uint32_t CharacterFlags4_69913 = 0x00040120U;
+            constexpr int32_t CharacterSaveVersion69913 = 76;
+            constexpr uint8_t CharacterNameFlags69913 = 0x0CU;
+
+            packet.writeBit(1); // Success
+            if (foreverCharacters.empty())
+            {
+                packet.writeBit(0); // Realmless
+                packet.writeBit(0); // IsDeletedCharacters
+                packet.writeBit(0); // IgnoreNewPlayerRestrictions
+                packet.writeBit(1); // IsRestrictedNewPlayer
+                packet.writeBit(0); // IsNewcomerChatCompleted
+                packet.writeBit(0); // IsRestrictedTrial
+                packet.writeBit(1); // IsAccountLapsedPlayer
+                packet.writeBit(1); // ClassDisableMask present
+                packet.writeBit(1); // ForceCharacterListSort
+            }
+            else
+            {
+                packet.writeBit(1);
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.writeBit(1);
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.writeBit(0);
+                packet.writeBit(1); // ClassDisableMask present
+                packet.writeBit(0); // ForceCharacterListSort
+            }
+            packet.flushBits();
+
+            packet << uint32_t(0); // RegionwideCharacters
+            packet << uint32_t(foreverCharacters.size());
+
+            int32_t maxCharacterLevel = foreverCharacters.empty() ? 0 : 1;
+            for (const ForeverCharacterEnumEntry& character : foreverCharacters)
+                maxCharacterLevel = std::max<int32_t>(maxCharacterLevel, character.level);
+
+            packet << maxCharacterLevel;
+            packet << uint32_t(ForeverRaceClassAvailability.size());
+            packet << uint32_t(0); // UnlockedConditionalAppearances
+            packet << uint32_t(0); // RaceLimitDisables
+            packet << uint32_t(0); // WarbandGroups
+            packet << ClassDisableMask69913;
+
+            for (const ForeverCharacterEnumEntry& character : foreverCharacters)
+            {
+                const std::vector<uint8_t> packedGuid = WoWGuid::createModernPlayer(foreverRealmId, character.guid).packModern();
+                packet.append(packedGuid.data(), packedGuid.size());
+                packet << foreverVirtualRealmAddress;
+                packet << uint16_t(0); // 69913 carries visible ordering in account-data type 16
+                packet << character.race << character.gender << character.charClass;
+                packet << int16_t(0); // SpecID
+                packet << uint32_t(character.customizations.size());
+                packet << character.level;
+                packet << character.mapId << character.zoneId;
+                packet << character.x << character.y << character.z;
+                packet << (character.guid | (static_cast<uint64_t>(foreverRealmId & 0x0FFFU) << 48U));
+
+                const std::vector<uint8_t> emptyGuildGuid = WoWGuid::createModernEmpty().packModern();
+                packet.append(emptyGuildGuid.data(), emptyGuildGuid.size());
+
+                packet << uint32_t(0);
+                packet << CharacterFlags2_69913;
+                packet << uint32_t(0);
+                packet << CharacterFlags4_69913;
+                packet << uint8_t(0); // CantLoginReason
+                packet << uint32_t(0) << uint32_t(0) << uint32_t(0); // Pet
+
+                for (const ForeverCharacterVisualItem& visualItem : character.visualItems)
+                {
+                    packet << visualItem.itemId << visualItem.transmogrifiedItemId;
+                    packet << visualItem.subclass << visualItem.inventoryType;
+                    packet << visualItem.displayId << visualItem.displayEnchantId;
+                    packet << visualItem.secondaryItemModifiedAppearanceId << visualItem.sheatheCategory;
+                }
+
+                packet << CharacterSaveVersion69913;
+                packet << uint64_t(0); // CreateTime
+                packet << uint64_t(0); // LastActiveTime
+                packet << int32_t(0); // LastLoginVersion
+                for (uint8_t i = 0; i < 5U; ++i)
+                    packet << int32_t(-1);
+                packet << uint32_t(0) << uint32_t(0); // ProfessionIds
+                packet << int32_t(0); // TimerunningSeasonID
+                packet << uint32_t(0); // OverrideSelectScreenFileDataID
+                packet << uint32_t(0); // RealmQueue
+                packet << foreverSuperDistrictId; // FOREVER-VERIFIED: Cfg_SuperDistrictID for this realm/character.
+
+                for (const ForeverCharacterCustomizationChoice& customization : character.customizations)
+                    packet << customization.optionId << customization.choiceId;
+
+                const uint32_t firstNameLength = static_cast<uint32_t>(std::min<size_t>(character.firstName.size(), 63U));
+                const uint32_t lastNameLength = static_cast<uint32_t>(std::min<size_t>(character.lastName.size(), 63U));
+                packet.writeBits(firstNameLength, 6);
+                packet.writeBits(lastNameLength, 6);
+                packet.writeBits(CharacterNameFlags69913, 4);
+                packet.flushBits();
+                if (firstNameLength != 0U)
+                    packet.append(reinterpret_cast<const uint8_t*>(character.firstName.data()), firstNameLength);
+                if (lastNameLength != 0U)
+                    packet.append(reinterpret_cast<const uint8_t*>(character.lastName.data()), lastNameLength);
+
+                packet.writeBit(0); // BoostInProgress
+                packet.writeBit(0); // RpeAvailable
+                packet.flushBits();
+                packet << uint32_t(0); // RestrictionFlags
+                packet << uint32_t(0); // MailSenders count
+                packet << uint32_t(0); // MailSenderTypes count
+                packet << uint32_t(0); // NoRpeReason
+                packet << uint8_t(0) << uint8_t(0) << uint8_t(0) << uint8_t(0xFF) << uint8_t(0) << uint8_t(0); // 69913 restriction tail
+            }
+
+            for (const RaceClassAvailability& race : ForeverRaceClassAvailability)
+            {
+                packet << int8_t(static_cast<uint8_t>(race.race));
+                packet << uint32_t(race.classCount);
+                for (uint8_t i = 0; i < race.classCount; ++i)
+                {
+                    packet << int8_t(static_cast<uint8_t>(race.classes[i]));
+                    packet << uint32_t(0); // AchievementID
+                    packet.writeBit(1); // HasExpansion
+                    packet.writeBit(1); // HasUnlockedAchievement
+                    packet.writeBit(1); // HasEntitlement
+                    packet.flushBits();
+                }
+
+                packet.writeBit(1); // HasUnlockedLicense
+                packet.writeBit(0); // HasUnlockedAchievement
+                packet.writeBit(0); // HasHeritageArmorUnlockAchievement
+                packet.writeBit(1); // HasEntitlement
+                packet.writeBit(0); // HideRaceOnClient
+                packet.writeBit(0); // FactionBalanceDisabled
+                packet.writeBit(0); // DoesNotHaveAvailableClasses
+                packet.flushBits();
             }
 
             return true;

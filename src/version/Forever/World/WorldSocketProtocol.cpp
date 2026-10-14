@@ -19,13 +19,20 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "version/Forever/BuildProfile.hpp"
 #include "version/Forever/Auth.hpp"
-#include "version/Forever/World/PostAuthBootstrap.hpp"
-#include "version/Forever/World/CharacterSelectBootstrap.hpp"
 #include "world/Server/BattleNetCommClient/BattleNetCommClient.hpp"
 #include "world/Server/LogonCommClient/LogonCommHandler.h"
 #include "world/Server/World.h"
 #include "world/Server/WorldSession.h"
 #include "world/Server/DatabaseDefinition.hpp"
+#include "world/Server/Packets/SmsgFeatureSystemStatusGlueScreen.h"
+#include "world/Server/Packets/SmsgAuthResponse.h"
+#include "world/Server/Packets/SmsgSetTimeZoneInformation.h"
+#include "world/Server/Packets/SmsgMirrorVars.h"
+#include "world/Server/Packets/SmsgWaitQueueFinish.h"
+#include "world/Server/Packets/SmsgWarden3Enabled.h"
+#include "world/Server/Packets/SmsgAccountDataTimes.h"
+#include "world/Server/Packets/SmsgTutorialFlags.h"
+#include "world/Server/MirrorVars.hpp"
 
 
 #include <openssl/crypto.h>
@@ -72,51 +79,6 @@ namespace
         return sOpcodeTables.getHexValueForExpansion(internalOpcode, WoW::Expansion::_Forever);
     }
 
-    bool isForeverMovementOpcode(uint32_t opcode)
-    {
-        switch (opcode)
-        {
-            case CMSG_MOVE_CHANGE_TRANSPORT:
-            case MSG_MOVE_JUMP:
-            case CMSG_MOVE_DOUBLE_JUMP:
-            case MSG_MOVE_FALL_LAND:
-            case CMSG_MOVE_FALL_RESET:
-            case CMSG_MOVE_UPDATE_FALL_SPEED:
-            case MSG_MOVE_HEARTBEAT:
-            case CMSG_MOVE_SET_ADV_FLY:
-            case MSG_MOVE_SET_WALK_MODE:
-            case MSG_MOVE_SET_RUN_MODE:
-            case CMSG_MOVE_SET_FLY:
-            case MSG_MOVE_SET_PITCH:
-            case MSG_MOVE_SET_FACING:
-            case CMSG_MOVE_SET_FACING_HEARTBEAT:
-            case MSG_MOVE_START_ASCEND:
-            case MSG_MOVE_START_BACKWARD:
-            case MSG_MOVE_START_DESCEND:
-            case MSG_MOVE_START_FORWARD:
-            case MSG_MOVE_START_PITCH_DOWN:
-            case MSG_MOVE_START_PITCH_UP:
-            case MSG_MOVE_START_STRAFE_LEFT:
-            case MSG_MOVE_START_STRAFE_RIGHT:
-            case MSG_MOVE_START_SWIM:
-            case MSG_MOVE_START_TURN_LEFT:
-            case MSG_MOVE_START_TURN_RIGHT:
-            case MSG_MOVE_STOP:
-            case MSG_MOVE_STOP_ASCEND:
-            case MSG_MOVE_STOP_PITCH:
-            case MSG_MOVE_STOP_STRAFE:
-            case MSG_MOVE_STOP_SWIM:
-            case MSG_MOVE_STOP_TURN:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    bool isForeverMovementWireOpcode(uint32_t rawOpcode)
-    {
-        return isForeverMovementOpcode(sOpcodeTables.getInternalIdForHex(rawOpcode, WoW::Expansion::_Forever));
-    }
     struct ForeverPendingInstanceLogin
     {
         WorldSession* session{nullptr};
@@ -148,19 +110,6 @@ namespace
         return value;
     }
 
-
-    ByteBuffer buildForeverAccountDataTimes()
-    {
-        // Same wire model as the verified modern protocol implementation:
-        // packed empty 128-bit ObjectGuid (16-bit zero presence mask),
-        // int64 ServerTime, then twenty int64 account-data timestamps.
-        ByteBuffer packet;
-        packet << uint16_t(0); // packed empty ObjectGuid presence mask
-        packet << int64_t(static_cast<int64_t>(std::time(nullptr)));
-        for (uint32_t i = 0; i < 20U; ++i)
-            packet << int64_t(0);
-        return packet;
-    }
 
     bool foreverSha512(const uint8_t* first, size_t firstSize, const uint8_t* second, size_t secondSize, std::array<uint8_t, 64>& digest)
     {
@@ -706,17 +655,9 @@ bool WorldSocket::initializeVersionedConnection()
     m_foreverSendCounter = 0;
     m_foreverCryptoSendCounter = 0;
     m_foreverCryptoRecvCounter = 0;
-    m_foreverCharacterEnumRequests = 0;
     m_foreverRegionId = 0;
     m_foreverBattlegroupId = 0;
     m_foreverRealmId = 0;
-    m_foreverHotfixBootstrapSent = false;
-    m_foreverBufferedEnumRequest = false;
-    m_foreverDbQueryBulkCount = 0;
-    m_foreverPostDbEnumRefreshPending = false;
-    m_foreverPostDbEnumRefreshSent = false;
-    m_foreverPostCreateEnumRefreshPending = false;
-    m_foreverPostCreateEnumRefreshArmed = false;
     m_foreverEncryptedHeaderReady = false;
     m_foreverEncryptedPacketSize = 0;
     m_foreverEncryptedPacketTag.fill(0);
@@ -931,10 +872,7 @@ bool WorldSocket::processForeverAuthPacket()
         m_foreverPacketRemaining =
             packetSize - static_cast<uint32_t>(sizeof(uint32_t));
 
-        if (isForeverMovementWireOpcode(m_foreverPacketOpcode))
-        {
-        }
-        else if (m_foreverPacketOpcode == foreverWireOpcode(CMSG_PING))
+        if (m_foreverPacketOpcode == foreverWireOpcode(CMSG_PING))
         {
             sLogger.debugOpcode("WorldSocket::Forever: RX header opcode=0x{:08X}, payload={} byte(s), auth-tag={}.", m_foreverPacketOpcode, m_foreverPacketRemaining, nonZeroAuthTag ? "non-zero" : "zero");
         }
@@ -970,10 +908,7 @@ bool WorldSocket::processForeverAuthPacket()
     if (opcode == foreverWireOpcode(CMSG_ENTER_ENCRYPTED_MODE_ACK))
         return processForeverEnterEncryptedModeAck(opcode, payload);
 
-    if (isForeverMovementWireOpcode(opcode))
-    {
-    }
-    else if (opcode == foreverWireOpcode(CMSG_PING))
+    if (opcode == foreverWireOpcode(CMSG_PING))
     {
         sLogger.debugOpcode("WorldSocket::Forever: RX opcode=0x{:08X}, payload={} byte(s), hex=[{}]", opcode, payload.size(), Util::ByteArrayToHexString(payload.data(), static_cast<uint32_t>(payload.size())));
     }
@@ -1476,90 +1411,36 @@ bool WorldSocket::sendForeverPostAuthBootstrap()
 {
     using namespace AscEmu::Version::Forever;
 
-    struct PacketView
-    {
-        uint32_t opcode;
-        const uint8_t* data;
-        uint32_t size;
-        const char* name;
-    };
+    // SMSG_UPDATE_BNET_SESSION_KEY (0x004602CE) is a real protocol opcode,
+    // but the old bootstrap only contained capture-specific opaque key material.
+    // Do not replay captured session-key bytes for a different authenticated session.
 
-    // AuthResponse contains a Unix timestamp at bytes 48..51. The official
-    // 69893 queue capture and the later official 69913 no-queue capture both
-    // show this field tracking the current server time, so do not replay the
-    // stale timestamp from the capture.
-    auto authResponse = PostAuthBootstrap::AuthResponse460001NoQueue;
-    const auto authResponseUnixTime = static_cast<uint32_t>(std::time(nullptr));
-    std::memcpy(authResponse.data() + 48, &authResponseUnixTime, sizeof(authResponseUnixTime));
+    AscEmu::Packets::SmsgAuthResponse authResponse(0, AscEmu::Packets::ARST_ACCOUNT_DATA);
+    authResponse.foreverServerTime = static_cast<uint32_t>(std::time(nullptr));
+    sendManagedPacket(authResponse);
 
-    // Keep the already-working auth/session prefix unchanged. The glue-state
-    // packets below are sent separately because AccountDataTimes is dynamic.
-    const std::array<PacketView, 4> authPackets =
-    {{
-        { SMSG_POST_AUTH_650007,
-          PostAuthBootstrap::Packet650007.data(),
-          static_cast<uint32_t>(PostAuthBootstrap::Packet650007.size()),
-          "SMSG_POST_AUTH_650007" },
-        { SMSG_POST_AUTH_4602CE,
-          PostAuthBootstrap::Packet4602CE.data(),
-          static_cast<uint32_t>(PostAuthBootstrap::Packet4602CE.size()),
-          "SMSG_POST_AUTH_4602CE" },
-        { SMSG_AUTH_RESPONSE,
-          authResponse.data(),
-          static_cast<uint32_t>(authResponse.size()),
-          "SMSG_AUTH_RESPONSE" },
-        { SMSG_SET_TIME_ZONE_INFORMATION,
-          PostAuthBootstrap::TimeZone460123.data(),
-          static_cast<uint32_t>(PostAuthBootstrap::TimeZone460123.size()),
-          "SMSG_SET_TIME_ZONE_INFORMATION" }
-    }};
+    m_session->sendPostAuthClientData(BUILD_VERSION);
 
-    for (const PacketView& packet : authPackets)
-    {
-        if (!sendForeverPacket(packet.opcode, packet.data, packet.size))
-        {
-            sLogger.failure("WorldSocket::Forever: failed to send {} opcode=0x{:08X}, payload={} byte(s).", packet.name, foreverWireOpcode(packet.opcode), packet.size);
-            return false;
-        }
+    AscEmu::Packets::SmsgSetTimeZoneInformation timeZone("America/Los_Angeles", "America/Los_Angeles");
+    sendManagedPacket(timeZone);
 
-    }
+    AscEmu::Packets::SmsgWaitQueueFinish waitQueueFinish;
+    sendManagedPacket(waitQueueFinish);
 
-    // Match the official 69893 pre-enum glue sequence, while using the same
-    // semantic AccountDataTimes serializer as the verified modern protocol path:
-    //   460003(empty), 4602CB(00 02 00 00), 4601B5(AccountDataTimes),
-    //   460064(FeatureStatus), 460371(Config), 460268(TutorialFlags).
-    const std::array<uint8_t, 4> glueState4602CB = { 0x00, 0x02, 0x00, 0x00 };
-    const std::array<uint8_t, 32> tutorialFlags460268 = {};
+    AscEmu::Packets::SmsgWarden3Enabled warden3Enabled;
+    sendManagedPacket(warden3Enabled);
 
-    auto sendGluePacket = [this](uint32_t internalOpcode, const uint8_t* data, uint32_t size, const char* name) -> bool
-    {
-        if (!sendForeverPacket(internalOpcode, data, size))
-        {
-            sLogger.failure("WorldSocket::Forever: failed to send {} opcode=0x{:08X}, payload={} byte(s).", name, foreverWireOpcode(internalOpcode), size);
-            return false;
-        }
+    AscEmu::Packets::SmsgAccountDataTimes accountDataTimes(static_cast<uint32_t>(std::time(nullptr)), 0, 0, 0);
+    sendManagedPacket(accountDataTimes);
 
-        return true;
-    };
+    AscEmu::Packets::SmsgFeatureSystemStatusGlueScreen featureStatus;
+    sendManagedPacket(featureStatus);
 
-    if (!sendGluePacket(SMSG_GLUE_BOOTSTRAP_EMPTY, nullptr, 0, "SMSG_GLUE_BOOTSTRAP_EMPTY"))
-        return false;
+    AscEmu::Packets::SmsgMirrorVars mirrorVars(AscEmu::getMirrorVars(getClientProtocol()));
+    sendManagedPacket(mirrorVars);
 
-    if (!sendGluePacket(SMSG_GLUE_BOOTSTRAP_STATE, glueState4602CB.data(), static_cast<uint32_t>(glueState4602CB.size()), "SMSG_GLUE_BOOTSTRAP_STATE"))
-        return false;
-
-    ByteBuffer accountDataTimes = buildForeverAccountDataTimes();
-    if (!sendGluePacket(SMSG_ACCOUNT_DATA_TIMES, accountDataTimes.contents(), static_cast<uint32_t>(accountDataTimes.size()), "SMSG_ACCOUNT_DATA_TIMES"))
-        return false;
-
-    if (!sendGluePacket(SMSG_FEATURE_SYSTEM_STATUS_GLUE_SCREEN, PostAuthBootstrap::FeatureStatus460064.data(), static_cast<uint32_t>(PostAuthBootstrap::FeatureStatus460064.size()), "SMSG_FEATURE_SYSTEM_STATUS_GLUE_SCREEN"))
-        return false;
-
-    if (!sendGluePacket(SMSG_POST_AUTH_CONFIG, PostAuthBootstrap::Config460371.data(), static_cast<uint32_t>(PostAuthBootstrap::Config460371.size()), "SMSG_POST_AUTH_CONFIG"))
-        return false;
-
-    if (!sendGluePacket(SMSG_TUTORIAL_FLAGS, tutorialFlags460268.data(), static_cast<uint32_t>(tutorialFlags460268.size()), "SMSG_TUTORIAL_FLAGS"))
-        return false;
+    AscEmu::Packets::SmsgTutorialFlags tutorialFlags(std::vector<uint32_t>(8U, 0U));
+    sendManagedPacket(tutorialFlags);
 
     return true;
 }

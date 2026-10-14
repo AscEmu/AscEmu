@@ -106,6 +106,42 @@ enum Races
     RACE_SKYBORNE_HORDE = 96,
 };
 
+struct RaceClassAvailability
+{
+    Races race = RACE_HUMAN;
+    std::array<Classes, MAX_PLAYER_CLASSES - 1> classes{};
+    uint8_t classCount = 0;
+};
+
+template <size_t N>
+constexpr RaceClassAvailability makeRaceClassAvailability(Races race, const std::array<Classes, N>& classes)
+{
+    static_assert(N <= MAX_PLAYER_CLASSES - 1);
+
+    RaceClassAvailability availability{};
+    availability.race = race;
+    availability.classCount = static_cast<uint8_t>(N);
+
+    for (size_t i = 0; i < N; ++i)
+        availability.classes[i] = classes[i];
+
+    return availability;
+}
+
+inline constexpr std::array ForeverRaceClassAvailability =
+{
+    makeRaceClassAvailability(RACE_SKYBORNE_ALLIANCE, std::array{ HUNTER, ROGUE, WARRIOR, MAGE, DRUID }),
+    makeRaceClassAvailability(RACE_SKYBORNE_HORDE, std::array{ HUNTER, ROGUE, SHAMAN, WARRIOR, DRUID }),
+    makeRaceClassAvailability(RACE_HUMAN, std::array{ WARRIOR, PALADIN, ROGUE, PRIEST, MAGE, WARLOCK, HUNTER }),
+    makeRaceClassAvailability(RACE_ORC, std::array{ WARRIOR, HUNTER, ROGUE, SHAMAN, WARLOCK, MAGE }),
+    makeRaceClassAvailability(RACE_DWARF, std::array{ WARRIOR, PALADIN, HUNTER, PRIEST, ROGUE, SHAMAN }),
+    makeRaceClassAvailability(RACE_NIGHTELF, std::array{ WARRIOR, HUNTER, ROGUE, PRIEST, DRUID }),
+    makeRaceClassAvailability(RACE_UNDEAD, std::array{ WARRIOR, ROGUE, PRIEST, MAGE, WARLOCK, PALADIN }),
+    makeRaceClassAvailability(RACE_TAUREN, std::array{ WARRIOR, HUNTER, SHAMAN, DRUID }),
+    makeRaceClassAvailability(RACE_GNOME, std::array{ WARRIOR, ROGUE, MAGE, WARLOCK, PRIEST }),
+    makeRaceClassAvailability(RACE_TROLL, std::array{ WARRIOR, ROGUE, HUNTER, PRIEST, SHAMAN, MAGE, WARLOCK })
+};
+
 enum TransferStatus : uint8_t
 {
     TRANSFER_NONE       = 0,

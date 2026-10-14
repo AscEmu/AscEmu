@@ -29,10 +29,19 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override { return 4 + 4; }
+        size_t expectedSize() const override { return m_protocol.isForever() ? size_t(10) : size_t(8); }
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                // Observed Forever 69913 completion layout: packed empty
+                // ObjectGuid, data type, result.
+                packet << uint16_t(0);
+                packet << uiId << unknown;
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_TBC)
                 return false;
 

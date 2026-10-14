@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include <array>
 #include <cstdint>
 #include <string>
 
@@ -37,6 +38,102 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                packet << entry;
+                packet.writeBit(info != nullptr);
+                packet.flushBits();
+
+                if (info == nullptr)
+                    return true;
+
+                const std::string creatureName = name != nullptr ? name : "";
+                const std::string creatureTitle = subName != nullptr ? subName : "";
+
+                packet.writeBits(creatureTitle.empty() ? 0U : static_cast<uint32_t>(creatureTitle.size() + 1U), 11);
+                packet.writeBits(0U, 11); // TitleAlt
+                packet.writeBits(info->icon_name.empty() ? 0U : static_cast<uint32_t>(info->icon_name.size() + 1U), 6);
+                packet.writeBit(info->Leader != 0);
+
+                packet.writeBits(creatureName.empty() ? 0U : static_cast<uint32_t>(creatureName.size() + 1U), 11);
+                packet.writeBits(0U, 11); // NameAlt[0]
+                for (uint8_t i = 1; i < 4; ++i)
+                {
+                    packet.writeBits(0U, 11);
+                    packet.writeBits(0U, 11);
+                }
+                packet.flushBits();
+
+                if (!creatureName.empty())
+                    packet << creatureName;
+
+                packet << info->typeFlags << uint32_t(0) << uint32_t(0);
+                packet << static_cast<uint8_t>(info->Type);
+                packet << static_cast<int32_t>(info->Family);
+                packet << static_cast<int8_t>(info->Rank);
+                packet << info->killcredit[0] << info->killcredit[1];
+
+                struct CreatureDisplay
+                {
+                    uint32_t id;
+                    float scale;
+                };
+
+                const float displayScale = info->Scale > 0.0f ? info->Scale : 1.0f;
+                const std::array<CreatureDisplay, 4> displays{{
+                    { info->Male_DisplayID, displayScale },
+                    { info->Female_DisplayID, displayScale },
+                    { info->Male_DisplayID2, displayScale },
+                    { info->Female_DisplayID2, displayScale }
+                }};
+
+                uint32_t displayCount = 0;
+                for (auto const& display : displays)
+                    if (display.id != 0)
+                        ++displayCount;
+
+                packet << displayCount;
+                packet << (displayCount != 0 ? 1.0f : 0.0f);
+
+                const float probability = displayCount != 0 ? 1.0f / static_cast<float>(displayCount) : 0.0f;
+                for (auto const& display : displays)
+                {
+                    if (display.id == 0)
+                        continue;
+
+                    packet << display.id << display.scale << probability;
+                }
+
+                packet << float(1.0f) << float(1.0f);
+
+                uint32_t questItemCount = 0;
+                for (uint32_t questItem : info->QuestItems)
+                    if (questItem != 0)
+                        ++questItemCount;
+
+                packet << questItemCount;
+                packet << uint32_t(0); // QuestCurrencies count
+                packet << int32_t(0);  // CreatureMovementInfoID
+                packet << int32_t(0);  // HealthScalingExpansion
+                packet << int32_t(0);  // RequiredExpansion
+                packet << int32_t(0);  // VignetteID
+                packet << int32_t(0);  // Class
+                packet << int32_t(0);  // CreatureDifficultyID
+                packet << int32_t(0);  // WidgetSetID
+                packet << int32_t(0);  // WidgetSetUnitConditionID
+
+                if (!creatureTitle.empty())
+                    packet << creatureTitle;
+                if (!info->icon_name.empty())
+                    packet << info->icon_name;
+
+                for (uint32_t questItem : info->QuestItems)
+                    if (questItem != 0)
+                        packet << static_cast<int32_t>(questItem);
+
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 if (entry == 300000)

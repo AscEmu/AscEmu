@@ -15,11 +15,9 @@ namespace AscEmu::Packets
     public:
         WoWGuid guid;
 
-        CmsgCharDelete() : CmsgCharDelete(0)
-        {
-        }
+        CmsgCharDelete() : CmsgCharDelete(0) {}
 
-        CmsgCharDelete(uint64_t guid) :
+        explicit CmsgCharDelete(uint64_t guid) :
             ManagedPacket(CMSG_CHAR_DELETE, 0),
             guid(guid)
         {
@@ -28,6 +26,17 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                WoWGuid modernGuid;
+                if (!WoWGuid::unpackModern(packet.contents(), packet.size(), modernGuid))
+                    return false;
+
+                guid = modernGuid;
+                packet.rfinish();
+                return true;
+            }
+
             if (!m_protocol.isMop())
             {
                 uint64_t unpackedGuid;

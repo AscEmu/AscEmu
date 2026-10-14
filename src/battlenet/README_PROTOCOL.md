@@ -147,12 +147,13 @@ The verified World V2 framing/authentication opcodes for build 69893 are:
 
 The first verified encrypted bootstrap packets include:
 
-- `SMSG_POST_AUTH_650007 = 0x00650007`
-- `SMSG_POST_AUTH_4602CE = 0x004602CE`
+- `SMSG_INVALIDATE_PLAYER = 0x00650007` (capture artifact; not required by the post-auth bootstrap)
+- `SMSG_UPDATE_BNET_SESSION_KEY = 0x004602CE`
+  - The previous 97-byte capture-specific payload is no longer replayed during post-auth bootstrap; a real session-key update must be generated from the active authenticated session before this opcode is sent.
 - `SMSG_AUTH_RESPONSE = 0x00460001`
 - `SMSG_SET_TIME_ZONE_INFORMATION = 0x00460123`
 - `SMSG_FEATURE_SYSTEM_STATUS_GLUE_SCREEN = 0x00460064`
-- `SMSG_POST_AUTH_CONFIG = 0x00460371`
+- `SMSG_MIRROR_VARS = 0x00460371`
 - `SMSG_GLUE_BOOTSTRAP_EMPTY = 0x00460003`
 - `SMSG_GLUE_BOOTSTRAP_STATE = 0x004602CB`
 - `SMSG_TUTORIAL_FLAGS = 0x00460268`

@@ -6,7 +6,11 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "world/Objects/Units/Players/PlayerDefines.hpp"
 #include <cstdint>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace AscEmu::Packets
 {
@@ -26,6 +30,7 @@ namespace AscEmu::Packets
         AuthWaitQueue = 0x1B,
     };
 
+
     struct SmsgAuthAccount
     {
         uint32_t billingTimeRemaining;
@@ -40,6 +45,27 @@ namespace AscEmu::Packets
         uint8_t error;
         uint8_t sendType;
         uint32_t queuePosition;
+
+        uint32_t foreverVirtualRealmAddress = 0;
+        uint32_t foreverVirtualRealmCount = 1;
+        uint32_t foreverTimeRested = 0;
+        uint8_t foreverActiveExpansionLevel = 0;
+        uint8_t foreverAccountExpansionLevel = 0;
+        uint32_t foreverTimeSecondsUntilPCKick = 0;
+        uint32_t foreverCurrencyId = 40;
+        uint32_t foreverBillingType = 2;
+        uint32_t foreverMinutesRemaining = 0;
+        uint32_t foreverRealBillingType = 2;
+        bool foreverIsInIGR = false;
+        bool foreverIsPaidForByIGR = false;
+        bool foreverIsCAISEnabled = false;
+        uint32_t foreverServerTime = 0;
+        uint32_t foreverRealmAddress = 0;
+        uint32_t foreverRealmUnknown = 0x46010002;
+        bool foreverRealmIsLocal = true;
+        bool foreverRealmIsInternal = false;
+        std::string foreverRealmName = "Classic Beta PvE";
+        std::string foreverRealmNameNormalized = "ClassicBetaPvE";
 
         SmsgAuthResponse() : SmsgAuthResponse(0, 0, 0)
         {
@@ -56,6 +82,60 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                packet << uint32_t(0); // BattlenetRpcErrorCode::OK
+                packet.writeBit(1);    // SuccessInfo
+                packet.writeBit(0);    // WaitInfo
+                packet.flushBits();
+
+                packet << foreverVirtualRealmAddress;
+                packet << foreverVirtualRealmCount;
+                packet << foreverTimeRested;
+                packet << foreverActiveExpansionLevel;
+                packet << foreverAccountExpansionLevel;
+                packet << foreverTimeSecondsUntilPCKick;
+                packet << uint32_t(ForeverRaceClassAvailability.size());
+                packet << uint32_t(0); // CharacterTemplates
+                packet << foreverCurrencyId;
+
+                packet << foreverBillingType;
+                packet << foreverMinutesRemaining;
+                packet << foreverRealBillingType;
+                packet.writeBit(foreverIsInIGR);
+                packet.writeBit(foreverIsPaidForByIGR);
+                packet.writeBit(foreverIsCAISEnabled);
+                packet.flushBits();
+                packet << foreverServerTime;
+
+                packet << foreverRealmAddress;
+                packet << foreverRealmUnknown;
+                packet.writeBit(foreverRealmIsLocal);
+                packet.writeBit(foreverRealmIsInternal);
+                packet.writeBits(foreverRealmName.size(), 8);
+                packet.writeBits(foreverRealmNameNormalized.size(), 8);
+                packet.flushBits();
+                packet.writeString(foreverRealmName);
+                packet.writeString(foreverRealmNameNormalized);
+
+                for (const RaceClassAvailability& race : ForeverRaceClassAvailability)
+                {
+                    packet << uint8_t(race.race);
+                    packet << uint32_t(race.classCount);
+                    for (uint8_t i = 0; i < race.classCount; ++i)
+                        packet << uint32_t(race.classes[i]);
+                }
+
+                packet.writeBit(0); // IsExpansionTrial
+                packet.writeBit(0); // ForceCharacterTemplate
+                packet.writeBit(0); // NumPlayersHorde
+                packet.writeBit(0); // NumPlayersAlliance
+                packet.writeBit(0); // ExpansionTrialExpiration
+                packet.writeBit(0); // CurrentBuild
+                packet.flushBits();
+                return true;
+            }
+
             SmsgAuthAccount accountInfo = { 0, 0, 0, static_cast<uint8_t>(m_protocol.expansion) };
 
             sLogger.debug("SmsgAuthResponse::internalSerialise: for expansion {}", accountInfo.expansion);

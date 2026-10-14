@@ -58,9 +58,19 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             if (m_protocol.isClassic())
+            {
                 packet << result;
+            }
+            else if (m_protocol.isForever())
+            {
+                packet << failReason;
+                packet.writeBit(instant);
+                packet.flushBits();
+            }
             else
+            {
                 packet << failReason << static_cast<uint8_t>(instant ? 1 : 0);
+            }
 
             return true;
         }

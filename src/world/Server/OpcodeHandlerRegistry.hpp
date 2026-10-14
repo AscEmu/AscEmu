@@ -18,7 +18,6 @@ This file is released under the MIT license. See README-MIT for more information
 constexpr int NUM_VERSIONS = MAX_VERSION_INDEX;
 
 class WorldSession;
-class WorldSocket;
 
 enum OpcodeState
 {
@@ -31,11 +30,8 @@ enum OpcodeState
 struct OpcodeEntry
 {
     std::function<void(WorldSession&, WorldPacket&)> sessionHandler;
-    std::function<bool(WorldSocket&, WorldPacket&)> socketHandler;
     std::optional<OpcodeState> sessionState;
-    std::optional<OpcodeState> socketState;
     bool sessionVersions[NUM_VERSIONS] = { false };
-    bool socketVersions[NUM_VERSIONS] = { false };
 };
 
 class OpcodeHandlerRegistry
@@ -100,26 +96,11 @@ public:
         registerOpcode<State>(opcode, std::move(handler), true, true, true, true, true, false, false, false, false, false, false, false, false);
     }
 
-    template <OpcodeState State = STATUS_AUTHED>
-    void registerSocketOpcode(uint32_t opcode, bool (WorldSocket::* handler)(WorldPacket&), bool forever = true)
-    {
-        auto& entry = opcodeHandlers[opcode];
-        entry.socketHandler = [handler](WorldSocket& socket, WorldPacket& packet) {
-            return (socket.*handler)(packet);
-        };
-        entry.socketState = State;
-        entry.socketVersions[WoW::getOpcodeTableIndex(WoW::Expansion::_Forever)] = forever;
-    }
-
-    // Registers the Forever-specific socket handlers in this same central registry.
-    void initializeForeverSocketHandlers();
-
     // Resolves a legacy wire opcode through the session protocol and dispatches it.
     bool handleOpcode(WorldSession& session, WorldPacket& packet);
 
     // Dispatches a wire opcode that has already been resolved by a protocol-specific transport.
     bool handleResolvedOpcode(WorldSession& session, WorldPacket& packet, uint32_t rawOpcode, uint32_t internalId);
-    bool handleResolvedOpcode(WorldSocket& socket, WorldPacket& packet, uint32_t rawOpcode, uint32_t internalId);
     [[nodiscard]] bool hasHandlerForVersion(uint32_t internalId, WoW::Expansion expansion) const;
 
     static void logUnhandledOpcode(uint32_t rawOpcode, uint32_t internalId, const std::string& name);

@@ -44,5 +44,15 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, WoW::Exp
 
 void MovementInfo::write(WorldPacket& packet, WoW::ClientProtocol const& protocol, bool withGuid /* = true*/) const
 {
+    if (protocol.isForever())
+    {
+        MovementInfo modernInfo = *this;
+        if (modernInfo.guid.getModernHigh() == 0)
+            modernInfo.guid = WoWGuid::createModernFromLegacy(modernInfo.guid.getRawGuid(), protocol.realmId);
+
+        MovementCodecDispatch::write(protocol.expansion, packet, modernInfo, packet.getOpcode(), withGuid);
+        return;
+    }
+
     writeMovementInfo(packet, packet.getOpcode(), protocol.expansion, withGuid);
 }

@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Data/InventoryLayout.hpp"
+#include "shared/WoWGuid.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Item.hpp"
 #include "Management/WeatherMgr.hpp"
@@ -25,6 +26,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/DynamicObject.hpp"
 #include "Server/Packets/CmsgFarSight.h"
 #include "Server/Packets/CmsgRequestAccountData.h"
+#include "Server/Packets/CmsgLogoutRequest.h"
+#include "Server/Packets/CmsgLogoutCancel.h"
 #include "Spell/SpellMgr.hpp"
 #include "Server/Packets/SmsgLogoutResponse.h"
 #include "Server/Packets/CmsgStandStateChange.h"
@@ -32,6 +35,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgWho.h"
 #include "Server/Packets/SmsgUpdateAccountData.h"
 #include "Server/Packets/CmsgSetSelection.h"
+#include "Server/Packets/CmsgCloseInteraction.h"
+#include "Server/Packets/CmsgSocialContractRequest.h"
+#include "Server/Packets/CmsgSocialContractAccept.h"
+#include "Server/Packets/CmsgServerTimeOffsetRequest.h"
+#include "Server/Packets/SmsgSocialContractRequestResponse.h"
+#include "Server/Packets/SmsgServerTimeOffset.h"
+#include "Server/Packets/CmsgGetLastCatalogFetch.h"
+#include "Server/Packets/SmsgLastCatalogFetchResponse.h"
 #include "Server/Packets/CmsgTutorialFlag.h"
 #include "Server/Packets/CmsgSetSheathed.h"
 #include "Server/Packets/CmsgRequestPlayedTime.h"
@@ -83,6 +94,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMirrorimageCreatureData.h"
 #include "Server/Packets/CmsgGetMirrorimageData.h"
 #include "Server/Packets/SmsgClientcacheVersion.h"
+#include "Server/Packets/SmsgAvailableHotfixes.h"
 #include "Server/Packets/SmsgSetForceReactions.h"
 #include "Server/Packets/SmsgBattlePetJournal.h"
 #include "Server/Packets/SmsgBattlePetJournalLockAcquired.h"
@@ -106,6 +118,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Strings.hpp"
 #include <Server/Packets/SmsgClearTarget.h>
 #include "Server/PacketBroadcast.hpp"
+
+#include <algorithm>
 
 using namespace AscEmu::Packets;
 
@@ -259,6 +273,72 @@ void WorldSession::handleSetSelectionOpcode(WorldPacket& recvPacket)
         _player->updateComboPoints();
 }
 
+void WorldSession::handleUnknownPlayerGuid003E002DOpcode(WorldPacket& recvPacket)
+{
+    WoWGuid modernGuid;
+    std::size_t consumed = 0;
+
+    if (!WoWGuid::unpackModern(recvPacket.contents(), recvPacket.size(), modernGuid, consumed) || consumed != recvPacket.size())
+    {
+        sLogger.warning("CMSG_UNKNOWN_PLAYER_GUID_003E002D: malformed payload={} byte(s), consumed={}.", recvPacket.size(), consumed);
+        return;
+    }
+
+    if (modernGuid.getModernHighType() != ModernHighGuid::Player)
+    {
+        sLogger.warning("CMSG_UNKNOWN_PLAYER_GUID_003E002D: unexpected modern high type={} realm={} entry={} counter={}.", static_cast<uint32_t>(modernGuid.getModernHighType()), modernGuid.getModernRealmId(), modernGuid.getModernEntry(), modernGuid.getModernCounter());
+        return;
+    }
+
+    // Observed with a packed Player GUID while interacting/selecting in the world.
+    // The exact semantic meaning is intentionally left unassigned until verified.
+    sLogger.debugOpcode("CMSG_UNKNOWN_PLAYER_GUID_003E002D realm={} low={} counter={}.", modernGuid.getModernRealmId(), modernGuid.getModernLow(), modernGuid.getModernCounter());
+}
+
+void WorldSession::handleCloseInteractionOpcode(WorldPacket& recvPacket)
+{
+    CmsgCloseInteraction srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+}
+
+void WorldSession::handleSocialContractRequestOpcode(WorldPacket& recvPacket)
+{
+    CmsgSocialContractRequest srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    SmsgSocialContractRequestResponse response(false);
+    sendManagedPacket(response);
+}
+
+void WorldSession::handleSocialContractAcceptOpcode(WorldPacket& recvPacket)
+{
+    CmsgSocialContractAccept srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+}
+
+void WorldSession::handleServerTimeOffsetRequestOpcode(WorldPacket& recvPacket)
+{
+    CmsgServerTimeOffsetRequest srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    SmsgServerTimeOffset response(static_cast<uint64_t>(UNIXTIME));
+    sendManagedPacket(response);
+}
+
+void WorldSession::handleGetLastCatalogFetchOpcode(WorldPacket& recvPacket)
+{
+    AscEmu::Packets::CmsgGetLastCatalogFetch request;
+    if (!parsePacket(recvPacket, request))
+        return;
+
+    AscEmu::Packets::SmsgLastCatalogFetchResponse response(0);
+    sendManagedPacket(response);
+}
+
 void WorldSession::handleTogglePVPOpcode(WorldPacket& /*recvPacket*/)
 {
     _player->togglePvP();
@@ -300,75 +380,55 @@ void WorldSession::handleTutorialReset(WorldPacket& /*recvPacket*/)
         _player->setTutorialValueForId(id, 0x00000000);
 }
 
-#if defined(AE_FOREVER)
-void WorldSession::handleForeverLogoutRequest(bool idleLogout)
+void WorldSession::handleLogoutRequestOpcode(WorldPacket& recvPacket)
 {
-    if (_player == nullptr)
+    CmsgLogoutRequest request;
+    if (!parsePacket(recvPacket, request))
         return;
 
-    // Forever 69913 uses the modern logout semantics. Flight is always
-    // instant; resting/permission based instant logout is ignored for idle logout.
-    bool instantLogout = _player->isOnTaxi();
-    if (!idleLogout)
+    if (request.getClientProtocol().isForever())
     {
-        instantLogout = instantLogout || _player->m_isResting ||
-            (hasPermissions() && worldConfig.player.enableInstantLogoutForAccessType > 0);
+        bool instantLogout = _player->isOnTaxi();
+        if (!request.idleLogout)
+        {
+            instantLogout = instantLogout || _player->m_isResting ||
+                (hasPermissions() && worldConfig.player.enableInstantLogoutForAccessType > 0);
+        }
+
+        uint32_t reason = 0;
+        if (_player->getCombatHandler().isInCombat() && !_player->m_isResting)
+            reason = 1;
+        else if (_player->IsFalling())
+            reason = 3;
+        else if (_player->m_duelPlayer != nullptr)
+            reason = 2;
+
+        if (!sHookInterface.OnLogoutRequest(_player))
+            reason = 1;
+
+        SmsgLogoutResponse managedPacket(reason, instantLogout);
+        sendManagedPacket(managedPacket);
+
+        if (reason != 0)
+        {
+            SetLogoutTimer(0);
+            return;
+        }
+
+        if (instantLogout)
+        {
+            LogoutPlayer(true);
+            return;
+        }
+
+        _player->setMoveRoot(true);
+        LoggingOut = true;
+        _player->addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+        _player->setStandState(STANDSTATE_SIT);
+        SetLogoutTimer(PLAYER_LOGOUT_DELAY);
+        return;
     }
 
-    uint32_t reason = 0;
-    if (_player->getCombatHandler().isInCombat() && !_player->m_isResting)
-        reason = 1;
-    else if (_player->IsFalling())
-        reason = 3;
-    else if (_player->m_duelPlayer != nullptr)
-        reason = 2;
-
-    if (!sHookInterface.OnLogoutRequest(_player))
-        reason = 1;
-
-    if (!sendForeverLogoutResponse(reason, instantLogout))
-        return;
-
-    if (reason != 0)
-    {
-        SetLogoutTimer(0);
-        return;
-    }
-
-    if (instantLogout)
-    {
-        LogoutPlayer(true);
-        return;
-    }
-
-    _player->setMoveRoot(true);
-    LoggingOut = true;
-    _player->addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
-    _player->setStandState(STANDSTATE_SIT);
-    SetLogoutTimer(PLAYER_LOGOUT_DELAY);
-}
-
-void WorldSession::handleForeverLogoutCancel()
-{
-    if (!LoggingOut)
-        return;
-
-    LoggingOut = false;
-    SetLogoutTimer(0);
-
-    if (_player != nullptr)
-    {
-        _player->setMoveRoot(false);
-        _player->setStandState(STANDSTATE_STAND);
-        _player->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
-    }
-
-    sLogger.debugOpcode("WorldSession::Forever: logout cancelled; SMSG_LOGOUT_CANCEL_ACK not sent until its 69913 opcode/payload is verified.");
-}
-#endif
-
-void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
-{
 #if VERSION_STRING == Mop
     sLogger.debug("handleLogoutRequestOpcode called (MoP)");
     bool instantLogout = _player->m_isResting || _player->isOnTaxi() ||
@@ -402,8 +462,6 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
     _player->addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
     _player->setStandState(STANDSTATE_SIT);
     SetLogoutTimer(PLAYER_LOGOUT_DELAY);
-#elif defined(AE_FOREVER)
-    handleForeverLogoutRequest(false);
 #else
     if (!sHookInterface.OnLogoutRequest(_player))
     {
@@ -428,25 +486,13 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
         }
     }
 
-    if (hasPermissions())
-    {
-        if (_player->m_isResting || _player->isOnTaxi() || worldConfig.player.enableInstantLogoutForAccessType > 0)
-        {
-            SetLogoutTimer(1);
-            return;
-        }
-    }
-
     SmsgLogoutResponse managedPacket(false);
     sendManagedPacket(managedPacket);
 
     _player->setMoveRoot(true);
     LoggingOut = true;
-
     _player->addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
-
     _player->setStandState(STANDSTATE_SIT);
-
     SetLogoutTimer(PLAYER_LOGOUT_DELAY);
 #endif
 }
@@ -974,13 +1020,35 @@ void WorldSession::handleSelfResurrect(WorldPacket& /*recvPacket*/)
     }
 }
 
+void WorldSession::storeCharacterListOrder(std::vector<CharacterListOrderEntry> const& entries)
+{
+    for (auto const& entry : entries)
+        CharacterDatabase.waitExecute("INSERT INTO character_list_order (acct, guid, listPosition) VALUES (%u, %llu, %u) ON DUPLICATE KEY UPDATE listPosition=VALUES(listPosition)", GetAccountId(), static_cast<unsigned long long>(entry.guidLow), entry.listPosition);
+}
+
 void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
 {
-    if (!worldConfig.server.useAccountData)
-        return;
-
     CmsgUpdateAccountData srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    if (srlPacket.getClientProtocol().isForever() && srlPacket.uiId == 16)
+    {
+        std::vector<CharacterListOrderEntry> entries;
+        if (!srlPacket.parseCharacterListOrder(entries))
+        {
+            sLogger.warning("WorldSession::handleUpdateAccountData: malformed Forever character-order account data, payload={} byte(s).", recvPacket.size());
+            return;
+        }
+
+        storeCharacterListOrder(entries);
+
+        SmsgUpdateAccountDataComplete managedPacket(srlPacket.uiId, 0);
+        sendManagedPacket(managedPacket);
+        return;
+    }
+
+    if (!worldConfig.server.useAccountData)
         return;
 
     if (srlPacket.uiId > 8)
@@ -1013,18 +1081,18 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
 
         switch (ZlibResult)
         {
-            case Z_OK:                  //0 no error decompression is OK
+            case Z_OK:
             {
                 SetAccountData(srlPacket.uiId, std::move(data), false, srlPacket.uiDecompressedSize);
                 sLogger.debug("Successfully decompressed account data {} for {}, and updated storage array.",
                     srlPacket.uiId, _player->getName());
             } break;
-            case Z_ERRNO:               //-1
-            case Z_STREAM_ERROR:        //-2
-            case Z_DATA_ERROR:          //-3
-            case Z_MEM_ERROR:           //-4
-            case Z_BUF_ERROR:           //-5
-            case Z_VERSION_ERROR:       //-6
+            case Z_ERRNO:
+            case Z_STREAM_ERROR:
+            case Z_DATA_ERROR:
+            case Z_MEM_ERROR:
+            case Z_BUF_ERROR:
+            case Z_VERSION_ERROR:
             {
                 sLogger.failure("Decompression of account data {} for {} FAILED.", srlPacket.uiId, _player->getName());
             } break;
@@ -1243,8 +1311,12 @@ void WorldSession::handleSummonResponseOpcode(WorldPacket& recvPacket)
     _player->m_summonData.summonerId = _player->m_summonData.instanceId = _player->m_summonData.mapId = 0;
 }
 
-void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::handleLogoutCancelOpcode(WorldPacket& recvPacket)
 {
+    CmsgLogoutCancel request;
+    if (!parsePacket(recvPacket, request))
+        return;
+
     sLogger.debugOpcode("Received CMSG_LOGOUT_CANCEL.");
 
     if (!LoggingOut)
@@ -1263,7 +1335,7 @@ void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)
 
     _player->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
-    sLogger.debug("Sent SMSG_LOGOUT_CANCEL_ACK");
+    sLogger.debugOpcode("Logout cancelled.");
 }
 
 void WorldSession::handlePlayerLogoutOpcode([[maybe_unused]] WorldPacket& recvPacket)
@@ -2205,10 +2277,36 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     sLogger.debug("Sent SMSG_MIRRORIMAGE_DATA");
 }
 
-void WorldSession::sendClientCacheVersion([[maybe_unused]] uint32_t version)
+void WorldSession::sendPostAuthClientData(uint32_t cacheVersion)
+{
+    sendClientCacheVersion(cacheVersion);
+    sendAvailableHotfixes();
+}
+
+void WorldSession::sendClientCacheVersion(uint32_t version)
 {
     SmsgClientcacheVersion managedPacket(version);
     sendManagedPacket(managedPacket);
+}
+
+void WorldSession::sendAvailableHotfixes()
+{
+#if defined(AE_FOREVER)
+    if (!getClientProtocol().isForever())
+        return;
+
+    WorldSocket* socket = getActiveSendSocket();
+    if (socket == nullptr)
+        return;
+
+    const uint32_t virtualRealmAddress =
+        ((socket->getForeverRegionId() & 0xFFU) << 24U) |
+        ((socket->getForeverBattlegroupId() & 0xFFU) << 16U) |
+        (socket->getForeverRealmId() & 0xFFFFU);
+
+    SmsgAvailableHotfixes managedPacket(static_cast<int32_t>(virtualRealmAddress), 0);
+    sendManagedPacket(managedPacket);
+#endif
 }
 
 void WorldSession::sendAccountDataTimes(uint32_t mask)
@@ -2267,4 +2365,8 @@ void WorldSession::handleViolenceLevel(WorldPacket& recvPacket)
 {
     uint8_t violenceLevel;
     recvPacket >> violenceLevel;
+}
+
+void WorldSession::handleIgnoredOpcode(WorldPacket& /*recvPacket*/)
+{
 }

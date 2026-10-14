@@ -8,13 +8,67 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WorldStrings.h"
 #include "Macros/ItemMacros.hpp"
 #include "Server/Packets/CmsgRequestHotfix.h"
+#include "Server/Packets/CmsgDbQueryBulk.h"
 #include "Server/Packets/SmsgDbReply.h"
+#if defined(AE_FOREVER)
+#include "version/Forever/World/BroadcastTextId.hpp"
+#include "version/Forever/World/Db2Registry.hpp"
+#include "Logging/Logger.hpp"
+#endif
 
 using namespace AscEmu::Packets;
 
 #define DB2_REPLY_SPARSE    2442913102
 #define DB2_REPLY_ITEM      1344507586
 #define DB2_REPLY_BROADCAST   35137211
+
+#if defined(AE_FOREVER)
+namespace
+{
+    constexpr uint32_t BroadcastTextTableHash = 0x021826BBU;
+    constexpr uint32_t TactKeyTableHash = 0xDF2F53CFU;
+}
+#endif
+
+void WorldSession::handleDbQueryBulkOpcode(WorldPacket& recvPacket)
+{
+    CmsgDbQueryBulk request;
+    if (!parsePacket(recvPacket, request))
+        return;
+
+#if defined(AE_FOREVER)
+    if (getClientProtocol().isForever())
+    {
+        uint32_t tactKeyServed = 0;
+        uint32_t tactKeyMissing = 0;
+
+        for (uint32_t recordId : request.recordIds)
+        {
+            bool found = false;
+            if (!sendDbQueryRecord(request.tableHash, recordId, &found))
+            {
+                sLogger.warning("WorldSession: failed to process CMSG_DB_QUERY_BULK table=0x{:08X} record={}.", request.tableHash, recordId);
+                return;
+            }
+
+            if (request.tableHash == TactKeyTableHash)
+            {
+                if (found)
+                    ++tactKeyServed;
+                else
+                    ++tactKeyMissing;
+            }
+        }
+
+        if (request.tableHash == TactKeyTableHash)
+            sLogger.info("WorldSession: TactKey query records={} served={} missing={}.", request.recordIds.size(), tactKeyServed, tactKeyMissing);
+
+        return;
+    }
+#endif
+
+    (void)request;
+}
 
 void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 {
@@ -253,3 +307,116 @@ void WorldSession::sendBroadcastDb2Reply(uint32_t entry)
     SmsgDbReply replyPacket(entry, DB2_REPLY_BROADCAST, buffer);
     sendManagedPacket(replyPacket);
 }
+
+#if defined(AE_FOREVER)
+bool WorldSession::sendDbQueryRecord(uint32_t tableHash, uint32_t recordId, bool* found)
+{
+    using namespace AscEmu::Version::Forever;
+
+    if (found != nullptr)
+        *found = false;
+
+    if (tableHash == BroadcastTextTableHash)
+    {
+        const auto type = BroadcastTextId::getType(recordId);
+        const uint32_t sourceId = BroadcastTextId::getSourceId(recordId);
+
+        switch (type)
+        {
+            case BroadcastTextId::Type::Native:
+            {
+                Db2::RecordView record;
+                if (!Db2::getRecord(BroadcastTextTableHash, recordId, record))
+                {
+                    sLogger.info("WorldSession: BroadcastText NATIVE MISSING id={}.", recordId);
+                    return sendDb2Reply(BroadcastTextTableHash, recordId, ByteBuffer{}, false);
+                }
+
+                ByteBuffer buffer;
+                buffer.append(record.data.data(), record.data.size());
+                sLogger.info("WorldSession: BroadcastText NATIVE id={}, table={}, layout=0x{:08X}.", recordId, record.tableName, record.layoutHash);
+                if (found != nullptr)
+                    *found = true;
+                return sendDb2Reply(BroadcastTextTableHash, recordId, std::move(buffer), true);
+            }
+
+            case BroadcastTextId::Type::Gossip:
+            {
+                ByteBuffer buffer;
+                if (!buildGossipBroadcastTextRecord(buffer, recordId, sourceId))
+                {
+                    sLogger.info("WorldSession: BroadcastText GOSSIP MISSING wireId={} sourceId={}.", recordId, sourceId);
+                    return sendDb2Reply(BroadcastTextTableHash, recordId, ByteBuffer{}, false);
+                }
+
+                sLogger.info("WorldSession: BroadcastText GOSSIP wireId={} sourceId={} recordSize={}.", recordId, sourceId, buffer.size());
+                if (found != nullptr)
+                    *found = true;
+                return sendDb2Reply(BroadcastTextTableHash, recordId, std::move(buffer), true);
+            }
+
+            case BroadcastTextId::Type::CreatureText:
+            case BroadcastTextId::Type::QuestText:
+            case BroadcastTextId::Type::ScriptText:
+            case BroadcastTextId::Type::GameObjectText:
+                sLogger.info("WorldSession: BroadcastText unsupported namespace={} wireId={} sourceId={}.", static_cast<uint32_t>(type), recordId, sourceId);
+                return sendDb2Reply(BroadcastTextTableHash, recordId, ByteBuffer{}, false);
+
+            default:
+                sLogger.warning("WorldSession: BroadcastText unknown namespace={} wireId={} sourceId={}.", static_cast<uint32_t>(type), recordId, sourceId);
+                return sendDb2Reply(BroadcastTextTableHash, recordId, ByteBuffer{}, false);
+        }
+    }
+
+    Db2::RecordView record;
+    const bool recordFound = Db2::getRecord(tableHash, recordId, record);
+    if (found != nullptr)
+        *found = recordFound;
+
+    if (!recordFound)
+        return sendDb2Reply(tableHash, recordId, ByteBuffer{}, false);
+
+    ByteBuffer buffer;
+    buffer.append(record.data.data(), record.data.size());
+    return sendDb2Reply(tableHash, recordId, std::move(buffer), true);
+}
+
+bool WorldSession::buildGossipBroadcastTextRecord(ByteBuffer& buffer, uint32_t wireId, uint32_t gossipTextId)
+{
+    const auto* gossipText = sMySQLStore.getNpcGossipText(gossipTextId);
+    if (gossipText == nullptr)
+        return false;
+
+    const std::string& defaultText = gossipText->textHolder[0].texts[0];
+    const std::string& alternateText = gossipText->textHolder[0].texts[1];
+
+    buffer << defaultText;
+    buffer << alternateText;
+    buffer << uint32_t(wireId);
+
+    static constexpr uint8_t BroadcastText70009Tail[42] =
+    {
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x01, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00
+    };
+
+    buffer.append(BroadcastText70009Tail, sizeof(BroadcastText70009Tail));
+    return true;
+}
+
+bool WorldSession::sendDb2Reply(uint32_t tableHash, uint32_t recordId, ByteBuffer buffer, bool found)
+{
+    AscEmu::Packets::SmsgDbReply response(recordId, tableHash, std::move(buffer), found);
+    sendManagedPacket(response);
+    return true;
+}
+#endif

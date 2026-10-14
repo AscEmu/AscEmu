@@ -17,7 +17,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/TraitManager.hpp"
 #endif
 #include "Server/Packets/CmsgCharDelete.h"
+#include "Server/Packets/CmsgCheckCharacterNameAvailability.h"
+#include "Server/Packets/CmsgEnumCharacters.h"
+#include "Server/Packets/CmsgGetUndeleteCharacterCooldownStatus.h"
+#include "Server/Packets/CmsgCharacterListAck.h"
 #include "Server/Packets/SmsgCharDelete.h"
+#include "Server/Packets/SmsgCheckCharacterNameAvailabilityResult.h"
+#include "Server/Packets/SmsgUndeleteCooldownStatusResponse.h"
 #include "Server/Packets/SmsgHotfixNotifyBlob.h"
 #include "Server/Packets/CmsgCharFactionChange.h"
 #include "Server/Packets/SmsgCharFactionChange.h"
@@ -38,6 +44,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetPlayerDeclinedNames.h"
 #include "Server/Packets/SmsgSetPlayerDeclinedNamesResult.h"
 #include "Server/Packets/SmsgEnumCharactersResult.h"
+#include "Server/Packets/SmsgAccountItemCollectionData.h"
+#include "Server/Packets/SmsgCharacterListState.h"
+#include "Server/Packets/SmsgAccountDataTimes.h"
 #include "Server/Packets/SmsgSetTimeZoneInformation.h"
 #include "Server/Packets/SmsgSetupCurrency.h"
 #include "Management/Guild/GuildMgr.hpp"
@@ -60,12 +69,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Strings.hpp"
 #include "Utilities/Util.hpp"
 
+
 #if defined(AE_FOREVER)
-#include "version/Forever/World/InWorldBootstrap.hpp"
 #include "version/Forever/World/ObjectUpdate.hpp"
-#include "version/Forever/World/PostAuthBootstrap.hpp"
 #include "WoWGuid.hpp"
 #include "Server/WorldSocket.hpp"
+#include "Server/ForeverRuleset.hpp"
 #endif
 
 using namespace AscEmu::Packets;
@@ -119,14 +128,73 @@ void WorldSession::handleCharDeleteOpcode(WorldPacket& recvPacket)
 {
     CmsgCharDelete srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
+    {
+#if defined(AE_FOREVER)
+        if (getClientProtocol().isForever())
+        {
+            SmsgCharDelete response(E_CHAR_DELETE_FAILED);
+            sendManagedPacket(response);
+        }
+#endif
         return;
+    }
 
-    const uint8_t deleteResult = deleteCharacter(srlPacket.guid);
+    WoWGuid characterGuid = srlPacket.guid;
 
-    SmsgCharDelete managedPacket(deleteResult);
+#if defined(AE_FOREVER)
+    if (getClientProtocol().isForever())
+    {
+        WorldSocket* socket = getActiveSendSocket();
+        if (socket == nullptr || srlPacket.guid.getModernHighType() != ModernHighGuid::Player || srlPacket.guid.getModernRealmId() != socket->getForeverRealmId() || srlPacket.guid.getModernLow() == 0 || srlPacket.guid.getModernLow() > UINT32_MAX)
+        {
+            SmsgCharDelete response(E_CHAR_DELETE_FAILED);
+            sendManagedPacket(response);
+            return;
+        }
+
+        characterGuid = WoWGuid(srlPacket.guid.getModernLow());
+    }
+#endif
+
+    const CharacterErrorCodes result = static_cast<CharacterErrorCodes>(deleteCharacter(characterGuid));
+
+#if defined(AE_FOREVER)
+    if (getClientProtocol().isForever() && result == E_CHAR_DELETE_SUCCESS)
+    {
+        CharacterDatabase.execute("DELETE FROM character_list_order WHERE acct=%u AND guid=%llu", GetAccountId(), static_cast<unsigned long long>(characterGuid.getLowGuid()));
+        CharacterDatabase.execute("DELETE FROM character_customizations WHERE guid=%llu", static_cast<unsigned long long>(characterGuid.getLowGuid()));
+    }
+#endif
+
+    SmsgCharDelete managedPacket(result);
     sendManagedPacket(managedPacket);
 }
 
+void WorldSession::handleCheckCharacterNameAvailabilityOpcode(WorldPacket& recvPacket)
+{
+    CmsgCheckCharacterNameAvailability request;
+    if (!parsePacket(recvPacket, request))
+        return;
+
+    CharacterErrorCodes result = VerifyName(request.name);
+    if (result == E_CHAR_NAME_SUCCESS && sObjectMgr.getCachedCharacterInfoByName(request.name) != nullptr)
+        result = E_CHAR_CREATE_NAME_IN_USE;
+
+    const uint32_t wireResult = result == E_CHAR_NAME_SUCCESS ? 0U : static_cast<uint32_t>(result);
+    SmsgCheckCharacterNameAvailabilityResult response(request.sequenceIndex, wireResult);
+    sendManagedPacket(response);
+}
+
+void WorldSession::handleUndeleteCooldownStatusOpcode(WorldPacket& recvPacket)
+{
+    CmsgGetUndeleteCharacterCooldownStatus request;
+    if (!parsePacket(recvPacket, request))
+        return;
+
+    constexpr uint32_t MaxUndeleteCooldown = 7U * 24U * 60U * 60U;
+    SmsgUndeleteCooldownStatusResponse response(MaxUndeleteCooldown, 0, false);
+    sendManagedPacket(response);
+}
 
 // \todo port player to a main city of his new faction
 void WorldSession::handleCharFactionOrRaceChange([[maybe_unused]] WorldPacket& recvPacket)
@@ -223,6 +291,30 @@ void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
     CmsgPlayerLogin srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;
+
+#if defined(AE_FOREVER)
+    if (getClientProtocol().isForever())
+    {
+        WorldSocket* socket = getActiveSendSocket();
+        if (socket == nullptr || srlPacket.guid.getModernHighType() != ModernHighGuid::Player || srlPacket.guid.getModernRealmId() != socket->getForeverRealmId() || srlPacket.guid.getModernLow() == 0 || srlPacket.guid.getModernLow() > UINT32_MAX)
+        {
+            sLogger.warning("WorldSession::Forever: rejected malformed CMSG_PLAYER_LOGIN GUID.");
+            return;
+        }
+
+        const uint32_t guidLow = static_cast<uint32_t>(srlPacket.guid.getModernLow());
+        const auto ownership = CharacterDatabase.query("SELECT guid FROM characters WHERE guid = %u AND acct = %u", guidLow, GetAccountId());
+        if (ownership == nullptr)
+        {
+            sLogger.warning("WorldSession::Forever: CMSG_PLAYER_LOGIN rejected guidLow={} because it does not belong to account={}.", guidLow, GetAccountId());
+            return;
+        }
+
+        if (!socket->beginForeverInstanceLogin(guidLow))
+            sLogger.warning("WorldSession::Forever: failed to begin instance login for guidLow={}.", guidLow);
+        return;
+    }
+#endif
 
     sLogger.debugOpcode("Received CMSG_PLAYER_LOGIN {} (guidLow).", srlPacket.guid.getLowGuid());
     beginPlayerLogin(srlPacket.guid.getLowGuid());
@@ -439,61 +531,104 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
     return E_CHAR_DELETE_FAILED;
 }
 
+void WorldSession::handleCharacterListAckOpcode(WorldPacket& recvPacket)
+{
+    CmsgCharacterListAck request;
+    if (!parsePacket(recvPacket, request))
+    {
+        sLogger.warning("WorldSession: malformed CMSG_CHARACTER_LIST_ACK.");
+        return;
+    }
+
+#if defined(AE_FOREVER)
+    if (m_postCreateCharacterEnumState == PostCreateCharacterEnumState::AwaitingAck)
+    {
+        m_postCreateCharacterEnumState = PostCreateCharacterEnumState::None;
+        if (!sendCharacterEnumFromDatabase())
+            sLogger.warning("WorldSession: failed to send post-create character enum refresh.");
+    }
+#endif
+}
+
 void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
 {
+    const bool isForever = getClientProtocol().isForever();
+
+#if defined(AE_FOREVER)
+    WorldSocket* foreverSocket = isForever ? getActiveSendSocket() : nullptr;
+#else
+    WorldSocket* foreverSocket = nullptr;
+#endif
+
+    auto sendCreateResult = [&](CharacterErrorCodes result, uint64_t guid = 0U)
+    {
+#if defined(AE_FOREVER)
+        const uint32_t realmId = foreverSocket != nullptr ? foreverSocket->getForeverRealmId() : 0U;
+        SmsgCharCreate response(result, realmId, guid);
+#else
+        SmsgCharCreate response(result);
+#endif
+        sendManagedPacket(response);
+    };
+
     CmsgCharCreate srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
+    {
+        if (isForever)
+            sendCreateResult(E_CHAR_CREATE_FAILED);
         return;
+    }
 
     const auto loginErrorCode = VerifyName(srlPacket.createStruct.name);
     if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {
-        SmsgCharCreate managedPacket(loginErrorCode);
-        sendManagedPacket(managedPacket);
+        sendCreateResult(loginErrorCode);
         return;
     }
 
-    const auto isAllowed = sMySQLStore.isCharacterNameAllowed(srlPacket.createStruct.name);
-    if (!isAllowed)
+    if (!isForever && !sMySQLStore.isCharacterNameAllowed(srlPacket.createStruct.name))
     {
-        SmsgCharCreate managedPacket(E_CHAR_NAME_PROFANE);
-        sendManagedPacket(managedPacket);
+        sendCreateResult(E_CHAR_NAME_PROFANE);
         return;
     }
 
     if (sObjectMgr.getCachedCharacterInfoByName(srlPacket.createStruct.name) != nullptr)
     {
-        SmsgCharCreate managedPacket(E_CHAR_CREATE_NAME_IN_USE);
-        sendManagedPacket(managedPacket);
+        sendCreateResult(E_CHAR_CREATE_NAME_IN_USE);
         return;
     }
 
-    const auto isValid = sHookInterface.OnNewCharacter(srlPacket.createStruct._race, srlPacket.createStruct._class,
-        this, srlPacket.createStruct.name.c_str());
-    if (!isValid)
+#if defined(AE_FOREVER)
+    if (isForever && sMySQLStore.getPlayerCreateInfo(srlPacket.createStruct._race, srlPacket.createStruct._class) == nullptr)
     {
-        SmsgCharCreate managedPacket(E_CHAR_CREATE_ERROR);
-        sendManagedPacket(managedPacket);
+        sendCreateResult(E_CHAR_CREATE_RESTRICTED_RACECLASS);
         return;
     }
+#endif
 
-    const auto bannedNamesQuery = CharacterDatabase.query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'",
-        CharacterDatabase.escapeString(srlPacket.createStruct.name).c_str());
-    if (bannedNamesQuery)
+    if (!isForever)
     {
-        if (bannedNamesQuery->fetch()[0].asUint32() > 0)
+        const auto isValid = sHookInterface.OnNewCharacter(srlPacket.createStruct._race, srlPacket.createStruct._class,
+            this, srlPacket.createStruct.name.c_str());
+        if (!isValid)
         {
-            SmsgCharCreate managedPacket(E_CHAR_NAME_PROFANE);
-            sendManagedPacket(managedPacket);
+            sendCreateResult(E_CHAR_CREATE_ERROR);
             return;
         }
     }
 
-#if VERSION_STRING > TBC
-    if (worldConfig.player.deathKnightLimit && has_dk && srlPacket.createStruct._class == DEATHKNIGHT)
+    const auto bannedNamesQuery = CharacterDatabase.query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'",
+        CharacterDatabase.escapeString(srlPacket.createStruct.name).c_str());
+    if (bannedNamesQuery && bannedNamesQuery->fetch()[0].asUint32() > 0)
     {
-        SmsgCharCreate managedPacket(E_CHAR_CREATE_UNIQUE_CLASS_LIMIT);
-        sendManagedPacket(managedPacket);
+        sendCreateResult(E_CHAR_NAME_PROFANE);
+        return;
+    }
+
+#if VERSION_STRING > TBC
+    if (!isForever && worldConfig.player.deathKnightLimit && has_dk && srlPacket.createStruct._class == DEATHKNIGHT)
+    {
+        sendCreateResult(E_CHAR_CREATE_UNIQUE_CLASS_LIMIT);
         return;
     }
 #endif
@@ -501,56 +636,59 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     const auto charactersQuery = CharacterDatabase.query("SELECT COUNT(*) FROM characters WHERE acct = %u", GetAccountId());
     if (charactersQuery)
     {
-        if (charactersQuery->fetch()[0].asUint32() >= 10)
+        const uint32_t characterLimit = isForever ? 60U : 10U;
+        if (charactersQuery->fetch()[0].asUint32() >= characterLimit)
         {
-            SmsgCharCreate managedPacket(E_CHAR_CREATE_SERVER_LIMIT);
-            sendManagedPacket(managedPacket);
+            sendCreateResult(E_CHAR_CREATE_SERVER_LIMIT);
             return;
         }
     }
 
     const auto newPlayer = sObjectMgr.createPlayer(srlPacket.createStruct._class);
+    if (newPlayer == nullptr)
+    {
+        sendCreateResult(E_CHAR_CREATE_FAILED);
+        return;
+    }
+
     newPlayer->setSession(this);
 
     if (!newPlayer->create(srlPacket.createStruct))
     {
         newPlayer->m_isReadyToBeRemoved = true;
         delete newPlayer;
-
-        SmsgCharCreate managedPacket(E_CHAR_CREATE_FAILED);
-        sendManagedPacket(managedPacket);
+        sendCreateResult(E_CHAR_CREATE_FAILED);
         return;
     }
 
-    const auto realmType = sLogonCommHandler.getRealmType();
-    if (!HasGMPermissions() && realmType == REALMTYPE_PVP && _side != 255 && !worldConfig.player.isCrossoverCharsCreationEnabled)
+    if (!isForever)
     {
-        if ((newPlayer->isTeamAlliance() && _side == 1) || (newPlayer->isTeamHorde() && _side == 0))
+        const auto realmType = sLogonCommHandler.getRealmType();
+        if (!HasGMPermissions() && realmType == REALMTYPE_PVP && _side != 255 && !worldConfig.player.isCrossoverCharsCreationEnabled)
+        {
+            if ((newPlayer->isTeamAlliance() && _side == 1) || (newPlayer->isTeamHorde() && _side == 0))
+            {
+                newPlayer->m_isReadyToBeRemoved = true;
+                delete newPlayer;
+                sendCreateResult(E_CHAR_CREATE_PVP_TEAMS_VIOLATION);
+                return;
+            }
+        }
+
+#if VERSION_STRING > TBC
+        if (worldConfig.player.deathKnightPreReq && !has_level_55_char && srlPacket.createStruct._class == DEATHKNIGHT)
         {
             newPlayer->m_isReadyToBeRemoved = true;
             delete newPlayer;
-
-            SmsgCharCreate managedPacket(E_CHAR_CREATE_PVP_TEAMS_VIOLATION);
-            sendManagedPacket(managedPacket);
+            sendCreateResult(E_CHAR_CREATE_LEVEL_REQUIREMENT);
             return;
         }
-    }
-
-#if VERSION_STRING > TBC
-    if (worldConfig.player.deathKnightPreReq && !has_level_55_char && srlPacket.createStruct._class == DEATHKNIGHT)
-    {
-        newPlayer->m_isReadyToBeRemoved = true;
-        delete newPlayer;
-
-        SmsgCharCreate managedPacket(E_CHAR_CREATE_LEVEL_REQUIREMENT);
-        sendManagedPacket(managedPacket);
-        return;
-    }
 #endif
+    }
 
     newPlayer->unsetBanned();
 
-    if (newPlayer->getClass() == WARLOCK)
+    if (!isForever && newPlayer->getClass() == WARLOCK)
     {
         newPlayer->addSummonSpell(416, 3110);
         newPlayer->addSummonSpell(417, 19505);
@@ -559,32 +697,82 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     }
 
     newPlayer->saveToDB(true);
+    const uint64_t createdGuid = newPlayer->getGuidLow();
 
-    auto playerInfo = std::make_unique<CachedCharacterInfo>();
-    playerInfo->guid = newPlayer->getGuidLow();
-    utf8_string name = newPlayer->getName();
-    AscEmu::Util::Strings::capitalize(name);
-    playerInfo->name = name;
-    playerInfo->cl = newPlayer->getClass();
-    playerInfo->race = newPlayer->getRace();
-    playerInfo->gender = newPlayer->getGender();
-    playerInfo->acct = GetAccountId();
-    playerInfo->m_Group = nullptr;
-    playerInfo->subGroup = 0;
-    playerInfo->team = newPlayer->getTeam();
-    playerInfo->m_guild = 0;
-    playerInfo->guildRank = GUILD_RANK_NONE;
-    playerInfo->lastOnline = UNIXTIME;
+#if defined(AE_FOREVER)
+    if (isForever)
+    {
+        CharacterDatabase.waitExecute("DELETE FROM character_customizations WHERE guid=%llu", static_cast<unsigned long long>(createdGuid));
+        for (const auto& customization : srlPacket.customizations)
+            CharacterDatabase.waitExecute("INSERT INTO character_customizations (guid, chrCustomizationOptionID, chrCustomizationChoiceID) VALUES (%llu, %u, %u)", static_cast<unsigned long long>(createdGuid), customization.optionId, customization.choiceId);
 
-    sObjectMgr.addCachedCharacterInfo(std::move(playerInfo));
+        auto missingExisting = CharacterDatabase.query("SELECT c.guid FROM characters c LEFT JOIN character_list_order o ON o.acct=c.acct AND o.guid=c.guid WHERE c.acct=%u AND c.guid<>%llu AND o.guid IS NULL ORDER BY c.guid", GetAccountId(), static_cast<unsigned long long>(createdGuid));
+        if (missingExisting)
+        {
+            uint32_t nextPosition = 0;
+            if (auto maxOrder = CharacterDatabase.query("SELECT MAX(listPosition) FROM character_list_order WHERE acct=%u", GetAccountId()))
+            {
+                Field* maxFields = maxOrder->fetch();
+                if (maxFields[0].isSet())
+                    nextPosition = static_cast<uint32_t>(maxFields[0].asUint16()) + 1U;
+            }
+
+            do
+            {
+                const uint64_t guid = missingExisting->fetch()[0].asUint64();
+                CharacterDatabase.waitExecute("INSERT IGNORE INTO character_list_order (acct, guid, listPosition) VALUES (%u, %llu, %u)", GetAccountId(), static_cast<unsigned long long>(guid), nextPosition);
+                ++nextPosition;
+            }
+            while (missingExisting->nextRow());
+        }
+
+        CharacterDatabase.waitExecute("UPDATE character_list_order SET listPosition=listPosition+1 WHERE acct=%u", GetAccountId());
+        CharacterDatabase.waitExecute("INSERT INTO character_list_order (acct, guid, listPosition) VALUES (%u, %llu, 0) ON DUPLICATE KEY UPDATE listPosition=0", GetAccountId(), static_cast<unsigned long long>(createdGuid));
+
+        auto cacheResult = CharacterDatabase.query("SELECT guid, name, race, class, level, gender, zoneid, timestamp, acct FROM characters WHERE guid=%u LIMIT 1", static_cast<uint32_t>(createdGuid));
+        if (cacheResult)
+        {
+            auto playerInfo = std::make_unique<CachedCharacterInfo>(cacheResult->fetch());
+            sObjectMgr.addCachedCharacterInfo(std::move(playerInfo));
+        }
+        else
+        {
+            sLogger.warning("WorldSession::Forever: character '{}' was saved with guid={} but could not be re-read for ObjectMgr cache population.", srlPacket.createStruct.name, createdGuid);
+        }
+
+    }
+    else
+#endif
+    {
+        auto playerInfo = std::make_unique<CachedCharacterInfo>();
+        playerInfo->guid = newPlayer->getGuidLow();
+        utf8_string name = newPlayer->getName();
+        AscEmu::Util::Strings::capitalize(name);
+        playerInfo->name = name;
+        playerInfo->cl = newPlayer->getClass();
+        playerInfo->race = newPlayer->getRace();
+        playerInfo->gender = newPlayer->getGender();
+        playerInfo->acct = GetAccountId();
+        playerInfo->m_Group = nullptr;
+        playerInfo->subGroup = 0;
+        playerInfo->team = newPlayer->getTeam();
+        playerInfo->m_guild = 0;
+        playerInfo->guildRank = GUILD_RANK_NONE;
+        playerInfo->lastOnline = UNIXTIME;
+        sObjectMgr.addCachedCharacterInfo(std::move(playerInfo));
+    }
 
     newPlayer->m_isReadyToBeRemoved = true;
     delete newPlayer;
 
-    SmsgCharCreate managedPacket(E_CHAR_CREATE_SUCCESS);
-    sendManagedPacket(managedPacket);
+#if defined(AE_FOREVER)
+    if (isForever)
+        m_postCreateCharacterEnumState = PostCreateCharacterEnumState::AwaitingEnum;
+#endif
 
-    sLogonCommHandler.updateAccountCount(GetAccountId(), 1);
+    sendCreateResult(E_CHAR_CREATE_SUCCESS, createdGuid);
+    if (!isForever)
+        sLogonCommHandler.updateAccountCount(GetAccountId(), 1);
 }
 
 void WorldSession::handleCharCustomizeLooksOpcode([[maybe_unused]] WorldPacket& recvPacket)
@@ -1128,33 +1316,15 @@ void WorldSession::fullLoginForever(Player* player)
 
     }
 
-    const std::vector<uint8_t> packedPlayerGuid = WoWGuid::createModernPlayer(instanceSocket->getForeverRealmId(), player->getGuidLow()).packModern();
-    ByteBuffer accountDataTimes;
-    accountDataTimes.append(packedPlayerGuid.data(), packedPlayerGuid.size());
-    accountDataTimes << int64_t(static_cast<int64_t>(UNIXTIME));
-    for (uint32_t i = 0; i < 20U; ++i)
-        accountDataTimes << int64_t(0);
+    SmsgAccountDataTimes accountDataTimes(static_cast<uint32_t>(UNIXTIME), 0, 0, 0);
+    accountDataTimes.foreverPlayerGuid = WoWGuid::createModernPlayer(instanceSocket->getForeverRealmId(), player->getGuidLow());
+    instanceSocket->sendManagedPacket(accountDataTimes);
 
-    if (!instanceSocket->sendForeverPacket(SMSG_ACCOUNT_DATA_TIMES, accountDataTimes.contents(), static_cast<uint32_t>(accountDataTimes.size())))
-    {
-        sLogger.failure("WorldSession::Forever: failed to send in-world SMSG_ACCOUNT_DATA_TIMES for {} ({}).", player->getName(), player->getGuidLow());
-        Disconnect();
-        return;
-    }
+    SmsgFeatureSystemStatus featureSystemStatus(FeatureSystemStatusLayout::ForeverInWorld);
+    instanceSocket->sendManagedPacket(featureSystemStatus);
 
-    if (!instanceSocket->sendForeverPacket(SMSG_FEATURE_SYSTEM_STATUS, AscEmu::Version::Forever::InWorldBootstrap::FeatureSystemStatus460063.data(), static_cast<uint32_t>(AscEmu::Version::Forever::InWorldBootstrap::FeatureSystemStatus460063.size())))
-    {
-        sLogger.failure("WorldSession::Forever: failed to send in-world SMSG_FEATURE_SYSTEM_STATUS for {} ({}).", player->getName(), player->getGuidLow());
-        Disconnect();
-        return;
-    }
-
-    if (!instanceSocket->sendForeverPacket(SMSG_SET_TIME_ZONE_INFORMATION, AscEmu::Version::Forever::PostAuthBootstrap::TimeZone460123.data(), static_cast<uint32_t>(AscEmu::Version::Forever::PostAuthBootstrap::TimeZone460123.size())))
-    {
-        sLogger.failure("WorldSession::Forever: failed to send in-world SMSG_SET_TIME_ZONE_INFORMATION for {} ({}).", player->getName(), player->getGuidLow());
-        Disconnect();
-        return;
-    }
+    SmsgSetTimeZoneInformation timeZoneInformation("America/Los_Angeles", "America/Los_Angeles");
+    instanceSocket->sendManagedPacket(timeZoneInformation);
 
     SmsgLoginVerifyWorld loginVerifyWorld(player);
     instanceSocket->sendManagedPacket(loginVerifyWorld);
@@ -1409,8 +1579,28 @@ void WorldSession::characterEnumProc(QueryResult* result)
     sendManagedPacket(enumPacket);
 }
 
-void WorldSession::handleCharEnumOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::handleCharEnumOpcode(WorldPacket& recvPacket)
 {
+#if defined(AE_FOREVER)
+    if (getClientProtocol().isForever())
+    {
+        CmsgEnumCharacters request;
+        if (!parsePacket(recvPacket, request))
+            return;
+
+        if (!sendCharacterEnumFromDatabase())
+        {
+            sLogger.warning("WorldSession: failed to send character enum.");
+            return;
+        }
+
+        if (m_postCreateCharacterEnumState == PostCreateCharacterEnumState::AwaitingEnum)
+            m_postCreateCharacterEnumState = PostCreateCharacterEnumState::AwaitingAck;
+
+        return;
+    }
+#endif
+
     sLogger.debug("handleCharEnumOpcode called");
     auto asyncQuery = std::make_unique<AsyncQuery>(std::make_unique<SQLClassCallbackP1<World, uint32_t>>(&sWorld,
         &World::sendCharacterEnumToAccountSession, GetAccountId()));
@@ -1422,6 +1612,187 @@ void WorldSession::handleCharEnumOpcode(WorldPacket& /*recvPacket*/)
 
     CharacterDatabase.queueAsyncQuery(std::move(asyncQuery));
 }
+
+#if defined(AE_FOREVER)
+bool WorldSession::sendCharacterEnumFromDatabase()
+{
+    const uint32_t accountId = GetAccountId();
+
+    // Seed missing order rows for existing characters before reading the enum.
+    // If character_list_order is empty after upgrading, existing characters
+    // keep their current GUID order until the client sends an explicit reorder.
+    auto missingOrder = CharacterDatabase.query("SELECT c.guid " "FROM characters c " "LEFT JOIN character_list_order o ON o.acct=c.acct AND o.guid=c.guid " "WHERE c.acct=%u AND o.guid IS NULL " "ORDER BY c.guid", accountId);
+
+    if (missingOrder)
+    {
+        uint32_t nextPosition = 0;
+
+        if (auto maxOrder = CharacterDatabase.query("SELECT MAX(listPosition) " "FROM character_list_order WHERE acct=%u", accountId))
+        {
+            Field* maxFields = maxOrder->fetch();
+            if (maxFields[0].isSet())
+                nextPosition = static_cast<uint32_t>(maxFields[0].asUint16()) + 1U;
+        }
+
+        do
+        {
+            const uint64_t guid = missingOrder->fetch()[0].asUint64();
+
+            CharacterDatabase.waitExecute("INSERT IGNORE INTO character_list_order (acct, guid, listPosition) " "VALUES (%u, %llu, %u)", accountId, static_cast<unsigned long long>(guid), nextPosition);
+
+
+            ++nextPosition;
+        }
+        while (missingOrder->nextRow());
+    }
+
+    auto result = CharacterDatabase.query("SELECT c.guid, c.level, c.race, c.class, c.gender, c.name, " "c.positionX, c.positionY, c.positionZ, c.mapId, c.zoneId " "FROM characters c " "LEFT JOIN character_list_order o ON o.acct=c.acct AND o.guid=c.guid " "WHERE c.acct=%u " "ORDER BY COALESCE(o.listPosition, 65535), c.guid " "LIMIT 10", accountId);
+
+    if (result == nullptr)
+    {
+        std::vector<AscEmu::Packets::ForeverCharacterEnumEntry> characters;
+        AscEmu::Packets::SmsgEnumCharactersResult response(0, 0, 0, std::move(characters));
+        sendManagedPacket(response);
+
+        AscEmu::Packets::SmsgAccountItemCollectionData collection(AscEmu::Packets::ItemCollectionType::WarbandScene);
+        sendManagedPacket(collection);
+        return true;
+    }
+
+    std::vector<AscEmu::Packets::ForeverCharacterEnumEntry> characters;
+    characters.reserve(10);
+
+    do
+    {
+        Field* fields = result->fetch();
+
+        AscEmu::Packets::ForeverCharacterEnumEntry character;
+        character.guid = fields[0].asUint64();
+        character.level = fields[1].asUint8();
+        character.race = fields[2].asUint8();
+        character.charClass = fields[3].asUint8();
+        character.gender = fields[4].asUint8();
+
+        std::string dbName = fields[5].asCString();
+
+        // The legacy characters table currently has one name column. Forever's
+        // CharacterInfo carries separate 6-bit first/last-name lengths.
+        // If a future migration stores "First Last" in this field, split it.
+        // Otherwise the complete DB name is the first name and last name is empty.
+        const size_t separator = dbName.find(' ');
+        if (separator == std::string::npos)
+        {
+            character.firstName = dbName;
+        }
+        else
+        {
+            character.firstName = dbName.substr(0, separator);
+            character.lastName = dbName.substr(separator + 1);
+        }
+
+        if (character.firstName.size() > 63U)
+            character.firstName.resize(63U);
+        if (character.lastName.size() > 63U)
+            character.lastName.resize(63U);
+
+        character.x = fields[6].asFloat();
+        character.y = fields[7].asFloat();
+        character.z = fields[8].asFloat();
+        character.mapId = fields[9].asInt32();
+        character.zoneId = fields[10].asInt32();
+
+        characters.emplace_back(std::move(character));
+    }
+    while (characters.size() < 10U && result->nextRow());
+
+    uint32_t visualItemCount = 0;
+    if (auto itemResult = CharacterDatabase.query("SELECT pi.ownerguid, pi.slot, pi.entry FROM playeritems pi INNER JOIN characters c ON c.guid=pi.ownerguid WHERE c.acct=%u AND pi.containerslot=-1 AND pi.slot BETWEEN 0 AND 18 ORDER BY pi.ownerguid, pi.slot", accountId))
+    {
+        do
+        {
+            Field* itemFields = itemResult->fetch();
+            const uint64_t guid = itemFields[0].asUint64();
+            const uint8_t slot = itemFields[1].asUint8();
+            const uint32_t itemEntry = itemFields[2].asUint32();
+
+            auto characterIt = std::find_if(characters.begin(), characters.end(), [guid](const auto& character) { return character.guid == guid; });
+            if (characterIt == characters.end() || slot >= characterIt->visualItems.size())
+                continue;
+
+            const auto itemProperties = sMySQLStore.getItemProperties(itemEntry);
+            if (itemProperties == nullptr)
+            {
+                sLogger.failure("WorldSession: character enum item {} is missing from resolved item properties for build {}.", itemEntry, getAEVersion());
+                continue;
+            }
+
+            auto& visualItem = characterIt->visualItems[slot];
+            visualItem.itemId = itemEntry;
+            visualItem.subclass = static_cast<uint8_t>(itemProperties->SubClass);
+            visualItem.inventoryType = static_cast<uint8_t>(itemProperties->InventoryType);
+            visualItem.displayId = itemProperties->DisplayInfoID;
+            visualItem.sheatheCategory = static_cast<uint8_t>(itemProperties->SheathID);
+            ++visualItemCount;
+        }
+        while (itemResult->nextRow());
+    }
+
+    sLogger.info("WorldSession: character enum loaded {} equipped visual items for account {}.", visualItemCount, accountId);
+
+
+    if (auto customizationResult = CharacterDatabase.query("SELECT cc.guid, cc.chrCustomizationOptionID, cc.chrCustomizationChoiceID " "FROM character_customizations cc " "INNER JOIN characters c ON c.guid=cc.guid " "WHERE c.acct=%u " "ORDER BY cc.guid, cc.chrCustomizationOptionID", accountId))
+    {
+        do
+        {
+            Field* customizationFields = customizationResult->fetch();
+            const uint64_t guid = customizationFields[0].asUint64();
+
+            auto characterIt = std::find_if(characters.begin(), characters.end(), [guid](const auto& character) { return character.guid == guid; });
+
+            if (characterIt == characters.end())
+                continue;
+
+            AscEmu::Packets::ForeverCharacterCustomizationChoice customization;
+            customization.optionId = customizationFields[1].asUint32();
+            customization.choiceId = customizationFields[2].asUint32();
+            characterIt->customizations.emplace_back(customization);
+        }
+        while (customizationResult->nextRow());
+    }
+
+    WorldSocket* socket = getActiveSendSocket();
+    if (socket == nullptr)
+        return false;
+
+    const uint32_t realmId = socket->getForeverRealmId();
+    const uint32_t virtualRealmAddress = ((socket->getForeverRegionId() & 0xFFU) << 24U) | ((socket->getForeverBattlegroupId() & 0xFFU) << 16U) | (realmId & 0xFFFFU);
+    AscEmu::Packets::SmsgEnumCharactersResult response(virtualRealmAddress, realmId, AscEmu::Version::Forever::getRealmCfgSuperDistrictId(), characters);
+    sendManagedPacket(response);
+
+    // Official Forever sends 0x00460019 immediately after a non-empty
+    // character enum. It mirrors the character GUID set and is separate from
+    // CharacterInfo/ListPosition.
+    std::vector<AscEmu::Packets::CharacterListStateEntry> characterListStateEntries;
+    characterListStateEntries.reserve(characters.size());
+
+    for (const AscEmu::Packets::ForeverCharacterEnumEntry& character : characters)
+    {
+        AscEmu::Packets::CharacterListStateEntry entry;
+        entry.guid = WoWGuid::createModernPlayer(realmId, character.guid);
+        characterListStateEntries.emplace_back(std::move(entry));
+    }
+
+    AscEmu::Packets::SmsgCharacterListState characterListState(std::move(characterListStateEntries));
+    sendManagedPacket(characterListState);
+
+
+    AscEmu::Packets::SmsgAccountItemCollectionData collection(AscEmu::Packets::ItemCollectionType::WarbandScene);
+    sendManagedPacket(collection);
+
+    return true;
+}
+
+#endif
 
 void WorldSession::loadAccountDataProc(QueryResult* result)
 {

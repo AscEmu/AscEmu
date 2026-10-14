@@ -258,20 +258,6 @@ uint8_t WorldSession::processQueuedPackets(uint32_t InstanceID)
 }
 
 #if defined(AE_FOREVER)
-bool WorldSession::sendForeverLogoutResponse(uint32_t reason, bool instantLogout)
-{
-    WorldSocket* socket = GetForeverInstanceSocket();
-    if (socket == nullptr || !socket->isConnected())
-        return false;
-
-    ByteBuffer payload;
-    payload << reason;
-    payload.writeBit(instantLogout);
-    payload.flushBits();
-
-    return socket->sendForeverPacket(SMSG_LOGOUT_RESPONSE, payload.contents(), static_cast<uint32_t>(payload.size()));
-}
-
 bool WorldSession::sendForeverLogoutComplete()
 {
     WorldSocket* socket = GetForeverInstanceSocket();
@@ -759,9 +745,11 @@ void WorldSession::registerOpcodeHandler()
     OpcodeHandlerRegistry& registry = OpcodeHandlerRegistry::instance();
 
     // Login
-    registry.registerOpcode<STATUS_AUTHED>(CMSG_ENUM_CHARACTERS, &WorldSession::handleCharEnumOpcode, true, true, true, true, true);
-    registry.registerOpcode<STATUS_AUTHED>(CMSG_CHAR_CREATE, &WorldSession::handleCharCreateOpcode, true, true, true, true, true);
-    registry.registerOpcode<STATUS_AUTHED>(CMSG_CHAR_DELETE, &WorldSession::handleCharDeleteOpcode, true, true, true, true, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_ENUM_CHARACTERS, &WorldSession::handleCharEnumOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_CHAR_CREATE, &WorldSession::handleCharCreateOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_CHAR_DELETE, &WorldSession::handleCharDeleteOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_CHECK_CHARACTER_NAME_AVAILABILITY, &WorldSession::handleCheckCharacterNameAvailabilityOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_GET_UNDELETE_CHARACTER_COOLDOWN_STATUS, &WorldSession::handleUndeleteCooldownStatusOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_CHAR_RENAME, &WorldSession::handleCharRenameOpcode, true, true, true, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_CHAR_CUSTOMIZE, &WorldSession::handleCharCustomizeLooksOpcode, false, false, true, true, false);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_CHAR_FACTION_CHANGE, &WorldSession::handleCharFactionOrRaceChange, false, false, true, false, false);
@@ -770,52 +758,70 @@ void WorldSession::registerOpcodeHandler()
     // declined names (Cyrillic client)
     registry.registerOpcode<STATUS_AUTHED>(CMSG_SET_PLAYER_DECLINED_NAMES, &WorldSession::handleSetPlayerDeclinedNamesOpcode, false, true, true, true, true);
 
-    registry.registerOpcode<STATUS_AUTHED>(CMSG_PLAYER_LOGIN, &WorldSession::handlePlayerLoginOpcode, true, true, true, true, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_PLAYER_LOGIN, &WorldSession::handlePlayerLoginOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
 
     registry.registerOpcode<STATUS_AUTHED>(CMSG_REALM_SPLIT, &WorldSession::handleRealmSplitOpcode, true, true, true, true, true);
+
+
+    // Character-select/bootstrap requests. Forever-specific sequencing is handled by the normal WorldSession handlers.
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_BATTLE_PAY_GET_PURCHASE_LIST, &WorldSession::handleIgnoredOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_BATTLE_PAY_GET_PRODUCT_LIST, &WorldSession::handleIgnoredOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_UPDATE_VAS_PURCHASE_STATES, &WorldSession::handleIgnoredOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_UPDATE_LAST_CATALOG_FETCH, &WorldSession::handleIgnoredOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_CHARACTER_SELECT_GATE_ACK, &WorldSession::handleIgnoredOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_QUICK_JOIN_AUTO_ACCEPT_REQUESTS, &WorldSession::handleIgnoredOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_GET_LAST_CATALOG_FETCH, &WorldSession::handleGetLastCatalogFetchOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_CHARACTER_LIST_ACK, &WorldSession::handleCharacterListAckOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_DB_QUERY_BULK, &WorldSession::handleDbQueryBulkOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_HOTFIX_REQUEST, &WorldSession::handleIgnoredOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
 
     // Queries
     registry.registerOpcode(MSG_CORPSE_QUERY, &WorldSession::handleCorpseQueryOpcode, false, true, true, true, false);
     registry.registerOpcode(CMSG_NAME_QUERY, &WorldSession::handleNameQueryOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_REALM_NAME_QUERY, &WorldSession::handleRealmNameQueryOpcode, false, false, false, false, true);
     registry.registerOpcode(CMSG_QUERY_TIME, &WorldSession::handleQueryTimeOpcode, false, true, true, true, true);
-    registry.registerOpcode(CMSG_CREATURE_QUERY, &WorldSession::handleCreatureQueryOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_GAMEOBJECT_QUERY, &WorldSession::handleGameObjectQueryOpcode, false, true, true, true, true);
+    registry.registerOpcode(CMSG_CREATURE_QUERY, &WorldSession::handleCreatureQueryOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_GAMEOBJECT_QUERY, &WorldSession::handleGameObjectQueryOpcode, false, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_PAGE_TEXT_QUERY, &WorldSession::handlePageTextQueryOpcode, false, true, true, true, true);
     registry.registerOpcode(CMSG_ITEM_NAME_QUERY, &WorldSession::handleItemNameQueryOpcode, false, true, true, true, false);
     registry.registerOpcode(CMSG_QUERY_INSPECT_ACHIEVEMENTS, &WorldSession::handleAchievmentQueryOpcode, false, false, true, true, false);
 
     // Movement
-    registry.registerOpcode(MSG_MOVE_HEARTBEAT, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
+    registry.registerOpcode(MSG_MOVE_HEARTBEAT, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(MSG_MOVE_WORLDPORT_ACK, &WorldSession::handleMoveWorldportAckOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
-    registry.registerOpcode(MSG_MOVE_JUMP, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_START_ASCEND, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_STOP_ASCEND, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_START_FORWARD, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_START_BACKWARD, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_SET_FACING, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_START_STRAFE_LEFT, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_START_STRAFE_RIGHT, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_STOP_STRAFE, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_START_TURN_LEFT, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_START_TURN_RIGHT, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_STOP_TURN, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_START_PITCH_UP, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_START_PITCH_DOWN, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_STOP_PITCH, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_SET_RUN_MODE, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_SET_WALK_MODE, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_SET_PITCH, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_START_SWIM, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_STOP_SWIM, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_FALL_LAND, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(MSG_MOVE_STOP, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(CMSG_MOVE_SET_FLY, &WorldSession::handleMovementOpcodes, true, true, true, false, true);
+    registry.registerOpcode(MSG_MOVE_JUMP, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_START_ASCEND, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_STOP_ASCEND, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_START_FORWARD, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_START_BACKWARD, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_SET_FACING, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_START_STRAFE_LEFT, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_START_STRAFE_RIGHT, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_STOP_STRAFE, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_START_TURN_LEFT, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_START_TURN_RIGHT, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_STOP_TURN, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_START_PITCH_UP, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_START_PITCH_DOWN, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_STOP_PITCH, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_SET_RUN_MODE, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_SET_WALK_MODE, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_SET_PITCH, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_START_SWIM, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_STOP_SWIM, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_FALL_LAND, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(MSG_MOVE_STOP, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_MOVE_SET_FLY, &WorldSession::handleMovementOpcodes, true, true, true, false, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_MOVE_NOT_ACTIVE_MOVER, &WorldSession::handleMoveNotActiveMoverOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_SET_ACTIVE_MOVER, &WorldSession::handleSetActiveMoverOpcode, false, true, true, true, true);
     registry.registerOpcode(CMSG_MOVE_TIME_SKIPPED, &WorldSession::handleMoveTimeSkippedOpcode, false, true, false, false, false);
     registry.registerOpcode(CMSG_MOVE_CHNG_TRANSPORT, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
-    registry.registerOpcode(CMSG_MOVE_FALL_RESET, &WorldSession::handleMovementOpcodes, false, false, false, true, true);
+    registry.registerOpcode(CMSG_MOVE_FALL_RESET, &WorldSession::handleMovementOpcodes, false, false, false, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_MOVE_CHANGE_TRANSPORT, &WorldSession::handleMovementOpcodes, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_MOVE_DOUBLE_JUMP, &WorldSession::handleMovementOpcodes, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_MOVE_UPDATE_FALL_SPEED, &WorldSession::handleMovementOpcodes, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_MOVE_SET_ADV_FLY, &WorldSession::handleMovementOpcodes, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_MOVE_SET_FACING_HEARTBEAT, &WorldSession::handleMovementOpcodes, false, false, false, false, false, false, false, false, false, false, false, false, true);
 
     // ACK
     registry.registerOpcode(MSG_MOVE_TELEPORT_ACK, &WorldSession::handleMoveTeleportAckOpcode, true, true, true, true, false);
@@ -827,7 +833,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_MOVE_KNOCK_BACK_ACK, &WorldSession::handleAcknowledgementOpcodes, true, true, true, true, true);
     registry.registerOpcode(CMSG_MOVE_HOVER_ACK, &WorldSession::handleAcknowledgementOpcodes, true, true, true, true, true);
     registry.registerOpcode(CMSG_MOVE_SET_CAN_FLY_ACK, &WorldSession::handleAcknowledgementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
-    registry.registerOpcode(MSG_MOVE_START_DESCEND, &WorldSession::handleMovementOpcodes, true, true, true, true, true);
+    registry.registerOpcode(MSG_MOVE_START_DESCEND, &WorldSession::handleMovementOpcodes, true, true, true, true, true, false, false, false, false, false, false, false, true);
 
     // Force Speed Change
     registry.registerOpcode(CMSG_FORCE_RUN_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, true, true, true, true, false, false, false, false, false, false, false, true);
@@ -856,14 +862,19 @@ void WorldSession::registerOpcodeHandler()
     // Player Interaction
     registry.registerOpcode(CMSG_WHO, &WorldSession::handleWhoOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_WHOIS, &WorldSession::handleWhoIsOpcode, true, false, true, true, true);
-    registry.registerOpcode(CMSG_LOGOUT_REQUEST, &WorldSession::handleLogoutRequestOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LOGOUT_REQUEST, &WorldSession::handleLogoutRequestOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_PLAYER_LOGOUT, &WorldSession::handlePlayerLogoutOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_LOGOUT_CANCEL, &WorldSession::handleLogoutCancelOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LOGOUT_CANCEL, &WorldSession::handleLogoutCancelOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     // registry.registerOpcode(CMSG_LOGOUT_CANCEL].status = STATUS_LOGGEDIN_RECENTLY_LOGGOUT, false, false, true, false, false);
 
     registry.registerOpcode(CMSG_ZONEUPDATE, &WorldSession::handleZoneupdate, true, true, true, true, false);
     // registry.registerOpcode(CMSG_SET_TARGET_OBSOLETE, &WorldSession::HandleSetTargetOpcode, false, false, true, false, false);
-    registry.registerOpcode(CMSG_SET_SELECTION, &WorldSession::handleSetSelectionOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_SET_SELECTION, &WorldSession::handleSetSelectionOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_UNKNOWN_PLAYER_GUID_003E002D, &WorldSession::handleUnknownPlayerGuid003E002DOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_CLOSE_INTERACTION, &WorldSession::handleCloseInteractionOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_SOCIAL_CONTRACT_REQUEST, &WorldSession::handleSocialContractRequestOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_SOCIAL_CONTRACT_ACCEPT, &WorldSession::handleSocialContractAcceptOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_SERVER_TIME_OFFSET_REQUEST, &WorldSession::handleServerTimeOffsetRequestOpcode, false, false, false, false, false, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_STANDSTATECHANGE, &WorldSession::handleStandStateChangeOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_CANCEL_MOUNT_AURA, &WorldSession::handleDismountOpcode, true, true, true, true, true);
 
@@ -880,7 +891,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_AREATRIGGER, &WorldSession::handleAreaTriggerOpcode, true, true, true, true, true, false, false, false, false, false, false, false, true);
 
     // Account Data
-    registry.registerOpcode<STATUS_AUTHED>(CMSG_UPDATE_ACCOUNT_DATA, &WorldSession::handleUpdateAccountData, true, true, true, true, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_UPDATE_ACCOUNT_DATA, &WorldSession::handleUpdateAccountData, true, true, true, true, true, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_REQUEST_ACCOUNT_DATA, &WorldSession::handleRequestAccountData, true, true, true, true, true);
     registry.registerOpcode(CMSG_TOGGLE_PVP, &WorldSession::handleTogglePVPOpcode, true, true, true, true, true);
 
@@ -1387,7 +1398,4 @@ void WorldSession::registerOpcodeHandler()
 
     registry.registerOpcode(SMSG_CLEAR_TARGET, &WorldSession::handleClearTargetOpcode, false, false, false, true, true);
 
-#if AE_WORLD_PROFILE_FOREVER
-    registry.initializeForeverSocketHandlers();
-#endif
 }

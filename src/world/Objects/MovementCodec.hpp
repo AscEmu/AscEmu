@@ -8,8 +8,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MovementInfo.hpp"
 #include "MovementDefines.hpp"
 #include "MovementDescriptors.hpp"
+#include "Utilities/Util.hpp"
 #include "Logging/Logger.hpp"
 #include "Server/OpcodeTable.hpp"
+
+#include <cstddef>
+#include <limits>
 
 template <WoW::Expansion Version>
 class MovementCodec
@@ -17,7 +21,7 @@ class MovementCodec
 public:
     static constexpr WoW::Expansion expansion = Version;
 
-    static void read(ByteBuffer& buffer, MovementInfo& movementInfo, uint16_t opcode)
+    static bool read(ByteBuffer& buffer, MovementInfo& movementInfo, uint16_t opcode, std::size_t /*expectedTrailingBytes*/ = 0)
     {
         unsetState(movementInfo);
 
@@ -34,6 +38,8 @@ public:
 
             executeReadStep(buffer, movementInfo, step.op, opcode);
         }
+
+        return !buffer.hadReadFailure();
     }
 
     static bool hasDescriptor(uint16_t opcode, bool read)
@@ -512,3 +518,235 @@ private:
             return getMopMovementDescriptor(opcode, read);
     }
 };
+
+template <>
+class MovementCodec<WoW::Expansion::_Forever>
+{
+public:
+    static constexpr WoW::Expansion expansion = WoW::Expansion::_Forever;
+
+    static bool hasDescriptor(uint16_t /*opcode*/, bool /*read*/)
+    {
+        // Modern clients use one common MovementInfo wire layout for movement snapshots.
+        return true;
+    }
+
+    static bool read(ByteBuffer& buffer, MovementInfo& movementInfo, uint16_t /*opcode*/, std::size_t expectedTrailingBytes = 0)
+    {
+        movementInfo = MovementInfo{};
+
+        WoWGuid modernGuid;
+        if (!readModernGuid(buffer, modernGuid))
+            return false;
+
+        movementInfo.guid = WoWGuid(modernGuid.toLegacyRaw());
+
+        uint64_t movementFlags = 0;
+        buffer >> movementFlags;
+        movementInfo.flags = static_cast<uint32_t>(movementFlags & std::numeric_limits<uint32_t>::max());
+        movementInfo.hasMovementFlags = true;
+
+        buffer >> movementInfo.update_time;
+        buffer >> movementInfo.position.x;
+        buffer >> movementInfo.position.y;
+        buffer >> movementInfo.position.z;
+        buffer >> movementInfo.position.o;
+        buffer >> movementInfo.pitch_rate;
+        buffer >> movementInfo.spline_elevation;
+
+        uint32_t removedMovementForces = 0;
+        uint32_t moveIndex = 0;
+        float gravityModifier = 1.0f;
+        buffer >> removedMovementForces;
+        buffer >> moveIndex;
+        buffer >> gravityModifier;
+
+        for (uint32_t i = 0; i < removedMovementForces; ++i)
+        {
+            WoWGuid ignored;
+            if (!readModernGuid(buffer, ignored))
+                return false;
+        }
+
+        const bool hasStandingOnGameObject = buffer.readBit();
+        movementInfo.hasTransportData = buffer.readBit();
+        movementInfo.status_info.hasFallData = buffer.readBit();
+        buffer.readBit(); // HasSpline - not consumed by player movement yet.
+        buffer.readBit(); // HeightChangeFailed.
+        buffer.readBit(); // RemoteTimeValid.
+        const bool hasInertia = buffer.readBit();
+        const bool hasAdvancedFlying = buffer.readBit();
+        const bool hasDriveStatus = buffer.readBit();
+        alignAfterBits(buffer, 9);
+
+        if (hasStandingOnGameObject)
+        {
+            WoWGuid ignored;
+            if (!readModernGuid(buffer, ignored))
+                return false;
+        }
+
+        if (movementInfo.hasTransportData && !readTransport(buffer, movementInfo))
+            return false;
+
+        if (movementInfo.status_info.hasFallData)
+        {
+            buffer >> movementInfo.fall_time;
+            buffer >> movementInfo.jump_info.velocity;
+            movementInfo.status_info.hasFallDirection = buffer.readBit();
+            alignAfterBits(buffer, 1);
+            if (movementInfo.status_info.hasFallDirection)
+            {
+                buffer >> movementInfo.jump_info.sinAngle;
+                buffer >> movementInfo.jump_info.cosAngle;
+                buffer >> movementInfo.jump_info.xyspeed;
+            }
+        }
+
+        // These modern extensions do not have matching core storage yet. Decode
+        // and skip them here so all movement users share one codec and alignment.
+        if (hasInertia)
+        {
+            uint32_t id = 0;
+            float x = 0.0f;
+            float y = 0.0f;
+            float z = 0.0f;
+            uint32_t lifetime = 0;
+            buffer >> id >> x >> y >> z >> lifetime;
+        }
+
+        if (hasAdvancedFlying)
+        {
+            float forwardVelocity = 0.0f;
+            float upVelocity = 0.0f;
+            buffer >> forwardVelocity >> upVelocity;
+        }
+
+        if (hasDriveStatus)
+        {
+            float speed = 0.0f;
+            float movementAngle = 0.0f;
+            buffer >> speed >> movementAngle;
+            buffer.readBit(); // Accelerating.
+            buffer.readBit(); // Drifting.
+            alignAfterBits(buffer, 2);
+        }
+
+        movementInfo.status_info.hasPitch = true;
+        movementInfo.status_info.hasOrientation = true;
+        movementInfo.status_info.hasTimeStamp = true;
+
+        return !buffer.hadReadFailure() && buffer.remaining() == expectedTrailingBytes;
+    }
+
+    static void write(ByteBuffer& data, MovementInfo movementInfo, uint16_t /*opcode*/, bool /*withGuid*/ = true)
+    {
+        const auto packedGuid = movementInfo.guid.packModern();
+        data.append(packedGuid.data(), packedGuid.size());
+        data << uint64_t(movementInfo.flags);
+        data << uint32_t(movementInfo.update_time);
+        data << movementInfo.position.x << movementInfo.position.y << movementInfo.position.z << movementInfo.position.o;
+        data << float(movementInfo.pitch_rate);
+        data << float(movementInfo.spline_elevation);
+        data << uint32_t(0); // RemovedMovementForcesCount
+        data << uint32_t(0); // MoveIndex
+        data << float(1.0f); // GravityModifier
+
+        const bool hasTransport = !movementInfo.transport_guid.isEmpty();
+        const bool hasFallData = movementInfo.status_info.hasFallData;
+        data.writeBit(false); // HasStandingOnGameObject
+        data.writeBit(hasTransport);
+        data.writeBit(hasFallData);
+        data.writeBit(false); // HasSpline
+        data.writeBit(false); // HeightChangeFailed
+        data.writeBit(false); // RemoteTimeValid
+        data.writeBit(false); // HasInertia
+        data.writeBit(false); // HasAdvancedFlying
+        data.writeBit(false); // HasDriveStatus
+        data.flushBits();
+
+        if (hasTransport)
+        {
+            const auto packedTransportGuid = movementInfo.transport_guid.packModern();
+            data.append(packedTransportGuid.data(), packedTransportGuid.size());
+            data << movementInfo.transport_position.x << movementInfo.transport_position.y << movementInfo.transport_position.z << movementInfo.transport_position.o;
+            data << int8_t(movementInfo.transport_seat);
+            data << uint32_t(movementInfo.transport_time);
+
+            const bool hasPrevTime = movementInfo.status_info.hasTransportTime2;
+            const bool hasVehicleId = movementInfo.status_info.hasTransportTime3;
+            data.writeBit(hasPrevTime);
+            data.writeBit(hasVehicleId);
+            data.flushBits();
+            if (hasPrevTime)
+                data << uint32_t(movementInfo.transport_time2);
+            if (hasVehicleId)
+                data << uint32_t(movementInfo.transport_time3);
+        }
+
+        if (hasFallData)
+        {
+            data << uint32_t(movementInfo.fall_time);
+            data << float(movementInfo.jump_info.velocity);
+            const bool hasFallDirection = movementInfo.status_info.hasFallDirection;
+            data.writeBit(hasFallDirection);
+            data.flushBits();
+            if (hasFallDirection)
+                data << float(movementInfo.jump_info.sinAngle) << float(movementInfo.jump_info.cosAngle) << float(movementInfo.jump_info.xyspeed);
+        }
+    }
+
+private:
+    static bool readModernGuid(ByteBuffer& buffer, WoWGuid& guid)
+    {
+        if (buffer.rpos() >= buffer.size())
+            return false;
+
+        std::size_t consumed = 0;
+        if (!WoWGuid::unpackModern(buffer.contents() + buffer.rpos(), buffer.size() - buffer.rpos(), guid, consumed))
+            return false;
+
+        buffer.rpos(buffer.rpos() + consumed);
+        return true;
+    }
+
+    static void alignAfterBits(ByteBuffer& buffer, uint8_t bitsAlreadyRead)
+    {
+        const uint8_t remainder = static_cast<uint8_t>(bitsAlreadyRead % 8U);
+        if (remainder == 0)
+            return;
+
+        for (uint8_t i = remainder; i < 8U; ++i)
+            buffer.readBit();
+    }
+
+    static bool readTransport(ByteBuffer& buffer, MovementInfo& movementInfo)
+    {
+        WoWGuid modernTransportGuid;
+        if (!readModernGuid(buffer, modernTransportGuid))
+            return false;
+
+        movementInfo.transport_guid = WoWGuid(modernTransportGuid.toLegacyRaw());
+        buffer >> movementInfo.transport_position.x;
+        buffer >> movementInfo.transport_position.y;
+        buffer >> movementInfo.transport_position.z;
+        buffer >> movementInfo.transport_position.o;
+
+        int8_t transportSeat = -1;
+        buffer >> transportSeat;
+        movementInfo.transport_seat = static_cast<uint8_t>(transportSeat);
+        buffer >> movementInfo.transport_time;
+
+        const bool hasPrevTime = buffer.readBit();
+        const bool hasVehicleId = buffer.readBit();
+        alignAfterBits(buffer, 2);
+
+        if (hasPrevTime)
+            buffer >> movementInfo.transport_time2;
+        if (hasVehicleId)
+            buffer >> movementInfo.transport_time3;
+
+        return !buffer.hadReadFailure();
+    }
+};
+

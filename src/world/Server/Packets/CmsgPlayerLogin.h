@@ -28,6 +28,25 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                WoWGuid modernGuid;
+                size_t consumed = 0;
+                if (!WoWGuid::unpackModern(packet.contents() + packet.rpos(), packet.remaining(), modernGuid, consumed))
+                    return false;
+
+                packet.rpos(packet.rpos() + consumed);
+
+                if (packet.remaining() != sizeof(float) + sizeof(uint8_t))
+                    return false;
+
+                packet.read<float>();
+                packet.read<uint8_t>();
+
+                guid = modernGuid;
+                return packet.remaining() == 0;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 uint64_t unpackedGuid;

@@ -94,6 +94,7 @@ public:
 protected:
     void handleAuthSession(std::unique_ptr<WorldPacket> recvPacket);
     void handlePing(std::unique_ptr<WorldPacket> recvPacket);
+    bool handlePingOpcode(WorldPacket& recvPacket);
     void handleMsgVerifyConnection(std::unique_ptr<WorldPacket> recvPacket);
 
 

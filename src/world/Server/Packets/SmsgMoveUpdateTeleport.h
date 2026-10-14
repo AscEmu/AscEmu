@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "Objects/MovementInfo.hpp"
-#include "version/Forever/Packets/MovementPackets.hpp"
 
 #include <cstdint>
 
@@ -40,7 +39,9 @@ namespace AscEmu::Packets
         {
             if (m_protocol.isForever())
             {
-                AscEmu::Version::Forever::Packets::writeMovementStatus(packet, mi, guid);
+                MovementInfo foreverInfo = mi;
+                foreverInfo.guid = guid;
+                foreverInfo.write(packet, m_protocol);
                 packet << uint32_t(0); // MovementForcesCount
                 for (uint8_t i = 0; i < 9; ++i)
                     packet.writeBit(false);

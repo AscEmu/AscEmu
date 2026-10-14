@@ -21,7 +21,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
-#include "version/Forever/Packets/MovementPackets.hpp"
+#include "Objects/MovementCodecDispatch.hpp"
+#include "Objects/MovementInfo.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -255,8 +256,8 @@ void WorldSession::handleMoveSplineDoneOpcode(WorldPacket& recvData)
 
     if (getClientProtocol().isForever())
     {
-        AscEmu::Version::Forever::Packets::MovementStatus status;
-        if (!AscEmu::Version::Forever::Packets::readMovementStatus(recvData, status, sizeof(uint32_t)))
+        MovementInfo movementInfo;
+        if (!MovementCodecDispatch::read(WoW::Expansion::_Forever, recvData, movementInfo, recvData.getOpcode(), sizeof(uint32_t)))
         {
             sLogger.warning("WorldSession::Forever: malformed CMSG_MOVE_SPLINE_DONE payload size={} consumed={}.", recvData.size(), recvData.rpos());
             return;

@@ -30,6 +30,26 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                if (packet.remaining() < sizeof(uint32_t) + 2U)
+                    return false;
+
+                packet >> entry;
+
+                WoWGuid modernGuid;
+                std::size_t consumed = 0;
+                if (!WoWGuid::unpackModern(packet.contents() + packet.rpos(), packet.remaining(), modernGuid, consumed) || consumed != packet.remaining())
+                    return false;
+
+                if (modernGuid.getModernHighType() != ModernHighGuid::GameObject && modernGuid.getModernHighType() != ModernHighGuid::Transport && modernGuid.getModernHighType() != ModernHighGuid::StaticDoor && modernGuid.getModernHighType() != ModernHighGuid::DynamicDoor)
+                    return false;
+
+                packet.rpos(packet.rpos() + consumed);
+                guid = modernGuid;
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 uint64_t unpacked_guid;

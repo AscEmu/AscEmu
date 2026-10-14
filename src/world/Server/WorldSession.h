@@ -37,6 +37,11 @@
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/WorldSocket.hpp"
 
+namespace AscEmu::Packets
+{
+    struct CharacterListOrderEntry;
+}
+
 struct QuestProperties;
 class Player;
 class WorldPacket;
@@ -203,9 +208,6 @@ public:
         void LogoutPlayer(bool Save);
 
 #if defined(AE_FOREVER)
-        void handleForeverLogoutRequest(bool idleLogout);
-        void handleForeverLogoutCancel();
-        bool sendForeverLogoutResponse(uint32_t reason, bool instantLogout);
         bool sendForeverLogoutComplete();
 #endif
 
@@ -432,11 +434,17 @@ protected:
         void handleSetFactionAtWarOpcode(WorldPacket& recvPacket);
         void handleSetFactionInactiveOpcode(WorldPacket& recvPacket);
         void handleCharDeleteOpcode(WorldPacket& recvPacket);
+        void handleCheckCharacterNameAvailabilityOpcode(WorldPacket& recvPacket);
+        void handleUndeleteCooldownStatusOpcode(WorldPacket& recvPacket);
         void handlePlayerLoginOpcode(WorldPacket& recvPacket);
         void handleCharRenameOpcode(WorldPacket& recvPacket);
         void handleCharCreateOpcode(WorldPacket& recvPacket);
         void handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket); // declined names (Cyrillic client)
-        void handleCharEnumOpcode(WorldPacket& /*recvPacket*/);
+        void handleCharEnumOpcode(WorldPacket& recvPacket);
+        void handleCharacterListAckOpcode(WorldPacket& recvPacket);
+#if defined(AE_FOREVER)
+        bool sendCharacterEnumFromDatabase();
+#endif
 
         void handleCharFactionOrRaceChange(WorldPacket& recvPacket);    //> TBC
         void handleCharCustomizeLooksOpcode(WorldPacket& recvPacket);   //> TBC
@@ -753,12 +761,20 @@ protected:
     public:
         void sendAccountDataTimes(uint32_t mask);
         void sendMOTD();
+        void sendPostAuthClientData(uint32_t cacheVersion);
         void sendClientCacheVersion(uint32_t version);    //> TBC
+        void sendAvailableHotfixes();
 
     protected:
         void handleStandStateChangeOpcode(WorldPacket& recvPacket);
         void handleWhoOpcode(WorldPacket& recvPacket);
         void handleSetSelectionOpcode(WorldPacket& recvPacket);
+        void handleUnknownPlayerGuid003E002DOpcode(WorldPacket& recvPacket);
+        void handleCloseInteractionOpcode(WorldPacket& recvPacket);
+        void handleSocialContractRequestOpcode(WorldPacket& recvPacket);
+        void handleSocialContractAcceptOpcode(WorldPacket& recvPacket);
+        void handleServerTimeOffsetRequestOpcode(WorldPacket& recvPacket);
+        void handleGetLastCatalogFetchOpcode(WorldPacket& recvPacket);
         void handleTogglePVPOpcode(WorldPacket& /*recvPacket*/);
         void handleTutorialFlag(WorldPacket& recvPacket);
         void handleTutorialClear(WorldPacket& /*recvPacket*/);
@@ -791,6 +807,7 @@ protected:
         void handleZoneupdate(WorldPacket& recvPacket);
         void handleResurrectResponse(WorldPacket& recvPacket);
         void handleSelfResurrect(WorldPacket& /*recvPacket*/);
+        void storeCharacterListOrder(std::vector<AscEmu::Packets::CharacterListOrderEntry> const& entries);
         void handleUpdateAccountData(WorldPacket& recvPacket);
         void handleRequestAccountData(WorldPacket& recvPacket);
         void handleBugOpcode(WorldPacket& recvPacket);
@@ -826,6 +843,12 @@ protected:
         //////////////////////////////////////////////////////////////////////////////////////////
         // HotfixHandler.cpp
         void handleRequestHotfix(WorldPacket& recvPacket);                  //>= Cata
+        void handleDbQueryBulkOpcode(WorldPacket& recvPacket);
+#if defined(AE_FOREVER)
+        bool sendDbQueryRecord(uint32_t tableHash, uint32_t recordId, bool* found = nullptr);
+        bool buildGossipBroadcastTextRecord(ByteBuffer& buffer, uint32_t wireId, uint32_t gossipTextId);
+        bool sendDb2Reply(uint32_t tableHash, uint32_t recordId, ByteBuffer buffer, bool found);
+#endif
         void sendItemDb2Reply(uint32_t entry);                              //>= Cata
         void sendItemSparseDb2Reply(uint32_t entry);                        //>= Cata
         void sendBroadcastDb2Reply(uint32_t entry);                         //>= Mop
@@ -1024,6 +1047,7 @@ protected:
         void handleBeginTradeOpcode(WorldPacket& /*recvPacket*/);
         void handleBusyTrade(WorldPacket& /*recvPacket*/);
         void handleIgnoreTrade(WorldPacket& /*recvPacket*/);
+        void handleIgnoredOpcode(WorldPacket& recvPacket);
         void handleAcceptTrade(WorldPacket& /*recvPacket*/);
         void handleUnacceptTrade(WorldPacket& /*recvPacket*/);
         void handleCancelTrade(WorldPacket& recvPacket);
@@ -1066,6 +1090,17 @@ protected:
         Player* _player;
         WorldSocket* _socket;
         WorldSocket* _foreverInstanceSocket{nullptr};
+
+#if defined(AE_FOREVER)
+        enum class PostCreateCharacterEnumState : uint8_t
+        {
+            None,
+            AwaitingEnum,
+            AwaitingAck
+        };
+
+        PostCreateCharacterEnumState m_postCreateCharacterEnumState{PostCreateCharacterEnumState::None};
+#endif
 
         // Preallocated buffers for movement handlers
         MovementInfo sessionMovementInfo;

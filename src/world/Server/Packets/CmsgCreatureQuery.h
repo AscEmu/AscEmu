@@ -30,6 +30,15 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                if (packet.remaining() != sizeof(uint32_t))
+                    return false;
+
+                packet >> entry;
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 uint64_t unpacked_guid;

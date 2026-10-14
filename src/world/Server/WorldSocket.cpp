@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Util.hpp"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "World.h"
+#include "Packets/CmsgPing.h"
 #include "Packets/SmsgPong.h"
 #include "Packets/SmsgAuthChallenge.h"
 #include "Packets/SmsgAuthResponse.h"
@@ -472,7 +473,7 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
     m_session->sendAddonInfo();
 
     if (m_protocol.expansion > WoW::Expansion::_TBC)
-        m_session->sendClientCacheVersion(BUILD_VERSION);
+        m_session->sendPostAuthClientData(BUILD_VERSION);
 
     m_session->_latency = m_latency;
 
@@ -641,24 +642,28 @@ void WorldSocket::dispatchPacket(std::unique_ptr<WorldPacket> packet)
 
 void WorldSocket::handlePing(std::unique_ptr<WorldPacket> recvPacket)
 {
-    uint32_t ping;
-    if (recvPacket->size() < 4)
+    if (!handlePingOpcode(*recvPacket))
     {
-        sLogger.failure("WorldSocket::handlePing: Socket closed due to incomplete ping packet.");
+        sLogger.failure("WorldSocket::handlePing: Socket closed due to malformed ping packet.");
         disconnect();
-        return;
+    }
+}
+
+bool WorldSocket::handlePingOpcode(WorldPacket& recvPacket)
+{
+    CmsgPing ping;
+    if (!parsePacket(recvPacket, ping))
+    {
+        if (m_protocol.isForever())
+        {
+            sLogger.warning("WorldSocket::handlePingOpcode: CMSG_PING expected 8 bytes, got {}.", recvPacket.remaining());
+            return true;
+        }
+
+        return false;
     }
 
-    if (m_protocol.expansion <= WoW::Expansion::_Cata)
-    {
-        *recvPacket >> ping;
-        *recvPacket >> m_latency;
-    }
-    else
-    {
-        *recvPacket >> m_latency;
-        *recvPacket >> ping;
-    }
+    m_latency = ping.latency;
 
     if (m_session)
     {
@@ -667,7 +672,7 @@ void WorldSocket::handlePing(std::unique_ptr<WorldPacket> recvPacket)
         m_session->m_clientTimeDelay = 0;
     }
 
-    SmsgPong pong(ping);
+    SmsgPong pong(ping.serial);
     sendManagedPacket(pong);
 
 #ifdef WIN32
@@ -693,6 +698,8 @@ void WorldSocket::handlePing(std::unique_ptr<WorldPacket> recvPacket)
         }
     }
 #endif
+
+    return true;
 }
 
 void WorldSocket::handleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
@@ -1073,11 +1080,20 @@ bool WorldSocket::dispatchForeverOpcode(uint32_t rawOpcode, const uint8_t* paylo
     if (payloadSize != 0)
         packet.append(payload, payloadSize);
 
-    bool consumed = false;
-    if (!processForeverGlueState(packet, consumed))
-        return false;
-    if (consumed)
+    // CMSG_PING is socket-level in every protocol. Forever uses the same
+    // core ping handler as the legacy dispatch path instead of a version
+    // specific socket-registry entry.
+    if (internalId == CMSG_PING)
+    {
+        if (!handlePingOpcode(packet))
+        {
+            sLogger.failure("WorldSocket::handlePing: Socket closed due to malformed ping packet.");
+            disconnect();
+            return false;
+        }
+
         return true;
+    }
 
     if (internalId != CMSG_DB_QUERY_BULK)
     {
@@ -1088,6 +1104,12 @@ bool WorldSocket::dispatchForeverOpcode(uint32_t rawOpcode, const uint8_t* paylo
         sLogger.debugOpcode("WorldSocket::Forever: {} received size={}{}.", name, payloadSize, details);
     }
 
-    return OpcodeHandlerRegistry::instance().handleResolvedOpcode(*this, packet, rawOpcode, internalId);
+    if (m_session == nullptr)
+    {
+        sLogger.warning("WorldSocket::Forever: received authenticated opcode {} without WorldSession.", sOpcodeTables.getNameForInternalId(internalId, WoW::Expansion::_Forever));
+        return false;
+    }
+
+    return OpcodeHandlerRegistry::instance().handleResolvedOpcode(*m_session, packet, rawOpcode, internalId);
 }
 #endif

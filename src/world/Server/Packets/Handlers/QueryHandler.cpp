@@ -110,12 +110,26 @@ void WorldSession::handleGameObjectQueryOpcode(WorldPacket& recvData)
 
     const auto gameobject_info = sMySQLStore.getGameObjectProperties(srlPacket.entry);
     if (!gameobject_info)
+    {
+        if (getClientProtocol().isForever())
+        {
+            SmsgGameobjectQueryResponse responsePacket(nullptr, srlPacket.entry, srlPacket.guid, "");
+            sendManagedPacket(responsePacket);
+        }
         return;
+    }
 
     const auto loc = (language > 0) ? sMySQLStore.getLocalizedGameobject(srlPacket.entry, language) : nullptr;
     const auto name = loc ? loc->name : gameobject_info->name.c_str();
 
     sLogger.debugOpcode("Received CMSG_GAMEOBJECT_QUERY for entry: {} name : {}.", srlPacket.entry, name);
+
+    if (getClientProtocol().isForever())
+    {
+        SmsgGameobjectQueryResponse responsePacket(gameobject_info, srlPacket.entry, srlPacket.guid, name);
+        sendManagedPacket(responsePacket);
+        return;
+    }
 
     SmsgGameobjectQueryResponse responsePacket(*gameobject_info, name);
     sendManagedPacket(responsePacket);
@@ -132,9 +146,16 @@ void WorldSession::handleCreatureQueryOpcode(WorldPacket& recvData)
 
     const auto creature_info = sMySQLStore.getCreatureProperties(srlPacket.entry);
     if (!creature_info)
+    {
+        if (getClientProtocol().isForever())
+        {
+            SmsgCreatureQueryResponse responsePacket(nullptr, srlPacket.entry, "", "");
+            sendManagedPacket(responsePacket);
+        }
         return;
+    }
 
-    const auto loc = (language > 0) ? sMySQLStore.getLocalizedCreature(srlPacket.entry, language) : nullptr;
+    const auto loc = (!getClientProtocol().isForever() && language > 0) ? sMySQLStore.getLocalizedCreature(srlPacket.entry, language) : nullptr;
     const auto name = loc ? loc->name : creature_info->Name.c_str();
     const auto subName = loc ? loc->subName : creature_info->SubName.c_str();
 
