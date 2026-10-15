@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "Management/AchievementMgr.h"
 #include "Management/Charter.hpp"
+#include "Server/Packets/SmsgSpellPrepare.h"
 #include "Server/Packets/CmsgSwapItem.h"
 #include "Server/Packets/CmsgTransmogrifyItems.h"
 #include "Server/Packets/CmsgEquipmentSetUse.h"
@@ -76,6 +77,12 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
+#if VERSION_STRING >= Legion
+    // the client waits for the cast id of the server before it accepts start, go or failure of its cast
+    SmsgSpellPrepare spellPrepare(srlPacket.clientCastGuid, _player->getGuid(), srlPacket.spellId);
+    sendManagedPacket(spellPrepare);
+#endif
+
     Item* tmpItem = _player->getItemInterface()->GetInventoryItem(srlPacket.containerIndex, srlPacket.inventorySlot);
     if (tmpItem == nullptr)
     {
@@ -88,7 +95,12 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
+#if VERSION_STRING >= WoD
+    // 6.x and later clients send a container back as item guid, the counter identifies the item
+    if (WoWGuid(tmpItem->getGuid()).getLowGuid() != srlPacket.itemGuid.getLowGuid())
+#else
     if (tmpItem->getGuid() != srlPacket.itemGuid.getRawGuid())
+#endif
     {
         _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_NOT_FOUND);
         return;

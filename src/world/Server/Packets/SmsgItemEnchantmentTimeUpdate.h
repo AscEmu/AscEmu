@@ -34,6 +34,16 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // item, remaining duration, slot, owner
+                packet << WoWGuid(itemGuid).toGuid128(m_protocol.realmId, 0);
+                packet << uint32_t(duration);
+                packet << uint32_t(slot);
+                packet << WoWGuid(playerGuid).toGuid128(m_protocol.realmId, 0);
+                return true;
+            }
+
             packet << itemGuid << slot << duration << playerGuid;
 
             return true;

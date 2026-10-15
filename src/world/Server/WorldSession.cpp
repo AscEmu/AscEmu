@@ -1042,26 +1042,26 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_ACTIVATE_TAXI_EXPRESS, &WorldSession::handleMultipleActivateTaxiOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_MOVE_SPLINE_DONE, &WorldSession::handleMoveSplineDoneOpcode, true, true, true, true, true);
     // Item / Vendors
-    registry.registerOpcode(CMSG_SWAP_INV_ITEM, &WorldSession::handleSwapInvItemOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_SWAP_ITEM, &WorldSession::handleSwapItemOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_DESTROY_ITEM, &WorldSession::handleDestroyItemOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_AUTOEQUIP_ITEM, &WorldSession::handleAutoEquipItemOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_AUTOEQUIP_ITEM_SLOT, &WorldSession::handleAutoEquipItemSlotOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_SWAP_INV_ITEM, &WorldSession::handleSwapInvItemOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_SWAP_ITEM, &WorldSession::handleSwapItemOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_DESTROY_ITEM, &WorldSession::handleDestroyItemOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_AUTOEQUIP_ITEM, &WorldSession::handleAutoEquipItemOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_AUTOEQUIP_ITEM_SLOT, &WorldSession::handleAutoEquipItemSlotOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_ITEM_QUERY_SINGLE, &WorldSession::handleItemQuerySingleOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_SELL_ITEM, &WorldSession::handleSellItemOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_BUY_ITEM_IN_SLOT, &WorldSession::handleBuyItemInSlotOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_BUY_ITEM, &WorldSession::handleBuyItemOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_LIST_INVENTORY, &WorldSession::handleListInventoryOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_AUTOSTORE_BAG_ITEM, &WorldSession::handleAutoStoreBagItemOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_AUTOSTORE_BAG_ITEM, &WorldSession::handleAutoStoreBagItemOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_SET_AMMO, &WorldSession::handleAmmoSetOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_BUY_BACK_ITEM, &WorldSession::handleBuyBackOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_SPLIT_ITEM, &WorldSession::handleSplitOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_READ_ITEM, &WorldSession::handleReadItemOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_SPLIT_ITEM, &WorldSession::handleSplitOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_READ_ITEM, &WorldSession::handleReadItemOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_REPAIR_ITEM, &WorldSession::handleRepairItemOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_AUTOBANK_ITEM, &WorldSession::handleAutoBankItemOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_AUTOSTORE_BANK_ITEM, &WorldSession::handleAutoStoreBankItemOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_CANCEL_TEMP_ENCHANTMENT, &WorldSession::handleCancelTemporaryEnchantmentOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_SOCKET_GEMS, &WorldSession::handleInsertGemOpcode, false, true, true, true, true);
+    registry.registerOpcode(CMSG_AUTOBANK_ITEM, &WorldSession::handleAutoBankItemOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_AUTOSTORE_BANK_ITEM, &WorldSession::handleAutoStoreBankItemOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CANCEL_TEMP_ENCHANTMENT, &WorldSession::handleCancelTemporaryEnchantmentOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_SOCKET_GEMS, &WorldSession::handleInsertGemOpcode, false, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_WRAP_ITEM, &WorldSession::handleWrapItemOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_ITEMREFUNDINFO, &WorldSession::handleItemRefundInfoOpcode, false, false, true, true, true);
     registry.registerOpcode(CMSG_ITEMREFUNDREQUEST, &WorldSession::handleItemRefundRequestOpcode, false, false, true, false, true);
@@ -1071,7 +1071,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_EQUIPMENT_SET_DELETE, &WorldSession::handleEquipmentSetDelete, false, false, true, true, true);
 
     // Spell System / Talent System
-    registry.registerOpcode(CMSG_USE_ITEM, &WorldSession::handleUseItemOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_USE_ITEM, &WorldSession::handleUseItemOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_CAST_SPELL, &WorldSession::handleCastSpellOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_SPELL_CLICK, &WorldSession::handleSpellClick, true, false, true, true, true);
     registry.registerOpcode(CMSG_CANCEL_CAST, &WorldSession::handleCancelCastOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
@@ -1257,7 +1257,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_VIOLENCE_LEVEL, &WorldSession::handleViolenceLevel, false, false, false, true, false);
 
     // Misc
-    registry.registerOpcode(CMSG_OPEN_ITEM, &WorldSession::handleOpenItemOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_OPEN_ITEM, &WorldSession::handleOpenItemOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_COMPLETE_CINEMATIC, &WorldSession::handleCompleteCinematic, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_NEXT_CINEMATIC_CAMERA, &WorldSession::handleNextCinematic, true, false, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_MOUNTSPECIAL_ANIM, &WorldSession::handleMountSpecialAnimOpcode, true, true, true, true, true);

@@ -51,6 +51,13 @@ namespace AscEmu::Packets
         {
         }
 
+        // CMSG_USE_ITEM of 6.x and later clients carries the same cast request
+        bool readCastRequest(WorldPacket& packet, WoW::ClientProtocol const& protocol)
+        {
+            setClientProtocol(protocol);
+            return readGuid128Request(packet);
+        }
+
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {

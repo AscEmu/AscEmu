@@ -29,6 +29,22 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // item, then the gem of every socket
+                WoWGuid128 guid;
+                packet >> guid;
+                itemGuid = WoWGuid::fromGuid128(guid);
+
+                for (auto i = 0; i < 3; ++i)
+                {
+                    WoWGuid128 gem;
+                    packet >> gem;
+                    gemGuid[i] = WoWGuid::fromGuid128(gem).getRawGuid();
+                }
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 uint64_t unpackedGuid;

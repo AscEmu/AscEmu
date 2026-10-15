@@ -349,6 +349,8 @@ bool Item::addEnchantment(uint32_t enchantmentId, EnchantmentSlot slot, uint32_t
 #endif
 
     SmsgEnchantmentLog managedPacket(m_owner->getGuid(), m_owner->getGuid(), getEntry(), Enchantment->Id);
+    managedPacket.itemGuid = getGuid();
+    managedPacket.enchantSlot = static_cast<uint32_t>(slot);
     m_owner->getSession()->sendManagedPacket(managedPacket);
 
     // Apply enchantment bonus only if the item is equipped

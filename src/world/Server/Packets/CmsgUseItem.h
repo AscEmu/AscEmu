@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "Spell/SpellCastTargets.hpp"
+#include "CmsgCastSpell.h"
 #include <G3D/Vector3.h>
 
 namespace AscEmu::Packets
@@ -40,6 +41,9 @@ namespace AscEmu::Packets
         bool hasSrcLocation = false;    // since 184141
         bool hasDestLocation = false;   // since 184141
 
+        // 7.x and later: the id the client gave the cast
+        WoWGuid128 clientCastGuid;
+
         CmsgUseItem() : CmsgUseItem(0, 0)
         {
         }
@@ -54,6 +58,29 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                WoWGuid128 guid;
+                packet >> containerIndex >> inventorySlot >> guid;
+                itemGuid = WoWGuid::fromGuid128(guid);
+
+                CmsgCastSpell castRequest;
+                if (!castRequest.readCastRequest(packet, m_protocol))
+                    return false;
+
+                spellId = castRequest.spellId;
+                castCount = castRequest.castCount;
+                castFlags = castRequest.castFlags;
+                targets = castRequest.targets;
+                projectilePitch = castRequest.projectilePitch;
+                projectileSpeed = castRequest.projectileSpeed;
+                hasSrcLocation = castRequest.hasSrcLocation;
+                hasDestLocation = castRequest.hasDestLocation;
+                hasAdditionalData = castRequest.hasDestLocation;
+                clientCastGuid = castRequest.clientCastGuid;
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 if (m_protocol.expansion == WoW::Expansion::_Classic)

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "InvUpdate.h"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -30,6 +31,15 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                skipInvUpdate(packet);
+                if (m_protocol.isTheWarWithinOrLater())
+                    packet.readSkip<uint8_t>(); // bank type
+                packet >> srcInventorySlot >> srcSlot;
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet >> srcInventorySlot >> srcSlot;

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "InvUpdate.h"
 #include <cstdint>
 #include <utility>
 #include <vector>
@@ -49,6 +50,16 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                skipInvUpdate(packet);
+
+                WoWGuid128 guid;
+                packet >> guid >> destSlot;
+                itemGuid = WoWGuid::fromGuid128(guid);
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 destSlot = static_cast<int8_t>(packet.read<uint8_t>());

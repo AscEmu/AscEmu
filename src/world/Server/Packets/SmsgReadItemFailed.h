@@ -34,6 +34,10 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            // 6.x and later: the meaning of delay and subcode is unknown, the client gets no answer
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+                return false;
+
             packet << itemGuid << error;
             return true;
         }
