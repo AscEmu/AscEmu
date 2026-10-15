@@ -14,15 +14,14 @@ using Version::ContainerField;
 
 Container::Container(uint32_t high, uint32_t low) : Item(), m_Slot(nullptr)
 {
-    m_objectType |= TYPE_ITEM | TYPE_CONTAINER;
-    m_objectTypeId = TYPEID_CONTAINER;
+    const uint16_t valueCount = Version::layouts().container.valueCount();
 
-    m_valuesCount = Version::layouts().container.valueCount();
+    m_valuesCount = valueCount;
     m_uint32Values = __fields;
-    memset(m_uint32Values, 0, (Version::layouts().container.valueCount()) * sizeof(uint32_t));
-    m_updateMask.SetCount(Version::layouts().container.valueCount());
+    memset(m_uint32Values, 0, valueCount * sizeof(uint32_t));
+    m_updateMask.SetCount(valueCount);
 
-    setOType(TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
+    setObjectType(TYPEID_CONTAINER);
     setGuid(low, high);
     setScale(1);
 }

@@ -156,18 +156,16 @@ bool CreatureProperties::isExotic() const
 
 Creature::Creature(uint64_t guid)
 {
-    //////////////////////////////////////////////////////////////////////////
-    m_objectTypeId = TYPEID_UNIT;
-    m_valuesCount = Version::layouts().unit.valueCount();
-    //////////////////////////////////////////////////////////////////////////
+    const uint16_t valueCount = Version::layouts().unit.valueCount();
+    m_valuesCount = valueCount;
 
-    //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
+    // Point base class value storage to embedded derived array
     m_uint32Values = _fields;
 
-    memset(m_uint32Values, 0, ((Version::layouts().unit.valueCount()) * sizeof(uint32_t)));
-    m_updateMask.SetCount(Version::layouts().unit.valueCount());
+    memset(m_uint32Values, 0, (valueCount * sizeof(uint32_t)));
+    m_updateMask.SetCount(valueCount);
 
-    setOType(TYPE_UNIT | TYPE_OBJECT);
+    setObjectType(TYPEID_UNIT);
     setGuid(guid);
 
     setAttackPowerMultiplier(0.0f);

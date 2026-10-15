@@ -168,7 +168,14 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
     sScriptMgr.callScriptedAuraOnRemove(this, mode);
     sHookInterface.OnAuraRemove(this);
 
-    sLogger.debug("Removing aura {} from unit {}", getSpellId(), getOwner()->getGuid());
+    if (mode != AURA_REMOVE_BY_SERVER)
+    {
+        sLogger.debug("Removing aura {} from unit {}", getSpellId(), getOwner()->getGuid());
+    }
+    else
+    {
+        sLogger.debugAura("Removing aura {} from unit {}", getSpellId(), getOwner()->getGuid());
+    }
 
     m_isGarbage = true;
 

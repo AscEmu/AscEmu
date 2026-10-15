@@ -419,7 +419,7 @@ uint32_t LogonCommHandler::clientConnectionId(std::string AccountName, WorldSock
 {
     uint32_t request_id = next_request++;
 
-    sLogger.debug(" Send Request for Account: `{}` (request ID: {}).", AccountName, request_id);
+    sLogger.debug("Send Request for Account: `{}` (request ID: {}).", AccountName, request_id);
 
     // Send request packet to server.
     if (logons.empty())
@@ -464,7 +464,7 @@ void LogonCommHandler::sendBuildRequest(std::string ip, WorldSocket* Socket)
 {
     uint32_t request_id = next_request++;
 
-    sLogger.debug(" Send Request for Account: `{}` (request ID: {}).", ip, request_id);
+    sLogger.debug("Send Request for Account: `{}` (request ID: {}).", ip, request_id);
 
     LogonCommClientSocket* logonCommSocket = getLogonServerSocket();
     if (logonCommSocket)

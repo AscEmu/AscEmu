@@ -21,9 +21,6 @@ using Version::DynamicObjectField;
 
 DynamicObject::DynamicObject(uint64_t guid)
 {
-    m_objectType |= TYPE_DYNAMICOBJECT;
-    m_objectTypeId = TYPEID_DYNAMICOBJECT;
-
 #if VERSION_STRING == Classic
     m_updateFlag = (UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
 #endif
@@ -40,12 +37,14 @@ DynamicObject::DynamicObject(uint64_t guid)
     m_updateFlag = UPDATEFLAG_HAS_POSITION;
 #endif
 
-    m_valuesCount = Version::layouts().dynamicObject.valueCount();
-    m_uint32Values = _fields;
-    memset(m_uint32Values, 0, (Version::layouts().dynamicObject.valueCount()) * sizeof(uint32_t));
-    m_updateMask.SetCount(Version::layouts().dynamicObject.valueCount());
+    const uint16_t valueCount = Version::layouts().dynamicObject.valueCount();
 
-    setOType(TYPE_DYNAMICOBJECT | TYPE_OBJECT);
+    m_valuesCount = valueCount;
+    m_uint32Values = _fields;
+    memset(m_uint32Values, 0, valueCount * sizeof(uint32_t));
+    m_updateMask.SetCount(valueCount);
+
+    setObjectType(TYPEID_DYNAMICOBJECT);
     setGuid(guid);
 
     setScale(1.0f);

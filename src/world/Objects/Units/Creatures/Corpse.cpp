@@ -23,9 +23,6 @@ using Version::CorpseField;
 
 Corpse::Corpse(uint64_t guid)
 {
-    m_objectType |= TYPE_CORPSE;
-    m_objectTypeId = TYPEID_CORPSE;
-
 #if VERSION_STRING == Classic
     m_updateFlag = (UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
 #endif
@@ -42,12 +39,14 @@ Corpse::Corpse(uint64_t guid)
     m_updateFlag = UPDATEFLAG_HAS_POSITION;
 #endif
 
-    m_valuesCount = Version::layouts().corpse.valueCount();
-    m_uint32Values = _fields;
-    memset(m_uint32Values, 0, (Version::layouts().corpse.valueCount()) * sizeof(uint32_t));
-    m_updateMask.SetCount(Version::layouts().corpse.valueCount());
+    const uint16_t valueCount = Version::layouts().corpse.valueCount();
 
-    setOType(TYPE_CORPSE | TYPE_OBJECT);
+    m_valuesCount = valueCount;
+    m_uint32Values = _fields;
+    memset(m_uint32Values, 0, valueCount * sizeof(uint32_t));
+    m_updateMask.SetCount(valueCount);
+
+    setObjectType(TYPEID_CORPSE);
     setGuid(guid);
 
     setScale(1);
@@ -89,7 +88,7 @@ void Corpse::setCorpseDataFromDbString(std::string dbString)
         switch (countPosition)
         {
             case 0: setGuid(std::stoull(stringValue)); break;
-            case 1: setOType(static_cast<uint16_t>(std::stoul(stringValue))); break;
+            case 1: setObjectType(TYPEID_CORPSE); break;
             case 2: setEntry(std::stoul(stringValue)); break;
             case 3: setScale(std::stof(stringValue)); break;
 

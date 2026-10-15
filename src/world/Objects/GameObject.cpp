@@ -91,35 +91,26 @@ QuaternionData QuaternionData::fromEulerAnglesZYX(float Z, float Y, float X)
 
 GameObject::GameObject(uint64_t guid)
 {
-    //////////////////////////////////////////////////////////////////////////
-    m_objectType |= TYPE_GAMEOBJECT;
-    m_objectTypeId = TYPEID_GAMEOBJECT;
-    m_valuesCount = Version::layouts().gameObject.valueCount();
-    //////////////////////////////////////////////////////////////////////////
-
 #if VERSION_STRING == Classic
     m_updateFlag = (UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
-#endif
-#if VERSION_STRING == TBC
+#elif VERSION_STRING == TBC
     m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION);
-#endif
-#if VERSION_STRING == WotLK
+#elif VERSION_STRING == WotLK
     m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION | UPDATEFLAG_ROTATION);
-#endif
-#if VERSION_STRING == Cata
-    m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
-#endif
-#if VERSION_STRING >= Mop
+#else
     m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
 #endif
 
-    //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
+    const uint16_t valueCount = Version::layouts().gameObject.valueCount();
+    m_valuesCount = valueCount;
+
+    // Point base class value storage to embedded derived array
     m_uint32Values = _fields;
 
-    std::fill(m_uint32Values, &m_uint32Values[Version::layouts().gameObject.valueCount()], 0);
-    m_updateMask.SetCount(Version::layouts().gameObject.valueCount());
+    std::fill(m_uint32Values, &m_uint32Values[valueCount], 0);
+    m_updateMask.SetCount(valueCount);
 
-    setOType(TYPE_GAMEOBJECT | TYPE_OBJECT);
+    setObjectType(TYPEID_GAMEOBJECT);
     setGuid(guid);
 
     setAnimationProgress(100);
@@ -236,6 +227,7 @@ void GameObject::removeFlags(uint32_t flags) { setFlags(getFlags() & ~flags); }
 bool GameObject::hasFlags(uint32_t flags) const { return (getFlags() & flags) != 0; }
 
 float GameObject::getParentRotation(uint8_t type) const { return getField<float>(GameObjectField::Rotation, type); }
+
 void GameObject::setParentRotation(QuaternionData const& rotation)
 {
     setField<float>(GameObjectField::Rotation, rotation.x, 0);
@@ -310,6 +302,7 @@ uint8_t GameObject::getState() const
 
     return static_cast<uint8_t>(getField<uint32_t>(GameObjectField::State));
 }
+
 void GameObject::setState(uint8_t state)
 {
     if (hasField(GameObjectField::Bytes1State))
@@ -328,6 +321,7 @@ uint8_t GameObject::getGoType() const
 
     return static_cast<uint8_t>(getField<uint32_t>(GameObjectField::Type));
 }
+
 void GameObject::setGoType(uint8_t type)
 {
     if (hasField(GameObjectField::Bytes1Type))
@@ -350,6 +344,7 @@ uint8_t GameObject::getArtKit() const
 
     return static_cast<uint8_t>(getField<uint32_t>(GameObjectField::ArtKit));
 }
+
 void GameObject::setArtKit(uint8_t artkit)
 {
     if (hasField(GameObjectField::Bytes2ArtKit))
@@ -377,6 +372,7 @@ uint8_t GameObject::getAnimationProgress() const
 
     return static_cast<uint8_t>(getField<uint32_t>(GameObjectField::AnimationProgress));
 }
+
 void GameObject::setAnimationProgress(uint8_t progress)
 {
     if (hasField(GameObjectField::Bytes2AnimationProgress))

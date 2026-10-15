@@ -85,15 +85,6 @@ using Version::ObjectField;
 
 using namespace AscEmu::Packets;
 
-Object::Object()
-{
-    //////////////////////////////////////////////////////////////////////////
-    m_objectType = TYPE_OBJECT;
-    m_objectTypeId = TYPEID_OBJECT;
-    m_updateFlag = UPDATEFLAG_NONE;
-    //////////////////////////////////////////////////////////////////////////
-}
-
 Object::~Object()
 {
     if (!isItem())
@@ -126,7 +117,6 @@ Object::~Object()
         }
     }
 }
-
 
 #if VERSION_STRING >= WoD
 #include "Server/World.h"
@@ -274,57 +264,19 @@ void Object::setGuidLow(uint32_t low) { setGuid(low, getField<uint32_t>(ObjectFi
 uint32_t Object::getGuidHigh() const { return getField<uint32_t>(ObjectField::GuidHigh); }
 void Object::setGuidHigh(uint32_t high) { setGuid(getField<uint32_t>(ObjectField::GuidLow), high); }
 
-uint32_t Object::getOType() const
-{
-    // a uint32 field before Cata, the low half of the type field since
-    if (hasField(ObjectField::FieldTypeType))
-        return getField<uint16_t>(ObjectField::FieldTypeType);
-
-    return getField<uint32_t>(ObjectField::Type);
-}
-
-void Object::setOType(uint32_t type)
-{
-    if (hasField(ObjectField::FieldTypeType))
-    {
-        setField<uint16_t>(ObjectField::FieldTypeType, static_cast<uint16_t>(type));
-        return;
-    }
-
-    setField<uint32_t>(ObjectField::Type, type);
-}
-
 void Object::setObjectType(uint8_t objectTypeId)
 {
-    uint16_t object_type = TYPE_OBJECT;
-    switch (objectTypeId)
-    {
-    case TYPEID_CONTAINER:
-        object_type |= TYPE_CONTAINER;
-    case TYPEID_ITEM:
-        object_type |= TYPE_ITEM;
-        break;
-    case TYPEID_PLAYER:
-        object_type |= TYPE_PLAYER;
-    case TYPEID_UNIT:
-        object_type |= TYPE_UNIT;
-        break;
-    case TYPEID_GAMEOBJECT:
-        object_type |= TYPE_GAMEOBJECT;
-        break;
-    case TYPEID_DYNAMICOBJECT:
-        object_type |= TYPE_DYNAMICOBJECT;
-        break;
-    case TYPEID_CORPSE:
-        object_type |= TYPE_CORPSE;
-        break;
-    default:
-        break;
-    }
-
-    m_objectType = object_type;
     m_objectTypeId = objectTypeId;
-    setOType(m_objectType);
+    m_objectType = getTypeMaskForTypeId(objectTypeId);
+
+    if (hasField(ObjectField::FieldTypeType))
+    {
+        setField<uint16_t>(ObjectField::FieldTypeType, m_objectType);
+    }
+    else if (hasField(ObjectField::Type))
+    {
+        setField<uint32_t>(ObjectField::Type, m_objectType);
+    }
 }
 
 uint32_t Object::getEntry() const { return getField<uint32_t>(ObjectField::Entry); }
@@ -367,23 +319,17 @@ void Object::updateObject()
 
 uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
-    if (m_wowGuid.getNewGuidLen() <= 0)
-        return 0;
-
-    if (target == nullptr)
+    if (m_wowGuid.getNewGuidLen() <= 0 || target == nullptr)
         return 0;
 
     uint8_t updateType = UPDATETYPE_CREATE_OBJECT;
-#if VERSION_STRING <= TBC
-    uint8_t updateFlags = static_cast<uint8_t>(m_updateFlag);
-#endif
-
-#if VERSION_STRING >= WotLK
     uint16_t updateFlags = m_updateFlag;
-#endif
 
     if (target == this)
         updateFlags |= UPDATEFLAG_SELF;
+
+    if ((updateFlags & UPDATEFLAG_LIVING) == 0 && !obj_movement_info.transport_guid.isEmpty())
+        updateFlags |= UPDATEFLAG_HAS_POSITION;
 
     switch (m_objectTypeId)
     {
@@ -391,64 +337,57 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
         case TYPEID_DYNAMICOBJECT:
         case TYPEID_CORPSE:
         case TYPEID_AREATRIGGER:
-        {
-            updateType = UPDATETYPE_CREATE_OBJECT2;
-        } break;
+        case TYPEID_SCENEOBJECT:
+        case TYPEID_CONVERSATION:
+            {
+                updateType = UPDATETYPE_CREATE_OBJECT2;
+            } break;
         case TYPEID_UNIT:
-        {
-            ///\ todo: vehicles?
-            if (isPet())
             {
-                updateType = UPDATETYPE_CREATE_OBJECT2;
-            }
-            else if (isSummon())
-            {
-                // Only player summons
-                const auto summoner = getWorldMapPlayer(static_cast<Summon*>(this)->getSummonedByGuid());
-                if (summoner != nullptr)
+                // TODO: vehicles?
+                if (isPet())
+                {
                     updateType = UPDATETYPE_CREATE_OBJECT2;
-            }
-        } break;
+                }
+                else if (isSummon())
+                {
+                    // Only player summons
+                    const auto summoner = getWorldMapPlayer(static_cast<Summon*>(this)->getSummonedByGuid());
+                    if (summoner != nullptr)
+                        updateType = UPDATETYPE_CREATE_OBJECT2;
+                }
+            } break;
         case TYPEID_GAMEOBJECT:
-        {
-            // Only player gameobjects
-            if (static_cast<GameObject*>(this)->getPlayerOwner() != nullptr)
-                updateType = UPDATETYPE_CREATE_OBJECT2;
-        } break;
+            {
+                const auto* gameObj = static_cast<GameObject*>(this);
+
+                if (gameObj->getPlayerOwner() != nullptr)
+                {
+                    updateType = UPDATETYPE_CREATE_OBJECT2;
+                }
+
+                if (updateFlags & UPDATEFLAG_HAS_POSITION)
+                {
+                    switch (gameObj->getGoType())
+                    {
+                        case GAMEOBJECT_TYPE_TRAP:
+                        case GAMEOBJECT_TYPE_DUEL_ARBITER:
+                        case GAMEOBJECT_TYPE_FLAGSTAND:
+                        case GAMEOBJECT_TYPE_FLAGDROP:
+                            updateType = UPDATETYPE_CREATE_OBJECT2;
+                            break;
+                        case GAMEOBJECT_TYPE_TRANSPORT:
+                        case GAMEOBJECT_TYPE_MO_TRANSPORT:
+                            updateFlags |= UPDATEFLAG_TRANSPORT;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                break;
+            }
         default:
             break;
-    }
-
-    if (!(updateFlags & UPDATEFLAG_LIVING))
-    {
-        if (!obj_movement_info.transport_guid.isEmpty())
-            updateFlags |= UPDATEFLAG_HAS_POSITION;
-    }
-
-    if (updateFlags & UPDATEFLAG_HAS_POSITION)
-    {
-        if (isGameObject())
-        {
-            const auto gameObj = static_cast<GameObject*>(this);
-            switch (gameObj->getGoType())
-            {
-                case GAMEOBJECT_TYPE_TRAP:
-                case GAMEOBJECT_TYPE_DUEL_ARBITER:
-                case GAMEOBJECT_TYPE_FLAGSTAND:
-                case GAMEOBJECT_TYPE_FLAGDROP:
-                    updateType = UPDATETYPE_CREATE_OBJECT2;
-                    break;
-                case GAMEOBJECT_TYPE_TRANSPORT:
-                case GAMEOBJECT_TYPE_MO_TRANSPORT:
-                    updateFlags |= UPDATEFLAG_TRANSPORT;
-                    break;
-                default:
-                    // Set update type for other gameobjects only if it's created by a player
-                    if (gameObj->getPlayerOwner() != nullptr)
-                        updateType = UPDATETYPE_CREATE_OBJECT2;
-                    break;
-            }
-        }
     }
 
 #ifdef FT_VEHICLES
@@ -463,7 +402,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
     }
 
     // build our actual update
-    *data << uint8_t(updateType);
+    *data << getWireUpdateType(updateType);
 #if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
     *data << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, target->GetMapId());
     *data << ObjectUpdateUF::wireObjectTypeId(this, target);
@@ -536,18 +475,6 @@ void Object::forceBuildUpdateValueForFields(uint32_t const* fields, Player* targ
     BuildValuesUpdateBlockForPlayer(&buffer, target);
     target->getUpdateMgr().pushUpdateData(&buffer, 1);
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Object Type Id
-uint8_t Object::getObjectTypeId() const { return m_objectTypeId; }
-
-bool Object::isCreatureOrPlayer() const { return (getObjectTypeId() == TYPEID_UNIT || getObjectTypeId() == TYPEID_PLAYER); }
-bool Object::isPlayer() const { return getObjectTypeId() == TYPEID_PLAYER; }
-bool Object::isCreature() const { return getObjectTypeId() == TYPEID_UNIT; }
-bool Object::isItem() const { return getObjectTypeId() == TYPEID_ITEM; }
-bool Object::isGameObject() const { return getObjectTypeId() == TYPEID_GAMEOBJECT; }
-bool Object::isCorpse() const { return getObjectTypeId() == TYPEID_CORPSE; }
-bool Object::isContainer() const { return getObjectTypeId() == TYPEID_CONTAINER; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Position functions
@@ -2541,7 +2468,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, [[maybe_
         }
     }
 
-    if (updateFlags & UPDATEFLAG_LOWGUID)    //0x10
+    if (updateFlags & UPDATEFLAG_LOWGUID) //0x10
     {
         switch (getOType())
         {
@@ -3846,25 +3773,26 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
 void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask* updateMask, Player* target)
 {
-    if (!updateMask)
+    if (updateMask == nullptr)
     {
         sLogger.failure("Object::buildValuesUpdate invalid updateMask (nullptr)");
         return;
     }
 
+    const bool isCreate = (updateType == UPDATETYPE_CREATE_OBJECT || updateType == UPDATETYPE_CREATE_OBJECT2);
+
     if (isGameObject() && !isTransporter())
     {
         updateMask->SetBit(Version::gameObjectDynamicFlagsIndex());
 
-        if (updateType != UPDATETYPE_CREATE_OBJECT && updateType != UPDATETYPE_CREATE_OBJECT2)
+        if (!isCreate)
         {
-#if VERSION_STRING < WotLK
-            updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::AnimationProgress));
-#elif VERSION_STRING < Mop
-            updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Bytes1AnimationProgress));
-#else
-            updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Bytes2AnimationProgress));
-#endif
+            if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+                updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::AnimationProgress));
+            else if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+                updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Bytes1AnimationProgress));
+            else
+                updateMask->SetBit(Version::layouts().gameObject.index(GameObjectField::Bytes2AnimationProgress));
         }
     }
 
@@ -3873,9 +3801,6 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
         sLogger.failure("Object::buildValuesUpdate values count in update mask is not equal to object values count!");
         return;
     }
-
-    uint32_t block_count, values_count;
-    const bool isCreate = (updateType == UPDATETYPE_CREATE_OBJECT || updateType == UPDATETYPE_CREATE_OBJECT2);
 
 #if VERSION_STRING >= WoD
     // guid fields: the 64 bit guid of the server becomes the 128 bit guid of the client, four values per field
@@ -3916,6 +3841,9 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
     }
 #endif
 
+    uint32_t block_count = 0;
+    uint32_t values_count = 0;
+
     if (m_valuesCount > 2 * 0x20 && !isCreate)
     {
         block_count = updateMask->GetUpdateBlockCount();
@@ -3930,220 +3858,220 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
     *data << uint8_t(block_count);
     data->append(updateMask->GetMask(), block_count * 4);
 
+    // Resolve type pointers and field indices once outside the hot loop
+    auto* const creature = (target != nullptr && isCreature()) ? dynamic_cast<Creature*>(this) : nullptr;
+    auto* const gameobject = (target != nullptr && isGameObject()) ? static_cast<GameObject*>(this) : nullptr;
+    auto* const corpse = (target != nullptr && isCorpse()) ? static_cast<Corpse*>(this) : nullptr;
+
+    const uint32_t unitFlagsIdx = creature ? Version::layouts().unit.index(UnitField::UnitFlags) : 0;
+    const uint32_t displayIdIdx = creature ? Version::layouts().unit.index(UnitField::DisplayId) : 0;
+    const uint32_t unitDynFlagsIdx = creature ? Version::unitDynamicFlagsIndex() : 0;
+    const uint32_t goDynFlagsIdx = gameobject ? Version::gameObjectDynamicFlagsIndex() : 0;
+    const uint32_t corpseDynFlagsIdx = corpse ? Version::layouts().corpse.index(CorpseField::DynamicFlags) : 0;
+    const bool isMopOrNewer = WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop);
+
     for (uint32_t idx = 0; idx < values_count; ++idx)
     {
-        if (updateMask->GetBit(idx))
-        {
-            // Some data must be altered because it has to be different to each player
-            auto bitValue = m_uint32Values[idx];
+        if (!updateMask->GetBit(idx))
+            continue;
+
+        // Some data must be altered because it has to be different to each player
+        auto bitValue = m_uint32Values[idx];
 
 #if VERSION_STRING >= WoD
-            if (const auto guidValue = guidValues.find(idx); guidValue != guidValues.end())
-                bitValue = guidValue->second;
+        if (const auto guidValue = guidValues.find(idx); guidValue != guidValues.end())
+            bitValue = guidValue->second;
 #endif
 
-            if (target != nullptr)
+        if (creature != nullptr)
+        {
+            if (idx == unitFlagsIdx)
             {
-                if (isCreature())
+                // Remove not selectable flag if GM mode is activated
+                if (target->isGMFlagSet())
+                    bitValue &= ~UNIT_FLAG_NOT_SELECTABLE;
+            }
+            else if (idx == displayIdIdx)
+            {
+                // Trigger npcs
+                if (creature->GetCreatureProperties()->isTriggerNpc && target->isGMFlagSet())
                 {
-                    auto* const creature = dynamic_cast<Creature*>(this);
-
-                    if (idx == Version::layouts().unit.index(UnitField::UnitFlags))
-                    {
-                        // Remove not selectable flag if GM mode is activated
-                        if (target->isGMFlagSet())
-                            bitValue &= ~UNIT_FLAG_NOT_SELECTABLE;
-                    }
-                    else if (idx == Version::layouts().unit.index(UnitField::DisplayId))
-                    {
-                        // Trigger npcs
-                        if (creature->GetCreatureProperties()->isTriggerNpc)
-                        {
-                            if (target->isGMFlagSet())
-                                bitValue = creature->GetCreatureProperties()->getVisibleModelForTriggerNpc();
-                        }
-                    }
-                    else if (idx == Version::unitDynamicFlagsIndex())
-                    {
-#if VERSION_STRING >= Mop
-                        // On Mop, U_DYN_FLAG_LOOTABLE is a persistent flag (set once on
-                        // Creature::die() when the kill produced loot, cleared once by the
-                        // loot-release handler once everything is taken - see Creature::die()
-                        // and handleLootReleaseOpcode in LootHandler.cpp) instead of something
-                        // re-derived on every broadcast. Stripping and re-adding it here from
-                        // HasLootForPlayer()/loot.isLooted() fights that persistent state: as
-                        // soon as one recompute call finds no unlooted content left for THIS
-                        // viewer (e.g. gold already collected by another group member), it wipes
-                        // the bit for every viewer and the Mop client falls back to attacking the
-                        // corpse instead of looting it. Only the tag/tap bits are viewer-relative
-                        // and need recomputing here.
-                        auto dynamicFlags = bitValue & ~(U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_TAPPED_BY_PLAYER);
-#else
-                        auto dynamicFlags = bitValue & ~(U_DYN_FLAG_LOOTABLE | U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_TAPPED_BY_PLAYER);
-#endif
-
-                        // Tagging
-                        if (creature->getTaggerGuid())
-                        {
-                            dynamicFlags |= U_DYN_FLAG_TAGGED_BY_OTHER;
-
-                            if (creature->isTaggedByPlayerOrItsGroup(target))
-                                dynamicFlags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
-                        }
-
-#if VERSION_STRING < Mop
-                        // Loot
-                        if (!creature->loot.isLooted() && creature->HasLootForPlayer(target))
-                            dynamicFlags |= U_DYN_FLAG_LOOTABLE;
-#endif
-
-                        bitValue = dynamicFlags;
-                    }
+                    bitValue = creature->GetCreatureProperties()->getVisibleModelForTriggerNpc();
                 }
-                else if (isGameObject())
+            }
+            else if (idx == unitDynFlagsIdx)
+            {
+                // On Mop, U_DYN_FLAG_LOOTABLE is a persistent flag (set once on
+                // Creature::die() when the kill produced loot, cleared once by the
+                // loot-release handler once everything is taken - see Creature::die()
+                // and handleLootReleaseOpcode in LootHandler.cpp) instead of something
+                // re-derived on every broadcast. Stripping and re-adding it here from
+                // HasLootForPlayer()/loot.isLooted() fights that persistent state: as
+                // soon as one recompute call finds no unlooted content left for THIS
+                // viewer (e.g. gold already collected by another group member), it wipes
+                // the bit for every viewer and the Mop client falls back to attacking the
+                // corpse instead of looting it. Only the tag/tap bits are viewer-relative
+                // and need recomputing here.
+                const uint32_t clearMask = isMopOrNewer
+                                               ? (U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_TAPPED_BY_PLAYER)
+                                               : (U_DYN_FLAG_LOOTABLE | U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_TAPPED_BY_PLAYER);
+
+                auto dynamicFlags = bitValue & ~clearMask;
+
+                // Tagging
+                if (creature->getTaggerGuid())
                 {
-                    auto* const gameobject = dynamic_cast<GameObject*>(this);
+                    dynamicFlags |= U_DYN_FLAG_TAGGED_BY_OTHER;
 
-                    if (idx == Version::gameObjectDynamicFlagsIndex())
+                    if (creature->isTaggedByPlayerOrItsGroup(target))
+                        dynamicFlags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
+                }
+
+                if (!isMopOrNewer && !creature->loot.isLooted() && creature->HasLootForPlayer(target))
+                    dynamicFlags |= U_DYN_FLAG_LOOTABLE;
+
+                bitValue = dynamicFlags;
+            }
+        }
+        else if (gameobject != nullptr)
+        {
+            if (idx == goDynFlagsIdx)
+            {
+                union
+                {
+                    struct
                     {
-                        union
+                        uint16_t dynamicFlags;
+                        int16_t pathProgress;
+                    } field_parts;
+
+                    uint32_t dynamicField;
+                };
+
+                dynamicField = bitValue;
+                field_parts.dynamicFlags &= ~(GO_DYN_FLAG_INTERACTABLE | GO_DYN_FLAG_SPARKLE);
+
+                // isTransporter() is only true for the full Transporter class
+                // (GAMEOBJECT_TYPE_MO_TRANSPORT, e.g. zeppelins/boats) - it does not
+                // recognize legacy GAMEOBJECT_TYPE_TRANSPORT elevators
+                // (GameObject_Transport), so this used to silently zero out the path
+                // progress this class of object was relying on to sync movement to
+                // clients. Checking the object type directly covers both.
+                const bool isMovingTransport = gameobject->getGoType() == GAMEOBJECT_TYPE_TRANSPORT || gameobject->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT;
+                if (!isMovingTransport)
+                    field_parts.pathProgress = 0;
+
+                const auto gobProperties = gameobject->GetGameObjectProperties();
+
+                // Loot
+                if (!gobProperties->goMap.empty() || !gobProperties->itemMap.empty())
+                {
+                    auto activeObject = false;
+                    for (const auto& questPair : gobProperties->goMap)
+                    {
+                        if (auto* const questLog = target->getQuestLogByQuestId(questPair.first->id))
                         {
-                            struct
+                            const auto quest = questLog->getQuestProperties();
+                            if (quest->count_required_mob == 0)
+                                continue;
+
+                            for (uint8_t i = 0; i < 4; ++i)
                             {
-                                uint16_t dynamicFlags;
-                                int16_t pathProgress;
-                            } field_parts;
-                            uint32_t dynamicField;
-                        };
-
-                        dynamicField = bitValue;
-                        field_parts.dynamicFlags &= ~(GO_DYN_FLAG_INTERACTABLE | GO_DYN_FLAG_SPARKLE);
-
-                        // isTransporter() is only true for the full Transporter class
-                        // (GAMEOBJECT_TYPE_MO_TRANSPORT, e.g. zeppelins/boats) - it does not
-                        // recognize legacy GAMEOBJECT_TYPE_TRANSPORT elevators
-                        // (GameObject_Transport), so this used to silently zero out the path
-                        // progress this class of object was relying on to sync movement to
-                        // clients. Checking the object type directly covers both.
-                        const bool isMovingTransport = gameobject->getGoType() == GAMEOBJECT_TYPE_TRANSPORT || gameobject->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT;
-                        if (!isMovingTransport)
-                            field_parts.pathProgress = 0;
-
-                        const auto gobProperties = gameobject->GetGameObjectProperties();
-
-                        // Loot
-                        if (!gobProperties->goMap.empty() || !gobProperties->itemMap.empty())
-                        {
-                            auto activeObject = false;
-                            for (const auto& questPair : gobProperties->goMap)
-                            {
-                                if (auto* const questLog = target->getQuestLogByQuestId(questPair.first->id))
+                                if (quest->required_mob_or_go[i] == static_cast<int32_t>(gameobject->getEntry()))
                                 {
-                                    const auto quest = questLog->getQuestProperties();
-                                    if (quest->count_required_mob == 0)
-                                        continue;
-
-                                    for (uint8_t i = 0; i < 4; ++i)
+                                    if (questLog->getMobCountByIndex(i) < quest->required_mob_or_go_count[i])
                                     {
-                                        if (quest->required_mob_or_go[i] == static_cast<int32_t>(gameobject->getEntry()))
-                                        {
-                                            if (questLog->getMobCountByIndex(i) < quest->required_mob_or_go_count[i])
-                                            {
-                                                activeObject = true;
-                                                break;
-                                            }
-                                        }
+                                        activeObject = true;
+                                        break;
                                     }
                                 }
-
-                                if (activeObject)
-                                    break;
                             }
+                        }
 
-                            if (!activeObject)
+                        if (activeObject)
+                            break;
+                    }
+
+                    if (!activeObject)
+                    {
+                        for (const auto& questItemData : gobProperties->itemMap)
+                        {
+                            for (const auto& itemPair : questItemData.second)
                             {
-                                for (const auto& questItemData : gobProperties->itemMap)
+                                auto* const questLog = target->getQuestLogByQuestId(questItemData.first->id);
+                                if (questLog == nullptr)
+                                    continue;
+
+                                if (target->getItemInterface()->GetItemCount(itemPair.first) < itemPair.second)
                                 {
-                                    for (const auto& itemPair : questItemData.second)
-                                    {
-                                        auto* const questLog = target->getQuestLogByQuestId(questItemData.first->id);
-                                        if (questLog == nullptr)
-                                            continue;
-
-                                        if (target->getItemInterface()->GetItemCount(itemPair.first) < itemPair.second)
-                                        {
-                                            activeObject = true;
-                                            break;
-                                        }
-                                    }
-
-                                    if (activeObject)
-                                        break;
+                                    activeObject = true;
+                                    break;
                                 }
                             }
 
                             if (activeObject)
-                                field_parts.dynamicFlags |= GO_DYN_FLAG_INTERACTABLE | GO_DYN_FLAG_SPARKLE;
+                                break;
                         }
+                    }
 
-                        // Interactable gameobject
-                        if (!(field_parts.dynamicFlags & GO_DYN_FLAG_INTERACTABLE))
+                    if (activeObject)
+                        field_parts.dynamicFlags |= GO_DYN_FLAG_INTERACTABLE | GO_DYN_FLAG_SPARKLE;
+                }
+
+                // Interactable gameobject
+                if (!(field_parts.dynamicFlags & GO_DYN_FLAG_INTERACTABLE))
+                {
+                    if (gameobject->isQuestGiver())
+                    {
+                        auto* const objectQuestGiver = dynamic_cast<GameObject_QuestGiver*>(this);
+                        if (objectQuestGiver->HasQuests())
                         {
-                            if (gameobject->isQuestGiver())
+                            auto activeObject = false;
+                            for (const auto& questRelation : objectQuestGiver->getQuestList())
                             {
-                                auto* const objectQuestGiver = dynamic_cast<GameObject_QuestGiver*>(this);
-                                if (objectQuestGiver->HasQuests())
+                                if (questRelation == nullptr)
+                                    continue;
+
+                                const auto questProperties = questRelation->qst;
+                                if (questProperties == nullptr)
+                                    continue;
+
+                                // Activate object if player has not started the quest but only if player is also able to start quest
+                                // or if player has the quest and object is the quest ender
+                                if ((questRelation->type & QUESTGIVER_QUEST_START && !target->hasQuestInQuestLog(questProperties->id)
+                                        && sQuestMgr.CalcQuestStatus(gameobject, target, questRelation.get()) >= QuestStatus::AvailableChat) ||
+                                    (questRelation->type & QUESTGIVER_QUEST_END && target->hasQuestInQuestLog(questProperties->id)))
                                 {
-                                    auto activeObject = false;
-                                    for (const auto& questRelation : objectQuestGiver->getQuestList())
-                                    {
-                                        if (questRelation == nullptr)
-                                            continue;
-
-                                        const auto questProperties = questRelation->qst;
-                                        if (questProperties == nullptr)
-                                            continue;
-
-                                        // Activate object if player has not started the quest but only if player is also able to start quest
-                                        // or if player has the quest and object is the quest ender
-                                        if ((questRelation->type & QUESTGIVER_QUEST_START && !target->hasQuestInQuestLog(questProperties->id)
-                                            && sQuestMgr.CalcQuestStatus(gameobject, target, questRelation.get()) >= QuestStatus::AvailableChat) ||
-                                            (questRelation->type & QUESTGIVER_QUEST_END && target->hasQuestInQuestLog(questProperties->id)))
-                                        {
-                                            activeObject = true;
-                                            break;
-                                        }
-                                    }
-
-                                    if (activeObject)
-                                        field_parts.dynamicFlags |= GO_DYN_FLAG_INTERACTABLE;
+                                    activeObject = true;
+                                    break;
                                 }
                             }
+
+                            if (activeObject)
+                                field_parts.dynamicFlags |= GO_DYN_FLAG_INTERACTABLE;
                         }
-
-                        bitValue = dynamicField;
                     }
                 }
-                else if (isCorpse())
-                {
-                    auto* const corpse = dynamic_cast<Corpse*>(this);
 
-                    if (idx == Version::layouts().corpse.index(CorpseField::DynamicFlags))
-                    {
-                        auto dynamicFlags = bitValue & ~(U_DYN_FLAG_LOOTABLE | U_DYN_FLAG_TAPPED_BY_PLAYER);
-
-                        // Loot
-                        // TODO: missing check if player is eligible to loot this corpse
-                        if (!corpse->loot.isLooted())
-                            dynamicFlags |= U_DYN_FLAG_LOOTABLE | U_DYN_FLAG_TAPPED_BY_PLAYER;
-
-                        bitValue = dynamicFlags;
-                    }
-                }
+                bitValue = dynamicField;
             }
-
-            *data << bitValue;
         }
+        else if (corpse != nullptr)
+        {
+            if (idx == corpseDynFlagsIdx)
+            {
+                auto dynamicFlags = bitValue & ~(U_DYN_FLAG_LOOTABLE | U_DYN_FLAG_TAPPED_BY_PLAYER);
+
+                // Loot
+                // TODO: missing check if player is eligible to loot this corpse
+                if (!corpse->loot.isLooted())
+                    dynamicFlags |= U_DYN_FLAG_LOOTABLE | U_DYN_FLAG_TAPPED_BY_PLAYER;
+
+                bitValue = dynamicFlags;
+            }
+        }
+
+        *data << bitValue;
     }
 
 #if VERSION_STRING >= WoD
@@ -4152,6 +4080,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
     *data << static_cast<uint8_t>(0);
 #endif
 }
+
 // MIT End
 
 bool Object::SetPosition(const LocationVector & v, [[maybe_unused]]bool allowPorting /* = false */)

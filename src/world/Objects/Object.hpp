@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Units/UnitDefines.hpp"
 #include "Map/Visibility/VisibilityTypes.hpp"
+#include "Map/Management/TerrainMgr.hpp"
 
 #include <cstring>
 #include <set>
@@ -25,6 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <atomic>
 
 #include "DamageInfo.hpp"
+#include "Data/Flags.hpp"
 
 namespace WDB::Structures
 {
@@ -75,7 +77,7 @@ enum CurrentSpellType : uint8_t
 class SERVER_DECL Object : public EventableObject
 {
 public:
-    Object();
+    Object() = default;
     virtual ~Object();
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -203,9 +205,7 @@ public:
     uint32_t getGuidHigh() const;
     void setGuidHigh(uint32_t high);
 
-    //\todo choose one function!
-    uint32_t getOType() const;
-    void setOType(uint32_t type);
+    [[nodiscard]] constexpr uint16_t getOType() const noexcept { return m_objectType; }
     void setObjectType(uint8_t objectTypeId);
 
     void setEntry(uint32_t entry);
@@ -247,24 +247,33 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Object Type Id
 protected:
-    uint8_t m_objectTypeId = TYPEID_UNIT;
+    uint8_t m_objectTypeId = TYPEID_OBJECT;
 
 public:
-    uint8_t getObjectTypeId() const;
+    [[nodiscard]] constexpr uint8_t getObjectTypeId() const noexcept { return m_objectTypeId; }
+    [[nodiscard]] constexpr bool hasObjectType(uint16_t typeMask) const noexcept { return (m_objectType & typeMask) != 0; }
 
-    bool isCreatureOrPlayer() const;
-    bool isPlayer() const;
-    bool isCreature() const;
-    bool isItem() const;
-    bool isGameObject() const;
-    bool isCorpse() const;
-    bool isContainer() const;
+    // Hierarchy checks (via bitmask)
+    [[nodiscard]] constexpr bool isCreatureOrPlayer() const noexcept { return hasObjectType(TYPE_UNIT); }
+    [[nodiscard]] constexpr bool isItemOrContainer() const noexcept { return hasObjectType(TYPE_ITEM); }
 
-    virtual bool isPet() const { return false; }
-    virtual bool isTotem() const { return false; }
-    virtual bool isSummon() const { return false; }
-    virtual bool isVehicle() const { return false; }
-    virtual bool isTransporter() const { return false; }
+    // Exact type checks (via TYPEID)
+    [[nodiscard]] constexpr bool isPlayer() const noexcept { return m_objectTypeId == TYPEID_PLAYER; }
+    [[nodiscard]] constexpr bool isCreature() const noexcept { return m_objectTypeId == TYPEID_UNIT; }
+    [[nodiscard]] constexpr bool isItem() const noexcept { return m_objectTypeId == TYPEID_ITEM; }
+    [[nodiscard]] constexpr bool isContainer() const noexcept { return m_objectTypeId == TYPEID_CONTAINER; }
+    [[nodiscard]] constexpr bool isGameObject() const noexcept { return m_objectTypeId == TYPEID_GAMEOBJECT; }
+    [[nodiscard]] constexpr bool isDynamicObject() const noexcept { return m_objectTypeId == TYPEID_DYNAMICOBJECT; }
+    [[nodiscard]] constexpr bool isCorpse() const noexcept { return m_objectTypeId == TYPEID_CORPSE; }
+    [[nodiscard]] constexpr bool isAreaTrigger() const noexcept { return m_objectTypeId == TYPEID_AREATRIGGER; }
+    [[nodiscard]] constexpr bool isSceneObject() const noexcept { return m_objectTypeId == TYPEID_SCENEOBJECT; }
+    [[nodiscard]] constexpr bool isConversation() const noexcept { return m_objectTypeId == TYPEID_CONVERSATION; }
+
+    [[nodiscard]] virtual bool isPet() const { return false; }
+    [[nodiscard]] virtual bool isTotem() const { return false; }
+    [[nodiscard]] virtual bool isSummon() const { return false; }
+    [[nodiscard]] virtual bool isVehicle() const { return false; }
+    [[nodiscard]] virtual bool isTransporter() const { return false; }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Position functions
@@ -431,11 +440,11 @@ public:
 
         ::WDB::Structures::AreaTableEntry const* GetArea() const;
 
-        void getPosition(float &x, float &y) const { x = GetPositionX(); y = GetPositionY(); }
-        void getPosition(float &x, float &y, float &z) const { getPosition(x, y); z = GetPositionZ(); }
-        void getPosition(float &x, float &y, float &z, float &o) const { getPosition(x, y, z); o = GetOrientation(); }
+        void getPosition(float& x, float& y) const { x = GetPositionX(); y = GetPositionY(); }
+        void getPosition(float& x, float& y, float& z) const { getPosition(x, y); z = GetPositionZ(); }
+        void getPosition(float& x, float& y, float& z, float& o) const { getPosition(x, y, z); o = GetOrientation(); }
         LocationVector GetPosition() const { return LocationVector(m_position); }
-        LocationVector & GetPositionNC() { return m_position; }
+        LocationVector& GetPositionNC() { return m_position; }
         LocationVector* GetPositionV() { return &m_position; }
 
         // TransporterInfo
@@ -469,6 +478,7 @@ public:
             float dy = y - GetPositionY();
             return dx * dx + dy * dy;
         }
+
         float getExactDist2dSq(LocationVector const& pos) const { return getExactDist2dSq(pos.x, pos.y); }
         float getExactDist2dSq(LocationVector const* pos) const { return getExactDist2dSq(*pos); }
 
@@ -481,6 +491,7 @@ public:
             float dz = z - GetPositionZ();
             return getExactDist2dSq(x, y) + dz * dz;
         }
+
         float getExactDistSq(LocationVector const& pos) const { return getExactDistSq(pos.x, pos.y, pos.z); }
         float getExactDistSq(LocationVector const* pos) const { return getExactDistSq(*pos); }
 
@@ -553,12 +564,12 @@ public:
             return false;
         }
 
-        // Use this to check if a object is in range of another
+        // Use this to check if an object is in range of another
         bool isInRange(Object* target, float range);
 
-        // Use this to Check if a object is in front of another object.
+        // Use this to Check if an object is in front of another object.
         bool isInFront(Object const* target) const;
-        // Use this to Check if a object is in back of another object.
+        // Use this to Check if an object is in back of another object.
         bool isInBack(Object* target);
         // Check to see if an object is in front of a target in a specified arc (in degrees)
         bool isInArc(Object* target, float degrees);
@@ -576,8 +587,8 @@ public:
             float dx = x - GetPositionX();
             float dy = y - GetPositionY();
             return LocationVector::normalizeOrientation(std::atan2(dy, dx));
-            
         }
+
         float getAbsoluteAngle(LocationVector const& pos) { return getAbsoluteAngle(pos.x, pos.y); }
         float getAbsoluteAngle(Object const* obj) { return getAbsoluteAngle(obj->GetPosition()); }
         float getAbsoluteAngle(LocationVector const* pos) const { return getAbsoluteAngle(pos->x, pos->y); }
@@ -616,7 +627,7 @@ public:
         float getDistanceSq(Object const* obj) const
         {
             if (obj->GetMapId() != m_mapId)
-                return 40000.0f;                        // enough for out of range
+                return 40000.0f; // enough for out of range
             return m_position.distanceSquare(obj->GetPosition());
         }
 
@@ -628,7 +639,7 @@ public:
         float GetDistance2dSq(Object* obj)
         {
             if (obj->GetMapId() != m_mapId)
-                return 40000.0f;                        // enough for out of range
+                return 40000.0f; // enough for out of range
             return m_position.distance2DSq(obj->m_position);
         }
 
@@ -692,7 +703,7 @@ public:
 
         MovementInfo obj_movement_info;
 
-        uint32_t m_phase = 1;         // This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
+        uint32_t m_phase = 1; // This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 
         uint32_t GetPhase() const { return m_phase; }
         virtual void Phase(uint8_t command = PHASE_SET, uint32_t newphase = 1);
@@ -746,14 +757,14 @@ public:
         WoWGuid m_wowGuid;
 
         // Type mask
-        uint16_t m_objectType;
+        uint16_t m_objectType = TYPE_OBJECT;
 
         //update flag
-        uint16_t m_updateFlag;
+        uint16_t m_updateFlag = UPDATEFLAG_NONE;
 
         // indoorcheck
-        bool m_outdoors;
-        ZLiquidStatus m_liquidStatus;
+        bool m_outdoors = false;
+        ZLiquidStatus m_liquidStatus = LIQUID_MAP_NO_WATER;
 
         float m_staticFloorZ = -100000.0f;
 
@@ -774,7 +785,7 @@ public:
 
         LocationVector m_position = {0, 0, 0, 0};
         LocationVector m_lastMapUpdatePosition;
-        LocationVector m_spawnLocation = { 0, 0, 0, 0 };
+        LocationVector m_spawnLocation = {0, 0, 0, 0};
 
         // Number of properties
         uint16_t m_valuesCount = 0;
@@ -800,7 +811,6 @@ public:
         bool GetRandomPoint(float rad, float & outx, float & outy, float & outz);
         bool GetRandomPoint(float rad, LocationVector & out);
 
-
         //////////////////////////////////////////////////////////////////////////////////////////////////////
         // WorldObjectRegistry RAII Logic
         //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -813,6 +823,7 @@ public:
                 if (obj)
                     obj->update_pin_.fetch_add(1, std::memory_order_acq_rel);
             }
+
             ~UpdatePin()
             {
                 if (obj)
@@ -825,5 +836,5 @@ public:
         uint32_t updatePinCount() const { return update_pin_.load(std::memory_order_acquire); }
 
     private:
-        std::atomic<uint32_t> update_pin_{ 0 };
+        std::atomic<uint32_t> update_pin_{0};
 };
