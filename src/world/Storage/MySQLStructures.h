@@ -15,6 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/LocationVector.hpp"
 #include <G3D/Quat.h>
 
+#include "Objects/GameObjectDefines.hpp"
+
 // related to table areatriggers
 enum AreaTriggerType
 {
@@ -215,10 +217,10 @@ namespace MySQLStructure
         uint32_t entry = 0;
         uint32_t map = 0;
         uint32_t phase = 0;
-        LocationVector spawnPoint = {0,0,0, 0};
-        QuaternionData rotation = { 0,0,0, 0 };
+        LocationVector spawnPoint = {0, 0, 0, 0};
+        QuaternionData rotation = {0, 0, 0, 0};
         uint32_t spawntimesecs = 0;
-        GameObject_State state = GO_STATE_OPEN;
+        GameObjectState state = GO_STATE_OPEN;
         std::string origine;
         //uint32_t event_entry
     };
@@ -239,8 +241,8 @@ namespace MySQLStructure
     //quest_properties_currencies (Cata+, CurrencyTypes.dbc-driven quest currency rewards)
     struct QuestPropertiesCurrencyReward
     {
-        uint32_t reward_currency_id[4] = { 0, 0, 0, 0 };
-        uint32_t reward_currency_count[4] = { 0, 0, 0, 0 };
+        uint32_t reward_currency_id[4] = {0, 0, 0, 0};
+        uint32_t reward_currency_count[4] = {0, 0, 0, 0};
     };
 
     //currency_creature_onkill (Cata+, currency awarded on kill)

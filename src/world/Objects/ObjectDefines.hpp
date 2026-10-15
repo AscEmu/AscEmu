@@ -145,26 +145,6 @@ enum PHASECOMMANDS : uint8_t
     PHASE_RESET = 3 /// Sets the default phase of 1, same as PHASE_SET with 1 as the new value
 };
 
-enum GameObjectDynamicFlags : uint16_t
-{
-    GO_DYN_FLAG_NONE = 0x0000,
-    GO_DYN_FLAG_INTERACTABLE = 0x0001,
-    GO_DYN_FLAG_LOOTABLE = 0x0002,
-    GO_DYN_FLAG_HIGHLIGHT = 0x0004,
-    GO_DYN_FLAG_SPARKLE = 0x0008,
-    GO_DYN_FLAG_TRANSPORT_STOPPED = 0x0010,
-    GO_DYN_FLAG_INVERTED_MOVEMENT = 0x0020,
-    GO_DYN_FLAG_LOOTED = 0x0040
-};
-
-enum GameObject_State : uint8_t
-{
-    GO_STATE_OPEN = 0,
-    GO_STATE_CLOSED = 1,
-    GO_STATE_ALTERNATIVE_OPEN = 2,
-    GO_STATE_DESTROYED = 3
-};
-
 struct QuaternionData
 {
     float x = 0.0f;
@@ -182,12 +162,6 @@ struct QuaternionData
     bool isUnit() const;
     void toEulerAnglesZYX(float& z, float& y, float& x) const;
     static QuaternionData fromEulerAnglesZYX(float z, float y, float x);
-};
-
-enum GOSummonType : uint8_t
-{
-    GO_SUMMON_TIMED_OR_CORPSE_DESPAWN = 0, // Despawns after a specified time OR when the summoner dies
-    GO_SUMMON_TIMED_DESPAWN = 1 // Despawns after a specified time
 };
 
 enum CreatureSummonDespawnType : uint8_t

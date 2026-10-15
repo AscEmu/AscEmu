@@ -16,24 +16,25 @@ enum LootState : uint8_t
     GO_JUST_DEACTIVATED         = 3
 };
 
-enum GameObject_Flags
+enum GameObjectFlags : uint32_t
 {
-    GO_FLAG_NONE                = 0x000,
-    GO_FLAG_NONSELECTABLE       = 0x001,
-    GO_FLAG_LOCKED              = 0x002,
-    GO_FLAG_UNTARGETABLE        = 0x004,
-    GO_FLAG_TRANSPORT           = 0x008,
-    GO_FLAG_NOT_SELECTABLE      = 0x010,
-    GO_FLAG_NEVER_DESPAWN       = 0x020,
-    GO_FLAG_TRIGGERED           = 0x040,
-    GO_FLAG_UNK1                = 0x080,
-    GO_FLAG_UNK2                = 0x100,
-    GO_FLAG_DAMAGED             = 0x200,
-    GO_FLAG_DESTROYED           = 0x400,
-    GO_FLAG_MAP_OBJECT          = 0x100000      // 7.0 and later: the model is a wmo, not an m2
+    GO_FLAG_NONE = 0x00000000,
+    GO_FLAG_NONSELECTABLE = 0x00000001,   // Object is currently in use / animates
+    GO_FLAG_LOCKED = 0x00000002,   // Requires key, spell, or event to open
+    GO_FLAG_UNTARGETABLE = 0x00000004,   // Cannot be targeted / conditional interaction
+    GO_FLAG_TRANSPORT = 0x00000008,   // Object can transport units (elevator/boat)
+    GO_FLAG_NOT_SELECTABLE = 0x00000010,   // Not selectable at all (even for GMs without flag removal)
+    GO_FLAG_NEVER_DESPAWN = 0x00000020,   // Never despawns automatically
+    GO_FLAG_TRIGGERED = 0x00000040,   // Summoned / triggered by spell or script
+    GO_FLAG_FREEZE_ANIMATION = 0x00000080,
+    GO_FLAG_UNK1 = 0x00000080,   // Legacy alias
+    GO_FLAG_UNK2 = 0x00000100,
+    GO_FLAG_DAMAGED = 0x00000200,   // Siege damage taken
+    GO_FLAG_DESTROYED = 0x00000400,   // Siege destroyed
+    GO_FLAG_MAP_OBJECT = 0x00100000    // 7.0+: Model is a WMO rather than an M2
 };
 
-enum GameObjectDestructibleState
+enum GameObjectDestructibleState : uint8_t
 {
     GO_DESTRUCTIBLE_INTACT      = 0,
     GO_DESTRUCTIBLE_DAMAGED     = 1,
@@ -87,11 +88,56 @@ enum GameObjectTypes
     GAMEOBJECT_TYPE_BARBER_CHAIR            = 32,
     GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING   = 33,
     GAMEOBJECT_TYPE_GUILD_BANK              = 34,
-    GAMEOBJECT_TYPE_TRAPDOOR                = 35
+    GAMEOBJECT_TYPE_TRAPDOOR                = 35,
+
+    // MoP+
+    GAMEOBJECT_TYPE_NEW_FLAG = 36,
+    GAMEOBJECT_TYPE_NEW_FLAG_DROP = 37,
+
+    // WoD+
+    GAMEOBJECT_TYPE_GARRISON_BUILDING = 38,
+    GAMEOBJECT_TYPE_GARRISON_PLOT = 39,
+    GAMEOBJECT_TYPE_CLIENT_CREATURE = 40,
+    GAMEOBJECT_TYPE_CLIENT_ITEM = 41,
+    GAMEOBJECT_TYPE_CAPTURE_POINT_NEW = 42,
+    GAMEOBJECT_TYPE_PHASEABLE_MO = 43,
+    GAMEOBJECT_TYPE_GARRISON_MONUMENT = 44,
+    GAMEOBJECT_TYPE_GARRISON_SHIPMENT = 45,
+    GAMEOBJECT_TYPE_GARRISON_MONUMENT_PLAQUE = 46,
+
+    // Legion+
+    GAMEOBJECT_TYPE_ITEM_FORGE = 47,
+    GAMEOBJECT_TYPE_UI_LINK = 48,
+    GAMEOBJECT_TYPE_KEYSTONE_RECEPTACLE = 49,
+    GAMEOBJECT_TYPE_GATHERING_NODE = 50,
+    GAMEOBJECT_TYPE_CHALLENGE_MODE_REWARD = 51,
+
+    // BfA+
+    GAMEOBJECT_TYPE_MULTI = 52,
+    GAMEOBJECT_TYPE_SIEGEABLE_MULTI = 53,
+    GAMEOBJECT_TYPE_SIEGEABLE_MO = 54,
+    GAMEOBJECT_TYPE_PVP_REWARD = 55,
+
+    // Shadowlands+
+    GAMEOBJECT_TYPE_PLAYER_CHOICE_CHEST = 56,
+    GAMEOBJECT_TYPE_LEGENDARY_FORGE = 57,
+    GAMEOBJECT_TYPE_GARR_TALENT_TREE = 58,
+    GAMEOBJECT_TYPE_WEEKLY_REWARD_CHEST = 59,
+
+    // Dragonflight / TWW+
+    GAMEOBJECT_TYPE_CLIENT_MODEL = 60,
+    GAMEOBJECT_TYPE_CRAFTING_TABLE = 61,
+    GAMEOBJECT_TYPE_PERKS_PROGRAM_CHEST = 62,
+
+    // The War Within (11.x) / Midnight (12.x)
+    GAMEOBJECT_TYPE_DELVE_REWARD = 63,
+    GAMEOBJECT_TYPE_HOUSING_DECOR = 64,
+
+    MAX_GAMEOBJECT_TYPE
 };
 
 //\todo check this enum - do we (ae) really handle this stuff this way?
-enum GameObjectOverrides
+enum GameObjectOverrides : uint32_t
 {
     GAMEOBJECT_NORMAL_DISTANCE = 0x00,
     GAMEOBJECT_INFVIS = 0x01,                   // Makes the gameobject forever visible on the map after you saw it at least once - for various transports; actually it just doesn't erase it while you're on the same map.
@@ -104,10 +150,37 @@ enum GameObjectOverrides
     // Later other types might folow, or the upper bytes might get used for the AREAWIDE option in the overrides variable...
 };
 
-enum GameObjectBytes
+enum GameObjectBytes : uint8_t
 {
     GAMEOBJECT_BYTES_STATE          = 0,
     GAMEOBJECT_BYTES_TYPE_ID        = 1,
-    GAMEOBJECT_BYTES_UNK            = 2,        //\todo unknown atm
+    GAMEOBJECT_BYTES_ARTKIT         = 2, // Visual artkit (or destructible health percent in MoP+)
+    GAMEOBJECT_BYTES_UNK            = 2, // Legacy alias
     GAMEOBJECT_BYTES_ANIMPROGRESS   = 3,
+};
+
+enum GameObjectState : uint8_t
+{
+    GO_STATE_OPEN = 0,
+    GO_STATE_CLOSED = 1,
+    GO_STATE_ALTERNATIVE_OPEN = 2,
+    GO_STATE_DESTROYED = 3
+};
+
+enum GameObjectSummonType : uint8_t
+{
+    GO_SUMMON_TIMED_OR_CORPSE_DESPAWN = 0, // Despawns after a specified time OR when the summoner dies
+    GO_SUMMON_TIMED_DESPAWN = 1 // Despawns after a specified time
+};
+
+enum GameObjectDynamicFlags : uint16_t
+{
+    GO_DYN_FLAG_NONE = 0x0000,
+    GO_DYN_FLAG_INTERACTABLE = 0x0001,
+    GO_DYN_FLAG_LOOTABLE = 0x0002,
+    GO_DYN_FLAG_HIGHLIGHT = 0x0004,
+    GO_DYN_FLAG_SPARKLE = 0x0008,
+    GO_DYN_FLAG_TRANSPORT_STOPPED = 0x0010,
+    GO_DYN_FLAG_INVERTED_MOVEMENT = 0x0020,
+    GO_DYN_FLAG_LOOTED = 0x0040
 };
