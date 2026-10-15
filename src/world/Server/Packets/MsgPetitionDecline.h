@@ -31,12 +31,26 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // the 6.x and later clients do not handle a decline
+                return false;
+            }
+
             packet << playerGuid;
             return true;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                WoWGuid128 item;
+                packet >> item;
+                itemGuid = WoWGuid::fromGuid128(item).getRawGuid();
+                return true;
+            }
+
             packet >> itemGuid;
             return true;
         }

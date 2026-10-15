@@ -32,6 +32,18 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                WoWGuid128 guildGuid;
+                packet >> guildGuid;
+                WoWGuid128 clientPlayerGuid;
+                packet >> clientPlayerGuid;
+                guildId64 = WoWGuid::fromGuid128(guildGuid).getRawGuid();
+                guildId = WoWGuid::fromGuid128(guildGuid).getLowGuid();
+                playerGuid = WoWGuid::fromGuid128(clientPlayerGuid).getRawGuid();
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
                 packet >> guildId;

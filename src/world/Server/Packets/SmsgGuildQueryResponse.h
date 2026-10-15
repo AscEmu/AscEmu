@@ -24,6 +24,9 @@ namespace AscEmu::Packets
         std::vector<uint32_t> rankIds;
         EmblemInfo emblemInfo;
 
+        // 8.x: the asking player is part of the answer
+        uint64_t playerGuid = 0;
+
         SmsgGuildQueryResponse() : SmsgGuildQueryResponse(0, 0, "", {}, {}, EmblemInfo{})
         {
         }
@@ -40,6 +43,52 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // guild (8.x: and player), the guild with realm, ranks and emblem; 7.x to 11.x put the name length in
+                // front of the ranks
+                const WoWGuid128 guildGuid = WoWGuid(guid).toGuid128(m_protocol.realmId, 0);
+                const bool nameLengthFirst = !m_protocol.isWoD() && !m_protocol.isMidnight();
+
+                packet << guildGuid;
+                if (m_protocol.isBfA())
+                    packet << WoWGuid(playerGuid).toGuid128(m_protocol.realmId, 0);
+                packet.writeBit(true);                                  // has info
+                packet.flushBits();
+
+                packet << guildGuid;
+                packet << uint32_t(m_protocol.getVirtualRealmAddress());
+                packet << uint32_t(rankIds.size());
+                packet << uint32_t(emblemInfo.getStyle());
+                packet << uint32_t(emblemInfo.getColor());
+                packet << uint32_t(emblemInfo.getBorderStyle());
+                packet << uint32_t(emblemInfo.getBorderColor());
+                packet << uint32_t(emblemInfo.getBackgroundColor());
+
+                if (nameLengthFirst)
+                {
+                    packet.writeBits(static_cast<uint32_t>(name.length()), 7);
+                    packet.flushBits();
+                }
+
+                for (size_t i = 0; i < rankIds.size(); ++i)
+                {
+                    packet << uint32_t(rankIds[i]);
+                    packet << uint32_t(i);                              // rank order
+                    packet.writeBits(static_cast<uint32_t>(rankNames[i].length()), 7);
+                    packet.flushBits();
+                    packet.writeString(rankNames[i]);
+                }
+
+                if (!nameLengthFirst)
+                {
+                    packet.writeBits(static_cast<uint32_t>(name.length()), 7);
+                    packet.flushBits();
+                }
+                packet.writeString(name);
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet << uint32_t(id);

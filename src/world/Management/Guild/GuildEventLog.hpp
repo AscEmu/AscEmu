@@ -18,6 +18,11 @@ public:
     void saveGuildLogToDB() const;
     void writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const;
 
+    GuildEventLogTypes getEventType() const { return mEventType; }
+    uint32_t getPlayerGuid1() const { return mPlayerGuid1; }
+    uint32_t getPlayerGuid2() const { return mPlayerGuid2; }
+    uint8_t getNewRank() const { return mNewRank; }
+
 private:
     GuildEventLogTypes mEventType;
     uint32_t mPlayerGuid1;

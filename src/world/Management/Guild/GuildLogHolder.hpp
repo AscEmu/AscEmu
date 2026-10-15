@@ -22,6 +22,7 @@ public:
     void writeLogHolderPacket(WorldPacket& data) const;
     uint32_t getNextGUID();
     GuildLog* getGuildLog();
+    GuildLog const& getLog() const { return mLog; }
 
 private:
     GuildLog mLog;

@@ -1448,6 +1448,7 @@ namespace Version::Tables
         { SMSG_SERVER_TIME_OFFSET, 0x2713 },
         { CMSG_SOCIAL_CONTRACT_REQUEST, 0x3741 },
         { SMSG_SOCIAL_CONTRACT_REQUEST_RESPONSE, 0x2892 },
+        { SMSG_NPC_INTERACTION_OPEN_RESULT, 0x2888 },
     };
 
     const OpcodeSource dragonflightOpcodes{ dragonflightOpcodeEntries, std::size(dragonflightOpcodeEntries) };

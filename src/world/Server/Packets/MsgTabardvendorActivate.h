@@ -30,6 +30,24 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 10.x and later open the guild tabard window through the interaction result
+                if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+                {
+                    packet.setOpcode(SMSG_NPC_INTERACTION_OPEN_RESULT);
+                    packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                    packet << int32_t(14);                              // interaction: guild tabard vendor
+                    packet.writeBit(true);                              // success
+                    packet.flushBits();
+                    return true;
+                }
+
+                packet.setOpcode(SMSG_PLAYER_TABARD_VENDOR_ACTIVATE);
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << guid.getRawGuid();
@@ -60,6 +78,16 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                WoWGuid128 vendor;
+                packet >> vendor;
+                guid = WoWGuid::fromGuid128(vendor);
+                if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+                    packet.readSkip<int32_t>();     // vendor type: guild or personal tabard
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 uint64_t unpackedGuid;

@@ -28,6 +28,18 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 9.x and later: an optional value behind the name
+                packet.resetBitPos();
+                const uint32_t length = packet.readBits(9);
+                const bool hasExtra = (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater()) && packet.readBit();
+                name = packet.readString(length);
+                if (hasExtra)
+                    packet.readSkip<int32_t>();
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
                 packet >> name;

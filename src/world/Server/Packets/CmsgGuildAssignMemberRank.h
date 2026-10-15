@@ -41,6 +41,15 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                WoWGuid128 member;
+                packet >> member;
+                targetGuid = WoWGuid::fromGuid128(member);
+                packet >> rankId;                   // rank order
+                return true;
+            }
+
             if (m_protocol.isCata())
             {
                 packet >> rankId;

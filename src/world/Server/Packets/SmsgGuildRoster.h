@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include <ctime>
 #include "Macros/GuildMacros.hpp"
 #include "Server/Definitions.h"
 #include <array>
@@ -44,6 +45,9 @@ namespace AscEmu::Packets
         uint32_t achievementPoints = 0;
         uint64_t totalActivity = 0;
         uint32_t weekReputationRemaining = 0;
+        // 6.x and later
+        uint8_t gender = 0;
+        uint8_t race = 0;
     };
 
     class SmsgGuildRoster : public ManagedPacket
@@ -78,6 +82,95 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // accounts, creation, flags, the members with their notes, the texts; the text lengths stand in front
+                // of the members from 7.x to 11.x
+                const bool isWoD = m_protocol.isWoD();
+                const bool isMidnight = m_protocol.isMidnight();
+                const bool withClubMember = m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater();
+                const bool textLengthFirst = !isWoD && !isMidnight;
+                // 6.x: both texts with 10 bits, 7.x: the info text with 11 bits, 8.x and later: both with 11 bits
+                const uint32_t motdBits = isWoD || m_protocol.isLegion() ? 10 : 11;
+                const uint32_t infoBits = isWoD ? 10 : 11;
+                const std::time_t now = ::time(nullptr);
+
+                const auto writeTextLengths = [&]()
+                {
+                    packet.writeBits(static_cast<uint32_t>(motd.length()), motdBits);
+                    packet.writeBits(static_cast<uint32_t>(info.length()), infoBits);
+                    packet.flushBits();
+                };
+
+                packet << int32_t(accountsNumber);
+                packet.appendPackedTime(createdDate);
+                packet << int32_t(0);                                   // guild flags
+                packet << uint32_t(members.size());
+                if (textLengthFirst)
+                    writeTextLengths();
+
+                for (const auto& member : members)
+                {
+                    const std::string officerNote = canSeeOfficerNote ? member.officerNote : std::string();
+                    const float daysSinceLogout = member.isOnline || member.logoutTime == 0 ? 0.0f : static_cast<float>(now - static_cast<std::time_t>(member.logoutTime)) / 86400.0f;
+
+                    packet << WoWGuid(member.guid).toGuid128(m_protocol.realmId, 0);
+                    packet << int32_t(member.rankId);
+                    packet << int32_t(member.zoneId);
+                    packet << int32_t(member.achievementPoints);
+                    packet << int32_t(member.totalReputation);
+                    packet << float(daysSinceLogout);
+                    for (uint8_t i = 0; i < 2; ++i)
+                    {
+                        packet << int32_t(0);                           // profession
+                        packet << int32_t(0);                           // rank
+                        packet << int32_t(0);                           // step
+                    }
+                    packet << uint32_t(m_protocol.getVirtualRealmAddress());
+                    packet << uint8_t(member.flags);
+                    packet << uint8_t(member.level);
+                    packet << uint8_t(member.classId);
+                    packet << uint8_t(member.gender);
+
+                    // 12.x: the dungeon score before the club member
+                    if (isMidnight)
+                    {
+                        packet << float(0.0f) << float(0.0f) << uint32_t(0);
+                    }
+                    if (withClubMember)
+                    {
+                        packet << uint64_t(uint64_t(WoWGuid::getLowGuidFromRaw(member.guid)) | (uint64_t(m_protocol.realmId & 0xFFF) << 48));
+                        packet << uint8_t(member.race);
+                    }
+                    if (m_protocol.isTheWarWithinOrLater())
+                        packet << int32_t(0);                           // timerunning season
+
+                    packet.writeBits(static_cast<uint32_t>(member.name.length()), 6);
+                    packet.writeBits(static_cast<uint32_t>(member.publicNote.length()), 8);
+                    packet.writeBits(static_cast<uint32_t>(officerNote.length()), 8);
+                    packet.writeBit(false);                             // authenticated
+                    if (!m_protocol.isTheWarWithinOrLater())
+                        packet.writeBit(false);                         // scroll of resurrection eligible
+                    packet.flushBits();
+
+                    // 9.x to 11.x: the dungeon score behind the bits
+                    if (withClubMember && !isMidnight)
+                    {
+                        packet << float(0.0f) << float(0.0f) << uint32_t(0);
+                    }
+
+                    packet.writeString(member.name);
+                    packet.writeString(member.publicNote);
+                    packet.writeString(officerNote);
+                }
+
+                if (!textLengthFirst)
+                    writeTextLengths();
+                packet.writeString(motd);
+                packet.writeString(info);
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet << uint32_t(members.size());

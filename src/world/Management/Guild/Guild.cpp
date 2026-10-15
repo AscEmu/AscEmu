@@ -318,6 +318,11 @@ void Guild::handleRoster(WorldSession* session)
         memberData.achievementPoints = member->getAchievementPoints();
         memberData.totalActivity = member->getTotalActivity();
         memberData.weekReputationRemaining = worldConfig.guild.maxRepPerWeek - member->getWeekReputation();
+        if (const auto characterInfo = sObjectMgr.getCachedCharacterInfo(WoWGuid::getLowGuidFromRaw(member->getGUID())))
+        {
+            memberData.gender = characterInfo->gender;
+            memberData.race = characterInfo->race;
+        }
 
         members.push_back(memberData);
     }
@@ -350,6 +355,8 @@ void Guild::handleQuery(WorldSession* session)
     }
 
     SmsgGuildQueryResponse managedPacket(getGUID(), m_id, m_name, rankNames, rankIds, m_emblemInfo);
+    if (session->GetPlayer() != nullptr)
+        managedPacket.playerGuid = session->GetPlayer()->getGuid();
     session->sendManagedPacket(managedPacket);
 
     //sLogger.debugOpcode("SMSG_GUILD_QUERY_RESPONSE {}", session->GetPlayer()->getName());

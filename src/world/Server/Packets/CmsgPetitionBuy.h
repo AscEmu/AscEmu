@@ -31,6 +31,20 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 6.x and later sell guild charters only; 9.x and later carry a value behind the unit
+                packet.resetBitPos();
+                const uint32_t length = packet.readBits(7);
+                WoWGuid128 unit;
+                packet >> unit;
+                creatureGuid = WoWGuid::fromGuid128(unit);
+                if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+                    packet.readSkip<uint32_t>();
+                name = packet.readString(length);
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 uint64_t unpackedGuid;

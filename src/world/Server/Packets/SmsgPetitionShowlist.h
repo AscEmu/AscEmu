@@ -36,6 +36,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 6.x and later sell guild charters only: the unit and the price
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << uint32_t(worldConfig.guild.charterCost);
+                return true;
+            }
+
             packet << guid.getRawGuid();
 
 

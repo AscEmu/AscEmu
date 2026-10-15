@@ -35,6 +35,25 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // result, command (11.x and later as bytes), name
+                if (m_protocol.isTheWarWithinOrLater())
+                {
+                    packet << uint8_t(error);
+                    packet << uint8_t(command);
+                }
+                else
+                {
+                    packet << int32_t(error);
+                    packet << int32_t(command);
+                }
+                packet.writeBits(static_cast<uint32_t>(message.length()), 8);
+                packet.flushBits();
+                packet.writeString(message);
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << command << message << error;

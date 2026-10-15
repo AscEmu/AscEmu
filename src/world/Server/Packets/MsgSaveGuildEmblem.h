@@ -36,6 +36,13 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                packet.setOpcode(SMSG_PLAYER_SAVE_GUILD_EMBLEM);
+                packet << int32_t(error);
+                return true;
+            }
+
             if (m_protocol.expansion >= WoW::Expansion::_Classic)
             {
                 packet << error;
@@ -47,6 +54,15 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                WoWGuid128 vendor;
+                packet >> vendor;
+                guid = WoWGuid::fromGuid128(vendor);
+                emblemInfo.readEmblemInfoFromPacket(packet);
+                return true;
+            }
+
             if (m_protocol.expansion >= WoW::Expansion::_Classic)
             {
                 uint64_t unpackedGuid;

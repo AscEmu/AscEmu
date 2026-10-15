@@ -49,6 +49,19 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                WoWGuid128 member;
+                packet >> member;
+                guid = WoWGuid::fromGuid128(member);
+
+                packet.resetBitPos();
+                const uint32_t length = packet.readBits(8);
+                isPublic = packet.readBit();
+                note = packet.readString(length);
+                return true;
+            }
+
             if (m_protocol.isCata())
             {
                 guid[1] = packet.readBit();

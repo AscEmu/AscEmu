@@ -2568,5 +2568,6 @@ namespace Version::Tables
         { "CMSG_MESSAGE_WHISPER", OpcodeDevelopmentState::Unchecked },
         { "SMSG_ACCOUNT_ITEM_COLLECTION_DATA", OpcodeDevelopmentState::Okay },
         { "SMSG_BATTLE_NET_CONNECTION_STATUS", OpcodeDevelopmentState::Okay },
+        { "SMSG_NPC_INTERACTION_OPEN_RESULT", OpcodeDevelopmentState::Okay },
     };
 }

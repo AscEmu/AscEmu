@@ -40,6 +40,32 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // rank, gold limit and rights (8.x, 10.x and later: rights first), purchased tabs, the eight tabs
+                const bool rightsFirst = m_protocol.isBfA() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater();
+
+                packet << uint32_t(rankId);
+                if (rightsFirst)
+                {
+                    packet << int32_t(rankRights);
+                    packet << int32_t(remainingMoney);
+                }
+                else
+                {
+                    packet << int32_t(remainingMoney);
+                    packet << int32_t(rankRights);
+                }
+                packet << int32_t(purchasedTabsSize);
+                packet << uint32_t(8);
+                for (size_t i = 0; i < 8; ++i)
+                {
+                    packet << int32_t(i < tabs.size() ? tabs[i].first : 0);
+                    packet << int32_t(i < tabs.size() ? tabs[i].second : 0);
+                }
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 return false;

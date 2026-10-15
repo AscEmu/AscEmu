@@ -1425,6 +1425,7 @@ namespace Version::Tables
         { CMSG_MESSAGE_WHISPER, 0x440011 },
         { SMSG_ACCOUNT_ITEM_COLLECTION_DATA, 0x450360 },
         { SMSG_BATTLE_NET_CONNECTION_STATUS, 0x4502B1 },
+        { SMSG_NPC_INTERACTION_OPEN_RESULT, 0x45031A },
     };
 
     const OpcodeSource midnightOpcodes{ midnightOpcodeEntries, std::size(midnightOpcodeEntries) };

@@ -32,12 +32,32 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                packet.setOpcode(SMSG_PETITION_RENAME_GUILD_RESPONSE);
+                packet << WoWGuid(itemGuid).toGuid128(m_protocol.realmId, 0);
+                packet.writeBits(static_cast<uint32_t>(name.length()), 7);
+                packet.flushBits();
+                packet.writeString(name);
+                return true;
+            }
+
             packet << itemGuid << name;
             return true;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                WoWGuid128 item;
+                packet >> item;
+                itemGuid = WoWGuid::fromGuid128(item).getRawGuid();
+                packet.resetBitPos();
+                name = packet.readString(packet.readBits(7));
+                return true;
+            }
+
             packet >> itemGuid >> name;
             return true;
         }

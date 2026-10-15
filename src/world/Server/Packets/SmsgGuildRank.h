@@ -46,6 +46,31 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // every rank with order, rights, gold limit and the eight bank tabs; 8.x and later send the rank id as byte
+                packet << uint32_t(ranks.size());
+                for (const auto& rank : ranks)
+                {
+                    if (m_protocol.isWoD() || m_protocol.isLegion())
+                        packet << uint32_t(rank.id);
+                    else
+                        packet << uint8_t(rank.id);
+                    packet << int32_t(rank.index);
+                    packet << uint32_t(rank.rights);
+                    packet << uint32_t(rank.bankMoneyPerDay);
+                    for (uint8_t i = 0; i < 8; ++i)
+                    {
+                        packet << uint32_t(i < MAX_GUILD_BANK_TABS ? rank.tabRights[i] : 0);
+                        packet << uint32_t(i < MAX_GUILD_BANK_TABS ? rank.tabSlotsPerDay[i] : 0);
+                    }
+                    packet.writeBits(static_cast<uint32_t>(rank.name.length()), 7);
+                    packet.flushBits();
+                    packet.writeString(rank.name);
+                }
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 return false;

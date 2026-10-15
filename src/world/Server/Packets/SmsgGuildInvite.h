@@ -51,6 +51,33 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // inviter, guild and the old guild (none) with their realms, the emblem, the level (6.x) or the
+                // achievement points
+                packet.writeBits(static_cast<uint32_t>(inviterName.length()), 6);
+                packet.writeBits(static_cast<uint32_t>(guildName.length()), 7);
+                packet.writeBits(0, 7);                                 // old guild name
+                packet.flushBits();
+                packet << uint32_t(m_protocol.getVirtualRealmAddress());
+                packet << uint32_t(m_protocol.getVirtualRealmAddress());
+                packet << WoWGuid(guildGuid).toGuid128(m_protocol.realmId, 0);
+                packet << uint32_t(0);                                  // old guild realm
+                packet << WoWGuid128();                                 // old guild
+                packet << uint32_t(mEmblemInfo.getStyle());
+                packet << uint32_t(mEmblemInfo.getColor());
+                packet << uint32_t(mEmblemInfo.getBorderStyle());
+                packet << uint32_t(mEmblemInfo.getBorderColor());
+                packet << uint32_t(mEmblemInfo.getBackgroundColor());
+                if (m_protocol.isWoD())
+                    packet << uint32_t(guildLevel);
+                else
+                    packet << int32_t(0);                               // achievement points
+                packet.writeString(inviterName);
+                packet.writeString(guildName);
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet << inviterName << guildName;

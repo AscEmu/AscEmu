@@ -1429,6 +1429,7 @@ namespace Version::Tables
         { CMSG_MESSAGE_WHISPER, 0x3F0011 },
         { SMSG_ACCOUNT_ITEM_COLLECTION_DATA, 0x400356 },
         { SMSG_BATTLE_NET_CONNECTION_STATUS, 0x4002A2 },
+        { SMSG_NPC_INTERACTION_OPEN_RESULT, 0x400312 },
     };
 
     const OpcodeSource theWarWithinOpcodes{ theWarWithinOpcodeEntries, std::size(theWarWithinOpcodeEntries) };
