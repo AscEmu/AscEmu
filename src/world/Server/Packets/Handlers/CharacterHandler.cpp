@@ -44,7 +44,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetPlayerDeclinedNames.h"
 #include "Server/Packets/SmsgSetPlayerDeclinedNamesResult.h"
 #include "Server/Packets/SmsgEnumCharactersResult.h"
-#include "Server/Packets/SmsgAccountItemCollectionData.h"
+#include "Server/Packets/SmsgRecentAllyDataResponse.h"
 #include "Server/Packets/SmsgCharacterListState.h"
 #include "Server/Packets/SmsgAccountDataTimes.h"
 #include "Server/Packets/SmsgSetTimeZoneInformation.h"
@@ -1638,7 +1638,7 @@ bool WorldSession::sendCharacterEnumFromDatabase()
         while (missingOrder->nextRow());
     }
 
-    auto result = CharacterDatabase.query("SELECT c.guid, c.level, c.race, c.class, c.gender, c.name, " "c.positionX, c.positionY, c.positionZ, c.mapId, c.zoneId " "FROM characters c " "LEFT JOIN character_list_order o ON o.acct=c.acct AND o.guid=c.guid " "WHERE c.acct=%u " "ORDER BY COALESCE(o.listPosition, 65535), c.guid " "LIMIT 10", accountId);
+    auto result = CharacterDatabase.query("SELECT c.guid, c.level, c.race, c.class, c.gender, c.name, " "c.positionX, c.positionY, c.positionZ, c.mapId, c.zoneId, c.login_flags, COALESCE(o.listPosition, 65535) " "FROM characters c " "LEFT JOIN character_list_order o ON o.acct=c.acct AND o.guid=c.guid " "WHERE c.acct=%u " "ORDER BY COALESCE(o.listPosition, 65535), c.guid " "LIMIT 10", accountId);
 
     if (result == nullptr)
     {
@@ -1646,8 +1646,8 @@ bool WorldSession::sendCharacterEnumFromDatabase()
         AscEmu::Packets::SmsgEnumCharactersResult response(0, 0, 0, std::move(characters));
         sendManagedPacket(response);
 
-        AscEmu::Packets::SmsgAccountItemCollectionData collection(AscEmu::Packets::ItemCollectionType::WarbandScene);
-        sendManagedPacket(collection);
+        AscEmu::Packets::SmsgRecentAllyDataResponse release;
+        sendManagedPacket(release);
         return true;
     }
 
@@ -1692,6 +1692,8 @@ bool WorldSession::sendCharacterEnumFromDatabase()
         character.z = fields[8].asFloat();
         character.mapId = fields[9].asInt32();
         character.zoneId = fields[10].asInt32();
+        character.firstLogin = (fields[11].asUint16() & 0x20U) != 0;
+        character.listPosition = fields[12].asUint16();
 
         characters.emplace_back(std::move(character));
     }
@@ -1777,9 +1779,10 @@ bool WorldSession::sendCharacterEnumFromDatabase()
     AscEmu::Packets::SmsgCharacterListState characterListState(std::move(characterListStateEntries));
     sendManagedPacket(characterListState);
 
-
-    AscEmu::Packets::SmsgAccountItemCollectionData collection(AscEmu::Packets::ItemCollectionType::WarbandScene);
-    sendManagedPacket(collection);
+    // Current Forever keeps the enum result pending until this response arrives.
+    // reference implementation sends it immediately after the regionwide restriction data.
+    AscEmu::Packets::SmsgRecentAllyDataResponse release;
+    sendManagedPacket(release);
 
     return true;
 }

@@ -44,6 +44,8 @@ namespace AscEmu::Packets
         uint8_t race{0};
         uint8_t charClass{0};
         uint8_t gender{0};
+        bool firstLogin{false};
+        uint16_t listPosition{0};
         std::string firstName;
         std::string lastName;
         float x{0.0f};
@@ -391,43 +393,33 @@ namespace AscEmu::Packets
 
         bool serialiseForever(WorldPacket& packet)
         {
-            constexpr uint32_t ClassDisableMask69913 = 0x7FFFFA20U;
-            constexpr uint32_t CharacterFlags2_69913 = 0x00000004U;
-            constexpr uint32_t CharacterFlags4_69913 = 0x00040120U;
-            constexpr int32_t CharacterSaveVersion69913 = 76;
-            constexpr uint8_t CharacterNameFlags69913 = 0x0CU;
+            // Forever 1.60.1 current character-select layout, aligned with the
+            // current reference implementation Forever branch (official 70235+ regionwide list flow).
+            // The client receives realm characters as RegionwideCharacters with
+            // Realmless set, then receives per-character restrictions separately.
+            constexpr uint32_t ClassDisableMask = 0U;
+            constexpr int32_t CharacterSaveVersion = 49;
+
+            const bool hasCharacters = !foreverCharacters.empty();
 
             packet.writeBit(1); // Success
-            if (foreverCharacters.empty())
-            {
-                packet.writeBit(0); // Realmless
-                packet.writeBit(0); // IsDeletedCharacters
-                packet.writeBit(0); // IgnoreNewPlayerRestrictions
-                packet.writeBit(1); // IsRestrictedNewPlayer
-                packet.writeBit(0); // IsNewcomerChatCompleted
-                packet.writeBit(0); // IsRestrictedTrial
-                packet.writeBit(1); // IsAccountLapsedPlayer
-                packet.writeBit(1); // ClassDisableMask present
-                packet.writeBit(1); // ForceCharacterListSort
-            }
-            else
-            {
-                packet.writeBit(1);
-                packet.writeBit(0);
-                packet.writeBit(0);
-                packet.writeBit(1);
-                packet.writeBit(0);
-                packet.writeBit(0);
-                packet.writeBit(0);
-                packet.writeBit(1); // ClassDisableMask present
-                packet.writeBit(0); // ForceCharacterListSort
-            }
+            packet.writeBit(hasCharacters ? 1 : 0); // Realmless
+            packet.writeBit(0); // IsDeletedCharacters
+            packet.writeBit(0); // IgnoreNewPlayerRestrictions
+            packet.writeBit(0); // IsRestrictedNewPlayer
+            packet.writeBit(0); // IsNewcomerChatCompleted
+            packet.writeBit(0); // IsRestrictedTrial
+            packet.writeBit(0); // IsAccountLapsedPlayer
+            packet.writeBit(1); // ClassDisableMask present
+            packet.writeBit(0); // ForceCharacterListSort
             packet.flushBits();
 
-            packet << uint32_t(0); // RegionwideCharacters
-            packet << uint32_t(foreverCharacters.size());
+            // Current Forever sends non-empty character lists through the
+            // RegionwideCharacters vector and leaves Characters empty.
+            packet << uint32_t(0); // Characters
+            packet << uint32_t(foreverCharacters.size()); // RegionwideCharacters
 
-            int32_t maxCharacterLevel = foreverCharacters.empty() ? 0 : 1;
+            int32_t maxCharacterLevel = 1;
             for (const ForeverCharacterEnumEntry& character : foreverCharacters)
                 maxCharacterLevel = std::max<int32_t>(maxCharacterLevel, character.level);
 
@@ -436,30 +428,36 @@ namespace AscEmu::Packets
             packet << uint32_t(0); // UnlockedConditionalAppearances
             packet << uint32_t(0); // RaceLimitDisables
             packet << uint32_t(0); // WarbandGroups
-            packet << ClassDisableMask69913;
+            packet << ClassDisableMask;
 
             for (const ForeverCharacterEnumEntry& character : foreverCharacters)
             {
+                // CharacterInfoBasic
                 const std::vector<uint8_t> packedGuid = WoWGuid::createModernPlayer(foreverRealmId, character.guid).packModern();
                 packet.append(packedGuid.data(), packedGuid.size());
+
                 packet << foreverVirtualRealmAddress;
-                packet << uint16_t(0); // 69913 carries visible ordering in account-data type 16
+                packet << character.listPosition;
                 packet << character.race << character.gender << character.charClass;
                 packet << int16_t(0); // SpecID
                 packet << uint32_t(character.customizations.size());
                 packet << character.level;
                 packet << character.mapId << character.zoneId;
                 packet << character.x << character.y << character.z;
+
+                // GuildClubMemberID. Keep the existing deterministic Forever value
+                // until AscEmu has the Battle.net clubs member-id helper.
                 packet << (character.guid | (static_cast<uint64_t>(foreverRealmId & 0x0FFFU) << 48U));
 
                 const std::vector<uint8_t> emptyGuildGuid = WoWGuid::createModernEmpty().packModern();
                 packet.append(emptyGuildGuid.data(), emptyGuildGuid.size());
 
-                packet << uint32_t(0);
-                packet << CharacterFlags2_69913;
-                packet << uint32_t(0);
-                packet << CharacterFlags4_69913;
-                packet << uint8_t(0); // CantLoginReason
+                packet << uint32_t(0); // Flags
+                packet << uint32_t(0); // Flags2
+                packet << uint32_t(0); // Flags3
+                packet << uint32_t(0); // Flags4
+                packet << uint8_t(0);  // CantLoginReason
+
                 packet << uint32_t(0) << uint32_t(0) << uint32_t(0); // Pet
 
                 for (const ForeverCharacterVisualItem& visualItem : character.visualItems)
@@ -470,46 +468,53 @@ namespace AscEmu::Packets
                     packet << visualItem.secondaryItemModifiedAppearanceId << visualItem.sheatheCategory;
                 }
 
-                packet << CharacterSaveVersion69913;
+                packet << CharacterSaveVersion;
                 packet << uint64_t(0); // CreateTime
                 packet << uint64_t(0); // LastActiveTime
-                packet << int32_t(0); // LastLoginVersion
+                packet << int32_t(0);  // LastLoginVersion
+
+                // CustomTabardInfo defaults.
                 for (uint8_t i = 0; i < 5U; ++i)
                     packet << int32_t(-1);
+
                 packet << uint32_t(0) << uint32_t(0); // ProfessionIds
-                packet << int32_t(0); // TimerunningSeasonID
+                packet << int32_t(0);  // TimerunningSeasonID
                 packet << uint32_t(0); // OverrideSelectScreenFileDataID
                 packet << uint32_t(0); // RealmQueue
-                packet << foreverSuperDistrictId; // FOREVER-VERIFIED: Cfg_SuperDistrictID for this realm/character.
+                packet << foreverSuperDistrictId;
 
                 for (const ForeverCharacterCustomizationChoice& customization : character.customizations)
                     packet << customization.optionId << customization.choiceId;
 
                 const uint32_t firstNameLength = static_cast<uint32_t>(std::min<size_t>(character.firstName.size(), 63U));
                 const uint32_t lastNameLength = static_cast<uint32_t>(std::min<size_t>(character.lastName.size(), 63U));
+
                 packet.writeBits(firstNameLength, 6);
                 packet.writeBits(lastNameLength, 6);
-                packet.writeBits(CharacterNameFlags69913, 4);
+                packet.writeBit(character.firstLogin);
+                packet.writeBit(1); // RealmInfoFound for regionwide entries
+                packet.writeBit(0); // IsRealmOffline
                 packet.flushBits();
+
                 if (firstNameLength != 0U)
                     packet.append(reinterpret_cast<const uint8_t*>(character.firstName.data()), firstNameLength);
                 if (lastNameLength != 0U)
                     packet.append(reinterpret_cast<const uint8_t*>(character.lastName.data()), lastNameLength);
 
-                packet.writeBit(0); // BoostInProgress
-                packet.writeBit(0); // RpeAvailable
-                packet.flushBits();
-                packet << uint32_t(0); // RestrictionFlags
-                packet << uint32_t(0); // MailSenders count
-                packet << uint32_t(0); // MailSenderTypes count
-                packet << uint32_t(0); // NoRpeReason
-                packet << uint8_t(0) << uint8_t(0) << uint8_t(0) << uint8_t(0xFF) << uint8_t(0) << uint8_t(0); // 69913 restriction tail
+                // RegionwideCharacterListEntry tail.
+                packet << uint64_t(0); // Money
+                packet << float(0.0f); // AvgEquippedItemLevel
+                packet << float(0.0f); // CurrentSeasonMythicPlusOverallScore
+                packet << int32_t(0);  // CurrentSeasonBestPvpRating
+                packet << int8_t(-1);  // PvpRatingBracket
+                packet << int16_t(0);  // PvpRatingAssociatedSpecID
             }
 
             for (const RaceClassAvailability& race : ForeverRaceClassAvailability)
             {
                 packet << int8_t(static_cast<uint8_t>(race.race));
                 packet << uint32_t(race.classCount);
+
                 for (uint8_t i = 0; i < race.classCount; ++i)
                 {
                     packet << int8_t(static_cast<uint8_t>(race.classes[i]));
