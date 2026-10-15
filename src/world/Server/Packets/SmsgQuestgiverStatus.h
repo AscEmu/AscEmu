@@ -13,6 +13,34 @@ This file is released under the MIT license. See README-MIT for more information
 namespace AscEmu::Packets
 {
     // 11.x moved the status bits: the 10.x bits in their 11.x positions
+    // 9.x and 10.x: the server status keeps the 5.x to 8.x values, the 9.x clients use other bits for them
+    inline uint64_t questgiverStatusForShadowlands(uint64_t status)
+    {
+        static constexpr std::pair<uint64_t, uint64_t> movedBits[] =
+        {
+            { 0x002, 0x0002 },                  // unavailable -> future
+            { 0x004, 0x0004 },                  // low level available -> trivial
+            { 0x008, 0x0008 },                  // low level reward repeatable -> trivial repeatable turn in
+            { 0x010, 0x0010 },                  // low level available repeatable -> trivial daily quest
+            { 0x020, 0x0020 },                  // incomplete -> reward
+            { 0x040, 0x0100 },                  // reward repeatable -> repeatable turn in
+            { 0x080, 0x0200 },                  // available repeatable -> daily quest
+            { 0x100, 0x0400 },                  // available -> quest
+            { 0x200, 0x0800 },                  // reward without minimap dot -> reward complete without poi
+            { 0x400, 0x1000 },                  // reward -> reward complete with poi
+        };
+
+        uint64_t result = 0;
+        for (const auto& [oldBit, newBit] : movedBits)
+        {
+            if (status & oldBit)
+                result |= newBit;
+        }
+
+        return result;
+    }
+
+    // 11.x and later: the 9.x and 10.x bits moved again
     inline uint64_t questgiverStatusForTheWarWithin(uint64_t status)
     {
         static constexpr std::pair<uint64_t, uint64_t> movedBits[] =
@@ -70,7 +98,7 @@ namespace AscEmu::Packets
             {
                 // 11.x: as 10.x with the moved status bits
                 packet << WoWGuid(questgiverGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
-                packet << questgiverStatusForTheWarWithin(status);
+                packet << questgiverStatusForTheWarWithin(questgiverStatusForShadowlands(status));
                 return true;
             }
 
@@ -78,7 +106,9 @@ namespace AscEmu::Packets
             {
                 packet << WoWGuid(questgiverGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
                 if (m_protocol.isDragonflight())
-                    packet << uint64_t(status);
+                    packet << uint64_t(questgiverStatusForShadowlands(status));
+                else if (m_protocol.isShadowlands())
+                    packet << uint32_t(questgiverStatusForShadowlands(status));
                 else
                     packet << status;
                 return true;

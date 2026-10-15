@@ -58,7 +58,7 @@ namespace AscEmu::Packets
                 for (const auto& questGiver : questgiverSet)
                 {
                     packet << WoWGuid(questGiver.rawGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
-                    packet << questgiverStatusForTheWarWithin(static_cast<uint32_t>(questGiver.status));
+                    packet << questgiverStatusForTheWarWithin(questgiverStatusForShadowlands(static_cast<uint32_t>(questGiver.status)));
                 }
 
                 return true;
@@ -72,7 +72,9 @@ namespace AscEmu::Packets
                 {
                     packet << WoWGuid(questGiver.rawGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
                     if (m_protocol.isDragonflight())
-                        packet << static_cast<uint64_t>(questGiver.status);
+                        packet << questgiverStatusForShadowlands(static_cast<uint32_t>(questGiver.status));
+                    else if (m_protocol.isShadowlands())
+                        packet << static_cast<uint32_t>(questgiverStatusForShadowlands(static_cast<uint32_t>(questGiver.status)));
                     else
                         packet << static_cast<uint32_t>(questGiver.status);
                 }

@@ -67,7 +67,9 @@ namespace AscEmu::Packets
                         optionText = itemListItem.second.text;
                     else
                         optionText = sMySQLStore.getLocaleGossipMenuOptionOrElse(itemListItem.second.textId, locale);
-                    packet << int32_t(itemListItem.first);              // option id, sent back by the selection
+                    // a positive option id names an option of the client data, its text comes from there; the ids of
+                    // the server go out negative and come back negative with the selection
+                    packet << int32_t(-(static_cast<int32_t>(itemListItem.first) + 1));
                     packet << uint32_t(itemListItem.second.icon);
                     packet << int8_t(itemListItem.second.isCoded ? 1 : 0);
                     packet << uint64_t(itemListItem.second.boxMoney);

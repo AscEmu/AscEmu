@@ -803,8 +803,9 @@ protected:
         void sendItemDb2Reply(uint32_t entry);                              //>= Cata
         void writeItemRecordLegion(uint32_t entry, ByteBuffer& record);
         void writeItemSparseRecordLegion(uint32_t entry, ByteBuffer& record);
-        void writeItemRecordTheWarWithin(uint32_t entry, ByteBuffer& record);
-        void writeItemSparseRecordTheWarWithin(uint32_t entry, ByteBuffer& record);
+        void writeItemRecordTheWarWithin(uint32_t entry, ByteBuffer& record, bool midnightLayout);
+        void writeItemSparseRecordTheWarWithin(uint32_t entry, ByteBuffer& record, bool midnightLayout);
+        void writeBroadcastTextRecordTheWarWithin(uint32_t entry, ByteBuffer& record);
         void sendItemSparseDb2Reply(uint32_t entry);                        //>= Cata
         void sendBroadcastDb2Reply(uint32_t entry);                         //>= Mop
 

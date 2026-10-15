@@ -41,6 +41,10 @@ namespace AscEmu::Packets
                 packet >> unit >> gossip_id >> option;
                 guid = WoWGuid::fromGuid128(unit);
 
+                // 12.x: the option ids of the server went out negative
+                if (m_protocol.isMidnight() && static_cast<int32_t>(option) < 0)
+                    option = static_cast<uint32_t>(-static_cast<int32_t>(option) - 1);
+
                 packet.resetBitPos();
                 const uint32_t inputLength = packet.readBits(8);
                 if (inputLength > 0)

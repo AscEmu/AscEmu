@@ -62,18 +62,22 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 
     if (protocol.isTheWarWithinOrLater())
     {
-        // 11.x: Item and ItemSparse records come from the item properties, every other table is reported as not
-        // available; the client asks on the character screen as well and waits for the answers
+        // 11.x: Item and ItemSparse records come from the item properties, BroadcastText records from the gossip
+        // texts, every other table is reported as not available; the client asks on the character screen as well
+        // and waits for the answers
         for (const uint32_t recordId : srlPacket.entries)
         {
             ByteBuffer record;
             switch (srlPacket.type)
             {
                 case DB2_REPLY_ITEM:
-                    writeItemRecordTheWarWithin(recordId, record);
+                    writeItemRecordTheWarWithin(recordId, record, protocol.isMidnight());
                     break;
                 case DB2_REPLY_SPARSE:
-                    writeItemSparseRecordTheWarWithin(recordId, record);
+                    writeItemSparseRecordTheWarWithin(recordId, record, protocol.isMidnight());
+                    break;
+                case DB2_REPLY_BROADCAST:
+                    writeBroadcastTextRecordTheWarWithin(recordId, record);
                     break;
                 default:
                     break;
@@ -248,9 +252,10 @@ void WorldSession::writeItemSparseRecordLegion(uint32_t entry, ByteBuffer& recor
 }
 
 // Item record of 11.2.7 without its id: class, sub class, material, inventory type, sheathe type, sound override,
-// icon, group sounds, content tuning, crafting reagent, crafting quality, one unused value. Icons are not known,
-// the client falls back to its own appearance data.
-void WorldSession::writeItemRecordTheWarWithin(uint32_t entry, ByteBuffer& record)
+// icon, group sounds, content tuning, crafting reagent, crafting quality, one unused value. 12.1.5 has a byte in
+// front of the crafting quality and the item squish era, recraft reagent percentage and order source behind it.
+// Icons are not known, the client falls back to its own appearance data.
+void WorldSession::writeItemRecordTheWarWithin(uint32_t entry, ByteBuffer& record, bool midnightLayout)
 {
     ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
     if (proto == nullptr)
@@ -266,19 +271,33 @@ void WorldSession::writeItemRecordTheWarWithin(uint32_t entry, ByteBuffer& recor
     record << uint32_t(0);                                          // item group sounds
     record << int32_t(0);                                           // content tuning
     record << int32_t(0);                                           // modified crafting reagent item
+
+    if (midnightLayout)
+    {
+        record << uint8_t(0);
+        record << int32_t(0);                                       // crafting quality
+        record << int32_t(0);                                       // item squish era
+        record << float(0.0f);                                      // recraft reagent count percentage
+        record << uint8_t(0);                                       // order source
+        return;
+    }
+
     record << int32_t(0);                                           // crafting quality
     record << int32_t(0);
 }
 
 // ItemSparse record of 11.2.7 without its id, in the field order of the client data. The stat values of the
-// properties go out as stat percent editor values of their stat types; the item level curves stay empty.
-void WorldSession::writeItemSparseRecordTheWarWithin(uint32_t entry, ByteBuffer& record)
+// properties go out as stat percent editor values of their stat types; the item level curves stay empty. 12.1.5 moves
+// the race mask behind the required ability as two 32 bit values and has the item squish era in place of the unused
+// value behind the item level offset.
+void WorldSession::writeItemSparseRecordTheWarWithin(uint32_t entry, ByteBuffer& record, bool midnightLayout)
 {
     ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
     if (proto == nullptr)
         return;
 
-    record << int64_t(proto->AllowableRace);
+    if (!midnightLayout)
+        record << int64_t(proto->AllowableRace);
     record << proto->Description;
     record << proto->Name;                                          // display name, 4 variants
     record << proto->Name;
@@ -323,6 +342,13 @@ void WorldSession::writeItemSparseRecordTheWarWithin(uint32_t entry, ByteBuffer&
     record << int32_t(proto->Unique);                               // max count
     record << int32_t(proto->RequiredFactionStanding);              // minimum reputation
     record << uint32_t(proto->RequiredSpell);                       // required ability
+    if (midnightLayout)
+    {
+        // a mask for every race stays a mask for every race in the upper half
+        const int32_t allowableRace = static_cast<int32_t>(proto->AllowableRace);
+        record << int32_t(allowableRace);
+        record << int32_t(allowableRace == -1 ? -1 : 0);
+    }
     record << uint32_t(proto->SellPrice);
     record << uint32_t(proto->BuyPrice);
     record << uint32_t(1);                                          // vendor stack count
@@ -339,7 +365,7 @@ void WorldSession::writeItemSparseRecordTheWarWithin(uint32_t entry, ByteBuffer&
     record << int32_t(0);                                           // player level to item level curve
     record << int32_t(0);                                           // item level offset curve
     record << int32_t(0);                                           // item level offset item level
-    record << int32_t(0);
+    record << int32_t(0);                                           // 12.x: item squish era
     record << uint16_t(0);                                          // item name description
     record << uint16_t(0);                                          // required transmog holiday
     record << uint16_t(proto->HolidayId);                           // required holiday
@@ -374,6 +400,53 @@ void WorldSession::writeItemSparseRecordTheWarWithin(uint32_t entry, ByteBuffer&
     record << int8_t(proto->RequiredLevel);
     record << int8_t(proto->InventoryType);
     record << int8_t(proto->Quality);                               // overall quality
+}
+
+// BroadcastText record of 11.2.7 and 12.1.5 (layout 0x00EB45B3) with its id: both texts, id, language, condition,
+// emotes, flags, chat bubble duration, voice over priority, two sound kits, three emotes and their delays. The gossip
+// window of these clients names its text by a broadcast text, the gossip text of the same id fills it.
+void WorldSession::writeBroadcastTextRecordTheWarWithin(uint32_t entry, ByteBuffer& record)
+{
+    const auto gossipText = sMySQLStore.getNpcGossipText(entry);
+    if (gossipText == nullptr)
+        return;
+
+    const auto& textHolder = gossipText->textHolder[0];
+    std::string maleText = textHolder.texts[0];
+    std::string femaleText = textHolder.texts[1];
+
+    if (language > 0)
+    {
+        if (const auto localizedText = sMySQLStore.getLocalizedNpcGossipText(entry, language))
+        {
+            if (localizedText->texts[0][0] != nullptr)
+                maleText = localizedText->texts[0][0];
+            if (localizedText->texts[0][1] != nullptr)
+                femaleText = localizedText->texts[0][1];
+        }
+    }
+
+    // a text for one gender only stands for both
+    if (maleText.empty())
+        maleText = femaleText;
+    if (femaleText.empty())
+        femaleText = maleText;
+
+    record << maleText;
+    record << femaleText;
+    record << uint32_t(entry);
+    record << int32_t(textHolder.language);
+    record << int32_t(0);                                           // condition
+    record << uint16_t(0);                                          // emotes
+    record << int32_t(0);                                           // flags
+    record << uint32_t(0);                                          // chat bubble duration
+    record << int32_t(0);                                           // voice over priority
+    record << uint32_t(0);                                          // sound kit
+    record << uint32_t(0);                                          // sound kit 2
+    for (uint8_t i = 0; i < GOSSIP_EMOTE_COUNT; ++i)
+        record << uint16_t(textHolder.gossipEmotes[i].emote);
+    for (uint8_t i = 0; i < GOSSIP_EMOTE_COUNT; ++i)
+        record << uint16_t(textHolder.gossipEmotes[i].delay);
 }
 
 void WorldSession::sendItemDb2Reply(uint32_t entry)
