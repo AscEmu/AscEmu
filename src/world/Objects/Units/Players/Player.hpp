@@ -1046,7 +1046,7 @@ public:
     template <typename... Args>
     void broadcastMessage(fmt::format_string<Args...> format, Args&&... args)
     {
-        broadcastMessage(fmt::format(format, std::forward<Args>(args)...));
+        broadcastMessage(fmt::format(fmt::runtime(format), std::forward<Args>(args)...));
     }
 
     void broadcastMessage(std::string_view message);
@@ -1054,7 +1054,7 @@ public:
     template <typename... Args>
     void sendAreaTriggerMessage(fmt::format_string<Args...> format, Args&&... args)
     {
-        sendAreaTriggerMessage(fmt::format(format, std::forward<Args>(args)...));
+        sendAreaTriggerMessage(fmt::format(fmt::runtime(format), std::forward<Args>(args)...));
     }
 
     void sendAreaTriggerMessage(std::string_view message);

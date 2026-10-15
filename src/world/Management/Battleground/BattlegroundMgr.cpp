@@ -498,7 +498,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
                     if (iitr == m_instances[_bgType].end())
                     {
                         // queue no longer valid, since instance has closed since queuing
-                        player->getSession()->systemMessage(player->getSession()->localizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_DELETED), player->getQueuedBgInstanceId());
+                        player->getSession()->systemMessage(fmt::runtime(player->getSession()->localizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_DELETED)), player->getQueuedBgInstanceId());
                         player->setIsQueuedForBg(false);
                         player->setBgQueueType(0);
                         player->setQueuedBgInstanceId(0);
@@ -1142,7 +1142,7 @@ void BattlegroundManager::deleteBattleground(Battleground* battleground)
         {
             if (plr->getQueuedBgInstanceId() == battleground->getId())
             {
-                plr->getSession()->systemMessage(plr->getSession()->localizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_LONGER_EXISTS), battleground->getId());
+                plr->getSession()->systemMessage(fmt::runtime(plr->getSession()->localizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_LONGER_EXISTS)), battleground->getId());
                 sendBattlefieldStatus(plr, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
                 plr->setIsQueuedForBg(false);
                 m_queuedPlayers[type][levelGroup].erase(it2);

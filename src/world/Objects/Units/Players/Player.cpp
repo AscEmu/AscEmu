@@ -16781,7 +16781,7 @@ void Player::completeLoading()
     {
         kickFromServer(10000);
         broadcastMessage(getSession()->localizedWorldSrv(ServerString::SS_NOT_ALLOWED_TO_PLAY));
-        broadcastMessage(getSession()->localizedWorldSrv(ServerString::SS_BANNED_FOR_TIME), getBanReason());
+        broadcastMessage(fmt::runtime(getSession()->localizedWorldSrv(ServerString::SS_BANNED_FOR_TIME)), getBanReason());
     }
 
     if (m_playerInfo->m_Group)

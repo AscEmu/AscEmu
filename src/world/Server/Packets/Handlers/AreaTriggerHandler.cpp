@@ -103,37 +103,37 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
                     } break;
                     case CANNOT_ENTER_MIN_LEVEL:
                     {
-                        const auto message = fmt::format(session->localizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X), areaTrigger->requiredLevel);
+                    const auto message = fmt::format(fmt::runtime(session->localizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X)), areaTrigger->requiredLevel);
                         _player->sendAreaTriggerMessage(message);
                     } break;
                     case CANNOT_ENTER_ATTUNE_ITEM:
                     {
                         const auto itemProperties = sMySQLStore.getItemProperties(mapInfo->required_item);
-                        const auto message = fmt::format(session->localizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name : "UNKNOWN");
+                        const auto message = fmt::format(fmt::runtime(session->localizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM)), itemProperties ? itemProperties->Name : "UNKNOWN");
                         _player->sendAreaTriggerMessage(message);
                     } break;
                     case CANNOT_ENTER_ATTUNE_QA:
                     {
                         const auto questProperties = sMySQLStore.getQuestProperties(mapInfo->required_quest_A);
-                        const auto message = fmt::format(session->localizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), questProperties ? questProperties->title : "UNKNOWN");
+                        const auto message = fmt::format(fmt::runtime(session->localizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST)), questProperties ? questProperties->title : "UNKNOWN");
                         _player->sendAreaTriggerMessage(message);
                     } break;
                     case CANNOT_ENTER_ATTUNE_QH:
                     {
                         const auto questProperties = sMySQLStore.getQuestProperties(mapInfo->required_quest_H);
 
-                        const auto message = fmt::format(session->localizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), questProperties ? questProperties->title : "UNKNOWN");
+                        const auto message = fmt::format(fmt::runtime(session->localizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST)), questProperties ? questProperties->title : "UNKNOWN");
                         _player->sendAreaTriggerMessage(message);
                     } break;
                     case CANNOT_ENTER_KEY:
                     {
                         const auto itemProperties = sMySQLStore.getItemProperties(mapInfo->heroic_key_1);
-                        const auto message = fmt::format(session->localizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), itemProperties ? itemProperties->Name : "UNKNOWN");
+                        const auto message = fmt::format(fmt::runtime(session->localizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM)), itemProperties ? itemProperties->Name : "UNKNOWN");
                         _player->sendAreaTriggerMessage(message);
                     } break;
                     case CANNOT_ENTER_MIN_LEVEL_HC:
                     {
-                        const auto message = fmt::format(session->localizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X), mapInfo->minlevel_heroic);
+                        const auto message = fmt::format(fmt::runtime(session->localizedWorldSrv(ServerString::SS_MUST_BE_LEVEL_X)), mapInfo->minlevel_heroic);
                         _player->sendAreaTriggerMessage(message);
                     } break;
                     default:

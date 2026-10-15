@@ -72,7 +72,7 @@ void report(lua_State* L)
     while (count > 0)
     {
         const char* msg = lua_tostring(L, -1);
-        DLLLogDetail(msg);
+        DLLLogDetail(fmt::runtime(msg));
         lua_pop(L, 1);
         count--;
     }

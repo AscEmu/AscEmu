@@ -56,7 +56,7 @@ public:
     void systemMessage(WorldSession* session, fmt::format_string<Args...> format, Args&&... args)
     {
         // Send the formatted message via packet
-        sendSystemMessagePacket(session, fmt::format(format, std::forward<Args>(args)...));
+        sendSystemMessagePacket(session, fmt::format(fmt::runtime(format), std::forward<Args>(args)...));
     }
 
     static void colorSystemMessage(WorldSession* session, std::string_view colorCode, std::string_view message)
@@ -69,7 +69,7 @@ public:
     void colorSystemMessage(WorldSession* session, std::string_view colorCode, fmt::format_string<Args...> fmt, Args&&... args)
     {
         // Send the formatted message via packet
-        std::string formattedMessage = fmt::format(fmt, std::forward<Args>(args)...);
+        std::string formattedMessage = fmt::format(fmt::runtime(fmt), std::forward<Args>(args)...);
         sendSystemMessagePacket(session, fmt::format("{}{}|r", colorCode, formattedMessage));
     }
 
