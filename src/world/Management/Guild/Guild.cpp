@@ -1778,6 +1778,7 @@ void Guild::logBankEvent(GuildBankEventLogTypes eventType, uint8_t tabId, uint32
 void Guild::broadcastEvent(GuildEvents guildEvent, uint64_t guid, std::vector<std::string> vars) const
 {
     SmsgGuildEvent packet(guildEvent, vars, guid);
+    packet.bankMoney = m_bankMoney;
     PacketBroadcast::sendFromGuild(*this, packet);
 
     sLogger.debugOpcode("SMSG_GUILD_EVENT: {} ({})", _GetGuildEventString(guildEvent), guildEvent);

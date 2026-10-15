@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.hpp"
 #include "Management/Guild/GuildDefinitions.hpp"
 #include <cstdint>
+#include <cstdlib>
 #include <string>
 #include <vector>
 
@@ -21,6 +22,9 @@ namespace AscEmu::Packets
         std::vector<std::string> text;
         uint8_t textCount = 0;
         uint64_t guid;
+
+        // 5.x and later: the bank money after a bank event
+        uint64_t bankMoney = 0;
 
         SmsgGuildEvent() : SmsgGuildEvent(0, {}, 0)
         {
@@ -43,6 +47,40 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isMop())
+            {
+                // the bank events have own packets, the other events keep the common layout
+                const auto nameAt = [&](size_t index) { return index < text.size() ? text[index] : std::string(); };
+                switch (guildEvent)
+                {
+                    case GE_BANK_TAB_PURCHASED:
+                    {
+                        packet.setOpcode(SMSG_GUILD_EVENT_TAB_ADDED);
+                        return true;
+                    }
+                    case GE_BANK_TAB_UPDATED:
+                    {
+                        // icon and name lengths, name, tab, icon
+                        packet.setOpcode(SMSG_GUILD_EVENT_TAB_MODIFIED);
+                        packet.writeBits(static_cast<uint32_t>(nameAt(2).length()), 9);
+                        packet.writeBits(static_cast<uint32_t>(nameAt(1).length()), 7);
+                        packet.flushBits();
+                        packet.writeString(nameAt(1));
+                        packet << uint32_t(std::atoi(nameAt(0).c_str()));
+                        packet.writeString(nameAt(2));
+                        return true;
+                    }
+                    case GE_BANK_TAB_AND_MONEY_UPDATED:
+                    {
+                        packet.setOpcode(SMSG_GUILD_EVENT_BANK_MONEY_CHANGED);
+                        packet << uint64_t(bankMoney);
+                        return true;
+                    }
+                    default:
+                        break;
+                }
+            }
+
             if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
                 // 6.x and later: one packet per event; the names come with the realm and the player of the event
@@ -151,8 +189,31 @@ namespace AscEmu::Packets
                         packet.writeString(nameAt(0));
                         return true;
                     }
+                    case GE_BANK_TAB_PURCHASED:
+                    {
+                        packet.setOpcode(SMSG_GUILD_EVENT_TAB_ADDED);
+                        return true;
+                    }
+                    case GE_BANK_TAB_UPDATED:
+                    {
+                        // tab, name, icon
+                        packet.setOpcode(SMSG_GUILD_EVENT_TAB_MODIFIED);
+                        packet << int32_t(std::atoi(nameAt(0).c_str()));
+                        packet.writeBits(static_cast<uint32_t>(nameAt(1).length()), 7);
+                        packet.writeBits(static_cast<uint32_t>(nameAt(2).length()), 9);
+                        packet.flushBits();
+                        packet.writeString(nameAt(1));
+                        packet.writeString(nameAt(2));
+                        return true;
+                    }
+                    case GE_BANK_TAB_AND_MONEY_UPDATED:
+                    {
+                        packet.setOpcode(SMSG_GUILD_EVENT_BANK_MONEY_CHANGED);
+                        packet << uint64_t(bankMoney);
+                        return true;
+                    }
                     default:
-                        // promotions come with the rank change, the bank events with the bank packets
+                        // promotions come with the rank change, the bank contents with the bank list
                         return false;
                 }
             }

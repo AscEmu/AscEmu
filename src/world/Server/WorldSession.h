@@ -519,6 +519,7 @@ protected:
         void handleGuildBankDepositMoney(WorldPacket& recvPacket);
         void handleGuildBankUpdateTab(WorldPacket& recvPacket);
         void handleGuildBankSwapItems(WorldPacket& recvPacket);
+        void handleGuildBankMoveItemOpcode(WorldPacket& recvPacket);
         void handleGuildBankQueryTab(WorldPacket& recvPacket);
         void handleGuildBankerActivate(WorldPacket& recvPacket);
         void handleGuildSetRank(WorldPacket& recvPacket);

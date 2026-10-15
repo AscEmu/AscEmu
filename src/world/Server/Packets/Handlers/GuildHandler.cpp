@@ -91,6 +91,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgLfGuildSetGuildPost.h"
 #endif
 
+#include "Server/Packets/CmsgGuildBankMoveItem.h"
+#include "Version/VersionRegistry.hpp"
+
 using namespace AscEmu::Packets;
 
 void WorldSession::handleGuildQuery(WorldPacket& recvPacket)
@@ -428,6 +431,27 @@ void WorldSession::handleGuildBankDepositMoney(WorldPacket& recvPacket)
     if (srlPacket.money && _player->hasEnoughCoinage(srlPacket.money))
         if (Guild* guild = _player->getGuild())
             guild->handleMemberDepositMoney(this, srlPacket.money);
+}
+
+// 7.x and later: one request per guild bank action
+void WorldSession::handleGuildBankMoveItemOpcode(WorldPacket& recvPacket)
+{
+    Guild* guild = _player->getGuild();
+    if (guild == nullptr)
+    {
+        recvPacket.rfinish();
+        return;
+    }
+
+    const auto opcode = Version::opcodeIdForHex(recvPacket.getOpcode(), getClientProtocol());
+    CmsgGuildBankMoveItem srlPacket(static_cast<uint16_t>(opcode));
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    if (srlPacket.bankToBank)
+        guild->swapItems(_player, srlPacket.tabId, srlPacket.slotId, srlPacket.destTabId, srlPacket.destSlotId, srlPacket.splitedAmount);
+    else
+        guild->swapItemsWithInventory(_player, srlPacket.toChar, srlPacket.tabId, srlPacket.slotId, srlPacket.playerBag, srlPacket.playerSlotId, srlPacket.splitedAmount);
 }
 
 void WorldSession::handleGuildBankUpdateTab(WorldPacket& recvPacket)

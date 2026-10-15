@@ -30,6 +30,23 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 10.x and later open the window through the interaction result
+                if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+                {
+                    packet.setOpcode(SMSG_NPC_INTERACTION_OPEN_RESULT);
+                    packet << WoWGuid(guid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                    packet << int32_t(8);
+                    packet.writeBit(true);                              // success
+                    packet.flushBits();
+                    return true;
+                }
+
+                packet << WoWGuid(guid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << guid;

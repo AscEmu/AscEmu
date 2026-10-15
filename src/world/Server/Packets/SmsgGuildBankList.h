@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "Objects/ItemDefines.hpp"
 #include "Management/Guild/GuildBankTab.hpp"
 #include <cstdint>
 #include <set>
@@ -67,6 +68,114 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // money, tab, remaining withdrawals, the tabs with name and icon, the items of the tab; 6.x: the full
+                // update bit at the end, 7.x to 11.x in front of the tabs, 12.x at the end with the item in front of
+                // the counts
+                const bool isWoD = m_protocol.isWoD();
+                const bool isLegion = m_protocol.isLegion();
+                const bool isMidnight = m_protocol.isMidnight();
+                const bool fullUpdate = sendAllSlots;
+                const size_t tabCount = withTabInfo ? tabInfo.size() : 0;
+
+                const auto writeItemInstance = [&](GuildBankListItemSlot const& item)
+                {
+                    packet << int32_t(item.entry);
+                    if (isWoD || isLegion)
+                    {
+                        packet << int32_t(item.propertySeed);
+                        packet << int32_t(item.randomPropertiesId);
+                        packet.writeBit(false);                         // item bonus
+                        packet.writeBit(false);                         // modifications
+                        packet.flushBits();
+                    }
+                    else if (m_protocol.isBfA())
+                    {
+                        packet.writeBit(false);                         // item bonus
+                        packet.writeBit(false);                         // modifications
+                        packet.flushBits();
+                    }
+                    else if (isMidnight)
+                    {
+                        packet.writeBits(0, 7);                         // modifications
+                        packet.flushBits();
+                        packet.writeBit(false);                         // item bonus
+                        packet.flushBits();
+                    }
+                    else
+                    {
+                        packet.writeBit(false);                         // item bonus
+                        packet.flushBits();
+                        packet.writeBits(0, 6);                         // modifications
+                        packet.flushBits();
+                    }
+                };
+
+                const auto enchantOfSlot = [](GuildBankListItemSlot const& item, uint32_t slot) -> uint32_t
+                {
+                    for (const auto& enchant : item.enchants)
+                    {
+                        if (enchant.second == slot)
+                            return enchant.first;
+                    }
+                    return 0;
+                };
+
+                packet << uint64_t(bankMoney);
+                packet << int32_t(tabId);
+                packet << int32_t(remainingSlots);
+                packet << uint32_t(tabCount);
+                packet << uint32_t(items.size());
+                if (!isWoD && !isMidnight)
+                {
+                    packet.writeBit(fullUpdate);
+                    packet.flushBits();
+                }
+
+                for (size_t i = 0; i < tabCount; ++i)
+                {
+                    packet << int32_t(i);
+                    packet.writeBits(static_cast<uint32_t>(tabInfo[i].name.length()), 7);
+                    packet.writeBits(static_cast<uint32_t>(tabInfo[i].icon.length()), 9);
+                    packet.flushBits();
+                    packet.writeString(tabInfo[i].name);
+                    packet.writeString(tabInfo[i].icon);
+                }
+
+                for (const auto& item : items)
+                {
+                    packet << int32_t(item.slotId);
+                    if (isWoD || isMidnight)
+                        writeItemInstance(item);
+                    packet << int32_t(item.stackCount);
+                    packet << int32_t(enchantOfSlot(item, PERM_ENCHANTMENT_SLOT));
+                    packet << int32_t(item.spellCharges);
+                    packet << int32_t(0);                               // on use enchantment
+                    if (isWoD)
+                    {
+                        packet << uint32_t(0);                          // socket enchantments
+                        packet << int32_t(0);                           // flags
+                        packet.writeBit(false);                         // locked
+                        packet.flushBits();
+                        continue;
+                    }
+                    packet << int32_t(0);                               // flags
+                    if (!isMidnight)
+                        writeItemInstance(item);
+                    packet.writeBits(0, 2);                             // socket enchantments
+                    packet.writeBit(false);                             // locked
+                    packet.flushBits();
+                }
+
+                if (isWoD || isMidnight)
+                {
+                    packet.writeBit(fullUpdate);
+                    packet.flushBits();
+                }
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet << uint64_t(bankMoney);

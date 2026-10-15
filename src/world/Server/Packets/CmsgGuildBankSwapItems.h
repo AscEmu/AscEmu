@@ -51,6 +51,42 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion())
+            {
+                // banker, bank item, second bank item, inventory position, to slot, count, then the bank only and the
+                // auto store bits
+                WoWGuid128 banker;
+                packet >> banker;
+                bankGuid = WoWGuid::fromGuid128(banker).getRawGuid();
+
+                uint8_t bankTab = 0, bankSlot = 0, bankTab1 = 0, bankSlot1 = 0, containerSlot = 0, containerItemSlot = 0, toSlot = 0;
+                packet >> bankTab >> bankSlot >> itemEntry >> bankTab1 >> bankSlot1;
+                packet.readSkip<uint32_t>();        // second item
+                packet.readSkip<uint32_t>();        // bank item count
+                packet >> containerSlot >> containerItemSlot >> toSlot >> splitedAmount;
+
+                packet.resetBitPos();
+                bankToBank = packet.readBit() ? 1 : 0;
+                autoStore = packet.readBit() ? 1 : 0;
+
+                if (bankToBank)
+                {
+                    tabId = bankTab1;
+                    slotId = bankSlot1;
+                    destTabId = bankTab;
+                    destSlotId = bankSlot;
+                }
+                else
+                {
+                    tabId = bankTab;
+                    slotId = bankSlot;
+                    playerBag = containerSlot;
+                    playerSlotId = containerItemSlot;
+                    toChar = toSlot != 0;
+                }
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet >> bankGuid >> bankToBank;

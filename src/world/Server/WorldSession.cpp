@@ -905,7 +905,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_SET_CONTACT_NOTES, &WorldSession::handleSetFriendNote, false, true, true, true, true);
 
     // Areatrigger
-    registry.registerOpcode(CMSG_AREATRIGGER, &WorldSession::handleAreaTriggerOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_AREATRIGGER, &WorldSession::handleAreaTriggerOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
 
     // Account Data
     registry.registerOpcode<STATUS_AUTHED>(CMSG_UPDATE_ACCOUNT_DATA, &WorldSession::handleUpdateAccountData, true, true, true, true, true);
@@ -920,7 +920,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_SET_FACTION_INACTIVE, &WorldSession::handleSetFactionInactiveOpcode, true, true, true, true, true);
 
     // Player Interaction
-    registry.registerOpcode(CMSG_GAMEOBJ_USE, &WorldSession::handleGameObjectUse, true, true, true, true, true);
+    registry.registerOpcode(CMSG_GAMEOBJ_USE, &WorldSession::handleGameObjectUse, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_REQUEST_PLAYED_TIME, &WorldSession::handlePlayedTimeOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_SETSHEATHED, &WorldSession::handleSetSheathedOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_MESSAGECHAT, &WorldSession::handleMessageChatOpcode, true, true, true, false, false);
@@ -1027,8 +1027,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_TAXIQUERYAVAILABLENODES, &WorldSession::handleTaxiQueryAvaibleNodesOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_ACTIVATE_TAXI, &WorldSession::handleActivateTaxiOpcode, true, true, true, true, true);
     registry.registerOpcode(MSG_TABARDVENDOR_ACTIVATE, &WorldSession::handleTabardVendorActivateOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_BANKER_ACTIVATE, &WorldSession::handleBankerActivateOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_BUY_BANK_SLOT, &WorldSession::handleBuyBankSlotOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BANKER_ACTIVATE, &WorldSession::handleBankerActivateOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BUY_BANK_SLOT, &WorldSession::handleBuyBankSlotOpcode, true, true, true, true, true, true, true, true, true, true, false, false);
     registry.registerOpcode(CMSG_TRAINER_LIST, &WorldSession::handleTrainerListOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_TRAINER_BUY_SPELL, &WorldSession::handleTrainerBuySpellOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_PETITION_SHOWLIST, &WorldSession::handleCharterShowListOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
@@ -1036,9 +1036,9 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_AUCTION_HELLO, &WorldSession::handleAuctionHelloRequestOpcode, false, false, false, false, true);
     registry.registerOpcode(CMSG_GOSSIP_HELLO, &WorldSession::handleGossipHelloOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_GOSSIP_SELECT_OPTION, &WorldSession::handleGossipSelectOptionOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
-    registry.registerOpcode(CMSG_SPIRIT_HEALER_ACTIVATE, &WorldSession::handleSpiritHealerActivateOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_SPIRIT_HEALER_ACTIVATE, &WorldSession::handleSpiritHealerActivateOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_NPC_TEXT_QUERY, &WorldSession::handleNpcTextQueryOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
-    registry.registerOpcode(CMSG_BINDER_ACTIVATE, &WorldSession::handleBinderActivateOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BINDER_ACTIVATE, &WorldSession::handleBinderActivateOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_ACTIVATE_TAXI_EXPRESS, &WorldSession::handleMultipleActivateTaxiOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_MOVE_SPLINE_DONE, &WorldSession::handleMoveSplineDoneOpcode, true, true, true, true, true);
     // Item / Vendors
@@ -1180,16 +1180,16 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(MSG_SAVE_GUILD_EMBLEM, &WorldSession::handleSaveGuildEmblem, true, true, true, true, false, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_GUILD_INFO_TEXT, &WorldSession::handleSetGuildInfo, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(MSG_QUERY_GUILD_BANK_TEXT, &WorldSession::handleGuildBankQueryText, true, true, true, true, true);
-    registry.registerOpcode(CMSG_SET_GUILD_BANK_TEXT, &WorldSession::handleSetGuildBankText, true, true, true, true, true);
+    registry.registerOpcode(CMSG_SET_GUILD_BANK_TEXT, &WorldSession::handleSetGuildBankText, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(MSG_GUILD_EVENT_LOG_QUERY, &WorldSession::handleGuildLog, true, true, true, false, false);
-    registry.registerOpcode(CMSG_GUILD_BANKER_ACTIVATE, &WorldSession::handleGuildBankerActivate, true, true, true, true, true);
-    registry.registerOpcode(CMSG_GUILD_BANK_BUY_TAB, &WorldSession::handleGuildBankBuyTab, true, true, true, true, false);
+    registry.registerOpcode(CMSG_GUILD_BANKER_ACTIVATE, &WorldSession::handleGuildBankerActivate, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_GUILD_BANK_BUY_TAB, &WorldSession::handleGuildBankBuyTab, true, true, true, true, false, true, true, true, true, true, true, true);
     registry.registerOpcode(MSG_GUILD_BANK_MONEY_WITHDRAWN, &WorldSession::handleGuildBankMoneyWithdrawn, true, true, true, true, false);
-    registry.registerOpcode(CMSG_GUILD_BANK_UPDATE_TAB, &WorldSession::handleGuildBankUpdateTab, true, true, true, true, false);
-    registry.registerOpcode(CMSG_GUILD_BANK_SWAP_ITEMS, &WorldSession::handleGuildBankSwapItems, true, true, true, true, false);
-    registry.registerOpcode(CMSG_GUILD_BANK_WITHDRAW_MONEY, &WorldSession::handleGuildBankWithdrawMoney, true, true, true, true, false);
-    registry.registerOpcode(CMSG_GUILD_BANK_DEPOSIT_MONEY, &WorldSession::handleGuildBankDepositMoney, true, true, true, true, false);
-    registry.registerOpcode(CMSG_GUILD_BANK_QUERY_TAB, &WorldSession::handleGuildBankQueryTab, true, true, true, true, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_UPDATE_TAB, &WorldSession::handleGuildBankUpdateTab, true, true, true, true, false, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_GUILD_BANK_SWAP_ITEMS, &WorldSession::handleGuildBankSwapItems, true, true, true, true, false, true, false, false, false, false, false, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_WITHDRAW_MONEY, &WorldSession::handleGuildBankWithdrawMoney, true, true, true, true, false, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_GUILD_BANK_DEPOSIT_MONEY, &WorldSession::handleGuildBankDepositMoney, true, true, true, true, false, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_GUILD_BANK_QUERY_TAB, &WorldSession::handleGuildBankQueryTab, true, true, true, true, false, true, true, true, true, true, true, true);
     registry.registerOpcode(MSG_GUILD_BANK_LOG_QUERY, &WorldSession::handleGuildBankLogQuery, true, true, true, true, false);
     registry.registerOpcode(MSG_GUILD_PERMISSIONS, &WorldSession::handleGuildPermissions, true, true, true, false, false);
 
@@ -1266,7 +1266,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_TOGGLE_HELM, &WorldSession::handleToggleHelmOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_SET_TITLE, &WorldSession::handleSetTitle, true, true, true, true, true);
     registry.registerOpcode(CMSG_COMPLAIN, &WorldSession::handleReportSpamOpcode, true, false, true, false, false);
-    registry.registerOpcode(CMSG_GAMEOBJ_REPORT_USE, &WorldSession::handleGameobjReportUseOpCode, false, false, true, true, true);
+    registry.registerOpcode(CMSG_GAMEOBJ_REPORT_USE, &WorldSession::handleGameobjReportUseOpCode, false, false, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_PET_CAST_SPELL, &WorldSession::handlePetCastSpell, true, true, true, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_WORLD_STATE_UI_TIMER_UPDATE, &WorldSession::handleWorldStateUITimerUpdate, false, false, true, true, true);
     registry.registerOpcode(CMSG_SET_TAXI_BENCHMARK_MODE, &WorldSession::handleSetTaxiBenchmarkOpcode, true, false, true, true, true);
@@ -1368,10 +1368,36 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_VOID_STORAGE_UNLOCK, &WorldSession::handleVoidStorageUnlock, false, false, false, true, true);
     registry.registerOpcode(CMSG_VOID_SWAP_ITEM, &WorldSession::handleVoidSwapItem, false, false, false, true, true);
     registry.registerOpcode(CMSG_LEARN_PREVIEW_TALENTS, &WorldSession::handleLearnPreviewTalentsOpcode, false, false, false, true, false);
-    registry.registerOpcode(CMSG_GUILD_BANK_MONEY_WITHDRAWN_QUERY, &WorldSession::handleGuildBankMoneyWithdrawn, false, false, false, true, true);
+    registry.registerOpcode(CMSG_GUILD_BANK_MONEY_WITHDRAWN_QUERY, &WorldSession::handleGuildBankMoneyWithdrawn, false, false, false, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_BATTLE_PET_REQUEST_JOURNAL, &WorldSession::handleBattlePetRequestJournal, false, false, false, false, true);
     registry.registerOpcode(CMSG_SAVE_CUF_PROFILES, &WorldSession::handleSaveCufProfiles, false, false, false, true, true);
-    registry.registerOpcode(CMSG_GUILD_BANK_QUERY_TEXT, &WorldSession::handleQueryGuildBankTabText, false, false, false, true, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_QUERY_TEXT, &WorldSession::handleQueryGuildBankTabText, false, false, false, true, false, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_GUILD_BANK_LOG_QUERY, &WorldSession::handleGuildBankLogQuery, false, false, false, false, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_GUILD_BANK_SWAP_ITEMS_LEGACY, &WorldSession::handleGuildBankSwapItems, false, false, false, false, false, false, true, false, false, false, false, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_MOVE_ITEMS_PLAYER_BANK, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, true, true, false, false, false, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_MOVE_ITEMS_BANK_PLAYER, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, true, true, false, false, false, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_SWAP_ITEMS_BANK_PLAYER, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, true, true, false, false, false, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_MOVE_ITEMS_PLAYER_BANK_COUNT, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, true, true, false, false, false, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_MERGE_ITEMS_PLAYER_BANK, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, true, true, false, false, false, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_MOVE_ITEMS_BANK_PLAYER_COUNT, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, true, true, false, false, false, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_MERGE_ITEMS_BANK_PLAYER, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, true, true, false, false, false, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_MOVE_ITEMS_BANK_PLAYER_AUTO, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, true, true, false, false, false, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_MOVE_ITEMS_BANK_BANK, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, true, true, false, false, false, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_SWAP_ITEMS_BANK_BANK, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, true, true, false, false, false, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_MOVE_ITEMS_BANK_BANK_COUNT, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, true, true, false, false, false, false);
+    registry.registerOpcode(CMSG_GUILD_BANK_MERGE_ITEMS_BANK_BANK, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, true, true, false, false, false, false);
+    registry.registerOpcode(CMSG_AUTO_GUILD_BANK_ITEM, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
+    registry.registerOpcode(CMSG_STORE_GUILD_BANK_ITEM, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
+    registry.registerOpcode(CMSG_SWAP_ITEM_WITH_GUILD_BANK_ITEM, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
+    registry.registerOpcode(CMSG_SWAP_GUILD_BANK_ITEM_WITH_GUILD_BANK_ITEM, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
+    registry.registerOpcode(CMSG_MOVE_GUILD_BANK_ITEM, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
+    registry.registerOpcode(CMSG_MERGE_ITEM_WITH_GUILD_BANK_ITEM, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
+    registry.registerOpcode(CMSG_SPLIT_ITEM_TO_GUILD_BANK, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
+    registry.registerOpcode(CMSG_MERGE_GUILD_BANK_ITEM_WITH_ITEM, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
+    registry.registerOpcode(CMSG_SPLIT_GUILD_BANK_ITEM_TO_INVENTORY, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
+    registry.registerOpcode(CMSG_AUTO_STORE_GUILD_BANK_ITEM, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
+    registry.registerOpcode(CMSG_MERGE_GUILD_BANK_ITEM_WITH_GUILD_BANK_ITEM, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
+    registry.registerOpcode(CMSG_SPLIT_GUILD_BANK_ITEM, &WorldSession::handleGuildBankMoveItemOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
     registry.registerOpcode(CMSG_QUERY_GUILD_XP, &WorldSession::handleGuildQueryXPOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_GUILD_SET_NOTE, &WorldSession::handleGuildSetNoteOpcode, false, false, false, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_GUILD_PROMOTE_MEMBER, &WorldSession::handleGuildPromote, false, false, false, false, false, true, true, true, true, true, true, true);

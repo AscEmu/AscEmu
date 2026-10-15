@@ -32,6 +32,42 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isMop())
+            {
+                packet >> money64;
+                money = static_cast<uint32_t>(money64);
+
+                WoWGuid banker;
+                banker[2] = packet.readBit();
+                banker[7] = packet.readBit();
+                banker[6] = packet.readBit();
+                banker[4] = packet.readBit();
+                banker[0] = packet.readBit();
+                banker[1] = packet.readBit();
+                banker[5] = packet.readBit();
+                banker[3] = packet.readBit();
+                packet.readByteSeq(banker[1]);
+                packet.readByteSeq(banker[4]);
+                packet.readByteSeq(banker[5]);
+                packet.readByteSeq(banker[0]);
+                packet.readByteSeq(banker[2]);
+                packet.readByteSeq(banker[7]);
+                packet.readByteSeq(banker[6]);
+                packet.readByteSeq(banker[3]);
+                guid = banker.getRawGuid();
+                return true;
+            }
+
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                WoWGuid128 banker;
+                packet >> banker;
+                guid = WoWGuid::fromGuid128(banker).getRawGuid();
+                packet >> money64;
+                money = static_cast<uint32_t>(money64);
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
                 packet >> guid;

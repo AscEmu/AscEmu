@@ -956,6 +956,9 @@ namespace Version::Tables
         { SMSG_MIRRORIMAGE_CREATURE_DATA, 0x04D0 },
         { CMSG_UNHANDLED_044E, 0x044E },
         { CMSG_UNHANDLED_0CF0, 0x0CF0 },
+        { SMSG_GUILD_EVENT_TAB_ADDED, 0x1BE9 },
+        { SMSG_GUILD_EVENT_TAB_MODIFIED, 0x0BF1 },
+        { SMSG_GUILD_EVENT_BANK_MONEY_CHANGED, 0x0F68 },
     };
 
     const OpcodeSource mopOpcodes{ mopOpcodeEntries, std::size(mopOpcodeEntries) };

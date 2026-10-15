@@ -31,6 +31,21 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                WoWGuid128 banker;
+                packet >> banker;
+                guid = WoWGuid::fromGuid128(banker).getRawGuid();
+                packet >> slot;
+
+                packet.resetBitPos();
+                const uint32_t nameLength = packet.readBits(7);
+                const uint32_t iconLength = packet.readBits(9);
+                tabName = packet.readString(nameLength);
+                tabIcon = packet.readString(iconLength);
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet >> guid >> slot >> tabName >> tabIcon;

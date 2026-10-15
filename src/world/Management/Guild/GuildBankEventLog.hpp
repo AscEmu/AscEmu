@@ -38,6 +38,13 @@ public:
     void saveGuildLogToDB() const;
     void writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const;
 
+    GuildBankEventLogTypes getEventType() const { return mEventType; }
+    uint8_t getTabId() const { return mBankTabId; }
+    uint32_t getPlayerGuid() const { return mPlayerGuid; }
+    uint64_t getItemOrMoney() const { return mItemOrMoney; }
+    uint16_t getItemStackCount() const { return mItemStackCount; }
+    uint8_t getDestTabId() const { return mDestTabId; }
+
 private:
     GuildBankEventLogTypes mEventType;
     uint8_t mBankTabId;

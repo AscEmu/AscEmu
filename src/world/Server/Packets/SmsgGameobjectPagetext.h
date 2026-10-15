@@ -28,6 +28,13 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                packet.setOpcode(SMSG_PAGE_TEXT);
+                packet << WoWGuid(guid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                return true;
+            }
+
             packet << guid;
 
             return true;

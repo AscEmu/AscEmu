@@ -26,6 +26,12 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                tabId = static_cast<uint8_t>(packet.read<int32_t>());
+                return true;
+            }
+
             if (m_protocol.expansion >= WoW::Expansion::_Cata)
             {
                 packet >> tabId;

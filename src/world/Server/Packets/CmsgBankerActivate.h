@@ -50,6 +50,17 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 11.x and later name the bank type behind the banker
+                WoWGuid128 banker;
+                packet >> banker;
+                guid = WoWGuid::fromGuid128(banker);
+                if (m_protocol.isTheWarWithinOrLater())
+                    packet.readSkip<int32_t>();
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 uint64_t unpackedGuid;

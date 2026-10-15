@@ -2569,5 +2569,17 @@ namespace Version::Tables
         { "SMSG_ACCOUNT_ITEM_COLLECTION_DATA", OpcodeDevelopmentState::Okay },
         { "SMSG_BATTLE_NET_CONNECTION_STATUS", OpcodeDevelopmentState::Okay },
         { "SMSG_NPC_INTERACTION_OPEN_RESULT", OpcodeDevelopmentState::Okay },
+        { "CMSG_AUTO_GUILD_BANK_ITEM", OpcodeDevelopmentState::Okay },
+        { "CMSG_STORE_GUILD_BANK_ITEM", OpcodeDevelopmentState::Okay },
+        { "CMSG_SWAP_ITEM_WITH_GUILD_BANK_ITEM", OpcodeDevelopmentState::Okay },
+        { "CMSG_SWAP_GUILD_BANK_ITEM_WITH_GUILD_BANK_ITEM", OpcodeDevelopmentState::Okay },
+        { "CMSG_MOVE_GUILD_BANK_ITEM", OpcodeDevelopmentState::Okay },
+        { "CMSG_MERGE_ITEM_WITH_GUILD_BANK_ITEM", OpcodeDevelopmentState::Okay },
+        { "CMSG_SPLIT_ITEM_TO_GUILD_BANK", OpcodeDevelopmentState::Okay },
+        { "CMSG_MERGE_GUILD_BANK_ITEM_WITH_ITEM", OpcodeDevelopmentState::Okay },
+        { "CMSG_SPLIT_GUILD_BANK_ITEM_TO_INVENTORY", OpcodeDevelopmentState::Okay },
+        { "CMSG_AUTO_STORE_GUILD_BANK_ITEM", OpcodeDevelopmentState::Okay },
+        { "CMSG_MERGE_GUILD_BANK_ITEM_WITH_GUILD_BANK_ITEM", OpcodeDevelopmentState::Okay },
+        { "CMSG_SPLIT_GUILD_BANK_ITEM", OpcodeDevelopmentState::Okay },
     };
 }
