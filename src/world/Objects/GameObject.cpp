@@ -977,6 +977,12 @@ uint32_t GameObject::getClientFlags() const
     if (mapObject)
         flags |= GO_FLAG_MAP_OBJECT;
 
+    // an elevator carries its passengers like a moving transport: the client needs the transport flag to attach a
+    // player standing on it. The world data sets 0x28 for elevators only up to the Cata build, the Mop data build the
+    // later targets run on has no override rows for them.
+    if (getGoType() == GAMEOBJECT_TYPE_TRANSPORT)
+        flags |= GO_FLAG_TRANSPORT | GO_FLAG_NEVER_DESPAWN;
+
     return flags;
 }
 
