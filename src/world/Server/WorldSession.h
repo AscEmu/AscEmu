@@ -238,13 +238,8 @@ public:
         [[nodiscard]] std::string localizedMapName(uint32_t id) const;
         [[nodiscard]] std::string localizedBroadCast(uint32_t id) const;
 
-#if VERSION_STRING != Cata
         uint32_t GetClientBuild() { return client_build; }
-        void SetClientBuild(uint32_t build) { client_build = static_cast<uint16_t>(build); }
-#else
-        uint16_t GetClientBuild() { return client_build; }
-        void SetClientBuild(uint16_t build) { client_build = build; }
-#endif
+        void SetClientBuild(uint32_t build) { client_build = build; }
 
         template <typename TPacket>
         bool parsePacket(WorldPacket& packet, TPacket& managedPacket)
@@ -1070,11 +1065,7 @@ protected:
         bool LoggingOut; // Player requesting to be logged out
 
         uint32_t _latency;
-#if VERSION_STRING < Cata
         uint32_t client_build;
-#else
-        uint16_t client_build;
-#endif
         std::atomic<uint32_t> instanceId;
         uint8_t _updatecount;
 

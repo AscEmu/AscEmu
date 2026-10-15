@@ -878,7 +878,7 @@ void WorldSocket::completeAuthentication(uint32_t AccountID, const std::string& 
 
     std::lock_guard guard(pSession->deleteMutex);
 
-    pSession->SetClientBuild(static_cast<uint16_t>(m_clientBuild));
+    pSession->SetClientBuild(m_clientBuild);
     pSession->readAddonInfoPacket(m_addonInfoBuffer);
     pSession->LoadSecurity(GMFlags);
     pSession->SetAccountFlags(AccountFlags);

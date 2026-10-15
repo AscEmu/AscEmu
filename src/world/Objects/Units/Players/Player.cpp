@@ -181,6 +181,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/EventMgr.h"
+#include "Server/ClientProtocol.hpp"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Script/HookInterface.hpp"
@@ -14769,6 +14770,9 @@ void Player::saveToDB(bool newCharacter /* =false */)
     ss << uint32_t(m_specs[SPEC_PRIMARY].getSpecializationId()) << " " << uint32_t(MAX_SPEC_COUNT > 1 ? m_specs[SPEC_SECONDARY].getSpecializationId() : 0);
     ss << "'";
 
+    // the build of the client the character is played with, checked against the level squish at load
+    ss << ", " << uint32_t(getSession()->GetClientBuild());
+
     ss << ")";
 
     if (newCharacter)
@@ -14906,6 +14910,38 @@ bool Player::loadFromDB(uint32_t guid)
     return true;
 }
 
+namespace
+{
+    // The level squish of 9.0: a character last played before it keeps its old level in the database, the level is
+    // converted when the server runs a client of 9.0 or later. The table lists the highest old level of every new
+    // level (the old level 50 counts to the new level 21), old levels above 120 become the new maximum
+    constexpr uint32_t LevelSquishBuild = WoW::Build::SHADOWLANDS_BUILD;
+    constexpr uint8_t LevelSquishOldMax[] =
+    {
+        1, 4, 7, 9, 11, 13, 15, 17, 19, 22, 25, 28, 31, 34, 36, 38, 40, 42, 44, 47, 50, 53, 56, 59, 63,
+        67, 71, 75, 79, 81, 83, 85, 87, 89, 91, 93, 95, 97, 99, 101, 103, 105, 107, 109, 111, 113, 115, 117, 119, 120
+    };
+
+    bool levelSquishRequired(uint32_t lastLoginBuild)
+    {
+#if VERSION_STRING >= Shadowlands
+        return lastLoginBuild < LevelSquishBuild;
+#else
+        (void)lastLoginBuild;
+        return false;
+#endif
+    }
+
+    uint32_t squishedLevel(uint32_t level)
+    {
+        for (size_t newLevel = 0; newLevel < std::size(LevelSquishOldMax); ++newLevel)
+            if (level <= LevelSquishOldMax[newLevel])
+                return static_cast<uint32_t>(newLevel + 1);
+
+        return static_cast<uint32_t>(std::size(LevelSquishOldMax));
+    }
+}
+
 void Player::loadFromDBProc(QueryResultVector& results)
 {
     auto startTime = Util::TimeNow();
@@ -14924,7 +14960,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
         return;
     }
 
-    const uint32_t fieldcount = 96;
+    const uint32_t fieldcount = 97;
     if (result->getFieldCount() != fieldcount)
     {
         sLogger.failure("Expected {} fields from the database, but received {}!  You may need to update your character database.", fieldcount, uint32_t(result->getFieldCount()));
@@ -14986,8 +15022,12 @@ void Player::loadFromDBProc(QueryResultVector& results)
         return;
     }
 
-    // set level
-    setLevel(field[7].asUint32());
+    // set level: a character last played before the level squish gets its level converted
+    const uint32_t lastLoginBuild = field[96].asUint32();
+    const bool levelSquished = levelSquishRequired(lastLoginBuild);
+    setLevel(levelSquished ? squishedLevel(field[7].asUint32()) : field[7].asUint32());
+    if (levelSquished)
+        sLogger.info("Player guid {} was last played with build {}: level {} converted to {}", getGuidLow(), lastLoginBuild, field[7].asUint32(), getLevel());
 
     // obtain level/stats information
     m_levelInfo = sObjectMgr.getLevelInfo(getRace(), getClass(), getLevel());
@@ -15006,8 +15046,8 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     setInitialPlayerData();
 
-    // set xp
-    setXp(field[8].asUint32());
+    // set xp, a converted level starts without experience
+    setXp(levelSquished ? 0 : field[8].asUint32());
 
     // Load active cheats
     uint32_t active_cheats = field[9].asUint32();
