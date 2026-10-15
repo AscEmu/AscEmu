@@ -60,7 +60,7 @@ public:
     bool loadFromDB(MySQLStructure::GameobjectSpawn* spawn, WorldMap* map, bool addToWorld);
     void saveToDB(bool newSpawn = false);
     void deleteFromDB();
-    bool create(uint32_t entry, WorldMap* map, uint32_t phase, LocationVector const& position, QuaternionData const&  rotation, GameObject_State state, uint32_t spawnId = 0);
+    bool create(uint32_t entry, WorldMap* map, uint32_t phase, LocationVector const& position, QuaternionData const& rotation, GameObjectState state, uint32_t spawnId = 0);
 
     uint32_t getLockId() const;
 
@@ -272,7 +272,7 @@ public:
         uint64_t m_lootStateUnitGUID = 0;
         bool m_noRespawn = false;
         time_t m_cooldownTime = 0;              // milliseconds
-        GameObject_State m_prevGoState = GO_STATE_OPEN; // What state to set whenever resetting
+        GameObjectState m_prevGoState = GO_STATE_OPEN; // What state to set whenever resetting
 
         int64_t m_packedRotation = 0;
         QuaternionData m_localRotation;

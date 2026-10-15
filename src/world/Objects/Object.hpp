@@ -26,6 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <atomic>
 
 #include "DamageInfo.hpp"
+#include "GameObjectDefines.hpp"
 #include "Data/Flags.hpp"
 
 namespace WDB::Structures
@@ -621,7 +622,7 @@ public:
 
         virtual float getCombatReach() const { return 0.0f; } // overridden (only) in Unit
 
-        GameObject* summonGameObject(uint32_t entryID, LocationVector pos, QuaternionData const& rot, uint32_t durationMs = 0, GOSummonType summonType = GO_SUMMON_TIMED_OR_CORPSE_DESPAWN);
+        GameObject* summonGameObject(uint32_t entryID, LocationVector pos, QuaternionData const& rot, uint32_t durationMs = 0, GameObjectSummonType summonType = GO_SUMMON_TIMED_OR_CORPSE_DESPAWN);
         Creature* summonCreature(uint32_t entry, LocationVector position, CreatureSummonDespawnType despawnType = MANUAL_DESPAWN, uint32_t duration = 0, uint32_t spellId = 0);
 
         float getDistanceSq(Object const* obj) const

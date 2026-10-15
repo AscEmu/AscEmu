@@ -297,7 +297,7 @@ void SpawnManager::refreshTemplateFromObjectNoLock(SpawnState& state, Object* ob
         go->getParentRotation(2),
         go->getParentRotation(3));
     row.spawntimesecs = go->getRespawnDelay();
-    row.state = GameObject_State(go->getState());
+    row.state = GameObjectState(go->getState());
     row.origine.clear();
 
     state.templateData = std::move(row);
@@ -531,7 +531,7 @@ GameObject* SpawnManager::createGameObject(uint32_t entry, LocationVector const&
     row.phase = go->GetPhase();
     row.spawnPoint = pos;
     row.rotation = rotation;
-    row.state = GameObject_State(go->getState());
+    row.state = GameObjectState(go->getState());
     state.templateData = row;
 
     const uint64_t guidRaw = go->GetNewGUID().getRawGuid();

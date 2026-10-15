@@ -519,7 +519,7 @@ void GameObject::saveToDB(bool newSpawn)
     m_spawn->spawnPoint = LocationVector(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
     m_spawn->rotation = QuaternionData(getParentRotation(0), getParentRotation(1), getParentRotation(2), getParentRotation(3));
     m_spawn->spawntimesecs = static_cast<uint32_t>(m_respawnDelayTime);
-    m_spawn->state = GameObject_State(getState());
+    m_spawn->state = GameObjectState(getState());
 
     std::stringstream ss;
     const QuaternionData& localRotation = getLocalRotation();
@@ -635,7 +635,7 @@ void GameObject::saveToDB(bool newSpawn)
     }
 }
 
-bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationVector const& position, QuaternionData const& rotation, GameObject_State state, uint32_t spawnId)
+bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationVector const& position, QuaternionData const& rotation, GameObjectState state, uint32_t spawnId)
 {
     gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
     if (gameobject_properties == nullptr)

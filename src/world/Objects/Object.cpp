@@ -5337,7 +5337,7 @@ Creature* Object::summonCreature(uint32_t entry, LocationVector position, Creatu
     return nullptr;
 }
 
-GameObject* Object::summonGameObject(uint32_t entry, LocationVector position, QuaternionData const& rot, uint32_t durationMs, GOSummonType summonType)
+GameObject* Object::summonGameObject(uint32_t entry, LocationVector position, QuaternionData const& rot, uint32_t durationMs, GameObjectSummonType summonType)
 {
     if (WorldMap* map = getWorldMap())
     {

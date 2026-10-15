@@ -4799,7 +4799,7 @@ void MySQLDataStore::loadGameobjectSpawns()
                 go_spawn->rotation.z = fields[12].asFloat();
                 go_spawn->rotation.w = fields[13].asFloat();
                 go_spawn->spawntimesecs = fields[14].asUint32();
-                go_spawn->state = GameObject_State(fields[15].asUint32());
+                go_spawn->state = GameObjectState(fields[15].asUint32());
                 //event_entry = 16
                 go_spawn->origine = fields[17].asCString();
 
