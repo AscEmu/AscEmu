@@ -6,10 +6,12 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "QuestPacketsGuid128.h"
 #include "QuestPacketCommon.h"
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace AscEmu::Packets
 {
@@ -40,6 +42,13 @@ namespace AscEmu::Packets
         uint32_t bonusArenaPoints = 0;
         uint32_t detailEmoteCount = 0; // pre-Cata, >TBC only: how many of detailEmotes to send
         QuestEmoteEntry detailEmotes[4];
+
+        // 6.x and later
+        QuestRewardsData rewards;
+        std::vector<QuestObjectiveEntry> objectiveList;
+        uint32_t questInfoId = 0;
+        uint32_t questGiverEntry = 0;
+        uint32_t startItem = 0;
     };
 
     class SmsgQuestgiverQuestDetails : public ManagedPacket
@@ -65,6 +74,124 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // the quest giver window: shown by a quest giver, the accept is not forced
+                const bool autoLaunched = true;
+                const bool displayPopup = false;
+                const bool isMidnight = m_protocol.isMidnight();
+                const bool isTheWarWithin = m_protocol.isTheWarWithin();
+                const uint32_t emoteCount = input.detailEmoteCount > 4 ? 4 : input.detailEmoteCount;
+
+                packet << WoWGuid(input.questGiverGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << WoWGuid(input.questSharerGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << int32_t(input.questId);
+                packet << int32_t(0);                       // quest package
+
+                if (m_protocol.isWoD())
+                {
+                    packet << int32_t(0);                   // portrait giver
+                    packet << int32_t(input.suggestedPlayers);
+                    packet << uint32_t(input.questFlags);
+                    packet << uint32_t(0);
+                    packet << int32_t(0);                   // portrait turn in
+                    packet << int32_t(0);                   // learn spells
+                    writeQuestRewards(packet, m_protocol, input.rewards);
+                    packet << int32_t(emoteCount);
+                    packet << int32_t(input.objectiveList.size());
+                }
+                else
+                {
+                    packet << int32_t(0);                   // portrait giver
+                    if (!m_protocol.isLegion())
+                        packet << int32_t(0);               // portrait giver mount
+                    if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+                        packet << int32_t(0);               // portrait giver model scene
+                    packet << int32_t(0);                   // portrait turn in
+                    writeQuestFlags(packet, m_protocol, input.questFlags);
+                    packet << int32_t(input.suggestedPlayers);
+                    packet << uint32_t(0);                  // learn spells
+                    if (isMidnight)
+                        writeQuestRewards(packet, m_protocol, input.rewards);
+                    packet << uint32_t(emoteCount);
+                    packet << uint32_t(input.objectiveList.size());
+                    packet << int32_t(input.startItem);
+                    if (isTheWarWithin || isMidnight)
+                        packet << int32_t(input.questInfoId);
+                    if (!m_protocol.isLegion())
+                        packet << int32_t(0);               // quest session bonus
+                    if (m_protocol.isDragonflight() || isTheWarWithin || isMidnight)
+                    {
+                        packet << int32_t(input.questGiverEntry);
+                        packet << uint32_t(0);              // conditional texts
+                    }
+                }
+
+                for (uint32_t i = 0; i < emoteCount; ++i)
+                {
+                    packet << int32_t(input.detailEmotes[i].emote);
+                    packet << uint32_t(input.detailEmotes[i].delay);
+                }
+
+                for (const auto& objective : input.objectiveList)
+                {
+                    packet << int32_t(objective.id);
+                    if (isTheWarWithin || isMidnight)
+                    {
+                        packet << int32_t(objective.type);
+                        packet << int32_t(objective.objectId);
+                        packet << int32_t(objective.amount);
+                    }
+                    else
+                    {
+                        packet << int32_t(objective.objectId);
+                        packet << int32_t(objective.amount);
+                        packet << uint8_t(objective.type);
+                    }
+                }
+
+                packet.writeBits(static_cast<uint32_t>(input.title.length()), 9);
+                packet.writeBits(static_cast<uint32_t>(input.details.length()), 12);
+                packet.writeBits(static_cast<uint32_t>(input.objectives.length()), 12);
+                packet.writeBits(0, 10);                    // portrait giver text
+                packet.writeBits(0, 8);                     // portrait giver name
+                packet.writeBits(0, 10);                    // portrait turn in text
+                packet.writeBits(0, 8);                     // portrait turn in name
+
+                if (m_protocol.isWoD())
+                {
+                    packet.writeBit(displayPopup);
+                    packet.writeBit(false);                 // start cheat
+                    packet.writeBit(autoLaunched);
+                }
+                else if (m_protocol.isLegion())
+                {
+                    packet.writeBit(autoLaunched);
+                    packet.writeBit(false);                 // start cheat
+                    packet.writeBit(displayPopup);
+                }
+                else
+                {
+                    packet.writeBit(autoLaunched);
+                    if (m_protocol.isDragonflight() || isTheWarWithin || isMidnight)
+                        packet.writeBit(false);             // from content push
+                    packet.writeBit(false);                 // 12.x replay quest, unused before
+                    if (isTheWarWithin || isMidnight)
+                        packet.writeBit(false);             // reset by scheduler
+                    packet.writeBit(false);                 // start cheat
+                    packet.writeBit(displayPopup);
+                }
+                packet.flushBits();
+
+                if (!m_protocol.isWoD() && !isMidnight)
+                    writeQuestRewards(packet, m_protocol, input.rewards);
+
+                packet.writeString(input.title);
+                packet.writeString(input.details);
+                packet.writeString(input.objectives);
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // Fields AscEmu's QuestProperties doesn't model (currency rewards, reward package id,

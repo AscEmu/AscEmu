@@ -36,6 +36,54 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // quests with their blobs; 8.x and later address the blobs by ui map, the world map areas of the data
+                // build do not fit there, these quests go out without blobs
+                const bool withBlobs = m_protocol.isWoD() || m_protocol.isLegion();
+                const size_t count = questIds.size() < questCount ? questIds.size() : questCount;
+
+                packet << int32_t(count);
+                packet << int32_t(count);
+                for (size_t i = 0; i < count; ++i)
+                {
+                    const uint32_t questId = questIds[i];
+                    QuestPOIVector const* poi = nullptr;
+                    if (withBlobs && sMySQLStore.getQuestProperties(questId) != nullptr)
+                        poi = sQuestMgr.getQuestPOIMap(questId);
+
+                    packet << int32_t(questId);
+                    packet << int32_t(poi != nullptr ? poi->size() : 0);
+                    if (poi == nullptr)
+                        continue;
+
+                    for (const auto& blob : *poi)
+                    {
+                        packet << int32_t(blob.PoiId);
+                        packet << int32_t(blob.ObjectiveIndex);
+                        packet << int32_t(blob.ObjectiveIndex >= 0 ? static_cast<int32_t>((questId << 4) | static_cast<uint32_t>(blob.ObjectiveIndex)) : 0);
+                        packet << int32_t(0);               // quest object
+                        packet << int32_t(blob.MapId);
+                        packet << int32_t(blob.MapAreaId);
+                        packet << int32_t(blob.FloorId);
+                        packet << int32_t(blob.Unk3);       // priority
+                        packet << int32_t(blob.Unk4);       // flags
+                        packet << int32_t(0);               // world effect
+                        packet << int32_t(0);               // player condition
+                        packet << int32_t(0);               // spawn tracking
+                        packet << int32_t(blob.points.size());
+                        for (const auto& point : blob.points)
+                            packet << int32_t(point.x) << int32_t(point.y);
+                        if (m_protocol.isLegion())
+                        {
+                            packet.writeBit(false);         // always allow merging blobs
+                            packet.flushBits();
+                        }
+                    }
+                }
+                return true;
+            }
+
             if (!m_protocol.isMop())
             {
                 packet << questCount;

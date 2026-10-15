@@ -34,6 +34,14 @@ namespace AscEmu::Packets
             {
                 packet >> questCount;
             }
+            else if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // count, then a fixed array of which the first count entries are used (6.x and 7.x 50, 8.x and 9.x
+                // 125, 10.x and later 175 entries)
+                packet >> questCount;
+                if (questCount > 175)
+                    return false;
+            }
             else if (m_protocol.isMop())
             {
                 questCount = packet.readBits(22);

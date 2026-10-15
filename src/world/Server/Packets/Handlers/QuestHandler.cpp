@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgQuestgiverOfferReward.h"
 #include "Server/Packets/SmsgQuestgiverQuestDetails.h"
 #include "Server/Packets/SmsgQuestgiverRequestItems.h"
+#include "Server/Packets/SmsgQueryQuestInfoResponse.h"
 #include "Server/WorldSession.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -338,6 +339,76 @@ std::unique_ptr<WorldPacket> WorldSession::buildQuestQueryResponse(QuestProperti
     *data << uint32_t(0);                                              // sound turn in?
 
     return data;
+}
+#elif VERSION_STRING >= WoD
+std::unique_ptr<WorldPacket> WorldSession::buildQuestQueryResponse(QuestProperties const* qst)
+{
+    MySQLStructure::LocalesQuest const* lci = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
+    const bool hiddenReward = qst->HasFlag(QUEST_FLAGS_HIDDEN_REWARDS);
+
+    QueryQuestInfoInput input;
+    input.questId = qst->id;
+    input.questLevel = qst->questlevel;
+    input.questMinLevel = static_cast<int32_t>(qst->min_level);
+    input.questSortId = qst->quest_sort > 0 ? -static_cast<int32_t>(qst->quest_sort) : static_cast<int32_t>(qst->zone_id);
+    input.questInfoId = static_cast<int32_t>(qst->type);
+    input.suggestedGroupNum = static_cast<int32_t>(qst->suggestedplayers);
+    input.rewardNextQuest = static_cast<int32_t>(qst->next_quest_id);
+    input.rewardXpDifficulty = static_cast<int32_t>(qst->RewXPId);
+    input.rewardMoney = hiddenReward ? 0 : static_cast<int32_t>(sQuestMgr.GenerateRewardMoney(_player, qst));
+    input.rewardBonusMoney = static_cast<int32_t>(qst->rew_money_at_max_level);
+    input.rewardDisplaySpell = static_cast<int32_t>(qst->reward_spell);
+    input.rewardSpell = static_cast<int32_t>(qst->effect_on_player);
+    input.rewardHonor = static_cast<int32_t>(qst->bonushonor);
+    input.startItem = static_cast<int32_t>(qst->srcitem);
+    input.flags = qst->quest_flags;
+
+    if (!hiddenReward)
+    {
+        for (uint8_t i = 0; i < 4; ++i)
+        {
+            input.rewardItems[i].itemId = qst->reward_item[i];
+            input.rewardItems[i].count = qst->reward_itemcount[i];
+        }
+
+        for (uint8_t i = 0; i < 6; ++i)
+        {
+            input.choiceItems[i].itemId = qst->reward_choiceitem[i];
+            input.choiceItems[i].count = qst->reward_choiceitemcount[i];
+            if (ItemProperties const* itemProperties = sMySQLStore.getItemProperties(qst->reward_choiceitem[i]))
+                input.choiceItems[i].displayId = itemProperties->DisplayInfoID;
+        }
+    }
+
+    input.poiContinent = static_cast<int32_t>(qst->point_mapid);
+    input.poiX = qst->point_x;
+    input.poiY = qst->point_y;
+    input.poiPriority = static_cast<int32_t>(qst->point_opt);
+    input.rewardTitle = static_cast<int32_t>(qst->rewardtitleid);
+    input.rewardTalents = static_cast<int32_t>(qst->rewardtalents);
+    input.rewardArenaPoints = static_cast<int32_t>(qst->bonusarenapoints);
+
+    for (uint8_t i = 0; i < 5; ++i)
+    {
+        input.factionId[i] = static_cast<int32_t>(qst->reward_repfaction[i]);
+        input.factionValue[i] = qst->reward_repvalue[i];
+    }
+
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        input.currencyId[i] = static_cast<int32_t>(qst->reward_currency_id[i]);
+        input.currencyCount[i] = static_cast<int32_t>(qst->reward_currency_count[i]);
+    }
+
+    input.timeAllowed = static_cast<int32_t>(qst->time);
+    input.objectives = sQuestMgr.buildQuestObjectiveList(qst, language);
+    input.logTitle = lci ? lci->title : qst->title;
+    input.logDescription = lci ? lci->objectives : qst->objectives;
+    input.questDescription = lci ? lci->details : qst->details;
+    input.areaDescription = lci ? lci->endText : qst->endtext;
+
+    SmsgQueryQuestInfoResponse managedPacket(std::move(input));
+    return buildPacket(managedPacket);
 }
 #else
 namespace

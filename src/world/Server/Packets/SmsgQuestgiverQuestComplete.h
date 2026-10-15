@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "QuestPacketsGuid128.h"
 
 #include <cstdint>
 
@@ -41,6 +42,48 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // no reward item, no skill reward
+                if (m_protocol.isWoD())
+                {
+                    packet << int32_t(questId);
+                    packet << int32_t(0);           // skill line
+                    packet << int32_t(rewardMoney);
+                    packet << int32_t(0);           // skill ups
+                    packet << int32_t(xp);
+                    packet << int32_t(bonusTalent);
+                    writeEmptyItemInstance(packet, m_protocol, 0);
+                    packet.writeBit(false);         // use quest reward
+                    packet.writeBit(false);         // launch gossip
+                    packet.flushBits();
+                    return true;
+                }
+
+                packet << int32_t(questId);
+                packet << int32_t(xp);
+                packet << int64_t(rewardMoney);
+                packet << int32_t(0);               // skill line
+                packet << int32_t(0);               // skill ups
+
+                // 12.x: the item before the bits
+                if (m_protocol.isMidnight())
+                    writeEmptyItemInstance(packet, m_protocol, 0);
+
+                packet.writeBit(false);             // use quest reward
+                packet.writeBit(false);             // launch gossip
+                packet.writeBit(false);             // launch quest
+                packet.writeBit(false);             // hide chat message
+                if (m_protocol.isLegion())
+                    packet.flushBits();
+
+                if (!m_protocol.isMidnight())
+                    writeEmptyItemInstance(packet, m_protocol, 0);
+                else
+                    packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet << questId << xp << rewardMoney << bonusHonor << bonusTalent << bonusArenaPoints;

@@ -37,6 +37,25 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // victim, quest, object, count, required, objective type (11.x and later as 32 bit value)
+                const int32_t signedEntry = static_cast<int32_t>(mobEntry);
+                const uint8_t objectiveType = signedEntry < 0 ? 2 : 0;     // 2 = gameobject, 0 = creature
+                const int32_t objectId = signedEntry < 0 ? -signedEntry : signedEntry;
+
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << int32_t(questId);
+                packet << int32_t(objectId);
+                packet << uint16_t(count);
+                packet << uint16_t(tCount);
+                if (m_protocol.isTheWarWithinOrLater())
+                    packet << uint32_t(objectiveType);
+                else
+                    packet << uint8_t(objectiveType);
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << questId << mobEntry << count << tCount << guid;

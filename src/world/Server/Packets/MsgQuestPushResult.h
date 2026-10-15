@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "Storage/MySQLDataStore.hpp"
+#include "Management/QuestProperties.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -49,6 +51,27 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // sender, result (11.x and later as 32 bit value), 9.x and later the quest title
+                packet << WoWGuid(giverGuid).toGuid128(m_protocol.realmId, 0);
+                if (m_protocol.isTheWarWithinOrLater())
+                    packet << uint32_t(pushResult);
+                else
+                    packet << uint8_t(pushResult);
+
+                if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+                {
+                    std::string title;
+                    if (QuestProperties const* quest = sMySQLStore.getQuestProperties(questId))
+                        title = quest->title;
+                    packet.writeBits(static_cast<uint32_t>(title.length()), 9);
+                    packet.flushBits();
+                    packet.writeString(title);
+                }
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << giverGuid << pushResult;
@@ -83,6 +106,15 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 6.x and later: CMSG_QUEST_PUSH_RESULT
+                WoWGuid128 guid;
+                packet >> guid >> questId >> pushResult;
+                giverGuid = WoWGuid::fromGuid128(guid).getRawGuid();
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet >> giverGuid;

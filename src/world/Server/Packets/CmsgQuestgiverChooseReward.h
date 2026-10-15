@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "Storage/MySQLDataStore.hpp"
+#include "Management/QuestProperties.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -49,6 +51,47 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                WoWGuid128 clientGuid;
+                packet >> clientGuid;
+                questgiverGuid = WoWGuid::fromGuid128(clientGuid);
+                packet >> questId;
+
+                // the client names the chosen item (9.x and later: as reward choice with loot type), the
+                // handler takes the slot of the item in the choices of the quest
+                uint32_t itemId = 0;
+                if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+                {
+                    packet >> itemId;
+                }
+                else
+                {
+                    packet.resetBitPos();
+                    packet.readBits(2);             // loot type
+                    if (m_protocol.isTheWarWithinOrLater())
+                        packet.readBit();           // context flags
+                    packet >> itemId;
+                }
+
+                rewardSlot = itemId == 0 ? 0 : 6;
+                if (itemId != 0)
+                {
+                    if (QuestProperties const* quest = sMySQLStore.getQuestProperties(questId))
+                    {
+                        for (uint32_t i = 0; i < 6; ++i)
+                        {
+                            if (quest->reward_choiceitem[i] == itemId)
+                            {
+                                rewardSlot = i;
+                                break;
+                            }
+                        }
+                    }
+                }
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 uint64_t unpackedGuid;

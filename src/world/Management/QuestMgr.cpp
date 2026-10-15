@@ -1509,6 +1509,105 @@ void QuestMgr::SetGameObjectLootQuest(uint32_t GO_Entry, uint32_t Item_Entry)
         sLogger.debug("QuestMgr : No corresponding quest was found for loot_gameobjects entryid {} quest item {}", GO_Entry, Item_Entry);*/
 }
 
+namespace
+{
+    // 6.x and later: the rewards block of the quest details and of the reward offer
+    QuestRewardsData buildQuestRewardsData(QuestProperties const* qst, uint32_t xp, uint32_t money)
+    {
+        QuestRewardsData rewards;
+        rewards.choiceItemCount = qst->count_reward_choiceitem;
+        for (uint8_t i = 0; i < 6; ++i)
+        {
+            rewards.choiceItems[i].itemId = qst->reward_choiceitem[i];
+            rewards.choiceItems[i].count = qst->reward_choiceitemcount[i];
+        }
+
+        rewards.itemCount = qst->count_reward_item;
+        for (uint8_t i = 0; i < 4; ++i)
+        {
+            rewards.items[i].itemId = qst->reward_item[i];
+            rewards.items[i].count = qst->reward_itemcount[i];
+        }
+
+        rewards.money = money;
+        rewards.xp = xp;
+        rewards.honor = qst->bonushonor;
+        rewards.title = qst->rewardtitleid;
+        rewards.talents = qst->rewardtalents;
+
+        for (uint8_t i = 0; i < 5; ++i)
+        {
+            rewards.factionId[i] = qst->reward_repfaction[i];
+            rewards.factionValue[i] = qst->reward_repvalue[i];
+        }
+
+        rewards.displaySpell = qst->reward_spell;
+        rewards.spell = qst->effect_on_player;
+
+        for (uint8_t i = 0; i < 4; ++i)
+        {
+            rewards.currencyId[i] = qst->reward_currency_id[i];
+            rewards.currencyCount[i] = qst->reward_currency_count[i];
+        }
+
+        return rewards;
+    }
+}
+
+std::vector<QuestObjectiveEntry> QuestMgr::buildQuestObjectiveList(QuestProperties const* qst, uint32_t language)
+{
+    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
+
+    std::vector<QuestObjectiveEntry> objectives;
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        QuestObjectiveEntry objective;
+        objective.id = (qst->id << 4) | i;
+        objective.storageIndex = static_cast<int8_t>(i);
+        objective.amount = static_cast<int32_t>(qst->required_mob_or_go_count[i]);
+        objective.description = lq != nullptr ? lq->objectiveText[i] : qst->objectivetexts[i];
+
+        if (qst->required_mob_or_go[i] > 0)
+        {
+            objective.type = 0;
+            objective.objectId = qst->required_mob_or_go[i];
+        }
+        else if (qst->required_mob_or_go[i] < 0)
+        {
+            objective.type = 2;
+            objective.objectId = -qst->required_mob_or_go[i];
+        }
+        else if (qst->required_spell[i] != 0)
+        {
+            objective.type = 5;
+            objective.objectId = static_cast<int32_t>(qst->required_spell[i]);
+        }
+        else
+        {
+            continue;
+        }
+
+        objectives.push_back(std::move(objective));
+    }
+
+    uint8_t nextIndex = 4;
+    for (uint8_t i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
+    {
+        if (qst->required_item[i] == 0)
+            continue;
+
+        QuestObjectiveEntry objective;
+        objective.id = (qst->id << 4) | nextIndex;
+        objective.storageIndex = static_cast<int8_t>(nextIndex++);
+        objective.type = 1;
+        objective.objectId = static_cast<int32_t>(qst->required_item[i]);
+        objective.amount = static_cast<int32_t>(qst->required_itemcount[i]);
+        objectives.push_back(std::move(objective));
+    }
+
+    return objectives;
+}
+
 QuestgiverOfferRewardInput QuestMgr::buildOfferRewardInput(QuestProperties const* qst, Object* qst_giver, Player* plr, uint32_t language)
 {
     QuestgiverOfferRewardInput input;
@@ -1560,6 +1659,10 @@ QuestgiverOfferRewardInput QuestMgr::buildOfferRewardInput(QuestProperties const
     for (uint8_t i = 0; i < 4; ++i)
         input.detailEmotes[i] = { qst->detailemote[i], qst->detailemotedelay[i] };
 
+    input.rewards = buildQuestRewardsData(qst, input.xp, input.rewardMoney);
+    input.questInfoId = qst->type;
+    input.questGiverEntry = qst_giver->isCreature() ? qst_giver->getEntry() : 0;
+
     return input;
 }
 
@@ -1609,6 +1712,12 @@ QuestgiverQuestDetailsInput QuestMgr::buildQuestDetailsInput(QuestProperties con
     for (uint8_t i = 0; i < 4; ++i)
         input.detailEmotes[i] = { qst->detailemote[i], qst->detailemotedelay[i] };
 
+    input.rewards = buildQuestRewardsData(qst, input.xp, input.rewardMoney);
+    input.objectiveList = buildQuestObjectiveList(qst, language);
+    input.questInfoId = qst->type;
+    input.questGiverEntry = qst_giver->isCreature() ? qst_giver->getEntry() : 0;
+    input.startItem = qst->srcitem;
+
     return input;
 }
 
@@ -1638,6 +1747,8 @@ QuestgiverRequestItemsInput QuestMgr::buildRequestItemsInput(QuestProperties con
     input.suggestedPlayers = qst->suggestedplayers;
     input.requiredMoney = static_cast<uint32_t>(qst->reward_money < 0 ? -qst->reward_money : 0);
     input.countRequiredItem = qst->count_required_item;
+    input.questInfoId = qst->type;
+    input.questGiverEntry = qst_giver->isCreature() ? qst_giver->getEntry() : 0;
 
     for (uint8_t i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
     {

@@ -57,6 +57,74 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // quest giver, greeting emote, the quests; 7.x to 11.x with the greeting length in front of them
+                const bool greetingFirst = !m_protocol.isWoD() && !m_protocol.isMidnight();
+
+                packet << WoWGuid(input.questGiverGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << uint32_t(0);                      // greeting emote delay
+                packet << uint32_t(0);                      // greeting emote
+                packet << uint32_t(input.quests.size());
+
+                if (greetingFirst)
+                {
+                    packet.writeBits(static_cast<uint32_t>(input.greeting.length()), 11);
+                    packet.flushBits();
+                }
+
+                for (const auto& quest : input.quests)
+                {
+                    packet << int32_t(quest.questId);
+                    if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA())
+                    {
+                        packet << uint32_t(quest.statusIcon);
+                        packet << int32_t(quest.questLevel);
+                        if (!m_protocol.isWoD())
+                            packet << int32_t(255);         // max scaling level
+                        packet << uint32_t(quest.questFlags);
+                        packet << uint32_t(0);              // flags 2
+                        packet.writeBit(quest.isRepeatable);
+                    }
+                    else
+                    {
+                        packet << int32_t(0);               // content tuning
+                        packet << int32_t(quest.statusIcon);
+                        if (m_protocol.isTheWarWithinOrLater())
+                        {
+                            packet << int32_t(0);           // 11.x unused, 12.x quest info
+                            packet << int32_t(quest.questFlags);
+                            packet << int32_t(0);
+                            packet << int32_t(0);
+                            packet << int32_t(0);
+                            packet.writeBit(quest.isRepeatable);
+                            packet.writeBit(false);         // reset by scheduler
+                            packet.writeBit(false);         // important
+                            packet.writeBit(false);         // meta
+                        }
+                        else
+                        {
+                            packet << int32_t(quest.questFlags);
+                            packet << int32_t(0);
+                            packet.writeBit(quest.isRepeatable);
+                            if (m_protocol.isDragonflight())
+                                packet.writeBit(false);     // important
+                        }
+                    }
+                    packet.writeBits(static_cast<uint32_t>(quest.title.length()), 9);
+                    packet.flushBits();
+                    packet.writeString(quest.title);
+                }
+
+                if (!greetingFirst)
+                {
+                    packet.writeBits(static_cast<uint32_t>(input.greeting.length()), 11);
+                    packet.flushBits();
+                }
+                packet.writeString(input.greeting);
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // Quests with !input.isValid naturally serialise as an empty (count == 0) list,

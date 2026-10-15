@@ -45,6 +45,7 @@ namespace AscEmu::Packets
     struct QuestgiverQuestDetailsInput;
     struct QuestgiverRequestItemsInput;
     struct QuestgiverQuestListInput;
+    struct QuestObjectiveEntry;
 }
 
 struct QuestRelation
@@ -140,6 +141,10 @@ public:
         AscEmu::Packets::QuestgiverQuestDetailsInput buildQuestDetailsInput(QuestProperties const* qst, Object* qst_giver, Player* plr, uint32_t language);
         AscEmu::Packets::QuestgiverRequestItemsInput buildRequestItemsInput(QuestProperties const* qst, Object* qst_giver, uint32_t status, uint32_t language);
         AscEmu::Packets::QuestgiverQuestListInput buildQuestListInput(Object* qst_giver, Player* plr, uint32_t language);
+
+        // 6.x and later: the objectives as the client knows them, creatures, game objects and spells take the storage
+        // index of their requirement, the items follow behind them
+        std::vector<AscEmu::Packets::QuestObjectiveEntry> buildQuestObjectiveList(QuestProperties const* qst, uint32_t language);
         bool isRepeatableQuestFinished(Player* plr, QuestProperties const* qst);
 
         void SendQuestUpdateAddKill(Player* plr, uint32_t questid, uint32_t entry, uint32_t count, uint32_t tcount, uint64_t guid);

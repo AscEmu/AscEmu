@@ -29,6 +29,18 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 12.x: hide credit message bit
+                packet << int32_t(questId);
+                if (m_protocol.isMidnight())
+                {
+                    packet.writeBit(false);
+                    packet.flushBits();
+                }
+                return true;
+            }
+
             packet << questId;
 
             return true;

@@ -30,6 +30,18 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // reason, 7.x and later the contribution reward, error message bit and an empty reason text
+                packet << uint32_t(reason);
+                if (!m_protocol.isWoD())
+                    packet << int32_t(0);
+                packet.writeBit(true);
+                packet.writeBits(0, 9);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
                 packet.writeBit(1);

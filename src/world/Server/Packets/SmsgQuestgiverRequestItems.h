@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "QuestPacketsGuid128.h"
 #include "QuestPacketCommon.h"
 
 #include <cstdint>
@@ -28,6 +29,10 @@ namespace AscEmu::Packets
         uint32_t requiredMoney = 0;
         uint32_t countRequiredItem = 0;
         QuestRewardItemEntry requiredItems[6]; // MAX_REQUIRED_QUEST_ITEM
+
+        // 6.x and later
+        uint32_t questInfoId = 0;
+        uint32_t questGiverEntry = 0;
     };
 
     class SmsgQuestgiverRequestItems : public ManagedPacket
@@ -53,6 +58,85 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // the items the quest wants; 7.x and later tell whether the quest can be completed
+                uint32_t collectCount = 0;
+                for (const auto& item : input.requiredItems)
+                {
+                    if (item.itemId != 0)
+                        ++collectCount;
+                }
+
+                int32_t statusFlags = 0xDF;
+                if (!m_protocol.isWoD())
+                    statusFlags = input.isNotFinished ? 0xFD : 0xFF;
+
+                auto writeCollect = [&]()
+                {
+                    for (const auto& item : input.requiredItems)
+                    {
+                        if (item.itemId == 0)
+                            continue;
+
+                        packet << int32_t(item.itemId);
+                        packet << int32_t(item.count);
+                        if (!m_protocol.isWoD())
+                            packet << uint32_t(0);          // flags
+                    }
+                };
+
+                if (m_protocol.isTheWarWithinOrLater())
+                {
+                    packet << int32_t(collectCount);
+                    packet << int32_t(0);                   // currencies
+                    packet << WoWGuid(input.questGiverGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                    writeQuestFlags(packet, m_protocol, input.questFlags);
+                    packet << int32_t(statusFlags);
+                    packet << int32_t(input.questGiverEntry);
+                    packet << int32_t(input.questId);
+                    packet << int32_t(0);                   // emote delay
+                    packet << int32_t(input.statusEmote);
+                    packet << int32_t(input.suggestedPlayers);
+                    packet << int32_t(input.requiredMoney);
+                    packet << int32_t(input.questInfoId);
+                    writeCollect();
+                    packet.writeBit(false);                 // auto launched
+                    packet.writeBit(false);                 // reset by scheduler
+                    packet.flushBits();
+                }
+                else
+                {
+                    packet << WoWGuid(input.questGiverGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                    packet << int32_t(input.questGiverEntry);
+                    packet << int32_t(input.questId);
+                    packet << int32_t(0);                   // emote delay
+                    packet << int32_t(input.statusEmote);
+                    writeQuestFlags(packet, m_protocol, input.questFlags);
+                    packet << int32_t(input.suggestedPlayers);
+                    packet << int32_t(input.requiredMoney);
+                    packet << int32_t(collectCount);
+                    packet << int32_t(0);                   // currencies
+                    packet << int32_t(statusFlags);
+                    writeCollect();
+                    packet.writeBit(false);                 // auto launched
+                    packet.flushBits();
+                }
+
+                if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+                {
+                    packet << int32_t(input.questGiverEntry);
+                    packet << uint32_t(0);                  // conditional texts
+                }
+
+                packet.writeBits(static_cast<uint32_t>(input.title.length()), 9);
+                packet.writeBits(static_cast<uint32_t>(input.requestItemsText.length()), 12);
+                packet.flushBits();
+                packet.writeString(input.title);
+                packet.writeString(input.requestItemsText);
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // Fields AscEmu's QuestProperties doesn't model (currency objectives, ender NPC/GO entry,

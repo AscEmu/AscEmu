@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "QuestPacketsGuid128.h"
 #include "QuestPacketCommon.h"
 
 #include <cstdint>
@@ -40,6 +41,11 @@ namespace AscEmu::Packets
         uint32_t bonusArenaPoints = 0;
         uint32_t rewardMoney = 0; // Cata only
         QuestEmoteEntry detailEmotes[4]; // Cata only, always 4 entries
+
+        // 6.x and later
+        QuestRewardsData rewards;
+        uint32_t questInfoId = 0;
+        uint32_t questGiverEntry = 0;
     };
 
     class SmsgQuestgiverOfferReward : public ManagedPacket
@@ -65,6 +71,88 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // the reward offer: quest data with the rewards, then portraits and texts
+                const bool autoLaunched = true;
+                const auto writeEmotes = [&]()
+                {
+                    for (const auto& emote : input.completionEmotes)
+                    {
+                        packet << int32_t(emote.emote);
+                        packet << uint32_t(emote.delay);
+                    }
+                };
+
+                if (m_protocol.isTheWarWithinOrLater())
+                {
+                    writeQuestRewards(packet, m_protocol, input.rewards);
+                    packet << int32_t(input.completionEmotes.size());
+                    packet << WoWGuid(input.questGiverGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                    writeQuestFlags(packet, m_protocol, input.questFlags);
+                    packet << int32_t(input.questGiverEntry);
+                    packet << int32_t(input.questId);
+                    packet << int32_t(input.suggestedPlayers);
+                    packet << int32_t(input.questInfoId);
+                    writeEmotes();
+                    packet.writeBit(autoLaunched);
+                    packet.writeBit(false);
+                    packet.writeBit(false);                 // reset by scheduler
+                    packet.flushBits();
+                }
+                else
+                {
+                    packet << WoWGuid(input.questGiverGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                    packet << int32_t(input.questGiverEntry);
+                    packet << int32_t(input.questId);
+                    writeQuestFlags(packet, m_protocol, input.questFlags);
+                    packet << int32_t(input.suggestedPlayers);
+                    if (m_protocol.isWoD())
+                        writeQuestRewards(packet, m_protocol, input.rewards);
+                    packet << int32_t(input.completionEmotes.size());
+                    writeEmotes();
+                    packet.writeBit(autoLaunched);
+                    if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
+                        packet.writeBit(false);
+                    packet.flushBits();
+                    if (!m_protocol.isWoD())
+                        writeQuestRewards(packet, m_protocol, input.rewards);
+                }
+
+                if (m_protocol.isWoD())
+                {
+                    packet << int32_t(0);                   // portrait turn in
+                    packet << int32_t(0);                   // portrait giver
+                    packet << int32_t(0);                   // quest package
+                }
+                else
+                {
+                    packet << int32_t(0);                   // quest package
+                    packet << int32_t(0);                   // portrait giver
+                    if (!m_protocol.isLegion())
+                        packet << int32_t(0);               // portrait giver mount
+                    if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+                        packet << int32_t(0);               // portrait giver model scene
+                    packet << int32_t(0);                   // portrait turn in
+                    if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+                    {
+                        packet << int32_t(input.questGiverEntry);
+                        packet << uint32_t(0);              // conditional texts
+                    }
+                }
+
+                packet.writeBits(static_cast<uint32_t>(input.title.length()), 9);
+                packet.writeBits(static_cast<uint32_t>(input.completionText.length()), 12);
+                packet.writeBits(0, 10);                    // portrait giver text
+                packet.writeBits(0, 8);                     // portrait giver name
+                packet.writeBits(0, 10);                    // portrait turn in text
+                packet.writeBits(0, 8);                     // portrait turn in name
+                packet.flushBits();
+                packet.writeString(input.title);
+                packet.writeString(input.completionText);
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // Fields AscEmu's QuestProperties doesn't model (currency rewards, reward package id,
