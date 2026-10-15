@@ -31,6 +31,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "version/Dragonflight/World/WorldProfile.hpp"
 #elif AE_WORLD_PROFILE_THEWARWITHIN
 #include "version/TheWarWithin/World/WorldProfile.hpp"
+#elif AE_WORLD_PROFILE_MIDNIGHT
+#include "version/Midnight/World/WorldProfile.hpp"
 #endif
 
 #include <openssl/bio.h>
@@ -51,7 +53,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-#if AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS || AE_WORLD_PROFILE_DRAGONFLIGHT || AE_WORLD_PROFILE_THEWARWITHIN
+#if AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS || AE_WORLD_PROFILE_DRAGONFLIGHT || AE_WORLD_PROFILE_THEWARWITHIN || AE_WORLD_PROFILE_MIDNIGHT
 
 namespace
 {
@@ -68,7 +70,7 @@ namespace
 
         // 11.x widened the transport: 32 bit opcodes, 32 byte challenges and seeds, SHA512 for the digests and the
         // session key, AES-256-GCM for the packets
-        constexpr bool WideTransport = Profile::Expansion == WoW::Expansion::_TheWarWithin;
+        constexpr bool WideTransport = Profile::Expansion == WoW::Expansion::_TheWarWithin || Profile::Expansion == WoW::Expansion::_Midnight;
         constexpr size_t OpcodeSize = WideTransport ? sizeof(uint32_t) : sizeof(uint16_t);
         constexpr size_t ChallengeSize = WideTransport ? 32 : 16;
         constexpr size_t EncryptKeySize = WideTransport ? AesGcmCrypt::KeySize256 : AesGcmCrypt::KeySize;
@@ -596,10 +598,10 @@ bool WorldSocket::sendAesEnterEncryptedMode()
     std::array<uint8_t, AesWorld::Hash::DigestLength> digest{};
     AesWorld::Hash::hmac(m_aesEncryptKey.data(), AesWorld::EncryptKeySize, message.data(), message.size(), digest.data());
 
-    // 8.x: RSA signature, 9.x, 10.x and 11.x: Ed25519 signature with a context
+    // 8.x: RSA signature, 9.x and later: Ed25519 signature with a context
     std::array<uint8_t, AesWorld::SignatureSize> signature{};
     size_t signatureSize = AesWorld::SignatureSize;
-    if constexpr (Profile::Expansion == WoW::Expansion::_Shadowlands || Profile::Expansion == WoW::Expansion::_Dragonflight || Profile::Expansion == WoW::Expansion::_TheWarWithin)
+    if constexpr (Profile::Expansion == WoW::Expansion::_Shadowlands || Profile::Expansion == WoW::Expansion::_Dragonflight || Profile::Expansion == WoW::Expansion::_TheWarWithin || Profile::Expansion == WoW::Expansion::_Midnight)
     {
         signatureSize = Ed25519SignatureSize;
         if (!signDigestEd25519(digest.data(), digest.size(), signature.data()))
@@ -782,40 +784,68 @@ bool WorldSocket::sendConnectTo(uint64_t key, uint32_t serial)
 
     const uint16_t port = static_cast<uint16_t>(worldConfig.listen.listenPort);
 
-    // where: type and address; signed together with the type as uint32 and the port
-    std::vector<uint8_t> where;
-    where.push_back(AesWorld::AddressTypeIPv4);
-    where.insert(where.end(), reinterpret_cast<const uint8_t*>(&local.sin_addr), reinterpret_cast<const uint8_t*>(&local.sin_addr) + 4);
-
-    std::vector<uint8_t> signed_;
-    signed_.insert(signed_.end(), where.begin(), where.end());
-    appendUInt32LE(signed_, AesWorld::AddressTypeIPv4);
-    appendUInt16LE(signed_, port);
-
-    std::array<uint8_t, AesWorld::SignatureSize> signature{};
-    if (!signMessage(signed_.data(), signed_.size(), signature.data()))
+    if constexpr (Profile::Expansion == WoW::Expansion::_Midnight)
     {
-        sLogger.failure("WorldSocket::{}: cannot sign SMSG_CONNECT_TO", Profile::Name);
-        return false;
-    }
-
-    // signature, where, port, serial, connection type, key; 11.x: the native realm address and the third key
-    WorldPacket connectTo(SMSG_CONNECT_TO, AesWorld::SignatureSize + where.size() + 2 + 4 + 1 + 8 + 8);
-    connectTo.append(signature.data(), signature.size());
-    connectTo.append(where.data(), where.size());
-    connectTo << uint16_t(port);
-    connectTo << uint32_t(serial);
-    connectTo << uint8_t(AesWorld::ConnectionTypeInstance);
-    connectTo << uint64_t(key);
-    if constexpr (AesWorld::WideTransport)
-    {
+        // 12.x: no signature; count, serial, connection type, key, native realm address, third key, then every
+        // payload with address type, address, port and a bleep token (token, proxy id and address strings with
+        // their bit lengths, then the token lifespan in nanoseconds)
+        WorldPacket connectTo(SMSG_CONNECT_TO, 4 + 4 + 1 + 8 + 4 + 4 + 1 + 4 + 2 + 5 + 8);
+        connectTo << uint32_t(1);                       // payloads
+        connectTo << uint32_t(serial);
+        connectTo << uint8_t(AesWorld::ConnectionTypeInstance);
+        connectTo << uint64_t(key);
         connectTo << uint32_t(m_protocol.getVirtualRealmAddress());
         connectTo << uint32_t(0);                       // third key
-    }
-    sendPacket(&connectTo);
+        connectTo << uint8_t(AesWorld::AddressTypeIPv4);
+        connectTo.append(reinterpret_cast<const uint8_t*>(&local.sin_addr), 4);
+        connectTo << uint16_t(port);
+        connectTo.writeBits(0, 5);                      // token length
+        connectTo.writeBits(0, 24);                     // proxy id length
+        connectTo.writeBits(0, 6);                      // address length
+        connectTo.flushBits();
+        connectTo << int64_t(0);                        // token lifespan
+        sendPacket(&connectTo);
 
-    sLogger.debug("WorldSocket::{}: sent SMSG_CONNECT_TO (serial {}) to game account {}", Profile::Name, serial, m_aesGameAccountId);
-    return true;
+        sLogger.debug("WorldSocket::{}: sent SMSG_CONNECT_TO (serial {}) to game account {}", Profile::Name, serial, m_aesGameAccountId);
+        return true;
+    }
+    else
+    {
+        // where: type and address; signed together with the type as uint32 and the port
+        std::vector<uint8_t> where;
+        where.push_back(AesWorld::AddressTypeIPv4);
+        where.insert(where.end(), reinterpret_cast<const uint8_t*>(&local.sin_addr), reinterpret_cast<const uint8_t*>(&local.sin_addr) + 4);
+
+        std::vector<uint8_t> signed_;
+        signed_.insert(signed_.end(), where.begin(), where.end());
+        appendUInt32LE(signed_, AesWorld::AddressTypeIPv4);
+        appendUInt16LE(signed_, port);
+
+        std::array<uint8_t, AesWorld::SignatureSize> signature{};
+        if (!signMessage(signed_.data(), signed_.size(), signature.data()))
+        {
+            sLogger.failure("WorldSocket::{}: cannot sign SMSG_CONNECT_TO", Profile::Name);
+            return false;
+        }
+
+        // signature, where, port, serial, connection type, key; 11.x: the native realm address and the third key
+        WorldPacket connectTo(SMSG_CONNECT_TO, AesWorld::SignatureSize + where.size() + 2 + 4 + 1 + 8 + 8);
+        connectTo.append(signature.data(), signature.size());
+        connectTo.append(where.data(), where.size());
+        connectTo << uint16_t(port);
+        connectTo << uint32_t(serial);
+        connectTo << uint8_t(AesWorld::ConnectionTypeInstance);
+        connectTo << uint64_t(key);
+        if constexpr (AesWorld::WideTransport)
+        {
+            connectTo << uint32_t(m_protocol.getVirtualRealmAddress());
+            connectTo << uint32_t(0);                       // third key
+        }
+        sendPacket(&connectTo);
+
+        sLogger.debug("WorldSocket::{}: sent SMSG_CONNECT_TO (serial {}) to game account {}", Profile::Name, serial, m_aesGameAccountId);
+        return true;
+    }
 }
 
 bool WorldSocket::sendVersionedPacket(WorldPacket* packet)

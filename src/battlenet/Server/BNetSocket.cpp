@@ -550,6 +550,7 @@ namespace AscEmu::Battlenet
                 case 45745u: return { 9u, 2u, 7u };
                 case 55664u: return { 10u, 2u, 7u };
                 case 65299u: return { 11u, 2u, 7u };
+                case 70391u: return { 12u, 1u, 5u };
                 default:     return { 0u, 0u, 0u };
             }
         }
@@ -1009,7 +1010,7 @@ namespace AscEmu::Battlenet
                     << "\"name\":\"" << jsonEscape(name) << "\","
                     << "\"cfgConfigsID\":1,"
 #if AE_BNET_V1_SERVICES
-                    // the v1 realm entry ends with the language id
+                    // the v1 realm entry ends with the language id; the v2 entry adds the content set and the bleep chance
                     << "\"cfgLanguagesID\":1"
 #else
                     << "\"cfgLanguagesID\":1,"
@@ -1824,6 +1825,7 @@ namespace AscEmu::Battlenet
         const uint32_t clientEpoch = static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count());
 
         const std::string clientInstanceId = buildClientInstanceId(serverLabel, serverEpoch, clientLabel, clientEpoch);
+        m_clientInstanceId = clientInstanceId;
 
         std::vector<uint8_t> response;
         response.reserve(96);
@@ -2329,7 +2331,7 @@ namespace AscEmu::Battlenet
         // A private server does not need Blizzard's Bleep relay service, but the
         // client expects a syntactically valid JSON list instead of an empty RPC.
         const std::vector<uint8_t> blob =
-            compressGameUtilitiesJson("JSONBleepProxyList:{\"proxies\":[]}");
+            compressGameUtilitiesJson("JSONBleepProxyList:{}");
 
         std::vector<uint8_t> response;
         if (!blob.empty())
@@ -2829,6 +2831,8 @@ namespace AscEmu::Battlenet
             appendVarIntField(header, 5, payload.size());
 
         appendFixed32Field(header, 11, serviceHash);
+        if (!m_clientInstanceId.empty())
+            appendStringField(header, 13, m_clientInstanceId);
 
         if (header.empty() || header.size() > UINT16_MAX)
             return false;
@@ -2854,6 +2858,8 @@ namespace AscEmu::Battlenet
         appendVarIntField(header, 3, token);
         if (!payload.empty())
             appendVarIntField(header, 5, payload.size());
+        if (!m_clientInstanceId.empty())
+            appendStringField(header, 13, m_clientInstanceId);
 
         if (header.empty() || header.size() > UINT16_MAX)
             return false;
@@ -2886,6 +2892,8 @@ namespace AscEmu::Battlenet
         appendVarIntField(header, 1, Protocol::ResponseServiceId);
         appendVarIntField(header, 3, token);
         appendVarIntField(header, 6, status);
+        if (!m_clientInstanceId.empty())
+            appendStringField(header, 13, m_clientInstanceId);
 
         std::vector<uint8_t> frame;
         frame.reserve(2 + header.size());

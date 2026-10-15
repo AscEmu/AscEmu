@@ -45,7 +45,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+            if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
                 // 10.x and 11.x: id, flags as field, position with height, icon, importance, wmo group, name length, name
                 packet << int32_t(0);

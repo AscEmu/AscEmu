@@ -55,7 +55,40 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isTheWarWithin())
+            if (m_protocol.isMidnight())
+            {
+                // 12.x: the 11.x layout with the item instance behind the slots (modifiers with a seven bit size)
+                packet << WoWGuid(guid).toGuid128(m_protocol.realmId, 0);
+                packet << uint8_t(bagSlot);
+                packet << int32_t(slot ? slot : -1);
+                packet << int32_t(entry);
+                packet.writeBits(0, 7);                 // modifications
+                packet.flushBits();
+                packet.writeBit(false);                 // item bonus
+                packet.flushBits();
+                packet << int32_t(0);                   // quest log item
+                packet << int32_t(count);
+                packet << int32_t(stackCount);
+                packet << int32_t(0);                   // quantity in the quest log
+                packet << int32_t(0);                   // dungeon encounter
+                packet << int32_t(0);                   // battle pet species
+                packet << int32_t(0);                   // battle pet breed
+                packet << uint8_t(0);                   // battle pet quality
+                packet << int32_t(0);                   // battle pet level
+                packet << itemGuid.toGuid128(m_protocol.realmId, 0);
+                packet << uint32_t(0);                  // toasts
+                packet.writeBit(isReceived);
+                packet.writeBit(isCreated);
+                packet.writeBit(false);                 // fake quest item
+                packet.writeBits(1, 3);                 // chat notify: normal
+                packet.writeBit(false);                 // bonus roll
+                packet.writeBit(false);                 // personal loot
+                packet.writeBit(false);                 // crafting data
+                packet.writeBit(false);                 // first craft operation
+                packet.flushBits();
+                return true;
+            }
+            if (m_protocol.isTheWarWithinOrLater())
             {
                 // 11.x: player, slots, quest log item, quantities (with the one in the quest log), encounter, battle pet
                 // (quality as byte), item, toasts, flags, then the item instance; no crafting data

@@ -44,7 +44,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
                 // the attack round as a block behind the combat log bit, 7.x closes it with the sandbox scaling data
                 ByteBuffer buff;
@@ -52,10 +52,10 @@ namespace AscEmu::Packets
                 buff << attackerGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 buff << victimGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 buff << int32_t(damage);
-                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                     buff << int32_t(damage);                                 // original damage
                 buff << int32_t(overKill);
-                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                 {
                     buff << uint8_t(1);                                      // sub damage count
                 }
@@ -115,7 +115,7 @@ namespace AscEmu::Packets
                     for (uint8_t i = 0; i < 15; ++i)
                         buff << uint8_t(0);
                 }
-                else if (m_protocol.isTheWarWithin())
+                else if (m_protocol.isTheWarWithinOrLater())
                 {
                     // content tuning: item levels, level delta, item level curve, unused value, primary stat curve,
                     // target level, expansion, scaling level delta, flags (no level and no item level scaling),

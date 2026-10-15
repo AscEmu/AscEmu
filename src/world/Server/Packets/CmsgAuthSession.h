@@ -41,14 +41,14 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+            if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
                 // dos response, realm, local challenge, digest, ipv6 bit, realm join ticket
                 packet.read<uint64_t>();
                 packet >> regionId;
                 packet >> battlegroupId;
                 packet >> realmId;
-                packet.read(localChallenge.data(), m_protocol.isTheWarWithin() ? localChallenge.size() : 16);
+                packet.read(localChallenge.data(), m_protocol.isTheWarWithinOrLater() ? localChallenge.size() : 16);
                 packet.read(sessionDigest.data(), sessionDigest.size());
                 packet.readBit();                       // use ipv6
 

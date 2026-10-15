@@ -32,11 +32,11 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
                 packet << WoWGuid(guid).toGuid128(m_protocol.realmId, m_receiverMapId);
                 packet << int32_t(textEmote);
-                if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+                if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                 {
                     packet << uint32_t(0);              // spell visual kits
                     packet << int32_t(0);               // sequence variation

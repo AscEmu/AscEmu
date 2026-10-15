@@ -38,12 +38,15 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isTheWarWithin())
+            if (m_protocol.isTheWarWithinOrLater())
             {
                 // 11.x: difficulty; housing: house, house owner battle.net account, house owner player, neighborhood (none);
                 // bits: tournament realm, cross realm pvp alert, block exiting loading screen, restricted level,
-                // restricted money, instance group size
-                packet << uint32_t(0);
+                // restricted money, instance group size; 12.x: the difficulty takes 16 bits
+                if (m_protocol.isMidnight())
+                    packet << int16_t(0);
+                else
+                    packet << uint32_t(0);
                 packet << WoWGuid128();
                 packet << WoWGuid128();
                 packet << WoWGuid128();

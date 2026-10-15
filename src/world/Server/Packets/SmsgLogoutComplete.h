@@ -24,7 +24,7 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             // 11.x: the optional game mode switch
-            if (m_protocol.isTheWarWithin())
+            if (m_protocol.isTheWarWithinOrLater())
             {
                 packet.writeBit(false);
                 packet.flushBits();

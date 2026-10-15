@@ -95,6 +95,7 @@ namespace AscEmu::Battlenet
         // print the semantic service/method name without duplicating logs in every handler.
         uint32_t m_currentRpcServiceHash = 0;
         uint32_t m_currentRpcMethodId = 0;
+        std::string m_clientInstanceId;         // ciid of the Connect response, repeated in every outgoing header (field 13)
 
         // Set by ConnectionService::RequestDisconnect. processRpcFrames() first
         // retires the current frame, processTls() flushes any remaining TLS

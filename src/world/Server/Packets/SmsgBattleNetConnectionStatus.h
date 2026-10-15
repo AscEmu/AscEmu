@@ -30,7 +30,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (!m_protocol.isTheWarWithin())
+            if (!m_protocol.isTheWarWithinOrLater())
                 return false;
 
             packet.writeBits(state, 2);

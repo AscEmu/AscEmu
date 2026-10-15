@@ -74,7 +74,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+            if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
                 // 10.x and 11.x: 11 bit texts; say, party, raid, raid warning and instance chat close with a secure bit; the
                 // whisper names its target by guid and realm and ends both texts with a terminator; the channel

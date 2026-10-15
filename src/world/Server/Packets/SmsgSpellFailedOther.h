@@ -44,16 +44,18 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
                 // caster, cast guid, spell, visual, reason
                 packet << casterGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 packet << WoWGuid128();
                 packet << uint32_t(spellId);
                 packet << uint32_t(0);
-                if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+                if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                     packet << int32_t(0);           // script visual
                 packet << uint8_t(result);
+                if (m_protocol.isMidnight())
+                    packet << WoWGuid128();         // 12.x: the unit that failed the cast
                 return true;
             }
 

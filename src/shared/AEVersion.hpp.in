@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define Shadowlands 45745
 #define Dragonflight 55664
 #define TheWarWithin 65299
+#define Midnight 70391
 #define AE_PROFILE_FOREVER 70009
 
 // TODO: Remove when Forever player level stats are loaded from modern DB2 data.
@@ -82,6 +83,11 @@ This file is released under the MIT license. See README-MIT for more information
     #define VERSION 11, 2, 7
     #define VERSION_STRING TheWarWithin
     #define BUILD_VERSION 65299
+#elif AE_CLIENT_PROFILE == Midnight
+    #define AE_MIDNIGHT
+    #define VERSION 12, 1, 5
+    #define VERSION_STRING Midnight
+    #define BUILD_VERSION 70391
 #elif AE_CLIENT_PROFILE == AE_PROFILE_FOREVER
     #define AE_FOREVER
     #define AE_MODERN_CLIENT

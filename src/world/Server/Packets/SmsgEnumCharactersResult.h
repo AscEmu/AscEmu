@@ -335,7 +335,7 @@ namespace AscEmu::Packets
                 for (auto const& data : enum_data)
                     writeCharacter128(packet, data, listPosition++);
             }
-            else if (m_protocol.isTheWarWithin())
+            else if (m_protocol.isTheWarWithinOrLater())
             {
                 // races a new character can be created with, allied races are not offered
                 static constexpr int8_t unlockedRaces[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 22, 24, 25, 26 };
@@ -373,11 +373,18 @@ namespace AscEmu::Packets
                 for (const int8_t race : unlockedRaces)
                 {
                     packet << race;
+                    if (m_protocol.isMidnight())
+                        packet << uint32_t(0);                  // 12.x: class unlocks of the race
                     packet.writeBit(1);                         // has the license
                     packet.writeBit(1);                         // has the achievement
                     packet.writeBit(0);                         // has the heritage armor achievement
+                    packet.writeBit(0);                         // 11.x: unused, 12.x: has the entitlement
                     packet.writeBit(0);                         // hidden on the client
-                    packet.writeBit(0);
+                    if (m_protocol.isMidnight())
+                    {
+                        packet.writeBit(0);                     // faction balance disabled
+                        packet.writeBit(0);                     // no available classes
+                    }
                     packet.flushBits();
                 }
             }
@@ -585,9 +592,24 @@ namespace AscEmu::Packets
             packet << uint32_t(data.pet_data.family);
 
             // the equipment without the bags: display, inventory type, enchantment, subclass, secondary appearance,
-            // item, transmogrified item
+            // item, transmogrified item; 12.x: item, transmogrified item, subclass, inventory type, display,
+            // enchantment, secondary appearance, sheathe category
+            const bool midnight = m_protocol.isMidnight();
             for (uint8_t i = 0; i < 19; ++i)
             {
+                if (midnight)
+                {
+                    packet << uint32_t(0);                      // item
+                    packet << uint32_t(0);                      // transmogrified item
+                    packet << uint8_t(0);                       // subclass
+                    packet << uint8_t(data.player_items[i].inventoryType);
+                    packet << uint32_t(data.player_items[i].displayId);
+                    packet << uint32_t(data.player_items[i].enchantmentId);
+                    packet << int32_t(0);                       // secondary item modified appearance
+                    packet << uint8_t(0);                       // sheathe category
+                    continue;
+                }
+
                 packet << uint32_t(data.player_items[i].displayId);
                 packet << uint8_t(data.player_items[i].inventoryType);
                 packet << uint32_t(data.player_items[i].enchantmentId);
@@ -600,32 +622,35 @@ namespace AscEmu::Packets
             packet << int32_t(0);                               // save version
             packet << int64_t(0);                               // creation time
             packet << int64_t(0);                               // last active time
-            packet << uint32_t(WoW::Build::THEWARWITHIN_BUILD); // build of the last login
+            packet << uint32_t(m_protocol.expansion == WoW::Expansion::_Midnight ? WoW::Build::MIDNIGHT_BUILD : WoW::Build::THEWARWITHIN_BUILD); // build of the last login
             for (uint8_t i = 0; i < 5; ++i)
                 packet << int32_t(-1);                          // personal tabard (none)
             packet << uint32_t(0);                              // profession 1
             packet << uint32_t(0);                              // profession 2
             packet << int32_t(0);                               // timerunning season
             packet << uint32_t(0);                              // override of the select screen file
-            packet << uint32_t(0);
+            packet << uint32_t(0);                              // 12.x: realm queue
 
             for (const auto& customization : customizations)
                 packet << customization.optionId << customization.choiceId;
 
             packet.writeBits(static_cast<uint32_t>(data.name.length()), 6);
             packet.writeBit(data.loginFlags & 0x20);            // first login
-            packet.writeBit(0);
-            packet.writeBit(0);
+            packet.writeBit(0);                                 // 12.x: realm info found
+            packet.writeBit(0);                                 // 12.x: realm offline
             packet.flushBits();
             packet.append(data.name.c_str(), data.name.length());
 
-            // restrictions and mails: boost in progress, rpe available; restriction flags, mail senders, mail sender types
+            // restrictions and mails: boost in progress, rpe available; restriction flags, mail senders, mail sender types,
+            // 12.x: the reason rpe is not available
             packet.writeBit(0);
             packet.writeBit(0);
             packet.flushBits();
             packet << uint32_t(0);
             packet << uint32_t(0);
             packet << uint32_t(0);
+            if (midnight)
+                packet << uint32_t(0);
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }

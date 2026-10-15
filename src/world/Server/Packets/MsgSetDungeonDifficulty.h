@@ -37,7 +37,10 @@ namespace AscEmu::Packets
             if (m_protocol.expansion >= WoW::Expansion::_Mop)
             {
                 packet.initialize(SMSG_SET_DUNGEON_DIFFICULTY, 4);
-                packet << uint32_t(difficulty);
+                if (m_protocol.isMidnight())
+                    packet << int16_t(difficulty);      // 12.x: the difficulty takes 16 bits
+                else
+                    packet << uint32_t(difficulty);
             }
             else
             {

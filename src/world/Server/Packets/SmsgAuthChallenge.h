@@ -63,7 +63,7 @@ namespace AscEmu::Packets
             else if (m_protocol.expansion >= WoW::Expansion::_WoD)
             {
                 packet.append(dosChallenge.data(), dosChallenge.size());
-                packet.append(challenge.data(), m_protocol.isTheWarWithin() ? challenge.size() : 16);
+                packet.append(challenge.data(), m_protocol.isTheWarWithinOrLater() ? challenge.size() : 16);
                 packet << uint8_t(1);                   // dos zero bits
             }
             return true;

@@ -60,7 +60,7 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
         return;
     }
 
-    if (protocol.isTheWarWithin())
+    if (protocol.isTheWarWithinOrLater())
     {
         // 11.x: Item and ItemSparse records come from the item properties, every other table is reported as not
         // available; the client asks on the character screen as well and waits for the answers

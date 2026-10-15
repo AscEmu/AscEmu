@@ -304,7 +304,7 @@ void WorldSocket::outPacket(uint32_t opcode, size_t len, const void* data)
         return;
     }
 
-#if AE_WORLD_PROFILE_WOD || AE_WORLD_PROFILE_LEGION || AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS || AE_WORLD_PROFILE_DRAGONFLIGHT || AE_WORLD_PROFILE_THEWARWITHIN
+#if AE_WORLD_PROFILE_WOD || AE_WORLD_PROFILE_LEGION || AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS || AE_WORLD_PROFILE_DRAGONFLIGHT || AE_WORLD_PROFILE_THEWARWITHIN || AE_WORLD_PROFILE_MIDNIGHT
     // connections with their own framing and encryption take every packet through it
     {
         WorldPacket packet(static_cast<WorldPacket::Opcode>(opcode), len);
@@ -468,13 +468,13 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
     sendManagedPacket(response);
 
     // 10.x and 11.x: the time zones before the glue screen status
-    if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+    if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
     {
         SmsgSetTimeZoneInformation timeZonePacket("Etc/UTC");
         sendManagedPacket(timeZonePacket);
     }
 
-    if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+    if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
     {
         SmsgFeatureSystemStatusGlueScreen glueScreen(static_cast<uint8_t>(m_protocol.expansion));
         sendManagedPacket(glueScreen);
@@ -493,7 +493,7 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
         m_session->sendClientCacheVersion(BUILD_VERSION);
 
     // 10.x and 11.x: the hotfix list, the global account data times and the account tutorials after the cache version
-    if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+    if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
     {
         SmsgAvailableHotfixes availableHotfixes;
         sendManagedPacket(availableHotfixes);
@@ -506,7 +506,7 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
         sendManagedPacket(tutorialFlags);
 
         // 11.x: the Battle.net connection state closes the glue sequence
-        if (m_protocol.isTheWarWithin())
+        if (m_protocol.isTheWarWithinOrLater())
         {
             SmsgBattleNetConnectionStatus connectionStatus(1, false);
             sendManagedPacket(connectionStatus);

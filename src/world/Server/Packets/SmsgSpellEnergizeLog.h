@@ -49,7 +49,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isTheWarWithin())
+            if (m_protocol.isTheWarWithinOrLater())
             {
                 // target, caster, spell, power type (8 bit in 11.x), amount, over energize, log data
                 packet << targetGuid.toGuid128(m_protocol.realmId, m_receiverMapId);

@@ -21,3 +21,4 @@ std::span<MovementStep const> getBfAMovementDescriptor(uint32_t opcode, bool rea
 std::span<MovementStep const> getShadowlandsMovementDescriptor(uint32_t opcode, bool read);
 std::span<MovementStep const> getDragonflightMovementDescriptor(uint32_t opcode, bool read);
 std::span<MovementStep const> getTheWarWithinMovementDescriptor(uint32_t opcode, bool read);
+std::span<MovementStep const> getMidnightMovementDescriptor(uint32_t opcode, bool read);

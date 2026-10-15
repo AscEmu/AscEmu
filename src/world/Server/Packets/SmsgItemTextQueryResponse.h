@@ -56,15 +56,18 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
                 // valid, text, item
                 packet.writeBit(result == 0);
                 packet.flushBits();
+                if (m_protocol.isMidnight())
+                    packet << WoWGuid(guid).toGuid128(m_protocol.realmId, 0);   // 12.x: the item before the text
                 packet.writeBits(static_cast<uint32_t>(text.length()), 13);
                 packet.flushBits();
                 packet.writeString(text);
-                packet << WoWGuid(guid).toGuid128(m_protocol.realmId, 0);
+                if (!m_protocol.isMidnight())
+                    packet << WoWGuid(guid).toGuid128(m_protocol.realmId, 0);
                 return true;
             }
 

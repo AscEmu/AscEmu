@@ -28,7 +28,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (!m_protocol.isDragonflight() && !m_protocol.isTheWarWithin())
+            if (!m_protocol.isDragonflight() && !m_protocol.isTheWarWithinOrLater())
                 return false;
 
             packet.writeBit(showSocialContract);

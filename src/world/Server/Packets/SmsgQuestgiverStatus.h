@@ -66,7 +66,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isTheWarWithin())
+            if (m_protocol.isTheWarWithinOrLater())
             {
                 // 11.x: as 10.x with the moved status bits
                 packet << WoWGuid(questgiverGuid).toGuid128(m_protocol.realmId, m_receiverMapId);

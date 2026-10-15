@@ -1102,7 +1102,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
     sendManagedPacket(enumPacket);
 
     // 11.x: the warband scenes of the account follow the character list
-    if (getClientProtocol().isTheWarWithin())
+    if (getClientProtocol().isTheWarWithinOrLater())
     {
         SmsgAccountItemCollectionData warbandScenes(7);
         sendManagedPacket(warbandScenes);

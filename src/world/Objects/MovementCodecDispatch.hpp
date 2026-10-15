@@ -26,6 +26,7 @@ public:
             case WoW::Expansion::_Shadowlands: return MovementCodec<WoW::Expansion::_Shadowlands>::hasDescriptor(opcode, read);
             case WoW::Expansion::_Dragonflight: return MovementCodec<WoW::Expansion::_Dragonflight>::hasDescriptor(opcode, read);
             case WoW::Expansion::_TheWarWithin: return MovementCodec<WoW::Expansion::_TheWarWithin>::hasDescriptor(opcode, read);
+            case WoW::Expansion::_Midnight: return MovementCodec<WoW::Expansion::_Midnight>::hasDescriptor(opcode, read);
             default: return MovementCodec<WoW::Expansion::_Mop>::hasDescriptor(opcode, read);
         }
     }
@@ -44,6 +45,7 @@ public:
             case WoW::Expansion::_Shadowlands: MovementCodec<WoW::Expansion::_Shadowlands>::read(buffer, movementInfo, opcode); break;
             case WoW::Expansion::_Dragonflight: MovementCodec<WoW::Expansion::_Dragonflight>::read(buffer, movementInfo, opcode); break;
             case WoW::Expansion::_TheWarWithin: MovementCodec<WoW::Expansion::_TheWarWithin>::read(buffer, movementInfo, opcode); break;
+            case WoW::Expansion::_Midnight: MovementCodec<WoW::Expansion::_Midnight>::read(buffer, movementInfo, opcode); break;
             default: MovementCodec<WoW::Expansion::_Mop>::read(buffer, movementInfo, opcode); break;
         }
     }
@@ -62,6 +64,7 @@ public:
             case WoW::Expansion::_Shadowlands: MovementCodec<WoW::Expansion::_Shadowlands>::write(data, movementInfo, opcode, withGuid); break;
             case WoW::Expansion::_Dragonflight: MovementCodec<WoW::Expansion::_Dragonflight>::write(data, movementInfo, opcode, withGuid); break;
             case WoW::Expansion::_TheWarWithin: MovementCodec<WoW::Expansion::_TheWarWithin>::write(data, movementInfo, opcode, withGuid); break;
+            case WoW::Expansion::_Midnight: MovementCodec<WoW::Expansion::_Midnight>::write(data, movementInfo, opcode, withGuid); break;
             default: MovementCodec<WoW::Expansion::_Mop>::write(data, movementInfo, opcode, withGuid); break;
         }
     }

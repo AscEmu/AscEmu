@@ -198,7 +198,7 @@ private:
 
             case MovementOp::Flags:
             {
-                if constexpr (Version == WoW::Expansion::_Shadowlands || Version == WoW::Expansion::_Dragonflight || Version == WoW::Expansion::_TheWarWithin)
+                if constexpr (Version == WoW::Expansion::_Shadowlands || Version == WoW::Expansion::_Dragonflight || Version == WoW::Expansion::_TheWarWithin || Version == WoW::Expansion::_Midnight)
                 {
                     buffer >> movementInfo.flags;
                 }
@@ -410,6 +410,20 @@ private:
                     buffer >> flags3;
                 } break;
 
+            case MovementOp::Flags64:
+                {
+                    uint64_t flags64 = 0;
+                    buffer >> flags64;
+                    movementInfo.flags = static_cast<uint32_t>(flags64 & 0xFFFFFFFF);
+                    movementInfo.flags2 = movementFlags2From64(flags64);
+                } break;
+
+            case MovementOp::GravityModifier:
+                {
+                    float gravityModifier = 0.0f;
+                    buffer >> gravityModifier;
+                } break;
+
             case MovementOp::HasInertia: movementInfo.hasInertia = buffer.readBit(); break;
 
             case MovementOp::SkipInertia:
@@ -489,7 +503,7 @@ private:
 
             case MovementOp::Flags:
             {
-                if constexpr (Version == WoW::Expansion::_Shadowlands || Version == WoW::Expansion::_Dragonflight || Version == WoW::Expansion::_TheWarWithin)
+                if constexpr (Version == WoW::Expansion::_Shadowlands || Version == WoW::Expansion::_Dragonflight || Version == WoW::Expansion::_TheWarWithin || Version == WoW::Expansion::_Midnight)
                     data << movementInfo.flags;
                 else if constexpr (Version >= WoW::Expansion::_Cata)
                     data.writeBits(movementInfo.flags, 30);
@@ -598,6 +612,8 @@ private:
             case MovementOp::RemovedForcesCount: data << static_cast<uint32_t>(0); break;
             case MovementOp::RemovedForces: break;
             case MovementOp::Flags3:      data << uint32_t(0); break;
+            case MovementOp::Flags64:     data << movementFlags64(movementInfo.flags, movementInfo.flags2); break;
+            case MovementOp::GravityModifier: data << float(1.0f); break;
             case MovementOp::HasInertia:  data.writeBit(false); break;
             case MovementOp::SkipInertia: break;
             case MovementOp::SkipInertiaId: break;
@@ -635,6 +651,8 @@ private:
             return getDragonflightMovementDescriptor(opcode, read);
         else if constexpr (Version == WoW::Expansion::_TheWarWithin)
             return getTheWarWithinMovementDescriptor(opcode, read);
+        else if constexpr (Version == WoW::Expansion::_Midnight)
+            return getMidnightMovementDescriptor(opcode, read);
         else
             return getMopMovementDescriptor(opcode, read);
     }

@@ -28,7 +28,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (!m_protocol.isTheWarWithin())
+            if (!m_protocol.isTheWarWithinOrLater())
                 return false;
 
             packet >> methodType >> objectId >> token >> dataSize;

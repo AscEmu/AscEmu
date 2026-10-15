@@ -23,12 +23,12 @@ AscEmu supports several versions as listed below. We achieved to handle differen
 
 Beside our multiversion-core we developed our world database with this attitude. Compared to other projects we are still a small project but with one core and database we are able to work on different versions at the same time. Beside all that we are able to show the changes to the game side by side in our code and database.
 
-Description       | Classic<br>1.12.1 (5875) | TBC<br>2.4.3 (8606) | WotLK<br>3.3.5a (12340) | Cata<br>4.3.4 (15595) | MoP<br>5.4.8 (18414) | WoD<br>6.2.4 (21742) | Legion<br>7.3.5 (26972) | BfA<br>8.3.7 (35662) | SL<br>9.2.7 (45745) | DF<br>10.2.7 (55664) | TWW<br>11.2.7 (65299)
-:---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------:
-Authentification  | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️               
-Worldsocket       | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️               
-Char Enum         | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️               
-Log into world    | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️               
+Description       | Classic<br>1.12.1 (5875) | TBC<br>2.4.3 (8606) | WotLK<br>3.3.5a (12340) | Cata<br>4.3.4 (15595) | MoP<br>5.4.8 (18414) | WoD<br>6.2.4 (21742) | Legion<br>7.3.5 (26972) | BfA<br>8.3.7 (35662) | SL<br>9.2.7 (45745) | DF<br>10.2.7 (55664) | TWW<br>11.2.7 (65299) | MN<br>12.1.5 (70391)
+:---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------:
+Authentification  | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️ | ❌
+Worldsocket       | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️ | ❌
+Char Enum         | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️ | ❌
+Log into world    | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️ | ❌
 
 ## Contributing & Issues
 

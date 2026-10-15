@@ -110,7 +110,7 @@ namespace AscEmu::Packets
                 mi.guid = guid;
                 mi.writeMovementInfo(packet, MSG_MOVE_TELEPORT, m_protocol.expansion);
             }
-            else if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+            else if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
                 // SMSG_MOVE_TELEPORT: mover, sequence, position, facing, preload world (7.x), transport and vehicle
                 const bool hasTransportData = !mi.transport_guid.isEmpty();
@@ -121,11 +121,13 @@ namespace AscEmu::Packets
                 packet << lv.y;
                 packet << lv.z;
                 packet << lv.o;
-                if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+                if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || (m_protocol.isTheWarWithinOrLater() && !m_protocol.isMidnight()))
                     packet << uint8_t(0);               // preload world
 
                 packet.writeBit(hasTransportData);
                 packet.writeBit(false);                 // vehicle
+                if (m_protocol.isMidnight())
+                    packet.writeBit(false);             // 12.x: preload world as bit
                 packet.flushBits();
 
                 if (hasTransportData)

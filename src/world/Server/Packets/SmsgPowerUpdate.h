@@ -37,7 +37,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isTheWarWithin())
+            if (m_protocol.isTheWarWithinOrLater())
             {
                 // 11.x: unit, then every changed power with its type in front of the value
                 packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);

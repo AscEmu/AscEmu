@@ -35,7 +35,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isTheWarWithin())
+            if (m_protocol.isTheWarWithinOrLater())
             {
                 // 11.x: the cooldown bit follows the two durations
                 packet << maxCooldown << currentCooldown;

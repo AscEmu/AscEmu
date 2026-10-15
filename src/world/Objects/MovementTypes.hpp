@@ -127,6 +127,11 @@ enum class MovementOp : uint16_t
     HasDriveStatus,
     SkipDriveStatus,
 
+    // 12.x: one 64 bit flag field (the flags in the low half, the extra flags from bit 32 on) and the gravity
+    // modifier float behind the move index
+    Flags64,
+    GravityModifier,
+
     // end of a bit field between byte fields: flushes on write, starts a new byte on read
     AlignBits
 };
@@ -225,6 +230,17 @@ struct MovementVersionTraits<WoW::Expansion::_Dragonflight>
 // 11.x keeps the plain 32 bit flag fields of 9.x
 template <>
 struct MovementVersionTraits<WoW::Expansion::_TheWarWithin>
+{
+    static constexpr bool hasFlags2 = true;
+    static constexpr int flags2BitWidth = 32;
+    static constexpr bool flags2IsBitPacked = false;
+};
+
+// 12.x: one 64 bit flag field and a gravity modifier replace the three flag fields (MovementOp::Flags64 and
+// MovementOp::GravityModifier in the Midnight descriptors); the traits of the 32 bit extra flags stay for the
+// shared steps
+template <>
+struct MovementVersionTraits<WoW::Expansion::_Midnight>
 {
     static constexpr bool hasFlags2 = true;
     static constexpr int flags2BitWidth = 32;

@@ -30,7 +30,26 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+            if (m_protocol.isMidnight())
+            {
+                // 12.x: the specialization and the first action bar slot in front, the spells as list with their bits,
+                // the message and trait bits last
+                packet << uint32_t(1);
+                packet << uint32_t(0);                  // specialization
+                packet << int32_t(0);                   // first action bar slot
+                packet << int32_t(spellId);
+                packet.writeBit(false);                 // favorite
+                packet.writeBit(false);                 // equipable spell inventory slot
+                packet.writeBit(false);                 // superceded spell
+                packet.writeBit(false);                 // trait definition
+                packet.flushBits();
+                packet.writeBit(false);                 // suppress the message
+                packet.writeBit(false);                 // trait granted by an aura
+                packet.flushBits();
+                return true;
+            }
+
+            if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
                 // 10.x and 11.x: the spells as list with their bits, the specialization and the message bit in front
                 packet << uint32_t(1);

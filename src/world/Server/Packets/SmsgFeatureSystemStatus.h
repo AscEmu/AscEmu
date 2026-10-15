@@ -83,7 +83,107 @@ namespace AscEmu::Packets
                 packet.writeBit(0);
                 packet.flushBits();
             }
-            else if (m_protocol.isTheWarWithin())
+            else if (m_protocol.isMidnight())
+            {
+                // 12.x: the quick join values and the squelch state precede the bits, an age verification state, the
+                // bits without the parental controls and the v2 service values, lfd and lfr in place of the group finder
+                packet << uint8_t(2);                   // complaint status
+                packet << uint32_t(m_protocol.realmId); // realm id
+                packet << int32_t(0);                   // realm record id
+                packet << uint32_t(0);                  // recruit a friend: max recruits
+                packet << uint32_t(0);                  // recruit a friend: max recruit months
+                packet << uint32_t(0);                  // recruit a friend: max recruitment uses
+                packet << uint32_t(0);                  // recruit a friend: days in cycle
+                packet << uint32_t(0);                  // recruit a friend: rewards version
+                packet << uint32_t(300);                // commerce price poll time in seconds
+                packet << uint32_t(0);                  // kiosk session minutes
+                // quick join: the throttle values of the social queue, then toasts disabled
+                packet << float(7) << float(10) << float(1);    // toast duration, delay, queue multiplier
+                for (uint8_t i = 0; i < 19; ++i)
+                    packet << float(0);
+                packet.writeBit(0);                     // toasts disabled
+                packet.flushBits();
+                packet << int64_t(0);                   // redeem for balance amount
+                packet << uint32_t(0);                  // clubs presence delay
+                packet << uint32_t(0);                  // club presence unsubscribe delay
+                // voice chat: squelched, battle.net account, guild
+                packet.writeBit(0);
+                packet.flushBits();
+                packet << WoWGuid128();
+                packet << WoWGuid128();
+                packet << int32_t(0);                   // age verification restriction state
+                packet << int32_t(0);                   // content set
+                packet << uint32_t(0);                  // disabled game modes
+                packet << uint32_t(0);                  // game rules
+                packet << int32_t(0);                   // active timerunning season
+                packet << int32_t(0);                   // remaining timerunning season seconds
+                packet << int16_t(50);                  // player guid lookups per request
+                packet << int16_t(600);                 // name lookup telemetry interval
+                packet << uint32_t(10);                 // not found cache time in seconds
+                packet << uint32_t(0);                  // realm pvp type override
+                packet << int32_t(10);                  // addon chat throttle: tries
+                packet << int32_t(1);                   // addon chat throttle: tries restored per second
+                packet << int32_t(1);                   // addon chat throttle: tries per message
+                packet << int32_t(1);                   // guild chat throttle: tries per message
+                packet << int32_t(1);                   // guild chat throttle: tries restored per second
+                packet << int32_t(1);                   // group chat throttle: tries per message
+                packet << int32_t(1);                   // group chat throttle: tries restored per second
+                packet << float(0);                     // addon performance message: warning
+                packet << float(0);                     // addon performance message: error
+                packet << float(0);                     // addon performance message: overall
+                packet.writeBit(0);                     // voice chat
+                packet.writeBit(0);                     // has the ticket system status
+                packet.writeBit(0);                     // shop available
+                packet.writeBit(1);                     // item restoration button
+                packet.writeBit(0);                     // has a session alert
+                packet.writeBit(0);                     // recruit a friend
+                packet.writeBit(0);                     // recruit a friend: recruiting
+                packet.writeBit(0);                     // character restore
+                packet.writeBit(0);                     // restricted account
+                packet.writeBit(0);                     // commerce system
+                packet.writeBit(1);                     // tutorials
+                packet.writeBit(0);                     // veteran token redeem will kick
+                packet.writeBit(0);                     // world token redeem will kick
+                packet.writeBit(0);                     // kiosk mode
+                packet.writeBit(0);                     // competitive mode
+                packet.writeBit(0);                     // redeem for balance
+                packet.writeBit(0);                     // war mode
+                packet.writeBit(0);                     // communities
+                packet.writeBit(0);                     // battle.net groups
+                packet.writeBit(0);                     // character communities
+                packet.writeBit(0);                     // club presence: subscribe all
+                packet.writeBit(0);                     // voice chat disabled by parental controls
+                packet.writeBit(0);                     // voice chat muted by parental controls
+                packet.writeBit(0);                     // quest session
+                packet.writeBit(0);                     // is muted
+                packet.writeBit(0);                     // club finder
+                packet.writeBit(0);                     // community finder
+                packet.writeBit(0);                     // browser crash reporter
+                packet.writeBit(0);                     // speak for me
+                packet.writeBit(0);                     // account needs the aadc prompt
+                packet.writeBit(0);                     // account opted in to aadc
+                packet.writeBit(0);                     // lfg requires an authenticator
+                packet.writeBit(0);                     // scripts disallowed for beta
+                packet.writeBit(0);                     // timerunning
+                packet.writeBit(0);                     // player identity options
+                packet.writeBit(0);                     // content tracking
+                packet.writeBit(1);                     // dungeon finder
+                packet.writeBit(1);                     // raid finder
+                packet.writeBit(0);                     // pet happiness
+                packet.writeBit(0);                     // guild event edits
+                packet.writeBit(0);                     // guild trade skills
+                packet.writeBits(0, 10);                // length of the movement text
+                packet.writeBit(0);                     // account currency transfer
+                packet.writeBit(0);                     // chat telemetry
+                packet.writeBit(0);                     // lobby matchmaker queue from mainline
+                packet.writeBit(0);                     // lobby matchmaker party customizations
+                packet.writeBit(0);                     // addon profiling
+                packet.writeBit(0);                     // global user generated content mute
+                packet.writeBit(0);                     // account user generated content is risky
+                packet.writeBit(0);                     // friends disabled
+                packet.flushBits();
+            }
+            else if (m_protocol.isTheWarWithinOrLater())
             {
                 packet << uint8_t(2);                   // complaint status
                 packet << uint32_t(m_protocol.realmId); // realm id

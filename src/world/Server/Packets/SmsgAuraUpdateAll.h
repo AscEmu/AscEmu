@@ -76,17 +76,19 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
                 // 7.x sends the full update as SMSG_AURA_UPDATE with the update all bit
                 packet.initialize(SMSG_AURA_UPDATE, 16 + aura_updates.size() * 40);
                 packet.writeBit(true);
                 packet.writeBits(static_cast<uint32_t>(aura_updates.size()), 9);
                 packet.flushBits();
+                if (m_protocol.isMidnight())
+                    packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);   // 12.x: the unit before the auras
 
                 for (const auto& auras : aura_updates)
                 {
-                    if (m_protocol.isTheWarWithin())
+                    if (m_protocol.isTheWarWithinOrLater())
                         writeAuraSlotTheWarWithin(packet, auras, false, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
                     else if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
                         writeAuraSlotShadowlands(packet, auras, false, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
@@ -96,7 +98,8 @@ namespace AscEmu::Packets
                         writeAuraSlotLegion(packet, auras, false, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
                 }
 
-                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                if (!m_protocol.isMidnight())
+                    packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 return true;
             }
 

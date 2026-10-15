@@ -42,7 +42,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isTheWarWithin())
+            if (m_protocol.isTheWarWithinOrLater())
             {
                 // 11.x: every currency: type, quantity, flags as byte, then the presence bits of the optional values
                 packet << uint32_t(records.size());

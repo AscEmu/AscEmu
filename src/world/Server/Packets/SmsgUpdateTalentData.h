@@ -85,7 +85,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isTheWarWithin())
+            if (m_protocol.isTheWarWithinOrLater())
             {
                 if (isPet)
                     return false;

@@ -66,7 +66,7 @@ namespace AscEmu::Packets
             if (trainer == nullptr)
                 return false;
 
-            if (m_protocol.isTheWarWithin())
+            if (m_protocol.isTheWarWithinOrLater())
             {
                 // 11.x: as 10.x with the trainer type as one byte
                 constexpr uint8_t maxRequiredCount = 3;

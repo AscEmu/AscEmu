@@ -28,7 +28,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isTheWarWithin())
+            if (m_protocol.isTheWarWithinOrLater())
             {
                 // 11.x: guid, far clip, remix (RPE) bit
                 WoWGuid128 clientGuid;

@@ -64,7 +64,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.isTheWarWithin())
+            if (m_protocol.isTheWarWithinOrLater())
             {
                 // target, caster, cast guid, spell, visual, damage, original damage, overkill, school, absorbed, resisted,
                 // blocked, hit flags (crit 0x2, 32 bit field in 11.x), world text viewers, supporters,
@@ -82,6 +82,8 @@ namespace AscEmu::Packets
                 packet << int32_t(absorbedDamage);
                 packet << int32_t(resistedDamage);
                 packet << int32_t(blockedDamage);
+                if (m_protocol.isMidnight())
+                    packet << int32_t(0);           // 12.x: reflecting spell
                 packet << int32_t(isCriticalHit ? 0x2 : 0);
                 packet << uint32_t(0);              // world text viewers
                 packet << uint32_t(0);              // supporters

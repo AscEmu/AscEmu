@@ -844,7 +844,7 @@ void Transporter::DoEventIfAny(KeyFrame const& node, bool departure)
 
 void Transporter::updatePathProgress()
 {
-#if VERSION_STRING >= WotLK && VERSION_STRING != TheWarWithin
+#if VERSION_STRING >= WotLK && VERSION_STRING != TheWarWithin && VERSION_STRING != Midnight
     // 11.x clients take the time offset from the create block and animate the transport themselves
     int16_t pathProgress = -1; // dynamic Path Progress
 

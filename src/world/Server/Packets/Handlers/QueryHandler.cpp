@@ -50,7 +50,7 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
     }
 
     // 9.x, 10.x and 11.x ask for several players in one request and get one answer per player
-    const std::vector<WoWGuid> queriedGuids = getClientProtocol().isShadowlands() || getClientProtocol().isDragonflight() || getClientProtocol().isTheWarWithin() ? srlPacket.guids : std::vector<WoWGuid>{ srlPacket.guid };
+    const std::vector<WoWGuid> queriedGuids = getClientProtocol().isShadowlands() || getClientProtocol().isDragonflight() || getClientProtocol().isTheWarWithinOrLater() ? srlPacket.guids : std::vector<WoWGuid>{ srlPacket.guid };
     for (const auto& queriedGuid : queriedGuids)
     {
         SmsgQueryPlayerNameResponse response;

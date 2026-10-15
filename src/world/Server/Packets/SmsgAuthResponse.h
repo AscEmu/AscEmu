@@ -66,7 +66,7 @@ namespace AscEmu::Packets
             if (m_protocol.isWoD())
                 return serialiseWoD(packet);
 
-            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                 return serialiseLegion(packet);
 
             SmsgAuthAccount accountInfo = { 0, 0, 0, static_cast<uint8_t>(m_protocol.expansion) };
@@ -344,24 +344,52 @@ namespace AscEmu::Packets
                 // 8.x: the classes a race can be created with
                 static constexpr uint8_t races[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 22, 24, 25, 26 };
 
+                // 12.x: the game time info and the virtual realms precede the time and the race class availabilities
+                const bool midnight = m_protocol.isMidnight();
+                const auto writeGameTimeInfo = [&packet]()
+                {
+                    packet << uint32_t(0);              // billing plan
+                    packet << uint32_t(0);              // billing time remaining
+                    packet << uint32_t(0);              // billing unknown
+                    packet.writeBit(0);                 // in game room, the client reads it three times
+                    packet.writeBit(0);
+                    packet.writeBit(0);
+                    packet.flushBits();
+                };
+                const auto writeVirtualRealm = [&packet, realmAddress, this, &normalizedName]()
+                {
+                    packet << realmAddress;
+                    packet.writeBit(1);                 // is local
+                    packet.writeBit(0);                 // is internal
+                    packet.writeBits(static_cast<uint32_t>(realmName.size()), 8);
+                    packet.writeBits(static_cast<uint32_t>(normalizedName.size()), 8);
+                    packet.flushBits();
+                    packet.append(realmName.data(), realmName.size());
+                    packet.append(normalizedName.data(), normalizedName.size());
+                };
+
                 packet << realmAddress;
                 packet << uint32_t(1);                  // virtual realms
                 packet << uint32_t(0);                  // time rested
                 packet << expansion;                    // active expansion
                 packet << expansion;                    // account expansion
                 packet << uint32_t(0);                  // seconds until pc kick
-                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                     packet << uint32_t(sizeof(races) / sizeof(races[0]));
                 else
                     packet << uint32_t(sizeof(classes) / sizeof(classes[0]));
                 packet << uint32_t(0);                  // character templates
                 packet << uint32_t(0);                  // currency id
-                if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+                if (midnight)
+                    writeGameTimeInfo();
+                if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                     packet << static_cast<int64_t>(std::time(nullptr));
                 else
                     packet << static_cast<int32_t>(std::time(nullptr));
+                if (midnight)
+                    writeVirtualRealm();
 
-                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                 {
                     for (const uint8_t race : races)
                     {
@@ -370,7 +398,7 @@ namespace AscEmu::Packets
                         for (const auto& playerClass : classes)
                         {
                             packet << playerClass[0] << playerClass[1] << playerClass[1];
-                            if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+                            if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                                 packet << playerClass[1];   // minimum active expansion level
                         }
                     }
@@ -385,40 +413,29 @@ namespace AscEmu::Packets
                 packet.writeBit(0);                     // force character template
                 packet.writeBit(0);                     // has horde player count
                 packet.writeBit(0);                     // has alliance player count
-                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                     packet.writeBit(0);                 // has an expansion trial expiration
-                if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+                if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                     packet.writeBit(0);                 // has new build keys (10.x) / has current build key (11.x)
                 packet.flushBits();
 
-                packet << uint32_t(0);                  // billing plan
-                packet << uint32_t(0);                  // billing time remaining
-                packet << uint32_t(0);                  // billing unknown
-                packet.writeBit(0);                     // in game room, the client reads it three times
-                packet.writeBit(0);
-                packet.writeBit(0);
-                packet.flushBits();
-
-                packet << realmAddress;
-                packet.writeBit(1);                     // is local
-                packet.writeBit(0);                     // is internal
-                packet.writeBits(static_cast<uint32_t>(realmName.size()), 8);
-                packet.writeBits(static_cast<uint32_t>(normalizedName.size()), 8);
-                packet.flushBits();
-                packet.append(realmName.data(), realmName.size());
-                packet.append(normalizedName.data(), normalizedName.size());
+                if (!midnight)
+                {
+                    writeGameTimeInfo();
+                    writeVirtualRealm();
+                }
             }
 
             if (queued)
             {
                 packet << queuePosition;                // wait count
                 packet << uint32_t(0);                  // wait time
-                if (m_protocol.isTheWarWithin())
+                if (m_protocol.isTheWarWithinOrLater())
                     packet << uint8_t(0);               // allowed faction group for character creation, 11.x: one byte
                 else if (m_protocol.isDragonflight())
                     packet << uint32_t(0);              // allowed faction group for character creation
                 packet.writeBit(0);                     // has fcm
-                if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+                if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                     packet.writeBit(0);                 // can create only with existing characters
                 packet.flushBits();
             }

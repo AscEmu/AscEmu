@@ -28,7 +28,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+            if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
                 // 10.x and 11.x: name length, template set, trial boost, new player experience, hardcore self found; race,
                 // class, sex; the customization choices; the timerunning season; the name; the template set; the choices

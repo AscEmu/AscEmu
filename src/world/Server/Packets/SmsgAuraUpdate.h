@@ -54,12 +54,14 @@ namespace AscEmu::Packets
 
         bool serialiseLegion(WorldPacket& packet)
         {
-            // one aura per packet: update all, count, the slot with its data, the unit last
+            // one aura per packet: update all, count, the slot with its data, the unit last; 12.x: the unit before the slot
             packet.writeBit(false);
             packet.writeBits(1, 9);
             packet.flushBits();
+            if (m_protocol.isMidnight())
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
 
-            if (m_protocol.isTheWarWithin())
+            if (m_protocol.isTheWarWithinOrLater())
                 writeAuraSlotTheWarWithin(packet, aura_updates, remove, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
             else if (m_protocol.isShadowlands() || m_protocol.isDragonflight())
                 writeAuraSlotShadowlands(packet, aura_updates, remove, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
@@ -68,7 +70,8 @@ namespace AscEmu::Packets
             else
                 writeAuraSlotLegion(packet, aura_updates, remove, m_protocol.realmId, m_receiverMapId, guid.getLowGuid());
 
-            packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+            if (!m_protocol.isMidnight())
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
             return true;
         }
 
@@ -92,7 +95,7 @@ namespace AscEmu::Packets
             if (m_protocol.isWoD())
                 return serialiseWoD(packet);
 
-            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithin())
+            if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                 return serialiseLegion(packet);
 
             if (m_protocol.expansion < WoW::Expansion::_Mop)

@@ -11,6 +11,19 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/LocationVector.hpp"
 #include "Map/Visibility/VisibilityTypes.hpp"
 
+// 12.x movement flags: one 64 bit field with the flags in the low half and the extra flags from bit 32 on
+// (no strafing, no jumping, full speed turning, full speed pitching, allow pitching in the order of the 16 bit
+// extra flags); the later extra bits of 12.x have no counterpart in the 16 bit field
+inline constexpr uint64_t movementFlags64(uint32_t flags, uint16_t flags2) noexcept
+{
+    return static_cast<uint64_t>(flags) | (static_cast<uint64_t>(flags2 & 0x1F) << 32);
+}
+
+inline constexpr uint16_t movementFlags2From64(uint64_t flags64) noexcept
+{
+    return static_cast<uint16_t>((flags64 >> 32) & 0x1F);
+}
+
 struct MovementInfo
 {
     WoWGuid guid = 0;

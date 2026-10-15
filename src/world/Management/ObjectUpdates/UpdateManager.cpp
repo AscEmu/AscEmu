@@ -139,7 +139,7 @@ void UpdateManager::internalProcessPendingUpdates()
     const auto sendBlocks = [this, &buffer](uint32_t blockCount, ByteBuffer& blocks, bool withOutOfRange)
     {
         buffer.clear();
-#if VERSION_STRING == TheWarWithin
+#if VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
         buffer << uint16_t(m_owner->GetMapId());
         buffer << uint32_t(blockCount);
         buffer.writeBit(true);

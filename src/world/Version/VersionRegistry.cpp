@@ -30,6 +30,7 @@ namespace Version
             WoW::Expansion::_Shadowlands,
             WoW::Expansion::_Dragonflight,
             WoW::Expansion::_TheWarWithin,
+            WoW::Expansion::_Midnight,
         };
 
         size_t opcodeCount = 0;

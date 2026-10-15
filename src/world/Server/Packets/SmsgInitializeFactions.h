@@ -37,7 +37,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isTheWarWithin())
+            if (m_protocol.isTheWarWithinOrLater())
             {
                 // 11.x: the factions are listed with their id instead of being indexed by the reputation list: faction
                 // count, bonus count, every faction with id, flags (16 bit) and standing, then every bonus with id and bit

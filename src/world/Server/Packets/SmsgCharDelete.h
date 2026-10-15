@@ -31,7 +31,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isTheWarWithin())
+            if (m_protocol.isTheWarWithinOrLater())
             {
                 // 11.x: result as a 32 bit value (same result codes as 10.x)
                 packet << uint32_t(toDragonflightCharacterErrorCode(result));
