@@ -18,15 +18,16 @@ namespace AscEmu::Version::Forever
 
     // Registered Forever builds share the current 1.60.1 transport. Build
     // authentication is independent and remains variant-specific in Auth.hpp.
-    inline constexpr std::array<BuildProfile, 4> BuildProfiles =
+    inline constexpr std::array<BuildProfile, 5> BuildProfiles =
     {{
         { 69893U, "Forever 1.60.1" },
         { 70009U, "Forever 1.60.1" },
         { 70124U, "Forever 1.60.1" },
         { 70205U, "Forever 1.60.1" },
+        { 70374U, "Forever 1.60.1" },
     }};
 
-    inline constexpr BuildProfile ActiveBuild{ 70009U, "Forever 1.60.1" };
+    inline constexpr BuildProfile ActiveBuild{ 70374U, "Forever 1.60.1" };
     inline constexpr uint32_t Build = ActiveBuild.build;
 
     inline constexpr bool supportsBuild(uint32_t build)
