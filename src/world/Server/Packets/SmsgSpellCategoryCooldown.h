@@ -37,6 +37,20 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands())
+            {
+                packet.setOpcode(SMSG_CATEGORY_COOLDOWN);
+                packet << uint32_t(entries.size());
+
+                for (auto const& entry : entries)
+                {
+                    packet << uint32_t(entry.category);
+                    packet << int32_t(entry.modCooldown);
+                }
+
+                return true;
+            }
+
             if (m_protocol.isCata())
             {
                 packet.writeBits(static_cast<uint32_t>(entries.size()), 23);

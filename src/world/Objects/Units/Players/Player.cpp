@@ -9960,6 +9960,7 @@ void Player::sendDismountResultPacket(uint32_t result)
 void Player::sendCastFailedPacket(uint32_t spellId, uint8_t errorMessage, uint8_t multiCast, uint32_t extra1, uint32_t extra2 /*= 0*/)
 {
     SmsgCastFailed managedPacket(multiCast, spellId, errorMessage, extra1, extra2);
+    managedPacket.casterGuid = getGuid();
     m_session->sendManagedPacket(managedPacket);
 }
 

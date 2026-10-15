@@ -2161,7 +2161,7 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
 
 #if VERSION_STRING >= WoD && VERSION_STRING != BfA && VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight && VERSION_STRING != TheWarWithin && VERSION_STRING != Midnight
     writeEmptyDynamicValues(buf, m_objectTypeId);
-#elif VERSION_STRING >= Mop
+#elif VERSION_STRING == Mop
     // Mop closes every values-update block with a dynamic-values section; for anything
     // that isn't an item or a player this is a single zero byte meaning "no dynamic
     // fields". buildValuesUpdate() already writes this trailer for the normal per-tick update path;
@@ -2201,7 +2201,7 @@ void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Va
 
 #if VERSION_STRING >= WoD && VERSION_STRING != BfA && VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight && VERSION_STRING != TheWarWithin && VERSION_STRING != Midnight
     writeEmptyDynamicValues(*buf, m_objectTypeId);
-#elif VERSION_STRING >= Mop
+#elif VERSION_STRING == Mop
     // See the other BuildFieldUpdatePacket() overload above for why this is required.
     *buf << static_cast<uint8_t>(0);
 #endif

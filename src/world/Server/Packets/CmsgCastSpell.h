@@ -9,6 +9,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "Spell/SpellCastTargets.hpp"
+#include "Spell/Definitions/SpellCastTargetFlags.hpp"
+#include "Objects/MovementInfo.hpp"
+#include "Version/VersionRegistry.hpp"
 
 namespace AscEmu::Packets
 {
@@ -33,6 +36,9 @@ namespace AscEmu::Packets
         bool hasSrcLocation = false;    // since 184141
         bool hasDestLocation = false;   // since 184141
 
+        // 7.x and later: the id the client gave the cast, SMSG_SPELL_PREPARE links it to the cast id of the server
+        WoWGuid128 clientCastGuid;
+
         CmsgCastSpell() : CmsgCastSpell(0, 0, 0)
         {
         }
@@ -48,6 +54,9 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+                return readGuid128Request(packet);
+
             if (m_protocol.expansion != WoW::Expansion::_Mop)
             {
                 if (m_protocol.expansion <= WoW::Expansion::_TBC)
@@ -377,6 +386,302 @@ namespace AscEmu::Packets
                 targets.setUnitTarget(targetGuid);
                 targets.setItemTarget(itemTargetGuid);
             }
+            return true;
+        }
+
+    private:
+        // 6.x and later: a target location is the transport and the position on it
+        void readTargetLocation(WorldPacket& packet, bool isSource)
+        {
+            WoWGuid128 transportGuid;
+            LocationVector location;
+            packet >> transportGuid >> location;
+
+            const uint64_t transport = WoWGuid::fromGuid128(transportGuid).getRawGuid();
+            if (isSource)
+            {
+                targets.setSource(location);
+                targets.setTransportSourceGuid(transport);
+            }
+            else
+            {
+                targets.setDestination(location);
+                targets.setTransportDestinationGuid(transport);
+            }
+        }
+
+        // 6.x to 10.x: the presence bits lead, 11.x and later: flags and guids lead
+        void readTargetData(WorldPacket& packet)
+        {
+            uint32_t targetFlags = 0;
+            uint32_t nameLength = 0;
+            bool hasOrientation = false;
+            bool hasMapId = false;
+            WoWGuid128 objectGuid;
+            WoWGuid128 itemGuid;
+
+            if (m_protocol.isTheWarWithinOrLater())
+            {
+                WoWGuid128 extraGuid;                   // 11.x unknown, 12.x housing
+                packet >> targetFlags >> objectGuid >> itemGuid >> extraGuid;
+
+                packet.resetBitPos();
+                packet.readBit();                       // 11.x unknown, 12.x housing resident
+                hasSrcLocation = packet.readBit();
+                hasDestLocation = packet.readBit();
+                hasOrientation = packet.readBit();
+                hasMapId = packet.readBit();
+                nameLength = packet.readBits(7);
+            }
+            else
+            {
+                int32_t flagBits = 23;
+                if (m_protocol.isLegion())
+                    flagBits = 25;
+                else if (m_protocol.isBfA() || m_protocol.isShadowlands())
+                    flagBits = 26;
+                else if (m_protocol.isDragonflight())
+                    flagBits = 28;
+
+                packet.resetBitPos();
+                targetFlags = packet.readBits(flagBits);
+                hasSrcLocation = packet.readBit();
+                hasDestLocation = packet.readBit();
+                hasOrientation = packet.readBit();
+                if (!m_protocol.isWoD())
+                    hasMapId = packet.readBit();
+                nameLength = packet.readBits(7);
+
+                packet >> objectGuid >> itemGuid;
+            }
+
+            if (hasSrcLocation)
+                readTargetLocation(packet, true);
+
+            if (hasDestLocation)
+                readTargetLocation(packet, false);
+
+            if (hasOrientation)
+                packet.readSkip<float>();
+
+            if (hasMapId)
+                packet.readSkip<int32_t>();
+
+            const std::string name = packet.readString(nameLength);
+
+            targets.setTargetMask(targetFlags);
+
+            // one guid for the unit or game object target
+            const uint64_t object = WoWGuid::fromGuid128(objectGuid).getRawGuid();
+            if (targetFlags & (TARGET_FLAG_OBJECT | TARGET_FLAG_OPEN_LOCK))
+                targets.setGameObjectTarget(object);
+            else
+                targets.setUnitTarget(object);
+
+            targets.setItemTarget(WoWGuid::fromGuid128(itemGuid).getRawGuid());
+
+            if (!name.empty())
+                targets.setStringTarget(name);
+        }
+
+        // crafting reagents (10.x and later) are not used by the server, they are only read past
+        void skipCraftingReagent(WorldPacket& packet)
+        {
+            if (m_protocol.isMidnight())
+            {
+                packet.readSkip<int32_t>();             // slot
+                packet.readSkip<int32_t>();             // quantity
+
+                packet.resetBitPos();
+                const bool hasItem = packet.readBit();
+                const bool hasCurrency = packet.readBit();
+
+                if (hasItem)
+                    packet.readSkip<int32_t>();
+
+                if (hasCurrency)
+                    packet.readSkip<int32_t>();
+
+                // the source bit shares the byte of the reagent bits unless a value came in between
+                if (hasItem || hasCurrency)
+                    packet.resetBitPos();
+            }
+            else
+            {
+                packet.readSkip<int32_t>();             // item
+                packet.readSkip<int32_t>();             // data slot
+                packet.readSkip<int32_t>();             // quantity
+                packet.resetBitPos();
+            }
+
+            if (packet.readBit())
+                packet.readSkip<uint8_t>();             // source
+        }
+
+        bool readGuid128Request(WorldPacket& packet)
+        {
+            const bool isWoD = m_protocol.isWoD();
+            const bool isLegion = m_protocol.isLegion();
+            const bool isBfA = m_protocol.isBfA();
+            const bool isShadowlands = m_protocol.isShadowlands();
+            const bool isDragonflight = m_protocol.isDragonflight();
+            const bool isTheWarWithin = m_protocol.isTheWarWithin();
+            const bool isMidnight = m_protocol.isMidnight();
+
+            castCount = 0;
+            castFlags = 0;
+
+            uint32_t weightCount = 0;
+            uint32_t currencyCount = 0;
+            uint32_t reagentCount = 0;
+            uint32_t removedCount = 0;
+            bool hasMovement = false;
+            bool hasCraftingOrderId = false;
+            bool hasReceiveTime = false;
+
+            // 6.x: cast count, 7.x and later: cast guid
+            if (isWoD)
+                packet >> castCount;
+            else
+                packet >> clientCastGuid;
+
+            if (isTheWarWithin || isMidnight)
+                packet >> castFlags;
+
+            // misc values, 12.x has a third one
+            packet.readSkip<int32_t>();
+            packet.readSkip<int32_t>();
+            if (isMidnight)
+                packet.readSkip<int32_t>();
+
+            packet >> spellId;
+
+            // visual, 9.x and later followed by the script visual
+            packet.readSkip<int32_t>();
+            if (!isWoD && !isLegion && !isBfA)
+                packet.readSkip<int32_t>();
+
+            if (isWoD || isMidnight)
+                readTargetData(packet);
+
+            packet >> projectilePitch >> projectileSpeed;
+
+            WoWGuid128 charmerOrCraftingNpc;
+            packet >> charmerOrCraftingNpc;
+
+            if (isShadowlands)
+            {
+                packet >> reagentCount >> currencyCount;
+                if (reagentCount > 6 || currencyCount > 5)
+                    return false;
+
+                for (uint32_t i = 0; i < reagentCount; ++i)
+                {
+                    packet.readSkip<int32_t>();         // item
+                    packet.readSkip<int32_t>();         // slot
+                }
+
+                for (uint32_t i = 0; i < currencyCount; ++i)
+                {
+                    packet.readSkip<int32_t>();         // currency
+                    packet.readSkip<int32_t>();         // count
+                }
+            }
+            else if (isDragonflight || isTheWarWithin || isMidnight)
+            {
+                packet >> currencyCount >> reagentCount >> removedCount;
+                if (currencyCount > 5 || reagentCount > 6 || removedCount > 6)
+                    return false;
+
+                if (isTheWarWithin || isMidnight)
+                    packet.readSkip<uint8_t>();         // crafting flags
+
+                for (uint32_t i = 0; i < currencyCount; ++i)
+                {
+                    packet.readSkip<int32_t>();         // currency
+                    packet.readSkip<int32_t>();         // count
+                }
+            }
+
+            if (isMidnight)
+            {
+                for (uint32_t i = 0; i < reagentCount; ++i)
+                    skipCraftingReagent(packet);
+
+                for (uint32_t i = 0; i < removedCount; ++i)
+                    skipCraftingReagent(packet);
+
+                packet.resetBitPos();
+                hasReceiveTime = packet.readBit();
+                hasMovement = packet.readBit();
+                weightCount = packet.readBits(2);
+                hasCraftingOrderId = packet.readBit();
+
+                if (hasReceiveTime)
+                    packet.readSkip<uint32_t>();
+            }
+            else if (isTheWarWithin)
+            {
+                readTargetData(packet);
+
+                packet.resetBitPos();
+                hasMovement = packet.readBit();
+                weightCount = packet.readBits(2);
+                hasCraftingOrderId = packet.readBit();
+
+                for (uint32_t i = 0; i < reagentCount; ++i)
+                    skipCraftingReagent(packet);
+
+                if (hasCraftingOrderId)
+                    packet.readSkip<uint64_t>();
+
+                for (uint32_t i = 0; i < removedCount; ++i)
+                    skipCraftingReagent(packet);
+            }
+            else
+            {
+                packet.resetBitPos();
+                castFlags = static_cast<uint8_t>(packet.readBits(5));
+                hasMovement = packet.readBit();
+                weightCount = packet.readBits(2);
+                if (isDragonflight)
+                    hasCraftingOrderId = packet.readBit();
+
+                if (!isWoD)
+                    readTargetData(packet);
+
+                if (isDragonflight)
+                {
+                    if (hasCraftingOrderId)
+                        packet.readSkip<uint64_t>();
+
+                    for (uint32_t i = 0; i < reagentCount; ++i)
+                        skipCraftingReagent(packet);
+
+                    for (uint32_t i = 0; i < removedCount; ++i)
+                        skipCraftingReagent(packet);
+                }
+            }
+
+            // the movement update has the layout of a heartbeat, the server only reads past it
+            if (hasMovement)
+            {
+                MovementInfo movementInfo;
+                packet.resetBitPos();
+                movementInfo.readMovementInfo(packet, Version::opcodeHexFor(MSG_MOVE_HEARTBEAT, m_protocol), m_protocol.expansion);
+            }
+
+            for (uint32_t i = 0; i < weightCount; ++i)
+            {
+                packet.resetBitPos();
+                packet.readBits(2);                     // type
+                packet.readSkip<int32_t>();             // id
+                packet.readSkip<uint32_t>();            // quantity
+            }
+
+            if (isMidnight && hasCraftingOrderId)
+                packet.readSkip<uint64_t>();
+
             return true;
         }
     };

@@ -48,7 +48,7 @@ namespace AscEmu::Packets
             {
                 // caster, cast guid, spell, visual, reason
                 packet << casterGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
-                packet << WoWGuid128();
+                packet << WoWGuid128::cast(m_protocol.realmId, m_receiverMapId, spellId, casterGuid.getLowGuid());
                 packet << uint32_t(spellId);
                 packet << uint32_t(0);
                 if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())

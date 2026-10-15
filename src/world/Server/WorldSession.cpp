@@ -893,7 +893,7 @@ void WorldSession::registerOpcodeHandler()
     // registry.registerOpcode(CMSG_SET_TARGET_OBSOLETE, &WorldSession::HandleSetTargetOpcode, false, false, true, false, false);
     registry.registerOpcode(CMSG_SET_SELECTION, &WorldSession::handleSetSelectionOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_STANDSTATECHANGE, &WorldSession::handleStandStateChangeOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_CANCEL_MOUNT_AURA, &WorldSession::handleDismountOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CANCEL_MOUNT_AURA, &WorldSession::handleDismountOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
 
     // Friends
     registry.registerOpcode(CMSG_CONTACT_LIST, &WorldSession::handleFriendListOpcode, true, true, true, true, true);
@@ -1072,19 +1072,19 @@ void WorldSession::registerOpcodeHandler()
 
     // Spell System / Talent System
     registry.registerOpcode(CMSG_USE_ITEM, &WorldSession::handleUseItemOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_CAST_SPELL, &WorldSession::handleCastSpellOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CAST_SPELL, &WorldSession::handleCastSpellOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_SPELL_CLICK, &WorldSession::handleSpellClick, true, false, true, true, true);
-    registry.registerOpcode(CMSG_CANCEL_CAST, &WorldSession::handleCancelCastOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_CANCEL_AURA, &WorldSession::handleCancelAuraOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_CANCEL_CHANNELLING, &WorldSession::handleCancelChannellingOpcode, true, false, true, true, true);
-    registry.registerOpcode(CMSG_CANCEL_AUTO_REPEAT_SPELL, &WorldSession::handleCancelAutoRepeatSpellOpcode, true, false, true, true, true);
-    registry.registerOpcode(CMSG_TOTEM_DESTROYED, &WorldSession::handleCancelTotem, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CANCEL_CAST, &WorldSession::handleCancelCastOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CANCEL_AURA, &WorldSession::handleCancelAuraOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CANCEL_CHANNELLING, &WorldSession::handleCancelChannellingOpcode, true, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CANCEL_AUTO_REPEAT_SPELL, &WorldSession::handleCancelAutoRepeatSpellOpcode, true, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_TOTEM_DESTROYED, &WorldSession::handleCancelTotem, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_LEARN_TALENT, &WorldSession::handleLearnTalentOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_LEARN_TALENTS_MULTIPLE, &WorldSession::handleLearnMultipleTalentsOpcode, false, false, true, false, false);
     registry.registerOpcode(CMSG_UNLEARN_TALENTS, &WorldSession::handleUnlearnTalents, true, false, true, true, true);
     registry.registerOpcode(CMSG_SET_PRIMARY_TALENT_TREE, &WorldSession::handleSetPrimaryTalentTreeOpcode, false, false, false, false, true);
     registry.registerOpcode(MSG_TALENT_WIPE_CONFIRM, &WorldSession::handleUnlearnTalents, true, true, true, true, false);
-    registry.registerOpcode(CMSG_REQUEST_CATEGORY_COOLDOWNS, &WorldSession::handleRequestCategoryCooldownsOpcode, false, false, false, true, true);
+    registry.registerOpcode(CMSG_REQUEST_CATEGORY_COOLDOWNS, &WorldSession::handleRequestCategoryCooldownsOpcode, false, false, false, true, true, true, true, true, true, false, false, false);
     registry.registerOpcode(CMSG_UPDATE_PROJECTILE_POSITION, &WorldSession::handleUpdateProjectilePosition, false, false, true, true, false);
     // Combat / Duel
     registry.registerOpcode(CMSG_ATTACKSWING, &WorldSession::handleAttackSwingOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
@@ -1247,7 +1247,7 @@ void WorldSession::registerOpcodeHandler()
     // Meeting Stone / Instances
     registry.registerOpcode(CMSG_SUMMON_RESPONSE, &WorldSession::handleSummonResponseOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_RESET_INSTANCES, &WorldSession::handleResetInstanceOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_SELF_RES, &WorldSession::handleSelfResurrect, true, true, true, true, true);
+    registry.registerOpcode(CMSG_SELF_RES, &WorldSession::handleSelfResurrect, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(MSG_RANDOM_ROLL, &WorldSession::handleRandomRollOpcode, true, true, true, true, true);
     registry.registerOpcode(MSG_SET_DUNGEON_DIFFICULTY, &WorldSession::handleDungeonDifficultyOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_SET_DUNGEON_DIFFICULTY, &WorldSession::handleDungeonDifficultyOpcode, false, false, false, false, true);

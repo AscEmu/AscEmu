@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgPetCastSpell.h"
 #include "Server/Packets/CmsgSpellClick.h"
 #include "Server/Packets/CmsgRequestCategoryCooldowns.h"
+#include "Server/Packets/SmsgSpellPrepare.h"
 #include "Server/Packets/SmsgSetProjectilePosition.h"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
@@ -139,6 +140,12 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
+#if VERSION_STRING >= Legion
+    // the client waits for the cast id of the server before it accepts start, go or failure of its cast
+    SmsgSpellPrepare spellPrepare(srlPacket.clientCastGuid, _player->getGuid(), srlPacket.spellId);
+    sendManagedPacket(spellPrepare);
+#endif
+
     const auto spellInfo = getSpellInfo(srlPacket.spellId);
     if (spellInfo == nullptr)
         return;
@@ -236,7 +243,15 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
 void WorldSession::handleCancelCastOpcode(WorldPacket& recvPacket)
 {
     uint32_t spellId = 0;
-#if VERSION_STRING >= Mop
+#if VERSION_STRING == WoD
+    // spell, cast count
+    recvPacket >> spellId;
+    recvPacket.readSkip<uint8_t>();
+#elif VERSION_STRING >= Legion
+    // cast guid, spell
+    WoWGuid128 castGuid;
+    recvPacket >> castGuid >> spellId;
+#elif VERSION_STRING == Mop
     uint8_t counter = 0;
 
     bool hasCounter = !recvPacket.readBit();

@@ -20,6 +20,9 @@ namespace AscEmu::Packets
         uint32_t extra1;
         uint32_t extra2;
 
+        // 7.x and later: the caster makes up the cast id
+        WoWGuid casterGuid;
+
         SmsgCastFailed() : SmsgCastFailed(0, 0, 0, 0, 0)
         {
         }
@@ -53,7 +56,7 @@ namespace AscEmu::Packets
             if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
                 // cast guid, spell, visual, reason, two arguments
-                packet << WoWGuid128();
+                packet << WoWGuid128::cast(m_protocol.realmId, m_receiverMapId, spellId, casterGuid.getLowGuid());
                 packet << int32_t(spellId);
                 packet << uint32_t(0);
                 if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())

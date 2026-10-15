@@ -32,6 +32,24 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // caster, spell, visual (7.x and 8.x one value, 9.x and later visual and script visual), duration,
+                // no interrupt immunities, no heal prediction
+                packet.setOpcode(SMSG_SPELL_CHANNEL_START);
+                packet << casterGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << int32_t(spellId);
+                if (!m_protocol.isWoD())
+                    packet << int32_t(0);
+                if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+                    packet << int32_t(0);
+                packet << uint32_t(duration);
+                packet.writeBit(false);
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.expansion >= WoW::Expansion::_TBC)
                 packet << casterGuid;
 
