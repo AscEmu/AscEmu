@@ -72,6 +72,11 @@ This file is released under the MIT license. See README-MIT for more information
     #define FT_VEHICLES
 #endif
 
+#if VERSION_STRING == Camelot
+    #undef FT_DEATH_KNIGHT
+    #undef FT_GLYPHS
+#endif
+
 #if VERSION_STRING >= Cata && !defined(AE_MODERN_CLIENT)
     #define FT_TRANSMOG
     #define FT_LFR

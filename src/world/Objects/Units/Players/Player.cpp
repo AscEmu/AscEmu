@@ -3794,7 +3794,9 @@ void Player::applyLevelInfo(uint32_t newLevel)
     m_playerInfo->lastLevel = previousLevel;
 
 #if VERSION_STRING >= WotLK
+#ifdef FT_GLYPHS
     updateGlyphs();
+#endif
     updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
 #endif
 
@@ -17353,7 +17355,9 @@ void Player::loadFromDBProc(QueryResultVector& results)
     HonorHandler::RecalculateHonorFields(this);
 
 #if VERSION_STRING > TBC
+#ifdef FT_GLYPHS
     updateGlyphs();
+#endif
 
     for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
         setGlyph(i, m_specs[m_talentActiveSpec].getGlyph(i));
