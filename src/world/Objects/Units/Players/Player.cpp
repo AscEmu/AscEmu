@@ -6158,10 +6158,10 @@ static uint32_t getInitialSpecialization(uint8_t playerClass)
 }
 #endif
 
-#if VERSION_STRING >= Mop
 uint32_t Player::getCurrentSpecId() const { return getField<uint32_t>(PlayerField::CurrentSpecId); }
 void Player::setCurrentSpecId(uint32_t specializationId) { setField<uint32_t>(PlayerField::CurrentSpecId, specializationId); }
 
+#if VERSION_STRING >= Mop
 void Player::setPrimaryTalentSpecialization(uint32_t specializationTabId)
 {
     if (specializationTabId >= 4)

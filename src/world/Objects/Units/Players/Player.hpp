@@ -268,10 +268,10 @@ public:
     uint64_t getKnownCurrencies() const;
     void setKnownCurrencies(uint64_t currencies);
 
-#if VERSION_STRING >= Mop
     uint32_t getCurrentSpecId() const;
     void setCurrentSpecId(uint32_t specializationId);
 
+#if VERSION_STRING >= Mop
     // CMSG_SET_PRIMARY_TALENT_TREE - chooses the class specialization for the active spec slot (once, cannot be changed by this opcode)
     void setPrimaryTalentSpecialization(uint32_t specializationTabId);
 #endif
