@@ -1382,6 +1382,26 @@ void Unit::setNativeDisplayId(uint32_t id) { setField<uint32_t>(UnitField::Nativ
 uint32_t Unit::getMountDisplayId() const { return getField<uint32_t>(UnitField::MountDisplayId); }
 void Unit::setMountDisplayId(uint32_t id) { setField<uint32_t>(UnitField::MountDisplayId, id); }
 
+uint32_t Unit::getViewerDisplayId(Player const* target) const
+{
+    if (auto const* creature = ToCreature(); creature != nullptr && target != nullptr && target->isGMFlagSet())
+    {
+        if (creature->GetCreatureProperties()->isTriggerNpc)
+            return creature->GetCreatureProperties()->getVisibleModelForTriggerNpc();
+    }
+
+    return getDisplayId();
+}
+
+uint32_t Unit::getViewerUnitFlags(Player const* target) const
+{
+    uint32_t unitFlags = getUnitFlags();
+    if (isCreature() && target != nullptr && target->isGMFlagSet())
+        unitFlags &= ~UNIT_FLAG_NOT_SELECTABLE;
+
+    return unitFlags;
+}
+
 float Unit::getMinDamage() const { return getField<float>(UnitField::MinimumDamage); }
 void Unit::setMinDamage(float damage) { setField<float>(UnitField::MinimumDamage, damage); }
 
@@ -7090,7 +7110,7 @@ void Unit::smsg_AttackStart(Unit* pVictim)
     SmsgAttackStart sendPacket(getGuid(), pVictim->getGuid());
     PacketBroadcast::sendToSet(*this, sendPacket, false);
 
-    sLogger.debugOpcode("WORLD: Sent SMSG_ATTACK_START");
+    //sLogger.debugOpcode("WORLD: Sent SMSG_ATTACK_START");
 
     if (isPlayer())
     {

@@ -5,10 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "AEVersion.hpp"
-
-#if VERSION_STRING == Midnight
-
 #include <cstdint>
 
 class ByteBuffer;
@@ -31,5 +27,3 @@ namespace ObjectUpdateMidnight
     // the update mask lists the changed values of the server layout
     void writeUpdateValues(Object* object, Player* target, UpdateMask const& mask, ByteBuffer& data);
 }
-
-#endif

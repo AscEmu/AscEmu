@@ -7,8 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Storage/CharacterCustomizations.hpp"
 
-#if VERSION_STRING == Midnight
-
 #include "Data/Flags.hpp"
 #include "Management/Group.h"
 #include "Management/ItemInterface.h"
@@ -289,146 +287,13 @@ namespace
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // values that depend on the receiver
-    uint32_t viewerDynamicFlags(Object* object, Player* target)
-    {
-        if (Creature* creature = object->ToCreature())
-        {
-            uint32_t dynamicFlags = creature->getDynamicFlags() & ~(U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_TAPPED_BY_PLAYER);
-            if (target != nullptr && creature->getTaggerGuid())
-            {
-                dynamicFlags |= U_DYN_FLAG_TAGGED_BY_OTHER;
-                if (creature->isTaggedByPlayerOrItsGroup(target))
-                    dynamicFlags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
-            }
-            return dynamicFlags;
-        }
-
-        if (Unit* unit = object->ToUnit())
-            return unit->getDynamicFlags();
-
-        if (GameObject* gameobject = static_cast<GameObject*>(object); object->isGameObject())
-        {
-            // 12.x: flags only, the progress of a transport goes through the game object block of the create block
-            uint32_t dynamicFlags = gameobject->getDynamicFlags() & ~(GO_DYN_FLAG_INTERACTABLE | GO_DYN_FLAG_SPARKLE);
-            const uint16_t pathProgress = 0;
-
-            if (target != nullptr)
-            {
-                const auto gobProperties = gameobject->GetGameObjectProperties();
-                bool activeObject = false;
-
-                for (const auto& questPair : gobProperties->goMap)
-                {
-                    if (auto* const questLog = target->getQuestLogByQuestId(questPair.first->id))
-                    {
-                        const auto quest = questLog->getQuestProperties();
-                        if (quest->count_required_mob == 0)
-                            continue;
-
-                        for (uint8_t i = 0; i < 4; ++i)
-                        {
-                            if (quest->required_mob_or_go[i] == static_cast<int32_t>(gameobject->getEntry()) && questLog->getMobCountByIndex(i) < quest->required_mob_or_go_count[i])
-                            {
-                                activeObject = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (activeObject)
-                        break;
-                }
-
-                if (!activeObject)
-                {
-                    for (const auto& questItemData : gobProperties->itemMap)
-                    {
-                        for (const auto& itemPair : questItemData.second)
-                        {
-                            if (target->getQuestLogByQuestId(questItemData.first->id) == nullptr)
-                                continue;
-
-                            if (target->getItemInterface()->GetItemCount(itemPair.first) < itemPair.second)
-                            {
-                                activeObject = true;
-                                break;
-                            }
-                        }
-
-                        if (activeObject)
-                            break;
-                    }
-                }
-
-                if (activeObject)
-                    dynamicFlags |= GO_DYN_FLAG_INTERACTABLE | GO_DYN_FLAG_SPARKLE;
-
-                if (!(dynamicFlags & GO_DYN_FLAG_INTERACTABLE) && gameobject->isQuestGiver())
-                {
-                    auto* const objectQuestGiver = dynamic_cast<GameObject_QuestGiver*>(gameobject);
-                    if (objectQuestGiver != nullptr && objectQuestGiver->HasQuests())
-                    {
-                        for (const auto& questRelation : objectQuestGiver->getQuestList())
-                        {
-                            if (questRelation == nullptr || questRelation->qst == nullptr)
-                                continue;
-
-                            const auto questProperties = questRelation->qst;
-                            if ((questRelation->type & QUESTGIVER_QUEST_START && !target->hasQuestInQuestLog(questProperties->id)
-                                && sQuestMgr.CalcQuestStatus(gameobject, target, questRelation.get()) >= QuestStatus::AvailableChat) ||
-                                (questRelation->type & QUESTGIVER_QUEST_END && target->hasQuestInQuestLog(questProperties->id)))
-                            {
-                                dynamicFlags |= GO_DYN_FLAG_INTERACTABLE;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return (dynamicFlags & 0xFFFF) | (uint32_t(pathProgress) << 16);
-        }
-
-        if (object->isCorpse())
-        {
-            auto* const corpse = static_cast<Corpse*>(object);
-            uint32_t dynamicFlags = corpse->getDynamicFlags() & ~(U_DYN_FLAG_LOOTABLE | U_DYN_FLAG_TAPPED_BY_PLAYER);
-            if (!corpse->loot.isLooted())
-                dynamicFlags |= U_DYN_FLAG_LOOTABLE | U_DYN_FLAG_TAPPED_BY_PLAYER;
-            return dynamicFlags;
-        }
-
-        return object->getField<uint32_t>(ObjectField::DynamicField);
-    }
-
-    uint32_t viewerDisplayId(Unit* unit, Player* target)
-    {
-        if (Creature* creature = unit->ToCreature(); creature != nullptr && target != nullptr && target->isGMFlagSet())
-        {
-            if (creature->GetCreatureProperties()->isTriggerNpc)
-                return creature->GetCreatureProperties()->getVisibleModelForTriggerNpc();
-        }
-
-        return unit->getDisplayId();
-    }
-
-    uint32_t viewerUnitFlags(Unit* unit, Player* target)
-    {
-        uint32_t unitFlags = unit->getUnitFlags();
-        if (unit->isCreature() && target != nullptr && target->isGMFlagSet())
-            unitFlags &= ~UNIT_FLAG_NOT_SELECTABLE;
-        return unitFlags;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////
     // ObjectData: entry, dynamic flags, scale
     using ObjectMask = ChangeMask<4>;
 
     void objectCreate(Object* object, Context const& ctx)
     {
         ctx.data << int32_t(object->getEntry());
-        ctx.data << uint32_t(viewerDynamicFlags(object, ctx.target));
+        ctx.data << uint32_t(object->getViewerDynamicFlags(ctx.target));
         ctx.data << float(object->getScale());
     }
 
@@ -454,7 +319,7 @@ namespace
             if (mask[1])
                 ctx.data << int32_t(object->getEntry());
             if (mask[2])
-                ctx.data << uint32_t(viewerDynamicFlags(object, ctx.target));
+                ctx.data << uint32_t(object->getViewerDynamicFlags(ctx.target));
             if (mask[3])
                 ctx.data << float(object->getScale());
         }
@@ -587,7 +452,7 @@ namespace
         uint8_t creatureType;
         unitCreatureInfo(unit, creatureFamily, creatureType);
 
-        data << int32_t(viewerDisplayId(unit, ctx.target));
+        data << int32_t(unit->getViewerDisplayId(ctx.target));
         data << uint32_t(unit->getField<uint32_t>(UnitField::NpcFlags, 0, 0));
         data << uint32_t(unit->getField<uint32_t>(UnitField::NpcFlags, 0, 4));
         data << uint32_t(0);                                                // state spell visual
@@ -650,7 +515,7 @@ namespace
         for (uint8_t i = 0; i < 3; ++i)
             unitVisibleItemCreate(unit, i, data);
 
-        data << uint32_t(viewerUnitFlags(unit, ctx.target));
+        data << uint32_t(unit->getViewerUnitFlags(ctx.target));
         data << uint32_t(unit->getUnitFlags2());
         data << uint32_t(0);                                                // flags 3
         data << uint32_t(0);                                                // flags 4
@@ -947,7 +812,7 @@ namespace
             if (mask[5] && channelObject != 0)
                 ctx.guid(channelObject);
             if (mask[6])
-                data << int32_t(viewerDisplayId(unit, ctx.target));
+                data << int32_t(unit->getViewerDisplayId(ctx.target));
             for (uint8_t i = 0; i < 2; ++i)
                 if (mask[7 + i])
                     data << uint32_t(unit->getField<uint32_t>(UnitField::NpcFlags, 0, i * 4));
@@ -1022,7 +887,7 @@ namespace
             if (mask[47])
                 data << int32_t(unit->getFactionTemplate());
             if (mask[48])
-                data << uint32_t(viewerUnitFlags(unit, ctx.target));
+                data << uint32_t(unit->getViewerUnitFlags(ctx.target));
             if (mask[49])
                 data << uint32_t(unit->getUnitFlags2());
             if (mask[50])
@@ -2968,7 +2833,7 @@ namespace
     {
         ByteBuffer& data = ctx.data;
 
-        data << uint32_t(viewerDynamicFlags(corpse, ctx.target));
+        data << uint32_t(corpse->getViewerDynamicFlags(ctx.target));
         ctx.guid(corpse->getOwnerGuid());
         ctx.guid(corpse->getField<uint64_t>(CorpseField::PartyGuid));
         ctx.guildGuid(corpse->getField<uint32_t>(CorpseField::Guild));
@@ -3023,7 +2888,7 @@ namespace
         if (mask[0])
         {
             if (mask[2])
-                data << uint32_t(viewerDynamicFlags(corpse, ctx.target));
+                data << uint32_t(corpse->getViewerDynamicFlags(ctx.target));
             if (mask[3])
                 ctx.guid(corpse->getOwnerGuid());
             if (mask[4])
@@ -3385,5 +3250,3 @@ namespace ObjectUpdateMidnight
         data.put<uint32_t>(sizePosition, static_cast<uint32_t>(data.wpos() - sizePosition - sizeof(uint32_t)));
     }
 }
-
-#endif

@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ObjectUpdateBfA.hpp"
 
-#if VERSION_STRING == BfA
-
 #include "Data/Flags.hpp"
 #include "Management/Group.h"
 #include "Management/ItemInterface.h"
@@ -2617,5 +2615,3 @@ namespace ObjectUpdateBfA
         data.put<uint32_t>(sizePosition, static_cast<uint32_t>(data.wpos() - sizePosition - sizeof(uint32_t)));
     }
 }
-
-#endif

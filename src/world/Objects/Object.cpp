@@ -3,6 +3,10 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include <array>
+#include <unordered_map>
+#include <vector>
+
 #include "Units/Unit.hpp"
 #include "Units/Creatures/Summons/Summon.hpp"
 #include "Storage/WDB/WDBStores.hpp"
@@ -65,17 +69,47 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ObjectUpdateMidnight.hpp"
 
 // 8.x and 9.x send their values as update field structures, each version has its own serializer
-#if VERSION_STRING == BfA
-namespace ObjectUpdateUF = ObjectUpdateBfA;
-#elif VERSION_STRING == Shadowlands
-namespace ObjectUpdateUF = ObjectUpdateShadowlands;
-#elif VERSION_STRING == Dragonflight
-namespace ObjectUpdateUF = ObjectUpdateDragonflight;
-#elif VERSION_STRING == TheWarWithin
-namespace ObjectUpdateUF = ObjectUpdateTheWarWithin;
-#elif VERSION_STRING == Midnight
-namespace ObjectUpdateUF = ObjectUpdateMidnight;
-#endif
+namespace ObjectUpdateUF
+{
+    inline uint8_t wireObjectTypeId(Object const* object, Player const* target)
+    {
+        switch (WoW::getServerExpansion())
+        {
+            case WoW::Expansion::_BfA:          return ObjectUpdateBfA::wireObjectTypeId(object, target);
+            case WoW::Expansion::_Shadowlands:  return ObjectUpdateShadowlands::wireObjectTypeId(object, target);
+            case WoW::Expansion::_Dragonflight: return ObjectUpdateDragonflight::wireObjectTypeId(object, target);
+            case WoW::Expansion::_TheWarWithin: return ObjectUpdateTheWarWithin::wireObjectTypeId(object, target);
+            case WoW::Expansion::_Midnight:     return ObjectUpdateMidnight::wireObjectTypeId(object, target);
+            default: return 0;
+        }
+    }
+
+    inline void writeCreateValues(Object* object, Player* target, ByteBuffer& data)
+    {
+        switch (WoW::getServerExpansion())
+        {
+            case WoW::Expansion::_BfA:          ObjectUpdateBfA::writeCreateValues(object, target, data); break;
+            case WoW::Expansion::_Shadowlands:  ObjectUpdateShadowlands::writeCreateValues(object, target, data); break;
+            case WoW::Expansion::_Dragonflight: ObjectUpdateDragonflight::writeCreateValues(object, target, data); break;
+            case WoW::Expansion::_TheWarWithin: ObjectUpdateTheWarWithin::writeCreateValues(object, target, data); break;
+            case WoW::Expansion::_Midnight:     ObjectUpdateMidnight::writeCreateValues(object, target, data); break;
+            default: break;
+        }
+    }
+
+    inline void writeUpdateValues(Object* object, Player* target, UpdateMask const& mask, ByteBuffer& data)
+    {
+        switch (WoW::getServerExpansion())
+        {
+            case WoW::Expansion::_BfA:          ObjectUpdateBfA::writeUpdateValues(object, target, mask, data); break;
+            case WoW::Expansion::_Shadowlands:  ObjectUpdateShadowlands::writeUpdateValues(object, target, mask, data); break;
+            case WoW::Expansion::_Dragonflight: ObjectUpdateDragonflight::writeUpdateValues(object, target, mask, data); break;
+            case WoW::Expansion::_TheWarWithin: ObjectUpdateTheWarWithin::writeUpdateValues(object, target, mask, data); break;
+            case WoW::Expansion::_Midnight:     ObjectUpdateMidnight::writeUpdateValues(object, target, mask, data); break;
+            default: break;
+        }
+    }
+}
 
 using Version::CorpseField;
 using Version::GameObjectField;
@@ -117,13 +151,6 @@ Object::~Object()
         }
     }
 }
-
-#if VERSION_STRING >= WoD
-#include "Server/World.h"
-
-#include <array>
-#include <unordered_map>
-#include <vector>
 
 namespace
 {
@@ -243,7 +270,6 @@ namespace
             data << uint32_t(info.transport_time2);
     }
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
@@ -301,6 +327,126 @@ void Object::setDynamicPathProgress(int16_t pathProgress)
         return;
 
     setField<int16_t>(ObjectField::DynamicFieldPathProgress, pathProgress);
+}
+
+uint32_t Object::getViewerDynamicFlags(Player* target)
+{
+    if (auto* creature = ToCreature())
+    {
+        uint32_t dynamicFlags = creature->getDynamicFlags() & ~(U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_TAPPED_BY_PLAYER);
+        if (target != nullptr && creature->getTaggerGuid())
+        {
+            dynamicFlags |= U_DYN_FLAG_TAGGED_BY_OTHER;
+            if (creature->isTaggedByPlayerOrItsGroup(target))
+                dynamicFlags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
+        }
+        return dynamicFlags;
+    }
+
+    if (auto const* unit = ToUnit())
+        return unit->getDynamicFlags();
+
+    if (isGameObject())
+    {
+        auto* gameobject = static_cast<GameObject*>(this);
+
+        uint32_t dynamicFlags = gameobject->getDynamicFlags() & ~(GO_DYN_FLAG_INTERACTABLE | GO_DYN_FLAG_SPARKLE);
+
+        // 11.x (TWW) and 12.x (Midnight) move transport path progress to movement updates (pathProgress = 0)
+        const bool sendPathProgress = !WoW::isServerExpansionAtLeast(WoW::Expansion::_TheWarWithin);
+        const bool isMovingTransport = gameobject->getGoType() == GAMEOBJECT_TYPE_TRANSPORT || gameobject->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT;
+        const uint16_t pathProgress = (sendPathProgress && isMovingTransport)
+                                          ? static_cast<uint16_t>(gameobject->getDynamicPathProgress())
+                                          : 0;
+
+        if (target != nullptr)
+        {
+            auto* gobProperties = gameobject->GetGameObjectProperties();
+            bool activeObject = false;
+
+            for (const auto& questPair : gobProperties->goMap)
+            {
+                if (auto const* questLog = target->getQuestLogByQuestId(questPair.first->id))
+                {
+                    auto const* quest = questLog->getQuestProperties();
+                    if (quest->count_required_mob == 0)
+                        continue;
+
+                    for (uint8_t i = 0; i < 4; ++i)
+                    {
+                        if (quest->required_mob_or_go[i] == static_cast<int32_t>(gameobject->getEntry()) &&
+                            questLog->getMobCountByIndex(i) < quest->required_mob_or_go_count[i])
+                        {
+                            activeObject = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (activeObject)
+                    break;
+            }
+
+            if (!activeObject)
+            {
+                for (const auto& questItemData : gobProperties->itemMap)
+                {
+                    for (const auto& itemPair : questItemData.second)
+                    {
+                        if (target->getQuestLogByQuestId(questItemData.first->id) == nullptr)
+                            continue;
+
+                        if (target->getItemInterface()->GetItemCount(itemPair.first) < itemPair.second)
+                        {
+                            activeObject = true;
+                            break;
+                        }
+                    }
+
+                    if (activeObject)
+                        break;
+                }
+            }
+
+            if (activeObject)
+                dynamicFlags |= GO_DYN_FLAG_INTERACTABLE | GO_DYN_FLAG_SPARKLE;
+
+            if (!(dynamicFlags & GO_DYN_FLAG_INTERACTABLE) && gameobject->isQuestGiver())
+            {
+                auto* objectQuestGiver = dynamic_cast<GameObject_QuestGiver*>(gameobject);
+                if (objectQuestGiver != nullptr && objectQuestGiver->HasQuests())
+                {
+                    for (const auto& questRelation : objectQuestGiver->getQuestList())
+                    {
+                        if (questRelation == nullptr || questRelation->qst == nullptr)
+                            continue;
+
+                        auto const* questProperties = questRelation->qst;
+                        if ((questRelation->type & QUESTGIVER_QUEST_START && !target->hasQuestInQuestLog(questProperties->id)
+                            && sQuestMgr.CalcQuestStatus(const_cast<GameObject*>(gameobject), target, questRelation.get()) >= QuestStatus::AvailableChat) ||
+                            (questRelation->type & QUESTGIVER_QUEST_END && target->hasQuestInQuestLog(questProperties->id)))
+                        {
+                            dynamicFlags |= GO_DYN_FLAG_INTERACTABLE;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return (dynamicFlags & 0xFFFF) | (uint32_t(pathProgress) << 16);
+    }
+
+    if (isCorpse())
+    {
+        auto const* corpse = static_cast<Corpse const*>(this);
+        uint32_t dynamicFlags = corpse->getDynamicFlags() & ~(U_DYN_FLAG_LOOTABLE | U_DYN_FLAG_TAPPED_BY_PLAYER);
+        if (!corpse->loot.isLooted())
+            dynamicFlags |= U_DYN_FLAG_LOOTABLE | U_DYN_FLAG_TAPPED_BY_PLAYER;
+        return dynamicFlags;
+    }
+
+    return hasField(ObjectField::DynamicField) ? getField<uint32_t>(ObjectField::DynamicField) : 0;
 }
 
 float Object::getScale() const { return getField<float>(ObjectField::ScaleX); }
@@ -403,25 +549,35 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     // build our actual update
     *data << getWireUpdateType(updateType);
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
-    *data << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, target->GetMapId());
-    *data << ObjectUpdateUF::wireObjectTypeId(this, target);
-#elif VERSION_STRING >= WoD
-    *data << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, target->GetMapId());
-    *data << wireObjectTypeId(m_objectTypeId);
-#else
-    *data << m_wowGuid;
-    *data << uint8_t(m_objectTypeId);
-#endif
+
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_BfA))
+    {
+        *data << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, target->GetMapId());
+        *data << ObjectUpdateUF::wireObjectTypeId(this, target);
+    }
+    else if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD))
+    {
+        *data << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, target->GetMapId());
+        *data << wireObjectTypeId(m_objectTypeId);
+    }
+    else
+    {
+        *data << m_wowGuid;
+        *data << uint8_t(m_objectTypeId);
+    }
 
     buildMovementUpdate(data, updateFlags, target);
 
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
-    // 8.x: the values as update field structures
-    ObjectUpdateUF::writeCreateValues(this, target, *data);
-    return 1;
-#else
-    // we have dirty data, or are creating for ourself.
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_BfA))
+    {
+        // 8.x+: the values as update field structures
+        ObjectUpdateUF::writeCreateValues(this, target, *data);
+        return 1;
+    }
+
+    // Classic up to Legion: raw update field masks
+
+    // we have dirty data, or are creating for ourselves.
     UpdateMask updateMask;
     updateMask.SetCount(m_valuesCount);
     setCreateBits(&updateMask, target);
@@ -440,7 +596,6 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     // Update count
     return 1;
-#endif
 }
 
 void Object::prepareInitialCreateForPlayer(Player* /*target*/)
@@ -5099,7 +5254,7 @@ void Object::updateGroundPositionZ(float x, float y, float& z)
 #endif
 }
 
-void Object::updateAllowedPositionZ(float x, float y, float &z, float* groundZ)
+void Object::updateAllowedPositionZ(float x, float y, float& z, float* groundZ)
 {
     // TODO: Allow transports to be part of dynamic vmap tree
     if (GetTransport())
@@ -5172,7 +5327,7 @@ LocationVector Object::getFirstCollisionPosition(float dist, float angle)
     return pos;
 }
 
-void Object::movePositionToFirstCollision(LocationVector &pos, float dist, float angle)
+void Object::movePositionToFirstCollision(LocationVector& pos, float dist, float angle)
 {
     angle += GetOrientation();
     float destx, desty, destz;
@@ -5231,7 +5386,7 @@ void Object::movePositionToFirstCollision(LocationVector &pos, float dist, float
     {
         destx -= CONTACT_DISTANCE * std::cos(angle);
         desty -= CONTACT_DISTANCE * std::sin(angle);
-        dist = std::sqrt((pos.x - destx)*(pos.x - destx) + (pos.y - desty) * (pos.y - desty));
+        dist = std::sqrt((pos.x - destx) * (pos.x - destx) + (pos.y - desty) * (pos.y - desty));
     }
 
     float groundZ = VMAP_INVALID_HEIGHT_VALUE;
@@ -5353,5 +5508,5 @@ GameObject* Object::summonGameObject(uint32_t entry, LocationVector position, Qu
     return nullptr;
 }
 
-bool Object::GetRandomPoint(float rad, float & outx, float & outy, float & outz) { return GetPoint(Util::getRandomFloat(float(M_PI * 2)), rad, outx, outy, outz); }
-bool Object::GetRandomPoint(float rad, LocationVector & out) { return GetRandomPoint(rad, out.x, out.y, out.z); }
+bool Object::GetRandomPoint(float rad, float& outx, float& outy, float& outz) { return GetPoint(Util::getRandomFloat(float(M_PI * 2)), rad, outx, outy, outz); }
+bool Object::GetRandomPoint(float rad, LocationVector& out) { return GetRandomPoint(rad, out.x, out.y, out.z); }

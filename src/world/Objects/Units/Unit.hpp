@@ -325,6 +325,9 @@ public:
     uint32_t getMountDisplayId() const;
     void setMountDisplayId(uint32_t id);
 
+    [[nodiscard]] virtual uint32_t getViewerDisplayId(Player const* target) const;
+    [[nodiscard]] virtual uint32_t getViewerUnitFlags(Player const* target) const;
+
     float getMinDamage() const;
     void setMinDamage(float damage);
 

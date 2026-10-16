@@ -221,6 +221,8 @@ public:
     bool hasDynamicFlags(uint16_t dynamicFlags) const;
     void setDynamicPathProgress(int16_t pathProgress);
 
+    [[nodiscard]] uint32_t getViewerDynamicFlags(Player* target);
+
     float getScale() const;
     void setScale(float scaleX);
 

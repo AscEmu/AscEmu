@@ -61,7 +61,7 @@ namespace Version
         template <typename FieldId>
         void build(const LayoutSource<FieldId>& source)
         {
-            fields.assign(static_cast<size_t>(FieldId::Count), FieldDesc{ kNoField, 0, 0, 0 });
+            fields.assign(static_cast<size_t>(FieldId::Count), FieldDesc{kNoField, 0, 0, 0});
             structSize = source.structSize;
             for (uint16_t i = 0; i < source.entryCount; ++i)
             {
@@ -74,7 +74,7 @@ namespace Version
         template <typename FieldId>
         [[nodiscard]] const FieldDesc& get(FieldId id) const noexcept
         {
-            static constexpr FieldDesc noField{ kNoField, 0, 0, 0 };
+            static constexpr FieldDesc noField{kNoField, 0, 0, 0};
             const auto index = static_cast<size_t>(id);
             return index < fields.size() ? fields[index] : noField;
         }
