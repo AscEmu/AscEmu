@@ -23,6 +23,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Server/Packets/CmsgFarSight.h"
+#include "Server/Packets/SmsgSplashScreenShowLatest.h"
+#include "Server/Packets/SmsgGetGarrisonInfoResult.h"
+#include "Server/Packets/SmsgAdventureJournalDataResponse.h"
 #include "Server/Packets/CmsgRequestAccountData.h"
 #include "Spell/SpellMgr.hpp"
 #include "Server/Packets/SmsgLogoutResponse.h"
@@ -1297,6 +1300,26 @@ void WorldSession::handleGetUndeleteCooldownStatusOpcode(WorldPacket& /*recvPack
 void WorldSession::handleNoResponseOpcode(WorldPacket& /*recvPacket*/)
 {
     // notifications of the client the server has nothing to answer to
+}
+
+void WorldSession::handleRequestLatestSplashScreenOpcode(WorldPacket& /*recvPacket*/)
+{
+    // no splash screen to show
+    SmsgSplashScreenShowLatest managedPacket(0);
+    sendManagedPacket(managedPacket);
+}
+
+void WorldSession::handleGetGarrisonInfoOpcode(WorldPacket& /*recvPacket*/)
+{
+    SmsgGetGarrisonInfoResult managedPacket(_player->getTeam() == TEAM_HORDE ? 0 : 1);
+    sendManagedPacket(managedPacket);
+}
+
+void WorldSession::handleAdventureJournalUpdateSuggestionsOpcode(WorldPacket& recvPacket)
+{
+    // the level up bit goes back with the empty answer
+    SmsgAdventureJournalDataResponse managedPacket(recvPacket.readBit());
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleServerTimeOffsetRequestOpcode(WorldPacket& /*recvPacket*/)

@@ -24,6 +24,24 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // current count, max count, max level gold, gold
+                for (int i = 0; i < 6; ++i)
+                    packet << int32_t(0);               // progress - not yet implemented
+
+                for (int i = 0; i < 6; ++i)
+                    packet << int32_t(guildChallengeWeeklyMaximum[i]);
+
+                for (int i = 0; i < 6; ++i)
+                    packet << int32_t(guildChallengeMaxLevelGoldReward[i]);
+
+                for (int i = 0; i < 6; ++i)
+                    packet << int32_t(guildChallengeGoldReward[i]);
+
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 return false;

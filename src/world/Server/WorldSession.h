@@ -785,6 +785,9 @@ protected:
         void handleServerTimeOffsetRequestOpcode(WorldPacket& /*recvPacket*/);  //>= Dragonflight
         void handleSocialContractRequestOpcode(WorldPacket& /*recvPacket*/);    //>= Dragonflight
         void handleBattlenetRequestOpcode(WorldPacket& recvPacket);             //>= TheWarWithin
+        void handleRequestLatestSplashScreenOpcode(WorldPacket& /*recvPacket*/);   //>= Shadowlands
+        void handleGetGarrisonInfoOpcode(WorldPacket& /*recvPacket*/);          //>= Legion
+        void handleAdventureJournalUpdateSuggestionsOpcode(WorldPacket& recvPacket);   //>= Shadowlands
         void handleTimeSyncRespOpcode(WorldPacket& recvPacket);
         void handleObjectUpdateFailedOpcode(WorldPacket& recvPacket);       //>= Cata
         

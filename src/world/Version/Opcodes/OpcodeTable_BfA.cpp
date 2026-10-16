@@ -1550,6 +1550,8 @@ namespace Version::Tables
         { SMSG_PARTY_MEMBER_STATS, 0x279F },
         { SMSG_WORLD_TEXT, 0x2831 },
         { SMSG_REALM_LOOKUP_INFORMATION, 0x2812 },
+        { CMSG_GET_RAF_ACCOUNT_INFO, 0x3720 },
+        { CMSG_CAN_REDEEM_WOW_TOKEN_FOR_BALANCE, 0x3707 },
     };
 
     const OpcodeSource bfaOpcodes{ bfaOpcodeEntries, std::size(bfaOpcodeEntries) };

@@ -39,6 +39,39 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 11.x puts the instance first, 12.x narrows the difficulty to 16 bit
+                const auto now = ::Util::getTimeNow();
+
+                packet << int32_t(permanentBinds.size());
+                for (const auto& bind : permanentBinds)
+                {
+                    InstanceSaved* save = bind.save;
+
+                    time_t nextReset = save->getResetTime();
+                    if (bind.extendState == EXTEND_STATE_EXTENDED)
+                        nextReset = sInstanceMgr.getSubsequentResetTime(save->getMapId(), save->getDifficulty(), save->getResetTime());
+
+                    if (m_protocol.isTheWarWithin())
+                        packet << uint64_t(save->getInstanceId());
+
+                    packet << uint32_t(save->getMapId());
+                    if (m_protocol.isMidnight())
+                        packet << int16_t(save->getDifficulty());
+                    else
+                        packet << uint32_t(save->getDifficulty());
+                    if (!m_protocol.isTheWarWithin())
+                        packet << uint64_t(save->getInstanceId());
+                    packet << uint32_t(nextReset - now);
+                    packet << uint32_t(0);                                  // completed encounters
+                    packet.writeBit(bind.extendState != EXTEND_STATE_EXPIRED);  // locked
+                    packet.writeBit(bind.extendState == EXTEND_STATE_EXTENDED); // extended
+                    packet.flushBits();
+                }
+                return true;
+            }
+
             if (!m_protocol.isMop())
             {
                 uint32_t counter = 0;

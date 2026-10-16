@@ -33,6 +33,17 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                packet.writeBit(false);             // gossip triggered
+                packet.flushBits();
+                packet << uint32_t(graveyards.size());
+                for (const auto& id : graveyards)
+                    packet << uint32_t(id);
+
+                return true;
+            }
+
             if (m_protocol.isCata())
             {
                 packet.writeBit(false); //unk
