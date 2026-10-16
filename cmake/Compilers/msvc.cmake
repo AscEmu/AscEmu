@@ -60,12 +60,29 @@ endif ()
 
 function(enable_clang_tidy target_name)
     if (MSVC)
+
+        set(clang_tidy_checks
+            "-*"                                               # Disable all default checks
+            "bugprone-*"                                       # Enable all bugprone checks
+            "-bugprone-easily-swappable-parameters"            # Ignore: triggers easily on consecutive parameters of the same type
+            "-bugprone-unchecked-string-to-number-conversion"  # Ignore: legacy string-to-number conversions
+            "-bugprone-narrowing-conversions"                  # Ignore: implicit integer narrowing in legacy code
+            "-clang-diagnostic-ignored-attributes"             # Ignore: warnings about compiler attributes being ignored
+            "-bugprone-reserved-identifier"                    # Ignore: identifiers/macros using reserved names or leading underscores
+            "-bugprone-switch-missing-default-case"            # Ignore: switches missing a default branch
+            "-clang-diagnostic-unused-field"                   # Ignore: unused class or struct member variables
+            "-clang-diagnostic-unused-private-field"           # Ignore: unused private class or struct member variables
+            "-clang-diagnostic-unused-const-variable"          # Ignore: unused const variables
+        )
+
+        string(JOIN "," clang_tidy_checks_str ${clang_tidy_checks})
+
         set_target_properties(${target_name} PROPERTIES
             VS_GLOBAL_RunCodeAnalysis "true"
             VS_GLOBAL_EnableMicrosoftCodeAnalysis "false"
             VS_GLOBAL_EnableClangTidyCodeAnalysis "true"
             VS_GLOBAL_ClangTidyTreatWarningAsError "false"
-            VS_GLOBAL_ClangTidyChecks "-*,bugprone-*,-bugprone-easily-swappable-parameters,-bugprone-unchecked-string-to-number-conversion,-bugprone-narrowing-conversions,-clang-diagnostic-ignored-attributes"
+            VS_GLOBAL_ClangTidyChecks "${clang_tidy_checks_str}"
         )
     endif()
 endfunction()
