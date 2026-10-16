@@ -41,8 +41,26 @@ GossipScript* GossipScript::getInterface(GameObject* gameObject)
 
 void GossipSpiritHealer::onHello(Object* object, Player* player)
 {
-    if (const auto creature = dynamic_cast<Creature*>(object))
-        player->getSession()->sendSpiritHealerRequest(creature);
+    const auto creature = dynamic_cast<Creature*>(object);
+    if (creature == nullptr)
+        return;
+
+    // 10.x and later ask through a gossip option of the spirit healer kind
+    const auto& protocol = player->getSession()->getClientProtocol();
+    if (protocol.isDragonflight() || protocol.isTheWarWithinOrLater())
+    {
+        GossipMenu menu(creature->getGuid(), DefaultGossipTextId, player->getSession()->language);
+        menu.addItem(GOSSIP_ICON_INTERACT_1, SPIRITHEALER, 1);
+        menu.sendGossipPacket(player);
+        return;
+    }
+
+    player->getSession()->sendSpiritHealerRequest(creature);
+}
+
+void GossipSpiritHealer::onSelectOption(Object* /*object*/, Player* player, uint32_t /*id*/, const char* /*enteredCode*/, uint32_t /*gossipId*/)
+{
+    player->getSession()->resurrectAtSpiritHealer();
 }
 
 void GossipVendor::onHello(Object* object, Player* player)

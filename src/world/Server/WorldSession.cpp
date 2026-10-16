@@ -892,7 +892,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_ZONEUPDATE, &WorldSession::handleZoneupdate, true, true, true, true, false);
     // registry.registerOpcode(CMSG_SET_TARGET_OBSOLETE, &WorldSession::HandleSetTargetOpcode, false, false, true, false, false);
     registry.registerOpcode(CMSG_SET_SELECTION, &WorldSession::handleSetSelectionOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
-    registry.registerOpcode(CMSG_STANDSTATECHANGE, &WorldSession::handleStandStateChangeOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_STANDSTATECHANGE, &WorldSession::handleStandStateChangeOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_CANCEL_MOUNT_AURA, &WorldSession::handleDismountOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
 
     // Friends

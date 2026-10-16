@@ -856,6 +856,7 @@ protected:
         void sendBankerList(Creature* creature);
         void sendAuctionList(Creature* creature);
         void sendSpiritHealerRequest(Creature* creature);
+        void resurrectAtSpiritHealer();
         void sendCharterRequest(Creature* creature);
         void sendInnkeeperBind(Creature* creature);
         void sendTrainerList(Creature* creature);

@@ -38,6 +38,7 @@ public:
     virtual ~GossipSpiritHealer() = default;
 
     void onHello(Object* object, Player* player) override;
+    void onSelectOption(Object* object, Player* player, uint32_t id, const char* enteredCode, uint32_t gossipId) override;
 };
 
 class SERVER_DECL GossipVendor : public GossipScript

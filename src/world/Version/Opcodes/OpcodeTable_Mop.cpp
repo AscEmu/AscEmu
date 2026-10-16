@@ -229,7 +229,7 @@ namespace Version::Tables
         { SMSG_SPELLHEALLOG, 0x09FB },
         { SMSG_SPELLENERGIZELOG, 0x0D79 },
         { SMSG_BINDPOINTUPDATE, 0x0E3B },
-        { SMSG_PLAYERBOUND, 0x1B60 },
+        { SMSG_PLAYERBOUND, 0x088E },
         { SMSG_CLIENT_CONTROL_UPDATE, 0x1043 },
         { CMSG_REPOP_REQUEST, 0x134A },
         { SMSG_RESURRECT_REQUEST, 0x1062 },
@@ -959,6 +959,9 @@ namespace Version::Tables
         { SMSG_GUILD_EVENT_TAB_ADDED, 0x1BE9 },
         { SMSG_GUILD_EVENT_TAB_MODIFIED, 0x0BF1 },
         { SMSG_GUILD_EVENT_BANK_MONEY_CHANGED, 0x0F68 },
+        { SMSG_GUILD_EVENT_TAB_TEXT_CHANGED, 0x0A70 },
+        { SMSG_GUILD_EVENT_PLAYER_LEFT, 0x0BF8 },
+        { SMSG_GAMEOBJECT_PAGETEXT, 0x14AF },
     };
 
     const OpcodeSource mopOpcodes{ mopOpcodeEntries, std::size(mopOpcodeEntries) };

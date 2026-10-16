@@ -1520,6 +1520,9 @@ void Guild::setBankTabText(uint8_t tabId, std::string const& text)
     {
         pTab->setText(text);
         pTab->sendText(this, nullptr);
+#if VERSION_STRING >= Mop
+        broadcastEvent(GE_BANK_TEXT_CHANGED, 0, { std::to_string(tabId) });
+#endif
     }
 }
 

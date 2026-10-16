@@ -517,6 +517,11 @@ TrainerSpellState WorldSession::trainerGetSpellStatus(TrainerSpell const* traine
 
 void WorldSession::handleSpiritHealerActivateOpcode(WorldPacket& /*recvPacket*/)
 {
+    resurrectAtSpiritHealer();
+}
+
+void WorldSession::resurrectAtSpiritHealer()
+{
     if (!_player->isDead())
         return;
 

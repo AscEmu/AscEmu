@@ -1571,6 +1571,7 @@ namespace Version::Tables
         { SMSG_WOW_TOKEN_SELL_RESULT_CONFIRMATION, 0x278F },
         { SMSG_WOW_TOKEN_UPDATE_AUCTIONABLE_LIST_RESPONSE, 0x2797 },
         { SMSG_XP_GAIN_ENABLED, 0x2762 },
+        { SMSG_NOTIFICATION, 0x2566 },
     };
 
     const OpcodeSource wodOpcodes{ wodOpcodeEntries, std::size(wodOpcodeEntries) };

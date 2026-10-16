@@ -95,7 +95,7 @@ enum MenuItemOptions
     AUCTIONEER,                         // GI_ "I would like to make a bid."
     INNKEEPER,                          // GI_ "Make this inn your home."
     BANKER,                             // GI_ "I would like to check my deposit box."
-    // GI_ "Bring me back to life."
+    SPIRITHEALER,                       // GI_ "Bring me back to life."
     // GI_ "How do I create a guild/arena team?"
     TABARD = 20,                        // GI_ "I want to create a guild crest."
     BATTLEMASTER,                       // GI_ "I would like to go to the battleground."

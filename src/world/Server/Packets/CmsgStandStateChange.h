@@ -28,11 +28,12 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            if (m_protocol.expansion <= WoW::Expansion::_Cata || m_protocol.isTheWarWithinOrLater())
             {
+                // one byte again from 11.x on
                 packet >> state;
             }
-            else //Mop
+            else // 5.x to 10.x
             {
                 uint32_t mopState;
                 packet >> mopState;

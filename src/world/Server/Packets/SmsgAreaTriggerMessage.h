@@ -37,10 +37,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            if (m_protocol.isMop() || m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
-                // the 6.x and later clients have no such message
-                return false;
+                // 5.x and later show the message as notification
+                packet.setOpcode(SMSG_NOTIFICATION);
+                packet.writeBits(static_cast<uint32_t>(text.size()), 12);
+                packet.flushBits();
+                packet.append(text.c_str(), text.size());
+                return true;
             }
 
             packet << unknown1 << text << unknown2;
