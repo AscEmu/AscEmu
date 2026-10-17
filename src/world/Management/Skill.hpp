@@ -176,7 +176,7 @@ enum PlayerSkills : uint16_t
     SKILL_PET_SERPENT                   = 768,
     SKILL_INTERNAL                      = 769,
 #endif
-// WoTLK
+// WotLK
 #if VERSION_STRING >= WotLK
 #if VERSION_STRING <= Cata
     SKILL_BLOOD                         = 770,

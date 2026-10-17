@@ -16,14 +16,22 @@ title: ⚙ [Support Request]
 -->
 
 
+
 **Expansion version**: <!-- (Add / Remove lines if necessary) -->
 <!--
     Specify version - is required:
-    - Patch 1.12.1 - Classic
-    - Patch 2.4.3 - TBC
-    - Patch 3.3.5 - WoTLK
-    - Patch 4.3.4 - Cataclysm
-    - Patch 5.4.8 - Mop
+    - Classic - Patch 1.12.1
+    - TBC     - Patch 2.4.3
+    - WotLK   - Patch 3.3.5
+    - Cata    - Patch 4.3.4
+    - Mop     - Patch 5.4.8
+    - WoD     - Patch 6.2.4
+    - Legion  - Patch 7.3.5
+    - BfA     - Patch 8.3.7
+    - SL      - Patch 9.2.7
+    - DF      - Patch 10.2.7
+    - TWW     - Patch 11.2.7
+    - MN      - Patch 12.1.5
 -->
 
 
