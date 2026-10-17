@@ -17,3 +17,10 @@
 - [] WotLK
 - [] Cata
 - [] Mop
+- [] WoD
+- [] Legion
+- [] BfA
+- [] SL
+- [] DF
+- [] TWW
+- [] MN
