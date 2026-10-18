@@ -10,19 +10,19 @@ This file is released under the MIT license. See README-MIT for more information
 enum
 {
     // GENERAL AV DEFINES
-    AV_NUM_REINFORCEMENTS = 600,           // Amount of reinforcements we start off with
+    AV_NUM_REINFORCEMENTS = 600,             // Amount of reinforcements we start off with
 
     //AV_SCORE_WARNING = 530,                // Dunno what this should be ;p
 
-    //AV_ADD_POINTS_ON_CONTROLLED_MINE = 1,  // Points to give the team who controls (a) mine(s)
+    AV_ADD_POINTS_ON_CONTROLLED_MINE = 1,    // Points to give the team who controls (a) mine(s)
 
-    AV_REINFORCEMENT_ADD_INTERVAL = 45000, // The interval (in milliseconds) that points from mines are awarded
+    AV_REINFORCEMENT_ADD_INTERVAL = 45000,   // The interval (in milliseconds) that points from mines are awarded
 
-    AV_POINTS_ON_DESTROY_BUNKER = 75,      // Points to remove for destroying a team's bunker
-    AV_POINTS_ON_KILL = 1,                 // Points to remove when killing a member of the opposite team
-    AV_POINTS_ON_KILL_CAPTAIN = 100,       // Points  to remove for killing a team's captain
+    AV_POINTS_ON_DESTROY_BUNKER = 75,        // Points to remove for destroying a team's bunker
+    AV_POINTS_ON_KILL = 1,                   // Points to remove when killing a member of the opposite team
+    AV_POINTS_ON_KILL_CAPTAIN = 100,         // Points  to remove for killing a team's captain
 
-    AV_HONOR_ON_KILL_BOSS = 62,            // Amount of honor awarded to players for killing a boss of the opposite team
+    AV_HONOR_ON_KILL_BOSS = 62,              // Amount of honor awarded to players for killing a boss of the opposite team
 
     //AV_NUM_CONTESTED_AREAS = 9,            // Total contested areas (graveyards/mines)
     //AV_NUM_DESTROYABLE_AREAS = 8,          // Total destroyable areas (towers/bunkers)
@@ -86,21 +86,21 @@ struct AVSpawnLocation { float x; float y; float z; float o; };
 struct AVGameObject { uint32_t id[AV_NODE_STATE_COUNT]; float x; float y; float z; float o; float rot1; float rot2; };
 struct AVNodeTemplate
 {
-    const char* m_name;                             // Stormpike Aid Station
-    bool m_isGraveyard;                             // Is this a graveyard?
-    bool m_capturable;                              // Is this capturable?
-    AVLocation m_graveyardLocation;                 // Revive location, also location of spirit guide
-    AVGameObject m_flagLocation;                    // Flag location (need to add GO id/properties here)
-    AVGameObject m_auraLocation;                    // Aura location
-    AVGameObject m_glowLocation;                    // Aura glow location
-    uint32_t m_guardId[3];                            // Horde/alliance guard ids
-    uint32_t m_guardCount;                            // Count of guards to spawn
-    uint32_t m_bossId[3];                             // Boss ID (e.g. Balinda), 0 = A, 1 = H, 2 = Neutral
-    AVLocation* m_peonLocations;                    // Used by mines.
-    AVLocation m_bossLocation;                      // Location of boss if there is one
-    uint32_t m_initialSpawnId;                        // Initial spawn (Bowmen) ID
-    uint32_t m_worldStateFields[AV_NODE_STATE_COUNT]; // State fields
-    uint32_t m_defaultState;                          // State of the node when battleground is spawned
+    const char* m_name;                                 // Stormpike Aid Station
+    bool m_isGraveyard;                                 // Is this a graveyard?
+    bool m_capturable;                                  // Is this capturable?
+    AVLocation m_graveyardLocation;                     // Revive location, also location of spirit guide
+    AVGameObject m_flagLocation;                        // Flag location (need to add GO id/properties here)
+    AVGameObject m_auraLocation;                        // Aura location
+    AVGameObject m_glowLocation;                        // Aura glow location
+    uint32_t m_guardId[3];                              // Horde/alliance guard ids
+    uint32_t m_guardCount;                              // Count of guards to spawn
+    uint32_t m_bossId[3];                               // Boss ID (e.g. Balinda), 0 = A, 1 = H, 2 = Neutral
+    AVLocation* m_peonLocations;                        // Used by mines.
+    AVLocation m_bossLocation;                          // Location of boss if there is one
+    uint32_t m_initialSpawnId;                          // Initial spawn (Bowmen) ID
+    uint32_t m_worldStateFields[AV_NODE_STATE_COUNT];   // State fields
+    uint32_t m_defaultState;                            // State of the node when battleground is spawned
 };
 
 enum GameObjectEntry
