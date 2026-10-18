@@ -81,23 +81,23 @@ enum AVNodeStates
     AV_NODE_STATE_COUNT = 5
 };
 
-struct AVLocation { float x; float y; float z; };
 struct AVSpawnLocation { float x; float y; float z; float o; };
 struct AVGameObject { uint32_t id[AV_NODE_STATE_COUNT]; float x; float y; float z; float o; float rot1; float rot2; };
+
 struct AVNodeTemplate
 {
     const char* m_name;                                 // Stormpike Aid Station
     bool m_isGraveyard;                                 // Is this a graveyard?
     bool m_capturable;                                  // Is this capturable?
-    AVLocation m_graveyardLocation;                     // Revive location, also location of spirit guide
+    AVSpawnLocation m_graveyardLocation;                // Revive location, also location of spirit guide
     AVGameObject m_flagLocation;                        // Flag location (need to add GO id/properties here)
     AVGameObject m_auraLocation;                        // Aura location
     AVGameObject m_glowLocation;                        // Aura glow location
     uint32_t m_guardId[3];                              // Horde/alliance guard ids
     uint32_t m_guardCount;                              // Count of guards to spawn
     uint32_t m_bossId[3];                               // Boss ID (e.g. Balinda), 0 = A, 1 = H, 2 = Neutral
-    AVLocation* m_peonLocations;                        // Used by mines.
-    AVLocation m_bossLocation;                          // Location of boss if there is one
+    AVSpawnLocation* m_peonLocations;                   // Used by mines.
+    AVSpawnLocation m_bossLocation;                     // Location of boss if there is one
     uint32_t m_initialSpawnId;                          // Initial spawn (Bowmen) ID
     uint32_t m_worldStateFields[AV_NODE_STATE_COUNT];   // State fields
     uint32_t m_defaultState;                            // State of the node when battleground is spawned
