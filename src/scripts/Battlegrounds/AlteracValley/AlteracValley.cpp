@@ -737,8 +737,7 @@ void AlteracValley::AVNode::Spawn()
     if (m_template->m_worldStateFields[m_state] != 0)
         m_bg->setWorldState(m_template->m_worldStateFields[m_state], 1);
 
-    // sch: spawn guards for the team controlling this node.
-    // nodes without configured dynamic guards keep their existing static spawns.
+    // sch: spawn/despawn guards according to state (delegated to SpawnGuards)
     if (g_stateToGuardType[m_state] > 0)
         SpawnGuards(static_cast<uint32_t>(g_stateToGuardType[m_state]));
 
@@ -776,7 +775,7 @@ void AlteracValley::AVNode::Spawn()
 
             // spawn new spirit guide
             m_spiritGuide = m_bg->spawnSpiritGuide(m_template->m_graveyardLocation.x, m_template->m_graveyardLocation.y,
-                m_template->m_graveyardLocation.z, m_template->m_graveyardLocation.z, 0);
+                m_template->m_graveyardLocation.z, m_template->m_graveyardLocation.o, 0);
 
             // add
             m_bg->addSpiritGuide(m_spiritGuide);
@@ -787,7 +786,7 @@ void AlteracValley::AVNode::Spawn()
 
             // spawn new spirit guide
             m_spiritGuide = m_bg->spawnSpiritGuide(m_template->m_graveyardLocation.x, m_template->m_graveyardLocation.y,
-                m_template->m_graveyardLocation.z, m_template->m_graveyardLocation.z, 1);
+                m_template->m_graveyardLocation.z, m_template->m_graveyardLocation.o, 1);
 
             // add
             m_bg->addSpiritGuide(m_spiritGuide);
@@ -823,8 +822,11 @@ void AlteracValley::AVNode::SpawnGuards(uint32_t guardType)
 
     for (uint32_t i = 0; i < m_template->m_guardCount; ++i)
     {
-        const float x = static_cast<float>(Util::getRandomInt(10)) * cos(Util::getRandomFloat(6.28f)) + m_template->m_flagLocation.x;
-        const float y = static_cast<float>(Util::getRandomInt(10)) * cos(Util::getRandomFloat(6.28f)) + m_template->m_flagLocation.y;
+        // uniform random angle + radius for circular distribution around flag
+        const float angle = Util::getRandomFloat(6.28318530718f); // 2*pi
+        const float radius = Util::getRandomFloat(10.0f); // up to 10 units
+        const float x = m_template->m_flagLocation.x + radius * cos(angle);
+        const float y = m_template->m_flagLocation.y + radius * sin(angle);
         const float z = m_bg->getWorldMap()->getHeight(LocationVector(x, y, m_template->m_flagLocation.z));
 
         Creature* guard = m_bg->spawnCreature(guardEntry, x, y, z, 0.0f);
@@ -1505,19 +1507,19 @@ const static AVLoot g_avLoot[] =
     // Alliance Loot
 
     // Stormpike Soldier's Blood
-    { 17306, 0, 100.0f, 1, 1 },     
+    { 17306, 0, 100.0f, 1, 1 },
     // Stormpike Soldier's Meat
     { 17326, 0, 80.0, 1, 1 },
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Horde Loot
-    
+
     // Crystal Cluster
     { 17423, 1, 50.0f, 1, 1 },
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Global loot
-    
+
     // Armor Scrap
     { 17422, -1, 100.0f, 1, 5 },
     // EOF
@@ -1544,9 +1546,8 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
                     lootItem.itemproto = itemProto;
                     if (lootPtr->MinCount != lootPtr->MaxCount)
                     {
-                        lootItem.count = static_cast<decltype(lootItem.count)>(
-                            Util::getRandomUInt(lootPtr->MaxCount - lootPtr->MinCount) + lootPtr->MinCount
-                        );
+                        const uint32_t range = lootPtr->MaxCount - lootPtr->MinCount + 1;
+                        lootItem.count = static_cast<decltype(lootItem.count)>(Util::getRandomUInt(range) + lootPtr->MinCount);
                     }
                     else
                     {
