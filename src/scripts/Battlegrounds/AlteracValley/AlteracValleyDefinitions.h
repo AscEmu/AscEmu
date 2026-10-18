@@ -36,7 +36,6 @@ enum
 
     //AV_DESTROYABLE_AREAS_START = 9,        // ID at which destroyable points start (for loops/ifs)
     //AV_DESTROYABLE_AREAS_END = 16,         // ID at which contested points finish (for loops/ifs)
-
 };
 
 enum AVControlPoints

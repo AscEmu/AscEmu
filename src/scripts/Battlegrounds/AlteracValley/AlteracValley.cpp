@@ -994,17 +994,14 @@ bool AlteracValley::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* /*
 
 void AlteracValley::HookFlagDrop(Player* /*plr*/, GameObject* /*obj*/)
 {
-
 }
 
 void AlteracValley::HookFlagStand(Player* /*plr*/, GameObject* /*obj*/)
 {
-
 }
 
 void AlteracValley::HookOnMount(Player* /*plr*/)
 {
-
 }
 
 void AlteracValley::HookOnAreaTrigger(Player* plr, uint32_t trigger)
@@ -1086,7 +1083,6 @@ void AlteracValley::HookOnHK(Player* plr)
 
 void AlteracValley::DropFlag(Player* /*plr*/)
 {
-
 }
 
 void AlteracValley::OnCreate()
