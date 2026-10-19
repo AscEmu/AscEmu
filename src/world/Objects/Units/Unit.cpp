@@ -1222,25 +1222,36 @@ bool Unit::canSwim()
 #endif
 }
 
-#if VERSION_STRING > Classic
-uint32_t Unit::getUnitFlags2() const { return getField<uint32_t>(UnitField::UnitFlags2); }
+
+uint32_t Unit::getUnitFlags2() const
+{
+    if (!hasField(UnitField::UnitFlags2))
+        return 0;
+
+    return getField<uint32_t>(UnitField::UnitFlags2);
+}
+
 void Unit::setUnitFlags2(uint32_t unitFlags2)
 {
-#if VERSION_STRING >= WotLK
-    const uint32_t oldFlags = getUnitFlags2();
-#endif
+    if (!hasField(UnitField::UnitFlags2))
+        return;
 
+    const uint32_t oldFlags = getUnitFlags2();
     setField<uint32_t>(UnitField::UnitFlags2, unitFlags2);
 
-#if VERSION_STRING >= WotLK
-    if (IsInWorld() && ((oldFlags ^ unitFlags2) & UNIT_FLAG2_FEIGN_DEATH) != 0)
-        getWorldMap()->queueUnitAwareness(this, UnitAwarenessSignal::CombatEligibilityChanged);
-#endif
+    if (WoW::getServerExpansion() >= WoW::Expansion::_WotLK)
+    {
+        if (IsInWorld() && ((oldFlags ^ unitFlags2) & UNIT_FLAG2_FEIGN_DEATH) != 0)
+        {
+            getWorldMap()->queueUnitAwareness(this, UnitAwarenessSignal::CombatEligibilityChanged);
+        }
+    }
 }
+
 void Unit::addUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() | unitFlags2); }
 void Unit::removeUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() & ~unitFlags2); }
 bool Unit::hasUnitFlags2(uint32_t unitFlags2) const { return (getUnitFlags2() & unitFlags2) != 0; }
-#endif
+
 
 #if VERSION_STRING < WotLK
 uint32_t Unit::getAura(uint8_t slot) const { return getField<uint32_t>(UnitField::Aura, slot); }

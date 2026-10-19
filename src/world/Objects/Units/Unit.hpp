@@ -278,13 +278,12 @@ public:
 
     virtual bool canSwim();
 
-#if VERSION_STRING > Classic
     uint32_t getUnitFlags2() const;
     void setUnitFlags2(uint32_t unitFlags2);
     void addUnitFlags2(uint32_t unitFlags2);
     void removeUnitFlags2(uint32_t unitFlags2);
     bool hasUnitFlags2(uint32_t unitFlags2) const;
-#endif
+
 
 #if VERSION_STRING < WotLK
     uint32_t getAura(uint8_t slot) const;

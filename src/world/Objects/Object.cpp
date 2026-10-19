@@ -2431,9 +2431,9 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* ma
 
 // MIT Start
 #if VERSION_STRING == Classic
-void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, [[maybe_unused]] Player* target)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, [[maybe_unused]] Player* target)
 {
-    *data << uint8_t(updateFlags);
+    *data << static_cast<uint8_t>(updateFlags);
 
     if (updateFlags & UPDATEFLAG_LIVING) //0x20
     {
@@ -2527,9 +2527,9 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, [[maybe_
 #endif
 
 #if VERSION_STRING == TBC
-void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, [[maybe_unused]] Player* target)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, [[maybe_unused]] Player* target)
 {
-    *data << uint8_t(updateFlags);
+    *data << static_cast<uint8_t>(updateFlags);
 
     if (updateFlags & UPDATEFLAG_LIVING)  //0x20
     {

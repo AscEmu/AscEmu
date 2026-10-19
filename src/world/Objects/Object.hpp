@@ -748,12 +748,7 @@ public:
         virtual void setCreateBits(UpdateMask* updateMask, Player* target) const;
 
         // Create updates that player will see
-#if VERSION_STRING < WotLK
-        void buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* target);
-#else
         void buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* target);
-#endif
-
         void buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask* updateMask, Player* target);
 
         // WoWGuid class
