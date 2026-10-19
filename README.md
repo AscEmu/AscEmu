@@ -12,23 +12,35 @@ AscEmu is derived from ArcEmu to keep up the Antrix-Ascent-Arcemu way of Framewo
 We focus on optimizing the codebase and improving the ingame functionality.
 
 You can help us by contributing. It is completely open source and can be used by everyone.
-This project is for educational purpose. So, if you're looking for serverfiles to run your server or create some "custom" scripts  this is the wrong place for you. If you want to discuss/develop/work on an open source project and on important stuff for the framework feel free to join our community.
+This project is for educational purpose. So, if you're looking for serverfiles to run your server or create some "custom" scripts 
+this is the wrong place for you. If you want to discuss/develop/work on an open source project and on important stuff for the framework feel free to join our community.
 
 Discord                                | Codefactor                                      | Openhub
 :------------------------------------: | :---------------------------------------------: | :--------------------------------------:
 [![Discord][DiscordBadge]][DiscordUrl] | [![Codefactor][CodefactorBadge]][CodefactorUrl] | [![Openhub][OpenhubBadge]][OpenhubUrl] |
 
 ## Multiversion
-AscEmu supports several versions as listed below. We achieved to handle different versions of the serverside code in one repo. The biggest advantage of that is that we always develop for all our supported versions without wasting time to merge features across all repos.
+AscEmu supports several versions as listed below. We achieved to handle different versions of the serverside code in one repo.
+The biggest advantage of that is that we always develop for all our supported versions without wasting time to merge features across all repos.
 
-Beside our multiversion-core we developed our world database with this attitude. Compared to other projects we are still a small project but with one core and database we are able to work on different versions at the same time. Beside all that we are able to show the changes to the game side by side in our code and database.
+Beside our multiversion-core we developed our world database with this attitude. Compared to other projects we are still
+a small project but with one core and database we are able to work on different versions at the same time.
+Beside all that we are able to show the changes to the game side by side in our code and database.
 
-Description       | Classic<br>1.12.1 (5875) | TBC<br>2.4.3 (8606) | WotLK<br>3.3.5a (12340) | Cata<br>4.3.4 (15595) | MoP<br>5.4.8 (18414) | WoD<br>6.2.4 (21742) | Legion<br>7.3.5 (26972) | BfA<br>8.3.7 (35662) | SL<br>9.2.7 (45745) | DF<br>10.2.7 (55664) | TWW<br>11.2.7 (65299) | MN<br>12.1.5 (70391)
-:---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------: | :---------------:
-Authentification  | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️ | ❌
-Worldsocket       | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️ | ❌
-Char Enum         | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️ | ❌
-Log into world    | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️                | ✔️ | ❌
+Description              | Authentification   | Worldsocket   | Char Enum    | Log into world
+:----------------------: | :----------------: | :-----------: | :----------: | :----------------:
+Classic 1.12.1 (5875)    | ✔                 | ✔            | ✔          | ✔
+TBC 2.4.3 (8606)         | ✔                 | ✔            | ✔          | ✔
+WotLK 3.3.5a (12340)     | ✔                 | ✔            | ✔          | ✔
+Cata 4.3.4 (15595)       | ✔                 | ✔            | ✔          | ✔
+MoP 5.4.8 (18414)        | ✔                 | ✔            | ✔          | ✔
+WoD 6.2.4 (21742)        | ✔                 | ✔            | ✔          | ✔
+Legion 7.3.5 (26972)     | ✔                 | ✔            | ✔          | ✔
+BfA 8.3.7 (35662)        | ✔                 | ✔            | ✔          | ✔
+SL 9.2.7 (45745)         | ✔                 | ✔            | ✔          | ✔
+DF 10.2.7 (55664)        | ✔                 | ✔            | ✔          | ✔
+TWW 11.2.7 (65299)       | ✔                 | ✔            | ✔          | ✔
+MN 12.1.5 (70391)        | ❌                 | ❌            | ❌          | ❌
 
 ## Contributing & Issues
 
