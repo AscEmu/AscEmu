@@ -32,6 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
 #include "Utilities/Util.hpp"
+#include <algorithm>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Fire Locations
@@ -338,14 +339,16 @@ static AVNodeTemplate g_nodeTemplates[AV_NUM_CONTROL_POINTS] =
     WORLDSTATE_AV_SNOWFALL_GRAVE_ALLIANCE_ASSAULTING, WORLDSTATE_AV_SNOWFALL_GRAVE_ALLIANCE_CONTROLLED,
     WORLDSTATE_AV_SNOWFALL_GRAVE_HORDE_ASSAULTING, WORLDSTATE_AV_SNOWFALL_GRAVE_HORDE_CONTROLLED, AV_NODE_STATE_NEUTRAL_CONTROLLED, },
 
+    // sch: mine ownership is changed by killing the neutral mine boss. The bosses are
+    // already database-spawned; do not create another copy here.
     { "Coldtooth Mine", false, true, { 0.0f, 0.0f, 0.0f }, { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
     { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }, { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
-    { 0, 0, 0 }, 0, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 0, WORLDSTATE_AV_COLDTOOTH_MINE_KOBOLD_CONTROLLED, 0,
+    { 0, 0, 0 }, 0, { 0, 0, AV_NPC_TASKMASTER_SNIVVLE }, nullptr, { -875.337f, -116.294f, 65.0083f }, 0, WORLDSTATE_AV_COLDTOOTH_MINE_KOBOLD_CONTROLLED, 0,
     WORLDSTATE_AV_COLDTOOTH_MINE_ALLIANCE_CONTROLLED, 0, WORLDSTATE_AV_COLDTOOTH_MINE_HORDE_CONTROLLED, AV_NODE_STATE_NEUTRAL_CONTROLLED, },
 
     { "Irondeep Mine", false, true, { 0.0f, 0.0f, 0.0f }, { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
     { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }, { { 0, 0, 0, 0, 0 }, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
-    { 0, 0, 0 }, 0, { 0, 0, 0 }, nullptr, { 0.0f, 0.0f, 0.0f }, 0, WORLDSTATE_AV_IRONDEEP_MINE_TROGG_CONTROLLED, 0,
+    { 0, 0, 0 }, 0, { 0, 0, AV_NPC_MORLOCH }, nullptr, { 802.0f, -323.101f, 52.365f }, 0, WORLDSTATE_AV_IRONDEEP_MINE_TROGG_CONTROLLED, 0,
     WORLDSTATE_AV_IRONDEEP_MINE_ALLIANCE_CONTROLLED, 0, WORLDSTATE_AV_IRONDEEP_MINE_HORDE_CONTROLLED, AV_NODE_STATE_NEUTRAL_CONTROLLED, },
 
     { "Iceblood Graveyard", true, true, { -531.067627f, -405.459778f, 49.552971f },
@@ -734,32 +737,9 @@ void AlteracValley::AVNode::Spawn()
     if (m_template->m_worldStateFields[m_state] != 0)
         m_bg->setWorldState(m_template->m_worldStateFields[m_state], 1);
 
-    // despawn/spawn guards
-    if (m_state == AV_NODE_STATE_ALLIANCE_CONTROLLED || m_state == AV_NODE_STATE_HORDE_CONTROLLED)
-    {
-        DLLLogDetail("AlteracValley : AVNode::Spawn({}) : despawning guards", m_template->m_name);
-        for (std::vector<Creature*>::iterator itr = m_guards.begin(); itr != m_guards.end(); ++itr)
-            (*itr)->Despawn(0, 0);
-
-        m_guards.clear();
-
-        // spawn guards if needed
-        const auto t = g_stateToGuardType[m_state];
-        if (t > 0 && t < 3 && m_template->m_guardId[t] != 0)
-        {
-            DLLLogDetail("AlteracValley : AVNode::Spawn({}) : spawning {} guards of {}", m_template->m_name, m_template->m_guardCount, m_template->m_guardId[t]);
-            for (uint32_t i = 0; i < m_template->m_guardCount; ++i)
-            {
-                float x = Util::getRandomInt(10) * cos(Util::getRandomFloat(6.28f)) + m_template->m_flagLocation.x;
-                float y = Util::getRandomInt(10) * cos(Util::getRandomFloat(6.28f)) + m_template->m_flagLocation.y;
-                float z = m_bg->getWorldMap()->getHeight(LocationVector(x, y, m_template->m_flagLocation.z));
-                m_guards.push_back(m_bg->spawnCreature(m_template->m_guardId[t], x, y, z, 0.0f));
-            }
-        }
-    }
-
+    // sch: spawn/despawn guards according to state (delegated to SpawnGuards)
     if (g_stateToGuardType[m_state] > 0)
-        SpawnGuards(g_stateToGuardType[m_state]);
+        SpawnGuards(static_cast<uint32_t>(g_stateToGuardType[m_state]));
 
     // spirit guides
     if (m_template->m_isGraveyard)
@@ -795,7 +775,7 @@ void AlteracValley::AVNode::Spawn()
 
             // spawn new spirit guide
             m_spiritGuide = m_bg->spawnSpiritGuide(m_template->m_graveyardLocation.x, m_template->m_graveyardLocation.y,
-                m_template->m_graveyardLocation.z, m_template->m_graveyardLocation.z, 0);
+                m_template->m_graveyardLocation.z, m_template->m_graveyardLocation.o, 0);
 
             // add
             m_bg->addSpiritGuide(m_spiritGuide);
@@ -806,7 +786,7 @@ void AlteracValley::AVNode::Spawn()
 
             // spawn new spirit guide
             m_spiritGuide = m_bg->spawnSpiritGuide(m_template->m_graveyardLocation.x, m_template->m_graveyardLocation.y,
-                m_template->m_graveyardLocation.z, m_template->m_graveyardLocation.z, 1);
+                m_template->m_graveyardLocation.z, m_template->m_graveyardLocation.o, 1);
 
             // add
             m_bg->addSpiritGuide(m_spiritGuide);
@@ -815,9 +795,44 @@ void AlteracValley::AVNode::Spawn()
     DLLLogDetail("AlteracValley : AVNode::Spawn({}) : completed for state {} {}", m_template->m_name, m_state, g_stateNames[m_state]);
 }
 
-void AlteracValley::AVNode::SpawnGuards(uint32_t /*x*/)
+void AlteracValley::AVNode::SpawnGuards(uint32_t guardType)
 {
-    DLLLogDetail("AlteracValley : AVNode::SpawnGuards({}) : spawning {} guards", m_template->m_name, m_template->m_guardCount);
+    // sch: guardType is 1 for Alliance and 2 for Horde. Neutral and assault states
+    // must not call this method.
+    if (guardType < 1 || guardType > 2)
+        return;
+
+    // sch: remove guards belonging to the previous owner before creating the new set.
+    DLLLogDetail("AlteracValley : AVNode::SpawnGuards({}) : despawning {} guards", m_template->m_name, m_guards.size());
+    for (Creature* guard : m_guards)
+    {
+        if (guard != nullptr)
+            guard->Despawn(0, 0);
+    }
+    m_guards.clear();
+
+    const uint32_t guardEntry = m_template->m_guardId[guardType];
+    if (guardEntry == 0 || m_template->m_guardCount == 0)
+    {
+        DLLLogDetail("AlteracValley : AVNode::SpawnGuards({}) : no dynamic guards configured for team {}", m_template->m_name, guardType);
+        return;
+    }
+
+    DLLLogDetail("AlteracValley : AVNode::SpawnGuards({}) : spawning {} guards of entry {} for team {}", m_template->m_name, m_template->m_guardCount, guardEntry, guardType);
+
+    for (uint32_t i = 0; i < m_template->m_guardCount; ++i)
+    {
+        // uniform random angle + radius for circular distribution around flag
+        const float angle = Util::getRandomFloat(6.28318530718f); // 2*pi
+        const float radius = Util::getRandomFloat(10.0f); // up to 10 units
+        const float x = m_template->m_flagLocation.x + radius * cos(angle);
+        const float y = m_template->m_flagLocation.y + radius * sin(angle);
+        const float z = m_bg->getWorldMap()->getHeight(LocationVector(x, y, m_template->m_flagLocation.z));
+
+        Creature* guard = m_bg->spawnCreature(guardEntry, x, y, z, 0.0f);
+        if (guard != nullptr)
+            m_guards.push_back(guard);
+    }
 }
 
 void AlteracValley::AVNode::ChangeState(uint32_t new_state)
@@ -979,17 +994,14 @@ bool AlteracValley::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* /*
 
 void AlteracValley::HookFlagDrop(Player* /*plr*/, GameObject* /*obj*/)
 {
-
 }
 
 void AlteracValley::HookFlagStand(Player* /*plr*/, GameObject* /*obj*/)
 {
-
 }
 
 void AlteracValley::HookOnMount(Player* /*plr*/)
 {
-
 }
 
 void AlteracValley::HookOnAreaTrigger(Player* plr, uint32_t trigger)
@@ -1071,7 +1083,6 @@ void AlteracValley::HookOnHK(Player* plr)
 
 void AlteracValley::DropFlag(Player* /*plr*/)
 {
-
 }
 
 void AlteracValley::OnCreate()
@@ -1350,21 +1361,19 @@ void AlteracValley::HookOnPlayerDeath(Player* plr)
 
 void AlteracValley::AddReinforcements(uint32_t teamId, uint32_t amt)
 {
-    if (((int32_t)(m_reinforcements[teamId] + amt)) > AV_NUM_REINFORCEMENTS)
-        m_reinforcements[teamId] = AV_NUM_REINFORCEMENTS;
-    else
-        m_reinforcements[teamId] += amt;
+    if (teamId > TEAM_HORDE || amt == 0 || hasEnded())
+        return;
 
+    m_reinforcements[teamId] = std::min(m_reinforcements[teamId] + amt, static_cast<uint32_t>(AV_NUM_REINFORCEMENTS));
     setWorldState(WORLDSTATE_AV_ALLIANCE_SCORE + teamId, m_reinforcements[teamId]);
 }
 
 void AlteracValley::RemoveReinforcements(uint32_t teamId, uint32_t amt)
 {
-    if (((int32_t)(m_reinforcements[teamId] - amt)) < 0)
-        m_reinforcements[teamId] = 0;
-    else
-        m_reinforcements[teamId] -= amt;
+    if (teamId > TEAM_HORDE || amt == 0 || hasEnded())
+        return;
 
+    m_reinforcements[teamId] = amt >= m_reinforcements[teamId] ? 0 : m_reinforcements[teamId] - amt;
     setWorldState(WORLDSTATE_AV_ALLIANCE_SCORE + teamId, m_reinforcements[teamId]);
 
     // We've lost. :(
@@ -1383,10 +1392,35 @@ void AlteracValley::HookOnPlayerKill(Player* plr, Player* pVictim)
     }
 }
 
-void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
+void AlteracValley::HookOnUnitKill(Player* plr, Unit* pVictim)
 {
-    if (pVictim->isPlayer())
+    if (pVictim == nullptr || pVictim->isPlayer())
         return;
+
+    // Mine bosses are neutral database spawns. Killing one transfers the mine
+    // directly to the killer's faction; mines do not use the four-minute flag timer.
+    if (plr != nullptr)
+    {
+        uint32_t mineNode = AV_NUM_CONTROL_POINTS;
+        if (m_nodes[AV_CONTROL_POINT_COLDTOOTH_MINE] != nullptr &&
+            pVictim->getEntry() == m_nodes[AV_CONTROL_POINT_COLDTOOTH_MINE]->m_template->m_bossId[2])
+            mineNode = AV_CONTROL_POINT_COLDTOOTH_MINE;
+        else if (m_nodes[AV_CONTROL_POINT_IRONDEEP_MINE] != nullptr &&
+            pVictim->getEntry() == m_nodes[AV_CONTROL_POINT_IRONDEEP_MINE]->m_template->m_bossId[2])
+            mineNode = AV_CONTROL_POINT_IRONDEEP_MINE;
+
+        if (mineNode < AV_NUM_CONTROL_POINTS && m_nodes[mineNode] != nullptr)
+        {
+            AVNode* mine = m_nodes[mineNode];
+            const uint32_t newState = plr->isTeamAlliance() ? AV_NODE_STATE_ALLIANCE_CONTROLLED : AV_NODE_STATE_HORDE_CONTROLLED;
+            if (mine->m_state != newState)
+            {
+                mine->ChangeState(newState);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "The {} has taken control of {} Mine!",
+                    plr->isTeamAlliance() ? "Alliance" : "Horde", mineNode == AV_CONTROL_POINT_COLDTOOTH_MINE ? "Coldtooth" : "Irondeep");
+            }
+        }
+    }
 
     Player* plr2;
     if (pVictim->getEntry() == AV_NPC_GENERAL_VANNDAR_STORMPIKE)
@@ -1469,19 +1503,19 @@ const static AVLoot g_avLoot[] =
     // Alliance Loot
 
     // Stormpike Soldier's Blood
-    { 17306, 0, 100.0f, 1, 1 },     
+    { 17306, 0, 100.0f, 1, 1 },
     // Stormpike Soldier's Meat
     { 17326, 0, 80.0, 1, 1 },
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Horde Loot
-    
+
     // Crystal Cluster
     { 17423, 1, 50.0f, 1, 1 },
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Global loot
-    
+
     // Armor Scrap
     { 17422, -1, 100.0f, 1, 5 },
     // EOF
@@ -1508,9 +1542,8 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
                     lootItem.itemproto = itemProto;
                     if (lootPtr->MinCount != lootPtr->MaxCount)
                     {
-                        lootItem.count = static_cast<decltype(lootItem.count)>(
-                            Util::getRandomUInt(lootPtr->MaxCount - lootPtr->MinCount) + lootPtr->MinCount
-                        );
+                        const uint32_t range = lootPtr->MaxCount - lootPtr->MinCount + 1;
+                        lootItem.count = static_cast<decltype(lootItem.count)>(Util::getRandomUInt(range) + lootPtr->MinCount);
                     }
                     else
                     {
@@ -1539,11 +1572,40 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
 
 void AlteracValley::EventUpdateResources()
 {
-    /*    for(uint32_t i = 0; i < 2; i++)
+    if (!m_hasStarted || hasEnded())
+        return;
+
+    // each controlled mine grants reinforcements to its owner once per interval.
+    static constexpr uint32_t mineNodes[] =
+    {
+        AV_CONTROL_POINT_COLDTOOTH_MINE,
+        AV_CONTROL_POINT_IRONDEEP_MINE
+    };
+
+    for (const uint32_t nodeId : mineNodes)
+    {
+        if (m_nodes[nodeId] == nullptr)
+            continue;
+
+        switch (m_nodes[nodeId]->m_state)
         {
-            AddReinforcements( i, m_mineControl[i] );
+            case AV_NODE_STATE_ALLIANCE_CONTROLLED:
+                AddReinforcements(TEAM_ALLIANCE, AV_ADD_POINTS_ON_CONTROLLED_MINE);
+                break;
+            case AV_NODE_STATE_HORDE_CONTROLLED:
+                AddReinforcements(TEAM_HORDE, AV_ADD_POINTS_ON_CONTROLLED_MINE);
+                break;
+            default:
+                break;
         }
-        sEventMgr.AddEvent(this, &AlteracValley::EventUpdateResources, EVENT_BATTLEGROUND_RESOURCEUPDATE, 45000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);*/
+
+        if (hasEnded())
+            return;
+    }
+
+    // the event is scheduled as a one-shot in OnStart, so schedule the next tick here.
+    if (!hasEnded())
+        sEventMgr.AddEvent(this, &AlteracValley::EventUpdateResources, EVENT_BATTLEGROUND_RESOURCEUPDATE, AV_REINFORCEMENT_ADD_INTERVAL, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void AlteracValley::EventAssaultControlPoint(uint32_t x)

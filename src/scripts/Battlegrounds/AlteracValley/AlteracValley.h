@@ -112,7 +112,7 @@ public:
         void Capture();
 
         // spawn guards
-        void SpawnGuards(uint32_t x);
+        void SpawnGuards(uint32_t guardType);
 
         // state change
         void ChangeState(uint32_t new_state);
