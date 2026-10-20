@@ -204,6 +204,13 @@ namespace WoW {
         return expansion;
     }
 
+    /// Expansions whose own DB2 tables the server loads (data_<expansion>/dbc) instead of the Mop dbc files.
+    /// The database rows and their build filters stay on getDataExpansion().
+    [[nodiscard]] constexpr bool hasOwnClientData(Expansion const expansion) noexcept
+    {
+        return expansion == Expansion::_Midnight;
+    }
+
     /// Build of the game data (dbc, maps, database rows) the server loads for an expansion.
     /// WoD, Legion, BfA, Shadowlands, Dragonflight, The War Within and Midnight run on the Mop data until their own data is available.
     [[nodiscard]] constexpr uint32_t getDataBuildForExpansion(Expansion const expansion) noexcept

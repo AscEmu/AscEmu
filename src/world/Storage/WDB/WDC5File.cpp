@@ -1,0 +1,930 @@
+/*
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#include "WDC5File.hpp"
+
+#include <algorithm>
+#include <array>
+#include <bit>
+#include <cstring>
+#include <fstream>
+#include <limits>
+#include <sstream>
+#include <type_traits>
+#include <utility>
+
+namespace WDB
+{
+    namespace
+    {
+        constexpr uint32_t WDC3Signature = 0x33434457; // WDC3
+        constexpr uint32_t WDC4Signature = 0x34434457; // WDC4
+        constexpr uint32_t WDC5Signature = 0x35434457; // WDC5
+
+        // 0 for a signature this reader does not handle
+        uint32_t versionOfSignature(uint32_t signature)
+        {
+            switch (signature)
+            {
+                case WDC3Signature: return 3;
+                case WDC4Signature: return 4;
+                case WDC5Signature: return 5;
+                default: return 0;
+            }
+        }
+
+        template <typename T>
+        bool readPod(std::vector<uint8_t> const& data, size_t& offset, T& value)
+        {
+            static_assert(std::is_trivially_copyable_v<T>);
+            if (offset + sizeof(T) > data.size())
+                return false;
+
+            std::memcpy(&value, data.data() + offset, sizeof(T));
+            offset += sizeof(T);
+            return true;
+        }
+
+        bool fail(std::string* error, std::string const& message)
+        {
+            if (error)
+                *error = message;
+            return false;
+        }
+    }
+
+
+    bool WDC5File::loadGeneric(std::string const& filename, std::string* error)
+    {
+        return loadGeneric(filename, {}, error);
+    }
+
+    bool WDC5File::loadGeneric(std::string const& filename, std::initializer_list<std::pair<uint32_t, uint8_t>> arrays, std::string* error)
+    {
+        std::ifstream stream(filename, std::ios::binary);
+        if (!stream)
+            return fail(error, "file does not exist: " + filename);
+
+        uint32_t signature = 0;
+        uint32_t version = 0;
+        char schemaName[128]{};
+        uint32_t recordCount = 0;
+        uint32_t fieldCount = 0;
+        uint32_t recordSize = 0;
+        uint32_t stringTableSize = 0;
+        uint32_t tableHash = 0;
+        uint32_t layoutHash = 0;
+        uint32_t minId = 0;
+        uint32_t maxId = 0;
+        uint32_t locale = 0;
+        uint16_t flags = 0;
+        int16_t indexField = -1;
+        uint32_t totalFieldCount = 0;
+
+        auto read = [&stream](auto& value) -> bool
+        {
+            return static_cast<bool>(stream.read(reinterpret_cast<char*>(&value), sizeof(value)));
+        };
+
+        if (!read(signature))
+            return fail(error, "truncated WDC header in " + filename);
+
+        if (versionOfSignature(signature) == 0)
+            return fail(error, "invalid signature (expected WDC3, WDC4 or WDC5) in " + filename);
+
+        // only WDC5 carries the version and the schema name
+        if (signature == WDC5Signature)
+        {
+            if (!read(version) || !stream.read(schemaName, sizeof(schemaName)))
+                return fail(error, "truncated WDC5 header in " + filename);
+        }
+        else
+            version = versionOfSignature(signature);
+
+        if (!read(recordCount) || !read(fieldCount) || !read(recordSize) || !read(stringTableSize)
+            || !read(tableHash) || !read(layoutHash) || !read(minId) || !read(maxId) || !read(locale)
+            || !read(flags) || !read(indexField) || !read(totalFieldCount))
+        {
+            return fail(error, "truncated WDC header in " + filename);
+        }
+
+        (void)recordCount;
+        (void)recordSize;
+        (void)stringTableSize;
+        (void)tableHash;
+        (void)minId;
+        (void)maxId;
+        (void)locale;
+        (void)flags;
+
+        if (fieldCount != totalFieldCount)
+            return fail(error, "generic WDC5 reader does not support split field counts in " + filename);
+
+        WDC5TableSchema schema;
+        schema.filename = nullptr;
+        schema.layoutHash = layoutHash;
+        schema.indexField = indexField;
+        schema.fields.assign(fieldCount, WDC5FieldSchema{1});
+        for (auto const& [field, arraySize] : arrays)
+        {
+            if (field >= schema.fields.size() || arraySize == 0)
+                return fail(error, "invalid generic array schema for " + filename);
+            schema.fields[field].arraySize = arraySize;
+        }
+        return load(filename, schema, error);
+    }
+
+    bool WDC5File::load(std::string const& filename, WDC5TableSchema const& schema, std::string* error)
+    {
+        m_header = {};
+        m_schema = schema;
+        m_layoutHash = 0;
+        m_schemaName.clear();
+        m_fileData.clear();
+        m_sections.clear();
+        m_columns.clear();
+        m_palletValues.clear();
+        m_palletArrayValues.clear();
+        m_commonValues.clear();
+        m_records.clear();
+        m_parentIds.clear();
+        m_recordIndexById.clear();
+
+        std::ifstream stream(filename, std::ios::binary | std::ios::ate);
+        if (!stream)
+            return fail(error, "file does not exist: " + filename);
+
+        std::streamsize const fileSize = stream.tellg();
+        if (fileSize <= 0)
+            return fail(error, "file is empty: " + filename);
+
+        stream.seekg(0, std::ios::beg);
+        m_fileData.resize(static_cast<size_t>(fileSize));
+        if (!stream.read(reinterpret_cast<char*>(m_fileData.data()), fileSize))
+            return fail(error, "unable to read file: " + filename);
+
+        size_t offset = 0;
+        if (!readPod(m_fileData, offset, m_header.signature))
+            return fail(error, "truncated WDC header in " + filename);
+
+        if (versionOfSignature(m_header.signature) == 0)
+            return fail(error, "invalid signature (expected WDC3, WDC4 or WDC5) in " + filename);
+
+        // only WDC5 carries the version and the schema name
+        if (m_header.signature == WDC5Signature)
+        {
+            if (!readPod(m_fileData, offset, m_header.version))
+                return fail(error, "truncated WDC5 header in " + filename);
+
+            if (offset + sizeof(m_header.schema) > m_fileData.size())
+                return fail(error, "truncated WDC5 schema name in " + filename);
+            std::memcpy(m_header.schema, m_fileData.data() + offset, sizeof(m_header.schema));
+            offset += sizeof(m_header.schema);
+            m_header.schema[sizeof(m_header.schema) - 1] = '\0';
+            m_schemaName = m_header.schema;
+        }
+        else
+            m_header.version = versionOfSignature(m_header.signature);
+
+        if (!readPod(m_fileData, offset, m_header.recordCount)
+            || !readPod(m_fileData, offset, m_header.fieldCount)
+            || !readPod(m_fileData, offset, m_header.recordSize)
+            || !readPod(m_fileData, offset, m_header.stringTableSize)
+            || !readPod(m_fileData, offset, m_header.tableHash)
+            || !readPod(m_fileData, offset, m_header.layoutHash)
+            || !readPod(m_fileData, offset, m_header.minId)
+            || !readPod(m_fileData, offset, m_header.maxId)
+            || !readPod(m_fileData, offset, m_header.locale)
+            || !readPod(m_fileData, offset, m_header.flags)
+            || !readPod(m_fileData, offset, m_header.indexField)
+            || !readPod(m_fileData, offset, m_header.totalFieldCount)
+            || !readPod(m_fileData, offset, m_header.packedDataOffset)
+            || !readPod(m_fileData, offset, m_header.parentLookupCount)
+            || !readPod(m_fileData, offset, m_header.columnMetaSize)
+            || !readPod(m_fileData, offset, m_header.commonDataSize)
+            || !readPod(m_fileData, offset, m_header.palletDataSize)
+            || !readPod(m_fileData, offset, m_header.sectionCount))
+        {
+            return fail(error, "truncated WDC5 header fields in " + filename);
+        }
+
+        m_isSparse = (m_header.flags & 0x1) != 0;
+        if (m_header.fieldCount != schema.fields.size() || m_header.totalFieldCount != schema.fields.size())
+            return fail(error, "field count mismatch in " + filename);
+        if (schema.layoutHash && m_header.layoutHash != schema.layoutHash)
+        {
+            std::ostringstream out;
+            out << "layout hash mismatch in " << filename << ": expected 0x" << std::hex << schema.layoutHash
+                << ", got 0x" << m_header.layoutHash;
+            return fail(error, out.str());
+        }
+
+        m_layoutHash = m_header.layoutHash;
+
+        m_sections.resize(m_header.sectionCount);
+        for (SectionHeader& section : m_sections)
+        {
+            if (!readPod(m_fileData, offset, section.tactKeyLookup)
+                || !readPod(m_fileData, offset, section.fileOffset)
+                || !readPod(m_fileData, offset, section.recordCount)
+                || !readPod(m_fileData, offset, section.stringTableSize)
+                || !readPod(m_fileData, offset, section.catalogDataOffset)
+                || !readPod(m_fileData, offset, section.idTableSize)
+                || !readPod(m_fileData, offset, section.parentLookupDataSize)
+                || !readPod(m_fileData, offset, section.catalogDataCount)
+                || !readPod(m_fileData, offset, section.copyTableCount))
+            {
+                return fail(error, "truncated section headers in " + filename);
+            }
+        }
+
+        // Field entries are currently not required by the regular WDC5 reader,
+        // but they are part of the on-disk format and must be skipped.
+        size_t const fieldEntriesSize = static_cast<size_t>(m_header.fieldCount) * 4U;
+        if (offset + fieldEntriesSize > m_fileData.size())
+            return fail(error, "truncated field entries in " + filename);
+        offset += fieldEntriesSize;
+
+        // Some Forever WDC5 tables are schema-only in a given build: they contain
+        // the header and field entries, but no records, sections, or column metadata.
+        // Treat those as valid empty stores instead of rejecting columnMetaSize == 0.
+        if (m_header.recordCount == 0 && m_header.sectionCount == 0 && m_header.columnMetaSize == 0)
+        {
+            m_columns.clear();
+            m_records.clear();
+            return true;
+        }
+
+        static constexpr uint32_t ColumnMetaEntrySize = 24U;
+        if ((m_header.columnMetaSize % ColumnMetaEntrySize) != 0)
+        {
+            std::ostringstream out;
+            out << "unexpected WDC5 column metadata size in " << filename << ": " << m_header.columnMetaSize
+                << " is not divisible by " << ColumnMetaEntrySize;
+            return fail(error, out.str());
+        }
+
+        uint32_t const columnMetaCount = m_header.columnMetaSize / ColumnMetaEntrySize;
+        if (columnMetaCount < m_header.totalFieldCount)
+        {
+            std::ostringstream out;
+            out << "insufficient WDC5 column metadata in " << filename << ": got " << columnMetaCount
+                << " entries for " << m_header.totalFieldCount << " fields";
+            return fail(error, out.str());
+        }
+
+        m_columns.resize(columnMetaCount);
+        for (ColumnMeta& column : m_columns)
+        {
+            uint32_t compression = 0;
+            if (!readPod(m_fileData, offset, column.bitOffset)
+                || !readPod(m_fileData, offset, column.bitSize)
+                || !readPod(m_fileData, offset, column.additionalDataSize)
+                || !readPod(m_fileData, offset, compression)
+                || !readPod(m_fileData, offset, column.value1)
+                || !readPod(m_fileData, offset, column.value2)
+                || !readPod(m_fileData, offset, column.value3))
+            {
+                return fail(error, "truncated WDC5 column metadata in " + filename);
+            }
+
+            if (compression > static_cast<uint32_t>(WDC5CompressionType::SignedImmediate))
+                return fail(error, "unknown WDC5 compression type in " + filename);
+            column.compression = static_cast<WDC5CompressionType>(compression);
+        }
+
+        m_palletValues.resize(columnMetaCount);
+        m_palletArrayValues.resize(columnMetaCount);
+        m_commonValues.resize(columnMetaCount);
+
+        for (uint32_t field = 0; field < columnMetaCount; ++field)
+        {
+            ColumnMeta const& column = m_columns[field];
+            if (column.compression != WDC5CompressionType::Pallet)
+                continue;
+
+            if (column.additionalDataSize % sizeof(uint32_t))
+                return fail(error, "unaligned WDC5 pallet data in " + filename);
+            auto& values = m_palletValues[field];
+            values.resize(column.additionalDataSize / sizeof(uint32_t));
+            for (uint32_t& value : values)
+                if (!readPod(m_fileData, offset, value))
+                    return fail(error, "truncated WDC5 pallet data in " + filename);
+        }
+
+        for (uint32_t field = 0; field < columnMetaCount; ++field)
+        {
+            ColumnMeta const& column = m_columns[field];
+            if (column.compression != WDC5CompressionType::PalletArray)
+                continue;
+
+            if (column.additionalDataSize % sizeof(uint32_t))
+                return fail(error, "unaligned WDC5 pallet-array data in " + filename);
+            auto& values = m_palletArrayValues[field];
+            values.resize(column.additionalDataSize / sizeof(uint32_t));
+            for (uint32_t& value : values)
+                if (!readPod(m_fileData, offset, value))
+                    return fail(error, "truncated WDC5 pallet-array data in " + filename);
+        }
+
+        for (uint32_t field = 0; field < columnMetaCount; ++field)
+        {
+            ColumnMeta const& column = m_columns[field];
+            if (column.compression != WDC5CompressionType::CommonData)
+                continue;
+
+            if (column.additionalDataSize % 8U)
+                return fail(error, "unaligned WDC5 common data in " + filename);
+            auto& values = m_commonValues[field];
+            for (uint32_t i = 0; i < column.additionalDataSize / 8U; ++i)
+            {
+                uint32_t id = 0;
+                uint32_t value = 0;
+                if (!readPod(m_fileData, offset, id) || !readPod(m_fileData, offset, value))
+                    return fail(error, "truncated WDC5 common data in " + filename);
+                values[id] = value;
+            }
+        }
+
+        m_records.reserve(m_header.recordCount);
+        m_parentIds.reserve(m_header.recordCount);
+        m_skippedEncryptedRecords = 0;
+
+        // WDC5 copy-table rows are logical records which reuse another record's
+        // payload under a different ID. Keep them until all physical records are
+        // indexed, then materialize lightweight RecordRef aliases.
+        std::vector<std::pair<uint32_t, uint32_t>> copyRecords;
+
+        for (SectionHeader const& section : m_sections)
+        {
+            // Retail WDC5 files can contain a mix of readable and encrypted sections.
+            // The extractor leaves encrypted section metadata intact, but the records
+            // themselves cannot be interpreted without the matching TACT key. Skip
+            // those sections and keep all unencrypted rows usable. This is important
+            // for Map.db2 in the Forever beta: map 0/1 and the normal login maps are
+            // in the unencrypted section while a handful of later maps are encrypted.
+            if (section.tactKeyLookup != 0)
+            {
+                m_skippedEncryptedRecords += section.recordCount;
+                continue;
+            }
+
+            if (m_isSparse)
+            {
+                if (section.catalogDataCount != section.recordCount)
+                    return fail(error, "sparse WDC5 catalog count does not match record count in " + filename);
+                if (section.idTableSize != section.recordCount * sizeof(uint32_t))
+                    return fail(error, "sparse WDC5 id table has unexpected size in " + filename);
+
+                size_t idOffset = section.catalogDataOffset;
+                size_t const idEnd = idOffset + section.idTableSize;
+                if (idEnd > m_fileData.size())
+                    return fail(error, "sparse WDC5 id table is outside file in " + filename);
+
+                std::vector<uint32_t> externalIds(section.recordCount);
+                for (uint32_t& id : externalIds)
+                {
+                    if (!readPod(m_fileData, idOffset, id))
+                        return fail(error, "truncated sparse WDC5 id table in " + filename);
+                }
+
+                size_t copyOffset = idEnd;
+                size_t const copyEnd = copyOffset + static_cast<size_t>(section.copyTableCount) * 8U;
+                if (copyEnd > m_fileData.size())
+                    return fail(error, "sparse WDC5 copy table is outside file in " + filename);
+                for (uint32_t i = 0; i < section.copyTableCount; ++i)
+                {
+                    uint32_t newId = 0;
+                    uint32_t sourceId = 0;
+                    if (!readPod(m_fileData, copyOffset, newId) || !readPod(m_fileData, copyOffset, sourceId))
+                        return fail(error, "truncated sparse WDC5 copy table in " + filename);
+                    copyRecords.emplace_back(newId, sourceId);
+                }
+
+                size_t mapOffset = copyEnd;
+                size_t const mapEnd = mapOffset + static_cast<size_t>(section.catalogDataCount) * 6U;
+                if (mapEnd > m_fileData.size())
+                    return fail(error, "sparse WDC5 offset map is outside file in " + filename);
+
+                for (uint32_t record = 0; record < section.recordCount; ++record)
+                {
+                    uint32_t recordOffset = 0;
+                    uint16_t recordSize = 0;
+                    if (!readPod(m_fileData, mapOffset, recordOffset) || !readPod(m_fileData, mapOffset, recordSize))
+                        return fail(error, "truncated sparse WDC5 offset map in " + filename);
+                    if (recordOffset == 0 || recordSize == 0
+                        || static_cast<size_t>(recordOffset) + recordSize > m_fileData.size())
+                    {
+                        return fail(error, "invalid sparse WDC5 record range in " + filename);
+                    }
+
+                    RecordRef ref;
+                    ref.offset = recordOffset;
+                    ref.size = recordSize;
+                    ref.externalId = externalIds[record];
+                    ref.hasExternalId = true;
+                    m_records.push_back(ref);
+                    m_parentIds.push_back(0);
+                }
+
+                continue;
+            }
+
+            size_t const recordsEnd = static_cast<size_t>(section.fileOffset)
+                + static_cast<size_t>(section.recordCount) * m_header.recordSize;
+            size_t const stringsEnd = recordsEnd + section.stringTableSize;
+            if (stringsEnd > m_fileData.size())
+                return fail(error, "section record/string data is outside file in " + filename);
+
+            // A section may carry an explicit ID table even when indexField is
+            // non-negative. In that case the external IDs are authoritative.
+            // TactKey.db2 in Forever 69913 is one such table: its only physical
+            // field is the 16-byte key payload while the record IDs live in the
+            // section ID table. Treating field 0 as the ID indexes the first four
+            // key bytes instead and produces essentially random uint32 IDs.
+            bool const hasExternalIdTable = section.idTableSize != 0;
+            std::vector<uint32_t> externalIds;
+            if (hasExternalIdTable)
+            {
+                if (section.idTableSize != section.recordCount * sizeof(uint32_t))
+                    return fail(error, "external WDC5 id table has unexpected size in " + filename);
+
+                size_t idOffset = stringsEnd;
+                externalIds.resize(section.recordCount);
+                for (uint32_t& id : externalIds)
+                {
+                    if (!readPod(m_fileData, idOffset, id))
+                        return fail(error, "truncated external WDC5 id table in " + filename);
+                }
+            }
+            else if (schema.indexField < 0)
+            {
+                return fail(error, "WDC5 schema expects external IDs but section has no ID table in " + filename);
+            }
+
+            if (section.copyTableCount != 0)
+            {
+                size_t copyOffset = stringsEnd + static_cast<size_t>(section.idTableSize);
+                size_t const copyEnd = copyOffset + static_cast<size_t>(section.copyTableCount) * 8U;
+                if (copyEnd > m_fileData.size())
+                    return fail(error, "WDC5 copy table is outside file in " + filename);
+
+                for (uint32_t i = 0; i < section.copyTableCount; ++i)
+                {
+                    uint32_t newId = 0;
+                    uint32_t sourceId = 0;
+                    if (!readPod(m_fileData, copyOffset, newId) || !readPod(m_fileData, copyOffset, sourceId))
+                        return fail(error, "truncated WDC5 copy table in " + filename);
+                    copyRecords.emplace_back(newId, sourceId);
+                }
+            }
+
+            std::vector<uint32_t> parentIds(section.recordCount, 0);
+            if (section.parentLookupDataSize != 0)
+            {
+                // WDC5 relationship/parent data follows the string table, optional
+                // external ID table and optional copy table. Layout:
+                //   uint32 entryCount, minId, maxId;
+                //   repeated { uint32 parentId, uint32 sectionRecordIndex }.
+                size_t parentOffset = stringsEnd
+                    + static_cast<size_t>(section.idTableSize)
+                    + static_cast<size_t>(section.copyTableCount) * 8U;
+                size_t const parentEnd = parentOffset + section.parentLookupDataSize;
+                if (parentEnd > m_fileData.size())
+                    return fail(error, "WDC5 parent lookup data is outside file in " + filename);
+
+                uint32_t entryCount = 0;
+                uint32_t minId = 0;
+                uint32_t maxId = 0;
+                if (!readPod(m_fileData, parentOffset, entryCount)
+                    || !readPod(m_fileData, parentOffset, minId)
+                    || !readPod(m_fileData, parentOffset, maxId))
+                {
+                    return fail(error, "truncated WDC5 parent lookup header in " + filename);
+                }
+
+                (void)minId;
+                (void)maxId;
+
+                if (12U + static_cast<size_t>(entryCount) * 8U > section.parentLookupDataSize)
+                    return fail(error, "invalid WDC5 parent lookup size in " + filename);
+
+                for (uint32_t i = 0; i < entryCount; ++i)
+                {
+                    uint32_t parentId = 0;
+                    uint32_t recordIndex = 0;
+                    if (!readPod(m_fileData, parentOffset, parentId)
+                        || !readPod(m_fileData, parentOffset, recordIndex))
+                    {
+                        return fail(error, "truncated WDC5 parent lookup entries in " + filename);
+                    }
+
+                    if (recordIndex >= section.recordCount)
+                        return fail(error, "WDC5 parent lookup record index out of range in " + filename);
+                    parentIds[recordIndex] = parentId;
+                }
+            }
+
+            for (uint32_t record = 0; record < section.recordCount; ++record)
+            {
+                RecordRef ref;
+                ref.offset = section.fileOffset + record * m_header.recordSize;
+                ref.size = m_header.recordSize;
+                ref.stringTableOffset = static_cast<uint32_t>(recordsEnd);
+                ref.stringTableSize = section.stringTableSize;
+                if (hasExternalIdTable)
+                {
+                    ref.externalId = externalIds[record];
+                    ref.hasExternalId = true;
+                }
+                m_records.push_back(ref);
+                m_parentIds.push_back(parentIds[record]);
+            }
+        }
+
+        if (m_records.size() + m_skippedEncryptedRecords != m_header.recordCount)
+            return fail(error, "WDC5 record count mismatch in " + filename);
+
+        m_recordIndexById.reserve(m_records.size() + copyRecords.size());
+        for (uint32_t recordIndex = 0; recordIndex < m_records.size(); ++recordIndex)
+            m_recordIndexById.emplace(getRecordId(recordIndex), recordIndex);
+
+        // Copy records can theoretically reference another copy record. Resolve in
+        // passes so chained aliases work as well, while rejecting broken sources.
+        while (!copyRecords.empty())
+        {
+            bool madeProgress = false;
+            for (auto itr = copyRecords.begin(); itr != copyRecords.end();)
+            {
+                auto const source = m_recordIndexById.find(itr->second);
+                if (source == m_recordIndexById.end())
+                {
+                    ++itr;
+                    continue;
+                }
+
+                uint32_t const sourceIndex = source->second;
+                RecordRef copy = m_records[sourceIndex];
+                copy.externalId = itr->first;
+                copy.hasExternalId = true;
+
+                uint32_t const copyIndex = static_cast<uint32_t>(m_records.size());
+                m_records.push_back(copy);
+                m_parentIds.push_back(m_parentIds[sourceIndex]);
+                m_recordIndexById.emplace(itr->first, copyIndex);
+
+                itr = copyRecords.erase(itr);
+                madeProgress = true;
+            }
+
+            if (!madeProgress)
+                return fail(error, "WDC5 copy table references unknown source record in " + filename);
+        }
+
+        if (m_isSparse)
+        {
+            for (uint32_t field = 0; field < m_header.totalFieldCount; ++field)
+            {
+                if (m_columns[field].compression != WDC5CompressionType::None)
+                    return fail(error, "compressed sparse WDC5 fields are not supported yet in " + filename);
+                if (!m_schema.fields[field].isString && (m_columns[field].bitSize == 0 || (m_columns[field].bitSize % 8U) != 0))
+                    return fail(error, "non-byte-aligned sparse WDC5 field is not supported in " + filename);
+            }
+
+            m_sparseFieldOffsets.resize(m_records.size());
+            for (uint32_t recordIndex = 0; recordIndex < m_records.size(); ++recordIndex)
+            {
+                auto& offsets = m_sparseFieldOffsets[recordIndex];
+                offsets.resize(m_header.totalFieldCount);
+
+                uint32_t cursor = 0;
+                uint32_t const recordSize = getRecordSize(recordIndex);
+                uint8_t const* record = getRecordData(recordIndex);
+                for (uint32_t field = 0; field < m_header.totalFieldCount; ++field)
+                {
+                    offsets[field] = cursor;
+                    if (m_schema.fields[field].isString)
+                    {
+                        if (cursor >= recordSize)
+                            return fail(error, "truncated sparse WDC5 string field in " + filename);
+                        void const* end = std::memchr(record + cursor, '\0', recordSize - cursor);
+                        if (!end)
+                            return fail(error, "unterminated sparse WDC5 string field in " + filename);
+                        cursor = static_cast<uint32_t>(static_cast<uint8_t const*>(end) - record) + 1U;
+                    }
+                    else
+                    {
+                        uint32_t const fieldBytes = m_columns[field].bitSize / 8U;
+                        if (cursor + fieldBytes > recordSize)
+                            return fail(error, "truncated sparse WDC5 numeric field in " + filename);
+                        cursor += fieldBytes;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    bool WDC5File::findRecordIndex(uint32_t recordId, uint32_t& recordIndex) const noexcept
+    {
+        auto const itr = m_recordIndexById.find(recordId);
+        if (itr == m_recordIndexById.end())
+            return false;
+
+        recordIndex = itr->second;
+        return true;
+    }
+
+    std::span<uint8_t const> WDC5File::getRawRecord(uint32_t recordIndex) const noexcept
+    {
+        uint8_t const* data = getRecordData(recordIndex);
+        uint32_t const size = getRecordSize(recordIndex);
+        if (!data || size == 0)
+            return {};
+
+        return {data, size};
+    }
+
+
+    std::string_view WDC5File::getString(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex) const
+    {
+        if (!checkIndex(recordIndex, field, arrayIndex))
+            return {};
+
+        RecordRef const& ref = m_records[recordIndex];
+        if (m_isSparse)
+        {
+            if (!m_schema.fields[field].isString || arrayIndex != 0
+                || recordIndex >= m_sparseFieldOffsets.size()
+                || field >= m_sparseFieldOffsets[recordIndex].size())
+                return {};
+
+            uint32_t const offset = m_sparseFieldOffsets[recordIndex][field];
+            if (offset >= ref.size)
+                return {};
+
+            char const* begin = reinterpret_cast<char const*>(m_fileData.data() + ref.offset + offset);
+            size_t const maxLength = ref.size - offset;
+            void const* terminator = std::memchr(begin, '\0', maxLength);
+            if (!terminator)
+                return {};
+            char const* end = static_cast<char const*>(terminator);
+            return std::string_view(begin, static_cast<size_t>(end - begin));
+        }
+        if (ref.stringTableSize == 0)
+            return {};
+
+        uint32_t const rawOffset = getUInt32(recordIndex, field, arrayIndex);
+        size_t const stringBegin = ref.stringTableOffset;
+        size_t const stringEnd = stringBegin + ref.stringTableSize;
+        if (stringEnd > m_fileData.size())
+            return {};
+
+        auto makeView = [&](size_t absoluteOffset) -> std::string_view
+        {
+            if (absoluteOffset < stringBegin || absoluteOffset >= stringEnd)
+                return {};
+
+            char const* begin = reinterpret_cast<char const*>(m_fileData.data() + absoluteOffset);
+            size_t const maxLength = stringEnd - absoluteOffset;
+            void const* terminator = std::memchr(begin, '\0', maxLength);
+            if (!terminator)
+                return {};
+
+            char const* end = static_cast<char const*>(terminator);
+            return std::string_view(begin, static_cast<size_t>(end - begin));
+        };
+
+        // WDC5 string fields can be represented either as a relative offset
+        // from the string field itself (the normal modern WDC form) or as an
+        // offset into the section string table. Try the relative form first.
+        //
+        // Trying table-relative first can still land on a perfectly valid
+        // NUL-terminated string, just the wrong one. That is exactly what
+        // happened with Forever Map.Directory, where map names turned into
+        // unrelated localized text.
+        uint32_t const fieldByteOffset = getFieldByteOffset(recordIndex, field) + static_cast<uint32_t>(sizeof(uint32_t)) * arrayIndex;
+        size_t const relativeOffset = static_cast<size_t>(ref.offset) + fieldByteOffset + rawOffset;
+        if (std::string_view value = makeView(relativeOffset); !value.empty())
+            return value;
+
+        size_t const tableOffset = stringBegin + rawOffset;
+        return makeView(tableOffset);
+    }
+
+    uint8_t const* WDC5File::getRecordData(uint32_t recordIndex) const
+    {
+        if (recordIndex >= m_records.size())
+            return nullptr;
+        return m_fileData.data() + m_records[recordIndex].offset;
+    }
+
+    uint32_t WDC5File::getRecordSize(uint32_t recordIndex) const noexcept
+    {
+        if (recordIndex >= m_records.size())
+            return 0;
+        return m_records[recordIndex].size != 0 ? m_records[recordIndex].size : m_header.recordSize;
+    }
+
+    bool WDC5File::checkIndex(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex) const
+    {
+        return recordIndex < m_records.size()
+            && field < m_columns.size()
+            && field < m_schema.fields.size()
+            && arrayIndex < m_schema.fields[field].arraySize;
+    }
+
+    uint64_t WDC5File::readPacked(uint8_t const* record, uint32_t bitOffset, uint32_t bitWidth) const
+    {
+        if (!record || bitWidth == 0 || bitWidth > 64)
+            return 0;
+
+        uint32_t const byteIndex = bitOffset / 8U;
+        uint32_t const bitShift = bitOffset & 7U;
+        if (byteIndex >= m_header.recordSize)
+            return 0;
+
+        // A shifted 64 bit value spans up to nine bytes; the end of the record
+        // bounds the copy, the bytes behind it read as zero.
+        std::array<uint8_t, 9> bytes{};
+        std::memcpy(bytes.data(), record + byteIndex, std::min<size_t>(bytes.size(), m_header.recordSize - byteIndex));
+
+        uint64_t low = 0;
+        std::memcpy(&low, bytes.data(), sizeof(low));
+        uint64_t value = low >> bitShift;
+        if (bitShift != 0)
+            value |= static_cast<uint64_t>(bytes[8]) << (64U - bitShift);
+
+        if (bitWidth < 64)
+            value &= (uint64_t(1) << bitWidth) - 1U;
+        return value;
+    }
+
+    uint32_t WDC5File::getFieldByteOffset(uint32_t recordIndex, uint32_t field) const
+    {
+        if (m_isSparse)
+        {
+            if (recordIndex >= m_sparseFieldOffsets.size() || field >= m_sparseFieldOffsets[recordIndex].size())
+                return 0;
+            return m_sparseFieldOffsets[recordIndex][field];
+        }
+
+        ColumnMeta const& column = m_columns[field];
+        switch (column.compression)
+        {
+            case WDC5CompressionType::None:
+                return column.bitOffset / 8U;
+            case WDC5CompressionType::Immediate:
+            case WDC5CompressionType::SignedImmediate:
+            case WDC5CompressionType::Pallet:
+            case WDC5CompressionType::PalletArray:
+                return m_header.packedDataOffset + column.value1 / 8U;
+            case WDC5CompressionType::CommonData:
+                return 0;
+        }
+        return 0;
+    }
+
+    uint32_t WDC5File::getRecordId(uint32_t recordIndex) const
+    {
+        if (recordIndex >= m_records.size())
+            return 0;
+
+        // External IDs are used both by non-inline-ID tables and by copy-table
+        // aliases. A copy of an inline-ID row must expose its new alias ID rather
+        // than the source row's inline ID.
+        if (m_records[recordIndex].hasExternalId)
+            return m_records[recordIndex].externalId;
+
+        if (m_schema.indexField < 0)
+            return m_records[recordIndex].externalId;
+        return getUInt32(recordIndex, static_cast<uint32_t>(m_schema.indexField));
+    }
+
+    template <typename T>
+    T WDC5File::readValue(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex) const
+    {
+        if (!checkIndex(recordIndex, field, arrayIndex))
+            return T{};
+
+        uint8_t const* record = getRecordData(recordIndex);
+        ColumnMeta const& column = m_columns[field];
+        uint64_t raw = 0;
+
+        switch (column.compression)
+        {
+            case WDC5CompressionType::None:
+            {
+                uint32_t const arraySize = m_schema.fields[field].arraySize;
+                uint32_t elementSize = static_cast<uint32_t>(sizeof(T));
+                if (arraySize != 0 && (column.bitSize % arraySize) == 0 && ((column.bitSize / arraySize) % 8U) == 0)
+                    elementSize = (column.bitSize / arraySize) / 8U;
+
+                uint32_t const byteOffset = getFieldByteOffset(recordIndex, field) + elementSize * arrayIndex;
+                uint32_t const recordSize = getRecordSize(recordIndex);
+                if (byteOffset + elementSize > recordSize || elementSize > sizeof(raw))
+                    return T{};
+                std::memcpy(&raw, record + byteOffset, std::min<size_t>(elementSize, sizeof(raw)));
+                break;
+            }
+            case WDC5CompressionType::Immediate:
+            case WDC5CompressionType::SignedImmediate:
+            {
+                if (arrayIndex != 0 || column.value2 == 0 || column.value2 > 64)
+                    return T{};
+                uint32_t const bitOffset = m_header.packedDataOffset * 8U + column.value1;
+                raw = readPacked(record, bitOffset, column.value2);
+                if (column.compression == WDC5CompressionType::SignedImmediate && column.value2 < 64)
+                {
+                    uint64_t const sign = uint64_t(1) << (column.value2 - 1U);
+                    raw = (raw ^ sign) - sign;
+                }
+                break;
+            }
+            case WDC5CompressionType::CommonData:
+            {
+                uint32_t const id = getRecordId(recordIndex);
+                auto const found = m_commonValues[field].find(id);
+                raw = found != m_commonValues[field].end() ? found->second : column.value1;
+                break;
+            }
+            case WDC5CompressionType::Pallet:
+            case WDC5CompressionType::PalletArray:
+            {
+                uint32_t const bitOffset = m_header.packedDataOffset * 8U + column.value1;
+                uint64_t const palletIndex = readPacked(record, bitOffset, column.value2);
+                if (column.compression == WDC5CompressionType::Pallet)
+                {
+                    if (arrayIndex != 0 || palletIndex >= m_palletValues[field].size())
+                        return T{};
+                    raw = m_palletValues[field][static_cast<size_t>(palletIndex)];
+                }
+                else
+                {
+                    uint32_t const arraySize = column.value3;
+                    size_t const valueIndex = static_cast<size_t>(palletIndex) * arraySize + arrayIndex;
+                    if (!arraySize || valueIndex >= m_palletArrayValues[field].size())
+                        return T{};
+                    raw = m_palletArrayValues[field][valueIndex];
+                }
+                break;
+            }
+        }
+
+        if constexpr (std::is_floating_point_v<T>)
+        {
+            static_assert(sizeof(T) == sizeof(uint32_t));
+            uint32_t const bits = static_cast<uint32_t>(raw);
+            return std::bit_cast<T>(bits);
+        }
+        else
+        {
+            T value{};
+            std::memcpy(&value, &raw, std::min(sizeof(T), sizeof(raw)));
+            return value;
+        }
+    }
+
+    uint8_t WDC5File::getUInt8(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex) const
+    {
+        return readValue<uint8_t>(recordIndex, field, arrayIndex);
+    }
+
+    int8_t WDC5File::getInt8(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex) const
+    {
+        return readValue<int8_t>(recordIndex, field, arrayIndex);
+    }
+
+    uint16_t WDC5File::getUInt16(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex) const
+    {
+        return readValue<uint16_t>(recordIndex, field, arrayIndex);
+    }
+
+    int16_t WDC5File::getInt16(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex) const
+    {
+        return readValue<int16_t>(recordIndex, field, arrayIndex);
+    }
+
+    uint32_t WDC5File::getUInt32(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex) const
+    {
+        return readValue<uint32_t>(recordIndex, field, arrayIndex);
+    }
+
+    int32_t WDC5File::getInt32(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex) const
+    {
+        return readValue<int32_t>(recordIndex, field, arrayIndex);
+    }
+
+    float WDC5File::getFloat(uint32_t recordIndex, uint32_t field, uint32_t arrayIndex) const
+    {
+        return readValue<float>(recordIndex, field, arrayIndex);
+    }
+
+    uint32_t WDC5File::getParentId(uint32_t recordIndex) const noexcept
+    {
+        return recordIndex < m_parentIds.size() ? m_parentIds[recordIndex] : 0U;
+    }
+}

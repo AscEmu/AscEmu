@@ -672,6 +672,10 @@ void ObjectMgr::loadAchievementCriteriaList()
         if (!criteria)
             continue;
 
+        // the lists are indexed by the criteria type, a type the core does not know has no list
+        if (criteria->requiredType >= ACHIEVEMENT_CRITERIA_TYPE_TOTAL)
+            continue;
+
 #if VERSION_STRING > WotLK
         auto achievement = sAchievementStore.lookupEntry(criteria->referredAchievement);
         if (achievement && achievement->flags & ACHIEVEMENT_FLAG_GUILD)

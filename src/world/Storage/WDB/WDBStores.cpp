@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <algorithm>
 #include <concepts>
 #include <cstdint>
+#include <cstring>
 #include <iterator>
 #include <map>
 #include <string>
@@ -258,6 +259,152 @@ namespace {
             powerIndexByClass[powerEntry.classId][powerEntry.power] = index;
         }
     }
+
+    // The lookups built from the stores below do not depend on the file format
+    // the stores were filled from, the DB2 path shares them with the dbc path.
+    void buildCharStartOutfitMap()
+    {
+        sCharStartOutfitMap.clear();
+        for (auto const& [id, outfit] : sCharStartOutfitStore)
+        {
+            sCharStartOutfitMap[outfit.makeKey()] = &outfit;
+        }
+    }
+
+    void buildNameGenData()
+    {
+        for (auto& names : _namegenData)
+            names.clear();
+
+        for (uint32_t i = 0; i < sNameGenStore.getNumRows(); ++i)
+        {
+            const auto name_gen_entry = sNameGenStore.lookupEntry(i);
+            if (name_gen_entry == nullptr)
+                continue;
+
+            NameGenData nameGenData;
+            nameGenData.name = std::string(name_gen_entry->Name);
+            nameGenData.type = name_gen_entry->type;
+            if (nameGenData.type < 3)
+                _namegenData[nameGenData.type].push_back(nameGenData);
+        }
+    }
+
+    void buildTaxiPathData()
+    {
+        for (uint32_t i = 1; i < sTaxiPathStore.getNumRows(); ++i)
+        {
+            if (WDB::Structures::TaxiPathEntry const* entry = sTaxiPathStore.lookupEntry(i))
+                sTaxiPathSetBySource[entry->from][entry->to] = TaxiPathBySourceAndDestination(entry->id, entry->price);
+        }
+
+        uint32_t pathCount = sTaxiPathStore.getNumRows();
+
+        // Calculate path nodes count
+        std::vector<uint32_t> pathLength;
+        pathLength.resize(pathCount); // 0 and some other indexes not used
+        for (uint32_t i = 0; i < sTaxiPathNodeStore.getNumRows(); ++i)
+        {
+            if (WDB::Structures::TaxiPathNodeEntry const* entry = sTaxiPathNodeStore.lookupEntry(i))
+            {
+                if (entry->pathId >= pathCount)
+                    continue;
+
+                if (pathLength[entry->pathId] < entry->NodeIndex + 1)
+                    pathLength[entry->pathId] = entry->NodeIndex + 1;
+            }
+        }
+
+        // Set path length
+        sTaxiPathNodesByPath.resize(pathCount); // 0 and some other indexes not used
+        for (uint32_t i = 0; i < sTaxiPathNodesByPath.size(); ++i)
+            sTaxiPathNodesByPath[i].resize(pathLength[i]);
+
+        // fill data
+        for (uint32_t i = 0; i < sTaxiPathNodeStore.getNumRows(); ++i)
+        {
+            if (WDB::Structures::TaxiPathNodeEntry const* entry = sTaxiPathNodeStore.lookupEntry(i))
+            {
+                if (entry->pathId < pathCount && entry->NodeIndex < sTaxiPathNodesByPath[entry->pathId].size())
+                    sTaxiPathNodesByPath[entry->pathId][entry->NodeIndex] = entry;
+            }
+        }
+    }
+
+    void buildWmoAreaTripples()
+    {
+        for (uint32_t i = 0; i < sWMOAreaTableStore.getNumRows(); ++i)
+        {
+            if (auto entry = sWMOAreaTableStore.lookupEntry(i))
+                sWMOAreaInfoByTripple.insert(WMOAreaInfoByTripple::value_type(WMOAreaTableTripple(entry->rootId, entry->adtId, entry->groupId), entry));
+        }
+    }
+
+#if VERSION_STRING >= Mop
+    void buildClassSpecializationTabs()
+    {
+        std::memset(ClassSpecializationTabs, 0, sizeof(ClassSpecializationTabs));
+        for (uint32_t i = 0; i < sChrSpecializationStore.getNumRows(); ++i)
+        {
+            auto const specialization_info = sChrSpecializationStore.lookupEntry(i);
+            if (specialization_info == nullptr)
+                continue;
+
+            if (specialization_info->classId >= 12 || specialization_info->tabPage >= 4)
+                continue;
+
+            ClassSpecializationTabs[specialization_info->classId][specialization_info->tabPage] = specialization_info->Id;
+        }
+    }
+#endif
+
+#if VERSION_STRING >= Cata
+    void buildSpellCategoryStore()
+    {
+        for (uint32_t i = 1; i < sSpellStore.getNumRows(); ++i)
+        {
+            if (WDB::Structures::SpellEntry const* spell = sSpellStore.lookupEntry(i))
+            {
+                if (WDB::Structures::SpellCategoriesEntry const* category = spell->GetSpellCategories())
+                    if (uint32_t cat = category->Category)
+                        sSpellCategoryStore[cat].insert(i);
+            }
+        }
+    }
+
+    void buildSpellEffectMap()
+    {
+        for (uint32_t i = 1; i < sSpellEffectStore.getNumRows(); ++i)
+        {
+            if (WDB::Structures::SpellEffectEntry const* spellEffect = sSpellEffectStore.lookupEntry(i))
+            {
+                sSpellEffectMap[spellEffect->EffectSpellId].effects[spellEffect->EffectIndex] = spellEffect;
+            }
+        }
+    }
+#endif
+
+#if VERSION_STRING >= Mop
+    // note: SpellPower rows are not keyed by spell id on Mop, map them by their spellId column
+    void buildSpellPowerMap()
+    {
+        for (uint32_t i = 0; i < sSpellPowerStore.getNumRows(); ++i)
+        {
+            WDB::Structures::SpellPowerEntry const* spellPower = sSpellPowerStore.lookupEntry(i);
+            if (spellPower == nullptr || spellPower->spellId == 0)
+                continue;
+
+            // A spell can own several rows (one per shapeshift form). Without a caster there is
+            // no form to match against, so keep the first row that does not require one - this
+            // is the row the reference picks for a caster without that shapeshift aura.
+            auto itr = sSpellPowerMap.find(spellPower->spellId);
+            if (itr == sSpellPowerMap.end())
+                sSpellPowerMap[spellPower->spellId] = spellPower;
+            else if (itr->second->ShapeShiftSpellId != 0 && spellPower->ShapeShiftSpellId == 0)
+                itr->second = spellPower;
+        }
+    }
+#endif
 }
 
 bool loadDBCs()
@@ -267,6 +414,32 @@ bool loadDBCs()
     uint32_t available_dbc_locales = 0xFFFFFFFF;
     WDB::StoreProblemList bad_dbc_files;
     std::string dbc_path = sWorld.settings.server.dataDir + "dbc/";
+
+#if VERSION_STRING >= WoD
+    // A client with its own data: the stores are filled from its DB2 tables,
+    // only the lookups built from the stores are shared with the dbc path.
+    if (WoW::hasOwnClientData(WoW::getServerExpansion()))
+    {
+        bool const loaded = loadDb2Stores(bad_dbc_files, dbc_path);
+        for (std::string const& problem : bad_dbc_files)
+            sLogger.failure("DB2: {}", problem);
+
+        buildCharStartOutfitMap();
+        buildNameGenData();
+        buildTaxiPathData();
+        buildWmoAreaTripples();
+        buildClassSpecializationTabs();
+        buildSpellCategoryStore();
+        buildSpellEffectMap();
+        buildSpellPowerMap();
+
+        buildMapDifficultyMap();
+        buildAreaMapCollection();
+        buildPowerIndexByClass();
+
+        return loaded;
+    }
+#endif
 
     // Load ChrClasses.dbc first to ensure the dbcLocaleId is set correctly before loading other DBC files that may depend on it
     WDB::loadUnifiedWDBStore<WDB::Structures::ChrClassesEntry>(
@@ -437,10 +610,7 @@ bool loadDBCs()
             }
         });
 
-    for (auto const& [id, outfit] : sCharStartOutfitStore)
-    {
-        sCharStartOutfitMap[outfit.makeKey()] = &outfit;
-    }
+    buildCharStartOutfitMap();
 
     WDB::loadUnifiedWDBStore<WDB::Structures::ChrRacesEntry>(
         bad_dbc_files, sChrRacesStore, dbc_path,
@@ -799,19 +969,7 @@ bool loadDBCs()
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sNameGenStore, dbc_path, "NameGen.dbc");
     // note: This was missing for TBC, Cata and Mop
-    {
-        for (uint32_t i = 0; i < sNameGenStore.getNumRows(); ++i)
-        {
-            const auto name_gen_entry = sNameGenStore.lookupEntry(i);
-            if (name_gen_entry == nullptr)
-                continue;
-
-            NameGenData nameGenData;
-            nameGenData.name = std::string(name_gen_entry->Name);
-            nameGenData.type = name_gen_entry->type;
-            _namegenData[nameGenData.type].push_back(nameGenData);
-        }
-    }
+    buildNameGenData();
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSkillLineAbilityStore, dbc_path, "SkillLineAbility.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSkillLineStore, dbc_path, "SkillLine.dbc");
@@ -903,50 +1061,12 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTaxiPathStore, dbc_path, "TaxiPath.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTaxiPathNodeStore, dbc_path, "TaxiPathNode.dbc");
     // note: Generate path data
-    {
-        for (uint32_t i = 1; i < sTaxiPathStore.getNumRows(); ++i)
-        {
-            if (WDB::Structures::TaxiPathEntry const* entry = sTaxiPathStore.lookupEntry(i))
-                sTaxiPathSetBySource[entry->from][entry->to] = TaxiPathBySourceAndDestination(entry->id, entry->price);
-        }
-
-        uint32_t pathCount = sTaxiPathStore.getNumRows();
-
-        // Calculate path nodes count
-        std::vector<uint32_t> pathLength;
-        pathLength.resize(pathCount); // 0 and some other indexes not used
-        for (uint32_t i = 0; i < sTaxiPathNodeStore.getNumRows(); ++i)
-        {
-            if (WDB::Structures::TaxiPathNodeEntry const* entry = sTaxiPathNodeStore.lookupEntry(i))
-            {
-                if (pathLength[entry->pathId] < entry->NodeIndex + 1)
-                    pathLength[entry->pathId] = entry->NodeIndex + 1;
-            }
-        }
-
-        // Set path length
-        sTaxiPathNodesByPath.resize(pathCount); // 0 and some other indexes not used
-        for (uint32_t i = 1; i < sTaxiPathNodesByPath.size(); ++i)
-            sTaxiPathNodesByPath[i].resize(pathLength[i]);
-
-        // fill data
-        for (uint32_t i = 0; i < sTaxiPathNodeStore.getNumRows(); ++i)
-        {
-            if (WDB::Structures::TaxiPathNodeEntry const* entry = sTaxiPathNodeStore.lookupEntry(i))
-                sTaxiPathNodesByPath[entry->pathId][entry->NodeIndex] = entry;
-        }
-    }
+    buildTaxiPathData();
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTransportAnimationStore, dbc_path, "TransportAnimation.dbc");
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sWMOAreaTableStore, dbc_path, "WMOAreaTable.dbc");
-    {
-        for (uint32_t i = 0; i < sWMOAreaTableStore.getNumRows(); ++i)
-        {
-            if (auto entry = sWMOAreaTableStore.lookupEntry(i))
-                sWMOAreaInfoByTripple.insert(WMOAreaInfoByTripple::value_type(WMOAreaTableTripple(entry->rootId, entry->adtId, entry->groupId), entry));
-        }
-    }
+    buildWmoAreaTripples();
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sWorldMapOverlayStore, dbc_path, "WorldMapOverlay.dbc");
 
@@ -964,19 +1084,7 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellMiscStore, dbc_path, "SpellMisc.dbc");
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChrSpecializationStore, dbc_path, "ChrSpecialization.dbc");
-    {
-        for (uint32_t i = 0; i < sChrSpecializationStore.getNumRows(); ++i)
-        {
-            auto const specialization_info = sChrSpecializationStore.lookupEntry(i);
-            if (specialization_info == nullptr)
-                continue;
-
-            if (specialization_info->classId >= 12 || specialization_info->tabPage >= 4)
-                continue;
-
-            ClassSpecializationTabs[specialization_info->classId][specialization_info->tabPage] = specialization_info->Id;
-        }
-    }
+    buildClassSpecializationTabs();
 #endif
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -1164,55 +1272,20 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellCastingRequirementsStore, dbc_path, "SpellCastingRequirements.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellCategoriesStore, dbc_path, "SpellCategories.dbc");
     // note: generate spell categories and insert to helper storage
-    {
-        for (uint32_t i = 1; i < sSpellStore.getNumRows(); ++i)
-        {
-            if (WDB::Structures::SpellEntry const* spell = sSpellStore.lookupEntry(i))
-            {
-                if (WDB::Structures::SpellCategoriesEntry const* category = spell->GetSpellCategories())
-                    if (uint32_t cat = category->Category)
-                        sSpellCategoryStore[cat].insert(i);
-            }
-        }
-    }
+    buildSpellCategoryStore();
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellClassOptionsStore, dbc_path, "SpellClassOptions.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellCooldownsStore, dbc_path, "SpellCooldowns.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellEffectStore, dbc_path, "SpellEffect.dbc");
     // note: generate spell effects and add to helper map
-    {
-        for (uint32_t i = 1; i < sSpellEffectStore.getNumRows(); ++i)
-        {
-            if (WDB::Structures::SpellEffectEntry const* spellEffect = sSpellEffectStore.lookupEntry(i))
-            {
-                sSpellEffectMap[spellEffect->EffectSpellId].effects[spellEffect->EffectIndex] = spellEffect;
-            }
-        }
-    }
+    buildSpellEffectMap();
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellEquippedItemsStore, dbc_path, "SpellEquippedItems.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellInterruptsStore, dbc_path, "SpellInterrupts.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellLevelsStore, dbc_path, "SpellLevels.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellPowerStore, dbc_path, "SpellPower.dbc");
     #if VERSION_STRING >= Mop
-    // note: SpellPower.dbc rows are not keyed by spell id on Mop, map them by their spellId column
-    {
-        for (uint32_t i = 0; i < sSpellPowerStore.getNumRows(); ++i)
-        {
-            WDB::Structures::SpellPowerEntry const* spellPower = sSpellPowerStore.lookupEntry(i);
-            if (spellPower == nullptr || spellPower->spellId == 0)
-                continue;
-
-            // A spell can own several rows (one per shapeshift form). Without a caster there is
-            // no form to match against, so keep the first row that does not require one - this
-            // is the row the reference picks for a caster without that shapeshift aura.
-            auto itr = sSpellPowerMap.find(spellPower->spellId);
-            if (itr == sSpellPowerMap.end())
-                sSpellPowerMap[spellPower->spellId] = spellPower;
-            else if (itr->second->ShapeShiftSpellId != 0 && spellPower->ShapeShiftSpellId == 0)
-                itr->second = spellPower;
-        }
-    }
+    buildSpellPowerMap();
     #endif
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellScalingStore, dbc_path, "SpellScaling.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellShapeshiftStore, dbc_path, "SpellShapeshift.dbc");

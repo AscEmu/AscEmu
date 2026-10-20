@@ -320,3 +320,9 @@ uint32_t const* getClassSpecializations(uint8_t playerClass);
 uint32_t getLiquidFlags(uint32_t liquidId);
 
 bool loadDBCs();
+
+#if VERSION_STRING >= WoD
+// Fills the stores from the DB2 tables of a client with its own data (WoW::hasOwnClientData),
+// the counterpart of the dbc loading in loadDBCs(). Defined in WDBStoresDb2.cpp.
+bool loadDb2Stores(WDB::StoreProblemList& errors, std::string const& dbcPath);
+#endif
