@@ -58,7 +58,7 @@ namespace AscEmu::Packets
         // the cast the aura comes from: one per spell and slot of the unit
         packet << WoWGuid128::cast(realmId, mapId, aura.spellId, (uint64_t(unitCounter) << 8) | aura.visualSlot);
         packet << uint32_t(aura.spellId);
-        packet << int32_t(0);                                       // spell visual
+        packet << int32_t(aura.spellVisualId);                      // spell visual
         packet << int32_t(0);                                       // script visual
         packet << uint16_t(auraFlags);
         packet << uint32_t(aura.flags & (AFLAG_EFFECT_1 | AFLAG_EFFECT_2 | AFLAG_EFFECT_3));

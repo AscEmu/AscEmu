@@ -364,6 +364,8 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     spell->m_glyphslot = srlPacket.glyphIndex;
 
 #if VERSION_STRING >= Mop
+    // defaults for the missile math, kept out of the target flags of the 6.x and later clients (see SpellHandler.cpp)
+    uint32_t const requestedTargetMask = srlPacket.targets.getTargetMask();
     if (!srlPacket.hasSrcLocation)
     {
         if (_player->getTransGuid())
@@ -379,6 +381,10 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         else
             srlPacket.targets.setDestination(_player->GetPosition());
     }
+
+#if VERSION_STRING >= WoD
+    srlPacket.targets.setTargetMask(requestedTargetMask);
+#endif
 #endif
 
     // Some spell cast packets include more data

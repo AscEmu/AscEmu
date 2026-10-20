@@ -26,6 +26,7 @@ namespace AscEmu::Packets
         {
             uint8_t visualSlot = 0;
             uint32_t spellId = 0;
+            uint32_t spellVisualId = 0;         // SpellXSpellVisual row of the aura (7.x and later clients with own data)
             uint16_t flags = 0;
             uint8_t level = 0;
             uint8_t stackCount = 0;

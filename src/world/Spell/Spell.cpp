@@ -63,6 +63,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Corpse.hpp"
 #include "Objects/Units/Players/TradeData.hpp"
 #include "Server/EventMgr.h"
+#include "Server/ClientProtocol.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/Script/HookInterface.hpp"
@@ -4662,6 +4663,12 @@ void Spell::sendSpellStart()
     SmsgSpellStart managedPacket(i_caster ? i_caster->GetNewGUID() : m_caster->GetNewGUID(),
         m_caster->GetNewGUID(), getSpellInfo()->getId(), castFlags, extra_cast_number, m_timer, m_castTime, m_targets);
 
+#if VERSION_STRING >= WoD
+    // a client with its own data resolves the cast visual from the SpellXSpellVisual row the server names
+    if (WoW::hasOwnClientData(WoW::getServerExpansion()))
+        managedPacket.spellVisualId = getSpellInfo()->getSpellVisual(0);
+#endif
+
 #if VERSION_STRING >= WotLK
     if (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE && u_caster != nullptr)
     {
@@ -4736,6 +4743,11 @@ void Spell::sendSpellGo()
     SmsgSpellGo managedPacket(i_caster ? i_caster->GetNewGUID() : m_caster->GetNewGUID(), m_caster->GetNewGUID(),
         getSpellInfo()->getId(), castFlags, extra_cast_number, m_timer, Util::getMSTime(),
         m_targets);
+
+#if VERSION_STRING >= WoD
+    if (WoW::hasOwnClientData(WoW::getServerExpansion()))
+        managedPacket.spellVisualId = getSpellInfo()->getSpellVisual(0);
+#endif
 
 #if VERSION_STRING >= WotLK
     if (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE && u_caster != nullptr)

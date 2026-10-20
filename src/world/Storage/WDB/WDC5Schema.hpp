@@ -166,5 +166,6 @@ namespace WDB
         inline const WDC5TableSchema SpellTargetRestrictions = makeScalarSchema("SpellTargetRestrictions.db2", 0x1EAB753E, -1, 7);
         inline const WDC5TableSchema SpellTotems = makeSchemaWithArrays("SpellTotems.db2", 0x03B23619, -1, 3, { { 1, 2 }, { 2, 2 } });
         inline const WDC5TableSchema SpellItemEnchantment = makeSchemaWithArrays("SpellItemEnchantment.db2", 0x952B72B2, -1, 24, { { 4, 3 }, { 5, 3 }, { 6, 3 }, { 8, 3 } });
+        inline const WDC5TableSchema SpellXSpellVisual = makeScalarSchema("SpellXSpellVisual.db2", 0x7994A890, 0, 12);
     }
 }

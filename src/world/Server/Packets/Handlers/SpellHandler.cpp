@@ -162,6 +162,10 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
 
     // Some spell cast packets include more data
 #if VERSION_STRING >= Mop
+    // A location the request did not carry defaults to the caster for the missile math below. The
+    // 6.x and later clients play the impact at a destination they are sent, so the defaults stay out
+    // of the target flags there and the cast packets name only the targets of the request.
+    uint32_t const requestedTargetMask = srlPacket.targets.getTargetMask();
     if (!srlPacket.hasSrcLocation)
     {
         if (_player->getTransGuid())
@@ -177,6 +181,10 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
         else
             srlPacket.targets.setDestination(_player->GetPosition());
     }
+
+#if VERSION_STRING >= WoD
+    srlPacket.targets.setTargetMask(requestedTargetMask);
+#endif
 
     if (srlPacket.hasDestLocation)
     {

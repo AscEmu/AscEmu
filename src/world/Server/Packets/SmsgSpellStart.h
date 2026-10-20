@@ -39,6 +39,7 @@ namespace AscEmu::Packets
         uint32_t powerValue {0};
 
         Spell::ProjectileData projectile {0,0};
+        uint32_t spellVisualId {0};             // SpellXSpellVisual row of the cast (7.x and later clients with own data)
 
         SmsgSpellStart(WoWGuid casterGuid, WoWGuid casterUnitGuid, uint32_t spellId, uint32_t castFlags,
             uint8_t extraCastNumber, uint32_t timer, uint32_t castTime, SpellCastTargets targets) :
@@ -62,7 +63,9 @@ namespace AscEmu::Packets
                 castData.casterGuid = casterGuid;
                 castData.casterUnitGuid = casterUnitGuid;
                 castData.spellId = spellId;
-                castData.castFlags = castFlags;
+                // 0x2 and 0x20000 mark a trajectory cast (a destination thrown with pitch and speed) on these
+                // clients, not a spell with travel time; the client builds the missile from the travel time alone
+                castData.castFlags = castFlags & ~(SPELL_PACKET_FLAGS_DEFAULT | SPELL_PACKET_FLAGS_UPDATE_MISSILE);
                 castData.castTime = castTime;
                 castData.targets = &targets;
                 castData.hasPower = (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE) != 0;
@@ -72,6 +75,7 @@ namespace AscEmu::Packets
                 castData.realmId = m_protocol.realmId;
                 castData.mapId = m_receiverMapId;
                 castData.castNumber = extraCastNumber;
+                castData.spellVisualId = spellVisualId;
                 if (m_protocol.isMidnight())
                     writeSpellCastDataMidnight(packet, castData);
                 else if (m_protocol.isTheWarWithinOrLater())

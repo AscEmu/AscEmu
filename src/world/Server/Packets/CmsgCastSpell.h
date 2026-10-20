@@ -485,7 +485,8 @@ namespace AscEmu::Packets
             else
                 targets.setUnitTarget(object);
 
-            targets.setItemTarget(WoWGuid::fromGuid128(itemGuid).getRawGuid());
+            if (uint64_t const item = WoWGuid::fromGuid128(itemGuid).getRawGuid(); item != 0)
+                targets.setItemTarget(item);
 
             if (!name.empty())
                 targets.setStringTarget(name);

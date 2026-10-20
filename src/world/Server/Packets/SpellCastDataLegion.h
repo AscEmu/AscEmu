@@ -26,6 +26,7 @@ namespace AscEmu::Packets
         uint32_t castFlags = 0;
         uint32_t castTime = 0;
         uint8_t castNumber = 0;
+        uint32_t spellVisualId = 0;             // SpellXSpellVisual row, 0 when the client picks the visual itself
         SpellCastTargets const* targets = nullptr;
 
         std::vector<uint64_t> hitTargets;
@@ -64,7 +65,7 @@ namespace AscEmu::Packets
             packet << castGuid;
             packet << castGuid;                                     // original cast
             packet << uint32_t(spellId);
-            packet << uint32_t(0);                                  // spell visual
+            packet << uint32_t(spellVisualId);                      // spell visual
             packet << uint32_t(castFlags);
             packet << uint32_t(castTime);
 
@@ -158,7 +159,7 @@ namespace AscEmu::Packets
             packet << casterUnitGuid.toGuid128(realmId, mapId);
             packet << uint8_t(castNumber);
             packet << int32_t(spellId);
-            packet << uint32_t(0);                                  // spell visual
+            packet << uint32_t(spellVisualId);                      // spell visual
             packet << uint32_t(castFlags);
             packet << uint32_t(castTime);
             packet << uint32_t(hitTargets.size());

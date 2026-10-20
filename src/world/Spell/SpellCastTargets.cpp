@@ -240,7 +240,7 @@ void SpellCastTargets::setItemTarget(uint64_t guid)
 
 void SpellCastTargets::setTransportSourceGuid(uint64_t guid)
 {
-    m_transportDestinationGuid = guid;
+    m_transportSourceGuid = guid;
     addTargetMask(TARGET_FLAG_SOURCE_LOCATION);
 }
 

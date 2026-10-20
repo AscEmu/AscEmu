@@ -41,7 +41,7 @@ namespace AscEmu::Packets
         packet << castGuid;
         packet << castGuid;                                     // original cast
         packet << uint32_t(cast.spellId);
-        packet << uint32_t(0);                                  // spell visual
+        packet << uint32_t(cast.spellVisualId);                 // spell visual
         packet << uint32_t(cast.castFlags);
         packet << uint32_t(0);                                  // extended cast flags
         packet << uint32_t(cast.castTime);

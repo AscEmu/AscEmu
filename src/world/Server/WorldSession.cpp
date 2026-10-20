@@ -810,6 +810,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_SET_EMPOWER_MIN_HOLD_STAGE_PERCENT, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, true, true, true);
     registry.registerOpcode(CMSG_HOUSING_SVCS_GET_PLAYER_HOUSES_INFO, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_ADVENTURE_JOURNAL_UPDATE_SUGGESTIONS, &WorldSession::handleAdventureJournalUpdateSuggestionsOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
+    // the client reports the SpellXSpellVisual it chose for one of its auras, the server keeps the row it sent
+    registry.registerOpcode(CMSG_UPDATE_SPELL_VISUAL, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_PERKS_PROGRAM_STATUS_REQUEST, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, true, true, true);
     registry.registerOpcode(CMSG_GUILD_SET_ACHIEVEMENT_TRACKING, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_REQUEST_INSTANCE_ENCOUNTER_EVENT_SYNC, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, false, false, true);

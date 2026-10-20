@@ -5039,6 +5039,10 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
     auraUpdate.visualSlot = aur->m_visualSlot;
     auraUpdate.flags = aur->getAuraFlags();
     auraUpdate.spellId = aur->getSpellId();
+#if VERSION_STRING >= WoD
+    if (WoW::hasOwnClientData(WoW::getServerExpansion()))
+        auraUpdate.spellVisualId = aur->getSpellInfo()->getSpellVisual(0);
+#endif
 
     const auto casterUnit = aur->GetUnitCaster();
     if (casterUnit != nullptr)
@@ -5100,6 +5104,10 @@ void Unit::queueInitialVisiblePacketsForPlayer(Player* target)
         auraUpdate.flags = aur->getAuraFlags();
         auraUpdate.visualSlot = aur->m_visualSlot;
         auraUpdate.spellId = aur->getSpellId();
+#if VERSION_STRING >= WoD
+        if (WoW::hasOwnClientData(WoW::getServerExpansion()))
+            auraUpdate.spellVisualId = aur->getSpellInfo()->getSpellVisual(0);
+#endif
 
         const auto casterUnit = aur->GetUnitCaster();
         if (casterUnit != nullptr)
@@ -5168,6 +5176,10 @@ void Unit::sendFullAuraUpdate()
         auraUpdate.flags = aur->getAuraFlags();
         auraUpdate.visualSlot = aur->m_visualSlot;
         auraUpdate.spellId = aur->getSpellId();
+#if VERSION_STRING >= WoD
+        if (WoW::hasOwnClientData(WoW::getServerExpansion()))
+            auraUpdate.spellVisualId = aur->getSpellInfo()->getSpellVisual(0);
+#endif
 
         const auto casterUnit = aur->GetUnitCaster();
         if (casterUnit != nullptr)

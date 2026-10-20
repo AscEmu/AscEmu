@@ -1134,7 +1134,7 @@ namespace
         WDC5File skillLine, skillLineAbility, talent, spellName, spellAuraOptions, spellAuraRestrictions, spellCastTimes, spellCastingRequirements;
         WDC5File spellCategories, spellClassOptions, spellCooldowns, spellDuration, spellEffect, spellEquippedItems, spellInterrupts, spellLevels;
         WDC5File spellMisc, spellPower, spellRadius, spellRange, spellReagents, spellScaling, spellShapeshift, spellShapeshiftForm;
-        WDC5File spellTargetRestrictions, spellTotems, spellItemEnchantment;
+        WDC5File spellTargetRestrictions, spellTotems, spellItemEnchantment, spellXSpellVisual;
         if (!loadTables(errors, dbcPath, {
             { skillLine, Layout::SkillLine }, { skillLineAbility, Layout::SkillLineAbility }, { talent, Layout::Talent }, { spellName, Layout::SpellName },
             { spellAuraOptions, Layout::SpellAuraOptions }, { spellAuraRestrictions, Layout::SpellAuraRestrictions }, { spellCastTimes, Layout::SpellCastTimes },
@@ -1144,7 +1144,7 @@ namespace
             { spellMisc, Layout::SpellMisc }, { spellPower, Layout::SpellPower }, { spellRadius, Layout::SpellRadius }, { spellRange, Layout::SpellRange },
             { spellReagents, Layout::SpellReagents }, { spellScaling, Layout::SpellScaling }, { spellShapeshift, Layout::SpellShapeshift },
             { spellShapeshiftForm, Layout::SpellShapeshiftForm }, { spellTargetRestrictions, Layout::SpellTargetRestrictions }, { spellTotems, Layout::SpellTotems },
-            { spellItemEnchantment, Layout::SpellItemEnchantment } }))
+            { spellItemEnchantment, Layout::SpellItemEnchantment }, { spellXSpellVisual, Layout::SpellXSpellVisual } }))
             return false;
 
         fillContainer(sSkillLineStore, skillLine, [](WDB::Structures::SkillLineEntry& entry, Row const& row)
@@ -1346,10 +1346,49 @@ namespace
                 linkSpell(row.parent(), row.id(), &WDB::Structures::SpellEntry::SpellLevelsId);
         });
 
+        // The cast visual of a spell is a SpellXSpellVisual row the client resolves
+        // itself; the server sends the row id. Of the rows of the base difficulty
+        // an unconditional one with the highest priority is the default. Many
+        // class spells only have rows with a caster condition (the class or the
+        // specialization), those are taken when nothing unconditional exists, the
+        // conditions themselves are not evaluated yet.
+        struct SpellVisual
+        {
+            uint32_t rowId;
+            uint32_t spellVisualId;
+            int32_t priority;
+            bool conditional;
+
+            [[nodiscard]] bool betterThan(SpellVisual const& other) const noexcept
+            {
+                if (conditional != other.conditional)
+                    return !conditional;
+                return priority > other.priority;
+            }
+        };
+        std::unordered_map<uint32_t, SpellVisual> visualBySpell;
+        visualBySpell.reserve(spellXSpellVisual.getRecordCount());
+        for (Row const row : rows(spellXSpellVisual))
+        {
+            if (row.i16(1) != 0)                        // DifficultyID
+                continue;
+
+            bool const conditional = row.u16(8) != 0 || row.u32(9) != 0 || row.u16(10) != 0 || row.u32(11) != 0;
+            SpellVisual const visual{ row.id(), row.u32(2), row.i32(5), conditional };
+            auto const [itr, inserted] = visualBySpell.try_emplace(row.parent(), visual);
+            if (!inserted && visual.betterThan(itr->second))
+                itr->second = visual;
+        }
+
         fillContainer(sSpellMiscStore, spellMisc, [&](WDB::Structures::SpellMiscEntry& entry, Row const& row)
         {
             entry.Id = row.id();
             entry.SpellDifficultyId = row.i16(1);
+            if (auto const visual = visualBySpell.find(row.parent()); visual != visualBySpell.end())
+            {
+                entry.SpellVisual = visual->second.rowId;
+                entry.SpellVisual1 = visual->second.spellVisualId;
+            }
             uint32_t* const attributes[] = {
                 &entry.Attributes, &entry.AttributesEx, &entry.AttributesExB, &entry.AttributesExC, &entry.AttributesExD,
                 &entry.AttributesExE, &entry.AttributesExF, &entry.AttributesExG, &entry.AttributesExH, &entry.AttributesExI,
