@@ -53,6 +53,9 @@
 #include <vector>
 
 #include "CascExtractor.hpp"
+#include "CascMapExtractor.hpp"
+#include "MapExtractorState.hpp"
+#include "mpqlib/CascStorage.hpp"
 
 namespace fs = std::filesystem;
 using mpqlib::ClientVersion;
@@ -86,6 +89,7 @@ namespace
     constexpr std::array<std::string_view, 4> kLegacyWdtTags = { "MVER", "MPHD", "MAIN", "MWMO" };
     constexpr std::array<std::string_view, 6> kModernAdtTags = { "MVER", "MH2O", "MCNK", "MCVT", "MCLQ", "MFBO" };
     constexpr std::array<std::string_view, 2> kModernWdtTags = { "MVER", "MAIN" };
+    constexpr std::array<std::string_view, 4> kCascWdtTags = { "MVER", "MPHD", "MAIN", "MAID" };
 
     constexpr uint32_t kAdtWdtFormatVersion = 18;
 
@@ -151,27 +155,36 @@ namespace
     }
 }
 
+std::optional<mpqlib::ChunkTree> loadAdtChunkTreeFromBytes(std::vector<std::byte> bytes, std::string_view description)
+{
+    auto tree = mpqlib::ChunkTree::load(std::move(bytes), kModernAdtTags);
+    if (!tree || !isValidVersionChunk(tree->find("MVER")))
+    {
+        printf("Error loading %.*s\n", static_cast<int>(description.size()), description.data());
+        return std::nullopt;
+    }
+    return tree;
+}
+
+std::optional<mpqlib::ChunkTree> loadCascWdtChunkTreeFromBytes(std::vector<std::byte> bytes, std::string_view description)
+{
+    auto tree = mpqlib::ChunkTree::load(std::move(bytes), kCascWdtTags);
+    if (!tree || !isValidVersionChunk(tree->find("MVER")))
+    {
+        printf("Error loading %.*s\n", static_cast<int>(description.size()), description.data());
+        return std::nullopt;
+    }
+    return tree;
+}
+
 struct map_id
 {
     char name[64];
     uint32_t id;
 };
 
-struct LiquidMaterialEntry
-{
-    int8_t LVF;
-};
 
-struct LiquidObjectEntry
-{
-    int16_t LiquidTypeID;
-};
 
-struct LiquidTypeEntry
-{
-    uint8_t SoundBank;
-    uint8_t MaterialID;
-};
 
 std::vector<map_id> map_ids;
 
@@ -187,7 +200,6 @@ std::unordered_map<uint32_t, LiquidMaterialEntry> LiquidMaterials;
 std::unordered_map<uint32_t, LiquidObjectEntry> LiquidObjects;
 std::unordered_map<uint32_t, LiquidTypeEntry> LiquidTypes;
 
-#define MAX_PATH_LENGTH 128
 char output_path[MAX_PATH_LENGTH] = ".";
 char input_path[MAX_PATH_LENGTH] = ".";
 
@@ -676,6 +688,13 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
     if (!adt)
         return false;
 
+    return ConvertADT(*adt, inputPath, outputPath, build, ignoreDeepWater);
+}
+
+bool ConvertADT(mpqlib::ChunkTree const& adtTree, std::string const& inputPath, std::string const& outputPath, uint32_t build, bool ignoreDeepWater)
+{
+    mpqlib::ChunkTree const* adt = &adtTree;
+
     bool const legacy = IsLegacyMapFormat();
 
     map_fileheader map{};
@@ -850,9 +869,21 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
             }
         }
 
-        // Hole data
-        holes[mcnk->iy][mcnk->ix] = static_cast<uint16_t>(mcnk->holes);
-        if (!hasHoles && mcnk->holes != 0)
+        // Hole data. The CASC clients may store an 8x8 hole bitmap in place of
+        // the two height offsets; the map format keeps the 4x4 one, a quarter
+        // with any hole counts as a hole.
+        uint16_t cellHoles = static_cast<uint16_t>(mcnk->holes);
+        if (mpqlib::isCascClient(gClientVersion) && (mcnk->flags & 0x10000))
+        {
+            cellHoles = 0;
+            uint8_t const* highRes = mcnk->highResHoles();
+            for (int row = 0; row < 8; ++row)
+                for (int column = 0; column < 8; ++column)
+                    if (highRes[row] & (1 << column))
+                        cellHoles |= static_cast<uint16_t>(1 << ((row / 2) * 4 + column / 2));
+        }
+        holes[mcnk->iy][mcnk->ix] = cellHoles;
+        if (!hasHoles && cellHoles != 0)
             hasHoles = true;
     }
 
@@ -927,6 +958,18 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
                 }
                 else
                 {
+                    liquid_entry[i][j] = h2o->GetLiquidType(h);
+                    auto const liquidTypeEntry = LiquidTypes.find(liquid_entry[i][j]);
+                    if (liquidTypeEntry == LiquidTypes.end())
+                    {
+                        printf("\nCan't find Liquid type %u for map %s\nchunk %d,%d\n", liquid_entry[i][j], inputPath.c_str(), i, j);
+                        continue;
+                    }
+
+                    // liquid the client only draws has no collision and no effect
+                    if (auto const material = LiquidMaterials.find(liquidTypeEntry->second.MaterialID); material != LiquidMaterials.end() && (material->second.Flags & 0x2))
+                        continue;
+
                     adt_liquid_attributes attrs = h2o->GetLiquidAttributes(i, j);
 
                     int count = 0;
@@ -946,8 +989,7 @@ bool ConvertADT(std::string const& inputPath, std::string const& outputPath, int
                         }
                     }
 
-                    liquid_entry[i][j] = h2o->GetLiquidType(h);
-                    switch (LiquidTypes.at(liquid_entry[i][j]).SoundBank)
+                    switch (liquidTypeEntry->second.SoundBank)
                     {
                         case LIQUID_TYPE_WATER: liquid_flags[i][j] |= MAP_LIQUID_TYPE_WATER; break;
                         case LIQUID_TYPE_OCEAN: liquid_flags[i][j] |= MAP_LIQUID_TYPE_OCEAN; if (!ignoreDeepWater && attrs.Deep) liquid_flags[i][j] |= MAP_LIQUID_TYPE_DARK_WATER; break;
@@ -2067,15 +2109,37 @@ int main(int argc, char* arg[])
     }
     else if (status == mpqlib::ClientSupportStatus::Db2Only)
     {
-        printf("[INFO] %.*s: DB2 extraction is verified. Map/VMap/MMap extraction is not yet supported.\n",
+        printf("[INFO] %.*s: DB2 extraction only, the map table layout of this client is unknown.\n",
+               static_cast<int>(getClientVersionName(gClientVersion).size()), getClientVersionName(gClientVersion).data());
+    }
+    else if (!mpqlib::isTestedClient(gClientVersion))
+    {
+        printf("[INFO] %.*s: the map extraction of this client is new and untested, check the result.\n",
                static_cast<int>(getClientVersionName(gClientVersion).size()), getClientVersionName(gClientVersion).data());
     }
 
     if (mpqlib::isCascClient(gClientVersion))
     {
-        if (!CascExtractor::run(fs::path(input_path), versionName, buildNumber))
+        CONF_use_minHeight = -2000.0f;
+        HandleArgs(argc, arg);
+
+        auto storage = mpqlib::CascStorage::open(fs::path(input_path), mpqlib::getDetectedProduct(), mpqlib::kCascLocaleNone);
+        if (!storage)
+            return 1;
+
+        // the build config of the storage beats the .build.info guess
+        if (uint32_t const storageBuild = storage->buildNumber(); storageBuild != 0)
+            buildNumber = storageBuild;
+
+        if ((CONF_extract & EXTRACT_DBC) && !CascExtractor::run(*storage, versionName, buildNumber))
         {
             printf("Error: CASC extraction failed!\n");
+            return 1;
+        }
+
+        if ((CONF_extract & EXTRACT_MAP) && status != mpqlib::ClientSupportStatus::Db2Only && !extractMapsFromCasc(*storage, gClientVersion, buildNumber))
+        {
+            printf("Error: map extraction failed!\n");
             return 1;
         }
     }

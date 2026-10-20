@@ -26,13 +26,13 @@
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <memory>
 #include <span>
 #undef min
 #undef max
 
 extern uint16_t* LiqType;
-extern std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
 
 WMORoot::WMORoot(std::string& filename) :
     m_filename(filename), m_col(0), m_numTextures(0), m_numGroups(0), m_numPortals(0), m_numLights(0),
@@ -44,7 +44,8 @@ WMORoot::WMORoot(std::string& filename) :
 
 bool WMORoot::open()
 {
-    MPQFile f(*WorldMpq, m_filename.c_str());
+    std::unique_ptr<MPQFile> file = OpenWorldFile(m_filename);
+    MPQFile& f = *file;
     if (f.isEof())
     {
         printf("No such file.\n");
@@ -78,7 +79,25 @@ bool WMORoot::open()
             f.read(m_boundingBoxMin, 12);
             f.read(m_boundingBoxMax, 12);
             f.read(&m_liquidType, 4);
-            break;
+        }
+        else if (!strcmp(fourCC, "MOGN"))
+        {
+            // the group names, null terminated, named by offset from the group header
+            m_groupNames.resize(size);
+            f.read(m_groupNames.data(), size);
+        }
+        else if (!strcmp(fourCC, "GFID"))
+        {
+            // 7.x and later: the group files by file data id. Roots with
+            // several detail levels list every level; only the first, most
+            // detailed one is of interest here.
+            for (uint32_t group = 0; group < m_numGroups && f.getPos() + 4 <= nextPos; ++group)
+            {
+                uint32_t fileDataId = 0;
+                f.read(&fileDataId, 4);
+                if (fileDataId != 0)
+                    m_groupFileDataIds.push_back(fileDataId);
+            }
         }
 
         f.seek(static_cast<int>(nextPos));
@@ -98,10 +117,10 @@ bool WMORoot::convertToVMapRootWmo(FILE* pOutfile)
 }
 
 WMOGroup::WMOGroup(const std::string& filename) :
-    m_filename(filename), m_mopy(nullptr), m_movi(nullptr), m_moviEx(nullptr), m_movt(nullptr), m_moba(nullptr), m_mobaEx(nullptr),
+    m_filename(filename), m_movt(nullptr), m_moba(nullptr), m_mobaEx(nullptr),
     m_liquidHeader(nullptr), m_liquidVerts(nullptr), m_liquidBytes(nullptr), m_groupNameOffset(0), m_descGroupNameOffset(0), m_mogpFlags(0),
     m_portalRefIdx(0), m_portalRefCount(0), m_batchCountA(0), m_batchCountB(0), m_batchCountC(0), m_fogIndex(0),
-    m_liquidType(0), m_groupWmoId(0), m_mopySize(0), m_mobaSize(0), m_liquidVertsSize(0),
+    m_liquidType(0), m_groupWmoId(0), m_mobaSize(0), m_liquidVertsSize(0),
     m_vertexCount(0), m_triangleCount(0), m_liquidFlags(0)
 {
     memset(m_boundingBoxMin, 0, sizeof(m_boundingBoxMin));
@@ -110,7 +129,8 @@ WMOGroup::WMOGroup(const std::string& filename) :
 
 bool WMOGroup::open()
 {
-    MPQFile f(*WorldMpq, m_filename.c_str());
+    std::unique_ptr<MPQFile> file = OpenWorldFile(m_filename);
+    MPQFile& f = *file;
     if (f.isEof())
     {
         printf("No such file.\n");
@@ -150,15 +170,30 @@ bool WMOGroup::open()
         }
         else if (!strcmp(fourCC, "MOPY"))
         {
-            m_mopy = new char[size];
-            m_mopySize = size;
+            // one flags byte and one material byte per triangle
+            std::vector<uint8_t> mopy(size);
+            f.read(mopy.data(), size);
+            m_materialFlags.assign(mopy.begin(), mopy.end());
             m_triangleCount = static_cast<int>(size) / 2;
-            f.read(m_mopy, size);
+        }
+        else if (!strcmp(fourCC, "MPY2"))
+        {
+            // 10.x and later: the same pairs as 16 bit words
+            m_materialFlags.resize(size / 2);
+            f.read(m_materialFlags.data(), size);
+            m_triangleCount = static_cast<int>(size) / 4;
         }
         else if (!strcmp(fourCC, "MOVI"))
         {
-            m_movi = new uint16_t[size / 2];
-            f.read(m_movi, size);
+            std::vector<uint16_t> movi(size / 2);
+            f.read(movi.data(), size);
+            m_indices.assign(movi.begin(), movi.end());
+        }
+        else if (!strcmp(fourCC, "MOVX"))
+        {
+            // 10.x and later: 32 bit indices for the big groups
+            m_indices.resize(size / 4);
+            f.read(m_indices.data(), size);
         }
         else if (!strcmp(fourCC, "MOVT"))
         {
@@ -193,7 +228,33 @@ bool WMOGroup::open()
         f.seek(static_cast<int>(nextPos));
     }
     f.close();
+
+    // a group without geometry still writes a header, the loops below need matching sizes
+    if (m_indices.size() < static_cast<size_t>(m_triangleCount) * 3)
+        m_triangleCount = static_cast<int>(m_indices.size() / 3);
+    if (m_materialFlags.size() < static_cast<size_t>(m_triangleCount) * 2)
+        m_triangleCount = static_cast<int>(m_materialFlags.size() / 2);
+
     return true;
+}
+
+bool WMOGroup::shouldSkip(WMORoot const& rootWMO) const
+{
+    if (m_mogpFlags & WMO_GROUP_UNREACHABLE)
+        return true;
+
+    if (m_mogpFlags & WMO_GROUP_ANTIPORTAL)
+        return true;
+
+    if (m_groupNameOffset >= 0 && static_cast<size_t>(m_groupNameOffset) < rootWMO.m_groupNames.size())
+    {
+        char const* name = rootWMO.m_groupNames.data() + m_groupNameOffset;
+        size_t const available = rootWMO.m_groupNames.size() - static_cast<size_t>(m_groupNameOffset);
+        if (strncmp(name, "antiportal", available) == 0 && available > strlen("antiportal") && name[strlen("antiportal")] == '\0')
+            return true;
+    }
+
+    return false;
 }
 
 int WMOGroup::convertToVMapGroupWmo(FILE* output, WMORoot* rootWMO, bool preciseVectorData)
@@ -205,7 +266,14 @@ int WMOGroup::convertToVMapGroupWmo(FILE* output, WMORoot* rootWMO, bool precise
     fwrite(m_boundingBoxMax, sizeof(float), 3, output);
     fwrite(&m_liquidFlags, sizeof(uint32_t), 1, output);
     int collisionTriangleCount = 0;
-    if (preciseVectorData)
+
+    // The vmap format stores 16 bit indices; a group with more vertices than
+    // that can only be written in the compacted, collision only form.
+    bool const fitsPrecise = m_vertexCount <= 0xFFFF;
+    if (preciseVectorData && !fitsPrecise)
+        printf("WMO group %s has %u vertices, writing its collision triangles only\n", m_filename.c_str(), m_vertexCount);
+
+    if (preciseVectorData && fitsPrecise)
     {
         char grp[] = "GRP ";
         fwrite(grp, 1, 4, output);
@@ -223,6 +291,9 @@ int WMOGroup::convertToVMapGroupWmo(FILE* output, WMORoot* rootWMO, bool precise
         delete[] m_mobaEx;
 
         uint32_t indexCount = m_triangleCount * 3;
+        std::vector<uint16_t> indices(indexCount);
+        for (uint32_t i = 0; i < indexCount; ++i)
+            indices[i] = static_cast<uint16_t>(m_indices[i]);
 
         if (fwrite("INDX", 4, 1, output) != 1)
         {
@@ -242,7 +313,7 @@ int WMOGroup::convertToVMapGroupWmo(FILE* output, WMORoot* rootWMO, bool precise
         }
         if (indexCount > 0)
         {
-            if (fwrite(m_movi, sizeof(unsigned short), indexCount, output) != indexCount)
+            if (fwrite(indices.data(), sizeof(unsigned short), indexCount, output) != indexCount)
             {
                 printf("Error while writing file indexarray");
                 exit(0);
@@ -294,7 +365,7 @@ int WMOGroup::convertToVMapGroupWmo(FILE* output, WMORoot* rootWMO, bool precise
 
         //-------INDX------------------------------------
         //-------MOPY--------
-        m_moviEx = new uint16_t[m_triangleCount * 3]; // "worst case" size...
+        std::vector<uint32_t> collisionIndices(static_cast<size_t>(m_triangleCount) * 3); // "worst case" size...
         auto indexRenumber = std::make_unique<int[]>(m_vertexCount);
         memset(indexRenumber.get(), 0xFF, m_vertexCount * sizeof(int));
         for (int i = 0; i < m_triangleCount; ++i)
@@ -305,15 +376,21 @@ int WMOGroup::convertToVMapGroupWmo(FILE* output, WMORoot* rootWMO, bool precise
             // wowdev.wiki's own documentation ("turns off water ripple rendering...
             // should be used for ghost material triangles"), so it's an additional
             // way for a triangle to opt in, not the primary signal.
-            bool isRenderFace = (m_mopy[2 * i] & WMO_MATERIAL_RENDER) && !(m_mopy[2 * i] & WMO_MATERIAL_DETAIL);
-            bool isCollision = (m_mopy[2 * i] & WMO_MATERIAL_COLLISION) || isRenderFace;
+            bool isRenderFace = (m_materialFlags[2 * i] & WMO_MATERIAL_RENDER) && !(m_materialFlags[2 * i] & WMO_MATERIAL_DETAIL);
+            bool isCollision = (m_materialFlags[2 * i] & WMO_MATERIAL_COLLISION) || isRenderFace;
             if (!isCollision)
                 continue;
             // Use this triangle
+            bool validIndices = true;
+            for (int j = 0; j < 3; ++j)
+                if (m_indices[3 * i + j] >= m_vertexCount)
+                    validIndices = false;
+            if (!validIndices)
+                continue;
             for (int j = 0; j < 3; ++j)
             {
-                indexRenumber[m_movi[3 * i + j]] = 1;
-                m_moviEx[3 * collisionTriangleCount + j] = m_movi[3 * i + j];
+                indexRenumber[m_indices[3 * i + j]] = 1;
+                collisionIndices[3 * collisionTriangleCount + j] = m_indices[3 * i + j];
             }
             ++collisionTriangleCount;
         }
@@ -329,17 +406,27 @@ int WMOGroup::convertToVMapGroupWmo(FILE* output, WMORoot* rootWMO, bool precise
             }
         }
 
+        if (collisionVertexCount > 0xFFFF)
+        {
+            // cannot be addressed with 16 bit indices, the group goes out without geometry
+            printf("WMO group %s has %d collision vertices, more than the vmap format can hold - skipped\n", m_filename.c_str(), collisionVertexCount);
+            collisionTriangleCount = 0;
+            collisionVertexCount = 0;
+            memset(indexRenumber.get(), 0xFF, m_vertexCount * sizeof(int));
+        }
+
         // translate triangle indices to new numbers
+        std::vector<uint16_t> indices(static_cast<size_t>(collisionTriangleCount) * 3);
         for (int i = 0; i < 3 * collisionTriangleCount; ++i)
         {
-            assert(m_moviEx[i] < m_vertexCount);
-            m_moviEx[i] = static_cast<uint16_t>(indexRenumber[m_moviEx[i]]);
+            assert(collisionIndices[i] < m_vertexCount);
+            indices[i] = static_cast<uint16_t>(indexRenumber[collisionIndices[i]]);
         }
 
         // write triangle indices
         int indx[] = { 0x58444E49, collisionTriangleCount * 6 + 4, collisionTriangleCount * 3 };
         fwrite(indx, 4, 3, output);
-        fwrite(m_moviEx, 2, collisionTriangleCount * 3, output);
+        fwrite(indices.data(), 2, collisionTriangleCount * 3, output);
 
         // write vertices
         int vert[] = { 0x54524556, collisionVertexCount * 3 * static_cast<int>(sizeof(float)) + 4, collisionVertexCount };// "VERT"
@@ -350,8 +437,6 @@ int WMOGroup::convertToVMapGroupWmo(FILE* output, WMORoot* rootWMO, bool precise
                 check -= static_cast<int>(fwrite(m_movt + 3 * i, sizeof(float), 3, output));
 
         assert(check == 0);
-
-        delete[] m_moviEx;
     }
 
     //------LIQU------------------------
@@ -421,8 +506,6 @@ int WMOGroup::convertToVMapGroupWmo(FILE* output, WMORoot* rootWMO, bool precise
 
 WMOGroup::~WMOGroup()
 {
-    delete[] m_mopy;
-    delete[] m_movi;
     delete[] m_movt;
     delete[] m_moba;
     delete m_liquidHeader;
@@ -430,24 +513,15 @@ WMOGroup::~WMOGroup()
     delete[] m_liquidBytes;
 }
 
-WMOInstance::WMOInstance(MPQFile& f, char const* wmoInstName, uint32_t mapID, uint32_t tileX, uint32_t tileY, FILE* pDirfile) :
-    m_currX(0), m_currY(0), m_wmoGroup(nullptr), m_doodadSet(0), m_pos(), m_index(0), m_id(0), m_d2(0), m_d3(0)
+WMOInstance::WMOInstance(AdtMapObjDef const& def, char const* wmoInstName, uint32_t mapID, uint32_t tileX, uint32_t tileY, FILE* pDirfile) :
+    m_currX(0), m_currY(0), m_wmoGroup(nullptr), m_doodadSet(def.doodadSet), m_pos(), m_index(0), m_id(def.uniqueId), m_d2(0), m_d3(0)
 {
-    float coords[3];
-    f.read(&m_id, 4);
-    f.read(coords, 12);
-    m_pos = Vec3D(coords[0], coords[1], coords[2]);
-    f.read(coords, 12);
-    m_rot = Vec3D(coords[0], coords[1], coords[2]);
-    f.read(coords, 12);
-    m_pos2 = Vec3D(coords[0], coords[1], coords[2]);
-    f.read(coords, 12);
-    m_pos3 = Vec3D(coords[0], coords[1], coords[2]);
-    f.read(&m_d2, 4);
-
-    uint16_t trash, adtId;
-    f.read(&adtId, 2);
-    f.read(&trash, 2);
+    m_pos = Vec3D(def.position[0], def.position[1], def.position[2]);
+    m_rot = Vec3D(def.rotation[0], def.rotation[1], def.rotation[2]);
+    m_pos2 = Vec3D(def.boundsMin[0], def.boundsMin[1], def.boundsMin[2]);
+    m_pos3 = Vec3D(def.boundsMax[0], def.boundsMax[1], def.boundsMax[2]);
+    m_d2 = static_cast<uint32_t>(def.flags) | (static_cast<uint32_t>(def.doodadSet) << 16);
+    uint16_t adtId = def.nameSet;
 
     //-----------add_in _dir_file----------------
 
@@ -478,7 +552,10 @@ WMOInstance::WMOInstance(MPQFile& f, char const* wmoInstName, uint32_t mapID, ui
     m_pos2 = fixCoords(m_pos2);
     m_pos3 = fixCoords(m_pos3);
 
+    // the CASC clients may scale a map object; nothing before 6.x sets the flag
     float scale = 1.0f;
+    if (def.flags & kMapObjDefHasScale)
+        scale = def.scale / 1024.0f;
     uint32_t flags = MOD_HAS_BOUND;
     if (tileX == 65 && tileY == 65)
         flags |= MOD_WORLDSPAWN;

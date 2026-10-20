@@ -18,11 +18,15 @@
  */
 
 #include "model.h"
+#include "mpqlib/CascStorage.hpp"
+#include "mpqlib/ClientDb2Layouts.hpp"
 #include "mpqlib/DBCFile.hpp"
+#include "mpqlib/Db2File.hpp"
 #include "ADTFile.hpp"
 #include "vmapexport.h"
 
 #include <algorithm>
+#include <cstring>
 #include <memory>
 #include <mutex>
 #include <stdio.h>
@@ -30,6 +34,7 @@
 
 extern std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
 extern std::unique_ptr<mpqlib::MpqPatchChain> LocaleMpq;
+extern std::unique_ptr<mpqlib::CascStorage> gCascStorage;
 
 namespace
 {
@@ -47,15 +52,15 @@ namespace
     // differently-sourced attempt already ran and failed.
     std::mutex g_modelExtractionRegistryMutex;
     std::unordered_map<std::string, std::unique_ptr<std::mutex>> g_modelExtractionLocks;
+}
 
-    std::mutex& LockForModelOutput(std::string const& outputPath)
-    {
-        std::lock_guard<std::mutex> lock(g_modelExtractionRegistryMutex);
-        auto& slot = g_modelExtractionLocks[outputPath];
-        if (!slot)
-            slot = std::make_unique<std::mutex>();
-        return *slot;
-    }
+std::mutex& LockForModelOutput(std::string const& outputPath)
+{
+    std::lock_guard<std::mutex> lock(g_modelExtractionRegistryMutex);
+    auto& slot = g_modelExtractionLocks[outputPath];
+    if (!slot)
+        slot = std::make_unique<std::mutex>();
+    return *slot;
 }
 
 bool ExtractSingleModel(std::string& fname)
@@ -100,15 +105,136 @@ bool ExtractSingleModel(std::string& fname)
     return mdl.convertToVMapModel(output.c_str());
 }
 
+namespace
+{
+    // Writes one line of the game object model list: display id, kind, name.
+    void writeGameObjectModel(FILE* modelList, uint32_t displayId, bool isWmo, char const* name)
+    {
+        uint8_t const kind = isWmo ? 1 : 0;
+        uint32_t const nameLength = static_cast<uint32_t>(strlen(name));
+        fwrite(&displayId, sizeof(uint32_t), 1, modelList);
+        fwrite(&kind, sizeof(uint8_t), 1, modelList);
+        fwrite(&nameLength, sizeof(uint32_t), 1, modelList);
+        fwrite(name, sizeof(char), nameLength, modelList);
+    }
+
+    // The MPQ clients and 6.x name the model file in the table.
+    bool extractGameObjectModelByPath(FILE* modelList, uint32_t displayId, std::string path)
+    {
+        if (path.length() < 4)
+            return false;
+
+        fixNameCase(path.data(), path.size());
+        char* name = getPlainName(path.data());
+        fixNameSpaces(name, strlen(name));
+
+        char* ch_ext = getExtension(name);
+        if (!ch_ext)
+            return false;
+
+        strToLower(ch_ext);
+
+        bool result = false;
+        bool isWmo = false;
+        if (!strcmp(ch_ext, ".wmo"))
+        {
+            isWmo = true;
+            result = ExtractSingleWmo(path);
+        }
+        else if (!strcmp(ch_ext, ".mdl"))
+        {
+            // TODO: extract .mdl files, if needed
+            return false;
+        }
+        else //if (!strcmp(ch_ext, ".mdx") || !strcmp(ch_ext, ".m2"))
+        {
+            result = ExtractSingleModel(path);
+        }
+
+        if (result)
+            writeGameObjectModel(modelList, displayId, isWmo, name);
+        return result;
+    }
+
+    // 7.x and later name the model by file data id; the kind comes from the file's magic.
+    bool extractGameObjectModelByFileDataId(FILE* modelList, uint32_t displayId, uint32_t fileDataId)
+    {
+        if (fileDataId == 0)
+            return false;
+
+        auto const magic = gCascStorage->readFilePrefix(fileDataId, 4);
+        if (!magic || magic->size() < 4)
+            return false;
+
+        std::string path = FileDataIdName(fileDataId);
+        bool result = false;
+        bool isWmo = false;
+        if (std::memcmp(magic->data(), "REVM", 4) == 0)
+        {
+            isWmo = true;
+            result = ExtractSingleWmo(path);
+            // a WMO without collision was not written
+            result = result && FileExists((std::string(szWorkDirWmo) + "/" + path).c_str());
+        }
+        else if (std::memcmp(magic->data(), "MD20", 4) == 0 || std::memcmp(magic->data(), "MD21", 4) == 0)
+            result = ExtractSingleModel(path);
+        else
+            return false;       // textures and other odd references of the table
+
+        if (result)
+            writeGameObjectModel(modelList, displayId, isWmo, path.c_str());
+        return result;
+    }
+
+    void extractGameObjectModelsFromCasc(FILE* modelList)
+    {
+        auto const layouts = mpqlib::clientDb2LayoutsFor(gClientVersion);
+        if (!layouts)
+        {
+            printf("No GameObjectDisplayInfo layout is known for this client, game object models are not extracted.\n");
+            return;
+        }
+
+        mpqlib::GameObjectDisplayInfoColumns const& columns = layouts->gameObjectDisplayInfo;
+        std::optional<std::vector<std::byte>> bytes;
+        if (columns.table.fileDataId != 0)
+            bytes = gCascStorage->readFile(columns.table.fileDataId);
+        else
+            bytes = gCascStorage->readFile(columns.table.fileName);
+        if (!bytes)
+        {
+            printf("Fatal error: cannot find GameObjectDisplayInfo in the client!\n");
+            return;
+        }
+
+        std::string error;
+        auto table = mpqlib::Db2File::load(std::move(*bytes), error);
+        if (!table)
+        {
+            printf("Fatal error: cannot read GameObjectDisplayInfo: %s\n", error.c_str());
+            return;
+        }
+
+        if (columns.table.layoutHash != 0 && table->layoutHash() != columns.table.layoutHash)
+            printf("Warning: GameObjectDisplayInfo has layout 0x%08X, the column indices were taken from layout 0x%08X\n", table->layoutHash(), columns.table.layoutHash);
+
+        for (uint32_t i = 0; i < table->recordCount(); ++i)
+        {
+            if (!table->isReadable(i))
+                continue;
+
+            auto const record = table->record(i);
+            if (columns.fileDataId >= 0)
+                extractGameObjectModelByFileDataId(modelList, record.id(), record.getUInt32(static_cast<uint32_t>(columns.fileDataId)));
+            else
+                extractGameObjectModelByPath(modelList, record.id(), std::string(record.getString(columns.modelName)));
+        }
+    }
+}
+
 void ExtractGameobjectModels()
 {
     printf("Extracting GameObject models...");
-    DBCFile dbc(IsLegacyVmapArchiveLayout() ? *WorldMpq : *LocaleMpq, "DBFilesClient\\GameObjectDisplayInfo.dbc");
-    if(!dbc.open())
-    {
-        printf("Fatal error: Invalid GameObjectDisplayInfo.dbc file format!\n");
-        exit(1);
-    }
 
     std::string basepath = szWorkDirWmo;
     basepath += "/";
@@ -121,50 +247,23 @@ void ExtractGameobjectModels()
         return;
     }
 
-    for (auto const& record : dbc)
+    if (IsCascClient())
     {
-        std::string path = record.getString(1);
-
-        if (path.length() < 4)
-            continue;
-
-        fixNameCase((char*)path.c_str(), path.size());
-        char* name = getPlainName((char*)path.c_str());
-        fixNameSpaces(name, strlen(name));
-
-        char* ch_ext = getExtension(name);
-        if (!ch_ext)
-            continue;
-
-        strToLower(ch_ext);
-
-        bool result = false;
-        uint8_t isWmo = 0;
-        if (!strcmp(ch_ext, ".wmo"))
-        {
-            isWmo = 1;
-            result = ExtractSingleWmo(path);
-        }
-        else if (!strcmp(ch_ext, ".mdl"))
-        {
-            // TODO: extract .mdl files, if needed
-            continue;
-        }
-        else //if (!strcmp(ch_ext, ".mdx") || !strcmp(ch_ext, ".m2"))
-        {
-            result = ExtractSingleModel(path);
-        }
-
-        if (result)
-        {
-            uint32_t displayId = record.getUInt(0);
-            uint32_t path_length = static_cast<uint32_t>(strlen(name));
-            fwrite(&displayId, sizeof(uint32_t), 1, model_list);
-            fwrite(&isWmo, sizeof(uint8_t), 1, model_list);
-            fwrite(&path_length, sizeof(uint32_t), 1, model_list);
-            fwrite(name, sizeof(char), path_length, model_list);
-        }
+        extractGameObjectModelsFromCasc(model_list);
+        fclose(model_list);
+        printf("Done!\n");
+        return;
     }
+
+    DBCFile dbc(IsLegacyVmapArchiveLayout() ? *WorldMpq : *LocaleMpq, "DBFilesClient\\GameObjectDisplayInfo.dbc");
+    if(!dbc.open())
+    {
+        printf("Fatal error: Invalid GameObjectDisplayInfo.dbc file format!\n");
+        exit(1);
+    }
+
+    for (auto const& record : dbc)
+        extractGameObjectModelByPath(model_list, record.getUInt(0), record.getString(1));
 
     fclose(model_list);
 

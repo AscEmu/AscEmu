@@ -174,9 +174,9 @@ namespace MMAP
         int smallWalkableHeight;
     };
 
-    // Cata/MoP's client uses a slightly different pathing tolerance than
-    // Classic/TBC/WotLK's; everything else about mmap generation is
-    // identical across versions.
+    // Cata and every later client use a slightly different pathing
+    // tolerance than Classic/TBC/WotLK's; everything else about mmap
+    // generation is identical across versions.
     MmapTuning getDefaultMmapTuning(mpqlib::ClientVersion version);
 
     struct Tile

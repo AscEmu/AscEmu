@@ -7,15 +7,37 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <algorithm>
 #include <cctype>
+#include <charconv>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 namespace mpqlib
 {
     namespace
     {
         uint32_t gLastDetectedBuild = 0;
+        uint32_t gLastDetectedMajor = 0;
+        uint32_t gLastDetectedMinor = 0;
+        std::string gLastDetectedProduct;
+
+        // "12.1.5.70391" -> 12 / 1, both 0 when the string has no dots
+        void parseProductVersion(std::string const& verStr, uint32_t& major, uint32_t& minor)
+        {
+            major = 0;
+            minor = 0;
+            size_t const firstDot = verStr.find('.');
+            if (firstDot == std::string::npos)
+                return;
+
+            std::from_chars(verStr.data(), verStr.data() + firstDot, major);
+            size_t const secondDot = verStr.find('.', firstDot + 1);
+            size_t const minorEnd = secondDot == std::string::npos ? verStr.size() : secondDot;
+            std::from_chars(verStr.data() + firstDot + 1, verStr.data() + minorEnd, minor);
+        }
 
         std::vector<std::string> splitPipe(const std::string& line)
         {
@@ -40,18 +62,27 @@ namespace mpqlib
 
             auto headers = splitPipe(headerLine);
             int versionIndex = -1;
+            int productIndex = -1;
+            int activeIndex = -1;
             for (size_t i = 0; i < headers.size(); ++i)
             {
                 if (headers[i].rfind("Version", 0) == 0)
-                {
                     versionIndex = static_cast<int>(i);
-                    break;
-                }
+                else if (headers[i].rfind("Product", 0) == 0)
+                    productIndex = static_cast<int>(i);
+                else if (headers[i].rfind("Active", 0) == 0)
+                    activeIndex = static_cast<int>(i);
             }
 
             if (versionIndex == -1)
                 return 0;
 
+            // A client root can list several products (retail, PTR, classic);
+            // the active one is the installation the launcher last used.
+            uint32_t firstBuild = 0;
+            uint32_t firstMajor = 0;
+            uint32_t firstMinor = 0;
+            std::string firstProduct;
             std::string dataLine;
             while (std::getline(file, dataLine))
             {
@@ -70,11 +101,25 @@ namespace mpqlib
                 std::string buildStr = verStr.substr(lastDot + 1);
                 uint32_t build = 0;
                 auto [ptr, ec] = std::from_chars(buildStr.data(), buildStr.data() + buildStr.size(), build);
-                if (ec == std::errc())
-                    return build;
+                if (ec != std::errc())
+                    continue;
+
+                std::string product = productIndex >= 0 && static_cast<size_t>(productIndex) < values.size() ? values[productIndex] : std::string();
+                bool const active = activeIndex >= 0 && static_cast<size_t>(activeIndex) < values.size() && values[activeIndex] == "1";
+                if (active || firstBuild == 0)
+                {
+                    firstBuild = build;
+                    firstProduct = product;
+                    parseProductVersion(verStr, firstMajor, firstMinor);
+                }
+                if (active)
+                    break;
             }
 
-            return 0;
+            gLastDetectedProduct = firstProduct;
+            gLastDetectedMajor = firstMajor;
+            gLastDetectedMinor = firstMinor;
+            return firstBuild;
         }
 
         std::string findWowExeName(std::filesystem::path const& clientRoot)
@@ -157,6 +202,21 @@ namespace mpqlib
         return gLastDetectedBuild;
     }
 
+    std::string const& getDetectedProduct()
+    {
+        return gLastDetectedProduct;
+    }
+
+    uint32_t getDetectedMajorVersion()
+    {
+        return gLastDetectedMajor;
+    }
+
+    uint32_t getDetectedMinorVersion()
+    {
+        return gLastDetectedMinor;
+    }
+
     std::optional<ClientVersion> clientVersionFromBuild(uint32_t build)
     {
         // The exact build number a real client reports (e.g. via
@@ -169,10 +229,8 @@ namespace mpqlib
         if (build == 0)
             return std::nullopt;
 
-        // Special client branches
-        if (build >= 69000 && build <= 71000)
-            return ClientVersion::Forever;
-
+        // WoW Forever (1.60.x) is not classified here: its builds (69876 and
+        // up) overlap with Midnight's, see clientVersionFromProductVersion().
         if (build < static_cast<uint32_t>(ClientVersion::BurningCrusade))
             return ClientVersion::Vanilla;
         if (build < static_cast<uint32_t>(ClientVersion::WrathOfTheLichKing))
@@ -199,6 +257,30 @@ namespace mpqlib
         return ClientVersion::Midnight;
     }
 
+    std::optional<ClientVersion> clientVersionFromProductVersion(uint32_t major, uint32_t minor, uint32_t build)
+    {
+        switch (major)
+        {
+            case 1:
+                // 1.12.x is the MPQ Vanilla client, 1.60 and up the Forever line
+                if (minor >= 60)
+                    return ClientVersion::Forever;
+                return ClientVersion::Vanilla;
+            case 2:  return ClientVersion::BurningCrusade;
+            case 3:  return ClientVersion::WrathOfTheLichKing;
+            case 4:  return ClientVersion::Cataclysm;
+            case 5:  return ClientVersion::MistsOfPandaria;
+            case 6:  return ClientVersion::WarlordsOfDraenor;
+            case 7:  return ClientVersion::Legion;
+            case 8:  return ClientVersion::BattleForAzeroth;
+            case 9:  return ClientVersion::Shadowlands;
+            case 10: return ClientVersion::Dragonflight;
+            case 11: return ClientVersion::TheWarWithin;
+            case 12: return ClientVersion::Midnight;
+            default: return clientVersionFromBuild(build);
+        }
+    }
+
     std::optional<ClientVersion> detectClientVersion(std::filesystem::path const& clientRoot)
     {
         // Check for CASC build first, since it has a .build.info file that can be read without opening Wow.exe.
@@ -207,7 +289,7 @@ namespace mpqlib
         if (build > 0)
         {
             gLastDetectedBuild = build;
-            return clientVersionFromBuild(build);
+            return clientVersionFromProductVersion(gLastDetectedMajor, gLastDetectedMinor, build);
         }
 
         // Fallback: Legacy MPQ (wow.exe scans) - this is slower and less reliable, but still works for older clients.
@@ -217,6 +299,9 @@ namespace mpqlib
 
         build = scanBuildNumber(clientRoot / exeName);
         gLastDetectedBuild = build;
+        gLastDetectedMajor = 0;
+        gLastDetectedMinor = 0;
+        gLastDetectedProduct.clear();
         return clientVersionFromBuild(build);
     }
 }

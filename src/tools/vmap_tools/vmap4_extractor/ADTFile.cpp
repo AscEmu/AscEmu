@@ -17,8 +17,6 @@ This file is released under the MIT license. See README-MIT for more information
 #define snprintf _snprintf
 #endif
 
-extern std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
-
 char const* getPlainName(char const* fileName)
 {
     if (const char* temp = strrchr(fileName, '\\'))
@@ -81,6 +79,10 @@ namespace
 
 void fixNameCase(char* name, size_t len)
 {
+    // file data id names are spelled by the tool itself, they stay as they are
+    if (FileDataIdFromName(std::string_view(name, len)))
+        return;
+
     if (IsLegacyVmapArchiveLayout())
         fixNameCaseLegacy(name, len);
     else
@@ -105,7 +107,7 @@ char* getExtension(char* fileName)
 
 ADTFile::ADTFile(std::string const& filename) :
     m_wmoCount(0), m_modelCount(0), m_wmoInstanceNames(nullptr), m_modelInstanceNames(nullptr),
-    m_adt(*WorldMpq, filename.c_str(), IsLegacyVmapArchiveLayout()), m_adtFilename(filename)
+    m_adt(OpenWorldFile(filename, IsLegacyVmapArchiveLayout())), m_adtFilename(filename)
 {
 }
 
@@ -123,14 +125,19 @@ namespace
 
 bool ADTFile::init(uint32_t mapNum, uint32_t tileX, uint32_t tileY)
 {
-    if (m_adt.isEof())
+    if (m_adt->isEof())
         return false;
 
-    m_adtFilename.erase(m_adtFilename.find(".adt"), 4);
-    std::string tempMapNumber = m_adtFilename.substr(m_adtFilename.length() - 6, 6);
-    std::string xMap = tempMapNumber.substr(tempMapNumber.find('_') + 1, (tempMapNumber.find_last_of('_') - 1) - (tempMapNumber.find('_')));
-    std::string yMap = tempMapNumber.substr(tempMapNumber.find_last_of('_') + 1, tempMapNumber.length() - tempMapNumber.find_last_of('_'));
-    m_adtFilename.erase((m_adtFilename.length() - xMap.length() - yMap.length() - 2), (xMap.length() + yMap.length() + 2));
+    // The tile coordinates used to be clipped off the file name here; the
+    // name is not needed afterwards, and a file data id name has none.
+    if (size_t const adtPos = m_adtFilename.find(".adt"); adtPos != std::string::npos)
+    {
+        m_adtFilename.erase(adtPos, 4);
+        std::string tempMapNumber = m_adtFilename.substr(m_adtFilename.length() - 6, 6);
+        std::string xMap = tempMapNumber.substr(tempMapNumber.find('_') + 1, (tempMapNumber.find_last_of('_') - 1) - (tempMapNumber.find('_')));
+        std::string yMap = tempMapNumber.substr(tempMapNumber.find_last_of('_') + 1, tempMapNumber.length() - tempMapNumber.find_last_of('_'));
+        m_adtFilename.erase((m_adtFilename.length() - xMap.length() - yMap.length() - 2), (xMap.length() + yMap.length() + 2));
+    }
 
     std::string dirName = std::string(szWorkDirWmo) + "/dir_bin";
     FILE* dirFile = fopen(dirName.c_str(), "ab");
@@ -140,7 +147,7 @@ bool ADTFile::init(uint32_t mapNum, uint32_t tileX, uint32_t tileY)
         return false;
     }
 
-    mpqlib::ChunkReader chunks(m_adt.reader());
+    mpqlib::ChunkReader chunks(m_adt->reader());
     mpqlib::Chunk chunk;
     while (chunks.next(chunk))
     {
@@ -200,11 +207,17 @@ bool ADTFile::init(uint32_t mapNum, uint32_t tileX, uint32_t tileY)
             m_wmoInstanceNames = new std::string[buf.size()];
             while (p < buf.data() + buf.size())
             {
+                // The MPQ clients extracted every WMO of the archive up front;
+                // the CASC clients have no file list, so the map objects are
+                // extracted as they are met. Done for all clients - an
+                // already extracted WMO is just skipped.
+                std::string path(p);
                 char* s = getPlainName(p);
                 fixNameCase(s, strlen(s));
                 fixNameSpaces(s, strlen(s));
                 p += strlen(p) + 1;
                 m_wmoInstanceNames[q++] = s;
+                ExtractSingleWmo(path);
             }
         }
         else if (chunk.tag == "MDDF")
@@ -212,15 +225,30 @@ bool ADTFile::init(uint32_t mapNum, uint32_t tileX, uint32_t tileY)
             if (chunk.payload.empty())
                 continue;
 
-            auto const payloadOffset = static_cast<size_t>(chunk.payload.data() - m_adt.reader().bytes().data());
-            m_adt.seek(static_cast<int>(payloadOffset));
+            auto const payloadOffset = static_cast<size_t>(chunk.payload.data() - m_adt->reader().bytes().data());
+            m_adt->seek(static_cast<int>(payloadOffset));
 
-            m_modelCount = static_cast<int>(chunk.payload.size()) / 36;
+            m_modelCount = static_cast<int>(chunk.payload.size()) / static_cast<int>(sizeof(AdtDoodadDef));
             for (int i = 0; i < m_modelCount; ++i)
             {
-                uint32_t id;
-                m_adt.read(&id, 4);
-                ModelInstance inst(m_adt, m_modelInstanceNames[id].c_str(), mapNum, tileX, tileY, dirFile);
+                AdtDoodadDef def{};
+                m_adt->read(&def, sizeof(def));
+
+                std::string name;
+                if (def.flags & kDoodadDefFileDataId)
+                {
+                    // 8.1 and later: the model comes by file data id
+                    name = FileDataIdName(def.id);
+                    std::string path = name;
+                    if (!ExtractSingleModel(path))
+                        continue;
+                }
+                else if (m_modelInstanceNames != nullptr)
+                    name = m_modelInstanceNames[def.id];
+                else
+                    continue;
+
+                ModelInstance inst(def, name.c_str(), mapNum, tileX, tileY, dirFile);
             }
             delete[] m_modelInstanceNames;
             m_modelInstanceNames = nullptr;
@@ -230,27 +258,40 @@ bool ADTFile::init(uint32_t mapNum, uint32_t tileX, uint32_t tileY)
             if (chunk.payload.empty())
                 continue;
 
-            auto const payloadOffset = static_cast<size_t>(chunk.payload.data() - m_adt.reader().bytes().data());
-            m_adt.seek(static_cast<int>(payloadOffset));
+            auto const payloadOffset = static_cast<size_t>(chunk.payload.data() - m_adt->reader().bytes().data());
+            m_adt->seek(static_cast<int>(payloadOffset));
 
-            m_wmoCount = static_cast<int>(chunk.payload.size()) / 64;
+            m_wmoCount = static_cast<int>(chunk.payload.size()) / static_cast<int>(sizeof(AdtMapObjDef));
             for (int i = 0; i < m_wmoCount; ++i)
             {
-                uint32_t id;
-                m_adt.read(&id, 4);
-                WMOInstance inst(m_adt, m_wmoInstanceNames[id].c_str(), mapNum, tileX, tileY, dirFile);
+                AdtMapObjDef def{};
+                m_adt->read(&def, sizeof(def));
+
+                std::string name;
+                if (def.flags & kMapObjDefFileDataId)
+                {
+                    name = FileDataIdName(def.id);
+                    std::string path = name;
+                    ExtractSingleWmo(path);
+                }
+                else if (m_wmoInstanceNames != nullptr)
+                    name = m_wmoInstanceNames[def.id];
+                else
+                    continue;
+
+                WMOInstance inst(def, name.c_str(), mapNum, tileX, tileY, dirFile);
             }
             delete[] m_wmoInstanceNames;
             m_wmoInstanceNames = nullptr;
         }
     }
 
-    m_adt.close();
+    m_adt->close();
     fclose(dirFile);
     return true;
 }
 
 ADTFile::~ADTFile()
 {
-    m_adt.close();
+    m_adt->close();
 }

@@ -130,6 +130,9 @@ struct adt_MCNK
     uint32_t offsMCCV;         // offsColorValues in WotLK
     uint32_t props;
     uint32_t effectId;
+
+    // with flag 0x10000 the 8x8 hole bitmap replaces offsMCVT/offsMCNR
+    uint8_t const* highResHoles() const { return reinterpret_cast<uint8_t const*>(&offsMCVT); }
 };
 
 // Blizzard's per-cell liquid struct (found via MH2O's offset table) kept the

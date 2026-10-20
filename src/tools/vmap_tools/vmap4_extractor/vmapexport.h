@@ -22,8 +22,14 @@
 
 #include "mpqlib/ClientVersion.hpp"
 
+#include <cstdint>
+#include <memory>
 #include <mutex>
+#include <optional>
 #include <string>
+#include <string_view>
+
+class MPQFile;
 
 enum ModelFlags
 {
@@ -52,6 +58,20 @@ extern std::mutex g_dirFileMutex;
 extern mpqlib::ClientVersion gClientVersion;
 bool IsLegacyVmapArchiveLayout();
 bool IsPreWotLKModelFormat();
+// 6.x and later read the CASC storage instead of MPQ archives.
+bool IsCascClient();
+
+// Opens a client file by path on whichever source the client has (MPQ chain
+// or CASC storage); a file data id name (see FileDataIdName) is resolved by id.
+std::unique_ptr<MPQFile> OpenWorldFile(std::string const& fileName, bool warnNoExist = true);
+
+// "FILE%08X.xxx": the name the tool gives a file that 8.1 and later only
+// know by file data id; used for the output files and the instance directory alike.
+std::string FileDataIdName(uint32_t fileDataId);
+std::optional<uint32_t> FileDataIdFromName(std::string_view name);
+
+// One extraction per output file at a time, the ADT tiles run in parallel.
+std::mutex& LockForModelOutput(std::string const& outputPath);
 
 bool FileExists(const char * file);
 void strToLower(char* str);

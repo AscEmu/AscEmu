@@ -5,9 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "mpqlib/MPQFile.hpp"
+#include "AdtDefinitions.hpp"
 #include "wmo.h"
 #include "model.h"
 
@@ -93,10 +95,13 @@ struct MapChunkHeader
     uint32_t effectId;
 };
 
+// One ADT tile (the _obj0 split file on Cata and later): the model and map
+// object placements of the tile. The file is opened by its path, which for the
+// CASC clients may be a file data id name (see FileDataIdName()).
 class ADTFile
 {
 public:
-    ADTFile(std::string const& filename);
+    explicit ADTFile(std::string const& filename);
     ~ADTFile();
 
     bool init(uint32_t mapNum, uint32_t tileX, uint32_t tileY);
@@ -107,7 +112,7 @@ public:
     std::string* m_modelInstanceNames;
 
 private:
-    MPQFile m_adt;
+    std::unique_ptr<MPQFile> m_adt;
     std::string m_adtFilename;
 };
 

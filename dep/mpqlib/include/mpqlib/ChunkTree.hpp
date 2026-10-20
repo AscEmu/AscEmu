@@ -95,6 +95,8 @@ namespace mpqlib
 
         static std::optional<ChunkTree> load(MpqPatchChain& mpq, std::string_view filename,
             std::span<const std::string_view> recognizedTags);
+        // The same scan over a file that is already in memory (CASC reads whole files).
+        static std::optional<ChunkTree> load(std::vector<std::byte> data, std::span<const std::string_view> recognizedTags);
 
         ChunkTree(ChunkTree const&) = delete;
         ChunkTree& operator=(ChunkTree const&) = delete;
@@ -110,6 +112,7 @@ namespace mpqlib
         ChunkTree() noexcept;
 
         static std::vector<RecognizedTag> buildRecognizedTags(std::span<const std::string_view> tags);
+        static ChunkTree scan(BinaryReader reader, std::span<const std::string_view> recognizedTags);
 
         static std::multimap<std::string, std::unique_ptr<ChunkNode>> scanChildren(BinaryReader const& reader,
             size_t nodeStart, uint32_t parentDeclaredSize, std::span<const RecognizedTag> recognizedTags);

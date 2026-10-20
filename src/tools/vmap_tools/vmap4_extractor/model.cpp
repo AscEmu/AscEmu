@@ -26,10 +26,9 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdio>
+#include <cstring>
 #include <memory>
 #include <span>
-
-extern std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
 
 Model::Model(std::string& filename) :
     m_filename(filename), m_nBoundingTriangles(0), m_ofsBoundingTriangles(0),
@@ -39,7 +38,8 @@ Model::Model(std::string& filename) :
 
 bool Model::open()
 {
-    MPQFile f(*WorldMpq, m_filename.c_str());
+    std::unique_ptr<MPQFile> file = OpenWorldFile(m_filename);
+    MPQFile& f = *file;
 
     if (f.isEof())
     {
@@ -50,10 +50,24 @@ bool Model::open()
 
     unload();
 
+    // 7.x and later wrap the model in a chunked file: the MD20 block follows the MD21 chunk header
+    size_t m2start = 0;
+    size_t const headerSize = IsPreWotLKModelFormat() ? sizeof(ModelHeaderLegacy) : sizeof(ModelHeaderModern);
+    char const* buffer = f.getBuffer();
+    while (m2start + 4 <= f.getSize() && memcmp(buffer + m2start, "MD20", 4) != 0)
+    {
+        ++m2start;
+        if (m2start + headerSize > f.getSize())
+        {
+            f.close();
+            return false;
+        }
+    }
+
     if (IsPreWotLKModelFormat())
     {
         ModelHeaderLegacy header;
-        memcpy(&header, f.getBuffer(), sizeof(header));
+        memcpy(&header, f.getBuffer() + m2start, sizeof(header));
         m_nBoundingTriangles = header.nBoundingTriangles;
         m_ofsBoundingTriangles = header.ofsBoundingTriangles;
         m_nBoundingVertices = header.nBoundingVertices;
@@ -62,7 +76,7 @@ bool Model::open()
     else
     {
         ModelHeaderModern header;
-        memcpy(&header, f.getBuffer(), sizeof(header));
+        memcpy(&header, f.getBuffer() + m2start, sizeof(header));
         m_nBoundingTriangles = header.nBoundingTriangles;
         m_ofsBoundingTriangles = header.ofsBoundingTriangles;
         m_nBoundingVertices = header.nBoundingVertices;
@@ -71,13 +85,13 @@ bool Model::open()
 
     if (m_nBoundingTriangles > 0)
     {
-        f.seek(0);
+        f.seek(static_cast<int>(m2start));
         f.seekRelative(m_ofsBoundingVertices);
         m_vertices = new Vec3D[m_nBoundingVertices];
         f.read(m_vertices, m_nBoundingVertices * 12);
         for (auto& vertex : std::span(m_vertices, m_nBoundingVertices))
             vertex = fixCoordSystem(vertex);
-        f.seek(0);
+        f.seek(static_cast<int>(m2start));
         f.seekRelative(m_ofsBoundingTriangles);
         m_indices = new uint16_t[m_nBoundingTriangles];
         f.read(m_indices, m_nBoundingTriangles * 2);
@@ -161,17 +175,11 @@ Vec3D fixCoordSystem2(Vec3D v)
     return Vec3D(v.x, v.z, v.y);
 }
 
-ModelInstance::ModelInstance(MPQFile& f, char const* modelInstName, uint32_t mapID, uint32_t tileX, uint32_t tileY, FILE* pDirfile) :
-    m_id(0), m_scale(0), m_flags(0)
+ModelInstance::ModelInstance(AdtDoodadDef const& def, char const* modelInstName, uint32_t mapID, uint32_t tileX, uint32_t tileY, FILE* pDirfile) :
+    m_id(def.uniqueId), m_scale(def.scale), m_flags(def.flags)
 {
-    float ff[3];
-    f.read(&m_id, 4);
-    f.read(ff, 12);
-    m_pos = fixCoords(Vec3D(ff[0], ff[1], ff[2]));
-    f.read(ff, 12);
-    m_rot = Vec3D(ff[0], ff[1], ff[2]);
-    f.read(&m_scale, 2);
-    f.read(&m_flags, 2);
+    m_pos = fixCoords(Vec3D(def.position[0], def.position[1], def.position[2]));
+    m_rot = Vec3D(def.rotation[0], def.rotation[1], def.rotation[2]);
     // scale factor - divide by 1024. blizzard devs must be on crack, why not just use a float?
     m_sc = m_scale / 1024.0f;
 

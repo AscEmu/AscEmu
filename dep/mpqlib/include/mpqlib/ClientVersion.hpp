@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <filesystem>
 #include <optional>
+#include <string>
 
 namespace mpqlib
 {
@@ -39,15 +40,15 @@ namespace mpqlib
         Shadowlands = 45745, // 9.2.7
         Dragonflight = 55664, // 10.2.7
         TheWarWithin = 65000, // 11.x
-        Midnight = 75000, // 12.x
-        Forever = 69913 // WoW Forever Beta Client
+        Midnight = 70391, // 12.1.5
+        Forever = 69913 // WoW Forever Beta Client (1.60.x, builds overlap with 12.x - told apart by the product version)
     };
 
     enum class ClientSupportStatus
     {
-        Unsupported, // Expansions like BfA, SL, DF, TWW, Midnight
-        Db2Only,     // Verified DB2 extraction, Map/ADT pipeline pending (WoD, Legion, Forever)
-        Full         // Full support: DB2, Maps, VMaps, MMaps (Vanilla to MoP)
+        Unsupported, // no extraction path at all
+        Db2Only,     // DB2 extraction only, no table layouts known (Forever)
+        Full         // DBC/DB2, Maps, VMaps, MMaps (Vanilla to Midnight; see isTestedClient)
     };
 
     [[nodiscard]] constexpr std::string_view getClientVersionName(ClientVersion version) noexcept
@@ -73,6 +74,14 @@ namespace mpqlib
 
     [[nodiscard]] uint32_t getDetectedBuildNumber();
 
+    // The product code of the detected CASC installation ("wow", "wowt", ...), empty for MPQ clients.
+    [[nodiscard]] std::string const& getDetectedProduct();
+
+    // The major and minor product version of the detected CASC installation
+    // ("12.1.5.70391" -> 12 and 1), both 0 for MPQ clients.
+    [[nodiscard]] uint32_t getDetectedMajorVersion();
+    [[nodiscard]] uint32_t getDetectedMinorVersion();
+
     // Every expansion starting with WoD uses CASC instead of MPQ
     [[nodiscard]] constexpr bool isCascClient(ClientVersion version) noexcept
     {
@@ -92,7 +101,9 @@ namespace mpqlib
         }
     }
 
-    // Flags which expansions have validated definitions and extraction support in AscEmu
+    // Flags which expansions ran through every extraction path with a real client.
+    // The map/vmap/mmap extraction of the CASC clients (WoD and later) is new and
+    // untested; their DB2 extraction was verified for WoD, Legion and Forever.
     [[nodiscard]] constexpr bool isTestedClient(ClientVersion version) noexcept
     {
         switch (version)
@@ -102,12 +113,9 @@ namespace mpqlib
             case ClientVersion::WrathOfTheLichKing:
             case ClientVersion::Cataclysm:
             case ClientVersion::MistsOfPandaria:
-            case ClientVersion::WarlordsOfDraenor:
-            case ClientVersion::Legion:
-            case ClientVersion::Forever:
                 return true;
             default:
-                return false; // BfA, SL, DF, TWW, Midnight, Forever are currently experimental / untested
+                return false;
         }
     }
 
@@ -121,10 +129,15 @@ namespace mpqlib
             case ClientVersion::WrathOfTheLichKing:
             case ClientVersion::Cataclysm:
             case ClientVersion::MistsOfPandaria:
-                return ClientSupportStatus::Full;
-
             case ClientVersion::WarlordsOfDraenor:
             case ClientVersion::Legion:
+            case ClientVersion::BattleForAzeroth:
+            case ClientVersion::Shadowlands:
+            case ClientVersion::Dragonflight:
+            case ClientVersion::TheWarWithin:
+            case ClientVersion::Midnight:
+                return ClientSupportStatus::Full;
+
             case ClientVersion::Forever:
                 return ClientSupportStatus::Db2Only;
 
@@ -148,6 +161,13 @@ namespace mpqlib
     // over-release with no overlap between expansions) rather than requiring
     // an exact match. Returns std::nullopt for build == 0 (never detected).
     std::optional<ClientVersion> clientVersionFromBuild(uint32_t build);
+
+    // Classifies a CASC client by the product version of its .build.info
+    // ("12.1.5.70391"): the major version names the expansion directly, and
+    // the 1.60 line (WoW Forever) shares its build numbers with 12.x, so it
+    // can only be told apart this way. Falls back to the build number when
+    // the major version is unknown.
+    std::optional<ClientVersion> clientVersionFromProductVersion(uint32_t major, uint32_t minor, uint32_t build);
 
     // Scans the Wow.exe found directly inside clientRoot for one of a fixed
     // set of known build-number byte patterns (the same approach map_extractor

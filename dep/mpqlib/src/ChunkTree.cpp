@@ -113,8 +113,18 @@ namespace mpqlib
         if (!reader)
             return std::nullopt;
 
+        return scan(std::move(*reader), recognizedTags);
+    }
+
+    std::optional<ChunkTree> ChunkTree::load(std::vector<std::byte> data, std::span<const std::string_view> recognizedTags)
+    {
+        return scan(BinaryReader(std::move(data)), recognizedTags);
+    }
+
+    ChunkTree ChunkTree::scan(BinaryReader reader, std::span<const std::string_view> recognizedTags)
+    {
         ChunkTree tree;
-        tree.m_reader = std::move(*reader);
+        tree.m_reader = std::move(reader);
 
         auto const tags = buildRecognizedTags(recognizedTags);
         auto const bytes = tree.m_reader.bytes();

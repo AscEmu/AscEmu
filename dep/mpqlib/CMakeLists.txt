@@ -35,6 +35,7 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
 
 target_include_directories(${LIBRARY_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/lzma
+    ${CMAKE_SOURCE_DIR}/dep/casclib/src
     ${BZIP2_INCLUDE_DIRS}
     ${ZLIB_INCLUDE_DIRS}
 )
@@ -43,6 +44,7 @@ target_link_libraries(${LIBRARY_NAME}
   PUBLIC
     ${ZLIB_LIBRARIES}
     ${BZIP2_LIBRARIES}
+    casc_static
 )
 
 target_compile_features(${LIBRARY_NAME} PUBLIC cxx_std_23)

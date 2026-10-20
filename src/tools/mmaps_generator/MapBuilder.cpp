@@ -99,6 +99,13 @@ namespace MMAP
         {
             case mpqlib::ClientVersion::Cataclysm:
             case mpqlib::ClientVersion::MistsOfPandaria:
+            case mpqlib::ClientVersion::WarlordsOfDraenor:
+            case mpqlib::ClientVersion::Legion:
+            case mpqlib::ClientVersion::BattleForAzeroth:
+            case mpqlib::ClientVersion::Shadowlands:
+            case mpqlib::ClientVersion::Dragonflight:
+            case mpqlib::ClientVersion::TheWarWithin:
+            case mpqlib::ClientVersion::Midnight:
                 return { 70.0f, 4 };
             default:
                 return { 70.0f, 2 };

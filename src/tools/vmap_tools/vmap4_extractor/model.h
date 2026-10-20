@@ -20,6 +20,7 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include "AdtDefinitions.hpp"
 #include "vec3d.h"
 #include <string>
 
@@ -66,7 +67,8 @@ public:
     float m_sc;
 
     ModelInstance() : m_id(0), m_scale(0), m_flags(0), m_sc(0.0f) {}
-    ModelInstance(MPQFile& f, char const* modelInstName, uint32_t mapID, uint32_t tileX, uint32_t tileY, FILE* pDirfile);
+    // Writes the placement of one MDDF entry to the instance directory.
+    ModelInstance(AdtDoodadDef const& def, char const* modelInstName, uint32_t mapID, uint32_t tileX, uint32_t tileY, FILE* pDirfile);
 
 };
 

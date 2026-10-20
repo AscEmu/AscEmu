@@ -29,6 +29,51 @@
 
 #pragma pack(push, 1)
 
+// header chunk; from 8.1 on the flag 0x200 announces the MAID chunk with the tile file data ids
+class wdt_MPHD
+{
+    union
+    {
+        uint32_t fcc;
+        char   fcc_txt[4];
+    };
+public:
+    uint32_t size;
+
+    uint32_t flags;
+    uint32_t lgtFileDataID;
+    uint32_t occFileDataID;
+    uint32_t fogsFileDataID;
+    uint32_t mpvFileDataID;
+    uint32_t texFileDataID;
+    uint32_t wdlFileDataID;
+    uint32_t pd4FileDataID;
+};
+
+// file data ids of the files of every tile (8.1 and later)
+class wdt_MAID
+{
+    union
+    {
+        uint32_t fcc;
+        char   fcc_txt[4];
+    };
+public:
+    uint32_t size;
+
+    struct adtFiles
+    {
+        uint32_t rootADT;           // mapname_xx_yy.adt
+        uint32_t obj0ADT;           // mapname_xx_yy_obj0.adt
+        uint32_t obj1ADT;           // mapname_xx_yy_obj1.adt
+        uint32_t tex0ADT;           // mapname_xx_yy_tex0.adt
+        uint32_t lodADT;            // mapname_xx_yy_lod.adt
+        uint32_t mapTexture;        // mapname_xx_yy.blp
+        uint32_t mapTextureN;       // mapname_xx_yy_n.blp
+        uint32_t minimapTexture;    // mapxx_yy.blp
+    } adt_files[64][64];
+};
+
 class wdt_MAIN
 {
     union

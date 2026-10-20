@@ -19,6 +19,9 @@ class MPQFile
 {
 public:
     MPQFile(mpqlib::MpqPatchChain& mpq, const char* filename, bool warnNoExist = true);
+    // The same stream over a file that was read elsewhere (CASC); an empty
+    // buffer stands for a file that could not be opened.
+    MPQFile(std::vector<std::byte> data, const char* filename);
     ~MPQFile();
 
     MPQFile(const MPQFile&) = delete;

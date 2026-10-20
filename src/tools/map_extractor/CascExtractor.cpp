@@ -314,19 +314,12 @@ namespace
     }
 }
 
-bool CascExtractor::run(const fs::path& clientPath, std::string_view expansionName, uint32_t buildNumber)
+bool CascExtractor::run(mpqlib::CascStorage const& storage, std::string_view expansionName, uint32_t buildNumber)
 {
-    printf("Initializing CASC storage for %.*s (Build: %u)...\n",
+    printf("Extracting DB2 files for %.*s (Build: %u)...\n",
            static_cast<int>(expansionName.length()), expansionName.data(), buildNumber);
 
-    HANDLE storageHandle = nullptr;
-    if (!CascOpenStorage(clientPath.string().c_str(), CASC_LOCALE_ALL, &storageHandle))
-    {
-        printf("Fatal Error: Could not open CASC storage at '%s'\n", clientPath.string().c_str());
-        return false;
-    }
-
-    printf("CASC Storage opened successfully!\n");
+    HANDLE storageHandle = storage.nativeHandle();
 
     fs::path dbcOutputDir = fs::current_path() / "dbc";
     fs::create_directories(dbcOutputDir);
@@ -357,6 +350,5 @@ bool CascExtractor::run(const fs::path& clientPath, std::string_view expansionNa
         }
     }
 
-    CascCloseStorage(storageHandle);
     return true;
 }

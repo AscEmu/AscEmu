@@ -21,9 +21,12 @@
 
 #include "ADTFile.hpp"
 #include "WDTFile.hpp"
+#include "mpqlib/CascStorage.hpp"
 #include "mpqlib/ClientArchiveData.hpp"
+#include "mpqlib/ClientDb2Layouts.hpp"
 #include "mpqlib/ClientVersion.hpp"
 #include "mpqlib/DBCFile.hpp"
+#include "mpqlib/Db2File.hpp"
 #include "mpqlib/MPQFile.hpp"
 #include "wmo.h"
 #include "vmapexport.h"
@@ -43,6 +46,10 @@
 #include <array>
 #include <cctype>
 #include <cerrno>
+#include <charconv>
+#include <cstddef>
+#include <optional>
+#include <unordered_map>
 #include <cstdio>
 #include <cstring>
 #include <execution>
@@ -65,6 +72,8 @@ std::unique_ptr<mpqlib::MpqPatchChain> WorldMpq;
 // Map.dbc, GameObjectDisplayInfo.dbc) live in a separate archive chain from
 // WorldMpq's world/model/WMO binary data on those clients.
 std::unique_ptr<mpqlib::MpqPatchChain> LocaleMpq;
+// The CASC storage of a 6.x or later client; WorldMpq/LocaleMpq stay empty then.
+std::unique_ptr<mpqlib::CascStorage> gCascStorage;
 
 ClientVersion gClientVersion = ClientVersion::WrathOfTheLichKing;
 
@@ -79,6 +88,52 @@ bool IsPreWotLKModelFormat()
     return gClientVersion == ClientVersion::Vanilla || gClientVersion == ClientVersion::BurningCrusade;
 }
 
+bool IsCascClient()
+{
+    return mpqlib::isCascClient(gClientVersion);
+}
+
+std::string FileDataIdName(uint32_t fileDataId)
+{
+    char name[32];
+    snprintf(name, sizeof(name), "FILE%08X.xxx", fileDataId);
+    return name;
+}
+
+std::optional<uint32_t> FileDataIdFromName(std::string_view name)
+{
+    // FILE + 8 hex digits + .xxx
+    if (name.size() != 16 || !name.starts_with("FILE") || !name.ends_with(".xxx"))
+        return std::nullopt;
+
+    uint32_t fileDataId = 0;
+    auto const [end, ec] = std::from_chars(name.data() + 4, name.data() + 12, fileDataId, 16);
+    if (ec != std::errc() || end != name.data() + 12)
+        return std::nullopt;
+    return fileDataId;
+}
+
+std::unique_ptr<MPQFile> OpenWorldFile(std::string const& fileName, bool warnNoExist)
+{
+    if (!gCascStorage)
+        return std::make_unique<MPQFile>(*WorldMpq, fileName.c_str(), warnNoExist);
+
+    std::optional<std::vector<std::byte>> bytes;
+    if (auto const fileDataId = FileDataIdFromName(fileName))
+        bytes = gCascStorage->readFile(*fileDataId);
+    else
+        bytes = gCascStorage->readFile(fileName);
+
+    if (!bytes)
+    {
+        if (warnNoExist)
+            fprintf(stderr, "Can't open %s!\n", fileName.c_str());
+        return std::make_unique<MPQFile>(std::vector<std::byte>{}, fileName.c_str());
+    }
+
+    return std::make_unique<MPQFile>(std::move(*bytes), fileName.c_str());
+}
+
 namespace
 {
     mpqlib::MpqPatchChain& DbcChain()
@@ -91,6 +146,7 @@ struct map_id
 {
     char name[64];
     uint32_t id;
+    uint32_t wdtFileDataId;     // 8.1 and later name the WDT in the map table
 };
 
 std::vector<map_id> map_ids;
@@ -262,6 +318,12 @@ bool ExtractSingleWmo(std::string& fname)
     if (p == 3)
         return true;
 
+    // The ADT tiles run in parallel and share their map objects: one
+    // extraction per output file at a time, a second caller finds the file.
+    std::lock_guard<std::mutex> lock(LockForModelOutput(szLocalFile));
+    if (FileExists(szLocalFile))
+        return true;
+
     bool file_ok = true;
     std::cout << "Extracting " << fname << std::endl;
     WMORoot froot(fname);
@@ -278,17 +340,27 @@ bool ExtractSingleWmo(std::string& fname)
     }
     froot.convertToVMapRootWmo(output);
     int Wmo_nVertices = 0;
+    uint32_t groupsWritten = 0;
     if (froot.m_numGroups != 0)
     {
-        for (uint32_t i = 0; i < froot.m_numGroups; ++i)
+        // 7.x and later list the group files by file data id, before that they follow the root's name
+        bool const groupsByFileDataId = !froot.m_groupFileDataIds.empty();
+        uint32_t const groupCount = groupsByFileDataId ? static_cast<uint32_t>(froot.m_groupFileDataIds.size()) : froot.m_numGroups;
+        for (uint32_t i = 0; i < groupCount; ++i)
         {
-            char temp[1024];
-            strncpy(temp, fname.c_str(), 1024);
-            temp[fname.length() - 4] = 0;
-            char groupFileName[1024];
-            sprintf(groupFileName, "%s_%03u.wmo", temp, i);
+            std::string s;
+            if (groupsByFileDataId)
+                s = FileDataIdName(froot.m_groupFileDataIds[i]);
+            else
+            {
+                char temp[1024];
+                strncpy(temp, fname.c_str(), 1024);
+                temp[fname.length() - 4] = 0;
+                char groupFileName[1024];
+                sprintf(groupFileName, "%s_%03u.wmo", temp, i);
+                s = groupFileName;
+            }
 
-            std::string s = groupFileName;
             WMOGroup fgroup(s);
             if (!fgroup.open())
             {
@@ -297,12 +369,19 @@ bool ExtractSingleWmo(std::string& fname)
                 break;
             }
 
+            // the CASC clients mark the groups the player never reaches
+            if (IsCascClient() && fgroup.shouldSkip(froot))
+                continue;
+
             Wmo_nVertices += fgroup.convertToVMapGroupWmo(output, &froot, preciseVectorData);
+            ++groupsWritten;
         }
     }
 
     fseek(output, 8, SEEK_SET); // store the correct no of vertices
     fwrite(&Wmo_nVertices, sizeof(int), 1, output);
+    // and the number of groups actually written
+    fwrite(&groupsWritten, sizeof(uint32_t), 1, output);
     fclose(output);
 
     // Delete the extracted file in the case of an error
@@ -326,6 +405,78 @@ namespace
     };
 }
 
+// The map table of a CASC client: directory names and, from 8.1 on, the WDT file data ids.
+bool ReadMapTableFromCasc()
+{
+    auto const layouts = mpqlib::clientDb2LayoutsFor(gClientVersion);
+    if (!layouts)
+    {
+        printf("FATAL ERROR: No map table layout is known for %.*s.\n",
+            static_cast<int>(mpqlib::getClientVersionName(gClientVersion).size()), mpqlib::getClientVersionName(gClientVersion).data());
+        return false;
+    }
+
+    mpqlib::MapTableColumns const& columns = layouts->map;
+    std::optional<std::vector<std::byte>> bytes;
+    if (columns.table.fileDataId != 0)
+        bytes = gCascStorage->readFile(columns.table.fileDataId);
+    else
+        bytes = gCascStorage->readFile(columns.table.fileName);
+    if (!bytes)
+    {
+        printf("FATAL ERROR: Map table not found in the client.\n");
+        return false;
+    }
+
+    std::string error;
+    auto table = mpqlib::Db2File::load(std::move(*bytes), error);
+    if (!table)
+    {
+        printf("FATAL ERROR: cannot read the map table: %s\n", error.c_str());
+        return false;
+    }
+
+    if (columns.table.layoutHash != 0 && table->layoutHash() != columns.table.layoutHash)
+        printf("Warning: the map table has layout 0x%08X, the column indices were taken from layout 0x%08X\n", table->layoutHash(), columns.table.layoutHash);
+
+    std::unordered_map<uint32_t, size_t> indexById;
+    for (uint32_t i = 0; i < table->recordCount(); ++i)
+    {
+        if (!table->isReadable(i))
+            continue;
+
+        auto const record = table->record(i);
+        std::string_view const directory = record.getString(columns.directory);
+        if (directory.empty() || directory.size() >= sizeof(map_id::name))
+            continue;
+
+        map_id map{};
+        map.id = record.id();
+        memcpy(map.name, directory.data(), directory.size());
+        map.name[directory.size()] = '\0';
+        if (columns.wdtFileDataId >= 0)
+            map.wdtFileDataId = record.getUInt32(static_cast<uint32_t>(columns.wdtFileDataId));
+
+        indexById[map.id] = map_ids.size();
+        map_ids.push_back(map);
+        printf("Map - %s\n", map.name);
+    }
+
+    // rows that only rename another row's id share its files
+    for (mpqlib::Db2File::Copy const& copy : table->copies())
+    {
+        auto const it = indexById.find(copy.sourceId);
+        if (it == indexById.end())
+            continue;
+
+        map_id map = map_ids[it->second];
+        map.id = copy.newId;
+        map_ids.push_back(map);
+    }
+
+    return true;
+}
+
 void ParsMapFiles()
 {
     char fn[512];
@@ -334,13 +485,15 @@ void ParsMapFiles()
     {
         sprintf(id, "%04u", map_ids[i].id);
         sprintf(fn, "World\\Maps\\%s\\%s.wdt", map_ids[i].name, map_ids[i].name);
-        WDTFile WDT(fn, map_ids[i].name);
-        if (WDT.init(id, map_ids[i].id))
+        std::unique_ptr<WDTFile> WDT = map_ids[i].wdtFileDataId != 0
+            ? std::make_unique<WDTFile>(map_ids[i].wdtFileDataId, std::string(map_ids[i].name))
+            : std::make_unique<WDTFile>(std::string(fn), std::string(map_ids[i].name));
+        if (WDT->init(id, map_ids[i].id))
         {
             std::vector<AdtTileWorkItem> tiles;
             for (int x = 0; x < 64; ++x)
                 for (int y = 0; y < 64; ++y)
-                    if (ADTFile* ADT = WDT.getMap(x, y))
+                    if (ADTFile* ADT = WDT->getMap(x, y))
                         tiles.push_back({ x, y, ADT });
 
             printf("Processing Map %u (%zu tiles)\n", map_ids[i].id, tiles.size());
@@ -786,6 +939,27 @@ int main(int argc, char** argv)
     std::error_code ec;
     std::filesystem::create_directories(szWorkDirWmo, ec);
     success = !ec;
+
+    if (IsCascClient())
+    {
+        // the CASC storage lives in the client root, where the client was detected
+        fs::path const clientRoot = hasInputPathParam ? fs::path(input_path) : fs::current_path();
+        gCascStorage = mpqlib::CascStorage::open(clientRoot, mpqlib::getDetectedProduct(), mpqlib::kCascLocaleNone);
+        if (!gCascStorage)
+            return 1;
+
+        if (!success || !ReadMapTableFromCasc())
+            return 1;
+
+        ParsMapFiles();
+        map_ids.clear();
+        // Extract models, listed in GameObjectDisplayInfo
+        ExtractGameobjectModels();
+        gCascStorage.reset();
+
+        printf("\nExtract %s. Work complete. No errors.\n", versionString);
+        return 0;
+    }
 
     if (IsLegacyVmapArchiveLayout())
     {

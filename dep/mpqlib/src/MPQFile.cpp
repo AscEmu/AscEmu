@@ -32,6 +32,22 @@ MPQFile::MPQFile(mpqlib::MpqPatchChain& mpq, const char* filename, bool warnNoEx
     m_reader = std::move(*reader);
 }
 
+MPQFile::MPQFile(std::vector<std::byte> data, const char* filename) :
+    m_eof(false),
+    m_pointer(0),
+    m_reader(std::vector<std::byte>{})
+{
+    if (data.size() <= 1)
+    {
+        if (!data.empty())
+            fprintf(stderr, "Can't open %s, size = %u!\n", filename, static_cast<uint32_t>(data.size()));
+        m_eof = true;
+        return;
+    }
+
+    m_reader = mpqlib::BinaryReader(std::move(data));
+}
+
 MPQFile::~MPQFile() = default;
 
 size_t MPQFile::read(void* dest, size_t bytes)

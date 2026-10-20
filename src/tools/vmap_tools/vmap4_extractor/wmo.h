@@ -27,6 +27,8 @@
 #include <cstdio>
 #include <string>
 #include <set>
+#include <vector>
+#include "AdtDefinitions.hpp"
 #include "vec3d.h"
 
 // MOPY flags (per-triangle, MOPY chunk - one of these bytes per triangle,
@@ -45,6 +47,10 @@
 #define WMO_MATERIAL_WALL_SURFACE    0x40
 #define WMO_MATERIAL_COLLIDE_HIT     0x80
 
+// MOGP flags
+#define WMO_GROUP_UNREACHABLE        0x80
+#define WMO_GROUP_ANTIPORTAL         0x4000000
+
 class WMOInstance;
 class WMOManager;
 class MPQFile;
@@ -61,6 +67,9 @@ public:
     uint32_t m_numTextures, m_numGroups, m_numPortals, m_numLights, m_numModels, m_numDoodads, m_numDoodadSets, m_rootWmoId, m_liquidType;
     float m_boundingBoxMin[3];
     float m_boundingBoxMax[3];
+    // 7.x and later: the group files by file data id (GFID), and the group names (MOGN)
+    std::vector<uint32_t> m_groupFileDataIds;
+    std::vector<char> m_groupNames;
 
     WMORoot(std::string& filename);
 
@@ -95,9 +104,10 @@ private:
 public:
     // MOGP
 
-    char* m_mopy;
-    uint16_t* m_movi;
-    uint16_t* m_moviEx;
+    // one flags/material pair per triangle (MOPY bytes, or the MPY2 words of 10.x and later)
+    std::vector<uint16_t> m_materialFlags;
+    // triangle indices (MOVI, or the 32 bit MOVX of 10.x and later)
+    std::vector<uint32_t> m_indices;
     float* m_movt;
     uint16_t* m_moba;
     int* m_mobaEx;
@@ -114,7 +124,7 @@ public:
     uint16_t m_batchCountB;
     uint32_t m_batchCountC, m_fogIndex, m_liquidType, m_groupWmoId;
 
-    int m_mopySize, m_mobaSize;
+    int m_mobaSize;
     int m_liquidVertsSize;
     unsigned int m_vertexCount; // number when loaded
     int m_triangleCount;        // number when loaded
@@ -125,6 +135,8 @@ public:
 
     bool open();
     int convertToVMapGroupWmo(FILE* output, WMORoot* rootWMO, bool preciseVectorData);
+    // Groups the client never walks: unreachable ones and antiportals.
+    bool shouldSkip(WMORoot const& rootWMO) const;
 };
 
 class WMOInstance
@@ -140,7 +152,8 @@ public:
     Vec3D m_pos2, m_pos3, m_rot;
     uint32_t m_index, m_id, m_d2, m_d3;
 
-    WMOInstance(MPQFile& f, char const* wmoInstName, uint32_t mapID, uint32_t tileX, uint32_t tileY, FILE* pDirfile);
+    // Writes the placement of one MODF entry to the instance directory.
+    WMOInstance(AdtMapObjDef const& def, char const* wmoInstName, uint32_t mapID, uint32_t tileX, uint32_t tileY, FILE* pDirfile);
 
     static void reset();
 };
