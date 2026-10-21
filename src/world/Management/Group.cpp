@@ -515,17 +515,6 @@ void Group::RemovePlayer(CachedCharacterInfo* info)
             pPlayer->getSession()->sendEmptyGroupList(pPlayer);
 #endif
         }
-
-        //Remove some party auras.
-        for (const auto& aur : pPlayer->getPositiveAuraRange())
-        {
-            if (aur && aur->m_areaAura)
-            {
-                Object* caster = aur->getCaster();
-                if (caster && pPlayer->getGuid() != caster->getGuid())
-                    aur->removeAura();
-            }
-        }
     }
 
     if (m_MemberCount < 2)
@@ -644,7 +633,7 @@ void Group::OutPacketToAllButOne(uint16_t op, uint16_t len, const void* data, Pl
     }
 }
 
-bool Group::HasMember(Player* pPlayer)
+bool Group::HasMember(Player const* pPlayer)
 {
     if (!pPlayer)
         return false;

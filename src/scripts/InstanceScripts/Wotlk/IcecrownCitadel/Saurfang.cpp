@@ -1283,8 +1283,8 @@ void BoilingBlood::filterEffectTargets(Spell* spell, uint8_t /*effectIndex*/, st
 SpellScriptExecuteState BoilingBlood::onAuraPeriodicTick(Aura* aur, AuraEffectModifier* /*aurEff*/, float_t* /*damage*/)
 {
     // On periodic damage, cast Blood Link on Saurfang
-    if (aur->GetUnitCaster() != nullptr)
-        aur->getOwner()->castSpell(aur->GetUnitCaster(), sSpellMgr.getSpellInfo(SPELL_BLOOD_LINK_DUMMY), true);
+    if (aur->getUnitCaster() != nullptr)
+        aur->getOwner()->castSpell(aur->getUnitCaster(), sSpellMgr.getSpellInfo(SPELL_BLOOD_LINK_DUMMY), true);
 
     return SpellScriptExecuteState::EXECUTE_OK;
 }

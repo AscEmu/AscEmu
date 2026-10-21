@@ -31,7 +31,7 @@ public:
         // Make the proc aura proc its mother spell
         // This is only needed to consume proc charges from this aura on melee attacks
         // DBC data also have PROC_ON_DONE_MELEE_HIT flag set so this is not probably far-fetched
-        motherAuraId = aur->pSpellId;
+        motherAuraId = aur->getTriggeredBySpellId();
         spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(motherAuraId), aur, aur->getCasterGuid());
         if (spellProc != nullptr)
             spellProc->skipOnNextHandleProc(true);

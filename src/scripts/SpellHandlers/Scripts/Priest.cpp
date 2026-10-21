@@ -497,7 +497,7 @@ public:
         // Create backfire damage on dispel
         SpellForcedBasePoints forcedBasePoints;
         forcedBasePoints.set(EFF_INDEX_0, aur->getAuraEffect(EFF_INDEX_1)->getEffectDamage() * 8);
-        const auto caster = aur->GetUnitCaster();
+        const auto caster = aur->getUnitCaster();
         if (caster != nullptr)
             caster->castSpell(aur->getOwner(), SPELL_VAMPIRIC_TOUCH_DISPEL, forcedBasePoints, true);
     }

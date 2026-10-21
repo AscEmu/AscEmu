@@ -220,22 +220,31 @@ SpellScriptCheckDummy IchronMerge::onDummyOrScriptedEffect(Spell* spell, uint8_t
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Spell: 54306 - Protective Bubble
-SpellScriptCheckDummy IchronBubble::onAuraDummyEffect(Aura* aur, AuraEffectModifier* /*aurEff*/, bool /*apply*/)
+SpellScriptExecuteState IchronBubble::beforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply)
 {
-    if (aur->getCharges() <= 1)
+    if (aurEff->getEffectIndex() != EFF_INDEX_0)
+        return SpellScriptExecuteState::EXECUTE_OK;
+
+    // Make proc self to consume proc charges
+    if (apply)
+        aur->getOwner()->addProcTriggerSpell(aur->getSpellInfo(), aur, aur->getCasterGuid());
+    else
+        aur->getOwner()->removeProcTriggerSpell(aur->getSpellId(), aur->getCasterGuid());
+
+    return SpellScriptExecuteState::EXECUTE_OK;
+}
+
+SpellScriptExecuteState IchronBubble::onCastProcSpell(SpellProc* spellProc, Unit* caster, Unit* /*victim*/, Spell* /*spellToProc*/)
+{
+    if (const auto* aur = spellProc->getCreatedByAura(); aur != nullptr && aur->getCharges() <= 1)
     {
-        for (AreaAuraList::iterator itr = aur->targets.begin(); itr != aur->targets.end(); ++itr)
-        {
-            auto unit = aur->getOwner()->getWorldMapUnit(*itr);
-            if (unit == nullptr || !unit->ToCreature())
-                return SpellScriptCheckDummy::DUMMY_OK;
+        if (!caster->ToCreature())
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
 
-            if (CreatureAIScript* targetAI = unit->ToCreature()->GetScript())
-                targetAI->DoAction(Ichron::ACTION_PROTECTIVE_BUBBLE_SHATTERED);
-        }
+        if (CreatureAIScript* targetAI = caster->ToCreature()->GetScript())
+            targetAI->DoAction(Ichron::ACTION_PROTECTIVE_BUBBLE_SHATTERED);
     }
-
-    return SpellScriptCheckDummy::DUMMY_OK;
+    return SpellScriptExecuteState::EXECUTE_PREVENT;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

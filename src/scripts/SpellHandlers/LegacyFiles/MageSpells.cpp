@@ -35,7 +35,7 @@ bool Cold_Snap(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool Living_Bomb(uint8_t effectIndex, Aura* pAura, bool apply)
 {
-    Unit* caster = pAura->GetUnitCaster();
+    Unit* caster = pAura->getUnitCaster();
     if (caster && !apply)
         caster->castSpell(pAura->getOwner(), pAura->getSpellInfo()->getEffectBasePoints(effectIndex) + 1, true);
     return true;
@@ -69,7 +69,7 @@ bool TormentOfTheWeak(uint8_t effectIndex, Aura* a, bool apply)
 
 bool FingersOfFrost(uint8_t effectIndex, Aura* a, bool apply) // Should be visible to client by using ID 74396
 {
-    Player* caster = a->GetPlayerCaster();
+    Player* caster = a->getPlayerCaster();
 
     if (caster == NULL)
         return true;
@@ -84,7 +84,7 @@ bool FingersOfFrost(uint8_t effectIndex, Aura* a, bool apply) // Should be visib
 
 bool BrainFreeze(uint8_t effectIndex, Aura* a, bool apply)
 {
-    Player* caster = a->GetPlayerCaster();
+    Player* caster = a->getPlayerCaster();
 
     if (caster == NULL)
         return true;
@@ -116,7 +116,7 @@ bool MagicAbsorbtion(uint8_t effectIndex, Aura* a, bool apply)
 
 bool MirrorImage(uint8_t effectIndex, Aura* pAura, bool apply)
 {
-    Unit* caster = pAura->GetUnitCaster();
+    Unit* caster = pAura->getUnitCaster();
     if (caster != NULL && apply && effectIndex == 2)
         if (caster->getGuid() == pAura->getOwner()->getCreatedByGuid())
             caster->castSpell(pAura->getOwner(), pAura->getSpellInfo()->getEffectTriggerSpell(effectIndex), true);

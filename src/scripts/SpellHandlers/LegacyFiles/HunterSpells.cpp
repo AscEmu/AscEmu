@@ -124,7 +124,7 @@ bool BestialWrath(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
 bool Misdirection(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Player* caster = a->GetPlayerCaster();
+    Player* caster = a->getPlayerCaster();
 
     if (caster == NULL)
         return true;
@@ -179,7 +179,7 @@ public:
     void operator()(Aura *a) {
         uint32_t spellId = a->getSpellInfo()->getId();
 
-        Unit *caster = a->GetUnitCaster();
+        Unit *caster = a->getUnitCaster();
         Unit *target = a->getOwner();
 
         if (caster == NULL)

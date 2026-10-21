@@ -953,12 +953,12 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
             //mage talent ignite
             case 12654:
             {
-                if (!pSpellId) //we need a parent spell and should always have one since it procs on it
+                if (!m_triggeredBySpellId) //we need a parent spell and should always have one since it procs on it
                     break;
-                SpellInfo const* parentsp = sSpellMgr.getSpellInfo(pSpellId);
+                SpellInfo const* parentsp = sSpellMgr.getSpellInfo(m_triggeredBySpellId);
                 if (!parentsp)
                     return;
-                auto c = GetUnitCaster();
+                auto c = getUnitCaster();
                 if (c != nullptr && c->isPlayer())
                 {
                     aurEff->setEffectDamage(Util::float2int32(static_cast<Player*>(c)->m_castedAmount[SCHOOL_FIRE] * parentsp->getEffectBasePoints(0) / 100.0f));
@@ -987,16 +987,16 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
             case 12162:
             case 12721:
             {
-                auto c = GetUnitCaster();
-                if (!c->isPlayer())
+                auto c = getUnitCaster();
+                if (c == nullptr || !c->isPlayer())
                     break;
 
                 uint32_t multiplyer = 0;
-                if (pSpellId == 12834)
+                if (m_triggeredBySpellId == 12834)
                     multiplyer = 16; //level 1 of the talent should apply 16 of average melee weapon dmg
-                else if (pSpellId == 12849)
+                else if (m_triggeredBySpellId == 12849)
                     multiplyer = 32;
-                else if (pSpellId == 12867)
+                else if (m_triggeredBySpellId == 12867)
                     multiplyer = 48;
 
                 if (multiplyer)
@@ -1018,7 +1018,7 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
 
         // Hackfixes end
 
-        const auto casterUnit = GetUnitCaster();
+        const auto casterUnit = getUnitCaster();
         float_t damage = aurEff->getEffectFloatDamage();
 
         // Get bonus damage from spell power and attack power
@@ -1074,7 +1074,7 @@ void Aura::spellAuraEffectPeriodicHeal(AuraEffectModifier* aurEff, bool apply)
 {
     if (apply)
     {
-        const auto casterUnit = GetUnitCaster();
+        const auto casterUnit = getUnitCaster();
         float_t heal = aurEff->getEffectFloatDamage();
 
         if (casterUnit != nullptr)
@@ -1120,7 +1120,7 @@ void Aura::spellAuraEffectPeriodicHealPct(AuraEffectModifier* aurEff, bool apply
         aurEff->setEffectDamage(static_cast<int32_t>(std::ceil(getOwner()->getMaxHealth() * (aurEff->getEffectBaseDamage() / 100.0f))) * getStackCount());
 
         // Get bonus healing from spell power and attack power
-        const auto casterUnit = GetUnitCaster();
+        const auto casterUnit = getUnitCaster();
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
             aurEff->setEffectDamage(casterUnit->applySpellHealingBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff));
 
@@ -1578,7 +1578,7 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
 {
     if (apply)
     {
-        const auto casterUnit = GetUnitCaster();
+        const auto casterUnit = getUnitCaster();
         float_t damage = aurEff->getEffectFloatDamage();
 
         // Get bonus damage from spell power and attack power
@@ -1731,7 +1731,7 @@ void Aura::spellAuraEffectPeriodicHealthFunnel(AuraEffectModifier* aurEff, bool 
     if (apply)
     {
         // Get bonus damage from spell power and attack power
-        const auto casterUnit = GetUnitCaster();
+        const auto casterUnit = getUnitCaster();
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
             aurEff->setEffectDamage(casterUnit->applySpellDamageBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff));
 
@@ -1771,7 +1771,7 @@ void Aura::spellAuraEffectSchoolAbsorb(AuraEffectModifier* aurEff, bool apply)
         return;
 
     // Apply spell power coefficient
-    auto* const unitCaster = GetUnitCaster();
+    auto* const unitCaster = getUnitCaster();
     if (unitCaster != nullptr && !aurEff->isEffectDamageStatic())
         aurEff->setEffectDamage(Util::float2int32(unitCaster->applySpellDamageBonus(unitCaster, m_spellInfo, aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff)));
 }
@@ -1820,7 +1820,7 @@ void Aura::spellAuraEffectPeriodicDamagePercent(AuraEffectModifier* aurEff, bool
         aurEff->setEffectDamage((aurEff->getEffectBaseDamage() / 100.0f * getOwner()->getMaxHealth()) * getStackCount());
 
         // Get bonus damage from spell power and attack power
-        const auto casterUnit = GetUnitCaster();
+        const auto casterUnit = getUnitCaster();
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
             aurEff->setEffectDamage(casterUnit->applySpellDamageBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff));
 
@@ -1842,7 +1842,7 @@ void Aura::spellAuraEffectManaShield(AuraEffectModifier* aurEff, bool apply)
     if (!apply)
         return;
 
-    auto* const unitCaster = GetUnitCaster();
+    auto* const unitCaster = getUnitCaster();
 
     // Apply spell power coefficient
     if (unitCaster != nullptr && !aurEff->isEffectDamageStatic())
@@ -2053,7 +2053,7 @@ void Aura::spellAuraEffectImmuneNegativeAuraSchoolAndCancelAuraWhenAbsorbed(Aura
     if (!apply)
         return;
 
-    const auto* const unitCaster = GetUnitCaster();
+    const auto* const unitCaster = getUnitCaster();
     if (unitCaster == nullptr)
         return;
 

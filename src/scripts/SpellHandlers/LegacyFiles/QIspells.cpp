@@ -1322,15 +1322,15 @@ bool CleansingVialDND(uint32_t /*i*/, Spell* s)
 bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* m_target = a->getOwner();
-    Player* p_caster = a->GetPlayerCaster();
+    Player* p_caster = a->getPlayerCaster();
 
     if (p_caster == nullptr)
         return true;
 
     if (apply)
     {
-        m_target->getAIInterface()->onHostileAction(a->GetUnitCaster());
-        m_target->getThreatManager().addThreat(a->GetUnitCaster(), 10.f);
+        m_target->getAIInterface()->onHostileAction(a->getUnitCaster());
+        m_target->getThreatManager().addThreat(a->getUnitCaster(), 10.f);
     }
     else
     {
@@ -1400,10 +1400,10 @@ bool ArcaneDisruption(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (apply == false)
         return true;
 
-    if (pAura->GetPlayerCaster() == nullptr)
+    if (pAura->getPlayerCaster() == nullptr)
         return true;
 
-    Player* plr = pAura->GetPlayerCaster();
+    Player* plr = pAura->getPlayerCaster();
     if (plr == nullptr)
         return true;
 
@@ -1434,7 +1434,7 @@ bool ToLegionHold(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (pAura == nullptr)
         return true;
 
-    Player* pPlayer = pAura->GetPlayerCaster();
+    Player* pPlayer = pAura->getPlayerCaster();
     if (pPlayer == nullptr)
         return true;
 

@@ -3850,7 +3850,7 @@ void Player::regeneratePlayerPowers(uint16_t diff)
         {
             for (const auto& aurEff : getAuraEffectList(auraEffect))
             {
-                if (aurEff->getAura()->IsPassive() || aurEff->getAura()->isNegative())
+                if (aurEff->getAura()->isPassive() || aurEff->getAura()->isNegative())
                     continue;
                 if (aurEff->getAura()->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
                     return true;
@@ -4152,6 +4152,58 @@ void Player::removeShapeShiftSpell(uint32_t spellId)
 SpellSet const& Player::getShapeshiftSpells() const
 {
     return m_shapeshiftSpells;
+}
+
+void Player::addPetAuraSpell(uint32_t spellId, bool castedByPet/* = false*/)
+{
+    if (spellId == 0)
+        return;
+
+    m_petAuraSpells.try_emplace(spellId, castedByPet);
+
+    // If pet is already active and alive, cast it right away
+    if (auto* const pet = getPet(); pet != nullptr && pet->isAlive() && pet->isPermanentSummon())
+    {
+        if (castedByPet)
+            pet->castSpell(pet->getGuid(), spellId, true);
+        else
+            castSpell(pet->getGuid(), spellId, true);
+    }
+}
+
+void Player::removePetAuraSpell(uint32_t spellId)
+{
+    const auto itr = std::as_const(m_petAuraSpells).find(spellId);
+    if (itr == m_petAuraSpells.cend())
+        return;
+
+    const auto wasCastedByPet = itr->second;
+    m_petAuraSpells.erase(itr);
+
+    if (wasCastedByPet)
+    {
+        if (const auto* pet = getPet())
+            pet->removeAllAurasById(spellId, pet->getGuid());
+    }
+    else
+    {
+        removeAllAurasById(spellId, getGuid());
+    }
+}
+
+void Player::castPetAuraSpells()
+{
+    auto* const pet = getPet();
+    if (pet == nullptr || !pet->isAlive() || !pet->isPermanentSummon())
+        return;
+
+    for (const auto& [spellId, isCastedByPet] : m_petAuraSpells)
+    {
+        if (isCastedByPet)
+            pet->castSpell(pet->getGuid(), spellId, true);
+        else
+            castSpell(pet->getGuid(), spellId, true);
+    }
 }
 
 void Player::sendAvailSpells(WDB::Structures::SpellShapeshiftFormEntry const* shapeshiftFormEntry, bool active)
@@ -5671,9 +5723,7 @@ void Player::_addSpell(uint32_t spellId, uint16_t fromSkill/* = 0*/, bool learni
                 (getShapeShiftMask() != 0 && (spellInfo->getRequiredShapeShift() & getShapeShiftMask())) ||
                 (getShapeShiftMask() == 0 && (spellInfo->getAttributesExB() & ATTRIBUTESEXB_NOT_NEED_SHAPESHIFT)))
             {
-                // TODO: temporarily check for this custom flag, will be removed when spell system handles pets properly!
-                if (((spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0) || (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET && getPet() != nullptr))
-                    castSpell(getGuid(), spellInfo, true);
+                castSpell(getGuid(), spellInfo, true);
             }
         }
     }
@@ -7303,7 +7353,7 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
         for (const auto& m_aura : getPositiveAuraRange())
         {
             if (m_aura != nullptr)
-                if (m_aura->m_castedItemId && m_aura->m_castedItemId == itemProperties->ItemId)
+                if (m_aura->getCastedItemId() && m_aura->getCastedItemId() == itemProperties->ItemId)
                     m_aura->removeAura();
         }
     }
@@ -7878,6 +7928,14 @@ void Player::resurrect()
 
     m_resurrecter = 0;
     setMoveLandWalk();
+
+    // Recast passive spells that were not death persistent
+    for (const auto& spellId : m_spellSet)
+    {
+        const auto* spellInfo = sSpellMgr.getSpellInfo(spellId);
+        if (spellInfo != nullptr && spellInfo->isPassive() && !spellInfo->isDeathPersistent())
+            castSpell(this, spellInfo, true);
+    }
 
     for (uint8_t i = 0; i < 7; ++i)
         m_schoolImmunityList[i] = 0;
@@ -12815,14 +12873,6 @@ void Player::eventSummonPet(Pet* summonPet)
         {
             if (const auto spellInfo = sSpellMgr.getSpellInfo(spellId))
             {
-                if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER)
-                {
-                    this->removeAllAurasById(spellId, this->getGuid());
-                    SpellCastTargets targets(this->getGuid());
-                    Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
-                    spell->prepare(&targets);
-                }
-
                 if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET)
                 {
                     this->removeAllAurasById(spellId, this->getGuid());
@@ -12832,10 +12882,6 @@ void Player::eventSummonPet(Pet* summonPet)
                 }
             }
         }
-
-        for (const auto& aura : getAuraList())
-            if (aura && aura->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_ON_PET)
-                aura->removeAura();
 
         // A pet can be summoned after its owner has already boarded a transporter.
         // In that case there is no player movement packet that would attach the pet,
@@ -12859,13 +12905,6 @@ void Player::eventSummonPet(Pet* summonPet)
     }
 }
 
-void Player::eventDismissPet()
-{
-    for (const auto& aura : getAuraList())
-        if (aura && aura->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
-            aura->removeAura();
-}
-
 Object* Player::getSummonedObject() const { return m_summonedObject; }
 void Player::setSummonedObject(Object* summonedObject) { m_summonedObject = summonedObject; }
 
@@ -12876,16 +12915,6 @@ void Player::_spawnPet(PetCache const* petCache)
     {
         pet->destroy();
         return;
-    }
-
-    // TODO: find a better way to handle these -Appled
-    if (petCache->spellid)
-    {
-        removeAllAurasById(18789);
-        removeAllAurasById(18790);
-        removeAllAurasById(18791);
-        removeAllAurasById(18792);
-        removeAllAurasById(35701);
     }
 }
 
@@ -16729,19 +16758,8 @@ void Player::completeLoading()
     {
         const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
 
-        if (spellInfo != nullptr
-            && (spellInfo->isPassive())
-            && !(spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET))
+        if (spellInfo != nullptr && spellInfo->isPassive())
         {
-            if (spellInfo->getRequiredShapeShift())
-            {
-                if (!(getShapeShiftMask() & spellInfo->getRequiredShapeShift()))
-                    continue;
-            }
-
-            if (spellInfo->getCasterAuraState() != 0 && !hasAuraState(static_cast<AuraState>(spellInfo->getCasterAuraState()), spellInfo, this))
-                continue;
-
             Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
             newSpell->prepare(&targets);
         }
@@ -16751,9 +16769,6 @@ void Player::completeLoading()
     {
         if (SpellInfo const* sp = sSpellMgr.getSpellInfo(loginaura.id))
         {
-            if (sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
-                continue; //do not load auras that only exist while pet exist. We should recast these when pet is created anyway
-
             auto aura = sSpellMgr.newAura(sp, loginaura.dur, this, this, false);
             for (uint8_t x = 0; x < 3; x++)
             {
@@ -17105,20 +17120,17 @@ void Player::saveAuras(std::stringstream& ss)
     for (uint16_t x = AuraSlots::REMOVABLE_SLOT_START; x < AuraSlots::REMOVABLE_SLOT_END; x++)
     {
         auto* const aur = getAuraWithAuraSlot(x);
-        if (aur != nullptr && aur->getTimeLeft() > 3000)
+        if (aur != nullptr && !aur->isTemporaryAura() && aur->getTimeLeft() > 3000)
         {
             for (uint8_t i = 0; i < 3; ++i)
                 if (aur->getSpellInfo()->getEffect(i) == SPELL_EFFECT_APPLY_GROUP_AREA_AURA || aur->getSpellInfo()->getEffect(i) == SPELL_EFFECT_APPLY_RAID_AREA_AURA || aur->getSpellInfo()->getEffect(i) == SPELL_EFFECT_ADD_FARSIGHT)
                     continue;
 
-            if (aur->pSpellId)
+            if (aur->getTriggeredBySpellId())
                 continue; // these auras were gained due to some proc. We do not save these either to avoid exploits of not removing them
 
-            if (aur->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
-                continue;
-
             // we are going to cast passive spells anyway on login so no need to save auras for them
-            if (aur->IsPassive() && !(aur->getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
+            if (aur->isPassive() && !(aur->getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
                 continue;
 
             auto* const prevAura = getAuraWithAuraSlot(prevX);

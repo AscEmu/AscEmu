@@ -5491,29 +5491,7 @@ float_t Spell::getEffectRadius(uint8_t effectIndex)
         return m_effectRadius[effectIndex];
 
     m_isEffectRadiusSet[effectIndex] = true;
-    m_effectRadius[effectIndex] = ::getRadius(sSpellRadiusStore.lookupEntry(getSpellInfo()->getEffectRadiusIndex(effectIndex)));
-
-    // If spell has no effect radius set, use spell range instead
-    // but skip for effect target 87. Otherwise some teleport spells like ICC teleports will target
-    // all units in infinite range
-    if (G3D::fuzzyEq(m_effectRadius[effectIndex], 0.f) &&
-        getSpellInfo()->getEffectImplicitTargetA(effectIndex) != EFF_TARGET_AREA_DESTINATION && getSpellInfo()->getEffectImplicitTargetB(effectIndex) != EFF_TARGET_AREA_DESTINATION)
-    {
-        const auto rangeEntry = sSpellRangeStore.lookupEntry(getSpellInfo()->getRangeIndex());
-        if (rangeEntry != nullptr)
-        {
-#if VERSION_STRING < WotLK
-            m_effectRadius[effectIndex] = rangeEntry->maxRange;
-#else
-            const auto effectTargetMask = getSpellInfo()->getRequiredTargetMaskForEffect(effectIndex);
-            m_effectRadius[effectIndex] = effectTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE ? rangeEntry->maxRange : rangeEntry->maxRangeFriendly;
-#endif
-        }
-    }
-
-    // Apply radius modifiers
-    if (getUnitCaster() != nullptr)
-        getUnitCaster()->applySpellModifiers(SPELLMOD_RADIUS, &m_effectRadius[effectIndex], getSpellInfo(), this);
+    m_effectRadius[effectIndex] = m_spellInfo->calculateEffectRadius(effectIndex, u_caster, this);
 
     return m_effectRadius[effectIndex];
 }

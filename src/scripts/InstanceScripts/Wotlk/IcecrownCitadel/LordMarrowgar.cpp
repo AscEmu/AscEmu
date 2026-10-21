@@ -422,8 +422,8 @@ void BoneStorm::onAuraCreate(Aura* aur)
 {
     // set duration here
     int32_t duration = 20000;
-    if (aur->GetUnitCaster()->isCreature())
-        duration = static_cast<Creature*>(aur->GetUnitCaster())->GetScript()->getRaidModeValue(20000, 30000, 20000, 30000);
+    if (aur->getUnitCaster()->isCreature())
+        duration = static_cast<Creature*>(aur->getUnitCaster())->GetScript()->getRaidModeValue(20000, 30000, 20000, 30000);
 
     aur->setNewMaxDuration(duration, false);
 }
@@ -450,13 +450,13 @@ void BoneSpikeGraveyard::onAuraApply(Aura* aur)
 {
     aur->removeAuraEffect(EFF_INDEX_1);
 
-    if (Creature* marrowgar = static_cast<Creature*>(aur->GetUnitCaster()))
+    if (Creature* marrowgar = static_cast<Creature*>(aur->getUnitCaster()))
     {
         CreatureAIScript* marrowgarAI = marrowgar->GetScript();
         if (!marrowgarAI)
             return;
 
-        uint8_t boneSpikeCount = uint8_t(aur->GetUnitCaster()->getWorldMap()->getSpawnMode() & 1 ? 3 : 1);
+        uint8_t boneSpikeCount = uint8_t(aur->getUnitCaster()->getWorldMap()->getSpawnMode() & 1 ? 3 : 1);
         std::list<Unit*> targets;
 
         targets.clear();

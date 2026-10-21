@@ -161,12 +161,13 @@ public:
     bool canKnowOnlySingleRank() const;
 
     int32_t calculateEffectValue(uint8_t effIndex, Unit* unitCaster = nullptr, Item* itemCaster = nullptr, SpellForcedBasePoints forcedBasePoints = SpellForcedBasePoints()) const;
+    float_t calculateEffectRadius(uint8_t effIndex, Unit* unitCaster = nullptr, Spell* spell = nullptr, Aura* aur = nullptr) const;
 
     bool doesEffectApplyAura(uint8_t effIndex) const;
 
-    bool isAreaAuraEffect(uint8_t effIndex) const;
+    bool isAreaAuraEffect(uint8_t effIndex, bool includePersistent = true) const;
+    bool hasAreaAuraEffect(bool includePersistent = true) const;
     bool appliesAreaAura(uint32_t auraType) const;
-    uint32_t getAreaAuraEffect() const;
 
     bool isTriggerSpellCastedByCaster(SpellInfo const* triggeringSpell) const;
 

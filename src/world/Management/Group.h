@@ -207,7 +207,7 @@ public:
 
     void MovePlayer(CachedCharacterInfo* info, uint8_t subgroup);
 
-    bool HasMember(Player* pPlayer);
+    bool HasMember(Player const* pPlayer);
     bool HasMember(CachedCharacterInfo* info);
     inline uint32_t MemberCount(void) { return m_MemberCount; }
     inline bool IsFull() { return ((m_GroupType == GROUP_TYPE_PARTY && m_MemberCount >= MAX_GROUP_SIZE_PARTY) || (m_GroupType == GROUP_TYPE_RAID && m_MemberCount >= MAX_GROUP_SIZE_RAID)); }

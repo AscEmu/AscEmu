@@ -60,7 +60,6 @@
 #include "Objects/GameObject.h"
 #include "Objects/DynamicObject.hpp"
 #include "Objects/Units/Creatures/Vehicle.hpp"
-#include "Server/EventMgr.h"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/CommonTime.hpp"
 #include "Utilities/Narrow.hpp"
@@ -75,653 +74,6 @@ using Version::UnitField;
 using namespace AscEmu::Packets;
 
 using AscEmu::World::Spell::Helpers::decimalToMask;
-
-Player* Aura::GetPlayerCaster()
-{
-    //caster and target are the same
-    if (m_casterGuid == m_target->getGuid())
-    {
-        if (m_target->isPlayer())
-            return static_cast<Player*>(m_target);
-
-        return nullptr;
-    }
-
-    if (m_target->getWorldMap())
-        return m_target->getWorldMapPlayer(m_casterGuid);
-
-    return nullptr;
-}
-
-Unit* Aura::GetUnitTarget()
-{
-    if (m_target && m_target->getWorldMap())
-        return m_target;
-    
-    return nullptr;
-}
-
-Player* Aura::GetPlayerTarget()
-{
-    if (p_target && p_target->getWorldMap())
-        return p_target;
-
-    return nullptr;
-}
-
-bool Aura::IsPassive() const { if (!m_spellInfo) return false; return (m_spellInfo->isPassive() && !m_areaAura); }
-
-Unit* Aura::GetUnitCaster()
-{
-    if (m_casterGuid == m_target->getGuid())
-        return m_target;
-
-    if (m_target->getWorldMap())
-        return m_target->getWorldMapUnit(m_casterGuid);
-
-    return nullptr;
-}
-
-Aura::Aura(SpellInfo const* proto, int32_t duration, Object* caster, Unit* target, bool temporary, Item* i_caster)
-    : m_auraEffects([]<size_t... indexSeq> (Aura& aur, std::index_sequence<indexSeq...>) {
-        return std::array<AuraEffectModifier, MAX_SPELL_EFFECTS>{ ((void)indexSeq, AuraEffectModifier(aur))... };
-    }(*this, std::make_index_sequence<MAX_SPELL_EFFECTS>{}))
-{
-    m_castInDuel = false;
-    m_temporary = temporary; // Aura saving related
-    m_ignoreunapply = false;
-
-    if (i_caster != nullptr)
-    {
-        m_castedItemId = i_caster->getItemProperties()->ItemId;
-        itemCasterGUID = i_caster->getGuid();
-    }
-    else
-    {
-        m_castedItemId = 0;
-        itemCasterGUID = 0;
-    }
-
-    // Modifies current aura duration based on its mechanic type
-    if (p_target && getMaxDuration() > 0)
-    {
-        int32_t DurationModifier = p_target->m_mechanicDurationPctMod[Spell::GetMechanic(proto)];
-        if (DurationModifier < -100)
-            DurationModifier = -100; // Can't reduce by more than 100%
-        setMaxDuration((getMaxDuration() * (100 + DurationModifier)) / 100);
-    }
-
-    m_areaAura = false;
-
-    if (caster->isCreatureOrPlayer())
-    {
-        if (p_target && caster->isPlayer())
-        {
-            if (p_target->getDuelPlayer() == static_cast<Player*>(caster))
-            {
-                m_castInDuel = true;
-            }
-        }
-    }
-
-    m_visualSlot = 0xFF;
-    pSpellId = 0;
-    // sLogger.info("Aura::Constructor {} ({}) from {}.", m_spellProto->getId(), m_spellProto->Name, m_target->getGuidLow());
-    m_auraSlot = 0xffff;
-    m_flags = 0;
-
-    // APGL End
-    // MIT Start
-    //\todo Zyres: We should create Auras in a function to check these pointers. To assert in a constructor after using at least on of the pointers before is bad codestyle ;)
-    ASSERT(target != nullptr && proto != nullptr);
-
-    m_spellInfo = proto;
-    m_casterGuid = caster->getGuid();
-    m_target = target;
-    if (m_target->isPlayer())
-        p_target = dynamic_cast<Player*>(m_target);
-
-    mPositive = !getSpellInfo()->isNegativeAura();
-
-    // Initialize aura charges
-    auto charges = getSpellInfo()->getProcCharges();
-    if (caster->isCreatureOrPlayer())
-        static_cast<Unit*>(caster)->applySpellModifiers(SPELLMOD_CHARGES, &charges, getSpellInfo(), nullptr, this);
-
-    m_charges = static_cast<uint16_t>(charges);
-    m_originalCharges = m_charges;
-
-    m_updatingModifiers = true;
-
-    // Initialize aura effect variables
-    //m_auraEffects.fill(AuraEffectModifier(*this));
-
-    if (!IsPassive())
-        m_originalDuration = duration;
-
-    _calculateSpellPowerBonus();
-    _calculateAttackPowerBonus();
-    _calculateSpellHaste();
-    _calculateCritChance();
-
-    // Set duration after haste calculation
-    setMaxDuration(Util::float2int32(m_originalDuration * m_spellHaste));
-    setTimeLeft(getMaxDuration());
-
-    // Call aura script hook
-    sScriptMgr.callScriptedAuraOnCreate(this);
-
-    // MIT End
-    // APGL Start
-}
-
-Aura::~Aura()
-{
-    sEventMgr.RemoveEvents(this);
-    m_usedModifiers.clear();
-}
-
-void Aura::EventUpdateGroupAA(AuraEffectModifier* /*aurEff*/, float r)
-{
-    Player* owner = m_target->getPlayerOwnerOrSelf();
-    if (owner == nullptr)
-    {
-        targets.clear();
-        return;
-    }
-
-    if (!owner->isInGroup())
-    {
-        if (m_target->getGuid() != owner->getGuid())
-        {
-            if ((m_target->getDistanceSq(owner) <= r))
-            {
-                if (!owner->hasAurasWithId(m_spellInfo->getId()))
-                    targets.insert(owner->getGuid());
-            }
-            else
-            {
-                if (owner->hasAurasWithId(m_spellInfo->getId()))
-                {
-                    targets.erase(owner->getGuidLow());
-                    owner->removeAllAurasById(m_spellInfo->getId());
-                }
-            }
-        }
-    }
-    else
-    {
-        owner->getGroup()->Lock();
-
-        SubGroup* sg = owner->getGroup()->GetSubGroup(owner->getSubGroupSlot());
-        for (const auto cachedCharacterInfo : sg->getGroupMembers())
-        {
-            Player* op = sObjectMgr.getPlayer(cachedCharacterInfo->guid);
-
-            if (op == nullptr)
-                continue;
-
-            if (m_target->getDistanceSq(op) > r)
-                continue;
-
-            if (m_target->GetInstanceID() != op->GetInstanceID())
-                continue;
-
-            if (!m_target->isInSamePhase(op))
-                continue;
-
-            if (!op->isAlive())
-                continue;
-
-            if (op->hasAurasWithId(m_spellInfo->getId()))
-                continue;
-
-            targets.insert(op->getGuid());
-        }
-
-        owner->getGroup()->Unlock();
-    }
-
-    for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end();)
-    {
-        AreaAuraList::iterator itr2 = itr;
-        ++itr;
-
-        Player* tp = m_target->getWorldMapPlayer(*itr2);
-
-        bool removable = false;
-        if (tp == nullptr)
-        {
-            targets.erase(itr2);
-            continue;
-        }
-
-        if (m_target->getDistanceSq(tp) > r)
-            removable = true;
-
-        if (!m_target->isInSamePhase(tp))
-            removable = true;
-
-        if ((tp->getGuid() != owner->getGuid()) && !tp->isInGroup())
-            removable = true;
-        else
-        {
-            if (owner->isInGroup())
-            {
-                if (owner->getGroup()->GetID() != tp->getGroup()->GetID())
-                    removable = true;
-
-                if (owner->getSubGroupSlot() != tp->getSubGroupSlot())
-                    removable = true;
-            }
-        }
-
-        if (removable)
-        {
-            targets.erase(itr2);
-            tp->removeAllAurasById(m_spellInfo->getId());
-        }
-    }
-}
-
-void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
-{
-    Player* owner = m_target->getPlayerOwnerOrSelf();
-    if (owner == nullptr)
-    {
-        targets.clear();
-        return;
-    }
-
-    if (!owner->isInGroup())
-    {
-        if (m_target->getGuid() != owner->getGuid())
-        {
-            if ((m_target->getDistanceSq(owner) <= r))
-            {
-                if (!owner->hasAurasWithId(m_spellInfo->getId()))
-                    targets.insert(owner->getGuid());
-            }
-            else
-            {
-                if (owner->hasAurasWithId(m_spellInfo->getId()))
-                {
-                    targets.erase(owner->getGuidLow());
-                    owner->removeAllAurasById(m_spellInfo->getId());
-                }
-            }
-        }
-
-    }
-    else
-    {
-        const auto group = owner->getGroup();
-
-        group->Lock();
-
-        for (uint32_t i = 0; i < group->GetSubGroupCount(); i++)
-        {
-            SubGroup* sg = group->GetSubGroup(i);
-
-            for (const auto& cachedCharacterInfo : sg->getGroupMembers())
-            {
-                Player* op = sObjectMgr.getPlayer(cachedCharacterInfo->guid);
-
-                if (op == nullptr)
-                    continue;
-
-                if (op->GetInstanceID() != m_target->GetInstanceID())
-                    continue;
-
-                if (m_target->getDistanceSq(op) > r)
-                    continue;
-
-                if (!m_target->isInSamePhase(op))
-                    continue;
-
-                if (!op->isAlive())
-                    continue;
-
-                if (op->hasAurasWithId(m_spellInfo->getId()))
-                    continue;
-
-                targets.insert(op->getGuid());
-            }
-        }
-
-        group->Unlock();
-    }
-
-    // Check for targets that should be no longer affected
-    for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end();)
-    {
-        AreaAuraList::iterator itr2 = itr;
-        ++itr;
-
-        Player* tp = m_target->getWorldMapPlayer(*itr2);
-        bool removable = false;
-
-        if (tp == nullptr)
-        {
-            targets.erase(itr2);
-            continue;
-        }
-
-        if (m_target->getDistanceSq(tp) > r)
-            removable = true;
-
-        if (!m_target->isInSamePhase(tp))
-            removable = true;
-
-        if ((tp->getGuid() != owner->getGuid()) && !tp->isInGroup())
-            removable = true;
-
-        if (removable)
-        {
-            targets.erase(itr2);
-            tp->removeAllAurasById(m_spellInfo->getId());
-        }
-    }
-}
-
-void Aura::EventUpdatePetAA(AuraEffectModifier* aurEff, float r)
-{
-    const auto pet = m_target->getPet();
-    if (pet == nullptr)
-        return;
-
-    if (m_target->getDistanceSq(pet) > r)
-    {
-        pet->removeAllAurasById(m_spellInfo->getId(), m_target->getGuid());
-    }
-    else
-    {
-        if (pet->isAlive() && pet->getAuraWithId(m_spellInfo->getId(), m_target->getGuid()) == nullptr)
-        {
-            auto a = sSpellMgr.newAura(m_spellInfo, getTimeLeft(), m_target, pet, true);
-            a->m_areaAura = true;
-            a->addAuraEffect(aurEff->getAuraEffectType(), aurEff->getEffectDamage(), aurEff->getEffectMiscValue(), aurEff->getEffectPercentModifier(), true, aurEff->getEffectIndex());
-            pet->addAura(std::move(a));
-        }
-    }
-}
-
-void Aura::EventUpdateFriendAA(AuraEffectModifier* /*aurEff*/, float r)
-{
-    Unit* u = m_target;
-    if (u == nullptr)
-        return;
-
-    for (const auto& itr : u->getInRangeObjectsSet())
-    {
-        Object* o = itr;
-
-        if (!o || !o->isCreatureOrPlayer())
-            continue;
-
-        Unit* ou = static_cast<Unit*>(o);
-
-        if (u->getDistanceSq(ou) > r)
-            continue;
-
-        if (!u->isInSamePhase(ou))
-            continue;
-
-        if (!ou->isAlive())
-            continue;
-
-        if (u->isHostileTo(ou))
-            continue;
-
-        if (u->isNeutralTo(ou))
-            continue;
-
-        if (ou->hasAurasWithId(m_spellInfo->getId()))
-            continue;
-
-        targets.insert(ou->getGuid());
-    }
-
-    for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end();)
-    {
-        AreaAuraList::iterator itr2 = itr;
-        ++itr;
-
-        Unit* tu = u->getWorldMapUnit(*itr2);
-        bool removable = false;
-
-        if (tu == nullptr)
-        {
-            targets.erase(itr2);
-            continue;
-        }
-
-        if (u->getDistanceSq(tu) > r)
-            removable = true;
-
-        if (u->isHostileTo(tu))
-            removable = true;
-
-        if (u->isNeutralTo(tu))
-            removable = true;
-
-        if (!u->isInSamePhase(tu))
-            removable = true;
-
-        if (removable)
-        {
-            tu->removeAllAurasById(m_spellInfo->getId());
-            targets.erase(itr2);
-        }
-    }
-}
-
-void Aura::EventUpdateEnemyAA(AuraEffectModifier* /*aurEff*/, float r)
-{
-    Unit* u = m_target;
-    if (u == nullptr)
-        return;
-
-    for (const auto& itr : u->getInRangeObjectsSet())
-    {
-        Object* o = itr;
-
-        if (!o || !o->isCreatureOrPlayer())
-            continue;
-
-        Unit* ou = static_cast<Unit*>(o);
-
-        if (u->getDistanceSq(ou) > r)
-            continue;
-
-        if (!u->isInSamePhase(ou))
-            continue;
-
-        if (!ou->isAlive())
-            continue;
-
-        if (!u->isHostileTo(ou))
-            continue;
-
-        if (ou->hasAurasWithId(m_spellInfo->getId()))
-            continue;
-
-        targets.insert(ou->getGuid());
-    }
-
-    for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end();)
-    {
-        AreaAuraList::iterator itr2 = itr;
-        ++itr;
-
-        Unit* tu = u->getWorldMapUnit(*itr2);
-        bool removable = false;
-
-        if (tu == nullptr)
-        {
-            targets.erase(itr2);
-            continue;
-        }
-
-        if (u->getDistanceSq(tu) > r)
-            removable = true;
-
-        if (!u->isHostileTo(tu))
-            removable = true;
-
-        if (u->isNeutralTo(tu))
-            removable = true;
-
-        if (!u->isInSamePhase(tu))
-            removable = true;
-
-        if (removable)
-        {
-            tu->removeAllAurasById(m_spellInfo->getId());
-            targets.erase(itr2);
-        }
-    }
-}
-
-void Aura::EventUpdateOwnerAA(AuraEffectModifier* aurEff, float r)
-{
-    Object* o = getOwner();
-    if (!o->isCreature())
-        return;
-
-    Creature* c = static_cast<Creature*>(o);
-    if (!c->isSummon())
-        return;
-
-    Unit* ou = nullptr;
-    ou = static_cast< Summon* >(c)->getUnitOwner();
-
-    if (ou == nullptr)
-        return;
-
-    if (ou->isAlive() &&
-        !ou->hasAurasWithId(m_spellInfo->getId()) &&
-        (c->getDistanceSq(ou) <= r))
-    {
-
-        auto a = sSpellMgr.newAura(m_spellInfo, getTimeLeft(), c, ou, true);
-        a->m_areaAura = true;
-        a->addAuraEffect(aurEff->getAuraEffectType(), aurEff->getEffectDamage(), aurEff->getEffectMiscValue(), aurEff->getEffectPercentModifier(), true, aurEff->getEffectIndex());
-        ou->addAura(std::move(a));
-    }
-
-
-    if (!ou->isAlive() || (c->getDistanceSq(ou) > r))
-        ou->removeAllAurasById(m_spellInfo->getId());
-}
-
-void Aura::EventUpdateAreaAura(uint8_t effIndex, float r)
-{
-    /* burlex: cheap hack to get this to execute in the correct context always */
-    if (event_GetCurrentInstanceId() == -1)
-    {
-        event_Relocate();
-        return;
-    }
-
-    Unit* u_caster = GetUnitCaster();
-
-    // if the caster is no longer valid->remove the aura
-    if (u_caster == nullptr)
-    {
-        removeAura();
-        //since we lost the caster we cannot do anything more
-        return;
-    }
-
-    // Do not update area aura if caster is not in world yet
-    if (!u_caster->IsInWorld())
-        return;
-
-    uint32_t AreaAuraEffectId = m_spellInfo->getAreaAuraEffect();
-
-    switch (AreaAuraEffectId)
-    {
-
-        case SPELL_EFFECT_APPLY_GROUP_AREA_AURA:
-            EventUpdateGroupAA(&m_auraEffects[effIndex], r);
-            break;
-
-        case SPELL_EFFECT_APPLY_RAID_AREA_AURA:
-            EventUpdateRaidAA(&m_auraEffects[effIndex], r);
-            break;
-
-        case SPELL_EFFECT_APPLY_PET_AREA_AURA:
-            EventUpdatePetAA(&m_auraEffects[effIndex], r);
-            break;
-
-        case SPELL_EFFECT_APPLY_FRIEND_AREA_AURA:
-            EventUpdateFriendAA(&m_auraEffects[effIndex], r);
-            break;
-
-        case SPELL_EFFECT_APPLY_ENEMY_AREA_AURA:
-            EventUpdateEnemyAA(&m_auraEffects[effIndex], r);
-            break;
-
-#if VERSION_STRING >= TBC
-        case SPELL_EFFECT_APPLY_OWNER_AREA_AURA:
-            EventUpdateOwnerAA(&m_auraEffects[effIndex], r);
-            break;
-#endif
-
-        default:
-            sLogger.failure("Spell {} ({}) has tried to update Area Aura targets but Spell has no valid Area Aura effect {}.", m_spellInfo->getId(), m_spellInfo->getName(), AreaAuraEffectId);
-            return;
-    }
-
-    for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end(); ++itr)
-    {
-        auto unit = m_target->getWorldMapUnit(*itr);
-        if (unit == nullptr)
-            return;
-
-        if (unit->hasAurasWithId(m_spellInfo->getId()))
-            continue;
-
-        auto a = sSpellMgr.newAura(m_spellInfo, getTimeLeft(), m_target, unit, true);
-        a->m_areaAura = true;
-        a->addAuraEffect(m_auraEffects[effIndex].getAuraEffectType(), m_auraEffects[effIndex].getEffectDamage(), m_auraEffects[effIndex].getEffectMiscValue(), m_auraEffects[effIndex].getEffectPercentModifier(), true, m_auraEffects[effIndex].getEffectIndex());
-        unit->addAura(std::move(a));
-    }
-}
-
-void Aura::ClearAATargets()
-{
-    uint32_t spellid = m_spellInfo->getId();
-
-    for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end(); ++itr)
-    {
-        Unit* tu = m_target->getWorldMapUnit(*itr);
-
-        if (tu == nullptr)
-            continue;
-
-        tu->removeAllAurasById(spellid);
-    }
-    targets.clear();
-
-    if (m_spellInfo->hasEffect(SPELL_EFFECT_APPLY_PET_AREA_AURA))
-    {
-        if (auto* const pet = m_target->getPet())
-            pet->removeAllAurasById(spellid, m_target->getGuid());
-    }
-
-#if VERSION_STRING >= TBC
-    if (m_spellInfo->hasEffect(SPELL_EFFECT_APPLY_OWNER_AREA_AURA))
-    {
-        Unit* u = m_target->getWorldMapUnit(m_target->getCreatedByGuid());
-
-        if (u != nullptr)
-            u->removeAllAurasById(spellid);
-
-    }
-#endif
-}
 
 //------------------------- Aura Effects -----------------------------
 
@@ -776,7 +128,7 @@ void Aura::SpellAuraBindSight(AuraEffectModifier* /*aurEff*/, bool apply)
 {
     mPositive = true;
     // MindVision
-    Player* caster = GetPlayerCaster();
+    Player* caster = getPlayerCaster();
     if (caster == nullptr)
         return;
 
@@ -788,7 +140,7 @@ void Aura::SpellAuraBindSight(AuraEffectModifier* /*aurEff*/, bool apply)
 
 void Aura::SpellAuraModPossess(AuraEffectModifier* /*aurEff*/, bool apply)
 {
-    Unit* caster = GetPlayerCaster();
+    Unit* caster = getPlayerCaster();
 
     if (apply)
     {
@@ -828,7 +180,7 @@ void Aura::SpellAuraModPossess(AuraEffectModifier* /*aurEff*/, bool apply)
 
 void Aura::SpellAuraModConfuse(AuraEffectModifier* aurEff, bool apply)
 {
-    Unit* u_caster = GetUnitCaster();
+    Unit* u_caster = getUnitCaster();
 
     if (m_target->isTotem())
         return;
@@ -884,7 +236,7 @@ void Aura::SpellAuraModConfuse(AuraEffectModifier* aurEff, bool apply)
 
 void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
 {
-    Player* caster = GetPlayerCaster();
+    Player* caster = getPlayerCaster();
     if (caster == nullptr)
         return;
     if (!m_target->isCreature())
@@ -945,7 +297,7 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
 
 void Aura::SpellAuraModFear(AuraEffectModifier* aurEff, bool apply)
 {
-    Unit* u_caster = GetUnitCaster();
+    Unit* u_caster = getUnitCaster();
 
     if (m_target->isCreature() &&
         (m_target->isTotem() || m_target->isRooted()))
@@ -1046,7 +398,7 @@ void Aura::SpellAuraModThreatGenerated(AuraEffectModifier* aurEff, bool apply)
 
 void Aura::SpellAuraModTaunt(AuraEffectModifier* /*aurEff*/, bool /*apply*/)
 {
-    Unit* m_caster = GetUnitCaster();
+    Unit* m_caster = getUnitCaster();
 
     if (!m_caster || !m_caster->isAlive() || !m_target->isAlive() || !m_target->getThreatManager().canHaveThreatList())
         return;
@@ -1058,7 +410,7 @@ void Aura::SpellAuraModTaunt(AuraEffectModifier* /*aurEff*/, bool /*apply*/)
 
 void Aura::SpellAuraModDetaunt(AuraEffectModifier* /*aurEff*/, bool /*apply*/)
 {
-    Unit* caster = GetUnitCaster();
+    Unit* caster = getUnitCaster();
 
     if (!caster || !caster->isAlive() || !m_target->isAlive() || !caster->getThreatManager().canHaveThreatList())
         return;
@@ -1128,7 +480,7 @@ void Aura::SpellAuraModStun(AuraEffectModifier* aurEff, bool apply)
         }
 
         //warrior talent - second wind triggers on stun and immobilize. This is not used as proc to be triggered always !
-        Unit* caster = GetUnitCaster();
+        Unit* caster = getUnitCaster();
         if (caster != nullptr)
         {
             caster->eventStunOrImmobilize(m_target);
@@ -1154,7 +506,7 @@ void Aura::SpellAuraModStun(AuraEffectModifier* aurEff, bool apply)
         // attack them back.. we seem to lose this sometimes for some reason
         if (m_target->isCreature())
         {
-            Unit* target = GetUnitCaster();
+            Unit* target = getUnitCaster();
             if (m_target->getAIInterface()->getCurrentTarget() != nullptr)
                 target = m_target->getAIInterface()->getCurrentTarget();
 
@@ -1178,7 +530,7 @@ void Aura::SpellAuraModStun(AuraEffectModifier* aurEff, bool apply)
         case 11298:
         {
         // sap
-        Unit* c = GetUnitCaster();
+        Unit* c = getUnitCaster();
         if (c)
         c->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);  // remove stealth
         }break;
@@ -1198,7 +550,7 @@ void Aura::SpellAuraModStun(AuraEffectModifier* aurEff, bool apply)
         case 28456:
         {
         // gouge
-        Unit* c = GetUnitCaster();
+        Unit* c = getUnitCaster();
         if (c && c->getObjectTypeId() == TYPEID_PLAYER)
         {
         //TO< Player* >(c)->CombatModeDelay = 10;
@@ -1585,9 +937,6 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
                         {
                             aur->setTimeLeft(tmp_duration);
                             aur->refreshOrModifyStack();
-
-                            sEventMgr.ModifyEventTimeLeft(aur.get(), EVENT_AURA_REMOVE, tmp_duration);
-                            sEventMgr.AddEvent(aur.get(), &Aura::removeAura, AURA_REMOVE_ON_EXPIRE, EVENT_AURA_REMOVE, tmp_duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
                         }
                     }
                 }
@@ -1692,11 +1041,11 @@ void Aura::SpellAuraModResistance(AuraEffectModifier* aurEff, bool apply)
     }
     else
         amt = -aurEff->getEffectDamage();
-    Unit* caster = GetUnitCaster();
+    Unit* caster = getUnitCaster();
     if (isNegative() && caster != nullptr && m_target->isCreature())
         m_target->getAIInterface()->onHostileAction(caster);
 
-    Player* plr = GetPlayerCaster();
+    Player* plr = getPlayerCaster();
     if (plr != nullptr)
     {
         switch (getSpellInfo()->getId())
@@ -1801,7 +1150,7 @@ void Aura::SpellAuraModRoot(AuraEffectModifier* aurEff, bool apply)
             m_target->setControlled(true, UNIT_STATE_ROOTED);
 
         //warrior talent - second wind triggers on stun and immobilize. This is not used as proc to be triggered always !
-        Unit* caster = GetUnitCaster();
+        Unit* caster = getUnitCaster();
         if (caster != nullptr)
         {
             caster->eventStunOrImmobilize(m_target);
@@ -1822,7 +1171,7 @@ void Aura::SpellAuraModRoot(AuraEffectModifier* aurEff, bool apply)
             m_target->setControlled(false, UNIT_STATE_ROOTED);
 
         if (m_target->isCreature())
-            m_target->getAIInterface()->onHostileAction(GetUnitCaster());
+            m_target->getAIInterface()->onHostileAction(getUnitCaster());
 
         if (getSpellInfo()->getSchoolMask() & SCHOOL_MASK_FROST && !--m_target->m_ascFrozen)
             m_target->removeAuraStateAndAuras(AURASTATE_FLAG_FROZEN);
@@ -2084,7 +1433,7 @@ void Aura::SpellAuraModDecreaseSpeed(AuraEffectModifier* aurEff, bool apply)
         if (m_spellInfo->getSchoolMask() & SCHOOL_MASK_FROST)
         {
             //yes we are freezing the bastard, so can we proc anything on this ?
-            Unit* caster = GetUnitCaster();
+            Unit* caster = getUnitCaster();
             if (caster != nullptr && caster->isPlayer())
                 caster->eventChill(m_target);
             if (m_target->isPlayer() && caster)
@@ -2118,7 +1467,7 @@ void Aura::UpdateAuraModDecreaseSpeed(AuraEffectModifier* aurEff)
     if (m_spellInfo->getSchoolMask() & SCHOOL_MASK_FROST)
     {
         //yes we are freezing the bastard, so can we proc anything on this ?
-        Unit* caster = GetUnitCaster();
+        Unit* caster = getUnitCaster();
         if (caster && caster->isPlayer())
             caster->eventChill(m_target);
         if (m_target->isPlayer() && caster)
@@ -2210,7 +1559,7 @@ void Aura::SpellAuraModEffectImmunity(AuraEffectModifier* /*aurEff*/, bool apply
     {
         if (m_spellInfo->getId() == 23333 || m_spellInfo->getId() == 23335 || m_spellInfo->getId() == 34976)
         {
-            Player* plr = GetPlayerCaster();
+            Player* plr = getPlayerCaster();
             if (plr == nullptr || plr->getBattleground() == nullptr)
                 return;
 
@@ -2265,7 +1614,7 @@ void Aura::SpellAuraModSchoolImmunity(AuraEffectModifier* aurEff, bool apply)
                 {
                     if (pAura.get() != this &&
                         pAura != nullptr &&
-                        !pAura->IsPassive() &&
+                        !pAura->isPassive() &&
                         pAura->isNegative() &&
                         !(pAura->getSpellInfo()->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY))
                     {
@@ -2314,7 +1663,7 @@ void Aura::SpellAuraModSchoolImmunity(AuraEffectModifier* aurEff, bool apply)
     if (apply)
     {
         //fix me may be negative
-        Unit* c = GetUnitCaster();
+        Unit* c = getUnitCaster();
         if (c)
         {
             if (c->isValidAttackableTarget(m_target))
@@ -3329,11 +2678,11 @@ void Aura::SpellAuraSplitDamage(AuraEffectModifier* aurEff, bool apply)
     if (m_areaAura)
     {
         source = getOwner();
-        destination = GetUnitCaster();
+        destination = getUnitCaster();
     }
     else
     {
-        source = GetUnitCaster();
+        source = getUnitCaster();
         destination = getOwner();
     }
 
@@ -3370,33 +2719,6 @@ void Aura::EventPeriodicDrink(uint32_t amount)
         v = m_target->getMaxPower(POWER_TYPE_MANA);
 
     m_target->setPower(POWER_TYPE_MANA, v);
-}
-
-void Aura::EventPeriodicHeal1(uint32_t amount)
-{
-    if (!m_target->isAlive())
-        return;
-
-    uint32_t ch = m_target->getHealth();
-    ch += amount;
-    uint32_t mh = m_target->getMaxHealth();
-
-    if (ch > mh)
-        m_target->setHealth(mh);
-    else
-        m_target->setHealth(ch);
-
-    if (getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
-    {
-        m_target->emote(EMOTE_ONESHOT_EAT);
-    }
-    else
-    {
-        if (!(m_spellInfo->custom_BGR_one_buff_on_target & SPELL_TYPE_ARMOR))
-            m_target->sendPeriodicAuraLog(m_casterGuid, m_target->GetNewGUID(), getSpellInfo(), amount, 0, 0, 0, SPELL_AURA_PERIODIC_HEAL_PCT, false);
-    }
-
-    m_target->removeAurasByHeal();
 }
 
 void Aura::SpellAuraChannelDeathItem(AuraEffectModifier* aurEff, bool apply)
@@ -3501,7 +2823,7 @@ void Aura::SpellAuraModResistChance(AuraEffectModifier* aurEff, bool apply)
 
 void Aura::SpellAuraModDetectRange(AuraEffectModifier* aurEff, bool apply)
 {
-    Unit* m_caster = GetUnitCaster();
+    Unit* m_caster = getUnitCaster();
     if (!m_caster)return;
     if (apply)
     {
@@ -3560,7 +2882,7 @@ void Aura::SpellAuraMagnet(AuraEffectModifier* /*aurEff*/, bool apply)
 {
     if (apply)
     {
-        Unit* caster = GetUnitCaster();
+        Unit* caster = getUnitCaster();
         if (!caster)
             return;
         mPositive = true;
@@ -3842,7 +3164,7 @@ void Aura::SpellAuraAddClassTargetTrigger(AuraEffectModifier* aurEff, bool apply
 
 void Aura::SpellAuraOverrideClassScripts(AuraEffectModifier* aurEff, bool apply)
 {
-    Player* plr = GetPlayerCaster();
+    Player* plr = getPlayerCaster();
     if (plr == nullptr)
         return;
 
@@ -4409,7 +3731,7 @@ void Aura::SpellAuraModShieldBlockPCT(AuraEffectModifier* aurEff, bool apply)
 
 void Aura::SpellAuraTrackStealthed(AuraEffectModifier* /*aurEff*/, bool apply)
 {
-    Unit* c = GetUnitCaster();
+    Unit* c = getUnitCaster();
     if (c == nullptr)
         return;
 
@@ -4717,7 +4039,7 @@ void Aura::SpellAuraModSpellDamageByAP(AuraEffectModifier* aurEff, bool apply)
     if (apply)
     {
         //!! caster may log out before spell expires on target !
-        Unit* pCaster = GetUnitCaster();
+        Unit* pCaster = getUnitCaster();
         if (pCaster == nullptr)
             return;
 
@@ -4794,7 +4116,7 @@ void Aura::SpellAuraModHealingByAP([[maybe_unused]] AuraEffectModifier* aurEff, 
     if (apply)
     {
         //!! caster may log out before spell expires on target !
-        Unit* pCaster = GetUnitCaster();
+        Unit* pCaster = getUnitCaster();
         if (pCaster == nullptr)
             return;
 
@@ -4887,7 +4209,7 @@ void Aura::SpellAuraModHealingDonePct(AuraEffectModifier* aurEff, bool apply)
 void Aura::SpellAuraEmphaty(AuraEffectModifier* /*aurEff*/, bool apply)
 {
     mPositive = true;
-    Player* caster = GetPlayerCaster();
+    Player* caster = getPlayerCaster();
     if (caster == nullptr)
         return;
 
@@ -5236,16 +4558,6 @@ void Aura::SpellAuraIncreaseRageFromDamageDealtPCT(AuraEffectModifier* aurEff, b
         return;
 
     static_cast< Player* >(m_target)->m_rageFromDamageDealt += (apply) ? aurEff->getEffectDamage() : -aurEff->getEffectDamage();
-}
-
-int32_t Aura::event_GetInstanceID()
-{
-    return m_target->event_GetInstanceID();
-}
-
-void Aura::RelocateEvents()
-{
-    event_Relocate();
 }
 
 void Aura::SpellAuraReduceCritMeleeAttackDmg(AuraEffectModifier* aurEff, bool apply)
@@ -5620,7 +4932,7 @@ void Aura::SpellAuraComprehendLang(AuraEffectModifier* /*aurEff*/, [[maybe_unuse
 
 void Aura::SpellAuraModPossessPet(AuraEffectModifier* /*aurEff*/, bool apply)
 {
-    Player* pCaster = GetPlayerCaster();
+    Player* pCaster = getPlayerCaster();
     if (pCaster == nullptr || !pCaster->IsInWorld())
         return;
 
@@ -6021,28 +5333,10 @@ void Aura::SpellAuraCallStabledPet(AuraEffectModifier* /*aurEff*/, bool apply)
 {
     if (apply)
     {
-        Player* pcaster = GetPlayerCaster();
+        Player* pcaster = getPlayerCaster();
         if (pcaster != nullptr && pcaster->getClass() == HUNTER && pcaster->getSession() != nullptr)
             pcaster->getSession()->sendStabledPetList(0);
     }
-}
-
-bool Aura::IsAreaAura() const
-{
-    auto sp = m_spellInfo;
-
-    if (sp->hasEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA) ||
-        sp->hasEffect(SPELL_EFFECT_APPLY_RAID_AREA_AURA) ||
-        sp->hasEffect(SPELL_EFFECT_APPLY_PET_AREA_AURA) ||
-        sp->hasEffect(SPELL_EFFECT_APPLY_FRIEND_AREA_AURA) ||
-        sp->hasEffect(SPELL_EFFECT_APPLY_ENEMY_AREA_AURA)
-#if VERSION_STRING >= TBC
-        || sp->hasEffect(SPELL_EFFECT_APPLY_OWNER_AREA_AURA)
-#endif
-        )
-        return true;
-
-    return false;
 }
 
 void Aura::SpellAuraConvertRune(AuraEffectModifier* aurEff, bool apply)

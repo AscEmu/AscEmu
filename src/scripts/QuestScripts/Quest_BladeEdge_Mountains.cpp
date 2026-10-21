@@ -46,7 +46,7 @@ public:
         // Let's see if we are netted
         if (Aura* a = getCreature()->getAuraWithId(38177))
         {
-            if (Unit* Caster = a->GetUnitCaster())
+            if (Unit* Caster = a->getUnitCaster())
             {
                 if (Caster->isPlayer())
                 {

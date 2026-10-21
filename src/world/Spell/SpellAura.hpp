@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/AuraEffects.hpp"
 #include "Definitions/AuraRemoveMode.hpp"
 #include "Definitions/School.hpp"
-#include "Server/EventableObject.h"
 #include "SpellAuraDefines.hpp"
 #include "Storage/WDB/WDBDefines.hpp"
 
@@ -22,16 +21,18 @@ class SpellInfo;
 class Object;
 class Player;
 class Unit;
-class Aura;
 
-class SERVER_DECL Aura : public EventableObject
+class SERVER_DECL Aura
 {
 public:
+    Aura(SpellInfo const* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr);
+    ~Aura();
+
     AuraEffectModifier const* getAuraEffect(uint8_t effIndex) const;
     AuraEffectModifier* getModifiableAuraEffect(uint8_t effIndex);
     bool hasAuraEffect(AuraEffect auraEffect) const;
-    void addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValue, float_t effectPctModifier, bool isStaticDamage, uint8_t effIndex, bool reapplying = false);
-    void addAuraEffect(AuraEffectModifier const* auraEffect, bool reapplying = false);
+    AuraEffectModifier* addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValue, float_t effectPctModifier, bool isStaticDamage, uint8_t effIndex, bool reapplying = false);
+    AuraEffectModifier* addAuraEffect(AuraEffectModifier const* auraEffect, bool reapplying = false);
     void removeAuraEffect(uint8_t effIndex);
     void removeAllAuraEffects();
     // Returns how many active aura effects the aura has
@@ -40,13 +41,15 @@ public:
     uint16_t getAuraSlot() const;
     void setAuraSlot(uint16_t slot);
 
+    uint8_t getVisualSlot() const;
+    void setVisualSlot(uint8_t visualSlot);
+
     int32_t getEffectDamage(uint8_t effIndex) const;
     int32_t getEffectDamageByEffect(AuraEffect auraEffect) const;
 
     void removeAura(AuraRemoveMode mode = AURA_REMOVE_BY_SERVER);
-    bool isDeleted() const;
 
-    bool canPeriodicEffectCrit();
+    bool canPeriodicEffectCrit() const;
 
     void applyModifiers(bool apply, AuraEffect applyOnlyFor = SPELL_AURA_NONE);
     void updateModifiers();
@@ -77,6 +80,7 @@ public:
 
     void setNegative(bool negative);
     bool isNegative() const;
+    bool isPassive() const;
 
     // Set on aura apply
     float_t getCritChance() const;
@@ -92,12 +96,31 @@ public:
     void removeUsedSpellModifier(AuraEffectModifier const* aurEff);
     void takeUsedSpellModifiers();
 
+    int32_t getPeriodicTimerFor(uint8_t effIndex) const;
+    void setPeriodicTimerFor(uint8_t effIndex, int32_t timer);
+
+    bool isAreaAura() const;
+    void setIsAreaAura(bool set);
+    void clearAreaAuraTargets();
+
+    bool isDeleted() const;
+    bool isTemporaryAura() const;
+
     Unit* getOwner() const;
     Player* getPlayerOwner() const;
     Object* getCaster() const;
+    Unit* getUnitCaster() const;
+    Player* getPlayerCaster() const;
     uint64_t getCasterGuid() const;
+    uint64_t getItemCasterGuid() const;
+
+    uint32_t getCastedItemId() const;
+    void setCastedItemId(uint32_t itemId);
 
     void update(unsigned long diff, bool skipDurationCheck = false);
+
+    uint32_t getTriggeredBySpellId() const;
+    void setTriggeredBySpellId(uint32_t spellId);
 
     SpellInfo const* getSpellInfo() const;
     uint32_t getSpellId() const;
@@ -329,6 +352,7 @@ private:
     bool m_updatingModifiers = false;
 
     uint16_t m_auraSlot = 0xFFFF;
+    uint8_t m_visualSlot = 0xFF;
 
     // Time left
     int32_t m_duration = 0;
@@ -347,7 +371,7 @@ private:
     void _calculateAttackPowerBonus();
     void _calculateSpellHaste();
     void _calculateEffectAmplitude(uint8_t effIndex);
-    bool _canHasteAffectDuration();
+    bool _canHasteAffectDuration() const;
     float_t m_critChance = 0.0f;
     int32_t m_spellPowerBonus = 0;
     int32_t m_healPowerBonus = 0;
@@ -359,53 +383,31 @@ private:
     bool mPositive = true;
 
     // Aura could have effects with different amplitude
+    // TODO: move this under AuraEffectModifier
     std::array<int32_t, MAX_SPELL_EFFECTS> m_periodicTimer = { 0 };
     void periodicTick(AuraEffectModifier* aurEff);
 
+    bool m_areaAura = false;
+    int32_t m_areaAuraTargetUpdateTimer = AREA_AURA_UPDATE_INTERVAL;
+
     bool m_isGarbage = false;
+    // Temporary auras are not saved
+    bool m_temporary = false;
 
     uint64_t m_casterGuid = 0;
     Unit* m_target = nullptr;
     Player* p_target = nullptr;
+    uint32_t m_castedItemId = 0;
+    uint64_t m_itemCasterGuid = 0;
+
+    bool m_castInDuel = false;
+
+    // Spell id of the spell that triggered this aura
+    uint32_t m_triggeredBySpellId = 0;
 
     SpellInfo const* m_spellInfo = nullptr;
 
 public:
-    Aura(SpellInfo const* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
-    ~Aura();
-
-    bool IsPassive() const;
-
-    Unit* GetUnitCaster();
-    Player* GetPlayerCaster();
-
-    Unit* GetUnitTarget();
-    Player* GetPlayerTarget();
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Area Auras
-
-    void EventUpdateAreaAura(uint8_t effIndex, float r);
-
-    void EventUpdateGroupAA(AuraEffectModifier* aurEff, float r);
-    void EventUpdateRaidAA(AuraEffectModifier* aurEff, float r);
-    void EventUpdatePetAA(AuraEffectModifier* aurEff, float r);
-    void EventUpdateFriendAA(AuraEffectModifier* aurEff, float r);
-    void EventUpdateEnemyAA(AuraEffectModifier* aurEff, float r);
-    void EventUpdateOwnerAA(AuraEffectModifier* aurEff, float r);
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Removes the Area Aura from all targets and clears the target set.
-    /// \param none    \return none
-    //////////////////////////////////////////////////////////////////////////////////////////
-    void ClearAATargets();
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Tells if the Aura is an area Aura.
-    /// \param none    \return true if it is false otherwise.
-    //////////////////////////////////////////////////////////////////////////////////////////
-    bool IsAreaAura() const;
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // Legacy Aura Handlers
     void SpellAuraBindSight(AuraEffectModifier* aurEff, bool apply);
@@ -601,29 +603,12 @@ public:
 
     void SendDummyModifierLog(std::map<SpellInfo*, uint32_t> * m, SpellInfo* spellInfo, uint32_t i, bool apply, bool pct = false);
 
-    // Events
-    void EventPeriodicHeal1(uint32_t);
-
-    void RelocateEvents();
-    int32_t event_GetInstanceID();
     bool WasCastInDuel() { return m_castInDuel; }
-
-    AreaAuraList targets;                           // This is only used for AA
-    uint32_t m_castedItemId;
-    uint64_t itemCasterGUID;
-    bool m_areaAura;                                // Area aura stuff -> never passive.
-    uint8_t m_visualSlot;
-    uint32_t pSpellId;                              // This represents the triggering spell id
-    bool m_castInDuel;
 
 protected:
     uint32_t m_flags;
 
     void SendChannelUpdate(uint32_t time, Object* m_caster);
-
-public:
-    bool m_temporary;                               // Skip saving
-    bool m_ignoreunapply;                           // \\\"special\\\" case, for unapply
 };
 
 typedef void(Aura::*pSpellAura)(AuraEffectModifier* aurEff, bool apply);

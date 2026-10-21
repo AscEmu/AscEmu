@@ -70,10 +70,10 @@ bool PredatoryStrikes(uint8_t effectIndex, Aura* a, bool apply)
 
 bool Tranquility(uint8_t effectIndex, Aura* a, bool apply)
 {
-    if (apply)
+    /*if (apply)
         sEventMgr.AddEvent(a, &Aura::EventPeriodicHeal1, (uint32_t)a->getEffectDamage(effectIndex), EVENT_AURA_PERIODIC_HEAL, 2000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     else
-        sEventMgr.RemoveEvents(a, EVENT_AURA_PERIODIC_HEAL);
+        sEventMgr.RemoveEvents(a, EVENT_AURA_PERIODIC_HEAL);*/
 
     return true;
 }
@@ -86,10 +86,10 @@ bool LifeBloom(uint8_t /*effectIndex*/, Aura* a, bool apply)
         return true;
 
     // apply ONCE only.
-    if (a->m_ignoreunapply)
-        return true;
+    //if (a->m_ignoreunapply)
+    //    return true;
 
-    Unit* pCaster = a->GetUnitCaster();
+    Unit* pCaster = a->getUnitCaster();
     if (pCaster == NULL)
         pCaster = m_target;
 
@@ -101,7 +101,7 @@ bool LifeBloom(uint8_t /*effectIndex*/, Aura* a, bool apply)
         {
             if (aur->getSpellId() == a->getSpellId())
             {
-                aur->m_ignoreunapply = true;
+                //aur->m_ignoreunapply = true;
                 if (aur->getTimeLeft())
                     expired = false;
                 aur->removeAura();

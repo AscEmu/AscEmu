@@ -7,11 +7,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Definitions/AuraEffects.hpp"
 #include "Platform/SymbolVisibility.hpp"
+#include "SpellAuraDefines.hpp"
 
 #include <cmath>
 #include <cstdint>
 
 class Aura;
+class Pet;
+class Player;
+class Unit;
 
 struct SERVER_DECL AuraEffectModifier
 {
@@ -61,6 +65,9 @@ public:
     void applyEffect(bool apply, bool skipScriptCheck = false);
     void resetEffect();
 
+    void updateAreaAuraEffectTargets();
+    void clearAreaAuraEffectTargets();
+
     // Never nullptr
     Aura* getAura() const;
 
@@ -78,6 +85,19 @@ private:
     bool mEffectDamageStatic = false;           // If effect damage is set to static, effect will not gain spell power bonuses
     bool mActive = false;                       // Is effect active
     uint8_t effIndex = 0;
+
+    AreaAuraList m_areaAuraTargets;
+
+    bool _canAddTargetToGroupOrRaidAreaAura(Player const* initiatorPlayer, Unit const* target, float radius, bool checkRaid) const;
+    void _fillGroupOrRaidAreaAuraTargets(float radius, bool checkRaid);
+    bool _canAddPetToPetAreaAura(Pet const* pet, float radius) const;
+    void _fillPetAreaAuraTargets(float radius);
+    bool _canAddTargetToFriendAreaAura(Unit const* target, float radius) const;
+    void _fillFriendAreaAuraTargets(float radius);
+    bool _canAddTargetToEnemyAreaAura(Unit const* target, float radius) const;
+    void _fillEnemyAreaAuraTargets(float radius);
+    bool _canAddOwnerToOwnerAreaAura(Unit const* owner, float radius) const;
+    void _fillOwnerAreaAuraTargets(float radius);
 
     Aura& mAura;
 };

@@ -395,7 +395,7 @@ public:
     //void spellEffectTriggerMissile(uint8_t effectIndex);
     //void spellEffectOpenLock(uint8_t effectIndex);
     //void spellEffectTransformItem(uint8_t effectIndex);
-    //void spellEffectApplyGroupAA(uint8_t effectIndex);
+    void spellEffectApplyAreaAura(uint8_t effectIndex);
     //void spellEffectLearnSpell(uint8_t effectIndex);
     //void spellEffectSpellDefense(uint8_t effectIndex);
     //void spellEffectDispel(uint8_t effectIndex);
@@ -418,7 +418,6 @@ public:
     //void spellEffectClearQuest(uint8_t effectIndex);
     void spellEffectForceCast(uint8_t effectIndex);
     void spellEffectTriggerSpell(uint8_t effectIndex);
-    //void spellEffectApplyRaidAA(uint8_t effectIndex);
     //void spellEffectPowerFunnel(uint8_t effectIndex);
     //void spellEffectHealMaxHealth(uint8_t effectIndex);
     //void spellEffectInterruptCast(uint8_t effectIndex);
@@ -459,22 +458,18 @@ public:
     //void spellEffectAttackMe(uint8_t effectIndex);
     //void spellEffectSkinPlayerCorpse(uint8_t effectIndex);
     void spellEffectSkill(uint8_t effectIndex);
-    //void spellEffectApplyPetAA(uint8_t effectIndex);
     //void spellEffectDummyMelee(uint8_t effectIndex);
     //void spellEffectStartTaxi(uint8_t effectIndex);
     //void spellEffectPlayerPull(uint8_t effectIndex);
     //void spellEffectReduceThreatPercent(uint8_t effectIndex);
     //void spellEffectSpellSteal(uint8_t effectIndex);
     //void spellEffectProspecting(uint8_t effectIndex);
-    //void spellEffectApplyFriendAA(uint8_t effectIndex);
-    //void spellEffectApplyEnemyAA(uint8_t effectIndex);
     //void spellEffectRedirectThreat(uint8_t effectIndex);
     //void spellEffectPlayMusic(uint8_t effectIndex);
     //void spellEffectForgetSpecialization(uint8_t effectIndex);
     //void spellEffectKillCredit(uint8_t effectIndex);
     //void spellEffectRestorePowerPct(uint8_t effectIndex);
     //void spellEffectTriggerSpellWithValue(uint8_t effectIndex);
-    //void spellEffectApplyOwnerAA(uint8_t effectIndex);
     //void spellEffectCreatePet(uint8_t effectIndex);
     //void spellEffectTeachTaxiPath(uint8_t effectIndex);
     //void spellEffectDualWield2H(uint8_t effectIndex);
@@ -551,8 +546,6 @@ public:
     void CreateItem(uint32_t itemId);
 
     // Effect Handlers for effectIndex
-    void ApplyAreaAura(uint8_t effectIndex);
-
     void SpellEffectInstantKill(uint8_t effectIndex);
     void SpellEffectSchoolDMG(uint8_t effectIndex);
     void SpellEffectTeleportUnits(uint8_t effectIndex);
@@ -584,7 +577,6 @@ public:
     void SpellEffectTriggerMissile(uint8_t effectIndex);
     void SpellEffectOpenLock(uint8_t effectIndex);
     void SpellEffectTransformItem(uint8_t effectIndex);
-    void SpellEffectApplyGroupAA(uint8_t effectIndex);
     void SpellEffectLearnSpell(uint8_t effectIndex);
     void SpellEffectSpellDefense(uint8_t effectIndex);
     void SpellEffectDispel(uint8_t effectIndex);
@@ -602,7 +594,6 @@ public:
     void SpellEffectPowerBurn(uint8_t effectIndex);
     void SpellEffectThreat(uint8_t effectIndex);
     void SpellEffectClearQuest(uint8_t effectIndex);
-    void SpellEffectApplyRaidAA(uint8_t effectIndex);
     void SpellEffectPowerFunnel(uint8_t effectIndex);
     void SpellEffectHealMaxHealth(uint8_t effectIndex);
     void SpellEffectInterruptCast(uint8_t effectIndex);
@@ -642,22 +633,18 @@ public:
     void SpellEffectResurrectNew(uint8_t effectIndex);
     void SpellEffectAttackMe(uint8_t effectIndex);
     void SpellEffectSkinPlayerCorpse(uint8_t effectIndex);
-    void SpellEffectApplyPetAA(uint8_t effectIndex);
     void SpellEffectDummyMelee(uint8_t effectIndex);
     void SpellEffectStartTaxi(uint8_t effectIndex);
     void SpellEffectPlayerPull(uint8_t effectIndex);
     void SpellEffectReduceThreatPercent(uint8_t effectIndex);
     void SpellEffectSpellSteal(uint8_t effectIndex);
     void SpellEffectProspecting(uint8_t effectIndex);
-    void SpellEffectApplyFriendAA(uint8_t effectIndex);
-    void SpellEffectApplyEnemyAA(uint8_t effectIndex);
     void SpellEffectRedirectThreat(uint8_t effectIndex);
     void SpellEffectPlayMusic(uint8_t effectIndex);
     void SpellEffectForgetSpecialization(uint8_t effectIndex);
     void SpellEffectKillCredit(uint8_t effectIndex);
     void SpellEffectRestorePowerPct(uint8_t effectIndex);
     void SpellEffectTriggerSpellWithValue(uint8_t effectIndex);
-    void SpellEffectApplyOwnerAA(uint8_t effectIndex);
     void SpellEffectCreatePet(uint8_t effectIndex);
     void SpellEffectTeachTaxiPath(uint8_t effectIndex);
     void SpellEffectDualWield2H(uint8_t effectIndex);

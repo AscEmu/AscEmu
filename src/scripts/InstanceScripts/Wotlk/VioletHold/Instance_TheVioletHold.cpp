@@ -1183,13 +1183,13 @@ void ActivationCrystalGossip::onHello(Object* /*object*/, Player* player)
 /// Spell: 58040 - Destroy Door Seal
 void DestroyDoorSeal::onAuraCreate(Aura* aur)
 {
-    if (aur->GetUnitCaster() && aur->GetUnitCaster()->getWorldMap()->getScript())
-        mInstance = aur->GetUnitCaster()->getWorldMap()->getScript();
+    if (aur->getUnitCaster() && aur->getUnitCaster()->getWorldMap()->getScript())
+        mInstance = aur->getUnitCaster()->getWorldMap()->getScript();
 }
 
 SpellScriptExecuteState DestroyDoorSeal::onAuraPeriodicTick(Aura* aur, AuraEffectModifier* /*aurEff*/, float_t* /*damage*/)
 {
-    if (aur->GetUnitCaster() && aur->GetUnitCaster()->isAlive())
+    if (aur->getUnitCaster() && aur->getUnitCaster()->isAlive())
     {
         if (mInstance)
         {
